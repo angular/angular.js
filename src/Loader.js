@@ -402,3 +402,4 @@ window['angularFactory'] = function(config) {
     compile:compile
   };
 };
+

@@ -1,0 +1,6 @@
+* move angular-bootstrap.js out of anugular.js.
+* 'angular' is the official namespace for public API
+  - angular.defaults = {}
+  - var scope = angular.compile(element, options);
+* angular.js is not self boot straping by default.
+*

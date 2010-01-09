@@ -28,8 +28,8 @@ end
 
 desc 'Compile JavaScript with Google Closure Compiler'
 task :compileclosure do
+#        --compilation_level ADVANCED_OPTIMIZATIONS \
   %x(java -jar lib/compiler-closure/compiler.jar \
-        --compilation_level ADVANCED_OPTIMIZATIONS \
         --js lib/webtoolkit/webtoolkit.base64.js \
         --js lib/underscore/underscore.js \
         --js src/Loader.js \
