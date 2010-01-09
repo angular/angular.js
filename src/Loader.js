@@ -166,7 +166,6 @@ nglr.Loader.prototype.load = function() {
   this.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
   this.loadCss('/stylesheets/nglr.css');
   console.log("Server: " + this.config.server);
-  jQuery.noConflict();
   nglr.msie = jQuery.browser.msie;
   this.configureJQueryPlugins();
   this.computeConfiguration();
@@ -201,7 +200,7 @@ nglr.Loader.prototype.uid = function() {
 nglr.Loader.prototype.computeConfiguration = function() {
   var config = this.config;
   if (!config.database) {
-    var match = config.server.match(/https?:\/\/([\w]*)/)
+    var match = config.server.match(/https?:\/\/([\w]*)/);
     config.database = match ? match[1] : "$MEMORY";
   }
 };
@@ -386,4 +385,20 @@ nglr.UrlWatcher.prototype.setUrl = function(url) {
 
 nglr.UrlWatcher.prototype.getUrl = function() {
   return window.location.href;
+};
+
+window['angularFactory'] = function(config) {
+  var defaults = {
+    server: ""
+  };
+  //todo: don't load stylesheet by default
+  //todo: don't start watcher
+  function compile(root){
+    var loader = new nglr.Loader(root, jQuery("head"), _(defaults).extend(config));
+    loader.load();
+    return jQuery(root).scope();
+  };
+  return {
+    compile:compile
+  };
 };

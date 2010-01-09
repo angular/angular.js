@@ -103,8 +103,17 @@ nglr.Binder.prototype.updateView = function() {
   _.each(this.updateListeners, function(fn) {fn();});
 };
 
+nglr.Binder.prototype.docFindWithSelf = function(exp){
+  var doc = jQuery(this.doc);
+  var selection = doc.find(exp);
+  if (doc.is(exp)){
+    selection = selection.andSelf();
+  }
+  return selection;
+};
+
 nglr.Binder.prototype.executeInit = function() {
-  jQuery("[ng-init]", this.doc).each(function() {
+  this.docFindWithSelf("[ng-init]").each(function() {
     var jThis = jQuery(this);
     var scope = jThis.scope();
     try {
@@ -116,7 +125,7 @@ nglr.Binder.prototype.executeInit = function() {
 };
 
 nglr.Binder.prototype.entity = function (scope) {
-  jQuery("[ng-entity]", this.doc).attr("ng-watch", function() {
+  this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
     try {
       var jNode = jQuery(this);
       var decl = scope.entity(jNode.attr("ng-entity"));
@@ -131,12 +140,12 @@ nglr.Binder.prototype.compile = function() {
   var jNode = jQuery(this.doc);
   var self = this;
   if (this.config.autoSubmit) {
-    var submits = jQuery(":submit", this.doc).not("[ng-action]");
+    var submits = this.docFindWithSelf(":submit").not("[ng-action]");
     submits.attr("ng-action", "$save()");
     submits.not(":disabled").not("ng-bind-attr").attr("ng-bind-attr", '{disabled:"{{$invalidWidgets}}"}');
   }
   this.precompile(this.doc)(this.doc, jNode.scope(), "");
-  jQuery("a[ng-action]", this.doc).live('click', function (event) {
+  this.docFindWithSelf("a[ng-action]").live('click', function (event) {
     var jNode = jQuery(this);
     try {
       jNode.scope().eval(jNode.attr('ng-action'));

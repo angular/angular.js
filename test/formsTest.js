@@ -16,7 +16,3 @@ nglrTest.prototype.testBind = function(){
     assertEquals(arg, 'arg');
   }).apply('XXX', ['arg']);
 };
-
-
-
-

@@ -39,25 +39,25 @@
   };
 
   if (scriptConfig.autoLoadDependencies) {
-    addScript("/javascripts/webtoolkit.base64.js");
-    addScript("/javascripts/swfobject.js");
-    addScript("/javascripts/jQuery/jquery-1.3.2.js");
-    addScript("/javascripts/jQuery/jquery-ui-1.7.1.custom.min.js");
-    addScript("/javascripts/underscore/underscore.js");
-    addScript("/javascripts/nglr/Loader.js");
-    addScript("/javascripts/nglr/API.js");
-    addScript("/javascripts/nglr/Binder.js");
-    addScript("/javascripts/nglr/ControlBar.js");
-    addScript("/javascripts/nglr/DataStore.js");
-    addScript("/javascripts/nglr/Filters.js");
-    addScript("/javascripts/nglr/JSON.js");
-    addScript("/javascripts/nglr/Model.js");
-    addScript("/javascripts/nglr/Parser.js");
-    addScript("/javascripts/nglr/Scope.js");
-    addScript("/javascripts/nglr/Server.js");
-    addScript("/javascripts/nglr/Users.js");
-    addScript("/javascripts/nglr/Validators.js");
-    addScript("/javascripts/nglr/Widgets.js");
+    addScript("/../lib/webtoolkit/webtoolkit.base64.js");
+    addScript("/../lib/swfobject/swfobject.js");
+    addScript("/../lib/jquery/jquery-1.3.2.js");
+    addScript("/../lib/jquery/jquery-ui-1.7.1.custom.min.js");
+    addScript("/../lib/underscore/underscore.js");
+    addScript("/Loader.js");
+    addScript("/API.js");
+    addScript("/Binder.js");
+    addScript("/ControlBar.js");
+    addScript("/DataStore.js");
+    addScript("/Filters.js");
+    addScript("/JSON.js");
+    addScript("/Model.js");
+    addScript("/Parser.js");
+    addScript("/Scope.js");
+    addScript("/Server.js");
+    addScript("/Users.js");
+    addScript("/Validators.js");
+    addScript("/Widgets.js");
   } else {
     addScript("/ajax/libs/swfobject/2.2/swfobject.js", "http://ajax.googleapis.com");
     addScript("/ajax/libs/jquery/1.3.2/jquery.min.js", "http://ajax.googleapis.com");
@@ -65,12 +65,6 @@
   }
 
   window.onload = function() {
-    window.angular.init = function(root, config){
-      var cnfgMerged = _.clone(scriptConfig||{});
-      _.extend(cnfgMerged, config);
-      new nglr.Loader(root, jQuery("head"), cnfgMerged).load();
-    };
-
     var doc = window.document;
     if (scriptConfig.bindRootId) {
       doc = null;
@@ -86,12 +80,13 @@
         doc = window.document.getElementById(id);
       }
     }
+    var angular = window.angularFactory(scriptConfig);
     if (scriptConfig.autoBind && doc) {
-      window.angular.init(doc);
+      window.angularScope = angular.compile(doc);
     }
     if (typeof previousOnLoad === 'function') {
       try {
-      previousOnLoad.apply(this, arguments);
+        previousOnLoad.apply(this, arguments);
       } catch (e) {}
     }
   };

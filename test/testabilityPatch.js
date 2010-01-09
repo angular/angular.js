@@ -13,6 +13,12 @@ function noop(){}
 
 jstd = jstestdriver;
 
+swfobject = {
+  createSwf:function(){
+    fail("must mock out swfobject.createSwf in test.");
+  }
+};
+
 function html(content) {
   return jQuery("<div></div>").html(content);
 }

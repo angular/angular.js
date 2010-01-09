@@ -1,3 +1,5 @@
+if (!nglr.test)        nglr.test = {};
+
 nglr.test.ScenarioRunner = function(scenarios, body) {
   this.scenarios = scenarios;
   this.body = body;
@@ -46,10 +48,10 @@ nglr.test.Runner.prototype = {
       scenario:jQuery('<div class="scenario"></div>')
     };
     current.run = current.scenario.append(
-      '<div class="run">' + 
-        '<span class="name">.</span>' + 
-        '<span class="time">.</span>' + 
-        '<span class="state">.</span>' + 
+      '<div class="run">' +
+        '<span class="name">.</span>' +
+        '<span class="time">.</span>' +
+        '<span class="state">.</span>' +
       '</run>').find(".run");
     current.log = current.scenario.append('<div class="log"></div>').find(".log");
     current.run.find(".name").text(name);
@@ -79,7 +81,7 @@ nglr.test.Runner.prototype = {
     log.text(buf.join(" "));
     this.current.log.append(log);
     this.console.scrollTop(this.console[0].scrollHeight);
-    if (level == "error") 
+    if (level == "error")
       this.current.error = buf.join(" ");
   }
 };
@@ -114,16 +116,16 @@ nglr.test.Scenario.prototype = {
   else if (step.Then) fn = angular.test.THEN[step.Then];
     return fn || function (){
              throw "ERROR: Need Given/When/Then got: " + nglr.toJson(step);
-           };    
+           };
   },
   context: function(runner) {
     var frame = runner.frame;
     var window = frame[0].contentWindow;
     var document;
-    if (window.jQuery) 
+    if (window.jQuery)
       document = window.jQuery(window.document);
     var context = {
-        frame:frame, 
+        frame:frame,
         window:window,
         log:_.bind(runner.log, runner, "info"),
         document:document,
