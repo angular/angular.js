@@ -1,18 +1,18 @@
-nglr.array = [].constructor;
+array = [].constructor;
 
-nglr.toJson = function(obj, pretty){
+toJson = function(obj, pretty){
   var buf = [];
-  nglr.toJsonArray(buf, obj, pretty ? "\n  " : null);
+  toJsonArray(buf, obj, pretty ? "\n  " : null);
   return buf.join('');
 };
 
-nglr.toPrettyJson = function(obj) {
-  return nglr.toJson(obj, true);
+toPrettyJson = function(obj) {
+  return toJson(obj, true);
 };
 
-nglr.fromJson = function(json) {
+fromJson = function(json) {
   try {
-    var parser = new nglr.Parser(json, true);
+    var parser = new Parser(json, true);
     var expression =  parser.primary();
     parser.assertAllConsumed();
     return expression();
@@ -23,7 +23,7 @@ nglr.fromJson = function(json) {
 };
 
 
-nglr.toJsonArray = function(buf, obj, pretty){
+toJsonArray = function(buf, obj, pretty){
   var type = typeof obj;
   if (obj === null) {
     buf.push("null");
@@ -50,7 +50,7 @@ nglr.toJsonArray = function(buf, obj, pretty){
         if (typeof item == 'function' || typeof item == 'undefined') {
           buf.push("null");
         } else {
-          nglr.toJsonArray(buf, item, pretty);
+          toJsonArray(buf, item, pretty);
         }
         sep = true;
       }
@@ -80,7 +80,7 @@ nglr.toJsonArray = function(buf, obj, pretty){
             }
             buf.push(angular.String.quote(key));
             buf.push(":");
-            nglr.toJsonArray(buf, value, childPretty);
+            toJsonArray(buf, value, childPretty);
             comma = true;
           }
         } catch (e) {

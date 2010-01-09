@@ -1,5 +1,5 @@
 // Copyright (C) 2009 BRAT Tech LLC
-nglr.Binder = function(doc, widgetFactory, urlWatcher, config) {
+Binder = function(doc, widgetFactory, urlWatcher, config) {
   this.doc = doc;
   this.urlWatcher = urlWatcher;
   this.anchor = {};
@@ -8,7 +8,7 @@ nglr.Binder = function(doc, widgetFactory, urlWatcher, config) {
   this.updateListeners = [];
 };
 
-nglr.Binder.parseBindings = function(string) {
+Binder.parseBindings = function(string) {
   var results = [];
   var lastIndex = 0;
   var index;
@@ -28,18 +28,18 @@ nglr.Binder.parseBindings = function(string) {
   return results.length === 0 ? [ string ] : results;
 };
 
-nglr.Binder.hasBinding = function(string) {
-  var bindings = nglr.Binder.parseBindings(string);
-  return bindings.length > 1 || nglr.Binder.binding(bindings[0]) !== null;
+Binder.hasBinding = function(string) {
+  var bindings = Binder.parseBindings(string);
+  return bindings.length > 1 || Binder.binding(bindings[0]) !== null;
 };
 
-nglr.Binder.binding = function(string) {
+Binder.binding = function(string) {
   var binding = string.replace(/\n/gm, ' ').match(/^\{\{(.*)\}\}$/);
   return binding ? binding[1] : null;
 };
 
 
-nglr.Binder.prototype.parseQueryString = function(query) {
+Binder.prototype.parseQueryString = function(query) {
   var params = {};
   query.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,
       function (match, left, right) {
@@ -48,7 +48,7 @@ nglr.Binder.prototype.parseQueryString = function(query) {
   return params;
 };
 
-nglr.Binder.prototype.parseAnchor = function(url) {
+Binder.prototype.parseAnchor = function(url) {
   var self = this;
   url = url || this.urlWatcher.getUrl();
 
@@ -65,13 +65,13 @@ nglr.Binder.prototype.parseAnchor = function(url) {
   });
 };
 
-nglr.Binder.prototype.onUrlChange = function (url) {
+Binder.prototype.onUrlChange = function (url) {
   console.log("URL change detected", url);
   this.parseAnchor(url);
   this.updateView();
 };
 
-nglr.Binder.prototype.updateAnchor = function() {
+Binder.prototype.updateAnchor = function() {
   var url = this.urlWatcher.getUrl();
   var anchorIndex = url.indexOf('#');
   if (anchorIndex > -1)
@@ -93,7 +93,7 @@ nglr.Binder.prototype.updateAnchor = function() {
   return url;
 };
 
-nglr.Binder.prototype.updateView = function() {
+Binder.prototype.updateView = function() {
   var start = new Date().getTime();
   var scope = jQuery(this.doc).scope();
   scope.set("$invalidWidgets", []);
@@ -103,7 +103,7 @@ nglr.Binder.prototype.updateView = function() {
   _.each(this.updateListeners, function(fn) {fn();});
 };
 
-nglr.Binder.prototype.docFindWithSelf = function(exp){
+Binder.prototype.docFindWithSelf = function(exp){
   var doc = jQuery(this.doc);
   var selection = doc.find(exp);
   if (doc.is(exp)){
@@ -112,31 +112,31 @@ nglr.Binder.prototype.docFindWithSelf = function(exp){
   return selection;
 };
 
-nglr.Binder.prototype.executeInit = function() {
+Binder.prototype.executeInit = function() {
   this.docFindWithSelf("[ng-init]").each(function() {
     var jThis = jQuery(this);
     var scope = jThis.scope();
     try {
       scope.eval(jThis.attr('ng-init'));
     } catch (e) {
-      nglr.alert("EVAL ERROR:\n" + jThis.attr('ng-init') + '\n' + nglr.toJson(e, true));
+      alert("EVAL ERROR:\n" + jThis.attr('ng-init') + '\n' + toJson(e, true));
     }
   });
 };
 
-nglr.Binder.prototype.entity = function (scope) {
+Binder.prototype.entity = function (scope) {
   this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
     try {
       var jNode = jQuery(this);
       var decl = scope.entity(jNode.attr("ng-entity"));
       return decl + (jNode.attr('ng-watch') || "");
     } catch (e) {
-      nglr.alert(e);
+      alert(e);
     }
   });
 };
 
-nglr.Binder.prototype.compile = function() {
+Binder.prototype.compile = function() {
   var jNode = jQuery(this.doc);
   var self = this;
   if (this.config.autoSubmit) {
@@ -153,37 +153,37 @@ nglr.Binder.prototype.compile = function() {
       jNode.removeClass("ng-exception");
     } catch (e) {
       jNode.addClass("ng-exception");
-      jNode.attr('ng-error', nglr.toJson(e, true));
+      jNode.attr('ng-error', toJson(e, true));
     }
     self.updateView();
     return false;
   });
 };
 
-nglr.Binder.prototype.translateBinding = function(node, parentPath, factories) {
+Binder.prototype.translateBinding = function(node, parentPath, factories) {
   var path = parentPath.concat();
   var offset = path.pop();
-  var parts = nglr.Binder.parseBindings(node.nodeValue);
-  if (parts.length > 1 || nglr.Binder.binding(parts[0])) {
+  var parts = Binder.parseBindings(node.nodeValue);
+  if (parts.length > 1 || Binder.binding(parts[0])) {
     var parent = node.parentNode;
-    if (nglr.isLeafNode(parent)) {
+    if (isLeafNode(parent)) {
       parent.setAttribute('ng-bind-template', node.nodeValue);
       factories.push({path:path, fn:function(node, scope, prefix) {
-        return new nglr.BindUpdater(node, node.getAttribute('ng-bind-template'));
+        return new BindUpdater(node, node.getAttribute('ng-bind-template'));
       }});
     } else {
       for (var i = 0; i < parts.length; i++) {
         var part = parts[i];
-        var binding = nglr.Binder.binding(part);
+        var binding = Binder.binding(part);
         var newNode;
         if (binding) {
           newNode = document.createElement("span");
           var jNewNode = jQuery(newNode);
           jNewNode.attr("ng-bind", binding);
           if (i === 0) {
-            factories.push({path:path.concat(offset + i), fn:nglr.Binder.prototype.ng_bind});
+            factories.push({path:path.concat(offset + i), fn:Binder.prototype.ng_bind});
           }
-        } else if (nglr.msie && part.charAt(0) == ' ') {
+        } else if (msie && part.charAt(0) == ' ') {
           newNode = document.createElement("span");
           newNode.innerHTML = '&nbsp;' + part.substring(1);
         } else {
@@ -196,7 +196,7 @@ nglr.Binder.prototype.translateBinding = function(node, parentPath, factories) {
   }
 };
 
-nglr.Binder.prototype.precompile = function(root) {
+Binder.prototype.precompile = function(root) {
   var factories = [];
   this.precompileNode(root, [], factories);
   return function (template, scope, prefix) {
@@ -211,13 +211,13 @@ nglr.Binder.prototype.precompile = function(root) {
       try {
         scope.addWidget(factory.fn(node, scope, prefix));
       } catch (e) {
-        nglr.alert(e);
+        alert(e);
       }
     }
   };
 };
 
-nglr.Binder.prototype.precompileNode = function(node, path, factories) {
+Binder.prototype.precompileNode = function(node, path, factories) {
   var nodeType = node.nodeType;
   if (nodeType == Node.TEXT_NODE) {
     this.translateBinding(node, path, factories);
@@ -234,19 +234,19 @@ nglr.Binder.prototype.precompileNode = function(node, path, factories) {
   if (attributes) {
     var bindings = node.getAttribute('ng-bind-attr');
     node.removeAttribute('ng-bind-attr');
-    bindings = bindings ? nglr.fromJson(bindings) : {};
+    bindings = bindings ? fromJson(bindings) : {};
     var attrLen = attributes.length;
     for (var i = 0; i < attrLen; i++) {
       var attr = attributes[i];
       var attrName = attr.name;
       // http://www.glennjones.net/Post/809/getAttributehrefbug.htm
-      var attrValue = nglr.msie && attrName == 'href' ?
+      var attrValue = msie && attrName == 'href' ?
                       decodeURI(node.getAttribute(attrName, 2)) : attr.value;
-      if (nglr.Binder.hasBinding(attrValue)) {
+      if (Binder.hasBinding(attrValue)) {
         bindings[attrName] = attrValue;
       }
     }
-    var json = nglr.toJson(bindings);
+    var json = toJson(bindings);
     if (json.length > 2) {
       node.setAttribute("ng-bind-attr", json);
     }
@@ -270,7 +270,7 @@ nglr.Binder.prototype.precompileNode = function(node, path, factories) {
       return clone;
     };
     factories.push({path:path, fn:function(node, scope, prefix) {
-      return new nglr.RepeaterUpdater(jQuery(node), repeaterExpression, template, prefix);
+      return new RepeaterUpdater(jQuery(node), repeaterExpression, template, prefix);
     }});
     return;
   }
@@ -309,42 +309,42 @@ nglr.Binder.prototype.precompileNode = function(node, path, factories) {
   }
 };
 
-nglr.Binder.prototype.ng_eval = function(node) {
-  return new nglr.EvalUpdater(node, node.getAttribute('ng-eval'));
+Binder.prototype.ng_eval = function(node) {
+  return new EvalUpdater(node, node.getAttribute('ng-eval'));
 };
 
-nglr.Binder.prototype.ng_bind = function(node) {
-  return new nglr.BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
+Binder.prototype.ng_bind = function(node) {
+  return new BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
 };
 
-nglr.Binder.prototype.ng_bind_attr = function(node) {
-  return new nglr.BindAttrUpdater(node, nglr.fromJson(node.getAttribute('ng-bind-attr')));
+Binder.prototype.ng_bind_attr = function(node) {
+  return new BindAttrUpdater(node, fromJson(node.getAttribute('ng-bind-attr')));
 };
 
-nglr.Binder.prototype.ng_hide = function(node) {
-  return new nglr.HideUpdater(node, node.getAttribute('ng-hide'));
+Binder.prototype.ng_hide = function(node) {
+  return new HideUpdater(node, node.getAttribute('ng-hide'));
 };
 
-nglr.Binder.prototype.ng_show = function(node) {
-  return new nglr.ShowUpdater(node, node.getAttribute('ng-show'));
+Binder.prototype.ng_show = function(node) {
+  return new ShowUpdater(node, node.getAttribute('ng-show'));
 };
 
-nglr.Binder.prototype.ng_class = function(node) {
-  return new nglr.ClassUpdater(node, node.getAttribute('ng-class'));
+Binder.prototype.ng_class = function(node) {
+  return new ClassUpdater(node, node.getAttribute('ng-class'));
 };
 
-nglr.Binder.prototype.ng_class_even = function(node) {
-  return new nglr.ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
+Binder.prototype.ng_class_even = function(node) {
+  return new ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
 };
 
-nglr.Binder.prototype.ng_class_odd = function(node) {
-  return new nglr.ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
+Binder.prototype.ng_class_odd = function(node) {
+  return new ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
 };
 
-nglr.Binder.prototype.ng_style = function(node) {
-  return new nglr.StyleUpdater(node, node.getAttribute('ng-style'));
+Binder.prototype.ng_style = function(node) {
+  return new StyleUpdater(node, node.getAttribute('ng-style'));
 };
 
-nglr.Binder.prototype.ng_watch = function(node, scope) {
+Binder.prototype.ng_watch = function(node, scope) {
   scope.watch(node.getAttribute('ng-watch'));
 };

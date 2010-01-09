@@ -3,4 +3,4 @@
   - angular.defaults = {}
   - var scope = angular.compile(element, options);
 * angular.js is not self boot straping by default.
-*
+* Remove SWFObject

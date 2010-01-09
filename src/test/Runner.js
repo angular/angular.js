@@ -1,11 +1,11 @@
-if (!nglr.test)        nglr.test = {};
+if (typeof test == 'undefined')        test = {};
 
-nglr.test.ScenarioRunner = function(scenarios, body) {
+test.ScenarioRunner = function(scenarios, body) {
   this.scenarios = scenarios;
   this.body = body;
 };
 
-nglr.test.ScenarioRunner.prototype = {
+test.ScenarioRunner.prototype = {
   run:function(){
     this.setUpUI();
     this.runScenarios();
@@ -25,22 +25,22 @@ nglr.test.ScenarioRunner.prototype = {
     });
   },
   runScenarios:function(){
-    var runner = new nglr.test.Runner(this.console, this.testFrame);
+    var runner = new test.Runner(this.console, this.testFrame);
     _.stepper(this.scenarios, function(next, scenario, name){
-        new nglr.test.Scenario(name, scenario).run(runner, next);
+        new test.Scenario(name, scenario).run(runner, next);
       }, function(){
       }
     );
   }
 };
 
-nglr.test.Runner = function(console, frame){
+test.Runner = function(console, frame){
   this.console = console;
   this.current = null;
   this.tests = [];
   this.frame = frame;
 };
-nglr.test.Runner.prototype = {
+test.Runner.prototype = {
   start:function(name){
     var current = this.current = {
       name:name,
@@ -75,7 +75,7 @@ nglr.test.Runner.prototype = {
     var buf = [];
     for ( var i = 1; i < arguments.length; i++) {
       var arg = arguments[i];
-      buf.push(typeof arg == "string" ?arg:nglr.toJson(arg));
+      buf.push(typeof arg == "string" ?arg:toJson(arg));
     }
     var log = jQuery('<div class="' + level + '"></div>');
     log.text(buf.join(" "));
@@ -86,11 +86,11 @@ nglr.test.Runner.prototype = {
   }
 };
 
-nglr.test.Scenario = function(name, scenario){
+test.Scenario = function(name, scenario){
   this.name = name;
   this.scenario = scenario;
 };
-nglr.test.Scenario.prototype = {
+test.Scenario.prototype = {
   run:function(runner, callback) {
     var self = this;
     _.stepper(this.scenario, function(next, steps, name){
@@ -115,7 +115,7 @@ nglr.test.Scenario.prototype = {
   else if (step.When) fn = angular.test.WHEN[step.When];
   else if (step.Then) fn = angular.test.THEN[step.Then];
     return fn || function (){
-             throw "ERROR: Need Given/When/Then got: " + nglr.toJson(step);
+             throw "ERROR: Need Given/When/Then got: " + toJson(step);
            };
   },
   context: function(runner) {
@@ -149,14 +149,14 @@ nglr.test.Scenario.prototype = {
     callback();
     return;
   }
-    runner.log("info", nglr.toJson(step));
+    runner.log("info", toJson(step));
     var fn = this.verb(step);
     var context = this.context(runner);
     _.extend(context, step);
     try {
       (fn.call(context)||function(c){c();})(callback);
     } catch (e) {
-      runner.log("error", "ERROR: " + nglr.toJson(e));
+      runner.log("error", "ERROR: " + toJson(e));
     }
   }
 };

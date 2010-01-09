@@ -2,7 +2,7 @@ nglrTest = TestCase('nglrTest');
 
 nglrTest.prototype.testShiftBind = function(){
   expectAsserts(3);
-  nglr.shiftBind('this', function(target, arg) {
+  shiftBind('this', function(target, arg) {
     assertEquals(this, 'this');
     assertEquals(target, 'target');
     assertEquals(arg, 'arg');
@@ -11,7 +11,7 @@ nglrTest.prototype.testShiftBind = function(){
 
 nglrTest.prototype.testBind = function(){
   expectAsserts(2);
-  nglr.bind('this', function(arg) {
+  bind('this', function(arg) {
     assertEquals(this, 'this');
     assertEquals(arg, 'arg');
   }).apply('XXX', ['arg']);

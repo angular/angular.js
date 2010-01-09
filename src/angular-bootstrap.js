@@ -80,9 +80,8 @@
         doc = window.document.getElementById(id);
       }
     }
-    var angular = window.angularFactory(scriptConfig);
     if (scriptConfig.autoBind && doc) {
-      window.angularScope = angular.compile(doc);
+      window.angularScope = angular.compile(doc, scriptConfig);
     }
     if (typeof previousOnLoad === 'function') {
       try {

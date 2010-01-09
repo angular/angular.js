@@ -3,10 +3,10 @@ BinderTest = TestCase('BinderTest');
 function compile(content, initialScope, config) {
   var h = html(content);
   config = config || {autoSubmit:true};
-  var scope = new nglr.Scope(initialScope, "ROOT");
+  var scope = new Scope(initialScope, "ROOT");
   h.data('scope', scope);
-  var binder = new nglr.Binder(h[0], new nglr.WidgetFactory(), new MockUrlWatcher(), config);
-  var datastore = new nglr.DataStore();
+  var binder = new Binder(h[0], new WidgetFactory(), new MockUrlWatcher(), config);
+  var datastore = new DataStore();
   scope.set("$datastore", datastore);
   scope.set("$binder", binder);
   scope.set("$anchor", binder.anchor);
@@ -19,80 +19,79 @@ function compileToHtml(content) {
   return compile(content).node.sortedHtml();
 }
 
-
 BinderTest.prototype.testParseTextWithNoBindings = function(){
-  var parts = nglr.Binder.parseBindings("a");
+  var parts = Binder.parseBindings("a");
   assertEquals(parts.length, 1);
   assertEquals(parts[0], "a");
-  assertTrue(!nglr.Binder.binding(parts[0]));
+  assertTrue(!Binder.binding(parts[0]));
 };
 
 BinderTest.prototype.testParseEmptyText = function(){
-  var parts = nglr.Binder.parseBindings("");
+  var parts = Binder.parseBindings("");
   assertEquals(parts.length, 1);
   assertEquals(parts[0], "");
-  assertTrue(!nglr.Binder.binding(parts[0]));
+  assertTrue(!Binder.binding(parts[0]));
 };
 
 BinderTest.prototype.testParseInnerBinding = function(){
-  var parts = nglr.Binder.parseBindings("a{{b}}c");
+  var parts = Binder.parseBindings("a{{b}}c");
   assertEquals(parts.length, 3);
   assertEquals(parts[0], "a");
-  assertTrue(!nglr.Binder.binding(parts[0]));
+  assertTrue(!Binder.binding(parts[0]));
   assertEquals(parts[1], "{{b}}");
-  assertEquals(nglr.Binder.binding(parts[1]), "b");
+  assertEquals(Binder.binding(parts[1]), "b");
   assertEquals(parts[2], "c");
-  assertTrue(!nglr.Binder.binding(parts[2]));
+  assertTrue(!Binder.binding(parts[2]));
 };
 
 BinderTest.prototype.testParseEndingBinding = function(){
-  var parts = nglr.Binder.parseBindings("a{{b}}");
+  var parts = Binder.parseBindings("a{{b}}");
   assertEquals(parts.length, 2);
   assertEquals(parts[0], "a");
-  assertTrue(!nglr.Binder.binding(parts[0]));
+  assertTrue(!Binder.binding(parts[0]));
   assertEquals(parts[1], "{{b}}");
-  assertEquals(nglr.Binder.binding(parts[1]), "b");
+  assertEquals(Binder.binding(parts[1]), "b");
 };
 
 BinderTest.prototype.testParseBeggingBinding = function(){
-  var parts = nglr.Binder.parseBindings("{{b}}c");
+  var parts = Binder.parseBindings("{{b}}c");
   assertEquals(parts.length, 2);
   assertEquals(parts[0], "{{b}}");
-  assertEquals(nglr.Binder.binding(parts[0]), "b");
+  assertEquals(Binder.binding(parts[0]), "b");
   assertEquals(parts[1], "c");
-  assertTrue(!nglr.Binder.binding(parts[1]));
+  assertTrue(!Binder.binding(parts[1]));
 };
 
 BinderTest.prototype.testParseLoanBinding = function(){
-  var parts = nglr.Binder.parseBindings("{{b}}");
+  var parts = Binder.parseBindings("{{b}}");
   assertEquals(parts.length, 1);
   assertEquals(parts[0], "{{b}}");
-  assertEquals(nglr.Binder.binding(parts[0]), "b");
+  assertEquals(Binder.binding(parts[0]), "b");
 };
 
 BinderTest.prototype.testParseTwoBindings = function(){
-  var parts = nglr.Binder.parseBindings("{{b}}{{c}}");
+  var parts = Binder.parseBindings("{{b}}{{c}}");
   assertEquals(parts.length, 2);
   assertEquals(parts[0], "{{b}}");
-  assertEquals(nglr.Binder.binding(parts[0]), "b");
+  assertEquals(Binder.binding(parts[0]), "b");
   assertEquals(parts[1], "{{c}}");
-  assertEquals(nglr.Binder.binding(parts[1]), "c");
+  assertEquals(Binder.binding(parts[1]), "c");
 };
 
 BinderTest.prototype.testParseTwoBindingsWithTextInMiddle = function(){
-  var parts = nglr.Binder.parseBindings("{{b}}x{{c}}");
+  var parts = Binder.parseBindings("{{b}}x{{c}}");
   assertEquals(parts.length, 3);
   assertEquals(parts[0], "{{b}}");
-  assertEquals(nglr.Binder.binding(parts[0]), "b");
+  assertEquals(Binder.binding(parts[0]), "b");
   assertEquals(parts[1], "x");
-  assertTrue(!nglr.Binder.binding(parts[1]));
+  assertTrue(!Binder.binding(parts[1]));
   assertEquals(parts[2], "{{c}}");
-  assertEquals(nglr.Binder.binding(parts[2]), "c");
+  assertEquals(Binder.binding(parts[2]), "c");
 };
 
 BinderTest.prototype.testParseMultiline = function(){
-  var parts = nglr.Binder.parseBindings('"X\nY{{A\nB}}C\nD"');
-  assertTrue(!!nglr.Binder.binding('{{A\nB}}'));
+  var parts = Binder.parseBindings('"X\nY{{A\nB}}C\nD"');
+  assertTrue(!!Binder.binding('{{A\nB}}'));
   assertEquals(parts.length, 3);
   assertEquals(parts[0], '"X\nY');
   assertEquals(parts[1], '{{A\nB}}');
@@ -100,9 +99,9 @@ BinderTest.prototype.testParseMultiline = function(){
 };
 
 BinderTest.prototype.testHasBinding = function(){
-  assertTrue(nglr.Binder.hasBinding("{{a}}"));
-  assertTrue(!nglr.Binder.hasBinding("a"));
-  assertTrue(nglr.Binder.hasBinding("{{b}}x{{c}}"));
+  assertTrue(Binder.hasBinding("{{a}}"));
+  assertTrue(!Binder.hasBinding("a"));
+  assertTrue(Binder.hasBinding("{{b}}x{{c}}"));
 };
 
 
@@ -119,9 +118,9 @@ BinderTest.prototype.testChangingTextfieldUpdatesModel = function(){
 
 BinderTest.prototype.testChangingTextareaUpdatesModel = function(){
   var form = html('<textarea name="model.note">abc</textarea>');
-  var scope = new nglr.Scope({model:{}});
+  var scope = new Scope({model:{}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals(scope.get('model').note, 'abc');
@@ -130,9 +129,9 @@ BinderTest.prototype.testChangingTextareaUpdatesModel = function(){
 BinderTest.prototype.testChangingRadioUpdatesModel = function(){
   var form = html('<input type="radio" name="model.price" value="A" checked>' +
         '<input type="radio" name="model.price" value="B">');
-  var scope = new nglr.Scope({model:{}});
+  var scope = new Scope({model:{}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals(scope.get('model').price, 'A');
@@ -140,9 +139,9 @@ BinderTest.prototype.testChangingRadioUpdatesModel = function(){
 
 BinderTest.prototype.testChangingCheckboxUpdatesModel = function(){
   var form = html('<input type="checkbox" name="model.price" value="A" checked>');
-  var scope = new nglr.Scope({model:{}});
+  var scope = new Scope({model:{}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals('A', scope.get('model').price);
@@ -156,9 +155,9 @@ BinderTest.prototype.testBindUpdate = function() {
 
 BinderTest.prototype.testChangingSelectNonSelectedUpdatesModel = function(){
   var form = html('<select name="model.price"><option value="A">A</option><option value="B">B</option></select>');
-  var scope = new nglr.Scope({model:{}});
+  var scope = new Scope({model:{}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals('A', scope.get('model').price);
@@ -170,9 +169,9 @@ BinderTest.prototype.testChangingMultiselectUpdatesModel = function(){
           '<option value="B" selected>Extra padding</option>' +
           '<option value="C">Expedite</option>' +
           '</select>');
-  var scope = new nglr.Scope({Invoice:{}});
+  var scope = new Scope({Invoice:{}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertJsonEquals(["A", "B"], scope.get('Invoice').options);
@@ -180,9 +179,9 @@ BinderTest.prototype.testChangingMultiselectUpdatesModel = function(){
 
 BinderTest.prototype.testChangingSelectSelectedUpdatesModel = function(){
   var form = html('<select name="model.price"><option>A</option><option selected value="b">B</option></select>');
-  var scope = new nglr.Scope({model:{}});
+  var scope = new Scope({model:{}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals(scope.get('model').price, 'b');
@@ -190,18 +189,18 @@ BinderTest.prototype.testChangingSelectSelectedUpdatesModel = function(){
 
 BinderTest.prototype.testExecuteInitialization = function() {
   var form = html('<div ng-init="a=123">');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0));
+  var binder = new Binder(form.get(0));
   binder.executeInit();
   assertEquals(scope.get('a'), 123);
 };
 
 BinderTest.prototype.testExecuteInitializationStatements = function() {
   var form = html('<div ng-init="a=123;b=345">');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0));
+  var binder = new Binder(form.get(0));
   binder.executeInit();
   assertEquals(scope.get('a'), 123);
   assertEquals(scope.get('b'), 345);
@@ -209,9 +208,9 @@ BinderTest.prototype.testExecuteInitializationStatements = function() {
 
 BinderTest.prototype.testApplyTextBindings = function(){
   var form = html('<div ng-bind="model.a">x</div>');
-  var scope = new nglr.Scope({model:{a:123}});
+  var scope = new Scope({model:{a:123}});
   form.data('scope', scope);
-  var binder = new nglr.Binder(form.get(0), null, new MockUrlWatcher());
+  var binder = new Binder(form.get(0), null, new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals('123', form.text());
@@ -224,15 +223,15 @@ BinderTest.prototype.testReplaceBindingInTextWithSpan = function() {
 
 BinderTest.prototype.testReplaceBindingCreatesCorrectNumberOfWidgets = function() {
   var h = html("space{{a}}<b>{{a}}a{{a}}</b>{{a}}");
-  h.data('scope', new nglr.Scope());
-  var binder = new nglr.Binder(h.get(0), new nglr.WidgetFactory());
+  h.data('scope', new Scope());
+  var binder = new Binder(h.get(0), new WidgetFactory());
   binder.compile();
 
   assertEquals(4, h.scope().widgets.length);
 };
 
 BinderTest.prototype.testBindingSpaceConfusesIE = function() {
-  if (!nglr.msie) return;
+  if (!msie) return;
   var span = document.createElement("span");
   span.innerHTML = '&nbsp;';
   var nbsp = span.firstChild.nodeValue;
@@ -246,30 +245,30 @@ BinderTest.prototype.testBindingSpaceConfusesIE = function() {
 
 BinderTest.prototype.testBindingOfAttributes = function() {
   var form = html("<a href='http://s/a{{b}}c' foo='x'></a>");
-  form.data('scope', new nglr.Scope());
-  var binder = new nglr.Binder(form.get(0));
+  form.data('scope', new Scope());
+  var binder = new Binder(form.get(0));
   binder.compile();
   var attrbinding = form.find("a").attr("ng-bind-attr");
-  var bindings = nglr.fromJson(attrbinding);
+  var bindings = fromJson(attrbinding);
   assertEquals("http://s/a{{b}}c", decodeURI(bindings.href));
   assertTrue(!bindings.foo);
 };
 
 BinderTest.prototype.testMarkMultipleAttributes = function() {
   var form = html("<a href='http://s/a{{b}}c' foo='{{d}}'></a>");
-  form.data('scope', new nglr.Scope());
-  var binder = new nglr.Binder(form.get(0));
+  form.data('scope', new Scope());
+  var binder = new Binder(form.get(0));
   binder.compile();
   var attrbinding = form.find("a").attr("ng-bind-attr");
-  var bindings = nglr.fromJson(attrbinding);
+  var bindings = fromJson(attrbinding);
   assertEquals(decodeURI(bindings.href), "http://s/a{{b}}c");
   assertEquals(bindings.foo, "{{d}}");
 };
 
 BinderTest.prototype.testAttributesNoneBound = function() {
   var form = html("<a href='abc' foo='def'></a>");
-  form.data('scope', new nglr.Scope());
-  var binder = new nglr.Binder(form.get(0));
+  form.data('scope', new Scope());
+  var binder = new Binder(form.get(0));
   binder.compile();
   var a = form.find("a");
   assertEquals(a.get(0).nodeName, "A");
@@ -278,8 +277,8 @@ BinderTest.prototype.testAttributesNoneBound = function() {
 
 BinderTest.prototype.testExistingAttrbindingIsAppended = function() {
   var form = html("<a href='http://s/{{abc}}' ng-bind-attr='{\"b\":\"{{def}}\"}'></a>");
-  form.data('scope', new nglr.Scope());
-  var binder = new nglr.Binder(form.get(0));
+  form.data('scope', new Scope());
+  var binder = new Binder(form.get(0));
   binder.compile();
   var a = form.find("a");
   assertEquals('{"b":"{{def}}","href":"http://s/{{abc}}"}', a.attr('ng-bind-attr'));
@@ -287,8 +286,8 @@ BinderTest.prototype.testExistingAttrbindingIsAppended = function() {
 
 BinderTest.prototype.testAttributesAreEvaluated = function(){
   var form = html('<a ng-bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>');
-  form.data('scope', new nglr.Scope({a:1, b:2}));
-  var binder = new nglr.Binder(form.get(0), null, new MockUrlWatcher());
+  form.data('scope', new Scope({a:1, b:2}));
+  var binder = new Binder(form.get(0), null, new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   var a = form.find("a");
@@ -305,8 +304,8 @@ BinderTest.prototype.testInputsAreUpdated = function(){
           '<input name="A.checkbox" type="checkbox" value="c" />' +
           '<input name="A.checkboxOff" type="checkbox" value="c" />' +
           '<select name="A.select"><option>a</option><option value="S">b</option></select>');
-  var binder = new nglr.Binder(form.get(0), new nglr.WidgetFactory(), new MockUrlWatcher());
-  form.data('scope', new nglr.Scope({A:{text:"t1", textarea:"t2", radio:"r", checkbox:"c", select:"S"}}));
+  var binder = new Binder(form.get(0), new WidgetFactory(), new MockUrlWatcher());
+  form.data('scope', new Scope({A:{text:"t1", textarea:"t2", radio:"r", checkbox:"c", select:"S"}}));
   binder.compile();
   binder.updateView();
   assertEquals(form.find("input[type=text]").attr('value'), 't1');
@@ -349,7 +348,7 @@ BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
 };
 
 BinderTest.prototype.testParseEmptyAnchor = function(){
-  var binder = new nglr.Binder(null, null, new MockUrlWatcher());
+  var binder = new Binder(null, null, new MockUrlWatcher());
   var anchor = binder.anchor;
   binder.parseAnchor("a#x=1");
   assertEquals(1, binder.anchor.x);
@@ -360,7 +359,7 @@ BinderTest.prototype.testParseEmptyAnchor = function(){
 };
 
 BinderTest.prototype.testParseAnchor = function(){
-  var binder = new nglr.Binder(null, null, new MockUrlWatcher());
+  var binder = new Binder(null, null, new MockUrlWatcher());
   binder.parseAnchor("a#x=1");
   assertEquals(binder.anchor.x, "1");
   binder.parseAnchor("a#a=b&c=%20&d");
@@ -371,7 +370,7 @@ BinderTest.prototype.testParseAnchor = function(){
 };
 
 BinderTest.prototype.testWriteAnchor = function(){
-  var binder = new nglr.Binder(null, null, new MockUrlWatcher());
+  var binder = new Binder(null, null, new MockUrlWatcher());
   binder.urlWatcher.setUrl('a');
   binder.anchor.a = 'b';
   binder.anchor.c = ' ';
@@ -381,9 +380,9 @@ BinderTest.prototype.testWriteAnchor = function(){
 };
 
 BinderTest.prototype.testWriteAnchorAsPartOfTheUpdateView = function(){
-  var binder = new nglr.Binder(html("<div/>")[0], null, new MockUrlWatcher());
+  var binder = new Binder(html("<div/>")[0], null, new MockUrlWatcher());
   binder.urlWatcher.setUrl('a');
-  $(binder.doc).data('scope', new nglr.Scope());
+  $(binder.doc).data('scope', new Scope());
   binder.anchor.a = 'b';
   binder.updateView();
   assertEquals(binder.urlWatcher.getUrl(), "a#a=b");
@@ -391,9 +390,9 @@ BinderTest.prototype.testWriteAnchorAsPartOfTheUpdateView = function(){
 
 BinderTest.prototype.testRepeaterUpdateBindings = function(){
   var form = html('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
-  var binder = new nglr.Binder(form.get(0), null, new MockUrlWatcher());
+  var binder = new Binder(form.get(0), null, new MockUrlWatcher());
   var items = [{a:"A"}, {a:"B"}];
-  form.data('scope', new nglr.Scope({model:{items:items}}));
+  form.data('scope', new Scope({model:{items:items}}));
   binder.compile();
 
   binder.updateView();
@@ -423,8 +422,8 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
 
 BinderTest.prototype.testRepeaterContentDoesNotBind = function(){
   var form = html('<ul><LI ng-repeat="item in model.items"><span ng-bind="item.a"/></li></ul>');
-  form.data('scope', new nglr.Scope({model:{items:[{a:"A"}]}}));
-  var binder = new nglr.Binder(form.get(0), null, new MockUrlWatcher());
+  form.data('scope', new Scope({model:{items:[{a:"A"}]}}));
+  var binder = new Binder(form.get(0), null, new MockUrlWatcher());
   binder.compile();
   binder.updateView();
   assertEquals('<ul>' +
@@ -450,9 +449,9 @@ BinderTest.prototype.testRepeaterInputContentDoesNotBind =  function(){
   var form =
     html('<ul><LI repeater="item in model.items">' +
           '<input type="text" name="item.a" value="OLD"/></li></ul>');
-  var binder = new nglr.Binder(form.get(0), null, new MockUrlWatcher());
+  var binder = new Binder(form.get(0), null, new MockUrlWatcher());
   var items = [{a:"A"}];
-  form.data('scope', new nglr.Scope({model:{items:items}}));
+  form.data('scope', new Scope({model:{items:items}}));
 
   assertEquals(form.find(":input").attr("value"), "OLD");
 };
@@ -492,9 +491,9 @@ BinderTest.prototype.testDoNotOverwriteCustomAction = function(){
 BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
   expectAsserts(1);
   var form = jQuery("body").append('<div id="testTag"><input type="file"></div>');
-  form.data('scope', new nglr.Scope());
+  form.data('scope', new Scope());
   var factory = {};
-  var binder = new nglr.Binder(form.get(0), factory, new MockUrlWatcher());
+  var binder = new Binder(form.get(0), factory, new MockUrlWatcher());
   factory.createController = function(node){
     assertEquals(node.attr('type'), 'file');
     return {updateModel:function(){}};
@@ -505,8 +504,8 @@ BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
 
 BinderTest.prototype.testRepeaterAdd = function(){
   var doc = $('<div><input type="text" name="item.x" ng-repeat="item in items"></div>');
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
-  doc.data('scope', new nglr.Scope({items:[{x:'a'}, {x:'b'}], $binder:binder}));
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
+  doc.data('scope', new Scope({items:[{x:'a'}, {x:'b'}], $binder:binder}));
   binder.compile();
   binder.updateView();
   assertEquals('a', doc.find(':input')[0].value);
@@ -520,16 +519,16 @@ BinderTest.prototype.testRepeaterAdd = function(){
 
 BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
   var doc = $('<div>{{error.throw()}}</div>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('error.throw', function(){throw "ErrorMsg1";});
   binder.updateView();
   var span = doc.find('span');
   assertTrue(span.hasClass('ng-exception'));
-  assertEquals('ErrorMsg1', nglr.fromJson(span.text()));
+  assertEquals('ErrorMsg1', fromJson(span.text()));
   assertEquals('"ErrorMsg1"', span.attr('ng-error'));
 
   scope.set('error.throw', function(){throw "MyError";});
@@ -548,9 +547,9 @@ BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
 
 BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheSpan = function(){
   var doc = $('<div attr="before {{error.throw()}} after"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('error.throw', function(){throw "ErrorMsg";});
@@ -570,9 +569,9 @@ BinderTest.prototype.testNestedRepeater = function() {
   var doc = html('<div ng-repeat="m in model" name="{{m.name}}">' +
                    '<ul name="{{i}}" ng-repeat="i in m.item"></ul>' +
                  '</div>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('model', [{name:'a', item:['a1', 'a2']}, {name:'b', item:['b1', 'b2']}]);
@@ -594,9 +593,9 @@ BinderTest.prototype.testNestedRepeater = function() {
 
 BinderTest.prototype.testRadioButtonGetsPrefixed = function () {
   var doc = html('<input ng-repeat="m in model" type="radio" name="m.a" value="on"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('model', ['a1', 'a2']);
@@ -611,9 +610,9 @@ BinderTest.prototype.testRadioButtonGetsPrefixed = function () {
 
 BinderTest.prototype.testHideBindingExpression = function() {
   var doc = html('<div ng-hide="hidden == 3"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('hidden', 3);
@@ -629,9 +628,9 @@ BinderTest.prototype.testHideBindingExpression = function() {
 
 BinderTest.prototype.testHideBinding = function() {
   var doc = html('<div ng-hide="hidden"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('hidden', 'true');
@@ -652,9 +651,9 @@ BinderTest.prototype.testHideBinding = function() {
 
 BinderTest.prototype.testShowBinding = function() {
   var doc = html('<div ng-show="show"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('show', 'true');
@@ -684,9 +683,9 @@ BinderTest.prototype.testBindClassUndefined = function() {
 
 BinderTest.prototype.testBindClass = function() {
   var doc = html('<div ng-class="class"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.set('class', 'testClass');
@@ -713,9 +712,9 @@ BinderTest.prototype.testBindClassEvenOdd = function() {
 
 BinderTest.prototype.testBindStyle = function() {
   var doc = html('<div ng-style="style"/>');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   doc.data('scope', scope);
-  var binder = new nglr.Binder(doc[0], new nglr.WidgetFactory(), new MockUrlWatcher());
+  var binder = new Binder(doc[0], new WidgetFactory(), new MockUrlWatcher());
   binder.compile();
 
   scope.eval('style={color:"red"}');
@@ -734,7 +733,7 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   var state = compile('<a ng-action="throw {a:\'abc\', b:2};">Add Phone</a>', model);
   var input = state.node.find('a');
   input.click();
-  assertEquals('abc', nglr.fromJson(input.attr('ng-error')).a);
+  assertEquals('abc', fromJson(input.attr('ng-error')).a);
   assertNotNull(input.data('qtip'));
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
@@ -890,7 +889,7 @@ BinderTest.prototype.testItShouldCallListenersWhenAnchorChanges = function() {
 };
 
 BinderTest.prototype.testParseQueryString = function(){
-  var binder = new nglr.Binder();
+  var binder = new Binder();
   assertJsonEquals({"a":"1"}, binder.parseQueryString("a=1"));
   assertJsonEquals({"a":"1", "b":"two"}, binder.parseQueryString("a=1&b=two"));
   assertJsonEquals({}, binder.parseQueryString(""));
@@ -905,8 +904,8 @@ BinderTest.prototype.testParseQueryString = function(){
 BinderTest.prototype.testSetBinderAnchorTriggersListeners = function(){
   expectAsserts(2);
   var doc = html("<div/>")[0];
-  var binder = new nglr.Binder(doc, null, new MockUrlWatcher());
-  var scope = new nglr.Scope({$binder:binder, $anchor:binder.anchor});
+  var binder = new Binder(doc, null, new MockUrlWatcher());
+  var scope = new Scope({$binder:binder, $anchor:binder.anchor});
   jQuery(doc).data('scope', scope);
 
   scope.addWatchListener("$anchor.name", function(newVal, oldVal) {

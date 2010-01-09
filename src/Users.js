@@ -1,10 +1,10 @@
 // Copyright (C) 2008,2009 BRAT Tech LLC
-nglr.Users = function(server, controlBar) {
+Users = function(server, controlBar) {
   this.server = server;
   this.controlBar = controlBar;
 };
 
-nglr.Users.prototype = {
+Users.prototype = {
   fetchCurrentUser:function(callback) {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
@@ -17,7 +17,7 @@ nglr.Users.prototype = {
     var self = this;
     this.controlBar.logout(function(){
       delete self.current;
-      (callback||nglr.noop)();
+      (callback||noop)();
     });
   },
   
@@ -25,7 +25,7 @@ nglr.Users.prototype = {
     var self = this;
     this.controlBar.login(function(){
       self.fetchCurrentUser(function(){
-        (callback||nglr.noop)();
+        (callback||noop)();
       });
     });
   },

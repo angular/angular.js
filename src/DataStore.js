@@ -1,6 +1,6 @@
 // Copyright (C) 2009 BRAT Tech LLC
 
-nglr.DataStore = function(post, users, anchor) {
+DataStore = function(post, users, anchor) {
   this.post = post;
   this.users = users;
   this._cache = {$collections:[]};
@@ -8,14 +8,14 @@ nglr.DataStore = function(post, users, anchor) {
   this.bulkRequest = [];
 };
 
-nglr.DataStore.prototype.cache = function(document) {
-  if (document.constructor != nglr.Model) {
-    throw "Parameter must be an instance of Entity! " + nglr.toJson(document);
+DataStore.prototype.cache = function(document) {
+  if (document.constructor != Model) {
+    throw "Parameter must be an instance of Entity! " + toJson(document);
   }
   var key = document.$entity + '/' + document.$id;
   var cachedDocument = this._cache[key];
   if (cachedDocument) {
-    nglr.Model.copyDirectFields(document, cachedDocument);
+    Model.copyDirectFields(document, cachedDocument);
   } else {
     this._cache[key] = document;
     cachedDocument = document;
@@ -23,7 +23,7 @@ nglr.DataStore.prototype.cache = function(document) {
   return cachedDocument;
 };
 
-nglr.DataStore.prototype.load = function(instance, id, callback, failure) {
+DataStore.prototype.load = function(instance, id, callback, failure) {
   if (id && id !== '*') {
     var self = this;
     this._jsonRequest(["GET", instance.$entity + "/" + id], function(response) {
@@ -31,13 +31,13 @@ nglr.DataStore.prototype.load = function(instance, id, callback, failure) {
       instance.$migrate();
       var clone = instance.$$entity(instance);
       self.cache(clone);
-      (callback||nglr.noop)(instance);
+      (callback||noop)(instance);
     }, failure);
   }
   return instance;
 };
 
-nglr.DataStore.prototype.loadMany = function(entity, ids, callback) {
+DataStore.prototype.loadMany = function(entity, ids, callback) {
   var self=this;
   var list = [];
   var callbackCount = 0;
@@ -45,26 +45,26 @@ nglr.DataStore.prototype.loadMany = function(entity, ids, callback) {
     list.push(self.load(entity(), id, function(){
       callbackCount++;
       if (callbackCount == ids.length) {
-        (callback||nglr.noop)(list);
+        (callback||noop)(list);
       }
     }));
   });
   return list;
 }
 
-nglr.DataStore.prototype.loadOrCreate = function(instance, id, callback) {
+DataStore.prototype.loadOrCreate = function(instance, id, callback) {
   var self=this;
   return this.load(instance, id, callback, function(response){
     if (response.$status_code == 404) {
       instance.$id = id;
-      (callback||nglr.noop)(instance);
+      (callback||noop)(instance);
     } else {
       throw response;
     }
   });
 };
 
-nglr.DataStore.prototype.loadAll = function(entity, callback) {
+DataStore.prototype.loadAll = function(entity, callback) {
   var self = this;
   var list = [];
   list.$$accept = function(doc){
@@ -78,12 +78,12 @@ nglr.DataStore.prototype.loadAll = function(entity, callback) {
       document.$loadFrom(rows[i]);
       list.push(self.cache(document));
     }
-    (callback||nglr.noop)(list);
+    (callback||noop)(list);
   });
   return list;
 };
 
-nglr.DataStore.prototype.save = function(document, callback) {
+DataStore.prototype.save = function(document, callback) {
   var self = this;
   var data = {};
   document.$saveTo(data);
@@ -103,7 +103,7 @@ nglr.DataStore.prototype.save = function(document, callback) {
   });
 };
 
-nglr.DataStore.prototype.remove = function(document, callback) {
+DataStore.prototype.remove = function(document, callback) {
   var self = this;
   var data = {};
   document.$saveTo(data);
@@ -117,11 +117,11 @@ nglr.DataStore.prototype.remove = function(document, callback) {
         }
       }
     });
-    (callback||nglr.noop)(response);
+    (callback||noop)(response);
   });
 };
 
-nglr.DataStore.prototype._jsonRequest = function(request, callback, failure) {
+DataStore.prototype._jsonRequest = function(request, callback, failure) {
   request.$$callback = callback;
   request.$$failure = failure||function(response){
     throw response;
@@ -129,7 +129,7 @@ nglr.DataStore.prototype._jsonRequest = function(request, callback, failure) {
   this.bulkRequest.push(request);
 };
 
-nglr.DataStore.prototype.flush = function() {
+DataStore.prototype.flush = function() {
   if (this.bulkRequest.length === 0) return;
   var self = this;
   var bulkRequest = this.bulkRequest;
@@ -142,7 +142,7 @@ nglr.DataStore.prototype.flush = function() {
         self.post(bulkRequest, callback);
       });
     } else if(bulkResponse.$status_code) {
-      nglr.alert(nglr.toJson(bulkResponse));
+      alert(toJson(bulkResponse));
     } else {
       for ( var i = 0; i < bulkResponse.length; i++) {
         var response = bulkResponse[i];
@@ -163,7 +163,7 @@ nglr.DataStore.prototype.flush = function() {
   this.post(bulkRequest, callback);
 };
 
-nglr.DataStore.prototype.saveScope = function(scope, callback) {
+DataStore.prototype.saveScope = function(scope, callback) {
   var saveCounter = 1;
   function onSaveDone() {
     saveCounter--;
@@ -172,7 +172,7 @@ nglr.DataStore.prototype.saveScope = function(scope, callback) {
   }
   for(var key in scope) {
     var item = scope[key];
-    if (item && item.$save == nglr.Model.prototype.$save) {
+    if (item && item.$save == Model.prototype.$save) {
       saveCounter++;
       item.$save(onSaveDone);
     }
@@ -180,7 +180,7 @@ nglr.DataStore.prototype.saveScope = function(scope, callback) {
   onSaveDone();
 };
 
-nglr.DataStore.prototype.query = function(type, query, arg, callback){
+DataStore.prototype.query = function(type, query, arg, callback){
   var self = this;
   var queryList = [];
   queryList.$$accept = function(doc){
@@ -200,7 +200,7 @@ nglr.DataStore.prototype.query = function(type, query, arg, callback){
   return queryList;
 };
 
-nglr.DataStore.prototype.entities = function(callback) {
+DataStore.prototype.entities = function(callback) {
   var entities = [];
   var self = this;
   this._jsonRequest(["GET", "$entities"], function(response) {
@@ -213,7 +213,7 @@ nglr.DataStore.prototype.entities = function(callback) {
   return entities;
 };
 
-nglr.DataStore.prototype.documentCountsByUser = function(){
+DataStore.prototype.documentCountsByUser = function(){
   var counts = {};
   var self = this;
   self.post([["GET", "$users"]], function(code, response){
@@ -224,7 +224,7 @@ nglr.DataStore.prototype.documentCountsByUser = function(){
   return counts;
 };
 
-nglr.DataStore.prototype.userDocumentIdsByEntity = function(user){
+DataStore.prototype.userDocumentIdsByEntity = function(user){
   var ids = {};
   var self = this;
   self.post([["GET", "$users/" + user]], function(code, response){
@@ -235,19 +235,19 @@ nglr.DataStore.prototype.userDocumentIdsByEntity = function(user){
   return ids;
 };
 
-nglr.DataStore.NullEntity = function(){};
-nglr.DataStore.NullEntity.all = function(){return [];};
-nglr.DataStore.NullEntity.query = function(){return [];};
-nglr.DataStore.NullEntity.load = function(){return {};};
-nglr.DataStore.NullEntity.title = undefined;
+DataStore.NullEntity = function(){};
+DataStore.NullEntity.all = function(){return [];};
+DataStore.NullEntity.query = function(){return [];};
+DataStore.NullEntity.load = function(){return {};};
+DataStore.NullEntity.title = undefined;
 
-nglr.DataStore.prototype.entity = function(name, defaults){
+DataStore.prototype.entity = function(name, defaults){
   if (!name) {
-    return nglr.DataStore.NullEntity;
+    return DataStore.NullEntity;
   }
   var self = this;
   var entity =  function(initialState){
-    return new nglr.Model(entity, initialState);
+    return new Model(entity, initialState);
   };
   // entity.name does not work as name seems to be reserved for functions
   entity.title = name;
@@ -275,7 +275,7 @@ nglr.DataStore.prototype.entity = function(name, defaults){
   return entity;
 };
 
-nglr.DataStore.prototype.join = function(join){
+DataStore.prototype.join = function(join){
   var fn = function(){
     throw "Joined entities can not be instantiated into a document.";
   };
@@ -312,7 +312,7 @@ nglr.DataStore.prototype.join = function(join){
         var row = {};
         joinedResult.push(row);
         row[baseName] = doc;
-        var id = nglr.Scope.getter(row, nextJoinOn);
+        var id = Scope.getter(row, nextJoinOn);
         joinIds[id] = id;
       });
       nextJoin.join.loadMany(_.toArray(joinIds), function(result){
@@ -321,7 +321,7 @@ nglr.DataStore.prototype.join = function(join){
           byId[doc.$id] = doc;
         });
         _(joinedResult).each(function(row){
-          var id = nglr.Scope.getter(row, nextJoinOn);
+          var id = Scope.getter(row, nextJoinOn);
           row[nextJoinName] = byId[id];
         });
       });

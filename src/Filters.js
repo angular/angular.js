@@ -60,11 +60,11 @@ angular.filter.date = function(amount) {
 
 angular.filter.json = function(object) {
   jQuery(this.element).addClass("ng-monospace");
-  return nglr.toJson(object, true);
+  return toJson(object, true);
 };
 
 angular.filter.trackPackage = function(trackingNo, noMatch) {
-  trackingNo = nglr.trim(trackingNo);
+  trackingNo = trim(trackingNo);
   var tNo = trackingNo.replace(/ /g, '');
   var MATCHERS = angular.filter.trackPackage.MATCHERS;
   for ( var i = 0; i < MATCHERS.length; i++) {
@@ -77,7 +77,7 @@ angular.filter.trackPackage = function(trackingNo, noMatch) {
         return new angular.filter.Meta({
           text:text,
           url:url,
-          html: '<a href="' + nglr.escapeAttr(url) + '">' + text + '</a>',
+          html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
           trackingNo:trackingNo});
       }
     }
@@ -115,7 +115,7 @@ angular.filter.link = function(obj, title) {
     if (angular.validator.email(url) === null) {
       url = "mailto:" + url;
     }
-    var html = '<a href="' + nglr.escapeHtml(url) + '">' + text + '</a>';
+    var html = '<a href="' + escapeHtml(url) + '">' + text + '</a>';
     return new angular.filter.Meta({text:text, url:url, html:html});
   }
   return obj;

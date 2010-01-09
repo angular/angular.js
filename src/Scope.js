@@ -1,6 +1,6 @@
 // Copyright (C) 2009 BRAT Tech LLC
 
-nglr.Scope = function(initialState, name) {
+Scope = function(initialState, name) {
   this.widgets = [];
   this.watchListeners = {};
   this.name = name;
@@ -14,9 +14,9 @@ nglr.Scope = function(initialState, name) {
   }
 };
 
-nglr.Scope.expressionCache = {};
+Scope.expressionCache = {};
 
-nglr.Scope.prototype.updateView = function() {
+Scope.prototype.updateView = function() {
   var self = this;
   this.fireWatchers();
   _.each(this.widgets, function(widget){
@@ -26,21 +26,21 @@ nglr.Scope.prototype.updateView = function() {
   });
 };
 
-nglr.Scope.prototype.addWidget = function(controller) {
+Scope.prototype.addWidget = function(controller) {
   if (controller) this.widgets.push(controller);
 };
 
-nglr.Scope.prototype.isProperty = function(exp) {
+Scope.prototype.isProperty = function(exp) {
   for ( var i = 0; i < exp.length; i++) {
     var ch = exp.charAt(i);
-    if (ch!='.'  && !nglr.Lexer.prototype.isIdent(ch)) {
+    if (ch!='.'  && !Lexer.prototype.isIdent(ch)) {
       return false;
     }
   }
   return true;
 };
 
-nglr.Scope.getter = function(instance, path) {
+Scope.getter = function(instance, path) {
   if (!path) return instance;
   var element = path.split('.');
   var key;
@@ -65,16 +65,16 @@ nglr.Scope.getter = function(instance, path) {
     }
   }
   if (typeof instance === 'function' && !instance.$$factory) {
-    return nglr.bind(lastInstance, instance);
+    return bind(lastInstance, instance);
   }
   return instance;
 };
 
-nglr.Scope.prototype.get = function(path) {
-  return nglr.Scope.getter(this.state, path);
+Scope.prototype.get = function(path) {
+  return Scope.getter(this.state, path);
 };
 
-nglr.Scope.prototype.set = function(path, value) {
+Scope.prototype.set = function(path, value) {
   var element = path.split('.');
   var instance = this.state;
   for ( var i = 0; element.length > 1; i++) {
@@ -90,17 +90,17 @@ nglr.Scope.prototype.set = function(path, value) {
   return value;
 };
 
-nglr.Scope.prototype.setEval = function(expressionText, value) {
-  this.eval(expressionText + "=" + nglr.toJson(value));
+Scope.prototype.setEval = function(expressionText, value) {
+  this.eval(expressionText + "=" + toJson(value));
 };
 
-nglr.Scope.prototype.eval = function(expressionText, context) {
-  var expression = nglr.Scope.expressionCache[expressionText];
+Scope.prototype.eval = function(expressionText, context) {
+  var expression = Scope.expressionCache[expressionText];
   if (!expression) {
-    var parser = new nglr.Parser(expressionText);
+    var parser = new Parser(expressionText);
     expression = parser.statements();
     parser.assertAllConsumed();
-    nglr.Scope.expressionCache[expressionText] = expression;
+    Scope.expressionCache[expressionText] = expression;
   }
   context = context || {};
   context.scope = this;
@@ -110,7 +110,7 @@ nglr.Scope.prototype.eval = function(expressionText, context) {
 //TODO: Refactor. This function needs to be an execution closure for widgets
 // move to widgets
 // remove expression, just have inner closure.
-nglr.Scope.prototype.evalWidget = function(widget, expression, context, onSuccess, onFailure) {
+Scope.prototype.evalWidget = function(widget, expression, context, onSuccess, onFailure) {
   try {
     var value = this.eval(expression, context);
     if (widget.hasError) {
@@ -125,7 +125,7 @@ nglr.Scope.prototype.evalWidget = function(widget, expression, context, onSucces
     return true;
   } catch (e){
     console.error('Eval Widget Error:', e);
-    var jsonError = nglr.toJson(e, true);
+    var jsonError = toJson(e, true);
     widget.hasError = true;
     jQuery(widget.view).
       addClass('ng-exception').
@@ -137,42 +137,42 @@ nglr.Scope.prototype.evalWidget = function(widget, expression, context, onSucces
   }
 };
 
-nglr.Scope.prototype.validate = function(expressionText, value) {
-  var expression = nglr.Scope.expressionCache[expressionText];
+Scope.prototype.validate = function(expressionText, value) {
+  var expression = Scope.expressionCache[expressionText];
   if (!expression) {
-    expression = new nglr.Parser(expressionText).validator();
-    nglr.Scope.expressionCache[expressionText] = expression;
+    expression = new Parser(expressionText).validator();
+    Scope.expressionCache[expressionText] = expression;
   }
   var self = {scope:this};
   return expression(self)(self, value);
 };
 
-nglr.Scope.prototype.entity = function(entityDeclaration) {
-  var expression = new nglr.Parser(entityDeclaration).entityDeclaration();
+Scope.prototype.entity = function(entityDeclaration) {
+  var expression = new Parser(entityDeclaration).entityDeclaration();
   return expression({scope:this});
 };
 
-nglr.Scope.prototype.markInvalid = function(widget) {
+Scope.prototype.markInvalid = function(widget) {
   this.state.$invalidWidgets.push(widget);
 };
 
-nglr.Scope.prototype.watch = function(declaration) {
+Scope.prototype.watch = function(declaration) {
   var self = this;
-  new nglr.Parser(declaration).watch()({
+  new Parser(declaration).watch()({
     scope:this,
     addListener:function(watch, exp){
       self.addWatchListener(watch, function(n,o){
         try {
           return exp({scope:self}, n, o);
         } catch(e) {
-          nglr.alert(e);
+          alert(e);
         }
       });
     }
   });
 };
 
-nglr.Scope.prototype.addWatchListener = function(watchExpression, listener) {
+Scope.prototype.addWatchListener = function(watchExpression, listener) {
   var watcher = this.watchListeners[watchExpression];
   if (!watcher) {
     watcher = {listeners:[], expression:watchExpression};
@@ -181,7 +181,7 @@ nglr.Scope.prototype.addWatchListener = function(watchExpression, listener) {
   watcher.listeners.push(listener);
 };
 
-nglr.Scope.prototype.fireWatchers = function() {
+Scope.prototype.fireWatchers = function() {
   var self = this;
   var fired = false;
   jQuery.each(this.watchListeners, function(name, watcher) {

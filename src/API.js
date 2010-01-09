@@ -66,7 +66,7 @@ angular.Array = {
       }
       return true;
     };
-    var getter = nglr.Scope.getter;
+    var getter = Scope.getter;
     var search = function(obj, text){
       if (text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
@@ -147,7 +147,7 @@ angular.Array = {
   },
   orderBy:function(array, expression, descend) {
     function reverse(comp, descending) {
-      return nglr.toBoolean(descending) ? 
+      return toBoolean(descending) ? 
           function(a,b){return comp(b,a);} : comp;
     }
     function compare(v1, v2){
@@ -224,7 +224,7 @@ angular.Array = {
       value = {};
       array[index] = value;
     }
-    nglr.merge(mergeValue, value);
+    merge(mergeValue, value);
     return array;
   }
 };
@@ -281,7 +281,7 @@ angular.Function = {
     if (_.isFunction(expression)){
       return expression;
     } else if (expression){
-      var scope = new nglr.Scope();
+      var scope = new Scope();
       return function($) {
         scope.state = $;
         return scope.eval(expression);

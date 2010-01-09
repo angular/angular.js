@@ -6,8 +6,8 @@ HIDDEN = jQuery.browser.msie ?
          ' style="display: none; "' :
          ' style="display: none;"';
 
-nglr.msie = jQuery.browser.msie;
-nglr.alert = function(msg) {jstestdriver.console.log("ALERT: " + msg);};
+msie = jQuery.browser.msie;
+alert = function(msg) {jstestdriver.console.log("ALERT: " + msg);};
 
 function noop(){}
 
@@ -50,7 +50,7 @@ jQuery.fn.sortedHtml = function() {
   var toString = function(index, node) {
     node = node || this;
     if (node.nodeName == "#text") {
-      html += nglr.escapeHtml(node.nodeValue);
+      html += escapeHtml(node.nodeValue);
     } else {
       html += '<' + node.nodeName.toLowerCase();
       var attributes = node.attributes || [];
@@ -89,14 +89,14 @@ jQuery.fn.sortedHtml = function() {
 };
 
 function encode64(obj){
-  return Base64.encode(nglr.toJson(obj));
+  return Base64.encode(toJson(obj));
 }
 
 function decode64(base64){
-  return nglr.fromJson(Base64.decode(base64));
+  return fromJson(Base64.decode(base64));
 }
 
-nglr.Loader.prototype.configureJQueryPlugins();
+Loader.prototype.configureJQueryPlugins();
 
 function assertHidden(node) {
   var display = node.css('display');
@@ -110,7 +110,7 @@ function assertVisible(node) {
 }
 
 function assertJsonEquals(expected, actual) {
-  assertEquals(nglr.toJson(expected), nglr.toJson(actual));
+  assertEquals(toJson(expected), toJson(actual));
 }
 
 function assertUndefined(value) {
@@ -118,7 +118,7 @@ function assertUndefined(value) {
 }
 
 function assertDefined(value) {
-  assertTrue(nglr.toJson(value), !!value);
+  assertTrue(toJson(value), !!value);
 }
 
 function assertThrows(error, fn){

@@ -14,7 +14,7 @@ angular.test.GIVEN = {
     };
   },
   dataset:function(){
-    this.frame.name="$DATASET:" + nglr.toJson({dataset:this.dataset});
+    this.frame.name="$DATASET:" + toJson({dataset:this.dataset});
   }
 };
 angular.test.WHEN = {

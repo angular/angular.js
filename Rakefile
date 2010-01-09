@@ -2,9 +2,11 @@ include FileUtils
 
 desc 'Compile JavaScript'
 task :compile do
-  compiled = %x(java -jar lib/shrinksafe/shrinksafe.jar \
-      lib/webtoolkit/webtoolkit.base64.js \
+  concat = %x(cat \
       lib/underscore/underscore.js \
+      src/angular.prefix \
+      lib/webtoolkit/webtoolkit.base64.js \
+      lib/swfobject.js/swfobject.js \
       src/Loader.js \
       src/API.js \
       src/Binder.js \
@@ -19,35 +21,16 @@ task :compile do
       src/Users.js \
       src/Validators.js \
       src/Widgets.js \
-      src/angular-bootstrap.js \
+      src/angular.suffix \
     )
   f = File.new("angular.js", 'w')
-  f.write(compiled)
+  f.write(concat)
   f.close
-end
 
-desc 'Compile JavaScript with Google Closure Compiler'
-task :compileclosure do
-#        --compilation_level ADVANCED_OPTIMIZATIONS \
   %x(java -jar lib/compiler-closure/compiler.jar \
-        --js lib/webtoolkit/webtoolkit.base64.js \
-        --js lib/underscore/underscore.js \
-        --js src/Loader.js \
-        --js src/API.js \
-        --js src/Binder.js \
-        --js src/ControlBar.js \
-        --js src/DataStore.js \
-        --js src/Filters.js \
-        --js src/JSON.js \
-        --js src/Model.js \
-        --js src/Parser.js \
-        --js src/Scope.js \
-        --js src/Server.js \
-        --js src/Users.js \
-        --js src/Validators.js \
-        --js src/Widgets.js \
-        --js src/angular-bootstrap.js \
-        --js_output_file angular.js)
+        --compilation_level ADVANCED_OPTIMIZATIONS \
+        --js angular.js \
+        --js_output_file angular-minified.js)
 end
 
 namespace :server do

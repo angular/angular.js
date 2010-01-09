@@ -72,7 +72,7 @@ angular.validator.url = function(value) {
 
 angular.validator.json = function(value) {
   try {
-    nglr.fromJson(value);
+    fromJson(value);
     return null;
   } catch (e) {
     return e.toString();

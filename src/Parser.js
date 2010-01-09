@@ -1,4 +1,4 @@
-nglr.Lexer = function(text, parsStrings){
+Lexer = function(text, parsStrings){
   this.text = text;
   // UTC dates have 20 characters, we send them through parser
   this.dateParseLength = parsStrings ? 20 : -1;
@@ -6,7 +6,7 @@ nglr.Lexer = function(text, parsStrings){
   this.index = 0;
 };
 
-nglr.Lexer.OPERATORS = {
+Lexer.OPERATORS = {
     'null':function(self){return null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
@@ -31,7 +31,7 @@ nglr.Lexer.OPERATORS = {
     '!':function(self, a){return !a;}
 };
 
-nglr.Lexer.prototype.peek = function() {
+Lexer.prototype.peek = function() {
   if (this.index + 1 < this.text.length) {
     return this.text.charAt(this.index + 1);
   } else {
@@ -39,9 +39,9 @@ nglr.Lexer.prototype.peek = function() {
   }
 };
 
-nglr.Lexer.prototype.parse = function() {
+Lexer.prototype.parse = function() {
   var tokens = this.tokens;
-  var OPERATORS = nglr.Lexer.OPERATORS;
+  var OPERATORS = Lexer.OPERATORS;
   var canStartRegExp = true;
   while (this.index < this.text.length) {
     var ch = this.text.charAt(this.index);
@@ -102,22 +102,22 @@ nglr.Lexer.prototype.parse = function() {
   return tokens;
 };
 
-nglr.Lexer.prototype.isNumber = function(ch) {
+Lexer.prototype.isNumber = function(ch) {
   return '0' <= ch && ch <= '9';
 };
 
-nglr.Lexer.prototype.isWhitespace = function(ch) {
+Lexer.prototype.isWhitespace = function(ch) {
   return ch == ' ' || ch == '\r' || ch == '\t' ||
          ch == '\n' || ch == '\v';
 };
 
-nglr.Lexer.prototype.isIdent = function(ch) {
+Lexer.prototype.isIdent = function(ch) {
   return 'a' <= ch && ch <= 'z' ||
          'A' <= ch && ch <= 'Z' ||
          '_' == ch || ch == '$';
 };
 
-nglr.Lexer.prototype.readNumber = function() {
+Lexer.prototype.readNumber = function() {
   var number = "";
   var start = this.index;
   while (this.index < this.text.length) {
@@ -134,7 +134,7 @@ nglr.Lexer.prototype.readNumber = function() {
     fn:function(){return number;}});
 };
 
-nglr.Lexer.prototype.readIdent = function() {
+Lexer.prototype.readIdent = function() {
   var ident = "";
   var start = this.index;
   while (this.index < this.text.length) {
@@ -146,7 +146,7 @@ nglr.Lexer.prototype.readIdent = function() {
     }
     this.index++;
   }
-  var fn = nglr.Lexer.OPERATORS[ident];
+  var fn = Lexer.OPERATORS[ident];
   if (!fn) {
     fn = function(self){
       return self.scope.get(ident);
@@ -155,8 +155,8 @@ nglr.Lexer.prototype.readIdent = function() {
   }
   this.tokens.push({index:start, text:ident, fn:fn});
 };
-nglr.Lexer.ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
-nglr.Lexer.prototype.readString = function(quote) {
+Lexer.ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+Lexer.prototype.readString = function(quote) {
   var start = this.index;
   var dateParseLength = this.dateParseLength;
   this.index++;
@@ -170,7 +170,7 @@ nglr.Lexer.prototype.readString = function(quote) {
         this.index += 4;
         string += String.fromCharCode(parseInt(hex, 16));
       } else {
-        var rep = nglr.Lexer.ESCAPE[ch];
+        var rep = Lexer.ESCAPE[ch];
         if (rep) {
           string += rep;
         } else {
@@ -198,7 +198,7 @@ nglr.Lexer.prototype.readString = function(quote) {
       (start+1) + "' in expression '" + this.text + "'.";
 };
 
-nglr.Lexer.prototype.readRegexp = function(quote) {
+Lexer.prototype.readRegexp = function(quote) {
   var start = this.index;
   this.index++;
   var regexp = "";
@@ -233,30 +233,30 @@ nglr.Lexer.prototype.readRegexp = function(quote) {
 };
 
 
-nglr.Parser = function(text, parseStrings){
+Parser = function(text, parseStrings){
   this.text = text;
-  this.tokens = new nglr.Lexer(text, parseStrings).parse();
+  this.tokens = new Lexer(text, parseStrings).parse();
   this.index = 0;
 };
 
-nglr.Parser.ZERO = function(){
+Parser.ZERO = function(){
   return 0;
 };
 
-nglr.Parser.prototype.error = function(msg, token) {
+Parser.prototype.error = function(msg, token) {
   throw "Token '" + token.text + 
     "' is " + msg + " at column='" + 
     (token.index + 1) + "' of expression '" + 
     this.text + "' starting at '" + this.text.substring(token.index) + "'.";
 };
 
-nglr.Parser.prototype.peekToken = function() {
+Parser.prototype.peekToken = function() {
   if (this.tokens.length === 0) 
     throw "Unexpected end of expression: " + this.text;
   return this.tokens[0];
 };
 
-nglr.Parser.prototype.peek = function(e1, e2, e3, e4) {
+Parser.prototype.peek = function(e1, e2, e3, e4) {
   var tokens = this.tokens;
   if (tokens.length > 0) {
     var token = tokens[0];
@@ -269,7 +269,7 @@ nglr.Parser.prototype.peek = function(e1, e2, e3, e4) {
   return false;
 };
 
-nglr.Parser.prototype.expect = function(e1, e2, e3, e4){
+Parser.prototype.expect = function(e1, e2, e3, e4){
   var token = this.peek(e1, e2, e3, e4);
   if (token) {
     this.tokens.shift();
@@ -279,7 +279,7 @@ nglr.Parser.prototype.expect = function(e1, e2, e3, e4){
   return false;
 };
 
-nglr.Parser.prototype.consume = function(e1){
+Parser.prototype.consume = function(e1){
   if (!this.expect(e1)) {
     var token = this.peek();
     throw "Expecting '" + e1 + "' at column '" +
@@ -289,32 +289,32 @@ nglr.Parser.prototype.consume = function(e1){
   }
 };
 
-nglr.Parser.prototype._unary = function(fn, parse) {
+Parser.prototype._unary = function(fn, parse) {
   var right = parse.apply(this);
   return function(self) {
     return fn(self, right(self));
   };
 };
 
-nglr.Parser.prototype._binary = function(left, fn, parse) {
+Parser.prototype._binary = function(left, fn, parse) {
   var right = parse.apply(this);
   return function(self) {
     return fn(self, left(self), right(self));
   };
 };
 
-nglr.Parser.prototype.hasTokens = function () {
+Parser.prototype.hasTokens = function () {
   return this.tokens.length > 0;
 };
 
-nglr.Parser.prototype.assertAllConsumed = function(){
+Parser.prototype.assertAllConsumed = function(){
   if (this.tokens.length !== 0) {
     throw "Did not understand '" + this.text.substring(this.tokens[0].index) +
         "' while evaluating '" + this.text + "'.";
   }
 };
 
-nglr.Parser.prototype.statements = function(){
+Parser.prototype.statements = function(){
   var statements = [];
   while(true) {
     if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
@@ -333,7 +333,7 @@ nglr.Parser.prototype.statements = function(){
   }
 };
 
-nglr.Parser.prototype.filterChain = function(){
+Parser.prototype.filterChain = function(){
   var left = this.expression();
   var token;
   while(true) {
@@ -345,15 +345,15 @@ nglr.Parser.prototype.filterChain = function(){
   }
 };
 
-nglr.Parser.prototype.filter = function(){
+Parser.prototype.filter = function(){
   return this._pipeFunction(angular.filter);
 };
 
-nglr.Parser.prototype.validator = function(){
+Parser.prototype.validator = function(){
   return this._pipeFunction(angular.validator);
 };
 
-nglr.Parser.prototype._pipeFunction = function(fnScope){
+Parser.prototype._pipeFunction = function(fnScope){
   var fn = this.functionIdent(fnScope);
   var argsFn = [];
   var token;
@@ -375,11 +375,11 @@ nglr.Parser.prototype._pipeFunction = function(fnScope){
   }
 };
 
-nglr.Parser.prototype.expression = function(){
+Parser.prototype.expression = function(){
   return this.throwStmt();
 };
 
-nglr.Parser.prototype.throwStmt = function(){
+Parser.prototype.throwStmt = function(){
   if (this.expect('throw')) {
     var throwExp = this.assignment();
     return function (self) {
@@ -390,7 +390,7 @@ nglr.Parser.prototype.throwStmt = function(){
   }
 };
 
-nglr.Parser.prototype.assignment = function(){
+Parser.prototype.assignment = function(){
   var left = this.logicalOR();
   var token;
   if (token = this.expect('=')) {
@@ -406,7 +406,7 @@ nglr.Parser.prototype.assignment = function(){
   }
 };
 
-nglr.Parser.prototype.logicalOR = function(){
+Parser.prototype.logicalOR = function(){
   var left = this.logicalAND();
   var token;
   while(true) {
@@ -418,7 +418,7 @@ nglr.Parser.prototype.logicalOR = function(){
   }
 };
 
-nglr.Parser.prototype.logicalAND = function(){
+Parser.prototype.logicalAND = function(){
   var left = this.negated();
   var token;
   while(true) {
@@ -430,7 +430,7 @@ nglr.Parser.prototype.logicalAND = function(){
   }
 };
 
-nglr.Parser.prototype.negated = function(){
+Parser.prototype.negated = function(){
   var token;
   if (token = this.expect('!')) {
     return this._unary(token.fn, this.equality);
@@ -439,7 +439,7 @@ nglr.Parser.prototype.negated = function(){
   }
 };
 
-nglr.Parser.prototype.equality = function(){
+Parser.prototype.equality = function(){
   var left = this.relational();
   var token;
   while(true) {
@@ -451,7 +451,7 @@ nglr.Parser.prototype.equality = function(){
   }
 };
 
-nglr.Parser.prototype.relational = function(){
+Parser.prototype.relational = function(){
   var left = this.additive();
   var token;
   while(true) {
@@ -463,7 +463,7 @@ nglr.Parser.prototype.relational = function(){
   }
 };
 
-nglr.Parser.prototype.additive = function(){
+Parser.prototype.additive = function(){
   var left = this.multiplicative();
   var token;
   while(token = this.expect('+','-')) {
@@ -472,7 +472,7 @@ nglr.Parser.prototype.additive = function(){
   return left;
 };
 
-nglr.Parser.prototype.multiplicative = function(){
+Parser.prototype.multiplicative = function(){
   var left = this.unary();
   var token;
   while(token = this.expect('*','/','%')) {
@@ -481,18 +481,18 @@ nglr.Parser.prototype.multiplicative = function(){
   return left;
 };
 
-nglr.Parser.prototype.unary = function(){
+Parser.prototype.unary = function(){
   var token;
   if (this.expect('+')) {
     return this.primary();
   } else if (token = this.expect('-')) {
-    return this._binary(nglr.Parser.ZERO, token.fn, this.multiplicative);
+    return this._binary(Parser.ZERO, token.fn, this.multiplicative);
   } else {
    return this.primary();
   }
 };
 
-nglr.Parser.prototype.functionIdent = function(fnScope) {
+Parser.prototype.functionIdent = function(fnScope) {
   var token = this.expect();
   var element = token.text.split('.');
   var instance = fnScope;
@@ -509,7 +509,7 @@ nglr.Parser.prototype.functionIdent = function(fnScope) {
   return instance;
 };
 
-nglr.Parser.prototype.primary = function() {
+Parser.prototype.primary = function() {
   var primary;
   if (this.expect('(')) {
     var expression = this.filterChain();
@@ -545,7 +545,7 @@ nglr.Parser.prototype.primary = function() {
   return primary;
 };
 
-nglr.Parser.prototype.closure = function(hasArgs) {
+Parser.prototype.closure = function(hasArgs) {
   var args = [];
   if (hasArgs) {
     if (!this.expect(')')) {
@@ -561,7 +561,7 @@ nglr.Parser.prototype.closure = function(hasArgs) {
   this.consume("}");
   return function(self){
     return function($){
-      var scope = new nglr.Scope(self.scope.state);
+      var scope = new Scope(self.scope.state);
       scope.set('$', $);
       for ( var i = 0; i < args.length; i++) {
         scope.set(args[i], arguments[i]);
@@ -571,16 +571,16 @@ nglr.Parser.prototype.closure = function(hasArgs) {
   };
 };
 
-nglr.Parser.prototype.fieldAccess = function(object) {
+Parser.prototype.fieldAccess = function(object) {
   var field = this.expect().text;
   var fn = function (self){
-    return nglr.Scope.getter(object(self), field);
+    return Scope.getter(object(self), field);
   };
   fn.isAssignable = field;
   return fn;
 };
 
-nglr.Parser.prototype.objectIndex = function(obj) {
+Parser.prototype.objectIndex = function(obj) {
   var indexFn = this.expression();
   this.consume(']');
   if (this.expect('=')) {
@@ -597,7 +597,7 @@ nglr.Parser.prototype.objectIndex = function(obj) {
   }
 };
 
-nglr.Parser.prototype.functionCall = function(fn) {
+Parser.prototype.functionCall = function(fn) {
   var argsFn = [];
   if (this.peekToken().text != ')') {
     do {
@@ -620,7 +620,7 @@ nglr.Parser.prototype.functionCall = function(fn) {
 };
 
 // This is used with json array declaration
-nglr.Parser.prototype.arrayDeclaration = function () {
+Parser.prototype.arrayDeclaration = function () {
   var elementFns = [];
   if (this.peekToken().text != ']') {
     do {
@@ -637,7 +637,7 @@ nglr.Parser.prototype.arrayDeclaration = function () {
   };
 };
 
-nglr.Parser.prototype.object = function () {
+Parser.prototype.object = function () {
   var keyValues = [];
   if (this.peekToken().text != '}') {
     do {
@@ -659,7 +659,7 @@ nglr.Parser.prototype.object = function () {
   };
 };
 
-nglr.Parser.prototype.entityDeclaration = function () {
+Parser.prototype.entityDeclaration = function () {
   var decl = [];
   while(this.hasTokens()) {
     decl.push(this.entityDecl());
@@ -676,7 +676,7 @@ nglr.Parser.prototype.entityDeclaration = function () {
   };
 };
 
-nglr.Parser.prototype.entityDecl = function () {
+Parser.prototype.entityDecl = function () {
   var entity = this.expect().text;
   var instance;
   var defaults;
@@ -705,7 +705,7 @@ nglr.Parser.prototype.entityDecl = function () {
   };
 };
 
-nglr.Parser.prototype.watch = function () {
+Parser.prototype.watch = function () {
   var decl = [];
   while(this.hasTokens()) {
     decl.push(this.watchDecl());
@@ -722,7 +722,7 @@ nglr.Parser.prototype.watch = function () {
   };
 };
 
-nglr.Parser.prototype.watchDecl = function () {
+Parser.prototype.watchDecl = function () {
   var anchorName = this.expect().text;
   this.consume(":");
   var expression;
