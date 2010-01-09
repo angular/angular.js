@@ -387,19 +387,15 @@ nglr.UrlWatcher.prototype.getUrl = function() {
   return window.location.href;
 };
 
-window['angularFactory'] = function(config) {
+angular['compile'] = function(root, config) {
+  config = config || {};
   var defaults = {
     server: ""
   };
   //todo: don't load stylesheet by default
   //todo: don't start watcher
-  function compile(root){
-    var loader = new nglr.Loader(root, jQuery("head"), _(defaults).extend(config));
-    loader.load();
-    return jQuery(root).scope();
-  };
-  return {
-    compile:compile
-  };
+  var loader = new nglr.Loader(root, jQuery("head"), _(defaults).extend(config));
+  loader.load();
+  return jQuery(root).scope();
 };
 
