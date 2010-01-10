@@ -55,7 +55,7 @@ Scope.getter = function(instance, path) {
       instance = instance[key];
     }
     if (_.isUndefined(instance)  && key.charAt(0) == '$') {
-      var type = angular.Global.typeOf(lastInstance);
+      var type = angular['Global']['typeOf'](lastInstance);
       type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
       var fn = type ? type[[key.substring(1)]] : undefined;
       if (fn) {

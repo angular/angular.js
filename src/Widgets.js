@@ -5,7 +5,13 @@ WidgetFactory = function(serverUrl, database) {
   this.nextUploadId = 0;
   this.serverUrl = serverUrl;
   this.database = database;
-  this.createSWF = swfobject.createSWF;
+  if (window.swfobject) {
+    this.createSWF = swfobject.createSWF;
+  } else {
+    this.createSWF = function(){
+      alert("ERROR: swfobject not loaded!");
+    };
+  }
   this.onChangeListener = function(){};
 };
 
@@ -145,7 +151,7 @@ FileController.prototype._on_uploadCompleteData = function(data) {
 FileController.prototype._on_select = function(name, size, type) {
   this.name = name;
   this.view.find("a").text(name).attr('href', name);
-  this.view.find("span").text(angular.filter.bytes(size));
+  this.view.find("span").text(angular['filter']['bytes'](size));
   this.upload();
 };
 
@@ -167,7 +173,7 @@ FileController.prototype.updateView = function(scope) {
     this.view.find("a").
       attr("href", this.value.url).
       text(this.value.text);
-    this.view.find("span").text(angular.filter.bytes(this.value.size));
+    this.view.find("span").text(angular['filter']['bytes'](this.value.size));
   }
   this.view.find("input").attr('checked', !!modelValue);
 };
@@ -677,8 +683,8 @@ RepeaterUpdater.prototype.updateView = function(scope) {
     });
     // shrink children
     for ( var r = childrenLength; r > iteratorLength; --r) {
-      var unneeded = this.children.pop();
-      unneeded.element.removeNode();
+      var unneeded = this.children.pop().element[0];
+      unneeded.parentNode.removeChild(unneeded);
     }
     // Special case for option in select
     if (child && child.element[0].nodeName === "OPTION") {

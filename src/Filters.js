@@ -22,7 +22,7 @@ angular.filter.Meta.get = function(obj, attr){
   }
 };
 
-angular.filter.currency = function(amount){
+angular.filter['currency'] = function(amount){
   jQuery(this.element).toggleClass('ng-format-negative', amount < 0);
   return '$' + angular.filter.number.apply(this, [amount, 2]);
 };

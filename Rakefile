@@ -1,12 +1,39 @@
 include FileUtils
 
+desc 'Generate Externs'
+task :compileexterns do
+  out = File.new("externs.js", "w")
+
+  out.write("function _(){};\n")
+  file = File.new("lib/underscore/underscore.js", "r")
+  while (line = file.gets)
+    if line =~ /^\s*_\.(\w+)\s*=.*$/ 
+      out.write("_.#{$1}=function(){};\n")
+    end
+  end
+  file.close
+
+  out.write("function jQuery(){};\n")
+  file = File.new("lib/jquery/jquery-1.3.2.js", "r")
+  while (line = file.gets)
+    if line =~ /^\s*(\w+)\s*:\s*function.*$/ 
+      out.write("jQuery.#{$1}=function(){};\n")
+    end
+  end
+  file.close
+  out.write("jQuery.scope=function(){};\n")
+  out.write("jQuery.controller=function(){};\n")
+
+  out.close
+end
+
 desc 'Compile JavaScript'
 task :compile do
+  Rake::Task['compileexterns'].execute
+
   concat = %x(cat \
-      lib/underscore/underscore.js \
       src/angular.prefix \
       lib/webtoolkit/webtoolkit.base64.js \
-      lib/swfobject.js/swfobject.js \
       src/Loader.js \
       src/API.js \
       src/Binder.js \
@@ -30,6 +57,8 @@ task :compile do
   %x(java -jar lib/compiler-closure/compiler.jar \
         --compilation_level ADVANCED_OPTIMIZATIONS \
         --js angular.js \
+        --externs externs.js \
+        --create_source_map ./angular-minified.map \
         --js_output_file angular-minified.js)
 end
 

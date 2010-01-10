@@ -38,7 +38,7 @@ toJsonArray = function(buf, obj, pretty){
       buf.push('' + obj);
     }
   } else if (type === 'string') {
-    return buf.push(angular.String.quoteUnicode(obj));
+    return buf.push(angular['String']['quoteUnicode'](obj));
   } else if (type === 'object') {
     if (obj instanceof Array) {
       buf.push("[");
@@ -56,7 +56,7 @@ toJsonArray = function(buf, obj, pretty){
       }
       buf.push("]");
     } else if (obj instanceof Date) {
-      buf.push(angular.String.quoteUnicode(angular.Date.toString(obj)));
+      buf.push(angular['String']['quoteUnicode'](angular['Date']['toString'](obj)));
     } else {
       buf.push("{");
       if (pretty) buf.push(pretty);
@@ -78,7 +78,7 @@ toJsonArray = function(buf, obj, pretty){
               buf.push(",");
               if (pretty) buf.push(pretty);
             }
-            buf.push(angular.String.quote(key));
+            buf.push(angular['String']['quote'](key));
             buf.push(":");
             toJsonArray(buf, value, childPretty);
             comma = true;

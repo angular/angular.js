@@ -110,7 +110,7 @@ test.Scenario.prototype = {
   },
   verb:function(step){
     var fn = null;
-  if (!step) fn = function (){ throw "Step is null!"; }
+  if (!step) fn = function (){ throw "Step is null!"; };
   else if (step.Given) fn = angular.test.GIVEN[step.Given];
   else if (step.When) fn = angular.test.WHEN[step.When];
   else if (step.Then) fn = angular.test.THEN[step.Then];

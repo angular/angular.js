@@ -92,7 +92,7 @@ DataStore.prototype.save = function(document, callback) {
     var cachedDoc = self.cache(document);
     _.each(self._cache.$collections, function(collection){
       if (collection.$$accept(document)) {
-        angular.Array.includeIf(collection, cachedDoc, true);
+        angular['Array']['includeIf'](collection, cachedDoc, true);
       }
     });
     if (document.$$anchor) {

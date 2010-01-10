@@ -1,5 +1,5 @@
-angular.Global = {
-  typeOf:function(obj){
+angular['Global'] = {
+  'typeOf':function(obj){
     var type = typeof obj;
     switch(type) {
     case "object":
@@ -12,10 +12,10 @@ angular.Global = {
   }
 };
 
-angular.Collection = {};
-angular.Object = {};
-angular.Array = {
-  includeIf:function(array, value, condition) {
+angular['Collection'] = {};
+angular['Object'] = {};
+angular['Array'] = {
+  'includeIf':function(array, value, condition) {
     var index = _.indexOf(array, value);
     if (condition) {
       if (index == -1)
@@ -25,8 +25,8 @@ angular.Array = {
     }
     return array;
   },
-  sum:function(array, expression) {
-    var fn = angular.Function.compile(expression);
+  'sum':function(array, expression) {
+    var fn = angular['Function']['compile'](expression);
     var sum = 0;
     for (var i = 0; i < array.length; i++) {
       var value = 1 * fn(array[i]);
@@ -36,15 +36,15 @@ angular.Array = {
     }
     return sum;
   },
-  remove:function(array, value) {
+  'remove':function(array, value) {
     var index = _.indexOf(array, value);
     if (index >=0)
       array.splice(index, 1);
     return value;
   },
-  find:function(array, condition, defaultValue) {
+  'find':function(array, condition, defaultValue) {
     if (!condition) return undefined;
-    var fn = angular.Function.compile(condition);
+    var fn = angular['Function']['compile'](condition);
     _.detect(array, function($){
       if (fn($)){
         defaultValue = $;
@@ -53,10 +53,10 @@ angular.Array = {
     });
     return defaultValue;
   },
-  findById:function(array, id) {
+  'findById':function(array, id) {
     return angular.Array.find(array, function($){return $.$id == id;}, null);
   },
-  filter:function(array, expression) {
+  'filter':function(array, expression) {
     var predicates = [];
     predicates.check = function(value) {
       for (var j = 0; j < predicates.length; j++) {
@@ -136,16 +136,16 @@ angular.Array = {
     }
     return filtered;
   },
-  add:function(array, value) {
+  'add':function(array, value) {
     array.push(_.isUndefined(value)? {} : value);
     return array;
   },
-  count:function(array, condition) {
+  'count':function(array, condition) {
     if (!condition) return array.length;
-    var fn = angular.Function.compile(condition);
+    var fn = angular['Function']['compile'](condition);
     return _.reduce(array, 0, function(count, $){return count + (fn($)?1:0);});
   },
-  orderBy:function(array, expression, descend) {
+  'orderBy':function(array, expression, descend) {
     function reverse(comp, descending) {
       return toBoolean(descending) ? 
           function(a,b){return comp(b,a);} : comp;
@@ -169,7 +169,7 @@ angular.Array = {
         descending = $.charAt(0) == '-';
         $ = $.substring(1);
       }
-      var get = $ ? angular.Function.compile($) : _.identity;
+      var get = $ ? angular['Function']['compile']($) : _.identity;
       return reverse(function(a,b){
         return compare(get(a),get(b));
       }, descending);
@@ -183,7 +183,7 @@ angular.Array = {
     };
     return _.clone(array).sort(reverse(comparator, descend));
   },
-  orderByToggle:function(predicate, attribute) {
+  'orderByToggle':function(predicate, attribute) {
     var STRIP = /^([+|-])?(.*)/;
     var ascending = false;
     var index = -1;
@@ -205,7 +205,7 @@ angular.Array = {
     predicate.unshift((ascending ? "-" : "+") + attribute);
     return predicate;
   },
-  orderByDirection:function(predicate, attribute, ascend, descend) {
+  'orderByDirection':function(predicate, attribute, ascend, descend) {
     ascend = ascend || 'ng-ascend';
     descend = descend || 'ng-descend';
     var att = predicate[0] || '';
@@ -218,7 +218,7 @@ angular.Array = {
     }
     return att == attribute ? (direction ? ascend : descend) : "";
   },
-  merge:function(array, index, mergeValue) {
+  'merge':function(array, index, mergeValue) {
     var value = array[index];
     if (!value) {
       value = {};
@@ -228,8 +228,8 @@ angular.Array = {
     return array;
   }
 };
-angular.String = {
-  quote:function(string) {
+angular['String'] = {
+  'quote':function(string) {
     return '"' + string.replace(/\\/g, '\\\\').
                         replace(/"/g, '\\"').
                         replace(/\n/g, '\\n').
@@ -239,8 +239,8 @@ angular.String = {
                         replace(/\v/g, '\\v') +
              '"';
   },
-  quoteUnicode:function(string) {
-    var str = angular.String.quote(string);
+  'quoteUnicode':function(string) {
+    var str = angular['String']['quote'](string);
     var chars = [];
     for ( var i = 0; i < str.length; i++) {
       var ch = str.charCodeAt(i);
@@ -253,7 +253,7 @@ angular.String = {
     }
     return chars.join('');
   },
-  toDate:function(string){
+  'toDate':function(string){
     var match;
     if (typeof string == 'string' && 
         (match = string.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){
@@ -265,8 +265,8 @@ angular.String = {
     return string;
   }
 };
-angular.Date = {
-    toString:function(date){
+angular['Date'] = {
+    'toString':function(date){
       function pad(n) { return n < 10 ? "0" + n : n; }
       return  (date.getUTCFullYear()) + '-' +
         pad(date.getUTCMonth() + 1) + '-' +
@@ -276,8 +276,8 @@ angular.Date = {
         pad(date.getUTCSeconds()) + 'Z';
     }
   };
-angular.Function = {
-  compile:function(expression) {
+angular['Function'] = {
+  'compile':function(expression) {
     if (_.isFunction(expression)){
       return expression;
     } else if (expression){
@@ -299,20 +299,20 @@ angular.Function = {
       dst[name] = _[name];
     });
   };
-  extend(angular.Global, {}, 
+  extend(angular['Global'], {}, 
       ['extend', 'clone','isEqual', 
        'isElement', 'isArray', 'isFunction', 'isUndefined']);
-  extend(angular.Collection, angular.Global, 
+  extend(angular['Collection'], angular['Global'], 
       ['each', 'map', 'reduce', 'reduceRight', 'detect', 
        'select', 'reject', 'all', 'any', 'include', 
        'invoke', 'pluck', 'max', 'min', 'sortBy', 
        'sortedIndex', 'toArray', 'size']);
-  extend(angular.Array, angular.Collection, 
+  extend(angular['Array'], angular['Collection'], 
       ['first', 'last', 'compact', 'flatten', 'without', 
        'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
-  extend(angular.Object, angular.Collection,
+  extend(angular['Object'], angular['Collection'],
       ['keys', 'values']);
-  extend(angular.String, angular.Global);
-  extend(angular.Function, angular.Global,
+  extend(angular['String'], angular['Global']);
+  extend(angular['Function'], angular['Global'],
       ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
 })();

@@ -23,6 +23,8 @@ if (typeof Node == 'undefined') {
 }
 
 var callbacks = {};
+var jQuery = window['jQuery'];
+var msie = jQuery['browser']['msie'];
 
 if (!window.angular){   angular = {}; window['angular'] = angular; }
 if (!angular.validator) angular.validator = {};
@@ -32,8 +34,8 @@ if (!window.console)
     log:function() {},
     error:function() {}
   };
-if (_.isUndefined(alert)) {
-  alert = function(){console.log(arguments); window.alert.apply(window, arguments); };
+if (!angular.alert) {
+  angular.alert = function(){console.log(arguments); window.alert.apply(window, arguments); };
 }
 
 var consoleNode;
@@ -169,7 +171,6 @@ Loader.prototype.load = function() {
   this.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
   this.loadCss('/stylesheets/css');
   console.log("Server: " + this.config.server);
-  msie = jQuery.browser.msie;
   this.configureJQueryPlugins();
   this.computeConfiguration();
   this.bindHtml();
@@ -177,11 +178,7 @@ Loader.prototype.load = function() {
 
 Loader.prototype.configureJQueryPlugins = function() {
   console.log('Loader.configureJQueryPlugins()');
-  jQuery.fn.removeNode = function() {
-    var node = this.get(0);
-    node.parentNode.removeChild(node);
-  };
-  jQuery.fn.scope = function() {
+  jQuery['fn']['scope'] = function() {
     var element = this;
     while (element && element.get(0)) {
       var scope = element.data("scope");
@@ -191,7 +188,7 @@ Loader.prototype.configureJQueryPlugins = function() {
     }
     return null;
   };
-  jQuery.fn.controller = function() {
+  jQuery['fn']['controller'] = function() {
     return this.data('controller') || NullController.instance;
   };
 };
@@ -229,23 +226,18 @@ Loader.prototype.bindHtml = function() {
   var datastore = new DataStore(post, users, binder.anchor);
   binder.updateListeners.push(function(){datastore.flush();});
   var scope = new Scope( {
-    $anchor : binder.anchor,
-    $binder : binder,
-    $config : this.config,
-    $console : window.console,
-    $datastore : datastore,
-    $save : function(callback) {
+    '$anchor' : binder.anchor,
+    '$binder' : binder,
+    '$config' : this.config,
+    '$console' : window.console,
+    '$datastore' : datastore,
+    '$save' : function(callback) {
       datastore.saveScope(scope.state, callback, binder.anchor);
     },
-    $window : window,
-    $uid : this.uid,
-    $users : users
+    '$window' : window,
+    '$uid' : this.uid,
+    '$users' : users
   }, "ROOT");
-
-  jQuery.each(["get", "set", "eval", "addWatchListener", "updateView"],
-    function(i, method){
-      angular[method] = bind(scope, scope[method]);
-    });
 
   document.data('scope', scope);
   console.log('$binder.entity()');
@@ -284,7 +276,6 @@ Loader.prototype.bindHtml = function() {
   watcher.watch();
   document.find("body").show();
   console.log('ready()');
-
 };
 
 Loader.prototype.visualPost = function(delegate) {
@@ -399,6 +390,12 @@ angular['compile'] = function(root, config) {
   //todo: don't start watcher
   var loader = new Loader(root, jQuery("head"), _(defaults).extend(config));
   loader.load();
-  return jQuery(root).scope();
+  var scope = jQuery(root).scope();
+  //TODO: cleanup
+  return {
+    'updateView':function(){return scope.updateView.apply(scope, arguments);},
+    'set':function(){return scope.set.apply(scope, arguments);},
+    'get':function(){return scope.get.apply(scope, arguments);}
+  };
 };
 

@@ -185,7 +185,7 @@ Lexer.prototype.readString = function(quote) {
       this.tokens.push({index:start, text:string,
         fn:function(){
           return (string.length == dateParseLength) ?
-            angular.String.toDate(string) : string;
+            angular['String']['toDate'](string) : string;
         }});
       return;
     } else {
@@ -346,11 +346,11 @@ Parser.prototype.filterChain = function(){
 };
 
 Parser.prototype.filter = function(){
-  return this._pipeFunction(angular.filter);
+  return this._pipeFunction(angular['filter']);
 };
 
 Parser.prototype.validator = function(){
-  return this._pipeFunction(angular.validator);
+  return this._pipeFunction(angular['validator']);
 };
 
 Parser.prototype._pipeFunction = function(fnScope){
@@ -697,7 +697,7 @@ Parser.prototype.entityDecl = function () {
       self.scope.set(instance, document);
       return "$anchor." + instance + ":{" + 
           instance + "=" + entity + ".load($anchor." + instance + ");" +
-          instance + ".$$anchor=" + angular.String.quote(instance) + ";" + 
+          instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" + 
         "};";
     } else {
       return "";
