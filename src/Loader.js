@@ -284,10 +284,7 @@ Loader.prototype = {
   
     log('$binder.parseAnchor()');
     binder.parseAnchor();
-  
-    log('$binder.executeInit()');
-    binder.executeInit();
-  
+    
     log('$binder.updateView()');
     binder.updateView();
   
@@ -419,8 +416,9 @@ angular['compile'] = function(root, config) {
   var scope = jQuery(root).scope();
   //TODO: cleanup
   return {
-    'updateView':function(){return scope.updateView.apply(scope, arguments);},
+    'updateView':function(){return scope.updateView();},
     'set':function(){return scope.set.apply(scope, arguments);},
-    'get':function(){return scope.get.apply(scope, arguments);}
+    'get':function(){return scope.get.apply(scope, arguments);},
+    'init':function(){scope.get('$binder.executeInit')(); scope.updateView();}
   };
 };
