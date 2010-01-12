@@ -391,12 +391,12 @@ UrlWatcher.prototype = {
   },
   
   setUrl: function(url) {
-    var existingURL = window.location.href;
-    if (!existingURL.match(/#/))
-      existingURL += '#';
-    if (existingURL != url)
-      window.location.href = url;
-    this.existingURL = url;
+//    var existingURL = window.location.href;
+//    if (!existingURL.match(/#/))
+//      existingURL += '#';
+//    if (existingURL != url)
+//      window.location.href = url;
+//    this.existingURL = url;
   },
   
   getUrl: function() {
