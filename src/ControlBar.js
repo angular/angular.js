@@ -1,8 +1,9 @@
 // Copyright (C) 2008,2009 BRAT Tech LLC
 
-nglr.ControlBar = function (document, serverUrl) {
+nglr.ControlBar = function (document, serverUrl, database) {
   this.document = document;
   this.serverUrl = serverUrl;
+  this.database = database;
   this.window = window;
   this.callbacks = [];
 };
@@ -21,7 +22,7 @@ nglr.ControlBar.HTML =
 nglr.ControlBar.prototype.login = function (loginSubmitFn) {
   this.callbacks.push(loginSubmitFn);
   if (this.callbacks.length == 1) {
-    this.doTemplate("/user_session/new.mini?return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
+    this.doTemplate("/user_session/new.mini?database="+encodeURIComponent(this.database)+"&return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
   }
 };
 

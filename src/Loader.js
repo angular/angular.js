@@ -213,7 +213,7 @@ nglr.Loader.prototype.bindHtml = function() {
   var widgetFactory = new nglr.WidgetFactory(this.config.server, this.config.database);
   var binder = new nglr.Binder(document[0], widgetFactory, watcher, this.config);
   widgetFactory.onChangeListener = nglr.shiftBind(binder, binder.updateModel);
-  var controlBar = new nglr.ControlBar(document.find('body'), this.config.server);
+  var controlBar = new nglr.ControlBar(document.find('body'), this.config.server, this.config.database);
   var onUpdate = function(){binder.updateView();};
   var server = this.config.database=="$MEMORY" ?
       new nglr.FrameServer(this.window) :
