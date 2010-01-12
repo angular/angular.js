@@ -25,8 +25,6 @@ var consoleNode,
     extend           = _.extend,
     jQuery           = window['jQuery'],
     msie             = jQuery['browser']['msie'],
-    log              = function(){window['console']['log'].apply(this, arguments);},
-    error            = function(){window['console']['error'].apply(this, arguments);},
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
@@ -34,7 +32,36 @@ var consoleNode,
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments); 
       });
-    
+
+function log(a, b, c){
+  var console = window['console'];
+  switch(arguments.length) {
+  case 1:
+    console['log'](a);
+    break;
+  case 2:
+    console['log'](a, b);
+    break;
+  default:
+    console['log'](a, b, c);
+    break;
+  }
+}
+
+function error(a, b, c){
+  var console = window['console'];
+  switch(arguments.length) {
+  case 1:
+    console['error'](a);
+    break;
+  case 2:
+    console['error'](a, b);
+    break;
+  default:
+    console['error'](a, b, c);
+    break;
+  }
+}
 
 function consoleLog(level, objs) {
   var log = document.createElement("div");
