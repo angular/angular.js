@@ -525,7 +525,7 @@ BindAttrUpdater.prototype.updateView = function(scope) {
             attrValues.push(value);
         } catch (e) {
           this.hasError = true;
-          console.error('BindAttrUpdater', e);
+          error('BindAttrUpdater', e);
           var jsonError = toJson(e, true);
           attrValues.push('[' + jsonError + ']');
           jNode.
@@ -657,7 +657,7 @@ RepeaterUpdater.prototype.updateView = function(scope) {
     var keyExp = this.keyExp;
     var valueExp = this.valueExp;
     var i = 0;
-    jQuery.each(iterator, function(key, value){
+    foreach(iterator, function(value, key){
       if (i < childrenLength) {
         // reuse children
         child = self.children[i];

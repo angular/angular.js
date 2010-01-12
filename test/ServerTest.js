@@ -10,7 +10,7 @@ ServerTest.prototype.testBreakLargeRequestIntoPackets = function() {
     assertEquals(200, code);
     assertEquals("response", r);
   });
-  callbacks.uuid0("response");
+  angularCallbacks.uuid0("response");
   assertEquals(
       "|http://server/$/uuid0/2/1?h=eyJtIjoiUE9TVCIsInAiOnt9LCJ1Ij" +
       "|http://server/$/uuid0/2/2?h=oiL2RhdGEvZGF0YWJhc2UifQ==",
@@ -35,7 +35,7 @@ FrameServerTest.prototype = {
   testWrite:function(){
     var window = {};
     var server = new FrameServer(window);
-    server.data = "TestData"
+    server.data = "TestData";
     server.write();
     assertEquals('$DATASET:"TestData"', window.name);
   }

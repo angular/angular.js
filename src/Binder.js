@@ -57,16 +57,16 @@ Binder.prototype.parseAnchor = function(url) {
   var anchor = url.substring(anchorIndex + 1);
 
   var anchorQuery = this.parseQueryString(anchor);
-  jQuery.each(self.anchor, function(key, newValue) {
+  foreach(self.anchor, function(newValue, key) {
     delete self.anchor[key];
   });
-  jQuery.each(anchorQuery, function(key, newValue) {
+  foreach(anchorQuery, function(newValue, key) {
     self.anchor[key] = newValue;
   });
 };
 
 Binder.prototype.onUrlChange = function (url) {
-  console.log("URL change detected", url);
+  log("URL change detected", url);
   this.parseAnchor(url);
   this.updateView();
 };
@@ -252,7 +252,7 @@ Binder.prototype.precompileNode = function(node, path, factories) {
     }
   }
 
-  if (!node.getAttribute) console.log(node);
+  if (!node.getAttribute) log(node);
   var repeaterExpression = node.getAttribute('ng-repeat');
   if (repeaterExpression) {
     node.removeAttribute('ng-repeat');

@@ -124,7 +124,7 @@ Scope.prototype.evalWidget = function(widget, expression, context, onSuccess, on
     }
     return true;
   } catch (e){
-    console.error('Eval Widget Error:', e);
+    error('Eval Widget Error:', e);
     var jsonError = toJson(e, true);
     widget.hasError = true;
     jQuery(widget.view).
@@ -184,10 +184,10 @@ Scope.prototype.addWatchListener = function(watchExpression, listener) {
 Scope.prototype.fireWatchers = function() {
   var self = this;
   var fired = false;
-  jQuery.each(this.watchListeners, function(name, watcher) {
+  foreach(this.watchListeners, function(watcher) {
     var value = self.eval(watcher.expression);
     if (value !== watcher.lastValue) {
-      jQuery.each(watcher.listeners, function(i, listener){
+      foreach(watcher.listeners, function(listener){
         listener(value, watcher.lastValue);
         fired = true;
       });

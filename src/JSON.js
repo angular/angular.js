@@ -17,7 +17,7 @@ fromJson = function(json) {
     parser.assertAllConsumed();
     return expression();
   } catch (e) {
-    console.error("fromJson error: ", json, e);
+    error("fromJson error: ", json, e);
     throw e;
   }
 };

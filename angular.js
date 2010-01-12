@@ -1,5 +1,5 @@
-
-(function(window, document){/**
+(function(window, document){
+/**
 *
 *  Base64 encode / decode
 *  http://www.webtoolkit.info/
@@ -145,8 +145,7 @@ var Base64 = {
 // IE compatibility
 
 if (typeof document.getAttribute == 'undefined')
-  document.getAttribute = function() {
-  };
+  document.getAttribute = function() {};
 if (typeof Node == 'undefined') {
   Node = {
     ELEMENT_NODE : 1,
@@ -164,25 +163,25 @@ if (typeof Node == 'undefined') {
   };
 }
 
-var callbacks = {};
-var jQuery = window['jQuery'];
-var msie = jQuery['browser']['msie'];
+function noop() {};
 
-if (!window.angular){   angular = {}; window['angular'] = angular; }
-if (!angular.validator) angular.validator = {};
-if (!angular.filter)    angular.filter = {};
-if (!window.console)
-  window.console = {
-    log:function() {},
-    error:function() {}
-  };
-if (!angular.alert) {
-  angular.alert = function(){console.log(arguments); window.alert.apply(window, arguments); };
-}
+var consoleNode,
+    foreach          = _.each,
+    extend           = _.extend,
+    console          = window['console'] || ({'log':noop, 'error':noop }),
+    jQuery           = window['jQuery'],
+    msie             = jQuery['browser']['msie'],
+    log              = function(){console.log.apply(this, arguments);},
+    error            = function(){console.error.apply(this, arguments);},
+    angular          = window['angular']    || (window['angular']    = {}), 
+    angularValidator = angular['validator'] || (angular['validator'] = {}), 
+    angularFilter    = angular['filter']    || (angular['filter']    = {}), 
+    angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
+    angularAlert     = angular['alert']     || (angular['alert']     = function(){
+        log(arguments); window.alert.apply(window, arguments); 
+      });
 
-var consoleNode;
-
-consoleLog = function(level, objs) {
+function consoleLog(level, objs) {
   var log = document.createElement("div");
   log.className = level;
   var msg = "";
@@ -194,17 +193,17 @@ consoleLog = function(level, objs) {
   }
   log.appendChild(document.createTextNode(msg));
   consoleNode.appendChild(log);
-};
+}
 
-isNode = function(inp) {
+function isNode(inp) {
   return inp &&
       inp.tagName &&
       inp.nodeName &&
       inp.ownerDocument &&
       inp.removeAttribute;
-};
+}
 
-isLeafNode = function(node) {
+function isLeafNode (node) {
   switch (node.nodeName) {
   case "OPTION":
   case "PRE":
@@ -215,9 +214,7 @@ isLeafNode = function(node) {
   }
 };
 
-noop = function() {
-};
-setHtml = function(node, html) {
+function setHtml(node, html) {
   if (isLeafNode(node)) {
     if (msie) {
       node.innerText = html;
@@ -227,9 +224,9 @@ setHtml = function(node, html) {
   } else {
     node.innerHTML = html;
   }
-};
+}
 
-escapeHtml = function(html) {
+function escapeHtml(html) {
   if (!html || !html.replace)
     return html;
   return html.
@@ -238,14 +235,14 @@ escapeHtml = function(html) {
       replace(/>/g, '&gt;');
 };
 
-escapeAttr = function(html) {
+function escapeAttr(html) {
   if (!html || !html.replace)
     return html;
   return html.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g,
       '&quot;');
 };
 
-bind = function(_this, _function) {
+function bind(_this, _function) {
   if (!_this)
     throw "Missing this";
   if (!_.isFunction(_function))
@@ -255,7 +252,7 @@ bind = function(_this, _function) {
   };
 };
 
-shiftBind = function(_this, _function) {
+function shiftBind(_this, _function) {
   return function() {
     var args = [ this ];
     for ( var i = 0; i < arguments.length; i++) {
@@ -265,7 +262,7 @@ shiftBind = function(_this, _function) {
   };
 };
 
-outerHTML = function(node) {
+function outerHTML(node) {
   var temp = document.createElement('div');
   temp.appendChild(node);
   var outerHTML = temp.innerHTML;
@@ -273,18 +270,18 @@ outerHTML = function(node) {
   return outerHTML;
 };
 
-trim = function(str) {
+function trim(str) {
   return str.replace(/^ */, '').replace(/ *$/, '');
 };
 
-toBoolean = function(value) {
+function toBoolean(value) {
   var v = ("" + value).toLowerCase();
   if (v == 'f' || v == '0' || v == 'false' || v == 'no')
     value = false;
   return !!value;
 };
 
-merge = function(src, dst) {
+function merge(src, dst) {
   for ( var key in src) {
     var value = dst[key];
     var type = typeof value;
@@ -301,176 +298,178 @@ merge = function(src, dst) {
 // Loader
 // ////////////////////////////
 
-Loader = function(document, head, config) {
+function Loader(document, head, config) {
   this.document = jQuery(document);
   this.head = jQuery(head);
   this.config = config;
   this.location = window.location;
 };
 
-Loader.prototype.load = function() {
-  this.configureLogging();
-  this.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
-  this.loadCss('/stylesheets/css');
-  console.log("Server: " + this.config.server);
-  this.configureJQueryPlugins();
-  this.computeConfiguration();
-  this.bindHtml();
-};
-
-Loader.prototype.configureJQueryPlugins = function() {
-  console.log('Loader.configureJQueryPlugins()');
-  jQuery['fn']['scope'] = function() {
-    var element = this;
-    while (element && element.get(0)) {
-      var scope = element.data("scope");
-      if (scope)
-        return scope;
-      element = element.parent();
+Loader.prototype = {
+  load: function() {
+    this.configureLogging();
+    this.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
+    this.loadCss('/stylesheets/css');
+    log("Server: " + this.config.server);
+    this.configureJQueryPlugins();
+    this.computeConfiguration();
+    this.bindHtml();
+  },
+  
+  configureJQueryPlugins: function() {
+    log('Loader.configureJQueryPlugins()');
+    jQuery['fn']['scope'] = function() {
+      var element = this;
+      while (element && element.get(0)) {
+        var scope = element.data("scope");
+        if (scope)
+          return scope;
+        element = element.parent();
+      }
+      return null;
+    };
+    jQuery['fn']['controller'] = function() {
+      return this.data('controller') || NullController.instance;
+    };
+  },
+  
+  uid: function() {
+    return "" + new Date().getTime();
+  },
+  
+  computeConfiguration: function() {
+    var config = this.config;
+    if (!config.database) {
+      var match = config.server.match(/https?:\/\/([\w]*)/);
+      config.database = match ? match[1] : "$MEMORY";
     }
-    return null;
-  };
-  jQuery['fn']['controller'] = function() {
-    return this.data('controller') || NullController.instance;
-  };
-};
-
-Loader.prototype.uid = function() {
-  return "" + new Date().getTime();
-};
-
-Loader.prototype.computeConfiguration = function() {
-  var config = this.config;
-  if (!config.database) {
-    var match = config.server.match(/https?:\/\/([\w]*)/);
-    config.database = match ? match[1] : "$MEMORY";
-  }
-};
-
-Loader.prototype.bindHtml = function() {
-  console.log('Loader.bindHtml()');
-  var watcher = new UrlWatcher(this.location);
-  var document = this.document;
-  var widgetFactory = new WidgetFactory(this.config.server, this.config.database);
-  var binder = new Binder(document[0], widgetFactory, watcher, this.config);
-  widgetFactory.onChangeListener = shiftBind(binder, binder.updateModel);
-  var controlBar = new ControlBar(document.find('body'), this.config.server);
-  var onUpdate = function(){binder.updateView();};
-  var server = this.config.database=="$MEMORY" ?
-      new FrameServer(this.window) :
-      new Server(this.config.server, jQuery.getScript);
-  server = new VisualServer(server, new Status(jQuery(document.body)), onUpdate);
-  var users = new Users(server, controlBar);
-  var databasePath = '/data/' + this.config.database;
-  var post = function(request, callback){
-    server.request("POST", databasePath, request, callback);
-  };
-  var datastore = new DataStore(post, users, binder.anchor);
-  binder.updateListeners.push(function(){datastore.flush();});
-  var scope = new Scope( {
-    '$anchor' : binder.anchor,
-    '$binder' : binder,
-    '$config' : this.config,
-    '$console' : window.console,
-    '$datastore' : datastore,
-    '$save' : function(callback) {
-      datastore.saveScope(scope.state, callback, binder.anchor);
-    },
-    '$window' : window,
-    '$uid' : this.uid,
-    '$users' : users
-  }, "ROOT");
-
-  document.data('scope', scope);
-  console.log('$binder.entity()');
-  binder.entity(scope);
-
-  console.log('$binder.compile()');
-  binder.compile();
-
-  console.log('ControlBar.bind()');
-  controlBar.bind();
-
-  console.log('$users.fetchCurrentUser()');
-  function fetchCurrentUser() {
-    users.fetchCurrentUser(function(u) {
-      if (!u && document.find("[ng-auth=eager]").length) {
-        users.login();
-      }
-    });
-  }
-  fetchCurrentUser();
-
-  console.log('PopUp.bind()');
-  new PopUp(document).bind();
-
-  console.log('$binder.parseAnchor()');
-  binder.parseAnchor();
-
-  console.log('$binder.executeInit()');
-  binder.executeInit();
-
-  console.log('$binder.updateView()');
-  binder.updateView();
-
-  watcher.listener = bind(binder, binder.onUrlChange, watcher);
-  watcher.onUpdate = function(){alert("update");};
-  watcher.watch();
-  document.find("body").show();
-  console.log('ready()');
-};
-
-Loader.prototype.visualPost = function(delegate) {
-  var status = new Status(jQuery(document.body));
-  return function(request, delegateCallback) {
-    status.beginRequest(request);
-    var callback = function() {
-      status.endRequest();
-      try {
-        delegateCallback.apply(this, arguments);
-      } catch (e) {
-        alert(toJson(e));
-      }
+  },
+  
+  bindHtml: function() {
+    log('Loader.bindHtml()');
+    var watcher = new UrlWatcher(this.location);
+    var document = this.document;
+    var widgetFactory = new WidgetFactory(this.config.server, this.config.database);
+    var binder = new Binder(document[0], widgetFactory, watcher, this.config);
+    widgetFactory.onChangeListener = shiftBind(binder, binder.updateModel);
+    var controlBar = new ControlBar(document.find('body'), this.config.server);
+    var onUpdate = function(){binder.updateView();};
+    var server = this.config.database=="$MEMORY" ?
+        new FrameServer(this.window) :
+        new Server(this.config.server, jQuery.getScript);
+    server = new VisualServer(server, new Status(jQuery(document.body)), onUpdate);
+    var users = new Users(server, controlBar);
+    var databasePath = '/data/' + this.config.database;
+    var post = function(request, callback){
+      server.request("POST", databasePath, request, callback);
     };
-    delegate(request, callback);
-  };
-};
-
-Loader.prototype.configureLogging = function() {
-  var url = window.location.href + '#';
-  url = url.split('#')[1];
-  var config = {
-    debug : null
-  };
-  var configs = url.split('&');
-  for ( var i = 0; i < configs.length; i++) {
-    var part = (configs[i] + '=').split('=');
-    config[part[0]] = part[1];
-  }
-  if (config.debug == 'console') {
-    consoleNode = document.createElement("div");
-    consoleNode.id = 'ng-console';
-    document.getElementsByTagName('body')[0].appendChild(consoleNode);
-    console.log = function() {
-      consoleLog('ng-console-info', arguments);
+    var datastore = new DataStore(post, users, binder.anchor);
+    binder.updateListeners.push(function(){datastore.flush();});
+    var scope = new Scope( {
+      '$anchor' : binder.anchor,
+      '$binder' : binder,
+      '$config' : this.config,
+      '$console' : window.console,
+      '$datastore' : datastore,
+      '$save' : function(callback) {
+        datastore.saveScope(scope.state, callback, binder.anchor);
+      },
+      '$window' : window,
+      '$uid' : this.uid,
+      '$users' : users
+    }, "ROOT");
+  
+    document.data('scope', scope);
+    log('$binder.entity()');
+    binder.entity(scope);
+  
+    log('$binder.compile()');
+    binder.compile();
+  
+    log('ControlBar.bind()');
+    controlBar.bind();
+  
+    log('$users.fetchCurrentUser()');
+    function fetchCurrentUser() {
+      users.fetchCurrentUser(function(u) {
+        if (!u && document.find("[ng-auth=eager]").length) {
+          users.login();
+        }
+      });
+    }
+    fetchCurrentUser();
+  
+    log('PopUp.bind()');
+    new PopUp(document).bind();
+  
+    log('$binder.parseAnchor()');
+    binder.parseAnchor();
+  
+    log('$binder.executeInit()');
+    binder.executeInit();
+  
+    log('$binder.updateView()');
+    binder.updateView();
+  
+    watcher.listener = bind(binder, binder.onUrlChange, watcher);
+    watcher.onUpdate = function(){alert("update");};
+    watcher.watch();
+    document.find("body").show();
+    log('ready()');
+  },
+  
+  visualPost: function(delegate) {
+    var status = new Status(jQuery(document.body));
+    return function(request, delegateCallback) {
+      status.beginRequest(request);
+      var callback = function() {
+        status.endRequest();
+        try {
+          delegateCallback.apply(this, arguments);
+        } catch (e) {
+          alert(toJson(e));
+        }
+      };
+      delegate(request, callback);
     };
-    console.error = function() {
-      consoleLog('ng-console-error', arguments);
+  },
+  
+  configureLogging: function() {
+    var url = window.location.href + '#';
+    url = url.split('#')[1];
+    var config = {
+      debug : null
     };
+    var configs = url.split('&');
+    for ( var i = 0; i < configs.length; i++) {
+      var part = (configs[i] + '=').split('=');
+      config[part[0]] = part[1];
+    }
+    if (config.debug == 'console') {
+      consoleNode = document.createElement("div");
+      consoleNode.id = 'ng-console';
+      document.getElementsByTagName('body')[0].appendChild(consoleNode);
+      log = function() {
+        consoleLog('ng-console-info', arguments);
+      };
+      console.error = function() {
+        consoleLog('ng-console-error', arguments);
+      };
+    }
+  },
+  
+  loadCss: function(css) {
+    var cssTag = document.createElement('link');
+    cssTag.rel = "stylesheet";
+    cssTag.type = "text/css";
+    if (!css.match(/^http:/))
+      css = this.config.server + css;
+    cssTag.href = css;
+    this.head[0].appendChild(cssTag);
   }
 };
 
-Loader.prototype.loadCss = function(css) {
-  var cssTag = document.createElement('link');
-  cssTag.rel = "stylesheet";
-  cssTag.type = "text/css";
-  if (!css.match(/^http:/))
-    css = this.config.server + css;
-  cssTag.href = css;
-  this.head[0].appendChild(cssTag);
-};
-
-UrlWatcher = function(location) {
+function UrlWatcher(location) {
   this.location = location;
   this.delay = 25;
   this.setTimeout = function(fn, delay) {
@@ -482,47 +481,49 @@ UrlWatcher = function(location) {
   this.expectedUrl = location.href;
 };
 
-UrlWatcher.prototype.watch = function() {
-  var self = this;
-  var pull = function() {
-    if (self.expectedUrl !== self.location.href) {
-      var notify = self.location.hash.match(/^#\$iframe_notify=(.*)$/);
-      if (notify) {
-        if (!self.expectedUrl.match(/#/)) {
-          self.expectedUrl += "#";
+UrlWatcher.prototype = {
+  watch: function() {
+    var self = this;
+    var pull = function() {
+      if (self.expectedUrl !== self.location.href) {
+        var notify = self.location.hash.match(/^#\$iframe_notify=(.*)$/);
+        if (notify) {
+          if (!self.expectedUrl.match(/#/)) {
+            self.expectedUrl += "#";
+          }
+          self.location.href = self.expectedUrl;
+          var id = '_iframe_notify_' + notify[1];
+          var notifyFn = angularCallbacks[id];
+          delete angularCallbacks[id];
+          try {
+            (notifyFn||noop)();
+          } catch (e) {
+            alert(e);
+          }
+        } else {
+          self.listener(self.location.href);
+          self.expectedUrl = self.location.href;
         }
-        self.location.href = self.expectedUrl;
-        var id = '_iframe_notify_' + notify[1];
-        var notifyFn = callbacks[id];
-        delete callbacks[id];
-        try {
-          (notifyFn||noop)();
-        } catch (e) {
-          alert(e);
-        }
-      } else {
-        self.listener(self.location.href);
-        self.expectedUrl = self.location.href;
       }
-    }
-    self.setTimeout(pull, self.delay);
-  };
-  pull();
+      self.setTimeout(pull, self.delay);
+    };
+    pull();
+  },
+  
+  setUrl: function(url) {
+    var existingURL = window.location.href;
+    if (!existingURL.match(/#/))
+      existingURL += '#';
+    if (existingURL != url)
+      window.location.href = url;
+    this.existingURL = url;
+  },
+  
+  getUrl: function() {
+    return window.location.href;
+  }
 };
-
-UrlWatcher.prototype.setUrl = function(url) {
-  var existingURL = window.location.href;
-  if (!existingURL.match(/#/))
-    existingURL += '#';
-  if (existingURL != url)
-    window.location.href = url;
-  this.existingURL = url;
-};
-
-UrlWatcher.prototype.getUrl = function() {
-  return window.location.href;
-};
-
+  
 angular['compile'] = function(root, config) {
   config = config || {};
   var defaults = {
@@ -539,14 +540,11 @@ angular['compile'] = function(root, config) {
     'set':function(){return scope.set.apply(scope, arguments);},
     'get':function(){return scope.get.apply(scope, arguments);}
   };
-};
-
-angular['Global'] = {
+};var angularGlobal = {
   'typeOf':function(obj){
+    if (obj === null) return "null";
     var type = typeof obj;
-    switch(type) {
-    case "object":
-      if (obj === null) return "null";
+    if (type == "object") {
       if (obj instanceof Array) return "array";
       if (obj instanceof Date) return "date";
       if (obj.nodeType == 1) return "element";
@@ -555,9 +553,9 @@ angular['Global'] = {
   }
 };
 
-angular['Collection'] = {};
-angular['Object'] = {};
-angular['Array'] = {
+var angularCollection = {};
+var angularObject = {};
+var angularArray = {
   'includeIf':function(array, value, condition) {
     var index = _.indexOf(array, value);
     if (condition) {
@@ -720,7 +718,7 @@ angular['Array'] = {
     var comparator = function(o1, o2){
       for ( var i = 0; i < expression.length; i++) {
         var comp = expression[i](o1, o2);
-        if (comp != 0) return comp;
+        if (comp !== 0) return comp;
       }
       return 0;
     };
@@ -740,7 +738,7 @@ angular['Array'] = {
         ascending = $.charAt(0) == '+';
         index = i;
         return true;
-      };
+      }
     });
     if (index >= 0) {
       predicate.splice(index, 1);
@@ -771,7 +769,8 @@ angular['Array'] = {
     return array;
   }
 };
-angular['String'] = {
+
+var angularString = {
   'quote':function(string) {
     return '"' + string.replace(/\\/g, '\\\\').
                         replace(/"/g, '\\"').
@@ -808,7 +807,8 @@ angular['String'] = {
     return string;
   }
 };
-angular['Date'] = {
+
+var angularDate = {
     'toString':function(date){
       function pad(n) { return n < 10 ? "0" + n : n; }
       return  (date.getUTCFullYear()) + '-' +
@@ -819,7 +819,8 @@ angular['Date'] = {
         pad(date.getUTCSeconds()) + 'Z';
     }
   };
-angular['Function'] = {
+
+var angularFunction = {
   'compile':function(expression) {
     if (_.isFunction(expression)){
       return expression;
@@ -836,27 +837,29 @@ angular['Function'] = {
 };
 
 (function(){
-  function extend(dst, src, names){
-    _.extend(dst, src);
-    _.each((names||[]), function(name){
-      dst[name] = _[name];
+  function define(dst, chain, names){
+    foreach(chain, function(parent){
+      extend(angular[dst], parent);
     });
-  };
-  extend(angular['Global'], {}, 
+    foreach(names, function(name){
+      angular[dst][name] = _[name];
+    });
+  }
+  define('Global', [angularGlobal],
       ['extend', 'clone','isEqual', 
        'isElement', 'isArray', 'isFunction', 'isUndefined']);
-  extend(angular['Collection'], angular['Global'], 
+  define('Collection', [angularGlobal, angularCollection], 
       ['each', 'map', 'reduce', 'reduceRight', 'detect', 
        'select', 'reject', 'all', 'any', 'include', 
        'invoke', 'pluck', 'max', 'min', 'sortBy', 
        'sortedIndex', 'toArray', 'size']);
-  extend(angular['Array'], angular['Collection'], 
+  define('Array', [angularGlobal, angularCollection], 
       ['first', 'last', 'compact', 'flatten', 'without', 
        'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
-  extend(angular['Object'], angular['Collection'],
+  define('Object', [angularGlobal, angularCollection],
       ['keys', 'values']);
-  extend(angular['String'], angular['Global']);
-  extend(angular['Function'], angular['Global'],
+  define('String', [angularGlobal]);
+  define('Function', [angularGlobal],
       ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
 })();// Copyright (C) 2009 BRAT Tech LLC
 Binder = function(doc, widgetFactory, urlWatcher, config) {
@@ -917,16 +920,16 @@ Binder.prototype.parseAnchor = function(url) {
   var anchor = url.substring(anchorIndex + 1);
 
   var anchorQuery = this.parseQueryString(anchor);
-  jQuery.each(self.anchor, function(key, newValue) {
+  foreach(self.anchor, function(newValue, key) {
     delete self.anchor[key];
   });
-  jQuery.each(anchorQuery, function(key, newValue) {
+  foreach(anchorQuery, function(newValue, key) {
     self.anchor[key] = newValue;
   });
 };
 
 Binder.prototype.onUrlChange = function (url) {
-  console.log("URL change detected", url);
+  log("URL change detected", url);
   this.parseAnchor(url);
   this.updateView();
 };
@@ -1112,7 +1115,7 @@ Binder.prototype.precompileNode = function(node, path, factories) {
     }
   }
 
-  if (!node.getAttribute) console.log(node);
+  if (!node.getAttribute) log(node);
   var repeaterExpression = node.getAttribute('ng-repeat');
   if (repeaterExpression) {
     node.removeAttribute('ng-repeat');
@@ -1262,7 +1265,7 @@ ControlBar.prototype.doTemplate = function (path) {
   callbacks["_iframe_notify_" + id] = function() {
     loginView.dialog("destroy");
     loginView.remove();
-    jQuery.each(self.callbacks, function(i, callback){
+    foreach(self.callbacks, function(callback){
       callback();
     });
     self.callbacks = [];
@@ -1322,7 +1325,7 @@ DataStore.prototype.loadMany = function(entity, ids, callback) {
   var self=this;
   var list = [];
   var callbackCount = 0;
-  jQuery.each(ids, function(i, id){
+  foreach(ids, function(id){
     list.push(self.load(entity(), id, function(){
       callbackCount++;
       if (callbackCount == ids.length) {
@@ -1415,9 +1418,9 @@ DataStore.prototype.flush = function() {
   var self = this;
   var bulkRequest = this.bulkRequest;
   this.bulkRequest = [];
-  console.log('REQUEST:', bulkRequest);
+  log('REQUEST:', bulkRequest);
   function callback(code, bulkResponse){
-    console.log('RESPONSE[' + code + ']: ', bulkResponse);
+    log('RESPONSE[' + code + ']: ', bulkResponse);
     if(bulkResponse.$status_code == 401) {
       self.users.login(function(){
         self.post(bulkRequest, callback);
@@ -1498,7 +1501,7 @@ DataStore.prototype.documentCountsByUser = function(){
   var counts = {};
   var self = this;
   self.post([["GET", "$users"]], function(code, response){
-    jQuery.each(response[0], function(key, value){
+    foreach(response[0], function(value, key){
       counts[key] = value;
     });
   });
@@ -1509,7 +1512,7 @@ DataStore.prototype.userDocumentIdsByEntity = function(user){
   var ids = {};
   var self = this;
   self.post([["GET", "$users/" + user]], function(code, response){
-    jQuery.each(response[0], function(key, value){
+    foreach(response[0], function(value, key){
       ids[key] = value;
     });
   });
@@ -1613,14 +1616,14 @@ DataStore.prototype.join = function(join){
 };
 // Copyright (C) 2009 BRAT Tech LLC
 
-angular.filter.Meta = function(obj){
+angularFilter.Meta = function(obj){
   if (obj) {
     for ( var key in obj) {
       this[key] = obj[key];
     }
   }
 };
-angular.filter.Meta.get = function(obj, attr){
+angularFilter.Meta.get = function(obj, attr){
   attr = attr || 'text';
   switch(typeof obj) {
   case "string":
@@ -1635,272 +1638,283 @@ angular.filter.Meta.get = function(obj, attr){
   }
 };
 
-angular.filter['currency'] = function(amount){
-  jQuery(this.element).toggleClass('ng-format-negative', amount < 0);
-  return '$' + angular.filter.number.apply(this, [amount, 2]);
-};
+var angularFilterGoogleChartApi;
 
-angular.filter.number = function(amount, fractionSize){
-  if (isNaN(amount) || !isFinite(amount)) {
-    return '';
-  }
-  fractionSize = typeof fractionSize == 'undefined' ? 2 : fractionSize;
-  var isNegative = amount < 0;
-  amount = Math.abs(amount);
-  var pow = Math.pow(10, fractionSize);
-  var text = "" + Math.round(amount * pow);
-  var whole = text.substring(0, text.length - fractionSize);
-  whole = whole || '0';
-  var frc = text.substring(text.length - fractionSize);
-  text = isNegative ? '-' : '';
-  for (var i = 0; i < whole.length; i++) {
-    if ((whole.length - i)%3 === 0 && i !== 0) {
-      text += ',';
+foreach({
+  'currency': function(amount){
+    jQuery(this.element).toggleClass('ng-format-negative', amount < 0);
+    return '$' + angularFilter['number'].apply(this, [amount, 2]);
+  },
+  
+  'number': function(amount, fractionSize){
+    if (isNaN(amount) || !isFinite(amount)) {
+      return '';
     }
-    text += whole.charAt(i);
-  }
-  if (fractionSize > 0) {
-    for (var j = frc.length; j < fractionSize; j++) {
-      frc += '0';
+    fractionSize = typeof fractionSize == 'undefined' ? 2 : fractionSize;
+    var isNegative = amount < 0;
+    amount = Math.abs(amount);
+    var pow = Math.pow(10, fractionSize);
+    var text = "" + Math.round(amount * pow);
+    var whole = text.substring(0, text.length - fractionSize);
+    whole = whole || '0';
+    var frc = text.substring(text.length - fractionSize);
+    text = isNegative ? '-' : '';
+    for (var i = 0; i < whole.length; i++) {
+      if ((whole.length - i)%3 === 0 && i !== 0) {
+        text += ',';
+      }
+      text += whole.charAt(i);
     }
-    text += '.' + frc.substring(0, fractionSize);
-  }
-  return text;
-};
-
-angular.filter.date = function(amount) {
-};
-
-angular.filter.json = function(object) {
-  jQuery(this.element).addClass("ng-monospace");
-  return toJson(object, true);
-};
-
-angular.filter.trackPackage = function(trackingNo, noMatch) {
-  trackingNo = trim(trackingNo);
-  var tNo = trackingNo.replace(/ /g, '');
-  var MATCHERS = angular.filter.trackPackage.MATCHERS;
-  for ( var i = 0; i < MATCHERS.length; i++) {
-    var carrier = MATCHERS[i];
-    for ( var j = 0; j < carrier.regexp.length; j++) {
-      var regexp = carrier.regexp[j];
-      if (regexp.test(tNo)) {
-        var text = carrier.name + ": " + trackingNo;
-        var url = carrier.url + trackingNo;
-        return new angular.filter.Meta({
-          text:text,
-          url:url,
-          html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
-          trackingNo:trackingNo});
+    if (fractionSize > 0) {
+      for (var j = frc.length; j < fractionSize; j++) {
+        frc += '0';
+      }
+      text += '.' + frc.substring(0, fractionSize);
+    }
+    return text;
+  },
+  
+  'date': function(amount) {
+  },
+  
+  'json': function(object) {
+    jQuery(this.element).addClass("ng-monospace");
+    return toJson(object, true);
+  },
+  
+  'trackPackage': (function(){
+    var MATCHERS = [
+      { name: "UPS",
+        url: "http://wwwapps.ups.com/WebTracking/processInputRequest?sort_by=status&tracknums_displayed=1&TypeOfInquiryNumber=T&loc=en_US&track.x=0&track.y=0&InquiryNumber1=",
+        regexp: [
+          /^1Z[0-9A-Z]{16}$/i]},
+      { name: "FedEx",
+        url: "http://www.fedex.com/Tracking?tracknumbers=",
+        regexp: [
+          /^96\d{10}?$/i,
+          /^96\d{17}?$/i,
+          /^96\d{20}?$/i,
+          /^\d{15}$/i,
+          /^\d{12}$/i]},
+      { name: "USPS",
+        url: "http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?origTrackNum=",
+        regexp: [
+          /^(91\d{20})$/i,
+          /^(91\d{18})$/i]}];
+    return function(trackingNo, noMatch) {
+      trackingNo = trim(trackingNo);
+      var tNo = trackingNo.replace(/ /g, '');
+      var returnValue;
+      foreach(MATCHERS, function(carrier){
+        foreach(carrier.regexp, function(regexp){
+          if (regexp.test(tNo)) {
+            var text = carrier.name + ": " + trackingNo;
+            var url = carrier.url + trackingNo;
+            returnValue = new angularFilter.Meta({
+              text:text,
+              url:url,
+              html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
+              trackingNo:trackingNo});
+            _.breakLoop();
+          }
+        });
+        if (returnValue) _.breakLoop();
+      });
+      if (returnValue) 
+        return returnValue;
+      else if (trackingNo)
+        return noMatch || new angularFilter.Meta({text:trackingNo + " is not recognized"});
+      else
+        return null;
+    };})(),
+  
+  'link': function(obj, title) {
+    var text = title || angularFilter.Meta.get(obj);
+    var url = angularFilter.Meta.get(obj, "url") || angularFilter.Meta.get(obj);
+    if (url) {
+      if (angular.validator.email(url) === null) {
+        url = "mailto:" + url;
+      }
+      var html = '<a href="' + escapeHtml(url) + '">' + text + '</a>';
+      return new angularFilter.Meta({text:text, url:url, html:html});
+    }
+    return obj;
+  },
+  
+  
+  'bytes': (function(){
+    var SUFFIX = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    return function(size) {
+      if(size === null) return "";
+    
+      var suffix = 0;
+      while (size > 1000) {
+        size = size / 1024;
+        suffix++;
+      }
+      var txt = "" + size;
+      var dot = txt.indexOf('.');
+      if (dot > -1 && dot + 2 < txt.length) {
+        txt = txt.substring(0, dot + 2);
+      }
+      return txt + " " + SUFFIX[suffix];
+    };
+  })(),
+  
+  'image': function(obj, width, height) {
+    if (obj && obj.url) {
+      var style = "";
+      if (width) {
+        style = ' style="max-width: ' + width +
+                'px; max-height: ' + (height || width) + 'px;"';
+      }
+      return new angularFilter.Meta({url:obj.url, text:obj.url,
+        html:'<img src="'+obj.url+'"' + style + '/>'});
+    }
+    return null;
+  },
+  
+  'lowercase': function (obj) {
+    var text = angularFilter.Meta.get(obj);
+    return text ? ("" + text).toLowerCase() : text;
+  },
+  
+  'uppercase': function (obj) {
+    var text = angularFilter.Meta.get(obj);
+    return text ? ("" + text).toUpperCase() : text;
+  },
+  
+  'linecount': function (obj) {
+    var text = angularFilter.Meta.get(obj);
+    if (text==='' || !text) return 1;
+    return text.split(/\n|\f/).length;
+  },
+  
+  'if': function (result, expression) {
+    return expression ? result : undefined;
+  },
+  
+  'unless': function (result, expression) {
+    return expression ? undefined : result;
+  },
+  
+  'googleChartApi': extend(
+    function(type, data, width, height) {
+      data = data || {};
+      var chart = {
+          cht:type, 
+          chco:angularFilterGoogleChartApi.collect(data, 'color'),
+          chtt:angularFilterGoogleChartApi.title(data),
+          chdl:angularFilterGoogleChartApi.collect(data, 'label'),
+          chd:angularFilterGoogleChartApi.values(data),
+          chf:'bg,s,FFFFFF00'
+        };
+      if (_.isArray(data.xLabels)) {
+        chart.chxt='x';
+        chart.chxl='0:|' + data.xLabels.join('|');
+      }
+      return angularFilterGoogleChartApi['encode'](chart, width, height);
+    },
+    {
+      'values': function(data){
+        var seriesValues = [];
+        foreach(data.series||[], function(serie){
+          var values = [];
+          foreach(serie.values||[], function(value){
+            values.push(value);
+          });
+          seriesValues.push(values.join(','));
+        });
+        var values = seriesValues.join('|');
+        return values === "" ? null : "t:" + values;
+      },
+      
+      'title': function(data){
+        var titles = [];
+        var title = data.title || [];
+        foreach(_.isArray(title)?title:[title], function(text){
+          titles.push(encodeURIComponent(text));
+        });
+        return titles.join('|');
+      },
+      
+      'collect': function(data, key){
+        var outterValues = [];
+        var count = 0;
+        foreach(data.series||[], function(serie){
+          var innerValues = [];
+          var value = serie[key] || [];
+          foreach(_.isArray(value)?value:[value], function(color){
+              innerValues.push(encodeURIComponent(color));
+              count++;
+            });
+          outterValues.push(innerValues.join('|'));
+        });
+        return count?outterValues.join(','):null;
+      },
+      
+      'encode': function(params, width, height) {
+        width = width || 200;
+        height = height || width;
+        var url = "http://chart.apis.google.com/chart?";
+        var urlParam = [];
+        params.chs = width + "x" + height;
+        foreach(params, function(value, key){
+          if (value) {
+            urlParam.push(key + "=" + value);
+          }
+        });
+        urlParam.sort();
+        url += urlParam.join("&");
+        return new angularFilter.Meta({url:url,
+          html:'<img width="' + width + '" height="' + height + '" src="'+url+'"/>'});
       }
     }
-  }
-  if (trackingNo)
-    return noMatch ||
-      new angular.filter.Meta({text:trackingNo + " is not recognized"});
-  else
-    return null;
-};
-
-angular.filter.trackPackage.MATCHERS = [
-    { name: "UPS",
-      url: "http://wwwapps.ups.com/WebTracking/processInputRequest?sort_by=status&tracknums_displayed=1&TypeOfInquiryNumber=T&loc=en_US&track.x=0&track.y=0&InquiryNumber1=",
-      regexp: [
-        /^1Z[0-9A-Z]{16}$/i]},
-    { name: "FedEx",
-      url: "http://www.fedex.com/Tracking?tracknumbers=",
-      regexp: [
-        /^96\d{10}?$/i,
-        /^96\d{17}?$/i,
-        /^96\d{20}?$/i,
-        /^\d{15}$/i,
-        /^\d{12}$/i]},
-    { name: "USPS",
-      url: "http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?origTrackNum=",
-      regexp: [
-        /^(91\d{20})$/i,
-        /^(91\d{18})$/i]}];
-
-angular.filter.link = function(obj, title) {
-  var text = title || angular.filter.Meta.get(obj);
-  var url = angular.filter.Meta.get(obj, "url") || angular.filter.Meta.get(obj);
-  if (url) {
-    if (angular.validator.email(url) === null) {
-      url = "mailto:" + url;
+  ),
+  
+  
+  'qrcode': function(value, width, height) {
+    return angularFilterGoogleChartApi['encode']({cht:'qr', chl:encodeURIComponent(value)}, width, height);
+  },
+  'chart': {
+    pie:function(data, width, height) {
+      return angularFilterGoogleChartApi('p', data, width, height);
+    },
+    pie3d:function(data, width, height) {
+      return angularFilterGoogleChartApi('p3', data, width, height);
+    },
+    pieConcentric:function(data, width, height) {
+      return angularFilterGoogleChartApi('pc', data, width, height);
+    },
+    barHorizontalStacked:function(data, width, height) {
+      return angularFilterGoogleChartApi('bhs', data, width, height);
+    },
+    barHorizontalGrouped:function(data, width, height) {
+      return angularFilterGoogleChartApi('bhg', data, width, height);
+    },
+    barVerticalStacked:function(data, width, height) {
+      return angularFilterGoogleChartApi('bvs', data, width, height);
+    },
+    barVerticalGrouped:function(data, width, height) {
+      return angularFilterGoogleChartApi('bvg', data, width, height);
+    },
+    line:function(data, width, height) {
+      return angularFilterGoogleChartApi('lc', data, width, height);
+    },
+    sparkline:function(data, width, height) {
+      return angularFilterGoogleChartApi('ls', data, width, height);
+    },
+    scatter:function(data, width, height) {
+      return angularFilterGoogleChartApi('s', data, width, height);
     }
-    var html = '<a href="' + escapeHtml(url) + '">' + text + '</a>';
-    return new angular.filter.Meta({text:text, url:url, html:html});
+  },
+  
+  'html': function(html){
+    return new angularFilter.Meta({html:html});
   }
-  return obj;
-};
+}, function(v,k){angularFilter[k] = v;});
 
-
-angular.filter.bytes = function(size) {
-  if(size === null) return "";
-
-  var suffix = 0;
-  while (size > 1000) {
-    size = size / 1024;
-    suffix++;
-  }
-  var txt = "" + size;
-  var dot = txt.indexOf('.');
-  if (dot > -1 && dot + 2 < txt.length) {
-    txt = txt.substring(0, dot + 2);
-  }
-  return txt + " " + angular.filter.bytes.SUFFIX[suffix];
-};
-angular.filter.bytes.SUFFIX = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
-
-angular.filter.image = function(obj, width, height) {
-  if (obj && obj.url) {
-    var style = "";
-    if (width) {
-      style = ' style="max-width: ' + width +
-              'px; max-height: ' + (height || width) + 'px;"';
-    }
-    return new angular.filter.Meta({url:obj.url, text:obj.url,
-      html:'<img src="'+obj.url+'"' + style + '/>'});
-  }
-  return null;
-};
-
-angular.filter.lowercase = function (obj) {
-  var text = angular.filter.Meta.get(obj);
-  return text ? ("" + text).toLowerCase() : text;
-};
-
-angular.filter.uppercase = function (obj) {
-  var text = angular.filter.Meta.get(obj);
-  return text ? ("" + text).toUpperCase() : text;
-};
-
-angular.filter.linecount = function (obj) {
-  var text = angular.filter.Meta.get(obj);
-  if (text==='' || !text) return 1;
-  return text.split(/\n|\f/).length;
-};
-
-angular.filter['if'] = function (result, expression) {
-  return expression ? result : undefined;
-};
-
-angular.filter.unless = function (result, expression) {
-  return expression ? undefined : result;
-};
-
-angular.filter.googleChartApi = function(type, data, width, height) {
-  data = data || {};
-  var api = angular.filter.googleChartApi;
-  var chart = {
-      cht:type, 
-      chco:api.collect(data, 'color'),
-      chtt:api.title(data),
-      chdl:api.collect(data, 'label'),
-      chd:api.values(data),
-      chf:'bg,s,FFFFFF00'
-    };
-  if (_.isArray(data.xLabels)) {
-    chart.chxt='x';
-    chart.chxl='0:|' + data.xLabels.join('|');
-  }
-  return angular.filter.googleChartApi.encode(chart, width, height);
-};
-
-angular.filter.googleChartApi.values = function(data){
-  var seriesValues = [];
-  _.each(data.series||[], function(serie){
-    var values = [];
-    _.each(serie.values||[], function(value){
-      values.push(value);
-    });
-    seriesValues.push(values.join(','));
-  });
-  var values = seriesValues.join('|');
-  return values === "" ? null : "t:" + values;
-};
-
-angular.filter.googleChartApi.title = function(data){
-  var titles = [];
-  var title = data.title || [];
-  _.each(_.isArray(title)?title:[title], function(text){
-    titles.push(encodeURIComponent(text));
-  });
-  return titles.join('|');
-};
-
-angular.filter.googleChartApi.collect = function(data, key){
-  var outterValues = [];
-  var count = 0;
-  _.each(data.series||[], function(serie){
-    var innerValues = [];
-    var value = serie[key] || [];
-    _.each(_.isArray(value)?value:[value], function(color){
-        innerValues.push(encodeURIComponent(color));
-        count++;
-      });
-    outterValues.push(innerValues.join('|'));
-  });
-  return count?outterValues.join(','):null;
-};
-
-angular.filter.googleChartApi.encode= function(params, width, height) {
-  width = width || 200;
-  height = height || width;
-  var url = "http://chart.apis.google.com/chart?";
-  var urlParam = [];
-  params.chs = width + "x" + height;
-  for ( var key in params) {
-    var value = params[key];
-    if (value) {
-      urlParam.push(key + "=" + value);
-    }
-  }
-  urlParam.sort();
-  url += urlParam.join("&");
-  return new angular.filter.Meta({url:url, text:value,
-    html:'<img width="' + width + '" height="' + height + '" src="'+url+'"/>'});
-};
-
-angular.filter.qrcode = function(value, width, height) {
-  return angular.filter.googleChartApi.encode({cht:'qr', chl:encodeURIComponent(value)}, width, height);
-};
-angular.filter.chart = {
-  pie:function(data, width, height) {
-    return angular.filter.googleChartApi('p', data, width, height);
-  },
-  pie3d:function(data, width, height) {
-    return angular.filter.googleChartApi('p3', data, width, height);
-  },
-  pieConcentric:function(data, width, height) {
-    return angular.filter.googleChartApi('pc', data, width, height);
-  },
-  barHorizontalStacked:function(data, width, height) {
-    return angular.filter.googleChartApi('bhs', data, width, height);
-  },
-  barHorizontalGrouped:function(data, width, height) {
-    return angular.filter.googleChartApi('bhg', data, width, height);
-  },
-  barVerticalStacked:function(data, width, height) {
-    return angular.filter.googleChartApi('bvs', data, width, height);
-  },
-  barVerticalGrouped:function(data, width, height) {
-    return angular.filter.googleChartApi('bvg', data, width, height);
-  },
-  line:function(data, width, height) {
-    return angular.filter.googleChartApi('lc', data, width, height);
-  },
-  sparkline:function(data, width, height) {
-    return angular.filter.googleChartApi('ls', data, width, height);
-  },
-  scatter:function(data, width, height) {
-    return angular.filter.googleChartApi('s', data, width, height);
-  }
-};
-
-angular.filter.html = function(html){
-  return new angular.filter.Meta({html:html});
-};
+angularFilterGoogleChartApi = angularFilter['googleChartApi'];
 array = [].constructor;
 
 toJson = function(obj, pretty){
@@ -1920,7 +1934,7 @@ fromJson = function(json) {
     parser.assertAllConsumed();
     return expression();
   } catch (e) {
-    console.error("fromJson error: ", json, e);
+    error("fromJson error: ", json, e);
     throw e;
   }
 };
@@ -2925,7 +2939,7 @@ Scope.prototype.evalWidget = function(widget, expression, context, onSuccess, on
     }
     return true;
   } catch (e){
-    console.error('Eval Widget Error:', e);
+    error('Eval Widget Error:', e);
     var jsonError = toJson(e, true);
     widget.hasError = true;
     jQuery(widget.view).
@@ -2985,10 +2999,10 @@ Scope.prototype.addWatchListener = function(watchExpression, listener) {
 Scope.prototype.fireWatchers = function() {
   var self = this;
   var fired = false;
-  jQuery.each(this.watchListeners, function(name, watcher) {
+  foreach(this.watchListeners, function(watcher) {
     var value = self.eval(watcher.expression);
     if (value !== watcher.lastValue) {
-      jQuery.each(watcher.listeners, function(i, listener){
+      foreach(watcher.listeners, function(listener){
         listener(value, watcher.lastValue);
         fired = true;
       });
@@ -3013,7 +3027,7 @@ Server.prototype.base64url = function(txt) {
 
 Server.prototype.request = function(method, url, request, callback) {
   var requestId = this.uuid + (this.nextId++);
-  callbacks[requestId] = function(response) {
+  angularCallbacks[requestId] = function(response) {
     delete angular[requestId];
     callback(200, response);
   };
@@ -3104,84 +3118,86 @@ Users.prototype = {
 };
 // Copyright (C) 2009 BRAT Tech LLC
 
-angular.validator.regexp = function(value, regexp, msg) {
-  if (!value.match(regexp)) {
-    return msg ||
-      "Value does not match expected format " + regexp + ".";
-  } else {
-    return null;
-  }
-};
-
-angular.validator.number = function(value, min, max) {
-  var num = 1 * value;
-  if (num == value) {
-    if (typeof min != 'undefined' && num < min) {
-      return "Value can not be less than " + min + ".";
+foreach({
+  'regexp': function(value, regexp, msg) {
+    if (!value.match(regexp)) {
+      return msg ||
+        "Value does not match expected format " + regexp + ".";
+    } else {
+      return null;
     }
-    if (typeof min != 'undefined' && num > max) {
-      return "Value can not be greater than " + max + ".";
+  },
+  
+  'number': function(value, min, max) {
+    var num = 1 * value;
+    if (num == value) {
+      if (typeof min != 'undefined' && num < min) {
+        return "Value can not be less than " + min + ".";
+      }
+      if (typeof min != 'undefined' && num > max) {
+        return "Value can not be greater than " + max + ".";
+      }
+      return null;
+    } else {
+      return "Value is not a number.";
     }
-    return null;
-  } else {
-    return "Value is not a number.";
+  },
+  
+  'integer': function(value, min, max) {
+    var number = angularValidator['number'](value, min, max);
+    if (number === null && value != Math.round(value)) {
+      return "Value is not a whole number.";
+    }
+    return number;
+  },
+  
+  'date': function(value, min, max) {
+    if (value.match(/^\d\d?\/\d\d?\/\d\d\d\d$/)) {
+      return null;
+    }
+    return "Value is not a date. (Expecting format: 12/31/2009).";
+  },
+  
+  'ssn': function(value) {
+    if (value.match(/^\d\d\d-\d\d-\d\d\d\d$/)) {
+      return null;
+    }
+    return "SSN needs to be in 999-99-9999 format.";
+  },
+  
+  'email': function(value) {
+    if (value.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)) {
+      return null;
+    }
+    return "Email needs to be in username@host.com format.";
+  },
+  
+  'phone': function(value) {
+    if (value.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/)) {
+      return null;
+    }
+    if (value.match(/^\+\d{2,3} (\(\d{1,5}\))?[\d ]+\d$/)) {
+      return null;
+    }
+    return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
+  },
+  
+  'url': function(value) {
+    if (value.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/)) {
+      return null;
+    }
+    return "URL needs to be in http://server[:port]/path format.";
+  },
+  
+  'json': function(value) {
+    try {
+      fromJson(value);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
   }
-};
-
-angular.validator.integer = function(value, min, max) {
-  var number = angular.validator.number(value, min, max);
-  if (number === null && value != Math.round(value)) {
-    return "Value is not a whole number.";
-  }
-  return number;
-};
-
-angular.validator.date = function(value, min, max) {
-  if (value.match(/^\d\d?\/\d\d?\/\d\d\d\d$/)) {
-    return null;
-  }
-  return "Value is not a date. (Expecting format: 12/31/2009).";
-};
-
-angular.validator.ssn = function(value) {
-  if (value.match(/^\d\d\d-\d\d-\d\d\d\d$/)) {
-    return null;
-  }
-  return "SSN needs to be in 999-99-9999 format.";
-};
-
-angular.validator.email = function(value) {
-  if (value.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)) {
-    return null;
-  }
-  return "Email needs to be in username@host.com format.";
-};
-
-angular.validator.phone = function(value) {
-  if (value.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/)) {
-    return null;
-  }
-  if (value.match(/^\+\d{2,3} (\(\d{1,5}\))?[\d ]+\d$/)) {
-    return null;
-  }
-  return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
-};
-
-angular.validator.url = function(value) {
-  if (value.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/)) {
-    return null;
-  }
-  return "URL needs to be in http://server[:port]/path format.";
-};
-
-angular.validator.json = function(value) {
-  try {
-    fromJson(value);
-    return null;
-  } catch (e) {
-    return e.toString();
-  }
-};
+}, function(v,k) {angularValidator[k] = v;});
 // Copyright (C) 2009 BRAT Tech LLC
 
 
@@ -3709,7 +3725,7 @@ BindAttrUpdater.prototype.updateView = function(scope) {
             attrValues.push(value);
         } catch (e) {
           this.hasError = true;
-          console.error('BindAttrUpdater', e);
+          error('BindAttrUpdater', e);
           var jsonError = toJson(e, true);
           attrValues.push('[' + jsonError + ']');
           jNode.
@@ -3841,7 +3857,7 @@ RepeaterUpdater.prototype.updateView = function(scope) {
     var keyExp = this.keyExp;
     var valueExp = this.valueExp;
     var i = 0;
-    jQuery.each(iterator, function(key, value){
+    foreach(iterator, function(value, key){
       if (i < childrenLength) {
         // reuse children
         child = self.children[i];

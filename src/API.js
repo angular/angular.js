@@ -1,9 +1,8 @@
-angular['Global'] = {
+var angularGlobal = {
   'typeOf':function(obj){
+    if (obj === null) return "null";
     var type = typeof obj;
-    switch(type) {
-    case "object":
-      if (obj === null) return "null";
+    if (type == "object") {
       if (obj instanceof Array) return "array";
       if (obj instanceof Date) return "date";
       if (obj.nodeType == 1) return "element";
@@ -12,9 +11,9 @@ angular['Global'] = {
   }
 };
 
-angular['Collection'] = {};
-angular['Object'] = {};
-angular['Array'] = {
+var angularCollection = {};
+var angularObject = {};
+var angularArray = {
   'includeIf':function(array, value, condition) {
     var index = _.indexOf(array, value);
     if (condition) {
@@ -177,7 +176,7 @@ angular['Array'] = {
     var comparator = function(o1, o2){
       for ( var i = 0; i < expression.length; i++) {
         var comp = expression[i](o1, o2);
-        if (comp != 0) return comp;
+        if (comp !== 0) return comp;
       }
       return 0;
     };
@@ -197,7 +196,7 @@ angular['Array'] = {
         ascending = $.charAt(0) == '+';
         index = i;
         return true;
-      };
+      }
     });
     if (index >= 0) {
       predicate.splice(index, 1);
@@ -228,7 +227,8 @@ angular['Array'] = {
     return array;
   }
 };
-angular['String'] = {
+
+var angularString = {
   'quote':function(string) {
     return '"' + string.replace(/\\/g, '\\\\').
                         replace(/"/g, '\\"').
@@ -265,7 +265,8 @@ angular['String'] = {
     return string;
   }
 };
-angular['Date'] = {
+
+var angularDate = {
     'toString':function(date){
       function pad(n) { return n < 10 ? "0" + n : n; }
       return  (date.getUTCFullYear()) + '-' +
@@ -276,7 +277,8 @@ angular['Date'] = {
         pad(date.getUTCSeconds()) + 'Z';
     }
   };
-angular['Function'] = {
+
+var angularFunction = {
   'compile':function(expression) {
     if (_.isFunction(expression)){
       return expression;
@@ -292,27 +294,30 @@ angular['Function'] = {
   }
 };
 
-(function(){
-  function extend(dst, src, names){
-    _.extend(dst, src);
-    _.each((names||[]), function(name){
-      dst[name] = _[name];
-    });
-  };
-  extend(angular['Global'], {}, 
-      ['extend', 'clone','isEqual', 
-       'isElement', 'isArray', 'isFunction', 'isUndefined']);
-  extend(angular['Collection'], angular['Global'], 
-      ['each', 'map', 'reduce', 'reduceRight', 'detect', 
-       'select', 'reject', 'all', 'any', 'include', 
-       'invoke', 'pluck', 'max', 'min', 'sortBy', 
-       'sortedIndex', 'toArray', 'size']);
-  extend(angular['Array'], angular['Collection'], 
-      ['first', 'last', 'compact', 'flatten', 'without', 
-       'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
-  extend(angular['Object'], angular['Collection'],
-      ['keys', 'values']);
-  extend(angular['String'], angular['Global']);
-  extend(angular['Function'], angular['Global'],
-      ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
-})();
+function defineApi(dst, chain, underscoreNames){
+  var lastChain = _.last(chain);
+  foreach(underscoreNames, function(name){
+    lastChain[name] = _[name];
+  });
+  angular[dst] = angular[dst] || {};
+  foreach(chain, function(parent){
+    extend(angular[dst], parent);
+  });
+}
+defineApi('Global', [angularGlobal],
+    ['extend', 'clone','isEqual', 
+     'isElement', 'isArray', 'isFunction', 'isUndefined']);
+defineApi('Collection', [angularGlobal, angularCollection], 
+    ['each', 'map', 'reduce', 'reduceRight', 'detect', 
+     'select', 'reject', 'all', 'any', 'include', 
+     'invoke', 'pluck', 'max', 'min', 'sortBy', 
+     'sortedIndex', 'toArray', 'size']);
+defineApi('Array', [angularGlobal, angularCollection, angularArray], 
+    ['first', 'last', 'compact', 'flatten', 'without', 
+     'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
+defineApi('Object', [angularGlobal, angularCollection, angularObject],
+    ['keys', 'values']);
+defineApi('String', [angularGlobal, angularString], []);
+defineApi('Date', [angularGlobal, angularDate], []);
+defineApi('Function', [angularGlobal, angularCollection, angularFunction],
+    ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);

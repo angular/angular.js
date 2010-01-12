@@ -52,7 +52,7 @@ ControlBar.prototype.doTemplate = function (path) {
   callbacks["_iframe_notify_" + id] = function() {
     loginView.dialog("destroy");
     loginView.remove();
-    jQuery.each(self.callbacks, function(i, callback){
+    foreach(self.callbacks, function(callback){
       callback();
     });
     self.callbacks = [];

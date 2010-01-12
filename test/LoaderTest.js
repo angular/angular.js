@@ -50,8 +50,8 @@ UrlWatcherTest.prototype.testItShouldFireOnUpdateEventWhenSpecialURLSet = functi
   expectAsserts(2);
   var location = {href:"http://server", hash:"#$iframe_notify=1234"};
   var watcher = new UrlWatcher(location);
-  callbacks._iframe_notify_1234 = function () {
-    assertEquals("undefined", typeof callbacks._iframe_notify_1234);
+  angular.callbacks._iframe_notify_1234 = function () {
+    assertEquals("undefined", typeof angularCallbacks._iframe_notify_1234);
     assertEquals("http://server2#", location.href);
   };
   watcher.delay = 1;

@@ -41,7 +41,7 @@ DataStore.prototype.loadMany = function(entity, ids, callback) {
   var self=this;
   var list = [];
   var callbackCount = 0;
-  jQuery.each(ids, function(i, id){
+  foreach(ids, function(id){
     list.push(self.load(entity(), id, function(){
       callbackCount++;
       if (callbackCount == ids.length) {
@@ -50,7 +50,7 @@ DataStore.prototype.loadMany = function(entity, ids, callback) {
     }));
   });
   return list;
-}
+};
 
 DataStore.prototype.loadOrCreate = function(instance, id, callback) {
   var self=this;
@@ -134,9 +134,9 @@ DataStore.prototype.flush = function() {
   var self = this;
   var bulkRequest = this.bulkRequest;
   this.bulkRequest = [];
-  console.log('REQUEST:', bulkRequest);
+  log('REQUEST:', bulkRequest);
   function callback(code, bulkResponse){
-    console.log('RESPONSE[' + code + ']: ', bulkResponse);
+    log('RESPONSE[' + code + ']: ', bulkResponse);
     if(bulkResponse.$status_code == 401) {
       self.users.login(function(){
         self.post(bulkRequest, callback);
@@ -147,9 +147,9 @@ DataStore.prototype.flush = function() {
       for ( var i = 0; i < bulkResponse.length; i++) {
         var response = bulkResponse[i];
         var request = bulkRequest[i];
-        var code = response.$status_code;
-        if(code) {
-          if(code == 403) {
+        var responseCode = response.$status_code;
+        if(responseCode) {
+          if(responseCode == 403) {
             self.users.notAuthorized();
           } else {
             request.$$failure(response);
@@ -217,7 +217,7 @@ DataStore.prototype.documentCountsByUser = function(){
   var counts = {};
   var self = this;
   self.post([["GET", "$users"]], function(code, response){
-    jQuery.each(response[0], function(key, value){
+    foreach(response[0], function(value, key){
       counts[key] = value;
     });
   });
@@ -228,7 +228,7 @@ DataStore.prototype.userDocumentIdsByEntity = function(user){
   var ids = {};
   var self = this;
   self.post([["GET", "$users/" + user]], function(code, response){
-    jQuery.each(response[0], function(key, value){
+    foreach(response[0], function(value, key){
       ids[key] = value;
     });
   });

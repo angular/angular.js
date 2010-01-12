@@ -14,7 +14,7 @@ Server.prototype.base64url = function(txt) {
 
 Server.prototype.request = function(method, url, request, callback) {
   var requestId = this.uuid + (this.nextId++);
-  callbacks[requestId] = function(response) {
+  angularCallbacks[requestId] = function(response) {
     delete angular[requestId];
     callback(200, response);
   };
