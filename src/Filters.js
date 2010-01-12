@@ -1,5 +1,3 @@
-// Copyright (C) 2009 BRAT Tech LLC
-
 angularFilter.Meta = function(obj){
   if (obj) {
     for ( var key in obj) {

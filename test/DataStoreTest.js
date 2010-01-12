@@ -17,9 +17,8 @@ DataStoreTest.prototype.testSavePostsToServer = function(){
     response.$version = "2";
     callback(200, [response]);
   };
-  var model;
   var datastore = new DataStore(post);
-  model = datastore.entity('abc', {name: "value"})();
+  var model = datastore.entity('abc', {name: "value"})();
   model.$id = "123";
   model.$version = "1";
 

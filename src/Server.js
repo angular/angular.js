@@ -1,6 +1,4 @@
-// Copyright (C) 2008,2009 BRAT Tech LLC
-
-Server = function(url, getScript) {
+function Server(url, getScript) {
   this.url = url;
   this.nextId = 0;
   this.getScript = getScript;
@@ -8,27 +6,29 @@ Server = function(url, getScript) {
   this.maxSize = 1800;
 };
 
-Server.prototype.base64url = function(txt) {
-  return Base64.encode(txt);
-};
-
-Server.prototype.request = function(method, url, request, callback) {
-  var requestId = this.uuid + (this.nextId++);
-  angularCallbacks[requestId] = function(response) {
-    delete angular[requestId];
-    callback(200, response);
-  };
-  var payload = {u:url, m:method, p:request};
-  payload = this.base64url(toJson(payload));
-  var totalPockets = Math.ceil(payload.length / this.maxSize);
-  var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
-  for ( var pocketNo = 0; pocketNo < totalPockets; pocketNo++) {
-    var pocket = payload.substr(pocketNo * this.maxSize, this.maxSize);
-    this.getScript(baseUrl + (pocketNo+1) + "?h=" + pocket, noop);
+Server.prototype = {
+  base64url: function(txt) {
+    return Base64.encode(txt);
+  },
+  
+  request: function(method, url, request, callback) {
+    var requestId = this.uuid + (this.nextId++);
+    angularCallbacks[requestId] = function(response) {
+      delete angular[requestId];
+      callback(200, response);
+    };
+    var payload = {u:url, m:method, p:request};
+    payload = this.base64url(toJson(payload));
+    var totalPockets = Math.ceil(payload.length / this.maxSize);
+    var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
+    for ( var pocketNo = 0; pocketNo < totalPockets; pocketNo++) {
+      var pocket = payload.substr(pocketNo * this.maxSize, this.maxSize);
+      this.getScript(baseUrl + (pocketNo+1) + "?h=" + pocket, noop);
+    }
   }
 };
 
-FrameServer = function(frame) {
+function FrameServer(frame) {
   this.frame = frame;
 };
 FrameServer.PREFIX = "$DATASET:";
@@ -46,7 +46,7 @@ FrameServer.prototype = {
 };
 
 
-VisualServer = function(delegate, status, update) {
+function VisualServer(delegate, status, update) {
   this.delegate = delegate;
   this.update = update;
   this.status = status;

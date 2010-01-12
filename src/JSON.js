@@ -1,16 +1,16 @@
 array = [].constructor;
 
-toJson = function(obj, pretty){
+function toJson(obj, pretty){
   var buf = [];
   toJsonArray(buf, obj, pretty ? "\n  " : null);
   return buf.join('');
 };
 
-toPrettyJson = function(obj) {
+function toPrettyJson(obj)  {
   return toJson(obj, true);
 };
 
-fromJson = function(json) {
+function fromJson(json) {
   try {
     var parser = new Parser(json, true);
     var expression =  parser.primary();
@@ -22,8 +22,10 @@ fromJson = function(json) {
   }
 };
 
+angular['toJson'] = toJson;
+angular['fromJson'] = fromJson;
 
-toJsonArray = function(buf, obj, pretty){
+function toJsonArray(buf, obj, pretty){
   var type = typeof obj;
   if (obj === null) {
     buf.push("null");

@@ -1,5 +1,3 @@
-// Copyright (C) 2009 BRAT Tech LLC
-
 foreach({
   'regexp': function(value, regexp, msg) {
     if (!value.match(regexp)) {

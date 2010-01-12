@@ -1,3 +1,26 @@
+/**
+ * The MIT License
+ * 
+ * Copyright (c) 2010 Adam Abrons and Misko Hevery http://getangular.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 (function(window, document){
 /**
 *
@@ -140,11 +163,7 @@ var Base64 = {
 		return string;
 	}
 
-};// Copyright (C) 2008,2009 BRAT Tech LLC
-
-// IE compatibility
-
-if (typeof document.getAttribute == 'undefined')
+};if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 if (typeof Node == 'undefined') {
   Node = {
@@ -163,16 +182,16 @@ if (typeof Node == 'undefined') {
   };
 }
 
-function noop() {};
+function noop() {}
+if (!window['console']) window['console']={'log':noop, 'error':noop};
 
 var consoleNode,
     foreach          = _.each,
     extend           = _.extend,
-    console          = window['console'] || ({'log':noop, 'error':noop }),
     jQuery           = window['jQuery'],
     msie             = jQuery['browser']['msie'],
-    log              = function(){console.log.apply(this, arguments);},
-    error            = function(){console.error.apply(this, arguments);},
+    log              = function(){window['console']['log'].apply(this, arguments);},
+    error            = function(){window['console']['error'].apply(this, arguments);},
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
@@ -180,6 +199,7 @@ var consoleNode,
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments); 
       });
+    
 
 function consoleLog(level, objs) {
   var log = document.createElement("div");
@@ -212,7 +232,7 @@ function isLeafNode (node) {
   default:
     return false;
   }
-};
+}
 
 function setHtml(node, html) {
   if (isLeafNode(node)) {
@@ -233,14 +253,14 @@ function escapeHtml(html) {
       replace(/&/g, '&amp;').
       replace(/</g, '&lt;').
       replace(/>/g, '&gt;');
-};
+}
 
 function escapeAttr(html) {
   if (!html || !html.replace)
     return html;
   return html.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g,
       '&quot;');
-};
+}
 
 function bind(_this, _function) {
   if (!_this)
@@ -250,7 +270,7 @@ function bind(_this, _function) {
   return function() {
     return _function.apply(_this, arguments);
   };
-};
+}
 
 function shiftBind(_this, _function) {
   return function() {
@@ -260,7 +280,7 @@ function shiftBind(_this, _function) {
     }
     return _function.apply(_this, args);
   };
-};
+}
 
 function outerHTML(node) {
   var temp = document.createElement('div');
@@ -268,18 +288,18 @@ function outerHTML(node) {
   var outerHTML = temp.innerHTML;
   temp.removeChild(node);
   return outerHTML;
-};
+}
 
 function trim(str) {
   return str.replace(/^ */, '').replace(/ *$/, '');
-};
+}
 
 function toBoolean(value) {
   var v = ("" + value).toLowerCase();
   if (v == 'f' || v == '0' || v == 'false' || v == 'no')
     value = false;
   return !!value;
-};
+}
 
 function merge(src, dst) {
   for ( var key in src) {
@@ -292,7 +312,7 @@ function merge(src, dst) {
       merge(src[key], value);
     }
   }
-};
+}
 
 // ////////////////////////////
 // Loader
@@ -303,7 +323,7 @@ function Loader(document, head, config) {
   this.head = jQuery(head);
   this.config = config;
   this.location = window.location;
-};
+}
 
 Loader.prototype = {
   load: function() {
@@ -479,7 +499,7 @@ function UrlWatcher(location) {
     return url;
   };
   this.expectedUrl = location.href;
-};
+}
 
 UrlWatcher.prototype = {
   watch: function() {
@@ -836,40 +856,41 @@ var angularFunction = {
   }
 };
 
-(function(){
-  function define(dst, chain, names){
-    foreach(chain, function(parent){
-      extend(angular[dst], parent);
-    });
-    foreach(names, function(name){
-      angular[dst][name] = _[name];
-    });
-  }
-  define('Global', [angularGlobal],
-      ['extend', 'clone','isEqual', 
-       'isElement', 'isArray', 'isFunction', 'isUndefined']);
-  define('Collection', [angularGlobal, angularCollection], 
-      ['each', 'map', 'reduce', 'reduceRight', 'detect', 
-       'select', 'reject', 'all', 'any', 'include', 
-       'invoke', 'pluck', 'max', 'min', 'sortBy', 
-       'sortedIndex', 'toArray', 'size']);
-  define('Array', [angularGlobal, angularCollection], 
-      ['first', 'last', 'compact', 'flatten', 'without', 
-       'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
-  define('Object', [angularGlobal, angularCollection],
-      ['keys', 'values']);
-  define('String', [angularGlobal]);
-  define('Function', [angularGlobal],
-      ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
-})();// Copyright (C) 2009 BRAT Tech LLC
-Binder = function(doc, widgetFactory, urlWatcher, config) {
+function defineApi(dst, chain, underscoreNames){
+  var lastChain = _.last(chain);
+  foreach(underscoreNames, function(name){
+    lastChain[name] = _[name];
+  });
+  angular[dst] = angular[dst] || {};
+  foreach(chain, function(parent){
+    extend(angular[dst], parent);
+  });
+}
+defineApi('Global', [angularGlobal],
+    ['extend', 'clone','isEqual', 
+     'isElement', 'isArray', 'isFunction', 'isUndefined']);
+defineApi('Collection', [angularGlobal, angularCollection], 
+    ['each', 'map', 'reduce', 'reduceRight', 'detect', 
+     'select', 'reject', 'all', 'any', 'include', 
+     'invoke', 'pluck', 'max', 'min', 'sortBy', 
+     'sortedIndex', 'toArray', 'size']);
+defineApi('Array', [angularGlobal, angularCollection, angularArray], 
+    ['first', 'last', 'compact', 'flatten', 'without', 
+     'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
+defineApi('Object', [angularGlobal, angularCollection, angularObject],
+    ['keys', 'values']);
+defineApi('String', [angularGlobal, angularString], []);
+defineApi('Date', [angularGlobal, angularDate], []);
+defineApi('Function', [angularGlobal, angularCollection, angularFunction],
+    ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
+function Binder(doc, widgetFactory, urlWatcher, config) {
   this.doc = doc;
   this.urlWatcher = urlWatcher;
   this.anchor = {};
   this.widgetFactory = widgetFactory;
   this.config = config || {};
   this.updateListeners = [];
-};
+}
 
 Binder.parseBindings = function(string) {
   var results = [];
@@ -902,325 +923,321 @@ Binder.binding = function(string) {
 };
 
 
-Binder.prototype.parseQueryString = function(query) {
-  var params = {};
-  query.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,
-      function (match, left, right) {
-        if (left) params[decodeURIComponent(left)] = decodeURIComponent(right);
-      });
-  return params;
-};
-
-Binder.prototype.parseAnchor = function(url) {
-  var self = this;
-  url = url || this.urlWatcher.getUrl();
-
-  var anchorIndex = url.indexOf('#');
-  if (anchorIndex < 0) return;
-  var anchor = url.substring(anchorIndex + 1);
-
-  var anchorQuery = this.parseQueryString(anchor);
-  foreach(self.anchor, function(newValue, key) {
-    delete self.anchor[key];
-  });
-  foreach(anchorQuery, function(newValue, key) {
-    self.anchor[key] = newValue;
-  });
-};
-
-Binder.prototype.onUrlChange = function (url) {
-  log("URL change detected", url);
-  this.parseAnchor(url);
-  this.updateView();
-};
-
-Binder.prototype.updateAnchor = function() {
-  var url = this.urlWatcher.getUrl();
-  var anchorIndex = url.indexOf('#');
-  if (anchorIndex > -1)
-    url = url.substring(0, anchorIndex);
-  url += "#";
-  var sep = '';
-  for (var key in this.anchor) {
-    var value = this.anchor[key];
-    if (typeof value === 'undefined' || value === null) {
-      delete this.anchor[key];
-    } else {
-      url += sep + encodeURIComponent(key);
-      if (value !== true)
-        url += "=" + encodeURIComponent(value);
-      sep = '&';
-    }
-  }
-  this.urlWatcher.setUrl(url);
-  return url;
-};
-
-Binder.prototype.updateView = function() {
-  var start = new Date().getTime();
-  var scope = jQuery(this.doc).scope();
-  scope.set("$invalidWidgets", []);
-  scope.updateView();
-  var end = new Date().getTime();
-  this.updateAnchor();
-  _.each(this.updateListeners, function(fn) {fn();});
-};
-
-Binder.prototype.docFindWithSelf = function(exp){
-  var doc = jQuery(this.doc);
-  var selection = doc.find(exp);
-  if (doc.is(exp)){
-    selection = selection.andSelf();
-  }
-  return selection;
-};
-
-Binder.prototype.executeInit = function() {
-  this.docFindWithSelf("[ng-init]").each(function() {
-    var jThis = jQuery(this);
-    var scope = jThis.scope();
-    try {
-      scope.eval(jThis.attr('ng-init'));
-    } catch (e) {
-      alert("EVAL ERROR:\n" + jThis.attr('ng-init') + '\n' + toJson(e, true));
-    }
-  });
-};
-
-Binder.prototype.entity = function (scope) {
-  this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
-    try {
-      var jNode = jQuery(this);
-      var decl = scope.entity(jNode.attr("ng-entity"));
-      return decl + (jNode.attr('ng-watch') || "");
-    } catch (e) {
-      alert(e);
-    }
-  });
-};
-
-Binder.prototype.compile = function() {
-  var jNode = jQuery(this.doc);
-  var self = this;
-  if (this.config.autoSubmit) {
-    var submits = this.docFindWithSelf(":submit").not("[ng-action]");
-    submits.attr("ng-action", "$save()");
-    submits.not(":disabled").not("ng-bind-attr").attr("ng-bind-attr", '{disabled:"{{$invalidWidgets}}"}');
-  }
-  this.precompile(this.doc)(this.doc, jNode.scope(), "");
-  this.docFindWithSelf("a[ng-action]").live('click', function (event) {
-    var jNode = jQuery(this);
-    try {
-      jNode.scope().eval(jNode.attr('ng-action'));
-      jNode.removeAttr('ng-error');
-      jNode.removeClass("ng-exception");
-    } catch (e) {
-      jNode.addClass("ng-exception");
-      jNode.attr('ng-error', toJson(e, true));
-    }
-    self.updateView();
-    return false;
-  });
-};
-
-Binder.prototype.translateBinding = function(node, parentPath, factories) {
-  var path = parentPath.concat();
-  var offset = path.pop();
-  var parts = Binder.parseBindings(node.nodeValue);
-  if (parts.length > 1 || Binder.binding(parts[0])) {
-    var parent = node.parentNode;
-    if (isLeafNode(parent)) {
-      parent.setAttribute('ng-bind-template', node.nodeValue);
-      factories.push({path:path, fn:function(node, scope, prefix) {
-        return new BindUpdater(node, node.getAttribute('ng-bind-template'));
-      }});
-    } else {
-      for (var i = 0; i < parts.length; i++) {
-        var part = parts[i];
-        var binding = Binder.binding(part);
-        var newNode;
-        if (binding) {
-          newNode = document.createElement("span");
-          var jNewNode = jQuery(newNode);
-          jNewNode.attr("ng-bind", binding);
-          if (i === 0) {
-            factories.push({path:path.concat(offset + i), fn:Binder.prototype.ng_bind});
-          }
-        } else if (msie && part.charAt(0) == ' ') {
-          newNode = document.createElement("span");
-          newNode.innerHTML = '&nbsp;' + part.substring(1);
-        } else {
-          newNode = document.createTextNode(part);
-        }
-        parent.insertBefore(newNode, node);
+Binder.prototype = {
+  parseQueryString: function(query) {
+    var params = {};
+    query.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,
+        function (match, left, right) {
+          if (left) params[decodeURIComponent(left)] = decodeURIComponent(right);
+        });
+    return params;
+  },
+  
+  parseAnchor: function(url) {
+    var self = this;
+    url = url || this.urlWatcher.getUrl();
+  
+    var anchorIndex = url.indexOf('#');
+    if (anchorIndex < 0) return;
+    var anchor = url.substring(anchorIndex + 1);
+  
+    var anchorQuery = this.parseQueryString(anchor);
+    foreach(self.anchor, function(newValue, key) {
+      delete self.anchor[key];
+    });
+    foreach(anchorQuery, function(newValue, key) {
+      self.anchor[key] = newValue;
+    });
+  },
+  
+  onUrlChange: function (url) {
+    log("URL change detected", url);
+    this.parseAnchor(url);
+    this.updateView();
+  },
+  
+  updateAnchor: function() {
+    var url = this.urlWatcher.getUrl();
+    var anchorIndex = url.indexOf('#');
+    if (anchorIndex > -1)
+      url = url.substring(0, anchorIndex);
+    url += "#";
+    var sep = '';
+    for (var key in this.anchor) {
+      var value = this.anchor[key];
+      if (typeof value === 'undefined' || value === null) {
+        delete this.anchor[key];
+      } else {
+        url += sep + encodeURIComponent(key);
+        if (value !== true)
+          url += "=" + encodeURIComponent(value);
+        sep = '&';
       }
     }
-    parent.removeChild(node);
-  }
-};
-
-Binder.prototype.precompile = function(root) {
-  var factories = [];
-  this.precompileNode(root, [], factories);
-  return function (template, scope, prefix) {
-    var len = factories.length;
-    for (var i = 0; i < len; i++) {
-      var factory = factories[i];
-      var node = template;
-      var path = factory.path;
-      for (var j = 0; j < path.length; j++) {
-        node = node.childNodes[path[j]];
-      }
+    this.urlWatcher.setUrl(url);
+    return url;
+  },
+  
+  updateView: function() {
+    var start = new Date().getTime();
+    var scope = jQuery(this.doc).scope();
+    scope.set("$invalidWidgets", []);
+    scope.updateView();
+    var end = new Date().getTime();
+    this.updateAnchor();
+    _.each(this.updateListeners, function(fn) {fn();});
+  },
+  
+  docFindWithSelf: function(exp){
+    var doc = jQuery(this.doc);
+    var selection = doc.find(exp);
+    if (doc.is(exp)){
+      selection = selection.andSelf();
+    }
+    return selection;
+  },
+  
+  executeInit: function() {
+    this.docFindWithSelf("[ng-init]").each(function() {
+      var jThis = jQuery(this);
+      var scope = jThis.scope();
       try {
-        scope.addWidget(factory.fn(node, scope, prefix));
+        scope.eval(jThis.attr('ng-init'));
+      } catch (e) {
+        alert("EVAL ERROR:\n" + jThis.attr('ng-init') + '\n' + toJson(e, true));
+      }
+    });
+  },
+  
+  entity: function (scope) {
+    this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
+      try {
+        var jNode = jQuery(this);
+        var decl = scope.entity(jNode.attr("ng-entity"));
+        return decl + (jNode.attr('ng-watch') || "");
       } catch (e) {
         alert(e);
       }
+    });
+  },
+  
+  compile: function() {
+    var jNode = jQuery(this.doc);
+    var self = this;
+    if (this.config.autoSubmit) {
+      var submits = this.docFindWithSelf(":submit").not("[ng-action]");
+      submits.attr("ng-action", "$save()");
+      submits.not(":disabled").not("ng-bind-attr").attr("ng-bind-attr", '{disabled:"{{$invalidWidgets}}"}');
     }
-  };
-};
-
-Binder.prototype.precompileNode = function(node, path, factories) {
-  var nodeType = node.nodeType;
-  if (nodeType == Node.TEXT_NODE) {
-    this.translateBinding(node, path, factories);
-    return;
-  } else if (nodeType != Node.ELEMENT_NODE && nodeType != Node.DOCUMENT_NODE) {
-    return;
-  }
-
-  if (!node.getAttribute) return;
-  var nonBindable = node.getAttribute('ng-non-bindable');
-  if (nonBindable || nonBindable === "") return;
-
-  var attributes = node.attributes;
-  if (attributes) {
-    var bindings = node.getAttribute('ng-bind-attr');
-    node.removeAttribute('ng-bind-attr');
-    bindings = bindings ? fromJson(bindings) : {};
-    var attrLen = attributes.length;
-    for (var i = 0; i < attrLen; i++) {
-      var attr = attributes[i];
-      var attrName = attr.name;
-      // http://www.glennjones.net/Post/809/getAttributehrefbug.htm
-      var attrValue = msie && attrName == 'href' ?
-                      decodeURI(node.getAttribute(attrName, 2)) : attr.value;
-      if (Binder.hasBinding(attrValue)) {
-        bindings[attrName] = attrValue;
+    this.precompile(this.doc)(this.doc, jNode.scope(), "");
+    this.docFindWithSelf("a[ng-action]").live('click', function (event) {
+      var jNode = jQuery(this);
+      try {
+        jNode.scope().eval(jNode.attr('ng-action'));
+        jNode.removeAttr('ng-error');
+        jNode.removeClass("ng-exception");
+      } catch (e) {
+        jNode.addClass("ng-exception");
+        jNode.attr('ng-error', toJson(e, true));
+      }
+      self.updateView();
+      return false;
+    });
+  },
+  
+  translateBinding: function(node, parentPath, factories) {
+    var path = parentPath.concat();
+    var offset = path.pop();
+    var parts = Binder.parseBindings(node.nodeValue);
+    if (parts.length > 1 || Binder.binding(parts[0])) {
+      var parent = node.parentNode;
+      if (isLeafNode(parent)) {
+        parent.setAttribute('ng-bind-template', node.nodeValue);
+        factories.push({path:path, fn:function(node, scope, prefix) {
+          return new BindUpdater(node, node.getAttribute('ng-bind-template'));
+        }});
+      } else {
+        for (var i = 0; i < parts.length; i++) {
+          var part = parts[i];
+          var binding = Binder.binding(part);
+          var newNode;
+          if (binding) {
+            newNode = document.createElement("span");
+            var jNewNode = jQuery(newNode);
+            jNewNode.attr("ng-bind", binding);
+            if (i === 0) {
+              factories.push({path:path.concat(offset + i), fn:this.ng_bind});
+            }
+          } else if (msie && part.charAt(0) == ' ') {
+            newNode = document.createElement("span");
+            newNode.innerHTML = '&nbsp;' + part.substring(1);
+          } else {
+            newNode = document.createTextNode(part);
+          }
+          parent.insertBefore(newNode, node);
+        }
+      }
+      parent.removeChild(node);
+    }
+  },
+  
+  precompile: function(root) {
+    var factories = [];
+    this.precompileNode(root, [], factories);
+    return function (template, scope, prefix) {
+      var len = factories.length;
+      for (var i = 0; i < len; i++) {
+        var factory = factories[i];
+        var node = template;
+        var path = factory.path;
+        for (var j = 0; j < path.length; j++) {
+          node = node.childNodes[path[j]];
+        }
+        try {
+          scope.addWidget(factory.fn(node, scope, prefix));
+        } catch (e) {
+          alert(e);
+        }
+      }
+    };
+  },
+  
+  precompileNode: function(node, path, factories) {
+    var nodeType = node.nodeType;
+    if (nodeType == Node.TEXT_NODE) {
+      this.translateBinding(node, path, factories);
+      return;
+    } else if (nodeType != Node.ELEMENT_NODE && nodeType != Node.DOCUMENT_NODE) {
+      return;
+    }
+  
+    if (!node.getAttribute) return;
+    var nonBindable = node.getAttribute('ng-non-bindable');
+    if (nonBindable || nonBindable === "") return;
+  
+    var attributes = node.attributes;
+    if (attributes) {
+      var bindings = node.getAttribute('ng-bind-attr');
+      node.removeAttribute('ng-bind-attr');
+      bindings = bindings ? fromJson(bindings) : {};
+      var attrLen = attributes.length;
+      for (var i = 0; i < attrLen; i++) {
+        var attr = attributes[i];
+        var attrName = attr.name;
+        // http://www.glennjones.net/Post/809/getAttributehrefbug.htm
+        var attrValue = msie && attrName == 'href' ?
+                        decodeURI(node.getAttribute(attrName, 2)) : attr.value;
+        if (Binder.hasBinding(attrValue)) {
+          bindings[attrName] = attrValue;
+        }
+      }
+      var json = toJson(bindings);
+      if (json.length > 2) {
+        node.setAttribute("ng-bind-attr", json);
       }
     }
-    var json = toJson(bindings);
-    if (json.length > 2) {
-      node.setAttribute("ng-bind-attr", json);
+  
+    if (!node.getAttribute) log(node);
+    var repeaterExpression = node.getAttribute('ng-repeat');
+    if (repeaterExpression) {
+      node.removeAttribute('ng-repeat');
+      var precompiled = this.precompile(node);
+      var view = document.createComment("ng-repeat: " + repeaterExpression);
+      var parentNode = node.parentNode;
+      parentNode.insertBefore(view, node);
+      parentNode.removeChild(node);
+      function template(childScope, prefix, i) {
+        var clone = jQuery(node).clone();
+        clone.css('display', '');
+        clone.attr('ng-repeat-index', "" + i);
+        clone.data('scope', childScope);
+        precompiled(clone[0], childScope, prefix + i + ":");
+        return clone;
+      }
+      factories.push({path:path, fn:function(node, scope, prefix) {
+        return new RepeaterUpdater(jQuery(node), repeaterExpression, template, prefix);
+      }});
+      return;
     }
-  }
-
-  if (!node.getAttribute) log(node);
-  var repeaterExpression = node.getAttribute('ng-repeat');
-  if (repeaterExpression) {
-    node.removeAttribute('ng-repeat');
-    var precompiled = this.precompile(node);
-    var view = document.createComment("ng-repeat: " + repeaterExpression);
-    var parentNode = node.parentNode;
-    parentNode.insertBefore(view, node);
-    parentNode.removeChild(node);
-    var template = function(childScope, prefix, i) {
-      var clone = jQuery(node).clone();
-      clone.css('display', '');
-      clone.attr('ng-repeat-index', "" + i);
-      clone.data('scope', childScope);
-      precompiled(clone[0], childScope, prefix + i + ":");
-      return clone;
-    };
-    factories.push({path:path, fn:function(node, scope, prefix) {
-      return new RepeaterUpdater(jQuery(node), repeaterExpression, template, prefix);
-    }});
-    return;
-  }
-
-  if (node.getAttribute('ng-eval')) factories.push({path:path, fn:this.ng_eval});
-  if (node.getAttribute('ng-bind')) factories.push({path:path, fn:this.ng_bind});
-  if (node.getAttribute('ng-bind-attr')) factories.push({path:path, fn:this.ng_bind_attr});
-  if (node.getAttribute('ng-hide')) factories.push({path:path, fn:this.ng_hide});
-  if (node.getAttribute('ng-show')) factories.push({path:path, fn:this.ng_show});
-  if (node.getAttribute('ng-class')) factories.push({path:path, fn:this.ng_class});
-  if (node.getAttribute('ng-class-odd')) factories.push({path:path, fn:this.ng_class_odd});
-  if (node.getAttribute('ng-class-even')) factories.push({path:path, fn:this.ng_class_even});
-  if (node.getAttribute('ng-style')) factories.push({path:path, fn:this.ng_style});
-  if (node.getAttribute('ng-watch')) factories.push({path:path, fn:this.ng_watch});
-  var nodeName = node.nodeName;
-  if ((nodeName == 'INPUT' ) ||
-      nodeName == 'TEXTAREA' ||
-      nodeName == 'SELECT' ||
-      nodeName == 'BUTTON') {
-    var self = this;
-    factories.push({path:path, fn:function(node, scope, prefix) {
-      node.name = prefix + node.name.split(":").pop();
-      return self.widgetFactory.createController(jQuery(node), scope);
-    }});
-  }
-  if (nodeName == 'OPTION') {
-    var html = jQuery('<select/>').append(jQuery(node).clone()).html();
-    if (!html.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
-      node.value = node.text;
+  
+    if (node.getAttribute('ng-eval')) factories.push({path:path, fn:this.ng_eval});
+    if (node.getAttribute('ng-bind')) factories.push({path:path, fn:this.ng_bind});
+    if (node.getAttribute('ng-bind-attr')) factories.push({path:path, fn:this.ng_bind_attr});
+    if (node.getAttribute('ng-hide')) factories.push({path:path, fn:this.ng_hide});
+    if (node.getAttribute('ng-show')) factories.push({path:path, fn:this.ng_show});
+    if (node.getAttribute('ng-class')) factories.push({path:path, fn:this.ng_class});
+    if (node.getAttribute('ng-class-odd')) factories.push({path:path, fn:this.ng_class_odd});
+    if (node.getAttribute('ng-class-even')) factories.push({path:path, fn:this.ng_class_even});
+    if (node.getAttribute('ng-style')) factories.push({path:path, fn:this.ng_style});
+    if (node.getAttribute('ng-watch')) factories.push({path:path, fn:this.ng_watch});
+    var nodeName = node.nodeName;
+    if ((nodeName == 'INPUT' ) ||
+        nodeName == 'TEXTAREA' ||
+        nodeName == 'SELECT' ||
+        nodeName == 'BUTTON') {
+      var self = this;
+      factories.push({path:path, fn:function(node, scope, prefix) {
+        node.name = prefix + node.name.split(":").pop();
+        return self.widgetFactory.createController(jQuery(node), scope);
+      }});
     }
+    if (nodeName == 'OPTION') {
+      var html = jQuery('<select/>').append(jQuery(node).clone()).html();
+      if (!html.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
+        node.value = node.text;
+      }
+    }
+  
+    var children = node.childNodes;
+    for (var k = 0; k < children.length; k++) {
+      this.precompileNode(children[k], path.concat(k), factories);
+    }
+  },
+  
+  ng_eval: function(node) {
+    return new EvalUpdater(node, node.getAttribute('ng-eval'));
+  },
+  
+  ng_bind: function(node) {
+    return new BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
+  },
+  
+  ng_bind_attr: function(node) {
+    return new BindAttrUpdater(node, fromJson(node.getAttribute('ng-bind-attr')));
+  },
+  
+  ng_hide: function(node) {
+    return new HideUpdater(node, node.getAttribute('ng-hide'));
+  },
+  
+  ng_show: function(node) {
+    return new ShowUpdater(node, node.getAttribute('ng-show'));
+  },
+  
+  ng_class: function(node) {
+    return new ClassUpdater(node, node.getAttribute('ng-class'));
+  },
+  
+  ng_class_even: function(node) {
+    return new ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
+  },
+  
+  ng_class_odd: function(node) {
+    return new ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
+  },
+  
+  ng_style: function(node) {
+    return new StyleUpdater(node, node.getAttribute('ng-style'));
+  },
+  
+  ng_watch: function(node, scope) {
+    scope.watch(node.getAttribute('ng-watch'));
   }
-
-  var children = node.childNodes;
-  for (var k = 0; k < children.length; k++) {
-    this.precompileNode(children[k], path.concat(k), factories);
-  }
-};
-
-Binder.prototype.ng_eval = function(node) {
-  return new EvalUpdater(node, node.getAttribute('ng-eval'));
-};
-
-Binder.prototype.ng_bind = function(node) {
-  return new BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
-};
-
-Binder.prototype.ng_bind_attr = function(node) {
-  return new BindAttrUpdater(node, fromJson(node.getAttribute('ng-bind-attr')));
-};
-
-Binder.prototype.ng_hide = function(node) {
-  return new HideUpdater(node, node.getAttribute('ng-hide'));
-};
-
-Binder.prototype.ng_show = function(node) {
-  return new ShowUpdater(node, node.getAttribute('ng-show'));
-};
-
-Binder.prototype.ng_class = function(node) {
-  return new ClassUpdater(node, node.getAttribute('ng-class'));
-};
-
-Binder.prototype.ng_class_even = function(node) {
-  return new ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
-};
-
-Binder.prototype.ng_class_odd = function(node) {
-  return new ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
-};
-
-Binder.prototype.ng_style = function(node) {
-  return new StyleUpdater(node, node.getAttribute('ng-style'));
-};
-
-Binder.prototype.ng_watch = function(node, scope) {
-  scope.watch(node.getAttribute('ng-watch'));
-};
-// Copyright (C) 2008,2009 BRAT Tech LLC
-
-ControlBar = function (document, serverUrl) {
+};function ControlBar(document, serverUrl) {
   this.document = document;
   this.serverUrl = serverUrl;
   this.window = window;
   this.callbacks = [];
-};
-
-ControlBar.prototype.bind = function () {
 };
 
 ControlBar.HTML =
@@ -1231,60 +1248,64 @@ ControlBar.HTML =
     '</div>' +
   '</div>';
 
-ControlBar.prototype.login = function (loginSubmitFn) {
-  this.callbacks.push(loginSubmitFn);
-  if (this.callbacks.length == 1) {
-    this.doTemplate("/user_session/new.mini?return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
-  }
-};
-
-ControlBar.prototype.logout = function (loginSubmitFn) {
-  this.callbacks.push(loginSubmitFn);
-  if (this.callbacks.length == 1) {
-    this.doTemplate("/user_session/do_destroy.mini");
-  }
-};
-
-ControlBar.prototype.urlWithoutAnchor = function (path) {
-  return this.window.location.href.split("#")[0];
-};
-
-ControlBar.prototype.doTemplate = function (path) {
-  var self = this;
-  var id = new Date().getTime();
-  var url = this.urlWithoutAnchor();
-  url += "#$iframe_notify=" + id;
-  var iframeHeight = 330;
-  var loginView = jQuery('<div style="overflow:hidden; padding:2px 0 0 0;"><iframe name="'+ url +'" src="'+this.serverUrl + path + '" width="500" height="'+ iframeHeight +'"/></div>');
-  this.document.append(loginView);
-  loginView.dialog({
-    height:iframeHeight + 33, width:500,
-    resizable: false, modal:true,
-    title: 'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'
-  });
-  callbacks["_iframe_notify_" + id] = function() {
-    loginView.dialog("destroy");
-    loginView.remove();
-    foreach(self.callbacks, function(callback){
-      callback();
-    });
-    self.callbacks = [];
-  };
-};
-
 ControlBar.FORBIDEN =
   '<div ng-non-bindable="true" title="Permission Error:">' +
     'Sorry, you do not have permission for this!'+
   '</div>';
 
-ControlBar.prototype.notAuthorized = function () {
-  if (this.forbidenView) return;
-  this.forbidenView = jQuery(ControlBar.FORBIDEN);
-  this.forbidenView.dialog({bgiframe:true, height:70, modal:true});
-};
-// Copyright (C) 2009 BRAT Tech LLC
 
-DataStore = function(post, users, anchor) {
+
+ControlBar.prototype = {
+  bind: function () {
+  },
+  
+  login: function (loginSubmitFn) {
+    this.callbacks.push(loginSubmitFn);
+    if (this.callbacks.length == 1) {
+      this.doTemplate("/user_session/new.mini?return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
+    }
+  },
+  
+  logout: function (loginSubmitFn) {
+    this.callbacks.push(loginSubmitFn);
+    if (this.callbacks.length == 1) {
+      this.doTemplate("/user_session/do_destroy.mini");
+    }
+  },
+  
+  urlWithoutAnchor: function (path) {
+    return this.window.location.href.split("#")[0];
+  },
+  
+  doTemplate: function (path) {
+    var self = this;
+    var id = new Date().getTime();
+    var url = this.urlWithoutAnchor();
+    url += "#$iframe_notify=" + id;
+    var iframeHeight = 330;
+    var loginView = jQuery('<div style="overflow:hidden; padding:2px 0 0 0;"><iframe name="'+ url +'" src="'+this.serverUrl + path + '" width="500" height="'+ iframeHeight +'"/></div>');
+    this.document.append(loginView);
+    loginView.dialog({
+      height:iframeHeight + 33, width:500,
+      resizable: false, modal:true,
+      title: 'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'
+    });
+    callbacks["_iframe_notify_" + id] = function() {
+      loginView.dialog("destroy");
+      loginView.remove();
+      foreach(self.callbacks, function(callback){
+        callback();
+      });
+      self.callbacks = [];
+    };
+  },
+  
+  notAuthorized: function () {
+    if (this.forbidenView) return;
+    this.forbidenView = jQuery(ControlBar.FORBIDEN);
+    this.forbidenView.dialog({bgiframe:true, height:70, modal:true});
+  }
+};function DataStore(post, users, anchor) {
   this.post = post;
   this.users = users;
   this._cache = {$collections:[]};
@@ -1292,331 +1313,332 @@ DataStore = function(post, users, anchor) {
   this.bulkRequest = [];
 };
 
-DataStore.prototype.cache = function(document) {
-  if (document.constructor != Model) {
-    throw "Parameter must be an instance of Entity! " + toJson(document);
-  }
-  var key = document.$entity + '/' + document.$id;
-  var cachedDocument = this._cache[key];
-  if (cachedDocument) {
-    Model.copyDirectFields(document, cachedDocument);
-  } else {
-    this._cache[key] = document;
-    cachedDocument = document;
-  }
-  return cachedDocument;
-};
+DataStore.NullEntity = extend(function(){}, {
+  'all': function(){return [];},
+  'query': function(){return [];},
+  'load': function(){return {};},
+  'title': undefined
+});
 
-DataStore.prototype.load = function(instance, id, callback, failure) {
-  if (id && id !== '*') {
+DataStore.prototype = {
+  cache: function(document) {
+    if (! document instanceof Model) {
+      throw "Parameter must be an instance of Entity! " + toJson(document);
+    }
+    var key = document.$entity + '/' + document.$id;
+    var cachedDocument = this._cache[key];
+    if (cachedDocument) {
+      Model.copyDirectFields(document, cachedDocument);
+    } else {
+      this._cache[key] = document;
+      cachedDocument = document;
+    }
+    return cachedDocument;
+  },
+  
+  load: function(instance, id, callback, failure) {
+    if (id && id !== '*') {
+      var self = this;
+      this._jsonRequest(["GET", instance.$entity + "/" + id], function(response) {
+        instance.$loadFrom(response);
+        instance.$migrate();
+        var clone = instance.$$entity(instance);
+        self.cache(clone);
+        (callback||noop)(instance);
+      }, failure);
+    }
+    return instance;
+  },
+  
+  loadMany: function(entity, ids, callback) {
+    var self=this;
+    var list = [];
+    var callbackCount = 0;
+    foreach(ids, function(id){
+      list.push(self.load(entity(), id, function(){
+        callbackCount++;
+        if (callbackCount == ids.length) {
+          (callback||noop)(list);
+        }
+      }));
+    });
+    return list;
+  },
+  
+  loadOrCreate: function(instance, id, callback) {
+    var self=this;
+    return this.load(instance, id, callback, function(response){
+      if (response.$status_code == 404) {
+        instance.$id = id;
+        (callback||noop)(instance);
+      } else {
+        throw response;
+      }
+    });
+  },
+  
+  loadAll: function(entity, callback) {
     var self = this;
-    this._jsonRequest(["GET", instance.$entity + "/" + id], function(response) {
-      instance.$loadFrom(response);
-      instance.$migrate();
-      var clone = instance.$$entity(instance);
-      self.cache(clone);
-      (callback||noop)(instance);
-    }, failure);
-  }
-  return instance;
-};
-
-DataStore.prototype.loadMany = function(entity, ids, callback) {
-  var self=this;
-  var list = [];
-  var callbackCount = 0;
-  foreach(ids, function(id){
-    list.push(self.load(entity(), id, function(){
-      callbackCount++;
-      if (callbackCount == ids.length) {
-        (callback||noop)(list);
+    var list = [];
+    list.$$accept = function(doc){
+      return doc.$entity == entity.title;
+    };
+    this._cache.$collections.push(list);
+    this._jsonRequest(["GET", entity.title], function(response) {
+      var rows = response;
+      for ( var i = 0; i < rows.length; i++) {
+        var document = entity();
+        document.$loadFrom(rows[i]);
+        list.push(self.cache(document));
       }
-    }));
-  });
-  return list;
-}
-
-DataStore.prototype.loadOrCreate = function(instance, id, callback) {
-  var self=this;
-  return this.load(instance, id, callback, function(response){
-    if (response.$status_code == 404) {
-      instance.$id = id;
-      (callback||noop)(instance);
-    } else {
-      throw response;
-    }
-  });
-};
-
-DataStore.prototype.loadAll = function(entity, callback) {
-  var self = this;
-  var list = [];
-  list.$$accept = function(doc){
-    return doc.$entity == entity.title;
-  };
-  this._cache.$collections.push(list);
-  this._jsonRequest(["GET", entity.title], function(response) {
-    var rows = response;
-    for ( var i = 0; i < rows.length; i++) {
-      var document = entity();
-      document.$loadFrom(rows[i]);
-      list.push(self.cache(document));
-    }
-    (callback||noop)(list);
-  });
-  return list;
-};
-
-DataStore.prototype.save = function(document, callback) {
-  var self = this;
-  var data = {};
-  document.$saveTo(data);
-  this._jsonRequest(["POST", "", data], function(response) {
-    document.$loadFrom(response);
-    var cachedDoc = self.cache(document);
-    _.each(self._cache.$collections, function(collection){
-      if (collection.$$accept(document)) {
-        angular['Array']['includeIf'](collection, cachedDoc, true);
-      }
+      (callback||noop)(list);
     });
-    if (document.$$anchor) {
-      self.anchor[document.$$anchor] = document.$id;
-    }
-    if (callback)
-      callback(document);
-  });
-};
-
-DataStore.prototype.remove = function(document, callback) {
-  var self = this;
-  var data = {};
-  document.$saveTo(data);
-  this._jsonRequest(["DELETE", "", data], function(response) {
-    delete self._cache[document.$entity + '/' + document.$id];
-    _.each(self._cache.$collections, function(collection){
-      for ( var i = 0; i < collection.length; i++) {
-        var item = collection[i];
-        if (item.$id == document.$id) {
-          collection.splice(i, 1);
+    return list;
+  },
+  
+  save: function(document, callback) {
+    var self = this;
+    var data = {};
+    document.$saveTo(data);
+    this._jsonRequest(["POST", "", data], function(response) {
+      document.$loadFrom(response);
+      var cachedDoc = self.cache(document);
+      _.each(self._cache.$collections, function(collection){
+        if (collection.$$accept(document)) {
+          angular['Array']['includeIf'](collection, cachedDoc, true);
         }
-      }
-    });
-    (callback||noop)(response);
-  });
-};
-
-DataStore.prototype._jsonRequest = function(request, callback, failure) {
-  request.$$callback = callback;
-  request.$$failure = failure||function(response){
-    throw response;
-  };
-  this.bulkRequest.push(request);
-};
-
-DataStore.prototype.flush = function() {
-  if (this.bulkRequest.length === 0) return;
-  var self = this;
-  var bulkRequest = this.bulkRequest;
-  this.bulkRequest = [];
-  log('REQUEST:', bulkRequest);
-  function callback(code, bulkResponse){
-    log('RESPONSE[' + code + ']: ', bulkResponse);
-    if(bulkResponse.$status_code == 401) {
-      self.users.login(function(){
-        self.post(bulkRequest, callback);
       });
-    } else if(bulkResponse.$status_code) {
-      alert(toJson(bulkResponse));
-    } else {
-      for ( var i = 0; i < bulkResponse.length; i++) {
-        var response = bulkResponse[i];
-        var request = bulkRequest[i];
-        var code = response.$status_code;
-        if(code) {
-          if(code == 403) {
-            self.users.notAuthorized();
-          } else {
-            request.$$failure(response);
+      if (document.$$anchor) {
+        self.anchor[document.$$anchor] = document.$id;
+      }
+      if (callback)
+        callback(document);
+    });
+  },
+  
+  remove: function(document, callback) {
+    var self = this;
+    var data = {};
+    document.$saveTo(data);
+    this._jsonRequest(["DELETE", "", data], function(response) {
+      delete self._cache[document.$entity + '/' + document.$id];
+      _.each(self._cache.$collections, function(collection){
+        for ( var i = 0; i < collection.length; i++) {
+          var item = collection[i];
+          if (item.$id == document.$id) {
+            collection.splice(i, 1);
           }
-        } else {
-          request.$$callback(response);
+        }
+      });
+      (callback||noop)(response);
+    });
+  },
+  
+  _jsonRequest: function(request, callback, failure) {
+    request.$$callback = callback;
+    request.$$failure = failure||function(response){
+      throw response;
+    };
+    this.bulkRequest.push(request);
+  },
+  
+  flush: function() {
+    if (this.bulkRequest.length === 0) return;
+    var self = this;
+    var bulkRequest = this.bulkRequest;
+    this.bulkRequest = [];
+    log('REQUEST:', bulkRequest);
+    function callback(code, bulkResponse){
+      log('RESPONSE[' + code + ']: ', bulkResponse);
+      if(bulkResponse.$status_code == 401) {
+        self.users.login(function(){
+          self.post(bulkRequest, callback);
+        });
+      } else if(bulkResponse.$status_code) {
+        alert(toJson(bulkResponse));
+      } else {
+        for ( var i = 0; i < bulkResponse.length; i++) {
+          var response = bulkResponse[i];
+          var request = bulkRequest[i];
+          var responseCode = response.$status_code;
+          if(responseCode) {
+            if(responseCode == 403) {
+              self.users.notAuthorized();
+            } else {
+              request.$$failure(response);
+            }
+          } else {
+            request.$$callback(response);
+          }
         }
       }
     }
-  }
-  this.post(bulkRequest, callback);
-};
-
-DataStore.prototype.saveScope = function(scope, callback) {
-  var saveCounter = 1;
-  function onSaveDone() {
-    saveCounter--;
-    if (saveCounter === 0 && callback)
-      callback();
-  }
-  for(var key in scope) {
-    var item = scope[key];
-    if (item && item.$save == Model.prototype.$save) {
-      saveCounter++;
-      item.$save(onSaveDone);
+    this.post(bulkRequest, callback);
+  },
+  
+  saveScope: function(scope, callback) {
+    var saveCounter = 1;
+    function onSaveDone() {
+      saveCounter--;
+      if (saveCounter === 0 && callback)
+        callback();
     }
-  }
-  onSaveDone();
-};
-
-DataStore.prototype.query = function(type, query, arg, callback){
-  var self = this;
-  var queryList = [];
-  queryList.$$accept = function(doc){
-    return false;
-  };
-  this._cache.$collections.push(queryList);
-  var request = type.title + '/' + query + '=' + arg;
-  this._jsonRequest(["GET", request], function(response){
-    var list = response;
-    for(var i = 0; i < list.length; i++) {
-      var document = new type().$loadFrom(list[i]);
-      queryList.push(self.cache(document));
+    for(var key in scope) {
+      var item = scope[key];
+      if (item && item.$save == Model.prototype.$save) {
+        saveCounter++;
+        item.$save(onSaveDone);
+      }
     }
-    if (callback)
-      callback(queryList);
-  });
-  return queryList;
-};
-
-DataStore.prototype.entities = function(callback) {
-  var entities = [];
-  var self = this;
-  this._jsonRequest(["GET", "$entities"], function(response) {
-    for (var entityName in response) {
-      entities.push(self.entity(entityName));
-    }
-    entities.sort(function(a,b){return a.title > b.title ? 1 : -1;});
-    if (callback) callback(entities);
-  });
-  return entities;
-};
-
-DataStore.prototype.documentCountsByUser = function(){
-  var counts = {};
-  var self = this;
-  self.post([["GET", "$users"]], function(code, response){
-    foreach(response[0], function(value, key){
-      counts[key] = value;
+    onSaveDone();
+  },
+  
+  query: function(type, query, arg, callback){
+    var self = this;
+    var queryList = [];
+    queryList.$$accept = function(doc){
+      return false;
+    };
+    this._cache.$collections.push(queryList);
+    var request = type.title + '/' + query + '=' + arg;
+    this._jsonRequest(["GET", request], function(response){
+      var list = response;
+      for(var i = 0; i < list.length; i++) {
+        var document = new type().$loadFrom(list[i]);
+        queryList.push(self.cache(document));
+      }
+      if (callback)
+        callback(queryList);
     });
-  });
-  return counts;
-};
-
-DataStore.prototype.userDocumentIdsByEntity = function(user){
-  var ids = {};
-  var self = this;
-  self.post([["GET", "$users/" + user]], function(code, response){
-    foreach(response[0], function(value, key){
-      ids[key] = value;
+    return queryList;
+  },
+  
+  entities: function(callback) {
+    var entities = [];
+    var self = this;
+    this._jsonRequest(["GET", "$entities"], function(response) {
+      for (var entityName in response) {
+        entities.push(self.entity(entityName));
+      }
+      entities.sort(function(a,b){return a.title > b.title ? 1 : -1;});
+      if (callback) callback(entities);
     });
-  });
-  return ids;
-};
-
-DataStore.NullEntity = function(){};
-DataStore.NullEntity.all = function(){return [];};
-DataStore.NullEntity.query = function(){return [];};
-DataStore.NullEntity.load = function(){return {};};
-DataStore.NullEntity.title = undefined;
-
-DataStore.prototype.entity = function(name, defaults){
-  if (!name) {
-    return DataStore.NullEntity;
-  }
-  var self = this;
-  var entity =  function(initialState){
-    return new Model(entity, initialState);
-  };
-  // entity.name does not work as name seems to be reserved for functions
-  entity.title = name;
-  entity.$$factory = true;
-  entity.datastore = this;
-  entity.defaults = defaults || {};
-  entity.load = function(id, callback){
-    return self.load(entity(), id, callback);
-  };
-  entity.loadMany = function(ids, callback){
-    return self.loadMany(entity, ids, callback);
-  };
-  entity.loadOrCreate = function(id, callback){
-    return self.loadOrCreate(entity(), id, callback);
-  };
-  entity.all = function(callback){
-    return self.loadAll(entity, callback);
-  };
-  entity.query = function(query, queryArgs, callback){
-    return self.query(entity, query, queryArgs, callback);
-  };
-  entity.properties = function(callback) {
-    self._jsonRequest(["GET", name + "/$properties"], callback);
-  };
-  return entity;
-};
-
-DataStore.prototype.join = function(join){
-  var fn = function(){
-    throw "Joined entities can not be instantiated into a document.";
-  };
-  function base(name){return name ? name.substring(0, name.indexOf('.')) : undefined;}
-  function next(name){return name.substring(name.indexOf('.') + 1);}
-  var joinOrder = _(join).chain().
-    map(function($, name){
-      return name;}).
-    sortBy(function(name){
-      var path = [];
-      do {
-        if (_(path).include(name)) throw "Infinite loop in join: " + path.join(" -> ");
-        path.push(name);
-        if (!join[name]) throw _("Named entity '<%=name%>' is undefined.").template({name:name});
-        name = base(join[name].on);
-      } while(name);
-      return path.length;
-    }).
-    value();
-  if (_(joinOrder).select(function($){return join[$].on;}).length != joinOrder.length - 1)
-    throw "Exactly one entity needs to be primary.";
-  fn.query = function(exp, value) {
-    var joinedResult = [];
-    var baseName = base(exp);
-    if (baseName != joinOrder[0]) throw _("Named entity '<%=name%>' is not a primary entity.").template({name:baseName});
-    var Entity = join[baseName].join;
-    var joinIndex = 1;
-    Entity.query(next(exp), value, function(result){
-      var nextJoinName = joinOrder[joinIndex++];
-      var nextJoin = join[nextJoinName];
-      var nextJoinOn = nextJoin.on;
-      var joinIds = {};
-      _(result).each(function(doc){
-        var row = {};
-        joinedResult.push(row);
-        row[baseName] = doc;
-        var id = Scope.getter(row, nextJoinOn);
-        joinIds[id] = id;
+    return entities;
+  },
+  
+  documentCountsByUser: function(){
+    var counts = {};
+    var self = this;
+    self.post([["GET", "$users"]], function(code, response){
+      foreach(response[0], function(value, key){
+        counts[key] = value;
       });
-      nextJoin.join.loadMany(_.toArray(joinIds), function(result){
-        var byId = {};
+    });
+    return counts;
+  },
+  
+  userDocumentIdsByEntity: function(user){
+    var ids = {};
+    var self = this;
+    self.post([["GET", "$users/" + user]], function(code, response){
+      foreach(response[0], function(value, key){
+        ids[key] = value;
+      });
+    });
+    return ids;
+  },
+  
+  entity: function(name, defaults){
+    if (!name) {
+      return DataStore.NullEntity;
+    }
+    var self = this;
+    var entity = extend(function(initialState){
+      return new Model(entity, initialState);
+    }, {
+      // entity.name does not work as name seems to be reserved for functions
+      'title': name,
+      '$$factory': true,
+      'datastore': this,
+      'defaults': defaults || {},
+      'load': function(id, callback){
+        return self.load(entity(), id, callback);
+      },
+      'loadMany': function(ids, callback){
+        return self.loadMany(entity, ids, callback);
+      },
+      'loadOrCreate': function(id, callback){
+        return self.loadOrCreate(entity(), id, callback);
+      },
+      'all': function(callback){
+        return self.loadAll(entity, callback);
+      },
+      'query': function(query, queryArgs, callback){
+        return self.query(entity, query, queryArgs, callback);
+      },
+      'properties': function(callback) {
+        self._jsonRequest(["GET", name + "/$properties"], callback);
+      }
+    });
+    return entity;
+  },
+  
+  join: function(join){
+    function fn(){
+      throw "Joined entities can not be instantiated into a document.";
+    };
+    function base(name){return name ? name.substring(0, name.indexOf('.')) : undefined;}
+    function next(name){return name.substring(name.indexOf('.') + 1);}
+    var joinOrder = _(join).chain().
+      map(function($, name){
+        return name;}).
+      sortBy(function(name){
+        var path = [];
+        do {
+          if (_(path).include(name)) throw "Infinite loop in join: " + path.join(" -> ");
+          path.push(name);
+          if (!join[name]) throw _("Named entity '<%=name%>' is undefined.").template({name:name});
+          name = base(join[name].on);
+        } while(name);
+        return path.length;
+      }).
+      value();
+    if (_(joinOrder).select(function($){return join[$].on;}).length != joinOrder.length - 1)
+      throw "Exactly one entity needs to be primary.";
+    fn['query'] = function(exp, value) {
+      var joinedResult = [];
+      var baseName = base(exp);
+      if (baseName != joinOrder[0]) throw _("Named entity '<%=name%>' is not a primary entity.").template({name:baseName});
+      var Entity = join[baseName].join;
+      var joinIndex = 1;
+      Entity['query'](next(exp), value, function(result){
+        var nextJoinName = joinOrder[joinIndex++];
+        var nextJoin = join[nextJoinName];
+        var nextJoinOn = nextJoin.on;
+        var joinIds = {};
         _(result).each(function(doc){
-          byId[doc.$id] = doc;
-        });
-        _(joinedResult).each(function(row){
+          var row = {};
+          joinedResult.push(row);
+          row[baseName] = doc;
           var id = Scope.getter(row, nextJoinOn);
-          row[nextJoinName] = byId[id];
+          joinIds[id] = id;
+        });
+        nextJoin.join.loadMany(_.toArray(joinIds), function(result){
+          var byId = {};
+          _(result).each(function(doc){
+            byId[doc.$id] = doc;
+          });
+          _(joinedResult).each(function(row){
+            var id = Scope.getter(row, nextJoinOn);
+            row[nextJoinName] = byId[id];
+          });
         });
       });
-    });
-    return joinedResult;
-  };
-  return fn;
-};
-// Copyright (C) 2009 BRAT Tech LLC
-
-angularFilter.Meta = function(obj){
+      return joinedResult;
+    };
+    return fn;
+  }
+};angularFilter.Meta = function(obj){
   if (obj) {
     for ( var key in obj) {
       this[key] = obj[key];
@@ -1917,17 +1939,17 @@ foreach({
 angularFilterGoogleChartApi = angularFilter['googleChartApi'];
 array = [].constructor;
 
-toJson = function(obj, pretty){
+function toJson(obj, pretty){
   var buf = [];
   toJsonArray(buf, obj, pretty ? "\n  " : null);
   return buf.join('');
 };
 
-toPrettyJson = function(obj) {
+function toPrettyJson(obj)  {
   return toJson(obj, true);
 };
 
-fromJson = function(json) {
+function fromJson(json) {
   try {
     var parser = new Parser(json, true);
     var expression =  parser.primary();
@@ -1939,8 +1961,10 @@ fromJson = function(json) {
   }
 };
 
+angular['toJson'] = toJson;
+angular['fromJson'] = fromJson;
 
-toJsonArray = function(buf, obj, pretty){
+function toJsonArray(buf, obj, pretty){
   var type = typeof obj;
   if (obj === null) {
     buf.push("null");
@@ -2007,15 +2031,13 @@ toJsonArray = function(buf, obj, pretty){
     }
   }
 };
-// Copyright (C) 2009 BRAT Tech LLC
-
 // Single $ is special and does not get searched
 // Double $$ is special an is client only (does not get sent to server)
 
-Model = function(entity, initial) {
-  this.$$entity = entity;
+function Model(entity, initial) {
+  this['$$entity'] = entity;
   this.$loadFrom(initial||{});
-  this.$entity = entity.title;
+  this.$entity = entity['title'];
   this.$migrate();
 };
 
@@ -2036,43 +2058,44 @@ Model.copyDirectFields = function(src, dst) {
   }
 };
 
-Model.prototype.$migrate = function() {
-  merge(this.$$entity.defaults, this);
-  return this;
-};
-
-Model.prototype.$merge = function(other) {
-  merge(other, this);
-  return this;
-};
-
-Model.prototype.$save = function(callback) {
-  this.$$entity.datastore.save(this, callback === true ? undefined : callback);
-  if (callback === true) this.$$entity.datastore.flush();
-  return this;
-};
-
-Model.prototype.$delete = function(callback) {
-  this.$$entity.datastore.remove(this, callback === true ? undefined : callback);
-  if (callback === true) this.$$entity.datastore.flush();
-  return this;
-};
-
-Model.prototype.$loadById = function(id, callback) {
-  this.$$entity.datastore.load(this, id, callback);
-  return this;
-};
-
-Model.prototype.$loadFrom = function(other) {
-  Model.copyDirectFields(other, this);
-  return this;
-};
-
-Model.prototype.$saveTo = function(other) {
-  Model.copyDirectFields(this, other);
-  return this;
-};
-Lexer = function(text, parsStrings){
+Model.prototype = {
+  '$migrate': function() {
+    merge(this['$$entity'].defaults, this);
+    return this;
+  },
+  
+  '$merge': function(other) {
+    merge(other, this);
+    return this;
+  },
+  
+  '$save': function(callback) {
+    this['$$entity'].datastore.save(this, callback === true ? undefined : callback);
+    if (callback === true) this['$$entity'].datastore.flush();
+    return this;
+  },
+  
+  '$delete': function(callback) {
+    this['$$entity'].datastore.remove(this, callback === true ? undefined : callback);
+    if (callback === true) this['$$entity'].datastore.flush();
+    return this;
+  },
+  
+  '$loadById': function(id, callback) {
+    this['$$entity'].datastore.load(this, id, callback);
+    return this;
+  },
+  
+  '$loadFrom': function(other) {
+    Model.copyDirectFields(other, this);
+    return this;
+  },
+  
+  '$saveTo': function(other) {
+    Model.copyDirectFields(this, other);
+    return this;
+  }
+};function Lexer(text, parsStrings){
   this.text = text;
   // UTC dates have 20 characters, we send them through parser
   this.dateParseLength = parsStrings ? 20 : -1;
@@ -2104,210 +2127,214 @@ Lexer.OPERATORS = {
     '|':function(self, a,b){return b(self, a);},
     '!':function(self, a){return !a;}
 };
+Lexer.ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-Lexer.prototype.peek = function() {
-  if (this.index + 1 < this.text.length) {
-    return this.text.charAt(this.index + 1);
-  } else {
-    return false;
-  }
-};
-
-Lexer.prototype.parse = function() {
-  var tokens = this.tokens;
-  var OPERATORS = Lexer.OPERATORS;
-  var canStartRegExp = true;
-  while (this.index < this.text.length) {
-    var ch = this.text.charAt(this.index);
-    if (ch == '"' || ch == "'") {
-      this.readString(ch);
-      canStartRegExp = true;
-    } else if (ch == '(' || ch == '[') {
-      tokens.push({index:this.index, text:ch});
-      this.index++;
-    } else if (ch == '{' ) {
-      var peekCh = this.peek();
-      if (peekCh == ':' || peekCh == '(') {
-        tokens.push({index:this.index, text:ch + peekCh});
+Lexer.prototype = {
+  peek: function() {
+    if (this.index + 1 < this.text.length) {
+      return this.text.charAt(this.index + 1);
+    } else {
+      return false;
+    }
+  },
+  
+  parse: function() {
+    var tokens = this.tokens;
+    var OPERATORS = Lexer.OPERATORS;
+    var canStartRegExp = true;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (ch == '"' || ch == "'") {
+        this.readString(ch);
+        canStartRegExp = true;
+      } else if (ch == '(' || ch == '[') {
+        tokens.push({index:this.index, text:ch});
+        this.index++;
+      } else if (ch == '{' ) {
+        var peekCh = this.peek();
+        if (peekCh == ':' || peekCh == '(') {
+          tokens.push({index:this.index, text:ch + peekCh});
+          this.index++;
+        } else {
+          tokens.push({index:this.index, text:ch});
+        }
+        this.index++;
+        canStartRegExp = true;
+      } else if (ch == ')' || ch == ']' || ch == '}' ) {
+        tokens.push({index:this.index, text:ch});
+        this.index++;
+        canStartRegExp = false;
+      } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
+        tokens.push({index:this.index, text:ch});
+        this.index++;
+        canStartRegExp = true;
+      } else if ( canStartRegExp && ch == '/' ) {
+        this.readRegexp();
+        canStartRegExp = false;
+      } else if ( this.isNumber(ch) ) {
+        this.readNumber();
+        canStartRegExp = false;
+      } else if (this.isIdent(ch)) {
+        this.readIdent();
+        canStartRegExp = false;
+      } else if (this.isWhitespace(ch)) {
         this.index++;
       } else {
-        tokens.push({index:this.index, text:ch});
-      }
-      this.index++;
-      canStartRegExp = true;
-    } else if (ch == ')' || ch == ']' || ch == '}' ) {
-      tokens.push({index:this.index, text:ch});
-      this.index++;
-      canStartRegExp = false;
-    } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
-      tokens.push({index:this.index, text:ch});
-      this.index++;
-      canStartRegExp = true;
-    } else if ( canStartRegExp && ch == '/' ) {
-      this.readRegexp();
-      canStartRegExp = false;
-    } else if ( this.isNumber(ch) ) {
-      this.readNumber();
-      canStartRegExp = false;
-    } else if (this.isIdent(ch)) {
-      this.readIdent();
-      canStartRegExp = false;
-    } else if (this.isWhitespace(ch)) {
-      this.index++;
-    } else {
-      var ch2 = ch + this.peek();
-      var fn = OPERATORS[ch];
-      var fn2 = OPERATORS[ch2];
-      if (fn2) {
-        tokens.push({index:this.index, text:ch2, fn:fn2});
-        this.index += 2;
-      } else if (fn) {
-        tokens.push({index:this.index, text:ch, fn:fn});
-        this.index += 1;
-      } else {
-        throw "Lexer Error: Unexpected next character [" +
-            this.text.substring(this.index) +
-            "] in expression '" + this.text +
-            "' at column '" + (this.index+1) + "'.";
-      }
-      canStartRegExp = true;
-    }
-  }
-  return tokens;
-};
-
-Lexer.prototype.isNumber = function(ch) {
-  return '0' <= ch && ch <= '9';
-};
-
-Lexer.prototype.isWhitespace = function(ch) {
-  return ch == ' ' || ch == '\r' || ch == '\t' ||
-         ch == '\n' || ch == '\v';
-};
-
-Lexer.prototype.isIdent = function(ch) {
-  return 'a' <= ch && ch <= 'z' ||
-         'A' <= ch && ch <= 'Z' ||
-         '_' == ch || ch == '$';
-};
-
-Lexer.prototype.readNumber = function() {
-  var number = "";
-  var start = this.index;
-  while (this.index < this.text.length) {
-    var ch = this.text.charAt(this.index);
-    if (ch == '.' || this.isNumber(ch)) {
-      number += ch;
-    } else {
-      break;
-    }
-    this.index++;
-  }
-  number = 1 * number;
-  this.tokens.push({index:start, text:number,
-    fn:function(){return number;}});
-};
-
-Lexer.prototype.readIdent = function() {
-  var ident = "";
-  var start = this.index;
-  while (this.index < this.text.length) {
-    var ch = this.text.charAt(this.index);
-    if (ch == '.' || this.isIdent(ch) || this.isNumber(ch)) {
-      ident += ch;
-    } else {
-      break;
-    }
-    this.index++;
-  }
-  var fn = Lexer.OPERATORS[ident];
-  if (!fn) {
-    fn = function(self){
-      return self.scope.get(ident);
-    };
-    fn.isAssignable = ident;
-  }
-  this.tokens.push({index:start, text:ident, fn:fn});
-};
-Lexer.ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
-Lexer.prototype.readString = function(quote) {
-  var start = this.index;
-  var dateParseLength = this.dateParseLength;
-  this.index++;
-  var string = "";
-  var escape = false;
-  while (this.index < this.text.length) {
-    var ch = this.text.charAt(this.index);
-    if (escape) {
-      if (ch == 'u') {
-        var hex = this.text.substring(this.index + 1, this.index + 5);
-        this.index += 4;
-        string += String.fromCharCode(parseInt(hex, 16));
-      } else {
-        var rep = Lexer.ESCAPE[ch];
-        if (rep) {
-          string += rep;
+        var ch2 = ch + this.peek();
+        var fn = OPERATORS[ch];
+        var fn2 = OPERATORS[ch2];
+        if (fn2) {
+          tokens.push({index:this.index, text:ch2, fn:fn2});
+          this.index += 2;
+        } else if (fn) {
+          tokens.push({index:this.index, text:ch, fn:fn});
+          this.index += 1;
         } else {
-          string += ch;
+          throw "Lexer Error: Unexpected next character [" +
+              this.text.substring(this.index) +
+              "] in expression '" + this.text +
+              "' at column '" + (this.index+1) + "'.";
         }
+        canStartRegExp = true;
       }
-      escape = false;
-    } else if (ch == '\\') {
-      escape = true;
-    } else if (ch == quote) {
-      this.index++;
-      this.tokens.push({index:start, text:string,
-        fn:function(){
-          return (string.length == dateParseLength) ?
-            angular['String']['toDate'](string) : string;
-        }});
-      return;
-    } else {
-      string += ch;
     }
+    return tokens;
+  },
+  
+  isNumber: function(ch) {
+    return '0' <= ch && ch <= '9';
+  },
+  
+  isWhitespace: function(ch) {
+    return ch == ' ' || ch == '\r' || ch == '\t' ||
+           ch == '\n' || ch == '\v';
+  },
+  
+  isIdent: function(ch) {
+    return 'a' <= ch && ch <= 'z' ||
+           'A' <= ch && ch <= 'Z' ||
+           '_' == ch || ch == '$';
+  },
+  
+  readNumber: function() {
+    var number = "";
+    var start = this.index;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (ch == '.' || this.isNumber(ch)) {
+        number += ch;
+      } else {
+        break;
+      }
+      this.index++;
+    }
+    number = 1 * number;
+    this.tokens.push({index:start, text:number,
+      fn:function(){return number;}});
+  },
+  
+  readIdent: function() {
+    var ident = "";
+    var start = this.index;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (ch == '.' || this.isIdent(ch) || this.isNumber(ch)) {
+        ident += ch;
+      } else {
+        break;
+      }
+      this.index++;
+    }
+    var fn = Lexer.OPERATORS[ident];
+    if (!fn) {
+      fn = function(self){
+        return self.scope.get(ident);
+      };
+      fn.isAssignable = ident;
+    }
+    this.tokens.push({index:start, text:ident, fn:fn});
+  },
+  
+  readString: function(quote) {
+    var start = this.index;
+    var dateParseLength = this.dateParseLength;
     this.index++;
+    var string = "";
+    var escape = false;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (escape) {
+        if (ch == 'u') {
+          var hex = this.text.substring(this.index + 1, this.index + 5);
+          this.index += 4;
+          string += String.fromCharCode(parseInt(hex, 16));
+        } else {
+          var rep = Lexer.ESCAPE[ch];
+          if (rep) {
+            string += rep;
+          } else {
+            string += ch;
+          }
+        }
+        escape = false;
+      } else if (ch == '\\') {
+        escape = true;
+      } else if (ch == quote) {
+        this.index++;
+        this.tokens.push({index:start, text:string,
+          fn:function(){
+            return (string.length == dateParseLength) ?
+              angular['String']['toDate'](string) : string;
+          }});
+        return;
+      } else {
+        string += ch;
+      }
+      this.index++;
+    }
+    throw "Lexer Error: Unterminated quote [" +
+        this.text.substring(start) + "] starting at column '" +
+        (start+1) + "' in expression '" + this.text + "'.";
+  },
+  
+  readRegexp: function(quote) {
+    var start = this.index;
+    this.index++;
+    var regexp = "";
+    var escape = false;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (escape) {
+        regexp += ch;
+        escape = false;
+      } else if (ch === '\\') {
+        regexp += ch;
+        escape = true;
+      } else if (ch === '/') {
+        this.index++;
+        var flags = "";
+        if (this.isIdent(this.text.charAt(this.index))) {
+          this.readIdent();
+          flags = this.tokens.pop().text;
+        }
+        var compiledRegexp = new RegExp(regexp, flags);
+        this.tokens.push({index:start, text:regexp, flags:flags,
+          fn:function(){return compiledRegexp;}});
+        return;
+      } else {
+        regexp += ch;
+      }
+      this.index++;
+    }
+    throw "Lexer Error: Unterminated RegExp [" +
+        this.text.substring(start) + "] starting at column '" +
+        (start+1) + "' in expression '" + this.text + "'.";
   }
-  throw "Lexer Error: Unterminated quote [" +
-      this.text.substring(start) + "] starting at column '" +
-      (start+1) + "' in expression '" + this.text + "'.";
 };
 
-Lexer.prototype.readRegexp = function(quote) {
-  var start = this.index;
-  this.index++;
-  var regexp = "";
-  var escape = false;
-  while (this.index < this.text.length) {
-    var ch = this.text.charAt(this.index);
-    if (escape) {
-      regexp += ch;
-      escape = false;
-    } else if (ch === '\\') {
-      regexp += ch;
-      escape = true;
-    } else if (ch === '/') {
-      this.index++;
-      var flags = "";
-      if (this.isIdent(this.text.charAt(this.index))) {
-        this.readIdent();
-        flags = this.tokens.pop().text;
-      }
-      var compiledRegexp = new RegExp(regexp, flags);
-      this.tokens.push({index:start, text:regexp, flags:flags,
-        fn:function(){return compiledRegexp;}});
-      return;
-    } else {
-      regexp += ch;
-    }
-    this.index++;
-  }
-  throw "Lexer Error: Unterminated RegExp [" +
-      this.text.substring(start) + "] starting at column '" +
-      (start+1) + "' in expression '" + this.text + "'.";
-};
+/////////////////////////////////////////
 
-
-Parser = function(text, parseStrings){
+function Parser(text, parseStrings){
   this.text = text;
   this.tokens = new Lexer(text, parseStrings).parse();
   this.index = 0;
@@ -2317,505 +2344,505 @@ Parser.ZERO = function(){
   return 0;
 };
 
-Parser.prototype.error = function(msg, token) {
-  throw "Token '" + token.text + 
-    "' is " + msg + " at column='" + 
-    (token.index + 1) + "' of expression '" + 
-    this.text + "' starting at '" + this.text.substring(token.index) + "'.";
-};
-
-Parser.prototype.peekToken = function() {
-  if (this.tokens.length === 0) 
-    throw "Unexpected end of expression: " + this.text;
-  return this.tokens[0];
-};
-
-Parser.prototype.peek = function(e1, e2, e3, e4) {
-  var tokens = this.tokens;
-  if (tokens.length > 0) {
-    var token = tokens[0];
-    var t = token.text;
-    if (t==e1 || t==e2 || t==e3 || t==e4 ||
-        (!e1 && !e2 && !e3 && !e4)) {
+Parser.prototype = {
+  error: function(msg, token) {
+    throw "Token '" + token.text + 
+      "' is " + msg + " at column='" + 
+      (token.index + 1) + "' of expression '" + 
+      this.text + "' starting at '" + this.text.substring(token.index) + "'.";
+  },
+  
+  peekToken: function() {
+    if (this.tokens.length === 0) 
+      throw "Unexpected end of expression: " + this.text;
+    return this.tokens[0];
+  },
+  
+  peek: function(e1, e2, e3, e4) {
+    var tokens = this.tokens;
+    if (tokens.length > 0) {
+      var token = tokens[0];
+      var t = token.text;
+      if (t==e1 || t==e2 || t==e3 || t==e4 ||
+          (!e1 && !e2 && !e3 && !e4)) {
+        return token;
+      }
+    }
+    return false;
+  },
+  
+  expect: function(e1, e2, e3, e4){
+    var token = this.peek(e1, e2, e3, e4);
+    if (token) {
+      this.tokens.shift();
+      this.currentToken = token;
       return token;
     }
-  }
-  return false;
-};
-
-Parser.prototype.expect = function(e1, e2, e3, e4){
-  var token = this.peek(e1, e2, e3, e4);
-  if (token) {
-    this.tokens.shift();
-    this.currentToken = token;
-    return token;
-  }
-  return false;
-};
-
-Parser.prototype.consume = function(e1){
-  if (!this.expect(e1)) {
-    var token = this.peek();
-    throw "Expecting '" + e1 + "' at column '" +
-        (token.index+1) + "' in '" +
-        this.text + "' got '" +
-        this.text.substring(token.index) + "'.";
-  }
-};
-
-Parser.prototype._unary = function(fn, parse) {
-  var right = parse.apply(this);
-  return function(self) {
-    return fn(self, right(self));
-  };
-};
-
-Parser.prototype._binary = function(left, fn, parse) {
-  var right = parse.apply(this);
-  return function(self) {
-    return fn(self, left(self), right(self));
-  };
-};
-
-Parser.prototype.hasTokens = function () {
-  return this.tokens.length > 0;
-};
-
-Parser.prototype.assertAllConsumed = function(){
-  if (this.tokens.length !== 0) {
-    throw "Did not understand '" + this.text.substring(this.tokens[0].index) +
-        "' while evaluating '" + this.text + "'.";
-  }
-};
-
-Parser.prototype.statements = function(){
-  var statements = [];
-  while(true) {
-    if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
-      statements.push(this.filterChain());
-    if (!this.expect(';')) {
-      return function (self){
-        var value;
-        for ( var i = 0; i < statements.length; i++) {
-          var statement = statements[i];
-          if (statement)
-            value = statement(self);
-        }
-        return value;
-      };
+    return false;
+  },
+  
+  consume: function(e1){
+    if (!this.expect(e1)) {
+      var token = this.peek();
+      throw "Expecting '" + e1 + "' at column '" +
+          (token.index+1) + "' in '" +
+          this.text + "' got '" +
+          this.text.substring(token.index) + "'.";
     }
-  }
-};
-
-Parser.prototype.filterChain = function(){
-  var left = this.expression();
-  var token;
-  while(true) {
-    if ((token = this.expect('|'))) {
-      left = this._binary(left, token.fn, this.filter);
-    } else {
-      return left;
-    }
-  }
-};
-
-Parser.prototype.filter = function(){
-  return this._pipeFunction(angular['filter']);
-};
-
-Parser.prototype.validator = function(){
-  return this._pipeFunction(angular['validator']);
-};
-
-Parser.prototype._pipeFunction = function(fnScope){
-  var fn = this.functionIdent(fnScope);
-  var argsFn = [];
-  var token;
-  while(true) {
-    if ((token = this.expect(':'))) {
-      argsFn.push(this.expression());
-    } else {
-      var fnInvoke = function(self, input){
-        var args = [input];
-        for ( var i = 0; i < argsFn.length; i++) {
-          args.push(argsFn[i](self));
-        }
-        return fn.apply(self, args);
-      };
-      return function(){
-        return fnInvoke;
-      };
-    }
-  }
-};
-
-Parser.prototype.expression = function(){
-  return this.throwStmt();
-};
-
-Parser.prototype.throwStmt = function(){
-  if (this.expect('throw')) {
-    var throwExp = this.assignment();
-    return function (self) {
-      throw throwExp(self);
+  },
+  
+  _unary: function(fn, parse) {
+    var right = parse.apply(this);
+    return function(self) {
+      return fn(self, right(self));
     };
-  } else {
-   return this.assignment();
-  }
-};
-
-Parser.prototype.assignment = function(){
-  var left = this.logicalOR();
-  var token;
-  if (token = this.expect('=')) {
-    if (!left.isAssignable) {
-      throw "Left hand side '" +
-          this.text.substring(0, token.index) + "' of assignment '" +
-          this.text.substring(token.index) + "' is not assignable.";
+  },
+  
+  _binary: function(left, fn, parse) {
+    var right = parse.apply(this);
+    return function(self) {
+      return fn(self, left(self), right(self));
+    };
+  },
+  
+  hasTokens: function () {
+    return this.tokens.length > 0;
+  },
+  
+  assertAllConsumed: function(){
+    if (this.tokens.length !== 0) {
+      throw "Did not understand '" + this.text.substring(this.tokens[0].index) +
+          "' while evaluating '" + this.text + "'.";
     }
-    var ident = function(){return left.isAssignable;};
-    return this._binary(ident, token.fn, this.logicalOR);
-  } else {
-   return left;
-  }
-};
-
-Parser.prototype.logicalOR = function(){
-  var left = this.logicalAND();
-  var token;
-  while(true) {
-    if ((token = this.expect('||'))) {
-      left = this._binary(left, token.fn, this.logicalAND);
+  },
+  
+  statements: function(){
+    var statements = [];
+    while(true) {
+      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
+        statements.push(this.filterChain());
+      if (!this.expect(';')) {
+        return function (self){
+          var value;
+          for ( var i = 0; i < statements.length; i++) {
+            var statement = statements[i];
+            if (statement)
+              value = statement(self);
+          }
+          return value;
+        };
+      }
+    }
+  },
+  
+  filterChain: function(){
+    var left = this.expression();
+    var token;
+    while(true) {
+      if ((token = this.expect('|'))) {
+        left = this._binary(left, token.fn, this.filter);
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  filter: function(){
+    return this._pipeFunction(angular['filter']);
+  },
+  
+  validator: function(){
+    return this._pipeFunction(angular['validator']);
+  },
+  
+  _pipeFunction: function(fnScope){
+    var fn = this.functionIdent(fnScope);
+    var argsFn = [];
+    var token;
+    while(true) {
+      if ((token = this.expect(':'))) {
+        argsFn.push(this.expression());
+      } else {
+        var fnInvoke = function(self, input){
+          var args = [input];
+          for ( var i = 0; i < argsFn.length; i++) {
+            args.push(argsFn[i](self));
+          }
+          return fn.apply(self, args);
+        };
+        return function(){
+          return fnInvoke;
+        };
+      }
+    }
+  },
+  
+  expression: function(){
+    return this.throwStmt();
+  },
+  
+  throwStmt: function(){
+    if (this.expect('throw')) {
+      var throwExp = this.assignment();
+      return function (self) {
+        throw throwExp(self);
+      };
     } else {
-      return left;
+     return this.assignment();
     }
-  }
-};
-
-Parser.prototype.logicalAND = function(){
-  var left = this.negated();
-  var token;
-  while(true) {
-    if ((token = this.expect('&&'))) {
-      left = this._binary(left, token.fn, this.negated);
+  },
+  
+  assignment: function(){
+    var left = this.logicalOR();
+    var token;
+    if (token = this.expect('=')) {
+      if (!left.isAssignable) {
+        throw "Left hand side '" +
+            this.text.substring(0, token.index) + "' of assignment '" +
+            this.text.substring(token.index) + "' is not assignable.";
+      }
+      var ident = function(){return left.isAssignable;};
+      return this._binary(ident, token.fn, this.logicalOR);
     } else {
-      return left;
+     return left;
     }
-  }
-};
-
-Parser.prototype.negated = function(){
-  var token;
-  if (token = this.expect('!')) {
-    return this._unary(token.fn, this.equality);
-  } else {
-   return this.equality();
-  }
-};
-
-Parser.prototype.equality = function(){
-  var left = this.relational();
-  var token;
-  while(true) {
-    if ((token = this.expect('==','!='))) {
-      left = this._binary(left, token.fn, this.relational);
+  },
+  
+  logicalOR: function(){
+    var left = this.logicalAND();
+    var token;
+    while(true) {
+      if ((token = this.expect('||'))) {
+        left = this._binary(left, token.fn, this.logicalAND);
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  logicalAND: function(){
+    var left = this.negated();
+    var token;
+    while(true) {
+      if ((token = this.expect('&&'))) {
+        left = this._binary(left, token.fn, this.negated);
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  negated: function(){
+    var token;
+    if (token = this.expect('!')) {
+      return this._unary(token.fn, this.equality);
     } else {
-      return left;
+     return this.equality();
     }
-  }
-};
-
-Parser.prototype.relational = function(){
-  var left = this.additive();
-  var token;
-  while(true) {
-    if ((token = this.expect('<', '>', '<=', '>='))) {
-      left = this._binary(left, token.fn, this.additive);
+  },
+  
+  equality: function(){
+    var left = this.relational();
+    var token;
+    while(true) {
+      if ((token = this.expect('==','!='))) {
+        left = this._binary(left, token.fn, this.relational);
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  relational: function(){
+    var left = this.additive();
+    var token;
+    while(true) {
+      if ((token = this.expect('<', '>', '<=', '>='))) {
+        left = this._binary(left, token.fn, this.additive);
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  additive: function(){
+    var left = this.multiplicative();
+    var token;
+    while(token = this.expect('+','-')) {
+      left = this._binary(left, token.fn, this.multiplicative);
+    }
+    return left;
+  },
+  
+  multiplicative: function(){
+    var left = this.unary();
+    var token;
+    while(token = this.expect('*','/','%')) {
+        left = this._binary(left, token.fn, this.unary);
+    }
+    return left;
+  },
+  
+  unary: function(){
+    var token;
+    if (this.expect('+')) {
+      return this.primary();
+    } else if (token = this.expect('-')) {
+      return this._binary(Parser.ZERO, token.fn, this.multiplicative);
     } else {
-      return left;
+     return this.primary();
     }
-  }
-};
-
-Parser.prototype.additive = function(){
-  var left = this.multiplicative();
-  var token;
-  while(token = this.expect('+','-')) {
-    left = this._binary(left, token.fn, this.multiplicative);
-  }
-  return left;
-};
-
-Parser.prototype.multiplicative = function(){
-  var left = this.unary();
-  var token;
-  while(token = this.expect('*','/','%')) {
-      left = this._binary(left, token.fn, this.unary);
-  }
-  return left;
-};
-
-Parser.prototype.unary = function(){
-  var token;
-  if (this.expect('+')) {
-    return this.primary();
-  } else if (token = this.expect('-')) {
-    return this._binary(Parser.ZERO, token.fn, this.multiplicative);
-  } else {
-   return this.primary();
-  }
-};
-
-Parser.prototype.functionIdent = function(fnScope) {
-  var token = this.expect();
-  var element = token.text.split('.');
-  var instance = fnScope;
-  var key;
-  for ( var i = 0; i < element.length; i++) {
-    key = element[i];
-    if (instance)
-      instance = instance[key];
-  }
-  if (typeof instance != 'function') {
-    throw "Function '" + token.text + "' at column '" +
-    (token.index+1)  + "' in '" + this.text + "' is not defined.";
-  }
-  return instance;
-};
-
-Parser.prototype.primary = function() {
-  var primary;
-  if (this.expect('(')) {
-    var expression = this.filterChain();
-    this.consume(')');
-    primary = expression;
-  } else if (this.expect('[')) {
-    primary = this.arrayDeclaration();
-  } else if (this.expect('{')) {
-    primary = this.object();
-  } else if (this.expect('{:')) {
-    primary = this.closure(false);
-  } else if (this.expect('{(')) {
-    primary = this.closure(true);
-  } else {
+  },
+  
+  functionIdent: function(fnScope) {
     var token = this.expect();
-    primary = token.fn;
-    if (!primary) {
-      this.error("not a primary expression", token);
+    var element = token.text.split('.');
+    var instance = fnScope;
+    var key;
+    for ( var i = 0; i < element.length; i++) {
+      key = element[i];
+      if (instance)
+        instance = instance[key];
     }
-  }
-  var next;
-  while (next = this.expect('(', '[', '.')) {
-    if (next.text === '(') {
-      primary = this.functionCall(primary);
-    } else if (next.text === '[') {
-      primary = this.objectIndex(primary);
-    } else if (next.text === '.') {
-      primary = this.fieldAccess(primary);
-    } else {
-      throw "IMPOSSIBLE";
+    if (typeof instance != 'function') {
+      throw "Function '" + token.text + "' at column '" +
+      (token.index+1)  + "' in '" + this.text + "' is not defined.";
     }
-  }
-  return primary;
-};
-
-Parser.prototype.closure = function(hasArgs) {
-  var args = [];
-  if (hasArgs) {
-    if (!this.expect(')')) {
-      args.push(this.expect().text);
-      while(this.expect(',')) {
-        args.push(this.expect().text);
-      }
+    return instance;
+  },
+  
+  primary: function() {
+    var primary;
+    if (this.expect('(')) {
+      var expression = this.filterChain();
       this.consume(')');
-    }
-    this.consume(":");
-  }
-  var statements = this.statements();
-  this.consume("}");
-  return function(self){
-    return function($){
-      var scope = new Scope(self.scope.state);
-      scope.set('$', $);
-      for ( var i = 0; i < args.length; i++) {
-        scope.set(args[i], arguments[i]);
+      primary = expression;
+    } else if (this.expect('[')) {
+      primary = this.arrayDeclaration();
+    } else if (this.expect('{')) {
+      primary = this.object();
+    } else if (this.expect('{:')) {
+      primary = this.closure(false);
+    } else if (this.expect('{(')) {
+      primary = this.closure(true);
+    } else {
+      var token = this.expect();
+      primary = token.fn;
+      if (!primary) {
+        this.error("not a primary expression", token);
       }
-      return statements({scope:scope});
-    };
-  };
-};
-
-Parser.prototype.fieldAccess = function(object) {
-  var field = this.expect().text;
-  var fn = function (self){
-    return Scope.getter(object(self), field);
-  };
-  fn.isAssignable = field;
-  return fn;
-};
-
-Parser.prototype.objectIndex = function(obj) {
-  var indexFn = this.expression();
-  this.consume(']');
-  if (this.expect('=')) {
-    var rhs = this.expression();
-    return function (self){
-      return obj(self)[indexFn(self)] = rhs(self);
-    };
-  } else {
-    return function (self){
-      var o = obj(self);
-      var i = indexFn(self);
-      return (o) ? o[i] : undefined;
-    };
-  }
-};
-
-Parser.prototype.functionCall = function(fn) {
-  var argsFn = [];
-  if (this.peekToken().text != ')') {
-    do {
-      argsFn.push(this.expression());
-    } while (this.expect(','));
-  }
-  this.consume(')');
-  return function (self){
+    }
+    var next;
+    while (next = this.expect('(', '[', '.')) {
+      if (next.text === '(') {
+        primary = this.functionCall(primary);
+      } else if (next.text === '[') {
+        primary = this.objectIndex(primary);
+      } else if (next.text === '.') {
+        primary = this.fieldAccess(primary);
+      } else {
+        throw "IMPOSSIBLE";
+      }
+    }
+    return primary;
+  },
+  
+  closure: function(hasArgs) {
     var args = [];
-    for ( var i = 0; i < argsFn.length; i++) {
-      args.push(argsFn[i](self));
-    }
-    var fnPtr = fn(self);
-    if (typeof fnPtr === 'function') {
-      return fnPtr.apply(self, args);
-    } else {
-      throw "Expression '" + fn.isAssignable + "' is not a function.";
-    }
-  };
-};
-
-// This is used with json array declaration
-Parser.prototype.arrayDeclaration = function () {
-  var elementFns = [];
-  if (this.peekToken().text != ']') {
-    do {
-      elementFns.push(this.expression());
-    } while (this.expect(','));
-  }
-  this.consume(']');
-  return function (self){
-    var array = [];
-    for ( var i = 0; i < elementFns.length; i++) {
-      array.push(elementFns[i](self));
-    }
-    return array;
-  };
-};
-
-Parser.prototype.object = function () {
-  var keyValues = [];
-  if (this.peekToken().text != '}') {
-    do {
-      var key = this.expect().text;
+    if (hasArgs) {
+      if (!this.expect(')')) {
+        args.push(this.expect().text);
+        while(this.expect(',')) {
+          args.push(this.expect().text);
+        }
+        this.consume(')');
+      }
       this.consume(":");
-      var value = this.expression();
-      keyValues.push({key:key, value:value});
-    } while (this.expect(','));
-  }
-  this.consume('}');
-  return function (self){
-    var object = {};
-    for ( var i = 0; i < keyValues.length; i++) {
-      var keyValue = keyValues[i];
-      var value = keyValue.value(self);
-      object[keyValue.key] = value;
     }
-    return object;
-  };
-};
-
-Parser.prototype.entityDeclaration = function () {
-  var decl = [];
-  while(this.hasTokens()) {
-    decl.push(this.entityDecl());
-    if (!this.expect(';')) {
-      this.assertAllConsumed();
-    }
-  }
-  return function (self){
-    var code = "";
-    for ( var i = 0; i < decl.length; i++) {
-      code += decl[i](self);
-    }
-    return code;
-  };
-};
-
-Parser.prototype.entityDecl = function () {
-  var entity = this.expect().text;
-  var instance;
-  var defaults;
-  if (this.expect('=')) {
-    instance = entity;
-    entity = this.expect().text;
-  }
-  if (this.expect(':')) {
-    defaults = this.primary()(null);
-  }
-  return function(self) {
-    var datastore = self.scope.get('$datastore');
-    var Entity = datastore.entity(entity, defaults);
-    self.scope.set(entity, Entity);
-    if (instance) {
-      var document = Entity();
-      document.$$anchor = instance;
-      self.scope.set(instance, document);
-      return "$anchor." + instance + ":{" + 
-          instance + "=" + entity + ".load($anchor." + instance + ");" +
-          instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" + 
-        "};";
-    } else {
-      return "";
-    }
-  };
-};
-
-Parser.prototype.watch = function () {
-  var decl = [];
-  while(this.hasTokens()) {
-    decl.push(this.watchDecl());
-    if (!this.expect(';')) {
-      this.assertAllConsumed();
-    }
-  }
-  this.assertAllConsumed();
-  return function (self){
-    for ( var i = 0; i < decl.length; i++) {
-      var d = decl[i](self);
-      self.addListener(d.name, d.fn);
-    }
-  };
-};
-
-Parser.prototype.watchDecl = function () {
-  var anchorName = this.expect().text;
-  this.consume(":");
-  var expression;
-  if (this.peekToken().text == '{') {
-    this.consume("{");
-    expression = this.statements();
+    var statements = this.statements();
     this.consume("}");
-  } else {
-    expression = this.expression();
+    return function(self){
+      return function($){
+        var scope = new Scope(self.scope.state);
+        scope.set('$', $);
+        for ( var i = 0; i < args.length; i++) {
+          scope.set(args[i], arguments[i]);
+        }
+        return statements({scope:scope});
+      };
+    };
+  },
+  
+  fieldAccess: function(object) {
+    var field = this.expect().text;
+    var fn = function (self){
+      return Scope.getter(object(self), field);
+    };
+    fn.isAssignable = field;
+    return fn;
+  },
+  
+  objectIndex: function(obj) {
+    var indexFn = this.expression();
+    this.consume(']');
+    if (this.expect('=')) {
+      var rhs = this.expression();
+      return function (self){
+        return obj(self)[indexFn(self)] = rhs(self);
+      };
+    } else {
+      return function (self){
+        var o = obj(self);
+        var i = indexFn(self);
+        return (o) ? o[i] : undefined;
+      };
+    }
+  },
+  
+  functionCall: function(fn) {
+    var argsFn = [];
+    if (this.peekToken().text != ')') {
+      do {
+        argsFn.push(this.expression());
+      } while (this.expect(','));
+    }
+    this.consume(')');
+    return function (self){
+      var args = [];
+      for ( var i = 0; i < argsFn.length; i++) {
+        args.push(argsFn[i](self));
+      }
+      var fnPtr = fn(self);
+      if (typeof fnPtr === 'function') {
+        return fnPtr.apply(self, args);
+      } else {
+        throw "Expression '" + fn.isAssignable + "' is not a function.";
+      }
+    };
+  },
+  
+  // This is used with json array declaration
+  arrayDeclaration: function () {
+    var elementFns = [];
+    if (this.peekToken().text != ']') {
+      do {
+        elementFns.push(this.expression());
+      } while (this.expect(','));
+    }
+    this.consume(']');
+    return function (self){
+      var array = [];
+      for ( var i = 0; i < elementFns.length; i++) {
+        array.push(elementFns[i](self));
+      }
+      return array;
+    };
+  },
+  
+  object: function () {
+    var keyValues = [];
+    if (this.peekToken().text != '}') {
+      do {
+        var key = this.expect().text;
+        this.consume(":");
+        var value = this.expression();
+        keyValues.push({key:key, value:value});
+      } while (this.expect(','));
+    }
+    this.consume('}');
+    return function (self){
+      var object = {};
+      for ( var i = 0; i < keyValues.length; i++) {
+        var keyValue = keyValues[i];
+        var value = keyValue.value(self);
+        object[keyValue.key] = value;
+      }
+      return object;
+    };
+  },
+  
+  entityDeclaration: function () {
+    var decl = [];
+    while(this.hasTokens()) {
+      decl.push(this.entityDecl());
+      if (!this.expect(';')) {
+        this.assertAllConsumed();
+      }
+    }
+    return function (self){
+      var code = "";
+      for ( var i = 0; i < decl.length; i++) {
+        code += decl[i](self);
+      }
+      return code;
+    };
+  },
+  
+  entityDecl: function () {
+    var entity = this.expect().text;
+    var instance;
+    var defaults;
+    if (this.expect('=')) {
+      instance = entity;
+      entity = this.expect().text;
+    }
+    if (this.expect(':')) {
+      defaults = this.primary()(null);
+    }
+    return function(self) {
+      var datastore = self.scope.get('$datastore');
+      var Entity = datastore.entity(entity, defaults);
+      self.scope.set(entity, Entity);
+      if (instance) {
+        var document = Entity();
+        document.$$anchor = instance;
+        self.scope.set(instance, document);
+        return "$anchor." + instance + ":{" + 
+            instance + "=" + entity + ".load($anchor." + instance + ");" +
+            instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" + 
+          "};";
+      } else {
+        return "";
+      }
+    };
+  },
+  
+  watch: function () {
+    var decl = [];
+    while(this.hasTokens()) {
+      decl.push(this.watchDecl());
+      if (!this.expect(';')) {
+        this.assertAllConsumed();
+      }
+    }
+    this.assertAllConsumed();
+    return function (self){
+      for ( var i = 0; i < decl.length; i++) {
+        var d = decl[i](self);
+        self.addListener(d.name, d.fn);
+      }
+    };
+  },
+  
+  watchDecl: function () {
+    var anchorName = this.expect().text;
+    this.consume(":");
+    var expression;
+    if (this.peekToken().text == '{') {
+      this.consume("{");
+      expression = this.statements();
+      this.consume("}");
+    } else {
+      expression = this.expression();
+    }
+    return function(self) {
+      return {name:anchorName, fn:expression};
+    };
   }
-  return function(self) {
-    return {name:anchorName, fn:expression};
-  };
 };
 
 
-// Copyright (C) 2009 BRAT Tech LLC
-
-Scope = function(initialState, name) {
+function Scope(initialState, name) {
   this.widgets = [];
   this.watchListeners = {};
   this.name = name;
@@ -2830,31 +2857,6 @@ Scope = function(initialState, name) {
 };
 
 Scope.expressionCache = {};
-
-Scope.prototype.updateView = function() {
-  var self = this;
-  this.fireWatchers();
-  _.each(this.widgets, function(widget){
-    self.evalWidget(widget, "", {}, function(){
-      this.updateView(self);
-    });
-  });
-};
-
-Scope.prototype.addWidget = function(controller) {
-  if (controller) this.widgets.push(controller);
-};
-
-Scope.prototype.isProperty = function(exp) {
-  for ( var i = 0; i < exp.length; i++) {
-    var ch = exp.charAt(i);
-    if (ch!='.'  && !Lexer.prototype.isIdent(ch)) {
-      return false;
-    }
-  }
-  return true;
-};
-
 Scope.getter = function(instance, path) {
   if (!path) return instance;
   var element = path.split('.');
@@ -2885,135 +2887,158 @@ Scope.getter = function(instance, path) {
   return instance;
 };
 
-Scope.prototype.get = function(path) {
-  return Scope.getter(this.state, path);
-};
-
-Scope.prototype.set = function(path, value) {
-  var element = path.split('.');
-  var instance = this.state;
-  for ( var i = 0; element.length > 1; i++) {
-    var key = element.shift();
-    var newInstance = instance[key];
-    if (!newInstance) {
-      newInstance = {};
-      instance[key] = newInstance;
-    }
-    instance = newInstance;
-  }
-  instance[element.shift()] = value;
-  return value;
-};
-
-Scope.prototype.setEval = function(expressionText, value) {
-  this.eval(expressionText + "=" + toJson(value));
-};
-
-Scope.prototype.eval = function(expressionText, context) {
-  var expression = Scope.expressionCache[expressionText];
-  if (!expression) {
-    var parser = new Parser(expressionText);
-    expression = parser.statements();
-    parser.assertAllConsumed();
-    Scope.expressionCache[expressionText] = expression;
-  }
-  context = context || {};
-  context.scope = this;
-  return expression(context);
-};
-
-//TODO: Refactor. This function needs to be an execution closure for widgets
-// move to widgets
-// remove expression, just have inner closure.
-Scope.prototype.evalWidget = function(widget, expression, context, onSuccess, onFailure) {
-  try {
-    var value = this.eval(expression, context);
-    if (widget.hasError) {
-      widget.hasError = false;
-      jQuery(widget.view).
-        removeClass('ng-exception').
-        removeAttr('ng-error');
-    }
-    if (onSuccess) {
-      value = onSuccess.apply(widget, [value]);
+Scope.prototype = {
+  updateView: function() {
+    var self = this;
+    this.fireWatchers();
+    _.each(this.widgets, function(widget){
+      self.evalWidget(widget, "", {}, function(){
+        this.updateView(self);
+      });
+    });
+  },
+  
+  addWidget: function(controller) {
+    if (controller) this.widgets.push(controller);
+  },
+  
+  isProperty: function(exp) {
+    for ( var i = 0; i < exp.length; i++) {
+      var ch = exp.charAt(i);
+      if (ch!='.'  && !Lexer.prototype.isIdent(ch)) {
+        return false;
+      }
     }
     return true;
-  } catch (e){
-    error('Eval Widget Error:', e);
-    var jsonError = toJson(e, true);
-    widget.hasError = true;
-    jQuery(widget.view).
-      addClass('ng-exception').
-      attr('ng-error', jsonError);
-    if (onFailure) {
-      onFailure.apply(widget, [e, jsonError]);
+  },
+    
+  get: function(path) {
+    return Scope.getter(this.state, path);
+  },
+  
+  set: function(path, value) {
+    var element = path.split('.');
+    var instance = this.state;
+    for ( var i = 0; element.length > 1; i++) {
+      var key = element.shift();
+      var newInstance = instance[key];
+      if (!newInstance) {
+        newInstance = {};
+        instance[key] = newInstance;
+      }
+      instance = newInstance;
     }
-    return false;
-  }
-};
-
-Scope.prototype.validate = function(expressionText, value) {
-  var expression = Scope.expressionCache[expressionText];
-  if (!expression) {
-    expression = new Parser(expressionText).validator();
-    Scope.expressionCache[expressionText] = expression;
-  }
-  var self = {scope:this};
-  return expression(self)(self, value);
-};
-
-Scope.prototype.entity = function(entityDeclaration) {
-  var expression = new Parser(entityDeclaration).entityDeclaration();
-  return expression({scope:this});
-};
-
-Scope.prototype.markInvalid = function(widget) {
-  this.state.$invalidWidgets.push(widget);
-};
-
-Scope.prototype.watch = function(declaration) {
-  var self = this;
-  new Parser(declaration).watch()({
-    scope:this,
-    addListener:function(watch, exp){
-      self.addWatchListener(watch, function(n,o){
-        try {
-          return exp({scope:self}, n, o);
-        } catch(e) {
-          alert(e);
-        }
-      });
+    instance[element.shift()] = value;
+    return value;
+  },
+  
+  setEval: function(expressionText, value) {
+    this.eval(expressionText + "=" + toJson(value));
+  },
+  
+  eval: function(expressionText, context) {
+    var expression = Scope.expressionCache[expressionText];
+    if (!expression) {
+      var parser = new Parser(expressionText);
+      expression = parser.statements();
+      parser.assertAllConsumed();
+      Scope.expressionCache[expressionText] = expression;
     }
-  });
-};
-
-Scope.prototype.addWatchListener = function(watchExpression, listener) {
-  var watcher = this.watchListeners[watchExpression];
-  if (!watcher) {
-    watcher = {listeners:[], expression:watchExpression};
-    this.watchListeners[watchExpression] = watcher;
-  }
-  watcher.listeners.push(listener);
-};
-
-Scope.prototype.fireWatchers = function() {
-  var self = this;
-  var fired = false;
-  foreach(this.watchListeners, function(watcher) {
-    var value = self.eval(watcher.expression);
-    if (value !== watcher.lastValue) {
-      foreach(watcher.listeners, function(listener){
-        listener(value, watcher.lastValue);
-        fired = true;
-      });
-      watcher.lastValue = value;
+    context = context || {};
+    context.scope = this;
+    return expression(context);
+  },
+  
+  //TODO: Refactor. This function needs to be an execution closure for widgets
+  // move to widgets
+  // remove expression, just have inner closure.
+  evalWidget: function(widget, expression, context, onSuccess, onFailure) {
+    try {
+      var value = this.eval(expression, context);
+      if (widget.hasError) {
+        widget.hasError = false;
+        jQuery(widget.view).
+          removeClass('ng-exception').
+          removeAttr('ng-error');
+      }
+      if (onSuccess) {
+        value = onSuccess.apply(widget, [value]);
+      }
+      return true;
+    } catch (e){
+      error('Eval Widget Error:', e);
+      var jsonError = toJson(e, true);
+      widget.hasError = true;
+      jQuery(widget.view).
+        addClass('ng-exception').
+        attr('ng-error', jsonError);
+      if (onFailure) {
+        onFailure.apply(widget, [e, jsonError]);
+      }
+      return false;
     }
-  });
-  return fired;
-};
-// Copyright (C) 2008,2009 BRAT Tech LLC
-
-Server = function(url, getScript) {
+  },
+  
+  validate: function(expressionText, value) {
+    var expression = Scope.expressionCache[expressionText];
+    if (!expression) {
+      expression = new Parser(expressionText).validator();
+      Scope.expressionCache[expressionText] = expression;
+    }
+    var self = {scope:this};
+    return expression(self)(self, value);
+  },
+  
+  entity: function(entityDeclaration) {
+    var expression = new Parser(entityDeclaration).entityDeclaration();
+    return expression({scope:this});
+  },
+  
+  markInvalid: function(widget) {
+    this.state.$invalidWidgets.push(widget);
+  },
+  
+  watch: function(declaration) {
+    var self = this;
+    new Parser(declaration).watch()({
+      scope:this,
+      addListener:function(watch, exp){
+        self.addWatchListener(watch, function(n,o){
+          try {
+            return exp({scope:self}, n, o);
+          } catch(e) {
+            alert(e);
+          }
+        });
+      }
+    });
+  },
+  
+  addWatchListener: function(watchExpression, listener) {
+    var watcher = this.watchListeners[watchExpression];
+    if (!watcher) {
+      watcher = {listeners:[], expression:watchExpression};
+      this.watchListeners[watchExpression] = watcher;
+    }
+    watcher.listeners.push(listener);
+  },
+  
+  fireWatchers: function() {
+    var self = this;
+    var fired = false;
+    foreach(this.watchListeners, function(watcher) {
+      var value = self.eval(watcher.expression);
+      if (value !== watcher.lastValue) {
+        foreach(watcher.listeners, function(listener){
+          listener(value, watcher.lastValue);
+          fired = true;
+        });
+        watcher.lastValue = value;
+      }
+    });
+    return fired;
+  }
+};function Server(url, getScript) {
   this.url = url;
   this.nextId = 0;
   this.getScript = getScript;
@@ -3021,27 +3046,29 @@ Server = function(url, getScript) {
   this.maxSize = 1800;
 };
 
-Server.prototype.base64url = function(txt) {
-  return Base64.encode(txt);
-};
-
-Server.prototype.request = function(method, url, request, callback) {
-  var requestId = this.uuid + (this.nextId++);
-  angularCallbacks[requestId] = function(response) {
-    delete angular[requestId];
-    callback(200, response);
-  };
-  var payload = {u:url, m:method, p:request};
-  payload = this.base64url(toJson(payload));
-  var totalPockets = Math.ceil(payload.length / this.maxSize);
-  var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
-  for ( var pocketNo = 0; pocketNo < totalPockets; pocketNo++) {
-    var pocket = payload.substr(pocketNo * this.maxSize, this.maxSize);
-    this.getScript(baseUrl + (pocketNo+1) + "?h=" + pocket, noop);
+Server.prototype = {
+  base64url: function(txt) {
+    return Base64.encode(txt);
+  },
+  
+  request: function(method, url, request, callback) {
+    var requestId = this.uuid + (this.nextId++);
+    angularCallbacks[requestId] = function(response) {
+      delete angular[requestId];
+      callback(200, response);
+    };
+    var payload = {u:url, m:method, p:request};
+    payload = this.base64url(toJson(payload));
+    var totalPockets = Math.ceil(payload.length / this.maxSize);
+    var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
+    for ( var pocketNo = 0; pocketNo < totalPockets; pocketNo++) {
+      var pocket = payload.substr(pocketNo * this.maxSize, this.maxSize);
+      this.getScript(baseUrl + (pocketNo+1) + "?h=" + pocket, noop);
+    }
   }
 };
 
-FrameServer = function(frame) {
+function FrameServer(frame) {
   this.frame = frame;
 };
 FrameServer.PREFIX = "$DATASET:";
@@ -3059,7 +3086,7 @@ FrameServer.prototype = {
 };
 
 
-VisualServer = function(delegate, status, update) {
+function VisualServer(delegate, status, update) {
   this.delegate = delegate;
   this.update = update;
   this.status = status;
@@ -3080,14 +3107,13 @@ VisualServer.prototype = {
     });
   }
 };
-// Copyright (C) 2008,2009 BRAT Tech LLC
-Users = function(server, controlBar) {
+function Users(server, controlBar) {
   this.server = server;
   this.controlBar = controlBar;
 };
 
 Users.prototype = {
-  fetchCurrentUser:function(callback) {
+  'fetchCurrentUser':function(callback) {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
       self.current = response.user;
@@ -3095,7 +3121,7 @@ Users.prototype = {
     });
   },
   
-  logout: function(callback) {
+  'logout': function(callback) {
     var self = this;
     this.controlBar.logout(function(){
       delete self.current;
@@ -3103,7 +3129,7 @@ Users.prototype = {
     });
   },
   
-  login: function(callback) {
+  'login': function(callback) {
     var self = this;
     this.controlBar.login(function(){
       self.fetchCurrentUser(function(){
@@ -3112,12 +3138,10 @@ Users.prototype = {
     });
   },
 
-  notAuthorized: function(){
+  'notAuthorized': function(){
     this.controlBar.notAuthorized();
   }
 };
-// Copyright (C) 2009 BRAT Tech LLC
-
 foreach({
   'regexp': function(value, regexp, msg) {
     if (!value.match(regexp)) {
@@ -3198,10 +3222,7 @@ foreach({
     }
   }
 }, function(v,k) {angularValidator[k] = v;});
-// Copyright (C) 2009 BRAT Tech LLC
-
-
-WidgetFactory = function(serverUrl, database) {
+function WidgetFactory(serverUrl, database) {
   this.nextUploadId = 0;
   this.serverUrl = serverUrl;
   this.database = database;
@@ -3215,80 +3236,81 @@ WidgetFactory = function(serverUrl, database) {
   this.onChangeListener = function(){};
 };
 
-WidgetFactory.prototype.createController = function(input, scope) {
-  var controller;
-  var type = input.attr('type').toLowerCase();
-  var exp = input.attr('name');
-  if (exp) exp = exp.split(':').pop();
-  var event = "change";
-  var bubbleEvent = true;
-  if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
-    controller = new ButtonController(input[0], exp);
-    event = "click";
-    bubbleEvent = false;
-  } else if (type == 'text' || type == 'textarea' || type == 'hidden' || type == 'password') {
-    controller = new TextController(input[0], exp);
-    event = "keyup change";
-  } else if (type == 'checkbox') {
-    controller = new CheckboxController(input[0], exp);
-    event = "click";
-  } else if (type == 'radio') {
-    controller = new RadioController(input[0], exp);
-    event="click";
-  } else if (type == 'select-one') {
-    controller = new SelectController(input[0], exp);
-  } else if (type == 'select-multiple') {
-    controller = new MultiSelectController(input[0], exp);
-  } else if (type == 'file') {
-    controller = this.createFileController(input, exp);
-  } else {
-    throw 'Unknown type: ' + type;
-  }
-  input.data('controller', controller);
-  var binder = scope.get('$binder');
-  var action = function() {
-    if (controller.updateModel(scope)) {
-      var action = jQuery(controller.view).attr('ng-action') || "";
-      if (scope.evalWidget(controller, action)) {
-        binder.updateView(scope);
-      }
+WidgetFactory.prototype = {
+  createController: function(input, scope) {
+    var controller;
+    var type = input.attr('type').toLowerCase();
+    var exp = input.attr('name');
+    if (exp) exp = exp.split(':').pop();
+    var event = "change";
+    var bubbleEvent = true;
+    if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
+      controller = new ButtonController(input[0], exp);
+      event = "click";
+      bubbleEvent = false;
+    } else if (type == 'text' || type == 'textarea' || type == 'hidden' || type == 'password') {
+      controller = new TextController(input[0], exp);
+      event = "keyup change";
+    } else if (type == 'checkbox') {
+      controller = new CheckboxController(input[0], exp);
+      event = "click";
+    } else if (type == 'radio') {
+      controller = new RadioController(input[0], exp);
+      event="click";
+    } else if (type == 'select-one') {
+      controller = new SelectController(input[0], exp);
+    } else if (type == 'select-multiple') {
+      controller = new MultiSelectController(input[0], exp);
+    } else if (type == 'file') {
+      controller = this.createFileController(input, exp);
+    } else {
+      throw 'Unknown type: ' + type;
     }
-    return bubbleEvent;
-  };
-  jQuery(controller.view, ":input").
-    bind(event, action);
-  return controller;
+    input.data('controller', controller);
+    var binder = scope.get('$binder');
+    var action = function() {
+      if (controller.updateModel(scope)) {
+        var action = jQuery(controller.view).attr('ng-action') || "";
+        if (scope.evalWidget(controller, action)) {
+          binder.updateView(scope);
+        }
+      }
+      return bubbleEvent;
+    };
+    jQuery(controller.view, ":input").
+      bind(event, action);
+    return controller;
+  },
+  
+  createFileController: function(fileInput) {
+    var uploadId = '__uploadWidget_' + (this.nextUploadId++);
+    var view = FileController.template(uploadId);
+    fileInput.after(view);
+    var att = {
+        data:this.serverUrl + "/admin/ServerAPI.swf",
+        width:"95", height:"20", align:"top",
+        wmode:"transparent"};
+    var par = {
+        flashvars:"uploadWidgetId=" + uploadId,
+        allowScriptAccess:"always"};
+    var swfNode = this.createSWF(att, par, uploadId);
+    fileInput.remove();
+    var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
+    jQuery(swfNode).data('controller', cntl);
+    return cntl;
+  },
+  
+  createTextWidget: function(textInput) {
+    var controller = new TextController(textInput);
+    controller.onChange(this.onChangeListener);
+    return controller;
+  }
 };
-
-WidgetFactory.prototype.createFileController = function(fileInput) {
-  var uploadId = '__uploadWidget_' + (this.nextUploadId++);
-  var view = FileController.template(uploadId);
-  fileInput.after(view);
-  var att = {
-      data:this.serverUrl + "/admin/ServerAPI.swf",
-      width:"95", height:"20", align:"top",
-      wmode:"transparent"};
-  var par = {
-      flashvars:"uploadWidgetId=" + uploadId,
-      allowScriptAccess:"always"};
-  var swfNode = this.createSWF(att, par, uploadId);
-  fileInput.remove();
-  var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
-  jQuery(swfNode).data('controller', cntl);
-  return cntl;
-};
-
-WidgetFactory.prototype.createTextWidget = function(textInput) {
-  var controller = new TextController(textInput);
-  controller.onChange(this.onChangeListener);
-  return controller;
-};
-
 /////////////////////
 // FileController
 ///////////////////////
 
-FileController = function(view, scopeName, uploader, databaseUrl) {
+function FileController(view, scopeName, uploader, databaseUrl) {
   this.view = view;
   this.uploader = uploader;
   this.scopeName = scopeName;
@@ -3312,99 +3334,89 @@ FileController.template = function(id) {
     '</span>');
 };
 
-FileController.prototype._on_cancel = function() {
-};
-
-FileController.prototype._on_complete = function() {
-};
-
-FileController.prototype._on_httpStatus = function(status) {
-  alert("httpStatus:" + this.scopeName + " status:" + status);
-};
-
-FileController.prototype._on_ioError = function() {
-  alert("ioError:" + this.scopeName);
-};
-
-FileController.prototype._on_open = function() {
-  alert("open:" + this.scopeName);
-};
-
-FileController.prototype._on_progress = function(bytesLoaded, bytesTotal) {
-};
-
-FileController.prototype._on_securityError = function() {
-  alert("securityError:" + this.scopeName);
-};
-
-FileController.prototype._on_uploadCompleteData = function(data) {
-  var value = fromJson(data);
-  value.url = this.attachmentsPath + '/' + value.id + '/' + value.text;
-  this.view.find("input").attr('checked', true);
-  var scope = this.view.scope();
-  this.value = value;
-  this.updateModel(scope);
-  this.value = null;
-  scope.get('$binder').updateView();
-};
-
-FileController.prototype._on_select = function(name, size, type) {
-  this.name = name;
-  this.view.find("a").text(name).attr('href', name);
-  this.view.find("span").text(angular['filter']['bytes'](size));
-  this.upload();
-};
-
-FileController.prototype.updateModel = function(scope) {
-  var isChecked = this.view.find("input").attr('checked');
-  var value = isChecked ? this.value : null;
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.set(this.scopeName, value);
-    return true;
+FileController.prototype = {
+  '_on_cancel': noop,
+  '_on_complete': noop,
+  '_on_httpStatus': function(status) {
+    alert("httpStatus:" + this.scopeName + " status:" + status);
+  },
+  '_on_ioError': function() {
+    alert("ioError:" + this.scopeName);
+  },
+  '_on_open': function() {
+    alert("open:" + this.scopeName);
+  },
+  '_on_progress':noop,
+  '_on_securityError':  function() {
+    alert("securityError:" + this.scopeName);
+  },
+  '_on_uploadCompleteData': function(data) {
+    var value = fromJson(data);
+    value.url = this.attachmentsPath + '/' + value.id + '/' + value.text;
+    this.view.find("input").attr('checked', true);
+    var scope = this.view.scope();
+    this.value = value;
+    this.updateModel(scope);
+    this.value = null;
+    scope.get('$binder').updateView();
+  },  
+  '_on_select': function(name, size, type) {
+    this.name = name;
+    this.view.find("a").text(name).attr('href', name);
+    this.view.find("span").text(angular['filter']['bytes'](size));
+    this.upload();
+  },
+  
+  updateModel: function(scope) {
+    var isChecked = this.view.find("input").attr('checked');
+    var value = isChecked ? this.value : null;
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.set(this.scopeName, value);
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var modelValue = scope.get(this.scopeName);
+    if (modelValue && this.value !== modelValue) {
+      this.value = modelValue;
+      this.view.find("a").
+        attr("href", this.value.url).
+        text(this.value.text);
+      this.view.find("span").text(angular['filter']['bytes'](this.value.size));
+    }
+    this.view.find("input").attr('checked', !!modelValue);
+  },
+  
+  upload: function() {
+    if (this.name) {
+      this.uploader.uploadFile(this.attachmentsPath);
+    }
   }
 };
-
-FileController.prototype.updateView = function(scope) {
-  var modelValue = scope.get(this.scopeName);
-  if (modelValue && this.value !== modelValue) {
-    this.value = modelValue;
-    this.view.find("a").
-      attr("href", this.value.url).
-      text(this.value.text);
-    this.view.find("span").text(angular['filter']['bytes'](this.value.size));
-  }
-  this.view.find("input").attr('checked', !!modelValue);
-};
-
-FileController.prototype.upload = function() {
-  if (this.name) {
-    this.uploader.uploadFile(this.attachmentsPath);
-  }
-};
-
 
 ///////////////////////
 // NullController
 ///////////////////////
-NullController = function(view) {this.view = view;};
-NullController.prototype.updateModel = function() { return true; };
-NullController.prototype.updateView = function() { };
+function NullController(view) {this.view = view;};
+NullController.prototype = {
+  updateModel: function() { return true; },
+  updateView: noop
+};
 NullController.instance = new NullController();
 
 
 ///////////////////////
 // ButtonController
 ///////////////////////
-ButtonController = function(view) {this.view = view;};
-ButtonController.prototype.updateModel = function(scope) { return true; };
-ButtonController.prototype.updateView = function(scope) {};
+var ButtonController = NullController;
 
 ///////////////////////
 // TextController
 ///////////////////////
-TextController = function(view, exp) {
+function TextController(view, exp) {
   this.view = view;
   this.exp = exp;
   this.validator = view.getAttribute('ng-validate');
@@ -3418,96 +3430,8 @@ TextController = function(view, exp) {
   }
 };
 
-TextController.prototype.updateModel = function(scope) {
-  var value = this.view.value;
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.setEval(this.exp, value);
-    this.lastValue = value;
-    return true;
-  }
-};
-
-TextController.prototype.updateView = function(scope) {
-  var view = this.view;
-  var value = scope.get(this.exp);
-  if (typeof value === "undefined") {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
-  }
-  value = value ? value : '';
-  if (this.lastValue != value) {
-    view.value = value;
-    this.lastValue = value;
-  }
-  var isValidationError = false;
-  view.removeAttribute('ng-error');
-  if (this.required) {
-    isValidationError = !(value && value.length > 0);
-  }
-  var errorText = isValidationError ? "Required Value" : null;
-  if (!isValidationError && this.validator && value) {
-    errorText = scope.validate(this.validator, value);
-    isValidationError = !!errorText;
-  }
-  if (this.lastErrorText !== errorText) {
-    this.lastErrorText = isValidationError;
-    if (errorText !== null) {
-      view.setAttribute('ng-error', errorText);
-      scope.markInvalid(this);
-    }
-    jQuery(view).toggleClass('ng-validation-error', isValidationError);
-  }
-};
-
-///////////////////////
-// CheckboxController
-///////////////////////
-CheckboxController = function(view, exp) {
-  this.view = view;
-  this.exp = exp;
-  this.lastValue = undefined;
-  this.initialValue = view.checked ? view.value : "";
-};
-
-CheckboxController.prototype.updateModel = function(scope) {
-  var input = this.view;
-  var value = input.checked ? input.value : '';
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.setEval(this.exp, value);
-    this.lastValue = value;
-    return true;
-  }
-};
-
-CheckboxController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var value = scope.eval(this.exp);
-  if (typeof value === "undefined") {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
-  }
-  input.checked = input.value == (''+value);
-};
-
-///////////////////////
-// SelectController
-///////////////////////
-SelectController = function(view, exp) {
-  this.view = view;
-  this.exp = exp;
-  this.lastValue = undefined;
-  this.initialValue = view.value;
-};
-
-SelectController.prototype.updateModel = function(scope) {
-  var input = this.view;
-  if (input.selectedIndex < 0) {
-    scope.setEval(this.exp, null);
-  } else {
+TextController.prototype = {
+  updateModel: function(scope) {
     var value = this.view.value;
     if (this.lastValue === value) {
       return false;
@@ -3516,77 +3440,173 @@ SelectController.prototype.updateModel = function(scope) {
       this.lastValue = value;
       return true;
     }
+  },
+  
+  updateView: function(scope) {
+    var view = this.view;
+    var value = scope.get(this.exp);
+    if (typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    value = value ? value : '';
+    if (this.lastValue != value) {
+      view.value = value;
+      this.lastValue = value;
+    }
+    var isValidationError = false;
+    view.removeAttribute('ng-error');
+    if (this.required) {
+      isValidationError = !(value && value.length > 0);
+    }
+    var errorText = isValidationError ? "Required Value" : null;
+    if (!isValidationError && this.validator && value) {
+      errorText = scope.validate(this.validator, value);
+      isValidationError = !!errorText;
+    }
+    if (this.lastErrorText !== errorText) {
+      this.lastErrorText = isValidationError;
+      if (errorText !== null) {
+        view.setAttribute('ng-error', errorText);
+        scope.markInvalid(this);
+      }
+      jQuery(view).toggleClass('ng-validation-error', isValidationError);
+    }
   }
 };
 
-SelectController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var value = scope.get(this.exp);
-  if (typeof value === 'undefined') {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
+///////////////////////
+// CheckboxController
+///////////////////////
+function CheckboxController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = view.checked ? view.value : "";
+};
+
+CheckboxController.prototype = {
+    updateModel: function(scope) {
+    var input = this.view;
+    var value = input.checked ? input.value : '';
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.eval(this.exp);
+    if (typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    input.checked = input.value == (''+value);
   }
-  if (value !== this.lastValue) {
-    input.value = value ? value : "";
-    this.lastValue = value;
+};
+
+///////////////////////
+// SelectController
+///////////////////////
+function SelectController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = view.value;
+};
+
+SelectController.prototype = {
+  updateModel: function(scope) {
+    var input = this.view;
+    if (input.selectedIndex < 0) {
+      scope.setEval(this.exp, null);
+    } else {
+      var value = this.view.value;
+      if (this.lastValue === value) {
+        return false;
+      } else {
+        scope.setEval(this.exp, value);
+        this.lastValue = value;
+        return true;
+      }
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.get(this.exp);
+    if (typeof value === 'undefined') {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    if (value !== this.lastValue) {
+      input.value = value ? value : "";
+      this.lastValue = value;
+    }
   }
 };
 
 ///////////////////////
 // MultiSelectController
 ///////////////////////
-MultiSelectController = function(view, exp) {
+function MultiSelectController(view, exp) {
   this.view = view;
   this.exp = exp;
   this.lastValue = undefined;
   this.initialValue = this.selected();
 };
 
-MultiSelectController.prototype.selected = function () {
-  var value = [];
-  var options = this.view.options;
-  for ( var i = 0; i < options.length; i++) {
-    var option = options[i];
-    if (option.selected) {
-      value.push(option.value);
-    }
-  }
-  return value;
-};
-
-MultiSelectController.prototype.updateModel = function(scope) {
-  var value = this.selected();
-  // TODO: This is wrong! no caching going on here as we are always comparing arrays
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.setEval(this.exp, value);
-    this.lastValue = value;
-    return true;
-  }
-};
-
-MultiSelectController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var selected = scope.get(this.exp);
-  if (typeof selected === "undefined") {
-    selected = this.initialValue;
-    scope.setEval(this.exp, selected);
-  }
-  if (selected !== this.lastValue) {
-    var options = input.options;
+MultiSelectController.prototype = {
+  selected: function () {
+    var value = [];
+    var options = this.view.options;
     for ( var i = 0; i < options.length; i++) {
       var option = options[i];
-      option.selected = _.include(selected, option.value);
+      if (option.selected) {
+        value.push(option.value);
+      }
     }
-    this.lastValue = selected;
+    return value;
+  },
+  
+  updateModel: function(scope) {
+    var value = this.selected();
+    // TODO: This is wrong! no caching going on here as we are always comparing arrays
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var selected = scope.get(this.exp);
+    if (typeof selected === "undefined") {
+      selected = this.initialValue;
+      scope.setEval(this.exp, selected);
+    }
+    if (selected !== this.lastValue) {
+      var options = input.options;
+      for ( var i = 0; i < options.length; i++) {
+        var option = options[i];
+        option.selected = _.include(selected, option.value);
+      }
+      this.lastValue = selected;
+    }
   }
 };
 
 ///////////////////////
 // RadioController
 ///////////////////////
-RadioController = function(view, exp) {
+function RadioController(view, exp) {
   this.view = view;
   this.exp = exp;
   this.lastChecked = undefined;
@@ -3595,35 +3615,37 @@ RadioController = function(view, exp) {
   this.initialValue = view.checked ? view.value : null;
 };
 
-RadioController.prototype.updateModel = function(scope) {
-  var input = this.view;
-  if (this.lastChecked) {
-    return false;
-  } else {
-    input.checked = true;
-    this.lastValue = scope.setEval(this.exp, this.inputValue);
-    this.lastChecked = true;
-    return true;
-  }
-};
-
-RadioController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var value = scope.get(this.exp);
-  if (this.initialValue && typeof value === "undefined") {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
-  }
-  if (this.lastValue != value) {
-    this.lastChecked = input.checked = this.inputValue == (''+value);
-    this.lastValue = value;
+RadioController.prototype = {
+  updateModel: function(scope) {
+    var input = this.view;
+    if (this.lastChecked) {
+      return false;
+    } else {
+      input.checked = true;
+      this.lastValue = scope.setEval(this.exp, this.inputValue);
+      this.lastChecked = true;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.get(this.exp);
+    if (this.initialValue && typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    if (this.lastValue != value) {
+      this.lastChecked = input.checked = this.inputValue == (''+value);
+      this.lastValue = value;
+    }
   }
 };
 
 ///////////////////////
 //ElementController
 ///////////////////////
-BindUpdater = function(view, exp) {
+function BindUpdater(view, exp) {
   this.view = view;
   this.exp = Binder.parseBindings(exp);
   this.hasError = false;
@@ -3673,152 +3695,170 @@ BindUpdater.toText = function(obj) {
   }
 };
 
-BindUpdater.prototype.updateModel = function(scope) {};
-BindUpdater.prototype.updateView = function(scope) {
-  var html = [];
-  var parts = this.exp;
-  var length = parts.length;
-  for(var i=0; i<length; i++) {
-    var part = parts[i];
-    var binding = Binder.binding(part);
-    if (binding) {
-      scope.evalWidget(this, binding, this.scopeSelf, function(value){
-        html.push(BindUpdater.toText(value));
-      }, function(e, text){
-        setHtml(this.view, text);
-      });
-      if (this.hasError) {
-        return;
+BindUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    var html = [];
+    var parts = this.exp;
+    var length = parts.length;
+    for(var i=0; i<length; i++) {
+      var part = parts[i];
+      var binding = Binder.binding(part);
+      if (binding) {
+        scope.evalWidget(this, binding, this.scopeSelf, function(value){
+          html.push(BindUpdater.toText(value));
+        }, function(e, text){
+          setHtml(this.view, text);
+        });
+        if (this.hasError) {
+          return;
+        }
+      } else {
+        html.push(escapeHtml(part));
       }
-    } else {
-      html.push(escapeHtml(part));
     }
+    setHtml(this.view, html.join(''));
   }
-  setHtml(this.view, html.join(''));
 };
 
-BindAttrUpdater = function(view, attrs) {
+function BindAttrUpdater(view, attrs) {
   this.view = view;
   this.attrs = attrs;
 };
 
-BindAttrUpdater.prototype.updateModel = function(scope) {};
-BindAttrUpdater.prototype.updateView = function(scope) {
-  var jNode = jQuery(this.view);
-  var attributeTemplates = this.attrs;
-  if (this.hasError) {
-    this.hasError = false;
-    jNode.
-      removeClass('ng-exception').
-      removeAttr('ng-error');
-  }
-  var isImage = jNode.is('img');
-  for (var attrName in attributeTemplates) {
-    var attributeTemplate = Binder.parseBindings(attributeTemplates[attrName]);
-    var attrValues = [];
-    for ( var i = 0; i < attributeTemplate.length; i++) {
-      var binding = Binder.binding(attributeTemplate[i]);
-      if (binding) {
-        try {
-          var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
-          if (value && (value.constructor !== array || value.length !== 0))
-            attrValues.push(value);
-        } catch (e) {
-          this.hasError = true;
-          error('BindAttrUpdater', e);
-          var jsonError = toJson(e, true);
-          attrValues.push('[' + jsonError + ']');
-          jNode.
-            addClass('ng-exception').
-            attr('ng-error', jsonError);
-        }
-      } else {
-        attrValues.push(attributeTemplate[i]);
-      }
+BindAttrUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    var jNode = jQuery(this.view);
+    var attributeTemplates = this.attrs;
+    if (this.hasError) {
+      this.hasError = false;
+      jNode.
+        removeClass('ng-exception').
+        removeAttr('ng-error');
     }
-    var attrValue = attrValues.length ? attrValues.join('') : null;
-    if(isImage && attrName == 'src' && !attrValue)
-      attrValue = scope.get('config.server') + '/images/blank.gif';
-    jNode.attr(attrName, attrValue);
+    var isImage = jNode.is('img');
+    for (var attrName in attributeTemplates) {
+      var attributeTemplate = Binder.parseBindings(attributeTemplates[attrName]);
+      var attrValues = [];
+      for ( var i = 0; i < attributeTemplate.length; i++) {
+        var binding = Binder.binding(attributeTemplate[i]);
+        if (binding) {
+          try {
+            var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
+            if (value && (value.constructor !== array || value.length !== 0))
+              attrValues.push(value);
+          } catch (e) {
+            this.hasError = true;
+            error('BindAttrUpdater', e);
+            var jsonError = toJson(e, true);
+            attrValues.push('[' + jsonError + ']');
+            jNode.
+              addClass('ng-exception').
+              attr('ng-error', jsonError);
+          }
+        } else {
+          attrValues.push(attributeTemplate[i]);
+        }
+      }
+      var attrValue = attrValues.length ? attrValues.join('') : null;
+      if(isImage && attrName == 'src' && !attrValue)
+        attrValue = scope.get('config.server') + '/images/blank.gif';
+      jNode.attr(attrName, attrValue);
+    } 
   }
 };
 
-EvalUpdater = function(view, exp) {
+function EvalUpdater(view, exp) {
   this.view = view;
   this.exp = exp;
   this.hasError = false;
 };
-EvalUpdater.prototype.updateModel = function(scope) {};
-EvalUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp);
+EvalUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp);
+  }
 };
 
-HideUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-HideUpdater.prototype.updateModel = function(scope) {};
-HideUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(hideValue){
-    var view = jQuery(this.view);
-    if (toBoolean(hideValue)) {
-      view.hide();
-    } else {
-      view.show();
-    }
-  });
+function HideUpdater(view, exp) { this.view = view; this.exp = exp; };
+HideUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(hideValue){
+      var view = jQuery(this.view);
+      if (toBoolean(hideValue)) {
+        view.hide();
+      } else {
+        view.show();
+      }
+    });
+  }
 };
 
-ShowUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-ShowUpdater.prototype.updateModel = function(scope) {};
-ShowUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(hideValue){
-    var view = jQuery(this.view);
-    if (toBoolean(hideValue)) {
-      view.show();
-    } else {
-      view.hide();
-    }
-  });
+function ShowUpdater(view, exp) { this.view = view; this.exp = exp; };
+ShowUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(hideValue){
+      var view = jQuery(this.view);
+      if (toBoolean(hideValue)) {
+        view.show();
+      } else {
+        view.hide();
+      }
+    });
+  }
 };
 
-ClassUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-ClassUpdater.prototype.updateModel = function(scope) {};
-ClassUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(classValue){
-    if (classValue !== null && classValue !== undefined) {
-      this.view.className = classValue;
-    }
-  });
+function ClassUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      if (classValue !== null && classValue !== undefined) {
+        this.view.className = classValue;
+      }
+    });
+  }
 };
 
-ClassEvenUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-ClassEvenUpdater.prototype.updateModel = function(scope) {};
-ClassEvenUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(classValue){
-    var index = scope.get('$index');
-    jQuery(this.view).toggleClass(classValue, index % 2 === 1);
-  });
+function ClassEvenUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassEvenUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      var index = scope.get('$index');
+      jQuery(this.view).toggleClass(classValue, index % 2 === 1);
+    });
+  }
 };
 
-ClassOddUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-ClassOddUpdater.prototype.updateModel = function(scope) {};
-ClassOddUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(classValue){
-    var index = scope.get('$index');
-    jQuery(this.view).toggleClass(classValue, index % 2 === 0);
-  });
+function ClassOddUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassOddUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      var index = scope.get('$index');
+      jQuery(this.view).toggleClass(classValue, index % 2 === 0);
+    });
+  }
 };
 
-StyleUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-StyleUpdater.prototype.updateModel = function(scope) {};
-StyleUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(styleValue){
-    jQuery(this.view).attr('style', "").css(styleValue);
-  });
+function StyleUpdater(view, exp) { this.view = view; this.exp = exp; };
+StyleUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(styleValue){
+      jQuery(this.view).attr('style', "").css(styleValue);
+    });
+  }
 };
 
 ///////////////////////
 // RepeaterUpdater
 ///////////////////////
-RepeaterUpdater = function(view, repeaterExpression, template, prefix) {
+function RepeaterUpdater(view, repeaterExpression, template, prefix) {
   this.view = view;
   this.template = template;
   this.prefix = prefix;
@@ -3839,80 +3879,76 @@ RepeaterUpdater = function(view, repeaterExpression, template, prefix) {
   this.keyExp = match[2];
 };
 
-RepeaterUpdater.prototype.updateModel = function(scope) {};
-RepeaterUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.iteratorExp, {}, function(iterator){
-    var self = this;
-    if (!iterator) {
-      iterator = [];
-      if (scope.isProperty(this.iteratorExp)) {
-        scope.set(this.iteratorExp, iterator);
+RepeaterUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.iteratorExp, {}, function(iterator){
+      var self = this;
+      if (!iterator) {
+        iterator = [];
+        if (scope.isProperty(this.iteratorExp)) {
+          scope.set(this.iteratorExp, iterator);
+        }
       }
-    }
-    var iteratorLength = iterator.length;
-    var childrenLength = this.children.length;
-    var cursor = this.view;
-    var time = 0;
-    var child = null;
-    var keyExp = this.keyExp;
-    var valueExp = this.valueExp;
-    var i = 0;
-    foreach(iterator, function(value, key){
-      if (i < childrenLength) {
-        // reuse children
-        child = self.children[i];
-        child.scope.set(valueExp, value);
-      } else {
-        // grow children
-        var name = self.prefix +
-          valueExp + " in " + self.iteratorExp + "[" + i + "]";
-        var childScope = new Scope(scope.state, name);
-        childScope.set('$index', i);
-        if (keyExp)
-          childScope.set(keyExp, key);
-        childScope.set(valueExp, value);
-        child = { scope:childScope, element:self.template(childScope, self.prefix, i) };
-        cursor.after(child.element);
-        self.children.push(child);
+      var iteratorLength = iterator.length;
+      var childrenLength = this.children.length;
+      var cursor = this.view;
+      var time = 0;
+      var child = null;
+      var keyExp = this.keyExp;
+      var valueExp = this.valueExp;
+      var i = 0;
+      foreach(iterator, function(value, key){
+        if (i < childrenLength) {
+          // reuse children
+          child = self.children[i];
+          child.scope.set(valueExp, value);
+        } else {
+          // grow children
+          var name = self.prefix +
+            valueExp + " in " + self.iteratorExp + "[" + i + "]";
+          var childScope = new Scope(scope.state, name);
+          childScope.set('$index', i);
+          if (keyExp)
+            childScope.set(keyExp, key);
+          childScope.set(valueExp, value);
+          child = { scope:childScope, element:self.template(childScope, self.prefix, i) };
+          cursor.after(child.element);
+          self.children.push(child);
+        }
+        cursor = child.element;
+        var s = new Date().getTime();
+        child.scope.updateView();
+        time += new Date().getTime() - s;
+        i++;
+      });
+      // shrink children
+      for ( var r = childrenLength; r > iteratorLength; --r) {
+        var unneeded = this.children.pop().element[0];
+        unneeded.parentNode.removeChild(unneeded);
       }
-      cursor = child.element;
-      var s = new Date().getTime();
-      child.scope.updateView();
-      time += new Date().getTime() - s;
-      i++;
+      // Special case for option in select
+      if (child && child.element[0].nodeName === "OPTION") {
+        var select = jQuery(child.element[0].parentNode);
+        var cntl = select.data('controller');
+        if (cntl) {
+          cntl.lastValue = undefined;
+          cntl.updateView(scope);
+        }
+      }
     });
-    // shrink children
-    for ( var r = childrenLength; r > iteratorLength; --r) {
-      var unneeded = this.children.pop().element[0];
-      unneeded.parentNode.removeChild(unneeded);
-    }
-    // Special case for option in select
-    if (child && child.element[0].nodeName === "OPTION") {
-      var select = jQuery(child.element[0].parentNode);
-      var cntl = select.data('controller');
-      if (cntl) {
-        cntl.lastValue = undefined;
-        cntl.updateView(scope);
-      }
-    }
-  });
+  }
 };
 
 //////////////////////////////////
 // PopUp
 //////////////////////////////////
 
-PopUp = function(doc) {
+function PopUp(doc) {
   this.doc = doc;
 };
 
 PopUp.OUT_EVENT = "mouseleave mouseout click dblclick keypress keyup";
-
-PopUp.prototype.bind = function () {
-  var self = this;
-  this.doc.find('.ng-validation-error,.ng-exception').
-    live("mouseover", PopUp.onOver);
-};
 
 PopUp.onOver = function(e) {
   PopUp.onOut();
@@ -3953,29 +3989,39 @@ PopUp.onOut = function() {
   return true;
 };
 
+PopUp.prototype = {
+  bind: function () {
+    var self = this;
+    this.doc.find('.ng-validation-error,.ng-exception').
+      live("mouseover", PopUp.onOver);
+  }
+};
+
 //////////////////////////////////
 // Status
 //////////////////////////////////
 
 
-Status = function(body) {
+function Status(body) {
   this.loader = body.append(Status.DOM).find("#ng-loading");
   this.requestCount = 0;
 };
 
 Status.DOM ='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';
 
-Status.prototype.beginRequest = function () {
-  if (this.requestCount === 0) {
-    this.loader.show();
-  }
-  this.requestCount++;
-};
-
-Status.prototype.endRequest = function () {
-  this.requestCount--;
-  if (this.requestCount === 0) {
-    this.loader.hide("fold");
+Status.prototype = {
+  beginRequest: function () {
+    if (this.requestCount === 0) {
+      this.loader.show();
+    }
+    this.requestCount++;
+  },
+  
+  endRequest: function () {
+    this.requestCount--;
+    if (this.requestCount === 0) {
+      this.loader.hide("fold");
+    }
   }
 };
 })(window, document);

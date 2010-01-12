@@ -1,7 +1,3 @@
-// Copyright (C) 2008,2009 BRAT Tech LLC
-
-// IE compatibility
-
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 if (typeof Node == 'undefined') {
