@@ -190,8 +190,6 @@ var consoleNode,
     extend           = _.extend,
     jQuery           = window['jQuery'],
     msie             = jQuery['browser']['msie'],
-    log              = function(){window['console']['log'].apply(this, arguments);},
-    error            = function(){window['console']['error'].apply(this, arguments);},
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
@@ -199,7 +197,36 @@ var consoleNode,
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments); 
       });
-    
+
+function log(a, b, c){
+  var console = window['console'];
+  switch(arguments.length) {
+  case 1:
+    console['log'](a);
+    break;
+  case 2:
+    console['log'](a, b);
+    break;
+  default:
+    console['log'](a, b, c);
+    break;
+  }
+}
+
+function error(a, b, c){
+  var console = window['console'];
+  switch(arguments.length) {
+  case 1:
+    console['error'](a);
+    break;
+  case 2:
+    console['error'](a, b);
+    break;
+  default:
+    console['error'](a, b, c);
+    break;
+  }
+}
 
 function consoleLog(level, objs) {
   var log = document.createElement("div");
@@ -328,8 +355,6 @@ function Loader(document, head, config) {
 Loader.prototype = {
   load: function() {
     this.configureLogging();
-    this.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
-    this.loadCss('/stylesheets/css');
     log("Server: " + this.config.server);
     this.configureJQueryPlugins();
     this.computeConfiguration();
@@ -431,9 +456,9 @@ Loader.prototype = {
     log('$binder.updateView()');
     binder.updateView();
   
-    watcher.listener = bind(binder, binder.onUrlChange, watcher);
-    watcher.onUpdate = function(){alert("update");};
-    watcher.watch();
+    //watcher.listener = bind(binder, binder.onUrlChange, watcher);
+    //watcher.onUpdate = function(){alert("update");};
+    //watcher.watch();
     document.find("body").show();
     log('ready()');
   },
@@ -547,11 +572,14 @@ UrlWatcher.prototype = {
 angular['compile'] = function(root, config) {
   config = config || {};
   var defaults = {
-    server: ""
+    'server': "",
+    'addUrlChangeListener': noop
   };
-  //todo: don't load stylesheet by default
   //todo: don't start watcher
   var loader = new Loader(root, jQuery("head"), _(defaults).extend(config));
+  //todo: don't load stylesheet by default
+  // loader.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
+  // loader.loadCss('/stylesheets/css');
   loader.load();
   var scope = jQuery(root).scope();
   //TODO: cleanup
