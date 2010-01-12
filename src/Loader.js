@@ -163,8 +163,6 @@ function Loader(document, head, config) {
 Loader.prototype = {
   load: function() {
     this.configureLogging();
-    this.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
-    this.loadCss('/stylesheets/css');
     log("Server: " + this.config.server);
     this.configureJQueryPlugins();
     this.computeConfiguration();
@@ -266,9 +264,9 @@ Loader.prototype = {
     log('$binder.updateView()');
     binder.updateView();
   
-    watcher.listener = bind(binder, binder.onUrlChange, watcher);
-    watcher.onUpdate = function(){alert("update");};
-    watcher.watch();
+    //watcher.listener = bind(binder, binder.onUrlChange, watcher);
+    //watcher.onUpdate = function(){alert("update");};
+    //watcher.watch();
     document.find("body").show();
     log('ready()');
   },
@@ -382,11 +380,14 @@ UrlWatcher.prototype = {
 angular['compile'] = function(root, config) {
   config = config || {};
   var defaults = {
-    server: ""
+    'server': "",
+    'addUrlChangeListener': noop
   };
-  //todo: don't load stylesheet by default
   //todo: don't start watcher
   var loader = new Loader(root, jQuery("head"), _(defaults).extend(config));
+  //todo: don't load stylesheet by default
+  // loader.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
+  // loader.loadCss('/stylesheets/css');
   loader.load();
   var scope = jQuery(root).scope();
   //TODO: cleanup

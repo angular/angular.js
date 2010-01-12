@@ -6,5 +6,9 @@ ExternalApiTest.prototype = {
     var scope = angular.compile(node);
     assertEquals(1, scope.get('a'));
     assertEquals(2, scope.get('b'));
+  },
+  
+  testItShouldRegisterAnchorListener: function (){
+    
   }
 };
