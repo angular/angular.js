@@ -1,0 +1,50 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="../angular.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        var scope = angular.compile(document);
+        scope.set('tweetFor', function(username){
+          scope.set('status', 'fetching');
+          scope.set('tweets', []);
+          $.getJSON("http://twitter.com/statuses/user_timeline/"+username+".json", function(tweets){
+            scope.set('tweets', tweets);
+            scope.set('status', "");
+            scope.updateView();
+          });
+          scope.updateView();
+        });
+        scope.set('tweetHome', function(){
+          scope.set('status', 'fetching');
+          scope.set('tweets', []);
+          $.getJSON("http://twitter.com/statuses/home_timeline.json", function(tweets){
+            scope.set('tweets', tweets);
+            scope.set('status', "");
+            scope.updateView();
+          });
+          scope.updateView();
+        });
+        scope.updateView();
+        scope.get('tweetHome')();
+      });
+    </script>
+    <style>
+    .loading {display: none;}
+    .fetching .loading {display: block;}
+    </style>
+  </head>
+  <body ng-class="status">
+    <input type="button" ng-action="tweetHome()" value="User Timeline"/> <br/>
+    Fetch tweets for:
+    <input name="username"/>
+    <input type="button" ng-action="tweetFor(username)" value="Fetch"/>
+    <hr/>
+    <div class="loading">Loading...</div>
+    <ul>
+     <li ng-repeat="tweet in tweets"><img src="{{tweet.user.profile_image_url}}"/>[{{tweet.user.screen_name}}]: {{tweet.text}}</li>
+    </ul>
+  </body>
+</html>
