@@ -34,7 +34,7 @@ task :compile do
   concat = %x(cat \
       src/angular.prefix \
       lib/webtoolkit/webtoolkit.base64.js \
-      src/Loader.js \
+      src/Angular.js \
       src/API.js \
       src/Binder.js \
       src/ControlBar.js \

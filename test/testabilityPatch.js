@@ -96,7 +96,7 @@ function decode64(base64){
   return fromJson(Base64.decode(base64));
 }
 
-Loader.prototype.configureJQueryPlugins();
+Angular.prototype.configureJQueryPlugins();
 
 function assertHidden(node) {
   var display = node.css('display');

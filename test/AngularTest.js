@@ -1,25 +1,15 @@
-LoaderTest = TestCase('LoaderTest');
+AngularTest = TestCase('AngularTest');
 
-LoaderTest.prototype.testLoadCss = function(){
-  if ($.browser.safari) return;
-  var head = jQuery('<head/>')[0];
-  var loader = new Loader(document, head, {});
-  var log = '';
-  loader.config.server = 'http://';
-  loader.loadCss('x');
-  assertEquals($(head).find('link').attr('href'), 'http://x');
-};
-
-LoaderTest.prototype.testDefaultDatabasePathFromSubdomain = function() {
-  var loader = new Loader(null, null, {server:"http://account.getangular.com", database:"database"});
+AngularTest.prototype.testDefaultDatabasePathFromSubdomain = function() {
+  var loader = new Angular(null, null, {server:"http://account.getangular.com", database:"database"});
   loader.computeConfiguration();
   assertEquals("database", loader.config.database);
 
-  loader = new Loader(null, null, {server:"http://account.getangular.com"});
+  loader = new Angular(null, null, {server:"http://account.getangular.com"});
   loader.computeConfiguration();
   assertEquals("account", loader.config.database);
 
-  loader = new Loader(null, null, {server:"https://account.getangular.com"});
+  loader = new Angular(null, null, {server:"https://account.getangular.com"});
   loader.computeConfiguration();
   assertEquals("account", loader.config.database);
 };

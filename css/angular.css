@@ -63,8 +63,8 @@ div.ui-widget {
   background-repeat: no-repeat;
   background-position: right;
 }
-.ng-ascend  { background-image: url(images/arrow_ascend.png); }
-.ng-descend { background-image: url(images/arrow_descend.png); }
+.ng-ascend  { background-image: url(angular_images/arrow_ascend.png); }
+.ng-descend { background-image: url(angular_images/arrow_descend.png); }
 
 /*****************
  * TIP
@@ -83,7 +83,7 @@ div.ui-widget {
 }
 
 #ng-callout .ng-arrow-left{
-  background-image: url(images/arrow_left.gif);
+  background-image: url(angular_images/arrow_left.gif);
   background-repeat: no-repeat;
   background-position: left top;
   position: absolute;
@@ -95,7 +95,7 @@ div.ui-widget {
 }
 
 #ng-callout .ng-arrow-right{
-  background-image: url(images/arrow_right.gif);
+  background-image: url(angular_images/arrow_right.gif);
   background-repeat: no-repeat;
   background-position: left top;
   position: absolute;

@@ -177,17 +177,17 @@ function merge(src, dst) {
 }
 
 // ////////////////////////////
-// Loader
+// Angular
 // ////////////////////////////
 
-function Loader(document, head, config) {
+function Angular(document, head, config) {
   this.document = jQuery(document);
   this.head = jQuery(head);
   this.config = config;
   this.location = window.location;
 }
 
-Loader.prototype = {
+Angular.prototype = {
   load: function() {
     this.configureLogging();
     log("Server: " + this.config.server);
@@ -197,7 +197,7 @@ Loader.prototype = {
   },
   
   configureJQueryPlugins: function() {
-    log('Loader.configureJQueryPlugins()');
+    log('Angular.configureJQueryPlugins()');
     jQuery['fn']['scope'] = function() {
       var element = this;
       while (element && element.get(0)) {
@@ -226,7 +226,7 @@ Loader.prototype = {
   },
   
   bindHtml: function() {
-    log('Loader.bindHtml()');
+    log('Angular.bindHtml()');
     var watcher = new UrlWatcher(this.location);
     var document = this.document;
     var widgetFactory = new WidgetFactory(this.config.server, this.config.database);
@@ -333,16 +333,6 @@ Loader.prototype = {
         consoleLog('ng-console-error', arguments);
       };
     }
-  },
-  
-  loadCss: function(css) {
-    var cssTag = document.createElement('link');
-    cssTag.rel = "stylesheet";
-    cssTag.type = "text/css";
-    if (!css.match(/^http:/))
-      css = this.config.server + css;
-    cssTag.href = css;
-    this.head[0].appendChild(cssTag);
   }
 };
 
@@ -408,11 +398,11 @@ angular['compile'] = function(root, config) {
     'addUrlChangeListener': noop
   };
   //todo: don't start watcher
-  var loader = new Loader(root, jQuery("head"), _(defaults).extend(config));
+  var angular = new Angular(root, jQuery("head"), _(defaults).extend(config));
   //todo: don't load stylesheet by default
   // loader.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
   // loader.loadCss('/stylesheets/css');
-  loader.load();
+  angular.load();
   var scope = jQuery(root).scope();
   //TODO: cleanup
   return {
