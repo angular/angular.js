@@ -342,17 +342,17 @@ function merge(src, dst) {
 }
 
 // ////////////////////////////
-// Loader
+// Angular
 // ////////////////////////////
 
-function Loader(document, head, config) {
+function Angular(document, head, config) {
   this.document = jQuery(document);
   this.head = jQuery(head);
   this.config = config;
   this.location = window.location;
 }
 
-Loader.prototype = {
+Angular.prototype = {
   load: function() {
     this.configureLogging();
     log("Server: " + this.config.server);
@@ -362,7 +362,7 @@ Loader.prototype = {
   },
   
   configureJQueryPlugins: function() {
-    log('Loader.configureJQueryPlugins()');
+    log('Angular.configureJQueryPlugins()');
     jQuery['fn']['scope'] = function() {
       var element = this;
       while (element && element.get(0)) {
@@ -391,8 +391,8 @@ Loader.prototype = {
   },
   
   bindHtml: function() {
-    log('Loader.bindHtml()');
-    var watcher = new UrlWatcher(this.location);
+    log('Angular.bindHtml()');
+    var watcher = this.watcher = new UrlWatcher(this.location);
     var document = this.document;
     var widgetFactory = new WidgetFactory(this.config.server, this.config.database);
     var binder = new Binder(document[0], widgetFactory, watcher, this.config);
@@ -450,12 +450,6 @@ Loader.prototype = {
     log('$binder.parseAnchor()');
     binder.parseAnchor();
     
-    log('$binder.updateView()');
-    binder.updateView();
-  
-    //watcher.listener = bind(binder, binder.onUrlChange, watcher);
-    //watcher.onUpdate = function(){alert("update");};
-    //watcher.watch();
     document.find("body").show();
     log('ready()');
   },
@@ -498,16 +492,6 @@ Loader.prototype = {
         consoleLog('ng-console-error', arguments);
       };
     }
-  },
-  
-  loadCss: function(css) {
-    var cssTag = document.createElement('link');
-    cssTag.rel = "stylesheet";
-    cssTag.type = "text/css";
-    if (!css.match(/^http:/))
-      css = this.config.server + css;
-    cssTag.href = css;
-    this.head[0].appendChild(cssTag);
   }
 };
 
@@ -553,12 +537,12 @@ UrlWatcher.prototype = {
   },
   
   setUrl: function(url) {
-//    var existingURL = window.location.href;
-//    if (!existingURL.match(/#/))
-//      existingURL += '#';
-//    if (existingURL != url)
-//      window.location.href = url;
-//    this.existingURL = url;
+    var existingURL = window.location.href;
+    if (!existingURL.match(/#/))
+      existingURL += '#';
+    if (existingURL != url)
+      window.location.href = url;
+    this.existingURL = url;
   },
   
   getUrl: function() {
@@ -573,18 +557,25 @@ angular['compile'] = function(root, config) {
     'addUrlChangeListener': noop
   };
   //todo: don't start watcher
-  var loader = new Loader(root, jQuery("head"), _(defaults).extend(config));
+  var angular = new Angular(root, jQuery("head"), _(defaults).extend(config));
   //todo: don't load stylesheet by default
   // loader.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
   // loader.loadCss('/stylesheets/css');
-  loader.load();
+  angular.load();
   var scope = jQuery(root).scope();
   //TODO: cleanup
   return {
     'updateView':function(){return scope.updateView();},
     'set':function(){return scope.set.apply(scope, arguments);},
     'get':function(){return scope.get.apply(scope, arguments);},
-    'init':function(){scope.get('$binder.executeInit')(); scope.updateView();}
+    'init':function(){scope.get('$binder.executeInit')(); scope.updateView();},
+    'watchUrl':function(){
+      var binder = scope.get('$binder');
+      var watcher = angular.watcher;
+      watcher.listener = bind(binder, binder.onUrlChange, watcher);
+      watcher.onUpdate = function(){alert("update");};
+      watcher.watch();
+    }
   };
 };var angularGlobal = {
   'typeOf':function(obj){
@@ -977,7 +968,6 @@ Binder.prototype = {
   },
   
   onUrlChange: function (url) {
-    log("URL change detected", url);
     this.parseAnchor(url);
     this.updateView();
   },
@@ -1959,6 +1949,23 @@ foreach({
   
   'html': function(html){
     return new angularFilter.Meta({html:html});
+  },
+  
+  'linky': function(text){
+    function regExpEscape(text) {
+      return text.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, '\\$1');
+    }
+    var URL = /(ftp|http|https):\/\/([^\(\)|\s]+)/gm;
+    var html = text;
+    var dups = {};
+    foreach(text.match(URL)||[], function(url){
+      url = url.replace(/\.$/, '');
+      if (!dups[url]) {
+        html = html.replace(new RegExp(regExpEscape(url), 'gm'), '<a href="'+url+'">'+url+'</a>');
+        dups[url] = true;
+      }
+    });
+    return new angularFilter.Meta({text:text, html:html});
   }
 }, function(v,k){angularFilter[k] = v;});
 

@@ -66,7 +66,6 @@ Binder.prototype = {
   },
   
   onUrlChange: function (url) {
-    log("URL change detected", url);
     this.parseAnchor(url);
     this.updateView();
   },

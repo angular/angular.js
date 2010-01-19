@@ -227,7 +227,7 @@ Angular.prototype = {
   
   bindHtml: function() {
     log('Angular.bindHtml()');
-    var watcher = new UrlWatcher(this.location);
+    var watcher = this.watcher = new UrlWatcher(this.location);
     var document = this.document;
     var widgetFactory = new WidgetFactory(this.config.server, this.config.database);
     var binder = new Binder(document[0], widgetFactory, watcher, this.config);
@@ -285,12 +285,6 @@ Angular.prototype = {
     log('$binder.parseAnchor()');
     binder.parseAnchor();
     
-    log('$binder.updateView()');
-    binder.updateView();
-  
-    //watcher.listener = bind(binder, binder.onUrlChange, watcher);
-    //watcher.onUpdate = function(){alert("update");};
-    //watcher.watch();
     document.find("body").show();
     log('ready()');
   },
@@ -378,12 +372,13 @@ UrlWatcher.prototype = {
   },
   
   setUrl: function(url) {
-//    var existingURL = window.location.href;
-//    if (!existingURL.match(/#/))
-//      existingURL += '#';
-//    if (existingURL != url)
-//      window.location.href = url;
-//    this.existingURL = url;
+    //TODO: conditionaly?
+    var existingURL = window.location.href;
+    if (!existingURL.match(/#/))
+      existingURL += '#';
+    if (existingURL != url)
+      window.location.href = url;
+    this.existingURL = url;
   },
   
   getUrl: function() {
@@ -409,6 +404,13 @@ angular['compile'] = function(root, config) {
     'updateView':function(){return scope.updateView();},
     'set':function(){return scope.set.apply(scope, arguments);},
     'get':function(){return scope.get.apply(scope, arguments);},
-    'init':function(){scope.get('$binder.executeInit')(); scope.updateView();}
+    'init':function(){scope.get('$binder.executeInit')(); scope.updateView();},
+    'watchUrl':function(){
+      var binder = scope.get('$binder');
+      var watcher = angular.watcher;
+      watcher.listener = bind(binder, binder.onUrlChange, watcher);
+      watcher.onUpdate = function(){alert("update");};
+      watcher.watch();
+    }
   };
 };

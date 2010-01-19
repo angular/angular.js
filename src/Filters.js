@@ -293,6 +293,23 @@ foreach({
   
   'html': function(html){
     return new angularFilter.Meta({html:html});
+  },
+  
+  'linky': function(text){
+    function regExpEscape(text) {
+      return text.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, '\\$1');
+    }
+    var URL = /(ftp|http|https):\/\/([^\(\)|\s]+)/gm;
+    var html = text;
+    var dups = {};
+    foreach(text.match(URL)||[], function(url){
+      url = url.replace(/\.$/, '');
+      if (!dups[url]) {
+        html = html.replace(new RegExp(regExpEscape(url), 'gm'), '<a href="'+url+'">'+url+'</a>');
+        dups[url] = true;
+      }
+    });
+    return new angularFilter.Meta({text:text, html:html});
   }
 }, function(v,k){angularFilter[k] = v;});
 
