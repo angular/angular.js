@@ -28,7 +28,7 @@ $(document).ready(function(){
       {screen_name:'mhevery', name:'Mi\u0161ko Hevery', notes:'Author of <angular/>.', 
         profile_image_url:'http://a3.twimg.com/profile_images/54360179/Me_-_Small_Banner_normal.jpg'},
       {screen_name:'abrons', name:'Adam Abrons', notes:'Author of <angular/> & Ruby guru.', 
-        profile_image_url:'http://a1.twimg.com/profile_images/533646480/PIC00024_normal.jpg'}
+        profile_image_url:'http://media.linkedin.com/mpr/mpr/shrink_80_80/p/2/000/005/0a8/044278d.jpg'}
     ]);
   scope.watchUrl();
   scope.init();
