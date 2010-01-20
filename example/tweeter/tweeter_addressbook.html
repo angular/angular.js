@@ -8,7 +8,7 @@
     <script type="text/javascript" src="../../angular.js"></script>
     <script type="text/javascript" src="tweeterclient.js"></script>
   </head>
-  <body ng-class="status" ng-watch="$anchor.user: tweets = fetchTweets($anchor.user)">
+  <body ng-class="status" ng-init="muted={}" ng-watch="$anchor.user: tweets = fetchTweets($anchor.user)">
     <div class="addressbook box">
       <h1>Address Book</h1>
       [ Filter: <input type="text" name="userFilter"/>]
@@ -19,6 +19,7 @@
           as <span class="nickname">{{user.name}}</span>
           [ <a href="#" ng-action="$anchor.edituser=user.screen_name">edit</a>
           | <a href="#" ng-action="users.$remove(user)">X</a>
+          | <a href="#" ng-action="muted[user.screen_name] = !muted[user.screen_name]"><span ng-show="muted[user.screen_name]">un</span>mute</a>
           ]
           <div class="notes">{{user.notes|linky}}</div>
           <div class="clrleft"></div>
@@ -41,6 +42,8 @@
       </div>
       <hr/>
       <div class="debug">
+muted={{muted}}
+
 userFilter={{userFilter|json}}
 
 tweetFilter={{tweetFilter|json}}
@@ -59,7 +62,8 @@ tweets={{tweets}}
       ]
       <div class="loading">Loading...</div>
       <ul>
-       <li ng-repeat="tweet in tweets.$filter(tweetFilter)" ng-class-even="'even'" ng-class-odd="'odd'" 
+       <li ng-repeat="tweet in tweets.$filter(tweetFilter).$filter({:!muted[$.user.screen_name]})" 
+           ng-class-even="'even'" ng-class-odd="'odd'" 
            ng-eval="user = users.$find({: $.screen_name == tweet.user.screen_name}) || tweet.user">
          <img src="{{user.profile_image_url}}"/>
          [ <a href="" ng-action="$anchor.user=user.screen_name">{{user.nickname || user.name || user.screen_name }}</a>

@@ -50,6 +50,10 @@ li.even {
   width: 350px;
 }
 
+.addressbook li {
+  font-size: .9em;
+}
+
 .clrleft {
   clear: left;
 }
