@@ -5,7 +5,7 @@ $(document).ready(function(){
     var list = [];
     var self = this;
     self.set('status', 'fetching');
-    $.getJSON(url, function(response){
+    $.getJSON(url, function(response, code){
       _(response).forEach(function(v,k){
         list[k] = v;
       });
