@@ -537,6 +537,7 @@ UrlWatcher.prototype = {
   },
   
   setUrl: function(url) {
+    //TODO: conditionaly?
     var existingURL = window.location.href;
     if (!existingURL.match(/#/))
       existingURL += '#';
@@ -1952,20 +1953,25 @@ foreach({
   },
   
   'linky': function(text){
+    if (!text) return text;
     function regExpEscape(text) {
       return text.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, '\\$1');
     }
-    var URL = /(ftp|http|https):\/\/([^\(\)|\s]+)/gm;
-    var html = text;
-    var dups = {};
-    foreach(text.match(URL)||[], function(url){
-      url = url.replace(/\.$/, '');
-      if (!dups[url]) {
-        html = html.replace(new RegExp(regExpEscape(url), 'gm'), '<a href="'+url+'">'+url+'</a>');
-        dups[url] = true;
-      }
-    });
-    return new angularFilter.Meta({text:text, html:html});
+    var URL = /(ftp|http|https|mailto):\/\/([^\(\)|\s]+)/;
+    var match;
+    var raw = text;
+    var html = [];
+    while (match=raw.match(URL)) {
+      var url = match[0].replace(/[\.\;\,\(\)\{\}\<\>]$/,'');
+      var i = raw.indexOf(url);
+      html.push(escapeHtml(raw.substr(0, i)));
+      html.push('<a href="' + url + '">');
+      html.push(url);
+      html.push('</a>');
+      raw = raw.substring(i + url.length);
+    }
+    html.push(escapeHtml(raw));
+    return new angularFilter.Meta({text:text, html:html.join('')});
   }
 }, function(v,k){angularFilter[k] = v;});
 
@@ -2424,15 +2430,13 @@ Parser.prototype = {
     }
   },
   
-  _unary: function(fn, parse) {
-    var right = parse.apply(this);
+  _unary: function(fn, right) {
     return function(self) {
       return fn(self, right(self));
     };
   },
   
-  _binary: function(left, fn, parse) {
-    var right = parse.apply(this);
+  _binary: function(left, fn, right) {
     return function(self) {
       return fn(self, left(self), right(self));
     };
@@ -2473,7 +2477,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('|'))) {
-        left = this._binary(left, token.fn, this.filter);
+        left = this._binary(left, token.fn, this.filter());
       } else {
         return left;
       }
@@ -2535,7 +2539,7 @@ Parser.prototype = {
             this.text.substring(token.index) + "' is not assignable.";
       }
       var ident = function(){return left.isAssignable;};
-      return this._binary(ident, token.fn, this.logicalOR);
+      return this._binary(ident, token.fn, this.logicalOR());
     } else {
      return left;
     }
@@ -2546,7 +2550,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('||'))) {
-        left = this._binary(left, token.fn, this.logicalAND);
+        left = this._binary(left, token.fn, this.logicalAND());
       } else {
         return left;
       }
@@ -2558,7 +2562,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('&&'))) {
-        left = this._binary(left, token.fn, this.negated);
+        left = this._binary(left, token.fn, this.negated());
       } else {
         return left;
       }
@@ -2568,9 +2572,9 @@ Parser.prototype = {
   negated: function(){
     var token;
     if (token = this.expect('!')) {
-      return this._unary(token.fn, this.equality);
+      return this._unary(token.fn, this.assignment());
     } else {
-     return this.equality();
+      return this.equality();
     }
   },
   
@@ -2579,7 +2583,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('==','!='))) {
-        left = this._binary(left, token.fn, this.relational);
+        left = this._binary(left, token.fn, this.relational());
       } else {
         return left;
       }
@@ -2591,7 +2595,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('<', '>', '<=', '>='))) {
-        left = this._binary(left, token.fn, this.additive);
+        left = this._binary(left, token.fn, this.additive());
       } else {
         return left;
       }
@@ -2602,7 +2606,7 @@ Parser.prototype = {
     var left = this.multiplicative();
     var token;
     while(token = this.expect('+','-')) {
-      left = this._binary(left, token.fn, this.multiplicative);
+      left = this._binary(left, token.fn, this.multiplicative());
     }
     return left;
   },
@@ -2611,7 +2615,7 @@ Parser.prototype = {
     var left = this.unary();
     var token;
     while(token = this.expect('*','/','%')) {
-        left = this._binary(left, token.fn, this.unary);
+        left = this._binary(left, token.fn, this.unary());
     }
     return left;
   },
@@ -2621,7 +2625,7 @@ Parser.prototype = {
     if (this.expect('+')) {
       return this.primary();
     } else if (token = this.expect('-')) {
-      return this._binary(Parser.ZERO, token.fn, this.multiplicative);
+      return this._binary(Parser.ZERO, token.fn, this.multiplicative());
     } else {
      return this.primary();
     }

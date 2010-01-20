@@ -153,10 +153,15 @@ FiltersTest.prototype.testHtml = function() {
 };
 
 FiltersTest.prototype.testLinky = function() {
+  var linky = angular.filter.linky;
   assertEquals(
-      'a (<a href="http://a">http://a</a>) <a href="http://a">http://a</a> \n <a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
-      angular.filter.linky("a (http://a) http://a \n http://1.2/v:~-123. c").html);
-  assertTrue(angular.filter.linky("a") instanceof angular.filter.Meta);
+      '<a href="http://ab">http://ab</a> ' + 
+      '(<a href="http://a">http://a</a>) ' + 
+      '&lt;<a href="http://a">http://a</a>&gt; \n ' + 
+      '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
+      linky("http://ab (http://a) <http://a> \n http://1.2/v:~-123. c").html);
+  assertTrue(linky("a") instanceof angular.filter.Meta);
+  assertEquals(undefined, linky(undefined));
 };
 
 

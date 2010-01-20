@@ -20,7 +20,7 @@
           [ <a href="#" ng-action="$anchor.edituser=user.screen_name">edit</a>
           | <a href="#" ng-action="users.$remove(user)">X</a>
           ]
-          <div class="notes">{{user.notes}}</div>
+          <div class="notes">{{user.notes|linky}}</div>
           <div class="clrleft"></div>
         </li>
       </ul>
@@ -67,7 +67,7 @@ tweets={{tweets}}
          ]:
          {{tweet.text | linky}}
          <span class="notes">{{tweet.created_at}}</span>
-         <span class="notes">{{user.notes}}</span>
+         <span class="notes">{{user.notes|linky}}</span>
          <div class="clrleft"></div>
        </li>
       </ul>

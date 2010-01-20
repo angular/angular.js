@@ -296,20 +296,25 @@ foreach({
   },
   
   'linky': function(text){
+    if (!text) return text;
     function regExpEscape(text) {
       return text.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, '\\$1');
     }
-    var URL = /(ftp|http|https):\/\/([^\(\)|\s]+)/gm;
-    var html = text;
-    var dups = {};
-    foreach(text.match(URL)||[], function(url){
-      url = url.replace(/\.$/, '');
-      if (!dups[url]) {
-        html = html.replace(new RegExp(regExpEscape(url), 'gm'), '<a href="'+url+'">'+url+'</a>');
-        dups[url] = true;
-      }
-    });
-    return new angularFilter.Meta({text:text, html:html});
+    var URL = /(ftp|http|https|mailto):\/\/([^\(\)|\s]+)/;
+    var match;
+    var raw = text;
+    var html = [];
+    while (match=raw.match(URL)) {
+      var url = match[0].replace(/[\.\;\,\(\)\{\}\<\>]$/,'');
+      var i = raw.indexOf(url);
+      html.push(escapeHtml(raw.substr(0, i)));
+      html.push('<a href="' + url + '">');
+      html.push(url);
+      html.push('</a>');
+      raw = raw.substring(i + url.length);
+    }
+    html.push(escapeHtml(raw));
+    return new angularFilter.Meta({text:text, html:html.join('')});
   }
 }, function(v,k){angularFilter[k] = v;});
 
