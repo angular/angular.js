@@ -460,3 +460,11 @@ ParserTest.prototype.testReturnFunctionsAreNotBound = function(){
   assertEquals("direct Group.all", "function", typeof Group.query);
 };
 
+ParserTest.prototype.testDoubleNegationBug = function (){
+  var scope = new Scope();
+  assertEquals(true, scope.eval('true'));
+  assertEquals(false, scope.eval('!true'));
+  assertEquals(true, scope.eval('!!true'));
+  assertEquals('a', scope.eval('{true:"a", false:"b"}[!!true]'));
+};
+

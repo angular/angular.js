@@ -39,6 +39,18 @@
           <input type="button" ng-action="$anchor.edituser=undefined" value="Close"/> 
         </div>
       </div>
+      <hr/>
+      <div class="debug">
+userFilter={{userFilter|json}}
+
+tweetFilter={{tweetFilter|json}}
+
+$anchor={{$anchor}}
+
+users={{users}}
+
+tweets={{tweets}}
+      </div>
     </div>
     <div class="tweeter box">
       <h1>Tweets: {{$anchor.user}}</h1>

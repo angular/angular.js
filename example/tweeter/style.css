@@ -85,3 +85,10 @@ label {
 .editor TEXTAREA {
   height: 50px;
 }
+
+.debug{
+  font-size: .7em;
+  white-space: pre;
+  padding: 0;
+  margin: 0;
+}

@@ -294,15 +294,13 @@ Parser.prototype = {
     }
   },
   
-  _unary: function(fn, parse) {
-    var right = parse.apply(this);
+  _unary: function(fn, right) {
     return function(self) {
       return fn(self, right(self));
     };
   },
   
-  _binary: function(left, fn, parse) {
-    var right = parse.apply(this);
+  _binary: function(left, fn, right) {
     return function(self) {
       return fn(self, left(self), right(self));
     };
@@ -343,7 +341,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('|'))) {
-        left = this._binary(left, token.fn, this.filter);
+        left = this._binary(left, token.fn, this.filter());
       } else {
         return left;
       }
@@ -405,7 +403,7 @@ Parser.prototype = {
             this.text.substring(token.index) + "' is not assignable.";
       }
       var ident = function(){return left.isAssignable;};
-      return this._binary(ident, token.fn, this.logicalOR);
+      return this._binary(ident, token.fn, this.logicalOR());
     } else {
      return left;
     }
@@ -416,7 +414,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('||'))) {
-        left = this._binary(left, token.fn, this.logicalAND);
+        left = this._binary(left, token.fn, this.logicalAND());
       } else {
         return left;
       }
@@ -428,7 +426,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('&&'))) {
-        left = this._binary(left, token.fn, this.negated);
+        left = this._binary(left, token.fn, this.negated());
       } else {
         return left;
       }
@@ -438,9 +436,9 @@ Parser.prototype = {
   negated: function(){
     var token;
     if (token = this.expect('!')) {
-      return this._unary(token.fn, this.equality);
+      return this._unary(token.fn, this.assignment());
     } else {
-     return this.equality();
+      return this.equality();
     }
   },
   
@@ -449,7 +447,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('==','!='))) {
-        left = this._binary(left, token.fn, this.relational);
+        left = this._binary(left, token.fn, this.relational());
       } else {
         return left;
       }
@@ -461,7 +459,7 @@ Parser.prototype = {
     var token;
     while(true) {
       if ((token = this.expect('<', '>', '<=', '>='))) {
-        left = this._binary(left, token.fn, this.additive);
+        left = this._binary(left, token.fn, this.additive());
       } else {
         return left;
       }
@@ -472,7 +470,7 @@ Parser.prototype = {
     var left = this.multiplicative();
     var token;
     while(token = this.expect('+','-')) {
-      left = this._binary(left, token.fn, this.multiplicative);
+      left = this._binary(left, token.fn, this.multiplicative());
     }
     return left;
   },
@@ -481,7 +479,7 @@ Parser.prototype = {
     var left = this.unary();
     var token;
     while(token = this.expect('*','/','%')) {
-        left = this._binary(left, token.fn, this.unary);
+        left = this._binary(left, token.fn, this.unary());
     }
     return left;
   },
@@ -491,7 +489,7 @@ Parser.prototype = {
     if (this.expect('+')) {
       return this.primary();
     } else if (token = this.expect('-')) {
-      return this._binary(Parser.ZERO, token.fn, this.multiplicative);
+      return this._binary(Parser.ZERO, token.fn, this.multiplicative());
     } else {
      return this.primary();
     }
