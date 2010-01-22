@@ -137,7 +137,6 @@ Binder.prototype = {
   
   compile: function() {
     var jNode = jQuery(this.doc);
-    var self = this;
     if (this.config.autoSubmit) {
       var submits = this.docFindWithSelf(":submit").not("[ng-action]");
       submits.attr("ng-action", "$save()");
@@ -146,15 +145,16 @@ Binder.prototype = {
     this.precompile(this.doc)(this.doc, jNode.scope(), "");
     this.docFindWithSelf("a[ng-action]").live('click', function (event) {
       var jNode = jQuery(this);
+      var scope = jNode.scope();
       try {
-        jNode.scope().eval(jNode.attr('ng-action'));
+        scope.eval(jNode.attr('ng-action'));
         jNode.removeAttr('ng-error');
         jNode.removeClass("ng-exception");
       } catch (e) {
         jNode.addClass("ng-exception");
         jNode.attr('ng-error', toJson(e, true));
       }
-      self.updateView();
+      scope.eval('$binder.updateView()');
       return false;
     });
   },
