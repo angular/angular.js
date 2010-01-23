@@ -509,11 +509,11 @@ BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
 };
 
 BinderTest.prototype.testRepeaterAdd = function(){
-  var doc = $('<div><input type="text" name="item.x" ng-repeat="item in items"></div>');
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  doc.data('scope', new Scope({items:[{x:'a'}, {x:'b'}], $binder:binder}));
-  binder.compile();
-  binder.updateView();
+  var c = compile('<div><input type="text" name="item.x" ng-repeat="item in items"></div>');
+  var doc = c.node;
+  c.scope.set('items', [{x:'a'}, {x:'b'}]);
+  c.binder.compile();
+  c.binder.updateView();
   assertEquals('a', doc.find(':input')[0].value);
   assertEquals('b', doc.find(':input')[1].value);
 
