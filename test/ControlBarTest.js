@@ -1,2 +1,0 @@
-ControlBarTest = TestCase("ControlBarTest");
-

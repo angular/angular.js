@@ -2,7 +2,7 @@ array = [].constructor;
 
 function toJson(obj, pretty){
   var buf = [];
-  toJsonArray(buf, obj, pretty ? "\n  " : null);
+  toJsonArray(buf, obj, pretty ? "\n  " : null, _([]));
   return buf.join('');
 };
 
@@ -25,7 +25,14 @@ function fromJson(json) {
 angular['toJson'] = toJson;
 angular['fromJson'] = fromJson;
 
-function toJsonArray(buf, obj, pretty){
+function toJsonArray(buf, obj, pretty, stack){
+  if (typeof obj == "object") {
+    if (stack.include(obj)) {
+      buf.push("RECURSION");
+      return;
+    }
+    stack.push(obj);
+  }
   var type = typeof obj;
   if (obj === null) {
     buf.push("null");
@@ -52,7 +59,7 @@ function toJsonArray(buf, obj, pretty){
         if (typeof item == 'function' || typeof item == 'undefined') {
           buf.push("null");
         } else {
-          toJsonArray(buf, item, pretty);
+          toJsonArray(buf, item, pretty, stack);
         }
         sep = true;
       }
@@ -82,7 +89,7 @@ function toJsonArray(buf, obj, pretty){
             }
             buf.push(angular['String']['quote'](key));
             buf.push(":");
-            toJsonArray(buf, value, childPretty);
+            toJsonArray(buf, value, childPretty, stack);
             comma = true;
           }
         } catch (e) {
@@ -90,5 +97,8 @@ function toJsonArray(buf, obj, pretty){
       }
       buf.push("}");
     }
+  }
+  if (typeof obj == "object") {
+    stack.pop();
   }
 };

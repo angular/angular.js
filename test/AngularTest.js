@@ -1,20 +1,5 @@
 AngularTest = TestCase('AngularTest');
 
-AngularTest.prototype.testDefaultDatabasePathFromSubdomain = function() {
-  var loader = new Angular(null, null, {server:"http://account.getangular.com", database:"database"});
-  loader.computeConfiguration();
-  assertEquals("database", loader.config.database);
-
-  loader = new Angular(null, null, {server:"http://account.getangular.com"});
-  loader.computeConfiguration();
-  assertEquals("account", loader.config.database);
-
-  loader = new Angular(null, null, {server:"https://account.getangular.com"});
-  loader.computeConfiguration();
-  assertEquals("account", loader.config.database);
-};
-
-
 
 UrlWatcherTest = TestCase('UrlWatcherTest');
 

@@ -9,7 +9,6 @@ function WidgetFactory(serverUrl, database) {
       alert("ERROR: swfobject not loaded!");
     };
   }
-  this.onChangeListener = function(){};
 };
 
 WidgetFactory.prototype = {
@@ -43,12 +42,12 @@ WidgetFactory.prototype = {
       throw 'Unknown type: ' + type;
     }
     input.data('controller', controller);
-    var binder = scope.get('$binder');
+    var updateView = scope.get('$updateView');
     var action = function() {
       if (controller.updateModel(scope)) {
         var action = jQuery(controller.view).attr('ng-action') || "";
         if (scope.evalWidget(controller, action)) {
-          binder.updateView(scope);
+          updateView(scope);
         }
       }
       return bubbleEvent;
@@ -74,12 +73,6 @@ WidgetFactory.prototype = {
     var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
     jQuery(swfNode).data('controller', cntl);
     return cntl;
-  },
-  
-  createTextWidget: function(textInput) {
-    var controller = new TextController(textInput);
-    controller.onChange(this.onChangeListener);
-    return controller;
   }
 };
 /////////////////////

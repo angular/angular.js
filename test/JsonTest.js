@@ -67,3 +67,14 @@ JsonTest.prototype.testItShouldUTCDates = function() {
   assertEquals(date.getTime(), 
       fromJson('"2009-10-09T01:02:03Z"').getTime());  
 };
+
+JsonTest.prototype.testItShouldPreventRecursion = function () {
+  var obj = {a:'b'};
+  obj.recursion = obj;
+  assertEquals('{"a":"b","recursion":RECURSION}', angular.toJson(obj));
+};
+
+JsonTest.prototype.testItShouldSerializeSameObjectsMultipleTimes = function () {
+  var obj = {a:'b'};
+  assertEquals('{"A":{"a":"b"},"B":{"a":"b"}}', angular.toJson({A:obj, B:obj}));
+};

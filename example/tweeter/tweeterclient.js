@@ -1,6 +1,8 @@
 function noop(){}
 $(document).ready(function(){
-  var scope = window.scope = angular.compile(document);
+  var scope = window.scope = angular.compile(document, {
+    location:angular.startUrlWatcher()
+  });
   scope.getJSON = function(url, callback) {
     var list = [];
     var self = this;
@@ -32,6 +34,5 @@ $(document).ready(function(){
        notes:'Author of <angular/> & Ruby guru see:  http://www.angularjs.org.', 
        profile_image_url:'http://media.linkedin.com/mpr/mpr/shrink_80_80/p/2/000/005/0a8/044278d.jpg'}
     ]);
-  scope.watchUrl();
   scope.init();
 });

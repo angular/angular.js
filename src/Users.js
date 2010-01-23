@@ -7,7 +7,7 @@ Users.prototype = {
   'fetchCurrentUser':function(callback) {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
-      self.current = response.user;
+      self['current'] = response['user'];
       callback(response.user);
     });
   },
@@ -15,7 +15,7 @@ Users.prototype = {
   'logout': function(callback) {
     var self = this;
     this.controlBar.logout(function(){
-      delete self.current;
+      delete self['current'];
       (callback||noop)();
     });
   },

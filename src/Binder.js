@@ -1,6 +1,6 @@
-function Binder(doc, widgetFactory, urlWatcher, config) {
+function Binder(doc, widgetFactory, location, config) {
   this.doc = doc;
-  this.urlWatcher = urlWatcher;
+  this.location = location;
   this.anchor = {};
   this.widgetFactory = widgetFactory;
   this.config = config || {};
@@ -48,9 +48,8 @@ Binder.prototype = {
     return params;
   },
   
-  parseAnchor: function(url) {
-    var self = this;
-    url = url || this.urlWatcher.getUrl();
+  parseAnchor: function() {
+    var self = this, url = this.location.get() || "";
   
     var anchorIndex = url.indexOf('#');
     if (anchorIndex < 0) return;
@@ -65,13 +64,13 @@ Binder.prototype = {
     });
   },
   
-  onUrlChange: function (url) {
-    this.parseAnchor(url);
+  onUrlChange: function() {
+    this.parseAnchor();
     this.updateView();
   },
   
   updateAnchor: function() {
-    var url = this.urlWatcher.getUrl();
+    var url = this.location.get();
     var anchorIndex = url.indexOf('#');
     if (anchorIndex > -1)
       url = url.substring(0, anchorIndex);
@@ -88,7 +87,7 @@ Binder.prototype = {
         sep = '&';
       }
     }
-    this.urlWatcher.setUrl(url);
+    this.location.set(url);
     return url;
   },
   
@@ -154,7 +153,7 @@ Binder.prototype = {
         jNode.addClass("ng-exception");
         jNode.attr('ng-error', toJson(e, true));
       }
-      scope.eval('$binder.updateView()');
+      scope.get('$updateView')();
       return false;
     });
   },

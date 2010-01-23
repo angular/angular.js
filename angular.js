@@ -299,16 +299,6 @@ function bind(_this, _function) {
   };
 }
 
-function shiftBind(_this, _function) {
-  return function() {
-    var args = [ this ];
-    for ( var i = 0; i < arguments.length; i++) {
-      args.push(arguments[i]);
-    }
-    return _function.apply(_this, args);
-  };
-}
-
 function outerHTML(node) {
   var temp = document.createElement('div');
   temp.appendChild(node);
@@ -342,158 +332,8 @@ function merge(src, dst) {
 }
 
 // ////////////////////////////
-// Angular
+// UrlWatcher
 // ////////////////////////////
-
-function Angular(document, head, config) {
-  this.document = jQuery(document);
-  this.head = jQuery(head);
-  this.config = config;
-  this.location = window.location;
-}
-
-Angular.prototype = {
-  load: function() {
-    this.configureLogging();
-    log("Server: " + this.config.server);
-    this.configureJQueryPlugins();
-    this.computeConfiguration();
-    this.bindHtml();
-  },
-  
-  configureJQueryPlugins: function() {
-    log('Angular.configureJQueryPlugins()');
-    jQuery['fn']['scope'] = function() {
-      var element = this;
-      while (element && element.get(0)) {
-        var scope = element.data("scope");
-        if (scope)
-          return scope;
-        element = element.parent();
-      }
-      return null;
-    };
-    jQuery['fn']['controller'] = function() {
-      return this.data('controller') || NullController.instance;
-    };
-  },
-  
-  uid: function() {
-    return "" + new Date().getTime();
-  },
-  
-  computeConfiguration: function() {
-    var config = this.config;
-    if (!config.database) {
-      var match = config.server.match(/https?:\/\/([\w]*)/);
-      config.database = match ? match[1] : "$MEMORY";
-    }
-  },
-  
-  bindHtml: function() {
-    log('Angular.bindHtml()');
-    var watcher = this.watcher = new UrlWatcher(this.location);
-    var document = this.document;
-    var widgetFactory = new WidgetFactory(this.config.server, this.config.database);
-    var binder = new Binder(document[0], widgetFactory, watcher, this.config);
-    widgetFactory.onChangeListener = shiftBind(binder, binder.updateModel);
-    var controlBar = new ControlBar(document.find('body'), this.config.server);
-    var onUpdate = function(){binder.updateView();};
-    var server = this.config.database=="$MEMORY" ?
-        new FrameServer(this.window) :
-        new Server(this.config.server, jQuery.getScript);
-    server = new VisualServer(server, new Status(jQuery(document.body)), onUpdate);
-    var users = new Users(server, controlBar);
-    var databasePath = '/data/' + this.config.database;
-    var post = function(request, callback){
-      server.request("POST", databasePath, request, callback);
-    };
-    var datastore = new DataStore(post, users, binder.anchor);
-    binder.updateListeners.push(function(){datastore.flush();});
-    var scope = new Scope( {
-      '$anchor' : binder.anchor,
-      '$binder' : binder,
-      '$config' : this.config,
-      '$console' : window.console,
-      '$datastore' : datastore,
-      '$save' : function(callback) {
-        datastore.saveScope(scope.state, callback, binder.anchor);
-      },
-      '$window' : window,
-      '$uid' : this.uid,
-      '$users' : users
-    }, "ROOT");
-  
-    document.data('scope', scope);
-    log('$binder.entity()');
-    binder.entity(scope);
-  
-    log('$binder.compile()');
-    binder.compile();
-  
-    log('ControlBar.bind()');
-    controlBar.bind();
-  
-    log('$users.fetchCurrentUser()');
-    function fetchCurrentUser() {
-      users.fetchCurrentUser(function(u) {
-        if (!u && document.find("[ng-auth=eager]").length) {
-          users.login();
-        }
-      });
-    }
-    fetchCurrentUser();
-  
-    log('PopUp.bind()');
-    new PopUp(document).bind();
-  
-    log('$binder.parseAnchor()');
-    binder.parseAnchor();
-    
-    document.find("body").show();
-    log('ready()');
-  },
-  
-  visualPost: function(delegate) {
-    var status = new Status(jQuery(document.body));
-    return function(request, delegateCallback) {
-      status.beginRequest(request);
-      var callback = function() {
-        status.endRequest();
-        try {
-          delegateCallback.apply(this, arguments);
-        } catch (e) {
-          alert(toJson(e));
-        }
-      };
-      delegate(request, callback);
-    };
-  },
-  
-  configureLogging: function() {
-    var url = window.location.href + '#';
-    url = url.split('#')[1];
-    var config = {
-      debug : null
-    };
-    var configs = url.split('&');
-    for ( var i = 0; i < configs.length; i++) {
-      var part = (configs[i] + '=').split('=');
-      config[part[0]] = part[1];
-    }
-    if (config.debug == 'console') {
-      consoleNode = document.createElement("div");
-      consoleNode.id = 'ng-console';
-      document.getElementsByTagName('body')[0].appendChild(consoleNode);
-      log = function() {
-        consoleLog('ng-console-info', arguments);
-      };
-      console.error = function() {
-        consoleLog('ng-console-error', arguments);
-      };
-    }
-  }
-};
 
 function UrlWatcher(location) {
   this.location = location;
@@ -508,6 +348,9 @@ function UrlWatcher(location) {
 }
 
 UrlWatcher.prototype = {
+  listen: function(fn){
+    this.listener = fn;
+  },
   watch: function() {
     var self = this;
     var pull = function() {
@@ -534,50 +377,151 @@ UrlWatcher.prototype = {
       self.setTimeout(pull, self.delay);
     };
     pull();
+    return this;
   },
   
-  setUrl: function(url) {
-    //TODO: conditionaly?
-    var existingURL = window.location.href;
+  set: function(url) {
+    var existingURL = this.location.href;
     if (!existingURL.match(/#/))
       existingURL += '#';
     if (existingURL != url)
-      window.location.href = url;
+      this.location.href = url;
     this.existingURL = url;
   },
   
-  getUrl: function() {
+  get: function() {
     return window.location.href;
   }
 };
-  
-angular['compile'] = function(root, config) {
-  config = config || {};
-  var defaults = {
-    'server': "",
-    'addUrlChangeListener': noop
-  };
-  //todo: don't start watcher
-  var angular = new Angular(root, jQuery("head"), _(defaults).extend(config));
-  //todo: don't load stylesheet by default
-  // loader.loadCss('/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css');
-  // loader.loadCss('/stylesheets/css');
-  angular.load();
-  var scope = jQuery(root).scope();
-  //TODO: cleanup
-  return {
-    'updateView':function(){return scope.updateView();},
-    'set':function(){return scope.set.apply(scope, arguments);},
-    'get':function(){return scope.get.apply(scope, arguments);},
-    'init':function(){scope.get('$binder.executeInit')(); scope.updateView();},
-    'watchUrl':function(){
-      var binder = scope.get('$binder');
-      var watcher = angular.watcher;
-      watcher.listener = bind(binder, binder.onUrlChange, watcher);
-      watcher.onUpdate = function(){alert("update");};
-      watcher.watch();
+
+/////////////////////////////////////////////////
+function configureJQueryPlugins() {
+  log('Angular.configureJQueryPlugins()');
+  var fn = jQuery['fn'];
+  fn['scope'] = function() {
+    var element = this;
+    while (element && element.get(0)) {
+      var scope = element.data("scope");
+      if (scope)
+        return scope;
+      element = element.parent();
     }
+    return null;
   };
+  fn['controller'] = function() {
+    return this.data('controller') || NullController.instance;
+  };
+}
+
+function configureLogging(config) {
+  if (config.debug == 'console' && !consoleNode) {
+    consoleNode = document.createElement("div");
+    consoleNode.id = 'ng-console';
+    document.getElementsByTagName('body')[0].appendChild(consoleNode);
+    log = function() {
+      consoleLog('ng-console-info', arguments);
+    };
+    console.error = function() {
+      consoleLog('ng-console-error', arguments);
+    };
+  }
+}
+
+function exposeMethods(obj, methods){
+  var bound = {};
+  foreach(methods, function(fn, name){
+    bound[name] = _(fn).bind(obj);
+  });
+  return bound;
+}
+
+function wireAngular(element, config) {
+  var widgetFactory = new WidgetFactory(config['server'], config['database']);
+  var binder = new Binder(element[0], widgetFactory, config['location'], config);
+  var controlBar = new ControlBar(element.find('body'), config.server);
+  var onUpdate = function(){binder.updateView();};
+  var server = config.database=="$MEMORY" ?
+      new FrameServer(this.window) :
+      new Server(config.server, jQuery.getScript);
+  server = new VisualServer(server, new Status(jQuery(element.body)), onUpdate);
+  var users = new Users(server, controlBar);
+  var databasePath = '/data/' + config.database;
+  var post = function(request, callback){
+    server.request("POST", databasePath, request, callback);
+  };
+  var datastore = new DataStore(post, users, binder.anchor);
+  binder.updateListeners.push(function(){datastore.flush();});
+  var scope = new Scope({
+    '$anchor'    : binder.anchor,
+    '$updateView': _(binder.updateView).bind(binder),
+    '$config'    : config,
+    '$console'   : window.console,
+    '$datastore' : exposeMethods(datastore, {
+      'load':                    datastore.load,
+      'loadMany':                datastore.loadMany,
+      'loadOrCreate':            datastore.loadOrCreate,
+      'loadAll':                 datastore.loadAll,
+      'save':                    datastore.save,
+      'remove':                  datastore.remove,
+      'flush':                   datastore.flush,
+      'query':                   datastore.query,
+      'entity':                  datastore.entity,
+      'entities':                datastore.entities,
+      'documentCountsByUser':    datastore.documentCountsByUser,
+      'userDocumentIdsByEntity': datastore.userDocumentIdsByEntity,
+      'join':                    datastore.join
+    }),
+    '$save' : function(callback) {
+      datastore.saveScope(scope.state, callback, binder.anchor);
+    },
+    '$window' : window,
+    '$uid' : function() {
+      return "" + new Date().getTime();
+    },
+    '$users' : users
+  }, "ROOT");
+
+  element.data('scope', scope);
+  binder.entity(scope);
+  binder.compile();
+  controlBar.bind();
+  
+  //TODO: remove this code
+  new PopUp(element).bind();
+  
+  var self = _(exposeMethods(scope, {
+    'updateView': scope.updateView,
+    'set':        scope.set,
+    'get':        scope.get,
+    'eval':       scope.eval
+  })).extend({
+    'init':function(){
+        config['location']['listen'](_(binder.onUrlChange).bind(binder));
+        binder.parseAnchor();
+        binder.executeInit(); 
+        scope.updateView(); 
+        return self;
+      },
+    'element':element[0],
+    'config':config
+  });
+  return self;
+}
+
+angular['startUrlWatcher'] = function(){ 
+  return new UrlWatcher(window['location']).watch();
+};
+
+angular['compile'] = function(element, config) {
+  config = _({
+      'server': "",
+      'location': {'get':noop, 'set':noop, 'listen':noop}
+    }).extend(config||{});
+
+  configureLogging(config);
+  configureJQueryPlugins();
+  
+  return wireAngular(jQuery(element), config);
 };var angularGlobal = {
   'typeOf':function(obj){
     if (obj === null) return "null";
@@ -901,9 +845,9 @@ defineApi('String', [angularGlobal, angularString], []);
 defineApi('Date', [angularGlobal, angularDate], []);
 defineApi('Function', [angularGlobal, angularCollection, angularFunction],
     ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
-function Binder(doc, widgetFactory, urlWatcher, config) {
+function Binder(doc, widgetFactory, location, config) {
   this.doc = doc;
-  this.urlWatcher = urlWatcher;
+  this.location = location;
   this.anchor = {};
   this.widgetFactory = widgetFactory;
   this.config = config || {};
@@ -951,9 +895,8 @@ Binder.prototype = {
     return params;
   },
   
-  parseAnchor: function(url) {
-    var self = this;
-    url = url || this.urlWatcher.getUrl();
+  parseAnchor: function() {
+    var self = this, url = this.location.get() || "";
   
     var anchorIndex = url.indexOf('#');
     if (anchorIndex < 0) return;
@@ -968,13 +911,13 @@ Binder.prototype = {
     });
   },
   
-  onUrlChange: function (url) {
-    this.parseAnchor(url);
+  onUrlChange: function() {
+    this.parseAnchor();
     this.updateView();
   },
   
   updateAnchor: function() {
-    var url = this.urlWatcher.getUrl();
+    var url = this.location.get();
     var anchorIndex = url.indexOf('#');
     if (anchorIndex > -1)
       url = url.substring(0, anchorIndex);
@@ -991,7 +934,7 @@ Binder.prototype = {
         sep = '&';
       }
     }
-    this.urlWatcher.setUrl(url);
+    this.location.set(url);
     return url;
   },
   
@@ -1057,7 +1000,7 @@ Binder.prototype = {
         jNode.addClass("ng-exception");
         jNode.attr('ng-error', toJson(e, true));
       }
-      scope.eval('$binder.updateView()');
+      scope.get('$updateView')();
       return false;
     });
   },
@@ -1980,7 +1923,7 @@ array = [].constructor;
 
 function toJson(obj, pretty){
   var buf = [];
-  toJsonArray(buf, obj, pretty ? "\n  " : null);
+  toJsonArray(buf, obj, pretty ? "\n  " : null, _([]));
   return buf.join('');
 };
 
@@ -2003,7 +1946,14 @@ function fromJson(json) {
 angular['toJson'] = toJson;
 angular['fromJson'] = fromJson;
 
-function toJsonArray(buf, obj, pretty){
+function toJsonArray(buf, obj, pretty, stack){
+  if (typeof obj == "object") {
+    if (stack.include(obj)) {
+      buf.push("RECURSION");
+      return;
+    }
+    stack.push(obj);
+  }
   var type = typeof obj;
   if (obj === null) {
     buf.push("null");
@@ -2030,7 +1980,7 @@ function toJsonArray(buf, obj, pretty){
         if (typeof item == 'function' || typeof item == 'undefined') {
           buf.push("null");
         } else {
-          toJsonArray(buf, item, pretty);
+          toJsonArray(buf, item, pretty, stack);
         }
         sep = true;
       }
@@ -2060,7 +2010,7 @@ function toJsonArray(buf, obj, pretty){
             }
             buf.push(angular['String']['quote'](key));
             buf.push(":");
-            toJsonArray(buf, value, childPretty);
+            toJsonArray(buf, value, childPretty, stack);
             comma = true;
           }
         } catch (e) {
@@ -2068,6 +2018,9 @@ function toJsonArray(buf, obj, pretty){
       }
       buf.push("}");
     }
+  }
+  if (typeof obj == "object") {
+    stack.pop();
   }
 };
 // Single $ is special and does not get searched
@@ -3153,7 +3106,7 @@ Users.prototype = {
   'fetchCurrentUser':function(callback) {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
-      self.current = response.user;
+      self['current'] = response['user'];
       callback(response.user);
     });
   },
@@ -3161,7 +3114,7 @@ Users.prototype = {
   'logout': function(callback) {
     var self = this;
     this.controlBar.logout(function(){
-      delete self.current;
+      delete self['current'];
       (callback||noop)();
     });
   },
@@ -3270,7 +3223,6 @@ function WidgetFactory(serverUrl, database) {
       alert("ERROR: swfobject not loaded!");
     };
   }
-  this.onChangeListener = function(){};
 };
 
 WidgetFactory.prototype = {
@@ -3304,12 +3256,12 @@ WidgetFactory.prototype = {
       throw 'Unknown type: ' + type;
     }
     input.data('controller', controller);
-    var binder = scope.get('$binder');
+    var updateView = scope.get('$updateView');
     var action = function() {
       if (controller.updateModel(scope)) {
         var action = jQuery(controller.view).attr('ng-action') || "";
         if (scope.evalWidget(controller, action)) {
-          binder.updateView(scope);
+          updateView(scope);
         }
       }
       return bubbleEvent;
@@ -3335,12 +3287,6 @@ WidgetFactory.prototype = {
     var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
     jQuery(swfNode).data('controller', cntl);
     return cntl;
-  },
-  
-  createTextWidget: function(textInput) {
-    var controller = new TextController(textInput);
-    controller.onChange(this.onChangeListener);
-    return controller;
   }
 };
 /////////////////////

@@ -35,13 +35,13 @@ function report(reportTest){
   });
 }
 
-MockUrlWatcher = function() {
+MockLocation = function() {
   this.url = "http://server";
 };
-MockUrlWatcher.prototype.getUrl = function(){
+MockLocation.prototype.get = function(){
   return this.url;
 };
-MockUrlWatcher.prototype.setUrl = function(url){
+MockLocation.prototype.set = function(url){
   this.url = url;
 };
 
@@ -96,7 +96,7 @@ function decode64(base64){
   return fromJson(Base64.decode(base64));
 }
 
-Angular.prototype.configureJQueryPlugins();
+configureJQueryPlugins();
 
 function assertHidden(node) {
   var display = node.css('display');

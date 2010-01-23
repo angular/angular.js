@@ -38,7 +38,7 @@ ScopeTest.prototype.testScopeFromPrototype = function(){
 
 ScopeTest.prototype.testSetScopeGet = function(){
   var scope = new Scope();
-  scope.set('a', 987);
+  assertEquals(987, scope.set('a', 987));
   assertEquals(scope.get('a'), 987);
   assertEquals(scope.eval('a'), 987);
 };
