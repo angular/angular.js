@@ -70,7 +70,7 @@ Binder.prototype = {
   },
   
   updateAnchor: function() {
-    var url = this.location.get();
+    var url = this.location.get() || "";
     var anchorIndex = url.indexOf('#');
     if (anchorIndex > -1)
       url = url.substring(0, anchorIndex);
