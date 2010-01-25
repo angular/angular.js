@@ -5,14 +5,13 @@ function compile(content, initialScope, config) {
   config = config || {autoSubmit:true};
   var scope = new Scope(initialScope, "ROOT");
   h.data('scope', scope);
-  var binder = new Binder(h[0], new WidgetFactory(), new MockLocation(), config);
   var datastore = new DataStore();
-  scope.set("$datastore", datastore);
+  var binder = new Binder(h[0], new WidgetFactory(), datastore, new MockLocation(), config);
   scope.set("$updateView", _(binder.updateView).bind(binder));
   scope.set("$anchor", binder.anchor);
   binder.entity(scope);
   binder.compile();
-  return {node:h, binder:binder, scope:scope};
+  return {node:h, binder:binder, scope:scope, datastore:datastore};
 }
 
 function compileToHtml(content) {
@@ -117,34 +116,23 @@ BinderTest.prototype.testChangingTextfieldUpdatesModel = function(){
 };
 
 BinderTest.prototype.testChangingTextareaUpdatesModel = function(){
-  var form = html('<textarea name="model.note">abc</textarea>');
-  var scope = new Scope({model:{}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertEquals(scope.get('model').note, 'abc');
+  var c = compile('<textarea name="model.note">abc</textarea>');
+  c.binder.updateView();
+  assertEquals(c.scope.get('model').note, 'abc');
 };
 
 BinderTest.prototype.testChangingRadioUpdatesModel = function(){
-  var form = html('<input type="radio" name="model.price" value="A" checked>' +
+  var c = compile('<input type="radio" name="model.price" value="A" checked>' +
         '<input type="radio" name="model.price" value="B">');
-  var scope = new Scope({model:{}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertEquals(scope.get('model').price, 'A');
+  c.binder.updateView();
+  assertEquals(c.scope.get('model').price, 'A');
 };
 
 BinderTest.prototype.testChangingCheckboxUpdatesModel = function(){
-  var form = html('<input type="checkbox" name="model.price" value="A" checked>');
-  var scope = new Scope({model:{}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertEquals('A', scope.get('model').price);
+  var form = compile('<input type="checkbox" name="model.price" value="A" checked>');
+  form.scope.set('model', {});
+  form.binder.updateView();
+  assertEquals('A', form.scope.get('model').price);
 };
 
 BinderTest.prototype.testBindUpdate = function() {
@@ -154,37 +142,28 @@ BinderTest.prototype.testBindUpdate = function() {
 };
 
 BinderTest.prototype.testChangingSelectNonSelectedUpdatesModel = function(){
-  var form = html('<select name="model.price"><option value="A">A</option><option value="B">B</option></select>');
-  var scope = new Scope({model:{}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertEquals('A', scope.get('model').price);
+  var form = compile('<select name="model.price"><option value="A">A</option><option value="B">B</option></select>');
+  form.scope.set('model', {});
+  form.binder.updateView();
+  assertEquals('A', form.scope.get('model').price);
 };
 
 BinderTest.prototype.testChangingMultiselectUpdatesModel = function(){
-  var form = html('<select name="Invoice.options" multiple="multiple">' +
+  var form = compile('<select name="Invoice.options" multiple="multiple">' +
           '<option value="A" selected>Gift wrap</option>' +
           '<option value="B" selected>Extra padding</option>' +
           '<option value="C">Expedite</option>' +
           '</select>');
-  var scope = new Scope({Invoice:{}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertJsonEquals(["A", "B"], scope.get('Invoice').options);
+  form.scope.set("Invoice", {});
+  form.binder.updateView();
+  assertJsonEquals(["A", "B"], form.scope.get('Invoice').options);
 };
 
 BinderTest.prototype.testChangingSelectSelectedUpdatesModel = function(){
-  var form = html('<select name="model.price"><option>A</option><option selected value="b">B</option></select>');
-  var scope = new Scope({model:{}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertEquals(scope.get('model').price, 'b');
+  var form = compile('<select name="model.price"><option>A</option><option selected value="b">B</option></select>');
+  form.scope.set('model', {});
+  form.binder.updateView();
+  assertEquals(form.scope.get('model').price, 'b');
 };
 
 BinderTest.prototype.testExecuteInitialization = function() {
@@ -207,13 +186,11 @@ BinderTest.prototype.testExecuteInitializationStatements = function() {
 };
 
 BinderTest.prototype.testApplyTextBindings = function(){
-  var form = html('<div ng-bind="model.a">x</div>');
-  var scope = new Scope({model:{a:123}});
-  form.data('scope', scope);
-  var binder = new Binder(form.get(0), null, new MockLocation());
-  binder.compile();
-  binder.updateView();
-  assertEquals('123', form.text());
+  var form = compile('<div ng-bind="model.a">x</div>');
+  form.scope.set('model', {a:123});
+  form.binder.compile();
+  form.binder.updateView();
+  assertEquals('123', form.node.text());
 };
 
 BinderTest.prototype.testReplaceBindingInTextWithSpan = function() {
@@ -285,10 +262,9 @@ BinderTest.prototype.testExistingAttrbindingIsAppended = function() {
 };
 
 BinderTest.prototype.testAttributesAreEvaluated = function(){
-  var form = html('<a ng-bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>');
-  form.data('scope', new Scope({a:1, b:2}));
-  var binder = new Binder(form.get(0), null, new MockLocation());
-  binder.compile();
+  var c = compile('<a ng-bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>');
+  var binder = c.binder, form = c.node;
+  c.scope.eval('a=1;b=2');
   binder.updateView();
   var a = form.find("a");
   assertEquals(a.attr('a'), 'a');
@@ -296,16 +272,16 @@ BinderTest.prototype.testAttributesAreEvaluated = function(){
 };
 
 BinderTest.prototype.testInputsAreUpdated = function(){
-  var form =
-     html('<input type="tEXt" name="A.text"/>' +
-          '<textarea name="A.textarea"/>' +
-          '<input name="A.radio" type="rADio" value="r"/>' +
-          '<input name="A.radioOff" type="rADio" value="r"/>' +
-          '<input name="A.checkbox" type="checkbox" value="c" />' +
-          '<input name="A.checkboxOff" type="checkbox" value="c" />' +
-          '<select name="A.select"><option>a</option><option value="S">b</option></select>');
-  var binder = new Binder(form.get(0), new WidgetFactory(), new MockLocation());
-  form.data('scope', new Scope({A:{text:"t1", textarea:"t2", radio:"r", checkbox:"c", select:"S"}}));
+  var a =
+     compile('<input type="tEXt" name="A.text"/>' +
+            '<textarea name="A.textarea"></textarea>' +
+            '<input name="A.radio" type="rADio" value="r"/>' +
+            '<input name="A.radioOff" type="rADio" value="r"/>' +
+            '<input name="A.checkbox" type="checkbox" value="c" />' +
+            '<input name="A.checkboxOff" type="checkbox" value="c" />' +
+            '<select name="A.select"><option>a</option><option value="S">b</option></select>');
+  var binder = a.binder, form = a.node;
+  a.scope.set('A', {text:"t1", textarea:"t2", radio:"r", checkbox:"c", select:"S"});
   binder.compile();
   binder.updateView();
   assertEquals(form.find("input[type=text]").attr('value'), 't1');
@@ -348,8 +324,8 @@ BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
 };
 
 BinderTest.prototype.testParseEmptyAnchor = function(){
-  var location = new MockLocation();
-  var binder = new Binder(null, null, location);
+  var binder = compile("<div/>").binder;
+  var location = binder.location;
   var anchor = binder.anchor;
   location.url = "a#x=1";
   binder.parseAnchor();
@@ -362,8 +338,8 @@ BinderTest.prototype.testParseEmptyAnchor = function(){
 };
 
 BinderTest.prototype.testParseAnchor = function(){
-  var location = new MockLocation();
-  var binder = new Binder(null, null, location);
+  var binder = compile("<div/>").binder;
+  var location = binder.location;
   location.url = "a#x=1";
   binder.parseAnchor();
   assertEquals(binder.anchor.x, "1");
@@ -376,7 +352,7 @@ BinderTest.prototype.testParseAnchor = function(){
 };
 
 BinderTest.prototype.testWriteAnchor = function(){
-  var binder = new Binder(null, null, new MockLocation());
+  var binder = compile("<div/>").binder;
   binder.location.set('a');
   binder.anchor.a = 'b';
   binder.anchor.c = ' ';
@@ -386,22 +362,20 @@ BinderTest.prototype.testWriteAnchor = function(){
 };
 
 BinderTest.prototype.testWriteAnchorAsPartOfTheUpdateView = function(){
-  var binder = new Binder(html("<div/>")[0], null, new MockLocation());
+  var binder = compile("<div/>").binder;
   binder.location.set('a');
-  $(binder.doc).data('scope', new Scope());
   binder.anchor.a = 'b';
   binder.updateView();
   assertEquals(binder.location.get(), "a#a=b");
 };
 
 BinderTest.prototype.testRepeaterUpdateBindings = function(){
-  var form = html('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
-  var binder = new Binder(form.get(0), null, new MockLocation());
+  var a = compile('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
+  var form = a.node;
   var items = [{a:"A"}, {a:"B"}];
-  form.data('scope', new Scope({model:{items:items}}));
-  binder.compile();
+  a.scope.set('model', {items:items});
 
-  binder.updateView();
+  a.binder.updateView();
   assertEquals('<ul>' +
         '<#comment></#comment>' +
         '<li ng-bind="item.a" ng-repeat-index="0">A</li>' +
@@ -409,7 +383,7 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
         '</ul>', form.sortedHtml());
 
   items.unshift({a:'C'});
-  binder.updateView();
+  a.binder.updateView();
   assertEquals('<ul>' +
         '<#comment></#comment>' +
         '<li ng-bind="item.a" ng-repeat-index="0">C</li>' +
@@ -418,7 +392,7 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
         '</ul>', form.sortedHtml());
 
   items.shift();
-  binder.updateView();
+  a.binder.updateView();
   assertEquals('<ul>' +
         '<#comment></#comment>' +
         '<li ng-bind="item.a" ng-repeat-index="0">A</li>' +
@@ -427,15 +401,13 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
 };
 
 BinderTest.prototype.testRepeaterContentDoesNotBind = function(){
-  var form = html('<ul><LI ng-repeat="item in model.items"><span ng-bind="item.a"/></li></ul>');
-  form.data('scope', new Scope({model:{items:[{a:"A"}]}}));
-  var binder = new Binder(form.get(0), null, new MockLocation());
-  binder.compile();
-  binder.updateView();
+  var a = compile('<ul><LI ng-repeat="item in model.items"><span ng-bind="item.a"/></li></ul>');
+  a.scope.set('model', {items:[{a:"A"}]});
+  a.binder.updateView();
   assertEquals('<ul>' +
         '<#comment></#comment>' +
         '<li ng-repeat-index="0"><span ng-bind="item.a">A</span></li>' +
-        '</ul>', form.sortedHtml());
+        '</ul>', a.node.sortedHtml());
 };
 
 BinderTest.prototype.testShouldBindActionsOnRepeaterClone = function(){
@@ -524,64 +496,55 @@ BinderTest.prototype.testRepeaterAdd = function(){
 };
 
 BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
-  var doc = $('<div>{{error.throw()}}</div>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var a = compile('<div>{{error.throw()}}</div>');
+  var doc = a.node.find('div');
 
-  scope.set('error.throw', function(){throw "ErrorMsg1";});
-  binder.updateView();
+  a.scope.set('error.throw', function(){throw "ErrorMsg1";});
+  a.binder.updateView();
   var span = doc.find('span');
   assertTrue(span.hasClass('ng-exception'));
   assertEquals('ErrorMsg1', fromJson(span.text()));
   assertEquals('"ErrorMsg1"', span.attr('ng-error'));
 
-  scope.set('error.throw', function(){throw "MyError";});
-  binder.updateView();
+  a.scope.set('error.throw', function(){throw "MyError";});
+  a.binder.updateView();
   span = doc.find('span');
   assertTrue(span.hasClass('ng-exception'));
   assertTrue(span.text(), span.text().match('MyError') !== null);
   assertEquals('"MyError"', span.attr('ng-error'));
 
-  scope.set('error.throw', function(){return "ok";});
-  binder.updateView();
+  a.scope.set('error.throw', function(){return "ok";});
+  a.binder.updateView();
   assertFalse(span.hasClass('ng-exception'));
   assertEquals('ok', span.text());
   assertEquals(null, span.attr('ng-error'));
 };
 
 BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheSpan = function(){
-  var doc = $('<div attr="before {{error.throw()}} after"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var a = compile('<div attr="before {{error.throw()}} after"></div>');
+  var doc = a.node.find("div");
 
-  scope.set('error.throw', function(){throw "ErrorMsg";});
-  binder.updateView();
+  a.scope.set('error.throw', function(){throw "ErrorMsg";});
+  a.binder.updateView();
   assertTrue('ng-exception', doc.hasClass('ng-exception'));
   assertEquals('before ["ErrorMsg"] after', doc.attr('attr'));
   assertEquals('"ErrorMsg"', doc.attr('ng-error'));
 
-  scope.set('error.throw', function(){ return 'X';});
-  binder.updateView();
+  a.scope.set('error.throw', function(){ return 'X';});
+  a.binder.updateView();
   assertFalse('!ng-exception', doc.hasClass('ng-exception'));
   assertEquals('before X after', doc.attr('attr'));
   assertEquals(null, doc.attr('ng-error'));
+
 };
 
 BinderTest.prototype.testNestedRepeater = function() {
-  var doc = html('<div ng-repeat="m in model" name="{{m.name}}">' +
+  var a = compile('<div ng-repeat="m in model" name="{{m.name}}">' +
                    '<ul name="{{i}}" ng-repeat="i in m.item"></ul>' +
                  '</div>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
 
-  scope.set('model', [{name:'a', item:['a1', 'a2']}, {name:'b', item:['b1', 'b2']}]);
-  binder.updateView();
+  a.scope.set('model', [{name:'a', item:['a1', 'a2']}, {name:'b', item:['b1', 'b2']}]);
+  a.binder.updateView();
 
   assertEquals(
       //'<#comment></#comment>'+
@@ -594,88 +557,71 @@ BinderTest.prototype.testNestedRepeater = function() {
         '<#comment></#comment>'+
         '<ul name="b1" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="0"></ul>'+
         '<ul name="b2" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="1"></ul>'+
-      '</div>', doc.sortedHtml());
+      '</div>', a.node.sortedHtml());
 };
 
 BinderTest.prototype.testRadioButtonGetsPrefixed = function () {
-  var doc = html('<input ng-repeat="m in model" type="radio" name="m.a" value="on"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
-
-  scope.set('model', ['a1', 'a2']);
-  binder.updateView();
+  var a = compile('<input ng-repeat="m in model" type="radio" name="m.a" value="on"/>');
+  a.scope.set('model', ['a1', 'a2']);
+  a.binder.updateView();
 
   assertEquals(
       //'<#comment></#comment>'+
       '<input name="0:m.a" ng-repeat-index="0" type="radio" value="on"></input>'+
       '<input name="1:m.a" ng-repeat-index="1" type="radio" value="on"></input>',
-      doc.sortedHtml());
+      a.node.sortedHtml());
 };
 
 BinderTest.prototype.testHideBindingExpression = function() {
-  var doc = html('<div ng-hide="hidden == 3"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var a = compile('<div ng-hide="hidden == 3"/>');
 
-  scope.set('hidden', 3);
-  binder.updateView();
+  a.scope.set('hidden', 3);
+  a.binder.updateView();
 
-  assertHidden(doc.children());
+  assertHidden(a.node.children());
 
-  scope.set('hidden', 2);
-  binder.updateView();
+  a.scope.set('hidden', 2);
+  a.binder.updateView();
 
-  assertVisible(doc.children());
+  assertVisible(a.node.children());
 };
 
 BinderTest.prototype.testHideBinding = function() {
-  var doc = html('<div ng-hide="hidden"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var c = compile('<div ng-hide="hidden"/>');
 
-  scope.set('hidden', 'true');
-  binder.updateView();
+  c.scope.set('hidden', 'true');
+  c.binder.updateView();
 
-  assertHidden(doc.children());
+  assertHidden(c.node.children());
 
-  scope.set('hidden', 'false');
-  binder.updateView();
+  c.scope.set('hidden', 'false');
+  c.binder.updateView();
 
-  assertVisible(doc.children());
+  assertVisible(c.node.children());
 
-  scope.set('hidden', '');
-  binder.updateView();
+  c.scope.set('hidden', '');
+  c.binder.updateView();
 
-  assertVisible(doc.children());
+  assertVisible(c.node.children());
 };
 
 BinderTest.prototype.testShowBinding = function() {
-  var doc = html('<div ng-show="show"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var c = compile('<div ng-show="show"/>');
 
-  scope.set('show', 'true');
-  binder.updateView();
+  c.scope.set('show', 'true');
+  c.binder.updateView();
 
-  assertVisible(doc.children());
+  assertVisible(c.node.children());
 
-  scope.set('show', 'false');
-  binder.updateView();
+  c.scope.set('show', 'false');
+  c.binder.updateView();
 
-  assertHidden(doc.children());
+  assertHidden(c.node.children());
 
-  scope.set('show', '');
-  binder.updateView();
+  c.scope.set('show', '');
+  c.binder.updateView();
 
-  assertHidden(doc.children());
+  assertHidden(c.node.children());
 };
 
 BinderTest.prototype.testBindClassUndefined = function() {
@@ -688,22 +634,18 @@ BinderTest.prototype.testBindClassUndefined = function() {
 };
 
 BinderTest.prototype.testBindClass = function() {
-  var doc = html('<div ng-class="class"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var c = compile('<div ng-class="class"/>');
 
-  scope.set('class', 'testClass');
-  binder.updateView();
+  c.scope.set('class', 'testClass');
+  c.binder.updateView();
 
-  assertEquals(doc.sortedHtml(),
+  assertEquals(c.node.sortedHtml(),
       '<div class="testClass" ng-class="class"></div>');
 
-  scope.set('class', ['a', 'b']);
-  binder.updateView();
+  c.scope.set('class', ['a', 'b']);
+  c.binder.updateView();
 
-  assertEquals(doc.sortedHtml(),
+  assertEquals(c.node.sortedHtml(),
       '<div class="a,b" ng-class="class"></div>');
 };
 
@@ -717,21 +659,17 @@ BinderTest.prototype.testBindClassEvenOdd = function() {
 };
 
 BinderTest.prototype.testBindStyle = function() {
-  var doc = html('<div ng-style="style"/>');
-  var scope = new Scope();
-  doc.data('scope', scope);
-  var binder = new Binder(doc[0], new WidgetFactory(), new MockLocation());
-  binder.compile();
+  var c = compile('<div ng-style="style"/>');
 
-  scope.eval('style={color:"red"}');
-  binder.updateView();
+  c.scope.eval('style={color:"red"}');
+  c.binder.updateView();
 
-  assertEquals("red", doc.find('div').css('color'));
+  assertEquals("red", c.node.find('div').css('color'));
 
-  scope.eval('style={}');
-  binder.updateView();
+  c.scope.eval('style={}');
+  c.binder.updateView();
 
-  assertEquals(doc.sortedHtml(), '<div ng-style="style"></div>');
+  assertEquals(c.node.sortedHtml(), '<div ng-style="style"></div>');
 };
 
 BinderTest.prototype.testActionOnAHrefThrowsError = function(){
@@ -919,7 +857,7 @@ BinderTest.prototype.testParseQueryString = function(){
 BinderTest.prototype.testSetBinderAnchorTriggersListeners = function(){
   expectAsserts(2);
   var doc = html("<div/>")[0];
-  var binder = new Binder(doc, null, new MockLocation());
+  var binder = new Binder(doc, null, null, new MockLocation());
   var scope = new Scope({$binder:binder, $anchor:binder.anchor});
   jQuery(doc).data('scope', scope);
 

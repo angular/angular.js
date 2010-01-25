@@ -6,9 +6,9 @@ function Scope(initialState, name) {
   var State = function(){};
   State.prototype = initialState;
   this.state = new State();
-  this.state.$parent = initialState;
+  this.state['$parent'] = initialState;
   if (name == "ROOT") {
-    this.state.$root = this.state;
+    this.state['$root'] = this.state;
   }
 };
 
@@ -37,7 +37,7 @@ Scope.getter = function(instance, path) {
       }
     }
   }
-  if (typeof instance === 'function' && !instance.$$factory) {
+  if (typeof instance === 'function' && !instance['$$factory']) {
     return bind(lastInstance, instance);
   }
   return instance;
@@ -69,10 +69,12 @@ Scope.prototype = {
   },
     
   get: function(path) {
+//    log('SCOPE.get', path, Scope.getter(this.state, path));
     return Scope.getter(this.state, path);
   },
   
   set: function(path, value) {
+//    log('SCOPE.set', path, value);
     var element = path.split('.');
     var instance = this.state;
     for ( var i = 0; element.length > 1; i++) {
@@ -145,9 +147,9 @@ Scope.prototype = {
     return expression(self)(self, value);
   },
   
-  entity: function(entityDeclaration) {
+  entity: function(entityDeclaration, datastore) {
     var expression = new Parser(entityDeclaration).entityDeclaration();
-    return expression({scope:this});
+    return expression({scope:this, datastore:datastore});
   },
   
   markInvalid: function(widget) {

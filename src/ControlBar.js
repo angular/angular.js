@@ -55,7 +55,7 @@ ControlBar.prototype = {
       resizable: false, modal:true,
       title: 'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'
     });
-    callbacks["_iframe_notify_" + id] = function() {
+    angularCallbacks["_iframe_notify_" + id] = function() {
       loginView.dialog("destroy");
       loginView.remove();
       foreach(self.callbacks, function(callback){

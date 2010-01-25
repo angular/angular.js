@@ -20,11 +20,9 @@ if (typeof Node == 'undefined') {
 function noop() {}
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
-var consoleNode,
+var consoleNode, jQuery, msie,
     foreach          = _.each,
     extend           = _.extend,
-    jQuery           = window['jQuery'],
-    msie             = jQuery['browser']['msie'],
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
@@ -212,7 +210,6 @@ UrlWatcher.prototype = {
       self.setTimeout(pull, self.delay);
     };
     pull();
-    return this;
   },
   
   set: function(url) {
@@ -271,19 +268,20 @@ function exposeMethods(obj, methods){
 
 function wireAngular(element, config) {
   var widgetFactory = new WidgetFactory(config['server'], config['database']);
-  var binder = new Binder(element[0], widgetFactory, config['location'], config);
+  var binder = new Binder(element[0], widgetFactory, datastore, config['location'], config);
   var controlBar = new ControlBar(element.find('body'), config.server);
   var onUpdate = function(){binder.updateView();};
-  var server = config.database=="$MEMORY" ?
+  var server = config['database'] =="$MEMORY" ?
       new FrameServer(this.window) :
-      new Server(config.server, jQuery.getScript);
+      new Server(config['server'], jQuery['getScript']);
   server = new VisualServer(server, new Status(jQuery(element.body)), onUpdate);
   var users = new Users(server, controlBar);
-  var databasePath = '/data/' + config.database;
+  var databasePath = '/data/' + config['database'];
   var post = function(request, callback){
     server.request("POST", databasePath, request, callback);
   };
   var datastore = new DataStore(post, users, binder.anchor);
+  binder.datastore = datastore;
   binder.updateListeners.push(function(){datastore.flush();});
   var scope = new Scope({
     '$anchor'    : binder.anchor,
@@ -343,10 +341,14 @@ function wireAngular(element, config) {
 }
 
 angular['startUrlWatcher'] = function(){ 
-  return new UrlWatcher(window['location']).watch();
+  var watcher = new UrlWatcher(window['location']);
+  watcher.watch();
+  return exposeMethods(watcher, {'listen':watcher.listen, 'set':watcher.set, 'get':watcher.get});
 };
 
 angular['compile'] = function(element, config) {
+  jQuery = window['jQuery'];
+  msie   = jQuery['browser']['msie'];
   config = _({
       'server': "",
       'location': {'get':noop, 'set':noop, 'listen':noop}

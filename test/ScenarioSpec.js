@@ -29,7 +29,7 @@ describe("ScenarioSpec: Scope", function(){
   });
   
   it("should have config", function(){
-    expect(angular.compile('', {a:'b'}).config.a).toEqual('b');
+    expect(angular.compile('<div></div>', {a:'b'}).config.a).toEqual('b');
   });
   
   it("should have $ objects", function(){

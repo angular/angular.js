@@ -396,7 +396,6 @@ UrlWatcher.prototype = {
 
 /////////////////////////////////////////////////
 function configureJQueryPlugins() {
-  log('Angular.configureJQueryPlugins()');
   var fn = jQuery['fn'];
   fn['scope'] = function() {
     var element = this;
@@ -499,7 +498,7 @@ function wireAngular(element, config) {
         config['location']['listen'](_(binder.onUrlChange).bind(binder));
         binder.parseAnchor();
         binder.executeInit(); 
-        scope.updateView(); 
+        binder.updateView(); 
         return self;
       },
     'element':element[0],
@@ -917,7 +916,7 @@ Binder.prototype = {
   },
   
   updateAnchor: function() {
-    var url = this.location.get();
+    var url = this.location.get() || "";
     var anchorIndex = url.indexOf('#');
     if (anchorIndex > -1)
       url = url.substring(0, anchorIndex);

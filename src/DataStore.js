@@ -1,7 +1,8 @@
 function DataStore(post, users, anchor) {
   this.post = post;
   this.users = users;
-  this._cache = {$collections:[]};
+  this._cache_collections = [];
+  this._cache = {'$collections':this._cache_collections};
   this.anchor = anchor;
   this.bulkRequest = [];
 };
@@ -15,10 +16,10 @@ DataStore.NullEntity = extend(function(){}, {
 
 DataStore.prototype = {
   cache: function(document) {
-    if (! document instanceof Model) {
+    if (! document.datastore === this) {
       throw "Parameter must be an instance of Entity! " + toJson(document);
     }
-    var key = document.$entity + '/' + document.$id;
+    var key = document['$entity'] + '/' + document['$id'];
     var cachedDocument = this._cache[key];
     if (cachedDocument) {
       Model.copyDirectFields(document, cachedDocument);
@@ -32,10 +33,10 @@ DataStore.prototype = {
   load: function(instance, id, callback, failure) {
     if (id && id !== '*') {
       var self = this;
-      this._jsonRequest(["GET", instance.$entity + "/" + id], function(response) {
-        instance.$loadFrom(response);
-        instance.$migrate();
-        var clone = instance.$$entity(instance);
+      this._jsonRequest(["GET", instance['$entity'] + "/" + id], function(response) {
+        instance['$loadFrom'](response);
+        instance['$migrate']();
+        var clone = instance['$$entity'](instance);
         self.cache(clone);
         (callback||noop)(instance);
       }, failure);
@@ -61,8 +62,8 @@ DataStore.prototype = {
   loadOrCreate: function(instance, id, callback) {
     var self=this;
     return this.load(instance, id, callback, function(response){
-      if (response.$status_code == 404) {
-        instance.$id = id;
+      if (response['$status_code'] == 404) {
+        instance['$id'] = id;
         (callback||noop)(instance);
       } else {
         throw response;
@@ -73,15 +74,15 @@ DataStore.prototype = {
   loadAll: function(entity, callback) {
     var self = this;
     var list = [];
-    list.$$accept = function(doc){
-      return doc.$entity == entity.title;
+    list['$$accept'] = function(doc){
+      return doc['$entity'] == entity['title'];
     };
-    this._cache.$collections.push(list);
-    this._jsonRequest(["GET", entity.title], function(response) {
+    this._cache_collections.push(list);
+    this._jsonRequest(["GET", entity['title']], function(response) {
       var rows = response;
       for ( var i = 0; i < rows.length; i++) {
         var document = entity();
-        document.$loadFrom(rows[i]);
+        document['$loadFrom'](rows[i]);
         list.push(self.cache(document));
       }
       (callback||noop)(list);
@@ -92,17 +93,17 @@ DataStore.prototype = {
   save: function(document, callback) {
     var self = this;
     var data = {};
-    document.$saveTo(data);
+    document['$saveTo'](data);
     this._jsonRequest(["POST", "", data], function(response) {
-      document.$loadFrom(response);
+      document['$loadFrom'](response);
       var cachedDoc = self.cache(document);
-      _.each(self._cache.$collections, function(collection){
-        if (collection.$$accept(document)) {
-          angular['Array']['includeIf'](collection, cachedDoc, true);
+      _.each(self._cache_collections, function(collection){
+        if (collection['$$accept'](document)) {
+          angularArray['includeIf'](collection, cachedDoc, true);
         }
       });
-      if (document.$$anchor) {
-        self.anchor[document.$$anchor] = document.$id;
+      if (document['$$anchor']) {
+        self.anchor[document['$$anchor']] = document['$id'];
       }
       if (callback)
         callback(document);
@@ -112,13 +113,13 @@ DataStore.prototype = {
   remove: function(document, callback) {
     var self = this;
     var data = {};
-    document.$saveTo(data);
+    document['$saveTo'](data);
     this._jsonRequest(["DELETE", "", data], function(response) {
-      delete self._cache[document.$entity + '/' + document.$id];
-      _.each(self._cache.$collections, function(collection){
+      delete self._cache[document['$entity'] + '/' + document['$id']];
+      _.each(self._cache_collections, function(collection){
         for ( var i = 0; i < collection.length; i++) {
           var item = collection[i];
-          if (item.$id == document.$id) {
+          if (item['$id'] == document['$id']) {
             collection.splice(i, 1);
           }
         }
@@ -128,8 +129,8 @@ DataStore.prototype = {
   },
   
   _jsonRequest: function(request, callback, failure) {
-    request.$$callback = callback;
-    request.$$failure = failure||function(response){
+    request['$$callback'] = callback;
+    request['$$failure'] = failure||function(response){
       throw response;
     };
     this.bulkRequest.push(request);
@@ -143,25 +144,25 @@ DataStore.prototype = {
     log('REQUEST:', bulkRequest);
     function callback(code, bulkResponse){
       log('RESPONSE[' + code + ']: ', bulkResponse);
-      if(bulkResponse.$status_code == 401) {
-        self.users.login(function(){
+      if(bulkResponse['$status_code'] == 401) {
+        self.users['login'](function(){
           self.post(bulkRequest, callback);
         });
-      } else if(bulkResponse.$status_code) {
+      } else if(bulkResponse['$status_code']) {
         alert(toJson(bulkResponse));
       } else {
         for ( var i = 0; i < bulkResponse.length; i++) {
           var response = bulkResponse[i];
           var request = bulkRequest[i];
-          var responseCode = response.$status_code;
+          var responseCode = response['$status_code'];
           if(responseCode) {
             if(responseCode == 403) {
-              self.users.notAuthorized();
+              self.users['notAuthorized']();
             } else {
-              request.$$failure(response);
+              request['$$failure'](response);
             }
           } else {
-            request.$$callback(response);
+            request['$$callback'](response);
           }
         }
       }
@@ -178,9 +179,9 @@ DataStore.prototype = {
     }
     for(var key in scope) {
       var item = scope[key];
-      if (item && item.$save == Model.prototype.$save) {
+      if (item && item['$save'] == Model.prototype['$save']) {
         saveCounter++;
-        item.$save(onSaveDone);
+        item['$save'](onSaveDone);
       }
     }
     onSaveDone();
@@ -189,19 +190,18 @@ DataStore.prototype = {
   query: function(type, query, arg, callback){
     var self = this;
     var queryList = [];
-    queryList.$$accept = function(doc){
+    queryList['$$accept'] = function(doc){
       return false;
     };
-    this._cache.$collections.push(queryList);
-    var request = type.title + '/' + query + '=' + arg;
+    this._cache_collections.push(queryList);
+    var request = type['title'] + '/' + query + '=' + arg;
     this._jsonRequest(["GET", request], function(response){
       var list = response;
-      for(var i = 0; i < list.length; i++) {
-        var document = new type().$loadFrom(list[i]);
+      foreach(list, function(item){
+        var document = type()['$loadFrom'](item);
         queryList.push(self.cache(document));
-      }
-      if (callback)
-        callback(queryList);
+      });
+      (callback||noop)(queryList);
     });
     return queryList;
   },
@@ -210,11 +210,11 @@ DataStore.prototype = {
     var entities = [];
     var self = this;
     this._jsonRequest(["GET", "$entities"], function(response) {
-      for (var entityName in response) {
+      foreach(response, function(value, entityName){
         entities.push(self.entity(entityName));
-      }
+      });
       entities.sort(function(a,b){return a.title > b.title ? 1 : -1;});
-      if (callback) callback(entities);
+      (callback||noop)(entities);
     });
     return entities;
   },
@@ -223,9 +223,7 @@ DataStore.prototype = {
     var counts = {};
     var self = this;
     self.post([["GET", "$users"]], function(code, response){
-      foreach(response[0], function(value, key){
-        counts[key] = value;
-      });
+      extend(counts, response[0]);
     });
     return counts;
   },
@@ -234,9 +232,7 @@ DataStore.prototype = {
     var ids = {};
     var self = this;
     self.post([["GET", "$users/" + user]], function(code, response){
-      foreach(response[0], function(value, key){
-        ids[key] = value;
-      });
+      extend(ids, response[0]);
     });
     return ids;
   },
@@ -252,7 +248,7 @@ DataStore.prototype = {
       // entity.name does not work as name seems to be reserved for functions
       'title': name,
       '$$factory': true,
-      'datastore': this,
+      datastore: this, //private, obfuscate
       'defaults': defaults || {},
       'load': function(id, callback){
         return self.load(entity(), id, callback);

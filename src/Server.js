@@ -14,10 +14,10 @@ Server.prototype = {
   request: function(method, url, request, callback) {
     var requestId = this.uuid + (this.nextId++);
     angularCallbacks[requestId] = function(response) {
-      delete angular[requestId];
+      delete angularCallbacks[requestId];
       callback(200, response);
     };
-    var payload = {u:url, m:method, p:request};
+    var payload = {'u':url, 'm':method, 'p':request};
     payload = this.base64url(toJson(payload));
     var totalPockets = Math.ceil(payload.length / this.maxSize);
     var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";

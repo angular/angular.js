@@ -691,8 +691,7 @@ Parser.prototype = {
       defaults = this.primary()(null);
     }
     return function(self) {
-      var datastore = self.scope.get('$datastore');
-      var Entity = datastore.entity(entity, defaults);
+      var Entity = self.datastore.entity(entity, defaults);
       self.scope.set(entity, Entity);
       if (instance) {
         var document = Entity();

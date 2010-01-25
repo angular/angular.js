@@ -451,8 +451,7 @@ ParserTest.prototype.testItShouldHaveDefaultArugument = function(){
 
 ParserTest.prototype.testReturnFunctionsAreNotBound = function(){
   var scope = new Scope();
-  scope.set("$datastore", new DataStore());
-  scope.entity("Group");
+  scope.entity("Group", new DataStore());
   var Group = scope.get("Group");
   assertEquals("eval Group", "function", typeof scope.eval("Group"));
   assertEquals("direct Group", "function", typeof Group);

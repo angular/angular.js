@@ -3,9 +3,9 @@
 
 function Model(entity, initial) {
   this['$$entity'] = entity;
-  this.$loadFrom(initial||{});
-  this.$entity = entity['title'];
-  this.$migrate();
+  this['$loadFrom'](initial||{});
+  this['$entity'] = entity['title'];
+  this['$migrate']();
 };
 
 Model.copyDirectFields = function(src, dst) {
@@ -25,9 +25,9 @@ Model.copyDirectFields = function(src, dst) {
   }
 };
 
-Model.prototype = {
+extend(Model.prototype, {
   '$migrate': function() {
-    merge(this['$$entity'].defaults, this);
+    merge(this['$$entity']['defaults'], this);
     return this;
   },
   
@@ -62,4 +62,4 @@ Model.prototype = {
     Model.copyDirectFields(this, other);
     return this;
   }
-};
+});

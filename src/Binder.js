@@ -1,6 +1,7 @@
-function Binder(doc, widgetFactory, location, config) {
+function Binder(doc, widgetFactory, datastore, location, config) {
   this.doc = doc;
   this.location = location;
+  this.datastore = datastore;
   this.anchor = {};
   this.widgetFactory = widgetFactory;
   this.config = config || {};
@@ -49,7 +50,7 @@ Binder.prototype = {
   },
   
   parseAnchor: function() {
-    var self = this, url = this.location.get() || "";
+    var self = this, url = this.location['get']() || "";
   
     var anchorIndex = url.indexOf('#');
     if (anchorIndex < 0) return;
@@ -70,7 +71,7 @@ Binder.prototype = {
   },
   
   updateAnchor: function() {
-    var url = this.location.get() || "";
+    var url = this.location['get']() || "";
     var anchorIndex = url.indexOf('#');
     if (anchorIndex > -1)
       url = url.substring(0, anchorIndex);
@@ -87,7 +88,7 @@ Binder.prototype = {
         sep = '&';
       }
     }
-    this.location.set(url);
+    this.location['set'](url);
     return url;
   },
   
@@ -123,12 +124,14 @@ Binder.prototype = {
   },
   
   entity: function (scope) {
+    var self = this;
     this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
       try {
         var jNode = jQuery(this);
-        var decl = scope.entity(jNode.attr("ng-entity"));
+        var decl = scope.entity(jNode.attr("ng-entity"), self.datastore);
         return decl + (jNode.attr('ng-watch') || "");
       } catch (e) {
+        log(e);
         alert(e);
       }
     });
@@ -136,7 +139,7 @@ Binder.prototype = {
   
   compile: function() {
     var jNode = jQuery(this.doc);
-    if (this.config.autoSubmit) {
+    if (this.config['autoSubmit']) {
       var submits = this.docFindWithSelf(":submit").not("[ng-action]");
       submits.attr("ng-action", "$save()");
       submits.not(":disabled").not("ng-bind-attr").attr("ng-bind-attr", '{disabled:"{{$invalidWidgets}}"}');
