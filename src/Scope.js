@@ -153,7 +153,7 @@ Scope.prototype = {
   },
   
   markInvalid: function(widget) {
-    this.state.$invalidWidgets.push(widget);
+    this.state['$invalidWidgets'].push(widget);
   },
   
   watch: function(declaration) {

@@ -93,7 +93,7 @@ angularCallbacks['flashEvent'] = function(id, event, args) {
   var jobject = jQuery(object);
   var controller = jobject.data("controller");
   FileController.prototype[event].apply(controller, args);
-  jobject.scope().get('$updateView')();
+  _.defer(jobject.scope().get('$updateView'));
 };
 
 FileController.template = function(id) {
@@ -102,7 +102,7 @@ FileController.template = function(id) {
       '<object id="' + id + '" />' +
       '<a></a>' +
       '<span/>' +
-    '</span>');
+    '</span>'); 
 };
 
 extend(FileController.prototype, {
@@ -129,7 +129,6 @@ extend(FileController.prototype, {
     this.value = value;
     this.updateModel(scope);
     this.value = null;
-    scope.get('$binder').updateView();
   },  
   'select': function(name, size, type) {
     this.name = name;

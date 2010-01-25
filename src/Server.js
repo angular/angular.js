@@ -13,14 +13,13 @@ Server.prototype = {
   
   request: function(method, url, request, callback) {
     var requestId = this.uuid + (this.nextId++);
+    var payload = this.base64url(toJson({'u':url, 'm':method, 'p':request}));
+    var totalPockets = Math.ceil(payload.length / this.maxSize);
+    var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
     angularCallbacks[requestId] = function(response) {
       delete angularCallbacks[requestId];
       callback(200, response);
     };
-    var payload = {'u':url, 'm':method, 'p':request};
-    payload = this.base64url(toJson(payload));
-    var totalPockets = Math.ceil(payload.length / this.maxSize);
-    var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
     for ( var pocketNo = 0; pocketNo < totalPockets; pocketNo++) {
       var pocket = payload.substr(pocketNo * this.maxSize, this.maxSize);
       this.getScript(baseUrl + (pocketNo+1) + "?h=" + pocket, noop);
