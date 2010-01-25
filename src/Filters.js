@@ -184,25 +184,25 @@ foreach({
     function(type, data, width, height) {
       data = data || {};
       var chart = {
-          cht:type, 
-          chco:angularFilterGoogleChartApi.collect(data, 'color'),
-          chtt:angularFilterGoogleChartApi.title(data),
-          chdl:angularFilterGoogleChartApi.collect(data, 'label'),
-          chd:angularFilterGoogleChartApi.values(data),
-          chf:'bg,s,FFFFFF00'
+          'cht':type, 
+          'chco':angularFilterGoogleChartApi['collect'](data, 'color'),
+          'chtt':angularFilterGoogleChartApi['title'](data),
+          'chdl':angularFilterGoogleChartApi['collect'](data, 'label'),
+          'chd':angularFilterGoogleChartApi['values'](data),
+          'chf':'bg,s,FFFFFF00'
         };
-      if (_.isArray(data.xLabels)) {
-        chart.chxt='x';
-        chart.chxl='0:|' + data.xLabels.join('|');
+      if (_.isArray(data['xLabels'])) {
+        chart['chxt']='x';
+        chart['chxl']='0:|' + data.xLabels.join('|');
       }
       return angularFilterGoogleChartApi['encode'](chart, width, height);
     },
     {
       'values': function(data){
         var seriesValues = [];
-        foreach(data.series||[], function(serie){
+        foreach(data['series']||[], function(serie){
           var values = [];
-          foreach(serie.values||[], function(value){
+          foreach(serie['values']||[], function(value){
             values.push(value);
           });
           seriesValues.push(values.join(','));
@@ -213,7 +213,7 @@ foreach({
       
       'title': function(data){
         var titles = [];
-        var title = data.title || [];
+        var title = data['title'] || [];
         foreach(_.isArray(title)?title:[title], function(text){
           titles.push(encodeURIComponent(text));
         });
@@ -223,7 +223,7 @@ foreach({
       'collect': function(data, key){
         var outterValues = [];
         var count = 0;
-        foreach(data.series||[], function(serie){
+        foreach(data['series']||[], function(serie){
           var innerValues = [];
           var value = serie[key] || [];
           foreach(_.isArray(value)?value:[value], function(color){
@@ -240,7 +240,7 @@ foreach({
         height = height || width;
         var url = "http://chart.apis.google.com/chart?";
         var urlParam = [];
-        params.chs = width + "x" + height;
+        params['chs'] = width + "x" + height;
         foreach(params, function(value, key){
           if (value) {
             urlParam.push(key + "=" + value);
@@ -256,37 +256,38 @@ foreach({
   
   
   'qrcode': function(value, width, height) {
-    return angularFilterGoogleChartApi['encode']({cht:'qr', chl:encodeURIComponent(value)}, width, height);
+    return angularFilterGoogleChartApi['encode']({
+      'cht':'qr', 'chl':encodeURIComponent(value)}, width, height);
   },
   'chart': {
-    pie:function(data, width, height) {
+    'pie':function(data, width, height) {
       return angularFilterGoogleChartApi('p', data, width, height);
     },
-    pie3d:function(data, width, height) {
+    'pie3d':function(data, width, height) {
       return angularFilterGoogleChartApi('p3', data, width, height);
     },
-    pieConcentric:function(data, width, height) {
+    'pieConcentric':function(data, width, height) {
       return angularFilterGoogleChartApi('pc', data, width, height);
     },
-    barHorizontalStacked:function(data, width, height) {
+    'barHorizontalStacked':function(data, width, height) {
       return angularFilterGoogleChartApi('bhs', data, width, height);
     },
-    barHorizontalGrouped:function(data, width, height) {
+    'barHorizontalGrouped':function(data, width, height) {
       return angularFilterGoogleChartApi('bhg', data, width, height);
     },
-    barVerticalStacked:function(data, width, height) {
+    'barVerticalStacked':function(data, width, height) {
       return angularFilterGoogleChartApi('bvs', data, width, height);
     },
-    barVerticalGrouped:function(data, width, height) {
+    'barVerticalGrouped':function(data, width, height) {
       return angularFilterGoogleChartApi('bvg', data, width, height);
     },
-    line:function(data, width, height) {
+    'line':function(data, width, height) {
       return angularFilterGoogleChartApi('lc', data, width, height);
     },
-    sparkline:function(data, width, height) {
+    'sparkline':function(data, width, height) {
       return angularFilterGoogleChartApi('ls', data, width, height);
     },
-    scatter:function(data, width, height) {
+    'scatter':function(data, width, height) {
       return angularFilterGoogleChartApi('s', data, width, height);
     }
   },

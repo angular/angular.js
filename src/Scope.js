@@ -95,6 +95,7 @@ Scope.prototype = {
   },
   
   eval: function(expressionText, context) {
+    log('Scope.eval', expressionText);
     var expression = Scope.expressionCache[expressionText];
     if (!expression) {
       var parser = new Parser(expressionText);

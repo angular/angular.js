@@ -695,7 +695,7 @@ Parser.prototype = {
       self.scope.set(entity, Entity);
       if (instance) {
         var document = Entity();
-        document.$$anchor = instance;
+        document['$$anchor'] = instance;
         self.scope.set(instance, document);
         return "$anchor." + instance + ":{" + 
             instance + "=" + entity + ".load($anchor." + instance + ");" +
