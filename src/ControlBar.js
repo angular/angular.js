@@ -1,7 +1,7 @@
 function ControlBar(document, serverUrl) {
-  this.document = document;
+  this._document = document;
   this.serverUrl = serverUrl;
-  this.window = window;
+  this._window = window;
   this.callbacks = [];
 };
 
@@ -39,25 +39,24 @@ ControlBar.prototype = {
   },
   
   urlWithoutAnchor: function (path) {
-    return this.window.location.href.split("#")[0];
+    return this._window['location']['href'].split("#")[0];
   },
   
   doTemplate: function (path) {
     var self = this;
     var id = new Date().getTime();
-    var url = this.urlWithoutAnchor();
-    url += "#$iframe_notify=" + id;
+    var url = this.urlWithoutAnchor() + "#$iframe_notify=" + id;
     var iframeHeight = 330;
     var loginView = jQuery('<div style="overflow:hidden; padding:2px 0 0 0;"><iframe name="'+ url +'" src="'+this.serverUrl + path + '" width="500" height="'+ iframeHeight +'"/></div>');
-    this.document.append(loginView);
-    loginView.dialog({
-      height:iframeHeight + 33, width:500,
-      resizable: false, modal:true,
-      title: 'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'
+    this._document.append(loginView);
+    loginView['dialog']({
+      'height':iframeHeight + 33, 'width':500,
+      'resizable': false, 'modal':true,
+      'title': 'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'
     });
     angularCallbacks["_iframe_notify_" + id] = function() {
-      loginView.dialog("destroy");
-      loginView.remove();
+      loginView['dialog']("destroy");
+      loginView['remove']();
       foreach(self.callbacks, function(callback){
         callback();
       });

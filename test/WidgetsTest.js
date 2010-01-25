@@ -223,10 +223,10 @@ BindAttrUpdaterTest.prototype.testShouldLoadBlankImageWhenBindingIsUndefined = f
 
   var scope = new Scope();
   scope.set('imageUrl', undefined);
-  scope.set('config.server', 'http://server');
+  scope.set('$config.blankImage', 'http://server/blank.gif');
 
   controller.updateView(scope);
-  assertEquals("http://server/images/blank.gif", view.attr('src'));
+  assertEquals("http://server/blank.gif", view.attr('src'));
 };
 
 RepeaterUpdaterTest.prototype.testShouldNotDieWhenRepeatExpressionIsNull = function() {

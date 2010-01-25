@@ -5,7 +5,7 @@ FileControllerTest.prototype.testOnSelectUpdateView = function(){
   var swf = {};
   var controller = new FileController(view, null, swf);
   swf.uploadFile = function(path){};
-  controller._on_select('A', 9, '9 bytes');
+  controller.select('A', 9, '9 bytes');
   assertEquals(view.find('a').text(), "A");
   assertEquals(view.find('span').text(), "9 bytes");
 };
@@ -20,7 +20,7 @@ FileControllerTest.prototype.testUpdateModelView = function(){
   view.data('scope', scope);
   controller = new FileController(view, 'value.input', null, "http://server_base");
   var value = '{"text":"A", "size":123, "id":"890"}';
-  controller._on_uploadCompleteData(value);
+  controller.uploadCompleteData(value);
   controller.updateView(scope);
   assertEquals(scope.get('value.input.text'), 'A');
   assertEquals(scope.get('value.input.size'), 123);

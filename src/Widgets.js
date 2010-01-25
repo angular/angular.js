@@ -2,8 +2,8 @@ function WidgetFactory(serverUrl, database) {
   this.nextUploadId = 0;
   this.serverUrl = serverUrl;
   this.database = database;
-  if (window.swfobject) {
-    this.createSWF = swfobject.createSWF;
+  if (window['swfobject']) {
+    this.createSWF = window['swfobject']['createSWF'];
   } else {
     this.createSWF = function(){
       alert("ERROR: swfobject not loaded!");
@@ -62,12 +62,12 @@ WidgetFactory.prototype = {
     var view = FileController.template(uploadId);
     fileInput.after(view);
     var att = {
-        data:this.serverUrl + "/admin/ServerAPI.swf",
-        width:"95", height:"20", align:"top",
-        wmode:"transparent"};
+        'data':this.serverUrl + "/admin/ServerAPI.swf",
+        'width':"95", 'height':"20", 'align':"top",
+        'wmode':"transparent"};
     var par = {
-        flashvars:"uploadWidgetId=" + uploadId,
-        allowScriptAccess:"always"};
+        'flashvars':"uploadWidgetId=" + uploadId,
+        'allowScriptAccess':"always"};
     var swfNode = this.createSWF(att, par, uploadId);
     fileInput.remove();
     var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
@@ -88,10 +88,12 @@ function FileController(view, scopeName, uploader, databaseUrl) {
   this.lastValue = undefined;
 };
 
-FileController.dispatchEvent = function(id, event, args) {
+angularCallbacks['flashEvent'] = function(id, event, args) {
   var object = document.getElementById(id);
-  var controller = jQuery(object).data("controller");
-  FileController.prototype['_on_' + event].apply(controller, args);
+  var jobject = jQuery(object);
+  var controller = jobject.data("controller");
+  FileController.prototype[event].apply(controller, args);
+  jobject.scope().get('$updateView')();
 };
 
 FileController.template = function(id) {
@@ -103,23 +105,23 @@ FileController.template = function(id) {
     '</span>');
 };
 
-FileController.prototype = {
-  '_on_cancel': noop,
-  '_on_complete': noop,
-  '_on_httpStatus': function(status) {
+extend(FileController.prototype, {
+  'cancel': noop,
+  'complete': noop,
+  'httpStatus': function(status) {
     alert("httpStatus:" + this.scopeName + " status:" + status);
   },
-  '_on_ioError': function() {
+  'ioError': function() {
     alert("ioError:" + this.scopeName);
   },
-  '_on_open': function() {
+  'open': function() {
     alert("open:" + this.scopeName);
   },
-  '_on_progress':noop,
-  '_on_securityError':  function() {
+  'progress':noop,
+  'securityError':  function() {
     alert("securityError:" + this.scopeName);
   },
-  '_on_uploadCompleteData': function(data) {
+  'uploadCompleteData': function(data) {
     var value = fromJson(data);
     value.url = this.attachmentsPath + '/' + value.id + '/' + value.text;
     this.view.find("input").attr('checked', true);
@@ -129,7 +131,7 @@ FileController.prototype = {
     this.value = null;
     scope.get('$binder').updateView();
   },  
-  '_on_select': function(name, size, type) {
+  'select': function(name, size, type) {
     this.name = name;
     this.view.find("a").text(name).attr('href', name);
     this.view.find("span").text(angular['filter']['bytes'](size));
@@ -161,10 +163,10 @@ FileController.prototype = {
   
   upload: function() {
     if (this.name) {
-      this.uploader.uploadFile(this.attachmentsPath);
+      this.uploader['uploadFile'](this.attachmentsPath);
     }
   }
-};
+});
 
 ///////////////////////
 // NullController
@@ -532,7 +534,7 @@ BindAttrUpdater.prototype = {
       }
       var attrValue = attrValues.length ? attrValues.join('') : null;
       if(isImage && attrName == 'src' && !attrValue)
-        attrValue = scope.get('config.server') + '/images/blank.gif';
+        attrValue = scope.get('$config.blankImage');
       jNode.attr(attrName, attrValue);
     } 
   }

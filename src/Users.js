@@ -3,7 +3,7 @@ function Users(server, controlBar) {
   this.controlBar = controlBar;
 };
 
-Users.prototype = {
+extend(Users.prototype, {
   'fetchCurrentUser':function(callback) {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
@@ -23,7 +23,7 @@ Users.prototype = {
   'login': function(callback) {
     var self = this;
     this.controlBar.login(function(){
-      self.fetchCurrentUser(function(){
+      self['fetchCurrentUser'](function(){
         (callback||noop)();
       });
     });
@@ -32,4 +32,4 @@ Users.prototype = {
   'notAuthorized': function(){
     this.controlBar.notAuthorized();
   }
-};
+});

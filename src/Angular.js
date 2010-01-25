@@ -269,10 +269,10 @@ function exposeMethods(obj, methods){
 function wireAngular(element, config) {
   var widgetFactory = new WidgetFactory(config['server'], config['database']);
   var binder = new Binder(element[0], widgetFactory, datastore, config['location'], config);
-  var controlBar = new ControlBar(element.find('body'), config.server);
+  var controlBar = new ControlBar(element.find('body'), config['server']);
   var onUpdate = function(){binder.updateView();};
   var server = config['database'] =="$MEMORY" ?
-      new FrameServer(this.window) :
+      new FrameServer(window) :
       new Server(config['server'], jQuery['getScript']);
   server = new VisualServer(server, new Status(jQuery(element.body)), onUpdate);
   var users = new Users(server, controlBar);
