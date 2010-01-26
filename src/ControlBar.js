@@ -1,6 +1,7 @@
-function ControlBar(document, serverUrl) {
+function ControlBar(document, serverUrl, database) {
   this._document = document;
   this.serverUrl = serverUrl;
+  this.database = database;
   this._window = window;
   this.callbacks = [];
 };
@@ -26,7 +27,7 @@ ControlBar.prototype = {
   login: function (loginSubmitFn) {
     this.callbacks.push(loginSubmitFn);
     if (this.callbacks.length == 1) {
-      this.doTemplate("/user_session/new.mini?return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
+      this.doTemplate("/user_session/new.mini?database="+encodeURIComponent(this.database)+"&return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
     }
   },
   

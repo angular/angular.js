@@ -1,5 +1,7 @@
 include FileUtils
 
+task :default => [:compile, :test]
+
 desc 'Generate Externs'
 task :compileexterns do
   out = File.new("externs.js", "w")
