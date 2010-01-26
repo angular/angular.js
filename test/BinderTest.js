@@ -401,7 +401,7 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
 };
 
 BinderTest.prototype.testRepeaterContentDoesNotBind = function(){
-  var a = compile('<ul><LI ng-repeat="item in model.items"><span ng-bind="item.a"/></li></ul>');
+  var a = compile('<ul><LI ng-repeat="item in model.items"><span ng-bind="item.a"></span></li></ul>');
   a.scope.set('model', {items:[{a:"A"}]});
   a.binder.updateView();
   assertEquals('<ul>' +

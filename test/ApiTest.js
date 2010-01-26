@@ -204,7 +204,7 @@ ApiTest.prototype.testQuoteString = function(){
 };
 
 ApiTest.prototype.testQuoteStringBug = function(){
-  assertEquals(angular.String.quote('"7\\\\\\\"7"', "7\\\"7"));
+  assertEquals('"7\\\\\\\"7"', angular.String.quote("7\\\"7"));
 };
 
 ApiTest.prototype.testQuoteUnicode = function(){

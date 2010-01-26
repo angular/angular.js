@@ -1,5 +1,3 @@
-TestCase = function(name) { return jstestdriver.testCaseManager.TestCase(name); };
-
 HIDDEN = jQuery.browser.msie ?
     '' :
     jQuery.browser.safari ?
@@ -7,7 +5,7 @@ HIDDEN = jQuery.browser.msie ?
          ' style="display: none;"';
 
 msie = jQuery.browser.msie;
-alert = function(msg) {jstestdriver.console.log("ALERT: " + msg);};
+//alert = function(msg) {jstestdriver.console.log("ALERT: " + msg);};
 
 function noop(){}
 
@@ -34,6 +32,7 @@ function report(reportTest){
     reportTest(success, module, name, this.nodeValue);
   });
 }
+
 
 MockLocation = function() {
   this.url = "http://server";

@@ -319,5 +319,7 @@ defineApi('Object', [angularGlobal, angularCollection, angularObject],
     ['keys', 'values']);
 defineApi('String', [angularGlobal, angularString], []);
 defineApi('Date', [angularGlobal, angularDate], []);
+//IE bug
+angular['Date']['toString'] = angularDate['toString'];
 defineApi('Function', [angularGlobal, angularCollection, angularFunction],
     ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);

@@ -20,7 +20,8 @@ if (typeof Node == 'undefined') {
 function noop() {}
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
-var consoleNode, jQuery, msie,
+var consoleNode, msie, 
+    jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
     foreach          = _.each,
     extend           = _.extend,
     angular          = window['angular']    || (window['angular']    = {}), 
