@@ -1,11 +1,40 @@
 include FileUtils
 
+desc 'Generate Externs'
+task :compileexterns do
+  out = File.new("externs.js", "w")
+
+  out.write("function _(){};\n")
+  file = File.new("lib/underscore/underscore.js", "r")
+  while (line = file.gets)
+    if line =~ /^\s*_\.(\w+)\s*=.*$/ 
+      out.write("_.#{$1}=function(){};\n")
+    end
+  end
+  file.close
+
+  out.write("function jQuery(){};\n")
+  file = File.new("lib/jquery/jquery-1.3.2.js", "r")
+  while (line = file.gets)
+    if line =~ /^\s*(\w+)\s*:\s*function.*$/ 
+      out.write("jQuery.#{$1}=function(){};\n")
+    end
+  end
+  file.close
+  out.write("jQuery.scope=function(){};\n")
+  out.write("jQuery.controller=function(){};\n")
+
+  out.close
+end
+
 desc 'Compile JavaScript'
 task :compile do
-  compiled = %x(java -jar lib/shrinksafe/shrinksafe.jar \
+  Rake::Task['compileexterns'].execute
+
+  concat = %x(cat \
+      src/angular.prefix \
       lib/webtoolkit/webtoolkit.base64.js \
-      lib/underscore/underscore.js \
-      src/Loader.js \
+      src/Angular.js \
       src/API.js \
       src/Binder.js \
       src/ControlBar.js \
@@ -19,35 +48,18 @@ task :compile do
       src/Users.js \
       src/Validators.js \
       src/Widgets.js \
-      src/angular-bootstrap.js \
+      src/angular.suffix \
     )
   f = File.new("angular.js", 'w')
-  f.write(compiled)
+  f.write(concat)
   f.close
-end
 
-desc 'Compile JavaScript with Google Closure Compiler'
-task :compileclosure do
   %x(java -jar lib/compiler-closure/compiler.jar \
         --compilation_level ADVANCED_OPTIMIZATIONS \
-        --js lib/webtoolkit/webtoolkit.base64.js \
-        --js lib/underscore/underscore.js \
-        --js src/Loader.js \
-        --js src/API.js \
-        --js src/Binder.js \
-        --js src/ControlBar.js \
-        --js src/DataStore.js \
-        --js src/Filters.js \
-        --js src/JSON.js \
-        --js src/Model.js \
-        --js src/Parser.js \
-        --js src/Scope.js \
-        --js src/Server.js \
-        --js src/Users.js \
-        --js src/Validators.js \
-        --js src/Widgets.js \
-        --js src/angular-bootstrap.js \
-        --js_output_file angular.js)
+        --js angular.js \
+        --externs externs.js \
+        --create_source_map ./angular-minified.map \
+        --js_output_file angular-minified.js)
 end
 
 namespace :server do

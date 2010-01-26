@@ -3,7 +3,7 @@ FiltersTest = TestCase('FiltersTest');
 FiltersTest.prototype.testCurrency = function(){
   var html = $('<span/>');
   var context = {element:html[0]};
-  var currency = nglr.bind(context, angular.filter.currency);
+  var currency = bind(context, angular.filter.currency);
 
   assertEquals(currency(0), '$0.00');
   assertEquals(html.hasClass('ng-format-negative'), false);
@@ -15,8 +15,8 @@ FiltersTest.prototype.testCurrency = function(){
 
 FiltersTest.prototype.testFilterThisIsContext = function(){
   expectAsserts(2);
-  var scope = new nglr.Scope();
-  nglr.Scope.expressionCache = {};
+  var scope = new Scope();
+  Scope.expressionCache = {};
   var context = {element:123};
   angular.filter.testFn = function () {
     assertEquals('Context not equal', this, context);
@@ -28,7 +28,7 @@ FiltersTest.prototype.testFilterThisIsContext = function(){
 
 FiltersTest.prototype.testNumberFormat = function(){
   var context = {jqElement:$('<span/>')};
-  var number = nglr.bind(context, angular.filter.number);
+  var number = bind(context, angular.filter.number);
 
   assertEquals('0', number(0, 0));
   assertEquals('0.00', number(0));
@@ -40,7 +40,7 @@ FiltersTest.prototype.testNumberFormat = function(){
 };
 
 FiltersTest.prototype.testJson = function () {
-  assertEquals(nglr.toJson({a:"b"}, true), angular.filter.json({a:"b"}));
+  assertEquals(toJson({a:"b"}, true), angular.filter.json({a:"b"}));
 };
 
 FiltersTest.prototype.testPackageTracking = function () {
@@ -48,9 +48,9 @@ FiltersTest.prototype.testPackageTracking = function () {
     var val = angular.filter.trackPackage(trackingNo, title);
     assertNotNull("Did Not Match: " + trackingNo, val);
     assertEquals(angular.filter.Meta.TAG, val.TAG);
-    assertEquals(title + ": " + nglr.trim(trackingNo), val.text);
+    assertEquals(title + ": " + trim(trackingNo), val.text);
     assertNotNull(val.url);
-    assertEquals(nglr.trim(trackingNo), val.trackingNo);
+    assertEquals(trim(trackingNo), val.trackingNo);
     assertEquals('<a href="' + val.url + '">' + val.text + '</a>', val.html);
   };
   assert('UPS', ' 1Z 999 999 99 9999 999 9 ');
@@ -83,7 +83,7 @@ FiltersTest.prototype.testLink = function() {
 };
 
 FiltersTest.prototype.testBytes = function(){
-  var controller = new nglr.FileController();
+  var controller = new FileController();
   assertEquals(angular.filter.bytes(123), '123 bytes');
   assertEquals(angular.filter.bytes(1234), '1.2 KB');
   assertEquals(angular.filter.bytes(1234567), '1.1 MB');
@@ -151,3 +151,17 @@ FiltersTest.prototype.testHtml = function() {
       angular.filter.html("a<b>c</b>d").html);
   assertTrue(angular.filter.html("a<b>c</b>d") instanceof angular.filter.Meta);
 };
+
+FiltersTest.prototype.testLinky = function() {
+  var linky = angular.filter.linky;
+  assertEquals(
+      '<a href="http://ab">http://ab</a> ' + 
+      '(<a href="http://a">http://a</a>) ' + 
+      '&lt;<a href="http://a">http://a</a>&gt; \n ' + 
+      '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
+      linky("http://ab (http://a) <http://a> \n http://1.2/v:~-123. c").html);
+  assertTrue(linky("a") instanceof angular.filter.Meta);
+  assertEquals(undefined, linky(undefined));
+};
+
+

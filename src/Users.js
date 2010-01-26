@@ -1,36 +1,35 @@
-// Copyright (C) 2008,2009 BRAT Tech LLC
-nglr.Users = function(server, controlBar) {
+function Users(server, controlBar) {
   this.server = server;
   this.controlBar = controlBar;
 };
 
-nglr.Users.prototype = {
-  fetchCurrentUser:function(callback) {
+extend(Users.prototype, {
+  'fetchCurrentUser':function(callback) {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
-      self.current = response.user;
+      self['current'] = response['user'];
       callback(response.user);
     });
   },
   
-  logout: function(callback) {
+  'logout': function(callback) {
     var self = this;
     this.controlBar.logout(function(){
-      delete self.current;
-      (callback||nglr.noop)();
+      delete self['current'];
+      (callback||noop)();
     });
   },
   
-  login: function(callback) {
+  'login': function(callback) {
     var self = this;
     this.controlBar.login(function(){
-      self.fetchCurrentUser(function(){
-        (callback||nglr.noop)();
+      self['fetchCurrentUser'](function(){
+        (callback||noop)();
       });
     });
   },
 
-  notAuthorized: function(){
+  'notAuthorized': function(){
     this.controlBar.notAuthorized();
   }
-};
+});

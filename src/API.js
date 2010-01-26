@@ -1,9 +1,8 @@
-angular.Global = {
-  typeOf:function(obj){
+var angularGlobal = {
+  'typeOf':function(obj){
+    if (obj === null) return "null";
     var type = typeof obj;
-    switch(type) {
-    case "object":
-      if (obj === null) return "null";
+    if (type == "object") {
       if (obj instanceof Array) return "array";
       if (obj instanceof Date) return "date";
       if (obj.nodeType == 1) return "element";
@@ -12,10 +11,10 @@ angular.Global = {
   }
 };
 
-angular.Collection = {};
-angular.Object = {};
-angular.Array = {
-  includeIf:function(array, value, condition) {
+var angularCollection = {};
+var angularObject = {};
+var angularArray = {
+  'includeIf':function(array, value, condition) {
     var index = _.indexOf(array, value);
     if (condition) {
       if (index == -1)
@@ -25,8 +24,8 @@ angular.Array = {
     }
     return array;
   },
-  sum:function(array, expression) {
-    var fn = angular.Function.compile(expression);
+  'sum':function(array, expression) {
+    var fn = angular['Function']['compile'](expression);
     var sum = 0;
     for (var i = 0; i < array.length; i++) {
       var value = 1 * fn(array[i]);
@@ -36,15 +35,15 @@ angular.Array = {
     }
     return sum;
   },
-  remove:function(array, value) {
+  'remove':function(array, value) {
     var index = _.indexOf(array, value);
     if (index >=0)
       array.splice(index, 1);
     return value;
   },
-  find:function(array, condition, defaultValue) {
+  'find':function(array, condition, defaultValue) {
     if (!condition) return undefined;
-    var fn = angular.Function.compile(condition);
+    var fn = angular['Function']['compile'](condition);
     _.detect(array, function($){
       if (fn($)){
         defaultValue = $;
@@ -53,10 +52,10 @@ angular.Array = {
     });
     return defaultValue;
   },
-  findById:function(array, id) {
+  'findById':function(array, id) {
     return angular.Array.find(array, function($){return $.$id == id;}, null);
   },
-  filter:function(array, expression) {
+  'filter':function(array, expression) {
     var predicates = [];
     predicates.check = function(value) {
       for (var j = 0; j < predicates.length; j++) {
@@ -66,7 +65,7 @@ angular.Array = {
       }
       return true;
     };
-    var getter = nglr.Scope.getter;
+    var getter = Scope.getter;
     var search = function(obj, text){
       if (text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
@@ -136,18 +135,18 @@ angular.Array = {
     }
     return filtered;
   },
-  add:function(array, value) {
+  'add':function(array, value) {
     array.push(_.isUndefined(value)? {} : value);
     return array;
   },
-  count:function(array, condition) {
+  'count':function(array, condition) {
     if (!condition) return array.length;
-    var fn = angular.Function.compile(condition);
+    var fn = angular['Function']['compile'](condition);
     return _.reduce(array, 0, function(count, $){return count + (fn($)?1:0);});
   },
-  orderBy:function(array, expression, descend) {
+  'orderBy':function(array, expression, descend) {
     function reverse(comp, descending) {
-      return nglr.toBoolean(descending) ? 
+      return toBoolean(descending) ? 
           function(a,b){return comp(b,a);} : comp;
     }
     function compare(v1, v2){
@@ -169,7 +168,7 @@ angular.Array = {
         descending = $.charAt(0) == '-';
         $ = $.substring(1);
       }
-      var get = $ ? angular.Function.compile($) : _.identity;
+      var get = $ ? angular['Function']['compile']($) : _.identity;
       return reverse(function(a,b){
         return compare(get(a),get(b));
       }, descending);
@@ -177,13 +176,13 @@ angular.Array = {
     var comparator = function(o1, o2){
       for ( var i = 0; i < expression.length; i++) {
         var comp = expression[i](o1, o2);
-        if (comp != 0) return comp;
+        if (comp !== 0) return comp;
       }
       return 0;
     };
     return _.clone(array).sort(reverse(comparator, descend));
   },
-  orderByToggle:function(predicate, attribute) {
+  'orderByToggle':function(predicate, attribute) {
     var STRIP = /^([+|-])?(.*)/;
     var ascending = false;
     var index = -1;
@@ -197,7 +196,7 @@ angular.Array = {
         ascending = $.charAt(0) == '+';
         index = i;
         return true;
-      };
+      }
     });
     if (index >= 0) {
       predicate.splice(index, 1);
@@ -205,7 +204,7 @@ angular.Array = {
     predicate.unshift((ascending ? "-" : "+") + attribute);
     return predicate;
   },
-  orderByDirection:function(predicate, attribute, ascend, descend) {
+  'orderByDirection':function(predicate, attribute, ascend, descend) {
     ascend = ascend || 'ng-ascend';
     descend = descend || 'ng-descend';
     var att = predicate[0] || '';
@@ -218,18 +217,19 @@ angular.Array = {
     }
     return att == attribute ? (direction ? ascend : descend) : "";
   },
-  merge:function(array, index, mergeValue) {
+  'merge':function(array, index, mergeValue) {
     var value = array[index];
     if (!value) {
       value = {};
       array[index] = value;
     }
-    nglr.merge(mergeValue, value);
+    merge(mergeValue, value);
     return array;
   }
 };
-angular.String = {
-  quote:function(string) {
+
+var angularString = {
+  'quote':function(string) {
     return '"' + string.replace(/\\/g, '\\\\').
                         replace(/"/g, '\\"').
                         replace(/\n/g, '\\n').
@@ -239,8 +239,8 @@ angular.String = {
                         replace(/\v/g, '\\v') +
              '"';
   },
-  quoteUnicode:function(string) {
-    var str = angular.String.quote(string);
+  'quoteUnicode':function(string) {
+    var str = angular['String']['quote'](string);
     var chars = [];
     for ( var i = 0; i < str.length; i++) {
       var ch = str.charCodeAt(i);
@@ -253,7 +253,7 @@ angular.String = {
     }
     return chars.join('');
   },
-  toDate:function(string){
+  'toDate':function(string){
     var match;
     if (typeof string == 'string' && 
         (match = string.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){
@@ -265,8 +265,9 @@ angular.String = {
     return string;
   }
 };
-angular.Date = {
-    toString:function(date){
+
+var angularDate = {
+    'toString':function(date){
       function pad(n) { return n < 10 ? "0" + n : n; }
       return  (date.getUTCFullYear()) + '-' +
         pad(date.getUTCMonth() + 1) + '-' +
@@ -276,12 +277,13 @@ angular.Date = {
         pad(date.getUTCSeconds()) + 'Z';
     }
   };
-angular.Function = {
-  compile:function(expression) {
+
+var angularFunction = {
+  'compile':function(expression) {
     if (_.isFunction(expression)){
       return expression;
     } else if (expression){
-      var scope = new nglr.Scope();
+      var scope = new Scope();
       return function($) {
         scope.state = $;
         return scope.eval(expression);
@@ -292,27 +294,30 @@ angular.Function = {
   }
 };
 
-(function(){
-  function extend(dst, src, names){
-    _.extend(dst, src);
-    _.each((names||[]), function(name){
-      dst[name] = _[name];
-    });
-  };
-  extend(angular.Global, {}, 
-      ['extend', 'clone','isEqual', 
-       'isElement', 'isArray', 'isFunction', 'isUndefined']);
-  extend(angular.Collection, angular.Global, 
-      ['each', 'map', 'reduce', 'reduceRight', 'detect', 
-       'select', 'reject', 'all', 'any', 'include', 
-       'invoke', 'pluck', 'max', 'min', 'sortBy', 
-       'sortedIndex', 'toArray', 'size']);
-  extend(angular.Array, angular.Collection, 
-      ['first', 'last', 'compact', 'flatten', 'without', 
-       'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
-  extend(angular.Object, angular.Collection,
-      ['keys', 'values']);
-  extend(angular.String, angular.Global);
-  extend(angular.Function, angular.Global,
-      ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
-})();
+function defineApi(dst, chain, underscoreNames){
+  var lastChain = _.last(chain);
+  foreach(underscoreNames, function(name){
+    lastChain[name] = _[name];
+  });
+  angular[dst] = angular[dst] || {};
+  foreach(chain, function(parent){
+    extend(angular[dst], parent);
+  });
+}
+defineApi('Global', [angularGlobal],
+    ['extend', 'clone','isEqual', 
+     'isElement', 'isArray', 'isFunction', 'isUndefined']);
+defineApi('Collection', [angularGlobal, angularCollection], 
+    ['each', 'map', 'reduce', 'reduceRight', 'detect', 
+     'select', 'reject', 'all', 'any', 'include', 
+     'invoke', 'pluck', 'max', 'min', 'sortBy', 
+     'sortedIndex', 'toArray', 'size']);
+defineApi('Array', [angularGlobal, angularCollection, angularArray], 
+    ['first', 'last', 'compact', 'flatten', 'without', 
+     'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
+defineApi('Object', [angularGlobal, angularCollection, angularObject],
+    ['keys', 'values']);
+defineApi('String', [angularGlobal, angularString], []);
+defineApi('Date', [angularGlobal, angularDate], []);
+defineApi('Function', [angularGlobal, angularCollection, angularFunction],
+    ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);

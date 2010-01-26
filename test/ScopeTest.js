@@ -23,13 +23,13 @@ ScopeTest.prototype.testNoScopeDoesNotCauseInfiniteRecursion = function(){
 };
 
 ScopeTest.prototype.testScopeEval = function(){
-  var scope = new nglr.Scope({b:345});
+  var scope = new Scope({b:345});
   assertEquals(scope.eval('b = 123'), 123);
   assertEquals(scope.get('b'), 123);
 };
 
 ScopeTest.prototype.testScopeFromPrototype = function(){
-  var scope = new nglr.Scope({b:123});
+  var scope = new Scope({b:123});
   scope.eval('a = b');
   scope.eval('b = 456');
   assertEquals(scope.get('a'), 123);
@@ -37,32 +37,32 @@ ScopeTest.prototype.testScopeFromPrototype = function(){
 };
 
 ScopeTest.prototype.testSetScopeGet = function(){
-  var scope = new nglr.Scope();
-  scope.set('a', 987);
+  var scope = new Scope();
+  assertEquals(987, scope.set('a', 987));
   assertEquals(scope.get('a'), 987);
   assertEquals(scope.eval('a'), 987);
 };
 
 ScopeTest.prototype.testGetChain = function(){
-  var scope = new nglr.Scope({a:{b:987}});
+  var scope = new Scope({a:{b:987}});
   assertEquals(scope.get('a.b'), 987);
   assertEquals(scope.eval('a.b'), 987);
 };
 
 ScopeTest.prototype.testGetUndefinedChain = function(){
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   assertEquals(typeof scope.get('a.b'),  'undefined');
 };
 
 ScopeTest.prototype.testSetChain = function(){
-  var scope = new nglr.Scope({a:{}});
+  var scope = new Scope({a:{}});
   scope.set('a.b', 987);
   assertEquals(scope.get('a.b'), 987);
   assertEquals(scope.eval('a.b'), 987);
 };
 
 ScopeTest.prototype.testSetGetOnChain = function(){
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   scope.set('a.b', 987);
   assertEquals(scope.get('a.b'), 987);
   assertEquals(scope.eval('a.b'), 987);
@@ -70,7 +70,7 @@ ScopeTest.prototype.testSetGetOnChain = function(){
 
 ScopeTest.prototype.testGlobalFunctionAccess =function(){
   window['scopeAddTest'] = function (a, b) {return a+b;};
-  var scope = new nglr.Scope({window:window});
+  var scope = new Scope({window:window});
   assertEquals(scope.eval('window.scopeAddTest(1,2)'), 3);
 
   scope.set('add', function (a, b) {return a+b;});
@@ -82,7 +82,7 @@ ScopeTest.prototype.testGlobalFunctionAccess =function(){
 
 ScopeTest.prototype.testValidationEval = function(){
   expectAsserts(4);
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   angular.validator.testValidator = function(value, expect){
     assertEquals(scope, this.scope);
     return value == expect ? null : "Error text";
@@ -96,7 +96,7 @@ ScopeTest.prototype.testValidationEval = function(){
 
 ScopeTest.prototype.testCallingNonExistantMethodShouldProduceFriendlyException = function() {
   expectAsserts(1);
-  var scope = new nglr.Scope({obj:{}});
+  var scope = new Scope({obj:{}});
   try {
     scope.eval("obj.iDontExist()");
     fail();
@@ -106,7 +106,7 @@ ScopeTest.prototype.testCallingNonExistantMethodShouldProduceFriendlyException =
 };
 
 ScopeTest.prototype.testAccessingWithInvalidPathShouldThrowError = function() {
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   try {
     scope.get('a.{{b}}');
     fail();
@@ -116,25 +116,25 @@ ScopeTest.prototype.testAccessingWithInvalidPathShouldThrowError = function() {
 };
 
 ScopeTest.prototype.testItShouldHave$parent = function() {
-  var parent = new nglr.Scope({}, "ROOT");
-  var child = new nglr.Scope(parent.state);
+  var parent = new Scope({}, "ROOT");
+  var child = new Scope(parent.state);
   assertSame("parent", child.state.$parent, parent.state);
   assertSame("root", child.state.$root, parent.state);
 };
 
 ScopeTest.prototype.testItShouldHave$root = function() {
-  var scope = new nglr.Scope({}, "ROOT");
+  var scope = new Scope({}, "ROOT");
   assertSame(scope.state.$root, scope.state);
 };
 
 ScopeTest.prototype.testItShouldBuildPathOnUndefined = function(){
-  var scope = new nglr.Scope({}, "ROOT");
+  var scope = new Scope({}, "ROOT");
   scope.setEval("a.$b.c", 1);
   assertJsonEquals({$b:{c:1}}, scope.get("a"));
 };
 
 ScopeTest.prototype.testItShouldMapUnderscoreFunctions = function(){
-  var scope = new nglr.Scope({}, "ROOT");
+  var scope = new Scope({}, "ROOT");
   scope.set("a", [1,2,3]);
   assertEquals('function', typeof scope.get("a.$size"));
   scope.eval("a.$includeIf(4,true)");

@@ -1,128 +1,4009 @@
-function r(){return function(a){return a}}function v(){return function(){}}function x(a){return function(b){this[a]=b}}function z(a){return function(){return a}}var A;
-function aa(a){var b="",c,e,d,f,i,j,n=0;a=a;a=a.replace(/\r\n/g,"\n");e="";for(d=0;d<a.length;d++){f=a.charCodeAt(d);if(f<128)e+=String.fromCharCode(f);else{if(f>127&&f<2048)e+=String.fromCharCode(f>>6|192);else{e+=String.fromCharCode(f>>12|224);e+=String.fromCharCode(f>>6&63|128)}e+=String.fromCharCode(f&63|128)}}for(a=e;n<a.length;){c=a.charCodeAt(n++);e=a.charCodeAt(n++);d=a.charCodeAt(n++);f=c>>2;c=(c&3)<<4|e>>4;i=(e&15)<<2|d>>6;j=d&63;if(isNaN(e))i=j=64;else if(isNaN(d))j=64;b=b+this.eb.charAt(f)+
-this.eb.charAt(c)+this.eb.charAt(i)+this.eb.charAt(j)}return b};(function(){var a=this,b=a.cb;function c(g){this.da=g}var e=typeof StopIteration!=="undefined"?StopIteration:"__break__",d=a.cb=function(g){return new c(g)};if(typeof exports!=="undefined")exports.cb=d;var f=Array.prototype.slice,i=Array.prototype.unshift,j=Object.prototype.toString,n=Object.prototype.hasOwnProperty,m=Object.prototype.propertyIsEnumerable;d.oe="0.5.1";d.a=function(g,h,k){try{if(g.forEach)g.forEach(h,k);else if(d.z(g)||d.dc(g))for(var l=0,p=g.length;l<p;l++)h.call(k,g[l],l,g);else{var s=
-d.la(g);p=s.length;for(l=0;l<p;l++)h.call(k,g[s[l]],s[l],g)}}catch(u){if(u!=e)throw u;}return g};d.map=function(g,h,k){if(g&&d.P(g.map))return g.map(h,k);var l=[];d.a(g,function(p,s,u){l.push(h.call(k,p,s,u))});return l};d.reduce=function(g,h,k,l){if(g&&d.P(g.reduce))return g.reduce(d.u(k,l),h);d.a(g,function(p,s,u){h=k.call(l,h,p,s,u)});return h};d.reduceRight=function(g,h,k,l){if(g&&d.P(g.reduceRight))return g.reduceRight(d.u(k,l),h);var p=d.fa(d.D(g)).reverse();d.a(p,function(s,u){h=k.call(l,h,
-s,u,g)});return h};d.Ub=function(g,h,k){var l;d.a(g,function(p,s,u){if(h.call(k,p,s,u)){l=p;d.va()}});return l};d.select=function(g,h,k){if(g&&d.P(g.filter))return g.filter(h,k);var l=[];d.a(g,function(p,s,u){h.call(k,p,s,u)&&l.push(p)});return l};d.vf=function(g,h,k){var l=[];d.a(g,function(p,s,u){!h.call(k,p,s,u)&&l.push(p)});return l};d.all=function(g,h,k){h=h||d.ka;if(g&&d.P(g.every))return g.every(h,k);var l=true;d.a(g,function(p,s,u){(l=l&&h.call(k,p,s,u))||d.va()});return l};d.Uc=function(g,
-h,k){h=h||d.ka;if(g&&d.P(g.some))return g.some(h,k);var l=false;d.a(g,function(p,s,u){if(l=h.call(k,p,s,u))d.va()});return l};d.Aa=function(g,h){if(d.z(g))return d.indexOf(g,h)!=-1;var k=false;d.a(g,function(l){if(k=l===h)d.va()});return k};d.Ze=function(g,h){var k=d.Q(arguments,2);return d.map(g,function(l){return(h?l[h]:l).apply(l,k)})};d.vb=function(g,h){return d.map(g,function(k){return k[h]})};d.max=function(g,h,k){if(!h&&d.z(g))return Math.max.apply(Math,g);var l={ga:-Infinity};d.a(g,function(p,
-s,u){s=h?h.call(k,p,s,u):p;s>=l.ga&&(l={value:p,ga:s})});return l.value};d.min=function(g,h,k){if(!h&&d.z(g))return Math.min.apply(Math,g);var l={ga:Infinity};d.a(g,function(p,s,u){s=h?h.call(k,p,s,u):p;s<l.ga&&(l={value:p,ga:s})});return l.value};d.Rd=function(g,h,k){return d.vb(d.map(g,function(l,p,s){return{value:l,Sb:h.call(k,l,p,s)}}).sort(function(l,p){l=l.Sb;p=p.Sb;return l<p?-1:l>p?1:0}),"value")};d.yf=function(g,h,k){k=k||d.ka;for(var l=0,p=g.length;l<p;){var s=l+p>>1;k(g[s])<k(h)?(l=s+1):
-(p=s)}return l};d.D=function(g){if(!g)return[];if(g.D)return g.D();if(d.z(g))return g;if(d.dc(g))return f.call(g);return d.map(g,r())};d.size=function(g){return d.D(g).length};d.jd=function(g,h,k){return h&&!k?f.call(g,0,h):g[0]};d.Q=function(g,h,k){return f.call(g,d.K(h)||k?1:h)};d.ud=function(g){return g[g.length-1]};d.compact=function(g){return d.select(g,function(h){return!!h})};d.kd=function(g){return d.reduce(g,[],function(h,k){if(d.z(k))return h.concat(d.kd(k));h.push(k);return h})};d.Mf=function(g){var h=
-d.Q(arguments);return d.select(g,function(k){return!d.Aa(h,k)})};d.Wd=function(g,h){return d.reduce(g,[],function(k,l,p){if(0==p||(h===true?d.ud(k)!=l:!d.Aa(k,l)))k.push(l);return k})};d.Ye=function(g){var h=d.Q(arguments);return d.select(d.Wd(g),function(k){return d.all(h,function(l){return d.indexOf(l,k)>=0})})};d.Pf=function(){for(var g=d.D(arguments),h=d.max(d.vb(g,"length")),k=new Array(h),l=0;l<h;l++)k[l]=d.vb(g,String(l));return k};d.indexOf=function(g,h){if(g.indexOf)return g.indexOf(h);for(var k=
-0,l=g.length;k<l;k++)if(g[k]===h)return k;return-1};d.lastIndexOf=function(g,h){if(g.lastIndexOf)return g.lastIndexOf(h);for(var k=g.length;k--;)if(g[k]===h)return k;return-1};d.Md=function(g,h,k){var l=d.D(arguments),p=l.length<=1;g=p?0:l[0];h=p?l[0]:l[1];k=l[2]||1;l=Math.ceil((h-g)/k);if(l<=0)return[];l=new Array(l);p=g;for(var s=0;;p+=k){if((k>0?p-h:h-p)>=0)return l;l[s++]=p}};d.u=function(g,h){var k=d.Q(arguments,2);return function(){return g.apply(h||a,k.concat(d.D(arguments)))}};d.we=function(g){var h=
-d.Q(arguments);if(h.length==0)h=d.nb(g);d.a(h,function(k){g[k]=d.u(g[k],g)});return g};d.lb=function(g,h){var k=d.Q(arguments,2);return setTimeout(function(){return g.apply(g,k)},h)};d.defer=function(g){return d.lb.apply(d,[g,1].concat(d.Q(arguments)))};d.Of=function(g,h){return function(){var k=[g].concat(d.D(arguments));return h.apply(h,k)}};d.Ie=function(){var g=d.D(arguments);return function(){for(var h=d.D(arguments),k=g.length-1;k>=0;k--)h=[g[k].apply(this,h)];return h[0]}};d.la=function(g){if(d.z(g))return d.Md(0,
-g.length);var h=[];for(var k in g)n.call(g,k)&&h.push(k);return h};d.Ab=function(g){return d.map(g,d.ka)};d.nb=function(g){return d.select(d.la(g),function(h){return d.P(g[h])}).sort()};d.extend=function(g,h){for(var k in h)g[k]=h[k];return g};d.fa=function(g){if(d.z(g))return g.slice(0);return d.extend({},g)};d.isEqual=function(g,h){if(g===h)return true;var k=typeof g;if(k!=typeof h)return false;if(g==h)return true;if(!g&&h||g&&!h)return false;if(g.isEqual)return g.isEqual(h);if(d.pd(g)&&d.pd(h))return g.getTime()===
-h.getTime();if(d.fc(g)&&d.fc(h))return true;if(d.qd(g)&&d.qd(h))return g.source===h.source&&g.global===h.global&&g.ignoreCase===h.ignoreCase&&g.multiline===h.multiline;if(k!=="object")return false;if(g.length&&g.length!==h.length)return false;k=d.la(g);var l=d.la(h);if(k.length!=l.length)return false;for(var p in g)if(!d.isEqual(g[p],h[p]))return false;return true};d.bf=function(g){return d.la(g).length==0};d.af=function(g){return!!(g&&g.nodeType==1)};d.dc=function(g){return g&&"0"<=g.length&&g.length<=
-"9"&&!d.z(g)&&!m.call(g,"length")};d.fc=function(g){return"0"<=g&&g<="9"&&isNaN(g)};d.cf=function(g){return g===null};d.K=function(g){return typeof g=="undefined"};for(var o=["Array","Date","Function","Number","RegExp","String"],q=0,w=o.length;q<w;q++)(function(){var g="[object "+o[q]+"]";d["is"+o[q]]=function(h){return j.call(h)==g}})();d.Id=function(){a.cb=b;return this};d.ka=r();d.va=function(){throw e;};var t=0;d.Hf=function(g){var h=t++;return g?g+h:h};d.Z=function(g,h){g=new Function("obj",
-"var p=[],print=function(){p.push.apply(p,arguments);};with(obj){p.push('"+g.replace(/[\r\t\n]/g," ").split("<%").join("\t").replace(/((^|%>)[^\t]*)'/g,"$1\r").replace(/\t=(.*?)%>/g,"',$1,'").split("\t").join("');").split("%>").join("p.push('").split("\r").join("\\'")+"');}return p.join('');");return h?g(h):g};d.forEach=d.a;d.Se=d.We=d.reduce;d.Te=d.reduceRight;d.filter=d.select;d.every=d.all;d.some=d.Uc;d.ac=d.jd;d.Cf=d.Q;d.hf=d.nb;function y(g,h){return h?d(g).Ob():g}d.a(d.nb(d),function(g){var h=
-d[g];c.prototype[g]=function(){i.call(arguments,this.da);return y(h.apply(d,arguments),this.db)}});d.a(["pop","push","reverse","shift","sort","splice","unshift"],function(g){var h=Array.prototype[g];c.prototype[g]=function(){h.apply(this.da,arguments);return y(this.da,this.db)}});d.a(["concat","join","slice"],function(g){var h=Array.prototype[g];c.prototype[g]=function(){return y(h.apply(this.da,arguments),this.db)}});c.prototype.Ob=function(){this.db=true;return this};c.prototype.value=function(){return this.da}})();if(typeof document.getAttribute=="undefined")document.getAttribute=v();if(typeof Node=="undefined")Node={ELEMENT_NODE:1,ATTRIBUTE_NODE:2,TEXT_NODE:3,CDATA_SECTION_NODE:4,ENTITY_REFERENCE_NODE:5,ENTITY_NODE:6,PROCESSING_INSTRUCTION_NODE:7,COMMENT_NODE:8,DOCUMENT_NODE:9,DOCUMENT_TYPE_NODE:10,DOCUMENT_FRAGMENT_NODE:11,NOTATION_NODE:12};if(_.K(window.jf))nglr={};if(_.K(window.Lb))angular={};if(_.K(angular.k))angular.k={};if(_.K(angular.filter))angular.filter={};
-if(_.K(window.console))window.console={log:v(),error:v()};if(_.K(nglr.alert))nglr.alert=function(){console.log(arguments);window.alert.apply(window,arguments)};nglr.Qb=function(a,b){var c=document.createElement("div");c.className=a;for(var e=a="",d=0;d<b.length;d++){var f=b[d];a+=e+(typeof f=="string"?f:nglr.m(f));e=" "}c.appendChild(document.createTextNode(a));nglr.hb.appendChild(c)};nglr.gc=function(a){return a&&a.tagName&&a.nodeName&&a.ownerDocument&&a.removeAttribute};
-nglr.ec=function(a){switch(a.nodeName){case "OPTION":case "PRE":case "TITLE":return true;default:return false}};nglr.L=v();nglr.yc=function(a,b){if(nglr.ec(a))if(nglr.Fa)a.innerText=b;else a.textContent=b;else a.innerHTML=b};nglr.mb=function(a){if(!a||!a.replace)return a;return a.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")};nglr.hd=function(a){if(!a||!a.replace)return a;return a.replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;")};
-nglr.u=function(a,b){if(!a)throw"Missing this";if(!_.P(b))throw"Missing function";return function(){return b.apply(a,arguments)}};nglr.Qd=function(a,b){return function(){for(var c=[this],e=0;e<arguments.length;e++)c.push(arguments[e]);return b.apply(a,c)}};nglr.outerHTML=function(a){var b=document.createElement("div");b.appendChild(a);var c=b.innerHTML;b.removeChild(a);return c};nglr.Td=function(a){return a.replace(/^ */,"").replace(/ *$/,"")};
-nglr.xb=function(a){var b=(""+a).toLowerCase();if(b=="f"||b=="0"||b=="false"||b=="no")a=false;return!!a};nglr.Ea=function(a,b){for(var c in a){var e=b[c],d=typeof e;if(d=="undefined")b[c]=nglr.za(nglr.m(a[c]));else d=="object"&&e.constructor!=nglr.Mb&&c.substring(0,1)!="$"&&nglr.Ea(a[c],e)}};nglr.Va=function(a,b,c){this.document=jQuery(a);this.ac=jQuery(b);this.w=c;this.location=window.location};
-nglr.Va.prototype.load=function(){ba(this);B(this,"/stylesheets/jquery-ui/smoothness/jquery-ui-1.7.1.css");B(this,"/stylesheets/nglr.css");console.log("Server: "+this.w.C);jQuery.Id();nglr.Fa=jQuery.xe.Fa;ca(this);var a=this.w;if(!a.X){var b=a.C.match(/https?:\/\/([\w]*)/);a.X=b?b[1]:"$MEMORY"}da(this)};
-function ca(){console.log("Loader.configureJQueryPlugins()");jQuery.b.removeNode=function(){var a=this.i(0);a.parentNode.removeChild(a)};jQuery.b.scope=function(){for(var a=this;a&&a.i(0);){var b=a.data("scope");if(b)return b;a=a.parent()}return null};jQuery.b.Je=function(){return this.data("controller")||nglr.ba.od}}nglr.Va.prototype.Vd=function(){return""+(new Date).getTime()};
-function da(a){function b(){j.Yb(function(q){!q&&e.find("[ng-auth=eager]").length&&j.Da()})}console.log("Loader.bindHtml()");var c=new nglr.Hb(a.location),e=a.document,d=new nglr.Qc(a.w.C,a.w.X),f=new nglr.g(e[0],d,c,a.w);d.Jd=nglr.Qd(f,f.j);d=new nglr.M(e.find("body"),a.w.C);var i=a.w.X=="$MEMORY"?new nglr.ta(a.window):new nglr.Gb(a.w.C,jQuery.$b);i=new nglr.Jb(i,new nglr.$a(jQuery(e.body)),function(){f.c()});var j=new nglr.Ib(i,d),n="/data/"+a.w.X,m=new nglr.p(function(q,w){i.oa("POST",n,q,w)},
-j,f.anchor);f.Cc.push(function(){C(m)});var o=new nglr.h({ce:f.anchor,de:f,ee:a.w,fe:window.console,ge:m,sa:function(q){ea(m,o.I,q,f.anchor)},me:window,ke:a.Vd,le:j},"ROOT");jQuery.a(["get","set","eval","addWatchListener","updateView"],function(q,w){angular[w]=nglr.u(o,o[w])});e.data("scope",o);console.log("$binder.entity()");f.ha(o);console.log("$binder.compile()");f.compile();console.log("ControlBar.bind()");d.u();console.log("$users.fetchCurrentUser()");b();console.log("PopUp.bind()");(new nglr.A(e)).u();
-console.log("$binder.parseAnchor()");D(f);console.log("$binder.executeInit()");fa(f);console.log("$binder.updateView()");f.c();c.ic=nglr.u(f,f.Ld,c);c.kf=function(){nglr.alert("update")};c.watch();e.find("body").wb();console.log("ready()")}
-function ba(){var a=window.location.href+"#";a=a.split("#")[1];var b={dd:null};a=a.split("&");for(var c=0;c<a.length;c++){var e=(a[c]+"=").split("=");b[e[0]]=e[1]}if(b.dd=="console"){nglr.hb=document.createElement("div");nglr.hb.id="ng-console";document.getElementsByTagName("body")[0].appendChild(nglr.hb);console.log=function(){nglr.Qb("ng-console-info",arguments)};console.error=function(){nglr.Qb("ng-console-error",arguments)}}}
-function B(a,b){var c=document.createElement("link");c.rel="stylesheet";c.type="text/css";b.match(/^http:/)||(b=a.w.C+b);c.href=b;a.ac[0].appendChild(c)}nglr.Hb=function(a){this.location=a;this.lb=25;this.setTimeout=function(b,c){window.setTimeout(b,c)};this.ic=r();this.ia=a.href};
-nglr.Hb.prototype.watch=function(){var a=this;function b(){if(a.ia!==a.location.href){var c=a.location.hash.match(/^#\$iframe_notify=(.*)$/);if(c){a.ia.match(/#/)||(a.ia+="#");a.location.href=a.ia;c="_iframe_notify_"+c[1];var e=nglr[c];delete nglr[c];try{(e||nglr.L)()}catch(d){nglr.alert(d)}}else{a.ic(a.location.href);a.ia=a.location.href}}a.setTimeout(b,a.lb)}b()};angular.aa={Ud:function(a){var b=typeof a;switch(b){case "object":if(a===null)return"null";if(a instanceof Array)return"array";if(a instanceof Date)return"date";if(a.nodeType==1)return"element"}return b}};angular.Sa={};angular.Nc={};
-angular.La={md:function(a,b,c){var e=_.indexOf(a,b);if(c)e==-1&&a.push(b);else a.splice(e,1);return a},Bf:function(a,b){b=angular.$.compile(b);for(var c=0,e=0;e<a.length;e++){var d=1*b(a[e]);isNaN(d)||(c+=d)}return c},remove:function(a,b){var c=_.indexOf(a,b);c>=0&&a.splice(c,1);return b},find:function(a,b,c){if(b){var e=angular.$.compile(b);_.Ub(a,function(d){if(e(d)){c=d;return true}});return c}},Pe:function(a,b){return angular.La.find(a,function(c){return c.R==b},null)},filter:function(a,b){var c=
-[];c.Zc=function(m){for(var o=0;o<c.length;o++)if(!c[o](m))return false;return true};var e=nglr.h.ja;function d(m,o){if(o.charAt(0)==="!")return!d(m,o.substr(1));switch(typeof m){case "boolean":case "number":case "string":return(""+m).toLowerCase().indexOf(o)>-1;case "object":for(var q in m)if(q.charAt(0)!=="$"&&d(m[q],o))return true;return false;case "array":for(q=0;q<m.length;q++)if(d(m[q],o))return true;return false;default:return false}}switch(typeof b){case "boolean":case "number":case "string":b=
-{be:b};case "object":for(var f in b)f=="$"?function(){var m=(""+b[f]).toLowerCase();m&&c.push(function(o){return d(o,m)})}():function(){var m=f,o=(""+b[f]).toLowerCase();o&&c.push(function(q){return d(e(q,m),o)})}();break;case "function":c.push(b);break;default:return a}for(var i=[],j=0;j<a.length;j++){var n=a[j];c.Zc(n)&&i.push(n)}return i},add:function(a,b){a.push(_.K(b)?{}:b);return a},Ke:function(a,b){if(!b)return a.length;var c=angular.$.compile(b);return _.reduce(a,0,function(e,d){return e+
-(c(d)?1:0)})},lf:function(a,b,c){function e(f,i){return nglr.xb(i)?function(j,n){return f(n,j)}:f}function d(f,i){var j=typeof f,n=typeof i;if(j==n){if(j=="string")f=f.toLowerCase();if(j=="string")i=i.toLowerCase();if(f===i)return 0;return f<i?-1:1}else return j<n?-1:1}b=_.z(b)?b:[b];b=_.map(b,function(f){var i=false;if(typeof f=="string"&&(f.charAt(0)=="+"||f.charAt(0)=="-")){i=f.charAt(0)=="-";f=f.substring(1)}var j=f?angular.$.compile(f):_.ka;return e(function(n,m){return d(j(n),j(m))},i)});return _.fa(a).sort(e(function(f,
-i){for(var j=0;j<b.length;j++){var n=b[j](f,i);if(n!=0)return n}return 0},c))},nf:function(a,b){var c=false,e=-1;_.Ub(a,function(d,f){if(d==b){c=true;e=f;return true}if((d.charAt(0)=="+"||d.charAt(0)=="-")&&d.substring(1)==b){c=d.charAt(0)=="+";e=f;return true}});e>=0&&a.splice(e,1);a.unshift((c?"-":"+")+b);return a},mf:function(a,b,c,e){c=c||"ng-ascend";e=e||"ng-descend";a=a[0]||"";var d=true;if(a.charAt(0)=="-"){a=a.substring(1);d=false}else if(a.charAt(0)=="+")a=a.substring(1);return a==b?d?c:
-e:""},Ea:function(a,b,c){var e=a[b];if(!e){e={};a[b]=e}nglr.Ea(c,e);return a}};
-angular.U={quote:function(a){return'"'+a.replace(/\\/g,"\\\\").replace(/"/g,'\\"').replace(/\n/g,"\\n").replace(/\f/g,"\\f").replace(/\r/g,"\\r").replace(/\t/g,"\\t").replace(/\v/g,"\\v")+'"'},tc:function(a){a=angular.U.quote(a);for(var b=[],c=0;c<a.length;c++){var e=a.charCodeAt(c);if(e<128)b.push(a.charAt(c));else{e="000"+e.toString(16);b.push("\\u"+e.substring(e.length-4))}}return b.join("")},Sd:function(a){var b;if(typeof a=="string"&&(b=a.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){a=
-new Date(0);a.setUTCFullYear(b[1],b[2]-1,b[3]);a.setUTCHours(b[4],b[5],b[6],0);return a}return a}};angular.Jc={toString:function(a){function b(c){return c<10?"0"+c:c}return a.getUTCFullYear()+"-"+b(a.getUTCMonth()+1)+"-"+b(a.getUTCDate())+"T"+b(a.getUTCHours())+":"+b(a.getUTCMinutes())+":"+b(a.getUTCSeconds())+"Z"}};angular.$={compile:function(a){if(_.P(a))return a;else if(a){var b=new nglr.h;return function(c){b.I=c;return b.eval(a)}}else return r()}};
-(function(){function a(b,c,e){_.extend(b,c);_.a(e||[],function(d){b[d]=_[d]})}a(angular.aa,{},["extend","clone","isEqual","isElement","isArray","isFunction","isUndefined"]);a(angular.Sa,angular.aa,["each","map","reduce","reduceRight","detect","select","reject","all","any","include","invoke","pluck","max","min","sortBy","sortedIndex","toArray","size"]);a(angular.La,angular.Sa,["first","last","compact","flatten","without","uniq","intersect","zip","indexOf","lastIndexOf"]);a(angular.Nc,angular.Sa,["keys",
-"values"]);a(angular.U,angular.aa);a(angular.$,angular.aa,["bind","bindAll","delay","defer","wrap","compose"])})();nglr.g=function(a,b,c,e){this.F=a;this.Lf=c;this.anchor={};this.$d=b;this.w=e||{};this.Cc=[]};nglr.g.Ha=function(a){for(var b=[],c=0,e;(e=a.indexOf("{{",c))>-1;){c<e&&b.push(a.substr(c,e-c));c=e;e=a.indexOf("}}",e);e=e<0?a.length:e+2;b.push(a.substr(c,e-c));c=e}c!=a.length&&b.push(a.substr(c,a.length-c));return b.length===0?[a]:b};nglr.g.ld=function(a){a=nglr.g.Ha(a);return a.length>1||nglr.g.ea(a[0])!==null};nglr.g.ea=function(a){return(a=a.replace(/\n/gm," ").match(/^\{\{(.*)\}\}$/))?a[1]:null};
-function ga(a,b){var c={};b.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,function(e,d,f){if(d)c[decodeURIComponent(d)]=decodeURIComponent(f)});return c}function D(a,b){b=b||window.location.href;var c=b.indexOf("#");if(!(c<0)){b=b.substring(c+1);b=ga(a,b);jQuery.a(a.anchor,function(e){delete a.anchor[e]});jQuery.a(b,function(e,d){a.anchor[e]=d})}}nglr.g.prototype.Ld=function(a){console.log("URL change detected",a);D(this,a);this.c()};
-function ha(a){var b=window.location.href,c=b.indexOf("#");if(c>-1)b=b.substring(0,c);b+="#";c="";for(var e in a.anchor){var d=a.anchor[e];if(typeof d==="undefined"||d===null)delete a.anchor[e];else{b+=c+encodeURIComponent(e);if(d!==true)b+="="+encodeURIComponent(d);c="&"}}a=b;e=window.location.href;e.match(/#/)||(e+="#");if(e!=a)window.location.href=a;self.Oe=a;return b}
-nglr.g.prototype.c=function(){(new Date).getTime();var a=jQuery(this.F).scope();E(a,"$invalidWidgets",[]);a.c();(new Date).getTime();ha(this);_.a(this.Cc,function(b){b()})};function fa(a){jQuery("[ng-init]",a.F).a(function(){var b=jQuery(this),c=b.scope();try{c.eval(b.e("ng-init"))}catch(e){nglr.alert("EVAL ERROR:\n"+b.e("ng-init")+"\n"+nglr.m(e,true))}})}
-nglr.g.prototype.ha=function(a){jQuery("[ng-entity]",this.F).e("ng-watch",function(){try{var b=jQuery(this);return a.ha(b.e("ng-entity"))+(b.e("ng-watch")||"")}catch(c){nglr.alert(c)}})};
-nglr.g.prototype.compile=function(){var a=jQuery(this.F),b=this;if(this.w.Xc){var c=jQuery(":submit",this.F).rc("[ng-action]");c.e("ng-action","$save()");c.rc(":disabled").rc("ng-bind-attr").e("ng-bind-attr",'{disabled:"{{$invalidWidgets}}"}')}F(this,this.F)(this.F,a.scope(),"");jQuery("a[ng-action]",this.F).vd("click",function(){var e=jQuery(this);try{e.scope().eval(e.e("ng-action"));e.vc("ng-error");e.wc("ng-exception")}catch(d){e.fb("ng-exception");e.e("ng-error",nglr.m(d,true))}b.c();return false})};
-function ia(a,b,c,e){a=c.concat();c=a.pop();var d=nglr.g.Ha(b.nodeValue);if(d.length>1||nglr.g.ea(d[0])){var f=b.parentNode;if(nglr.ec(f)){f.setAttribute("ng-bind-template",b.nodeValue);e.push({path:a,b:function(o){return new nglr.S(o,o.getAttribute("ng-bind-template"))}})}else for(var i=0;i<d.length;i++){var j=d[i],n=nglr.g.ea(j),m;if(n){m=document.createElement("span");jQuery(m).e("ng-bind",n);i===0&&e.push({path:a.concat(c+i),b:nglr.g.prototype.qc})}else if(nglr.Fa&&j.charAt(0)==" "){m=document.createElement("span");
-m.innerHTML="&nbsp;"+j.substring(1)}else m=document.createTextNode(j);f.insertBefore(m,b)}f.removeChild(b)}}function F(a,b){var c=[];G(a,b,[],c);return function(e,d,f){for(var i=c.length,j=0;j<i;j++){for(var n=c[j],m=e,o=n.path,q=0;q<o.length;q++)m=m.childNodes[o[q]];try{var w=n.b(m,d,f);w&&d.Ec.push(w)}catch(t){nglr.alert(t)}}}}
-function G(a,b,c,e){var d=b.nodeType;if(d==Node.TEXT_NODE)ia(a,b,c,e);else if(!(d!=Node.ELEMENT_NODE&&d!=Node.DOCUMENT_NODE))if(b.getAttribute){d=b.getAttribute("ng-non-bindable");if(!(d||d==="")){if(d=b.attributes){var f=b.getAttribute("ng-bind-attr");b.removeAttribute("ng-bind-attr");f=f?nglr.za(f):{};for(var i=d.length,j=0;j<i;j++){var n=d[j],m=n.name;n=nglr.Fa&&m=="href"?decodeURI(b.getAttribute(m,2)):n.value;if(nglr.g.ld(n))f[m]=n}d=nglr.m(f);d.length>2&&b.setAttribute("ng-bind-attr",d)}b.getAttribute||
-console.log(b);var o=b.getAttribute("ng-repeat");if(o){b.removeAttribute("ng-repeat");var q=F(a,b);d=document.createComment("ng-repeat: "+o);f=b.parentNode;f.insertBefore(d,b);f.removeChild(b);var w=function(t,y,g){var h=jQuery(b).fa();h.kb("display","");h.e("ng-repeat-index",""+g);h.data("scope",t);q(h[0],t,y+g+":");return h};e.push({path:c,b:function(t,y,g){return new nglr.Xa(jQuery(t),o,w,g)}})}else{b.getAttribute("ng-eval")&&e.push({path:c,b:a.Dd});b.getAttribute("ng-bind")&&e.push({path:c,b:a.qc});
-b.getAttribute("ng-bind-attr")&&e.push({path:c,b:a.zd});b.getAttribute("ng-hide")&&e.push({path:c,b:a.Ed});b.getAttribute("ng-show")&&e.push({path:c,b:a.Fd});b.getAttribute("ng-class")&&e.push({path:c,b:a.Ad});b.getAttribute("ng-class-odd")&&e.push({path:c,b:a.Cd});b.getAttribute("ng-class-even")&&e.push({path:c,b:a.Bd});b.getAttribute("ng-style")&&e.push({path:c,b:a.Gd});b.getAttribute("ng-watch")&&e.push({path:c,b:a.Hd});d=b.nodeName;if(d=="INPUT"||d=="TEXTAREA"||d=="SELECT"||d=="BUTTON")e.push({path:c,
-b:function(t,y,g){t.name=g+t.name.split(":").pop();return ja(a.$d,jQuery(t),y)}});if(d=="OPTION")if(!jQuery("<select/>").append(jQuery(b).fa()).B().match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi))b.value=b.text;d=b.childNodes;for(f=0;f<d.length;f++)G(a,d[f],c.concat(f),e)}}}}A=nglr.g.prototype;A.Dd=function(a){return new nglr.Ta(a,a.getAttribute("ng-eval"))};A.qc=function(a){return new nglr.S(a,"{{"+a.getAttribute("ng-bind")+"}}")};A.zd=function(a){return new nglr.Ma(a,nglr.za(a.getAttribute("ng-bind-attr")))};
-A.Ed=function(a){return new nglr.Ua(a,a.getAttribute("ng-hide"))};A.Fd=function(a){return new nglr.Za(a,a.getAttribute("ng-show"))};A.Ad=function(a){return new nglr.Ra(a,a.getAttribute("ng-class"))};A.Bd=function(a){return new nglr.Pa(a,a.getAttribute("ng-class-even"))};A.Cd=function(a){return new nglr.Qa(a,a.getAttribute("ng-class-odd"))};A.Gd=function(a){return new nglr.ab(a,a.getAttribute("ng-style"))};A.Hd=function(a,b){b.watch(a.getAttribute("ng-watch"))};nglr.M=function(a,b){this.document=a;this.Ja=b;this.window=window;this.W=[]};nglr.M.prototype.u=v();nglr.M.ne='<div><div class="ui-widget-overlay"></div><div id="ng-login" ng-non-bindable="true"><div class="ng-login-container"></div></div></div>';nglr.M.prototype.Da=function(a){this.W.push(a);this.W.length==1&&H(this,"/user_session/new.mini?return_url="+encodeURIComponent(this.window.location.href.split("#")[0]))};nglr.M.prototype.oc=function(a){this.W.push(a);this.W.length==1&&H(this,"/user_session/do_destroy.mini")};
-function H(a,b){var c=(new Date).getTime(),e=a.window.location.href.split("#")[0];e+="#$iframe_notify="+c;var d=jQuery('<div style="overflow:hidden; padding:2px 0 0 0;"><iframe name="'+e+'" src="'+a.Ja+b+'" width="500" height="330"/></div>');a.document.append(d);d.Vb({height:363,width:500,wf:false,wd:true,title:'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'});nglr["_iframe_notify_"+c]=function(){d.Vb("destroy");d.remove();jQuery.a(a.W,function(f,i){i()});a.W=[]}}
-nglr.M.Lc='<div ng-non-bindable="true" title="Permission Error:">Sorry, you do not have permission for this!</div>';nglr.M.prototype.sb=function(){if(!this.Zb){this.Zb=jQuery(nglr.M.Lc);this.Zb.Vb({ve:true,height:70,wd:true})}};nglr.p=function(a,b,c){this.sc=a;this.Dc=b;this.V={qa:[]};this.anchor=c;this.wa=[]};function I(a,b){if(b.constructor!=nglr.N)throw"Parameter must be an instance of Entity! "+nglr.m(b);var c=b.ra+"/"+b.R,e=a.V[c];if(e)nglr.N.jb(b,e);else e=a.V[c]=b;return e}nglr.p.prototype.load=function(a,b,c,e){if(b&&b!=="*"){var d=this;J(this,["GET",a.ra+"/"+b],function(f){K(a,f);L(a);f=a.pa(a);I(d,f);(c||nglr.L)(a)},e)}return a};
-nglr.p.prototype.pb=function(a,b,c){var e=this,d=[],f=0;jQuery.a(b,function(i,j){d.push(e.load(a(),j,function(){f++;if(f==b.length)(c||nglr.L)(d)}))});return d};nglr.p.prototype.kc=function(a,b,c){return this.load(a,b,c,function(e){if(e.Ka==404){a.R=b;(c||nglr.L)(a)}else throw e;})};function ka(a,b,c){var e=[];e.Cb=function(d){return d.ra==b.title};a.V.qa.push(e);J(a,["GET",b.title],function(d){for(var f=0;f<d.length;f++){var i=b();K(i,d[f]);e.push(I(a,i))}(c||nglr.L)(e)});return e}
-nglr.p.prototype.save=function(a,b){var c=this,e={};M(a,e);J(this,["POST","",e],function(d){K(a,d);var f=I(c,a);_.a(c.V.qa,function(i){i.Cb(a)&&angular.La.md(i,f,true)});if(a.Db)c.anchor[a.Db]=a.R;b&&b(a)})};nglr.p.prototype.remove=function(a,b){var c=this,e={};M(a,e);J(this,["DELETE","",e],function(d){delete c.V[a.ra+"/"+a.R];_.a(c.V.qa,function(f){for(var i=0;i<f.length;i++)f[i].R==a.R&&f.splice(i,1)});(b||nglr.L)(d)})};function J(a,b,c,e){b.Fc=c;b.Hc=e||function(d){throw d;};a.wa.push(b)}
-function C(a){function b(d,f){console.log("RESPONSE["+d+"]: ",f);if(f.Ka==401)c.Dc.Da(function(){c.sc(e,b)});else if(f.Ka)nglr.alert(nglr.m(f));else for(var i=0;i<f.length;i++){var j=f[i],n=e[i];if(d=j.Ka)d==403?c.Dc.sb():n.Hc(j);else n.Fc(j)}}if(a.wa.length!==0){var c=a,e=a.wa;a.wa=[];console.log("REQUEST:",e);a.sc(e,b)}}function ea(a,b,c){function e(){d--;d===0&&c&&c()}var d=1;for(var f in b)if((a=b[f])&&a.sa==nglr.N.prototype.sa){d++;a.sa(e)}e()}
-nglr.p.prototype.ma=function(a,b,c,e){var d=this,f=[];f.Cb=z(false);this.V.qa.push(f);J(this,["GET",a.title+"/"+b+"="+c],function(i){for(var j=0;j<i.length;j++){var n=K(new a,i[j]);f.push(I(d,n))}e&&e(f)});return f};nglr.p.ca=v();nglr.p.ca.all=function(){return[]};nglr.p.ca.ma=function(){return[]};nglr.p.ca.load=function(){return{}};nglr.p.ca.title=undefined;
-nglr.p.prototype.ha=function(a,b){if(!a)return nglr.p.ca;var c=this;function e(d){return new nglr.N(e,d)}e.title=a;e.Gc=true;e.Tb=this;e.ed=b||{};e.load=function(d,f){return c.load(e(),d,f)};e.pb=function(d,f){return c.pb(e,d,f)};e.kc=function(d,f){return c.kc(e(),d,f)};e.all=function(d){return ka(c,e,d)};e.ma=function(d,f,i){return c.ma(e,d,f,i)};e.tf=function(d){J(c,["GET",a+"/$properties"],d)};return e};
-nglr.p.prototype.join=function(a){function b(){throw"Joined entities can not be instantiated into a document.";}var c=_(a).Ob().map(function(e,d){return d}).Rd(function(e){var d=[];do{if(_(d).Aa(e))throw"Infinite loop in join: "+d.join(" -> ");d.push(e);if(!a[e])throw _("Named entity '<%=name%>' is undefined.").Z({name:e});e=a[e].Ga?a[e].Ga.substring(0,a[e].Ga.indexOf(".")):undefined}while(e);return d.length}).value();if(_(c).select(function(e){return a[e].Ga}).length!=c.length-1)throw"Exactly one entity needs to be primary.";
-b.ma=function(e,d){var f=[],i=e?e.substring(0,e.indexOf(".")):undefined;if(i!=c[0])throw _("Named entity '<%=name%>' is not a primary entity.").Z({name:i});var j=1;a[i].join.ma(e.substring(e.indexOf(".")+1),d,function(n){var m=c[j++],o=a[m],q=o.Ga,w={};_(n).a(function(t){var y={};f.push(y);y[i]=t;t=nglr.h.ja(y,q);w[t]=t});o.join.pb(_.D(w),function(t){var y={};_(t).a(function(g){y[g.R]=g});_(f).a(function(g){var h=nglr.h.ja(g,q);g[m]=y[h]})})});return f};return b};angular.filter.s=function(a){if(a)for(var b in a)this[b]=a[b]};angular.filter.s.i=function(a,b){b=b||"text";switch(typeof a){case "string":return b=="text"?a:undefined;case "object":if(a&&typeof a[b]!=="undefined")return a[b];return;default:return a}};angular.filter.Le=function(a){jQuery(this.element).zb("ng-format-negative",a<0);return"$"+angular.filter.tb.apply(this,[a,2])};
-angular.filter.tb=function(a,b){if(isNaN(a)||!isFinite(a))return"";b=typeof b=="undefined"?2:b;var c=a<0;a=Math.abs(a);var e=Math.pow(10,b);a=""+Math.round(a*e);var d=a.substring(0,a.length-b);d=d||"0";e=a.substring(a.length-b);a=c?"-":"";for(c=0;c<d.length;c++){if((d.length-c)%3===0&&c!==0)a+=",";a+=d.charAt(c)}if(b>0){for(c=e.length;c<b;c++)e+="0";a+="."+e.substring(0,b)}return a};angular.filter.bd=v();angular.filter.rd=function(a){jQuery(this.element).fb("ng-monospace");return nglr.m(a,true)};
-angular.filter.Ac=function(a,b){a=nglr.Td(a);for(var c=a.replace(/ /g,""),e=angular.filter.Ac.Mc,d=0;d<e.length;d++)for(var f=e[d],i=0;i<f.na.length;i++)if(f.na[i].test(c)){b=f.name+": "+a;f=f.url+a;return new angular.filter.s({text:b,url:f,B:'<a href="'+nglr.hd(f)+'">'+b+"</a>",Ef:a})}return a?b||new angular.filter.s({text:a+" is not recognized"}):null};
-angular.filter.Ac.Mc=[{name:"UPS",url:"http://wwwapps.ups.com/WebTracking/processInputRequest?sort_by=status&tracknums_displayed=1&TypeOfInquiryNumber=T&loc=en_US&track.x=0&track.y=0&InquiryNumber1=",na:[/^1Z[0-9A-Z]{16}$/i]},{name:"FedEx",url:"http://www.fedex.com/Tracking?tracknumbers=",na:[/^96\d{10}?$/i,/^96\d{17}?$/i,/^96\d{20}?$/i,/^\d{15}$/i,/^\d{12}$/i]},{name:"USPS",url:"http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?origTrackNum=",na:[/^(91\d{20})$/i,/^(91\d{18})$/i]}];
-angular.filter.link=function(a,b){b=b||angular.filter.s.i(a);var c=angular.filter.s.i(a,"url")||angular.filter.s.i(a);if(c){if(angular.k.gd(c)===null)c="mailto:"+c;a='<a href="'+nglr.mb(c)+'">'+b+"</a>";return new angular.filter.s({text:b,url:c,B:a})}return a};angular.filter.gb=function(a){if(a===null)return"";for(var b=0;a>1E3;){a/=1024;b++}a=""+a;var c=a.indexOf(".");if(c>-1&&c+2<a.length)a=a.substring(0,c+2);return a+" "+angular.filter.gb.Pc[b]};
-angular.filter.gb.Pc=["bytes","KB","MB","GB","TB","PB"];angular.filter.Ve=function(a,b,c){if(a&&a.url){var e="";if(b)e=' style="max-width: '+b+"px; max-height: "+(c||b)+'px;"';return new angular.filter.s({url:a.url,text:a.url,B:'<img src="'+a.url+'"'+e+"/>"})}return null};angular.filter.ff=function(a){return(a=angular.filter.s.i(a))?(""+a).toLowerCase():a};angular.filter.Kf=function(a){return(a=angular.filter.s.i(a))?(""+a).toUpperCase():a};
-angular.filter.ef=function(a){a=angular.filter.s.i(a);if(a===""||!a)return 1;return a.split(/\n|\f/).length};angular.filter["if"]=function(a,b){return b?a:undefined};angular.filter.If=function(a,b){return b?undefined:a};angular.filter.l=function(a,b,c,e){b=b||{};var d=angular.filter.l;a={$c:a,ze:d.Pb(b,"color"),Fe:d.title(b),Be:d.Pb(b,"label"),Ae:d.Ab(b),Ce:"bg,s,FFFFFF00"};if(_.z(b.ae)){a.He="x";a.Ge="0:|"+b.ae.join("|")}return angular.filter.l.Wb(a,c,e)};
-angular.filter.l.Ab=function(a){var b=[];_.a(a.Pd||[],function(c){var e=[];_.a(c.Ab||[],function(d){e.push(d)});b.push(e.join(","))});a=b.join("|");return a===""?null:"t:"+a};angular.filter.l.title=function(a){var b=[];a=a.title||[];_.a(_.z(a)?a:[a],function(c){b.push(encodeURIComponent(c))});return b.join("|")};
-angular.filter.l.Pb=function(a,b){var c=[],e=0;_.a(a.Pd||[],function(d){var f=[];d=d[b]||[];_.a(_.z(d)?d:[d],function(i){f.push(encodeURIComponent(i));e++});c.push(f.join("|"))});return e?c.join(","):null};angular.filter.l.Wb=function(a,b,c){b=b||200;c=c||b;var e="http://chart.apis.google.com/chart?",d=[];a.Ee=b+"x"+c;for(var f in a){var i=a[f];i&&d.push(f+"="+i)}d.sort();e+=d.join("&");return new angular.filter.s({url:e,text:i,B:'<img width="'+b+'" height="'+c+'" src="'+e+'"/>'})};
-angular.filter.uf=function(a,b,c){return angular.filter.l.Wb({$c:"qr",De:encodeURIComponent(a)},b,c)};
-angular.filter.ye={qf:function(a,b,c){return angular.filter.l("p",a,b,c)},rf:function(a,b,c){return angular.filter.l("p3",a,b,c)},sf:function(a,b,c){return angular.filter.l("pc",a,b,c)},se:function(a,b,c){return angular.filter.l("bhs",a,b,c)},re:function(a,b,c){return angular.filter.l("bhg",a,b,c)},ue:function(a,b,c){return angular.filter.l("bvs",a,b,c)},te:function(a,b,c){return angular.filter.l("bvg",a,b,c)},df:function(a,b,c){return angular.filter.l("lc",a,b,c)},zf:function(a,b,c){return angular.filter.l("ls",
-a,b,c)},xf:function(a,b,c){return angular.filter.l("s",a,b,c)}};angular.filter.B=function(a){return new angular.filter.s({B:a})};nglr.Mb=[].constructor;nglr.m=function(a,b){var c=[];nglr.yb(c,a,b?"\n  ":null);return c.join("")};nglr.Df=function(a){return nglr.m(a,true)};nglr.za=function(a){try{var b=new nglr.q(a,true),c=N(b);O(b);return c()}catch(e){console.error("fromJson error: ",a,e);throw e;}};
-nglr.yb=function(a,b,c){var e=typeof b;if(b===null)a.push("null");else if(e!=="function")if(e==="boolean")a.push(""+b);else if(e==="number")isNaN(b)?a.push("null"):a.push(""+b);else if(e==="string")return a.push(angular.U.tc(b));else if(e==="object")if(b instanceof Array){a.push("[");var d=b.length;e=false;for(var f=0;f<d;f++){var i=b[f];e&&a.push(",");typeof i=="function"||typeof i=="undefined"?a.push("null"):nglr.yb(a,i,c);e=true}a.push("]")}else if(b instanceof Date)a.push(angular.U.tc(angular.Jc.toString(b)));
-else{a.push("{");c&&a.push(c);e=false;f=c?c+"  ":false;i=[];for(var j in b)j.indexOf("$$")!==0&&i.push(j);i.sort();for(j=0;j<i.length;j++){var n=i[j];try{d=b[n];if(typeof d!="function"){if(e){a.push(",");c&&a.push(c)}a.push(angular.U.quote(n));a.push(":");nglr.yb(a,d,f);e=true}}catch(m){}}a.push("}")}};nglr.N=function(a,b){this.pa=a;K(this,b||{});this.ra=a.title;L(this)};nglr.N.jb=function(a,b){if(!(a===b||!a||!b)){var c=function(d,f,i){return i.substring(0,2)!=="$$"&&typeof d[i]!=="function"&&typeof f[i]!=="function"};for(var e in b)c(a,b,e)&&delete b[e];for(e in a)if(c(a,b,e))b[e]=a[e]}};function L(a){nglr.Ea(a.pa.ed,a);return a}nglr.N.prototype.sa=function(a){this.pa.Tb.save(this,a===true?undefined:a);a===true&&C(this.pa.Tb);return this};function K(a,b){nglr.N.jb(b,a);return a}
-function M(a,b){nglr.N.jb(a,b);return a};nglr.J=function(a,b){this.text=a;this.cd=b?20:-1;this.o=[];this.index=0};
-nglr.J.Eb={"null":z(null),"true":z(true),"false":z(false),"+":function(a,b,c){return(b||0)+(c||0)},"-":function(a,b,c){return(b||0)-(c||0)},"*":function(a,b,c){return b*c},"/":function(a,b,c){return b/c},"%":function(a,b,c){return b%c},"^":function(a,b,c){return b^c},"=":function(a,b,c){return E(a.scope,b,c)},"==":function(a,b,c){return b==c},"!=":function(a,b,c){return b!=c},"<":function(a,b,c){return b<c},">":function(a,b,c){return b>c},"<=":function(a,b,c){return b<=c},">=":function(a,b,c){return b>=
-c},"&&":function(a,b,c){return b&&c},"||":function(a,b,c){return b||c},"&":function(a,b,c){return b&c},"|":function(a,b,c){return c(a,b)},"!":function(a,b){return!b}};nglr.J.prototype.Y=function(){return this.index+1<this.text.length?this.text.charAt(this.index+1):false};
-nglr.J.prototype.parse=function(){for(var a=this.o,b=nglr.J.Eb,c=true;this.index<this.text.length;){var e=this.text.charAt(this.index);if(e=='"'||e=="'"){la(this,e);c=true}else if(e=="("||e=="["){a.push({index:this.index,text:e});this.index++}else if(e=="{"){c=this.Y();if(c==":"||c=="("){a.push({index:this.index,text:e+c});this.index++}else a.push({index:this.index,text:e});this.index++;c=true}else if(e==")"||e=="]"||e=="}"){a.push({index:this.index,text:e});this.index++;c=false}else if(e==":"||e==
-"."||e==","||e==";"){a.push({index:this.index,text:e});this.index++;c=true}else if(c&&e=="/"){ma(this);c=false}else if("0"<=e&&e<="9"){na(this);c=false}else if(P(this,e)){Q(this);c=false}else if(e==" "||e=="\r"||e=="\t"||e=="\n"||e=="\u000b")this.index++;else{c=e+this.Y();var d=b[e],f=b[c];if(f){a.push({index:this.index,text:c,b:f});this.index+=2}else if(d){a.push({index:this.index,text:e,b:d});this.index+=1}else throw"Lexer Error: Unexpected next character ["+this.text.substring(this.index)+"] in expression '"+
-this.text+"' at column '"+(this.index+1)+"'.";c=true}}return a};function P(a,b){return"a"<=b&&b<="z"||"A"<=b&&b<="Z"||"_"==b||b=="$"}function na(a){for(var b="",c=a.index;a.index<a.text.length;){var e=a.text.charAt(a.index);if(e=="."||"0"<=e&&e<="9")b+=e;else break;a.index++}b=1*b;a.o.push({index:c,text:b,b:function(){return b}})}
-function Q(a){for(var b="",c=a.index;a.index<a.text.length;){var e=a.text.charAt(a.index);if(e=="."||P(a,e)||"0"<=e&&e<="9")b+=e;else break;a.index++}e=nglr.J.Eb[b];if(!e){e=function(d){return d.scope.i(b)};e.Ba=b}a.o.push({index:c,text:b,b:e})}nglr.J.Kc={n:"\n",f:"\u000c",r:"\r",t:"\t",v:"\u000b","'":"'",'"':'"'};
-function la(a,b){var c=a.index,e=a.cd;a.index++;for(var d="",f=false;a.index<a.text.length;){var i=a.text.charAt(a.index);if(f){if(i=="u"){i=a.text.substring(a.index+1,a.index+5);a.index+=4;d+=String.fromCharCode(parseInt(i,16))}else{f=nglr.J.Kc[i];d+=f?f:i}f=false}else if(i=="\\")f=true;else if(i==b){a.index++;a.o.push({index:c,text:d,b:function(){return d.length==e?angular.U.Sd(d):d}});return}else d+=i;a.index++}throw"Lexer Error: Unterminated quote ["+a.text.substring(c)+"] starting at column '"+
-(c+1)+"' in expression '"+a.text+"'.";}
-function ma(a){var b=a.index;a.index++;for(var c="",e=false;a.index<a.text.length;){var d=a.text.charAt(a.index);if(e){c+=d;e=false}else if(d==="\\"){c+=d;e=true}else if(d==="/"){a.index++;e="";if(P(a,a.text.charAt(a.index))){Q(a);e=a.o.pop().text}var f=new RegExp(c,e);a.o.push({index:b,text:c,Qe:e,b:function(){return f}});return}else c+=d;a.index++}throw"Lexer Error: Unterminated RegExp ["+a.text.substring(b)+"] starting at column '"+(b+1)+"' in expression '"+a.text+"'.";}
-nglr.q=function(a,b){this.text=a;this.o=(new nglr.J(a,b)).parse();this.index=0};nglr.q.Rc=z(0);nglr.q.prototype.error=function(a,b){throw"Token '"+b.text+"' is "+a+" at column='"+(b.index+1)+"' of expression '"+this.text+"' starting at '"+this.text.substring(b.index)+"'.";};function R(a){if(a.o.length===0)throw"Unexpected end of expression: "+a.text;return a.o[0]}nglr.q.prototype.Y=function(a,b,c,e){var d=this.o;if(d.length>0){d=d[0];var f=d.text;if(f==a||f==b||f==c||f==e||!a&&!b&&!c&&!e)return d}return false};
-function S(a,b,c,e,d){if(b=a.Y(b,c,e,d)){a.o.shift();return a.Me=b}return false}function T(a,b){if(!S(a,b)){var c=a.Y();throw"Expecting '"+b+"' at column '"+(c.index+1)+"' in '"+a.text+"' got '"+a.text.substring(c.index)+"'.";}}function oa(a,b,c){var e=c.apply(a);return function(d){return b(d,e(d))}}function U(a,b,c,e){var d=e.apply(a);return function(f){return c(f,b(f),d(f))}}
-function O(a){if(a.o.length!==0)throw"Did not understand '"+a.text.substring(a.o[0].index)+"' while evaluating '"+a.text+"'.";}function V(a){for(var b=[];;){a.o.length>0&&!a.Y("}",")",";","]")&&b.push(W(a));if(!S(a,";"))return function(c){for(var e,d=0;d<b.length;d++){var f=b[d];if(f)e=f(c)}return e}}}function W(a){for(var b=a.G(),c;;)if(c=S(a,"|"))b=U(a,b,c.b,a.filter);else return b}nglr.q.prototype.filter=function(){return X(this,angular.filter)};nglr.q.prototype.k=function(){return X(this,angular.k)};
-function X(a,b){for(var c=pa(a,b),e=[];;)if(S(a,":"))e.push(a.G());else{var d=function(f,i){i=[i];for(var j=0;j<e.length;j++)i.push(e[j](f));return c.apply(f,i)};return function(){return d}}}nglr.q.prototype.G=function(){return qa(this)};function qa(a){if(S(a,"throw")){var b=Y(a);return function(c){throw b(c);}}else return Y(a)}
-function Y(a){var b=a.nc(),c;if(c=S(a,"=")){if(!b.Ba)throw"Left hand side '"+a.text.substring(0,c.index)+"' of assignment '"+a.text.substring(c.index)+"' is not assignable.";return U(a,function(){return b.Ba},c.b,a.nc)}else return b}A=nglr.q.prototype;A.nc=function(){for(var a=this.mc(),b;;)if(b=S(this,"||"))a=U(this,a,b.b,this.mc);else return a};A.mc=function(){for(var a=this.pc(),b;;)if(b=S(this,"&&"))a=U(this,a,b.b,this.pc);else return a};
-A.pc=function(){var a;return(a=S(this,"!"))?oa(this,a.b,this.Xb):this.Xb()};A.Xb=function(){for(var a=this.uc(),b;;)if(b=S(this,"==","!="))a=U(this,a,b.b,this.uc);else return a};A.uc=function(){for(var a=this.Kb(),b;;)if(b=S(this,"<",">","<=",">="))a=U(this,a,b.b,this.Kb);else return a};A.Kb=function(){for(var a=this.rb(),b;b=S(this,"+","-");)a=U(this,a,b.b,this.rb);return a};A.rb=function(){for(var a=this.Bc(),b;b=S(this,"*","/","%");)a=U(this,a,b.b,this.Bc);return a};
-A.Bc=function(){var a;return S(this,"+")?N(this):(a=S(this,"-"))?U(this,nglr.q.Rc,a.b,this.rb):N(this)};function pa(a,b){var c=S(a),e=c.text.split(".");b=b;for(var d,f=0;f<e.length;f++){d=e[f];if(b)b=b[d]}if(typeof b!="function")throw"Function '"+c.text+"' at column '"+(c.index+1)+"' in '"+a.text+"' is not defined.";return b}
-function N(a){var b;if(S(a,"(")){b=W(a);T(a,")");b=b}else if(S(a,"["))b=ra(a);else if(S(a,"{"))b=a.object();else if(S(a,"{:"))b=sa(a,false);else if(S(a,"{("))b=sa(a,true);else{var c=S(a);(b=c.b)||a.error("not a primary expression",c)}for(;c=S(a,"(","[",".");)if(c.text==="(")b=ta(a,b);else if(c.text==="[")b=ua(a,b);else if(c.text===".")b=va(a,b);else throw"IMPOSSIBLE";return b}
-function sa(a,b){var c=[];if(b){if(!S(a,")")){for(c.push(S(a).text);S(a,",");)c.push(S(a).text);T(a,")")}T(a,":")}var e=V(a);T(a,"}");return function(d){return function(f){var i=new nglr.h(d.scope.I);E(i,"$",f);for(var j=0;j<c.length;j++)E(i,c[j],arguments[j]);return e({scope:i})}}}function va(a,b){var c=S(a).text;function e(d){return nglr.h.ja(b(d),c)}e.Ba=c;return e}
-function ua(a,b){var c=a.G();T(a,"]");if(S(a,"=")){var e=a.G();return function(d){return b(d)[c(d)]=e(d)}}else return function(d){var f=b(d);d=c(d);return f?f[d]:undefined}}function ta(a,b){var c=[];if(R(a).text!=")"){do c.push(a.G());while(S(a,","))}T(a,")");return function(e){for(var d=[],f=0;f<c.length;f++)d.push(c[f](e));f=b(e);if(typeof f==="function")return f.apply(e,d);else throw"Expression '"+b.Ba+"' is not a function.";}}
-function ra(a){var b=[];if(R(a).text!="]"){do b.push(a.G());while(S(a,","))}T(a,"]");return function(c){for(var e=[],d=0;d<b.length;d++)e.push(b[d](c));return e}}nglr.q.prototype.object=function(){var a=[];if(R(this).text!="}"){do{var b=S(this).text;T(this,":");var c=this.G();a.push({sd:b,value:c})}while(S(this,","))}T(this,"}");return function(e){for(var d={},f=0;f<a.length;f++){var i=a[f],j=i.value(e);d[i.sd]=j}return d}};
-function wa(a){for(var b=[];a.o.length>0;){b.push(xa(a));S(a,";")||O(a)}return function(c){for(var e="",d=0;d<b.length;d++)e+=b[d](c);return e}}function xa(a){var b=S(a).text,c,e;if(S(a,"=")){c=b;b=S(a).text}if(S(a,":"))e=N(a)(null);return function(d){var f=d.scope.i("$datastore").ha(b,e);E(d.scope,b,f);if(c){f=f();f.Db=c;E(d.scope,c,f);return"$anchor."+c+":{"+c+"="+b+".load($anchor."+c+");"+c+".$$anchor="+angular.U.quote(c)+";};"}else return""}}
-nglr.q.prototype.watch=function(){for(var a=[];this.o.length>0;){a.push(ya(this));S(this,";")||O(this)}O(this);return function(b){for(var c=0;c<a.length;c++){var e=a[c](b);b.Sc(e.name,e.b)}}};function ya(a){var b=S(a).text;T(a,":");var c;if(R(a).text=="{"){T(a,"{");c=V(a);T(a,"}")}else c=a.G();return function(){return{name:b,b:c}}};nglr.h=function(a,b){this.Ec=[];this.Bb={};this.name=b;a=a||{};function c(){}c.prototype=a;this.I=new c;this.I.ie=a;if(b=="ROOT")this.I.je=this.I};nglr.h.ya={};nglr.h.prototype.c=function(){var a=this;za(this);_.a(this.Ec,function(b){Z(a,b,"",{},function(){this.c(a)})})};function Aa(a,b){for(a=0;a<b.length;a++){var c=b.charAt(a);if(c!="."&&!P(nglr.J.prototype,c))return false}return true}
-nglr.h.ja=function(a,b){if(!b)return a;for(var c=b.split("."),e,d=a,f=c.length,i=0;i<f;i++){e=c[i];if(!e.match(/^[\$\w][\$\w\d]*$/))throw"Expression '"+b+"' is not a valid expression for accesing variables.";if(a){d=a;a=a[e]}if(_.K(a)&&e.charAt(0)=="$"){var j=angular.aa.Ud(d);if(e=(j=angular[j.charAt(0).toUpperCase()+j.substring(1)])?j[[e.substring(1)]]:undefined)return a=_.u(e,d,d)}}if(typeof a==="function"&&!a.Gc)return nglr.u(d,a);return a};
-nglr.h.prototype.i=function(a){return nglr.h.ja(this.I,a)};function E(a,b,c){b=b.split(".");a=a.I;for(var e=0;b.length>1;e++){var d=b.shift(),f=a[d];if(!f){f={};a[d]=f}a=f}return a[b.shift()]=c}function $(a,b,c){a.eval(b+"="+nglr.m(c))}nglr.h.prototype.eval=function(a,b){var c=nglr.h.ya[a];if(!c){var e=new nglr.q(a);c=V(e);O(e);nglr.h.ya[a]=c}b=b||{};b.scope=this;return c(b)};
-function Z(a,b,c,e,d,f){try{var i=a.eval(c,e);if(b.O){b.O=false;jQuery(b.view).wc("ng-exception").vc("ng-error")}d&&d.apply(b,[i]);return true}catch(j){console.error("Eval Widget Error:",j);a=nglr.m(j,true);b.O=true;jQuery(b.view).fb("ng-exception").e("ng-error",a);f&&f.apply(b,[j,a]);return false}}nglr.h.prototype.ha=function(a){return wa(new nglr.q(a))({scope:this})};
-nglr.h.prototype.watch=function(a){var b=this;(new nglr.q(a)).watch()({scope:this,Sc:function(c,e){Ba(b,c,function(d,f){try{return e({scope:b},d,f)}catch(i){nglr.alert(i)}})}})};function Ba(a,b,c){var e=a.Bb[b];if(!e){e={jc:[],G:b};a.Bb[b]=e}e.jc.push(c)}function za(a){var b=false;jQuery.a(a.Bb,function(c,e){var d=a.eval(e.G);if(d!==e.d){jQuery.a(e.jc,function(f,i){i(d,e.d);b=true});e.d=d}});return b};nglr.Gb=function(a,b){this.url=a;this.xd=0;this.$b=b;this.Yd="_"+(""+Math.random()).substr(2)+"_";this.qb=1800};function Ca(a,b){return aa(b)}nglr.Gb.prototype.oa=function(a,b,c,e){var d=this.Yd+this.xd++;nglr[d]=function(j){delete nglr[d];e(200,j)};a={Ff:b,gf:a,of:c};a=Ca(this,nglr.m(a));b=Math.ceil(a.length/this.qb);c=this.url+"/$/"+d+"/"+b+"/";for(var f=0;f<b;f++){var i=a.substr(f*this.qb,this.qb);this.$b(c+(f+1)+"?h="+i,nglr.L)}};nglr.ta=x("frame");nglr.ta.Oc="$DATASET:";
-nglr.ta.prototype={write:function(){this.frame.name=nglr.ta.Oc+nglr.m(this.data)},oa:v()};nglr.Jb=function(a,b,c){this.fd=a;this.update=c;this.status=b};nglr.Jb.prototype={oa:function(a,b,c,e){var d=this;Da(this.status,c);this.fd.oa(a,b,c,function(){var f=d.status;f.Ia--;f.Ia===0&&f.lc.bc("fold");try{e.apply(this,arguments)}catch(i){nglr.alert(nglr.m(i))}d.update()})}};nglr.Ib=function(a,b){this.C=a;this.ib=b};nglr.Ib.prototype={Yb:function(a){var b=this;this.C.oa("GET","/account.json",{},function(c,e){b.ad=e.Xd;a(e.Xd)})},oc:function(a){var b=this;this.ib.oc(function(){delete b.ad;(a||nglr.L)()})},Da:function(a){var b=this;this.ib.Da(function(){b.Yb(function(){(a||nglr.L)()})})},sb:function(){this.ib.sb()}};angular.k.na=function(a,b,c){return a.match(b)?null:c||"Value does not match expected format "+b+"."};angular.k.tb=function(a,b,c){var e=1*a;if(e==a){if(typeof b!="undefined"&&e<b)return"Value can not be less than "+b+".";if(typeof b!="undefined"&&e>c)return"Value can not be greater than "+c+".";return null}else return"Value is not a number."};angular.k.Xe=function(a,b,c){b=angular.k.tb(a,b,c);if(b===null&&a!=Math.round(a))return"Value is not a whole number.";return b};
-angular.k.bd=function(a){if(a.match(/^\d\d?\/\d\d?\/\d\d\d\d$/))return null;return"Value is not a date. (Expecting format: 12/31/2009)."};angular.k.Af=function(a){if(a.match(/^\d\d\d-\d\d-\d\d\d\d$/))return null;return"SSN needs to be in 999-99-9999 format."};angular.k.gd=function(a){if(a.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/))return null;return"Email needs to be in username@host.com format."};
-angular.k.pf=function(a){if(a.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/))return null;if(a.match(/^\+\d{2,3} (\(\d{1,5}\))?[\d ]+\d$/))return null;return"Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly."};angular.k.url=function(a){if(a.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/))return null;return"URL needs to be in http://server[:port]/path format."};angular.k.rd=function(a){try{nglr.za(a);return null}catch(b){return b.toString()}};nglr.Qc=function(a,b){this.yd=0;this.Ja=a;this.X=b;this.Rb=swfobject.Rb;this.Jd=v()};
-function ja(a,b,c){var e,d=b.e("type").toLowerCase(),f=b.e("name");if(f)f=f.split(":").pop();var i="change",j=true;if(d=="button"||d=="submit"||d=="reset"||d=="image"){e=new nglr.Na(b[0],f);i="click";j=false}else if(d=="text"||d=="textarea"||d=="hidden"||d=="password"){e=new nglr.bb(b[0],f);i="keyup change"}else if(d=="checkbox"){e=new nglr.Oa(b[0],f);i="click"}else if(d=="radio"){e=new nglr.Wa(b[0],f);i="click"}else if(d=="select-one")e=new nglr.Ya(b[0],f);else if(d=="select-multiple")e=new nglr.ua(b[0],
-f);else if(d=="file")e=Ea(a,b,f);else throw"Unknown type: "+d;b.data("controller",e);var n=c.i("$binder");jQuery(e.view,":input").u(i,function(){if(e.j(c)){var m=jQuery(e.view).e("ng-action")||"";Z(c,e,m)&&n.c(c)}return j});return e}
-function Ea(a,b){var c="__uploadWidget_"+a.yd++,e=nglr.T.Z(c);b.Tc(e);c=a.Rb({data:a.Ja+"/admin/ServerAPI.swf",width:"95",height:"20",align:"top",Nf:"transparent"},{Re:"uploadWidgetId="+c,pe:"always"},c);b.remove();a=new nglr.T(e,b[0].name,c,a.Ja+"/data/"+a.X);jQuery(c).data("controller",a);return a}nglr.T=function(a,b,c,e){this.view=a;this.Jf=c;this.xc=b;this.qe=e+"/_attachments";this.value=null;this.d=undefined};
-nglr.T.dispatchEvent=function(a,b,c){a=document.getElementById(a);a=jQuery(a).data("controller");nglr.T.prototype["_on_"+b].apply(a,c)};nglr.T.Z=function(a){return jQuery('<span class="ng-upload-widget"><input type="checkbox" ng-non-bindable="true"/><object id="'+a+'" /><a></a><span/></span>')};nglr.T.prototype.j=function(a){var b=this.view.find("input").e("checked")?this.value:null;if(this.d===b)return false;else{E(a,this.xc,b);return true}};
-nglr.T.prototype.c=function(a){if((a=a.i(this.xc))&&this.value!==a){this.value=a;this.view.find("a").e("href",this.value.url).text(this.value.text);this.view.find("span").text(angular.filter.gb(this.value.size))}this.view.find("input").e("checked",!!a)};nglr.ba=x("view");nglr.ba.prototype.j=z(true);nglr.ba.prototype.c=v();nglr.ba.od=new nglr.ba;nglr.Na=x("view");nglr.Na.prototype.j=z(true);nglr.Na.prototype.c=v();
-nglr.bb=function(a,b){this.view=a;this.exp=b;this.k=a.getAttribute("ng-validate");this.Nd=typeof a.attributes["ng-required"]!="undefined";this.hc=null;this.d=undefined;this.H=a.value;a.getAttribute("ng-widget")==="datepicker"&&jQuery(a).Ne()};nglr.bb.prototype.j=function(a){var b=this.view.value;if(this.d===b)return false;else{$(a,this.exp,b);this.d=b;return true}};
-nglr.bb.prototype.c=function(a){var b=this.view,c=a.i(this.exp);if(typeof c==="undefined"){c=this.H;$(a,this.exp,c)}c=c?c:"";if(this.d!=c)this.d=b.value=c;var e=false;b.removeAttribute("ng-error");if(this.Nd)e=!(c&&c.length>0);var d=e?"Required Value":null;if(!e&&this.k&&c){e=this.k;c=c;d=nglr.h.ya[e];if(!d){d=(new nglr.q(e)).k();nglr.h.ya[e]=d}e={scope:a};d=d(e)(e,c);e=!!d}if(this.hc!==d){this.hc=e;if(d!==null){b.setAttribute("ng-error",d);a.I.he.push(this)}jQuery(b).zb("ng-validation-error",e)}};
-nglr.Oa=function(a,b){this.view=a;this.exp=b;this.d=undefined;this.H=a.checked?a.value:""};nglr.Oa.prototype.j=function(a){var b=this.view;b=b.checked?b.value:"";if(this.d===b)return false;else{$(a,this.exp,b);this.d=b;return true}};nglr.Oa.prototype.c=function(a){var b=this.view,c=a.eval(this.exp);if(typeof c==="undefined"){c=this.H;$(a,this.exp,c)}b.checked=b.value==""+c};nglr.Ya=function(a,b){this.view=a;this.exp=b;this.d=undefined;this.H=a.value};
-nglr.Ya.prototype.j=function(a){if(this.view.selectedIndex<0)$(a,this.exp,null);else{var b=this.view.value;if(this.d===b)return false;else{$(a,this.exp,b);this.d=b;return true}}};nglr.Ya.prototype.c=function(a){var b=this.view,c=a.i(this.exp);if(typeof c==="undefined"){c=this.H;$(a,this.exp,c)}if(c!==this.d){b.value=c?c:"";this.d=c}};nglr.ua=function(a,b){this.view=a;this.exp=b;this.d=undefined;this.H=this.selected()};
-nglr.ua.prototype.selected=function(){for(var a=[],b=this.view.options,c=0;c<b.length;c++){var e=b[c];e.selected&&a.push(e.value)}return a};nglr.ua.prototype.j=function(a){var b=this.selected();if(this.d===b)return false;else{$(a,this.exp,b);this.d=b;return true}};nglr.ua.prototype.c=function(a){var b=this.view,c=a.i(this.exp);if(typeof c==="undefined"){c=this.H;$(a,this.exp,c)}if(c!==this.d){a=b.options;for(b=0;b<a.length;b++){var e=a[b];e.selected=_.Aa(c,e.value)}this.d=c}};
-nglr.Wa=function(a,b){this.view=a;this.exp=b;this.d=this.ob=undefined;this.cc=a.value;this.H=a.checked?a.value:null};nglr.Wa.prototype.j=function(a){var b=this.view;if(this.ob)return false;else{b.checked=true;this.d=$(a,this.exp,this.cc);return this.ob=true}};nglr.Wa.prototype.c=function(a){var b=this.view,c=a.i(this.exp);if(this.H&&typeof c==="undefined"){c=this.H;$(a,this.exp,c)}if(this.d!=c){this.ob=b.checked=this.cc==""+c;this.d=c}};
-nglr.S=function(a,b){this.view=a;this.exp=nglr.g.Ha(b);this.O=false;this.Od={element:a}};
-nglr.S.zc=function(a){var b=nglr.mb;switch(typeof a){case "string":case "boolean":case "number":return b(a);case "function":return nglr.S.zc(a());case "object":if(nglr.gc(a))return nglr.outerHTML(a);else if(a instanceof angular.filter.s){switch(typeof a.B){case "string":case "number":return a.B;case "function":return a.B();case "object":if(nglr.gc(a.B))return nglr.outerHTML(a.B);default:break}switch(typeof a.text){case "string":case "number":return b(a.text);case "function":return b(a.text());default:break}}if(a===
-null)return"";return b(nglr.m(a,true));default:return""}};nglr.S.prototype.j=v();nglr.S.prototype.c=function(a){for(var b=[],c=this.exp,e=c.length,d=0;d<e;d++){var f=c[d],i=nglr.g.ea(f);if(i){Z(a,this,i,this.Od,function(j){b.push(nglr.S.zc(j))},function(j,n){nglr.yc(this.view,n)});if(this.O)return}else b.push(nglr.mb(f))}nglr.yc(this.view,b.join(""))};nglr.Ma=function(a,b){this.view=a;this.Vc=b};nglr.Ma.prototype.j=v();
-nglr.Ma.prototype.c=function(a){var b=jQuery(this.view),c=this.Vc;if(this.O){this.O=false;b.wc("ng-exception").vc("ng-error")}var e=b.$e("img");for(var d in c){for(var f=nglr.g.Ha(c[d]),i=[],j=0;j<f.length;j++){var n=nglr.g.ea(f[j]);if(n)try{var m=a.eval(n,{element:b[0],attrName:d});if(m&&(m.constructor!==nglr.Mb||m.length!==0))i.push(m)}catch(o){this.O=true;console.error("BindAttrUpdater",o);n=nglr.m(o,true);i.push("["+n+"]");b.fb("ng-exception").e("ng-error",n)}else i.push(f[j])}f=i.length?i.join(""):
-null;if(e&&d=="src"&&!f)f=a.i("config.server")+"/images/blank.gif";b.e(d,f)}};nglr.Ta=function(a,b){this.view=a;this.exp=b;this.O=false};nglr.Ta.prototype.j=v();nglr.Ta.prototype.c=function(a){Z(a,this,this.exp)};nglr.Ua=function(a,b){this.view=a;this.exp=b};nglr.Ua.prototype.j=v();nglr.Ua.prototype.c=function(a){Z(a,this,this.exp,{},function(b){var c=jQuery(this.view);nglr.xb(b)?c.bc():c.wb()})};nglr.Za=function(a,b){this.view=a;this.exp=b};nglr.Za.prototype.j=v();
-nglr.Za.prototype.c=function(a){Z(a,this,this.exp,{},function(b){var c=jQuery(this.view);nglr.xb(b)?c.wb():c.bc()})};nglr.Ra=function(a,b){this.view=a;this.exp=b};nglr.Ra.prototype.j=v();nglr.Ra.prototype.c=function(a){Z(a,this,this.exp,{},function(b){if(b!==null&&b!==undefined)this.view.className=b})};nglr.Pa=function(a,b){this.view=a;this.exp=b};nglr.Pa.prototype.j=v();nglr.Pa.prototype.c=function(a){Z(a,this,this.exp,{},function(b){var c=a.i("$index");jQuery(this.view).zb(b,c%2===1)})};
-nglr.Qa=function(a,b){this.view=a;this.exp=b};nglr.Qa.prototype.j=v();nglr.Qa.prototype.c=function(a){Z(a,this,this.exp,{},function(b){var c=a.i("$index");jQuery(this.view).zb(b,c%2===0)})};nglr.ab=function(a,b){this.view=a;this.exp=b};nglr.ab.prototype.j=v();nglr.ab.prototype.c=function(a){Z(a,this,this.exp,{},function(b){jQuery(this.view).e("style","").kb(b)})};
-nglr.Xa=function(a,b,c,e){this.view=a;this.Z=c;this.prefix=e;this.xa=[];a=b.match(/^\s*(.+)\s+in\s+(.*)\s*$/);if(!a)throw"Expected ng-repeat in form of 'item in collection' but got '"+b+"'.";b=a[1];this.Ca=a[2];a=b.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);if(!a)throw"'item' in 'item in collection' should be identifier or (key, value) but get '"+b+"'.";this.Zd=a[3]||a[1];this.td=a[2]};nglr.Xa.prototype.j=v();
-nglr.Xa.prototype.c=function(a){Z(a,this,this.Ca,{},function(b){var c=this;if(!b){b=[];Aa(a,this.Ca)&&E(a,this.Ca,b)}var e=b.length,d=this.xa.length,f=this.view,i=0,j=null,n=this.td,m=this.Zd,o=0;jQuery.a(b,function(q,w){if(o<d){j=c.xa[o];E(j.scope,m,w)}else{var t=new nglr.h(a.I,c.prefix+m+" in "+c.Ca+"["+o+"]");E(t,"$index",o);n&&E(t,n,q);E(t,m,w);j={scope:t,element:c.Z(t,c.prefix,o)};f.Tc(j.element);c.xa.push(j)}f=j.element;q=(new Date).getTime();j.scope.c();i+=(new Date).getTime()-q;o++});for(b=
-d;b>e;--b)this.xa.pop().element.removeNode();if(j&&j.element[0].nodeName==="OPTION")if(e=jQuery(j.element[0].parentNode).data("controller")){e.d=undefined;e.c(a)}})};nglr.A=x("F");nglr.A.Fb="mouseleave mouseout click dblclick keypress keyup";nglr.A.prototype.u=function(){this.F.find(".ng-validation-error,.ng-exception").vd("mouseover",nglr.A.Kd)};
-nglr.A.Kd=function(){nglr.A.ub();var a=jQuery(this);a.u(nglr.A.Fb,nglr.A.ub);var b=a.position(),c=document.documentElement,e=(self.innerWidth||c&&c.clientWidth||document.body.clientWidth)-b.left;c=a.Ue("ng-exception")?"EXCEPTION:":"Validation error...";a=a.e("ng-error");e=e>375?"left":"right";c=jQuery("<div id='ng-callout' style='width:300px'><div class='ng-arrow-"+e+"'/><div class='ng-title'>"+c+"</div><div class='ng-content'>"+a+"</div></div>");jQuery("body").append(c);if(e==="left")a=b.left+this.offsetWidth+
-11;else{a=b.left-315;c.find(".ng-arrow-right").kb({left:301})}c.kb({left:a+"px",top:b.top-3+"px"});return true};nglr.A.ub=function(){jQuery("#ng-callout").Gf(nglr.A.Fb,nglr.A.ub).remove();return true};nglr.$a=function(a){this.lc=a.append(nglr.$a.Ic).find("#ng-loading");this.Ia=0};nglr.$a.Ic='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';function Da(a){a.Ia===0&&a.lc.wb();a.Ia++};(function(a){for(var b=/(.*)\/angular-(.*).js(#(.*))?/,c=document.getElementsByTagName("script"),e={Xc:true,Wc:true,Nb:false},d=0;d<c.length;d++){var f=c[d].src;if(f&&f.match(b)){f=f.match(b);if(f[2]=="bootstrap")e.Nb=true;e.C=f[1]||"";if(!e.C)e.C=window.location.toString().split(window.location.pathname)[0];if(f[4]){f=f[4].split("&");for(var i=0;i<f.length;i++){var j=f[i].split("="),n=j[0];j=j.length==1?true:j[1];if(j=="false")j=false;if(j=="true")j=true;e[n]=j}}}}function m(o,q){q=q||e.C;document.write('<script type="text/javascript" src="'+
-q+o+'"><\/script>')}if(e.Nb){m("/javascripts/webtoolkit.base64.js");m("/javascripts/swfobject.js");m("/javascripts/jQuery/jquery-1.3.2.js");m("/javascripts/jQuery/jquery-ui-1.7.1.custom.min.js");m("/javascripts/underscore/underscore.js");m("/javascripts/nglr/Loader.js");m("/javascripts/nglr/API.js");m("/javascripts/nglr/Binder.js");m("/javascripts/nglr/ControlBar.js");m("/javascripts/nglr/DataStore.js");m("/javascripts/nglr/Filters.js");m("/javascripts/nglr/JSON.js");m("/javascripts/nglr/Model.js");
-m("/javascripts/nglr/Parser.js");m("/javascripts/nglr/Scope.js");m("/javascripts/nglr/Server.js");m("/javascripts/nglr/Users.js");m("/javascripts/nglr/Validators.js");m("/javascripts/nglr/Widgets.js")}else{m("/ajax/libs/swfobject/2.2/swfobject.js","http://ajax.googleapis.com");m("/ajax/libs/jquery/1.3.2/jquery.min.js","http://ajax.googleapis.com");m("/ajax/libs/jqueryui/1.7.2/jquery-ui.min.js","http://ajax.googleapis.com")}window.onload=function(){window.Lb.nd=function(h,k){var l=_.fa(e||{});_.extend(l,
-k);(new nglr.Va(h,jQuery("head"),l)).load()};var o=window.document;if(e.Yc){o=null;for(var q=e.Yc.split("|"),w=0;w<q.length&&!o;w++){var t=q[w].split("?"),y=t[0];if(t.length>1)if(!window.document.getElementById(t[1]))continue;o=window.document.getElementById(y)}}e.Wc&&o&&window.Lb.nd(o);if(typeof a==="function")try{a.apply(this,arguments)}catch(g){}}})(window.onload);
+/**
+ * The MIT License
+ * 
+ * Copyright (c) 2010 Adam Abrons and Misko Hevery http://getangular.com
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+(function(window, document){
+/**
+*
+*  Base64 encode / decode
+*  http://www.webtoolkit.info/
+*
+**/
+
+var Base64 = {
+
+	// private property
+	_keyStr : "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_=",
+
+	// public method for encoding
+	encode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		input = Base64._utf8_encode(input);
+
+		while (i < input.length) {
+
+			chr1 = input.charCodeAt(i++);
+			chr2 = input.charCodeAt(i++);
+			chr3 = input.charCodeAt(i++);
+
+			enc1 = chr1 >> 2;
+			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			enc4 = chr3 & 63;
+
+			if (isNaN(chr2)) {
+				enc3 = enc4 = 64;
+			} else if (isNaN(chr3)) {
+				enc4 = 64;
+			}
+
+			output = output +
+			this._keyStr.charAt(enc1) + this._keyStr.charAt(enc2) +
+			this._keyStr.charAt(enc3) + this._keyStr.charAt(enc4);
+
+		}
+
+		return output;
+	},
+
+	// public method for decoding
+	decode : function (input) {
+		var output = "";
+		var chr1, chr2, chr3;
+		var enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
+
+		while (i < input.length) {
+
+			enc1 = this._keyStr.indexOf(input.charAt(i++));
+			enc2 = this._keyStr.indexOf(input.charAt(i++));
+			enc3 = this._keyStr.indexOf(input.charAt(i++));
+			enc4 = this._keyStr.indexOf(input.charAt(i++));
+
+			chr1 = (enc1 << 2) | (enc2 >> 4);
+			chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
+			chr3 = ((enc3 & 3) << 6) | enc4;
+
+			output = output + String.fromCharCode(chr1);
+
+			if (enc3 != 64) {
+				output = output + String.fromCharCode(chr2);
+			}
+			if (enc4 != 64) {
+				output = output + String.fromCharCode(chr3);
+			}
+
+		}
+
+		output = Base64._utf8_decode(output);
+
+		return output;
+
+	},
+
+	// private method for UTF-8 encoding
+	_utf8_encode : function (string) {
+		string = string.replace(/\r\n/g,"\n");
+		var utftext = "";
+
+		for (var n = 0; n < string.length; n++) {
+
+			var c = string.charCodeAt(n);
+
+			if (c < 128) {
+				utftext += String.fromCharCode(c);
+			}
+			else if((c > 127) && (c < 2048)) {
+				utftext += String.fromCharCode((c >> 6) | 192);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+			else {
+				utftext += String.fromCharCode((c >> 12) | 224);
+				utftext += String.fromCharCode(((c >> 6) & 63) | 128);
+				utftext += String.fromCharCode((c & 63) | 128);
+			}
+
+		}
+
+		return utftext;
+	},
+
+	// private method for UTF-8 decoding
+	_utf8_decode : function (utftext) {
+		var string = "";
+		var i = 0;
+		var c = c1 = c2 = 0;
+
+		while ( i < utftext.length ) {
+
+			c = utftext.charCodeAt(i);
+
+			if (c < 128) {
+				string += String.fromCharCode(c);
+				i++;
+			}
+			else if((c > 191) && (c < 224)) {
+				c2 = utftext.charCodeAt(i+1);
+				string += String.fromCharCode(((c & 31) << 6) | (c2 & 63));
+				i += 2;
+			}
+			else {
+				c2 = utftext.charCodeAt(i+1);
+				c3 = utftext.charCodeAt(i+2);
+				string += String.fromCharCode(((c & 15) << 12) | ((c2 & 63) << 6) | (c3 & 63));
+				i += 3;
+			}
+
+		}
+
+		return string;
+	}
+
+};if (typeof document.getAttribute == 'undefined')
+  document.getAttribute = function() {};
+if (typeof Node == 'undefined') {
+  Node = {
+    ELEMENT_NODE : 1,
+    ATTRIBUTE_NODE : 2,
+    TEXT_NODE : 3,
+    CDATA_SECTION_NODE : 4,
+    ENTITY_REFERENCE_NODE : 5,
+    ENTITY_NODE : 6,
+    PROCESSING_INSTRUCTION_NODE : 7,
+    COMMENT_NODE : 8,
+    DOCUMENT_NODE : 9,
+    DOCUMENT_TYPE_NODE : 10,
+    DOCUMENT_FRAGMENT_NODE : 11,
+    NOTATION_NODE : 12
+  };
+}
+
+function noop() {}
+if (!window['console']) window['console']={'log':noop, 'error':noop};
+
+var consoleNode,
+    foreach          = _.each,
+    extend           = _.extend,
+    jQuery           = window['jQuery'],
+    msie             = jQuery['browser']['msie'],
+    angular          = window['angular']    || (window['angular']    = {}), 
+    angularValidator = angular['validator'] || (angular['validator'] = {}), 
+    angularFilter    = angular['filter']    || (angular['filter']    = {}), 
+    angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
+    angularAlert     = angular['alert']     || (angular['alert']     = function(){
+        log(arguments); window.alert.apply(window, arguments); 
+      });
+
+function log(a, b, c){
+  var console = window['console'];
+  switch(arguments.length) {
+  case 1:
+    console['log'](a);
+    break;
+  case 2:
+    console['log'](a, b);
+    break;
+  default:
+    console['log'](a, b, c);
+    break;
+  }
+}
+
+function error(a, b, c){
+  var console = window['console'];
+  switch(arguments.length) {
+  case 1:
+    console['error'](a);
+    break;
+  case 2:
+    console['error'](a, b);
+    break;
+  default:
+    console['error'](a, b, c);
+    break;
+  }
+}
+
+function consoleLog(level, objs) {
+  var log = document.createElement("div");
+  log.className = level;
+  var msg = "";
+  var sep = "";
+  for ( var i = 0; i < objs.length; i++) {
+    var obj = objs[i];
+    msg += sep + (typeof obj == 'string' ? obj : toJson(obj));
+    sep = " ";
+  }
+  log.appendChild(document.createTextNode(msg));
+  consoleNode.appendChild(log);
+}
+
+function isNode(inp) {
+  return inp &&
+      inp.tagName &&
+      inp.nodeName &&
+      inp.ownerDocument &&
+      inp.removeAttribute;
+}
+
+function isLeafNode (node) {
+  switch (node.nodeName) {
+  case "OPTION":
+  case "PRE":
+  case "TITLE":
+    return true;
+  default:
+    return false;
+  }
+}
+
+function setHtml(node, html) {
+  if (isLeafNode(node)) {
+    if (msie) {
+      node.innerText = html;
+    } else {
+      node.textContent = html;
+    }
+  } else {
+    node.innerHTML = html;
+  }
+}
+
+function escapeHtml(html) {
+  if (!html || !html.replace)
+    return html;
+  return html.
+      replace(/&/g, '&amp;').
+      replace(/</g, '&lt;').
+      replace(/>/g, '&gt;');
+}
+
+function escapeAttr(html) {
+  if (!html || !html.replace)
+    return html;
+  return html.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g,
+      '&quot;');
+}
+
+function bind(_this, _function) {
+  if (!_this)
+    throw "Missing this";
+  if (!_.isFunction(_function))
+    throw "Missing function";
+  return function() {
+    return _function.apply(_this, arguments);
+  };
+}
+
+function outerHTML(node) {
+  var temp = document.createElement('div');
+  temp.appendChild(node);
+  var outerHTML = temp.innerHTML;
+  temp.removeChild(node);
+  return outerHTML;
+}
+
+function trim(str) {
+  return str.replace(/^ */, '').replace(/ *$/, '');
+}
+
+function toBoolean(value) {
+  var v = ("" + value).toLowerCase();
+  if (v == 'f' || v == '0' || v == 'false' || v == 'no')
+    value = false;
+  return !!value;
+}
+
+function merge(src, dst) {
+  for ( var key in src) {
+    var value = dst[key];
+    var type = typeof value;
+    if (type == 'undefined') {
+      dst[key] = fromJson(toJson(src[key]));
+    } else if (type == 'object' && value.constructor != array &&
+        key.substring(0, 1) != "$") {
+      merge(src[key], value);
+    }
+  }
+}
+
+// ////////////////////////////
+// UrlWatcher
+// ////////////////////////////
+
+function UrlWatcher(location) {
+  this.location = location;
+  this.delay = 25;
+  this.setTimeout = function(fn, delay) {
+    window.setTimeout(fn, delay);
+  };
+  this.listener = function(url) {
+    return url;
+  };
+  this.expectedUrl = location.href;
+}
+
+UrlWatcher.prototype = {
+  listen: function(fn){
+    this.listener = fn;
+  },
+  watch: function() {
+    var self = this;
+    var pull = function() {
+      if (self.expectedUrl !== self.location.href) {
+        var notify = self.location.hash.match(/^#\$iframe_notify=(.*)$/);
+        if (notify) {
+          if (!self.expectedUrl.match(/#/)) {
+            self.expectedUrl += "#";
+          }
+          self.location.href = self.expectedUrl;
+          var id = '_iframe_notify_' + notify[1];
+          var notifyFn = angularCallbacks[id];
+          delete angularCallbacks[id];
+          try {
+            (notifyFn||noop)();
+          } catch (e) {
+            alert(e);
+          }
+        } else {
+          self.listener(self.location.href);
+          self.expectedUrl = self.location.href;
+        }
+      }
+      self.setTimeout(pull, self.delay);
+    };
+    pull();
+    return this;
+  },
+  
+  set: function(url) {
+    var existingURL = this.location.href;
+    if (!existingURL.match(/#/))
+      existingURL += '#';
+    if (existingURL != url)
+      this.location.href = url;
+    this.existingURL = url;
+  },
+  
+  get: function() {
+    return window.location.href;
+  }
+};
+
+/////////////////////////////////////////////////
+function configureJQueryPlugins() {
+  var fn = jQuery['fn'];
+  fn['scope'] = function() {
+    var element = this;
+    while (element && element.get(0)) {
+      var scope = element.data("scope");
+      if (scope)
+        return scope;
+      element = element.parent();
+    }
+    return null;
+  };
+  fn['controller'] = function() {
+    return this.data('controller') || NullController.instance;
+  };
+}
+
+function configureLogging(config) {
+  if (config.debug == 'console' && !consoleNode) {
+    consoleNode = document.createElement("div");
+    consoleNode.id = 'ng-console';
+    document.getElementsByTagName('body')[0].appendChild(consoleNode);
+    log = function() {
+      consoleLog('ng-console-info', arguments);
+    };
+    console.error = function() {
+      consoleLog('ng-console-error', arguments);
+    };
+  }
+}
+
+function exposeMethods(obj, methods){
+  var bound = {};
+  foreach(methods, function(fn, name){
+    bound[name] = _(fn).bind(obj);
+  });
+  return bound;
+}
+
+function wireAngular(element, config) {
+  var widgetFactory = new WidgetFactory(config['server'], config['database']);
+  var binder = new Binder(element[0], widgetFactory, config['location'], config);
+  var controlBar = new ControlBar(element.find('body'), config.server);
+  var onUpdate = function(){binder.updateView();};
+  var server = config.database=="$MEMORY" ?
+      new FrameServer(this.window) :
+      new Server(config.server, jQuery.getScript);
+  server = new VisualServer(server, new Status(jQuery(element.body)), onUpdate);
+  var users = new Users(server, controlBar);
+  var databasePath = '/data/' + config.database;
+  var post = function(request, callback){
+    server.request("POST", databasePath, request, callback);
+  };
+  var datastore = new DataStore(post, users, binder.anchor);
+  binder.updateListeners.push(function(){datastore.flush();});
+  var scope = new Scope({
+    '$anchor'    : binder.anchor,
+    '$updateView': _(binder.updateView).bind(binder),
+    '$config'    : config,
+    '$console'   : window.console,
+    '$datastore' : exposeMethods(datastore, {
+      'load':                    datastore.load,
+      'loadMany':                datastore.loadMany,
+      'loadOrCreate':            datastore.loadOrCreate,
+      'loadAll':                 datastore.loadAll,
+      'save':                    datastore.save,
+      'remove':                  datastore.remove,
+      'flush':                   datastore.flush,
+      'query':                   datastore.query,
+      'entity':                  datastore.entity,
+      'entities':                datastore.entities,
+      'documentCountsByUser':    datastore.documentCountsByUser,
+      'userDocumentIdsByEntity': datastore.userDocumentIdsByEntity,
+      'join':                    datastore.join
+    }),
+    '$save' : function(callback) {
+      datastore.saveScope(scope.state, callback, binder.anchor);
+    },
+    '$window' : window,
+    '$uid' : function() {
+      return "" + new Date().getTime();
+    },
+    '$users' : users
+  }, "ROOT");
+
+  element.data('scope', scope);
+  binder.entity(scope);
+  binder.compile();
+  controlBar.bind();
+  
+  //TODO: remove this code
+  new PopUp(element).bind();
+  
+  var self = _(exposeMethods(scope, {
+    'updateView': scope.updateView,
+    'set':        scope.set,
+    'get':        scope.get,
+    'eval':       scope.eval
+  })).extend({
+    'init':function(){
+        config['location']['listen'](_(binder.onUrlChange).bind(binder));
+        binder.parseAnchor();
+        binder.executeInit(); 
+        binder.updateView(); 
+        return self;
+      },
+    'element':element[0],
+    'config':config
+  });
+  return self;
+}
+
+angular['startUrlWatcher'] = function(){ 
+  return new UrlWatcher(window['location']).watch();
+};
+
+angular['compile'] = function(element, config) {
+  config = _({
+      'server': "",
+      'location': {'get':noop, 'set':noop, 'listen':noop}
+    }).extend(config||{});
+
+  configureLogging(config);
+  configureJQueryPlugins();
+  
+  return wireAngular(jQuery(element), config);
+};var angularGlobal = {
+  'typeOf':function(obj){
+    if (obj === null) return "null";
+    var type = typeof obj;
+    if (type == "object") {
+      if (obj instanceof Array) return "array";
+      if (obj instanceof Date) return "date";
+      if (obj.nodeType == 1) return "element";
+    }
+    return type;
+  }
+};
+
+var angularCollection = {};
+var angularObject = {};
+var angularArray = {
+  'includeIf':function(array, value, condition) {
+    var index = _.indexOf(array, value);
+    if (condition) {
+      if (index == -1)
+        array.push(value);
+    } else {
+      array.splice(index, 1);
+    }
+    return array;
+  },
+  'sum':function(array, expression) {
+    var fn = angular['Function']['compile'](expression);
+    var sum = 0;
+    for (var i = 0; i < array.length; i++) {
+      var value = 1 * fn(array[i]);
+      if (!isNaN(value)){
+        sum += value;
+      }
+    }
+    return sum;
+  },
+  'remove':function(array, value) {
+    var index = _.indexOf(array, value);
+    if (index >=0)
+      array.splice(index, 1);
+    return value;
+  },
+  'find':function(array, condition, defaultValue) {
+    if (!condition) return undefined;
+    var fn = angular['Function']['compile'](condition);
+    _.detect(array, function($){
+      if (fn($)){
+        defaultValue = $;
+        return true;
+      }      
+    });
+    return defaultValue;
+  },
+  'findById':function(array, id) {
+    return angular.Array.find(array, function($){return $.$id == id;}, null);
+  },
+  'filter':function(array, expression) {
+    var predicates = [];
+    predicates.check = function(value) {
+      for (var j = 0; j < predicates.length; j++) {
+        if(!predicates[j](value)) {
+          return false;
+        }
+      }
+      return true;
+    };
+    var getter = Scope.getter;
+    var search = function(obj, text){
+      if (text.charAt(0) === '!') {
+        return !search(obj, text.substr(1));
+      }
+      switch (typeof obj) {
+      case "boolean":
+      case "number":
+      case "string":
+        return ('' + obj).toLowerCase().indexOf(text) > -1;
+      case "object":
+        for ( var objKey in obj) {
+          if (objKey.charAt(0) !== '$' && search(obj[objKey], text)) {
+            return true;
+          }
+        }
+        return false;
+      case "array":
+        for ( var i = 0; i < obj.length; i++) {
+          if (search(obj[i], text)) {
+            return true;
+          }
+        }
+        return false;
+      default:
+        return false;
+      }
+    };
+    switch (typeof expression) {
+      case "boolean":
+      case "number":
+      case "string":
+        expression = {$:expression};
+      case "object":
+        for (var key in expression) {
+          if (key == '$') {
+            (function(){
+              var text = (''+expression[key]).toLowerCase();
+              if (!text) return;
+              predicates.push(function(value) {
+                return search(value, text);
+              });
+            })();
+          } else {
+            (function(){
+              var path = key;
+              var text = (''+expression[key]).toLowerCase();
+              if (!text) return;
+              predicates.push(function(value) {
+                return search(getter(value, path), text);
+              });
+            })();
+          }
+        }
+        break;
+      case "function":
+        predicates.push(expression);
+        break;
+      default:
+        return array;
+    }
+    var filtered = [];
+    for ( var j = 0; j < array.length; j++) {
+      var value = array[j];
+      if (predicates.check(value)) {
+        filtered.push(value);
+      }
+    }
+    return filtered;
+  },
+  'add':function(array, value) {
+    array.push(_.isUndefined(value)? {} : value);
+    return array;
+  },
+  'count':function(array, condition) {
+    if (!condition) return array.length;
+    var fn = angular['Function']['compile'](condition);
+    return _.reduce(array, 0, function(count, $){return count + (fn($)?1:0);});
+  },
+  'orderBy':function(array, expression, descend) {
+    function reverse(comp, descending) {
+      return toBoolean(descending) ? 
+          function(a,b){return comp(b,a);} : comp;
+    }
+    function compare(v1, v2){
+      var t1 = typeof v1;
+      var t2 = typeof v2;
+      if (t1 == t2) {
+        if (t1 == "string") v1 = v1.toLowerCase();
+        if (t1 == "string") v2 = v2.toLowerCase();
+        if (v1 === v2) return 0;
+        return v1 < v2 ? -1 : 1;
+      } else {
+        return t1 < t2 ? -1 : 1;
+      }
+    }
+    expression = _.isArray(expression) ? expression: [expression];
+    expression = _.map(expression, function($){
+      var descending = false;
+      if (typeof $ == "string" && ($.charAt(0) == '+' || $.charAt(0) == '-')) {
+        descending = $.charAt(0) == '-';
+        $ = $.substring(1);
+      }
+      var get = $ ? angular['Function']['compile']($) : _.identity;
+      return reverse(function(a,b){
+        return compare(get(a),get(b));
+      }, descending);
+    });
+    var comparator = function(o1, o2){
+      for ( var i = 0; i < expression.length; i++) {
+        var comp = expression[i](o1, o2);
+        if (comp !== 0) return comp;
+      }
+      return 0;
+    };
+    return _.clone(array).sort(reverse(comparator, descend));
+  },
+  'orderByToggle':function(predicate, attribute) {
+    var STRIP = /^([+|-])?(.*)/;
+    var ascending = false;
+    var index = -1;
+    _.detect(predicate, function($, i){
+      if ($ == attribute) {
+        ascending = true;
+        index = i;
+        return true;
+      }
+      if (($.charAt(0)=='+'||$.charAt(0)=='-') && $.substring(1) == attribute) {
+        ascending = $.charAt(0) == '+';
+        index = i;
+        return true;
+      }
+    });
+    if (index >= 0) {
+      predicate.splice(index, 1);
+    }
+    predicate.unshift((ascending ? "-" : "+") + attribute);
+    return predicate;
+  },
+  'orderByDirection':function(predicate, attribute, ascend, descend) {
+    ascend = ascend || 'ng-ascend';
+    descend = descend || 'ng-descend';
+    var att = predicate[0] || '';
+    var direction = true;
+    if (att.charAt(0) == '-') {
+      att = att.substring(1);
+      direction = false;
+    } else if(att.charAt(0) == '+') {
+      att = att.substring(1);
+    }
+    return att == attribute ? (direction ? ascend : descend) : "";
+  },
+  'merge':function(array, index, mergeValue) {
+    var value = array[index];
+    if (!value) {
+      value = {};
+      array[index] = value;
+    }
+    merge(mergeValue, value);
+    return array;
+  }
+};
+
+var angularString = {
+  'quote':function(string) {
+    return '"' + string.replace(/\\/g, '\\\\').
+                        replace(/"/g, '\\"').
+                        replace(/\n/g, '\\n').
+                        replace(/\f/g, '\\f').
+                        replace(/\r/g, '\\r').
+                        replace(/\t/g, '\\t').
+                        replace(/\v/g, '\\v') +
+             '"';
+  },
+  'quoteUnicode':function(string) {
+    var str = angular['String']['quote'](string);
+    var chars = [];
+    for ( var i = 0; i < str.length; i++) {
+      var ch = str.charCodeAt(i);
+      if (ch < 128) {
+        chars.push(str.charAt(i));
+      } else {
+        var encode = "000" + ch.toString(16);
+        chars.push("\\u" + encode.substring(encode.length - 4));
+      }
+    }
+    return chars.join('');
+  },
+  'toDate':function(string){
+    var match;
+    if (typeof string == 'string' && 
+        (match = string.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){
+      var date = new Date(0);
+      date.setUTCFullYear(match[1], match[2] - 1, match[3]);
+      date.setUTCHours(match[4], match[5], match[6], 0);
+      return date;
+    }
+    return string;
+  }
+};
+
+var angularDate = {
+    'toString':function(date){
+      function pad(n) { return n < 10 ? "0" + n : n; }
+      return  (date.getUTCFullYear()) + '-' +
+        pad(date.getUTCMonth() + 1) + '-' +
+        pad(date.getUTCDate()) + 'T' +
+        pad(date.getUTCHours()) + ':' +
+        pad(date.getUTCMinutes()) + ':' +
+        pad(date.getUTCSeconds()) + 'Z';
+    }
+  };
+
+var angularFunction = {
+  'compile':function(expression) {
+    if (_.isFunction(expression)){
+      return expression;
+    } else if (expression){
+      var scope = new Scope();
+      return function($) {
+        scope.state = $;
+        return scope.eval(expression);
+      };
+    } else {
+      return function($){return $;};
+    }
+  }
+};
+
+function defineApi(dst, chain, underscoreNames){
+  var lastChain = _.last(chain);
+  foreach(underscoreNames, function(name){
+    lastChain[name] = _[name];
+  });
+  angular[dst] = angular[dst] || {};
+  foreach(chain, function(parent){
+    extend(angular[dst], parent);
+  });
+}
+defineApi('Global', [angularGlobal],
+    ['extend', 'clone','isEqual', 
+     'isElement', 'isArray', 'isFunction', 'isUndefined']);
+defineApi('Collection', [angularGlobal, angularCollection], 
+    ['each', 'map', 'reduce', 'reduceRight', 'detect', 
+     'select', 'reject', 'all', 'any', 'include', 
+     'invoke', 'pluck', 'max', 'min', 'sortBy', 
+     'sortedIndex', 'toArray', 'size']);
+defineApi('Array', [angularGlobal, angularCollection, angularArray], 
+    ['first', 'last', 'compact', 'flatten', 'without', 
+     'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
+defineApi('Object', [angularGlobal, angularCollection, angularObject],
+    ['keys', 'values']);
+defineApi('String', [angularGlobal, angularString], []);
+defineApi('Date', [angularGlobal, angularDate], []);
+defineApi('Function', [angularGlobal, angularCollection, angularFunction],
+    ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
+function Binder(doc, widgetFactory, location, config) {
+  this.doc = doc;
+  this.location = location;
+  this.anchor = {};
+  this.widgetFactory = widgetFactory;
+  this.config = config || {};
+  this.updateListeners = [];
+}
+
+Binder.parseBindings = function(string) {
+  var results = [];
+  var lastIndex = 0;
+  var index;
+  while((index = string.indexOf('{{', lastIndex)) > -1) {
+    if (lastIndex < index)
+      results.push(string.substr(lastIndex, index - lastIndex));
+    lastIndex = index;
+
+    index = string.indexOf('}}', index);
+    index = index < 0 ? string.length : index + 2;
+
+    results.push(string.substr(lastIndex, index - lastIndex));
+    lastIndex = index;
+  }
+  if (lastIndex != string.length)
+    results.push(string.substr(lastIndex, string.length - lastIndex));
+  return results.length === 0 ? [ string ] : results;
+};
+
+Binder.hasBinding = function(string) {
+  var bindings = Binder.parseBindings(string);
+  return bindings.length > 1 || Binder.binding(bindings[0]) !== null;
+};
+
+Binder.binding = function(string) {
+  var binding = string.replace(/\n/gm, ' ').match(/^\{\{(.*)\}\}$/);
+  return binding ? binding[1] : null;
+};
+
+
+Binder.prototype = {
+  parseQueryString: function(query) {
+    var params = {};
+    query.replace(/(?:^|&)([^&=]*)=?([^&]*)/g,
+        function (match, left, right) {
+          if (left) params[decodeURIComponent(left)] = decodeURIComponent(right);
+        });
+    return params;
+  },
+  
+  parseAnchor: function() {
+    var self = this, url = this.location.get() || "";
+  
+    var anchorIndex = url.indexOf('#');
+    if (anchorIndex < 0) return;
+    var anchor = url.substring(anchorIndex + 1);
+  
+    var anchorQuery = this.parseQueryString(anchor);
+    foreach(self.anchor, function(newValue, key) {
+      delete self.anchor[key];
+    });
+    foreach(anchorQuery, function(newValue, key) {
+      self.anchor[key] = newValue;
+    });
+  },
+  
+  onUrlChange: function() {
+    this.parseAnchor();
+    this.updateView();
+  },
+  
+  updateAnchor: function() {
+    var url = this.location.get() || "";
+    var anchorIndex = url.indexOf('#');
+    if (anchorIndex > -1)
+      url = url.substring(0, anchorIndex);
+    url += "#";
+    var sep = '';
+    for (var key in this.anchor) {
+      var value = this.anchor[key];
+      if (typeof value === 'undefined' || value === null) {
+        delete this.anchor[key];
+      } else {
+        url += sep + encodeURIComponent(key);
+        if (value !== true)
+          url += "=" + encodeURIComponent(value);
+        sep = '&';
+      }
+    }
+    this.location.set(url);
+    return url;
+  },
+  
+  updateView: function() {
+    var start = new Date().getTime();
+    var scope = jQuery(this.doc).scope();
+    scope.set("$invalidWidgets", []);
+    scope.updateView();
+    var end = new Date().getTime();
+    this.updateAnchor();
+    _.each(this.updateListeners, function(fn) {fn();});
+  },
+  
+  docFindWithSelf: function(exp){
+    var doc = jQuery(this.doc);
+    var selection = doc.find(exp);
+    if (doc.is(exp)){
+      selection = selection.andSelf();
+    }
+    return selection;
+  },
+  
+  executeInit: function() {
+    this.docFindWithSelf("[ng-init]").each(function() {
+      var jThis = jQuery(this);
+      var scope = jThis.scope();
+      try {
+        scope.eval(jThis.attr('ng-init'));
+      } catch (e) {
+        alert("EVAL ERROR:\n" + jThis.attr('ng-init') + '\n' + toJson(e, true));
+      }
+    });
+  },
+  
+  entity: function (scope) {
+    this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
+      try {
+        var jNode = jQuery(this);
+        var decl = scope.entity(jNode.attr("ng-entity"));
+        return decl + (jNode.attr('ng-watch') || "");
+      } catch (e) {
+        alert(e);
+      }
+    });
+  },
+  
+  compile: function() {
+    var jNode = jQuery(this.doc);
+    if (this.config.autoSubmit) {
+      var submits = this.docFindWithSelf(":submit").not("[ng-action]");
+      submits.attr("ng-action", "$save()");
+      submits.not(":disabled").not("ng-bind-attr").attr("ng-bind-attr", '{disabled:"{{$invalidWidgets}}"}');
+    }
+    this.precompile(this.doc)(this.doc, jNode.scope(), "");
+    this.docFindWithSelf("a[ng-action]").live('click', function (event) {
+      var jNode = jQuery(this);
+      var scope = jNode.scope();
+      try {
+        scope.eval(jNode.attr('ng-action'));
+        jNode.removeAttr('ng-error');
+        jNode.removeClass("ng-exception");
+      } catch (e) {
+        jNode.addClass("ng-exception");
+        jNode.attr('ng-error', toJson(e, true));
+      }
+      scope.get('$updateView')();
+      return false;
+    });
+  },
+  
+  translateBinding: function(node, parentPath, factories) {
+    var path = parentPath.concat();
+    var offset = path.pop();
+    var parts = Binder.parseBindings(node.nodeValue);
+    if (parts.length > 1 || Binder.binding(parts[0])) {
+      var parent = node.parentNode;
+      if (isLeafNode(parent)) {
+        parent.setAttribute('ng-bind-template', node.nodeValue);
+        factories.push({path:path, fn:function(node, scope, prefix) {
+          return new BindUpdater(node, node.getAttribute('ng-bind-template'));
+        }});
+      } else {
+        for (var i = 0; i < parts.length; i++) {
+          var part = parts[i];
+          var binding = Binder.binding(part);
+          var newNode;
+          if (binding) {
+            newNode = document.createElement("span");
+            var jNewNode = jQuery(newNode);
+            jNewNode.attr("ng-bind", binding);
+            if (i === 0) {
+              factories.push({path:path.concat(offset + i), fn:this.ng_bind});
+            }
+          } else if (msie && part.charAt(0) == ' ') {
+            newNode = document.createElement("span");
+            newNode.innerHTML = '&nbsp;' + part.substring(1);
+          } else {
+            newNode = document.createTextNode(part);
+          }
+          parent.insertBefore(newNode, node);
+        }
+      }
+      parent.removeChild(node);
+    }
+  },
+  
+  precompile: function(root) {
+    var factories = [];
+    this.precompileNode(root, [], factories);
+    return function (template, scope, prefix) {
+      var len = factories.length;
+      for (var i = 0; i < len; i++) {
+        var factory = factories[i];
+        var node = template;
+        var path = factory.path;
+        for (var j = 0; j < path.length; j++) {
+          node = node.childNodes[path[j]];
+        }
+        try {
+          scope.addWidget(factory.fn(node, scope, prefix));
+        } catch (e) {
+          alert(e);
+        }
+      }
+    };
+  },
+  
+  precompileNode: function(node, path, factories) {
+    var nodeType = node.nodeType;
+    if (nodeType == Node.TEXT_NODE) {
+      this.translateBinding(node, path, factories);
+      return;
+    } else if (nodeType != Node.ELEMENT_NODE && nodeType != Node.DOCUMENT_NODE) {
+      return;
+    }
+  
+    if (!node.getAttribute) return;
+    var nonBindable = node.getAttribute('ng-non-bindable');
+    if (nonBindable || nonBindable === "") return;
+  
+    var attributes = node.attributes;
+    if (attributes) {
+      var bindings = node.getAttribute('ng-bind-attr');
+      node.removeAttribute('ng-bind-attr');
+      bindings = bindings ? fromJson(bindings) : {};
+      var attrLen = attributes.length;
+      for (var i = 0; i < attrLen; i++) {
+        var attr = attributes[i];
+        var attrName = attr.name;
+        // http://www.glennjones.net/Post/809/getAttributehrefbug.htm
+        var attrValue = msie && attrName == 'href' ?
+                        decodeURI(node.getAttribute(attrName, 2)) : attr.value;
+        if (Binder.hasBinding(attrValue)) {
+          bindings[attrName] = attrValue;
+        }
+      }
+      var json = toJson(bindings);
+      if (json.length > 2) {
+        node.setAttribute("ng-bind-attr", json);
+      }
+    }
+  
+    if (!node.getAttribute) log(node);
+    var repeaterExpression = node.getAttribute('ng-repeat');
+    if (repeaterExpression) {
+      node.removeAttribute('ng-repeat');
+      var precompiled = this.precompile(node);
+      var view = document.createComment("ng-repeat: " + repeaterExpression);
+      var parentNode = node.parentNode;
+      parentNode.insertBefore(view, node);
+      parentNode.removeChild(node);
+      function template(childScope, prefix, i) {
+        var clone = jQuery(node).clone();
+        clone.css('display', '');
+        clone.attr('ng-repeat-index', "" + i);
+        clone.data('scope', childScope);
+        precompiled(clone[0], childScope, prefix + i + ":");
+        return clone;
+      }
+      factories.push({path:path, fn:function(node, scope, prefix) {
+        return new RepeaterUpdater(jQuery(node), repeaterExpression, template, prefix);
+      }});
+      return;
+    }
+  
+    if (node.getAttribute('ng-eval')) factories.push({path:path, fn:this.ng_eval});
+    if (node.getAttribute('ng-bind')) factories.push({path:path, fn:this.ng_bind});
+    if (node.getAttribute('ng-bind-attr')) factories.push({path:path, fn:this.ng_bind_attr});
+    if (node.getAttribute('ng-hide')) factories.push({path:path, fn:this.ng_hide});
+    if (node.getAttribute('ng-show')) factories.push({path:path, fn:this.ng_show});
+    if (node.getAttribute('ng-class')) factories.push({path:path, fn:this.ng_class});
+    if (node.getAttribute('ng-class-odd')) factories.push({path:path, fn:this.ng_class_odd});
+    if (node.getAttribute('ng-class-even')) factories.push({path:path, fn:this.ng_class_even});
+    if (node.getAttribute('ng-style')) factories.push({path:path, fn:this.ng_style});
+    if (node.getAttribute('ng-watch')) factories.push({path:path, fn:this.ng_watch});
+    var nodeName = node.nodeName;
+    if ((nodeName == 'INPUT' ) ||
+        nodeName == 'TEXTAREA' ||
+        nodeName == 'SELECT' ||
+        nodeName == 'BUTTON') {
+      var self = this;
+      factories.push({path:path, fn:function(node, scope, prefix) {
+        node.name = prefix + node.name.split(":").pop();
+        return self.widgetFactory.createController(jQuery(node), scope);
+      }});
+    }
+    if (nodeName == 'OPTION') {
+      var html = jQuery('<select/>').append(jQuery(node).clone()).html();
+      if (!html.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
+        node.value = node.text;
+      }
+    }
+  
+    var children = node.childNodes;
+    for (var k = 0; k < children.length; k++) {
+      this.precompileNode(children[k], path.concat(k), factories);
+    }
+  },
+  
+  ng_eval: function(node) {
+    return new EvalUpdater(node, node.getAttribute('ng-eval'));
+  },
+  
+  ng_bind: function(node) {
+    return new BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
+  },
+  
+  ng_bind_attr: function(node) {
+    return new BindAttrUpdater(node, fromJson(node.getAttribute('ng-bind-attr')));
+  },
+  
+  ng_hide: function(node) {
+    return new HideUpdater(node, node.getAttribute('ng-hide'));
+  },
+  
+  ng_show: function(node) {
+    return new ShowUpdater(node, node.getAttribute('ng-show'));
+  },
+  
+  ng_class: function(node) {
+    return new ClassUpdater(node, node.getAttribute('ng-class'));
+  },
+  
+  ng_class_even: function(node) {
+    return new ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
+  },
+  
+  ng_class_odd: function(node) {
+    return new ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
+  },
+  
+  ng_style: function(node) {
+    return new StyleUpdater(node, node.getAttribute('ng-style'));
+  },
+  
+  ng_watch: function(node, scope) {
+    scope.watch(node.getAttribute('ng-watch'));
+  }
+};function ControlBar(document, serverUrl) {
+  this.document = document;
+  this.serverUrl = serverUrl;
+  this.window = window;
+  this.callbacks = [];
+};
+
+ControlBar.HTML =
+  '<div>' +
+    '<div class="ui-widget-overlay"></div>' +
+    '<div id="ng-login" ng-non-bindable="true">' +
+      '<div class="ng-login-container"></div>' +
+    '</div>' +
+  '</div>';
+
+ControlBar.FORBIDEN =
+  '<div ng-non-bindable="true" title="Permission Error:">' +
+    'Sorry, you do not have permission for this!'+
+  '</div>';
+
+
+
+ControlBar.prototype = {
+  bind: function () {
+  },
+  
+  login: function (loginSubmitFn) {
+    this.callbacks.push(loginSubmitFn);
+    if (this.callbacks.length == 1) {
+      this.doTemplate("/user_session/new.mini?return_url=" + encodeURIComponent(this.urlWithoutAnchor()));
+    }
+  },
+  
+  logout: function (loginSubmitFn) {
+    this.callbacks.push(loginSubmitFn);
+    if (this.callbacks.length == 1) {
+      this.doTemplate("/user_session/do_destroy.mini");
+    }
+  },
+  
+  urlWithoutAnchor: function (path) {
+    return this.window.location.href.split("#")[0];
+  },
+  
+  doTemplate: function (path) {
+    var self = this;
+    var id = new Date().getTime();
+    var url = this.urlWithoutAnchor();
+    url += "#$iframe_notify=" + id;
+    var iframeHeight = 330;
+    var loginView = jQuery('<div style="overflow:hidden; padding:2px 0 0 0;"><iframe name="'+ url +'" src="'+this.serverUrl + path + '" width="500" height="'+ iframeHeight +'"/></div>');
+    this.document.append(loginView);
+    loginView.dialog({
+      height:iframeHeight + 33, width:500,
+      resizable: false, modal:true,
+      title: 'Authentication: <a href="http://www.getangular.com"><tt>&lt;angular/&gt;</tt></a>'
+    });
+    callbacks["_iframe_notify_" + id] = function() {
+      loginView.dialog("destroy");
+      loginView.remove();
+      foreach(self.callbacks, function(callback){
+        callback();
+      });
+      self.callbacks = [];
+    };
+  },
+  
+  notAuthorized: function () {
+    if (this.forbidenView) return;
+    this.forbidenView = jQuery(ControlBar.FORBIDEN);
+    this.forbidenView.dialog({bgiframe:true, height:70, modal:true});
+  }
+};function DataStore(post, users, anchor) {
+  this.post = post;
+  this.users = users;
+  this._cache = {$collections:[]};
+  this.anchor = anchor;
+  this.bulkRequest = [];
+};
+
+DataStore.NullEntity = extend(function(){}, {
+  'all': function(){return [];},
+  'query': function(){return [];},
+  'load': function(){return {};},
+  'title': undefined
+});
+
+DataStore.prototype = {
+  cache: function(document) {
+    if (! document instanceof Model) {
+      throw "Parameter must be an instance of Entity! " + toJson(document);
+    }
+    var key = document.$entity + '/' + document.$id;
+    var cachedDocument = this._cache[key];
+    if (cachedDocument) {
+      Model.copyDirectFields(document, cachedDocument);
+    } else {
+      this._cache[key] = document;
+      cachedDocument = document;
+    }
+    return cachedDocument;
+  },
+  
+  load: function(instance, id, callback, failure) {
+    if (id && id !== '*') {
+      var self = this;
+      this._jsonRequest(["GET", instance.$entity + "/" + id], function(response) {
+        instance.$loadFrom(response);
+        instance.$migrate();
+        var clone = instance.$$entity(instance);
+        self.cache(clone);
+        (callback||noop)(instance);
+      }, failure);
+    }
+    return instance;
+  },
+  
+  loadMany: function(entity, ids, callback) {
+    var self=this;
+    var list = [];
+    var callbackCount = 0;
+    foreach(ids, function(id){
+      list.push(self.load(entity(), id, function(){
+        callbackCount++;
+        if (callbackCount == ids.length) {
+          (callback||noop)(list);
+        }
+      }));
+    });
+    return list;
+  },
+  
+  loadOrCreate: function(instance, id, callback) {
+    var self=this;
+    return this.load(instance, id, callback, function(response){
+      if (response.$status_code == 404) {
+        instance.$id = id;
+        (callback||noop)(instance);
+      } else {
+        throw response;
+      }
+    });
+  },
+  
+  loadAll: function(entity, callback) {
+    var self = this;
+    var list = [];
+    list.$$accept = function(doc){
+      return doc.$entity == entity.title;
+    };
+    this._cache.$collections.push(list);
+    this._jsonRequest(["GET", entity.title], function(response) {
+      var rows = response;
+      for ( var i = 0; i < rows.length; i++) {
+        var document = entity();
+        document.$loadFrom(rows[i]);
+        list.push(self.cache(document));
+      }
+      (callback||noop)(list);
+    });
+    return list;
+  },
+  
+  save: function(document, callback) {
+    var self = this;
+    var data = {};
+    document.$saveTo(data);
+    this._jsonRequest(["POST", "", data], function(response) {
+      document.$loadFrom(response);
+      var cachedDoc = self.cache(document);
+      _.each(self._cache.$collections, function(collection){
+        if (collection.$$accept(document)) {
+          angular['Array']['includeIf'](collection, cachedDoc, true);
+        }
+      });
+      if (document.$$anchor) {
+        self.anchor[document.$$anchor] = document.$id;
+      }
+      if (callback)
+        callback(document);
+    });
+  },
+  
+  remove: function(document, callback) {
+    var self = this;
+    var data = {};
+    document.$saveTo(data);
+    this._jsonRequest(["DELETE", "", data], function(response) {
+      delete self._cache[document.$entity + '/' + document.$id];
+      _.each(self._cache.$collections, function(collection){
+        for ( var i = 0; i < collection.length; i++) {
+          var item = collection[i];
+          if (item.$id == document.$id) {
+            collection.splice(i, 1);
+          }
+        }
+      });
+      (callback||noop)(response);
+    });
+  },
+  
+  _jsonRequest: function(request, callback, failure) {
+    request.$$callback = callback;
+    request.$$failure = failure||function(response){
+      throw response;
+    };
+    this.bulkRequest.push(request);
+  },
+  
+  flush: function() {
+    if (this.bulkRequest.length === 0) return;
+    var self = this;
+    var bulkRequest = this.bulkRequest;
+    this.bulkRequest = [];
+    log('REQUEST:', bulkRequest);
+    function callback(code, bulkResponse){
+      log('RESPONSE[' + code + ']: ', bulkResponse);
+      if(bulkResponse.$status_code == 401) {
+        self.users.login(function(){
+          self.post(bulkRequest, callback);
+        });
+      } else if(bulkResponse.$status_code) {
+        alert(toJson(bulkResponse));
+      } else {
+        for ( var i = 0; i < bulkResponse.length; i++) {
+          var response = bulkResponse[i];
+          var request = bulkRequest[i];
+          var responseCode = response.$status_code;
+          if(responseCode) {
+            if(responseCode == 403) {
+              self.users.notAuthorized();
+            } else {
+              request.$$failure(response);
+            }
+          } else {
+            request.$$callback(response);
+          }
+        }
+      }
+    }
+    this.post(bulkRequest, callback);
+  },
+  
+  saveScope: function(scope, callback) {
+    var saveCounter = 1;
+    function onSaveDone() {
+      saveCounter--;
+      if (saveCounter === 0 && callback)
+        callback();
+    }
+    for(var key in scope) {
+      var item = scope[key];
+      if (item && item.$save == Model.prototype.$save) {
+        saveCounter++;
+        item.$save(onSaveDone);
+      }
+    }
+    onSaveDone();
+  },
+  
+  query: function(type, query, arg, callback){
+    var self = this;
+    var queryList = [];
+    queryList.$$accept = function(doc){
+      return false;
+    };
+    this._cache.$collections.push(queryList);
+    var request = type.title + '/' + query + '=' + arg;
+    this._jsonRequest(["GET", request], function(response){
+      var list = response;
+      for(var i = 0; i < list.length; i++) {
+        var document = new type().$loadFrom(list[i]);
+        queryList.push(self.cache(document));
+      }
+      if (callback)
+        callback(queryList);
+    });
+    return queryList;
+  },
+  
+  entities: function(callback) {
+    var entities = [];
+    var self = this;
+    this._jsonRequest(["GET", "$entities"], function(response) {
+      for (var entityName in response) {
+        entities.push(self.entity(entityName));
+      }
+      entities.sort(function(a,b){return a.title > b.title ? 1 : -1;});
+      if (callback) callback(entities);
+    });
+    return entities;
+  },
+  
+  documentCountsByUser: function(){
+    var counts = {};
+    var self = this;
+    self.post([["GET", "$users"]], function(code, response){
+      foreach(response[0], function(value, key){
+        counts[key] = value;
+      });
+    });
+    return counts;
+  },
+  
+  userDocumentIdsByEntity: function(user){
+    var ids = {};
+    var self = this;
+    self.post([["GET", "$users/" + user]], function(code, response){
+      foreach(response[0], function(value, key){
+        ids[key] = value;
+      });
+    });
+    return ids;
+  },
+  
+  entity: function(name, defaults){
+    if (!name) {
+      return DataStore.NullEntity;
+    }
+    var self = this;
+    var entity = extend(function(initialState){
+      return new Model(entity, initialState);
+    }, {
+      // entity.name does not work as name seems to be reserved for functions
+      'title': name,
+      '$$factory': true,
+      'datastore': this,
+      'defaults': defaults || {},
+      'load': function(id, callback){
+        return self.load(entity(), id, callback);
+      },
+      'loadMany': function(ids, callback){
+        return self.loadMany(entity, ids, callback);
+      },
+      'loadOrCreate': function(id, callback){
+        return self.loadOrCreate(entity(), id, callback);
+      },
+      'all': function(callback){
+        return self.loadAll(entity, callback);
+      },
+      'query': function(query, queryArgs, callback){
+        return self.query(entity, query, queryArgs, callback);
+      },
+      'properties': function(callback) {
+        self._jsonRequest(["GET", name + "/$properties"], callback);
+      }
+    });
+    return entity;
+  },
+  
+  join: function(join){
+    function fn(){
+      throw "Joined entities can not be instantiated into a document.";
+    };
+    function base(name){return name ? name.substring(0, name.indexOf('.')) : undefined;}
+    function next(name){return name.substring(name.indexOf('.') + 1);}
+    var joinOrder = _(join).chain().
+      map(function($, name){
+        return name;}).
+      sortBy(function(name){
+        var path = [];
+        do {
+          if (_(path).include(name)) throw "Infinite loop in join: " + path.join(" -> ");
+          path.push(name);
+          if (!join[name]) throw _("Named entity '<%=name%>' is undefined.").template({name:name});
+          name = base(join[name].on);
+        } while(name);
+        return path.length;
+      }).
+      value();
+    if (_(joinOrder).select(function($){return join[$].on;}).length != joinOrder.length - 1)
+      throw "Exactly one entity needs to be primary.";
+    fn['query'] = function(exp, value) {
+      var joinedResult = [];
+      var baseName = base(exp);
+      if (baseName != joinOrder[0]) throw _("Named entity '<%=name%>' is not a primary entity.").template({name:baseName});
+      var Entity = join[baseName].join;
+      var joinIndex = 1;
+      Entity['query'](next(exp), value, function(result){
+        var nextJoinName = joinOrder[joinIndex++];
+        var nextJoin = join[nextJoinName];
+        var nextJoinOn = nextJoin.on;
+        var joinIds = {};
+        _(result).each(function(doc){
+          var row = {};
+          joinedResult.push(row);
+          row[baseName] = doc;
+          var id = Scope.getter(row, nextJoinOn);
+          joinIds[id] = id;
+        });
+        nextJoin.join.loadMany(_.toArray(joinIds), function(result){
+          var byId = {};
+          _(result).each(function(doc){
+            byId[doc.$id] = doc;
+          });
+          _(joinedResult).each(function(row){
+            var id = Scope.getter(row, nextJoinOn);
+            row[nextJoinName] = byId[id];
+          });
+        });
+      });
+      return joinedResult;
+    };
+    return fn;
+  }
+};angularFilter.Meta = function(obj){
+  if (obj) {
+    for ( var key in obj) {
+      this[key] = obj[key];
+    }
+  }
+};
+angularFilter.Meta.get = function(obj, attr){
+  attr = attr || 'text';
+  switch(typeof obj) {
+  case "string":
+    return attr == "text" ? obj : undefined;
+  case "object":
+    if (obj && typeof obj[attr] !== "undefined") {
+      return obj[attr];
+    }
+    return undefined;
+  default:
+    return obj;
+  }
+};
+
+var angularFilterGoogleChartApi;
+
+foreach({
+  'currency': function(amount){
+    jQuery(this.element).toggleClass('ng-format-negative', amount < 0);
+    return '$' + angularFilter['number'].apply(this, [amount, 2]);
+  },
+  
+  'number': function(amount, fractionSize){
+    if (isNaN(amount) || !isFinite(amount)) {
+      return '';
+    }
+    fractionSize = typeof fractionSize == 'undefined' ? 2 : fractionSize;
+    var isNegative = amount < 0;
+    amount = Math.abs(amount);
+    var pow = Math.pow(10, fractionSize);
+    var text = "" + Math.round(amount * pow);
+    var whole = text.substring(0, text.length - fractionSize);
+    whole = whole || '0';
+    var frc = text.substring(text.length - fractionSize);
+    text = isNegative ? '-' : '';
+    for (var i = 0; i < whole.length; i++) {
+      if ((whole.length - i)%3 === 0 && i !== 0) {
+        text += ',';
+      }
+      text += whole.charAt(i);
+    }
+    if (fractionSize > 0) {
+      for (var j = frc.length; j < fractionSize; j++) {
+        frc += '0';
+      }
+      text += '.' + frc.substring(0, fractionSize);
+    }
+    return text;
+  },
+  
+  'date': function(amount) {
+  },
+  
+  'json': function(object) {
+    jQuery(this.element).addClass("ng-monospace");
+    return toJson(object, true);
+  },
+  
+  'trackPackage': (function(){
+    var MATCHERS = [
+      { name: "UPS",
+        url: "http://wwwapps.ups.com/WebTracking/processInputRequest?sort_by=status&tracknums_displayed=1&TypeOfInquiryNumber=T&loc=en_US&track.x=0&track.y=0&InquiryNumber1=",
+        regexp: [
+          /^1Z[0-9A-Z]{16}$/i]},
+      { name: "FedEx",
+        url: "http://www.fedex.com/Tracking?tracknumbers=",
+        regexp: [
+          /^96\d{10}?$/i,
+          /^96\d{17}?$/i,
+          /^96\d{20}?$/i,
+          /^\d{15}$/i,
+          /^\d{12}$/i]},
+      { name: "USPS",
+        url: "http://trkcnfrm1.smi.usps.com/PTSInternetWeb/InterLabelInquiry.do?origTrackNum=",
+        regexp: [
+          /^(91\d{20})$/i,
+          /^(91\d{18})$/i]}];
+    return function(trackingNo, noMatch) {
+      trackingNo = trim(trackingNo);
+      var tNo = trackingNo.replace(/ /g, '');
+      var returnValue;
+      foreach(MATCHERS, function(carrier){
+        foreach(carrier.regexp, function(regexp){
+          if (regexp.test(tNo)) {
+            var text = carrier.name + ": " + trackingNo;
+            var url = carrier.url + trackingNo;
+            returnValue = new angularFilter.Meta({
+              text:text,
+              url:url,
+              html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
+              trackingNo:trackingNo});
+            _.breakLoop();
+          }
+        });
+        if (returnValue) _.breakLoop();
+      });
+      if (returnValue) 
+        return returnValue;
+      else if (trackingNo)
+        return noMatch || new angularFilter.Meta({text:trackingNo + " is not recognized"});
+      else
+        return null;
+    };})(),
+  
+  'link': function(obj, title) {
+    var text = title || angularFilter.Meta.get(obj);
+    var url = angularFilter.Meta.get(obj, "url") || angularFilter.Meta.get(obj);
+    if (url) {
+      if (angular.validator.email(url) === null) {
+        url = "mailto:" + url;
+      }
+      var html = '<a href="' + escapeHtml(url) + '">' + text + '</a>';
+      return new angularFilter.Meta({text:text, url:url, html:html});
+    }
+    return obj;
+  },
+  
+  
+  'bytes': (function(){
+    var SUFFIX = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
+    return function(size) {
+      if(size === null) return "";
+    
+      var suffix = 0;
+      while (size > 1000) {
+        size = size / 1024;
+        suffix++;
+      }
+      var txt = "" + size;
+      var dot = txt.indexOf('.');
+      if (dot > -1 && dot + 2 < txt.length) {
+        txt = txt.substring(0, dot + 2);
+      }
+      return txt + " " + SUFFIX[suffix];
+    };
+  })(),
+  
+  'image': function(obj, width, height) {
+    if (obj && obj.url) {
+      var style = "";
+      if (width) {
+        style = ' style="max-width: ' + width +
+                'px; max-height: ' + (height || width) + 'px;"';
+      }
+      return new angularFilter.Meta({url:obj.url, text:obj.url,
+        html:'<img src="'+obj.url+'"' + style + '/>'});
+    }
+    return null;
+  },
+  
+  'lowercase': function (obj) {
+    var text = angularFilter.Meta.get(obj);
+    return text ? ("" + text).toLowerCase() : text;
+  },
+  
+  'uppercase': function (obj) {
+    var text = angularFilter.Meta.get(obj);
+    return text ? ("" + text).toUpperCase() : text;
+  },
+  
+  'linecount': function (obj) {
+    var text = angularFilter.Meta.get(obj);
+    if (text==='' || !text) return 1;
+    return text.split(/\n|\f/).length;
+  },
+  
+  'if': function (result, expression) {
+    return expression ? result : undefined;
+  },
+  
+  'unless': function (result, expression) {
+    return expression ? undefined : result;
+  },
+  
+  'googleChartApi': extend(
+    function(type, data, width, height) {
+      data = data || {};
+      var chart = {
+          cht:type, 
+          chco:angularFilterGoogleChartApi.collect(data, 'color'),
+          chtt:angularFilterGoogleChartApi.title(data),
+          chdl:angularFilterGoogleChartApi.collect(data, 'label'),
+          chd:angularFilterGoogleChartApi.values(data),
+          chf:'bg,s,FFFFFF00'
+        };
+      if (_.isArray(data.xLabels)) {
+        chart.chxt='x';
+        chart.chxl='0:|' + data.xLabels.join('|');
+      }
+      return angularFilterGoogleChartApi['encode'](chart, width, height);
+    },
+    {
+      'values': function(data){
+        var seriesValues = [];
+        foreach(data.series||[], function(serie){
+          var values = [];
+          foreach(serie.values||[], function(value){
+            values.push(value);
+          });
+          seriesValues.push(values.join(','));
+        });
+        var values = seriesValues.join('|');
+        return values === "" ? null : "t:" + values;
+      },
+      
+      'title': function(data){
+        var titles = [];
+        var title = data.title || [];
+        foreach(_.isArray(title)?title:[title], function(text){
+          titles.push(encodeURIComponent(text));
+        });
+        return titles.join('|');
+      },
+      
+      'collect': function(data, key){
+        var outterValues = [];
+        var count = 0;
+        foreach(data.series||[], function(serie){
+          var innerValues = [];
+          var value = serie[key] || [];
+          foreach(_.isArray(value)?value:[value], function(color){
+              innerValues.push(encodeURIComponent(color));
+              count++;
+            });
+          outterValues.push(innerValues.join('|'));
+        });
+        return count?outterValues.join(','):null;
+      },
+      
+      'encode': function(params, width, height) {
+        width = width || 200;
+        height = height || width;
+        var url = "http://chart.apis.google.com/chart?";
+        var urlParam = [];
+        params.chs = width + "x" + height;
+        foreach(params, function(value, key){
+          if (value) {
+            urlParam.push(key + "=" + value);
+          }
+        });
+        urlParam.sort();
+        url += urlParam.join("&");
+        return new angularFilter.Meta({url:url,
+          html:'<img width="' + width + '" height="' + height + '" src="'+url+'"/>'});
+      }
+    }
+  ),
+  
+  
+  'qrcode': function(value, width, height) {
+    return angularFilterGoogleChartApi['encode']({cht:'qr', chl:encodeURIComponent(value)}, width, height);
+  },
+  'chart': {
+    pie:function(data, width, height) {
+      return angularFilterGoogleChartApi('p', data, width, height);
+    },
+    pie3d:function(data, width, height) {
+      return angularFilterGoogleChartApi('p3', data, width, height);
+    },
+    pieConcentric:function(data, width, height) {
+      return angularFilterGoogleChartApi('pc', data, width, height);
+    },
+    barHorizontalStacked:function(data, width, height) {
+      return angularFilterGoogleChartApi('bhs', data, width, height);
+    },
+    barHorizontalGrouped:function(data, width, height) {
+      return angularFilterGoogleChartApi('bhg', data, width, height);
+    },
+    barVerticalStacked:function(data, width, height) {
+      return angularFilterGoogleChartApi('bvs', data, width, height);
+    },
+    barVerticalGrouped:function(data, width, height) {
+      return angularFilterGoogleChartApi('bvg', data, width, height);
+    },
+    line:function(data, width, height) {
+      return angularFilterGoogleChartApi('lc', data, width, height);
+    },
+    sparkline:function(data, width, height) {
+      return angularFilterGoogleChartApi('ls', data, width, height);
+    },
+    scatter:function(data, width, height) {
+      return angularFilterGoogleChartApi('s', data, width, height);
+    }
+  },
+  
+  'html': function(html){
+    return new angularFilter.Meta({html:html});
+  },
+  
+  'linky': function(text){
+    if (!text) return text;
+    function regExpEscape(text) {
+      return text.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, '\\$1');
+    }
+    var URL = /(ftp|http|https|mailto):\/\/([^\(\)|\s]+)/;
+    var match;
+    var raw = text;
+    var html = [];
+    while (match=raw.match(URL)) {
+      var url = match[0].replace(/[\.\;\,\(\)\{\}\<\>]$/,'');
+      var i = raw.indexOf(url);
+      html.push(escapeHtml(raw.substr(0, i)));
+      html.push('<a href="' + url + '">');
+      html.push(url);
+      html.push('</a>');
+      raw = raw.substring(i + url.length);
+    }
+    html.push(escapeHtml(raw));
+    return new angularFilter.Meta({text:text, html:html.join('')});
+  }
+}, function(v,k){angularFilter[k] = v;});
+
+angularFilterGoogleChartApi = angularFilter['googleChartApi'];
+array = [].constructor;
+
+function toJson(obj, pretty){
+  var buf = [];
+  toJsonArray(buf, obj, pretty ? "\n  " : null, _([]));
+  return buf.join('');
+};
+
+function toPrettyJson(obj)  {
+  return toJson(obj, true);
+};
+
+function fromJson(json) {
+  try {
+    var parser = new Parser(json, true);
+    var expression =  parser.primary();
+    parser.assertAllConsumed();
+    return expression();
+  } catch (e) {
+    error("fromJson error: ", json, e);
+    throw e;
+  }
+};
+
+angular['toJson'] = toJson;
+angular['fromJson'] = fromJson;
+
+function toJsonArray(buf, obj, pretty, stack){
+  if (typeof obj == "object") {
+    if (stack.include(obj)) {
+      buf.push("RECURSION");
+      return;
+    }
+    stack.push(obj);
+  }
+  var type = typeof obj;
+  if (obj === null) {
+    buf.push("null");
+  } else if (type === 'function') {
+    return;
+  } else if (type === 'boolean') {
+    buf.push('' + obj);
+  } else if (type === 'number') {
+    if (isNaN(obj)) {
+      buf.push('null');
+    } else {
+      buf.push('' + obj);
+    }
+  } else if (type === 'string') {
+    return buf.push(angular['String']['quoteUnicode'](obj));
+  } else if (type === 'object') {
+    if (obj instanceof Array) {
+      buf.push("[");
+      var len = obj.length;
+      var sep = false;
+      for(var i=0; i<len; i++) {
+        var item = obj[i];
+        if (sep) buf.push(",");
+        if (typeof item == 'function' || typeof item == 'undefined') {
+          buf.push("null");
+        } else {
+          toJsonArray(buf, item, pretty, stack);
+        }
+        sep = true;
+      }
+      buf.push("]");
+    } else if (obj instanceof Date) {
+      buf.push(angular['String']['quoteUnicode'](angular['Date']['toString'](obj)));
+    } else {
+      buf.push("{");
+      if (pretty) buf.push(pretty);
+      var comma = false;
+      var childPretty = pretty ? pretty + "  " : false;
+      var keys = [];
+      for(var k in obj) {
+        if (k.indexOf('$$') === 0)
+          continue;
+        keys.push(k);
+      }
+      keys.sort();
+      for ( var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
+        var key = keys[keyIndex];
+        try {
+          var value = obj[key];
+          if (typeof value != 'function') {
+            if (comma) {
+              buf.push(",");
+              if (pretty) buf.push(pretty);
+            }
+            buf.push(angular['String']['quote'](key));
+            buf.push(":");
+            toJsonArray(buf, value, childPretty, stack);
+            comma = true;
+          }
+        } catch (e) {
+        }
+      }
+      buf.push("}");
+    }
+  }
+  if (typeof obj == "object") {
+    stack.pop();
+  }
+};
+// Single $ is special and does not get searched
+// Double $$ is special an is client only (does not get sent to server)
+
+function Model(entity, initial) {
+  this['$$entity'] = entity;
+  this.$loadFrom(initial||{});
+  this.$entity = entity['title'];
+  this.$migrate();
+};
+
+Model.copyDirectFields = function(src, dst) {
+  if (src === dst || !src || !dst) return;
+  var isDataField = function(src, dst, field) {
+    return (field.substring(0,2) !== '$$') &&
+        (typeof src[field] !== 'function') &&
+        (typeof dst[field] !== 'function');
+  };
+  for (var field in dst) {
+    if (isDataField(src, dst, field))
+      delete dst[field];
+  }
+  for (field in src) {
+    if (isDataField(src, dst, field))
+      dst[field] = src[field];
+  }
+};
+
+Model.prototype = {
+  '$migrate': function() {
+    merge(this['$$entity'].defaults, this);
+    return this;
+  },
+  
+  '$merge': function(other) {
+    merge(other, this);
+    return this;
+  },
+  
+  '$save': function(callback) {
+    this['$$entity'].datastore.save(this, callback === true ? undefined : callback);
+    if (callback === true) this['$$entity'].datastore.flush();
+    return this;
+  },
+  
+  '$delete': function(callback) {
+    this['$$entity'].datastore.remove(this, callback === true ? undefined : callback);
+    if (callback === true) this['$$entity'].datastore.flush();
+    return this;
+  },
+  
+  '$loadById': function(id, callback) {
+    this['$$entity'].datastore.load(this, id, callback);
+    return this;
+  },
+  
+  '$loadFrom': function(other) {
+    Model.copyDirectFields(other, this);
+    return this;
+  },
+  
+  '$saveTo': function(other) {
+    Model.copyDirectFields(this, other);
+    return this;
+  }
+};function Lexer(text, parsStrings){
+  this.text = text;
+  // UTC dates have 20 characters, we send them through parser
+  this.dateParseLength = parsStrings ? 20 : -1;
+  this.tokens = [];
+  this.index = 0;
+};
+
+Lexer.OPERATORS = {
+    'null':function(self){return null;},
+    'true':function(self){return true;},
+    'false':function(self){return false;},
+    '+':function(self, a,b){return (a||0)+(b||0);},
+    '-':function(self, a,b){return (a||0)-(b||0);},
+    '*':function(self, a,b){return a*b;},
+    '/':function(self, a,b){return a/b;},
+    '%':function(self, a,b){return a%b;},
+    '^':function(self, a,b){return a^b;},
+    '=':function(self, a,b){return self.scope.set(a, b);},
+    '==':function(self, a,b){return a==b;},
+    '!=':function(self, a,b){return a!=b;},
+    '<':function(self, a,b){return a<b;},
+    '>':function(self, a,b){return a>b;},
+    '<=':function(self, a,b){return a<=b;},
+    '>=':function(self, a,b){return a>=b;},
+    '&&':function(self, a,b){return a&&b;},
+    '||':function(self, a,b){return a||b;},
+    '&':function(self, a,b){return a&b;},
+//    '|':function(self, a,b){return a|b;},
+    '|':function(self, a,b){return b(self, a);},
+    '!':function(self, a){return !a;}
+};
+Lexer.ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+
+Lexer.prototype = {
+  peek: function() {
+    if (this.index + 1 < this.text.length) {
+      return this.text.charAt(this.index + 1);
+    } else {
+      return false;
+    }
+  },
+  
+  parse: function() {
+    var tokens = this.tokens;
+    var OPERATORS = Lexer.OPERATORS;
+    var canStartRegExp = true;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (ch == '"' || ch == "'") {
+        this.readString(ch);
+        canStartRegExp = true;
+      } else if (ch == '(' || ch == '[') {
+        tokens.push({index:this.index, text:ch});
+        this.index++;
+      } else if (ch == '{' ) {
+        var peekCh = this.peek();
+        if (peekCh == ':' || peekCh == '(') {
+          tokens.push({index:this.index, text:ch + peekCh});
+          this.index++;
+        } else {
+          tokens.push({index:this.index, text:ch});
+        }
+        this.index++;
+        canStartRegExp = true;
+      } else if (ch == ')' || ch == ']' || ch == '}' ) {
+        tokens.push({index:this.index, text:ch});
+        this.index++;
+        canStartRegExp = false;
+      } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
+        tokens.push({index:this.index, text:ch});
+        this.index++;
+        canStartRegExp = true;
+      } else if ( canStartRegExp && ch == '/' ) {
+        this.readRegexp();
+        canStartRegExp = false;
+      } else if ( this.isNumber(ch) ) {
+        this.readNumber();
+        canStartRegExp = false;
+      } else if (this.isIdent(ch)) {
+        this.readIdent();
+        canStartRegExp = false;
+      } else if (this.isWhitespace(ch)) {
+        this.index++;
+      } else {
+        var ch2 = ch + this.peek();
+        var fn = OPERATORS[ch];
+        var fn2 = OPERATORS[ch2];
+        if (fn2) {
+          tokens.push({index:this.index, text:ch2, fn:fn2});
+          this.index += 2;
+        } else if (fn) {
+          tokens.push({index:this.index, text:ch, fn:fn});
+          this.index += 1;
+        } else {
+          throw "Lexer Error: Unexpected next character [" +
+              this.text.substring(this.index) +
+              "] in expression '" + this.text +
+              "' at column '" + (this.index+1) + "'.";
+        }
+        canStartRegExp = true;
+      }
+    }
+    return tokens;
+  },
+  
+  isNumber: function(ch) {
+    return '0' <= ch && ch <= '9';
+  },
+  
+  isWhitespace: function(ch) {
+    return ch == ' ' || ch == '\r' || ch == '\t' ||
+           ch == '\n' || ch == '\v';
+  },
+  
+  isIdent: function(ch) {
+    return 'a' <= ch && ch <= 'z' ||
+           'A' <= ch && ch <= 'Z' ||
+           '_' == ch || ch == '$';
+  },
+  
+  readNumber: function() {
+    var number = "";
+    var start = this.index;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (ch == '.' || this.isNumber(ch)) {
+        number += ch;
+      } else {
+        break;
+      }
+      this.index++;
+    }
+    number = 1 * number;
+    this.tokens.push({index:start, text:number,
+      fn:function(){return number;}});
+  },
+  
+  readIdent: function() {
+    var ident = "";
+    var start = this.index;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (ch == '.' || this.isIdent(ch) || this.isNumber(ch)) {
+        ident += ch;
+      } else {
+        break;
+      }
+      this.index++;
+    }
+    var fn = Lexer.OPERATORS[ident];
+    if (!fn) {
+      fn = function(self){
+        return self.scope.get(ident);
+      };
+      fn.isAssignable = ident;
+    }
+    this.tokens.push({index:start, text:ident, fn:fn});
+  },
+  
+  readString: function(quote) {
+    var start = this.index;
+    var dateParseLength = this.dateParseLength;
+    this.index++;
+    var string = "";
+    var escape = false;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (escape) {
+        if (ch == 'u') {
+          var hex = this.text.substring(this.index + 1, this.index + 5);
+          this.index += 4;
+          string += String.fromCharCode(parseInt(hex, 16));
+        } else {
+          var rep = Lexer.ESCAPE[ch];
+          if (rep) {
+            string += rep;
+          } else {
+            string += ch;
+          }
+        }
+        escape = false;
+      } else if (ch == '\\') {
+        escape = true;
+      } else if (ch == quote) {
+        this.index++;
+        this.tokens.push({index:start, text:string,
+          fn:function(){
+            return (string.length == dateParseLength) ?
+              angular['String']['toDate'](string) : string;
+          }});
+        return;
+      } else {
+        string += ch;
+      }
+      this.index++;
+    }
+    throw "Lexer Error: Unterminated quote [" +
+        this.text.substring(start) + "] starting at column '" +
+        (start+1) + "' in expression '" + this.text + "'.";
+  },
+  
+  readRegexp: function(quote) {
+    var start = this.index;
+    this.index++;
+    var regexp = "";
+    var escape = false;
+    while (this.index < this.text.length) {
+      var ch = this.text.charAt(this.index);
+      if (escape) {
+        regexp += ch;
+        escape = false;
+      } else if (ch === '\\') {
+        regexp += ch;
+        escape = true;
+      } else if (ch === '/') {
+        this.index++;
+        var flags = "";
+        if (this.isIdent(this.text.charAt(this.index))) {
+          this.readIdent();
+          flags = this.tokens.pop().text;
+        }
+        var compiledRegexp = new RegExp(regexp, flags);
+        this.tokens.push({index:start, text:regexp, flags:flags,
+          fn:function(){return compiledRegexp;}});
+        return;
+      } else {
+        regexp += ch;
+      }
+      this.index++;
+    }
+    throw "Lexer Error: Unterminated RegExp [" +
+        this.text.substring(start) + "] starting at column '" +
+        (start+1) + "' in expression '" + this.text + "'.";
+  }
+};
+
+/////////////////////////////////////////
+
+function Parser(text, parseStrings){
+  this.text = text;
+  this.tokens = new Lexer(text, parseStrings).parse();
+  this.index = 0;
+};
+
+Parser.ZERO = function(){
+  return 0;
+};
+
+Parser.prototype = {
+  error: function(msg, token) {
+    throw "Token '" + token.text + 
+      "' is " + msg + " at column='" + 
+      (token.index + 1) + "' of expression '" + 
+      this.text + "' starting at '" + this.text.substring(token.index) + "'.";
+  },
+  
+  peekToken: function() {
+    if (this.tokens.length === 0) 
+      throw "Unexpected end of expression: " + this.text;
+    return this.tokens[0];
+  },
+  
+  peek: function(e1, e2, e3, e4) {
+    var tokens = this.tokens;
+    if (tokens.length > 0) {
+      var token = tokens[0];
+      var t = token.text;
+      if (t==e1 || t==e2 || t==e3 || t==e4 ||
+          (!e1 && !e2 && !e3 && !e4)) {
+        return token;
+      }
+    }
+    return false;
+  },
+  
+  expect: function(e1, e2, e3, e4){
+    var token = this.peek(e1, e2, e3, e4);
+    if (token) {
+      this.tokens.shift();
+      this.currentToken = token;
+      return token;
+    }
+    return false;
+  },
+  
+  consume: function(e1){
+    if (!this.expect(e1)) {
+      var token = this.peek();
+      throw "Expecting '" + e1 + "' at column '" +
+          (token.index+1) + "' in '" +
+          this.text + "' got '" +
+          this.text.substring(token.index) + "'.";
+    }
+  },
+  
+  _unary: function(fn, right) {
+    return function(self) {
+      return fn(self, right(self));
+    };
+  },
+  
+  _binary: function(left, fn, right) {
+    return function(self) {
+      return fn(self, left(self), right(self));
+    };
+  },
+  
+  hasTokens: function () {
+    return this.tokens.length > 0;
+  },
+  
+  assertAllConsumed: function(){
+    if (this.tokens.length !== 0) {
+      throw "Did not understand '" + this.text.substring(this.tokens[0].index) +
+          "' while evaluating '" + this.text + "'.";
+    }
+  },
+  
+  statements: function(){
+    var statements = [];
+    while(true) {
+      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
+        statements.push(this.filterChain());
+      if (!this.expect(';')) {
+        return function (self){
+          var value;
+          for ( var i = 0; i < statements.length; i++) {
+            var statement = statements[i];
+            if (statement)
+              value = statement(self);
+          }
+          return value;
+        };
+      }
+    }
+  },
+  
+  filterChain: function(){
+    var left = this.expression();
+    var token;
+    while(true) {
+      if ((token = this.expect('|'))) {
+        left = this._binary(left, token.fn, this.filter());
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  filter: function(){
+    return this._pipeFunction(angular['filter']);
+  },
+  
+  validator: function(){
+    return this._pipeFunction(angular['validator']);
+  },
+  
+  _pipeFunction: function(fnScope){
+    var fn = this.functionIdent(fnScope);
+    var argsFn = [];
+    var token;
+    while(true) {
+      if ((token = this.expect(':'))) {
+        argsFn.push(this.expression());
+      } else {
+        var fnInvoke = function(self, input){
+          var args = [input];
+          for ( var i = 0; i < argsFn.length; i++) {
+            args.push(argsFn[i](self));
+          }
+          return fn.apply(self, args);
+        };
+        return function(){
+          return fnInvoke;
+        };
+      }
+    }
+  },
+  
+  expression: function(){
+    return this.throwStmt();
+  },
+  
+  throwStmt: function(){
+    if (this.expect('throw')) {
+      var throwExp = this.assignment();
+      return function (self) {
+        throw throwExp(self);
+      };
+    } else {
+     return this.assignment();
+    }
+  },
+  
+  assignment: function(){
+    var left = this.logicalOR();
+    var token;
+    if (token = this.expect('=')) {
+      if (!left.isAssignable) {
+        throw "Left hand side '" +
+            this.text.substring(0, token.index) + "' of assignment '" +
+            this.text.substring(token.index) + "' is not assignable.";
+      }
+      var ident = function(){return left.isAssignable;};
+      return this._binary(ident, token.fn, this.logicalOR());
+    } else {
+     return left;
+    }
+  },
+  
+  logicalOR: function(){
+    var left = this.logicalAND();
+    var token;
+    while(true) {
+      if ((token = this.expect('||'))) {
+        left = this._binary(left, token.fn, this.logicalAND());
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  logicalAND: function(){
+    var left = this.negated();
+    var token;
+    while(true) {
+      if ((token = this.expect('&&'))) {
+        left = this._binary(left, token.fn, this.negated());
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  negated: function(){
+    var token;
+    if (token = this.expect('!')) {
+      return this._unary(token.fn, this.assignment());
+    } else {
+      return this.equality();
+    }
+  },
+  
+  equality: function(){
+    var left = this.relational();
+    var token;
+    while(true) {
+      if ((token = this.expect('==','!='))) {
+        left = this._binary(left, token.fn, this.relational());
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  relational: function(){
+    var left = this.additive();
+    var token;
+    while(true) {
+      if ((token = this.expect('<', '>', '<=', '>='))) {
+        left = this._binary(left, token.fn, this.additive());
+      } else {
+        return left;
+      }
+    }
+  },
+  
+  additive: function(){
+    var left = this.multiplicative();
+    var token;
+    while(token = this.expect('+','-')) {
+      left = this._binary(left, token.fn, this.multiplicative());
+    }
+    return left;
+  },
+  
+  multiplicative: function(){
+    var left = this.unary();
+    var token;
+    while(token = this.expect('*','/','%')) {
+        left = this._binary(left, token.fn, this.unary());
+    }
+    return left;
+  },
+  
+  unary: function(){
+    var token;
+    if (this.expect('+')) {
+      return this.primary();
+    } else if (token = this.expect('-')) {
+      return this._binary(Parser.ZERO, token.fn, this.multiplicative());
+    } else {
+     return this.primary();
+    }
+  },
+  
+  functionIdent: function(fnScope) {
+    var token = this.expect();
+    var element = token.text.split('.');
+    var instance = fnScope;
+    var key;
+    for ( var i = 0; i < element.length; i++) {
+      key = element[i];
+      if (instance)
+        instance = instance[key];
+    }
+    if (typeof instance != 'function') {
+      throw "Function '" + token.text + "' at column '" +
+      (token.index+1)  + "' in '" + this.text + "' is not defined.";
+    }
+    return instance;
+  },
+  
+  primary: function() {
+    var primary;
+    if (this.expect('(')) {
+      var expression = this.filterChain();
+      this.consume(')');
+      primary = expression;
+    } else if (this.expect('[')) {
+      primary = this.arrayDeclaration();
+    } else if (this.expect('{')) {
+      primary = this.object();
+    } else if (this.expect('{:')) {
+      primary = this.closure(false);
+    } else if (this.expect('{(')) {
+      primary = this.closure(true);
+    } else {
+      var token = this.expect();
+      primary = token.fn;
+      if (!primary) {
+        this.error("not a primary expression", token);
+      }
+    }
+    var next;
+    while (next = this.expect('(', '[', '.')) {
+      if (next.text === '(') {
+        primary = this.functionCall(primary);
+      } else if (next.text === '[') {
+        primary = this.objectIndex(primary);
+      } else if (next.text === '.') {
+        primary = this.fieldAccess(primary);
+      } else {
+        throw "IMPOSSIBLE";
+      }
+    }
+    return primary;
+  },
+  
+  closure: function(hasArgs) {
+    var args = [];
+    if (hasArgs) {
+      if (!this.expect(')')) {
+        args.push(this.expect().text);
+        while(this.expect(',')) {
+          args.push(this.expect().text);
+        }
+        this.consume(')');
+      }
+      this.consume(":");
+    }
+    var statements = this.statements();
+    this.consume("}");
+    return function(self){
+      return function($){
+        var scope = new Scope(self.scope.state);
+        scope.set('$', $);
+        for ( var i = 0; i < args.length; i++) {
+          scope.set(args[i], arguments[i]);
+        }
+        return statements({scope:scope});
+      };
+    };
+  },
+  
+  fieldAccess: function(object) {
+    var field = this.expect().text;
+    var fn = function (self){
+      return Scope.getter(object(self), field);
+    };
+    fn.isAssignable = field;
+    return fn;
+  },
+  
+  objectIndex: function(obj) {
+    var indexFn = this.expression();
+    this.consume(']');
+    if (this.expect('=')) {
+      var rhs = this.expression();
+      return function (self){
+        return obj(self)[indexFn(self)] = rhs(self);
+      };
+    } else {
+      return function (self){
+        var o = obj(self);
+        var i = indexFn(self);
+        return (o) ? o[i] : undefined;
+      };
+    }
+  },
+  
+  functionCall: function(fn) {
+    var argsFn = [];
+    if (this.peekToken().text != ')') {
+      do {
+        argsFn.push(this.expression());
+      } while (this.expect(','));
+    }
+    this.consume(')');
+    return function (self){
+      var args = [];
+      for ( var i = 0; i < argsFn.length; i++) {
+        args.push(argsFn[i](self));
+      }
+      var fnPtr = fn(self);
+      if (typeof fnPtr === 'function') {
+        return fnPtr.apply(self, args);
+      } else {
+        throw "Expression '" + fn.isAssignable + "' is not a function.";
+      }
+    };
+  },
+  
+  // This is used with json array declaration
+  arrayDeclaration: function () {
+    var elementFns = [];
+    if (this.peekToken().text != ']') {
+      do {
+        elementFns.push(this.expression());
+      } while (this.expect(','));
+    }
+    this.consume(']');
+    return function (self){
+      var array = [];
+      for ( var i = 0; i < elementFns.length; i++) {
+        array.push(elementFns[i](self));
+      }
+      return array;
+    };
+  },
+  
+  object: function () {
+    var keyValues = [];
+    if (this.peekToken().text != '}') {
+      do {
+        var key = this.expect().text;
+        this.consume(":");
+        var value = this.expression();
+        keyValues.push({key:key, value:value});
+      } while (this.expect(','));
+    }
+    this.consume('}');
+    return function (self){
+      var object = {};
+      for ( var i = 0; i < keyValues.length; i++) {
+        var keyValue = keyValues[i];
+        var value = keyValue.value(self);
+        object[keyValue.key] = value;
+      }
+      return object;
+    };
+  },
+  
+  entityDeclaration: function () {
+    var decl = [];
+    while(this.hasTokens()) {
+      decl.push(this.entityDecl());
+      if (!this.expect(';')) {
+        this.assertAllConsumed();
+      }
+    }
+    return function (self){
+      var code = "";
+      for ( var i = 0; i < decl.length; i++) {
+        code += decl[i](self);
+      }
+      return code;
+    };
+  },
+  
+  entityDecl: function () {
+    var entity = this.expect().text;
+    var instance;
+    var defaults;
+    if (this.expect('=')) {
+      instance = entity;
+      entity = this.expect().text;
+    }
+    if (this.expect(':')) {
+      defaults = this.primary()(null);
+    }
+    return function(self) {
+      var datastore = self.scope.get('$datastore');
+      var Entity = datastore.entity(entity, defaults);
+      self.scope.set(entity, Entity);
+      if (instance) {
+        var document = Entity();
+        document.$$anchor = instance;
+        self.scope.set(instance, document);
+        return "$anchor." + instance + ":{" + 
+            instance + "=" + entity + ".load($anchor." + instance + ");" +
+            instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" + 
+          "};";
+      } else {
+        return "";
+      }
+    };
+  },
+  
+  watch: function () {
+    var decl = [];
+    while(this.hasTokens()) {
+      decl.push(this.watchDecl());
+      if (!this.expect(';')) {
+        this.assertAllConsumed();
+      }
+    }
+    this.assertAllConsumed();
+    return function (self){
+      for ( var i = 0; i < decl.length; i++) {
+        var d = decl[i](self);
+        self.addListener(d.name, d.fn);
+      }
+    };
+  },
+  
+  watchDecl: function () {
+    var anchorName = this.expect().text;
+    this.consume(":");
+    var expression;
+    if (this.peekToken().text == '{') {
+      this.consume("{");
+      expression = this.statements();
+      this.consume("}");
+    } else {
+      expression = this.expression();
+    }
+    return function(self) {
+      return {name:anchorName, fn:expression};
+    };
+  }
+};
+
+
+function Scope(initialState, name) {
+  this.widgets = [];
+  this.watchListeners = {};
+  this.name = name;
+  initialState = initialState || {};
+  var State = function(){};
+  State.prototype = initialState;
+  this.state = new State();
+  this.state.$parent = initialState;
+  if (name == "ROOT") {
+    this.state.$root = this.state;
+  }
+};
+
+Scope.expressionCache = {};
+Scope.getter = function(instance, path) {
+  if (!path) return instance;
+  var element = path.split('.');
+  var key;
+  var lastInstance = instance;
+  var len = element.length;
+  for ( var i = 0; i < len; i++) {
+    key = element[i];
+    if (!key.match(/^[\$\w][\$\w\d]*$/))
+        throw "Expression '" + path + "' is not a valid expression for accesing variables.";
+    if (instance) {
+      lastInstance = instance;
+      instance = instance[key];
+    }
+    if (_.isUndefined(instance)  && key.charAt(0) == '$') {
+      var type = angular['Global']['typeOf'](lastInstance);
+      type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
+      var fn = type ? type[[key.substring(1)]] : undefined;
+      if (fn) {
+        instance = _.bind(fn, lastInstance, lastInstance);
+        return instance;
+      }
+    }
+  }
+  if (typeof instance === 'function' && !instance.$$factory) {
+    return bind(lastInstance, instance);
+  }
+  return instance;
+};
+
+Scope.prototype = {
+  updateView: function() {
+    var self = this;
+    this.fireWatchers();
+    _.each(this.widgets, function(widget){
+      self.evalWidget(widget, "", {}, function(){
+        this.updateView(self);
+      });
+    });
+  },
+  
+  addWidget: function(controller) {
+    if (controller) this.widgets.push(controller);
+  },
+  
+  isProperty: function(exp) {
+    for ( var i = 0; i < exp.length; i++) {
+      var ch = exp.charAt(i);
+      if (ch!='.'  && !Lexer.prototype.isIdent(ch)) {
+        return false;
+      }
+    }
+    return true;
+  },
+    
+  get: function(path) {
+    return Scope.getter(this.state, path);
+  },
+  
+  set: function(path, value) {
+    var element = path.split('.');
+    var instance = this.state;
+    for ( var i = 0; element.length > 1; i++) {
+      var key = element.shift();
+      var newInstance = instance[key];
+      if (!newInstance) {
+        newInstance = {};
+        instance[key] = newInstance;
+      }
+      instance = newInstance;
+    }
+    instance[element.shift()] = value;
+    return value;
+  },
+  
+  setEval: function(expressionText, value) {
+    this.eval(expressionText + "=" + toJson(value));
+  },
+  
+  eval: function(expressionText, context) {
+    var expression = Scope.expressionCache[expressionText];
+    if (!expression) {
+      var parser = new Parser(expressionText);
+      expression = parser.statements();
+      parser.assertAllConsumed();
+      Scope.expressionCache[expressionText] = expression;
+    }
+    context = context || {};
+    context.scope = this;
+    return expression(context);
+  },
+  
+  //TODO: Refactor. This function needs to be an execution closure for widgets
+  // move to widgets
+  // remove expression, just have inner closure.
+  evalWidget: function(widget, expression, context, onSuccess, onFailure) {
+    try {
+      var value = this.eval(expression, context);
+      if (widget.hasError) {
+        widget.hasError = false;
+        jQuery(widget.view).
+          removeClass('ng-exception').
+          removeAttr('ng-error');
+      }
+      if (onSuccess) {
+        value = onSuccess.apply(widget, [value]);
+      }
+      return true;
+    } catch (e){
+      error('Eval Widget Error:', e);
+      var jsonError = toJson(e, true);
+      widget.hasError = true;
+      jQuery(widget.view).
+        addClass('ng-exception').
+        attr('ng-error', jsonError);
+      if (onFailure) {
+        onFailure.apply(widget, [e, jsonError]);
+      }
+      return false;
+    }
+  },
+  
+  validate: function(expressionText, value) {
+    var expression = Scope.expressionCache[expressionText];
+    if (!expression) {
+      expression = new Parser(expressionText).validator();
+      Scope.expressionCache[expressionText] = expression;
+    }
+    var self = {scope:this};
+    return expression(self)(self, value);
+  },
+  
+  entity: function(entityDeclaration) {
+    var expression = new Parser(entityDeclaration).entityDeclaration();
+    return expression({scope:this});
+  },
+  
+  markInvalid: function(widget) {
+    this.state.$invalidWidgets.push(widget);
+  },
+  
+  watch: function(declaration) {
+    var self = this;
+    new Parser(declaration).watch()({
+      scope:this,
+      addListener:function(watch, exp){
+        self.addWatchListener(watch, function(n,o){
+          try {
+            return exp({scope:self}, n, o);
+          } catch(e) {
+            alert(e);
+          }
+        });
+      }
+    });
+  },
+  
+  addWatchListener: function(watchExpression, listener) {
+    var watcher = this.watchListeners[watchExpression];
+    if (!watcher) {
+      watcher = {listeners:[], expression:watchExpression};
+      this.watchListeners[watchExpression] = watcher;
+    }
+    watcher.listeners.push(listener);
+  },
+  
+  fireWatchers: function() {
+    var self = this;
+    var fired = false;
+    foreach(this.watchListeners, function(watcher) {
+      var value = self.eval(watcher.expression);
+      if (value !== watcher.lastValue) {
+        foreach(watcher.listeners, function(listener){
+          listener(value, watcher.lastValue);
+          fired = true;
+        });
+        watcher.lastValue = value;
+      }
+    });
+    return fired;
+  }
+};function Server(url, getScript) {
+  this.url = url;
+  this.nextId = 0;
+  this.getScript = getScript;
+  this.uuid = "_" + ("" + Math.random()).substr(2) + "_";
+  this.maxSize = 1800;
+};
+
+Server.prototype = {
+  base64url: function(txt) {
+    return Base64.encode(txt);
+  },
+  
+  request: function(method, url, request, callback) {
+    var requestId = this.uuid + (this.nextId++);
+    angularCallbacks[requestId] = function(response) {
+      delete angular[requestId];
+      callback(200, response);
+    };
+    var payload = {u:url, m:method, p:request};
+    payload = this.base64url(toJson(payload));
+    var totalPockets = Math.ceil(payload.length / this.maxSize);
+    var baseUrl = this.url + "/$/" + requestId +  "/" + totalPockets + "/";
+    for ( var pocketNo = 0; pocketNo < totalPockets; pocketNo++) {
+      var pocket = payload.substr(pocketNo * this.maxSize, this.maxSize);
+      this.getScript(baseUrl + (pocketNo+1) + "?h=" + pocket, noop);
+    }
+  }
+};
+
+function FrameServer(frame) {
+  this.frame = frame;
+};
+FrameServer.PREFIX = "$DATASET:";
+
+FrameServer.prototype = {
+  read:function(){
+    this.data = fromJson(this.frame.name.substr(FrameServer.PREFIX.length));
+  },
+  write:function(){
+    this.frame.name = FrameServer.PREFIX +  toJson(this.data);
+  }, 
+  request: function(method, url, request, callback) {
+    //alert(method + " " + url + " " + toJson(request) + " " + toJson(callback));
+  }
+};
+
+
+function VisualServer(delegate, status, update) {
+  this.delegate = delegate;
+  this.update = update;
+  this.status = status;
+};
+
+VisualServer.prototype = {
+  request:function(method, url, request, callback) {
+    var self = this;
+    this.status.beginRequest(request);
+    this.delegate.request(method, url, request, function() {
+      self.status.endRequest();
+      try {
+        callback.apply(this, arguments);
+      } catch (e) {
+        alert(toJson(e));
+      }
+      self.update();
+    });
+  }
+};
+function Users(server, controlBar) {
+  this.server = server;
+  this.controlBar = controlBar;
+};
+
+Users.prototype = {
+  'fetchCurrentUser':function(callback) {
+    var self = this;
+    this.server.request("GET", "/account.json", {}, function(code, response){
+      self['current'] = response['user'];
+      callback(response.user);
+    });
+  },
+  
+  'logout': function(callback) {
+    var self = this;
+    this.controlBar.logout(function(){
+      delete self['current'];
+      (callback||noop)();
+    });
+  },
+  
+  'login': function(callback) {
+    var self = this;
+    this.controlBar.login(function(){
+      self.fetchCurrentUser(function(){
+        (callback||noop)();
+      });
+    });
+  },
+
+  'notAuthorized': function(){
+    this.controlBar.notAuthorized();
+  }
+};
+foreach({
+  'regexp': function(value, regexp, msg) {
+    if (!value.match(regexp)) {
+      return msg ||
+        "Value does not match expected format " + regexp + ".";
+    } else {
+      return null;
+    }
+  },
+  
+  'number': function(value, min, max) {
+    var num = 1 * value;
+    if (num == value) {
+      if (typeof min != 'undefined' && num < min) {
+        return "Value can not be less than " + min + ".";
+      }
+      if (typeof min != 'undefined' && num > max) {
+        return "Value can not be greater than " + max + ".";
+      }
+      return null;
+    } else {
+      return "Value is not a number.";
+    }
+  },
+  
+  'integer': function(value, min, max) {
+    var number = angularValidator['number'](value, min, max);
+    if (number === null && value != Math.round(value)) {
+      return "Value is not a whole number.";
+    }
+    return number;
+  },
+  
+  'date': function(value, min, max) {
+    if (value.match(/^\d\d?\/\d\d?\/\d\d\d\d$/)) {
+      return null;
+    }
+    return "Value is not a date. (Expecting format: 12/31/2009).";
+  },
+  
+  'ssn': function(value) {
+    if (value.match(/^\d\d\d-\d\d-\d\d\d\d$/)) {
+      return null;
+    }
+    return "SSN needs to be in 999-99-9999 format.";
+  },
+  
+  'email': function(value) {
+    if (value.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)) {
+      return null;
+    }
+    return "Email needs to be in username@host.com format.";
+  },
+  
+  'phone': function(value) {
+    if (value.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/)) {
+      return null;
+    }
+    if (value.match(/^\+\d{2,3} (\(\d{1,5}\))?[\d ]+\d$/)) {
+      return null;
+    }
+    return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
+  },
+  
+  'url': function(value) {
+    if (value.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/)) {
+      return null;
+    }
+    return "URL needs to be in http://server[:port]/path format.";
+  },
+  
+  'json': function(value) {
+    try {
+      fromJson(value);
+      return null;
+    } catch (e) {
+      return e.toString();
+    }
+  }
+}, function(v,k) {angularValidator[k] = v;});
+function WidgetFactory(serverUrl, database) {
+  this.nextUploadId = 0;
+  this.serverUrl = serverUrl;
+  this.database = database;
+  if (window.swfobject) {
+    this.createSWF = swfobject.createSWF;
+  } else {
+    this.createSWF = function(){
+      alert("ERROR: swfobject not loaded!");
+    };
+  }
+};
+
+WidgetFactory.prototype = {
+  createController: function(input, scope) {
+    var controller;
+    var type = input.attr('type').toLowerCase();
+    var exp = input.attr('name');
+    if (exp) exp = exp.split(':').pop();
+    var event = "change";
+    var bubbleEvent = true;
+    if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
+      controller = new ButtonController(input[0], exp);
+      event = "click";
+      bubbleEvent = false;
+    } else if (type == 'text' || type == 'textarea' || type == 'hidden' || type == 'password') {
+      controller = new TextController(input[0], exp);
+      event = "keyup change";
+    } else if (type == 'checkbox') {
+      controller = new CheckboxController(input[0], exp);
+      event = "click";
+    } else if (type == 'radio') {
+      controller = new RadioController(input[0], exp);
+      event="click";
+    } else if (type == 'select-one') {
+      controller = new SelectController(input[0], exp);
+    } else if (type == 'select-multiple') {
+      controller = new MultiSelectController(input[0], exp);
+    } else if (type == 'file') {
+      controller = this.createFileController(input, exp);
+    } else {
+      throw 'Unknown type: ' + type;
+    }
+    input.data('controller', controller);
+    var updateView = scope.get('$updateView');
+    var action = function() {
+      if (controller.updateModel(scope)) {
+        var action = jQuery(controller.view).attr('ng-action') || "";
+        if (scope.evalWidget(controller, action)) {
+          updateView(scope);
+        }
+      }
+      return bubbleEvent;
+    };
+    jQuery(controller.view, ":input").
+      bind(event, action);
+    return controller;
+  },
+  
+  createFileController: function(fileInput) {
+    var uploadId = '__uploadWidget_' + (this.nextUploadId++);
+    var view = FileController.template(uploadId);
+    fileInput.after(view);
+    var att = {
+        data:this.serverUrl + "/admin/ServerAPI.swf",
+        width:"95", height:"20", align:"top",
+        wmode:"transparent"};
+    var par = {
+        flashvars:"uploadWidgetId=" + uploadId,
+        allowScriptAccess:"always"};
+    var swfNode = this.createSWF(att, par, uploadId);
+    fileInput.remove();
+    var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
+    jQuery(swfNode).data('controller', cntl);
+    return cntl;
+  }
+};
+/////////////////////
+// FileController
+///////////////////////
+
+function FileController(view, scopeName, uploader, databaseUrl) {
+  this.view = view;
+  this.uploader = uploader;
+  this.scopeName = scopeName;
+  this.attachmentsPath = databaseUrl + '/_attachments';
+  this.value = null;
+  this.lastValue = undefined;
+};
+
+FileController.dispatchEvent = function(id, event, args) {
+  var object = document.getElementById(id);
+  var controller = jQuery(object).data("controller");
+  FileController.prototype['_on_' + event].apply(controller, args);
+};
+
+FileController.template = function(id) {
+  return jQuery('<span class="ng-upload-widget">' +
+      '<input type="checkbox" ng-non-bindable="true"/>' +
+      '<object id="' + id + '" />' +
+      '<a></a>' +
+      '<span/>' +
+    '</span>');
+};
+
+FileController.prototype = {
+  '_on_cancel': noop,
+  '_on_complete': noop,
+  '_on_httpStatus': function(status) {
+    alert("httpStatus:" + this.scopeName + " status:" + status);
+  },
+  '_on_ioError': function() {
+    alert("ioError:" + this.scopeName);
+  },
+  '_on_open': function() {
+    alert("open:" + this.scopeName);
+  },
+  '_on_progress':noop,
+  '_on_securityError':  function() {
+    alert("securityError:" + this.scopeName);
+  },
+  '_on_uploadCompleteData': function(data) {
+    var value = fromJson(data);
+    value.url = this.attachmentsPath + '/' + value.id + '/' + value.text;
+    this.view.find("input").attr('checked', true);
+    var scope = this.view.scope();
+    this.value = value;
+    this.updateModel(scope);
+    this.value = null;
+    scope.get('$binder').updateView();
+  },  
+  '_on_select': function(name, size, type) {
+    this.name = name;
+    this.view.find("a").text(name).attr('href', name);
+    this.view.find("span").text(angular['filter']['bytes'](size));
+    this.upload();
+  },
+  
+  updateModel: function(scope) {
+    var isChecked = this.view.find("input").attr('checked');
+    var value = isChecked ? this.value : null;
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.set(this.scopeName, value);
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var modelValue = scope.get(this.scopeName);
+    if (modelValue && this.value !== modelValue) {
+      this.value = modelValue;
+      this.view.find("a").
+        attr("href", this.value.url).
+        text(this.value.text);
+      this.view.find("span").text(angular['filter']['bytes'](this.value.size));
+    }
+    this.view.find("input").attr('checked', !!modelValue);
+  },
+  
+  upload: function() {
+    if (this.name) {
+      this.uploader.uploadFile(this.attachmentsPath);
+    }
+  }
+};
+
+///////////////////////
+// NullController
+///////////////////////
+function NullController(view) {this.view = view;};
+NullController.prototype = {
+  updateModel: function() { return true; },
+  updateView: noop
+};
+NullController.instance = new NullController();
+
+
+///////////////////////
+// ButtonController
+///////////////////////
+var ButtonController = NullController;
+
+///////////////////////
+// TextController
+///////////////////////
+function TextController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.validator = view.getAttribute('ng-validate');
+  this.required = typeof view.attributes['ng-required'] != "undefined";
+  this.lastErrorText = null;
+  this.lastValue = undefined;
+  this.initialValue = view.value;
+  var widget = view.getAttribute('ng-widget');
+  if (widget === 'datepicker') {
+    jQuery(view).datepicker();
+  }
+};
+
+TextController.prototype = {
+  updateModel: function(scope) {
+    var value = this.view.value;
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var view = this.view;
+    var value = scope.get(this.exp);
+    if (typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    value = value ? value : '';
+    if (this.lastValue != value) {
+      view.value = value;
+      this.lastValue = value;
+    }
+    var isValidationError = false;
+    view.removeAttribute('ng-error');
+    if (this.required) {
+      isValidationError = !(value && value.length > 0);
+    }
+    var errorText = isValidationError ? "Required Value" : null;
+    if (!isValidationError && this.validator && value) {
+      errorText = scope.validate(this.validator, value);
+      isValidationError = !!errorText;
+    }
+    if (this.lastErrorText !== errorText) {
+      this.lastErrorText = isValidationError;
+      if (errorText !== null) {
+        view.setAttribute('ng-error', errorText);
+        scope.markInvalid(this);
+      }
+      jQuery(view).toggleClass('ng-validation-error', isValidationError);
+    }
+  }
+};
+
+///////////////////////
+// CheckboxController
+///////////////////////
+function CheckboxController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = view.checked ? view.value : "";
+};
+
+CheckboxController.prototype = {
+    updateModel: function(scope) {
+    var input = this.view;
+    var value = input.checked ? input.value : '';
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.eval(this.exp);
+    if (typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    input.checked = input.value == (''+value);
+  }
+};
+
+///////////////////////
+// SelectController
+///////////////////////
+function SelectController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = view.value;
+};
+
+SelectController.prototype = {
+  updateModel: function(scope) {
+    var input = this.view;
+    if (input.selectedIndex < 0) {
+      scope.setEval(this.exp, null);
+    } else {
+      var value = this.view.value;
+      if (this.lastValue === value) {
+        return false;
+      } else {
+        scope.setEval(this.exp, value);
+        this.lastValue = value;
+        return true;
+      }
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.get(this.exp);
+    if (typeof value === 'undefined') {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    if (value !== this.lastValue) {
+      input.value = value ? value : "";
+      this.lastValue = value;
+    }
+  }
+};
+
+///////////////////////
+// MultiSelectController
+///////////////////////
+function MultiSelectController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = this.selected();
+};
+
+MultiSelectController.prototype = {
+  selected: function () {
+    var value = [];
+    var options = this.view.options;
+    for ( var i = 0; i < options.length; i++) {
+      var option = options[i];
+      if (option.selected) {
+        value.push(option.value);
+      }
+    }
+    return value;
+  },
+  
+  updateModel: function(scope) {
+    var value = this.selected();
+    // TODO: This is wrong! no caching going on here as we are always comparing arrays
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var selected = scope.get(this.exp);
+    if (typeof selected === "undefined") {
+      selected = this.initialValue;
+      scope.setEval(this.exp, selected);
+    }
+    if (selected !== this.lastValue) {
+      var options = input.options;
+      for ( var i = 0; i < options.length; i++) {
+        var option = options[i];
+        option.selected = _.include(selected, option.value);
+      }
+      this.lastValue = selected;
+    }
+  }
+};
+
+///////////////////////
+// RadioController
+///////////////////////
+function RadioController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastChecked = undefined;
+  this.lastValue = undefined;
+  this.inputValue = view.value;
+  this.initialValue = view.checked ? view.value : null;
+};
+
+RadioController.prototype = {
+  updateModel: function(scope) {
+    var input = this.view;
+    if (this.lastChecked) {
+      return false;
+    } else {
+      input.checked = true;
+      this.lastValue = scope.setEval(this.exp, this.inputValue);
+      this.lastChecked = true;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.get(this.exp);
+    if (this.initialValue && typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    if (this.lastValue != value) {
+      this.lastChecked = input.checked = this.inputValue == (''+value);
+      this.lastValue = value;
+    }
+  }
+};
+
+///////////////////////
+//ElementController
+///////////////////////
+function BindUpdater(view, exp) {
+  this.view = view;
+  this.exp = Binder.parseBindings(exp);
+  this.hasError = false;
+  this.scopeSelf = {element:view};
+};
+
+BindUpdater.toText = function(obj) {
+  var e = escapeHtml;
+  switch(typeof obj) {
+    case "string":
+    case "boolean":
+    case "number":
+      return e(obj);
+    case "function":
+      return BindUpdater.toText(obj());
+    case "object":
+      if (isNode(obj)) {
+        return outerHTML(obj);
+      } else if (obj instanceof angular.filter.Meta) {
+        switch(typeof obj.html) {
+          case "string":
+          case "number":
+            return obj.html;
+          case "function":
+            return obj.html();
+          case "object":
+            if (isNode(obj.html))
+              return outerHTML(obj.html);
+          default:
+            break;
+        }
+        switch(typeof obj.text) {
+          case "string":
+          case "number":
+            return e(obj.text);
+          case "function":
+            return e(obj.text());
+          default:
+            break;
+        }
+      }
+      if (obj === null)
+        return "";
+      return e(toJson(obj, true));
+    default:
+      return "";
+  }
+};
+
+BindUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    var html = [];
+    var parts = this.exp;
+    var length = parts.length;
+    for(var i=0; i<length; i++) {
+      var part = parts[i];
+      var binding = Binder.binding(part);
+      if (binding) {
+        scope.evalWidget(this, binding, this.scopeSelf, function(value){
+          html.push(BindUpdater.toText(value));
+        }, function(e, text){
+          setHtml(this.view, text);
+        });
+        if (this.hasError) {
+          return;
+        }
+      } else {
+        html.push(escapeHtml(part));
+      }
+    }
+    setHtml(this.view, html.join(''));
+  }
+};
+
+function BindAttrUpdater(view, attrs) {
+  this.view = view;
+  this.attrs = attrs;
+};
+
+BindAttrUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    var jNode = jQuery(this.view);
+    var attributeTemplates = this.attrs;
+    if (this.hasError) {
+      this.hasError = false;
+      jNode.
+        removeClass('ng-exception').
+        removeAttr('ng-error');
+    }
+    var isImage = jNode.is('img');
+    for (var attrName in attributeTemplates) {
+      var attributeTemplate = Binder.parseBindings(attributeTemplates[attrName]);
+      var attrValues = [];
+      for ( var i = 0; i < attributeTemplate.length; i++) {
+        var binding = Binder.binding(attributeTemplate[i]);
+        if (binding) {
+          try {
+            var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
+            if (value && (value.constructor !== array || value.length !== 0))
+              attrValues.push(value);
+          } catch (e) {
+            this.hasError = true;
+            error('BindAttrUpdater', e);
+            var jsonError = toJson(e, true);
+            attrValues.push('[' + jsonError + ']');
+            jNode.
+              addClass('ng-exception').
+              attr('ng-error', jsonError);
+          }
+        } else {
+          attrValues.push(attributeTemplate[i]);
+        }
+      }
+      var attrValue = attrValues.length ? attrValues.join('') : null;
+      if(isImage && attrName == 'src' && !attrValue)
+        attrValue = scope.get('config.server') + '/images/blank.gif';
+      jNode.attr(attrName, attrValue);
+    } 
+  }
+};
+
+function EvalUpdater(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.hasError = false;
+};
+EvalUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp);
+  }
+};
+
+function HideUpdater(view, exp) { this.view = view; this.exp = exp; };
+HideUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(hideValue){
+      var view = jQuery(this.view);
+      if (toBoolean(hideValue)) {
+        view.hide();
+      } else {
+        view.show();
+      }
+    });
+  }
+};
+
+function ShowUpdater(view, exp) { this.view = view; this.exp = exp; };
+ShowUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(hideValue){
+      var view = jQuery(this.view);
+      if (toBoolean(hideValue)) {
+        view.show();
+      } else {
+        view.hide();
+      }
+    });
+  }
+};
+
+function ClassUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      if (classValue !== null && classValue !== undefined) {
+        this.view.className = classValue;
+      }
+    });
+  }
+};
+
+function ClassEvenUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassEvenUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      var index = scope.get('$index');
+      jQuery(this.view).toggleClass(classValue, index % 2 === 1);
+    });
+  }
+};
+
+function ClassOddUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassOddUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      var index = scope.get('$index');
+      jQuery(this.view).toggleClass(classValue, index % 2 === 0);
+    });
+  }
+};
+
+function StyleUpdater(view, exp) { this.view = view; this.exp = exp; };
+StyleUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(styleValue){
+      jQuery(this.view).attr('style', "").css(styleValue);
+    });
+  }
+};
+
+///////////////////////
+// RepeaterUpdater
+///////////////////////
+function RepeaterUpdater(view, repeaterExpression, template, prefix) {
+  this.view = view;
+  this.template = template;
+  this.prefix = prefix;
+  this.children = [];
+  var match = repeaterExpression.match(/^\s*(.+)\s+in\s+(.*)\s*$/);
+  if (! match) {
+    throw "Expected ng-repeat in form of 'item in collection' but got '" +
+      repeaterExpression + "'.";
+  }
+  var keyValue = match[1];
+  this.iteratorExp = match[2];
+  match = keyValue.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
+  if (!match) {
+    throw "'item' in 'item in collection' should be identifier or (key, value) but get '" +
+      keyValue + "'.";
+  }
+  this.valueExp = match[3] || match[1];
+  this.keyExp = match[2];
+};
+
+RepeaterUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.iteratorExp, {}, function(iterator){
+      var self = this;
+      if (!iterator) {
+        iterator = [];
+        if (scope.isProperty(this.iteratorExp)) {
+          scope.set(this.iteratorExp, iterator);
+        }
+      }
+      var iteratorLength = iterator.length;
+      var childrenLength = this.children.length;
+      var cursor = this.view;
+      var time = 0;
+      var child = null;
+      var keyExp = this.keyExp;
+      var valueExp = this.valueExp;
+      var i = 0;
+      foreach(iterator, function(value, key){
+        if (i < childrenLength) {
+          // reuse children
+          child = self.children[i];
+          child.scope.set(valueExp, value);
+        } else {
+          // grow children
+          var name = self.prefix +
+            valueExp + " in " + self.iteratorExp + "[" + i + "]";
+          var childScope = new Scope(scope.state, name);
+          childScope.set('$index', i);
+          if (keyExp)
+            childScope.set(keyExp, key);
+          childScope.set(valueExp, value);
+          child = { scope:childScope, element:self.template(childScope, self.prefix, i) };
+          cursor.after(child.element);
+          self.children.push(child);
+        }
+        cursor = child.element;
+        var s = new Date().getTime();
+        child.scope.updateView();
+        time += new Date().getTime() - s;
+        i++;
+      });
+      // shrink children
+      for ( var r = childrenLength; r > iteratorLength; --r) {
+        var unneeded = this.children.pop().element[0];
+        unneeded.parentNode.removeChild(unneeded);
+      }
+      // Special case for option in select
+      if (child && child.element[0].nodeName === "OPTION") {
+        var select = jQuery(child.element[0].parentNode);
+        var cntl = select.data('controller');
+        if (cntl) {
+          cntl.lastValue = undefined;
+          cntl.updateView(scope);
+        }
+      }
+    });
+  }
+};
+
+//////////////////////////////////
+// PopUp
+//////////////////////////////////
+
+function PopUp(doc) {
+  this.doc = doc;
+};
+
+PopUp.OUT_EVENT = "mouseleave mouseout click dblclick keypress keyup";
+
+PopUp.onOver = function(e) {
+  PopUp.onOut();
+  var jNode = jQuery(this);
+  jNode.bind(PopUp.OUT_EVENT, PopUp.onOut);
+  var position = jNode.position();
+  var de = document.documentElement;
+  var w = self.innerWidth || (de&&de.clientWidth) || document.body.clientWidth;
+  var hasArea = w - position.left;
+  var width = 300;
+  var title = jNode.hasClass("ng-exception") ? "EXCEPTION:" : "Validation error...";
+  var msg = jNode.attr("ng-error");
+
+  var x;
+  var arrowPos = hasArea>(width+75) ? "left" : "right";
+  var tip = jQuery(
+    "<div id='ng-callout' style='width:"+width+"px'>" +
+      "<div class='ng-arrow-"+arrowPos+"'/>" +
+      "<div class='ng-title'>"+title+"</div>" +
+      "<div class='ng-content'>"+msg+"</div>" +
+    "</div>");
+  jQuery("body").append(tip);
+  if(arrowPos === 'left'){
+    x = position.left + this.offsetWidth + 11;
+  }else{
+    x = position.left - (width + 15);
+    tip.find('.ng-arrow-right').css({left:width+1});
+  }
+
+  tip.css({left: x+"px", top: (position.top - 3)+"px"});
+  return true;
+};
+
+PopUp.onOut = function() {
+  jQuery('#ng-callout').
+    unbind(PopUp.OUT_EVENT, PopUp.onOut).
+    remove();
+  return true;
+};
+
+PopUp.prototype = {
+  bind: function () {
+    var self = this;
+    this.doc.find('.ng-validation-error,.ng-exception').
+      live("mouseover", PopUp.onOver);
+  }
+};
+
+//////////////////////////////////
+// Status
+//////////////////////////////////
+
+
+function Status(body) {
+  this.loader = body.append(Status.DOM).find("#ng-loading");
+  this.requestCount = 0;
+};
+
+Status.DOM ='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';
+
+Status.prototype = {
+  beginRequest: function () {
+    if (this.requestCount === 0) {
+      this.loader.show();
+    }
+    this.requestCount++;
+  },
+  
+  endRequest: function () {
+    this.requestCount--;
+    if (this.requestCount === 0) {
+      this.loader.hide("fold");
+    }
+  }
+};
+})(window, document);

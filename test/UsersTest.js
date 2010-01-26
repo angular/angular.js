@@ -10,10 +10,10 @@ UsersTest.prototype = {
   testItShouldFetchCurrentUser:function(){
     expectAsserts(5);
     var user;
-    var users = new nglr.Users({request:function(method, url, request, callback){
+    var users = new Users({request:function(method, url, request, callback){
       assertEquals("GET", method);
       assertEquals("/account.json", url);
-      assertEquals("{}", nglr.toJson(request));
+      assertEquals("{}", toJson(request));
       callback(200, {$status_code:200, user:{name:'misko'}});
     }});
     users.fetchCurrentUser(function(u){

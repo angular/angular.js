@@ -1,7 +1,7 @@
 ModelTest = TestCase('ModelTest');
 
 ModelTest.prototype.testLoadSaveOperations = function(){
-  var m1 = new nglr.DataStore().entity('A')();
+  var m1 = new DataStore().entity('A')();
   m1.a = 1;
 
   var m2 =  {b:1};
@@ -13,7 +13,7 @@ ModelTest.prototype.testLoadSaveOperations = function(){
 };
 
 ModelTest.prototype.testLoadfromDoesNotClobberFunctions = function(){
-  var m1 = new nglr.DataStore().entity('A')();
+  var m1 = new DataStore().entity('A')();
   m1.id = function(){return 'OK';};
   m1.$loadFrom({id:null});
   assertEquals(m1.id(), 'OK');
@@ -24,7 +24,7 @@ ModelTest.prototype.testLoadfromDoesNotClobberFunctions = function(){
 };
 
 ModelTest.prototype.testDataStoreDoesNotGetClobbered = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var m = ds.entity('A')();
   assertTrue(m.$$entity.datastore === ds);
   m.$loadFrom({});
@@ -33,7 +33,7 @@ ModelTest.prototype.testDataStoreDoesNotGetClobbered = function(){
 
 ModelTest.prototype.testManagedModelDelegatesMethodsToDataStore = function(){
   expectAsserts(7);
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var model = datastore.entity("A", {a:1})();
   var fn = {};
   datastore.save = function(instance, callback) {
@@ -56,7 +56,7 @@ ModelTest.prototype.testManagedModelDelegatesMethodsToDataStore = function(){
 
 ModelTest.prototype.testManagedModelCanBeForcedToFlush = function(){
   expectAsserts(6);
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var model = datastore.entity("A", {a:1})();
 
   datastore.save = function(instance, callback) {
@@ -77,7 +77,7 @@ ModelTest.prototype.testManagedModelCanBeForcedToFlush = function(){
 
 ModelTest.prototype.testItShouldMakeDeepCopyOfInitialValues = function (){
   var initial = {a:[]};
-  var entity = new nglr.DataStore().entity("A", initial);
+  var entity = new DataStore().entity("A", initial);
   var model = entity();
   model.a.push(1);
   assertEquals(0, entity().a.length);

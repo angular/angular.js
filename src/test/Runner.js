@@ -1,9 +1,11 @@
-nglr.test.ScenarioRunner = function(scenarios, body) {
+if (typeof test == 'undefined')        test = {};
+
+test.ScenarioRunner = function(scenarios, body) {
   this.scenarios = scenarios;
   this.body = body;
 };
 
-nglr.test.ScenarioRunner.prototype = {
+test.ScenarioRunner.prototype = {
   run:function(){
     this.setUpUI();
     this.runScenarios();
@@ -23,22 +25,22 @@ nglr.test.ScenarioRunner.prototype = {
     });
   },
   runScenarios:function(){
-    var runner = new nglr.test.Runner(this.console, this.testFrame);
+    var runner = new test.Runner(this.console, this.testFrame);
     _.stepper(this.scenarios, function(next, scenario, name){
-        new nglr.test.Scenario(name, scenario).run(runner, next);
+        new test.Scenario(name, scenario).run(runner, next);
       }, function(){
       }
     );
   }
 };
 
-nglr.test.Runner = function(console, frame){
+test.Runner = function(console, frame){
   this.console = console;
   this.current = null;
   this.tests = [];
   this.frame = frame;
 };
-nglr.test.Runner.prototype = {
+test.Runner.prototype = {
   start:function(name){
     var current = this.current = {
       name:name,
@@ -46,10 +48,10 @@ nglr.test.Runner.prototype = {
       scenario:jQuery('<div class="scenario"></div>')
     };
     current.run = current.scenario.append(
-      '<div class="run">' + 
-        '<span class="name">.</span>' + 
-        '<span class="time">.</span>' + 
-        '<span class="state">.</span>' + 
+      '<div class="run">' +
+        '<span class="name">.</span>' +
+        '<span class="time">.</span>' +
+        '<span class="state">.</span>' +
       '</run>').find(".run");
     current.log = current.scenario.append('<div class="log"></div>').find(".log");
     current.run.find(".name").text(name);
@@ -73,22 +75,22 @@ nglr.test.Runner.prototype = {
     var buf = [];
     for ( var i = 1; i < arguments.length; i++) {
       var arg = arguments[i];
-      buf.push(typeof arg == "string" ?arg:nglr.toJson(arg));
+      buf.push(typeof arg == "string" ?arg:toJson(arg));
     }
     var log = jQuery('<div class="' + level + '"></div>');
     log.text(buf.join(" "));
     this.current.log.append(log);
     this.console.scrollTop(this.console[0].scrollHeight);
-    if (level == "error") 
+    if (level == "error")
       this.current.error = buf.join(" ");
   }
 };
 
-nglr.test.Scenario = function(name, scenario){
+test.Scenario = function(name, scenario){
   this.name = name;
   this.scenario = scenario;
 };
-nglr.test.Scenario.prototype = {
+test.Scenario.prototype = {
   run:function(runner, callback) {
     var self = this;
     _.stepper(this.scenario, function(next, steps, name){
@@ -108,22 +110,22 @@ nglr.test.Scenario.prototype = {
   },
   verb:function(step){
     var fn = null;
-  if (!step) fn = function (){ throw "Step is null!"; }
+  if (!step) fn = function (){ throw "Step is null!"; };
   else if (step.Given) fn = angular.test.GIVEN[step.Given];
   else if (step.When) fn = angular.test.WHEN[step.When];
   else if (step.Then) fn = angular.test.THEN[step.Then];
     return fn || function (){
-             throw "ERROR: Need Given/When/Then got: " + nglr.toJson(step);
-           };    
+             throw "ERROR: Need Given/When/Then got: " + toJson(step);
+           };
   },
   context: function(runner) {
     var frame = runner.frame;
     var window = frame[0].contentWindow;
     var document;
-    if (window.jQuery) 
+    if (window.jQuery)
       document = window.jQuery(window.document);
     var context = {
-        frame:frame, 
+        frame:frame,
         window:window,
         log:_.bind(runner.log, runner, "info"),
         document:document,
@@ -147,14 +149,14 @@ nglr.test.Scenario.prototype = {
     callback();
     return;
   }
-    runner.log("info", nglr.toJson(step));
+    runner.log("info", toJson(step));
     var fn = this.verb(step);
     var context = this.context(runner);
     _.extend(context, step);
     try {
       (fn.call(context)||function(c){c();})(callback);
     } catch (e) {
-      runner.log("error", "ERROR: " + nglr.toJson(e));
+      runner.log("error", "ERROR: " + toJson(e));
     }
   }
 };

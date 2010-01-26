@@ -1,29 +1,38 @@
-nglr.array = [].constructor;
+array = [].constructor;
 
-nglr.toJson = function(obj, pretty){
+function toJson(obj, pretty){
   var buf = [];
-  nglr.toJsonArray(buf, obj, pretty ? "\n  " : null);
+  toJsonArray(buf, obj, pretty ? "\n  " : null, _([]));
   return buf.join('');
 };
 
-nglr.toPrettyJson = function(obj) {
-  return nglr.toJson(obj, true);
+function toPrettyJson(obj)  {
+  return toJson(obj, true);
 };
 
-nglr.fromJson = function(json) {
+function fromJson(json) {
   try {
-    var parser = new nglr.Parser(json, true);
+    var parser = new Parser(json, true);
     var expression =  parser.primary();
     parser.assertAllConsumed();
     return expression();
   } catch (e) {
-    console.error("fromJson error: ", json, e);
+    error("fromJson error: ", json, e);
     throw e;
   }
 };
 
+angular['toJson'] = toJson;
+angular['fromJson'] = fromJson;
 
-nglr.toJsonArray = function(buf, obj, pretty){
+function toJsonArray(buf, obj, pretty, stack){
+  if (typeof obj == "object") {
+    if (stack.include(obj)) {
+      buf.push("RECURSION");
+      return;
+    }
+    stack.push(obj);
+  }
   var type = typeof obj;
   if (obj === null) {
     buf.push("null");
@@ -38,7 +47,7 @@ nglr.toJsonArray = function(buf, obj, pretty){
       buf.push('' + obj);
     }
   } else if (type === 'string') {
-    return buf.push(angular.String.quoteUnicode(obj));
+    return buf.push(angular['String']['quoteUnicode'](obj));
   } else if (type === 'object') {
     if (obj instanceof Array) {
       buf.push("[");
@@ -50,13 +59,13 @@ nglr.toJsonArray = function(buf, obj, pretty){
         if (typeof item == 'function' || typeof item == 'undefined') {
           buf.push("null");
         } else {
-          nglr.toJsonArray(buf, item, pretty);
+          toJsonArray(buf, item, pretty, stack);
         }
         sep = true;
       }
       buf.push("]");
     } else if (obj instanceof Date) {
-      buf.push(angular.String.quoteUnicode(angular.Date.toString(obj)));
+      buf.push(angular['String']['quoteUnicode'](angular['Date']['toString'](obj)));
     } else {
       buf.push("{");
       if (pretty) buf.push(pretty);
@@ -78,9 +87,9 @@ nglr.toJsonArray = function(buf, obj, pretty){
               buf.push(",");
               if (pretty) buf.push(pretty);
             }
-            buf.push(angular.String.quote(key));
+            buf.push(angular['String']['quote'](key));
             buf.push(":");
-            nglr.toJsonArray(buf, value, childPretty);
+            toJsonArray(buf, value, childPretty, stack);
             comma = true;
           }
         } catch (e) {
@@ -88,5 +97,8 @@ nglr.toJsonArray = function(buf, obj, pretty){
       }
       buf.push("}");
     }
+  }
+  if (typeof obj == "object") {
+    stack.pop();
   }
 };

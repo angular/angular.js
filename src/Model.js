@@ -1,16 +1,14 @@
-// Copyright (C) 2009 BRAT Tech LLC
-
 // Single $ is special and does not get searched
 // Double $$ is special an is client only (does not get sent to server)
 
-nglr.Model = function(entity, initial) {
-  this.$$entity = entity;
-  this.$loadFrom(initial||{});
-  this.$entity = entity.title;
-  this.$migrate();
+function Model(entity, initial) {
+  this['$$entity'] = entity;
+  this['$loadFrom'](initial||{});
+  this['$entity'] = entity['title'];
+  this['$migrate']();
 };
 
-nglr.Model.copyDirectFields = function(src, dst) {
+Model.copyDirectFields = function(src, dst) {
   if (src === dst || !src || !dst) return;
   var isDataField = function(src, dst, field) {
     return (field.substring(0,2) !== '$$') &&
@@ -27,39 +25,41 @@ nglr.Model.copyDirectFields = function(src, dst) {
   }
 };
 
-nglr.Model.prototype.$migrate = function() {
-  nglr.merge(this.$$entity.defaults, this);
-  return this;
-};
-
-nglr.Model.prototype.$merge = function(other) {
-  nglr.merge(other, this);
-  return this;
-};
-
-nglr.Model.prototype.$save = function(callback) {
-  this.$$entity.datastore.save(this, callback === true ? undefined : callback);
-  if (callback === true) this.$$entity.datastore.flush();
-  return this;
-};
-
-nglr.Model.prototype.$delete = function(callback) {
-  this.$$entity.datastore.remove(this, callback === true ? undefined : callback);
-  if (callback === true) this.$$entity.datastore.flush();
-  return this;
-};
-
-nglr.Model.prototype.$loadById = function(id, callback) {
-  this.$$entity.datastore.load(this, id, callback);
-  return this;
-};
-
-nglr.Model.prototype.$loadFrom = function(other) {
-  nglr.Model.copyDirectFields(other, this);
-  return this;
-};
-
-nglr.Model.prototype.$saveTo = function(other) {
-  nglr.Model.copyDirectFields(this, other);
-  return this;
-};
+extend(Model.prototype, {
+  '$migrate': function() {
+    merge(this['$$entity']['defaults'], this);
+    return this;
+  },
+  
+  '$merge': function(other) {
+    merge(other, this);
+    return this;
+  },
+  
+  '$save': function(callback) {
+    this['$$entity'].datastore.save(this, callback === true ? undefined : callback);
+    if (callback === true) this['$$entity'].datastore.flush();
+    return this;
+  },
+  
+  '$delete': function(callback) {
+    this['$$entity'].datastore.remove(this, callback === true ? undefined : callback);
+    if (callback === true) this['$$entity'].datastore.flush();
+    return this;
+  },
+  
+  '$loadById': function(id, callback) {
+    this['$$entity'].datastore.load(this, id, callback);
+    return this;
+  },
+  
+  '$loadFrom': function(other) {
+    Model.copyDirectFields(other, this);
+    return this;
+  },
+  
+  '$saveTo': function(other) {
+    Model.copyDirectFields(this, other);
+    return this;
+  }
+});

@@ -3,24 +3,24 @@ FileControllerTest = TestCase('FileControllerTest');
 FileControllerTest.prototype.testOnSelectUpdateView = function(){
   var view = jQuery('<span><a/><span/></span>');
   var swf = {};
-  var controller = new nglr.FileController(view, null, swf);
+  var controller = new FileController(view, null, swf);
   swf.uploadFile = function(path){};
-  controller._on_select('A', 9, '9 bytes');
+  controller.select('A', 9, '9 bytes');
   assertEquals(view.find('a').text(), "A");
   assertEquals(view.find('span').text(), "9 bytes");
 };
 
 FileControllerTest.prototype.testUpdateModelView = function(){
-  var view = nglr.FileController.template('');
+  var view = FileController.template('');
   var input = $('<input name="value.input">');
   var controller;
-  var scope = new nglr.Scope({value:{}, $binder:{updateView:function(){
+  var scope = new Scope({value:{}, $binder:{updateView:function(){
       controller.updateView(scope);
     }}});
   view.data('scope', scope);
-  controller = new nglr.FileController(view, 'value.input', null, "http://server_base");
+  controller = new FileController(view, 'value.input', null, "http://server_base");
   var value = '{"text":"A", "size":123, "id":"890"}';
-  controller._on_uploadCompleteData(value);
+  controller.uploadCompleteData(value);
   controller.updateView(scope);
   assertEquals(scope.get('value.input.text'), 'A');
   assertEquals(scope.get('value.input.size'), 123);
@@ -34,7 +34,7 @@ FileControllerTest.prototype.testUpdateModelView = function(){
 FileControllerTest.prototype.testFileUpload = function(){
   expectAsserts(1);
   var swf = {};
-  var controller = new nglr.FileController(null, null, swf, "http://server_base");
+  var controller = new FileController(null, null, swf, "http://server_base");
   swf.uploadFile = function(path){
     assertEquals("http://server_base/_attachments", path);
   };
@@ -47,16 +47,16 @@ FileControllerTest.prototype.testFileUploadNoFileIsNoop = function(){
   var swf = {uploadFile:function(path){
     fail();
   }};
-  var controller = new nglr.FileController(null, swf);
+  var controller = new FileController(null, swf);
   controller.upload("basePath", null);
 };
 
 FileControllerTest.prototype.testRemoveAttachment = function(){
-  var doc = nglr.FileController.template();
+  var doc = FileController.template();
   var input = $('<input name="file">');
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   input.data('scope', scope);
-  var controller = new nglr.FileController(doc, 'file', null, null);
+  var controller = new FileController(doc, 'file', null, null);
   controller.updateView(scope);
   assertEquals(false, doc.find('input').attr('checked'));
 
@@ -75,10 +75,10 @@ FileControllerTest.prototype.testRemoveAttachment = function(){
 };
 
 FileControllerTest.prototype.testShouldEmptyOutOnUndefined = function () {
-  var view = nglr.FileController.template('hello');
-  var controller = new nglr.FileController(view, 'abc', null, null);
+  var view = FileController.template('hello');
+  var controller = new FileController(view, 'abc', null, null);
 
-  var scope = new nglr.Scope();
+  var scope = new Scope();
   scope.set('abc', {text: 'myname', url: 'myurl', size: 1234});
 
   controller.updateView(scope);

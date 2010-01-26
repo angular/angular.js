@@ -11,15 +11,14 @@ DataStoreTest.prototype.testSavePostsToServer = function(){
     assertEquals("123", posted.$id);
     assertEquals("1", posted.$version);
     assertFalse('function' == typeof posted.save);
-    response = nglr.fromJson(nglr.toJson(posted));
+    response = fromJson(toJson(posted));
     response.$entity = "abc";
     response.$id = "123";
     response.$version = "2";
     callback(200, [response]);
   };
-  var model;
-  var datastore = new nglr.DataStore(post);
-  model = datastore.entity('abc', {name: "value"})();
+  var datastore = new DataStore(post);
+  var model = datastore.entity('abc', {name: "value"})();
   model.$id = "123";
   model.$version = "1";
 
@@ -44,7 +43,7 @@ DataStoreTest.prototype.testLoadGetsFromServer = function(){
       response = [{$entity:'abc', $id:'1', $version:'2', key:"value"}];
       callback(200, response);
     };
-  var datastore = new nglr.DataStore(post);
+  var datastore = new DataStore(post);
 
   var model = datastore.entity("abc", {merge:true})();
   assertEquals(datastore.load(model, '1', function(obj){
@@ -72,14 +71,14 @@ DataStoreTest.prototype.testRemove = function(){
     assertEquals("123", posted.$id);
     assertEquals("1", posted.$version);
     assertFalse('function' == typeof posted.save);
-    response = nglr.fromJson(nglr.toJson(posted));
+    response = fromJson(toJson(posted));
     response.$entity = "abc";
     response.$id = "123";
     response.$version = "2";
     callback(200, [response]);
   };
   var model;
-  var datastore = new nglr.DataStore(post);
+  var datastore = new DataStore(post);
   model = datastore.entity('abc', {name: "value"})();
   model.$id = "123";
   model.$version = "1";
@@ -101,7 +100,7 @@ DataStoreTest.prototype.test401ResponseDoesNotCallCallback = function(){
     callback(200, {$status_code: 401});
   };
 
-  var datastore = new nglr.DataStore(post, {login:function(){
+  var datastore = new DataStore(post, {login:function(){
     assertTrue(true);
   }});
 
@@ -119,7 +118,7 @@ DataStoreTest.prototype.test403ResponseDoesNotCallCallback = function(){
     callback(200, [{$status_code: 403}]);
   };
 
-  var datastore = new nglr.DataStore(post, {notAuthorized:function(){
+  var datastore = new DataStore(post, {notAuthorized:function(){
     assertTrue(true);
   }});
 
@@ -136,14 +135,14 @@ DataStoreTest.prototype.testLoadCalledWithoutIdShouldBeNoop = function(){
   var post = function(url, callback){
     assertTrue(false);
   };
-  var datastore = new nglr.DataStore(post);
+  var datastore = new DataStore(post);
   var model = datastore.entity("abc")();
   assertEquals(datastore.load(model, undefined), model);
   assertEquals(model.$entity, "abc");
 };
 
 DataStoreTest.prototype.testEntityFactory = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var Recipe = ds.entity("Recipe", {a:1, b:2});
   assertEquals(Recipe.title, "Recipe");
   assertEquals(Recipe.defaults.a, 1);
@@ -161,7 +160,7 @@ DataStoreTest.prototype.testEntityFactory = function(){
 };
 
 DataStoreTest.prototype.testEntityFactoryNoDefaults = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var Recipe = ds.entity("Recipe");
   assertEquals(Recipe.title, "Recipe");
 
@@ -170,7 +169,7 @@ DataStoreTest.prototype.testEntityFactoryNoDefaults = function(){
 };
 
 DataStoreTest.prototype.testEntityFactoryWithInitialValues = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var Recipe = ds.entity("Recipe");
 
   var recipe = Recipe({name: "name"});
@@ -178,7 +177,7 @@ DataStoreTest.prototype.testEntityFactoryWithInitialValues = function(){
 };
 
 DataStoreTest.prototype.testEntityLoad = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var Recipe = ds.entity("Recipe", {a:1, b:2});
   ds.load = function(instance, id, callback){
     callback.apply(instance);
@@ -192,7 +191,7 @@ DataStoreTest.prototype.testEntityLoad = function(){
 };
 
 DataStoreTest.prototype.testSaveScope = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var log = "";
   var Person = ds.entity("Person");
   var person1 = Person({name:"A", $entity:"Person", $id:"1", $version:"1"}, ds);
@@ -215,7 +214,7 @@ DataStoreTest.prototype.testSaveScope = function(){
 };
 
 DataStoreTest.prototype.testEntityLoadAllRows = function(){
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var Recipe = ds.entity("Recipe");
   var list = [];
   ds.loadAll = function(entity, callback){
@@ -236,7 +235,7 @@ DataStoreTest.prototype.testLoadAll = function(){
     assertEquals("A", data[0][1]);
     callback(200, [[{$entity:'A', $id:'1'},{$entity:'A', $id:'2'}]]);
   };
-  var datastore = new nglr.DataStore(post);
+  var datastore = new DataStore(post);
   var list = datastore.entity("A").all(function(){
     assertTrue(true);
   });
@@ -256,7 +255,7 @@ DataStoreTest.prototype.testQuery = function(){
     callback(200, [[{$entity:"Employee", $id: "456", managerId: "123ABC"}]]);
 
   };
-  var datastore = new nglr.DataStore(post);
+  var datastore = new DataStore(post);
   var Employee = datastore.entity("Employee");
   var list = Employee.query('managerId', "123abc", function(){
     assertTrue(true);
@@ -269,7 +268,7 @@ DataStoreTest.prototype.testQuery = function(){
 DataStoreTest.prototype.testLoadingDocumentRefreshesExistingArrays = function() {
   expectAsserts(12);
   var post;
-  var datastore = new nglr.DataStore(function(r, c){post(r,c);});
+  var datastore = new DataStore(function(r, c){post(r,c);});
   var Book = datastore.entity('Book');
   post = function(req, callback) {
     callback(200, [[{$id:1, $entity:"Book", name:"Moby"},
@@ -285,7 +284,7 @@ DataStoreTest.prototype.testLoadingDocumentRefreshesExistingArrays = function() 
   assertEquals("Dick", queryBooks[1].name);
 
   post = function(req, callback) {
-    assertEquals('[["GET","Book/1"]]', nglr.toJson(req));
+    assertEquals('[["GET","Book/1"]]', toJson(req));
     callback(200, [{$id:1, $entity:"Book", name:"Moby Dick"}]);
   };
   var book = Book.load(1);
@@ -307,7 +306,7 @@ DataStoreTest.prototype.testLoadingDocumentRefreshesExistingArrays = function() 
 
 DataStoreTest.prototype.testEntityProperties = function() {
   expectAsserts(2);
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var callback = {};
 
   datastore._jsonRequest = function(request, callbackFn) {
@@ -322,11 +321,11 @@ DataStoreTest.prototype.testEntityProperties = function() {
 
 DataStoreTest.prototype.testLoadInstanceIsNotFromCache = function() {
   var post;
-  var datastore = new nglr.DataStore(function(r, c){post(r,c);});
+  var datastore = new DataStore(function(r, c){post(r,c);});
   var Book = datastore.entity('Book');
 
   post = function(req, callback) {
-    assertEquals('[["GET","Book/1"]]', nglr.toJson(req));
+    assertEquals('[["GET","Book/1"]]', toJson(req));
     callback(200, [{$id:1, $entity:"Book", name:"Moby Dick"}]);
   };
   var book = Book.load(1);
@@ -336,14 +335,14 @@ DataStoreTest.prototype.testLoadInstanceIsNotFromCache = function() {
 };
 
 DataStoreTest.prototype.testLoadStarsIsNewDocument = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Book = datastore.entity('Book');
   var book = Book.load('*');
   assertEquals('Book', book.$entity);
 };
 
 DataStoreTest.prototype.testUndefinedEntityReturnsNullValueObject = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Entity = datastore.entity(undefined);
   var all = Entity.all();
   assertEquals(0, all.length);
@@ -355,7 +354,7 @@ DataStoreTest.prototype.testFetchEntities = function(){
     assertJsonEquals(["GET", "$entities"], data[0]);
     callback(200, [{A:0, B:0}]);
   };
-  var datastore = new nglr.DataStore(post);
+  var datastore = new DataStore(post);
   var entities = datastore.entities(function(){
     assertTrue(true);
   });
@@ -367,20 +366,20 @@ DataStoreTest.prototype.testFetchEntities = function(){
 };
 
 DataStoreTest.prototype.testItShouldMigrateSchema = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Entity = datastore.entity("Entity", {a:[], user:{name:"Misko", email:""}});
   var doc = Entity().$loadFrom({b:'abc', user:{email:"misko@hevery.com"}});
   assertFalse(
-      nglr.toJson({a:[], b:'abc', user:{name:"Misko", email:"misko@hevery.com"}}) ==
-      nglr.toJson(doc));
+      toJson({a:[], b:'abc', user:{name:"Misko", email:"misko@hevery.com"}}) ==
+      toJson(doc));
   doc.$migrate();
   assertEquals(
-      nglr.toJson({a:[], b:'abc', user:{name:"Misko", email:"misko@hevery.com"}}),
-      nglr.toJson(doc));
+      toJson({a:[], b:'abc', user:{name:"Misko", email:"misko@hevery.com"}}),
+      toJson(doc));
 };
 
 DataStoreTest.prototype.testItShouldCollectRequestsForBulk = function() {
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   var Book = ds.entity("Book");
   var Library = ds.entity("Library");
   Book.all();
@@ -391,7 +390,7 @@ DataStoreTest.prototype.testItShouldCollectRequestsForBulk = function() {
 };
 
 DataStoreTest.prototype.testEmptyFlushShouldDoNothing = function () {
-  var ds = new nglr.DataStore(function(){
+  var ds = new DataStore(function(){
     fail("expecting noop");
   });
   ds.flush();
@@ -400,17 +399,17 @@ DataStoreTest.prototype.testEmptyFlushShouldDoNothing = function () {
 DataStoreTest.prototype.testFlushShouldCallAllCallbacks = function() {
   var log = "";
   function post(request, callback){
-    log += 'BulkRequest:' + nglr.toJson(request) + ';';
+    log += 'BulkRequest:' + toJson(request) + ';';
     callback(200, [[{$id:'ABC'}], {$id:'XYZ'}]);
   }
-  var ds = new nglr.DataStore(post);
+  var ds = new DataStore(post);
   var Book = ds.entity("Book");
   var Library = ds.entity("Library");
   Book.all(function(instance){
-    log += nglr.toJson(instance) + ';';
+    log += toJson(instance) + ';';
   });
   Library.load("123", function(instance){
-    log += nglr.toJson(instance) + ';';
+    log += toJson(instance) + ';';
   });
   assertEquals("", log);
   ds.flush();
@@ -421,7 +420,7 @@ DataStoreTest.prototype.testFlushShouldCallAllCallbacks = function() {
 DataStoreTest.prototype.testSaveOnNotLoggedInRetriesAfterLoggin = function(){
   var log = "";
   var book;
-  var ds = new nglr.DataStore(null, {login:function(c){c();}});
+  var ds = new DataStore(null, {login:function(c){c();}});
   ds.post = function (request, callback){
     assertJsonEquals([["POST", "", book]], request);
     ds.post = function(request, callback){
@@ -439,7 +438,7 @@ DataStoreTest.prototype.testSaveOnNotLoggedInRetriesAfterLoggin = function(){
 
 DataStoreTest.prototype.testItShouldRemoveItemFromCollectionWhenDeleted = function() {
   expectAsserts(6);
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   ds.post = function(request, callback){
     assertJsonEquals([["GET", "Book"]], request);
     callback(200, [[{name:"Moby Dick", $id:123, $entity:'Book'}]]);
@@ -462,7 +461,7 @@ DataStoreTest.prototype.testItShouldRemoveItemFromCollectionWhenDeleted = functi
 
 DataStoreTest.prototype.testItShouldAddToAll = function() {
   expectAsserts(8);
-  var ds = new nglr.DataStore();
+  var ds = new DataStore();
   ds.post = function(request, callback){
     assertJsonEquals([["GET", "Book"]], request);
     callback(200, [[]]);
@@ -490,7 +489,7 @@ DataStoreTest.prototype.testItShouldAddToAll = function() {
 
 DataStoreTest.prototype.testItShouldReturnCreatedDocumentCountByUser = function(){
   expectAsserts(2);
-  var datastore = new nglr.DataStore(
+  var datastore = new DataStore(
       function(request, callback){
         assertJsonEquals([["GET", "$users"]], request);
         callback(200, [{misko:1, adam:1}]);
@@ -502,7 +501,7 @@ DataStoreTest.prototype.testItShouldReturnCreatedDocumentCountByUser = function(
 
 DataStoreTest.prototype.testItShouldReturnDocumentIdsForUeserByEntity = function(){
   expectAsserts(2);
-  var datastore = new nglr.DataStore(
+  var datastore = new DataStore(
       function(request, callback){
         assertJsonEquals([["GET", "$users/misko@hevery.com"]], request);
         callback(200, [{Book:["1"], Library:["2"]}]);
@@ -514,7 +513,7 @@ DataStoreTest.prototype.testItShouldReturnDocumentIdsForUeserByEntity = function
 DataStoreTest.prototype.testItShouldReturnNewInstanceOn404 = function(){
   expectAsserts(7);
   var log = "";
-  var datastore = new nglr.DataStore(
+  var datastore = new DataStore(
       function(request, callback){
         assertJsonEquals([["GET", "User/misko"]], request);
         callback(200, [{$status_code:404}]);
@@ -532,13 +531,13 @@ DataStoreTest.prototype.testItShouldReturnNewInstanceOn404 = function(){
 
 DataStoreTest.prototype.testItShouldReturnNewInstanceOn404 = function(){
   var log = "";
-  var datastore = new nglr.DataStore(
+  var datastore = new DataStore(
       function(request, callback){
         assertJsonEquals([["GET", "User/misko"],["GET", "User/adam"]], request);
         callback(200, [{$id:'misko'},{$id:'adam'}]);
       });
   var User = datastore.entity("User");
-  var users = User.loadMany(['misko', 'adam'], function(i){log+="cb "+nglr.toJson(i)+";";});
+  var users = User.loadMany(['misko', 'adam'], function(i){log+="cb "+toJson(i)+";";});
   datastore.flush();
   assertEquals("misko", users[0].$id);
   assertEquals("adam", users[1].$id);
@@ -546,7 +545,7 @@ DataStoreTest.prototype.testItShouldReturnNewInstanceOn404 = function(){
 };
 
 DataStoreTest.prototype.testItShouldCreateJoinAndQuery = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Invoice = datastore.entity("Invoice");
   var Customer = datastore.entity("Customer");
   var InvoiceWithCustomer = datastore.join({
@@ -568,7 +567,7 @@ DataStoreTest.prototype.testItShouldCreateJoinAndQuery = function() {
 };
 
 DataStoreTest.prototype.testItShouldThrowIfMoreThanOneEntityIsPrimary = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Invoice = datastore.entity("Invoice");
   var Customer = datastore.entity("Customer");
   assertThrows("Exactly one entity needs to be primary.", function(){
@@ -580,7 +579,7 @@ DataStoreTest.prototype.testItShouldThrowIfMoreThanOneEntityIsPrimary = function
 };
 
 DataStoreTest.prototype.testItShouldThrowIfLoopInReferences = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Invoice = datastore.entity("Invoice");
   var Customer = datastore.entity("Customer");
   assertThrows("Infinite loop in join: invoice -> customer", function(){
@@ -592,7 +591,7 @@ DataStoreTest.prototype.testItShouldThrowIfLoopInReferences = function() {
 };
 
 DataStoreTest.prototype.testItShouldThrowIfReferenceToNonExistantJoin = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Invoice = datastore.entity("Invoice");
   var Customer = datastore.entity("Customer");
   assertThrows("Named entity 'x' is undefined.", function(){
@@ -604,7 +603,7 @@ DataStoreTest.prototype.testItShouldThrowIfReferenceToNonExistantJoin = function
 };
 
 DataStoreTest.prototype.testItShouldThrowIfQueryOnNonPrimary = function() {
-  var datastore = new nglr.DataStore();
+  var datastore = new DataStore();
   var Invoice = datastore.entity("Invoice");
   var Customer = datastore.entity("Customer");
   var InvoiceWithCustomer = datastore.join({

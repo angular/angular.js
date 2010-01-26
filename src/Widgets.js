@@ -1,88 +1,85 @@
-// Copyright (C) 2009 BRAT Tech LLC
-
-
-nglr.WidgetFactory = function(serverUrl, database) {
+function WidgetFactory(serverUrl, database) {
   this.nextUploadId = 0;
   this.serverUrl = serverUrl;
   this.database = database;
-  this.createSWF = swfobject.createSWF;
-  this.onChangeListener = function(){};
-};
-
-nglr.WidgetFactory.prototype.createController = function(input, scope) {
-  var controller;
-  var type = input.attr('type').toLowerCase();
-  var exp = input.attr('name');
-  if (exp) exp = exp.split(':').pop();
-  var event = "change";
-  var bubbleEvent = true;
-  if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
-    controller = new nglr.ButtonController(input[0], exp);
-    event = "click";
-    bubbleEvent = false;
-  } else if (type == 'text' || type == 'textarea' || type == 'hidden' || type == 'password') {
-    controller = new nglr.TextController(input[0], exp);
-    event = "keyup change";
-  } else if (type == 'checkbox') {
-    controller = new nglr.CheckboxController(input[0], exp);
-    event = "click";
-  } else if (type == 'radio') {
-    controller = new nglr.RadioController(input[0], exp);
-    event="click";
-  } else if (type == 'select-one') {
-    controller = new nglr.SelectController(input[0], exp);
-  } else if (type == 'select-multiple') {
-    controller = new nglr.MultiSelectController(input[0], exp);
-  } else if (type == 'file') {
-    controller = this.createFileController(input, exp);
+  if (window['swfobject']) {
+    this.createSWF = window['swfobject']['createSWF'];
   } else {
-    throw 'Unknown type: ' + type;
+    this.createSWF = function(){
+      alert("ERROR: swfobject not loaded!");
+    };
   }
-  input.data('controller', controller);
-  var binder = scope.get('$binder');
-  var action = function() {
-    if (controller.updateModel(scope)) {
-      var action = jQuery(controller.view).attr('ng-action') || "";
-      if (scope.evalWidget(controller, action)) {
-        binder.updateView(scope);
-      }
+};
+
+WidgetFactory.prototype = {
+  createController: function(input, scope) {
+    var controller;
+    var type = input.attr('type').toLowerCase();
+    var exp = input.attr('name');
+    if (exp) exp = exp.split(':').pop();
+    var event = "change";
+    var bubbleEvent = true;
+    if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
+      controller = new ButtonController(input[0], exp);
+      event = "click";
+      bubbleEvent = false;
+    } else if (type == 'text' || type == 'textarea' || type == 'hidden' || type == 'password') {
+      controller = new TextController(input[0], exp);
+      event = "keyup change";
+    } else if (type == 'checkbox') {
+      controller = new CheckboxController(input[0], exp);
+      event = "click";
+    } else if (type == 'radio') {
+      controller = new RadioController(input[0], exp);
+      event="click";
+    } else if (type == 'select-one') {
+      controller = new SelectController(input[0], exp);
+    } else if (type == 'select-multiple') {
+      controller = new MultiSelectController(input[0], exp);
+    } else if (type == 'file') {
+      controller = this.createFileController(input, exp);
+    } else {
+      throw 'Unknown type: ' + type;
     }
-    return bubbleEvent;
-  };
-  jQuery(controller.view, ":input").
-    bind(event, action);
-  return controller;
+    input.data('controller', controller);
+    var updateView = scope.get('$updateView');
+    var action = function() {
+      if (controller.updateModel(scope)) {
+        var action = jQuery(controller.view).attr('ng-action') || "";
+        if (scope.evalWidget(controller, action)) {
+          updateView(scope);
+        }
+      }
+      return bubbleEvent;
+    };
+    jQuery(controller.view, ":input").
+      bind(event, action);
+    return controller;
+  },
+  
+  createFileController: function(fileInput) {
+    var uploadId = '__uploadWidget_' + (this.nextUploadId++);
+    var view = FileController.template(uploadId);
+    fileInput.after(view);
+    var att = {
+        'data':this.serverUrl + "/admin/ServerAPI.swf",
+        'width':"95", 'height':"20", 'align':"top",
+        'wmode':"transparent"};
+    var par = {
+        'flashvars':"uploadWidgetId=" + uploadId,
+        'allowScriptAccess':"always"};
+    var swfNode = this.createSWF(att, par, uploadId);
+    fileInput.remove();
+    var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
+    jQuery(swfNode).data('controller', cntl);
+    return cntl;
+  }
 };
-
-nglr.WidgetFactory.prototype.createFileController = function(fileInput) {
-  var uploadId = '__uploadWidget_' + (this.nextUploadId++);
-  var view = nglr.FileController.template(uploadId);
-  fileInput.after(view);
-  var att = {
-      data:this.serverUrl + "/admin/ServerAPI.swf",
-      width:"95", height:"20", align:"top",
-      wmode:"transparent"};
-  var par = {
-      flashvars:"uploadWidgetId=" + uploadId,
-      allowScriptAccess:"always"};
-  var swfNode = this.createSWF(att, par, uploadId);
-  fileInput.remove();
-  var cntl = new nglr.FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
-  jQuery(swfNode).data('controller', cntl);
-  return cntl;
-};
-
-nglr.WidgetFactory.prototype.createTextWidget = function(textInput) {
-  var controller = new nglr.TextController(textInput);
-  controller.onChange(this.onChangeListener);
-  return controller;
-};
-
 /////////////////////
 // FileController
 ///////////////////////
 
-nglr.FileController = function(view, scopeName, uploader, databaseUrl) {
+function FileController(view, scopeName, uploader, databaseUrl) {
   this.view = view;
   this.uploader = uploader;
   this.scopeName = scopeName;
@@ -91,114 +88,105 @@ nglr.FileController = function(view, scopeName, uploader, databaseUrl) {
   this.lastValue = undefined;
 };
 
-nglr.FileController.dispatchEvent = function(id, event, args) {
+angularCallbacks['flashEvent'] = function(id, event, args) {
   var object = document.getElementById(id);
-  var controller = jQuery(object).data("controller");
-  nglr.FileController.prototype['_on_' + event].apply(controller, args);
+  var jobject = jQuery(object);
+  var controller = jobject.data("controller");
+  FileController.prototype[event].apply(controller, args);
+  _.defer(jobject.scope().get('$updateView'));
 };
 
-nglr.FileController.template = function(id) {
+FileController.template = function(id) {
   return jQuery('<span class="ng-upload-widget">' +
       '<input type="checkbox" ng-non-bindable="true"/>' +
       '<object id="' + id + '" />' +
       '<a></a>' +
       '<span/>' +
-    '</span>');
+    '</span>'); 
 };
 
-nglr.FileController.prototype._on_cancel = function() {
-};
-
-nglr.FileController.prototype._on_complete = function() {
-};
-
-nglr.FileController.prototype._on_httpStatus = function(status) {
-  nglr.alert("httpStatus:" + this.scopeName + " status:" + status);
-};
-
-nglr.FileController.prototype._on_ioError = function() {
-  nglr.alert("ioError:" + this.scopeName);
-};
-
-nglr.FileController.prototype._on_open = function() {
-  nglr.alert("open:" + this.scopeName);
-};
-
-nglr.FileController.prototype._on_progress = function(bytesLoaded, bytesTotal) {
-};
-
-nglr.FileController.prototype._on_securityError = function() {
-  nglr.alert("securityError:" + this.scopeName);
-};
-
-nglr.FileController.prototype._on_uploadCompleteData = function(data) {
-  var value = nglr.fromJson(data);
-  value.url = this.attachmentsPath + '/' + value.id + '/' + value.text;
-  this.view.find("input").attr('checked', true);
-  var scope = this.view.scope();
-  this.value = value;
-  this.updateModel(scope);
-  this.value = null;
-  scope.get('$binder').updateView();
-};
-
-nglr.FileController.prototype._on_select = function(name, size, type) {
-  this.name = name;
-  this.view.find("a").text(name).attr('href', name);
-  this.view.find("span").text(angular.filter.bytes(size));
-  this.upload();
-};
-
-nglr.FileController.prototype.updateModel = function(scope) {
-  var isChecked = this.view.find("input").attr('checked');
-  var value = isChecked ? this.value : null;
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.set(this.scopeName, value);
-    return true;
+extend(FileController.prototype, {
+  'cancel': noop,
+  'complete': noop,
+  'httpStatus': function(status) {
+    alert("httpStatus:" + this.scopeName + " status:" + status);
+  },
+  'ioError': function() {
+    alert("ioError:" + this.scopeName);
+  },
+  'open': function() {
+    alert("open:" + this.scopeName);
+  },
+  'progress':noop,
+  'securityError':  function() {
+    alert("securityError:" + this.scopeName);
+  },
+  'uploadCompleteData': function(data) {
+    var value = fromJson(data);
+    value.url = this.attachmentsPath + '/' + value.id + '/' + value.text;
+    this.view.find("input").attr('checked', true);
+    var scope = this.view.scope();
+    this.value = value;
+    this.updateModel(scope);
+    this.value = null;
+  },  
+  'select': function(name, size, type) {
+    this.name = name;
+    this.view.find("a").text(name).attr('href', name);
+    this.view.find("span").text(angular['filter']['bytes'](size));
+    this.upload();
+  },
+  
+  updateModel: function(scope) {
+    var isChecked = this.view.find("input").attr('checked');
+    var value = isChecked ? this.value : null;
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.set(this.scopeName, value);
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var modelValue = scope.get(this.scopeName);
+    if (modelValue && this.value !== modelValue) {
+      this.value = modelValue;
+      this.view.find("a").
+        attr("href", this.value.url).
+        text(this.value.text);
+      this.view.find("span").text(angular['filter']['bytes'](this.value.size));
+    }
+    this.view.find("input").attr('checked', !!modelValue);
+  },
+  
+  upload: function() {
+    if (this.name) {
+      this.uploader['uploadFile'](this.attachmentsPath);
+    }
   }
-};
-
-nglr.FileController.prototype.updateView = function(scope) {
-  var modelValue = scope.get(this.scopeName);
-  if (modelValue && this.value !== modelValue) {
-    this.value = modelValue;
-    this.view.find("a").
-      attr("href", this.value.url).
-      text(this.value.text);
-    this.view.find("span").text(angular.filter.bytes(this.value.size));
-  }
-  this.view.find("input").attr('checked', !!modelValue);
-};
-
-nglr.FileController.prototype.upload = function() {
-  if (this.name) {
-    this.uploader.uploadFile(this.attachmentsPath);
-  }
-};
-
+});
 
 ///////////////////////
 // NullController
 ///////////////////////
-nglr.NullController = function(view) {this.view = view;};
-nglr.NullController.prototype.updateModel = function() { return true; };
-nglr.NullController.prototype.updateView = function() { };
-nglr.NullController.instance = new nglr.NullController();
+function NullController(view) {this.view = view;};
+NullController.prototype = {
+  updateModel: function() { return true; },
+  updateView: noop
+};
+NullController.instance = new NullController();
 
 
 ///////////////////////
 // ButtonController
 ///////////////////////
-nglr.ButtonController = function(view) {this.view = view;};
-nglr.ButtonController.prototype.updateModel = function(scope) { return true; };
-nglr.ButtonController.prototype.updateView = function(scope) {};
+var ButtonController = NullController;
 
 ///////////////////////
 // TextController
 ///////////////////////
-nglr.TextController = function(view, exp) {
+function TextController(view, exp) {
   this.view = view;
   this.exp = exp;
   this.validator = view.getAttribute('ng-validate');
@@ -212,96 +200,8 @@ nglr.TextController = function(view, exp) {
   }
 };
 
-nglr.TextController.prototype.updateModel = function(scope) {
-  var value = this.view.value;
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.setEval(this.exp, value);
-    this.lastValue = value;
-    return true;
-  }
-};
-
-nglr.TextController.prototype.updateView = function(scope) {
-  var view = this.view;
-  var value = scope.get(this.exp);
-  if (typeof value === "undefined") {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
-  }
-  value = value ? value : '';
-  if (this.lastValue != value) {
-    view.value = value;
-    this.lastValue = value;
-  }
-  var isValidationError = false;
-  view.removeAttribute('ng-error');
-  if (this.required) {
-    isValidationError = !(value && value.length > 0);
-  }
-  var errorText = isValidationError ? "Required Value" : null;
-  if (!isValidationError && this.validator && value) {
-    errorText = scope.validate(this.validator, value);
-    isValidationError = !!errorText;
-  }
-  if (this.lastErrorText !== errorText) {
-    this.lastErrorText = isValidationError;
-    if (errorText !== null) {
-      view.setAttribute('ng-error', errorText);
-      scope.markInvalid(this);
-    }
-    jQuery(view).toggleClass('ng-validation-error', isValidationError);
-  }
-};
-
-///////////////////////
-// CheckboxController
-///////////////////////
-nglr.CheckboxController = function(view, exp) {
-  this.view = view;
-  this.exp = exp;
-  this.lastValue = undefined;
-  this.initialValue = view.checked ? view.value : "";
-};
-
-nglr.CheckboxController.prototype.updateModel = function(scope) {
-  var input = this.view;
-  var value = input.checked ? input.value : '';
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.setEval(this.exp, value);
-    this.lastValue = value;
-    return true;
-  }
-};
-
-nglr.CheckboxController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var value = scope.eval(this.exp);
-  if (typeof value === "undefined") {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
-  }
-  input.checked = input.value == (''+value);
-};
-
-///////////////////////
-// SelectController
-///////////////////////
-nglr.SelectController = function(view, exp) {
-  this.view = view;
-  this.exp = exp;
-  this.lastValue = undefined;
-  this.initialValue = view.value;
-};
-
-nglr.SelectController.prototype.updateModel = function(scope) {
-  var input = this.view;
-  if (input.selectedIndex < 0) {
-    scope.setEval(this.exp, null);
-  } else {
+TextController.prototype = {
+  updateModel: function(scope) {
     var value = this.view.value;
     if (this.lastValue === value) {
       return false;
@@ -310,77 +210,173 @@ nglr.SelectController.prototype.updateModel = function(scope) {
       this.lastValue = value;
       return true;
     }
+  },
+  
+  updateView: function(scope) {
+    var view = this.view;
+    var value = scope.get(this.exp);
+    if (typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    value = value ? value : '';
+    if (this.lastValue != value) {
+      view.value = value;
+      this.lastValue = value;
+    }
+    var isValidationError = false;
+    view.removeAttribute('ng-error');
+    if (this.required) {
+      isValidationError = !(value && value.length > 0);
+    }
+    var errorText = isValidationError ? "Required Value" : null;
+    if (!isValidationError && this.validator && value) {
+      errorText = scope.validate(this.validator, value);
+      isValidationError = !!errorText;
+    }
+    if (this.lastErrorText !== errorText) {
+      this.lastErrorText = isValidationError;
+      if (errorText !== null) {
+        view.setAttribute('ng-error', errorText);
+        scope.markInvalid(this);
+      }
+      jQuery(view).toggleClass('ng-validation-error', isValidationError);
+    }
   }
 };
 
-nglr.SelectController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var value = scope.get(this.exp);
-  if (typeof value === 'undefined') {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
+///////////////////////
+// CheckboxController
+///////////////////////
+function CheckboxController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = view.checked ? view.value : "";
+};
+
+CheckboxController.prototype = {
+    updateModel: function(scope) {
+    var input = this.view;
+    var value = input.checked ? input.value : '';
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.eval(this.exp);
+    if (typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    input.checked = input.value == (''+value);
   }
-  if (value !== this.lastValue) {
-    input.value = value ? value : "";
-    this.lastValue = value;
+};
+
+///////////////////////
+// SelectController
+///////////////////////
+function SelectController(view, exp) {
+  this.view = view;
+  this.exp = exp;
+  this.lastValue = undefined;
+  this.initialValue = view.value;
+};
+
+SelectController.prototype = {
+  updateModel: function(scope) {
+    var input = this.view;
+    if (input.selectedIndex < 0) {
+      scope.setEval(this.exp, null);
+    } else {
+      var value = this.view.value;
+      if (this.lastValue === value) {
+        return false;
+      } else {
+        scope.setEval(this.exp, value);
+        this.lastValue = value;
+        return true;
+      }
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.get(this.exp);
+    if (typeof value === 'undefined') {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    if (value !== this.lastValue) {
+      input.value = value ? value : "";
+      this.lastValue = value;
+    }
   }
 };
 
 ///////////////////////
 // MultiSelectController
 ///////////////////////
-nglr.MultiSelectController = function(view, exp) {
+function MultiSelectController(view, exp) {
   this.view = view;
   this.exp = exp;
   this.lastValue = undefined;
   this.initialValue = this.selected();
 };
 
-nglr.MultiSelectController.prototype.selected = function () {
-  var value = [];
-  var options = this.view.options;
-  for ( var i = 0; i < options.length; i++) {
-    var option = options[i];
-    if (option.selected) {
-      value.push(option.value);
-    }
-  }
-  return value;
-};
-
-nglr.MultiSelectController.prototype.updateModel = function(scope) {
-  var value = this.selected();
-  // TODO: This is wrong! no caching going on here as we are always comparing arrays
-  if (this.lastValue === value) {
-    return false;
-  } else {
-    scope.setEval(this.exp, value);
-    this.lastValue = value;
-    return true;
-  }
-};
-
-nglr.MultiSelectController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var selected = scope.get(this.exp);
-  if (typeof selected === "undefined") {
-    selected = this.initialValue;
-    scope.setEval(this.exp, selected);
-  }
-  if (selected !== this.lastValue) {
-    var options = input.options;
+MultiSelectController.prototype = {
+  selected: function () {
+    var value = [];
+    var options = this.view.options;
     for ( var i = 0; i < options.length; i++) {
       var option = options[i];
-      option.selected = _.include(selected, option.value);
+      if (option.selected) {
+        value.push(option.value);
+      }
     }
-    this.lastValue = selected;
+    return value;
+  },
+  
+  updateModel: function(scope) {
+    var value = this.selected();
+    // TODO: This is wrong! no caching going on here as we are always comparing arrays
+    if (this.lastValue === value) {
+      return false;
+    } else {
+      scope.setEval(this.exp, value);
+      this.lastValue = value;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var selected = scope.get(this.exp);
+    if (typeof selected === "undefined") {
+      selected = this.initialValue;
+      scope.setEval(this.exp, selected);
+    }
+    if (selected !== this.lastValue) {
+      var options = input.options;
+      for ( var i = 0; i < options.length; i++) {
+        var option = options[i];
+        option.selected = _.include(selected, option.value);
+      }
+      this.lastValue = selected;
+    }
   }
 };
 
 ///////////////////////
 // RadioController
 ///////////////////////
-nglr.RadioController = function(view, exp) {
+function RadioController(view, exp) {
   this.view = view;
   this.exp = exp;
   this.lastChecked = undefined;
@@ -389,53 +385,55 @@ nglr.RadioController = function(view, exp) {
   this.initialValue = view.checked ? view.value : null;
 };
 
-nglr.RadioController.prototype.updateModel = function(scope) {
-  var input = this.view;
-  if (this.lastChecked) {
-    return false;
-  } else {
-    input.checked = true;
-    this.lastValue = scope.setEval(this.exp, this.inputValue);
-    this.lastChecked = true;
-    return true;
-  }
-};
-
-nglr.RadioController.prototype.updateView = function(scope) {
-  var input = this.view;
-  var value = scope.get(this.exp);
-  if (this.initialValue && typeof value === "undefined") {
-    value = this.initialValue;
-    scope.setEval(this.exp, value);
-  }
-  if (this.lastValue != value) {
-    this.lastChecked = input.checked = this.inputValue == (''+value);
-    this.lastValue = value;
+RadioController.prototype = {
+  updateModel: function(scope) {
+    var input = this.view;
+    if (this.lastChecked) {
+      return false;
+    } else {
+      input.checked = true;
+      this.lastValue = scope.setEval(this.exp, this.inputValue);
+      this.lastChecked = true;
+      return true;
+    }
+  },
+  
+  updateView: function(scope) {
+    var input = this.view;
+    var value = scope.get(this.exp);
+    if (this.initialValue && typeof value === "undefined") {
+      value = this.initialValue;
+      scope.setEval(this.exp, value);
+    }
+    if (this.lastValue != value) {
+      this.lastChecked = input.checked = this.inputValue == (''+value);
+      this.lastValue = value;
+    }
   }
 };
 
 ///////////////////////
 //ElementController
 ///////////////////////
-nglr.BindUpdater = function(view, exp) {
+function BindUpdater(view, exp) {
   this.view = view;
-  this.exp = nglr.Binder.parseBindings(exp);
+  this.exp = Binder.parseBindings(exp);
   this.hasError = false;
   this.scopeSelf = {element:view};
 };
 
-nglr.BindUpdater.toText = function(obj) {
-  var e = nglr.escapeHtml;
+BindUpdater.toText = function(obj) {
+  var e = escapeHtml;
   switch(typeof obj) {
     case "string":
     case "boolean":
     case "number":
       return e(obj);
     case "function":
-      return nglr.BindUpdater.toText(obj());
+      return BindUpdater.toText(obj());
     case "object":
-      if (nglr.isNode(obj)) {
-        return nglr.outerHTML(obj);
+      if (isNode(obj)) {
+        return outerHTML(obj);
       } else if (obj instanceof angular.filter.Meta) {
         switch(typeof obj.html) {
           case "string":
@@ -444,8 +442,8 @@ nglr.BindUpdater.toText = function(obj) {
           case "function":
             return obj.html();
           case "object":
-            if (nglr.isNode(obj.html))
-              return nglr.outerHTML(obj.html);
+            if (isNode(obj.html))
+              return outerHTML(obj.html);
           default:
             break;
         }
@@ -461,158 +459,176 @@ nglr.BindUpdater.toText = function(obj) {
       }
       if (obj === null)
         return "";
-      return e(nglr.toJson(obj, true));
+      return e(toJson(obj, true));
     default:
       return "";
   }
 };
 
-nglr.BindUpdater.prototype.updateModel = function(scope) {};
-nglr.BindUpdater.prototype.updateView = function(scope) {
-  var html = [];
-  var parts = this.exp;
-  var length = parts.length;
-  for(var i=0; i<length; i++) {
-    var part = parts[i];
-    var binding = nglr.Binder.binding(part);
-    if (binding) {
-      scope.evalWidget(this, binding, this.scopeSelf, function(value){
-        html.push(nglr.BindUpdater.toText(value));
-      }, function(e, text){
-        nglr.setHtml(this.view, text);
-      });
-      if (this.hasError) {
-        return;
+BindUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    var html = [];
+    var parts = this.exp;
+    var length = parts.length;
+    for(var i=0; i<length; i++) {
+      var part = parts[i];
+      var binding = Binder.binding(part);
+      if (binding) {
+        scope.evalWidget(this, binding, this.scopeSelf, function(value){
+          html.push(BindUpdater.toText(value));
+        }, function(e, text){
+          setHtml(this.view, text);
+        });
+        if (this.hasError) {
+          return;
+        }
+      } else {
+        html.push(escapeHtml(part));
       }
-    } else {
-      html.push(nglr.escapeHtml(part));
     }
+    setHtml(this.view, html.join(''));
   }
-  nglr.setHtml(this.view, html.join(''));
 };
 
-nglr.BindAttrUpdater = function(view, attrs) {
+function BindAttrUpdater(view, attrs) {
   this.view = view;
   this.attrs = attrs;
 };
 
-nglr.BindAttrUpdater.prototype.updateModel = function(scope) {};
-nglr.BindAttrUpdater.prototype.updateView = function(scope) {
-  var jNode = jQuery(this.view);
-  var attributeTemplates = this.attrs;
-  if (this.hasError) {
-    this.hasError = false;
-    jNode.
-      removeClass('ng-exception').
-      removeAttr('ng-error');
-  }
-  var isImage = jNode.is('img');
-  for (var attrName in attributeTemplates) {
-    var attributeTemplate = nglr.Binder.parseBindings(attributeTemplates[attrName]);
-    var attrValues = [];
-    for ( var i = 0; i < attributeTemplate.length; i++) {
-      var binding = nglr.Binder.binding(attributeTemplate[i]);
-      if (binding) {
-        try {
-          var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
-          if (value && (value.constructor !== nglr.array || value.length !== 0))
-            attrValues.push(value);
-        } catch (e) {
-          this.hasError = true;
-          console.error('BindAttrUpdater', e);
-          var jsonError = nglr.toJson(e, true);
-          attrValues.push('[' + jsonError + ']');
-          jNode.
-            addClass('ng-exception').
-            attr('ng-error', jsonError);
-        }
-      } else {
-        attrValues.push(attributeTemplate[i]);
-      }
+BindAttrUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    var jNode = jQuery(this.view);
+    var attributeTemplates = this.attrs;
+    if (this.hasError) {
+      this.hasError = false;
+      jNode.
+        removeClass('ng-exception').
+        removeAttr('ng-error');
     }
-    var attrValue = attrValues.length ? attrValues.join('') : null;
-    if(isImage && attrName == 'src' && !attrValue)
-      attrValue = scope.get('config.server') + '/images/blank.gif';
-    jNode.attr(attrName, attrValue);
+    var isImage = jNode.is('img');
+    for (var attrName in attributeTemplates) {
+      var attributeTemplate = Binder.parseBindings(attributeTemplates[attrName]);
+      var attrValues = [];
+      for ( var i = 0; i < attributeTemplate.length; i++) {
+        var binding = Binder.binding(attributeTemplate[i]);
+        if (binding) {
+          try {
+            var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
+            if (value && (value.constructor !== array || value.length !== 0))
+              attrValues.push(value);
+          } catch (e) {
+            this.hasError = true;
+            error('BindAttrUpdater', e);
+            var jsonError = toJson(e, true);
+            attrValues.push('[' + jsonError + ']');
+            jNode.
+              addClass('ng-exception').
+              attr('ng-error', jsonError);
+          }
+        } else {
+          attrValues.push(attributeTemplate[i]);
+        }
+      }
+      var attrValue = attrValues.length ? attrValues.join('') : null;
+      if(isImage && attrName == 'src' && !attrValue)
+        attrValue = scope.get('$config.blankImage');
+      jNode.attr(attrName, attrValue);
+    } 
   }
 };
 
-nglr.EvalUpdater = function(view, exp) {
+function EvalUpdater(view, exp) {
   this.view = view;
   this.exp = exp;
   this.hasError = false;
 };
-nglr.EvalUpdater.prototype.updateModel = function(scope) {};
-nglr.EvalUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp);
+EvalUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp);
+  }
 };
 
-nglr.HideUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-nglr.HideUpdater.prototype.updateModel = function(scope) {};
-nglr.HideUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(hideValue){
-    var view = jQuery(this.view);
-    if (nglr.toBoolean(hideValue)) {
-      view.hide();
-    } else {
-      view.show();
-    }
-  });
+function HideUpdater(view, exp) { this.view = view; this.exp = exp; };
+HideUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(hideValue){
+      var view = jQuery(this.view);
+      if (toBoolean(hideValue)) {
+        view.hide();
+      } else {
+        view.show();
+      }
+    });
+  }
 };
 
-nglr.ShowUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-nglr.ShowUpdater.prototype.updateModel = function(scope) {};
-nglr.ShowUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(hideValue){
-    var view = jQuery(this.view);
-    if (nglr.toBoolean(hideValue)) {
-      view.show();
-    } else {
-      view.hide();
-    }
-  });
+function ShowUpdater(view, exp) { this.view = view; this.exp = exp; };
+ShowUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(hideValue){
+      var view = jQuery(this.view);
+      if (toBoolean(hideValue)) {
+        view.show();
+      } else {
+        view.hide();
+      }
+    });
+  }
 };
 
-nglr.ClassUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-nglr.ClassUpdater.prototype.updateModel = function(scope) {};
-nglr.ClassUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(classValue){
-    if (classValue !== null && classValue !== undefined) {
-      this.view.className = classValue;
-    }
-  });
+function ClassUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      if (classValue !== null && classValue !== undefined) {
+        this.view.className = classValue;
+      }
+    });
+  }
 };
 
-nglr.ClassEvenUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-nglr.ClassEvenUpdater.prototype.updateModel = function(scope) {};
-nglr.ClassEvenUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(classValue){
-    var index = scope.get('$index');
-    jQuery(this.view).toggleClass(classValue, index % 2 === 1);
-  });
+function ClassEvenUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassEvenUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      var index = scope.get('$index');
+      jQuery(this.view).toggleClass(classValue, index % 2 === 1);
+    });
+  }
 };
 
-nglr.ClassOddUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-nglr.ClassOddUpdater.prototype.updateModel = function(scope) {};
-nglr.ClassOddUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(classValue){
-    var index = scope.get('$index');
-    jQuery(this.view).toggleClass(classValue, index % 2 === 0);
-  });
+function ClassOddUpdater(view, exp) { this.view = view; this.exp = exp; };
+ClassOddUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(classValue){
+      var index = scope.get('$index');
+      jQuery(this.view).toggleClass(classValue, index % 2 === 0);
+    });
+  }
 };
 
-nglr.StyleUpdater = function(view, exp) { this.view = view; this.exp = exp; };
-nglr.StyleUpdater.prototype.updateModel = function(scope) {};
-nglr.StyleUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.exp, {}, function(styleValue){
-    jQuery(this.view).attr('style', "").css(styleValue);
-  });
+function StyleUpdater(view, exp) { this.view = view; this.exp = exp; };
+StyleUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.exp, {}, function(styleValue){
+      jQuery(this.view).attr('style', "").css(styleValue);
+    });
+  }
 };
 
 ///////////////////////
 // RepeaterUpdater
 ///////////////////////
-nglr.RepeaterUpdater = function(view, repeaterExpression, template, prefix) {
+function RepeaterUpdater(view, repeaterExpression, template, prefix) {
   this.view = view;
   this.template = template;
   this.prefix = prefix;
@@ -633,85 +649,81 @@ nglr.RepeaterUpdater = function(view, repeaterExpression, template, prefix) {
   this.keyExp = match[2];
 };
 
-nglr.RepeaterUpdater.prototype.updateModel = function(scope) {};
-nglr.RepeaterUpdater.prototype.updateView = function(scope) {
-  scope.evalWidget(this, this.iteratorExp, {}, function(iterator){
-    var self = this;
-    if (!iterator) {
-      iterator = [];
-      if (scope.isProperty(this.iteratorExp)) {
-        scope.set(this.iteratorExp, iterator);
+RepeaterUpdater.prototype = {
+  updateModel: noop,
+  updateView: function(scope) {
+    scope.evalWidget(this, this.iteratorExp, {}, function(iterator){
+      var self = this;
+      if (!iterator) {
+        iterator = [];
+        if (scope.isProperty(this.iteratorExp)) {
+          scope.set(this.iteratorExp, iterator);
+        }
       }
-    }
-    var iteratorLength = iterator.length;
-    var childrenLength = this.children.length;
-    var cursor = this.view;
-    var time = 0;
-    var child = null;
-    var keyExp = this.keyExp;
-    var valueExp = this.valueExp;
-    var i = 0;
-    jQuery.each(iterator, function(key, value){
-      if (i < childrenLength) {
-        // reuse children
-        child = self.children[i];
-        child.scope.set(valueExp, value);
-      } else {
-        // grow children
-        var name = self.prefix +
-          valueExp + " in " + self.iteratorExp + "[" + i + "]";
-        var childScope = new nglr.Scope(scope.state, name);
-        childScope.set('$index', i);
-        if (keyExp)
-          childScope.set(keyExp, key);
-        childScope.set(valueExp, value);
-        child = { scope:childScope, element:self.template(childScope, self.prefix, i) };
-        cursor.after(child.element);
-        self.children.push(child);
+      var iteratorLength = iterator.length;
+      var childrenLength = this.children.length;
+      var cursor = this.view;
+      var time = 0;
+      var child = null;
+      var keyExp = this.keyExp;
+      var valueExp = this.valueExp;
+      var i = 0;
+      foreach(iterator, function(value, key){
+        if (i < childrenLength) {
+          // reuse children
+          child = self.children[i];
+          child.scope.set(valueExp, value);
+        } else {
+          // grow children
+          var name = self.prefix +
+            valueExp + " in " + self.iteratorExp + "[" + i + "]";
+          var childScope = new Scope(scope.state, name);
+          childScope.set('$index', i);
+          if (keyExp)
+            childScope.set(keyExp, key);
+          childScope.set(valueExp, value);
+          child = { scope:childScope, element:self.template(childScope, self.prefix, i) };
+          cursor.after(child.element);
+          self.children.push(child);
+        }
+        cursor = child.element;
+        var s = new Date().getTime();
+        child.scope.updateView();
+        time += new Date().getTime() - s;
+        i++;
+      });
+      // shrink children
+      for ( var r = childrenLength; r > iteratorLength; --r) {
+        var unneeded = this.children.pop().element[0];
+        unneeded.parentNode.removeChild(unneeded);
       }
-      cursor = child.element;
-      var s = new Date().getTime();
-      child.scope.updateView();
-      time += new Date().getTime() - s;
-      i++;
+      // Special case for option in select
+      if (child && child.element[0].nodeName === "OPTION") {
+        var select = jQuery(child.element[0].parentNode);
+        var cntl = select.data('controller');
+        if (cntl) {
+          cntl.lastValue = undefined;
+          cntl.updateView(scope);
+        }
+      }
     });
-    // shrink children
-    for ( var r = childrenLength; r > iteratorLength; --r) {
-      var unneeded = this.children.pop();
-      unneeded.element.removeNode();
-    }
-    // Special case for option in select
-    if (child && child.element[0].nodeName === "OPTION") {
-      var select = jQuery(child.element[0].parentNode);
-      var cntl = select.data('controller');
-      if (cntl) {
-        cntl.lastValue = undefined;
-        cntl.updateView(scope);
-      }
-    }
-  });
+  }
 };
 
 //////////////////////////////////
 // PopUp
 //////////////////////////////////
 
-nglr.PopUp = function(doc) {
+function PopUp(doc) {
   this.doc = doc;
 };
 
-nglr.PopUp.OUT_EVENT = "mouseleave mouseout click dblclick keypress keyup";
+PopUp.OUT_EVENT = "mouseleave mouseout click dblclick keypress keyup";
 
-nglr.PopUp.prototype.bind = function () {
-  var self = this;
-  this.doc.find('.ng-validation-error,.ng-exception').
-    live("mouseover", nglr.PopUp.onOver);
-};
-
-nglr.PopUp.onOver = function(e) {
-  nglr.PopUp.onOut();
+PopUp.onOver = function(e) {
+  PopUp.onOut();
   var jNode = jQuery(this);
-  jNode.bind(nglr.PopUp.OUT_EVENT, nglr.PopUp.onOut);
+  jNode.bind(PopUp.OUT_EVENT, PopUp.onOut);
   var position = jNode.position();
   var de = document.documentElement;
   var w = self.innerWidth || (de&&de.clientWidth) || document.body.clientWidth;
@@ -740,11 +752,19 @@ nglr.PopUp.onOver = function(e) {
   return true;
 };
 
-nglr.PopUp.onOut = function() {
+PopUp.onOut = function() {
   jQuery('#ng-callout').
-    unbind(nglr.PopUp.OUT_EVENT, nglr.PopUp.onOut).
+    unbind(PopUp.OUT_EVENT, PopUp.onOut).
     remove();
   return true;
+};
+
+PopUp.prototype = {
+  bind: function () {
+    var self = this;
+    this.doc.find('.ng-validation-error,.ng-exception').
+      live("mouseover", PopUp.onOver);
+  }
 };
 
 //////////////////////////////////
@@ -752,23 +772,25 @@ nglr.PopUp.onOut = function() {
 //////////////////////////////////
 
 
-nglr.Status = function(body) {
-  this.loader = body.append(nglr.Status.DOM).find("#ng-loading");
+function Status(body) {
+  this.loader = body.append(Status.DOM).find("#ng-loading");
   this.requestCount = 0;
 };
 
-nglr.Status.DOM ='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';
+Status.DOM ='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';
 
-nglr.Status.prototype.beginRequest = function () {
-  if (this.requestCount === 0) {
-    this.loader.show();
-  }
-  this.requestCount++;
-};
-
-nglr.Status.prototype.endRequest = function () {
-  this.requestCount--;
-  if (this.requestCount === 0) {
-    this.loader.hide("fold");
+Status.prototype = {
+  beginRequest: function () {
+    if (this.requestCount === 0) {
+      this.loader.show();
+    }
+    this.requestCount++;
+  },
+  
+  endRequest: function () {
+    this.requestCount--;
+    if (this.requestCount === 0) {
+      this.loader.hide("fold");
+    }
   }
 };
