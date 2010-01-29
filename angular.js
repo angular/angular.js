@@ -189,9 +189,11 @@ var consoleNode, msie,
     jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
     foreach          = _.each,
     extend           = _.extend,
+    identity         = _.identity,
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
+    angularFormatter = angular['formatter'] || (angular['formatter'] = {}), 
     angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments); 
@@ -1922,6 +1924,20 @@ foreach({
 }, function(v,k){angularFilter[k] = v;});
 
 angularFilterGoogleChartApi = angularFilter['googleChartApi'];
+function formater(format, parse) {return {'format':format, 'parse':parse};}
+function toString(obj) {return ""+obj;};
+extend(angularFormatter, {
+  'noop':formater(identity, identity),
+  'boolean':formater(toString, toBoolean),
+  'number':formater(toString, function(obj){return 1*obj;}),
+
+  'list':formater(
+    function(obj) { return obj ? obj.join(", ") : obj; },
+    function(value) { 
+      return value ? _(_(value.split(',')).map(jQuery.trim)).select(_.identity) : value;
+    }
+  )  
+});
 array = [].constructor;
 
 function toJson(obj, pretty){
@@ -3237,25 +3253,26 @@ WidgetFactory.prototype = {
     if (exp) exp = exp.split(':').pop();
     var event = "change";
     var bubbleEvent = true;
+    var formatter = angularFormatter[input.attr('ng-format')] || angularFormatter['noop'];
     if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
-      controller = new ButtonController(input[0], exp);
+      controller = new ButtonController(input[0], exp, formatter);
       event = "click";
       bubbleEvent = false;
     } else if (type == 'text' || type == 'textarea' || type == 'hidden' || type == 'password') {
-      controller = new TextController(input[0], exp);
+      controller = new TextController(input[0], exp, formatter);
       event = "keyup change";
     } else if (type == 'checkbox') {
-      controller = new CheckboxController(input[0], exp);
+      controller = new CheckboxController(input[0], exp, formatter);
       event = "click";
     } else if (type == 'radio') {
-      controller = new RadioController(input[0], exp);
+      controller = new RadioController(input[0], exp, formatter);
       event="click";
     } else if (type == 'select-one') {
-      controller = new SelectController(input[0], exp);
+      controller = new SelectController(input[0], exp, formatter);
     } else if (type == 'select-multiple') {
-      controller = new MultiSelectController(input[0], exp);
+      controller = new MultiSelectController(input[0], exp, formatter);
     } else if (type == 'file') {
-      controller = this.createFileController(input, exp);
+      controller = this.createFileController(input, exp, formatter);
     } else {
       throw 'Unknown type: ' + type;
     }
@@ -3404,8 +3421,9 @@ var ButtonController = NullController;
 ///////////////////////
 // TextController
 ///////////////////////
-function TextController(view, exp) {
+function TextController(view, exp, formatter) {
   this.view = view;
+  this.formatter = formatter;
   this.exp = exp;
   this.validator = view.getAttribute('ng-validate');
   this.required = typeof view.attributes['ng-required'] != "undefined";
@@ -3424,7 +3442,7 @@ TextController.prototype = {
     if (this.lastValue === value) {
       return false;
     } else {
-      scope.setEval(this.exp, value);
+      scope.setEval(this.exp, this.formatter['parse'](value));
       this.lastValue = value;
       return true;
     }
@@ -3432,10 +3450,10 @@ TextController.prototype = {
   
   updateView: function(scope) {
     var view = this.view;
-    var value = scope.get(this.exp);
+    var value = this.formatter['format'](scope.get(this.exp));
     if (typeof value === "undefined") {
       value = this.initialValue;
-      scope.setEval(this.exp, value);
+      scope.setEval(this.exp, this.formatter['parse'](value));
     }
     value = value ? value : '';
     if (this.lastValue != value) {
@@ -3466,21 +3484,23 @@ TextController.prototype = {
 ///////////////////////
 // CheckboxController
 ///////////////////////
-function CheckboxController(view, exp) {
+function CheckboxController(view, exp, formatter) {
   this.view = view;
   this.exp = exp;
   this.lastValue = undefined;
+  this.formatter = formatter;
   this.initialValue = view.checked ? view.value : "";
 };
 
 CheckboxController.prototype = {
-    updateModel: function(scope) {
+  updateModel: function(scope) {
+    jstd.console.log("model");
     var input = this.view;
     var value = input.checked ? input.value : '';
     if (this.lastValue === value) {
       return false;
     } else {
-      scope.setEval(this.exp, value);
+      scope.setEval(this.exp, this.formatter['parse'](value));
       this.lastValue = value;
       return true;
     }
@@ -3491,9 +3511,10 @@ CheckboxController.prototype = {
     var value = scope.eval(this.exp);
     if (typeof value === "undefined") {
       value = this.initialValue;
-      scope.setEval(this.exp, value);
+      scope.setEval(this.exp, this.formatter['parse'](value));
     }
-    input.checked = input.value == (''+value);
+    value = this.formatter['format'](value);
+    input.checked = input.value == value;
   }
 };
 
