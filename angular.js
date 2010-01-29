@@ -3429,7 +3429,7 @@ function TextController(view, exp, formatter) {
   this.required = typeof view.attributes['ng-required'] != "undefined";
   this.lastErrorText = null;
   this.lastValue = undefined;
-  this.initialValue = view.value;
+  this.initialValue = this.formatter['parse'](view.value);
   var widget = view.getAttribute('ng-widget');
   if (widget === 'datepicker') {
     jQuery(view).datepicker();
@@ -3438,11 +3438,11 @@ function TextController(view, exp, formatter) {
 
 TextController.prototype = {
   updateModel: function(scope) {
-    var value = this.view.value;
+    var value = this.formatter['parse'](this.view.value);
     if (this.lastValue === value) {
       return false;
     } else {
-      scope.setEval(this.exp, this.formatter['parse'](value));
+      scope.setEval(this.exp, value);
       this.lastValue = value;
       return true;
     }
@@ -3450,16 +3450,17 @@ TextController.prototype = {
   
   updateView: function(scope) {
     var view = this.view;
-    var value = this.formatter['format'](scope.get(this.exp));
+    var value = scope.get(this.exp);
     if (typeof value === "undefined") {
       value = this.initialValue;
-      scope.setEval(this.exp, this.formatter['parse'](value));
+      scope.setEval(this.exp, value);
     }
     value = value ? value : '';
-    if (this.lastValue != value) {
-      view.value = value;
+    if (!_(this.lastValue).isEqual(value)) {
+      view.value = this.formatter['format'](value);
       this.lastValue = value;
     }
+    
     var isValidationError = false;
     view.removeAttribute('ng-error');
     if (this.required) {
@@ -3489,14 +3490,15 @@ function CheckboxController(view, exp, formatter) {
   this.exp = exp;
   this.lastValue = undefined;
   this.formatter = formatter;
-  this.initialValue = view.checked ? view.value : "";
+  this.initialValue = this.formatter['parse'](view.checked ? view.value : "");
 };
 
 CheckboxController.prototype = {
   updateModel: function(scope) {
-    jstd.console.log("model");
     var input = this.view;
     var value = input.checked ? input.value : '';
+    value = this.formatter['parse'](value);
+    value = this.formatter['format'](value);
     if (this.lastValue === value) {
       return false;
     } else {
@@ -3511,10 +3513,9 @@ CheckboxController.prototype = {
     var value = scope.eval(this.exp);
     if (typeof value === "undefined") {
       value = this.initialValue;
-      scope.setEval(this.exp, this.formatter['parse'](value));
+      scope.setEval(this.exp, value);
     }
-    value = this.formatter['format'](value);
-    input.checked = input.value == value;
+    input.checked = this.formatter['parse'](input.value) == value;
   }
 };
 
