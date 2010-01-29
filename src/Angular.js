@@ -26,6 +26,7 @@ var consoleNode, jQuery, msie,
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
+    angularFormater  = angular['formater']  || (angular['formater']  = {}), 
     angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments); 
