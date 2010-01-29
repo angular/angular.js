@@ -42,6 +42,7 @@ task :compile do
       src/ControlBar.js \
       src/DataStore.js \
       src/Filters.js \
+      src/Formatters.js \
       src/JSON.js \
       src/Model.js \
       src/Parser.js \

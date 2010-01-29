@@ -129,10 +129,10 @@ BinderTest.prototype.testChangingRadioUpdatesModel = function(){
 };
 
 BinderTest.prototype.testChangingCheckboxUpdatesModel = function(){
-  var form = compile('<input type="checkbox" name="model.price" value="A" checked>');
+  var form = compile('<input type="checkbox" name="model.price" value="true" checked ng-format="boolean">');
   form.scope.set('model', {});
   form.binder.updateView();
-  assertEquals('A', form.scope.get('model').price);
+  assertEquals(true, form.scope.get('model').price);
 };
 
 BinderTest.prototype.testBindUpdate = function() {
@@ -950,4 +950,17 @@ BinderTest.prototype.testItShouldRenderMultiRootHtmlInBinding = function() {
   assertEquals(
       '<div>before <span ng-bind="a|html">a<b>c</b>d</span>after</div>', 
       x.node.sortedHtml());
+};
+
+BinderTest.prototype.testItShouldUseFormaterForText = function() {
+  var x = compile('<input name="a" ng-format="list" value="a,b">');
+  x.binder.updateView();
+  assertEquals(['a','b'], x.scope.get('a'));
+  var input = x.node.find('input');
+  input[0].value = ' x,,yz';
+  input.change();
+  assertEquals(['x','yz'], x.scope.get('a'));
+  x.scope.set('a', [1 ,2, 3]);
+  x.binder.updateView();
+  assertEquals('1, 2, 3', input[0].value);
 };

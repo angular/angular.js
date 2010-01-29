@@ -24,10 +24,11 @@ var consoleNode, msie,
     jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
     foreach          = _.each,
     extend           = _.extend,
+    identity         = _.identity,
     angular          = window['angular']    || (window['angular']    = {}), 
     angularValidator = angular['validator'] || (angular['validator'] = {}), 
     angularFilter    = angular['filter']    || (angular['filter']    = {}), 
-    angularFormater  = angular['formater']  || (angular['formater']  = {}), 
+    angularFormatter = angular['formatter'] || (angular['formatter'] = {}), 
     angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments); 

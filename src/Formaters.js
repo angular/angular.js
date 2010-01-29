@@ -1,6 +1,0 @@
-
-extend(angularFormater, {
-  'noop':function(){
-    
-  }
-});
