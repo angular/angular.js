@@ -7,8 +7,10 @@ TestCase("formatterTest", {
   
   testList: function() {
     assertEquals('a, b', angular.formatter.list.format(['a', 'b']));
+    assertEquals('', angular.formatter.list.format([]));
     assertEquals(['abc', 'c'], angular.formatter.list.parse("  , abc , c ,,"));
-    assertEquals(null, angular.formatter.list.parse(null));
+    assertEquals([], angular.formatter.list.parse(""));
+    assertEquals([], angular.formatter.list.parse(null));
   },
   
   testBoolean: function() {

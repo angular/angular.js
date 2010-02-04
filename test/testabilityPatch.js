@@ -12,7 +12,7 @@ function noop(){}
 jstd = jstestdriver;
 
 swfobject = {
-  createSwf:function(){
+  createSwf:function() {
     fail("must mock out swfobject.createSwf in test.");
   }
 };
@@ -32,7 +32,6 @@ function report(reportTest){
     reportTest(success, module, name, this.nodeValue);
   });
 }
-
 
 MockLocation = function() {
   this.url = "http://server";

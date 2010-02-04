@@ -1934,7 +1934,7 @@ extend(angularFormatter, {
   'list':formater(
     function(obj) { return obj ? obj.join(", ") : obj; },
     function(value) { 
-      return value ? _(_(value.split(',')).map(jQuery.trim)).select(_.identity) : value;
+      return value ? _(_(value.split(',')).map(jQuery.trim)).select(_.identity) : [];
     }
   )  
 });
