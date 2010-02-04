@@ -3464,7 +3464,7 @@ TextController.prototype = {
     var isValidationError = false;
     view.removeAttribute('ng-error');
     if (this.required) {
-      isValidationError = !(value && value.length > 0);
+      isValidationError = !(value && $.trim(value).length > 0);
     }
     var errorText = isValidationError ? "Required Value" : null;
     if (!isValidationError && this.validator && value) {

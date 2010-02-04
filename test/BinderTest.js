@@ -767,6 +767,14 @@ BinderTest.prototype.testValidateForm = function() {
   c.binder.updateView();
   assertEquals(3, c.scope.get("$invalidWidgets.length"));
 
+  c.scope.set('name', '');
+  c.binder.updateView();
+  assertEquals(3, c.scope.get("$invalidWidgets.length"));
+
+  c.scope.set('name', ' ');
+  c.binder.updateView();
+  assertEquals(3, c.scope.get("$invalidWidgets.length"));
+
   c.scope.set('name', 'abc');
   c.binder.updateView();
   assertEquals(2, c.scope.get("$invalidWidgets.length"));
