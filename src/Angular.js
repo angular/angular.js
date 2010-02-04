@@ -34,6 +34,10 @@ var consoleNode, msie,
         log(arguments); window.alert.apply(window, arguments); 
       });
 
+var isVisible = isVisible || function (element) {
+  return jQuery(element).is(":visible");  
+}
+
 function log(a, b, c){
   var console = window['console'];
   switch(arguments.length) {
@@ -95,10 +99,6 @@ function isLeafNode (node) {
   default:
     return false;
   }
-}
-
-function isVisible(element) {
-  return jQuery(element).is(":visible");  
 }
 
 function setHtml(node, html) {
@@ -281,7 +281,7 @@ function wireAngular(element, config) {
   var server = config['database'] =="$MEMORY" ?
       new FrameServer(window) :
       new Server(config['server'], jQuery['getScript']);
-  server = new VisualServer(server, new Status(jQuery(element.body)), onUpdate);
+  server = new VisualServer(server, new Status(element.find('body')), onUpdate);
   var users = new Users(server, controlBar);
   var databasePath = '/data/' + config['database'];
   var post = function(request, callback){
@@ -330,7 +330,6 @@ function wireAngular(element, config) {
   new PopUp(element).bind();
   
   var self = _(exposeMethods(scope, {
-    'updateView': scope.updateView,
     'set':        scope.set,
     'get':        scope.get,
     'eval':       scope.eval
@@ -343,6 +342,7 @@ function wireAngular(element, config) {
         return self;
       },
     'element':element[0],
+    'updateView': _(binder.updateView).bind(binder),
     'config':config
   });
   return self;

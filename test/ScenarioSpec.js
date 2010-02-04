@@ -21,10 +21,12 @@ describe("ScenarioSpec: Compilation", function(){
 describe("ScenarioSpec: Scope", function(){
   it("should have set, get, eval, init, updateView methods", function(){
     var scope = angular.compile('<div>{{a}}</div>').init();
+    scope.eval("$invalidWidgets.push({})");
     expect(scope.set("a", 2)).toEqual(2);
     expect(scope.get("a")).toEqual(2);
     expect(scope.eval("a=3")).toEqual(3);
     scope.updateView();
+    expect(scope.eval("$invalidWidgets")).toEqual([]);
     expect($(scope.element).text()).toEqual('3');
   });
   

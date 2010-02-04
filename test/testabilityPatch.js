@@ -135,3 +135,6 @@ function assertThrows(error, fn){
   }
   assertEquals(error, exception);
 }
+
+log = noop;
+error = noop;
