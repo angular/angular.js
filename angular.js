@@ -459,6 +459,7 @@ function wireAngular(element, config) {
     '$anchor'    : binder.anchor,
     '$updateView': _(binder.updateView).bind(binder),
     '$config'    : config,
+    '$invalidWidgets': [],
     '$console'   : window.console,
     '$datastore' : exposeMethods(datastore, {
       'load':                    datastore.load,
@@ -952,7 +953,7 @@ Binder.prototype = {
   updateView: function() {
     var start = new Date().getTime();
     var scope = jQuery(this.doc).scope();
-    scope.set("$invalidWidgets", []);
+    scope.clearInvalid();
     scope.updateView();
     var end = new Date().getTime();
     this.updateAnchor();
@@ -3011,6 +3012,11 @@ Scope.prototype = {
   entity: function(entityDeclaration, datastore) {
     var expression = new Parser(entityDeclaration).entityDeclaration();
     return expression({scope:this, datastore:datastore});
+  },
+  
+  clearInvalid: function() {
+    var invalid = this.state['$invalidWidgets'];
+    while(invalid.length > 0) {invalid.pop();}
   },
   
   markInvalid: function(widget) {

@@ -153,6 +153,11 @@ Scope.prototype = {
     return expression({scope:this, datastore:datastore});
   },
   
+  clearInvalid: function() {
+    var invalid = this.state['$invalidWidgets'];
+    while(invalid.length > 0) {invalid.pop();}
+  },
+  
   markInvalid: function(widget) {
     this.state['$invalidWidgets'].push(widget);
   },

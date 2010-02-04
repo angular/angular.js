@@ -3,7 +3,7 @@ BinderTest = TestCase('BinderTest');
 function compile(content, initialScope, config) {
   var h = html(content);
   config = config || {autoSubmit:true};
-  var scope = new Scope(initialScope, "ROOT");
+  var scope = new Scope($.extend({$invalidWidgets:[]}, initialScope), "ROOT");
   h.data('scope', scope);
   var datastore = new DataStore();
   var binder = new Binder(h[0], new WidgetFactory(), datastore, new MockLocation(), config);
@@ -875,18 +875,15 @@ BinderTest.prototype.testParseQueryString = function(){
 
 BinderTest.prototype.testSetBinderAnchorTriggersListeners = function(){
   expectAsserts(2);
-  var doc = html("<div/>")[0];
-  var binder = new Binder(doc, null, null, new MockLocation());
-  var scope = new Scope({$binder:binder, $anchor:binder.anchor});
-  jQuery(doc).data('scope', scope);
+  var doc = compile("<div/>");
 
-  scope.addWatchListener("$anchor.name", function(newVal, oldVal) {
+  doc.scope.addWatchListener("$anchor.name", function(newVal, oldVal) {
     assertEquals("new", newVal);
     assertEquals(undefined, oldVal);
   });
 
-  binder.anchor.name = "new";
-  binder.onUrlChange("http://base#name=new");
+  doc.binder.anchor.name = "new";
+  doc.binder.onUrlChange("http://base#name=new");
 };
 
 BinderTest.prototype.testItShouldDisplayErrorWhenActionIsSyntacticlyIncorect = function(){

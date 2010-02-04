@@ -95,7 +95,7 @@ Binder.prototype = {
   updateView: function() {
     var start = new Date().getTime();
     var scope = jQuery(this.doc).scope();
-    scope.set("$invalidWidgets", []);
+    scope.clearInvalid();
     scope.updateView();
     var end = new Date().getTime();
     this.updateAnchor();

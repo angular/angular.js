@@ -294,6 +294,7 @@ function wireAngular(element, config) {
     '$anchor'    : binder.anchor,
     '$updateView': _(binder.updateView).bind(binder),
     '$config'    : config,
+    '$invalidWidgets': [],
     '$console'   : window.console,
     '$datastore' : exposeMethods(datastore, {
       'load':                    datastore.load,
