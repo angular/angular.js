@@ -97,6 +97,10 @@ function isLeafNode (node) {
   }
 }
 
+function isVisible(element) {
+  return jQuery(element).is(":visible");  
+}
+
 function setHtml(node, html) {
   if (isLeafNode(node)) {
     if (msie) {

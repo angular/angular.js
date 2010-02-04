@@ -25,6 +25,13 @@ TestCase("formatterTest", {
   testNumber: function() {
     assertEquals('1', angular.formatter.number.format(1));
     assertEquals(1, angular.formatter.number.format('1'));
+  },
+  
+  testTrim: function() {
+    assertEquals('', angular.formatter.trim.format(null));
+    assertEquals('', angular.formatter.trim.format(""));
+    assertEquals('a', angular.formatter.trim.format(" a "));
+    assertEquals('a', angular.formatter.trim.parse(' a '));
   }
   
 });

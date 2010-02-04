@@ -788,6 +788,17 @@ BinderTest.prototype.testValidateForm = function() {
   assertEquals(0, c.scope.get("$invalidWidgets.length"));
 };
 
+BinderTest.prototype.testValidateOnlyVisibleItems = function(){
+  var c = compile('<input name="name" ng-required><input ng-show="show" name="name" ng-required>');
+  c.scope.set("show", true);
+  c.binder.updateView();
+  assertEquals(2, c.scope.get("$invalidWidgets.length"));
+
+  c.scope.set("show", false);
+  c.binder.updateView();
+  assertEquals(1, c.scope.get("$invalidWidgets.length"));
+};
+
 BinderTest.prototype.testDeleteAttributeIfEvaluatesFalse = function() {
   var c = compile(
       '<input name="a0" ng-bind-attr="{disabled:\'{{true}}\'}"><input name="a1" ng-bind-attr="{disabled:\'{{false}}\'}">' +

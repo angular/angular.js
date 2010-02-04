@@ -262,6 +262,10 @@ function isLeafNode (node) {
   }
 }
 
+function isVisible(element) {
+  return jQuery(element).is(":visible");  
+}
+
 function setHtml(node, html) {
   if (isLeafNode(node)) {
     if (msie) {
@@ -1924,7 +1928,7 @@ foreach({
 }, function(v,k){angularFilter[k] = v;});
 
 angularFilterGoogleChartApi = angularFilter['googleChartApi'];
-function formater(format, parse) {return {'format':format, 'parse':parse};}
+function formater(format, parse) {return {'format':format, 'parse':parse || format};}
 function toString(obj) {return ""+obj;};
 extend(angularFormatter, {
   'noop':formater(identity, identity),
@@ -1936,6 +1940,10 @@ extend(angularFormatter, {
     function(value) { 
       return value ? _(_(value.split(',')).map(jQuery.trim)).select(_.identity) : [];
     }
+  ),
+
+  'trim':formater(
+    function(obj) { return obj ? $.trim("" + obj) : ""; }
   )  
 });
 array = [].constructor;
@@ -3464,7 +3472,7 @@ TextController.prototype = {
     var isValidationError = false;
     view.removeAttribute('ng-error');
     if (this.required) {
-      isValidationError = !(value && $.trim(value).length > 0);
+      isValidationError = !(value && $.trim("" + value).length > 0);
     }
     var errorText = isValidationError ? "Required Value" : null;
     if (!isValidationError && this.validator && value) {
@@ -3473,7 +3481,7 @@ TextController.prototype = {
     }
     if (this.lastErrorText !== errorText) {
       this.lastErrorText = isValidationError;
-      if (errorText !== null) {
+      if (errorText !== null && isVisible(view)) {
         view.setAttribute('ng-error', errorText);
         scope.markInvalid(this);
       }

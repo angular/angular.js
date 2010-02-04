@@ -230,7 +230,7 @@ TextController.prototype = {
     var isValidationError = false;
     view.removeAttribute('ng-error');
     if (this.required) {
-      isValidationError = !(value && $.trim(value).length > 0);
+      isValidationError = !(value && $.trim("" + value).length > 0);
     }
     var errorText = isValidationError ? "Required Value" : null;
     if (!isValidationError && this.validator && value) {
@@ -239,7 +239,7 @@ TextController.prototype = {
     }
     if (this.lastErrorText !== errorText) {
       this.lastErrorText = isValidationError;
-      if (errorText !== null) {
+      if (errorText !== null && isVisible(view)) {
         view.setAttribute('ng-error', errorText);
         scope.markInvalid(this);
       }

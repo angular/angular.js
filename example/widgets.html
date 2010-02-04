@@ -9,15 +9,20 @@
         angular.compile(document).init();
       });
     </script>
+    <link rel="StyleSheet" type="text/css" href="../css/angular.css"/>
   </head>
   <body>
-    <input name="form.required" ng-required/> 
+    <input type="checkbox" name="form.checked" ng-format="boolean" value="true" checked="checked" />
+    <input ng-show="form.checked" name="form.required" ng-required/> 
     <hr/>
     <input name="form.list" ng-format="list" ng-required/> 
     <input name="form.list" ng-format="list" /> 
     <hr/>    
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" checked="checked" />
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" />
-    <pre>{{form}}</pre>
+    <pre>
+form={{form}}
+$invalidWidgets.length={{$invalidWidgets.length}}
+    </pre>
   </body>
 </html>

@@ -1,4 +1,4 @@
-function formater(format, parse) {return {'format':format, 'parse':parse};}
+function formater(format, parse) {return {'format':format, 'parse':parse || format};}
 function toString(obj) {return ""+obj;};
 extend(angularFormatter, {
   'noop':formater(identity, identity),
@@ -10,5 +10,9 @@ extend(angularFormatter, {
     function(value) { 
       return value ? _(_(value.split(',')).map(jQuery.trim)).select(_.identity) : [];
     }
+  ),
+
+  'trim':formater(
+    function(obj) { return obj ? $.trim("" + obj) : ""; }
   )  
 });

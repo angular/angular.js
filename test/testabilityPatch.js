@@ -96,15 +96,19 @@ function decode64(base64){
 
 configureJQueryPlugins();
 
+function isVisible(node) {
+  var display = $(node).css('display');
+  if (display == 'block') display = "";
+  return display != 'none';
+}
+
 function assertHidden(node) {
   var display = node.css('display');
-  assertEquals("Node should be hidden but vas visible: " + node.sortedHtml(), 'none', display);
+  assertFalse("Node should be hidden but vas visible: " + node.sortedHtml(), isVisible(node));
 }
 
 function assertVisible(node) {
-  var display = node.css('display');
-  if (display == 'block') display = "";
-  assertEquals("Node should be visible but vas hidden: " + node.sortedHtml(), '', display);
+  assertTrue("Node should be visible but vas hidden: " + node.sortedHtml(), isVisible(node));
 }
 
 function assertJsonEquals(expected, actual) {
