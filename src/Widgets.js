@@ -779,8 +779,8 @@ PopUp.prototype = {
 
 
 function Status(body) {
-  this.loader = body.append(Status.DOM).find("#ng-loading");
   this.requestCount = 0;
+  this.body = body;
 };
 
 Status.DOM ='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';
@@ -788,7 +788,7 @@ Status.DOM ='<div id="ng-spacer"></div><div id="ng-loading">loading....</div>';
 Status.prototype = {
   beginRequest: function () {
     if (this.requestCount === 0) {
-      this.loader.show();
+      (this.loader = this.loader || this.body.append(Status.DOM).find("#ng-loading")).show();
     }
     this.requestCount++;
   },
