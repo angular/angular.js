@@ -373,6 +373,8 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
   var a = compile('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
   var form = a.node;
   var items = [{a:"A"}, {a:"B"}];
+  var initialDataCount = _(jQuery.cache).size();
+  assertTrue("" + initialDataCount, initialDataCount > 0);
   a.scope.set('model', {items:items});
 
   a.binder.updateView();
@@ -398,6 +400,12 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
         '<li ng-bind="item.a" ng-repeat-index="0">A</li>' +
         '<li ng-bind="item.a" ng-repeat-index="1">B</li>' +
         '</ul>', form.sortedHtml());
+  
+  items.shift();
+  items.shift();
+  a.binder.updateView();
+  var currentDataCount = _(jQuery.cache).size();
+  assertEquals("I have leaked " + (currentDataCount - initialDataCount), initialDataCount, currentDataCount);
 };
 
 BinderTest.prototype.testRepeaterContentDoesNotBind = function(){

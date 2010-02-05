@@ -425,7 +425,6 @@ function BindUpdater(view, exp) {
   this.view = view;
   this.exp = Binder.parseBindings(exp);
   this.hasError = false;
-  this.scopeSelf = {element:view};
 };
 
 BindUpdater.toText = function(obj) {
@@ -481,7 +480,7 @@ BindUpdater.prototype = {
       var part = parts[i];
       var binding = Binder.binding(part);
       if (binding) {
-        scope.evalWidget(this, binding, this.scopeSelf, function(value){
+        scope.evalWidget(this, binding, {element:this.view}, function(value){
           html.push(BindUpdater.toText(value));
         }, function(e, text){
           setHtml(this.view, text);
@@ -700,8 +699,7 @@ RepeaterUpdater.prototype = {
       });
       // shrink children
       for ( var r = childrenLength; r > iteratorLength; --r) {
-        var unneeded = this.children.pop().element[0];
-        unneeded.parentNode.removeChild(unneeded);
+        this.children.pop().element.remove();
       }
       // Special case for option in select
       if (child && child.element[0].nodeName === "OPTION") {
