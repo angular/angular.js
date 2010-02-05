@@ -19,6 +19,8 @@ ValidatorTest.prototype.testNumber = function() {
 ValidatorTest.prototype.testInteger = function() {
   assertEquals(angular.validator.integer("ab"), "Value is not a number.");
   assertEquals(angular.validator.integer("1.1"), "Value is not a whole number.");
+  assertEquals(angular.validator.integer("1.0"), "Value is not a whole number.");
+  assertEquals(angular.validator.integer("1."), "Value is not a whole number.");
   assertEquals(angular.validator.integer("-1",0), "Value can not be less than 0.");
   assertEquals(angular.validator.integer("11",0,10), "Value can not be greater than 10.");
   assertEquals(angular.validator.integer("1"), null);

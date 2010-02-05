@@ -3192,11 +3192,12 @@ foreach({
   },
   
   'integer': function(value, min, max) {
-    var number = angularValidator['number'](value, min, max);
-    if (number === null && value != Math.round(value)) {
+    var numberError = angularValidator['number'](value, min, max);
+    if (numberError) return numberError;
+    if (!("" + value).match(/^\s*[\d+]*\s*$/) || value != Math.round(value)) {
       return "Value is not a whole number.";
     }
-    return number;
+    return null;
   },
   
   'date': function(value, min, max) {
