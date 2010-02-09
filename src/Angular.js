@@ -276,6 +276,7 @@ function exposeMethods(obj, methods){
 function wireAngular(element, config) {
   var widgetFactory = new WidgetFactory(config['server'], config['database']);
   var binder = new Binder(element[0], widgetFactory, datastore, config['location'], config);
+  binder.updateListeners.push(config.onUpdateView);
   var controlBar = new ControlBar(element.find('body'), config['server'], config['database']);
   var onUpdate = function(){binder.updateView();};
   var server = config['database'] =="$MEMORY" ?
@@ -358,6 +359,7 @@ angular['compile'] = function(element, config) {
   jQuery = window['jQuery'];
   msie   = jQuery['browser']['msie'];
   config = _({
+      'onUpdateView': noop,
       'server': "",
       'location': {'get':noop, 'set':noop, 'listen':noop}
     }).extend(config||{});

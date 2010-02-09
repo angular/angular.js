@@ -99,7 +99,7 @@ Binder.prototype = {
     scope.updateView();
     var end = new Date().getTime();
     this.updateAnchor();
-    _.each(this.updateListeners, function(fn) {fn();});
+    foreach(this.updateListeners, function(fn) {fn();});
   },
   
   docFindWithSelf: function(exp){

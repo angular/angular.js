@@ -1,6 +1,5 @@
 AngularTest = TestCase('AngularTest');
 
-
 UrlWatcherTest = TestCase('UrlWatcherTest');
 
 UrlWatcherTest.prototype.testUrlWatcher = function () {
