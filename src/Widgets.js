@@ -239,7 +239,7 @@ TextController.prototype = {
     }
     if (this.lastErrorText !== errorText) {
       this.lastErrorText = isValidationError;
-      if (errorText !== null && isVisible(view)) {
+      if (errorText && isVisible(view)) {
         view.setAttribute('ng-error', errorText);
         scope.markInvalid(this);
       }

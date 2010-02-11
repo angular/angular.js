@@ -18,7 +18,7 @@ WidgetTest.prototype.testValidator = function () {
   var scope = new Scope({$invalidWidgets:[]});
   var cntl = new TextController(view[0], 'a', angularFormatter.noop);
   angular.validator.testValidator = function(value, expect){
-    return value == expect ? null : "Error text";
+    return value == expect ? false : "Error text";
   };
 
   scope.set('a', '');
