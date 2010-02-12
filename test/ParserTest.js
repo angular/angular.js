@@ -160,6 +160,9 @@ ParserTest.prototype.testComparison = function(){
   assertEquals(scope.eval("1<=1"), true);
   assertEquals(scope.eval("1>2"), 1>2);
   assertEquals(scope.eval("2>=1"), 2>=1);
+
+  assertEquals(true==2<3, scope.eval("true==2<3"));
+
 };
 
 ParserTest.prototype.testLogical = function(){
@@ -465,5 +468,12 @@ ParserTest.prototype.testDoubleNegationBug = function (){
   assertEquals(false, scope.eval('!true'));
   assertEquals(true, scope.eval('!!true'));
   assertEquals('a', scope.eval('{true:"a", false:"b"}[!!true]'));
+};
+
+ParserTest.prototype.testNegationBug = function () {
+  var scope = new Scope();
+  assertEquals(!false || true, scope.eval("!false || true"));
+  assertEquals(!11 == 10, scope.eval("!11 == 10"));
+  assertEquals(12/6/2, scope.eval("12/6/2"));
 };
 

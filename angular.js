@@ -1635,7 +1635,7 @@ var angularFilterGoogleChartApi;
 
 foreach({
   'currency': function(amount){
-    jQuery(this.element).toggleClass('ng-format-negative', amount < 0);
+    jQuery(this.$element).toggleClass('ng-format-negative', amount < 0);
     return '$' + angularFilter['number'].apply(this, [amount, 2]);
   },
   
@@ -1671,7 +1671,7 @@ foreach({
   },
   
   'json': function(object) {
-    jQuery(this.element).addClass("ng-monospace");
+    jQuery(this.$element).addClass("ng-monospace");
     return toJson(object, true);
   },
   
@@ -2488,7 +2488,16 @@ Parser.prototype = {
           for ( var i = 0; i < argsFn.length; i++) {
             args.push(argsFn[i](self));
           }
-          return fn.apply(self, args);
+          var pipeThis = function(){
+            var _this = this;
+            foreach(self, function(v, k) {
+              if (k.charAt(0) == '$') {
+                _this[k] = v; 
+              }
+            });
+          };
+          pipeThis.prototype = self.self;
+          return fn.apply(new pipeThis(), args);
         };
         return function(){
           return fnInvoke;
@@ -2541,48 +2550,30 @@ Parser.prototype = {
   },
   
   logicalAND: function(){
-    var left = this.negated();
+    var left = this.equality();
     var token;
-    while(true) {
-      if ((token = this.expect('&&'))) {
-        left = this._binary(left, token.fn, this.negated());
-      } else {
-        return left;
-      }
+    if ((token = this.expect('&&'))) {
+      left = this._binary(left, token.fn, this.logicalAND());
     }
-  },
-  
-  negated: function(){
-    var token;
-    if (token = this.expect('!')) {
-      return this._unary(token.fn, this.assignment());
-    } else {
-      return this.equality();
-    }
+    return left;
   },
   
   equality: function(){
     var left = this.relational();
     var token;
-    while(true) {
-      if ((token = this.expect('==','!='))) {
-        left = this._binary(left, token.fn, this.relational());
-      } else {
-        return left;
-      }
+    if ((token = this.expect('==','!='))) {
+      left = this._binary(left, token.fn, this.equality());
     }
+    return left;
   },
   
   relational: function(){
     var left = this.additive();
     var token;
-    while(true) {
-      if ((token = this.expect('<', '>', '<=', '>='))) {
-        left = this._binary(left, token.fn, this.additive());
-      } else {
-        return left;
-      }
+    if (token = this.expect('<', '>', '<=', '>=')) {
+      left = this._binary(left, token.fn, this.relational());
     }
+    return left;
   },
   
   additive: function(){
@@ -2608,7 +2599,9 @@ Parser.prototype = {
     if (this.expect('+')) {
       return this.primary();
     } else if (token = this.expect('-')) {
-      return this._binary(Parser.ZERO, token.fn, this.multiplicative());
+      return this._binary(Parser.ZERO, token.fn, this.unary());
+    } else if (token = this.expect('!')) {
+      return this._unary(token.fn, this.unary());
     } else {
      return this.primary();
     }
@@ -3001,13 +2994,13 @@ Scope.prototype = {
     }
   },
   
-  validate: function(expressionText, value) {
+  validate: function(expressionText, value, element) {
     var expression = Scope.expressionCache[expressionText];
     if (!expression) {
       expression = new Parser(expressionText).validator();
       Scope.expressionCache[expressionText] = expression;
     }
-    var self = {scope:this};
+    var self = {scope:this, self:this.state, '$element':element};
     return expression(self)(self, value);
   },
   
@@ -3485,7 +3478,7 @@ TextController.prototype = {
     }
     var errorText = isValidationError ? "Required Value" : null;
     if (!isValidationError && this.validator && value) {
-      errorText = scope.validate(this.validator, value);
+      errorText = scope.validate(this.validator, value, view);
       isValidationError = !!errorText;
     }
     if (this.lastErrorText !== errorText) {
@@ -3731,7 +3724,7 @@ BindUpdater.prototype = {
       var part = parts[i];
       var binding = Binder.binding(part);
       if (binding) {
-        scope.evalWidget(this, binding, {element:this.view}, function(value){
+        scope.evalWidget(this, binding, {$element:this.view}, function(value){
           html.push(BindUpdater.toText(value));
         }, function(e, text){
           setHtml(this.view, text);
@@ -3771,7 +3764,7 @@ BindAttrUpdater.prototype = {
         var binding = Binder.binding(attributeTemplate[i]);
         if (binding) {
           try {
-            var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
+            var value = scope.eval(binding, {$element:jNode[0], attrName:attrName});
             if (value && (value.constructor !== array || value.length !== 0))
               attrValues.push(value);
           } catch (e) {

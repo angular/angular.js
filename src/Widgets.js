@@ -234,7 +234,7 @@ TextController.prototype = {
     }
     var errorText = isValidationError ? "Required Value" : null;
     if (!isValidationError && this.validator && value) {
-      errorText = scope.validate(this.validator, value);
+      errorText = scope.validate(this.validator, value, view);
       isValidationError = !!errorText;
     }
     if (this.lastErrorText !== errorText) {
@@ -480,7 +480,7 @@ BindUpdater.prototype = {
       var part = parts[i];
       var binding = Binder.binding(part);
       if (binding) {
-        scope.evalWidget(this, binding, {element:this.view}, function(value){
+        scope.evalWidget(this, binding, {$element:this.view}, function(value){
           html.push(BindUpdater.toText(value));
         }, function(e, text){
           setHtml(this.view, text);
@@ -520,7 +520,7 @@ BindAttrUpdater.prototype = {
         var binding = Binder.binding(attributeTemplate[i]);
         if (binding) {
           try {
-            var value = scope.eval(binding, {element:jNode[0], attrName:attrName});
+            var value = scope.eval(binding, {$element:jNode[0], attrName:attrName});
             if (value && (value.constructor !== array || value.length !== 0))
               attrValues.push(value);
           } catch (e) {

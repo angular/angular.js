@@ -1,5 +1,22 @@
 ValidatorTest = TestCase('ValidatorTest');
 
+ValidatorTest.prototype.testItShouldHaveThisSet = function() {
+  expectAsserts(5);
+  var self;
+  angular.validator.myValidator = function(first, last){
+    assertEquals('misko', first);
+    assertEquals('hevery', last);
+    self = this;
+  };
+  var c = compile('<input name="name" ng-validate="myValidator:\'hevery\'"/>');
+  c.scope.set('name', 'misko');
+  c.scope.set('state', 'abc');
+  c.binder.updateView();
+  assertEquals('abc', self.state);
+  assertEquals('misko', self.name);
+  assertEquals('name', self.$element.name);
+};
+
 ValidatorTest.prototype.testRegexp = function() {
   assertEquals(angular.validator.regexp("abc", /x/, "E1"), "E1");
   assertEquals(angular.validator.regexp("abc", '/x/'),
@@ -64,4 +81,3 @@ ValidatorTest.prototype.testJson = function() {
   assertNotNull(angular.validator.json("''X"));
   assertNull(angular.validator.json("{}"));
 };
-

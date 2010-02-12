@@ -2,7 +2,7 @@ FiltersTest = TestCase('FiltersTest');
 
 FiltersTest.prototype.testCurrency = function(){
   var html = $('<span/>');
-  var context = {element:html[0]};
+  var context = {$element:html[0]};
   var currency = bind(context, angular.filter.currency);
 
   assertEquals(currency(0), '$0.00');
@@ -17,10 +17,10 @@ FiltersTest.prototype.testFilterThisIsContext = function(){
   expectAsserts(2);
   var scope = new Scope();
   Scope.expressionCache = {};
-  var context = {element:123};
+  var context = {$element:123, self:{name:'misko'}};
   angular.filter.testFn = function () {
-    assertEquals('Context not equal', this, context);
-    assertEquals('scope not equal', this.scope, scope);
+    assertEquals('Context not equal', 123, this.$element);
+    assertEquals('scope not equal', 'misko', this.name);
   };
   scope.eval("0|testFn", context);
   delete angular.filter['testFn'];

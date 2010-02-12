@@ -138,13 +138,13 @@ Scope.prototype = {
     }
   },
   
-  validate: function(expressionText, value) {
+  validate: function(expressionText, value, element) {
     var expression = Scope.expressionCache[expressionText];
     if (!expression) {
       expression = new Parser(expressionText).validator();
       Scope.expressionCache[expressionText] = expression;
     }
-    var self = {scope:this};
+    var self = {scope:this, self:this.state, '$element':element};
     return expression(self)(self, value);
   },
   

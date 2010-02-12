@@ -83,8 +83,9 @@ ScopeTest.prototype.testGlobalFunctionAccess =function(){
 ScopeTest.prototype.testValidationEval = function(){
   expectAsserts(4);
   var scope = new Scope();
+  scope.set("name", "misko");
   angular.validator.testValidator = function(value, expect){
-    assertEquals(scope, this.scope);
+    assertEquals("misko", this.name);
     return value == expect ? null : "Error text";
   };
 
