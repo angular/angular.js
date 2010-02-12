@@ -170,3 +170,15 @@ div.ui-widget {
   height: 100%;
   border: 2px solid black;
 }
+
+
+/*****************
+ * indicators
+ *****************/
+.ng-indicator-wait {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-image: url("angular_images/indicator-wait.png");
+}
+
