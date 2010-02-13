@@ -81,3 +81,58 @@ ValidatorTest.prototype.testJson = function() {
   assertNotNull(angular.validator.json("''X"));
   assertNull(angular.validator.json("{}"));
 };
+
+describe('Validator:asynchronous', function(){
+  var asynchronous = angular.validator.asynchronous;
+  var self;
+  var value, fn;
+  
+  beforeEach(function(){
+    value = null;
+    fn = null;
+    self = {
+        $element:$('<input />')[0],
+        $invalidWidgets:[],
+        $updateView: noop
+    };
+  });
+  
+  it('should make a request and show spinner', function(){
+    var x = compile('<input name="name" ng-validate="asynchronous:asyncFn"/>')
+    var asyncFn = function(v,f){value=v; fn=f};
+    var input = x.node.find(":input");
+    x.scope.set("asyncFn", asyncFn);
+    x.scope.set("name", "misko");
+    x.binder.updateView();
+    expect(value).toEqual('misko');
+    expect(input.hasClass('ng-input-indicator-wait')).toBeTruthy();
+    fn("myError");
+    expect(input.hasClass('ng-input-indicator-wait')).toBeFalsy();
+    expect(input.attr('ng-error')).toEqual("myError");
+  });
+  
+  it("should not make second request to same value", function(){
+    asynchronous.call(self, "kai", function(v,f){value=v; fn=f;});
+    expect(value).toEqual('kai');
+    expect(self.$invalidWidgets).toEqual([self.$element]);
+    
+    var spy = jasmine.createSpy();
+    asynchronous.call(self, "kai", spy);
+    expect(spy).wasNotCalled();
+    
+    asynchronous.call(self, "misko", spy);
+    expect(spy).wasCalled();    
+  });
+  
+  it("should ignore old callbacks, and not remove spinner", function(){
+    var firstCb, secondCb;
+    asynchronous.call(self, "first", function(v,f){value=v; firstCb=f;});
+    asynchronous.call(self, "second", function(v,f){value=v; secondCb=f;});
+    
+    firstCb();
+    expect($(self.$element).hasClass('ng-input-indicator-wait')).toBeTruthy();
+    
+    secondCb();
+    expect($(self.$element).hasClass('ng-input-indicator-wait')).toBeFalsy();
+  });
+});

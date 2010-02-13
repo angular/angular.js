@@ -349,11 +349,11 @@ Parser.prototype = {
   },
   
   filter: function(){
-    return this._pipeFunction(angular['filter']);
+    return this._pipeFunction(angularFilter);
   },
   
   validator: function(){
-    return this._pipeFunction(angular['validator']);
+    return this._pipeFunction(angularValidator);
   },
   
   _pipeFunction: function(fnScope){

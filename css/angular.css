@@ -182,3 +182,8 @@ div.ui-widget {
   background-image: url("angular_images/indicator-wait.png");
 }
 
+.ng-input-indicator-wait {
+  background-image: url("angular_images/indicator-wait.png");
+  background-position: right;
+  background-repeat: no-repeat;
+}

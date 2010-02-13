@@ -2468,11 +2468,11 @@ Parser.prototype = {
   },
   
   filter: function(){
-    return this._pipeFunction(angular['filter']);
+    return this._pipeFunction(angularFilter);
   },
   
   validator: function(){
-    return this._pipeFunction(angular['validator']);
+    return this._pipeFunction(angularValidator);
   },
   
   _pipeFunction: function(fnScope){
@@ -3240,7 +3240,36 @@ foreach({
     } catch (e) {
       return e.toString();
     }
+  },
+  
+  'asynchronous': function(text, asynchronousFn) {
+    var stateKey = '$validateState';
+    var lastKey = '$lastKey';
+    var obj = this['$element'];
+    var stateCache = obj[stateKey] = obj[stateKey] || {};
+    var state = stateCache[text];
+    var updateView = this['$updateView'];
+    obj[lastKey] = text;
+    if (state === undefined) {
+      // we have never seen this before, Request it
+      jQuery(obj).addClass('ng-input-indicator-wait');
+      state = stateCache[text] = null;
+      asynchronousFn(text, function(error){
+        state = stateCache[text] = error ? error : false;
+        if (stateCache[obj[lastKey]] !== null) {
+          jQuery(obj).removeClass('ng-input-indicator-wait');
+        }
+        updateView();
+      });
+    }
+
+    if (state === null){
+      // request in flight, mark widget invalid, but don't show it to user
+      this['$invalidWidgets'].push(this.$element);
+    }
+    return state;
   }
+
 }, function(v,k) {angularValidator[k] = v;});
 function WidgetFactory(serverUrl, database) {
   this.nextUploadId = 0;

@@ -8,6 +8,11 @@
       $(document).ready(function(){
         angular.compile(document).init();
       });
+      function asyncValidate(value, callback){
+        var x = value.length % 2 ? null: "even";
+        //callback(x);
+        _(callback).delay(1000, x);
+      }
     </script>
     <link rel="StyleSheet" type="text/css" href="../css/angular.css"/>
   </head>
@@ -20,6 +25,8 @@
     <hr/>    
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" checked="checked" />
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" />
+    <hr/>    
+    <input type="text" name="form.async" ng-validate="asynchronous:$window.asyncValidate" />
     <pre>
 form={{form}}
 $invalidWidgets.length={{$invalidWidgets.length}}
