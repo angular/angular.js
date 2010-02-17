@@ -282,7 +282,7 @@ function wireAngular(element, config) {
   var server = config['database'] =="$MEMORY" ?
       new FrameServer(window) :
       new Server(config['server'], jQuery['getScript']);
-  server = new VisualServer(server, new Status(element.find('body')), onUpdate);
+  server = new VisualServer(server, new NullStatus(element.find('body')), onUpdate);
   var users = new Users(server, controlBar);
   var databasePath = '/data/' + config['database'];
   var post = function(request, callback){
