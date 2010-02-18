@@ -447,7 +447,7 @@ function wireAngular(element, config) {
   var server = config['database'] =="$MEMORY" ?
       new FrameServer(window) :
       new Server(config['server'], jQuery['getScript']);
-  server = new VisualServer(server, new Status(element.find('body')), onUpdate);
+  server = new VisualServer(server, new NullStatus(element.find('body')), onUpdate);
   var users = new Users(server, controlBar);
   var databasePath = '/data/' + config['database'];
   var post = function(request, callback){
@@ -533,7 +533,8 @@ angular['compile'] = function(element, config) {
   configureJQueryPlugins();
   
   return wireAngular(jQuery(element), config);
-};var angularGlobal = {
+};
+var angularGlobal = {
   'typeOf':function(obj){
     if (obj === null) return "null";
     var type = typeof obj;
@@ -3331,7 +3332,7 @@ WidgetFactory.prototype = {
       bind(event, action);
     return controller;
   },
-  
+
   createFileController: function(fileInput) {
     var uploadId = '__uploadWidget_' + (this.nextUploadId++);
     var view = FileController.template(uploadId);
@@ -3346,7 +3347,7 @@ WidgetFactory.prototype = {
     var swfNode = this.createSWF(att, par, uploadId);
     fileInput.remove();
     var cntl = new FileController(view, fileInput[0].name, swfNode, this.serverUrl + "/data/" + this.database);
-    jQuery(swfNode).data('controller', cntl);
+    jQuery(swfNode).parent().data('controller', cntl);
     return cntl;
   }
 };
@@ -3366,7 +3367,7 @@ function FileController(view, scopeName, uploader, databaseUrl) {
 angularCallbacks['flashEvent'] = function(id, event, args) {
   var object = document.getElementById(id);
   var jobject = jQuery(object);
-  var controller = jobject.data("controller");
+  var controller = jobject.parent().data("controller");
   FileController.prototype[event].apply(controller, args);
   _.defer(jobject.scope().get('$updateView'));
 };
@@ -3377,7 +3378,7 @@ FileController.template = function(id) {
       '<object id="' + id + '" />' +
       '<a></a>' +
       '<span/>' +
-    '</span>'); 
+    '</span>');
 };
 
 extend(FileController.prototype, {
@@ -3404,14 +3405,14 @@ extend(FileController.prototype, {
     this.value = value;
     this.updateModel(scope);
     this.value = null;
-  },  
+  },
   'select': function(name, size, type) {
     this.name = name;
     this.view.find("a").text(name).attr('href', name);
     this.view.find("span").text(angular['filter']['bytes'](size));
     this.upload();
   },
-  
+
   updateModel: function(scope) {
     var isChecked = this.view.find("input").attr('checked');
     var value = isChecked ? this.value : null;
@@ -3422,7 +3423,7 @@ extend(FileController.prototype, {
       return true;
     }
   },
-  
+
   updateView: function(scope) {
     var modelValue = scope.get(this.scopeName);
     if (modelValue && this.value !== modelValue) {
@@ -3434,7 +3435,7 @@ extend(FileController.prototype, {
     }
     this.view.find("input").attr('checked', !!modelValue);
   },
-  
+
   upload: function() {
     if (this.name) {
       this.uploader['uploadFile'](this.attachmentsPath);
@@ -3487,7 +3488,7 @@ TextController.prototype = {
       return true;
     }
   },
-  
+
   updateView: function(scope) {
     var view = this.view;
     var value = scope.get(this.exp);
@@ -3500,7 +3501,7 @@ TextController.prototype = {
       view.value = this.formatter['format'](value);
       this.lastValue = value;
     }
-    
+
     var isValidationError = false;
     view.removeAttribute('ng-error');
     if (this.required) {
@@ -3547,7 +3548,7 @@ CheckboxController.prototype = {
       return true;
     }
   },
-  
+
   updateView: function(scope) {
     var input = this.view;
     var value = scope.eval(this.exp);
@@ -3585,7 +3586,7 @@ SelectController.prototype = {
       }
     }
   },
-  
+
   updateView: function(scope) {
     var input = this.view;
     var value = scope.get(this.exp);
@@ -3622,7 +3623,7 @@ MultiSelectController.prototype = {
     }
     return value;
   },
-  
+
   updateModel: function(scope) {
     var value = this.selected();
     // TODO: This is wrong! no caching going on here as we are always comparing arrays
@@ -3634,7 +3635,7 @@ MultiSelectController.prototype = {
       return true;
     }
   },
-  
+
   updateView: function(scope) {
     var input = this.view;
     var selected = scope.get(this.exp);
@@ -3677,7 +3678,7 @@ RadioController.prototype = {
       return true;
     }
   },
-  
+
   updateView: function(scope) {
     var input = this.view;
     var value = scope.get(this.exp);
@@ -3814,7 +3815,7 @@ BindAttrUpdater.prototype = {
       if(isImage && attrName == 'src' && !attrValue)
         attrValue = scope.get('$config.blankImage');
       jNode.attr(attrName, attrValue);
-    } 
+    }
   }
 };
 
@@ -4049,6 +4050,13 @@ PopUp.prototype = {
 // Status
 //////////////////////////////////
 
+function NullStatus(body) {
+};
+
+NullStatus.prototype = {
+ beginRequest:function(){},
+ endRequest:function(){}
+};
 
 function Status(body) {
   this.requestCount = 0;
@@ -4064,7 +4072,7 @@ Status.prototype = {
     }
     this.requestCount++;
   },
-  
+
   endRequest: function () {
     this.requestCount--;
     if (this.requestCount === 0) {
