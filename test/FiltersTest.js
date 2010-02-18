@@ -17,7 +17,8 @@ FiltersTest.prototype.testFilterThisIsContext = function(){
   expectAsserts(2);
   var scope = new Scope();
   Scope.expressionCache = {};
-  var context = {$element:123, self:{name:'misko'}};
+  scope.set('name', 'misko');
+  var context = {$element:123};
   angular.filter.testFn = function () {
     assertEquals('Context not equal', 123, this.$element);
     assertEquals('scope not equal', 'misko', this.name);

@@ -105,6 +105,7 @@ Scope.prototype = {
     }
     context = context || {};
     context.scope = this;
+    context.self = this.state;
     return expression(context);
   },
   
