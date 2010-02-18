@@ -775,6 +775,13 @@ PopUp.prototype = {
 // Status
 //////////////////////////////////
 
+function NullStatus(body) {
+};
+
+NullStatus.prototype = {
+ beginRequest:function(){},
+ endRequest:function(){}
+};
 
 function Status(body) {
   this.requestCount = 0;
