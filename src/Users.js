@@ -8,10 +8,10 @@ extend(Users.prototype, {
     var self = this;
     this.server.request("GET", "/account.json", {}, function(code, response){
       self['current'] = response['user'];
-      callback(response.user);
+      callback(response['user']);
     });
   },
-  
+
   'logout': function(callback) {
     var self = this;
     this.controlBar.logout(function(){
@@ -19,7 +19,7 @@ extend(Users.prototype, {
       (callback||noop)();
     });
   },
-  
+
   'login': function(callback) {
     var self = this;
     this.controlBar.login(function(){
