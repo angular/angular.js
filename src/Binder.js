@@ -48,14 +48,14 @@ Binder.prototype = {
         });
     return params;
   },
-  
+
   parseAnchor: function() {
     var self = this, url = this.location['get']() || "";
-  
+
     var anchorIndex = url.indexOf('#');
     if (anchorIndex < 0) return;
     var anchor = url.substring(anchorIndex + 1);
-  
+
     var anchorQuery = this.parseQueryString(anchor);
     foreach(self.anchor, function(newValue, key) {
       delete self.anchor[key];
@@ -64,12 +64,12 @@ Binder.prototype = {
       self.anchor[key] = newValue;
     });
   },
-  
+
   onUrlChange: function() {
     this.parseAnchor();
     this.updateView();
   },
-  
+
   updateAnchor: function() {
     var url = this.location['get']() || "";
     var anchorIndex = url.indexOf('#');
@@ -91,7 +91,7 @@ Binder.prototype = {
     this.location['set'](url);
     return url;
   },
-  
+
   updateView: function() {
     var start = new Date().getTime();
     var scope = jQuery(this.doc).scope();
@@ -101,7 +101,7 @@ Binder.prototype = {
     this.updateAnchor();
     foreach(this.updateListeners, function(fn) {fn();});
   },
-  
+
   docFindWithSelf: function(exp){
     var doc = jQuery(this.doc);
     var selection = doc.find(exp);
@@ -110,7 +110,7 @@ Binder.prototype = {
     }
     return selection;
   },
-  
+
   executeInit: function() {
     this.docFindWithSelf("[ng-init]").each(function() {
       var jThis = jQuery(this);
@@ -122,7 +122,7 @@ Binder.prototype = {
       }
     });
   },
-  
+
   entity: function (scope) {
     var self = this;
     this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
@@ -136,7 +136,7 @@ Binder.prototype = {
       }
     });
   },
-  
+
   compile: function() {
     var jNode = jQuery(this.doc);
     if (this.config['autoSubmit']) {
@@ -160,7 +160,7 @@ Binder.prototype = {
       return false;
     });
   },
-  
+
   translateBinding: function(node, parentPath, factories) {
     var path = parentPath.concat();
     var offset = path.pop();
@@ -196,7 +196,7 @@ Binder.prototype = {
       parent.removeChild(node);
     }
   },
-  
+
   precompile: function(root) {
     var factories = [];
     this.precompileNode(root, [], factories);
@@ -217,7 +217,7 @@ Binder.prototype = {
       }
     };
   },
-  
+
   precompileNode: function(node, path, factories) {
     var nodeType = node.nodeType;
     if (nodeType == Node.TEXT_NODE) {
@@ -226,11 +226,11 @@ Binder.prototype = {
     } else if (nodeType != Node.ELEMENT_NODE && nodeType != Node.DOCUMENT_NODE) {
       return;
     }
-  
+
     if (!node.getAttribute) return;
     var nonBindable = node.getAttribute('ng-non-bindable');
     if (nonBindable || nonBindable === "") return;
-  
+
     var attributes = node.attributes;
     if (attributes) {
       var bindings = node.getAttribute('ng-bind-attr');
@@ -252,7 +252,7 @@ Binder.prototype = {
         node.setAttribute("ng-bind-attr", json);
       }
     }
-  
+
     if (!node.getAttribute) log(node);
     var repeaterExpression = node.getAttribute('ng-repeat');
     if (repeaterExpression) {
@@ -275,7 +275,7 @@ Binder.prototype = {
       }});
       return;
     }
-  
+
     if (node.getAttribute('ng-eval')) factories.push({path:path, fn:this.ng_eval});
     if (node.getAttribute('ng-bind')) factories.push({path:path, fn:this.ng_bind});
     if (node.getAttribute('ng-bind-attr')) factories.push({path:path, fn:this.ng_bind_attr});
@@ -300,52 +300,56 @@ Binder.prototype = {
     if (nodeName == 'OPTION') {
       var html = jQuery('<select/>').append(jQuery(node).clone()).html();
       if (!html.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
-        node.value = node.text;
+        if (Binder.hasBinding(node.text)) {
+          jQuery(node).attr('ng-bind-attr', angular.toJson({'value':node.text}));
+        } else {
+          node.value = node.text;
+        }
       }
     }
-  
+
     var children = node.childNodes;
     for (var k = 0; k < children.length; k++) {
       this.precompileNode(children[k], path.concat(k), factories);
     }
   },
-  
+
   ng_eval: function(node) {
     return new EvalUpdater(node, node.getAttribute('ng-eval'));
   },
-  
+
   ng_bind: function(node) {
     return new BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
   },
-  
+
   ng_bind_attr: function(node) {
     return new BindAttrUpdater(node, fromJson(node.getAttribute('ng-bind-attr')));
   },
-  
+
   ng_hide: function(node) {
     return new HideUpdater(node, node.getAttribute('ng-hide'));
   },
-  
+
   ng_show: function(node) {
     return new ShowUpdater(node, node.getAttribute('ng-show'));
   },
-  
+
   ng_class: function(node) {
     return new ClassUpdater(node, node.getAttribute('ng-class'));
   },
-  
+
   ng_class_even: function(node) {
     return new ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
   },
-  
+
   ng_class_odd: function(node) {
     return new ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
   },
-  
+
   ng_style: function(node) {
     return new StyleUpdater(node, node.getAttribute('ng-style'));
   },
-  
+
   ng_watch: function(node, scope) {
     scope.watch(node.getAttribute('ng-watch'));
   }

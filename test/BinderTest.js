@@ -400,7 +400,7 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
         '<li ng-bind="item.a" ng-repeat-index="0">A</li>' +
         '<li ng-bind="item.a" ng-repeat-index="1">B</li>' +
         '</ul>', form.sortedHtml());
-  
+
   items.shift();
   items.shift();
   a.binder.updateView();
@@ -761,10 +761,20 @@ BinderTest.prototype.testSettingAnchorToNullOrUndefinedRemovesTheAnchorFromURL =
 };
 
 BinderTest.prototype.testFillInOptionValueWhenMissing = function() {
-  var c = compile('<select><option selected="true">A</option><option value="">B</option></select>');
-  assertEquals(
-      '<select><option selected="true" value="A">A</option><option>B</option></select>',
-      c.node.sortedHtml());
+  var c = compile(
+      '<select><option selected="true">{{a}}</option><option value="">{{b}}</option><option>C</option></select>');
+  c.scope.set('a', 'A');
+  c.scope.set('b', 'B');
+  c.binder.updateView();
+
+  expect(c.node.find("option:first").attr('value')).toEqual('A');
+  expect(c.node.find("option:first").text()).toEqual('A');
+
+  expect(c.node.find("option:nth-child(2)").attr('value')).toEqual('');
+  expect(c.node.find("option:nth-child(2)").text()).toEqual('B');
+
+  expect(c.node.find("option:last").attr('value')).toEqual('C');
+  expect(c.node.find("option:last").text()).toEqual('C');
 };
 
 BinderTest.prototype.testValidateForm = function() {
@@ -972,7 +982,7 @@ BinderTest.prototype.testItShouldRenderMultiRootHtmlInBinding = function() {
   x.scope.set("a", "a<b>c</b>d");
   x.binder.updateView();
   assertEquals(
-      '<div>before <span ng-bind="a|html">a<b>c</b>d</span>after</div>', 
+      '<div>before <span ng-bind="a|html">a<b>c</b>d</span>after</div>',
       x.node.sortedHtml());
 };
 
