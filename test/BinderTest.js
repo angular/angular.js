@@ -503,6 +503,23 @@ BinderTest.prototype.testRepeaterAdd = function(){
   assertEquals(doc.scope().get('items')[0].x, 'ABC');
 };
 
+BinderTest.prototype.testItShouldRemoveExtraChildrenWhenIteratingOverHash = function(){
+  var c = compile('<div ng-repeat="i in items">{{i}}</div>');
+  var items = {};
+  c.scope.set("items", items);
+
+  c.binder.updateView();
+  expect(c.node.find("div").size()).toEqual(0);
+
+  items.name = "misko";
+  c.binder.updateView();
+  expect(c.node.find("div").size()).toEqual(1);
+
+  delete items.name;
+  c.binder.updateView();
+  expect(c.node.find("div").size()).toEqual(0);
+};
+
 BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
   var a = compile('<div>{{error.throw()}}</div>');
   var doc = a.node.find('div');

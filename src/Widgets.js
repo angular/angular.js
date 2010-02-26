@@ -665,29 +665,28 @@ RepeaterUpdater.prototype = {
           scope.set(this.iteratorExp, iterator);
         }
       }
-      var iteratorLength = iterator.length;
       var childrenLength = this.children.length;
       var cursor = this.view;
       var time = 0;
       var child = null;
       var keyExp = this.keyExp;
       var valueExp = this.valueExp;
-      var i = 0;
+      var iteratorCounter = 0;
       foreach(iterator, function(value, key){
-        if (i < childrenLength) {
+        if (iteratorCounter < childrenLength) {
           // reuse children
-          child = self.children[i];
+          child = self.children[iteratorCounter];
           child.scope.set(valueExp, value);
         } else {
           // grow children
           var name = self.prefix +
-            valueExp + " in " + self.iteratorExp + "[" + i + "]";
+            valueExp + " in " + self.iteratorExp + "[" + iteratorCounter + "]";
           var childScope = new Scope(scope.state, name);
-          childScope.set('$index', i);
+          childScope.set('$index', iteratorCounter);
           if (keyExp)
             childScope.set(keyExp, key);
           childScope.set(valueExp, value);
-          child = { scope:childScope, element:self.template(childScope, self.prefix, i) };
+          child = { scope:childScope, element:self.template(childScope, self.prefix, iteratorCounter) };
           cursor.after(child.element);
           self.children.push(child);
         }
@@ -695,10 +694,10 @@ RepeaterUpdater.prototype = {
         var s = new Date().getTime();
         child.scope.updateView();
         time += new Date().getTime() - s;
-        i++;
+        iteratorCounter++;
       });
       // shrink children
-      for ( var r = childrenLength; r > iteratorLength; --r) {
+      for ( var r = childrenLength; r > iteratorCounter; --r) {
         this.children.pop().element.remove();
       }
       // Special case for option in select
