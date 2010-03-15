@@ -107,7 +107,11 @@ ResourceFactory.prototype = {
           default:
             throw "Expected between 1-3 arguments [params, data, callback], got " + arguments.length + " arguments."
           }
-          Resource[name](params, this, callback);
+          var self = this;
+          Resource[name](params, this, function(response){
+            copy(response, self);
+            callback(self);
+          });
         };
       }
     });
