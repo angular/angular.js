@@ -20,22 +20,23 @@ if (typeof Node == 'undefined') {
 function noop() {}
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
-var consoleNode, msie, 
+var consoleNode, msie,
     jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
     foreach          = _.each,
     extend           = _.extend,
     identity         = _.identity,
-    angular          = window['angular']    || (window['angular']    = {}), 
-    angularValidator = angular['validator'] || (angular['validator'] = {}), 
-    angularFilter    = angular['filter']    || (angular['filter']    = {}), 
-    angularFormatter = angular['formatter'] || (angular['formatter'] = {}), 
+    angular          = window['angular']    || (window['angular']    = {}),
+    angularValidator = angular['validator'] || (angular['validator'] = {}),
+    angularFilter    = angular['filter']    || (angular['filter']    = {}),
+    angularFormatter = angular['formatter'] || (angular['formatter'] = {}),
     angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
-        log(arguments); window.alert.apply(window, arguments); 
+        log(arguments); window.alert.apply(window, arguments);
       });
+angular['copy'] = copy;
 
 var isVisible = isVisible || function (element) {
-  return jQuery(element).is(":visible");  
+  return jQuery(element).is(":visible");
 }
 
 function log(a, b, c){
@@ -100,6 +101,29 @@ function isLeafNode (node) {
     return false;
   }
 }
+
+function copy(source, destination){
+  if (!destination) {
+    if (!source) {
+      return source;
+    } else if (_.isArray(source)) {
+      return copy(source, []);
+    } else {
+      return copy(source, {});
+    }
+  } else {
+    if (_.isArray(source)) {
+      while(destination.length) {
+        destination.pop();
+      }
+    } else {
+      _(destination).each(function(value, key){
+        delete destination[key];
+      });
+    }
+    return $.extend(true, destination, source);
+  }
+};
 
 function setHtml(node, html) {
   if (isLeafNode(node)) {
@@ -218,7 +242,7 @@ UrlWatcher.prototype = {
     };
     pull();
   },
-  
+
   set: function(url) {
     var existingURL = this.location.href;
     if (!existingURL.match(/#/))
@@ -227,7 +251,7 @@ UrlWatcher.prototype = {
       this.location.href = url;
     this.existingURL = url;
   },
-  
+
   get: function() {
     return window.location.href;
   }
@@ -326,10 +350,10 @@ function wireAngular(element, config) {
   binder.entity(scope);
   binder.compile();
   controlBar.bind();
-  
+
   //TODO: remove this code
   new PopUp(element).bind();
-  
+
   var self = _(exposeMethods(scope, {
     'set':        scope.set,
     'get':        scope.get,
@@ -338,8 +362,8 @@ function wireAngular(element, config) {
     'init':function(){
         config['location']['listen'](_(binder.onUrlChange).bind(binder));
         binder.parseAnchor();
-        binder.executeInit(); 
-        binder.updateView(); 
+        binder.executeInit();
+        binder.updateView();
         return self;
       },
     'element':element[0],
@@ -349,7 +373,7 @@ function wireAngular(element, config) {
   return self;
 }
 
-angular['startUrlWatcher'] = function(){ 
+angular['startUrlWatcher'] = function(){
   var watcher = new UrlWatcher(window['location']);
   watcher.watch();
   return exposeMethods(watcher, {'listen':watcher.listen, 'set':watcher.set, 'get':watcher.get});
@@ -366,6 +390,6 @@ angular['compile'] = function(element, config) {
 
   configureLogging(config);
   configureJQueryPlugins();
-  
+
   return wireAngular(jQuery(element), config);
 };

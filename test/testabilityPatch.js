@@ -10,6 +10,11 @@ msie = jQuery.browser.msie;
 function noop(){}
 
 jstd = jstestdriver;
+dump = _(jstd.console.log).bind(jstd.console);
+
+function nakedExpect(obj) {
+  return expect(angular.fromJson(angular.toJson(obj)));
+};
 
 swfobject = {
   createSwf:function() {

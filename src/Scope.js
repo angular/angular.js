@@ -53,11 +53,11 @@ Scope.prototype = {
       });
     });
   },
-  
+
   addWidget: function(controller) {
     if (controller) this.widgets.push(controller);
   },
-  
+
   isProperty: function(exp) {
     for ( var i = 0; i < exp.length; i++) {
       var ch = exp.charAt(i);
@@ -67,12 +67,12 @@ Scope.prototype = {
     }
     return true;
   },
-    
+
   get: function(path) {
 //    log('SCOPE.get', path, Scope.getter(this.state, path));
     return Scope.getter(this.state, path);
   },
-  
+
   set: function(path, value) {
 //    log('SCOPE.set', path, value);
     var element = path.split('.');
@@ -89,11 +89,11 @@ Scope.prototype = {
     instance[element.shift()] = value;
     return value;
   },
-  
+
   setEval: function(expressionText, value) {
     this.eval(expressionText + "=" + toJson(value));
   },
-  
+
   eval: function(expressionText, context) {
 //    log('Scope.eval', expressionText);
     var expression = Scope.expressionCache[expressionText];
@@ -108,7 +108,7 @@ Scope.prototype = {
     context.self = this.state;
     return expression(context);
   },
-  
+
   //TODO: Refactor. This function needs to be an execution closure for widgets
   // move to widgets
   // remove expression, just have inner closure.
@@ -126,8 +126,8 @@ Scope.prototype = {
       }
       return true;
     } catch (e){
-      error('Eval Widget Error:', e);
       var jsonError = toJson(e, true);
+      error('Eval Widget Error:', jsonError);
       widget.hasError = true;
       jQuery(widget.view).
         addClass('ng-exception').
@@ -138,7 +138,7 @@ Scope.prototype = {
       return false;
     }
   },
-  
+
   validate: function(expressionText, value, element) {
     var expression = Scope.expressionCache[expressionText];
     if (!expression) {
@@ -148,21 +148,21 @@ Scope.prototype = {
     var self = {scope:this, self:this.state, '$element':element};
     return expression(self)(self, value);
   },
-  
+
   entity: function(entityDeclaration, datastore) {
     var expression = new Parser(entityDeclaration).entityDeclaration();
     return expression({scope:this, datastore:datastore});
   },
-  
+
   clearInvalid: function() {
     var invalid = this.state['$invalidWidgets'];
     while(invalid.length > 0) {invalid.pop();}
   },
-  
+
   markInvalid: function(widget) {
     this.state['$invalidWidgets'].push(widget);
   },
-  
+
   watch: function(declaration) {
     var self = this;
     new Parser(declaration).watch()({
@@ -178,7 +178,7 @@ Scope.prototype = {
       }
     });
   },
-  
+
   addWatchListener: function(watchExpression, listener) {
     var watcher = this.watchListeners[watchExpression];
     if (!watcher) {
@@ -187,7 +187,7 @@ Scope.prototype = {
     }
     watcher.listeners.push(listener);
   },
-  
+
   fireWatchers: function() {
     var self = this;
     var fired = false;

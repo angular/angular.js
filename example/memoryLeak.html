@@ -6,17 +6,50 @@
     <script type="text/javascript" src="../src/angular-bootstrap.js"></script>
     <script type="text/javascript">
       $(document).ready(function(){
-        angular.compile(document).init();
+        var scope = angular.compile(document);
+        scope.init();
+        scope.set("add", function(){
+          var partial = $("#partial");
+          //id++;
+          partial.html('<div>{{ error() }}<br/></div>');
+          var scope = angular.compile(partial);
+          scope.set("hello", function (){
+            return 'who dat?';
+          });
+          scope.set("error", function (){
+            this.misko.length;
+          });
+          function XXXXXXXXX(){};
+          scope.set('xxx', new XXXXXXXXX());
+          scope.set("names", ["adam", "misko", "shyam"]);
+          scope.init();
+        });
+        scope.set("remove", function(){
+          var partial = $("#partial");
+          /*
+          partial.find('*').andSelf().each(function(){
+            var scope = $(this).data('scope');
+            if (scope) {
+              delete scope.state;
+              delete scope.widgets;
+            }
+            var cntl = $(this).data('controller');
+            if (cntl) {
+              delete cntl.view;
+            }
+            $(this).removeData();
+          });
+          */
+          partial.removeData('scope');
+          partial.children().remove();
+        });
       });
     </script>
     <link rel="StyleSheet" type="text/css" href="../css/angular.css"/>
   </head>
   <body>
-  Filter: <input name="filterText">
-  <ul ng-init="names=['misko']">
-    <li ng-repeat="name in names.$filter(filterText)">
-      <a href="" ng-action="greet(name)">{{name}}</a>
-    </li>
-  </ul>
+  <input type="button" value="add" ng-action="add()"/>
+  <input type="button" value="remove" ng-action="remove()"/>
+  <div id="partial"></div>
   </body>
 </html>
