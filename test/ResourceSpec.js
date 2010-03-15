@@ -62,7 +62,7 @@ describe("resource", function() {
   beforeEach(function(){
     xhr = new MockXHR();
     resource = new ResourceFactory(xhr);
-    CreditCard = resource.route('/CreditCard/:id:verb', {id:'id.key'}, {
+    CreditCard = resource.route('/CreditCard/:id:verb', {id:'@id.key'}, {
       charge:{
         method:'POST',
         params:{verb:'!charge'}
@@ -78,6 +78,15 @@ describe("resource", function() {
     expect(typeof CreditCard.remove).toBe('function');
     expect(typeof CreditCard['delete']).toBe('function');
     expect(typeof CreditCard.query).toBe('function');
+  });
+
+  it("should build resource with default param", function(){
+    xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
+    var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
+    var item = LineItem.get({id:456});
+    xhr.flush();
+    nakedExpect(item).toEqual({id:'abc'});
+
   });
 
   it("should create resource", function(){
@@ -155,5 +164,12 @@ describe("resource", function() {
     expect(callback).wasCalledWith(cc);
   });
 
+  it('should bind default parameters', function(){
+    xhr.expectGET('/CreditCard/123.visa?minimum=0.05').respond({id:123});
+    var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});
+    var visa = Visa.get({id:123});
+    xhr.flush();
+    nakedExpect(visa).toEqual({id:123});
+  });
 
 });

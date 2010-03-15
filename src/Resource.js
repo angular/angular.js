@@ -43,14 +43,14 @@ ResourceFactory.DEFAULT_ACTIONS = {
 };
 
 ResourceFactory.prototype = {
-  route: function(url, idPaths, actions){
+  route: function(url, paramDefaults, actions){
     var self = this;
     var route = new Route(url);
     actions = $.extend({}, ResourceFactory.DEFAULT_ACTIONS, actions);
-    function extractIds(data){
+    function extractParams(data){
       var ids = {};
-      foreach(idPaths, function(path, id){
-        ids[id] = Scope.getter(data, path);
+      foreach(paramDefaults, function(value, key){
+        ids[key] = value.charAt && value.charAt(0) == '@' ? Scope.getter(data, value.substr(1)) : value;
       });
       return ids;
     }
@@ -83,7 +83,7 @@ ResourceFactory.prototype = {
         }
 
         var value = action.isArray ? [] : new Resource(data);
-        self.xhr.method(action.method, route.url($.extend({}, action.params || {}, extractIds(data), params)), data, function(response) {
+        self.xhr.method(action.method, route.url($.extend({}, action.params || {}, extractParams(data), params)), data, function(response) {
           if (action.isArray) {
             foreach(response, function(item){
               value.push(new Resource(item));
@@ -94,6 +94,10 @@ ResourceFactory.prototype = {
           (callback||noop)(value);
         });
         return value;
+      };
+
+      Resource.bind = function(additionalParamDefaults){
+        return self.route(url, $.extend({}, paramDefaults, additionalParamDefaults), actions);
       };
 
       if (!isGet) {
