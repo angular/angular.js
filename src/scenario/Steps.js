@@ -1,4 +1,4 @@
-angular.test.GIVEN = {
+angular.scenario.GIVEN = {
   browser:function(){
     var self = this;
     if (jQuery.browser.safari && this.frame.attr('src') == this.at) {
@@ -17,7 +17,7 @@ angular.test.GIVEN = {
     this.frame.name="$DATASET:" + toJson({dataset:this.dataset});
   }
 };
-angular.test.WHEN = {
+angular.scenario.WHEN = {
   enter:function(){
     var element = this.element(this.at);
     element.attr('value', this.text);
@@ -40,7 +40,7 @@ angular.test.WHEN = {
     element.change();
   }
 };
-angular.test.THEN = {
+angular.scenario.THEN = {
   text:function(){
     var element = this.element(this.at);
     if (typeof this.should_be != undefined ) {
