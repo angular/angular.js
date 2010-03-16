@@ -119,3 +119,5 @@ angular.directive("watch", function(expression, element){
 //widget related
 //ng-validate, ng-required, ng-formatter
 //ng-error
+
+//ng-scope ng-controller????
