@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="../src/angular-bootstrap.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){angular.compile(document).init();});
+    </script>
+  </head>
+  <body>
+    <p>
+     name: <input type="text" name="name" /> name={{name}} <br/>
+    </p>
+    <p>
+     <input type="radio" name="gender" value="female"/> Female
+     <input type="radio" name="gender" value="male"/> Male
+     gender={{gender}}
+    </p>
+    <p>
+     <input type="checkbox" name="tea" checked value="on"/> tea={{tea}} <br/>
+     <input type="checkbox" name="coffee" value="on"/> coffee={{coffee}} <br/>
+    </p>
+    <p ng-init="count = 0">
+      <form>
+       <input type="button" value="button" ng-action="count = count + 1"/>
+       <input type="submit" value="submit" ng-action="count = count + 1"/>
+       <input type="image" src="" ng-action="count = count + 1"/>
+       <a href="#ERROR" ng-action="count=count+1">action</a>
+       count={{count}}
+      </form>
+    </p>
+    <p>
+      <select name="select">
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+      </select>
+      select={{select}}
+    </p>
+    <p>
+     <select name="multiple" multiple>
+       <option>A</option>
+       <option>B</option>
+       <option>C</option>
+     </select>
+      multiple={{multiple}}
+    </p>
+    <p>
+      <input type="hidden" name="hidden" value="hiddenValue" />
+      Hidden field = {{hidden}}
+    </p>
+    <p>
+      <input type="password" name="password" value="passwordValue" />
+      Password field = {{password}}
+    </p>
+  </body>
+ </html>
