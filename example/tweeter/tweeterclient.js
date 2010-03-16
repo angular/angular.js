@@ -1,28 +1,26 @@
 function noop(){}
 $(document).ready(function(){
+  function xhr(method, url, data, callback){
+    jQuery.getJSON(url, function(){
+      callback.apply(this, arguments);
+      scope.updateView();
+    })
+  }
+
+  var resourceFactory = new ResourceFactory({method: xhr});
+
+  var Tweeter = resourceFactory.route("http://twitter.com/statuses/:service:username.json", {}, {
+    home: {method:'GET', params: {service:'home_timeline'}, isArray:true },
+    user: {method:'GET', params: {service:'user_timeline/'}, isArray:true }
+  });
+
+
   var scope = window.scope = angular.compile(document, {
     location:angular.startUrlWatcher()
   });
-  scope.getJSON = function(url, callback) {
-    var list = [];
-    var self = this;
-    self.set('status', 'fetching');
-    $.getJSON(url, function(response, code){
-      _(response).forEach(function(v,k){
-        list[k] = v;
-      });
-      (callback||noop)(response);
-      self.set('status', '');
-      self.updateView();
-    });
-    return list;
-  };
 
   function fetchTweets(username){
-    return scope.getJSON(
-        username ?
-            "http://twitter.com/statuses/user_timeline/"+username+".json" :
-            "http://twitter.com/statuses/home_timeline.json");
+    return username ? Tweeter.user({username: username}) : Tweeter.home();
   }
 
   scope.set('fetchTweets', fetchTweets);

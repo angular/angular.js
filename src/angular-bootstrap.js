@@ -46,6 +46,7 @@
   addScript("/JSON.js");
   addScript("/Model.js");
   addScript("/Parser.js");
+  addScript("/Resource.js");
   addScript("/Scope.js");
   addScript("/Server.js");
   addScript("/Users.js");

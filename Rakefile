@@ -46,6 +46,7 @@ task :compile do
       src/JSON.js \
       src/Model.js \
       src/Parser.js \
+      src/Resource.js \
       src/Scope.js \
       src/Server.js \
       src/Users.js \

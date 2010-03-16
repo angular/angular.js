@@ -49,7 +49,7 @@ ResourceFactory.prototype = {
     actions = $.extend({}, ResourceFactory.DEFAULT_ACTIONS, actions);
     function extractParams(data){
       var ids = {};
-      foreach(paramDefaults, function(value, key){
+      foreach(paramDefaults || {}, function(value, key){
         ids[key] = value.charAt && value.charAt(0) == '@' ? Scope.getter(data, value.substr(1)) : value;
       });
       return ids;
