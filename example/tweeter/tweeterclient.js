@@ -7,7 +7,7 @@ $(document).ready(function(){
     })
   }
 
-  var resourceFactory = new ResourceFactory({method: xhr});
+  var resourceFactory = new ResourceFactory(xhr);
 
   var Tweeter = resourceFactory.route("http://twitter.com/statuses/:service:username.json", {}, {
     home: {method:'GET', params: {service:'home_timeline'}, isArray:true },

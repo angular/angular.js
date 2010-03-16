@@ -61,7 +61,7 @@ describe("resource", function() {
 
   beforeEach(function(){
     xhr = new MockXHR();
-    resource = new ResourceFactory(xhr);
+    resource = new ResourceFactory(_(xhr.method).bind(xhr));
     CreditCard = resource.route('/CreditCard/:id:verb', {id:'@id.key'}, {
       charge:{
         method:'POST',
@@ -78,6 +78,11 @@ describe("resource", function() {
     expect(typeof CreditCard.remove).toBe('function');
     expect(typeof CreditCard['delete']).toBe('function');
     expect(typeof CreditCard.query).toBe('function');
+  });
+
+  it('should default to empty parameters', function(){
+    xhr.expectGET('URL').respond({});
+    resource.route('URL').query();
   });
 
   it("should build resource with default param", function(){

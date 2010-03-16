@@ -83,7 +83,7 @@ ResourceFactory.prototype = {
         }
 
         var value = action.isArray ? [] : new Resource(data);
-        self.xhr.method(action.method, route.url($.extend({}, action.params || {}, extractParams(data), params)), data, function(response) {
+        self.xhr(action.method, route.url($.extend({}, action.params || {}, extractParams(data), params)), data, function(response) {
           if (action.isArray) {
             foreach(response, function(item){
               value.push(new Resource(item));
