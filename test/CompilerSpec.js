@@ -48,7 +48,8 @@ Template.prototype = {
 // Compiler
 //////////////////////////////////
 
-function Compiler(directives){
+function Compiler(markup, directives){
+  this.markup = markup;
   this.directives = directives;
 }
 
@@ -69,16 +70,26 @@ Compiler.prototype = {
   },
 
   templetize: function(element){
-    var items, item, length, i, directive, init, template,
-        childTemplate, recurse = true;
+    var chldrn, item, child, length, i, j, directive, init, template,
+        childTemplate, recurse = true, directives = this.directives,
+        markup = this.markup, markupLength = markup.length;
+
+    for (i = 0, chldrn = element.childNodes, length = chldrn.length;
+        i < length; i++) {
+      if ((child = chldrn[i]).nodeType == Node.TEXT_NODE) {
+        for (j = 0; j < markupLength; j++) {
+          markup[j].call(this, child.nodeValue, child, element);
+        }
+      }
+    }
 
     // Process attributes/directives
-    for (i = 0, items = element.attributes || [], length = items.length;
+    for (i = 0, chldrn = element.attributes || [], length = chldrn.length;
          i < length; i++) {
-      item = items[i];
+      item = chldrn[i];
       var match = item.name.match(DIRECTIVE);
       if (match) {
-        directive = this.directives[match[1]];
+        directive = directives[match[1]];
         if (directive) {
           init = directive.call(this, item.value, element);
           template = template || new Template();
@@ -97,9 +108,10 @@ Compiler.prototype = {
 
     // Process children
     if (recurse) {
-      for (i = 0, items = element.childNodes, length = items.length;
+      for (i = 0, chldrn = element.childNodes, length = chldrn.length;
            i < length; i++) {
-        if(childTemplate = this.templetize(items[i])) {
+        if((child = chldrn[i]).nodeType != Node.TEXT_NODE &&
+            (childTemplate = this.templetize(child))) {
           template = template || new Template();
           template.addChild(i, childTemplate);
         }
@@ -114,7 +126,7 @@ describe('compiler', function(){
     return jQuery(html)[0];
   }
 
-  var compiler, directives, compile, log;
+  var compiler, markup, directives, compile, log;
 
   beforeEach(function(){
     log = "";
@@ -135,7 +147,8 @@ describe('compiler', function(){
       }
 
     };
-    compiler = new Compiler(directives);
+    markup = [];
+    compiler = new Compiler(markup, directives);
     compile = function(html){
       var e = element("<div>" + html + "</div>");
       var view = compiler.compile(e)(e);
@@ -221,5 +234,18 @@ describe('compiler', function(){
 
     compile('<span ng-hello="misko", ng-exclusive/>');
     expect(log).toEqual('exclusive');
+  });
+
+  it('should process markup before directives', function(){
+    markup.push(function(text, textNode, parentNode) {
+      if (text == 'middle') {
+        expect(textNode.nodeValue).toEqual(text);
+        parentNode.setAttribute('ng-hello', text);
+        textNode.nodeValue = 'replaced';
+      }
+    });
+    var scope = compile('before<span>middle</span>after');
+    expect(scope.element.innerHTML).toEqual('before<span ng-hello="middle">replaced</span>after');
+    expect(log).toEqual("hello middle");
   });
 });
