@@ -10,6 +10,7 @@ function Scope(initialState, name) {
   if (name == "ROOT") {
     this.state['$root'] = this.state;
   }
+  this.set('$watch', bind(this, this.addWatchListener));
 };
 
 Scope.expressionCache = {};
@@ -202,5 +203,9 @@ Scope.prototype = {
       }
     });
     return fired;
+  },
+
+  apply: function(fn) {
+    fn.apply(this.state, slice(arguments, 0, arguments.length));
   }
 };

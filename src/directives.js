@@ -4,7 +4,7 @@ angular.directive("auth", function(expression, element){
     if(expression == "eager") {
       this.$users.fetchCurrent();
     }
-  }
+  };
 });
 
 
@@ -30,7 +30,7 @@ angular.directive("entity", function(expression, element){
 angular.directive("init", function(expression, element){
   return function(){
     this.$eval(expresssion);
-  }
+  };
 });
 
 
@@ -49,8 +49,8 @@ angular.directive("bind", function(expression, element){
 // becomes
 // <a href="" ng-bind-attr="{href:'http://example.com?id={{book.$id}}', alt:'{{book.$name}}'}">link</a>
 angular.directive("bind-attr", function(expression, element){
-  var jElement = jQuery(element);
-  return function(){
+  return function(expression, element){
+    var jElement = jQuery(element);
     this.$watch(expression, _(jElement.attr).bind(jElement));
   };
 });
@@ -58,7 +58,7 @@ angular.directive("bind-attr", function(expression, element){
 angular.directive("repeat", function(expression, element){
   var anchor = document.createComment(expression);
   jQuery(element).replace(anchor);
-  var template = this.compile(element);
+  var template = this.templetize(element);
   var lhs = "item";
   var rhs = "items";
   var children = [];
@@ -103,7 +103,7 @@ angular.directive("action", function(expression, element){
 angular.directive("eval", function(expression, element){
   return function(){
     this.$onUpdate( expression);
-  }
+  };
 });
 //ng-watch
 // <div ng-watch="$anchor.book: book=Book.get();"/>
@@ -113,7 +113,7 @@ angular.directive("watch", function(expression, element){
   }; // parse
   return function(){
     this.$watch(watches);
-  }
+  };
 });
 
 //widget related

@@ -29,7 +29,7 @@ DataStore.prototype = {
     }
     return cachedDocument;
   },
-  
+
   load: function(instance, id, callback, failure) {
     if (id && id !== '*') {
       var self = this;
@@ -43,7 +43,7 @@ DataStore.prototype = {
     }
     return instance;
   },
-  
+
   loadMany: function(entity, ids, callback) {
     var self=this;
     var list = [];
@@ -58,7 +58,7 @@ DataStore.prototype = {
     });
     return list;
   },
-  
+
   loadOrCreate: function(instance, id, callback) {
     var self=this;
     return this.load(instance, id, callback, function(response){
@@ -70,7 +70,7 @@ DataStore.prototype = {
       }
     });
   },
-  
+
   loadAll: function(entity, callback) {
     var self = this;
     var list = [];
@@ -89,7 +89,7 @@ DataStore.prototype = {
     });
     return list;
   },
-  
+
   save: function(document, callback) {
     var self = this;
     var data = {};
@@ -109,7 +109,7 @@ DataStore.prototype = {
         callback(document);
     });
   },
-  
+
   remove: function(document, callback) {
     var self = this;
     var data = {};
@@ -127,7 +127,7 @@ DataStore.prototype = {
       (callback||noop)(response);
     });
   },
-  
+
   _jsonRequest: function(request, callback, failure) {
     request['$$callback'] = callback;
     request['$$failure'] = failure||function(response){
@@ -135,7 +135,7 @@ DataStore.prototype = {
     };
     this.bulkRequest.push(request);
   },
-  
+
   flush: function() {
     if (this.bulkRequest.length === 0) return;
     var self = this;
@@ -169,7 +169,7 @@ DataStore.prototype = {
     }
     this.post(bulkRequest, callback);
   },
-  
+
   saveScope: function(scope, callback) {
     var saveCounter = 1;
     function onSaveDone() {
@@ -186,7 +186,7 @@ DataStore.prototype = {
     }
     onSaveDone();
   },
-  
+
   query: function(type, query, arg, callback){
     var self = this;
     var queryList = [];
@@ -205,7 +205,7 @@ DataStore.prototype = {
     });
     return queryList;
   },
-  
+
   entities: function(callback) {
     var entities = [];
     var self = this;
@@ -218,7 +218,7 @@ DataStore.prototype = {
     });
     return entities;
   },
-  
+
   documentCountsByUser: function(){
     var counts = {};
     var self = this;
@@ -227,7 +227,7 @@ DataStore.prototype = {
     });
     return counts;
   },
-  
+
   userDocumentIdsByEntity: function(user){
     var ids = {};
     var self = this;
@@ -236,7 +236,7 @@ DataStore.prototype = {
     });
     return ids;
   },
-  
+
   entity: function(name, defaults){
     if (!name) {
       return DataStore.NullEntity;
@@ -271,7 +271,7 @@ DataStore.prototype = {
     });
     return entity;
   },
-  
+
   join: function(join){
     function fn(){
       throw "Joined entities can not be instantiated into a document.";

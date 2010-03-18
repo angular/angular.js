@@ -24,9 +24,14 @@ var consoleNode, msie,
     jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
     foreach          = _.each,
     extend           = _.extend,
+    slice            = Array.prototype.slice,
     identity         = _.identity,
     angular          = window['angular']    || (window['angular']    = {}),
     angularValidator = angular['validator'] || (angular['validator'] = {}),
+    angularDirective = angular['directive'] || (angular['directive'] = function(name, fn){
+      if (fn) {angularDirective[name] = fn;};
+      return angularDirective[name];
+    }),
     angularFilter    = angular['filter']    || (angular['filter']    = {}),
     angularFormatter = angular['formatter'] || (angular['formatter'] = {}),
     angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
@@ -37,7 +42,7 @@ angular['copy'] = copy;
 
 var isVisible = isVisible || function (element) {
   return jQuery(element).is(":visible");
-}
+};
 
 function log(a, b, c){
   var console = window['console'];
@@ -154,12 +159,13 @@ function escapeAttr(html) {
 }
 
 function bind(_this, _function) {
+  var curryArgs = slice.call(arguments, 2, arguments.length);
   if (!_this)
     throw "Missing this";
   if (!_.isFunction(_function))
     throw "Missing function";
   return function() {
-    return _function.apply(_this, arguments);
+    return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
   };
 }
 

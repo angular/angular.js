@@ -79,7 +79,7 @@ ResourceFactory.prototype = {
         case 1: if (isPost) data = a1; else params = a1; break;
         case 0: break;
         default:
-          throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments."
+          throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
         }
 
         var value = action.isArray ? [] : new Resource(data);
@@ -109,7 +109,7 @@ ResourceFactory.prototype = {
           case 1: if (typeof a1 == 'function') callback = a1; else params = a1;
           case 0: break;
           default:
-            throw "Expected between 1-3 arguments [params, data, callback], got " + arguments.length + " arguments."
+            throw "Expected between 1-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
           }
           var self = this;
           Resource[name](params, this, function(response){
