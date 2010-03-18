@@ -1,3 +1,9 @@
+/**
+ * Template provides directions an how to bind to a given element.
+ * It contains a list of init functions which need to be called to
+ * bind to a new instance of elements. It also provides a list
+ * of child paths which contain child templates
+ */
 function Template() {
   this.paths = [];
   this.children = [];
@@ -26,6 +32,11 @@ Template.prototype = {
     }
   },
 
+  setExclusiveInit: function(init) {
+    this.inits = [init];
+    this.addInit = noop;
+  },
+
 
   addChild: function(index, template) {
     this.paths.push(index);
@@ -33,39 +44,22 @@ Template.prototype = {
   }
 };
 
+///////////////////////////////////
+// Compiler
+//////////////////////////////////
+
 function Compiler(directives){
   this.directives = directives;
 }
 
 DIRECTIVE = /^ng-(.*)$/;
 
-/**
- * return {
- *   element:
- *   init: function(element){...}
- * }
- *
- * internal data structure: {
- *  paths: [4, 5, 6],
- *  directive: name,
- *  init: function(expression, element){}
- * }
- *
- * template : {
- *   inits: [fn(), fn()}
- *   paths: [1, 5],
- *   templates: [
- *     inits: []
- *     paths: []
- *     templates:
- *   ]
- * }
- */
 Compiler.prototype = {
   compile: function(element) {
-    var template = this.templetize(element);
-    return function(){
+    var template = this.templetize(element) || new Template();
+    return function(element){
       var scope = new Scope();
+      scope.element = element;
       return {
         scope: scope,
         element:element,
@@ -79,17 +73,24 @@ Compiler.prototype = {
         childTemplate, recurse = true;
 
     // Process attributes/directives
-    for (i = 0, items = element.attributes, length = items.length;
+    for (i = 0, items = element.attributes || [], length = items.length;
          i < length; i++) {
       item = items[i];
       var match = item.name.match(DIRECTIVE);
       if (match) {
         directive = this.directives[match[1]];
         if (directive) {
-          init = directive.call({}, item.value, element);
+          init = directive.call(this, item.value, element);
           template = template || new Template();
-          template.addInit(init);
+          if (directive.exclusive) {
+            template.setExclusiveInit(init);
+            i = length; // quit iterations
+          } else {
+            template.addInit(init);
+          }
           recurse = recurse && init;
+        } else {
+          error("Directive '" + match[0] + "' is not recognized.");
         }
       }
     }
@@ -136,7 +137,7 @@ describe('compiler', function(){
     };
     compiler = new Compiler(directives);
     compile = function(html){
-      var e = element(html);
+      var e = element("<div>" + html + "</div>");
       var view = compiler.compile(e)(e);
       view.init();
       return view.scope;
@@ -182,5 +183,43 @@ describe('compiler', function(){
     directives.stop = function(){ return false; };
     var scope = compile('<span ng-hello="misko" ng-stop="true"><span ng-hello="adam"/></span>');
     expect(log).toEqual("hello misko");
+  });
+
+  it('should allow creation of templates', function(){
+    directives.duplicate = function(expr, element){
+      var template,
+          marker = document.createComment("marker"),
+          parentNode = element.parentNode;
+      parentNode.insertBefore(marker, element);
+      parentNode.removeChild(element);
+      element.removeAttribute("ng-duplicate");
+      template = this.compile(element);
+      return function(marker) {
+        var parentNode = marker.parentNode;
+        this.$eval(function() {
+          parentNode.insertBefore(
+              template(element.cloneNode(true)).element,
+              marker.nextSibling);
+        });
+      };
+    };
+    var scope = compile('before<span ng-duplicate="expr">x</span>after');
+    expect($(scope.element).html()).toEqual('before<!--marker-->after');
+    scope.updateView();
+    expect($(scope.element).html()).toEqual('before<!--marker--><span>x</span>after');
+    scope.updateView();
+    expect($(scope.element).html()).toEqual('before<!--marker--><span>x</span><span>x</span>after');
+  });
+
+  it('should allow for exculsive tags which suppress others', function(){
+    directives.exclusive = function(){
+      return function() {
+        log += ('exclusive');
+      };
+    };
+    directives.exclusive.exclusive = true;
+
+    compile('<span ng-hello="misko", ng-exclusive/>');
+    expect(log).toEqual('exclusive');
   });
 });

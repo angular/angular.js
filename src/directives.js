@@ -58,12 +58,12 @@ angular.directive("bind-attr", function(expression, element){
 angular.directive("repeat", function(expression, element){
   var anchor = document.createComment(expression);
   jQuery(element).replace(anchor);
-  var template = this.templetize(element);
+  var template = this.compile(element);
   var lhs = "item";
   var rhs = "items";
-  var children = [];
   return function(){
-    this.$watch(rhs, function(items){
+    var children = [];
+    this.$eval(rhs, function(items){
       foreach(children, function(child){
         child.element.remove();
       });
@@ -102,7 +102,7 @@ angular.directive("action", function(expression, element){
 //ng-eval
 angular.directive("eval", function(expression, element){
   return function(){
-    this.$onUpdate( expression);
+    this.$eval(expression);
   };
 });
 //ng-watch

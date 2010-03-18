@@ -1,5 +1,6 @@
 function Scope(initialState, name) {
   this.widgets = [];
+  this.evals = [];
   this.watchListeners = {};
   this.name = name;
   initialState = initialState || {};
@@ -11,6 +12,7 @@ function Scope(initialState, name) {
     this.state['$root'] = this.state;
   }
   this.set('$watch', bind(this, this.addWatchListener));
+  this.set('$eval', bind(this, this.addEval));
 };
 
 Scope.expressionCache = {};
@@ -48,15 +50,21 @@ Scope.prototype = {
   updateView: function() {
     var self = this;
     this.fireWatchers();
-    _.each(this.widgets, function(widget){
+    foreach(this.widgets, function(widget){
       self.evalWidget(widget, "", {}, function(){
         this.updateView(self);
       });
     });
+    foreach(this.evals, bind(this, this.apply));
   },
 
   addWidget: function(controller) {
     if (controller) this.widgets.push(controller);
+  },
+
+  addEval: function(fn, listener) {
+    // todo: this should take a function/string and a listener
+    this.evals.push(fn);
   },
 
   isProperty: function(exp) {
@@ -190,8 +198,7 @@ Scope.prototype = {
   },
 
   fireWatchers: function() {
-    var self = this;
-    var fired = false;
+    var self = this, fired = false;
     foreach(this.watchListeners, function(watcher) {
       var value = self.eval(watcher.expression);
       if (value !== watcher.lastValue) {
@@ -206,6 +213,6 @@ Scope.prototype = {
   },
 
   apply: function(fn) {
-    fn.apply(this.state, slice(arguments, 0, arguments.length));
+    fn.apply(this.state, slice.call(arguments, 1, arguments.length));
   }
 };
