@@ -3,7 +3,7 @@ describe('compiler', function(){
     return jQuery(html)[0];
   }
 
-  var compiler, markup, directives, compile, log;
+  var compiler, markup, directives, widgets, compile, log;
 
   beforeEach(function(){
     log = "";
@@ -25,7 +25,8 @@ describe('compiler', function(){
 
     };
     markup = [];
-    compiler = new Compiler(markup, directives);
+    widgets = {};
+    compiler = new Compiler(markup, directives, widgets);
     compile = function(html){
       var e = element("<div>" + html + "</div>");
       var view = compiler.compile(e)(e);
@@ -39,7 +40,7 @@ describe('compiler', function(){
     directives.directive = function(expression, element){
       log += "found";
       expect(expression).toEqual("expr");
-      expect(element).toEqual(e);
+      expect(element.element).toEqual(e);
       return function initFn() {
         log += ":init";
       };
@@ -78,17 +79,15 @@ describe('compiler', function(){
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
       var template,
-          marker = document.createComment("marker"),
-          parentNode = element.parentNode;
-      parentNode.insertBefore(marker, element);
-      parentNode.removeChild(element);
+          marker = document.createComment("marker");
+      element.replaceWith(marker);
       element.removeAttribute("ng-duplicate");
       template = this.compile(element);
       return function(marker) {
         var parentNode = marker.parentNode;
         this.$eval(function() {
           parentNode.insertBefore(
-              template(element.cloneNode(true)).element,
+              template(element.clone()).element,
               marker.nextSibling);
         });
       };
@@ -116,13 +115,24 @@ describe('compiler', function(){
   it('should process markup before directives', function(){
     markup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
-        expect(textNode.nodeValue).toEqual(text);
-        parentNode.setAttribute('ng-hello', text);
+        expect(textNode.text()).toEqual(text);
+        parentNode.attr('ng-hello', text);
         textNode.nodeValue = 'replaced';
       }
     });
     var scope = compile('before<span>middle</span>after');
     expect(scope.element.innerHTML).toEqual('before<span ng-hello="middle">replaced</span>after');
     expect(log).toEqual("hello middle");
+  });
+
+  it('should replace widgets', function(){
+    widgets.button = function(element) {
+      element.parentNode.replaceChild(button, element);
+      return function(element) {
+        log += 'init';
+      };
+    };
+    var scope = compile('<ng:button>push me</ng:button>');
+    expect(scope.element.innerHTML).toEqual('before<span ng-hello="middle">replaced</span>after');
   });
 });
