@@ -78,17 +78,14 @@ describe('compiler', function(){
 
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
-      var template,
-          marker = document.createComment("marker");
-      element.replaceWith(marker);
+      element.replaceWith(document.createComment("marker"));
       element.removeAttribute("ng-duplicate");
-      template = this.compile(element);
+      var template = this.compile(element);
       return function(marker) {
-        var parentNode = marker.parentNode;
         this.$eval(function() {
-          parentNode.insertBefore(
-              template(element.clone()).element,
-              marker.nextSibling);
+          dump("A");
+          marker.after(template(element.clone()).element);
+          dump("B");
         });
       };
     };
@@ -135,4 +132,5 @@ describe('compiler', function(){
     var scope = compile('<ng:button>push me</ng:button>');
     expect(scope.element.innerHTML).toEqual('before<span ng-hello="middle">replaced</span>after');
   });
+
 });
