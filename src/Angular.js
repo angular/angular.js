@@ -44,6 +44,10 @@ var isVisible = isVisible || function (element) {
   return jQuery(element).is(":visible");
 };
 
+function isDefined(value){
+  return typeof value !== 'undefined';
+}
+
 function log(a, b, c){
   var console = window['console'];
   switch(arguments.length) {

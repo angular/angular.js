@@ -26,21 +26,21 @@ Template.prototype = {
     }
   },
 
+
   addInit:function(init) {
     if (init) {
       this.inits.push(init);
     }
   },
 
-  setExclusiveInit: function(init) {
-    this.inits = [init];
-    this.addInit = noop;
-  },
-
 
   addChild: function(index, template) {
     this.paths.push(index);
     this.children.push(template);
+  },
+
+  empty: function() {
+    return this.inits.length == 0 && this.paths.length == 0;
   }
 };
 
@@ -92,19 +92,25 @@ NodeLite.prototype = {
   },
 
   after: function(element) {
-    this.element.parentNode.insertBefore(element, this.element.nextSibling);
+    this.element.parentNode.insertBefore(nodeLite(element).element, this.element.nextSibling);
   },
 
   attr: function(name, value){
-    if (typeof value == 'undefined') {
-      return this.element.getAttribute(name);
+    if (isDefined(value)) {
+      this.element.setAttribute(name, value);
     } else {
-      this.element.setAttribute(name);
+      return this.element.getAttribute(name);
     }
   },
 
+  text: function(value) {
+    if (isDefined(value)) {
+      this.element.nodeValue = value;
+    }
+    return this.element.nodeValue;
+  },
+
   isText: function() { return this.element.nodeType == Node.TEXT_NODE; },
-  text: function() { return this.element.nodeValue; },
   clone: function() { return nodeLite(this.element.cloneNode(true)); }
 };
 
@@ -142,7 +148,8 @@ Compiler.prototype = {
         widgets = self.widgets,
         recurse = true,
         exclusive = false,
-        template;
+        directiveQueue = [],
+        template = new Template();
 
     // process markup for text nodes only
     element.eachTextNode(function(textNode){
@@ -154,23 +161,26 @@ Compiler.prototype = {
     // Process attributes/directives
     element.eachAttribute(function(name, value){
       var match = name.match(DIRECTIVE),
-          directive, init;
+          directive;
       if (!exclusive && match) {
         directive = directives[match[1]];
         if (directive) {
-          init = directive.call(self, value, element);
-          template = template || new Template();
           if (directive.exclusive) {
-            template.setExclusiveInit(init);
             exclusive = true;
-          } else {
-            template.addInit(init);
+            directiveQueue = [];
           }
-          recurse = recurse && init;
+          directiveQueue.push(bind(self, directive, value, element));
         } else {
           error("Directive '" + match[0] + "' is not recognized.");
         }
       }
+    });
+
+    // Execute directives
+    foreach(directiveQueue, function(directive){
+      var init = directive();
+      template.addInit(init);
+      recurse = recurse && init;
     });
 
     // Process non text child nodes
@@ -178,11 +188,10 @@ Compiler.prototype = {
       element.eachNode(function(child, i){
         var childTemplate = self.templetize(child);
         if(childTemplate) {
-          template = template || new Template();
           template.addChild(i, childTemplate);
         }
       });
     }
-    return template;
+    return template.empty() ? null : template;
   }
 };
