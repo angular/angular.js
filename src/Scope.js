@@ -207,6 +207,10 @@ Scope.prototype = {
   },
 
   addWatchListener: function(watchExpression, listener) {
+    // TODO: clean me up!
+    if (!isFunction(listener)) {
+      listener = bind(this, this.compile(listener), {scope: this, self: this.state});
+    }
     var watcher = this.watchListeners[watchExpression];
     if (!watcher) {
       watcher = {listeners:[], expression:watchExpression};

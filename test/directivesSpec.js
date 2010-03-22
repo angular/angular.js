@@ -82,4 +82,16 @@ describe("directives", function(){
     });
     expect(log).toEqual("\"Expected ng-repeat in form of 'item in collection' but got 'i dont parse'.\";true;");
   });
+
+  it('should ng-watch', function(){
+    var scope = compile('<div ng-watch="i: count = count + 1" ng-init="count = 0">');
+    scope.updateView();
+    scope.updateView();
+    expect(scope.get('count')).toEqual(0);
+
+    scope.set('i', 0);
+    scope.updateView();
+    scope.updateView();
+    expect(scope.get('count')).toEqual(1);
+  });
 });

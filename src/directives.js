@@ -82,6 +82,17 @@ angularDirective("ng-repeat", function(expression, element){
   };
 }, {exclusive: true});
 
+angularDirective("ng-watch", function(expression, element){
+  var match = expression.match(/^([^.]*):(.*)$/);
+  if (!match) {
+    throw "Expecting watch expression 'ident_to_watch: watch_statement' got '"
+        + expression + "'";
+  }
+  return function(){
+    this.$watch(match[1], match[2]);
+  };
+});
+
 
 /////////////////////////////////////////
 /////////////////////////////////////////
@@ -106,17 +117,6 @@ angularDirective("action", function(expression, element){
     jQuery(element).click(function(){
       self.$eval(expression);
     });
-  };
-});
-
-//ng-watch
-// <div ng-watch="$anchor.book: book=Book.get();"/>
-angularDirective("watch", function(expression, element){
-  var watches = {
-    'lhs':'rhs'
-  }; // parse
-  return function(){
-    this.$watch(watches);
   };
 });
 
