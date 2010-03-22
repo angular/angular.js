@@ -181,12 +181,29 @@ function escapeAttr(html) {
 
 function bind(_this, _function) {
   var curryArgs = slice.call(arguments, 2, arguments.length);
-  if (!_this)
-    throw "Missing this";
-  if (!_.isFunction(_function))
-    throw "Missing function";
   return function() {
     return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
+  };
+}
+
+function bindTry(_this, _function) {
+  var args = arguments,
+      last = args.length - 1,
+      curryArgs = slice.call(args, 2, last),
+      exceptionHandler = args[last];
+  return function() {
+    try {
+      return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
+    } catch (e) {
+      if (e = exceptionHandler(e)) throw e;
+    }
+  };
+}
+
+function errorHandlerFor(element) {
+  return function(error){
+    element.attr('ng-error', angular.toJson(error));
+    element.addClass('ng-exception');
   };
 }
 

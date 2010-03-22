@@ -66,6 +66,20 @@ describe("directives", function(){
     expect(element.text()).toEqual('brad;');
   });
 
-  it('should ng-repeat over object', function(){});
-  it('should error on wrong parsing of ng-repeat', function(){});
+  it('should ng-repeat over object', function(){
+    var scope = compile('<ul><li ng-repeat="(key, value) in items" ng-bind="key + \':\' + value + \';\' "></li></ul>');
+    scope.set('items', {misko:'swe', shyam:'set'});
+    scope.updateView();
+    expect(element.text()).toEqual('misko:swe;shyam:set;');
+  });
+
+  it('should error on wrong parsing of ng-repeat', function(){
+    var scope = compile('<ul><li ng-repeat="i dont parse"></li></ul>');
+    var log = "";
+    element.eachNode(function(li){
+      log += li.attr('ng-error') + ';';
+      log += li.hasClass('ng-exception') + ';';
+    });
+    expect(log).toEqual("\"Expected ng-repeat in form of 'item in collection' but got 'i dont parse'.\";true;");
+  });
 });

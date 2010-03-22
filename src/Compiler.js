@@ -107,6 +107,20 @@ JQLite.prototype = {
     this.element.parentNode.insertBefore(jqLite(element).element, this.element.nextSibling);
   },
 
+  hasClass: function(selector) {
+    var className = " " + selector + " ";
+    if ( (" " + this.element.className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1 ) {
+      return true;
+    }
+    return false;
+  },
+
+  addClass: function( selector ) {
+    if (!this.hasClass(selector)) {
+      this.element.className += ' ' + selector;
+    }
+  },
+
   attr: function(name, value){
     var e = this.element;
     if (isObject(name)) {
@@ -201,7 +215,7 @@ Compiler.prototype = {
             exclusive = true;
             directiveQueue = [];
           }
-          directiveQueue.push(bind(selfApi, directive, value, element));
+          directiveQueue.push(bindTry(selfApi, directive, value, element, errorHandlerFor(element)));
         }
       });
 

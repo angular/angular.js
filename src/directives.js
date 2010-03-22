@@ -10,7 +10,7 @@ angularDirective("ng-eval", function(expression){
   };
 });
 
-angular.directive("ng-bind", function(expression){
+angularDirective("ng-bind", function(expression){
   return function(element) {
     this.$watch(expression, function(value){
       element.text(value);
@@ -18,23 +18,36 @@ angular.directive("ng-bind", function(expression){
   };
 });
 
-angular.directive("ng-bind-attr", function(expression){
+angularDirective("ng-bind-attr", function(expression){
   return function(element){
     this.$watch(expression, bind(element, element.attr));
   };
 });
 
-angular.directive("ng-non-bindable", function(){
+angularDirective("ng-non-bindable", function(){
   this.descend(false);
 });
 
-angular.directive("ng-repeat", function(expression, element){
+angularDirective("ng-repeat", function(expression, element){
   var reference = this.reference("ng-repeat: " + expression),
       r = element.removeAttr('ng-repeat'),
       template = this.compile(element),
-      path = expression.split(' in '),
-      lhs = path[0],
-      rhs = path[1];
+      match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+      lhs, rhs, valueIdent, keyIdent;
+  if (! match) {
+    throw "Expected ng-repeat in form of 'item in collection' but got '" +
+      expression + "'.";
+  }
+  lhs = match[1];
+  rhs = match[2];
+  match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
+  if (!match) {
+    throw "'item' in 'item in collection' should be identifier or (key, value) but got '" +
+      keyValue + "'.";
+  }
+  valueIdent = match[3] || match[1];
+  keyIdent = match[2];
+
   var parent = element.parent();
   element.replaceWith(reference);
   return function(){
@@ -42,7 +55,7 @@ angular.directive("ng-repeat", function(expression, element){
         currentScope = this;
     this.$addEval(rhs, function(items){
       var index = 0, childCount = children.length, childScope, lastElement = reference;
-      foreach(items, function(value, key){
+      foreach(items || [], function(value, key){
         if (index < childCount) {
           // reuse existing child
           childScope = children[index];
@@ -55,7 +68,8 @@ angular.directive("ng-repeat", function(expression, element){
           lastElement.after(childScope.element);
           children.push(childScope);
         }
-        childScope.scope.set(lhs, value);
+        childScope.scope.set(valueIdent, value);
+        if (keyIdent) childScope.scope.set(keyIdent, key);
         childScope.scope.updateView();
         lastElement = childScope.element;
         index ++;
@@ -86,7 +100,7 @@ angular.directive("ng-repeat", function(expression, element){
 //ng-show, ng-hide
 
 
-angular.directive("action", function(expression, element){
+angularDirective("action", function(expression, element){
   return function(){
     var self = this;
     jQuery(element).click(function(){
@@ -97,7 +111,7 @@ angular.directive("action", function(expression, element){
 
 //ng-watch
 // <div ng-watch="$anchor.book: book=Book.get();"/>
-angular.directive("watch", function(expression, element){
+angularDirective("watch", function(expression, element){
   var watches = {
     'lhs':'rhs'
   }; // parse
