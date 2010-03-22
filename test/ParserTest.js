@@ -41,7 +41,7 @@ LexerTest.prototype.testTokenizeAString = function(){
 
   i++;
   assertEquals(tokens[i].index, 15);
-  assertEquals(tokens[i].text, "a'c");
+  assertEquals(tokens[i].string, "a'c");
 
   i++;
   assertEquals(tokens[i].index, 21);
@@ -49,7 +49,7 @@ LexerTest.prototype.testTokenizeAString = function(){
 
   i++;
   assertEquals(tokens[i].index, 22);
-  assertEquals(tokens[i].text, 'd"e');
+  assertEquals(tokens[i].string, 'd"e');
 };
 
 
@@ -68,10 +68,10 @@ LexerTest.prototype.testQuotedString = function(){
   var tokens = lexer.parse();
 
   assertEquals(1, tokens[1].index);
-  assertEquals("'", tokens[1].text);
+  assertEquals("'", tokens[1].string);
 
   assertEquals(7, tokens[3].index);
-  assertEquals('"', tokens[3].text);
+  assertEquals('"', tokens[3].string);
 
 };
 
@@ -80,14 +80,14 @@ LexerTest.prototype.testQuotedStringEscape = function(){
   var lexer = new Lexer(str);
   var tokens = lexer.parse();
 
-  assertEquals('"\n\f\r\t\v\u00A0', tokens[0].text);
+  assertEquals('"\n\f\r\t\v\u00A0', tokens[0].string);
 };
 
 LexerTest.prototype.testTokenizeUnicode = function(){
   var lexer = new Lexer('"\\u00A0"');
   var tokens = lexer.parse();
   assertEquals(1, tokens.length);
-  assertEquals('\u00a0', tokens[0].text);
+  assertEquals('\u00a0', tokens[0].string);
 };
 
 LexerTest.prototype.testTokenizeRegExpWithOptions = function(){
@@ -408,7 +408,7 @@ ParserTest.prototype.testItShouldParseOnChangeIntoHashSet = function () {
 ParserTest.prototype.testItShouldParseOnChangeBlockIntoHashSet = function () {
   var scope = new Scope({count:0});
   var listeners = {a:[], b:[]};
-  scope.watch("a:{count=count+1;count=count+20;};b:count=count+300", 
+  scope.watch("a:{count=count+1;count=count+20;};b:count=count+300",
       function(n, fn){listeners[n].push(fn);});
 
   assertEquals(1, scope.watchListeners.a.listeners.length);
@@ -475,5 +475,10 @@ ParserTest.prototype.testNegationBug = function () {
   assertEquals(!false || true, scope.eval("!false || true"));
   assertEquals(!11 == 10, scope.eval("!11 == 10"));
   assertEquals(12/6/2, scope.eval("12/6/2"));
+};
+
+ParserTest.prototype.testBugStringConfusesParser = function() {
+  var scope = new Scope();
+  assertEquals('!', scope.eval('suffix = "!"'));
 };
 

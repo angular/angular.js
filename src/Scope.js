@@ -1,18 +1,23 @@
 function Scope(initialState, name) {
-  this.widgets = [];
-  this.evals = [];
-  this.watchListeners = {};
-  this.name = name;
+  var self = this;
+  self.widgets = [];
+  self.evals = [];
+  self.watchListeners = {};
+  self.name = name;
   initialState = initialState || {};
   var State = function(){};
   State.prototype = initialState;
-  this.state = new State();
-  this.state['$parent'] = initialState;
+  self.state = new State();
+  extend(self.state, {
+    '$parent': initialState,
+    '$watch': bind(self, self.addWatchListener),
+    '$eval': bind(self, self.eval),
+    // change name to onEval?
+    '$addEval': bind(self, self.addEval)
+  });
   if (name == "ROOT") {
-    this.state['$root'] = this.state;
+    self.state['$root'] = self.state;
   }
-  this.set('$watch', bind(this, this.addWatchListener));
-  this.set('$eval', bind(this, this.addEval));
 };
 
 Scope.expressionCache = {};
@@ -47,6 +52,7 @@ Scope.getter = function(instance, path) {
 };
 
 Scope.prototype = {
+  // TODO: rename to update? or eval?
   updateView: function() {
     var self = this;
     this.fireWatchers();
@@ -64,7 +70,13 @@ Scope.prototype = {
 
   addEval: function(fn, listener) {
     // todo: this should take a function/string and a listener
-    this.evals.push(fn);
+    // todo: this is a hack, which will need to be cleaned up.
+    var self = this,
+        listenFn = listener || noop,
+        expr = bind(self, self.compile(fn), {scope: self, self: self.state});
+    this.evals.push(function(){
+      self.apply(listenFn, expr());
+    });
   },
 
   isProperty: function(exp) {
@@ -103,15 +115,21 @@ Scope.prototype = {
     this.eval(expressionText + "=" + toJson(value));
   },
 
+  compile: function(exp) {
+    if (isFunction(exp)) return exp;
+    var expFn = Scope.expressionCache[exp];
+    if (!expFn) {
+      var parser = new Parser(exp);
+      expFn = parser.statements();
+      parser.assertAllConsumed();
+      Scope.expressionCache[exp] = expFn;
+    }
+    return expFn;
+  },
+
   eval: function(expressionText, context) {
 //    log('Scope.eval', expressionText);
-    var expression = Scope.expressionCache[expressionText];
-    if (!expression) {
-      var parser = new Parser(expressionText);
-      expression = parser.statements();
-      parser.assertAllConsumed();
-      Scope.expressionCache[expressionText] = expression;
-    }
+    var expression = this.compile(expressionText);
     context = context || {};
     context.scope = this;
     context.self = this.state;

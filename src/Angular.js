@@ -18,23 +18,32 @@ if (typeof Node == 'undefined') {
 }
 
 function noop() {}
+function identity($) {return $;}
 if (!window['console']) window['console']={'log':noop, 'error':noop};
+
+function extension(angular, name) {
+  var extPoint;
+  return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
+    if (isDefined(fn)) {
+      extPoint[name] = extend(fn, prop || {});
+    }
+    return extPoint[name];
+  });
+}
 
 var consoleNode, msie,
     jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
     foreach          = _.each,
     extend           = _.extend,
     slice            = Array.prototype.slice,
-    identity         = _.identity,
     angular          = window['angular']    || (window['angular']    = {}),
-    angularValidator = angular['validator'] || (angular['validator'] = {}),
-    angularDirective = angular['directive'] || (angular['directive'] = function(name, fn){
-      if (fn) {angularDirective[name] = fn;};
-      return angularDirective[name];
-    }),
-    angularFilter    = angular['filter']    || (angular['filter']    = {}),
-    angularFormatter = angular['formatter'] || (angular['formatter'] = {}),
-    angularCallbacks = angular['callbacks'] || (angular['callbacks'] = {}),
+    angularDirective = extension(angular, 'directive'),
+    angularMarkup    = extension(angular, 'markup'),
+    angularWidget    = extension(angular, 'widget'),
+    angularValidator = extension(angular, 'validator'),
+    angularFilter    = extension(angular, 'filter'),
+    angularFormatter = extension(angular, 'formatter'),
+    angularCallbacks = extension(angular, 'callbacks'),
     angularAlert     = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments);
       });
@@ -45,7 +54,15 @@ var isVisible = isVisible || function (element) {
 };
 
 function isDefined(value){
-  return typeof value !== 'undefined';
+  return typeof value != 'undefined';
+}
+
+function isObject(value){
+  return typeof value == 'object';
+}
+
+function isFunction(value){
+  return typeof value == 'function';
 }
 
 function log(a, b, c){

@@ -13,7 +13,7 @@ function Template() {
 Template.prototype = {
   init: function(element, scope) {
     foreach(this.inits, function(fn) {
-      scope.apply(fn, nodeLite(element));
+      scope.apply(fn, jqLite(element));
     });
 
     var i,
@@ -35,8 +35,10 @@ Template.prototype = {
 
 
   addChild: function(index, template) {
-    this.paths.push(index);
-    this.children.push(template);
+    if (template) {
+      this.paths.push(index);
+      this.children.push(template);
+    }
   },
 
   empty: function() {
@@ -45,31 +47,37 @@ Template.prototype = {
 };
 
 ///////////////////////////////////
-//NodeLite
+//JQLite
 //////////////////////////////////
 
-function NodeLite(element) {
+function JQLite(element) {
   this.element = element;
 }
 
-function nodeLite(element) {
-  return element instanceof NodeLite ? element : new NodeLite(element);
+function jqLite(element) {
+  if (typeof element == 'string') {
+    var div = document.createElement('div');
+    div.innerHTML = element;
+    element = div.childNodes[0];
+  }
+  return element instanceof JQLite ? element : new JQLite(element);
 }
 
-NodeLite.prototype = {
+JQLite.prototype = {
   eachTextNode: function(fn){
     var i, chldNodes = this.element.childNodes || [], size = chldNodes.length, chld;
     for (i = 0; i < size; i++) {
-      if((chld = new NodeLite(chldNodes[i])).isText()) {
+      if((chld = new JQLite(chldNodes[i])).isText()) {
         fn(chld, i);
       }
     }
   },
 
+
   eachNode: function(fn){
     var i, chldNodes = this.element.childNodes || [], size = chldNodes.length, chld;
     for (i = 0; i < size; i++) {
-      if(!(chld = new NodeLite(chldNodes[i])).isText()) {
+      if(!(chld = new JQLite(chldNodes[i])).isText()) {
         fn(chld, i);
       }
     }
@@ -84,34 +92,51 @@ NodeLite.prototype = {
   },
 
   replaceWith: function(replaceNode) {
-    this.element.parentNode.replaceChild(nodeLite(replaceNode).element, this.element);
+    this.element.parentNode.replaceChild(jqLite(replaceNode).element, this.element);
   },
 
-  removeAttribute: function(name) {
+  remove: function() {
+    this.element.parentNode.removeChild(this.element);
+  },
+
+  removeAttr: function(name) {
     this.element.removeAttribute(name);
   },
 
   after: function(element) {
-    this.element.parentNode.insertBefore(nodeLite(element).element, this.element.nextSibling);
+    this.element.parentNode.insertBefore(jqLite(element).element, this.element.nextSibling);
   },
 
   attr: function(name, value){
-    if (isDefined(value)) {
-      this.element.setAttribute(name, value);
+    var e = this.element;
+    if (isObject(name)) {
+      foreach(name, function(value, name){
+        e.setAttribute(name, value);
+      });
+    } else if (isDefined(value)) {
+      e.setAttribute(name, value);
     } else {
-      return this.element.getAttribute(name);
+      return e.getAttribute(name);
     }
   },
 
   text: function(value) {
     if (isDefined(value)) {
-      this.element.nodeValue = value;
+      this.element.textContent = value;
     }
-    return this.element.nodeValue;
+    return this.element.textContent;
   },
 
+  html: function(value) {
+    if (isDefined(value)) {
+      this.element.innerHTML = value;
+    }
+    return this.element.innerHTML;
+  },
+
+  parent: function() { return jqLite(this.element.parentNode);},
   isText: function() { return this.element.nodeType == Node.TEXT_NODE; },
-  clone: function() { return nodeLite(this.element.cloneNode(true)); }
+  clone: function() { return jqLite(this.element.cloneNode(true)); }
 };
 
 ///////////////////////////////////
@@ -124,14 +149,14 @@ function Compiler(markup, directives, widgets){
   this.widgets = widgets;
 }
 
-DIRECTIVE = /^ng-(.*)$/;
-
 Compiler.prototype = {
-  compile: function(element) {
-    var template = this.templetize(nodeLite(element)) || new Template();
-    return function(element){
-      var scope = new Scope();
+  compile: function(rawElement) {
+    rawElement = jqLite(rawElement);
+    var template = this.templatize(rawElement) || new Template();
+    return function(element, parentScope){
+      var scope = new Scope(parentScope);
       scope.element = element;
+      // todo return should be a scope with everything already set on it as element
       return {
         scope: scope,
         element:element,
@@ -140,57 +165,57 @@ Compiler.prototype = {
     };
   },
 
-  templetize: function(element){
+  templatize: function(element){
     var self = this,
+        elementName = element.element.nodeName,
+        widgets = self.widgets,
+        widget = widgets[elementName],
         markup = self.markup,
         markupSize = markup.length,
         directives = self.directives,
-        widgets = self.widgets,
-        recurse = true,
+        descend = true,
         exclusive = false,
         directiveQueue = [],
-        template = new Template();
+        template = new Template(),
+        selfApi = {
+          compile: bind(self, self.compile),
+          reference:function(name) {return jqLite(document.createComment(name));},
+          descend: function(value){ if(isDefined(value)) descend = value; return descend;}
+        };
 
-    // process markup for text nodes only
-    element.eachTextNode(function(textNode){
-      for (var i = 0, text = textNode.text(); i < markupSize; i++) {
-        markup[i].call(self, text, textNode, element);
-      }
-    });
+    if (widget) {
+      template.addInit(widget.call(selfApi, element));
+    } else {
+      // process markup for text nodes only
+      element.eachTextNode(function(textNode){
+        for (var i = 0, text = textNode.text(); i < markupSize; i++) {
+          markup[i].call(selfApi, text, textNode, element);
+        }
+      });
 
-    // Process attributes/directives
-    element.eachAttribute(function(name, value){
-      var match = name.match(DIRECTIVE),
-          directive;
-      if (!exclusive && match) {
-        directive = directives[match[1]];
-        if (directive) {
+      // Process attributes/directives
+      element.eachAttribute(function(name, value){
+        var directive  = directives[name];
+        if (!exclusive && directive) {
           if (directive.exclusive) {
             exclusive = true;
             directiveQueue = [];
           }
-          directiveQueue.push(bind(self, directive, value, element));
-        } else {
-          error("Directive '" + match[0] + "' is not recognized.");
-        }
-      }
-    });
-
-    // Execute directives
-    foreach(directiveQueue, function(directive){
-      var init = directive();
-      template.addInit(init);
-      recurse = recurse && init;
-    });
-
-    // Process non text child nodes
-    if (recurse) {
-      element.eachNode(function(child, i){
-        var childTemplate = self.templetize(child);
-        if(childTemplate) {
-          template.addChild(i, childTemplate);
+          directiveQueue.push(bind(selfApi, directive, value, element));
         }
       });
+
+      // Execute directives
+      foreach(directiveQueue, function(directive){
+        template.addInit(directive());
+      });
+
+      // Process non text child nodes
+      if (descend) {
+        element.eachNode(function(child, i){
+          template.addChild(i, self.templatize(child));
+        });
+      }
     }
     return template.empty() ? null : template;
   }

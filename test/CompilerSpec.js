@@ -36,7 +36,7 @@ describe('compiler', function(){
   });
 
   it('should recognize a directive', function(){
-    var e = element('<div ng-directive="expr" ignore="me"></div>');
+    var e = element('<div directive="expr" ignore="me"></div>');
     directives.directive = function(expression, element){
       log += "found";
       expect(expression).toEqual("expr");
@@ -53,12 +53,12 @@ describe('compiler', function(){
   });
 
   it('should recurse to children', function(){
-    var scope = compile('<div><span ng-hello="misko"/></div>');
+    var scope = compile('<div><span hello="misko"/></div>');
     expect(log).toEqual("hello misko");
   });
 
   it('should watch scope', function(){
-    var scope = compile('<span ng-watch="name"/>');
+    var scope = compile('<span watch="name"/>');
     expect(log).toEqual("");
     scope.updateView();
     scope.set('name', 'misko');
@@ -70,24 +70,24 @@ describe('compiler', function(){
     expect(log).toEqual(":misko:adam");
   });
 
-  it('should prevent recursion', function(){
-    directives.stop = function(){ return false; };
-    var scope = compile('<span ng-hello="misko" ng-stop="true"><span ng-hello="adam"/></span>');
+  it('should prevent descend', function(){
+    directives.stop = function(){ this.descend(false); };
+    var scope = compile('<span hello="misko" stop="true"><span hello="adam"/></span>');
     expect(log).toEqual("hello misko");
   });
 
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
       element.replaceWith(document.createComment("marker"));
-      element.removeAttribute("ng-duplicate");
+      element.removeAttr("duplicate");
       var template = this.compile(element);
       return function(marker) {
-        this.$eval(function() {
+        this.$addEval(function() {
           marker.after(template(element.clone()).element);
         });
       };
     };
-    var scope = compile('before<span ng-duplicate="expr">x</span>after');
+    var scope = compile('before<span duplicate="expr">x</span>after');
     expect($(scope.element).html()).toEqual('before<!--marker-->after');
     scope.updateView();
     expect($(scope.element).html()).toEqual('before<!--marker--><span>x</span>after');
@@ -103,7 +103,7 @@ describe('compiler', function(){
     };
     directives.exclusive.exclusive = true;
 
-    compile('<span ng-hello="misko", ng-exclusive/>');
+    compile('<span hello="misko", exclusive/>');
     expect(log).toEqual('exclusive');
   });
 
@@ -111,24 +111,25 @@ describe('compiler', function(){
     markup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
-        parentNode.attr('ng-hello', text);
+        parentNode.attr('hello', text);
         textNode.text('replaced');
       }
     });
     var scope = compile('before<span>middle</span>after');
-    expect(scope.element.innerHTML).toEqual('before<span ng-hello="middle">replaced</span>after');
+    expect(scope.element.innerHTML).toEqual('before<span hello="middle">replaced</span>after');
     expect(log).toEqual("hello middle");
   });
 
-  xit('should replace widgets', function(){
-    widgets.button = function(element) {
-      element.parentNode.replaceChild(button, element);
+  it('should replace widgets', function(){
+    widgets['NG:BUTTON'] = function(element) {
+      element.replaceWith('<div>button</div>', element);
       return function(element) {
         log += 'init';
       };
     };
     var scope = compile('<ng:button>push me</ng:button>');
-    expect(scope.element.innerHTML).toEqual('before<span ng-hello="middle">replaced</span>after');
+    expect(scope.element.innerHTML).toEqual('<div>button</div>');
+    expect(log).toEqual('init');
   });
 
 });

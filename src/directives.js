@@ -1,86 +1,82 @@
-
-angular.directive("auth", function(expression, element){
+angularDirective("ng-init", function(expression){
   return function(){
-    if(expression == "eager") {
-      this.$users.fetchCurrent();
-    }
+    this.$eval(expression);
   };
 });
 
-
-//expression = "book=Book:{year=2000}"
-angular.directive("entity", function(expression, element){
-  //parse expression, ignore element
-  var entityName; // "Book";
-  var instanceName; // "book";
-  var defaults; // {year: 2000};
-
-  parse(expression);
-
+angularDirective("ng-eval", function(expression){
   return function(){
-    this[entityName] = this.$datastore.entity(entityName, defaults);
-    this[instanceName] = this[entityName]();
-    this.$watch("$anchor."+instanceName, function(newAnchor){
-      this[instanceName] = this[entityName].get(this.$anchor[instanceName]);
-    });
+    this.$addEval(expression);
   };
 });
 
-
-angular.directive("init", function(expression, element){
-  return function(){
-    this.$eval(expresssion);
-  };
-});
-
-
-//translation of {{ }} to ng-bind is external to this
-angular.directive("bind", function(expression, element){
-  return function() {
+angular.directive("ng-bind", function(expression){
+  return function(element) {
     this.$watch(expression, function(value){
-      element.innerText = value;
+      element.text(value);
     });
   };
 });
 
-
-// translation of {{ }} to ng-bind-attr is external to this
-// <a href="http://example.com?id={{book.$id}}" alt="{{book.$name}}">link</a>
-// becomes
-// <a href="" ng-bind-attr="{href:'http://example.com?id={{book.$id}}', alt:'{{book.$name}}'}">link</a>
-angular.directive("bind-attr", function(expression, element){
-  return function(expression, element){
-    var jElement = jQuery(element);
-    this.$watch(expression, _(jElement.attr).bind(jElement));
+angular.directive("ng-bind-attr", function(expression){
+  return function(element){
+    this.$watch(expression, bind(element, element.attr));
   };
 });
 
-angular.directive("repeat", function(expression, element){
-  var anchor = document.createComment(expression);
-  jQuery(element).replace(anchor);
-  var template = this.compile(element);
-  var lhs = "item";
-  var rhs = "items";
+angular.directive("ng-non-bindable", function(){
+  this.descend(false);
+});
+
+angular.directive("ng-repeat", function(expression, element){
+  var reference = this.reference("ng-repeat: " + expression),
+      r = element.removeAttr('ng-repeat'),
+      template = this.compile(element),
+      path = expression.split(' in '),
+      lhs = path[0],
+      rhs = path[1];
+  var parent = element.parent();
+  element.replaceWith(reference);
   return function(){
-    var children = [];
-    this.$eval(rhs, function(items){
-      foreach(children, function(child){
-        child.element.remove();
+    var children = [],
+        currentScope = this;
+    this.$addEval(rhs, function(items){
+      var index = 0, childCount = children.length, childScope, lastElement = reference;
+      foreach(items, function(value, key){
+        if (index < childCount) {
+          // reuse existing child
+          childScope = children[index];
+        } else {
+          // grow children
+          childScope = template(element.clone(), currentScope);
+          childScope.init();
+          childScope.scope.set('$index', index);
+          childScope.element.attr('ng-index', index);
+          lastElement.after(childScope.element);
+          children.push(childScope);
+        }
+        childScope.scope.set(lhs, value);
+        childScope.scope.updateView();
+        lastElement = childScope.element;
+        index ++;
       });
-      foreach(items, function(item){
-        var child = template(item); // create scope
-        element.addChild(child.element, anchor);
-        children.push(child);
-      });
+      // shrink children
+      while(children.length > index) {
+        children.pop().element.remove();
+      }
     });
   };
-});
+}, {exclusive: true});
 
 
-//ng-non-bindable
-angular.directive("non-bindable", function(expression, element){
-  return false;
-});
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+
+
+
 
 //Styling
 //
@@ -99,12 +95,6 @@ angular.directive("action", function(expression, element){
   };
 });
 
-//ng-eval
-angular.directive("eval", function(expression, element){
-  return function(){
-    this.$eval(expression);
-  };
-});
 //ng-watch
 // <div ng-watch="$anchor.book: book=Book.get();"/>
 angular.directive("watch", function(expression, element){
