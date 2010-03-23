@@ -703,7 +703,6 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   var input = state.node.find('a');
   input.click();
   assertEquals('abc', fromJson(input.attr('ng-error')).a);
-  assertNotNull(input.data('qtip'));
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
   input.attr('ng-action', '0');

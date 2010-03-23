@@ -82,6 +82,15 @@ angularDirective("ng-repeat", function(expression, element){
   };
 }, {exclusive: true});
 
+angularDirective("ng-action", function(expression, element){
+  return function(){
+    var self = this;
+    jQuery(element.element).click(function(){
+      self.$eval(expression);
+    });
+  };
+});
+
 angularDirective("ng-watch", function(expression, element){
   var match = expression.match(/^([^.]*):(.*)$/);
   if (!match) {
@@ -93,16 +102,6 @@ angularDirective("ng-watch", function(expression, element){
   };
 });
 
-
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-
-
-
-
 //Styling
 //
 //ng-class
@@ -110,15 +109,15 @@ angularDirective("ng-watch", function(expression, element){
 //ng-style
 //ng-show, ng-hide
 
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
 
-angularDirective("action", function(expression, element){
-  return function(){
-    var self = this;
-    jQuery(element).click(function(){
-      self.$eval(expression);
-    });
-  };
-});
+
+
+
 
 //widget related
 //ng-validate, ng-required, ng-formatter

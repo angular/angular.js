@@ -94,4 +94,13 @@ describe("directives", function(){
     scope.updateView();
     expect(scope.get('count')).toEqual(1);
   });
+
+  it('should ng-action', function(){
+    var scope = compile('<div ng-action="clicked = true"></div>');
+    scope.updateView();
+    expect(scope.get('clicked')).toBeFalsy();
+
+    jQuery(element.element).click();
+    expect(scope.get('clicked')).toEqual(true);
+  });
 });
