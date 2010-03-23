@@ -50,7 +50,39 @@ Template.prototype = {
 //JQLite
 //////////////////////////////////
 
+var jqCache = {};
+var jqName = 'ng-' + new Date().getTime();
+var jqId = 1;
+function jqNextId() { return jqId++; }
+
+var addEventListener = window.document.attachEvent ?
+    function(element, type, fn) {
+      element.attachEvent('on' + type, fn);
+    } : function(element, type, fn) {
+      element.addEventListener(type, fn, false);
+    };
+
+var removeEventListener = window.document.detachEvent ?
+    function(element, type, fn) {
+      element.detachEvent('on' + type, fn);
+    } : function(element, type, fn) {
+      element.removeEventListener(type, fn, false);
+    };
+
+function jqClearData(element) {
+  var cacheId = element[jqName],
+      cache = jqCache[cacheId];
+  if (cache) {
+    foreach(cache.bind || {}, function(fn, type){
+      removeEventListener(element, type, fn);
+    });
+    delete jqCache[cacheId];
+    delete element[jqName];
+  }
+};
+
 function JQLite(element) {
+  //todo: change to this[0];
   this.element = element;
 }
 
@@ -64,6 +96,67 @@ function jqLite(element) {
 }
 
 JQLite.prototype = {
+  data: function(key, value) {
+    var element = this.element,
+        cacheId = element[jqName],
+        cache = jqCache[cacheId || -1];
+    if (isDefined(value)) {
+      if (!cache) {
+        element[jqName] = cacheId = jqNextId();
+        cache = jqCache[cacheId] = {};
+      }
+      cache[key] = value;
+    } else {
+      return cache ? cache[key] : null;
+    }
+  },
+
+  removeData: function(){
+    jqClearData(this.element);
+  },
+
+  dealoc: function(){
+    (function dealoc(element){
+      jqClearData(element);
+      for ( var i = 0, children = element.childNodes; i < children.length; i++) {
+        dealoc(children[0]);
+      }
+    })(this.element);
+  },
+
+  bind: function(type, fn){
+    var element = this.element,
+        bind = this.data('bind'),
+        eventHandler;
+    if (!bind) this.data('bind', bind = {});
+    eventHandler = bind[type];
+    if (!eventHandler) {
+      bind[type] = eventHandler = function() {
+        var self = this;
+        foreach(eventHandler.fns, function(fn){
+          fn.apply(self, arguments);
+        });
+      };
+      eventHandler.fns = [];
+      addEventListener(element, type, eventHandler);
+    }
+    eventHandler.fns.push(fn);
+  },
+
+  trigger: function(type) {
+    var cache = this.data('bind');
+    if (cache) {
+      (cache[type] || noop)();
+    }
+  },
+
+  click: function(fn) {
+    if (fn)
+      this.bind('click', fn);
+    else
+      this.trigger('click');
+  },
+
   eachTextNode: function(fn){
     var i, chldNodes = this.element.childNodes || [], size = chldNodes.length, chld;
     for (i = 0; i < size; i++) {
@@ -96,6 +189,7 @@ JQLite.prototype = {
   },
 
   remove: function() {
+    this.dealoc();
     this.element.parentNode.removeChild(this.element);
   },
 

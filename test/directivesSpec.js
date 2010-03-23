@@ -12,6 +12,11 @@ describe("directives", function(){
     };
   });
 
+  afterEach(function(){
+    element.remove();
+    expect(_(jqCache).size()).toEqual(0);
+  });
+
   it("should ng-init", function() {
     var scope = compile('<div ng-init="a=123"></div>');
     expect(scope.get('a')).toEqual(123);
@@ -100,7 +105,7 @@ describe("directives", function(){
     scope.updateView();
     expect(scope.get('clicked')).toBeFalsy();
 
-    jQuery(element.element).click();
+    element.click();
     expect(scope.get('clicked')).toEqual(true);
   });
 });

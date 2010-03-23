@@ -85,7 +85,7 @@ angularDirective("ng-repeat", function(expression, element){
 angularDirective("ng-action", function(expression, element){
   return function(){
     var self = this;
-    jQuery(element.element).click(function(){
+    element.click(function(){
       self.$eval(expression);
     });
   };

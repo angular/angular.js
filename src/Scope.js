@@ -73,7 +73,7 @@ Scope.prototype = {
     // todo: this is a hack, which will need to be cleaned up.
     var self = this,
         listenFn = listener || noop,
-        expr = bind(self, self.compile(fn), {scope: self, self: self.state});
+        expr = self.compile(fn);
     this.evals.push(function(){
       self.apply(listenFn, expr());
     });
@@ -117,23 +117,24 @@ Scope.prototype = {
 
   compile: function(exp) {
     if (isFunction(exp)) return exp;
-    var expFn = Scope.expressionCache[exp];
+    var expFn = Scope.expressionCache[exp], self = this;
     if (!expFn) {
       var parser = new Parser(exp);
       expFn = parser.statements();
       parser.assertAllConsumed();
       Scope.expressionCache[exp] = expFn;
     }
-    return expFn;
+    return function(context){
+      context = context || {};
+      context.self = self.state;
+      context.scope = self;
+      return expFn.call(self, context);
+    };
   },
 
   eval: function(expressionText, context) {
 //    log('Scope.eval', expressionText);
-    var expression = this.compile(expressionText);
-    context = context || {};
-    context.scope = this;
-    context.self = this.state;
-    return expression(context);
+    return this.compile(expressionText)(context);
   },
 
   //TODO: Refactor. This function needs to be an execution closure for widgets
@@ -209,7 +210,7 @@ Scope.prototype = {
   addWatchListener: function(watchExpression, listener) {
     // TODO: clean me up!
     if (!isFunction(listener)) {
-      listener = bind(this, this.compile(listener), {scope: this, self: this.state});
+      listener = this.compile(listener);
     }
     var watcher = this.watchListeners[watchExpression];
     if (!watcher) {
