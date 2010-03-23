@@ -1,6 +1,7 @@
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 if (typeof Node == 'undefined') {
+  //TODO: can we get rid of this?
   Node = {
     ELEMENT_NODE : 1,
     ATTRIBUTE_NODE : 2,
@@ -21,7 +22,7 @@ function noop() {}
 function identity($) {return $;}
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
-function extension(angular, name) {
+function extensionMap(angular, name) {
   var extPoint;
   return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
     if (isDefined(fn)) {
@@ -31,20 +32,30 @@ function extension(angular, name) {
   });
 }
 
+function extensionList(angular, name) {
+  var extPoint, length = 0;
+  return angular[name] || (extPoint = angular[name] = function (fn, prop){
+    if (isDefined(fn)) {
+      extPoint[length] = extend(fn, prop || {});
+      length++;
+    }
+    return extPoint;
+  });
+}
+
 var consoleNode, msie,
-    jQuery           = window['jQuery'] || window['$'], // weirdness to make IE happy
-    foreach          = _.each,
-    extend           = _.extend,
-    slice            = Array.prototype.slice,
-    angular          = window['angular']    || (window['angular']    = {}),
-    angularDirective = extension(angular, 'directive'),
-    angularMarkup    = extension(angular, 'markup'),
-    angularWidget    = extension(angular, 'widget'),
-    angularValidator = extension(angular, 'validator'),
-    angularFilter    = extension(angular, 'filter'),
-    angularFormatter = extension(angular, 'formatter'),
-    angularCallbacks = extension(angular, 'callbacks'),
-    angularAlert     = angular['alert']     || (angular['alert']     = function(){
+    jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
+    slice             = Array.prototype.slice,
+    angular           = window['angular']    || (window['angular']    = {}),
+    angularTextMarkup = extensionList(angular, 'textMarkup'),
+    angularAttrMarkup = extensionList(angular, 'attrMarkup'),
+    angularDirective  = extensionMap(angular, 'directive'),
+    angularWidget     = extensionMap(angular, 'widget'),
+    angularValidator  = extensionMap(angular, 'validator'),
+    angularFilter     = extensionMap(angular, 'filter'),
+    angularFormatter  = extensionMap(angular, 'formatter'),
+    angularCallbacks  = extensionMap(angular, 'callbacks'),
+    angularAlert      = angular['alert']     || (angular['alert']     = function(){
         log(arguments); window.alert.apply(window, arguments);
       });
 angular['copy'] = copy;
@@ -52,6 +63,29 @@ angular['copy'] = copy;
 var isVisible = isVisible || function (element) {
   return jQuery(element).is(":visible");
 };
+
+function foreach(obj, iterator, context) {
+  var key;
+  if (obj) {
+    if (obj.forEach) {
+      obj.forEach(iterator, context);
+    } else if (obj instanceof Array) {
+      for (key = 0; key < obj.length; key++)
+        iterator.call(context, obj[key], key);
+    } else {
+      for (key in obj)
+        iterator.call(context, obj[key], key);
+    }
+  }
+  return obj;
+}
+
+function extend(dst, obj) {
+  foreach(obj, function(value, key){
+    dst[key] = value;
+  });
+  return dst;
+}
 
 function isDefined(value){ return typeof value != 'undefined'; }
 function isObject(value){ return typeof value == 'object';}
@@ -112,14 +146,15 @@ function isNode(inp) {
 }
 
 function isLeafNode (node) {
-  switch (node.nodeName) {
-  case "OPTION":
-  case "PRE":
-  case "TITLE":
-    return true;
-  default:
-    return false;
+  if (node) {
+    switch (node.nodeName) {
+    case "OPTION":
+    case "PRE":
+    case "TITLE":
+      return true;
+    }
   }
+  return false;
 }
 
 function copy(source, destination){

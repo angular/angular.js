@@ -3,7 +3,7 @@ describe('compiler', function(){
     return jQuery(html)[0];
   }
 
-  var compiler, markup, directives, widgets, compile, log;
+  var compiler, textMarkup, directives, widgets, compile, log;
 
   beforeEach(function(){
     log = "";
@@ -24,9 +24,10 @@ describe('compiler', function(){
       }
 
     };
-    markup = [];
+    textMarkup = [];
+    attrMarkup = [];
     widgets = {};
-    compiler = new Compiler(markup, directives, widgets);
+    compiler = new Compiler(textMarkup, attrMarkup, directives, widgets);
     compile = function(html){
       var e = element("<div>" + html + "</div>");
       var view = compiler.compile(e)(e);
@@ -108,7 +109,7 @@ describe('compiler', function(){
   });
 
   it('should process markup before directives', function(){
-    markup.push(function(text, textNode, parentNode) {
+    textMarkup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
         parentNode.attr('hello', text);

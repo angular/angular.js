@@ -1,3 +1,19 @@
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+/////////////////////////////////////////
+
+
+
+
+
+//widget related
+//ng-validate, ng-required, ng-formatter
+//ng-error
+
+//ng-scope ng-controller????
+
 // <input type="text" name="bla" ng-action=""> -> <ng:textinput name="" ng-action=""/>
 angular.widget("inputtext", function(element) {
   var expression = element.attr('name');
@@ -49,7 +65,7 @@ angular.widget("colorpicker", function(element) {
     this.$watch(expression, function(cmyk){
       element.setColor(formatter.format(cmyk));
     });
-  }
+  };
 });
 
 angular.widget("template", function(element) {

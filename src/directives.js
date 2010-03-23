@@ -18,9 +18,50 @@ angularDirective("ng-bind", function(expression){
   };
 });
 
+var bindTemplateCache = {};
+function compileBindTemplate(template){
+  var fn = bindTemplateCache[template];
+  if (!fn) {
+    var bindings = [];
+    foreach(parseBindings(template), function(text){
+      var exp = binding(text);
+      bindings.push(exp ? function(){
+        return this.$eval(exp);
+      } : function(){
+        return text;
+      });
+    });
+    bindTemplateCache[template] = fn = function(){
+      var parts = [], self = this;
+      foreach(bindings, function(fn){
+        parts.push(fn.call(self));
+      });
+      return parts.join('');
+    };
+  }
+  return fn;
+};
+angularDirective("ng-bind-template", function(expression){
+  var templateFn = compileBindTemplate(expression);
+  return function(element) {
+    var lastValue;
+    this.$addEval(function() {
+      var value = templateFn.call(this);
+      if (value != lastValue) {
+        element.text(value);
+        lastValue = value;
+      }
+    });
+  };
+});
+
 angularDirective("ng-bind-attr", function(expression){
   return function(element){
-    this.$watch(expression, bind(element, element.attr));
+    this.$addEval(function(){
+      foreach(this.$eval(expression), function(value, key){
+        element.attr(key, compileBindTemplate(value).call(this));
+      }, this);
+    });
   };
 });
 
@@ -29,7 +70,7 @@ angularDirective("ng-non-bindable", function(){
 });
 
 angularDirective("ng-repeat", function(expression, element){
-  var reference = this.reference("ng-repeat: " + expression),
+  var reference = this.comment("ng-repeat: " + expression),
       r = element.removeAttr('ng-repeat'),
       template = this.compile(element),
       match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
@@ -135,18 +176,12 @@ angularDirective("ng-hide", function(expression, element){
     });
   };
 });
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
 
+angularDirective("ng-style", function(expression, element){
+  return function(element){
+    this.$addEval(expression, function(value){
+      element.css(value);
+    });
+  };
+});
 
-
-
-
-//widget related
-//ng-validate, ng-required, ng-formatter
-//ng-error
-
-//ng-scope ng-controller????

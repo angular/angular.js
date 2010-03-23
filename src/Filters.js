@@ -27,7 +27,7 @@ foreach({
     jQuery(this.$element).toggleClass('ng-format-negative', amount < 0);
     return '$' + angularFilter['number'].apply(this, [amount, 2]);
   },
-  
+
   'number': function(amount, fractionSize){
     if (isNaN(amount) || !isFinite(amount)) {
       return '';
@@ -55,15 +55,15 @@ foreach({
     }
     return text;
   },
-  
+
   'date': function(amount) {
   },
-  
+
   'json': function(object) {
     jQuery(this.$element).addClass("ng-monospace");
     return toJson(object, true);
   },
-  
+
   'trackPackage': (function(){
     var MATCHERS = [
       { name: "UPS",
@@ -89,7 +89,7 @@ foreach({
       var returnValue;
       foreach(MATCHERS, function(carrier){
         foreach(carrier.regexp, function(regexp){
-          if (regexp.test(tNo)) {
+          if (!returnValue && regexp.test(tNo)) {
             var text = carrier.name + ": " + trackingNo;
             var url = carrier.url + trackingNo;
             returnValue = new angularFilter.Meta({
@@ -97,19 +97,17 @@ foreach({
               url:url,
               html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
               trackingNo:trackingNo});
-            _.breakLoop();
           }
         });
-        if (returnValue) _.breakLoop();
       });
-      if (returnValue) 
+      if (returnValue)
         return returnValue;
       else if (trackingNo)
         return noMatch || new angularFilter.Meta({text:trackingNo + " is not recognized"});
       else
         return null;
     };})(),
-  
+
   'link': function(obj, title) {
     var text = title || angularFilter.Meta.get(obj);
     var url = angularFilter.Meta.get(obj, "url") || angularFilter.Meta.get(obj);
@@ -122,13 +120,13 @@ foreach({
     }
     return obj;
   },
-  
-  
+
+
   'bytes': (function(){
     var SUFFIX = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
     return function(size) {
       if(size === null) return "";
-    
+
       var suffix = 0;
       while (size > 1000) {
         size = size / 1024;
@@ -142,7 +140,7 @@ foreach({
       return txt + " " + SUFFIX[suffix];
     };
   })(),
-  
+
   'image': function(obj, width, height) {
     if (obj && obj.url) {
       var style = "";
@@ -155,36 +153,36 @@ foreach({
     }
     return null;
   },
-  
+
   'lowercase': function (obj) {
     var text = angularFilter.Meta.get(obj);
     return text ? ("" + text).toLowerCase() : text;
   },
-  
+
   'uppercase': function (obj) {
     var text = angularFilter.Meta.get(obj);
     return text ? ("" + text).toUpperCase() : text;
   },
-  
+
   'linecount': function (obj) {
     var text = angularFilter.Meta.get(obj);
     if (text==='' || !text) return 1;
     return text.split(/\n|\f/).length;
   },
-  
+
   'if': function (result, expression) {
     return expression ? result : undefined;
   },
-  
+
   'unless': function (result, expression) {
     return expression ? undefined : result;
   },
-  
+
   'googleChartApi': extend(
     function(type, data, width, height) {
       data = data || {};
       var chart = {
-          'cht':type, 
+          'cht':type,
           'chco':angularFilterGoogleChartApi['collect'](data, 'color'),
           'chtt':angularFilterGoogleChartApi['title'](data),
           'chdl':angularFilterGoogleChartApi['collect'](data, 'label'),
@@ -210,7 +208,7 @@ foreach({
         var values = seriesValues.join('|');
         return values === "" ? null : "t:" + values;
       },
-      
+
       'title': function(data){
         var titles = [];
         var title = data['title'] || [];
@@ -219,7 +217,7 @@ foreach({
         });
         return titles.join('|');
       },
-      
+
       'collect': function(data, key){
         var outterValues = [];
         var count = 0;
@@ -234,7 +232,7 @@ foreach({
         });
         return count?outterValues.join(','):null;
       },
-      
+
       'encode': function(params, width, height) {
         width = width || 200;
         height = height || width;
@@ -253,8 +251,8 @@ foreach({
       }
     }
   ),
-  
-  
+
+
   'qrcode': function(value, width, height) {
     return angularFilterGoogleChartApi['encode']({
       'cht':'qr', 'chl':encodeURIComponent(value)}, width, height);
@@ -291,11 +289,11 @@ foreach({
       return angularFilterGoogleChartApi('s', data, width, height);
     }
   },
-  
+
   'html': function(html){
     return new angularFilter.Meta({html:html});
   },
-  
+
   'linky': function(text){
     if (!text) return text;
     function regExpEscape(text) {

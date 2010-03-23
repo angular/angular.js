@@ -3,7 +3,7 @@ describe("directives", function(){
   var compile, element;
 
   beforeEach(function() {
-    var compiler = new Compiler(angularMarkup, angularDirective, angularWidget);
+    var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
     compile = function(html) {
       element = jqLite(html);
       var view = compiler.compile(element)(element);
@@ -37,6 +37,14 @@ describe("directives", function(){
     scope.set('a', 'misko');
     scope.updateView();
     expect(element.text()).toEqual('misko');
+  });
+
+  it('should ng-bind-template', function() {
+    var scope = compile('<div ng-bind-template="Hello {{name}}!"></div>');
+    expect(element.text()).toEqual('');
+    scope.set('name', 'Misko');
+    scope.updateView();
+    expect(element.text()).toEqual('Hello Misko!');
   });
 
   it('should ng-bind-attr', function(){
@@ -81,7 +89,7 @@ describe("directives", function(){
   it('should error on wrong parsing of ng-repeat', function(){
     var scope = compile('<ul><li ng-repeat="i dont parse"></li></ul>');
     var log = "";
-    element.eachNode(function(li){
+    eachNode(element, function(li){
       log += li.attr('ng-error') + ';';
       log += li.hasClass('ng-exception') + ';';
     });

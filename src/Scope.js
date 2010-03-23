@@ -116,7 +116,7 @@ Scope.prototype = {
   },
 
   compile: function(exp) {
-    if (isFunction(exp)) return exp;
+    if (isFunction(exp)) return bind(this.state, exp);
     var expFn = Scope.expressionCache[exp], self = this;
     if (!expFn) {
       var parser = new Parser(exp);

@@ -1,0 +1,185 @@
+
+///////////////////////////////////
+//JQLite
+//////////////////////////////////
+
+var jqCache = {};
+var jqName = 'ng-' + new Date().getTime();
+var jqId = 1;
+function jqNextId() { return jqId++; }
+
+var addEventListener = window.document.attachEvent ?
+    function(element, type, fn) {
+      element.attachEvent('on' + type, fn);
+    } : function(element, type, fn) {
+      element.addEventListener(type, fn, false);
+    };
+
+var removeEventListener = window.document.detachEvent ?
+    function(element, type, fn) {
+      element.detachEvent('on' + type, fn);
+    } : function(element, type, fn) {
+      element.removeEventListener(type, fn, false);
+    };
+
+function jqClearData(element) {
+  var cacheId = element[jqName],
+      cache = jqCache[cacheId];
+  if (cache) {
+    foreach(cache.bind || {}, function(fn, type){
+      removeEventListener(element, type, fn);
+    });
+    delete jqCache[cacheId];
+    delete element[jqName];
+  }
+};
+
+function JQLite(element) {
+  this[0] = element;
+}
+
+function jqLite(element) {
+  if (typeof element == 'string') {
+    var div = document.createElement('div');
+    div.innerHTML = element;
+    element = div.childNodes[0];
+  }
+  return element instanceof JQLite ? element : new JQLite(element);
+}
+
+JQLite.prototype = {
+  data: function(key, value) {
+    var element = this[0],
+        cacheId = element[jqName],
+        cache = jqCache[cacheId || -1];
+    if (isDefined(value)) {
+      if (!cache) {
+        element[jqName] = cacheId = jqNextId();
+        cache = jqCache[cacheId] = {};
+      }
+      cache[key] = value;
+    } else {
+      return cache ? cache[key] : null;
+    }
+  },
+
+  removeData: function(){
+    jqClearData(this[0]);
+  },
+
+  dealoc: function(){
+    (function dealoc(element){
+      jqClearData(element);
+      for ( var i = 0, children = element.childNodes; i < children.length; i++) {
+        dealoc(children[0]);
+      }
+    })(this[0]);
+  },
+
+  bind: function(type, fn){
+    var element = this[0],
+        bind = this.data('bind'),
+        eventHandler;
+    if (!bind) this.data('bind', bind = {});
+    eventHandler = bind[type];
+    if (!eventHandler) {
+      bind[type] = eventHandler = function() {
+        var self = this;
+        foreach(eventHandler.fns, function(fn){
+          fn.apply(self, arguments);
+        });
+      };
+      eventHandler.fns = [];
+      addEventListener(element, type, eventHandler);
+    }
+    eventHandler.fns.push(fn);
+  },
+
+  trigger: function(type) {
+    var cache = this.data('bind');
+    if (cache) {
+      (cache[type] || noop)();
+    }
+  },
+
+  click: function(fn) {
+    if (fn)
+      this.bind('click', fn);
+    else
+      this.trigger('click');
+  },
+
+  replaceWith: function(replaceNode) {
+    this[0].parentNode.replaceChild(jqLite(replaceNode)[0], this[0]);
+  },
+
+  remove: function() {
+    this.dealoc();
+    this[0].parentNode.removeChild(this[0]);
+  },
+
+  removeAttr: function(name) {
+    this[0].removeAttribute(name);
+  },
+
+  after: function(element) {
+    this[0].parentNode.insertBefore(jqLite(element)[0], this[0].nextSibling);
+  },
+
+  hasClass: function(selector) {
+    var className = " " + selector + " ";
+    if ( (" " + this[0].className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1 ) {
+      return true;
+    }
+    return false;
+  },
+
+  addClass: function( selector ) {
+    if (!this.hasClass(selector)) {
+      this[0].className += ' ' + selector;
+    }
+  },
+
+  css: function(name, value) {
+    var style = this[0].style;
+    if (isString(name)) {
+      if (isDefined(value)) {
+        style[name] = value;
+      } else {
+        return style[name];
+      }
+    } else {
+      extend(style, name);
+    }
+  },
+
+  attr: function(name, value){
+    var e = this[0];
+    if (isObject(name)) {
+      foreach(name, function(value, name){
+        e.setAttribute(name, value);
+      });
+    } else if (isDefined(value)) {
+      e.setAttribute(name, value);
+    } else {
+      return e.getAttribute(name);
+    }
+  },
+
+  text: function(value) {
+    if (isDefined(value)) {
+      this[0].textContent = value;
+    }
+    return this[0].textContent;
+  },
+
+  html: function(value) {
+    if (isDefined(value)) {
+      this[0].innerHTML = value;
+    }
+    return this[0].innerHTML;
+  },
+
+  parent: function() { return jqLite(this[0].parentNode);},
+  clone: function() { return jqLite(this[0].cloneNode(true)); }
+};
