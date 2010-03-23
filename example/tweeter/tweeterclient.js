@@ -4,7 +4,7 @@ $(document).ready(function(){
     jQuery.getJSON(url, function(){
       callback.apply(this, arguments);
       scope.updateView();
-    })
+    });
   }
 
   var resourceFactory = new ResourceFactory(xhr);
@@ -25,11 +25,11 @@ $(document).ready(function(){
 
   scope.set('fetchTweets', fetchTweets);
   scope.set('users', [
-      {screen_name:'mhevery', name:'Mi\u0161ko Hevery', 
-       notes:'Author of <angular/> http://www.getangular.com.', 
+      {screen_name:'mhevery', name:'Mi\u0161ko Hevery',
+       notes:'Author of <angular/> http://www.getangular.com.',
        profile_image_url:'http://a3.twimg.com/profile_images/54360179/Me_-_Small_Banner_normal.jpg'},
-      {screen_name:'abrons', name:'Adam Abrons', 
-       notes:'Author of <angular/> & Ruby guru see:  http://www.angularjs.org.', 
+      {screen_name:'abrons', name:'Adam Abrons',
+       notes:'Author of <angular/> & Ruby guru see:  http://www.angularjs.org.',
        profile_image_url:'http://media.linkedin.com/mpr/mpr/shrink_80_80/p/2/000/005/0a8/044278d.jpg'}
     ]);
   scope.init();

@@ -8,7 +8,7 @@
         var parts = src.match(filename);
         return parts[1];
       }
-    }    
+    }
   })();
   function addScript(path) {
     document.write('<script type="text/javascript" src="' + prefix + path + '"></script>');
@@ -17,7 +17,7 @@
     document.write('<link rel="stylesheet" type="text/css" href="' + prefix + path + '"/>');
   };
   window.onload = function(){
-    if (!_.stepper) { 
+    if (!_.stepper) {
       _.stepper = function(collection, iterator, done){
         var keys = _.keys(collection);
         function next() {
@@ -38,7 +38,7 @@
   };
   addCSS("../../css/angular-scenario.css");
   addScript("../../lib/underscore/underscore.js");
-  addScript("../../lib/jquery/jquery-1.3.2.js");
+  addScript("../../lib/jquery/jquery-1.4.2.js");
   addScript("../angular-bootstrap.js");
   addScript("_namespace.js");
   addScript("Steps.js");
