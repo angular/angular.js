@@ -53,17 +53,11 @@ var isVisible = isVisible || function (element) {
   return jQuery(element).is(":visible");
 };
 
-function isDefined(value){
-  return typeof value != 'undefined';
-}
-
-function isObject(value){
-  return typeof value == 'object';
-}
-
-function isFunction(value){
-  return typeof value == 'function';
-}
+function isDefined(value){ return typeof value != 'undefined'; }
+function isObject(value){ return typeof value == 'object';}
+function isString(value){ return typeof value == 'string';}
+function isArray(value) { return value instanceof Array; }
+function isFunction(value){ return typeof value == 'function';}
 
 function log(a, b, c){
   var console = window['console'];

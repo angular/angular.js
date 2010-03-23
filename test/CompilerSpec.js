@@ -40,7 +40,7 @@ describe('compiler', function(){
     directives.directive = function(expression, element){
       log += "found";
       expect(expression).toEqual("expr");
-      expect(element.element).toEqual(e);
+      expect(element[0]).toEqual(e);
       return function initFn() {
         log += ":init";
       };

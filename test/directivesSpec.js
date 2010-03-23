@@ -6,7 +6,7 @@ describe("directives", function(){
     var compiler = new Compiler(angularMarkup, angularDirective, angularWidget);
     compile = function(html) {
       element = jqLite(html);
-      var view = compiler.compile(element.element)(element.element);
+      var view = compiler.compile(element)(element);
       view.init();
       return view.scope;
     };
@@ -107,5 +107,48 @@ describe("directives", function(){
 
     element.click();
     expect(scope.get('clicked')).toEqual(true);
+  });
+
+  it('should ng-class', function(){
+    var scope = compile('<div class="existing" ng-class="[\'A\', \'B\']"></div>');
+    scope.updateView();
+    expect(element.hasClass('existing')).toBeTruthy();
+    expect(element.hasClass('A')).toBeTruthy();
+    expect(element.hasClass('B')).toBeTruthy();
+  });
+
+  it('should ng-class odd/even', function(){
+    var scope = compile('<ul><li ng-repeat="i in [0,1]" class="existing" ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li><ul>');
+    scope.updateView();
+    var e1 = jQuery(element.parent()[0]).find('li:first');
+    var e2 = jQuery(element.parent()[0]).find('li:last');
+    expect(e1.hasClass('existing')).toBeTruthy();
+    expect(e1.hasClass('even')).toBeTruthy();
+    expect(e2.hasClass('existing')).toBeTruthy();
+    expect(e2.hasClass('odd')).toBeTruthy();
+  });
+
+  it('should ng-style', function(){
+    var scope = compile('<div ng-style="{color:\'red\'}"></div>');
+    scope.updateView();
+    expect(element.css('color')).toEqual('red');
+  });
+
+  it('should ng-show', function(){
+    var scope = compile('<div ng-hide="hide"></div>');
+    scope.updateView();
+    expect(element.css('display')).toEqual('');
+    scope.set('hide', true);
+    scope.updateView();
+    expect(element.css('display')).toEqual('none');
+  });
+
+  it('should ng-hide', function(){
+    var scope = compile('<div ng-show="show"></div>');
+    scope.updateView();
+    expect(element.css('display')).toEqual('none');
+    scope.set('show', true);
+    scope.updateView();
+    expect(element.css('display')).toEqual('');
   });
 });

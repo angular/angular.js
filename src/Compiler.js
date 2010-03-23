@@ -12,12 +12,13 @@ function Template() {
 
 Template.prototype = {
   init: function(element, scope) {
+    element = jqLite(element);
     foreach(this.inits, function(fn) {
-      scope.apply(fn, jqLite(element));
+      scope.apply(fn, element);
     });
 
     var i,
-        childNodes = element.childNodes,
+        childNodes = element[0].childNodes,
         children = this.children,
         paths = this.paths,
         length = paths.length;
@@ -82,8 +83,7 @@ function jqClearData(element) {
 };
 
 function JQLite(element) {
-  //todo: change to this[0];
-  this.element = element;
+  this[0] = element;
 }
 
 function jqLite(element) {
@@ -97,7 +97,7 @@ function jqLite(element) {
 
 JQLite.prototype = {
   data: function(key, value) {
-    var element = this.element,
+    var element = this[0],
         cacheId = element[jqName],
         cache = jqCache[cacheId || -1];
     if (isDefined(value)) {
@@ -112,7 +112,7 @@ JQLite.prototype = {
   },
 
   removeData: function(){
-    jqClearData(this.element);
+    jqClearData(this[0]);
   },
 
   dealoc: function(){
@@ -121,11 +121,11 @@ JQLite.prototype = {
       for ( var i = 0, children = element.childNodes; i < children.length; i++) {
         dealoc(children[0]);
       }
-    })(this.element);
+    })(this[0]);
   },
 
   bind: function(type, fn){
-    var element = this.element,
+    var element = this[0],
         bind = this.data('bind'),
         eventHandler;
     if (!bind) this.data('bind', bind = {});
@@ -158,7 +158,7 @@ JQLite.prototype = {
   },
 
   eachTextNode: function(fn){
-    var i, chldNodes = this.element.childNodes || [], size = chldNodes.length, chld;
+    var i, chldNodes = this[0].childNodes || [], size = chldNodes.length, chld;
     for (i = 0; i < size; i++) {
       if((chld = new JQLite(chldNodes[i])).isText()) {
         fn(chld, i);
@@ -168,7 +168,7 @@ JQLite.prototype = {
 
 
   eachNode: function(fn){
-    var i, chldNodes = this.element.childNodes || [], size = chldNodes.length, chld;
+    var i, chldNodes = this[0].childNodes || [], size = chldNodes.length, chld;
     for (i = 0; i < size; i++) {
       if(!(chld = new JQLite(chldNodes[i])).isText()) {
         fn(chld, i);
@@ -177,7 +177,7 @@ JQLite.prototype = {
   },
 
   eachAttribute: function(fn){
-    var i, attrs = this.element.attributes || [], size = attrs.length, chld, attr;
+    var i, attrs = this[0].attributes || [], size = attrs.length, chld, attr;
     for (i = 0; i < size; i++) {
       var attr = attrs[i];
       fn(attr.name, attr.value);
@@ -185,25 +185,25 @@ JQLite.prototype = {
   },
 
   replaceWith: function(replaceNode) {
-    this.element.parentNode.replaceChild(jqLite(replaceNode).element, this.element);
+    this[0].parentNode.replaceChild(jqLite(replaceNode)[0], this[0]);
   },
 
   remove: function() {
     this.dealoc();
-    this.element.parentNode.removeChild(this.element);
+    this[0].parentNode.removeChild(this[0]);
   },
 
   removeAttr: function(name) {
-    this.element.removeAttribute(name);
+    this[0].removeAttribute(name);
   },
 
   after: function(element) {
-    this.element.parentNode.insertBefore(jqLite(element).element, this.element.nextSibling);
+    this[0].parentNode.insertBefore(jqLite(element)[0], this[0].nextSibling);
   },
 
   hasClass: function(selector) {
     var className = " " + selector + " ";
-    if ( (" " + this.element.className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1 ) {
+    if ( (" " + this[0].className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1 ) {
       return true;
     }
     return false;
@@ -211,12 +211,25 @@ JQLite.prototype = {
 
   addClass: function( selector ) {
     if (!this.hasClass(selector)) {
-      this.element.className += ' ' + selector;
+      this[0].className += ' ' + selector;
+    }
+  },
+
+  css: function(name, value) {
+    var style = this[0].style;
+    if (isString(name)) {
+      if (isDefined(value)) {
+        style[name] = value;
+      } else {
+        return style[name];
+      }
+    } else {
+      extend(style, name);
     }
   },
 
   attr: function(name, value){
-    var e = this.element;
+    var e = this[0];
     if (isObject(name)) {
       foreach(name, function(value, name){
         e.setAttribute(name, value);
@@ -230,21 +243,21 @@ JQLite.prototype = {
 
   text: function(value) {
     if (isDefined(value)) {
-      this.element.textContent = value;
+      this[0].textContent = value;
     }
-    return this.element.textContent;
+    return this[0].textContent;
   },
 
   html: function(value) {
     if (isDefined(value)) {
-      this.element.innerHTML = value;
+      this[0].innerHTML = value;
     }
-    return this.element.innerHTML;
+    return this[0].innerHTML;
   },
 
-  parent: function() { return jqLite(this.element.parentNode);},
-  isText: function() { return this.element.nodeType == Node.TEXT_NODE; },
-  clone: function() { return jqLite(this.element.cloneNode(true)); }
+  parent: function() { return jqLite(this[0].parentNode);},
+  isText: function() { return this[0].nodeType == Node.TEXT_NODE; },
+  clone: function() { return jqLite(this[0].cloneNode(true)); }
 };
 
 ///////////////////////////////////
@@ -275,7 +288,7 @@ Compiler.prototype = {
 
   templatize: function(element){
     var self = this,
-        elementName = element.element.nodeName,
+        elementName = element[0].nodeName,
         widgets = self.widgets,
         widget = widgets[elementName],
         markup = self.markup,

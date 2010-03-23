@@ -102,13 +102,39 @@ angularDirective("ng-watch", function(expression, element){
   };
 });
 
-//Styling
-//
-//ng-class
-//ng-class-odd, ng-class-even
-//ng-style
-//ng-show, ng-hide
+function ngClass(selector) {
+  return function(expression, element){
+    var existing = element[0].className + ' ';
+    return function(element){
+      this.$addEval(expression, function(value){
+        if (selector(this.$index)) {
+          if (isArray(value)) value = value.join(' ');
+          element[0].className = (existing + value).replace(/\s\s+/g, ' ');
+        }
+      });
+    };
+  };
+}
 
+angularDirective("ng-class", ngClass(function(){return true;}));
+angularDirective("ng-class-odd", ngClass(function(i){return i % 2 == 1;}));
+angularDirective("ng-class-even", ngClass(function(i){return i % 2 == 0;}));
+
+angularDirective("ng-show", function(expression, element){
+  return function(element){
+    this.$addEval(expression, function(value){
+      element.css('display', toBoolean(value) ? '' : 'none');
+    });
+  };
+});
+
+angularDirective("ng-hide", function(expression, element){
+  return function(element){
+    this.$addEval(expression, function(value){
+      element.css('display', toBoolean(value) ? 'none' : '');
+    });
+  };
+});
 /////////////////////////////////////////
 /////////////////////////////////////////
 /////////////////////////////////////////
