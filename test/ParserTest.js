@@ -482,3 +482,7 @@ ParserTest.prototype.testBugStringConfusesParser = function() {
   assertEquals('!', scope.eval('suffix = "!"'));
 };
 
+ParserTest.prototype.testParsingBug = function () {
+  var scope = new Scope();
+  assertEquals({a: "-"}, scope.eval("{a:'-'}"));
+};
