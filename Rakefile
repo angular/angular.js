@@ -31,7 +31,7 @@ end
 
 desc 'Compile JavaScript'
 task :compile do
-  Rake::Task['compileexterns'].execute
+  Rake::Task['compileexterns'].execute 0
 
   concat = %x(cat \
       src/angular.prefix \
