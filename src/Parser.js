@@ -40,7 +40,7 @@ Lexer.prototype = {
       return false;
     }
   },
-  
+
   parse: function() {
     var tokens = this.tokens;
     var OPERATORS = Lexer.OPERATORS;
@@ -103,22 +103,22 @@ Lexer.prototype = {
     }
     return tokens;
   },
-  
+
   isNumber: function(ch) {
     return '0' <= ch && ch <= '9';
   },
-  
+
   isWhitespace: function(ch) {
     return ch == ' ' || ch == '\r' || ch == '\t' ||
            ch == '\n' || ch == '\v';
   },
-  
+
   isIdent: function(ch) {
     return 'a' <= ch && ch <= 'z' ||
            'A' <= ch && ch <= 'Z' ||
            '_' == ch || ch == '$';
   },
-  
+
   readNumber: function() {
     var number = "";
     var start = this.index;
@@ -135,7 +135,7 @@ Lexer.prototype = {
     this.tokens.push({index:start, text:number,
       fn:function(){return number;}});
   },
-  
+
   readIdent: function() {
     var ident = "";
     var start = this.index;
@@ -157,15 +157,17 @@ Lexer.prototype = {
     }
     this.tokens.push({index:start, text:ident, fn:fn});
   },
-  
+
   readString: function(quote) {
     var start = this.index;
     var dateParseLength = this.dateParseLength;
     this.index++;
     var string = "";
+    var rawString = quote;
     var escape = false;
     while (this.index < this.text.length) {
       var ch = this.text.charAt(this.index);
+      rawString += ch;
       if (escape) {
         if (ch == 'u') {
           var hex = this.text.substring(this.index + 1, this.index + 5);
@@ -184,7 +186,7 @@ Lexer.prototype = {
         escape = true;
       } else if (ch == quote) {
         this.index++;
-        this.tokens.push({index:start, text:string,
+        this.tokens.push({index:start, text:rawString, string:string,
           fn:function(){
             return (string.length == dateParseLength) ?
               angular['String']['toDate'](string) : string;
@@ -199,7 +201,7 @@ Lexer.prototype = {
         this.text.substring(start) + "] starting at column '" +
         (start+1) + "' in expression '" + this.text + "'.";
   },
-  
+
   readRegexp: function(quote) {
     var start = this.index;
     this.index++;
@@ -249,18 +251,18 @@ Parser.ZERO = function(){
 
 Parser.prototype = {
   error: function(msg, token) {
-    throw "Token '" + token.text + 
-      "' is " + msg + " at column='" + 
-      (token.index + 1) + "' of expression '" + 
+    throw "Token '" + token.text +
+      "' is " + msg + " at column='" +
+      (token.index + 1) + "' of expression '" +
       this.text + "' starting at '" + this.text.substring(token.index) + "'.";
   },
-  
+
   peekToken: function() {
-    if (this.tokens.length === 0) 
+    if (this.tokens.length === 0)
       throw "Unexpected end of expression: " + this.text;
     return this.tokens[0];
   },
-  
+
   peek: function(e1, e2, e3, e4) {
     var tokens = this.tokens;
     if (tokens.length > 0) {
@@ -273,7 +275,7 @@ Parser.prototype = {
     }
     return false;
   },
-  
+
   expect: function(e1, e2, e3, e4){
     var token = this.peek(e1, e2, e3, e4);
     if (token) {
@@ -283,7 +285,7 @@ Parser.prototype = {
     }
     return false;
   },
-  
+
   consume: function(e1){
     if (!this.expect(e1)) {
       var token = this.peek();
@@ -293,30 +295,30 @@ Parser.prototype = {
           this.text.substring(token.index) + "'.";
     }
   },
-  
+
   _unary: function(fn, right) {
     return function(self) {
       return fn(self, right(self));
     };
   },
-  
+
   _binary: function(left, fn, right) {
     return function(self) {
       return fn(self, left(self), right(self));
     };
   },
-  
+
   hasTokens: function () {
     return this.tokens.length > 0;
   },
-  
+
   assertAllConsumed: function(){
     if (this.tokens.length !== 0) {
       throw "Did not understand '" + this.text.substring(this.tokens[0].index) +
           "' while evaluating '" + this.text + "'.";
     }
   },
-  
+
   statements: function(){
     var statements = [];
     while(true) {
@@ -335,7 +337,7 @@ Parser.prototype = {
       }
     }
   },
-  
+
   filterChain: function(){
     var left = this.expression();
     var token;
@@ -347,15 +349,15 @@ Parser.prototype = {
       }
     }
   },
-  
+
   filter: function(){
     return this._pipeFunction(angularFilter);
   },
-  
+
   validator: function(){
     return this._pipeFunction(angularValidator);
   },
-  
+
   _pipeFunction: function(fnScope){
     var fn = this.functionIdent(fnScope);
     var argsFn = [];
@@ -373,7 +375,7 @@ Parser.prototype = {
             var _this = this;
             foreach(self, function(v, k) {
               if (k.charAt(0) == '$') {
-                _this[k] = v; 
+                _this[k] = v;
               }
             });
           };
@@ -386,11 +388,11 @@ Parser.prototype = {
       }
     }
   },
-  
+
   expression: function(){
     return this.throwStmt();
   },
-  
+
   throwStmt: function(){
     if (this.expect('throw')) {
       var throwExp = this.assignment();
@@ -401,7 +403,7 @@ Parser.prototype = {
      return this.assignment();
     }
   },
-  
+
   assignment: function(){
     var left = this.logicalOR();
     var token;
@@ -417,7 +419,7 @@ Parser.prototype = {
      return left;
     }
   },
-  
+
   logicalOR: function(){
     var left = this.logicalAND();
     var token;
@@ -429,7 +431,7 @@ Parser.prototype = {
       }
     }
   },
-  
+
   logicalAND: function(){
     var left = this.equality();
     var token;
@@ -438,7 +440,7 @@ Parser.prototype = {
     }
     return left;
   },
-  
+
   equality: function(){
     var left = this.relational();
     var token;
@@ -447,7 +449,7 @@ Parser.prototype = {
     }
     return left;
   },
-  
+
   relational: function(){
     var left = this.additive();
     var token;
@@ -456,7 +458,7 @@ Parser.prototype = {
     }
     return left;
   },
-  
+
   additive: function(){
     var left = this.multiplicative();
     var token;
@@ -465,7 +467,7 @@ Parser.prototype = {
     }
     return left;
   },
-  
+
   multiplicative: function(){
     var left = this.unary();
     var token;
@@ -474,7 +476,7 @@ Parser.prototype = {
     }
     return left;
   },
-  
+
   unary: function(){
     var token;
     if (this.expect('+')) {
@@ -487,7 +489,7 @@ Parser.prototype = {
      return this.primary();
     }
   },
-  
+
   functionIdent: function(fnScope) {
     var token = this.expect();
     var element = token.text.split('.');
@@ -504,7 +506,7 @@ Parser.prototype = {
     }
     return instance;
   },
-  
+
   primary: function() {
     var primary;
     if (this.expect('(')) {
@@ -540,7 +542,7 @@ Parser.prototype = {
     }
     return primary;
   },
-  
+
   closure: function(hasArgs) {
     var args = [];
     if (hasArgs) {
@@ -566,7 +568,7 @@ Parser.prototype = {
       };
     };
   },
-  
+
   fieldAccess: function(object) {
     var field = this.expect().text;
     var fn = function (self){
@@ -575,7 +577,7 @@ Parser.prototype = {
     fn.isAssignable = field;
     return fn;
   },
-  
+
   objectIndex: function(obj) {
     var indexFn = this.expression();
     this.consume(']');
@@ -592,7 +594,7 @@ Parser.prototype = {
       };
     }
   },
-  
+
   functionCall: function(fn) {
     var argsFn = [];
     if (this.peekToken().text != ')') {
@@ -614,7 +616,7 @@ Parser.prototype = {
       }
     };
   },
-  
+
   // This is used with json array declaration
   arrayDeclaration: function () {
     var elementFns = [];
@@ -632,12 +634,13 @@ Parser.prototype = {
       return array;
     };
   },
-  
+
   object: function () {
     var keyValues = [];
     if (this.peekToken().text != '}') {
       do {
-        var key = this.expect().text;
+        var token = this.expect(),
+            key = token.string || token.text;
         this.consume(":");
         var value = this.expression();
         keyValues.push({key:key, value:value});
@@ -654,7 +657,7 @@ Parser.prototype = {
       return object;
     };
   },
-  
+
   entityDeclaration: function () {
     var decl = [];
     while(this.hasTokens()) {
@@ -671,7 +674,7 @@ Parser.prototype = {
       return code;
     };
   },
-  
+
   entityDecl: function () {
     var entity = this.expect().text;
     var instance;
@@ -690,16 +693,16 @@ Parser.prototype = {
         var document = Entity();
         document['$$anchor'] = instance;
         self.scope.set(instance, document);
-        return "$anchor." + instance + ":{" + 
+        return "$anchor." + instance + ":{" +
             instance + "=" + entity + ".load($anchor." + instance + ");" +
-            instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" + 
+            instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" +
           "};";
       } else {
         return "";
       }
     };
   },
-  
+
   watch: function () {
     var decl = [];
     while(this.hasTokens()) {
@@ -716,7 +719,7 @@ Parser.prototype = {
       }
     };
   },
-  
+
   watchDecl: function () {
     var anchorName = this.expect().text;
     this.consume(":");
@@ -733,5 +736,4 @@ Parser.prototype = {
     };
   }
 };
-
 
