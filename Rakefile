@@ -9,16 +9,16 @@ task :compileexterns do
   out.write("function _(){};\n")
   file = File.new("lib/underscore/underscore.js", "r")
   while (line = file.gets)
-    if line =~ /^\s*_\.(\w+)\s*=.*$/ 
+    if line =~ /^\s*_\.(\w+)\s*=.*$/
       out.write("_.#{$1}=function(){};\n")
     end
   end
   file.close
 
   out.write("function jQuery(){};\n")
-  file = File.new("lib/jquery/jquery-1.3.2.js", "r")
+  file = File.new("lib/jquery/jquery-1.4.2.js", "r")
   while (line = file.gets)
-    if line =~ /^\s*(\w+)\s*:\s*function.*$/ 
+    if line =~ /^\s*(\w+)\s*:\s*function.*$/
       out.write("jQuery.#{$1}=function(){};\n")
     end
   end
