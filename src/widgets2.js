@@ -36,23 +36,22 @@ function domAccessor(element) {
     return value;
   }
   return {
-    get: function(){
-      return validate(element.attr(VALUE));
-    },
-    set: function(value){
-      element.attr(VALUE, validate(value));
-    }
+    get: function(){ return validate(element.val()); },
+    set: function(value){ element.val(validate(value)); }
   };
 }
 
 var NG_ERROR = 'ng-error',
     NG_VALIDATION_ERROR = 'ng-validation-error',
+    TEXT_META = ['', 'keyup change'],
     INPUT_META = {
-  'text': ["", 'keyup change']
-};
+      'text':     TEXT_META,
+      'textarea': TEXT_META,
+      'hidden':   TEXT_META,
+      'password': TEXT_META
+    };
 
-angularWidget('INPUT', function input(element){
-  var meta = INPUT_META[lowercase(element.attr('type'))];
+function inputWidget(meta) {
   return meta ? function(element) {
     var scope = scopeAccessor(this, element),
         dom = domAccessor(element);
@@ -62,6 +61,14 @@ angularWidget('INPUT', function input(element){
     });
     this.$watch(scope.get, dom.set);
   } : 0;
+}
+
+angularWidget('INPUT', function input(element){
+  return inputWidget(INPUT_META[lowercase(element[0].type)]);
+});
+
+angularWidget('TEXTAREA', function(){
+  return inputWidget(INPUT_META['text']);
 });
 
 

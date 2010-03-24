@@ -179,6 +179,13 @@ JQLite.prototype = {
     return this[0].textContent;
   },
 
+  val: function(value) {
+    if (isDefined(value)) {
+      this[0].value = value;
+    }
+    return this[0].value;
+  },
+
   html: function(value) {
     if (isDefined(value)) {
       this[0].innerHTML = value;

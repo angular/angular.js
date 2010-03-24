@@ -44,7 +44,6 @@ function extensionList(angular, name) {
 }
 
 var consoleNode, msie,
-    VALUE             = 'value',
     NOOP              = 'noop',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     slice             = Array.prototype.slice,

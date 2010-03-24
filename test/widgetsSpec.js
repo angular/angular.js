@@ -25,13 +25,13 @@ describe("input widget", function(){
 
     scope.set('name', 'Adam');
     scope.updateView();
-    expect(element.attr('value')).toEqual("Adam");
+    expect(element.val()).toEqual("Adam");
 
-    element.attr('value', 'Shyam');
+    element.val('Shyam');
     element.trigger('keyup');
     expect(scope.get('name')).toEqual('Shyam');
 
-    element.attr('value', 'Kai');
+    element.val('Kai');
     element.trigger('change');
     expect(scope.get('name')).toEqual('Kai');
   });
@@ -42,9 +42,9 @@ describe("input widget", function(){
 
     scope.set('list', ['x', 'y', 'z']);
     scope.updateView();
-    expect(element.attr('value')).toEqual("x, y, z");
+    expect(element.val()).toEqual("x, y, z");
 
-    element.attr('value', '1, 2, 3');
+    element.val('1, 2, 3');
     element.trigger('keyup');
     expect(scope.get('list')).toEqual(['1', '2', '3']);
   });
@@ -59,7 +59,7 @@ describe("input widget", function(){
     expect(element.hasClass('ng-validation-error')).toBeFalsy();
     expect(element.attr('ng-error')).toBeFalsy();
 
-    element.attr('value', 'x');
+    element.val('x');
     element.trigger('keyup');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
     expect(element.attr('ng-error')).toEqual('Not a number');
@@ -75,10 +75,28 @@ describe("input widget", function(){
     expect(element.hasClass('ng-validation-error')).toBeFalsy();
     expect(element.attr('ng-error')).toBeFalsy();
 
-    element.attr('value', '');
+    element.val('');
     element.trigger('keyup');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
     expect(element.attr('ng-error')).toEqual('Required');
   });
+
+  it("should process ng-required", function() {
+    compile('<textarea name="name">Misko</textarea>');
+    expect(scope.get('name')).toEqual("Misko");
+
+    scope.set('name', 'Adam');
+    scope.updateView();
+    expect(element.val()).toEqual("Adam");
+
+    element.val('Shyam');
+    element.trigger('keyup');
+    expect(scope.get('name')).toEqual('Shyam');
+
+    element.val('Kai');
+    element.trigger('change');
+    expect(scope.get('name')).toEqual('Kai');
+  });
+
 
 });
