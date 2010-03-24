@@ -26,7 +26,7 @@ ValidatorTest.prototype.testRegexp = function() {
 };
 
 ValidatorTest.prototype.testNumber = function() {
-  assertEquals(angular.validator.number("ab"), "Value is not a number.");
+  assertEquals(angular.validator.number("ab"), "Not a number");
   assertEquals(angular.validator.number("-0.1",0), "Value can not be less than 0.");
   assertEquals(angular.validator.number("10.1",0,10), "Value can not be greater than 10.");
   assertEquals(angular.validator.number("1.2"), null);
@@ -34,10 +34,10 @@ ValidatorTest.prototype.testNumber = function() {
 };
 
 ValidatorTest.prototype.testInteger = function() {
-  assertEquals(angular.validator.integer("ab"), "Value is not a number.");
-  assertEquals(angular.validator.integer("1.1"), "Value is not a whole number.");
-  assertEquals(angular.validator.integer("1.0"), "Value is not a whole number.");
-  assertEquals(angular.validator.integer("1."), "Value is not a whole number.");
+  assertEquals(angular.validator.integer("ab"), "Not a number");
+  assertEquals(angular.validator.integer("1.1"), "Not a whole number");
+  assertEquals(angular.validator.integer("1.0"), "Not a whole number");
+  assertEquals(angular.validator.integer("1."), "Not a whole number");
   assertEquals(angular.validator.integer("-1",0), "Value can not be less than 0.");
   assertEquals(angular.validator.integer("11",0,10), "Value can not be greater than 10.");
   assertEquals(angular.validator.integer("1"), null);
@@ -86,7 +86,7 @@ describe('Validator:asynchronous', function(){
   var asynchronous = angular.validator.asynchronous;
   var self;
   var value, fn;
-  
+
   beforeEach(function(){
     value = null;
     fn = null;
@@ -96,10 +96,10 @@ describe('Validator:asynchronous', function(){
         $updateView: noop
     };
   });
-  
+
   it('should make a request and show spinner', function(){
-    var x = compile('<input name="name" ng-validate="asynchronous:asyncFn"/>')
-    var asyncFn = function(v,f){value=v; fn=f};
+    var x = compile('<input name="name" ng-validate="asynchronous:asyncFn"/>');
+    var asyncFn = function(v,f){value=v; fn=f;};
     var input = x.node.find(":input");
     x.scope.set("asyncFn", asyncFn);
     x.scope.set("name", "misko");
@@ -110,28 +110,28 @@ describe('Validator:asynchronous', function(){
     expect(input.hasClass('ng-input-indicator-wait')).toBeFalsy();
     expect(input.attr('ng-error')).toEqual("myError");
   });
-  
+
   it("should not make second request to same value", function(){
     asynchronous.call(self, "kai", function(v,f){value=v; fn=f;});
     expect(value).toEqual('kai');
     expect(self.$invalidWidgets).toEqual([self.$element]);
-    
+
     var spy = jasmine.createSpy();
     asynchronous.call(self, "kai", spy);
     expect(spy).wasNotCalled();
-    
+
     asynchronous.call(self, "misko", spy);
-    expect(spy).wasCalled();    
+    expect(spy).wasCalled();
   });
-  
+
   it("should ignore old callbacks, and not remove spinner", function(){
     var firstCb, secondCb;
     asynchronous.call(self, "first", function(v,f){value=v; firstCb=f;});
     asynchronous.call(self, "second", function(v,f){value=v; secondCb=f;});
-    
+
     firstCb();
     expect($(self.$element).hasClass('ng-input-indicator-wait')).toBeTruthy();
-    
+
     secondCb();
     expect($(self.$element).hasClass('ng-input-indicator-wait')).toBeFalsy();
   });

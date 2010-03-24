@@ -1,4 +1,6 @@
 foreach({
+  'noop': noop,
+
   'regexp': function(value, regexp, msg) {
     if (!value.match(regexp)) {
       return msg ||
@@ -7,7 +9,7 @@ foreach({
       return null;
     }
   },
-  
+
   'number': function(value, min, max) {
     var num = 1 * value;
     if (num == value) {
@@ -19,40 +21,40 @@ foreach({
       }
       return null;
     } else {
-      return "Value is not a number.";
+      return "Not a number";
     }
   },
-  
+
   'integer': function(value, min, max) {
     var numberError = angularValidator['number'](value, min, max);
     if (numberError) return numberError;
     if (!("" + value).match(/^\s*[\d+]*\s*$/) || value != Math.round(value)) {
-      return "Value is not a whole number.";
+      return "Not a whole number";
     }
     return null;
   },
-  
+
   'date': function(value, min, max) {
     if (value.match(/^\d\d?\/\d\d?\/\d\d\d\d$/)) {
       return null;
     }
     return "Value is not a date. (Expecting format: 12/31/2009).";
   },
-  
+
   'ssn': function(value) {
     if (value.match(/^\d\d\d-\d\d-\d\d\d\d$/)) {
       return null;
     }
     return "SSN needs to be in 999-99-9999 format.";
   },
-  
+
   'email': function(value) {
     if (value.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)) {
       return null;
     }
     return "Email needs to be in username@host.com format.";
   },
-  
+
   'phone': function(value) {
     if (value.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/)) {
       return null;
@@ -62,14 +64,14 @@ foreach({
     }
     return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
   },
-  
+
   'url': function(value) {
     if (value.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/)) {
       return null;
     }
     return "URL needs to be in http://server[:port]/path format.";
   },
-  
+
   'json': function(value) {
     try {
       fromJson(value);
@@ -78,7 +80,7 @@ foreach({
       return e.toString();
     }
   },
-  
+
   'asynchronous': function(text, asynchronousFn) {
     var stateKey = '$validateState';
     var lastKey = '$lastKey';

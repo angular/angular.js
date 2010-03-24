@@ -105,9 +105,7 @@ Compiler.prototype = {
 
   templatize: function(element){
     var self = this,
-        elementName = element[0].nodeName,
-        widgets = self.widgets,
-        widget = widgets[elementName],
+        widget = self.widgets[element[0].nodeName],
         directives = self.directives,
         descend = true,
         exclusive = false,

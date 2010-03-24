@@ -44,6 +44,8 @@ function extensionList(angular, name) {
 }
 
 var consoleNode, msie,
+    VALUE             = 'value',
+    NOOP              = 'noop',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     slice             = Array.prototype.slice,
     angular           = window['angular']    || (window['angular']    = {}),
@@ -92,6 +94,9 @@ function isObject(value){ return typeof value == 'object';}
 function isString(value){ return typeof value == 'string';}
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == 'function';}
+function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
+function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
+function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; };
 
 function log(a, b, c){
   var console = window['console'];
@@ -242,10 +247,6 @@ function outerHTML(node) {
   var outerHTML = temp.innerHTML;
   temp.removeChild(node);
   return outerHTML;
-}
-
-function trim(str) {
-  return str.replace(/^ */, '').replace(/ *$/, '');
 }
 
 function toBoolean(value) {

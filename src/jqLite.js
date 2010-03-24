@@ -77,22 +77,24 @@ JQLite.prototype = {
   },
 
   bind: function(type, fn){
-    var element = this[0],
-        bind = this.data('bind'),
+    var self = this,
+        element = self[0],
+        bind = self.data('bind'),
         eventHandler;
     if (!bind) this.data('bind', bind = {});
-    eventHandler = bind[type];
-    if (!eventHandler) {
-      bind[type] = eventHandler = function() {
-        var self = this;
-        foreach(eventHandler.fns, function(fn){
-          fn.apply(self, arguments);
-        });
-      };
-      eventHandler.fns = [];
-      addEventListener(element, type, eventHandler);
-    }
-    eventHandler.fns.push(fn);
+    foreach(type.split(' '), function(type){
+      eventHandler = bind[type];
+      if (!eventHandler) {
+        bind[type] = eventHandler = function() {
+          foreach(eventHandler.fns, function(fn){
+            fn.apply(self, arguments);
+          });
+        };
+        eventHandler.fns = [];
+        addEventListener(element, type, eventHandler);
+      }
+      eventHandler.fns.push(fn);
+    });
   },
 
   trigger: function(type) {
@@ -132,6 +134,10 @@ JQLite.prototype = {
       return true;
     }
     return false;
+  },
+
+  removeClass: function(selector) {
+    this[0].className = trim((" " + this[0].className + " ").replace(/[\n\t]/g, " ").replace(" " + selector + " ", ""));
   },
 
   addClass: function( selector ) {
