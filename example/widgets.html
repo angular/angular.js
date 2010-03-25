@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
-    <script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
     <script type="text/javascript" src="../src/angular-bootstrap.js"></script>
     <script type="text/javascript">
       $(document).ready(function(){
@@ -18,15 +18,20 @@
   </head>
   <body>
     <input type="checkbox" name="form.checked" ng-format="boolean" value="true" checked="checked" />
-    <input ng-show="form.checked" name="form.required" ng-required/> 
+    <input ng-show="form.checked" name="form.required" ng-required/>
     <hr/>
-    <input name="form.list" ng-format="list" ng-required/> 
-    <input name="form.list" ng-format="list" /> 
-    <hr/>    
+    <input name="form.list" ng-format="list" ng-required/>
+    <input name="form.list" ng-format="list" />
+    <hr/>
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" checked="checked" />
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" />
-    <hr/>    
+    <hr/>
     <input type="text" name="form.async" ng-validate="asynchronous:$window.asyncValidate" />
+    <hr/>
+    <select name="select">
+      <option>A</option>
+      <option selected>B</option>
+    </select>
     <pre>
 form={{form}}
 $invalidWidgets.length={{$invalidWidgets.length}}

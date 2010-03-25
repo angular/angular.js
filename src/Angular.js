@@ -32,24 +32,13 @@ function extensionMap(angular, name) {
   });
 }
 
-function extensionList(angular, name) {
-  var extPoint, length = 0;
-  return angular[name] || (extPoint = angular[name] = function (fn, prop){
-    if (isDefined(fn)) {
-      extPoint[length] = extend(fn, prop || {});
-      length++;
-    }
-    return extPoint;
-  });
-}
-
 var consoleNode, msie,
     NOOP              = 'noop',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     slice             = Array.prototype.slice,
     angular           = window['angular']    || (window['angular']    = {}),
-    angularTextMarkup = extensionList(angular, 'textMarkup'),
-    angularAttrMarkup = extensionList(angular, 'attrMarkup'),
+    angularTextMarkup = extensionMap(angular, 'textMarkup'),
+    angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
     angularWidget     = extensionMap(angular, 'widget'),
     angularValidator  = extensionMap(angular, 'validator'),

@@ -120,6 +120,7 @@ Compiler.prototype = {
         };
 
     if (widget) {
+      descend = false;
       template.addInit(widget.call(selfApi, element));
     } else {
       // process markup for text nodes only
@@ -152,12 +153,12 @@ Compiler.prototype = {
         template.addInit(directive());
       });
 
-      // Process non text child nodes
-      if (descend) {
-        eachNode(element, function(child, i){
-          template.addChild(i, self.templatize(child));
-        });
-      }
+    }
+    // Process non text child nodes
+    if (descend) {
+      eachNode(element, function(child, i){
+        template.addChild(i, self.templatize(child));
+      });
     }
     return template.empty() ? null : template;
   }

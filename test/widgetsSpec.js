@@ -108,6 +108,12 @@ describe("input widget", function(){
     expect(scope.get('clicked')).toEqual(true);
   });
 
+  it('should support button alias', function(){
+    compile('<button ng-action="clicked = true">Click Me</button>');
+    element.click();
+    expect(scope.get('clicked')).toEqual(true);
+  });
+
   it('should type="checkbox"', function(){
     compile('<input type="checkbox" name="checkbox" checked ng-action="action = true"/>');
     expect(scope.get('checkbox')).toEqual(true);
@@ -140,6 +146,21 @@ describe("input widget", function(){
     jqLite(a).click();
     expect(model.chose).toEqual('A');
     expect(model.clicked).toEqual(1);
+  });
+
+  it('should type="radio"', function(){
+    compile(
+      '<select name="selection">' +
+        '<option>A</option>' +
+        '<option selected>B</option>' +
+      '</select>');
+    expect(element[0].selectedIndex).toEqual(1);
+    expect(element[0].value).toEqual('B');
+    expect(model.selection).toEqual('B');
+    model.selection = 'A';
+    model.$updateView();
+    expect(model.selection).toEqual('A');
+    expect(element[0].childNodes[0].selected).toEqual(true);
   });
 
   it('should report error on missing field', function(){

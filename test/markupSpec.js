@@ -30,11 +30,11 @@ describe("markups", function(){
   });
 
   it('should translate {{}} in terminal nodes', function(){
-    compile('<select><option>Greet {{name}}!</option></select>');
-    expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!"></option>');
+    compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
+    expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!" value=""></option>');
     scope.set('name', 'Misko');
     scope.updateView();
-    expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!">Greet Misko!</option>');
+    expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!" value="">Greet Misko!</option>');
   });
 
   it('should translate {{}} in attributes', function(){
@@ -44,6 +44,11 @@ describe("markups", function(){
     scope.set('path', 'a/b');
     scope.updateView();
     expect(element.attr('src')).toEqual("http://server/a/b.png");
+  });
+
+  it('should populate value attribute on OPTION', function(){
+    compile('<select name="x"><option>A</option></select>');
+    expect(element.html()).toEqual('<option value="A">A</option>');
   });
 
 });

@@ -73,8 +73,8 @@ var NG_ERROR = 'ng-error',
       'reset':           buttonWidget,
       'image':           buttonWidget,
       'checkbox':        inputWidget('click', modelAccessor, checkedAccessor, false),
-      'radio':           inputWidget('click', modelAccessor, radioAccessor, undefined)
-//      'select-one':      [null,  'change'],
+      'radio':           inputWidget('click', modelAccessor, radioAccessor, undefined),
+      'select-one':      inputWidget('click', modelAccessor, valueAccessor, null)
 //      'select-multiple': [[],    'change'],
 //      'file':            [{},    'click']
     };
@@ -84,9 +84,10 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(element),
-        action = element.attr('ng-action') || '';
-    var value = view.get() || initValue;
+        action = element.attr('ng-action') || '',
+        value = view.get() || initValue;
     if (isDefined(value)) model.set(value);
+    this.$eval(element.attr('ng-init')||'');
     element.bind(events, function(){
       model.set(view.get());
       scope.$eval(action);
@@ -95,13 +96,14 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
   };
 }
 
-angularWidget('INPUT', function input(element){
-  return function(element) {
-    this.$eval(element.attr('ng-init')||'');
-    (INPUT_TYPE[lowercase(element[0].type)] || noop).call(this, element);
-  };
-});
+function inputWidgetSelector(element){
+  return INPUT_TYPE[lowercase(element[0].type)] || noop;
+}
 
-angularWidget('TEXTAREA', function(){
-  return textWidget;
+angularWidget('INPUT', inputWidgetSelector);
+angularWidget('TEXTAREA', inputWidgetSelector);
+angularWidget('BUTTON', inputWidgetSelector);
+angularWidget('SELECT', function(element){
+  this.descend(true);
+  return inputWidgetSelector.call(this, element);
 });

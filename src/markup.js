@@ -27,30 +27,42 @@ function hasBindings(bindings) {
   return bindings.length > 1 || Binder.binding(bindings[0]) !== null;
 };
 
-angularTextMarkup(function(text, textNode, parentElement) {
+angularTextMarkup('{{}}', function(text, textNode, parentElement) {
   var bindings = parseBindings(text),
       self = this;
-  if (isLeafNode(parentElement[0])) {
-    parentElement.attr('ng-bind-template', text);
-  } else {
-    var cursor = textNode, newElement;
-    foreach(parseBindings(text), function(text){
-      var exp = binding(text);
-      if (exp) {
-        newElement = self.element('span');
-        newElement.attr('ng-bind', exp);
-      } else {
-        newElement = self.text(text);
-      }
-      cursor.after(newElement);
-      cursor = newElement;
-    });
+  if (hasBindings(bindings)) {
+    if (isLeafNode(parentElement[0])) {
+      parentElement.attr('ng-bind-template', text);
+    } else {
+      var cursor = textNode, newElement;
+      foreach(parseBindings(text), function(text){
+        var exp = binding(text);
+        if (exp) {
+          newElement = self.element('span');
+          newElement.attr('ng-bind', exp);
+        } else {
+          newElement = self.text(text);
+        }
+        cursor.after(newElement);
+        cursor = newElement;
+      });
+    }
+    textNode.remove();
   }
-  textNode.remove();
+});
+
+angularTextMarkup('OPTION', function(text, textNode, parentElement){
+  if (parentElement[0].nodeName == "OPTION") {
+    var select = document.createElement('select');
+    select.insertBefore(parentElement[0].cloneNode(true), null);
+    if (!select.innerHTML.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
+      parentElement.attr('value', text);
+    }
+  }
 });
 
 var NG_BIND_ATTR = 'ng-bind-attr';
-angularAttrMarkup(function(value, name, element){
+angularAttrMarkup('{{}}', function(value, name, element){
   if (name.substr(0, 3) != 'ng-') {
     var bindings = parseBindings(value),
         bindAttr;
