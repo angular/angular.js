@@ -57,6 +57,26 @@ function radioAccessor(element) {
   };
 }
 
+function optionsAccessor(element) {
+  var options = element[0].options;
+  return {
+    get: function(){
+      var values = [];
+      foreach(options, function(option){
+        if (option.selected) values.push(option.value);
+      });
+      return values;
+    },
+    set: function(values){
+      var keys = {};
+      foreach(values, function(value){ keys[value] = true; });
+      foreach(options, function(option){
+        option.selected = keys[option.value];
+      });
+    }
+  };
+}
+
 function noopAccessor() { return { get: noop, set: noop }; }
 
 var NG_ERROR = 'ng-error',
@@ -74,8 +94,8 @@ var NG_ERROR = 'ng-error',
       'image':           buttonWidget,
       'checkbox':        inputWidget('click', modelAccessor, checkedAccessor, false),
       'radio':           inputWidget('click', modelAccessor, radioAccessor, undefined),
-      'select-one':      inputWidget('click', modelAccessor, valueAccessor, null)
-//      'select-multiple': [[],    'change'],
+      'select-one':      inputWidget('click', modelAccessor, valueAccessor, null),
+      'select-multiple': inputWidget('click', modelAccessor, optionsAccessor, [])
 //      'file':            [{},    'click']
     };
 
@@ -85,7 +105,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
         model = modelAccessor(scope, element),
         view = viewAccessor(element),
         action = element.attr('ng-action') || '',
-        value = view.get() || initValue;
+        value = view.get() || copy(initValue);
     if (isDefined(value)) model.set(value);
     this.$eval(element.attr('ng-init')||'');
     element.bind(events, function(){

@@ -148,18 +148,28 @@ describe("input widget", function(){
     expect(model.clicked).toEqual(1);
   });
 
-  it('should type="radio"', function(){
+  it('should type="select-one"', function(){
     compile(
       '<select name="selection">' +
         '<option>A</option>' +
         '<option selected>B</option>' +
       '</select>');
-    expect(element[0].selectedIndex).toEqual(1);
-    expect(element[0].value).toEqual('B');
     expect(model.selection).toEqual('B');
     model.selection = 'A';
     model.$updateView();
     expect(model.selection).toEqual('A');
+    expect(element[0].childNodes[0].selected).toEqual(true);
+  });
+
+  it('should type="select-multiple"', function(){
+    compile(
+      '<select name="selection" multiple>' +
+        '<option>A</option>' +
+        '<option selected>B</option>' +
+      '</select>');
+    expect(model.selection).toEqual(['B']);
+    model.selection = ['A'];
+    model.$updateView();
     expect(element[0].childNodes[0].selected).toEqual(true);
   });
 
