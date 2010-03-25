@@ -52,6 +52,16 @@ LexerTest.prototype.testTokenizeAString = function(){
   assertEquals(tokens[i].string, 'd"e');
 };
 
+LexerTest.prototype.testTokenizeUndefined = function(){
+  var lexer = new Lexer("undefined");
+  var tokens = lexer.parse();
+  var i = 0;
+  assertEquals(tokens[i].index, 0);
+  assertEquals(tokens[i].text, 'undefined');
+  assertEquals(undefined, tokens[i].fn());
+};
+
+
 
 LexerTest.prototype.testTokenizeRegExp = function(){
   var lexer = new Lexer("/r 1/");
@@ -485,4 +495,11 @@ ParserTest.prototype.testBugStringConfusesParser = function() {
 ParserTest.prototype.testParsingBug = function () {
   var scope = new Scope();
   assertEquals({a: "-"}, scope.eval("{a:'-'}"));
+};
+
+ParserTest.prototype.testUndefined = function () {
+  var scope = new Scope();
+  assertEquals(undefined, scope.eval("undefined"));
+  assertEquals(undefined, scope.eval("a=undefined"));
+  assertEquals(undefined, scope.get("a"));
 };

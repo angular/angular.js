@@ -71,7 +71,7 @@ JQLite.prototype = {
     (function dealoc(element){
       jqClearData(element);
       for ( var i = 0, children = element.childNodes; i < children.length; i++) {
-        dealoc(children[0]);
+        dealoc(children[i]);
       }
     })(this[0]);
   },
@@ -86,9 +86,11 @@ JQLite.prototype = {
       eventHandler = bind[type];
       if (!eventHandler) {
         bind[type] = eventHandler = function() {
+          var value = false;
           foreach(eventHandler.fns, function(fn){
-            fn.apply(self, arguments);
+            value = value || fn.apply(self, arguments);
           });
+          return value;
         };
         eventHandler.fns = [];
         addEventListener(element, type, eventHandler);
@@ -98,10 +100,9 @@ JQLite.prototype = {
   },
 
   trigger: function(type) {
-    var cache = this.data('bind');
-    if (cache) {
-      (cache[type] || noop)();
-    }
+    var evnt = document.createEvent('MouseEvent');
+    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+    this[0].dispatchEvent(evnt);
   },
 
   click: function(fn) {

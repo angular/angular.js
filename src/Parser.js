@@ -10,6 +10,7 @@ Lexer.OPERATORS = {
     'null':function(self){return null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
+    'undefined':noop,
     '+':function(self, a,b){return (a||0)+(b||0);},
     '-':function(self, a,b){return (a||0)-(b||0);},
     '*':function(self, a,b){return a*b;},

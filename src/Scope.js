@@ -12,8 +12,10 @@ function Scope(initialState, name) {
     '$parent': initialState,
     '$watch': bind(self, self.addWatchListener),
     '$eval': bind(self, self.eval),
-    // change name to onEval?
-    '$addEval': bind(self, self.addEval)
+    '$bind': bind(self, bind, self),
+    // change name to autoEval?
+    '$addEval': bind(self, self.addEval),
+    '$updateView': bind(self, self.updateView)
   });
   if (name == "ROOT") {
     self.state['$root'] = self.state;

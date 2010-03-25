@@ -1,4 +1,4 @@
-function scopeAccessor(scope, element) {
+function modelAccessor(scope, element) {
   var expr = element.attr('name'),
       farmatterName = element.attr('ng-format') || NOOP,
       formatter = angularFormatter(farmatterName);
@@ -14,7 +14,7 @@ function scopeAccessor(scope, element) {
   };
 }
 
-function domAccessor(element) {
+function valueAccessor(element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = angularValidator(validatorName),
       required = element.attr('ng-required'),
@@ -41,135 +41,67 @@ function domAccessor(element) {
   };
 }
 
+function checkedAccessor(element) {
+  var domElement = element[0];
+  return {
+    get: function(){ return !!domElement.checked; },
+    set: function(value){ domElement.checked = !!value; }
+  };
+}
+
+function radioAccessor(element) {
+  var domElement = element[0];
+  return {
+    get: function(){ return domElement.checked ? domElement.value : null; },
+    set: function(value){ domElement.checked = value == domElement.value; }
+  };
+}
+
+function noopAccessor() { return { get: noop, set: noop }; }
+
 var NG_ERROR = 'ng-error',
     NG_VALIDATION_ERROR = 'ng-validation-error',
-    TEXT_META = ['', 'keyup change'],
-    INPUT_META = {
-      'text':     TEXT_META,
-      'textarea': TEXT_META,
-      'hidden':   TEXT_META,
-      'password': TEXT_META
+    textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, ''),
+    buttonWidget = inputWidget('click', noopAccessor, noopAccessor, undefined),
+    INPUT_TYPE = {
+      'text':            textWidget,
+      'textarea':        textWidget,
+      'hidden':          textWidget,
+      'password':        textWidget,
+      'button':          buttonWidget,
+      'submit':          buttonWidget,
+      'reset':           buttonWidget,
+      'image':           buttonWidget,
+      'checkbox':        inputWidget('click', modelAccessor, checkedAccessor, false),
+      'radio':           inputWidget('click', modelAccessor, radioAccessor, undefined)
+//      'select-one':      [null,  'change'],
+//      'select-multiple': [[],    'change'],
+//      'file':            [{},    'click']
     };
 
-function inputWidget(meta) {
-  return meta ? function(element) {
-    var scope = scopeAccessor(this, element),
-        dom = domAccessor(element);
-    scope.set(dom.get() || meta[0]);
-    element.bind(meta[1], function(){
-      scope.set(dom.get());
+function inputWidget(events, modelAccessor, viewAccessor, initValue) {
+  return function(element) {
+    var scope = this,
+        model = modelAccessor(scope, element),
+        view = viewAccessor(element),
+        action = element.attr('ng-action') || '';
+    var value = view.get() || initValue;
+    if (isDefined(value)) model.set(value);
+    element.bind(events, function(){
+      model.set(view.get());
+      scope.$eval(action);
     });
-    this.$watch(scope.get, dom.set);
-  } : 0;
+    scope.$watch(model.get, view.set);
+  };
 }
 
 angularWidget('INPUT', function input(element){
-  return inputWidget(INPUT_META[lowercase(element[0].type)]);
-});
-
-angularWidget('TEXTAREA', function(){
-  return inputWidget(INPUT_META['text']);
-});
-
-
-
-
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-/////////////////////////////////////////
-
-
-
-//widget related
-//ng-validate, ng-required, ng-formatter
-//ng-error
-
-//ng-scope ng-controller????
-
-// <input type="text" name="bla" ng-action=""> -> <ng:textinput name="" ng-action=""/>
-angular.widget("inputtext", function(element) {
-  var expression = element.attr('name');
-  var formatter = this.formatter(element.attr('formatter'));
-  var validator = this.validator(element.attr('validator'));
-
-  function validate(value) {
-    var error = validator(element);
-    if (error) {
-      element.addClass("ng-error");
-      scope.markInvalid(this);  //move out of scope
-    } else {
-      scope.clearInvalid(this);
-    }
-  }
-
-
-  element.keyup(this.withScope(function(){
-    this.$evalSet(expression, formatter.parse(element.val()));
-    validate(element.val());
-  }));
-
-  return {watch: expression, apply: function(newValue){
-    element.val(formatter.format(newValue));
-    validate(element.val());
-  }};
-
-});
-
-angular.widget("inputfile", function(element) {
-
-});
-
-angular.widget("inputradio", function(element) {
-
-});
-
-
-// <ng:colorpicker name="chosenColor" >
-angular.widget("colorpicker", function(element) {
-  var name = element.attr('datasource');
-  var formatter = this.formatter(element.attr('ng-formatter'));
-
-  element.colorPicker(this.withScope(function(selectedColor){
-    this.$evalSet(name, formatter.parse(selectedColor));
-  }));
-
-  return function(){
-    this.$watch(expression, function(cmyk){
-      element.setColor(formatter.format(cmyk));
-    });
+  return function(element) {
+    this.$eval(element.attr('ng-init')||'');
+    (INPUT_TYPE[lowercase(element[0].type)] || noop).call(this, element);
   };
 });
 
-angular.widget("template", function(element) {
-  var srcExpression = element.attr('src');
-  var self = this;
-  return {watch:srcExpression, apply:function(src){
-    $.load(src, function(html){
-      self.destroy(element);
-      element.html(html);
-      self.compile(element);
-    });
-  }};
+angularWidget('TEXTAREA', function(){
+  return textWidget;
 });
-
-
-/**
- *
- * {
- *   withScope:  //safely executes, with a try/catch.  applies scope
- *   compile:
- *   widget:
- *   directive:
- *   validator:
- *   formatter:
- *
- *
- *   config:
- *   loadCSS:
- *   loadScript:
- *   loadTemplate:
- * }
- *
- **/

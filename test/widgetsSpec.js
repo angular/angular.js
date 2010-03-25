@@ -1,6 +1,6 @@
 describe("input widget", function(){
 
-  var compile, element, scope;
+  var compile, element, scope, model;
 
   beforeEach(function() {
     scope = null;
@@ -11,6 +11,7 @@ describe("input widget", function(){
       var view = compiler.compile(element)(element);
       view.init();
       scope = view.scope;
+      model = scope.state;
     };
   });
 
@@ -20,8 +21,9 @@ describe("input widget", function(){
   });
 
   it('should input-text auto init and handle keyup/change events', function(){
-    compile('<input type="Text" name="name" value="Misko"/>');
+    compile('<input type="Text" name="name" value="Misko" ng-action="count = count + 1" ng-init="count=0"/>');
     expect(scope.get('name')).toEqual("Misko");
+    expect(scope.get('count')).toEqual(0);
 
     scope.set('name', 'Adam');
     scope.updateView();
@@ -30,10 +32,12 @@ describe("input widget", function(){
     element.val('Shyam');
     element.trigger('keyup');
     expect(scope.get('name')).toEqual('Shyam');
+    expect(scope.get('count')).toEqual(1);
 
     element.val('Kai');
     element.trigger('change');
     expect(scope.get('name')).toEqual('Kai');
+    expect(scope.get('count')).toEqual(2);
   });
 
   it("should process ng-format", function(){
@@ -96,6 +100,58 @@ describe("input widget", function(){
     element.val('Kai');
     element.trigger('change');
     expect(scope.get('name')).toEqual('Kai');
+  });
+
+  it('should call ng-action on button click', function(){
+    compile('<input type="button" value="Click Me" ng-action="clicked = true"/>');
+    element.click();
+    expect(scope.get('clicked')).toEqual(true);
+  });
+
+  it('should type="checkbox"', function(){
+    compile('<input type="checkbox" name="checkbox" checked ng-action="action = true"/>');
+    expect(scope.get('checkbox')).toEqual(true);
+    element.click();
+    expect(scope.get('checkbox')).toEqual(false);
+    expect(scope.get('action')).toEqual(true);
+    element.click();
+    expect(scope.get('checkbox')).toEqual(true);
+  });
+
+  it('should type="radio"', function(){
+    compile('<div>' +
+        '<input type="radio" name="chose" value="A" ng-action="clicked = 1"/>' +
+        '<input type="radio" name="chose" value="B" checked ng-action="clicked = 2"/>' +
+      '</div>');
+    var a = element[0].childNodes[0];
+    var b = element[0].childNodes[1];
+    expect(model.chose).toEqual('B');
+    expect(model.clicked).not.toBeDefined();
+    model.chose = 'A';
+    model.$updateView();
+    expect(a.checked).toEqual(true);
+
+    model.chose = 'B';
+    model.$updateView();
+    expect(a.checked).toEqual(false);
+    expect(b.checked).toEqual(true);
+    expect(model.clicked).not.toBeDefined();
+
+    jqLite(a).click();
+    expect(model.chose).toEqual('A');
+    expect(model.clicked).toEqual(1);
+  });
+
+  it('should report error on missing field', function(){
+
+  });
+
+  it('should report error on assignment error', function(){
+
+  });
+
+  it('should report error on ng-action exception', function(){
+
   });
 
 

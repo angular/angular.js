@@ -12,7 +12,7 @@ describe("directives", function(){
     };
   });
 
-  afterEach(function(){
+  afterEach(function() {
     element.remove();
     expect(_(jqCache).size()).toEqual(0);
   });
