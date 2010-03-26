@@ -53,6 +53,21 @@ Scope.getter = function(instance, path) {
   return instance;
 };
 
+Scope.setter = function(instance, path, value){
+  var element = path.split('.');
+  for ( var i = 0; element.length > 1; i++) {
+    var key = element.shift();
+    var newInstance = instance[key];
+    if (!newInstance) {
+      newInstance = {};
+      instance[key] = newInstance;
+    }
+    instance = newInstance;
+  }
+  instance[element.shift()] = value;
+  return value;
+};
+
 Scope.prototype = {
   // TODO: rename to update? or eval?
   updateView: function() {
@@ -98,19 +113,8 @@ Scope.prototype = {
 
   set: function(path, value) {
 //    log('SCOPE.set', path, value);
-    var element = path.split('.');
     var instance = this.state;
-    for ( var i = 0; element.length > 1; i++) {
-      var key = element.shift();
-      var newInstance = instance[key];
-      if (!newInstance) {
-        newInstance = {};
-        instance[key] = newInstance;
-      }
-      instance = newInstance;
-    }
-    instance[element.shift()] = value;
-    return value;
+    return Scope.setter(instance, path, value);
   },
 
   setEval: function(expressionText, value) {
@@ -134,9 +138,9 @@ Scope.prototype = {
     };
   },
 
-  eval: function(expressionText, context) {
+  eval: function(exp, context) {
 //    log('Scope.eval', expressionText);
-    return this.compile(expressionText)(context);
+    return this.compile(exp)(context);
   },
 
   //TODO: Refactor. This function needs to be an execution closure for widgets
@@ -241,3 +245,163 @@ Scope.prototype = {
     fn.apply(this.state, slice.call(arguments, 1, arguments.length));
   }
 };
+
+//////////////////////////////
+
+function getter(instance, path) {
+  if (!path) return instance;
+  var element = path.split('.');
+  var key;
+  var lastInstance = instance;
+  var len = element.length;
+  for ( var i = 0; i < len; i++) {
+    key = element[i];
+    if (!key.match(/^[\$\w][\$\w\d]*$/))
+        throw "Expression '" + path + "' is not a valid expression for accesing variables.";
+    if (instance) {
+      lastInstance = instance;
+      instance = instance[key];
+    }
+    if (_.isUndefined(instance)  && key.charAt(0) == '$') {
+      var type = angular['Global']['typeOf'](lastInstance);
+      type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
+      var fn = type ? type[[key.substring(1)]] : undefined;
+      if (fn) {
+        instance = _.bind(fn, lastInstance, lastInstance);
+        return instance;
+      }
+    }
+  }
+  if (typeof instance === 'function' && !instance['$$factory']) {
+    return bind(lastInstance, instance);
+  }
+  return instance;
+};
+
+function setter(instance, path, value){
+  var element = path.split('.');
+  for ( var i = 0; element.length > 1; i++) {
+    var key = element.shift();
+    var newInstance = instance[key];
+    if (!newInstance) {
+      newInstance = {};
+      instance[key] = newInstance;
+    }
+    instance = newInstance;
+  }
+  instance[element.shift()] = value;
+  return value;
+};
+
+var compileCache = {};
+function expressionCompile(exp){
+  if (isFunction(exp)) return exp;
+  var expFn = compileCache[exp];
+  if (!expFn) {
+    var parser = new Parser(exp);
+    expFn = parser.statements();
+    parser.assertAllConsumed();
+    compileCache[exp] = expFn;
+  }
+  // return expFn
+  // TODO(remove this hack)
+  return function(){
+    return expFn({
+      scope: {
+        set: this.$set,
+        get: this.$get
+      }
+    });
+  };
+};
+
+var NON_RENDERABLE_ELEMENTS = {
+  '#text': 1, '#comment':1, 'TR':1, 'TH':1
+};
+
+function isRenderableElement(element){
+  return element && element[0] && !NON_RENDERABLE_ELEMENTS[element[0].nodeName];
+}
+
+function rethrow(e) { throw e; }
+function errorHandlerFor(element) {
+  while (!isRenderableElement(element)) {
+    element = element.parent() || jqLite(document.body);
+  }
+  return function(error) {
+    element.attr('ng-error', angular.toJson(error));
+    element.addClass('ng-exception');
+  };
+}
+
+function scope(parent, Class) {
+  function Parent(){}
+  function API(){}
+  function Behavior(){}
+
+  var instance, behavior, api, watchList = [], evalList = [];
+
+  Class = Class || noop;
+  parent = Parent.prototype = parent || {};
+  api = API.prototype = new Parent();
+  behavior = Behavior.prototype = extend(new API(), Class.prototype);
+  instance = new Behavior();
+
+  extend(api, {
+    $parent: parent,
+    $bind: bind(instance, bind, instance),
+    $get: bind(instance, getter, instance),
+    $set: bind(instance, setter, instance),
+
+    $eval: function(exp) {
+      if (isDefined(exp)) {
+        return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
+      } else {
+        foreach(evalList, function(eval) {
+          instance.$tryEval(eval.fn, eval.handler);
+        });
+        foreach(watchList, function(watch) {
+          var value = instance.$tryEval(watch.watch, watch.handler);
+          if (watch.last !== value) {
+            instance.$tryEval(watch.listener, watch.handler, value, watch.last);
+            watch.last = value;
+          }
+        });
+      }
+    },
+
+    $tryEval: function (expression, exceptionHandler) {
+      try {
+        return expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
+      } catch (e) {
+        error(e);
+        if (isFunction(exceptionHandler)) {
+          exceptionHandler(e);
+        } else if (exceptionHandler) {
+          errorHandlerFor(exceptionHandler)(e);
+        }
+      }
+    },
+
+    $watch: function(watchExp, listener, exceptionHandler) {
+      var watch = expressionCompile(watchExp);
+      watchList.push({
+        watch: watch,
+        last: watch.call(instance),
+        handler: exceptionHandler,
+        listener:expressionCompile(listener)
+      });
+    },
+
+    $onEval: function(expr, exceptionHandler){
+      evalList.push({
+        fn: expressionCompile(expr),
+        handler: exceptionHandler
+      });
+    }
+  });
+
+  Class.apply(instance, slice.call(arguments, 2, arguments.length));
+
+  return instance;
+}

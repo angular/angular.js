@@ -8,9 +8,8 @@ describe("markups", function(){
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
     compile = function(html) {
       element = jqLite(html);
-      var view = compiler.compile(element)(element);
-      view.init();
-      scope = view.scope;
+      scope = compiler.compile(element)(element);
+      scope.$init();
     };
   });
 
@@ -24,16 +23,16 @@ describe("markups", function(){
   it('should translate {{}} in text', function(){
     compile('<div>hello {{name}}!</div>');
     expect(element.html()).toEqual('hello <span ng-bind="name"></span>!');
-    scope.set('name', 'Misko');
-    scope.updateView();
+    scope.$set('name', 'Misko');
+    scope.$eval();
     expect(element.html()).toEqual('hello <span ng-bind="name">Misko</span>!');
   });
 
   it('should translate {{}} in terminal nodes', function(){
     compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
     expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!" value=""></option>');
-    scope.set('name', 'Misko');
-    scope.updateView();
+    scope.$set('name', 'Misko');
+    scope.$eval();
     expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!" value="">Greet Misko!</option>');
   });
 
@@ -41,8 +40,8 @@ describe("markups", function(){
     compile('<img src="http://server/{{path}}.png"/>');
     expect(element.attr('src')).toEqual();
     expect(element.attr('ng-bind-attr')).toEqual('{"src":"http://server/{{path}}.png"}');
-    scope.set('path', 'a/b');
-    scope.updateView();
+    scope.$set('path', 'a/b');
+    scope.$eval();
     expect(element.attr('src')).toEqual("http://server/a/b.png");
   });
 

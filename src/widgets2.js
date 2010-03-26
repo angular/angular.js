@@ -96,7 +96,7 @@ var NG_ERROR = 'ng-error',
       'radio':           inputWidget('click', modelAccessor, radioAccessor, undefined),
       'select-one':      inputWidget('click', modelAccessor, valueAccessor, null),
       'select-multiple': inputWidget('click', modelAccessor, optionsAccessor, [])
-//      'file':            [{},    'click']
+//      'file':            fileWidget???
     };
 
 function inputWidget(events, modelAccessor, viewAccessor, initValue) {

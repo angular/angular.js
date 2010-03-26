@@ -14,7 +14,7 @@ Template.prototype = {
   init: function(element, scope) {
     element = jqLite(element);
     foreach(this.inits, function(fn) {
-      scope.apply(fn, element);
+      scope.$tryEval(fn, element, element);
     });
 
     var i,
@@ -92,14 +92,11 @@ Compiler.prototype = {
     rawElement = jqLite(rawElement);
     var template = this.templatize(rawElement) || new Template();
     return function(element, parentScope){
-      var scope = new Scope(parentScope);
-      scope.element = element;
-      // todo return should be a scope with everything already set on it as element
-      return {
-        scope: scope,
-        element:element,
-        init: bind(template, template.init, element, scope)
-      };
+      var model = scope(parentScope);
+      return extend(model, {
+        $element:element,
+        $init: bind(template, template.init, element, model)
+      });
     };
   },
 
@@ -144,7 +141,7 @@ Compiler.prototype = {
             exclusive = true;
             directiveQueue = [];
           }
-          directiveQueue.push(bindTry(selfApi, directive, value, element, errorHandlerFor(element)));
+          directiveQueue.push(bind(selfApi, directive, value, element));
         }
       });
 
