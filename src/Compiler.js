@@ -51,7 +51,7 @@ Template.prototype = {
 //Compiler
 //////////////////////////////////
 function isTextNode(node) {
-  return node.nodeType == Node.TEXT_NODE;
+  return node.nodeName == '#text';
 }
 
 function eachTextNode(element, fn){
@@ -92,10 +92,13 @@ Compiler.prototype = {
     rawElement = jqLite(rawElement);
     var template = this.templatize(rawElement) || new Template();
     return function(element, parentScope){
-      var model = scope(parentScope);
-      return extend(model, {
+      var scope = createScope(parentScope);
+      return extend(scope, {
         $element:element,
-        $init: bind(template, template.init, element, model)
+        $init: function() {
+          template.init(element, scope);
+          scope.$eval();
+        }
       });
     };
   },

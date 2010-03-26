@@ -1,13 +1,8 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
-    <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
     <script type="text/javascript" src="../src/angular-bootstrap.js"></script>
     <script type="text/javascript">
-      $(document).ready(function(){
-        angular.compile(document).init();
-      });
       function asyncValidate(value, callback){
         var x = value.length % 2 ? null: "even";
         //callback(x);
@@ -16,7 +11,8 @@
     </script>
     <link rel="StyleSheet" type="text/css" href="../css/angular.css"/>
   </head>
-  <body>
+  <body onload="angular.compile(document).$init()">
+
     <input type="checkbox" name="form.checked" ng-format="boolean" value="true" checked="checked" />
     <input ng-show="form.checked" name="form.required" ng-required/>
     <hr/>
@@ -25,8 +21,6 @@
     <hr/>
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" checked="checked" />
     <input type="checkbox" name="form.boolean" ng-format="boolean" value="true" />
-    <hr/>
-    <input type="text" name="form.async" ng-validate="asynchronous:$window.asyncValidate" />
     <hr/>
     <select name="select">
       <option>A</option>

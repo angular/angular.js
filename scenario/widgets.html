@@ -1,58 +1,84 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
-    <script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js"></script>
-    <script type="text/javascript" src="../src/angular-bootstrap.js"></script>
-    <script type="text/javascript">
-      $(document).ready(function(){angular.compile(document).init();});
-    </script>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script type="text/javascript" src="../src/angular-bootstrap.js#autobind&rootScope=$view"></script>
   </head>
   <body>
-    <p>
-     name: <input type="text" name="name" /> name={{name}} <br/>
-    </p>
-    <p>
-     <input type="radio" name="gender" value="female"/> Female
-     <input type="radio" name="gender" value="male"/> Male
-     gender={{gender}}
-    </p>
-    <p>
-     <input type="checkbox" name="tea" checked value="on"/> tea={{tea}} <br/>
-     <input type="checkbox" name="coffee" value="on"/> coffee={{coffee}} <br/>
-    </p>
-    <p ng-init="count = 0">
-      <form>
-       <input type="button" value="button" ng-action="count = count + 1"/>
-       <input type="submit" value="submit" ng-action="count = count + 1"/>
-       <input type="image" src="" ng-action="count = count + 1"/>
-       <a href="#ERROR" ng-action="count=count+1">action</a>
-       count={{count}}
-      </form>
-    </p>
-    <p>
-      <select name="select">
-        <option>A</option>
-        <option>B</option>
-        <option>C</option>
-      </select>
-      select={{select}}
-    </p>
-    <p>
-     <select name="multiple" multiple>
-       <option>A</option>
-       <option>B</option>
-       <option>C</option>
-     </select>
-      multiple={{multiple}}
-    </p>
-    <p>
-      <input type="hidden" name="hidden" value="hiddenValue" />
-      Hidden field = {{hidden}}
-    </p>
-    <p>
-      <input type="password" name="password" value="passwordValue" />
-      Password field = {{password}}
-    </p>
+    <table>
+      <tr>
+        <th>Description</th>
+        <th>Test</th>
+        <th>Result</th>
+      </tr>
+      <tr><th colspan="3">Input text field</th></tr>
+      <tr>
+        <td>basic</td>
+        <td><input type="text" name="text.basic" /></td>
+        <td>text.basic={{text.basic}}</td>
+      </tr>
+      <tr>
+        <td>password</td>
+        <td><input type="password" name="text.password" /></td>
+        <td>text.password={{text.password}}</td>
+      </tr>
+      <tr>
+        <td>hidden</td>
+        <td><input type="hidden" name="hidden" value="hiddenValue" /></td>
+        <td>hidden={{hidden}}</td>
+      </tr>
+      <tr><th colspan="3">Input selection field</th></tr>
+      <tr>
+        <td>radio</td>
+        <td>
+         <input type="radio" name="gender" value="female"/> Female <br/>
+         <input type="radio" name="gender" value="male"/> Male
+        </td>
+        <td>gender={{gender}}</td>
+      </tr>
+      <tr>
+        <td>checkbox</td>
+        <td>
+         <input type="checkbox" name="checkbox.tea" checked value="on"/> Tea<br/>
+         <input type="checkbox" name="checkbox.coffee" value="on"/> Coffe
+        </td>
+        <td>checkbox={{checkbox}}</td>
+      </tr>
+      <tr>
+        <td>select</td>
+        <td>
+          <select name="select">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </td>
+        <td>select={{select}}</td>
+      </tr>
+      <tr>
+        <td>multiselect</td>
+        <td>
+          <select name="multiselect" multiple>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </td>
+        <td>multiselect={{multiselect}}</td>
+      </tr>
+      <tr><th colspan="3">Buttons</th></tr>
+      <tr>
+        <td>ng-action</td>
+        <td>
+          <form ng-init="button.count = 0">
+           <input type="button" value="button" ng-action="button.count = button.count + 1"/> <br/>
+           <input type="submit" value="submit" ng-action="button.count = button.count + 1"/><br/>
+           <input type="image" src="" ng-action="button.count = button.count + 1"/><br/>
+           <a href="" ng-action="button.count = button.count + 1">action</a>
+          </form>
+        </td>
+        <td>button={{button}}</td>
+      </tr>
+    </table>
   </body>
  </html>

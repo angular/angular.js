@@ -11,9 +11,15 @@ angularDirective("ng-eval", function(expression){
 });
 
 angularDirective("ng-bind", function(expression){
+  var templateFn = compileBindTemplate("{{" + expression + "}}");
   return function(element) {
-    this.$watch(expression, function(value){
-      element.text(value);
+    var lastValue;
+    this.$onEval(function() {
+      var value = templateFn.call(this);
+      if (value != lastValue) {
+        element.text(value);
+        lastValue = value;
+      }
     }, element);
   };
 });
@@ -34,7 +40,9 @@ function compileBindTemplate(template){
     bindTemplateCache[template] = fn = function(){
       var parts = [], self = this;
       foreach(bindings, function(fn){
-        parts.push(fn.call(self));
+        var value = fn.call(self);
+        if (isObject(value)) value = toJson(value, true);
+        parts.push(value);
       });
       return parts.join('');
     };
@@ -125,6 +133,7 @@ angularDirective("ng-action", function(expression, element){
     var self = this;
     element.click(function(){
       self.$tryEval(expression, element);
+      self.$eval();
     });
   };
 });

@@ -48,7 +48,7 @@ var angularArray = {
       if (fn($)){
         defaultValue = $;
         return true;
-      }      
+      }
     });
     return defaultValue;
   },
@@ -146,7 +146,7 @@ var angularArray = {
   },
   'orderBy':function(array, expression, descend) {
     function reverse(comp, descending) {
-      return toBoolean(descending) ? 
+      return toBoolean(descending) ?
           function(a,b){return comp(b,a);} : comp;
     }
     function compare(v1, v2){
@@ -255,7 +255,7 @@ var angularString = {
   },
   'toDate':function(string){
     var match;
-    if (typeof string == 'string' && 
+    if (typeof string == 'string' &&
         (match = string.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){
       var date = new Date(0);
       date.setUTCFullYear(match[1], match[2] - 1, match[3]);
@@ -269,12 +269,13 @@ var angularString = {
 var angularDate = {
     'toString':function(date){
       function pad(n) { return n < 10 ? "0" + n : n; }
-      return  (date.getUTCFullYear()) + '-' +
+      return  !date ? date :
+        date.getUTCFullYear() + '-' +
         pad(date.getUTCMonth() + 1) + '-' +
         pad(date.getUTCDate()) + 'T' +
         pad(date.getUTCHours()) + ':' +
         pad(date.getUTCMinutes()) + ':' +
-        pad(date.getUTCSeconds()) + 'Z';
+        pad(date.getUTCSeconds()) + 'Z' ;
     }
   };
 
@@ -295,25 +296,27 @@ var angularFunction = {
 };
 
 function defineApi(dst, chain, underscoreNames){
-  var lastChain = _.last(chain);
-  foreach(underscoreNames, function(name){
-    lastChain[name] = _[name];
-  });
+  if (_) {
+    var lastChain = _.last(chain);
+    foreach(underscoreNames, function(name){
+      lastChain[name] = _[name];
+    });
+  }
   angular[dst] = angular[dst] || {};
   foreach(chain, function(parent){
     extend(angular[dst], parent);
   });
 }
 defineApi('Global', [angularGlobal],
-    ['extend', 'clone','isEqual', 
+    ['extend', 'clone','isEqual',
      'isElement', 'isArray', 'isFunction', 'isUndefined']);
-defineApi('Collection', [angularGlobal, angularCollection], 
-    ['each', 'map', 'reduce', 'reduceRight', 'detect', 
-     'select', 'reject', 'all', 'any', 'include', 
-     'invoke', 'pluck', 'max', 'min', 'sortBy', 
+defineApi('Collection', [angularGlobal, angularCollection],
+    ['each', 'map', 'reduce', 'reduceRight', 'detect',
+     'select', 'reject', 'all', 'any', 'include',
+     'invoke', 'pluck', 'max', 'min', 'sortBy',
      'sortedIndex', 'toArray', 'size']);
-defineApi('Array', [angularGlobal, angularCollection, angularArray], 
-    ['first', 'last', 'compact', 'flatten', 'without', 
+defineApi('Array', [angularGlobal, angularCollection, angularArray],
+    ['first', 'last', 'compact', 'flatten', 'without',
      'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
 defineApi('Object', [angularGlobal, angularCollection, angularObject],
     ['keys', 'values']);

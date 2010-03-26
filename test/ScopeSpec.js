@@ -1,13 +1,13 @@
 describe('scope/model', function(){
 
   it('should create a scope with parent', function(){
-    var model = scope({name:'Misko'});
+    var model = createScope({name:'Misko'});
     expect(model.name).toEqual('Misko');
   });
 
   it('should have $get/set$/parent$', function(){
     var parent = {};
-    var model = scope(parent);
+    var model = createScope(parent);
     model.$set('name', 'adam');
     expect(model.name).toEqual('adam');
     expect(model.$get('name')).toEqual('adam');
@@ -16,7 +16,7 @@ describe('scope/model', function(){
 
   //$eval
   it('should eval function with correct this and pass arguments', function(){
-    var model = scope();
+    var model = createScope();
     model.$eval(function(name){
       this.name = name;
     }, 'works');
@@ -24,14 +24,14 @@ describe('scope/model', function(){
   });
 
   it('should eval expression with correct this', function(){
-    var model = scope();
+    var model = createScope();
     model.$eval('name="works"');
     expect(model.name).toEqual('works');
   });
 
   //$onEval
   it('should watch an expression for change', function(){
-    var model = scope();
+    var model = createScope();
     model.oldValue = "";
     var count = 0;
     model.name = 'adam';
@@ -48,7 +48,7 @@ describe('scope/model', function(){
   });
 
   it('should eval with no arguments', function(){
-    var model = scope();
+    var model = createScope();
     var count = 0;
     model.$onEval(function(){count++;});
     model.$eval();
@@ -57,7 +57,7 @@ describe('scope/model', function(){
 
   //$bind
   it('should curry a function with respect to scope', function(){
-    var model = scope();
+    var model = createScope();
     model.name = 'misko';
     expect(model.$bind(function(){return this.name;})()).toEqual('misko');
   });
@@ -70,7 +70,7 @@ describe('scope/model', function(){
     Printer.prototype.print = function(){
       this.printed = true;
     };
-    var model = scope({ name: 'parent' }, Printer, 'hp');
+    var model = createScope({ name: 'parent' }, Printer, 'hp');
     expect(model.brand).toEqual('hp');
     model.print();
     expect(model.printed).toEqual(true);

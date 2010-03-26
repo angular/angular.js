@@ -2,7 +2,7 @@ array = [].constructor;
 
 function toJson(obj, pretty){
   var buf = [];
-  toJsonArray(buf, obj, pretty ? "\n  " : null, _([]));
+  toJsonArray(buf, obj, pretty ? "\n  " : null, []);
   return buf.join('');
 };
 
@@ -27,7 +27,7 @@ angular['fromJson'] = fromJson;
 
 function toJsonArray(buf, obj, pretty, stack){
   if (typeof obj == "object") {
-    if (stack.include(obj)) {
+    if (includes(stack, obj)) {
       buf.push("RECURSION");
       return;
     }

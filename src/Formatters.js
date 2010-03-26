@@ -7,12 +7,17 @@ extend(angularFormatter, {
 
   'list':formater(
     function(obj) { return obj ? obj.join(", ") : obj; },
-    function(value) { 
-      return value ? _(_(value.split(',')).map(jQuery.trim)).select(_.identity) : [];
+    function(value) {
+      var list = [];
+      foreach(value.split(','), function(item){
+        item = trim(item);
+        if (item) list.push(item);
+      });
+      return list;
     }
   ),
 
   'trim':formater(
     function(obj) { return obj ? $.trim("" + obj) : ""; }
-  )  
+  )
 });

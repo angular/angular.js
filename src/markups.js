@@ -24,7 +24,7 @@ function binding(string) {
 };
 
 function hasBindings(bindings) {
-  return bindings.length > 1 || Binder.binding(bindings[0]) !== null;
+  return bindings.length > 1 || binding(bindings[0]) !== null;
 };
 
 angularTextMarkup('{{}}', function(text, textNode, parentElement) {

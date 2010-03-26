@@ -38,7 +38,8 @@ function JQLite(element) {
   this[0] = element;
 }
 
-function jqLite(element) {
+
+function jqLiteWrap(element) {
   if (typeof element == 'string') {
     var div = document.createElement('div');
     div.innerHTML = element;
@@ -46,6 +47,8 @@ function jqLite(element) {
   }
   return element instanceof JQLite ? element : new JQLite(element);
 }
+
+jqLite = jqLite || jqLiteWrap;
 
 JQLite.prototype = {
   data: function(key, value) {
@@ -85,12 +88,15 @@ JQLite.prototype = {
     foreach(type.split(' '), function(type){
       eventHandler = bind[type];
       if (!eventHandler) {
-        bind[type] = eventHandler = function() {
-          var value = false;
+        bind[type] = eventHandler = function(event) {
+          var bubbleEvent = false;
           foreach(eventHandler.fns, function(fn){
-            value = value || fn.apply(self, arguments);
+            bubbleEvent = bubbleEvent || fn.apply(self, arguments);
           });
-          return value;
+          if (!bubbleEvent) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
         };
         eventHandler.fns = [];
         addEventListener(element, type, eventHandler);
