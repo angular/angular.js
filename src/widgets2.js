@@ -110,7 +110,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
     this.$eval(element.attr('ng-init')||'');
     element.bind(events, function(){
       model.set(view.get());
-      scope.$eval(action);
+      scope.$tryEval(action, element);
     });
     scope.$watch(model.get, view.set);
   };

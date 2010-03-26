@@ -172,15 +172,19 @@ describe("input widget", function(){
   });
 
   it('should report error on missing field', function(){
-    //compile('<input type="text"/>');
+    compile('<input type="text"/>');
+    expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
   it('should report error on assignment error', function(){
-
+    compile('<input type="text" name="1-2" value="x"/>');
+    expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
   it('should report error on ng-action exception', function(){
-
+    compile('<button ng-action="a-2=x">click</button>');
+    element.click();
+    expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
 
