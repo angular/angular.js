@@ -35,23 +35,21 @@ task :compile do
 
   concat = %x(cat \
       src/angular.prefix \
-      lib/webtoolkit/webtoolkit.base64.js \
       src/Angular.js \
-      src/API.js \
-      src/Binder.js \
-      src/ControlBar.js \
-      src/DataStore.js \
-      src/Filters.js \
-      src/Formatters.js \
       src/JSON.js \
-      src/Model.js \
+      src/Compiler.js \
+      src/Scope.js \
+      src/jqlite.js \
       src/Parser.js \
       src/Resource.js \
-      src/Scope.js \
-      src/Server.js \
-      src/Users.js \
-      src/Validators.js \
-      src/Widgets.js \
+      src/URLWatcher.js \
+      src/apis.js \
+      src/filters.js \
+      src/formatters.js \
+      src/validators.js \
+      src/directives.js \
+      src/markups.js \
+      src/widgets.js \
       src/angular.suffix \
     )
   f = File.new("angular.js", 'w')
