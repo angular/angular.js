@@ -91,24 +91,35 @@ describe('Validator:asynchronous', function(){
     value = null;
     fn = null;
     self = {
-        $element:jqLite('<input />')[0],
+        $element:jqLite('<input />'),
         $invalidWidgets:[],
         $updateView: noop
     };
   });
 
-  xit('should make a request and show spinner', function(){
-    var x = compile('<input name="name" ng-validate="asynchronous:asyncFn"/>');
-    var asyncFn = function(v,f){value=v; fn=f;};
-    var input = x.node.find(":input");
-    x.scope.$set("asyncFn", asyncFn);
-    x.scope.$set("name", "misko");
-    x.scope.$eval();
+  afterEach(function(){
+    if (self.$element) self.$element.remove();
+    var oldCache = jqCache;
+    jqCache = {};
+    expect(size(oldCache)).toEqual(0);
+  });
+
+  it('should make a request and show spinner', function(){
+    var value, fn;
+    var scope = angular.compile('<input type="text" name="name" ng-validate="asynchronous:asyncFn"/>');
+    scope.$init();
+    var input = scope.$element;
+    scope.asyncFn = function(v,f){
+      value=v; fn=f;
+    };
+    scope.name = "misko";
+    scope.$eval();
     expect(value).toEqual('misko');
     expect(input.hasClass('ng-input-indicator-wait')).toBeTruthy();
     fn("myError");
     expect(input.hasClass('ng-input-indicator-wait')).toBeFalsy();
     expect(input.attr('ng-error')).toEqual("myError");
+    scope.$element.remove();
   });
 
   it("should not make second request to same value", function(){

@@ -228,6 +228,16 @@ function escapeHtml(html) {
       replace(/>/g, '&gt;');
 }
 
+function elementDecorateError(element, error) {
+  if (error) {
+    element.addClass(NG_VALIDATION_ERROR);
+    element.attr(NG_ERROR, error);
+  } else {
+    element.removeClass(NG_VALIDATION_ERROR);
+    element.removeAttr(NG_ERROR);
+  }
+}
+
 function escapeAttr(html) {
   if (!html || !html.replace)
     return html;

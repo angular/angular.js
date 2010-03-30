@@ -28,13 +28,7 @@ function valueAccessor(scope, element) {
   function validate(value) {
     var error = required && !trim(value) ? "Required" : validator({self:scope, scope:{get:scope.$get, set:scope.$set}}, value);
     if (error !== lastError) {
-      if (error) {
-        element.addClass(NG_VALIDATION_ERROR);
-        element.attr(NG_ERROR, error);
-      } else {
-        element.removeClass(NG_VALIDATION_ERROR);
-        element.removeAttr(NG_ERROR);
-      }
+      elementDecorateError(element, error);
       lastError = error;
     }
     return value;

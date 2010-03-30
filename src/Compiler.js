@@ -93,6 +93,7 @@ Compiler.prototype = {
     rawElement = jqLite(rawElement);
     var template = this.templatize(rawElement) || new Template();
     return function(element, parentScope){
+      element = jqLite(element);
       parentScope = parentScope || {};
       var scope = createScope(parentScope);
       parentScope.$root = parentScope.$root || scope;

@@ -82,29 +82,30 @@ foreach({
   },
 
   'asynchronous': function(text, asynchronousFn) {
-    var stateKey = '$validateState';
-    var lastKey = '$lastKey';
-    var obj = this['$element'];
-    var stateCache = obj[stateKey] = obj[stateKey] || {};
-    var state = stateCache[text];
-    var updateView = this['$updateView'];
-    obj[lastKey] = text;
+    var element = this['$element'];
+    var cache = element.data('$validateState');
+    if (!cache) {
+      cache = { state: {}};
+      element.data('$validateState', cache);
+    }
+    var state = cache.state[text];
+    cache.lastKey = text;
     if (state === undefined) {
       // we have never seen this before, Request it
-      jqLite(obj).addClass('ng-input-indicator-wait');
-      state = stateCache[text] = null;
-      asynchronousFn(text, function(error){
-        state = stateCache[text] = error ? error : false;
-        if (stateCache[obj[lastKey]] !== null) {
-          jqLite(obj).removeClass('ng-input-indicator-wait');
+      element.addClass('ng-input-indicator-wait');
+      state = cache.state[text] = null;
+      (asynchronousFn || noop)(text, function(error){
+        state = cache.state[text] = error ? error : false;
+        if (cache.state[cache.lastKey] !== null) {
+          element.removeClass('ng-input-indicator-wait');
         }
-        updateView();
+        elementDecorateError(element, error);
       });
     }
 
     if (state === null){
       // request in flight, mark widget invalid, but don't show it to user
-      this['$invalidWidgets'].push(this.$element);
+      (this['$invalidWidgets']||[]).push(this.$element);
     }
     return state;
   }
