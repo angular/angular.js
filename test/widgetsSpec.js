@@ -15,7 +15,7 @@ describe("input widget", function(){
 
   afterEach(function(){
     if (element) element.remove();
-    expect(_(jqCache).size()).toEqual(0);
+    expect(size(jqCache)).toEqual(0);
   });
 
   it('should input-text auto init and handle keyup/change events', function(){

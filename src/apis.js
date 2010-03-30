@@ -11,11 +11,15 @@ var angularGlobal = {
   }
 };
 
-var angularCollection = {};
+var angularCollection = {
+  'size': size
+};
 var angularObject = {};
 var angularArray = {
+  'indexOf': indexOf,
+  'include': includes,
   'includeIf':function(array, value, condition) {
-    var index = _.indexOf(array, value);
+    var index = indexOf(array, value);
     if (condition) {
       if (index == -1)
         array.push(value);
@@ -36,7 +40,7 @@ var angularArray = {
     return sum;
   },
   'remove':function(array, value) {
-    var index = _.indexOf(array, value);
+    var index = indexOf(array, value);
     if (index >=0)
       array.splice(index, 1);
     return value;
@@ -44,7 +48,7 @@ var angularArray = {
   'find':function(array, condition, defaultValue) {
     if (!condition) return undefined;
     var fn = angular['Function']['compile'](condition);
-    _.detect(array, function($){
+    foreach(array, function($){
       if (fn($)){
         defaultValue = $;
         return true;
@@ -65,7 +69,6 @@ var angularArray = {
       }
       return true;
     };
-    var getter = Scope.getter;
     var search = function(obj, text){
       if (text.charAt(0) === '!') {
         return !search(obj, text.substr(1));
@@ -136,13 +139,18 @@ var angularArray = {
     return filtered;
   },
   'add':function(array, value) {
-    array.push(_.isUndefined(value)? {} : value);
+    array.push(isUndefined(value)? {} : value);
     return array;
   },
   'count':function(array, condition) {
     if (!condition) return array.length;
-    var fn = angular['Function']['compile'](condition);
-    return _.reduce(array, 0, function(count, $){return count + (fn($)?1:0);});
+    var fn = angular['Function']['compile'](condition), count = 0;
+    foreach(array, function(value){
+      if (fn(value)) {
+        count ++;
+      }
+    });
+    return count;
   },
   'orderBy':function(array, expression, descend) {
     function reverse(comp, descending) {
@@ -161,14 +169,14 @@ var angularArray = {
         return t1 < t2 ? -1 : 1;
       }
     }
-    expression = _.isArray(expression) ? expression: [expression];
-    expression = _.map(expression, function($){
+    expression = isArray(expression) ? expression: [expression];
+    expression = map(expression, function($){
       var descending = false;
       if (typeof $ == "string" && ($.charAt(0) == '+' || $.charAt(0) == '-')) {
         descending = $.charAt(0) == '-';
         $ = $.substring(1);
       }
-      var get = $ ? angular['Function']['compile']($) : _.identity;
+      var get = $ ? angular['Function']['compile']($) : identity;
       return reverse(function(a,b){
         return compare(get(a),get(b));
       }, descending);
@@ -180,22 +188,24 @@ var angularArray = {
       }
       return 0;
     };
-    return _.clone(array).sort(reverse(comparator, descend));
+    return copy(array).sort(reverse(comparator, descend));
   },
   'orderByToggle':function(predicate, attribute) {
     var STRIP = /^([+|-])?(.*)/;
     var ascending = false;
     var index = -1;
-    _.detect(predicate, function($, i){
-      if ($ == attribute) {
-        ascending = true;
-        index = i;
-        return true;
-      }
-      if (($.charAt(0)=='+'||$.charAt(0)=='-') && $.substring(1) == attribute) {
-        ascending = $.charAt(0) == '+';
-        index = i;
-        return true;
+    foreach(predicate, function($, i){
+      if (index == -1) {
+        if ($ == attribute) {
+          ascending = true;
+          index = i;
+          return true;
+        }
+        if (($.charAt(0)=='+'||$.charAt(0)=='-') && $.substring(1) == attribute) {
+          ascending = $.charAt(0) == '+';
+          index = i;
+          return true;
+        }
       }
     });
     if (index >= 0) {
@@ -281,16 +291,14 @@ var angularDate = {
 
 var angularFunction = {
   'compile':function(expression) {
-    if (_.isFunction(expression)){
+    if (isFunction(expression)){
       return expression;
     } else if (expression){
-      var scope = new Scope();
       return function($) {
-        scope.state = $;
-        return scope.eval(expression);
+        return createScope($).$eval(expression);
       };
     } else {
-      return function($){return $;};
+      return identity;
     }
   }
 };

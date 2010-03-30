@@ -9,7 +9,7 @@ extend(angularFormatter, {
     function(obj) { return obj ? obj.join(", ") : obj; },
     function(value) {
       var list = [];
-      foreach(value.split(','), function(item){
+      foreach((value || '').split(','), function(item){
         item = trim(item);
         if (item) list.push(item);
       });
@@ -18,6 +18,6 @@ extend(angularFormatter, {
   ),
 
   'trim':formater(
-    function(obj) { return obj ? $.trim("" + obj) : ""; }
+    function(obj) { return obj ? trim("" + obj) : ""; }
   )
 });

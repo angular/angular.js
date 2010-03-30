@@ -1,16 +1,5 @@
-HIDDEN = jQuery.browser.msie ?
-    '' :
-    jQuery.browser.safari ?
-         ' style="display: none; "' :
-         ' style="display: none;"';
-
-msie = jQuery.browser.msie;
-//alert = function(msg) {jstestdriver.console.log("ALERT: " + msg);};
-
-function noop(){}
-
 jstd = jstestdriver;
-dump = _(jstd.console.log).bind(jstd.console);
+dump = bind(jstd.console, jstd.console.log);
 
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
@@ -48,10 +37,9 @@ MockLocation.prototype.set = function(url){
   this.url = url;
 };
 
-jQuery.fn.sortedHtml = function() {
+function sortedHtml(element) {
   var html = "";
-  var toString = function(index, node) {
-    node = node || this;
+  (function toString(node) {
     if (node.nodeName == "#text") {
       html += escapeHtml(node.nodeValue);
     } else {
@@ -82,24 +70,13 @@ jQuery.fn.sortedHtml = function() {
       html += '>';
       var children = node.childNodes;
       for(var j=0; j<children.length; j++) {
-        toString(j, children[j]);
+        toString(children[j]);
       }
       html += '</' + node.nodeName.toLowerCase() + '>';
     }
-  };
-  this.children().each(toString);
+  })(element[0]);
   return html;
 };
-
-function encode64(obj){
-  return Base64.encode(toJson(obj));
-}
-
-function decode64(base64){
-  return fromJson(Base64.decode(base64));
-}
-
-configureJQueryPlugins();
 
 function isVisible(node) {
   var display = $(node).css('display');

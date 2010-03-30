@@ -1,6 +1,6 @@
 FileControllerTest = TestCase('FileControllerTest');
 
-FileControllerTest.prototype.testOnSelectUpdateView = function(){
+FileControllerTest.prototype.XtestOnSelectUpdateView = function(){
   var view = jQuery('<span><a/><span/></span>');
   var swf = {};
   var controller = new FileController(view, null, swf);
@@ -10,7 +10,7 @@ FileControllerTest.prototype.testOnSelectUpdateView = function(){
   assertEquals(view.find('span').text(), "9 bytes");
 };
 
-FileControllerTest.prototype.testUpdateModelView = function(){
+FileControllerTest.prototype.XtestUpdateModelView = function(){
   var view = FileController.template('');
   var input = $('<input name="value.input">');
   var controller;
@@ -31,7 +31,7 @@ FileControllerTest.prototype.testUpdateModelView = function(){
   assertEquals(view.find('span').text(), "123 bytes");
 };
 
-FileControllerTest.prototype.testFileUpload = function(){
+FileControllerTest.prototype.XtestFileUpload = function(){
   expectAsserts(1);
   var swf = {};
   var controller = new FileController(null, null, swf, "http://server_base");
@@ -42,7 +42,7 @@ FileControllerTest.prototype.testFileUpload = function(){
   controller.upload();
 };
 
-FileControllerTest.prototype.testFileUploadNoFileIsNoop = function(){
+FileControllerTest.prototype.XtestFileUploadNoFileIsNoop = function(){
   expectAsserts(0);
   var swf = {uploadFile:function(path){
     fail();
@@ -51,7 +51,7 @@ FileControllerTest.prototype.testFileUploadNoFileIsNoop = function(){
   controller.upload("basePath", null);
 };
 
-FileControllerTest.prototype.testRemoveAttachment = function(){
+FileControllerTest.prototype.XtestRemoveAttachment = function(){
   var doc = FileController.template();
   var input = $('<input name="file">');
   var scope = new Scope();
@@ -74,7 +74,7 @@ FileControllerTest.prototype.testRemoveAttachment = function(){
   assertEquals(123, scope.get('file.size'));
 };
 
-FileControllerTest.prototype.testShouldEmptyOutOnUndefined = function () {
+FileControllerTest.prototype.XtestShouldEmptyOutOnUndefined = function () {
   var view = FileController.template('hello');
   var controller = new FileController(view, 'abc', null, null);
 

@@ -1,5 +1,4 @@
-
-///////////////////////////////////
+//////////////////////////////////
 //JQLite
 //////////////////////////////////
 
@@ -37,18 +36,6 @@ function jqClearData(element) {
 function JQLite(element) {
   this[0] = element;
 }
-
-
-function jqLiteWrap(element) {
-  if (typeof element == 'string') {
-    var div = document.createElement('div');
-    div.innerHTML = element;
-    element = div.childNodes[0];
-  }
-  return element instanceof JQLite ? element : new JQLite(element);
-}
-
-jqLite = jqLite || jqLiteWrap;
 
 JQLite.prototype = {
   data: function(key, value) {

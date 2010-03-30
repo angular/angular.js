@@ -61,6 +61,7 @@ function expressionCompile(exp){
 function parserNewScopeAdapter(fn) {
   return function(){
     return fn({
+      state: this,
       scope: {
         set: this.$set,
         get: this.$get

@@ -73,11 +73,12 @@ function eachNode(element, fn){
 }
 
 function eachAttribute(element, fn){
-  var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr;
+  var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr, attrValue = {};
   for (i = 0; i < size; i++) {
     var attr = attrs[i];
-    fn(attr.name, attr.value);
+    attrValue[attr.name] = attr.value;
   }
+  foreach(attrValue, fn);
 }
 
 function Compiler(textMarkup, attrMarkup, directives, widgets){
@@ -92,12 +93,15 @@ Compiler.prototype = {
     rawElement = jqLite(rawElement);
     var template = this.templatize(rawElement) || new Template();
     return function(element, parentScope){
+      parentScope = parentScope || {};
       var scope = createScope(parentScope);
+      parentScope.$root = parentScope.$root || scope;
       return extend(scope, {
         $element:element,
         $init: function() {
           template.init(element, scope);
           scope.$eval();
+          return scope;
         }
       });
     };
@@ -132,12 +136,12 @@ Compiler.prototype = {
       });
 
       // Process attributes/directives
-      eachAttribute(element, function(name, value){
+      eachAttribute(element, function(value, name){
         foreach(self.attrMarkup, function(markup){
           markup.call(selfApi, value, name, element);
         });
       });
-      eachAttribute(element, function(name, value){
+      eachAttribute(element, function(value, name){
         var directive  = directives[name];
         if (!exclusive && directive) {
           if (directive.exclusive) {

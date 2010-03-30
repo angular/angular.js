@@ -91,12 +91,12 @@ foreach({
     obj[lastKey] = text;
     if (state === undefined) {
       // we have never seen this before, Request it
-      jQuery(obj).addClass('ng-input-indicator-wait');
+      jqLite(obj).addClass('ng-input-indicator-wait');
       state = stateCache[text] = null;
       asynchronousFn(text, function(error){
         state = stateCache[text] = error ? error : false;
         if (stateCache[obj[lastKey]] !== null) {
-          jQuery(obj).removeClass('ng-input-indicator-wait');
+          jqLite(obj).removeClass('ng-input-indicator-wait');
         }
         updateView();
       });

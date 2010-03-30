@@ -14,7 +14,7 @@ describe("directives", function(){
 
   afterEach(function() {
     model.$element.remove();
-    expect(_(jqCache).size()).toEqual(0);
+    expect(size(jqCache)).toEqual(0);
   });
 
   it("should ng-init", function() {
@@ -24,8 +24,6 @@ describe("directives", function(){
 
   it("should ng-eval", function() {
     var scope = compile('<div ng-init="a=0" ng-eval="a = a + 1"></div>');
-    expect(scope.a).toEqual(0);
-    scope.$eval();
     expect(scope.a).toEqual(1);
     scope.$eval();
     expect(scope.a).toEqual(2);
@@ -41,7 +39,6 @@ describe("directives", function(){
 
   it('should ng-bind-template', function() {
     var scope = compile('<div ng-bind-template="Hello {{name}}!"></div>');
-    expect(element.text()).toEqual('');
     scope.$set('name', 'Misko');
     scope.$eval();
     expect(element.text()).toEqual('Hello Misko!');
@@ -49,9 +46,6 @@ describe("directives", function(){
 
   it('should ng-bind-attr', function(){
     var scope = compile('<img ng-bind-attr="{src:\'mysrc\', alt:\'myalt\'}"/>');
-    expect(element.attr('src')).toEqual(null);
-    expect(element.attr('alt')).toEqual(null);
-    scope.$eval();
     expect(element.attr('src')).toEqual('mysrc');
     expect(element.attr('alt')).toEqual('myalt');
   });
@@ -126,8 +120,8 @@ describe("directives", function(){
   it('should ng-class odd/even', function(){
     var scope = compile('<ul><li ng-repeat="i in [0,1]" class="existing" ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li><ul>');
     scope.$eval();
-    var e1 = jQuery(element.parent()[0]).find('li:first');
-    var e2 = jQuery(element.parent()[0]).find('li:last');
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
     expect(e1.hasClass('existing')).toBeTruthy();
     expect(e1.hasClass('even')).toBeTruthy();
     expect(e2.hasClass('existing')).toBeTruthy();

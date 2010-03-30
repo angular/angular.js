@@ -1,25 +1,13 @@
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 
-function noop() {}
-function identity($) {return $;}
 if (!window['console']) window['console']={'log':noop, 'error':noop};
-
-function extensionMap(angular, name) {
-  var extPoint;
-  return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
-    if (isDefined(fn)) {
-      extPoint[name] = extend(fn, prop || {});
-    }
-    return extPoint[name];
-  });
-}
 
 var consoleNode,
     NOOP              = 'noop',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     _                 = window['_'],
-    jqLite            = jQuery,
+    jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
     angular           = window['angular']    || (window['angular']    = {}),
     angularTextMarkup = extensionMap(angular, 'textMarkup'),
@@ -44,7 +32,7 @@ function foreach(obj, iterator, context) {
   if (obj) {
     if (obj.forEach) {
       obj.forEach(iterator, context);
-    } else if (obj instanceof Array) {
+    } else if (isObject(obj) && isNumber(obj.length)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
     } else {
@@ -55,27 +43,78 @@ function foreach(obj, iterator, context) {
   return obj;
 }
 
-function extend(dst, obj) {
-  foreach(obj, function(value, key){
-    dst[key] = value;
+function extend(dst) {
+  foreach(arguments, function(obj){
+    if (obj !== dst) {
+      foreach(obj, function(value, key){
+        dst[key] = value;
+      });
+    }
   });
   return dst;
 }
 
+function noop() {}
+function identity($) {return $;}
+function extensionMap(angular, name) {
+  var extPoint;
+  return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
+    if (isDefined(fn)) {
+      extPoint[name] = extend(fn, prop || {});
+    }
+    return extPoint[name];
+  });
+}
+
+function jqLiteWrap(element) {
+  if (typeof element == 'string') {
+    var div = document.createElement('div');
+    div.innerHTML = element;
+    element = div.childNodes[0];
+  }
+  return element instanceof JQLite ? element : new JQLite(element);
+}
 function isUndefined(value){ return typeof value == 'undefined'; }
 function isDefined(value){ return typeof value != 'undefined'; }
 function isObject(value){ return typeof value == 'object';}
 function isString(value){ return typeof value == 'string';}
+function isNumber(value){ return typeof value == 'number';}
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == 'function';}
 function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; };
+function map(obj, iterator, context) {
+  var results = [];
+  foreach(obj, function(value, index, list) {
+    results.push(iterator.call(context, value, index, list));
+  });
+  return results;
+};
+function size(obj) {
+  var size = 0;
+  if (obj) {
+    if (isNumber(obj.length)) {
+      return obj.length;
+    } else if (isObject(obj)){
+      for (key in obj)
+        size++;
+    }
+  }
+  return size;
+}
 function includes(array, obj) {
   for ( var i = 0; i < array.length; i++) {
     if (obj === array[i]) return true;
   }
   return false;
+}
+
+function indexOf(array, obj) {
+  for ( var i = 0; i < array.length; i++) {
+    if (obj === array[i]) return i;
+  }
+  return -1;
 }
 
 function log(a, b, c){
@@ -157,11 +196,14 @@ function copy(source, destination){
         destination.pop();
       }
     } else {
-      foreach(function(value, key){
+      foreach(destination, function(value, key){
         delete destination[key];
       });
     }
-    return $.extend(true, destination, source);
+    foreach(source, function(value, key){
+      destination[key] = isArray(value) ? copy(value, []) : (isObject(value) ? copy(value, {}) : value);
+    });
+    return destination;
   }
 };
 

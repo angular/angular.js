@@ -10,7 +10,7 @@ ApiTest.prototype.testItShouldReturnTypeOf = function (){
   assertEquals("element", angular.Object.typeOf(document.body));
   assertEquals("function", angular.Object.typeOf(function(){}));
 };
-  
+
 ApiTest.prototype.testItShouldReturnSize = function(){
   assertEquals(0, angular.Collection.size({}));
   assertEquals(1, angular.Collection.size({a:"b"}));
@@ -24,18 +24,18 @@ ApiTest.prototype.testIncludeIf = function() {
 
   angular.Array.includeIf(array, obj, true);
   angular.Array.includeIf(array, obj, true);
-  assertTrue(_.include(array, obj));
+  assertTrue(includes(array, obj));
   assertEquals(1, array.length);
 
   angular.Array.includeIf(array, obj, false);
-  assertFalse(_.include(array, obj));
+  assertFalse(includes(array, obj));
   assertEquals(0, array.length);
 
   angular.Array.includeIf(array, obj, 'x');
-  assertTrue(_.include(array, obj));
+  assertTrue(includes(array, obj));
   assertEquals(1, array.length);
   angular.Array.includeIf(array, obj, '');
-  assertFalse(_.include(array, obj));
+  assertFalse(includes(array, obj));
   assertEquals(0, array.length);
 };
 
@@ -187,11 +187,11 @@ ApiTest.prototype.testItShouldSortArrayInReverse = function() {
 };
 
 ApiTest.prototype.testItShouldSortArrayByPredicate = function() {
-  assertJsonEquals([{a:2, b:1},{a:15, b:1}], 
+  assertJsonEquals([{a:2, b:1},{a:15, b:1}],
     angular.Array.orderBy([{a:15, b:1},{a:2, b:1}], ['a', 'b']));
-  assertJsonEquals([{a:2, b:1},{a:15, b:1}], 
+  assertJsonEquals([{a:2, b:1},{a:15, b:1}],
     angular.Array.orderBy([{a:15, b:1},{a:2, b:1}], ['b', 'a']));
-  assertJsonEquals([{a:15, b:1},{a:2, b:1}], 
+  assertJsonEquals([{a:15, b:1},{a:2, b:1}],
     angular.Array.orderBy([{a:15, b:1},{a:2, b:1}], ['+b', '-a']));
 };
 

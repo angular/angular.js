@@ -61,7 +61,7 @@ describe("resource", function() {
 
   beforeEach(function(){
     xhr = new MockXHR();
-    resource = new ResourceFactory(_(xhr.method).bind(xhr));
+    resource = new ResourceFactory(bind(xhr, xhr.method));
     CreditCard = resource.route('/CreditCard/:id:verb', {id:'@id.key'}, {
       charge:{
         method:'POST',

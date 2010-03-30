@@ -558,14 +558,14 @@ Parser.prototype = {
     }
     var statements = this.statements();
     this.consume("}");
-    return function(self){
+    return function(self) {
       return function($){
-        var scope = new Scope(self.scope.state);
-        scope.set('$', $);
+        var scope = createScope(self.state);
+        scope['$'] = $;
         for ( var i = 0; i < args.length; i++) {
-          scope.set(args[i], arguments[i]);
+          scope.$set(args[i], arguments[i]);
         }
-        return statements({scope:scope});
+        return statements({scope:{get:scope.$get, set:scope.$set}});
       };
     };
   },
@@ -573,7 +573,7 @@ Parser.prototype = {
   fieldAccess: function(object) {
     var field = this.expect().text;
     var fn = function (self){
-      return Scope.getter(object(self), field);
+      return getter(object(self), field);
     };
     fn.isAssignable = field;
     return fn;

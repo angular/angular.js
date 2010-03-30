@@ -18,7 +18,7 @@ function compileValidator(expr) {
   return new Parser(expr).validator()();
 }
 
-function valueAccessor(element) {
+function valueAccessor(scope, element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = compileValidator(validatorName),
       required = element.attr('ng-required'),
@@ -26,7 +26,7 @@ function valueAccessor(element) {
   required = required || required == '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
-    var error = required && !trim(value) ? "Required" : validator.call(this, value);
+    var error = required && !trim(value) ? "Required" : validator({self:scope, scope:{get:scope.$get, set:scope.$set}}, value);
     if (error !== lastError) {
       if (error) {
         element.addClass(NG_VALIDATION_ERROR);
@@ -45,23 +45,31 @@ function valueAccessor(element) {
   };
 }
 
-function checkedAccessor(element) {
+function checkedAccessor(scope, element) {
   var domElement = element[0];
   return {
-    get: function(){ return !!domElement.checked; },
-    set: function(value){ domElement.checked = !!value; }
+    get: function(){
+      return !!domElement.checked;
+    },
+    set: function(value){
+      domElement.checked = !!value;
+    }
   };
 }
 
-function radioAccessor(element) {
+function radioAccessor(scope, element) {
   var domElement = element[0];
   return {
-    get: function(){ return domElement.checked ? domElement.value : null; },
-    set: function(value){ domElement.checked = value == domElement.value; }
+    get: function(){
+      return domElement.checked ? domElement.value : null;
+    },
+    set: function(value){
+      domElement.checked = value == domElement.value;
+    }
   };
 }
 
-function optionsAccessor(element) {
+function optionsAccessor(scope, element) {
   var options = element[0].options;
   return {
     get: function(){
@@ -107,7 +115,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
   return function(element) {
     var scope = this,
         model = modelAccessor(scope, element),
-        view = viewAccessor(element),
+        view = viewAccessor(scope, element),
         action = element.attr('ng-action') || '',
         value = view.get() || copy(initValue);
     if (isDefined(value)) model.set(value);
