@@ -28,7 +28,7 @@ function valueAccessor(scope, element) {
   function validate(value) {
     var error = required && !trim(value) ? "Required" : validator({self:scope, scope:{get:scope.$get, set:scope.$set}}, value);
     if (error !== lastError) {
-      elementDecorateError(element, error);
+      elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
     }
     return value;
@@ -85,9 +85,7 @@ function optionsAccessor(scope, element) {
 
 function noopAccessor() { return { get: noop, set: noop }; }
 
-var NG_ERROR = 'ng-error',
-    NG_VALIDATION_ERROR = 'ng-validation-error',
-    textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, ''),
+var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, ''),
     buttonWidget = inputWidget('click', noopAccessor, noopAccessor, undefined),
     INPUT_TYPE = {
       'text':            textWidget,

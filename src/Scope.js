@@ -77,14 +77,11 @@ function isRenderableElement(element) {
 }
 
 function rethrow(e) { throw e; }
-function errorHandlerFor(element) {
+function errorHandlerFor(element, error) {
   while (!isRenderableElement(element)) {
     element = element.parent() || jqLite(document.body);
   }
-  return function(error) {
-    element.attr('ng-error', angular.toJson(error));
-    element.addClass('ng-exception');
-  };
+  elementError(element, 'ng-exception', isDefined(error) ? toJson(error) : error);
 }
 
 function createScope(parent, Class) {
@@ -125,17 +122,13 @@ function createScope(parent, Class) {
 
     $tryEval: function (expression, exceptionHandler) {
       try {
-        var value = expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
-        if (exceptionHandler) {
-          errorHandlerFor(exceptionHandler)();
-        }
-        return value;
+        return expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
       } catch (e) {
         error(e);
         if (isFunction(exceptionHandler)) {
           exceptionHandler(e);
         } else if (exceptionHandler) {
-          errorHandlerFor(exceptionHandler)(e);
+          errorHandlerFor(exceptionHandler, e);
         }
       }
     },

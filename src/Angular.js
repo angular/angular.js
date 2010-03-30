@@ -5,6 +5,8 @@ if (!window['console']) window['console']={'log':noop, 'error':noop};
 
 var consoleNode,
     NOOP              = 'noop',
+    NG_ERROR          = 'ng-error',
+    NG_VALIDATION_ERROR = 'ng-validation-error',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     _                 = window['_'],
     jqLite            = jQuery || jqLiteWrap,
@@ -226,12 +228,12 @@ function escapeHtml(html) {
       replace(/>/g, '&gt;');
 }
 
-function elementDecorateError(element, error) {
+function elementError(element, type, error) {
   if (error) {
-    element.addClass(NG_VALIDATION_ERROR);
+    element.addClass(type);
     element.attr(NG_ERROR, error);
   } else {
-    element.removeClass(NG_VALIDATION_ERROR);
+    element.removeClass(type);
     element.removeAttr(NG_ERROR);
   }
 }

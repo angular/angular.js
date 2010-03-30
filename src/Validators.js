@@ -99,7 +99,7 @@ foreach({
         if (cache.state[cache.lastKey] !== null) {
           element.removeClass('ng-input-indicator-wait');
         }
-        elementDecorateError(element, error);
+        elementError(element, NG_VALIDATION_ERROR, error);
       });
     }
 
