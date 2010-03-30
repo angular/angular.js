@@ -106,20 +106,23 @@ function createScope(parent, Class) {
     $get: bind(instance, getter, instance),
     $set: bind(instance, setter, instance),
 
-    $eval: function(exp) {
+    $eval: function $eval(exp) {
       if (isDefined(exp)) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
         foreach(evalList, function(eval) {
           instance.$tryEval(eval.fn, eval.handler);
         });
+        var dirty = false;
         foreach(watchList, function(watch) {
           var value = instance.$tryEval(watch.watch, watch.handler);
           if (watch.last !== value) {
+            dirty = true;
             instance.$tryEval(watch.listener, watch.handler, value, watch.last);
             watch.last = value;
           }
         });
+        if (dirty) $eval();
       }
     },
 

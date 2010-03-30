@@ -29,7 +29,7 @@ describe('scope/model', function(){
     expect(model.name).toEqual('works');
   });
 
-  //$onEval
+  //$watch
   it('should watch an expression for change', function(){
     var model = createScope();
     model.oldValue = "";
@@ -42,7 +42,7 @@ describe('scope/model', function(){
     });
     model.name = 'misko';
     model.$eval();
-    expect(count).toEqual(1);
+    expect(count).toEqual(2); // since watches trigger $eval
     expect(model.newValue).toEqual('misko');
     expect(model.oldValue).toEqual('adam');
   });
