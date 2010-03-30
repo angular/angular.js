@@ -37,6 +37,10 @@ MockLocation.prototype.set = function(url){
   this.url = url;
 };
 
+function childNode(element, index) {
+  return jqLite(element[0].childNodes[index]);
+}
+
 function sortedHtml(element) {
   var html = "";
   (function toString(node) {

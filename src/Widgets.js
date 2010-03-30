@@ -9,7 +9,7 @@ function modelAccessor(scope, element) {
       return formatter['format'](scope.$eval(expr));
     },
     set: function(value) {
-      scope.$eval(expr + '=' + toJson(formatter['parse'](value)));
+      scope.$tryEval(expr + '=' + toJson(formatter['parse'](value)), element);
     }
   };
 }
@@ -112,7 +112,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
         view = viewAccessor(scope, element),
         action = element.attr('ng-action') || '',
         value = view.get() || copy(initValue);
-    if (isDefined(value)) model.set(value);
+    if (isUndefined(model.get()) && isDefined(value)) model.set(value);
     this.$eval(element.attr('ng-init')||'');
     element.bind(events, function(){
       model.set(view.get());
@@ -127,6 +127,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
 }
 
 function inputWidgetSelector(element){
+  this.directives(true);
   return INPUT_TYPE[lowercase(element[0].type)] || noop;
 }
 

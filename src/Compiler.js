@@ -50,37 +50,6 @@ Template.prototype = {
 ///////////////////////////////////
 //Compiler
 //////////////////////////////////
-function isTextNode(node) {
-  return node.nodeName == '#text';
-}
-
-function eachTextNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
-  for (i = 0; i < size; i++) {
-    if(isTextNode(chld = chldNodes[i])) {
-      fn(jqLite(chld), i);
-    }
-  }
-}
-
-function eachNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
-  for (i = 0; i < size; i++) {
-    if(!isTextNode(chld = chldNodes[i])) {
-      fn(jqLite(chld), i);
-    }
-  }
-}
-
-function eachAttribute(element, fn){
-  var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr, attrValue = {};
-  for (i = 0; i < size; i++) {
-    var attr = attrs[i];
-    attrValue[attr.name] = attr.value;
-  }
-  foreach(attrValue, fn);
-}
-
 function Compiler(textMarkup, attrMarkup, directives, widgets){
   this.textMarkup = textMarkup;
   this.attrMarkup = attrMarkup;
@@ -110,24 +79,38 @@ Compiler.prototype = {
 
   templatize: function(element){
     var self = this,
-        widget = self.widgets[element[0].nodeName],
-        directives = self.directives,
+        widget,
+        directiveFns = self.directives,
         descend = true,
-        exclusive = false,
-        directiveQueue = [],
+        directives = true,
         template = new Template(),
         selfApi = {
           compile: bind(self, self.compile),
           comment:function(text) {return jqLite(document.createComment(text));},
           element:function(type) {return jqLite(document.createElement(type));},
           text:function(text) {return jqLite(document.createTextNode(text));},
-          descend: function(value){ if(isDefined(value)) descend = value; return descend;}
+          descend: function(value){ if(isDefined(value)) descend = value; return descend;},
+          directives: function(value){ if(isDefined(value)) directives = value; return directives;}
         };
 
+    eachAttribute(element, function(value, name){
+      if (!widget) {
+        if (widget = self.widgets['@' + name]) {
+          widget = bind(selfApi, widget, value, element);
+        }
+      }
+    });
+    if (!widget) {
+      if (widget = self.widgets[nodeName(element)]) {
+        widget = bind(selfApi, widget, element);
+      }
+    }
     if (widget) {
       descend = false;
+      directives = false;
       template.addInit(widget.call(selfApi, element));
-    } else {
+    }
+    if (descend){
       // process markup for text nodes only
       eachTextNode(element, function(textNode){
         var text = textNode.text();
@@ -135,7 +118,9 @@ Compiler.prototype = {
           markup.call(selfApi, text, textNode, element);
         });
       });
+    }
 
+    if (directives) {
       // Process attributes/directives
       eachAttribute(element, function(value, name){
         foreach(self.attrMarkup, function(markup){
@@ -143,21 +128,8 @@ Compiler.prototype = {
         });
       });
       eachAttribute(element, function(value, name){
-        var directive  = directives[name];
-        if (!exclusive && directive) {
-          if (directive.exclusive) {
-            exclusive = true;
-            directiveQueue = [];
-          }
-          directiveQueue.push(bind(selfApi, directive, value, element));
-        }
+        template.addInit((directiveFns[name]||noop).call(selfApi, value, element));
       });
-
-      // Execute directives
-      foreach(directiveQueue, function(directive){
-        template.addInit(directive());
-      });
-
     }
     // Process non text child nodes
     if (descend) {
@@ -168,3 +140,31 @@ Compiler.prototype = {
     return template.empty() ? null : template;
   }
 };
+
+function eachTextNode(element, fn){
+  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
+  for (i = 0; i < size; i++) {
+    if(isTextNode(chld = chldNodes[i])) {
+      fn(jqLite(chld), i);
+    }
+  }
+}
+
+function eachNode(element, fn){
+  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
+  for (i = 0; i < size; i++) {
+    if(!isTextNode(chld = chldNodes[i])) {
+      fn(jqLite(chld), i);
+    }
+  }
+}
+
+function eachAttribute(element, fn){
+  var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr, attrValue = {};
+  for (i = 0; i < size; i++) {
+    var attr = attrs[i];
+    attrValue[attr.name] = attr.value;
+  }
+  foreach(attrValue, fn);
+}
+

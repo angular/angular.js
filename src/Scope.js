@@ -110,25 +110,26 @@ function createScope(parent, Class) {
       if (isDefined(exp)) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
-        foreach(evalList, function(eval) {
-          instance.$tryEval(eval.fn, eval.handler);
-        });
-        var dirty = false;
         foreach(watchList, function(watch) {
           var value = instance.$tryEval(watch.watch, watch.handler);
           if (watch.last !== value) {
-            dirty = true;
             instance.$tryEval(watch.listener, watch.handler, value, watch.last);
             watch.last = value;
           }
         });
-        if (dirty) $eval();
+        foreach(evalList, function(eval) {
+          instance.$tryEval(eval.fn, eval.handler);
+        });
       }
     },
 
     $tryEval: function (expression, exceptionHandler) {
       try {
-        return expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
+        var value = expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
+        if (exceptionHandler) {
+          errorHandlerFor(exceptionHandler)();
+        }
+        return value;
       } catch (e) {
         error(e);
         if (isFunction(exceptionHandler)) {

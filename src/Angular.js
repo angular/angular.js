@@ -23,10 +23,6 @@ var consoleNode,
       });
 angular['copy'] = copy;
 
-var isVisible = isVisible || function (element) {
-  return jQuery(element).is(":visible");
-};
-
 function foreach(obj, iterator, context) {
   var key;
   if (obj) {
@@ -81,9 +77,11 @@ function isString(value){ return typeof value == 'string';}
 function isNumber(value){ return typeof value == 'number';}
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == 'function';}
+function isTextNode(node) { return nodeName(node) == '#text'; }
 function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; };
+function nodeName(element) { return (element[0] || element || {}).nodeName; }
 function map(obj, iterator, context) {
   var results = [];
   foreach(obj, function(value, index, list) {
@@ -261,10 +259,13 @@ function outerHTML(node) {
 }
 
 function toBoolean(value) {
-  var v = ("" + value).toLowerCase();
-  if (v == 'f' || v == '0' || v == 'false' || v == 'no')
+  if (value && value.length !== 0) {
+    var v = lowercase("" + value);
+    value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == '[]');
+  } else {
     value = false;
-  return !!value;
+  }
+  return value;
 }
 
 function merge(src, dst) {

@@ -33,16 +33,18 @@ describe('scope/model', function(){
   it('should watch an expression for change', function(){
     var model = createScope();
     model.oldValue = "";
-    var count = 0;
+    var nameCount = 0, evalCount = 0;
     model.name = 'adam';
-    model.$watch('name', function(){ count ++; });
+    model.$watch('name', function(){ nameCount ++; });
     model.$watch(function(){return model.name;}, function(newValue, oldValue){
       this.newValue = newValue;
       this.oldValue = oldValue;
     });
+    model.$onEval(function(){evalCount ++;});
     model.name = 'misko';
     model.$eval();
-    expect(count).toEqual(2); // since watches trigger $eval
+    expect(nameCount).toEqual(1);
+    expect(evalCount).toEqual(1);
     expect(model.newValue).toEqual('misko');
     expect(model.oldValue).toEqual('adam');
   });

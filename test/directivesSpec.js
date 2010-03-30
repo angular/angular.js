@@ -80,6 +80,11 @@ describe("directives", function(){
     expect(element.text()).toEqual('misko:swe;shyam:set;');
   });
 
+  it('should set ng-repeat to [] if undefinde', function(){
+    var scope = compile('<ul><li ng-repeat="item in items"></li></ul>');
+    expect(scope.items).toEqual([]);
+  });
+
   it('should error on wrong parsing of ng-repeat', function(){
     var scope = compile('<ul><li ng-repeat="i dont parse"></li></ul>');
     var log = "";

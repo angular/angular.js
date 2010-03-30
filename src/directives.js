@@ -66,18 +66,21 @@ angularDirective("ng-bind-template", function(expression){
 angularDirective("ng-bind-attr", function(expression){
   return function(element){
     this.$onEval(function(){
-      foreach(this.$eval(expression), function(value, key){
-        element.attr(key, compileBindTemplate(value).call(this));
+      foreach(this.$eval(expression), function(bindExp, key) {
+        var value = compileBindTemplate(bindExp).call(this);
+        if (key == 'disabled' && !toBoolean(value)) {
+          element.removeAttr('disabled');
+        } else {
+          element.attr(key, value);
+        }
       }, this);
     }, element);
   };
 });
 
-angularDirective("ng-non-bindable", function(){
-  this.descend(false);
-});
+angularWidget("@ng-non-bindable", noop);
 
-angularDirective("ng-repeat", function(expression, element){
+angularWidget("@ng-repeat", function(expression, element){
   element.removeAttr('ng-repeat');
   element.replaceWith(this.comment("ng-repeat: " + expression));
   var template = this.compile(element);
@@ -98,24 +101,28 @@ angularDirective("ng-repeat", function(expression, element){
     valueIdent = match[3] || match[1];
     keyIdent = match[2];
 
+    if (isUndefined(this.$eval(rhs))) this.$set(rhs, []);
+
     var children = [], currentScope = this;
     this.$onEval(function(){
       var index = 0, childCount = children.length, childScope, lastElement = reference;
       foreach(this.$tryEval(rhs, reference), function(value, key){
+        function assign(scope) {
+          scope[valueIdent] = value;
+          if (keyIdent) scope[keyIdent] = key;
+        }
         if (index < childCount) {
           // reuse existing child
-          childScope = children[index];
+          assign(childScope = children[index]);
         } else {
           // grow children
-          childScope = template(element.clone(), currentScope);
+          assign(childScope = template(element.clone(), currentScope));
           lastElement.after(childScope.$element);
           childScope.$index = index;
-          childScope.$element.attr('ng-index', index);
+          childScope.$element.attr('ng-repeat-index', index);
           childScope.$init();
           children.push(childScope);
         }
-        childScope[valueIdent] = value;
-        if (keyIdent) childScope[keyIdent] = key;
         childScope.$eval();
         lastElement = childScope.$element;
         index ++;
@@ -126,7 +133,7 @@ angularDirective("ng-repeat", function(expression, element){
       }
     }, reference);
   };
-}, {exclusive: true});
+});
 
 angularDirective("ng-action", function(expression, element){
   return function(element){
@@ -139,13 +146,16 @@ angularDirective("ng-action", function(expression, element){
 });
 
 angularDirective("ng-watch", function(expression, element){
-  var match = expression.match(/^([^.]*):(.*)$/);
   return function(element){
-    if (!match) {
-      throw "Expecting watch expression 'ident_to_watch: watch_statement' got '"
-      + expression + "'";
-    }
-    this.$watch(match[1], match[2], element);
+    var self = this;
+    new Parser(expression).watch()({
+      scope:{get: self.$get, set: self.$set},
+      addListener:function(watch, exp){
+        self.$watch(watch, function(){
+          return exp({scope:{get: self.$get, set: self.$set}, state:self});
+        }, element);
+      }
+    });
   };
 });
 

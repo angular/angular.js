@@ -14,10 +14,8 @@ describe("input widget", function(){
   });
 
   afterEach(function(){
-    if (element) element.remove();
-    var oldCache = jqCache;
-    jqCache = {};
-    expect(size(oldCache)).toEqual(0);
+    if (element && element.dealoc) element.dealoc();
+    expect(size(jqCache)).toEqual(0);
   });
 
   it('should input-text auto init and handle keyup/change events', function(){
@@ -179,7 +177,7 @@ describe("input widget", function(){
   });
 
   it('should report error on assignment error', function(){
-    compile('<input type="text" name="1-2" value="x"/>');
+    compile('<input type="text" name="throw \'\'" value="x"/>');
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
