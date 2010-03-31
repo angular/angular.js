@@ -108,7 +108,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng-action') || '',
+        action = element.attr('ng-change') || '',
         value = view.get() || copy(initValue);
     if (isUndefined(model.get()) && isDefined(value)) model.set(value);
     this.$eval(element.attr('ng-init')||'');
@@ -120,6 +120,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initValue) {
       // therefore we want to prevent default action
       return isDefined(initValue);
     });
+    view.set(model.get());
     scope.$watch(model.get, view.set);
   };
 }

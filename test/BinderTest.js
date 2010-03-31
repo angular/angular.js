@@ -39,7 +39,7 @@ BinderTest.prototype.testChangingRadioUpdatesModel = function(){
 };
 
 BinderTest.prototype.testChangingCheckboxUpdatesModel = function(){
-  var form = this.compile('<input type="checkbox" name="model.price" value="true" checked ng-format="boolean">');
+  var form = this.compile('<input type="checkbox" name="model.price" value="true" checked ng-format="boolean"/>');
   assertEquals(true, form.scope.model.price);
 };
 
@@ -91,7 +91,7 @@ BinderTest.prototype.testReplaceBindingInTextWithSpan = function() {
 };
 
 BinderTest.prototype.testBindingSpaceConfusesIE = function() {
-  //if (!msie) return;
+  if (!msie) return;
   var span = document.createElement("span");
   span.innerHTML = '&nbsp;';
   var nbsp = span.firstChild.nodeValue;
@@ -144,7 +144,7 @@ BinderTest.prototype.testAttributesAreEvaluated = function(){
 
 BinderTest.prototype.testInputTypeButtonActionExecutesInScope =  function(){
   var savedCalled = false;
-  var c = this.compile('<input type="button" ng-action="person.save()" value="Apply">');
+  var c = this.compile('<input type="button" ng-click="person.save()" value="Apply">');
   c.scope.$set("person.save", function(){
     savedCalled = true;
   });
@@ -153,17 +153,19 @@ BinderTest.prototype.testInputTypeButtonActionExecutesInScope =  function(){
 };
 
 BinderTest.prototype.testInputTypeButtonActionExecutesInScope2 =  function(){
-  expectAsserts(1);
-  var c = this.compile('<input type="image" ng-action="action()">');
+  var log = "";
+  var c = this.compile('<input type="image" ng-click="action()">');
   c.scope.$set("action", function(){
-    assertTrue(true);
+    log += 'click;';
   });
+  expect(log).toEqual('');
   c.node.click();
+  expect(log).toEqual('click;');
 };
 
 BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
   var savedCalled = false;
-  var c = this.compile('<button ng-action="person.save()">Apply</button>');
+  var c = this.compile('<button ng-click="person.save()">Apply</button>');
   c.scope.$set("person.save", function(){
     savedCalled = true;
   });
@@ -171,7 +173,7 @@ BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
   assertTrue(savedCalled);
 };
 
-BinderTest.prototype.testParseEmptyAnchor = function(){
+BinderTest.prototype.XtestParseEmptyAnchor = function(){
   var binder = this.compile("<div/>").binder;
   var location = binder.location;
   var anchor = binder.anchor;
@@ -185,7 +187,7 @@ BinderTest.prototype.testParseEmptyAnchor = function(){
   assertEquals('undefined', typeof (anchor[""]));
 };
 
-BinderTest.prototype.testParseAnchor = function(){
+BinderTest.prototype.XtestParseAnchor = function(){
   var binder = this.compile("<div/>").binder;
   var location = binder.location;
   location.url = "a#x=1";
@@ -199,7 +201,7 @@ BinderTest.prototype.testParseAnchor = function(){
   assertTrue(!binder.anchor.x);
 };
 
-BinderTest.prototype.testWriteAnchor = function(){
+BinderTest.prototype.XtestWriteAnchor = function(){
   var binder = this.compile("<div/>").binder;
   binder.location.set('a');
   binder.anchor.a = 'b';
@@ -209,7 +211,7 @@ BinderTest.prototype.testWriteAnchor = function(){
   assertEquals(binder.location.get(), "a#a=b&c=%20&d");
 };
 
-BinderTest.prototype.testWriteAnchorAsPartOfTheUpdateView = function(){
+BinderTest.prototype.XtestWriteAnchorAsPartOfTheUpdateView = function(){
   var binder = this.compile("<div/>").binder;
   binder.location.set('a');
   binder.anchor.a = 'b';
@@ -221,8 +223,6 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
   var a = this.compile('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
   var form = a.node;
   var items = [{a:"A"}, {a:"B"}];
-  var initialDataCount = _(jQuery.cache).size();
-  assertTrue("" + initialDataCount, initialDataCount > 0);
   a.scope.$set('model', {items:items});
 
   a.scope.$eval();
@@ -252,8 +252,6 @@ BinderTest.prototype.testRepeaterUpdateBindings = function(){
   items.shift();
   items.shift();
   a.scope.$eval();
-  var currentDataCount = _(jQuery.cache).size();
-  assertEquals("I have leaked " + (currentDataCount - initialDataCount), initialDataCount, currentDataCount);
 };
 
 BinderTest.prototype.testRepeaterContentDoesNotBind = function(){
@@ -266,51 +264,10 @@ BinderTest.prototype.testRepeaterContentDoesNotBind = function(){
         '</ul>', sortedHtml(a.node));
 };
 
-BinderTest.prototype.testShouldBindActionsOnRepeaterClone = function(){
-  var c = this.compile('<a ng-repeat="item in items" href="#" ng-action="result.value = item">link</a>');
-  jQuery(c).die();
-  c.scope.$set('result.value', false);
-  c.scope.$set('items', ['abc', 'xyz']);
-  c.scope.$eval();
-  assertEquals(2, c.node.find("a").size());
-  c.node.find("a:last").click();
-  assertEquals('xyz', c.scope.$get('result.value'));
-};
-
-
-
-BinderTest.prototype.testRepeaterInputContentDoesNotBind =  function(){
-  var c = compil('<ul><LI repeater="item in model.items">' +
-                 '<input type="text" name="item.a" value="OLD"/></li></ul>');
-  c.scope.items = [{a:"A"}];
-  assertEquals(c.node.find(":input").attr("value"), "OLD");
-};
-
 BinderTest.prototype.testExpandEntityTag = function(){
   assertEquals(
       '<div ng-entity="Person" ng-watch="$anchor.a:1"></div>',
       this.compileToHtml('<div ng-entity="Person" ng-watch="$anchor.a:1"/>'));
-};
-
-BinderTest.prototype.testExpandEntityTagWithDefaults = function(){
-  assertEquals(
-      '<div ng-entity="Person:{a:\"a\"}" ng-watch=""></div>',
-      this.compileToHtml('<div ng-entity=\'Person:{a:"a"}\'/>'));
-};
-
-BinderTest.prototype.testExpandEntityTagWithName = function(){
-  var c = this.compile('<div ng-entity="friend=Person"/>');
-  assertEquals(
-      '<div ng-entity="friend=Person" ng-watch="$anchor.friend:{friend=Person.load($anchor.friend);friend.$$anchor=\"friend\";};"></div>',
-      sortedHtml(c.node));
-  assertEquals("Person", c.scope.$get("friend.$entity"));
-  assertEquals("friend", c.scope.$get("friend.$$anchor"));
-};
-
-BinderTest.prototype.testExpandSubmitButtonToAction = function(){
-  var html = this.compileToHtml('<input type="submit" value="Save">');
-  assertTrue(html, html.indexOf('ng-action="$save()"') > 0 );
-  assertTrue(html, html.indexOf('ng-bind-attr="{"disabled":"{{$invalidWidgets}}"}"') > 0 );
 };
 
 BinderTest.prototype.testDoNotOverwriteCustomAction = function(){
@@ -318,66 +275,52 @@ BinderTest.prototype.testDoNotOverwriteCustomAction = function(){
   assertTrue(html.indexOf('action="foo();"') > 0 );
 };
 
-BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
-  expectAsserts(1);
-  var form = jQuery("body").append('<div id="testTag"><input type="file"></div>');
-  form.data('scope', new Scope());
-  var factory = {};
-  var binder = new Binder(form.get(0), factory, new MockLocation());
-  factory.createController = function(node){
-    assertEquals(node.attr('type'), 'file');
-    return {updateModel:function(){}};
-  };
-  binder.compile();
-  jQuery("#testTag").remove();
-};
-
 BinderTest.prototype.testRepeaterAdd = function(){
   var c = this.compile('<div><input type="text" name="item.x" ng-repeat="item in items"></div>');
   var doc = c.node;
   c.scope.$set('items', [{x:'a'}, {x:'b'}]);
-  c.binder.compile();
   c.scope.$eval();
-  assertEquals('a', doc.find(':input')[0].value);
-  assertEquals('b', doc.find(':input')[1].value);
+  var first = childNode(c.node, 1);
+  var second = childNode(c.node, 2);
+  assertEquals('a', first.val());
+  assertEquals('b', second.val());
 
-  var first = doc.find('[ng-repeat-index="0"]');
-  first[0].value = 'ABC';
+  first.val('ABC');
   first.trigger('keyup');
-  assertEquals(doc.scope().get('items')[0].x, 'ABC');
+  assertEquals(c.scope.items[0].x, 'ABC');
 };
 
 BinderTest.prototype.testItShouldRemoveExtraChildrenWhenIteratingOverHash = function(){
-  var c = this.compile('<div ng-repeat="i in items">{{i}}</div>');
+  var c = this.compile('<div><div ng-repeat="i in items">{{i}}</div></div>');
   var items = {};
   c.scope.$set("items", items);
 
   c.scope.$eval();
-  expect(c.node.find("div").size()).toEqual(0);
+  expect(c.node[0].childNodes.length - 1).toEqual(0);
 
   items.name = "misko";
   c.scope.$eval();
-  expect(c.node.find("div").size()).toEqual(1);
+  expect(c.node[0].childNodes.length - 1).toEqual(1);
 
   delete items.name;
   c.scope.$eval();
-  expect(c.node.find("div").size()).toEqual(0);
+  expect(c.node[0].childNodes.length - 1).toEqual(0);
 };
 
 BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
   var a = this.compile('<div>{{error.throw()}}</div>');
-  var doc = a.node.find('div');
+  var doc = a.node;
 
   a.scope.$set('error.throw', function(){throw "ErrorMsg1";});
   a.scope.$eval();
-  var span = doc.find('span');
+  var span = childNode(doc, 0);
   assertTrue(span.hasClass('ng-exception'));
   assertEquals('ErrorMsg1', fromJson(span.text()));
   assertEquals('"ErrorMsg1"', span.attr('ng-error'));
 
   a.scope.$set('error.throw', function(){throw "MyError";});
   a.scope.$eval();
-  span = doc.find('span');
+  span = childNode(doc, 0);
   assertTrue(span.hasClass('ng-exception'));
   assertTrue(span.text(), span.text().match('MyError') !== null);
   assertEquals('"MyError"', span.attr('ng-error'));
@@ -389,15 +332,15 @@ BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
   assertEquals(null, span.attr('ng-error'));
 };
 
-BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheSpan = function(){
+BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheAttribute = function(){
   var a = this.compile('<div attr="before {{error.throw()}} after"></div>');
-  var doc = a.node.find("div");
+  var doc = a.node;
 
   a.scope.$set('error.throw', function(){throw "ErrorMsg";});
   a.scope.$eval();
   assertTrue('ng-exception', doc.hasClass('ng-exception'));
-  assertEquals('before ["ErrorMsg"] after', doc.attr('attr'));
   assertEquals('"ErrorMsg"', doc.attr('ng-error'));
+  assertEquals('before "ErrorMsg" after', doc.attr('attr'));
 
   a.scope.$set('error.throw', function(){ return 'X';});
   a.scope.$eval();
@@ -408,15 +351,15 @@ BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheSpan = function(){
 };
 
 BinderTest.prototype.testNestedRepeater = function() {
-  var a = this.compile('<div ng-repeat="m in model" name="{{m.name}}">' +
+  var a = this.compile('<div><div ng-repeat="m in model" name="{{m.name}}">' +
                    '<ul name="{{i}}" ng-repeat="i in m.item"></ul>' +
-                 '</div>');
+                 '</div></div>');
 
   a.scope.$set('model', [{name:'a', item:['a1', 'a2']}, {name:'b', item:['b1', 'b2']}]);
   a.scope.$eval();
 
-  assertEquals(
-      //'<#comment></#comment>'+
+  assertEquals('<div>'+
+      '<#comment></#comment>'+
       '<div name="a" ng-bind-attr="{"name":"{{m.name}}"}" ng-repeat-index="0">'+
         '<#comment></#comment>'+
         '<ul name="a1" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="0"></ul>'+
@@ -426,18 +369,18 @@ BinderTest.prototype.testNestedRepeater = function() {
         '<#comment></#comment>'+
         '<ul name="b1" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="0"></ul>'+
         '<ul name="b2" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="1"></ul>'+
-      '</div>', sortedHtml(a.node));
+      '</div></div>', sortedHtml(a.node));
 };
 
-BinderTest.prototype.testRadioButtonGetsPrefixed = function () {
-  var a = this.compile('<input ng-repeat="m in model" type="radio" name="m.a" value="on"/>');
+BinderTest.prototype.XtestRadioButtonGetsPrefixed = function () {
+  var a = this.compile('<div><input ng-repeat="m in model" type="radio" name="m.a" value="on"/></div>');
   a.scope.$set('model', ['a1', 'a2']);
   a.scope.$eval();
 
-  assertEquals(
-      //'<#comment></#comment>'+
+  assertEquals('</div>' +
+      '<#comment></#comment>'+
       '<input name="0:m.a" ng-repeat-index="0" type="radio" value="on"></input>'+
-      '<input name="1:m.a" ng-repeat-index="1" type="radio" value="on"></input>',
+      '<input name="1:m.a" ng-repeat-index="1" type="radio" value="on"></input></div>',
       sortedHtml(a.node));
 };
 
@@ -447,12 +390,12 @@ BinderTest.prototype.testHideBindingExpression = function() {
   a.scope.$set('hidden', 3);
   a.scope.$eval();
 
-  assertHidden(a.node.children());
+  assertHidden(a.node);
 
   a.scope.$set('hidden', 2);
   a.scope.$eval();
 
-  assertVisible(a.node.children());
+  assertVisible(a.node);
 };
 
 BinderTest.prototype.testHideBinding = function() {
@@ -461,17 +404,17 @@ BinderTest.prototype.testHideBinding = function() {
   c.scope.$set('hidden', 'true');
   c.scope.$eval();
 
-  assertHidden(c.node.children());
+  assertHidden(c.node);
 
   c.scope.$set('hidden', 'false');
   c.scope.$eval();
 
-  assertVisible(c.node.children());
+  assertVisible(c.node);
 
   c.scope.$set('hidden', '');
   c.scope.$eval();
 
-  assertVisible(c.node.children());
+  assertVisible(c.node);
 };
 
 BinderTest.prototype.testShowBinding = function() {
@@ -480,17 +423,17 @@ BinderTest.prototype.testShowBinding = function() {
   c.scope.$set('show', 'true');
   c.scope.$eval();
 
-  assertVisible(c.node.children());
+  assertVisible(c.node);
 
   c.scope.$set('show', 'false');
   c.scope.$eval();
 
-  assertHidden(c.node.children());
+  assertHidden(c.node);
 
   c.scope.$set('show', '');
   c.scope.$eval();
 
-  assertHidden(c.node.children());
+  assertHidden(c.node);
 };
 
 BinderTest.prototype.testBindClassUndefined = function() {
@@ -498,7 +441,7 @@ BinderTest.prototype.testBindClassUndefined = function() {
   doc.scope.$eval();
 
   assertEquals(
-      '<div ng-class="undefined"></div>',
+      '<div class="undefined" ng-class="undefined"></div>',
       sortedHtml(doc.node));
 };
 
@@ -515,35 +458,34 @@ BinderTest.prototype.testBindClass = function() {
   c.scope.$eval();
 
   assertEquals(sortedHtml(c.node),
-      '<div class="a,b" ng-class="class"></div>');
+      '<div class="a b" ng-class="class"></div>');
 };
 
 BinderTest.prototype.testBindClassEvenOdd = function() {
-  var x = this.compile('<div ng-repeat="i in [0,1]" ng-class-even="\'e\'" ng-class-odd="\'o\'"/>');
+  var x = this.compile('<div><div ng-repeat="i in [0,1]" ng-class-even="\'e\'" ng-class-odd="\'o\'"/></div>');
   x.scope.$eval();
   assertEquals(
+      '<div><#comment></#comment>' +
       '<div class="o" ng-class-even="\'e\'" ng-class-odd="\'o\'" ng-repeat-index="0"></div>' +
-      '<div class="e" ng-class-even="\'e\'" ng-class-odd="\'o\'" ng-repeat-index="1"></div>',
+      '<div class="e" ng-class-even="\'e\'" ng-class-odd="\'o\'" ng-repeat-index="1"></div></div>',
       sortedHtml(x.node));
 };
 
 BinderTest.prototype.testBindStyle = function() {
   var c = this.compile('<div ng-style="style"/>');
 
-  c.scope.eval('style={color:"red"}');
+  c.scope.$eval('style={color:"red"}');
   c.scope.$eval();
 
-  assertEquals("red", c.node.find('div').css('color'));
+  assertEquals("red", c.node.css('color'));
 
-  c.scope.eval('style={}');
+  c.scope.$eval('style={}');
   c.scope.$eval();
-
-  assertEquals(sortedHtml(c.node), '<div ng-style="style"></div>');
 };
 
 BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   var model = {books:[]};
-  var c = this.compile('<a ng-action="action()">Add Phone</a>', model);
+  var c = this.compile('<a ng-click="action()">Add Phone</a>', model);
   c.scope.action = function(){
     throw {a:'abc', b:2};
   };
@@ -553,10 +495,10 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
   // TODO: I think that exception should never get cleared so this portion of test makes no sense
-//  c.scope.action = noop;
-//  input.click();
-//  dump(input.attr('ng-error'));
-//  assertFalse('error class should be cleared', input.hasClass('ng-exception'));
+  //c.scope.action = noop;
+  //input.click();
+  //dump(input.attr('ng-error'));
+  //assertFalse('error class should be cleared', input.hasClass('ng-exception'));
 };
 
 BinderTest.prototype.testShoulIgnoreVbNonBindable = function(){
@@ -777,8 +719,8 @@ BinderTest.prototype.XtestSetBinderAnchorTriggersListeners = function(){
 
 BinderTest.prototype.testItShouldDisplayErrorWhenActionIsSyntacticlyIncorect = function(){
   var c = this.compile('<div>' +
-      '<input type="button" ng-action="greeting=\'ABC\'"/>' +
-      '<input type="button" ng-action=":garbage:"/></div>');
+      '<input type="button" ng-click="greeting=\'ABC\'"/>' +
+      '<input type="button" ng-click=":garbage:"/></div>');
   var first = jqLite(c.node[0].childNodes[0]);
   var second = jqLite(c.node[0].childNodes[1]);
 

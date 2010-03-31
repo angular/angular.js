@@ -11,6 +11,7 @@ function toPrettyJson(obj)  {
 };
 
 function fromJson(json) {
+  if (!json) return json;
   try {
     var parser = new Parser(json, true);
     var expression =  parser.primary();

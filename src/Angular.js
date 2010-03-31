@@ -6,9 +6,11 @@ if (!window['console']) window['console']={'log':noop, 'error':noop};
 var consoleNode,
     NOOP              = 'noop',
     NG_ERROR          = 'ng-error',
+    NG_EXCEPTION      = 'ng-exception',
     NG_VALIDATION_ERROR = 'ng-validation-error',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     _                 = window['_'],
+    msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
     angular           = window['angular']    || (window['angular']    = {}),

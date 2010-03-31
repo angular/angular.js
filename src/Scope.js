@@ -81,7 +81,7 @@ function errorHandlerFor(element, error) {
   while (!isRenderableElement(element)) {
     element = element.parent() || jqLite(document.body);
   }
-  elementError(element, 'ng-exception', isDefined(error) ? toJson(error) : error);
+  elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
 }
 
 function createScope(parent, Class) {

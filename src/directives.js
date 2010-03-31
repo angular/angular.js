@@ -15,7 +15,7 @@ angularDirective("ng-bind", function(expression){
   return function(element) {
     var lastValue;
     this.$onEval(function() {
-      var value = templateFn.call(this);
+      var value = templateFn.call(this, element);
       if (value != lastValue) {
         element.text(value);
         lastValue = value;
@@ -31,16 +31,20 @@ function compileBindTemplate(template){
     var bindings = [];
     foreach(parseBindings(template), function(text){
       var exp = binding(text);
-      bindings.push(exp ? function(){
-        return this.$eval(exp);
-      } : function(){
+      bindings.push(exp ? function(element){
+        var error, value = this.$tryEval(exp, function(e){
+          error = toJson(e);
+        });
+        elementError(element, NG_EXCEPTION, error);
+        return error ? error : value;
+      } : function() {
         return text;
       });
     });
-    bindTemplateCache[template] = fn = function(){
+    bindTemplateCache[template] = fn = function(element){
       var parts = [], self = this;
       foreach(bindings, function(fn){
-        var value = fn.call(self);
+        var value = fn.call(self, element);
         if (isObject(value)) value = toJson(value, true);
         parts.push(value);
       });
@@ -54,7 +58,7 @@ angularDirective("ng-bind-template", function(expression){
   return function(element) {
     var lastValue;
     this.$onEval(function() {
-      var value = templateFn.call(this);
+      var value = templateFn.call(this, element);
       if (value != lastValue) {
         element.text(value);
         lastValue = value;
@@ -67,7 +71,7 @@ angularDirective("ng-bind-attr", function(expression){
   return function(element){
     this.$onEval(function(){
       foreach(this.$eval(expression), function(bindExp, key) {
-        var value = compileBindTemplate(bindExp).call(this);
+        var value = compileBindTemplate(bindExp).call(this, element);
         if (key == 'disabled' && !toBoolean(value)) {
           element.removeAttr('disabled');
         } else {
@@ -135,12 +139,13 @@ angularWidget("@ng-repeat", function(expression, element){
   };
 });
 
-angularDirective("ng-action", function(expression, element){
+angularDirective("ng-click", function(expression, element){
   return function(element){
     var self = this;
     element.click(function(){
       self.$tryEval(expression, element);
       self.$eval();
+      return false;
     });
   };
 });
@@ -167,7 +172,7 @@ function ngClass(selector) {
         var value = this.$eval(expression);
         if (selector(this.$index)) {
           if (isArray(value)) value = value.join(' ');
-          element[0].className = (existing + value).replace(/\s\s+/g, ' ');
+          element[0].className = trim(existing + value);
         }
       }, element);
     };
@@ -175,8 +180,8 @@ function ngClass(selector) {
 }
 
 angularDirective("ng-class", ngClass(function(){return true;}));
-angularDirective("ng-class-odd", ngClass(function(i){return i % 2 == 1;}));
-angularDirective("ng-class-even", ngClass(function(i){return i % 2 == 0;}));
+angularDirective("ng-class-odd", ngClass(function(i){return i % 2 == 0;}));
+angularDirective("ng-class-even", ngClass(function(i){return i % 2 == 1;}));
 
 angularDirective("ng-show", function(expression, element){
   return function(element){

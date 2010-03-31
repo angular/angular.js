@@ -105,8 +105,8 @@ describe("directives", function(){
     expect(scope.$get('count')).toEqual(1);
   });
 
-  it('should ng-action', function(){
-    var scope = compile('<div ng-action="clicked = true"></div>');
+  it('should ng-click', function(){
+    var scope = compile('<div ng-click="clicked = true"></div>');
     scope.$eval();
     expect(scope.$get('clicked')).toBeFalsy();
 
@@ -128,9 +128,9 @@ describe("directives", function(){
     var e1 = jqLite(element[0].childNodes[1]);
     var e2 = jqLite(element[0].childNodes[2]);
     expect(e1.hasClass('existing')).toBeTruthy();
-    expect(e1.hasClass('even')).toBeTruthy();
+    expect(e1.hasClass('odd')).toBeTruthy();
     expect(e2.hasClass('existing')).toBeTruthy();
-    expect(e2.hasClass('odd')).toBeTruthy();
+    expect(e2.hasClass('even')).toBeTruthy();
   });
 
   it('should ng-style', function(){

@@ -136,7 +136,7 @@ JQLite.prototype = {
 
   addClass: function( selector ) {
     if (!this.hasClass(selector)) {
-      this[0].className += ' ' + selector;
+      this[0].className = trim(this[0].className + ' ' + selector);
     }
   },
 

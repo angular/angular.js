@@ -19,7 +19,7 @@ describe("input widget", function(){
   });
 
   it('should input-text auto init and handle keyup/change events', function(){
-    compile('<input type="Text" name="name" value="Misko" ng-action="count = count + 1" ng-init="count=0"/>');
+    compile('<input type="Text" name="name" value="Misko" ng-change="count = count + 1" ng-init="count=0"/>');
     expect(scope.$get('name')).toEqual("Misko");
     expect(scope.$get('count')).toEqual(0);
 
@@ -100,20 +100,20 @@ describe("input widget", function(){
     expect(scope.$get('name')).toEqual('Kai');
   });
 
-  it('should call ng-action on button click', function(){
-    compile('<input type="button" value="Click Me" ng-action="clicked = true"/>');
+  it('should call ng-change on button click', function(){
+    compile('<input type="button" value="Click Me" ng-change="clicked = true"/>');
     element.click();
     expect(scope.$get('clicked')).toEqual(true);
   });
 
   it('should support button alias', function(){
-    compile('<button ng-action="clicked = true">Click Me</button>');
+    compile('<button ng-change="clicked = true">Click Me</button>');
     element.click();
     expect(scope.$get('clicked')).toEqual(true);
   });
 
   it('should type="checkbox"', function(){
-    compile('<input type="checkbox" name="checkbox" checked ng-action="action = true"/>');
+    compile('<input type="checkbox" name="checkbox" checked ng-change="action = true"/>');
     expect(scope.$get('checkbox')).toEqual(true);
     element.click();
     expect(scope.$get('checkbox')).toEqual(false);
@@ -124,8 +124,8 @@ describe("input widget", function(){
 
   it('should type="radio"', function(){
     compile('<div>' +
-        '<input type="radio" name="chose" value="A" ng-action="clicked = 1"/>' +
-        '<input type="radio" name="chose" value="B" checked ng-action="clicked = 2"/>' +
+        '<input type="radio" name="chose" value="A" ng-change="clicked = 1"/>' +
+        '<input type="radio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
       '</div>');
     var a = element[0].childNodes[0];
     var b = element[0].childNodes[1];
@@ -181,8 +181,8 @@ describe("input widget", function(){
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
-  it('should report error on ng-action exception', function(){
-    compile('<button ng-action="a-2=x">click</button>');
+  it('should report error on ng-change exception', function(){
+    compile('<button ng-change="a-2=x">click</button>');
     element.click();
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });

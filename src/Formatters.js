@@ -1,5 +1,5 @@
 function formater(format, parse) {return {'format':format, 'parse':parse || format};}
-function toString(obj) {return ""+obj;};
+function toString(obj) {return isDefined(obj) ? "" + obj : obj;};
 extend(angularFormatter, {
   'noop':formater(identity, identity),
   'boolean':formater(toString, toBoolean),

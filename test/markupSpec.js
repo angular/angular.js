@@ -20,18 +20,18 @@ describe("markups", function(){
 
   it('should translate {{}} in text', function(){
     compile('<div>hello {{name}}!</div>');
-    expect(element.html()).toEqual('hello <span ng-bind="name"></span>!');
+    expect(sortedHtml(element)).toEqual('<div>hello <span ng-bind="name"></span>!</div>');
     scope.$set('name', 'Misko');
     scope.$eval();
-    expect(element.html()).toEqual('hello <span ng-bind="name">Misko</span>!');
+    expect(sortedHtml(element)).toEqual('<div>hello <span ng-bind="name">Misko</span>!</div>');
   });
 
   it('should translate {{}} in terminal nodes', function(){
     compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
-    expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!" value="">Greet !</option>');
+    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!">Greet !</option></select>');
     scope.$set('name', 'Misko');
     scope.$eval();
-    expect(element.html()).toEqual('<option ng-bind-template="Greet {{name}}!" value="">Greet Misko!</option>');
+    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!">Greet Misko!</option></select>');
   });
 
   it('should translate {{}} in attributes', function(){
