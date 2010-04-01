@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"></link>
-    <script type="text/javascript" src="../src/angular-bootstrap.js#autobind&rootScope=$view"></script>
+    <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
   </head>
-  <body>
+  <body ng-init="$window.$scope = $root">
     <table>
       <tr>
         <th>Description</th>

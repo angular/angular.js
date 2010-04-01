@@ -45,7 +45,7 @@ UrlWatcher.prototype = {
   }
 };
 
-
+////////////////////////////////////
 
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
@@ -386,3 +386,20 @@ function compile(element, config) {
 }
 /////////////////////////////////////////////////
 
+function parseKeyValue(keyValue) {
+  var obj = {}, key_value, key;
+  foreach((keyValue || "").split('&'), function(keyValue){
+    if (keyValue) {
+      key_value = keyValue.split('=');
+      key = decodeURIComponent(key_value[0]);
+      obj[key] = key_value[1] ? decodeURIComponent(key_value[1]) : true;
+    }
+  });
+  return obj;
+}
+
+function angularInit(config){
+  if (config.autobind) {
+    compile(window.document, config).$init();
+  }
+}

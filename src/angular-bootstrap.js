@@ -22,23 +22,16 @@
  * THE SOFTWARE.
  */
 (function(previousOnLoad){
-  var filename = /(.*)\/angular-(.*).js(#(.*))?/;
-  var scripts = document.getElementsByTagName("SCRIPT");
-  var serverPath;
-  var config = {};
+  var filename = /(.*)\/angular-(.*).js(#(.*))?/,
+      scripts = document.getElementsByTagName("SCRIPT"),
+      serverPath,
+      config,
+      match;
   for(var j = 0; j < scripts.length; j++) {
-    var match = (scripts[j].src || "").match(filename);
+    match = (scripts[j].src || "").match(filename);
     if (match) {
       serverPath = match[1];
-      parseConfig(match[4]);
-    }
-  }
-
-  function parseConfig(args) {
-    var keyValues = args.split('&'), keyValue, i = 0;
-    for (; i < keyValues.length; i++) {
-      keyValue = keyValues[i].split('=');
-      config[keyValue[0]] = keyValue[1] || true;
+      config = match[4];
     }
   }
 
@@ -53,7 +46,6 @@
   addScript("/jqlite.js");
   addScript("/Parser.js");
   addScript("/Resource.js");
-  addScript("/URLWatcher.js");
 
   // Extension points
   addScript("/apis.js");
@@ -63,17 +55,14 @@
   addScript("/directives.js");
   addScript("/markups.js");
   addScript("/widgets.js");
+  addScript("/services.js");
 
-  if (config.autobind) {
-    window.onload = function(){
-      try {
-        if (previousOnLoad) previousOnLoad();
-      } catch(e) {}
-      var scope = angular.compile(window.document, config);
-      if (config.rootScope) window[config.rootScope] = scope;
-      scope.$init();
-    };
-  }
+  window.onload = function(){
+    try {
+      if (previousOnLoad) previousOnLoad();
+    } catch(e) {}
+    angularInit(parseKeyValue(config));
+  };
 
 })(window.onload);
 

@@ -51,6 +51,7 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
   }
 });
 
+// TODO: this should be widget not a markup
 angularTextMarkup('OPTION', function(text, textNode, parentElement){
   if (parentElement[0].nodeName == "OPTION") {
     var select = document.createElement('select');
