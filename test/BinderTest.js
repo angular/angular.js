@@ -201,24 +201,6 @@ BinderTest.prototype.XtestParseAnchor = function(){
   assertTrue(!binder.anchor.x);
 };
 
-BinderTest.prototype.XtestWriteAnchor = function(){
-  var binder = this.compile("<div/>").binder;
-  binder.location.set('a');
-  binder.anchor.a = 'b';
-  binder.anchor.c = ' ';
-  binder.anchor.d = true;
-  binder.updateAnchor();
-  assertEquals(binder.location.get(), "a#a=b&c=%20&d");
-};
-
-BinderTest.prototype.XtestWriteAnchorAsPartOfTheUpdateView = function(){
-  var binder = this.compile("<div/>").binder;
-  binder.location.set('a');
-  binder.anchor.a = 'b';
-  binder.updateView();
-  assertEquals(binder.location.get(), "a#a=b");
-};
-
 BinderTest.prototype.testRepeaterUpdateBindings = function(){
   var a = this.compile('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
   var form = a.node;
@@ -821,3 +803,23 @@ BinderTest.prototype.testItShouldUseFormaterForText = function() {
   x.scope.$eval();
   assertEquals('1, 2, 3', input[0].value);
 };
+
+BinderTest.prototype.XtestWriteAnchor = function(){
+  var binder = this.compile("<div/>").binder;
+  binder.location.set('a');
+  binder.anchor.a = 'b';
+  binder.anchor.c = ' ';
+  binder.anchor.d = true;
+  binder.updateAnchor();
+  assertEquals(binder.location.get(), "a#a=b&c=%20&d");
+};
+
+BinderTest.prototype.XtestWriteAnchorAsPartOfTheUpdateView = function(){
+  var binder = this.compile("<div/>").binder;
+  binder.location.set('a');
+  binder.anchor.a = 'b';
+  binder.updateView();
+  assertEquals(binder.location.get(), "a#a=b");
+};
+
+

@@ -11,7 +11,8 @@ describe('scope/model', function(){
     model.$set('name', 'adam');
     expect(model.name).toEqual('adam');
     expect(model.$get('name')).toEqual('adam');
-    expect(model.$parent).toEqual(parent);
+    expect(model.$parent).toEqual(model);
+    expect(model.$root).toEqual(model);
   });
 
   //$eval
@@ -78,15 +79,50 @@ describe('scope/model', function(){
     expect(model.printed).toEqual(true);
   });
 
-
-
   //$tryEval
   it('should report error on element', function(){
-
+    var scope = createScope();
+    scope.$tryEval('throw "myerror";', function(error){
+      scope.error = error;
+    });
+    expect(scope.error).toEqual('myerror');
   });
 
   it('should report error on visible element', function(){
+    var element = jqLite('<div></div>');
+    var scope = createScope();
+    scope.$tryEval('throw "myError"', element);
+    expect(element.attr('ng-error')).toEqual('"myError"'); // errors are jsonified
+    expect(element.hasClass('ng-exception')).toBeTruthy();
+  });
 
+  // $onEval
+
+  it("should eval using priority", function(){
+    var scope = createScope();
+    scope.log = "";
+    scope.$onEval('log = log + "middle;"');
+    scope.$onEval(-1, 'log = log + "first;"');
+    scope.$onEval(1, 'log = log + "last;"');
+    scope.$eval();
+    expect(scope.log).toEqual('first;middle;last;');
+  });
+
+  // Services are initialized
+  it("should inject services", function(){
+    var scope = createScope(serviceAdapter({
+      $window: function(){
+      return window;
+    }
+    }));
+    expect(scope.$window).toEqual(window);
+  });
+
+  it("should have $root and $parent", function(){
+    var parent = createScope();
+    var scope = createScope(parent);
+    expect(scope.$root).toEqual(parent);
+    expect(scope.$parent).toEqual(parent);
   });
 
 });

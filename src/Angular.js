@@ -1,9 +1,61 @@
+
+//////////////////////////////
+//UrlWatcher
+//////////////////////////////
+
+function UrlWatcher(location) {
+  this.location = location;
+  this.delay = 25;
+  this.setTimeout = function(fn, delay) {
+   window.setTimeout(fn, delay);
+  };
+  this.expectedUrl = location.href;
+  this.listeners = [];
+}
+
+UrlWatcher.prototype = {
+  watch: function(fn){
+   this.listeners.push(fn);
+  },
+
+  start: function() {
+   var self = this;
+   (function pull () {
+     if (self.expectedUrl !== self.location.href) {
+       foreach(self.listeners, function(listener){
+         listener(self.location.href);
+       });
+       self.expectedUrl = self.location.href;
+     }
+     self.setTimeout(pull, self.delay);
+   })();
+  },
+
+  set: function(url) {
+   var existingURL = this.location.href;
+   if (!existingURL.match(/#/))
+     existingURL += '#';
+   if (existingURL != url)
+     this.location.href = url;
+   this.existingURL = url;
+  },
+
+  get: function() {
+   return this.location.href;
+  }
+};
+
+
+
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
 var consoleNode,
+    PRIORITY_FIRST    = -99999;
+    PRIORITY_WATCH    = -1000;
+    PRIORITY_LAST     =  99999;
     NOOP              = 'noop',
     NG_ERROR          = 'ng-error',
     NG_EXCEPTION      = 'ng-exception',
@@ -13,7 +65,7 @@ var consoleNode,
     msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
-    angular           = window['angular']    || (window['angular']    = {}),
+    angular           = window['angular']    || (window['angular'] = {}),
     angularTextMarkup = extensionMap(angular, 'textMarkup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
@@ -21,11 +73,30 @@ var consoleNode,
     angularValidator  = extensionMap(angular, 'validator'),
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
+    angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
-    angularAlert      = angular['alert']     || (angular['alert']     = function(){
-        log(arguments); window.alert.apply(window, arguments);
-      });
-angular['copy'] = copy;
+    urlWatcher        = new UrlWatcher(window.location);
+
+function angularAlert(){
+  log(arguments); window.alert.apply(window, arguments);
+};
+
+extend(angular, {
+  'compile': compile,
+  'startUrlWatch': bind(urlWatcher, urlWatcher.start),
+  'copy': copy,
+  'extend': extend,
+  'foreach': foreach,
+  'noop':noop,
+  'identity':identity,
+  'isUndefined': isUndefined,
+  'isDefined': isDefined,
+  'isString': isString,
+  'isFunction': isFunction,
+  'isNumber': isNumber,
+  'isArray': isArray,
+  'alert': angularAlert
+});
 
 function foreach(obj, iterator, context) {
   var key;
@@ -42,6 +113,17 @@ function foreach(obj, iterator, context) {
   }
   return obj;
 }
+
+function foreachSorted(obj, iterator, context) {
+  var keys = [];
+  for (var key in obj) keys.push(key);
+  keys.sort();
+  for ( var i = 0; i < keys.length; i++) {
+    iterator.call(context, obj[keys[i]], keys[i]);
+  }
+  return keys;
+}
+
 
 function extend(dst) {
   foreach(arguments, function(obj){
@@ -285,19 +367,22 @@ function merge(src, dst) {
   }
 }
 
-/////////////////////////////////////////////////
-
-angular['compile'] = function(element, config) {
-  config = extend({
-      'onUpdateView': noop,
-      'server': "",
-      'location': {'get':noop, 'set':noop, 'listen':noop}
-    }, config||{});
-
+function compile(element, config) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
       $element = jqLite(element),
-      rootScope = {
-        '$window': window
-      };
-  return rootScope['$root'] = compiler.compile($element)($element, rootScope);
-};
+      rootScope = createScope({
+        $element: $element,
+        $config: extend({
+          'onUpdateView': noop,
+          'server': "",
+          'location': {
+            'get':bind(urlWatcher, urlWatcher.get),
+            'set':bind(urlWatcher, urlWatcher.set),
+            'watch':bind(urlWatcher, urlWatcher.watch)
+          }
+        }, config || {})
+      }, serviceAdapter(angularService));
+  return compiler.compile($element)($element, rootScope);
+}
+/////////////////////////////////////////////////
+
