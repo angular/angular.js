@@ -65,7 +65,6 @@ Compiler.prototype = {
       element = jqLite(element);
       parentScope = parentScope || {};
       var scope = createScope(parentScope);
-      parentScope.$root = parentScope.$root || scope;
       return extend(scope, {
         $element:element,
         $init: function() {

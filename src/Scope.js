@@ -89,7 +89,11 @@ function createScope(parent, Class) {
   function API(){}
   function Behavior(){}
 
-  var instance, behavior, api, watchList = [], evalList = [];
+  var instance, behavior, api, evalLists = {};
+  if (isFunction(parent)) {
+    Class = parent;
+    parent = {};
+  }
 
   Class = Class || noop;
   parent = Parent.prototype = parent || {};
@@ -107,15 +111,10 @@ function createScope(parent, Class) {
       if (isDefined(exp)) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
-        foreach(watchList, function(watch) {
-          var value = instance.$tryEval(watch.watch, watch.handler);
-          if (watch.last !== value) {
-            instance.$tryEval(watch.listener, watch.handler, value, watch.last);
-            watch.last = value;
-          }
-        });
-        foreach(evalList, function(eval) {
-          instance.$tryEval(eval.fn, eval.handler);
+        foreachSorted(evalLists, function(list) {
+          foreach(list, function(eval) {
+            instance.$tryEval(eval.fn, eval.handler);
+          });
         });
       }
     },
@@ -134,16 +133,24 @@ function createScope(parent, Class) {
     },
 
     $watch: function(watchExp, listener, exceptionHandler) {
-      var watch = expressionCompile(watchExp);
-      watchList.push({
-        watch: watch,
-        last: watch.call(instance),
-        handler: exceptionHandler,
-        listener:expressionCompile(listener)
+      var watch = expressionCompile(watchExp),
+          last = watch.call(instance);
+      instance.$onEval(PRIORITY_WATCH, function(){
+        var value = watch.call(instance);
+        if (last !== value) {
+          instance.$tryEval(listener, exceptionHandler, value, last);
+          last = value;
+        }
       });
     },
 
-    $onEval: function(expr, exceptionHandler){
+    $onEval: function(priority, expr, exceptionHandler){
+      if (!isNumber(priority)) {
+        exceptionHandler = expr;
+        expr = priority;
+        priority = 0;
+      }
+      var evalList = evalLists[priority] || (evalLists[priority] = []);
       evalList.push({
         fn: expressionCompile(expr),
         handler: exceptionHandler
@@ -151,7 +158,21 @@ function createScope(parent, Class) {
     }
   });
 
+  if (isUndefined(instance.$root)) {
+    behavior.$root = instance;
+    behavior.$parent = instance;
+  }
+
   Class.apply(instance, slice.call(arguments, 2, arguments.length));
 
   return instance;
 }
+
+function serviceAdapter(services) {
+  return function(){
+    var self = this;
+    foreach(services, function(service, name){
+      self[name] = service.call(self);
+    });
+  };
+};

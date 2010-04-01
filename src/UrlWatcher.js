@@ -9,42 +9,26 @@ function UrlWatcher(location) {
   this.setTimeout = function(fn, delay) {
     window.setTimeout(fn, delay);
   };
-  this.listener = function(url) {
-    return url;
-  };
   this.expectedUrl = location.href;
+  this.listeners = [];
 }
 
 UrlWatcher.prototype = {
-  listen: function(fn){
-    this.listener = fn;
+  watch: function(fn){
+    this.listeners.push(fn);
   },
-  watch: function() {
+
+  start: function() {
     var self = this;
-    var pull = function() {
+    (function pull () {
       if (self.expectedUrl !== self.location.href) {
-        var notify = self.location.hash.match(/^#\$iframe_notify=(.*)$/);
-        if (notify) {
-          if (!self.expectedUrl.match(/#/)) {
-            self.expectedUrl += "#";
-          }
-          self.location.href = self.expectedUrl;
-          var id = '_iframe_notify_' + notify[1];
-          var notifyFn = angularCallbacks[id];
-          delete angularCallbacks[id];
-          try {
-            (notifyFn||noop)();
-          } catch (e) {
-            alert(e);
-          }
-        } else {
-          self.listener(self.location.href);
-          self.expectedUrl = self.location.href;
-        }
+        foreach(self.listeners, function(listener){
+          listener(self.location.href);
+        });
+        self.expectedUrl = self.location.href;
       }
       self.setTimeout(pull, self.delay);
-    };
-    pull();
+    })();
   },
 
   set: function(url) {
@@ -57,6 +41,6 @@ UrlWatcher.prototype = {
   },
 
   get: function() {
-    return window.location.href;
+    return this.location.href;
   }
 };

@@ -4,6 +4,9 @@ if (typeof document.getAttribute == 'undefined')
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
 var consoleNode,
+    PRIORITY_FIRST    = -99999;
+    PRIORITY_WATCH    = -1000;
+    PRIORITY_LAST     =  99999;
     NOOP              = 'noop',
     NG_ERROR          = 'ng-error',
     NG_EXCEPTION      = 'ng-exception',
@@ -21,11 +24,30 @@ var consoleNode,
     angularValidator  = extensionMap(angular, 'validator'),
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
+    angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
-    angularAlert      = angular['alert']     || (angular['alert']     = function(){
-        log(arguments); window.alert.apply(window, arguments);
-      });
-angular['copy'] = copy;
+    urlWatcher        = new UrlWatcher(window.location);
+
+function angularAlert(){
+  log(arguments); window.alert.apply(window, arguments);
+};
+
+extend(angular, {
+  'compile': compile,
+  'startUrlWatch': bind(urlWatcher, urlWatcher.start),
+  'copy': copy,
+  'extend': extend,
+  'foreach': foreach,
+  'noop':noop,
+  'identity':identity,
+  'isUndefined': isUndefined,
+  'isDefined': isDefined,
+  'isString': isString,
+  'isFunction': isFunction,
+  'isNumber': isNumber,
+  'isArray': isArray,
+  'alert': angularAlert
+});
 
 function foreach(obj, iterator, context) {
   var key;
@@ -42,6 +64,17 @@ function foreach(obj, iterator, context) {
   }
   return obj;
 }
+
+function foreachSorted(obj, iterator, context) {
+  var keys = [];
+  for (var key in obj) keys.push(key);
+  keys.sort();
+  for ( var i = 0; i < keys.length; i++) {
+    iterator.call(context, obj[keys[i]], keys[i]);
+  }
+  return keys;
+}
+
 
 function extend(dst) {
   foreach(arguments, function(obj){
@@ -285,19 +318,21 @@ function merge(src, dst) {
   }
 }
 
-/////////////////////////////////////////////////
-
-angular['compile'] = function(element, config) {
-  config = extend({
-      'onUpdateView': noop,
-      'server': "",
-      'location': {'get':noop, 'set':noop, 'listen':noop}
-    }, config||{});
-
+function compile(element, config) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
       $element = jqLite(element),
-      rootScope = {
-        '$window': window
-      };
-  return rootScope['$root'] = compiler.compile($element)($element, rootScope);
-};
+      rootScope = createScope({
+        $element: $element,
+        $config: extend({
+          'onUpdateView': noop,
+          'server': "",
+          'location': {
+            'get':bind(urlWatcher, urlWatcher.get),
+            'set':bind(urlWatcher, urlWatcher.set),
+            'watch':bind(urlWatcher, urlWatcher.watch)
+          }
+        }, config || {})
+      }, serviceAdapter(angularService));
+  return compiler.compile($element)($element, rootScope);
+}
+/////////////////////////////////////////////////
