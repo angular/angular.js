@@ -130,6 +130,7 @@ describe("input widget", function(){
       '</div>');
     var a = element[0].childNodes[0];
     var b = element[0].childNodes[1];
+    expect(b.name.split('@')[1]).toEqual('chose');
     expect(scope.chose).toEqual('B');
     scope.chose = 'A';
     scope.$eval();

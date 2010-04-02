@@ -111,8 +111,9 @@ function initWidgetValue(initValue) {
   };
 }
 
-function radioInit(model, view) {
- var modelValue = model.get(), viewValue = view.get();
+function radioInit(model, view, element) {
+ var modelValue = model.get(), viewValue = view.get(), input = element[0];
+ input.name = this.$id + '@' + input.name;
  if (isUndefined(modelValue)) model.set(null);
  if (viewValue != null) model.set(viewValue);
 }
@@ -123,7 +124,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
         action = element.attr('ng-change') || '';
-    initFn(model, view);
+    initFn.call(scope, model, view, element);
     this.$eval(element.attr('ng-init')||'');
     element.bind(events, function(){
       model.set(view.get());

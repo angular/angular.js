@@ -84,6 +84,7 @@ function errorHandlerFor(element, error) {
   elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
 }
 
+var scopeId = 0;
 function createScope(parent, Class) {
   function Parent(){}
   function API(){}
@@ -103,6 +104,7 @@ function createScope(parent, Class) {
 
   extend(api, {
     'this': instance,
+    $id: (scopeId++),
     $parent: parent,
     $bind: bind(instance, bind, instance),
     $get: bind(instance, getter, instance),
