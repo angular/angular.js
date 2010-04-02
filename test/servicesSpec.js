@@ -45,4 +45,5 @@ describe("services", function(){
 
     expect(scope.$location()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
   });
+
 });

@@ -411,3 +411,4 @@ function angularInit(config){
     compile(window.document, config).$init();
   }
 }
+

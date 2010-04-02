@@ -163,6 +163,7 @@ function createScope(parent, Class) {
     behavior.$root = instance;
     behavior.$parent = instance;
   }
+
   (parent.$onEval || noop)(instance.$eval);
   Class.apply(instance, slice.call(arguments, 2, arguments.length));
 
