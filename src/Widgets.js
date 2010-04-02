@@ -85,8 +85,8 @@ function optionsAccessor(scope, element) {
 
 function noopAccessor() { return { get: noop, set: noop }; }
 
-var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, ''),
-    buttonWidget = inputWidget('click', noopAccessor, noopAccessor, undefined),
+var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initWidgetValue('')),
+    buttonWidget = inputWidget('click', noopAccessor, noopAccessor, noop),
     INPUT_TYPE = {
       'text':            textWidget,
       'textarea':        textWidget,
@@ -96,29 +96,42 @@ var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, ''),
       'submit':          buttonWidget,
       'reset':           buttonWidget,
       'image':           buttonWidget,
-      'checkbox':        inputWidget('click', modelAccessor, checkedAccessor, false),
-      'radio':           inputWidget('click', modelAccessor, radioAccessor, undefined),
-      'select-one':      inputWidget('click', modelAccessor, valueAccessor, null),
-      'select-multiple': inputWidget('click', modelAccessor, optionsAccessor, [])
+      'checkbox':        inputWidget('click', modelAccessor, checkedAccessor, initWidgetValue(false)),
+      'radio':           inputWidget('click', modelAccessor, radioAccessor, radioInit),
+      'select-one':      inputWidget('change', modelAccessor, valueAccessor, initWidgetValue(null)),
+      'select-multiple': inputWidget('change', modelAccessor, optionsAccessor, initWidgetValue([]))
 //      'file':            fileWidget???
     };
 
-function inputWidget(events, modelAccessor, viewAccessor, initValue) {
+function initWidgetValue(initValue) {
+  return function (model, view) {
+    var value = view.get() || copy(initValue);
+    if (isUndefined(model.get()) && isDefined(value))
+      model.set(value);
+  };
+}
+
+function radioInit(model, view) {
+ var modelValue = model.get(), viewValue = view.get();
+ if (isUndefined(modelValue)) model.set(null);
+ if (viewValue != null) model.set(viewValue);
+}
+
+function inputWidget(events, modelAccessor, viewAccessor, initFn) {
   return function(element) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng-change') || '',
-        value = view.get() || copy(initValue);
-    if (isUndefined(model.get()) && isDefined(value)) model.set(value);
+        action = element.attr('ng-change') || '';
+    initFn(model, view);
     this.$eval(element.attr('ng-init')||'');
     element.bind(events, function(){
       model.set(view.get());
       scope.$tryEval(action, element);
       scope.$root.$eval();
-      // if we have no initValue than we are just a button,
+      // if we have noop initFn than we are just a button,
       // therefore we want to prevent default action
-      return isDefined(initValue);
+      return initFn != noop;
     });
     view.set(model.get());
     scope.$watch(model.get, view.set);
@@ -136,4 +149,45 @@ angularWidget('BUTTON', inputWidgetSelector);
 angularWidget('SELECT', function(element){
   this.descend(true);
   return inputWidgetSelector.call(this, element);
+});
+
+
+angularWidget('INLINE', function(element){
+  element.replaceWith(this.element("div"));
+  var compiler = this,
+      behavior = element.attr("behavior"),
+      template = element.attr("template"),
+      initExpr = element.attr("init");
+  return function(boundElement){
+    var scope = this;
+    boundElement.load(template, function(){
+      var templateScope = compiler.compile(boundElement)(boundElement, scope);
+      templateScope.$tryEval(initExpr, boundElement);
+      templateScope.$init();
+    });
+  };
+});
+
+angularWidget('INCLUDE', function(element){
+  element.replaceWith(this.element("div"));
+  var matches = [];
+  element.find("INLINE").each(function(){
+    matches.push({match: jQuery(this).attr("match"), element: jQuery(this)});
+  });
+  var compiler = this,
+      watchExpr = element.attr("watch");
+  return function(boundElement){
+    var scope = this;
+    this.$watch(watchExpr, function(value){
+      foreach(matches, function(inline){
+        if(inline.match == value) {
+          var template = inline.element.attr("template");
+          boundElement.load(template, function(){
+            var templateScope = compiler.compile(boundElement)(boundElement, scope);
+            templateScope.$init();
+          });
+        }
+      });
+    });
+  };
 });

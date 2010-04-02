@@ -1,34 +1,40 @@
 angularService("$window", bind(window, identity, window));
 
-var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]+)(:([0-9]+))?([^\?#]+)?(\?([^#]*))((#([^\?]*))(\?([^\?]*))?)$/;
+var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?((#([^\?]*))?(\?([^\?]*))?)$/;
+var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(){
   var scope = this;
   function location(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
-      dump(match);
-      location.href = url;
-      location.protocol = match[1];
-      location.host = match[3];
-      location.port = match[5];
-      location.path = match[6];
-      location.search = parseKeyValue(match[8]);
-      location.hash = match[9];
-      location.hashPath = match[11];
-      location.hashSearch = parseKeyValue(match[13]);
-      foreach(location, dump);
+      if (match) {
+        location.href = url;
+        location.protocol = match[1];
+        location.host = match[3] || '';
+        location.port = match[5] || DEFAULT_PORTS[location.href] || null;
+        location.path = match[6];
+        location.search = parseKeyValue(match[8]);
+        location.hash = match[9];
+        if (location.hash) location.hash = location.hash.substr(1);
+        location.hashPath = match[11] || '';
+        location.hashSearch = parseKeyValue(match[13]);
+      }
     }
-    var params = [];
-    foreach(location.param, function(value, key){
-      params.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
-    });
-    return (location.path ? location.path : '') + (params.length ? '?' + params.join('&') : '');
+    var hashKeyValue = toKeyValue(location.hashSearch);
+    return location.href +
+      (location.hashPath ? location.hashPath : '') +
+      (hashKeyValue ? '?' + hashKeyValue : '');
   };
   this.$config.location.watch(function(url){
     location(url);
   });
+  location(this.$config.location.get());
   this.$onEval(PRIORITY_LAST, function(){
-    scope.$config.location.set(location());
+    var href = location();
+    if (href != location.href) {
+      scope.$config.location.set(location());
+      location.href = href;
+    }
   });
   return location;
 });

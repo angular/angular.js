@@ -398,6 +398,14 @@ function parseKeyValue(keyValue) {
   return obj;
 }
 
+function toKeyValue(obj) {
+  var parts = [];
+  foreach(obj, function(value, key){
+    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+  });
+  return parts.length ? parts.join('&') : '';
+};
+
 function angularInit(config){
   if (config.autobind) {
     compile(window.document, config).$init();

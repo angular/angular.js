@@ -102,6 +102,7 @@ function createScope(parent, Class) {
   instance = new Behavior();
 
   extend(api, {
+    'this': instance,
     $parent: parent,
     $bind: bind(instance, bind, instance),
     $get: bind(instance, getter, instance),
@@ -162,7 +163,7 @@ function createScope(parent, Class) {
     behavior.$root = instance;
     behavior.$parent = instance;
   }
-
+  (parent.$onEval || noop)(instance.$eval);
   Class.apply(instance, slice.call(arguments, 2, arguments.length));
 
   return instance;

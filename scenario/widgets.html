@@ -32,7 +32,7 @@
         <td>radio</td>
         <td>
          <input type="radio" name="gender" value="female"/> Female <br/>
-         <input type="radio" name="gender" value="male"/> Male
+         <input type="radio" name="gender" value="male" checked="checked"/> Male
         </td>
         <td>gender={{gender}}</td>
       </tr>
@@ -42,7 +42,9 @@
          <input type="checkbox" name="checkbox.tea" checked value="on"/> Tea<br/>
          <input type="checkbox" name="checkbox.coffee" value="on"/> Coffe
         </td>
-        <td>checkbox={{checkbox}}</td>
+        <td>
+          <pre>checkbox={{checkbox}}</pre>
+        </td>
       </tr>
       <tr>
         <td>select</td>
@@ -71,10 +73,10 @@
         <td>ng-action</td>
         <td>
           <form ng-init="button.count = 0">
-           <input type="button" value="button" ng-action="button.count = button.count + 1"/> <br/>
-           <input type="submit" value="submit" ng-action="button.count = button.count + 1"/><br/>
-           <input type="image" src="" ng-action="button.count = button.count + 1"/><br/>
-           <a href="" ng-action="button.count = button.count + 1">action</a>
+           <input type="button" value="button" ng-change="button.count = button.count + 1"/> <br/>
+           <input type="submit" value="submit" ng-change="button.count = button.count + 1"/><br/>
+           <input type="image" src="" ng-change="button.count = button.count + 1"/><br/>
+           <a href=""   ng-click="button.count = button.count + 1">action</a>
           </form>
         </td>
         <td>button={{button}}</td>

@@ -114,23 +114,23 @@ describe("input widget", function(){
 
   it('should type="checkbox"', function(){
     compile('<input type="checkbox" name="checkbox" checked ng-change="action = true"/>');
-    expect(scope.$get('checkbox')).toEqual(true);
+    expect(scope.checkbox).toEqual(true);
     element.click();
-    expect(scope.$get('checkbox')).toEqual(false);
-    expect(scope.$get('action')).toEqual(true);
+    expect(scope.checkbox).toEqual(false);
+    expect(scope.action).toEqual(true);
     element.click();
-    expect(scope.$get('checkbox')).toEqual(true);
+    expect(scope.checkbox).toEqual(true);
   });
 
   it('should type="radio"', function(){
     compile('<div>' +
         '<input type="radio" name="chose" value="A" ng-change="clicked = 1"/>' +
         '<input type="radio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
+        '<input type="radio" name="chose" value="C" ng-change="clicked = 3"/>' +
       '</div>');
     var a = element[0].childNodes[0];
     var b = element[0].childNodes[1];
     expect(scope.chose).toEqual('B');
-    expect(scope.clicked).not.toBeDefined();
     scope.chose = 'A';
     scope.$eval();
     expect(a.checked).toEqual(true);
