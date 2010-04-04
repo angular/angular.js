@@ -4,8 +4,8 @@
     <link rel="stylesheet" type="text/css" href="style.css"></link>
     <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
   </head>
-  <body ng-init="$window.$scope = $root">
-    <table ng-repeat="i in [0, 1]">
+  <body ng-init="$window.$scope = this">
+    <table>
       <tr>
         <th>Description</th>
         <th>Test</th>
@@ -14,7 +14,7 @@
       <tr><th colspan="3">Input text field</th></tr>
       <tr>
         <td>basic</td>
-        <td><input type="text" name="text.basic" /></td>
+        <td><input type="text" name="text.basic" ng-required /></td>
         <td>text.basic={{text.basic}}</td>
       </tr>
       <tr>
@@ -70,7 +70,7 @@
       </tr>
       <tr><th colspan="3">Buttons</th></tr>
       <tr>
-        <td>ng-action</td>
+        <td>ng-change<br/>ng-click</td>
         <td>
           <form ng-init="button.count = 0">
            <input type="button" value="button" ng-change="button.count = button.count + 1"/> <br/>

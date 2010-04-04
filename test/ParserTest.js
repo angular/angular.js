@@ -171,7 +171,7 @@ ParserTest.prototype.testComparison = function(){
   assertEquals(scope.$eval("1>2"), 1>2);
   assertEquals(scope.$eval("2>=1"), 2>=1);
 
-  assertEquals(true==2<3, scope.$eval("true==2<3"));
+  assertEquals(true === 2<3, scope.$eval("true==2<3"));
 
 };
 

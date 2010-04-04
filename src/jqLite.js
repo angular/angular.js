@@ -5,7 +5,7 @@
 var jqCache = {};
 var jqName = 'ng-' + new Date().getTime();
 var jqId = 1;
-function jqNextId() { return jqId++; }
+function jqNextId() { return (jqId++); }
 
 var addEventListener = window.document.attachEvent ?
     function(element, type, fn) {
@@ -31,7 +31,7 @@ function jqClearData(element) {
     delete jqCache[cacheId];
     delete element[jqName];
   }
-};
+}
 
 function JQLite(element) {
   this[0] = element;

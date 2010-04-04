@@ -23,7 +23,7 @@ function valueAccessor(scope, element) {
       validator = compileValidator(validatorName),
       required = element.attr('ng-required'),
       lastError;
-  required = required || required == '';
+  required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
     var error = required && !trim(value) ? "Required" : validator({self:scope, scope:{get:scope.$get, set:scope.$set}}, value);
@@ -115,7 +115,7 @@ function radioInit(model, view, element) {
  var modelValue = model.get(), viewValue = view.get(), input = element[0];
  input.name = this.$id + '@' + input.name;
  if (isUndefined(modelValue)) model.set(null);
- if (viewValue != null) model.set(viewValue);
+ if (viewValue !== null) model.set(viewValue);
 }
 
 function inputWidget(events, modelAccessor, viewAccessor, initFn) {
@@ -126,14 +126,17 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
         action = element.attr('ng-change') || '';
     initFn.call(scope, model, view, element);
     this.$eval(element.attr('ng-init')||'');
-    element.bind(events, function(){
-      model.set(view.get());
-      scope.$tryEval(action, element);
-      scope.$root.$eval();
-      // if we have noop initFn than we are just a button,
-      // therefore we want to prevent default action
-      return initFn != noop;
-    });
+    // Don't register a handler if we are a button (noopAccessor) and there is no action
+    if (action || modelAccessor !== noopAccessor) {
+      element.bind(events, function(){
+        model.set(view.get());
+        scope.$tryEval(action, element);
+        scope.$root.$eval();
+        // if we have noop initFn than we are just a button,
+        // therefore we want to prevent default action
+        return initFn != noop;
+      });
+    }
     view.set(model.get());
     scope.$watch(model.get, view.set);
   };

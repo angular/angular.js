@@ -3,7 +3,7 @@ dump = bind(jstd.console, jstd.console.log);
 
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
-};
+}
 
 swfobject = {
   createSwf:function() {
@@ -27,15 +27,27 @@ function report(reportTest){
   });
 }
 
-MockLocation = function() {
+function MockBrowser() {
   this.url = "http://server";
+  this.watches = [];
+}
+MockBrowser.prototype = {
+  getUrl: function(){
+    return this.url;
+  },
+
+  setUrl: function(url){
+    this.url = url;
+  },
+
+  watchUrl: function(fn) {
+    this.watches.push(fn);
+  }
 };
-MockLocation.prototype.get = function(){
-  return this.url;
-};
-MockLocation.prototype.set = function(url){
-  this.url = url;
-};
+
+angularService('$browser', function(){
+  return new MockBrowser();
+});
 
 function childNode(element, index) {
   return jqLite(element[0].childNodes[index]);
@@ -80,7 +92,7 @@ function sortedHtml(element) {
     }
   })(element[0]);
   return html;
-};
+}
 
 function isVisible(node) {
   var display = node.css('display');

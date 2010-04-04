@@ -26,7 +26,7 @@ function getter(instance, path) {
     return bind(lastInstance, instance);
   }
   return instance;
-};
+}
 
 function setter(instance, path, value){
   var element = path.split('.');
@@ -41,7 +41,7 @@ function setter(instance, path, value){
   }
   instance[element.shift()] = value;
   return value;
-};
+}
 
 var compileCache = {};
 function expressionCompile(exp){
@@ -54,7 +54,7 @@ function expressionCompile(exp){
     compileCache[exp] = expFn;
   }
   return parserNewScopeAdapter(expFn);
-};
+}
 
 // return expFn
 // TODO(remove this hack)
@@ -85,21 +85,16 @@ function errorHandlerFor(element, error) {
 }
 
 var scopeId = 0;
-function createScope(parent, Class) {
+function createScope(parent, services, existing) {
   function Parent(){}
   function API(){}
   function Behavior(){}
 
-  var instance, behavior, api, evalLists = {};
-  if (isFunction(parent)) {
-    Class = parent;
-    parent = {};
-  }
+  var instance, behavior, api, evalLists = {}, servicesCache = extend({}, existing);
 
-  Class = Class || noop;
-  parent = Parent.prototype = parent || {};
+  parent = Parent.prototype = (parent || {});
   api = API.prototype = new Parent();
-  behavior = Behavior.prototype = extend(new API(), Class.prototype);
+  behavior = Behavior.prototype = new API();
   instance = new Behavior();
 
   extend(api, {
@@ -161,22 +156,28 @@ function createScope(parent, Class) {
     }
   });
 
-  if (isUndefined(instance.$root)) {
-    behavior.$root = instance;
-    behavior.$parent = instance;
+  if (!parent.$root) {
+    api.$root = instance;
+    api.$parent = instance;
   }
 
-  (parent.$onEval || noop)(instance.$eval);
-  Class.apply(instance, slice.call(arguments, 2, arguments.length));
+  function inject(name){
+    var service = getter(servicesCache, name), factory, args = [];
+    if (isUndefined(service)) {
+      factory = services[name];
+      if (!isFunction(factory))
+        throw "Don't know how to inject '" + name + "'.";
+      foreach(factory.inject, function(dependency){
+        args.push(inject(dependency));
+      });
+      setter(servicesCache, name, service = factory.apply(instance, args));
+    }
+    return service;
+  }
+
+  foreach(services, function(_, name){
+    instance[name] = inject(name);
+  });
 
   return instance;
 }
-
-function serviceAdapter(services) {
-  return function(){
-    var self = this;
-    foreach(services, function(service, name){
-      self[name] = service.call(self);
-    });
-  };
-};

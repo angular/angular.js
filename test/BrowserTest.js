@@ -1,11 +1,11 @@
-UrlWatcherTest = TestCase('UrlWatcherTest');
+BrowserTest = TestCase('BrowserTest');
 
-UrlWatcherTest.prototype.testUrlWatcher = function () {
+BrowserTest.prototype.testUrlWatcher = function () {
   expectAsserts(2);
   var location = {href:"http://server", hash:""};
-  var watcher = new UrlWatcher(location);
+  var watcher = new Browser(location);
   watcher.delay = 1;
-  watcher.watch(function(url){
+  watcher.watchUrl(function(url){
     assertEquals('http://getangular.test', url);
   });
   watcher.setTimeout = function(fn, delay){
@@ -15,7 +15,7 @@ UrlWatcherTest.prototype.testUrlWatcher = function () {
     };
     fn();
   };
-  watcher.start();
+  watcher.startUrlWatcher();
 };
 
 FunctionTest = TestCase("FunctionTest");

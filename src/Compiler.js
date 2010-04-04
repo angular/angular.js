@@ -1,5 +1,5 @@
 /**
- * Template provides directions an how to bind to a given element.
+= * Template provides directions an how to bind to a given element.
  * It contains a list of init functions which need to be called to
  * bind to a new instance of elements. It also provides a list
  * of child paths which contain child templates
@@ -43,7 +43,7 @@ Template.prototype = {
   },
 
   empty: function() {
-    return this.inits.length == 0 && this.paths.length == 0;
+    return this.inits.length === 0 && this.paths.length === 0;
   }
 };
 
@@ -63,8 +63,9 @@ Compiler.prototype = {
     var template = this.templatize(rawElement) || new Template();
     return function(element, parentScope){
       element = jqLite(element);
-      parentScope = parentScope || {};
-      var scope = createScope(parentScope);
+      var scope = parentScope && parentScope.$eval ?
+          parentScope :
+          createScope(parentScope || {}, angularService);
       return extend(scope, {
         $element:element,
         $init: function() {
@@ -161,7 +162,7 @@ function eachNode(element, fn){
 function eachAttribute(element, fn){
   var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr, attrValue = {};
   for (i = 0; i < size; i++) {
-    var attr = attrs[i];
+    attr = attrs[i];
     attrValue[attr.name] = attr.value;
   }
   foreach(attrValue, fn);

@@ -4,11 +4,11 @@ function toJson(obj, pretty){
   var buf = [];
   toJsonArray(buf, obj, pretty ? "\n  " : null, []);
   return buf.join('');
-};
+}
 
 function toPrettyJson(obj)  {
   return toJson(obj, true);
-};
+}
 
 function fromJson(json) {
   if (!json) return json;
@@ -21,7 +21,7 @@ function fromJson(json) {
     error("fromJson error: ", json, e);
     throw e;
   }
-};
+}
 
 angular['toJson'] = toJson;
 angular['fromJson'] = fromJson;
@@ -102,4 +102,4 @@ function toJsonArray(buf, obj, pretty, stack){
   if (typeof obj == "object") {
     stack.pop();
   }
-};
+}

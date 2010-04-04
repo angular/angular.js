@@ -16,16 +16,16 @@ function parseBindings(string) {
   if (lastIndex != string.length)
     results.push(string.substr(lastIndex, string.length - lastIndex));
   return results.length === 0 ? [ string ] : results;
-};
+}
 
 function binding(string) {
   var binding = string.replace(/\n/gm, ' ').match(/^\{\{(.*)\}\}$/);
   return binding ? binding[1] : null;
-};
+}
 
 function hasBindings(bindings) {
   return bindings.length > 1 || binding(bindings[0]) !== null;
-};
+}
 
 angularTextMarkup('{{}}', function(text, textNode, parentElement) {
   var bindings = parseBindings(text),

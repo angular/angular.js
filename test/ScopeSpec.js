@@ -65,20 +65,6 @@ describe('scope/model', function(){
     expect(model.$bind(function(){return this.name;})()).toEqual('misko');
   });
 
-  //$behavior
-  it('should behave as class', function(){
-    function Printer(brand){
-      this.brand = brand;
-    };
-    Printer.prototype.print = function(){
-      this.printed = true;
-    };
-    var model = createScope({ name: 'parent' }, Printer, 'hp');
-    expect(model.brand).toEqual('hp');
-    model.print();
-    expect(model.printed).toEqual(true);
-  });
-
   //$tryEval
   it('should report error on element', function(){
     var scope = createScope();
@@ -108,21 +94,44 @@ describe('scope/model', function(){
     expect(scope.log).toEqual('first;middle;last;');
   });
 
-  // Services are initialized
-  it("should inject services", function(){
-    var scope = createScope(serviceAdapter({
-      $window: function(){
-      return window;
-    }
-    }));
-    expect(scope.$window).toEqual(window);
-  });
-
   it("should have $root and $parent", function(){
     var parent = createScope();
     var scope = createScope(parent);
     expect(scope.$root).toEqual(parent);
     expect(scope.$parent).toEqual(parent);
   });
+
+  // Service injection
+  it('should inject services', function(){
+    var scope = createScope(null, {
+      service:function(){
+        return "ABC";
+      }
+    });
+    expect(scope.service).toEqual("ABC");
+  });
+
+  it('should inject arugments', function(){
+    var scope = createScope(null, {
+      name:function(){
+        return "misko";
+      },
+      greet: extend(function(name) {
+        return 'hello ' + name;
+      }, {inject:['name']})
+    });
+    expect(scope.greet).toEqual("hello misko");
+  });
+
+  it('should throw error on missing dependency', function(){
+    try {
+      createScope(null, {
+        greet: extend(function(name) {
+        }, {inject:['name']})
+      });
+    } catch(e) {
+      expect(e).toEqual("Don't know how to inject 'name'.");
+    }
+   });
 
 });

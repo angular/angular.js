@@ -2,11 +2,7 @@ describe("services", function(){
   var scope;
 
   beforeEach(function(){
-    scope = createScope({
-      $config: {
-        'location': {'get':noop, 'set':noop, 'watch':noop}
-      }
-    }, serviceAdapter(angularService));
+    scope = createScope(null, angularService, {});
   });
 
   it("should inject $window", function(){
@@ -44,6 +40,17 @@ describe("services", function(){
     expect(scope.$location.hashSearch).toEqual({});
 
     expect(scope.$location()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
+  });
+
+  xit('should add stylesheets', function(){
+    scope.$document = {
+      getElementsByTagName: function(name){
+        expect(name).toEqual('LINK');
+        return [];
+      }
+    };
+    scope.$document.addStyleSheet('css/angular.css');
+
   });
 
 });

@@ -15,7 +15,7 @@ Route.prototype = {
     var self = this;
     var url = this.template;
     params = params || {};
-    foreach(this.urlParams, function(value, urlParam){
+    foreach(this.urlParams, function(_, urlParam){
       var value = params[urlParam] || self.defaults[urlParam] || "";
       url = url.replace(new RegExp(":" + urlParam + "(\\W)"), value + "$1");
     });
@@ -57,7 +57,7 @@ ResourceFactory.prototype = {
 
     function Resource(value){
       copy(value || {}, this);
-    };
+    }
 
     foreach(actions, function(action, name){
       var isGet = action.method == 'GET';
@@ -105,7 +105,7 @@ ResourceFactory.prototype = {
           var params = {};
           var callback = noop;
           switch(arguments.length) {
-          case 2: params = a1, callback = a2;
+          case 2: params = a1; callback = a2;
           case 1: if (typeof a1 == 'function') callback = a1; else params = a1;
           case 0: break;
           default:

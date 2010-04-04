@@ -52,7 +52,8 @@ function compileBindTemplate(template){
     };
   }
   return fn;
-};
+}
+
 angularDirective("ng-bind-template", function(expression){
   var templateFn = compileBindTemplate(expression);
   return function(element) {
@@ -120,7 +121,7 @@ angularWidget("@ng-repeat", function(expression, element){
           assign(childScope = children[index]);
         } else {
           // grow children
-          assign(childScope = template(element.clone(), currentScope));
+          assign(childScope = template(element.clone(), createScope(currentScope)));
           lastElement.after(childScope.$element);
           childScope.$index = index;
           childScope.$element.attr('ng-repeat-index', index);
@@ -144,7 +145,7 @@ angularDirective("ng-click", function(expression, element){
     var self = this;
     element.click(function(){
       self.$tryEval(expression, element);
-      self.$eval();
+      self.$root.$eval();
       return false;
     });
   };
@@ -180,8 +181,8 @@ function ngClass(selector) {
 }
 
 angularDirective("ng-class", ngClass(function(){return true;}));
-angularDirective("ng-class-odd", ngClass(function(i){return i % 2 == 0;}));
-angularDirective("ng-class-even", ngClass(function(i){return i % 2 == 1;}));
+angularDirective("ng-class-odd", ngClass(function(i){return i % 2 === 0;}));
+angularDirective("ng-class-even", ngClass(function(i){return i % 2 === 1;}));
 
 angularDirective("ng-show", function(expression, element){
   return function(element){

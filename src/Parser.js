@@ -4,7 +4,7 @@ function Lexer(text, parsStrings){
   this.dateParseLength = parsStrings ? 20 : -1;
   this.tokens = [];
   this.index = 0;
-};
+}
 
 Lexer.OPERATORS = {
     'null':function(self){return null;},
@@ -244,7 +244,7 @@ function Parser(text, parseStrings){
   this.text = text;
   this.tokens = new Lexer(text, parseStrings).parse();
   this.index = 0;
-};
+}
 
 Parser.ZERO = function(){
   return 0;

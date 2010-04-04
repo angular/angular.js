@@ -46,6 +46,7 @@
   addScript("/jqlite.js");
   addScript("/Parser.js");
   addScript("/Resource.js");
+  addScript("/Browser.js");
 
   // Extension points
   addScript("/apis.js");

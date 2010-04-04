@@ -1,8 +1,11 @@
 angularService("$window", bind(window, identity, window));
+angularService("$document", function(window){
+  return jqLite(window.document);
+}, {inject:['$window']});
 
 var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?((#([^\?]*))?(\?([^\?]*))?)$/;
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
-angularService("$location", function(){
+angularService("$location", function(browser){
   var scope = this;
   function location(url){
     if (isDefined(url)) {
@@ -24,17 +27,29 @@ angularService("$location", function(){
     return location.href +
       (location.hashPath ? location.hashPath : '') +
       (hashKeyValue ? '?' + hashKeyValue : '');
-  };
-  this.$config.location.watch(function(url){
+  }
+  browser.watchUrl(function(url){
     location(url);
   });
-  location(this.$config.location.get());
+  location(browser.getUrl());
   this.$onEval(PRIORITY_LAST, function(){
     var href = location();
     if (href != location.href) {
-      scope.$config.location.set(location());
+      browser.setUrl(href);
       location.href = href;
     }
   });
   return location;
-});
+}, {inject: ['$browser']});
+
+if (!angularService['$browser']) {
+  var browserSingleton;
+  angularService('$browser', function browserFactory(){
+    if (!browserSingleton) {
+      browserSingleton = new Browser(window.location);
+      browserSingleton.startUrlWatcher();
+    }
+    return browserSingleton;
+  });
+}
+

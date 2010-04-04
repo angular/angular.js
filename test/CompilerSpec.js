@@ -1,8 +1,4 @@
-xdescribe('compiler', function(){
-  function element(html) {
-    return jQuery(html)[0];
-  }
-
+describe('compiler', function(){
   var compiler, textMarkup, directives, widgets, compile, log;
 
   beforeEach(function(){
@@ -29,25 +25,25 @@ xdescribe('compiler', function(){
     widgets = {};
     compiler = new Compiler(textMarkup, attrMarkup, directives, widgets);
     compile = function(html){
-      var e = element("<div>" + html + "</div>");
-      var view = compiler.compile(e)(e);
-      view.init();
-      return view.scope;
+      var e = jqLite("<div>" + html + "</div>");
+      var scope = compiler.compile(e)(e);
+      scope.$init();
+      return scope;
     };
   });
 
   it('should recognize a directive', function(){
-    var e = element('<div directive="expr" ignore="me"></div>');
+    var e = jqLite('<div directive="expr" ignore="me"></div>');
     directives.directive = function(expression, element){
       log += "found";
       expect(expression).toEqual("expr");
-      expect(element[0]).toEqual(e);
+      expect(element).toEqual(e);
       return function initFn() {
         log += ":init";
       };
     };
     var template = compiler.compile(e);
-    var init = template(e).init;
+    var init = template(e).$init;
     expect(log).toEqual("found");
     init();
     expect(log).toEqual("found:init");
@@ -61,13 +57,13 @@ xdescribe('compiler', function(){
   it('should watch scope', function(){
     var scope = compile('<span watch="name"/>');
     expect(log).toEqual("");
-    scope.updateView();
-    scope.set('name', 'misko');
-    scope.updateView();
-    scope.updateView();
-    scope.set('name', 'adam');
-    scope.updateView();
-    scope.updateView();
+    scope.$eval();
+    scope.$set('name', 'misko');
+    scope.$eval();
+    scope.$eval();
+    scope.$set('name', 'adam');
+    scope.$eval();
+    scope.$eval();
     expect(log).toEqual(":misko:adam");
   });
 
@@ -83,29 +79,17 @@ xdescribe('compiler', function(){
       element.removeAttr("duplicate");
       var template = this.compile(element);
       return function(marker) {
-        this.$addEval(function() {
+        this.$onEval(function() {
           marker.after(template(element.clone()).element);
         });
       };
     };
     var scope = compile('before<span duplicate="expr">x</span>after');
-    expect($(scope.element).html()).toEqual('before<!--marker-->after');
-    scope.updateView();
-    expect($(scope.element).html()).toEqual('before<!--marker--><span>x</span>after');
-    scope.updateView();
-    expect($(scope.element).html()).toEqual('before<!--marker--><span>x</span><span>x</span>after');
-  });
-
-  it('should allow for exculsive tags which suppress others', function(){
-    directives.exclusive = function(){
-      return function() {
-        log += ('exclusive');
-      };
-    };
-    directives.exclusive.exclusive = true;
-
-    compile('<span hello="misko", exclusive/>');
-    expect(log).toEqual('exclusive');
+    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment>after</div>');
+    scope.$eval();
+    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment>after</div>');
+    scope.$eval();
+    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment>after</div>');
   });
 
   it('should process markup before directives', function(){
@@ -117,7 +101,7 @@ xdescribe('compiler', function(){
       }
     });
     var scope = compile('before<span>middle</span>after');
-    expect(scope.element.innerHTML).toEqual('before<span hello="middle">replaced</span>after');
+    expect(scope.$element[0].innerHTML).toEqual('before<span hello="middle">replaced</span>after');
     expect(log).toEqual("hello middle");
   });
 
@@ -129,7 +113,7 @@ xdescribe('compiler', function(){
       };
     };
     var scope = compile('<ng:button>push me</ng:button>');
-    expect(scope.element.innerHTML).toEqual('<div>button</div>');
+    expect(scope.$element[0].innerHTML).toEqual('<div>button</div>');
     expect(log).toEqual('init');
   });
 

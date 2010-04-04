@@ -19,6 +19,7 @@ BinderTest.prototype.tearDown = function(){
   if (this.element && this.element.dealoc) this.element.dealoc();
 };
 
+
 BinderTest.prototype.testChangingTextfieldUpdatesModel = function(){
   var state = this.compile('<input type="text" name="model.price" value="abc">', {model:{}});
   state.scope.$eval();
@@ -707,7 +708,7 @@ BinderTest.prototype.testItShouldDisplayErrorWhenActionIsSyntacticlyIncorect = f
   var second = jqLite(c.node[0].childNodes[1]);
 
   first.click();
-  assertEquals("ABC", c.scope.$get('greeting'));
+  assertEquals("ABC", c.scope.greeting);
 
   second.click();
   assertTrue(second.hasClass("ng-exception"));
@@ -821,5 +822,3 @@ BinderTest.prototype.XtestWriteAnchorAsPartOfTheUpdateView = function(){
   binder.updateView();
   assertEquals(binder.location.get(), "a#a=b");
 };
-
-

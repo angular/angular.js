@@ -1,50 +1,3 @@
-
-//////////////////////////////
-//UrlWatcher
-//////////////////////////////
-
-function UrlWatcher(location) {
-  this.location = location;
-  this.delay = 25;
-  this.setTimeout = function(fn, delay) {
-   window.setTimeout(fn, delay);
-  };
-  this.expectedUrl = location.href;
-  this.listeners = [];
-}
-
-UrlWatcher.prototype = {
-  watch: function(fn){
-   this.listeners.push(fn);
-  },
-
-  start: function() {
-   var self = this;
-   (function pull () {
-     if (self.expectedUrl !== self.location.href) {
-       foreach(self.listeners, function(listener){
-         listener(self.location.href);
-       });
-       self.expectedUrl = self.location.href;
-     }
-     self.setTimeout(pull, self.delay);
-   })();
-  },
-
-  set: function(url) {
-   var existingURL = this.location.href;
-   if (!existingURL.match(/#/))
-     existingURL += '#';
-   if (existingURL != url)
-     this.location.href = url;
-   this.existingURL = url;
-  },
-
-  get: function() {
-   return this.location.href;
-  }
-};
-
 ////////////////////////////////////
 
 if (typeof document.getAttribute == 'undefined')
@@ -53,9 +6,9 @@ if (typeof document.getAttribute == 'undefined')
 if (!window['console']) window['console']={'log':noop, 'error':noop};
 
 var consoleNode,
-    PRIORITY_FIRST    = -99999;
-    PRIORITY_WATCH    = -1000;
-    PRIORITY_LAST     =  99999;
+    PRIORITY_FIRST    = -99999,
+    PRIORITY_WATCH    = -1000,
+    PRIORITY_LAST     =  99999,
     NOOP              = 'noop',
     NG_ERROR          = 'ng-error',
     NG_EXCEPTION      = 'ng-exception',
@@ -74,16 +27,14 @@ var consoleNode,
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
     angularService    = extensionMap(angular, 'service'),
-    angularCallbacks  = extensionMap(angular, 'callbacks'),
-    urlWatcher        = new UrlWatcher(window.location);
+    angularCallbacks  = extensionMap(angular, 'callbacks');
 
 function angularAlert(){
   log(arguments); window.alert.apply(window, arguments);
-};
+}
 
 extend(angular, {
   'compile': compile,
-  'startUrlWatch': bind(urlWatcher, urlWatcher.start),
   'copy': copy,
   'extend': extend,
   'foreach': foreach,
@@ -166,7 +117,7 @@ function isFunction(value){ return typeof value == 'function';}
 function isTextNode(node) { return nodeName(node) == '#text'; }
 function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
-function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; };
+function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function nodeName(element) { return (element[0] || element || {}).nodeName; }
 function map(obj, iterator, context) {
   var results = [];
@@ -174,7 +125,7 @@ function map(obj, iterator, context) {
     results.push(iterator.call(context, value, index, list));
   });
   return results;
-};
+}
 function size(obj) {
   var size = 0;
   if (obj) {
@@ -289,7 +240,7 @@ function copy(source, destination){
     });
     return destination;
   }
-};
+}
 
 function setHtml(node, html) {
   if (isLeafNode(node)) {
@@ -367,22 +318,10 @@ function merge(src, dst) {
   }
 }
 
-function compile(element, config) {
+function compile(element, parentScope, overrides) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
-      $element = jqLite(element),
-      rootScope = createScope({
-        $element: $element,
-        $config: extend({
-          'onUpdateView': noop,
-          'server': "",
-          'location': {
-            'get':bind(urlWatcher, urlWatcher.get),
-            'set':bind(urlWatcher, urlWatcher.set),
-            'watch':bind(urlWatcher, urlWatcher.watch)
-          }
-        }, config || {})
-      }, serviceAdapter(angularService));
-  return compiler.compile($element)($element, rootScope);
+      $element = jqLite(element);
+  return compiler.compile($element)($element, parentScope, overrides);
 }
 /////////////////////////////////////////////////
 
@@ -404,11 +343,10 @@ function toKeyValue(obj) {
     parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
   });
   return parts.length ? parts.join('&') : '';
-};
+}
 
 function angularInit(config){
   if (config.autobind) {
-    compile(window.document, config).$init();
+    compile(window.document, null, {'$config':config}).$init();
   }
 }
-
