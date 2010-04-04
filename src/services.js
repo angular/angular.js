@@ -24,9 +24,9 @@ angularService("$location", function(browser){
       }
     }
     var hashKeyValue = toKeyValue(location.hashSearch);
-    return location.href +
-      (location.hashPath ? location.hashPath : '') +
+    var hash = (location.hashPath ? location.hashPath : '') +
       (hashKeyValue ? '?' + hashKeyValue : '');
+    return location.href.split('#')[0] + '#' + (hash ? hash : '');
   }
   browser.watchUrl(function(url){
     location(url);

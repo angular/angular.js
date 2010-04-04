@@ -33,22 +33,6 @@ function angularAlert(){
   log(arguments); window.alert.apply(window, arguments);
 }
 
-extend(angular, {
-  'compile': compile,
-  'copy': copy,
-  'extend': extend,
-  'foreach': foreach,
-  'noop':noop,
-  'identity':identity,
-  'isUndefined': isUndefined,
-  'isDefined': isDefined,
-  'isString': isString,
-  'isFunction': isFunction,
-  'isNumber': isNumber,
-  'isArray': isArray,
-  'alert': angularAlert
-});
-
 function foreach(obj, iterator, context) {
   var key;
   if (obj) {

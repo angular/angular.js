@@ -37,7 +37,6 @@ Browser.prototype = {
      existingURL += '#';
    if (existingURL != url)
      this.location.href = url;
-   this.existingURL = url;
   },
 
   getUrl: function() {

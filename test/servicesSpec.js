@@ -24,7 +24,7 @@ describe("services", function(){
     scope.$location.hashPath = 'page=http://path';
     scope.$location.hashSearch = {k:'a=b'};
 
-    expect(scope.$location()).toEqual('http://host:123/p/a/t/h.html?query=value#path?key=valuepage=http://path?k=a%3Db');
+    expect(scope.$location()).toEqual('http://host:123/p/a/t/h.html?query=value#page=http://path?k=a%3Db');
   });
 
   it('should parse file://', function(){
@@ -39,7 +39,7 @@ describe("services", function(){
     expect(scope.$location.hashPath).toEqual('');
     expect(scope.$location.hashSearch).toEqual({});
 
-    expect(scope.$location()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
+    expect(scope.$location()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html#');
   });
 
   xit('should add stylesheets', function(){
