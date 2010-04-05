@@ -247,7 +247,16 @@ function escapeHtml(html) {
       replace(/>/g, '&gt;');
 }
 
+
+function isRenderableElement(element) {
+  var name = element && element[0] && element[0].nodeName;
+  return name && name.charAt(0) != '#' &&
+    !includes(['TR', 'COL', 'COLGROUP', 'TBODY', 'THEAD', 'TFOOT'], name);
+}
 function elementError(element, type, error) {
+  while (!isRenderableElement(element)) {
+    element = element.parent() || jqLite(document.body);
+  }
   if (error) {
     element.addClass(type);
     element.attr(NG_ERROR, error);

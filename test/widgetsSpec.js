@@ -188,5 +188,21 @@ describe("input widget", function(){
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
+  it('should switch on value change', function(){
+    compile('<ng:switch on="select"><div ng-switch-when="1">first</div><div ng-switch-when="2">second</div></ng:switch>');
+    expect(element.html()).toEqual('');
+    scope.select = 1;
+    scope.$eval();
+    expect(element.text()).toEqual('first');
+    scope.select = 2;
+    scope.$eval();
+    expect(element.text()).toEqual('second');
+  });
+});
 
+describe('ng:include', function(){
+  it('should include on external file', function() {
+    var element = jqLite('<ng:include src="myUrl"></ng:include>');
+    var scope = compile(element).$init();
+  });
 });

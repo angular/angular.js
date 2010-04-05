@@ -10,7 +10,7 @@ describe("services", function(){
   });
 
   it("should inject $location", function(){
-    scope.$location('http://host:123/p/a/t/h.html?query=value#path?key=value');
+    scope.$location.parse('http://host:123/p/a/t/h.html?query=value#path?key=value');
     expect(scope.$location.href).toEqual("http://host:123/p/a/t/h.html?query=value#path?key=value");
     expect(scope.$location.protocol).toEqual("http");
     expect(scope.$location.host).toEqual("host");
@@ -24,11 +24,11 @@ describe("services", function(){
     scope.$location.hashPath = 'page=http://path';
     scope.$location.hashSearch = {k:'a=b'};
 
-    expect(scope.$location()).toEqual('http://host:123/p/a/t/h.html?query=value#page=http://path?k=a%3Db');
+    expect(scope.$location.toString()).toEqual('http://host:123/p/a/t/h.html?query=value#page=http://path?k=a%3Db');
   });
 
   it('should parse file://', function(){
-    scope.$location('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
+    scope.$location.parse('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
     expect(scope.$location.href).toEqual("file:///Users/Shared/misko/work/angular.js/scenario/widgets.html");
     expect(scope.$location.protocol).toEqual("file");
     expect(scope.$location.host).toEqual("");
@@ -39,7 +39,7 @@ describe("services", function(){
     expect(scope.$location.hashPath).toEqual('');
     expect(scope.$location.hashSearch).toEqual({});
 
-    expect(scope.$location()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html#');
+    expect(scope.$location.toString()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html#');
   });
 
   xit('should add stylesheets', function(){

@@ -109,6 +109,10 @@ JQLite.prototype = {
     this[0].parentNode.replaceChild(jqLite(replaceNode)[0], this[0]);
   },
 
+  append: function(node) {
+    this[0].appendChild(jqLite(node)[0]);
+  },
+
   remove: function() {
     this.dealoc();
     this[0].parentNode.removeChild(this[0]);
@@ -182,6 +186,9 @@ JQLite.prototype = {
 
   html: function(value) {
     if (isDefined(value)) {
+      for ( var i = 0, children = this[0].childNodes; i < children.length; i++) {
+        jqLite(children[i]).dealoc();
+      }
       this[0].innerHTML = value;
     }
     return this[0].innerHTML;

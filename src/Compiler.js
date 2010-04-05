@@ -71,6 +71,7 @@ Compiler.prototype = {
         $init: function() {
           template.init(element, scope);
           scope.$eval();
+          delete scope.$init;
           return scope;
         }
       });

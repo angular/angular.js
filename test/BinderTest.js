@@ -629,21 +629,6 @@ BinderTest.prototype.testDeleteAttributeIfEvaluatesFalse = function() {
   assertChild(5, false);
 };
 
-BinderTest.prototype.testRepeaterErrorShouldBePlacedOnInstanceNotOnTemplateComment = function () {
-  var c = this.compile(
-    '<input name="person.{{name}}" ng-repeat="name in [\'a\', \'b\']" />');
-  c.scope.$eval();
-  assertTrue(c.node.hasClass("ng-exception"));
-};
-
-BinderTest.prototype.testItShouldApplyAttributesBeforeTheWidgetsAreMaterialized = function() {
-  var c = this.compile(
-      '<input name="person.{{name}}" ng-repeat="name in [\'a\', \'b\']" />');
-  c.scope.$set('person', {a:'misko', b:'adam'});
-  c.scope.$eval();
-  assertEquals("", c.node.html());
-};
-
 BinderTest.prototype.XtestItShouldCallListenersWhenAnchorChanges = function() {
   var log = "";
   var c = this.compile('<div ng-watch="$anchor.counter:count = count+1">');

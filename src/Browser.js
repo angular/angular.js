@@ -3,9 +3,10 @@
 // Browser
 //////////////////////////////
 
-function Browser(location) {
+function Browser(location, XHR) {
   this.location = location;
   this.delay = 25;
+  this.XHR = XHR;
   this.setTimeout = function(fn, delay) {
    window.setTimeout(fn, delay);
   };
@@ -14,6 +15,17 @@ function Browser(location) {
 }
 
 Browser.prototype = {
+  xhr: function(method, url, callback){
+    var xhr = new this.XHR();
+    xhr.open(method, url, true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4) {
+        callback(xhr.status, xhr.responseText);
+      }
+    };
+    xhr.send('');
+  },
+
   watchUrl: function(fn){
    this.listeners.push(fn);
   },
@@ -23,7 +35,11 @@ Browser.prototype = {
    (function pull () {
      if (self.expectedUrl !== self.location.href) {
        foreach(self.listeners, function(listener){
-         listener(self.location.href);
+         try {
+           listener(self.location.href);
+         } catch (e) {
+           error(e);
+         }
        });
        self.expectedUrl = self.location.href;
      }

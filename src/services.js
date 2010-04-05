@@ -6,8 +6,8 @@ angularService("$document", function(window){
 var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?((#([^\?]*))?(\?([^\?]*))?)$/;
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(browser){
-  var scope = this;
-  function location(url){
+  var scope = this, location = {parse:parse, toString:toString};
+  function parse(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
       if (match) {
@@ -23,17 +23,19 @@ angularService("$location", function(browser){
         location.hashSearch = parseKeyValue(match[13]);
       }
     }
-    var hashKeyValue = toKeyValue(location.hashSearch);
-    var hash = (location.hashPath ? location.hashPath : '') +
-      (hashKeyValue ? '?' + hashKeyValue : '');
+  }
+  function toString() {
+    var hashKeyValue = toKeyValue(location.hashSearch),
+        hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : '');
     return location.href.split('#')[0] + '#' + (hash ? hash : '');
   }
   browser.watchUrl(function(url){
-    location(url);
+    parse(url);
+    scope.$root.$eval();
   });
-  location(browser.getUrl());
+  parse(browser.getUrl());
   this.$onEval(PRIORITY_LAST, function(){
-    var href = location();
+    var href = toString();
     if (href != location.href) {
       browser.setUrl(href);
       location.href = href;
@@ -41,15 +43,4 @@ angularService("$location", function(browser){
   });
   return location;
 }, {inject: ['$browser']});
-
-if (!angularService['$browser']) {
-  var browserSingleton;
-  angularService('$browser', function browserFactory(){
-    if (!browserSingleton) {
-      browserSingleton = new Browser(window.location);
-      browserSingleton.startUrlWatcher();
-    }
-    return browserSingleton;
-  });
-}
 

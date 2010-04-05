@@ -5,46 +5,6 @@ function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
 }
 
-swfobject = {
-  createSwf:function() {
-    fail("must mock out swfobject.createSwf in test.");
-  }
-};
-
-function html(content) {
-  return jQuery("<div></div>").html(content);
-}
-
-function report(reportTest){
-  $("#tests").children().each(function(i){
-    var success = this.className == "pass";
-    var strong = this.firstChild;
-    var msg = strong.firstChild.nodeValue;
-    var parts = msg.split(" module: ");
-    var module = parts[0];
-    var name = parts[1].replace(/ *$/, "");
-    reportTest(success, module, name, this.nodeValue);
-  });
-}
-
-function MockBrowser() {
-  this.url = "http://server";
-  this.watches = [];
-}
-MockBrowser.prototype = {
-  getUrl: function(){
-    return this.url;
-  },
-
-  setUrl: function(url){
-    this.url = url;
-  },
-
-  watchUrl: function(fn) {
-    this.watches.push(fn);
-  }
-};
-
 angularService('$browser', function(){
   return new MockBrowser();
 });

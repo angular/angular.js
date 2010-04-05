@@ -70,17 +70,8 @@ function parserNewScopeAdapter(fn) {
   };
 }
 
-function isRenderableElement(element) {
-  var name = element && element[0] && element[0].nodeName;
-  return name && name.charAt(0) != '#' &&
-    !includes(['TR', 'COL', 'COLGROUP', 'TBODY', 'THEAD', 'TFOOT'], name);
-}
-
 function rethrow(e) { throw e; }
 function errorHandlerFor(element, error) {
-  while (!isRenderableElement(element)) {
-    element = element.parent() || jqLite(document.body);
-  }
   elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
 }
 
@@ -132,14 +123,16 @@ function createScope(parent, services, existing) {
 
     $watch: function(watchExp, listener, exceptionHandler) {
       var watch = expressionCompile(watchExp),
-          last = watch.call(instance);
-      instance.$onEval(PRIORITY_WATCH, function(){
+          last;
+      function watcher(){
         var value = watch.call(instance);
         if (last !== value) {
           instance.$tryEval(listener, exceptionHandler, value, last);
           last = value;
         }
-      });
+      }
+      instance.$onEval(PRIORITY_WATCH, watcher);
+      watcher();
     },
 
     $onEval: function(priority, expr, exceptionHandler){

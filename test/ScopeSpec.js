@@ -44,7 +44,7 @@ describe('scope/model', function(){
     model.$onEval(function(){evalCount ++;});
     model.name = 'misko';
     model.$eval();
-    expect(nameCount).toEqual(1);
+    expect(nameCount).toEqual(2);
     expect(evalCount).toEqual(1);
     expect(model.newValue).toEqual('misko');
     expect(model.oldValue).toEqual('adam');

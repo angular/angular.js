@@ -156,40 +156,47 @@ angularWidget('SELECT', function(element){
 });
 
 
-angularWidget('INLINE', function(element){
-  element.replaceWith(this.element("div"));
+angularWidget('NG:INCLUDE', function(element){
   var compiler = this,
-      behavior = element.attr("behavior"),
-      template = element.attr("template"),
-      initExpr = element.attr("init");
-  return function(boundElement){
-    var scope = this;
-    boundElement.load(template, function(){
-      var templateScope = compiler.compile(boundElement)(boundElement, scope);
-      templateScope.$tryEval(initExpr, boundElement);
-      templateScope.$init();
+      src = element.attr("src");
+  return element.attr('switch-instance') ? null : function(element){
+    var scope = this, childScope;
+    element.attr('switch-instance', 'compiled');
+    scope.$browser.xhr('GET', src, function(code, response){
+      element.html(response);
+      childScope = createScope(scope);
+      compiler.compile(element)(element, childScope);
+      childScope.$init();
     });
+    scope.$onEval(function(){ if (childScope) childScope.$eval(); });
   };
 });
 
-angularWidget('INCLUDE', function(element){
-  element.replaceWith(this.element("div"));
-  var matches = [];
-  element.find("INLINE").each(function(){
-    matches.push({match: jQuery(this).attr("match"), element: jQuery(this)});
-  });
+angularWidget('NG:SWITCH', function(element){
   var compiler = this,
-      watchExpr = element.attr("watch");
-  return function(boundElement){
+      watchExpr = element.attr("on"),
+      cases = [];
+  eachNode(element, function(caseElement){
+    var when = caseElement.attr('ng-switch-when');
+    if (when) {
+      cases.push({
+        when: function(value){ return value == when; },
+        element: caseElement,
+        template: compiler.compile(caseElement)
+      });
+    }
+  });
+  element.html('');
+  return function(element){
     var scope = this;
     this.$watch(watchExpr, function(value){
-      foreach(matches, function(inline){
-        if(inline.match == value) {
-          var template = inline.element.attr("template");
-          boundElement.load(template, function(){
-            var templateScope = compiler.compile(boundElement)(boundElement, scope);
-            templateScope.$init();
-          });
+      element.html('');
+      foreach(cases, function(switchCase){
+        if (switchCase.when(value)) {
+          element.append(switchCase.element);
+          var childScope = createScope(scope);
+          switchCase.template(switchCase.element, childScope);
+          childScope.$init();
         }
       });
     });

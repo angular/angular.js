@@ -106,7 +106,7 @@ describe('Validator:asynchronous', function(){
 
   it('should make a request and show spinner', function(){
     var value, fn;
-    var scope = angular.compile('<input type="text" name="name" ng-validate="asynchronous:asyncFn"/>');
+    var scope = compile('<input type="text" name="name" ng-validate="asynchronous:asyncFn"/>');
     scope.$init();
     var input = scope.$element;
     scope.asyncFn = function(v,f){
