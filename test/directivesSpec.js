@@ -13,7 +13,7 @@ describe("directives", function(){
   });
 
   afterEach(function() {
-    model.$element.remove();
+    if (model && model.$element) model.$element.remove();
     expect(size(jqCache)).toEqual(0);
   });
 

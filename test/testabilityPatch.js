@@ -5,13 +5,27 @@ function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
 }
 
-angularService('$browser', function(){
-  return new MockBrowser();
-});
-
 function childNode(element, index) {
   return jqLite(element[0].childNodes[index]);
 }
+
+extend(angular, {
+  'element': jqLite,
+  'compile': compile,
+  'scope': createScope,
+  'copy': copy,
+  'extend': extend,
+  'foreach': foreach,
+  'noop':noop,
+  'identity':identity,
+  'isUndefined': isUndefined,
+  'isDefined': isDefined,
+  'isString': isString,
+  'isFunction': isFunction,
+  'isNumber': isNumber,
+  'isArray': isArray
+});
+
 
 function sortedHtml(element) {
   var html = "";

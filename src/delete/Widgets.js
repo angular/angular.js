@@ -729,7 +729,7 @@ PopUp.onOver = function(e) {
   jNode.bind(PopUp.OUT_EVENT, PopUp.onOut);
   var position = jNode.position();
   var de = document.documentElement;
-  var w = self.innerWidth || (de&&de.clientWidth) || document.body.clientWidth;
+  var w = self.innerWidth || (de && de.clientWidth) || document.body.clientWidth;
   var hasArea = w - position.left;
   var width = 300;
   var title = jNode.hasClass("ng-exception") ? "EXCEPTION:" : "Validation error...";

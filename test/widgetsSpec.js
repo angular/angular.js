@@ -203,6 +203,11 @@ describe("input widget", function(){
 describe('ng:include', function(){
   it('should include on external file', function() {
     var element = jqLite('<ng:include src="myUrl"></ng:include>');
-    var scope = compile(element).$init();
+    var scope = compile(element);
+    scope.$browser.xhr.expect('GET', 'myUrl').respond('hello');
+    scope.$init();
+    expect(sortedHtml(element)).toEqual('<ng:include src="myUrl" switch-instance="compiled"></ng:include>');
+    scope.$browser.xhr.flush();
+    expect(sortedHtml(element)).toEqual('<ng:include src="myUrl" switch-instance="compiled">hello</ng:include>');
   });
 });
