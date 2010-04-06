@@ -313,8 +313,10 @@ function merge(src, dst) {
 
 function compile(element, parentScope, overrides) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
-      $element = jqLite(element);
-  return compiler.compile($element)($element, parentScope, overrides);
+      $element = jqLite(element),
+      parent = extend({}, parentScope);
+  parent.$element = $element;
+  return compiler.compile($element)($element, parent, overrides);
 }
 /////////////////////////////////////////////////
 
@@ -340,6 +342,8 @@ function toKeyValue(obj) {
 
 function angularInit(config){
   if (config.autobind) {
-    compile(window.document, null, {'$config':config}).$init();
+    var scope = compile(window.document, null, {'$config':config});
+    scope.$browser.addCss('../css/angular.css');
+    scope.$init();
   }
 }

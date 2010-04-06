@@ -47,7 +47,7 @@
   addScript("/Parser.js");
   addScript("/Resource.js");
   addScript("/Browser.js");
-  addScript("/~AngularPublic.js");
+  addScript("/AngularPublic.js");
 
   // Extension points
   addScript("/apis.js");

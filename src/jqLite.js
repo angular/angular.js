@@ -78,7 +78,7 @@ JQLite.prototype = {
         bind[type] = eventHandler = function(event) {
           var bubbleEvent = false;
           foreach(eventHandler.fns, function(fn){
-            bubbleEvent = bubbleEvent || fn.apply(self, arguments);
+            bubbleEvent = bubbleEvent || fn.call(self, event);
           });
           if (!bubbleEvent) {
             event.preventDefault();

@@ -3,7 +3,7 @@ BrowserTest = TestCase('BrowserTest');
 BrowserTest.prototype.testUrlWatcher = function () {
   expectAsserts(2);
   var location = {href:"http://server", hash:""};
-  var watcher = new Browser(location);
+  var watcher = new Browser(location, {});
   watcher.delay = 1;
   watcher.watchUrl(function(url){
     assertEquals('http://getangular.test', url);

@@ -3,18 +3,52 @@
 // Browser
 //////////////////////////////
 
-function Browser(location, XHR) {
-  this.location = location;
+function Browser(location, document) {
   this.delay = 25;
-  this.XHR = XHR;
+  this.expectedUrl = location.href;
+  this.urlListeners = [];
+  this.hoverListener = noop;
+
+  this.XHR = XMLHttpRequest || function () {
+    try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
+    try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
+    try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
+    throw new Error("This browser does not support XMLHttpRequest.");
+  };
   this.setTimeout = function(fn, delay) {
    window.setTimeout(fn, delay);
   };
-  this.expectedUrl = location.href;
-  this.listeners = [];
+
+  this.location = location;
+  this.document = jqLite(document);
+  this.body = jqLite(document.body);
 }
 
 Browser.prototype = {
+
+  bind: function() {
+    var self = this;
+    self.document.bind("mouseover", function(event){
+      self.hoverListener(jqLite(event.target), true);
+      return true;
+    });
+    self.document.bind("mouseleave mouseout click dblclick keypress keyup", function(event){
+      self.hoverListener(jqLite(event.target), false);
+      return true;
+    });
+  },
+
+  hover: function(hoverListener) {
+    this.hoverListener = hoverListener;
+  },
+
+  addCss: function(url) {
+    var head = jqLite(this.document[0].getElementsByTagName('head')[0]),
+        link = jqLite('<link rel="stylesheet" type="text/css"></link>');
+    link.attr('href', url);
+    head.append(link);
+  },
+
   xhr: function(method, url, callback){
     var xhr = new this.XHR();
     xhr.open(method, url, true);
@@ -27,14 +61,14 @@ Browser.prototype = {
   },
 
   watchUrl: function(fn){
-   this.listeners.push(fn);
+    this.urlListeners.push(fn);
   },
 
   startUrlWatcher: function() {
    var self = this;
    (function pull () {
      if (self.expectedUrl !== self.location.href) {
-       foreach(self.listeners, function(listener){
+       foreach(self.urlListeners, function(listener){
          try {
            listener(self.location.href);
          } catch (e) {

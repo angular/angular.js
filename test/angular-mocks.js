@@ -8,7 +8,7 @@ function MockBrowser() {
     var expect = expectations[method] || {};
     var response = expect[url];
     if (!response) {
-      throw "Unexepected request for mothod '" + method + "' and url '" + url + "'.";
+      throw "Unexepected request for method '" + method + "' and url '" + url + "'.";
     }
     requests.push(function(){
       callback(200, response);
@@ -31,6 +31,9 @@ function MockBrowser() {
   };
 }
 MockBrowser.prototype = {
+
+  hover: function(onHover) {
+  },
 
   getUrl: function(){
     return this.url;
