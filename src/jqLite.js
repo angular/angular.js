@@ -115,7 +115,8 @@ JQLite.prototype = {
 
   remove: function() {
     this.dealoc();
-    this[0].parentNode.removeChild(this[0]);
+    var parentNode = this[0].parentNode;
+    if (parentNode) parentNode.removeChild(this[0]);
   },
 
   removeAttr: function(name) {

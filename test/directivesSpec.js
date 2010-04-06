@@ -156,4 +156,19 @@ describe("directives", function(){
     scope.$eval();
     expect(element.css('display')).toEqual('');
   });
+
+  it('should ng-controller', function(){
+    window.Greeter = function(){
+      this.greeting = 'hello';
+    };
+    window.Greeter.prototype = {
+      greet: function(name) {
+        return this.greeting + ' ' + name;
+      }
+    };
+    var scope = compile('<div ng-controller="Greeter"></div>');
+    expect(scope.greeting).toEqual('hello');
+    expect(scope.greet('misko')).toEqual('hello misko');
+    delete window.Greeter;
+  });
 });

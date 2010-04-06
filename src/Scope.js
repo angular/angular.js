@@ -1,4 +1,4 @@
-function getter(instance, path) {
+function getter(instance, path, unboundFn) {
   if (!path) return instance;
   var element = path.split('.');
   var key;
@@ -22,7 +22,7 @@ function getter(instance, path) {
       }
     }
   }
-  if (typeof instance === 'function' && !instance['$$factory']) {
+  if (!unboundFn && isFunction(instance) && !instance['$$factory']) {
     return bind(lastInstance, instance);
   }
   return instance;
@@ -146,7 +146,17 @@ function createScope(parent, services, existing) {
         fn: expressionCompile(expr),
         handler: exceptionHandler
       });
+    },
+
+    $become: function(Class) {
+      // remove existing
+      foreach(behavior, function(value, key){ delete behavior[key]; });
+      foreach((Class || noop).prototype, function(fn, name){
+        behavior[name] = bind(instance, fn);
+      });
+      (Class || noop).call(instance);
     }
+
   });
 
   if (!parent.$root) {

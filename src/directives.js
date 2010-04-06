@@ -4,6 +4,17 @@ angularDirective("ng-init", function(expression){
   };
 });
 
+angularDirective("ng-controller", function(expression){
+  return function(element){
+    var controller = getter(window, expression, true) || getter(this, expression, true);
+    if (!controller)
+      throw "Can not find '"+expression+"' controller.";
+    if (!isFunction(controller))
+      throw "Reference '"+expression+"' is not a class.";
+    this.$become(controller);
+  };
+});
+
 angularDirective("ng-eval", function(expression){
   return function(element){
     this.$onEval(expression, element);
