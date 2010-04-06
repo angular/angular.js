@@ -72,7 +72,7 @@ describe('compiler', function(){
     var scope = compile('<span hello="misko" stop="true"><span hello="adam"/></span>');
     expect(log).toEqual("hello misko");
   });
-
+  
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
       element.replaceWith(document.createComment("marker"));
@@ -97,7 +97,7 @@ describe('compiler', function(){
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
         parentNode.attr('hello', text);
-        textNode.text('replaced');
+        textNode[0].textContent = 'replaced';
       }
     });
     var scope = compile('before<span>middle</span>after');

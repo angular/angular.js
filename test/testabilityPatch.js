@@ -27,6 +27,12 @@ extend(angular, {
 });
 
 
+function trigger(element, type) {
+  var evnt = document.createEvent('MouseEvent');
+  evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+  (element[0] || element).dispatchEvent(evnt);
+}
+
 function sortedHtml(element) {
   var html = "";
   (function toString(node) {

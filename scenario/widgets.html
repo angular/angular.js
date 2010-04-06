@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"></link>
-    <!--<script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>-->
+    <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
     <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
   </head>
   <body ng-init="$window.$scope = this">
@@ -81,6 +81,16 @@
           </form>
         </td>
         <td>button={{button}}</td>
+      </tr>
+      <tr><th colspan="3">Repeaters</th></tr>
+      <tr>
+        <td>ng-repeat</td>
+        <td>
+          <ul>
+            <li ng-repeat="name in ['misko', 'adam']">{{name}}</li>
+          </ul>
+        </td>
+        <td></td>
       </tr>
     </table>
   </body>
