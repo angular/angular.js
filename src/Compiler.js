@@ -1,5 +1,5 @@
 /**
-= * Template provides directions an how to bind to a given element.
+ * Template provides directions an how to bind to a given element.
  * It contains a list of init functions which need to be called to
  * bind to a new instance of elements. It also provides a list
  * of child paths which contain child templates

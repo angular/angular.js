@@ -12,6 +12,7 @@ angularDirective("ng-controller", function(expression){
     if (!isFunction(controller))
       throw "Reference '"+expression+"' is not a class.";
     this.$become(controller);
+    (this.init || noop)();
   };
 });
 

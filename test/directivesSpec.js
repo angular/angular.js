@@ -162,13 +162,16 @@ describe("directives", function(){
       this.greeting = 'hello';
     };
     window.Greeter.prototype = {
+      init: function(){
+       this.suffix = '!';
+      },
       greet: function(name) {
-        return this.greeting + ' ' + name;
+        return this.greeting + ' ' + name + this.suffix;
       }
     };
     var scope = compile('<div ng-controller="Greeter"></div>');
     expect(scope.greeting).toEqual('hello');
-    expect(scope.greet('misko')).toEqual('hello misko');
+    expect(scope.greet('misko')).toEqual('hello misko!');
     delete window.Greeter;
   });
 });

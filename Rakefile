@@ -39,10 +39,10 @@ task :compile do
       src/JSON.js \
       src/Compiler.js \
       src/Scope.js \
-      src/jqlite.js \
       src/Parser.js \
       src/Resource.js \
-      src/URLWatcher.js \
+      src/Browser.js \
+      src/jqLite.js \
       src/apis.js \
       src/filters.js \
       src/formatters.js \
@@ -50,15 +50,17 @@ task :compile do
       src/directives.js \
       src/markups.js \
       src/widgets.js \
+      src/services.js \
+      src/AngularPublic.js \
       src/angular.suffix \
     )
-  f = File.new("angular.js", 'w')
+  f = File.new("angular-debug.js", 'w')
   f.write(concat)
   f.close
 
   %x(java -jar lib/compiler-closure/compiler.jar \
         --compilation_level ADVANCED_OPTIMIZATIONS \
-        --js angular.js \
+        --js angular-debug.js \
         --externs externs.js \
         --create_source_map ./angular-minified.map \
         --js_output_file angular-minified.js)

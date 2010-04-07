@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="lib/swfobject/|test/test/|src/test/|src/|lib/jquery/|lib/webtoolkit/|lib/underscore/|test/" kind="src" path=""/>
-	<classpathentry kind="src" path="lib/jquery"/>
-	<classpathentry kind="src" path="lib/swfobject"/>
-	<classpathentry kind="src" path="lib/underscore"/>
-	<classpathentry kind="src" path="lib/webtoolkit"/>
 	<classpathentry excluding="test/" kind="src" path="src"/>
 	<classpathentry kind="src" path="src/test"/>
 	<classpathentry excluding="test/" kind="src" path="test"/>
 	<classpathentry kind="src" path="test/test"/>
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.baseBrowserLibrary"/>
 </classpath>

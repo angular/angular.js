@@ -164,28 +164,42 @@ angularWidget('SELECT', function(element){
 angularWidget('NG:INCLUDE', function(element){
   var compiler = this,
       src = element.attr("src");
-  return element.attr('switch-instance') ? null : function(element){
-    var scope = this, childScope;
-    element.attr('switch-instance', 'compiled');
-    scope.$browser.xhr('GET', src, function(code, response){
-      element.html(response);
-      childScope = createScope(scope);
-      compiler.compile(element)(element, childScope);
-      childScope.$init();
-    });
-    scope.$onEval(function(){ if (childScope) childScope.$eval(); });
-  };
+  if (element.attr('switch-instance')) {
+    this.descend(true);
+    this.directives(true);
+  } else {
+    return function(element){
+      var scope = this, childScope;
+      element.attr('switch-instance', 'compiled');
+      scope.$browser.xhr('GET', src, function(code, response){
+        element.html(response);
+        childScope = createScope(scope);
+        compiler.compile(element)(element, childScope);
+        childScope.$init();
+        scope.$root.$eval();
+      });
+      scope.$onEval(function(){
+        if (childScope) childScope.$eval();
+      });
+    };
+  }
 });
 
-angularWidget('NG:SWITCH', function(element){
+angularWidget('NG:SWITCH', function ngSwitch(element){
   var compiler = this,
       watchExpr = element.attr("on"),
+      whenFn = ngSwitch[element.attr("using") || 'equals'];
+      changeExpr = element.attr('change') || '',
       cases = [];
+  if (!whenFn) throw "Using expression '" + usingExpr + "' unknown.";
   eachNode(element, function(caseElement){
     var when = caseElement.attr('ng-switch-when');
     if (when) {
       cases.push({
-        when: function(value){ return value == when; },
+        when: function(scope, value){
+          return whenFn.call(scope, value, when);
+        },
+        change: changeExpr,
         element: caseElement,
         template: compiler.compile(caseElement)
       });
@@ -193,17 +207,30 @@ angularWidget('NG:SWITCH', function(element){
   });
   element.html('');
   return function(element){
-    var scope = this;
+    var scope = this, childScope;
     this.$watch(watchExpr, function(value){
       element.html('');
+      childScope = null;
       foreach(cases, function(switchCase){
-        if (switchCase.when(value)) {
+        if (switchCase.when(childScope, value)) {
           element.append(switchCase.element);
-          var childScope = createScope(scope);
+          childScope = createScope(scope);
+          childScope.$tryEval(switchCase.change, element);
           switchCase.template(switchCase.element, childScope);
           childScope.$init();
         }
       });
     });
+    scope.$onEval(function(){
+      if (childScope) childScope.$eval();
+    });
   };
+}, {
+  equals: function(on, when) {
+    return on == when;
+  },
+  route: function(on, when) {
+    this.name = 'misko';
+    return true;
+  }
 });

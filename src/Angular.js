@@ -102,7 +102,7 @@ function isTextNode(node) { return nodeName(node) == '#text'; }
 function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
-function nodeName(element) { return (element[0] || element || {}).nodeName; }
+function nodeName(element) { return (element[0] || element).nodeName; }
 function map(obj, iterator, context) {
   var results = [];
   foreach(obj, function(value, index, list) {
@@ -274,6 +274,8 @@ function escapeAttr(html) {
 }
 
 function bind(_this, _function) {
+  if (!isFunction(_function))
+    throw "Not a function!";
   var curryArgs = slice.call(arguments, 2, arguments.length);
   return function() {
     return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
@@ -346,4 +348,17 @@ function angularInit(config){
     scope.$browser.addCss('../css/angular.css');
     scope.$init();
   }
+}
+
+function angularJsConfig(document) {
+  var filename = /(.*)\/angular(-(.*))?.js(#(.*))?/,
+      scripts = document.getElementsByTagName("SCRIPT"),
+      match;
+  for(var j = 0; j < scripts.length; j++) {
+    match = (scripts[j].src || "").match(filename);
+    if (match) {
+      return match[5];
+    }
+  }
+  return "";
 }
