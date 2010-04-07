@@ -17,7 +17,7 @@ function getter(instance, path, unboundFn) {
       type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
       var fn = type ? type[[key.substring(1)]] : undefined;
       if (fn) {
-        instance = bind(fn, lastInstance, lastInstance);
+        instance = bind(lastInstance, fn, lastInstance);
         return instance;
       }
     }

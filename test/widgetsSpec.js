@@ -189,14 +189,36 @@ describe("input widget", function(){
   });
 
   it('should switch on value change', function(){
-    compile('<ng:switch on="select"><div ng-switch-when="1">first</div><div ng-switch-when="2">second</div></ng:switch>');
+    compile('<ng:switch on="select"><div ng-switch-when="1">first:{{name}}</div><div ng-switch-when="2">second:{{name}}</div></ng:switch>');
     expect(element.html()).toEqual('');
     scope.select = 1;
     scope.$eval();
-    expect(element.text()).toEqual('first');
+    expect(element.text()).toEqual('first:');
+    scope.name="shyam";
+    scope.$eval();
+    expect(element.text()).toEqual('first:shyam');
     scope.select = 2;
     scope.$eval();
-    expect(element.text()).toEqual('second');
+    scope.name = 'misko';
+    scope.$eval();
+    expect(element.text()).toEqual('second:misko');
+  });
+});
+
+describe('ng:switch', function(){
+  it("should match urls", function(){
+    var scope = compile('<ng:switch on="url" using="route"><div ng-switch-when="/Book/:name">{{name}}</div></ng:include>');
+    scope.url = '/Book/Moby';
+    scope.$init();
+    expect(scope.$element.text()).toEqual('Moby');
+  });
+
+  it('should call init on switch', function(){
+    var scope = compile('<ng:switch on="url" change="name=\'works\'"><div ng-switch-when="a">{{name}}</div></ng:include>');
+    scope.url = 'a';
+    scope.$init();
+    expect(scope.name).toEqual(undefined);
+    expect(scope.$element.text()).toEqual('works');
   });
 });
 
@@ -204,10 +226,11 @@ describe('ng:include', function(){
   it('should include on external file', function() {
     var element = jqLite('<ng:include src="myUrl"></ng:include>');
     var scope = compile(element);
-    scope.$browser.xhr.expect('GET', 'myUrl').respond('hello');
+    scope.$browser.xhr.expect('GET', 'myUrl').respond('{{1+2}}');
     scope.$init();
     expect(sortedHtml(element)).toEqual('<ng:include src="myUrl" switch-instance="compiled"></ng:include>');
     scope.$browser.xhr.flush();
-    expect(sortedHtml(element)).toEqual('<ng:include src="myUrl" switch-instance="compiled">hello</ng:include>');
+    expect(element.text()).toEqual('3');
   });
 });
+
