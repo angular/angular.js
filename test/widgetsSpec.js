@@ -115,10 +115,10 @@ describe("input widget", function(){
   it('should type="checkbox"', function(){
     compile('<input type="checkbox" name="checkbox" checked ng-change="action = true"/>');
     expect(scope.checkbox).toEqual(true);
-    element.click();
+    trigger(element, 'click');
     expect(scope.checkbox).toEqual(false);
     expect(scope.action).toEqual(true);
-    element.click();
+    trigger(element, 'click');
     expect(scope.checkbox).toEqual(true);
   });
 
@@ -142,7 +142,7 @@ describe("input widget", function(){
     expect(b.checked).toEqual(true);
     expect(scope.clicked).not.toBeDefined();
 
-    jqLite(a).click();
+    trigger(a, 'click');
     expect(scope.chose).toEqual('A');
     expect(scope.clicked).toEqual(1);
   });

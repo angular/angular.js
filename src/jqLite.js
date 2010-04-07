@@ -92,6 +92,7 @@ JQLite.prototype = {
     });
   },
 
+  //TODO: remove
   trigger: function(type) {
     var evnt = document.createEvent('MouseEvent');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);

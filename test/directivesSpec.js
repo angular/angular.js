@@ -142,19 +142,19 @@ describe("directives", function(){
   it('should ng-show', function(){
     var scope = compile('<div ng-hide="hide"></div>');
     scope.$eval();
-    expect(element.css('display')).toEqual('');
+    expect(isVisible(element)).toEqual(true);
     scope.$set('hide', true);
     scope.$eval();
-    expect(element.css('display')).toEqual('none');
+    expect(isVisible(element)).toEqual(false);
   });
 
   it('should ng-hide', function(){
     var scope = compile('<div ng-show="show"></div>');
     scope.$eval();
-    expect(element.css('display')).toEqual('none');
+    expect(isVisible(element)).toEqual(false);
     scope.$set('show', true);
     scope.$eval();
-    expect(element.css('display')).toEqual('');
+    expect(isVisible(element)).toEqual(true);
   });
 
   it('should ng-controller', function(){
