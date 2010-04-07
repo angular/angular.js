@@ -210,6 +210,7 @@ describe('ng:switch', function(){
     var scope = compile('<ng:switch on="url" using="route"><div ng-switch-when="/Book/:name">{{name}}</div></ng:include>');
     scope.url = '/Book/Moby';
     scope.$init();
+//    jstestdriver.console.log('text');
     expect(scope.$element.text()).toEqual('Moby');
   });
 

@@ -225,5 +225,7 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     return on == when;
   },
   route: function(on, when) {
+    this.name = 'misko';
+    return true;
   }
 });
