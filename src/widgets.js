@@ -206,10 +206,12 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     this.$watch(watchExpr, function(value){
       element.html('');
       childScope = null;
+      var params = {};
       foreach(cases, function(switchCase){
-        if (switchCase.when(childScope, value)) {
+        if (switchCase.when(params, value)) {
           element.append(switchCase.element);
           childScope = createScope(scope);
+          extend(childScope, params);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(switchCase.element, childScope);
           childScope.$init();
@@ -225,7 +227,23 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     return on == when;
   },
   route: function(on, when) {
-    this.name = 'misko';
-    return true;
+    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$', params = [], self = this;
+    foreach(when.split(/\W/), function(param){
+      if (param) {
+        var paramRegExp = new RegExp(":" + param + "([\\W])");
+        if (regex.match(paramRegExp)) {
+          regex = regex.replace(paramRegExp, "(.*)$1");
+          params.push(param);
+        }
+      }
+    });
+    console.log(regex);
+    var match = on.match(new RegExp(regex));
+    if (match) {
+      foreach(params, function(name, index){
+        self[name] = match[index + 1];
+      });
+    }
+    return match;
   }
 });

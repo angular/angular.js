@@ -492,7 +492,7 @@ function toJsonArray(buf, obj, pretty, stack){
   }
 }
 /**
-= * Template provides directions an how to bind to a given element.
+ * Template provides directions an how to bind to a given element.
  * It contains a list of init functions which need to be called to
  * bind to a new instance of elements. It also provides a list
  * of child paths which contain child templates
@@ -1902,6 +1902,7 @@ JQLite.prototype = {
     });
   },
 
+  //TODO: remove
   trigger: function(type) {
     var evnt = document.createEvent('MouseEvent');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
@@ -3281,15 +3282,21 @@ angularWidget('NG:INCLUDE', function(element){
   }
 });
 
-angularWidget('NG:SWITCH', function(element){
+angularWidget('NG:SWITCH', function ngSwitch(element){
   var compiler = this,
       watchExpr = element.attr("on"),
+      whenFn = ngSwitch[element.attr("using") || 'equals'];
+      changeExpr = element.attr('change') || '',
       cases = [];
+  if (!whenFn) throw "Using expression '" + usingExpr + "' unknown.";
   eachNode(element, function(caseElement){
     var when = caseElement.attr('ng-switch-when');
     if (when) {
       cases.push({
-        when: function(value){ return value == when; },
+        when: function(scope, value){
+          return whenFn.call(scope, value, when);
+        },
+        change: changeExpr,
         element: caseElement,
         template: compiler.compile(caseElement)
       });
@@ -3301,10 +3308,13 @@ angularWidget('NG:SWITCH', function(element){
     this.$watch(watchExpr, function(value){
       element.html('');
       childScope = null;
+      var params = {};
       foreach(cases, function(switchCase){
-        if (switchCase.when(value)) {
+        if (switchCase.when(params, value)) {
           element.append(switchCase.element);
           childScope = createScope(scope);
+          extend(childScope, params);
+          childScope.$tryEval(switchCase.change, element);
           switchCase.template(switchCase.element, childScope);
           childScope.$init();
         }
@@ -3314,6 +3324,30 @@ angularWidget('NG:SWITCH', function(element){
       if (childScope) childScope.$eval();
     });
   };
+}, {
+  equals: function(on, when) {
+    return on == when;
+  },
+  route: function(on, when) {
+    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$', params = [], self = this;
+    foreach(when.split(/\W/), function(param){
+      if (param) {
+        var paramRegExp = new RegExp(":" + param + "([\\W])");
+        if (regex.match(paramRegExp)) {
+          regex = regex.replace(paramRegExp, "(.*)$1");
+          params.push(param);
+        }
+      }
+    });
+    console.log(regex);
+    var match = on.match(new RegExp(regex));
+    if (match) {
+      foreach(params, function(name, index){
+        self[name] = match[index + 1];
+      });
+    }
+    return match;
+  }
 });
 angularService("$window", bind(window, identity, window));
 angularService("$document", function(window){
