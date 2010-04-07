@@ -54,3 +54,23 @@ describe("services", function(){
   });
 
 });
+
+describe("service $invalidWidgets", function(){
+  var scope;
+  beforeEach(function(){
+    scope = null;
+  });
+  afterEach(function(){
+    if (scope && scope.$element)
+      scope.$element.remove();
+  });
+
+  it("should count number of invalid widgets", function(){
+    var scope = compile('<input name="price" ng-required></input>').$init();
+    expect(scope.$invalidWidgets.length).toEqual(1);
+    scope.price = 123;
+    scope.$eval();
+    expect(scope.$invalidWidgets.length).toEqual(0);
+    scope.$element.remove();
+  });
+});

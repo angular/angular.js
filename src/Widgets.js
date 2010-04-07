@@ -22,7 +22,8 @@ function valueAccessor(scope, element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = compileValidator(validatorName),
       required = element.attr('ng-required'),
-      lastError;
+      lastError,
+      invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
@@ -30,6 +31,10 @@ function valueAccessor(scope, element) {
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
+      if (error)
+        invalidWidgets.markInvalid(element);
+      else
+        invalidWidgets.markValid(element);
     }
     return value;
   }

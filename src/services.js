@@ -87,3 +87,18 @@ angularService("$hover", function(browser) {
     }
   });
 }, {inject:['$browser']});
+
+angularService("$invalidWidgets", function(){
+  var invalidWidgets = [];
+  invalidWidgets.markValid = function(element){
+    var index = indexOf(invalidWidgets, element);
+    if (index != -1)
+      invalidWidgets.splice(index, 1);
+  };
+  invalidWidgets.markInvalid = function(element){
+    var index = indexOf(invalidWidgets, element);
+    if (index === -1)
+      invalidWidgets.push(element);
+  };
+  return invalidWidgets;
+});
