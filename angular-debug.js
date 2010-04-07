@@ -3124,7 +3124,8 @@ function valueAccessor(scope, element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = compileValidator(validatorName),
       required = element.attr('ng-required'),
-      lastError;
+      lastError,
+      invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
@@ -3132,6 +3133,10 @@ function valueAccessor(scope, element) {
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
+      if (error)
+        invalidWidgets.markInvalid(element);
+      else
+        invalidWidgets.markValid(element);
     }
     return value;
   }
@@ -3339,7 +3344,6 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
         }
       }
     });
-    console.log(regex);
     var match = on.match(new RegExp(regex));
     if (match) {
       foreach(params, function(name, index){
@@ -3438,6 +3442,21 @@ angularService("$hover", function(browser) {
     }
   });
 }, {inject:['$browser']});
+
+angularService("$invalidWidgets", function(){
+  var invalidWidgets = [];
+  invalidWidgets.markValid = function(element){
+    var index = indexOf(invalidWidgets, element);
+    if (index != -1)
+      invalidWidgets.splice(index, 1);
+  };
+  invalidWidgets.markInvalid = function(element){
+    var index = indexOf(invalidWidgets, element);
+    if (index === -1)
+      invalidWidgets.push(element);
+  };
+  return invalidWidgets;
+});
 var browserSingleton;
 angularService('$browser', function browserFactory(){
   if (!browserSingleton) {

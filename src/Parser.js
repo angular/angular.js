@@ -372,16 +372,7 @@ Parser.prototype = {
           for ( var i = 0; i < argsFn.length; i++) {
             args.push(argsFn[i](self));
           }
-          var pipeThis = function(){
-            var _this = this;
-            foreach(self, function(v, k) {
-              if (k.charAt(0) == '$') {
-                _this[k] = v;
-              }
-            });
-          };
-          pipeThis.prototype = self.self;
-          return fn.apply(new pipeThis(), args);
+          return fn.apply(self.state, args);
         };
         return function(){
           return fnInvoke;

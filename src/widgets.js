@@ -27,7 +27,7 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
-    var error = required && !trim(value) ? "Required" : validator({self:scope, scope:{get:scope.$get, set:scope.$set}}, value);
+    var error = required && !trim(value) ? "Required" : validator({state:scope, scope:{get:scope.$get, set:scope.$set}}, value);
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
@@ -242,7 +242,6 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
         }
       }
     });
-    console.log(regex);
     var match = on.match(new RegExp(regex));
     if (match) {
       foreach(params, function(name, index){

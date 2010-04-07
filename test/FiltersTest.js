@@ -13,17 +13,14 @@ FiltersTest.prototype.XtestCurrency = function(){
   assertEquals(html.hasClass('ng-format-negative'), false);
 };
 
-FiltersTest.prototype.XtestFilterThisIsContext = function(){
-  expectAsserts(2);
-  var scope = new Scope();
-  Scope.expressionCache = {};
-  scope.set('name', 'misko');
-  var context = {$element:123};
+FiltersTest.prototype.testFilterThisIsContext = function(){
+  expectAsserts(1);
+  var scope = createScope();
+  scope.name = 'misko';
   angular.filter.testFn = function () {
-    assertEquals('Context not equal', 123, this.$element);
     assertEquals('scope not equal', 'misko', this.name);
   };
-  scope.eval("0|testFn", context);
+  scope.$eval("0|testFn");
   delete angular.filter['testFn'];
 };
 
