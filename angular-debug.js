@@ -34,7 +34,6 @@ var consoleNode,
     PRIORITY_WATCH    = -1000,
     PRIORITY_LAST     =  99999,
     NOOP              = 'noop',
-    NG_ERROR          = 'ng-error',
     NG_EXCEPTION      = 'ng-exception',
     NG_VALIDATION_ERROR = 'ng-validation-error',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
@@ -283,10 +282,10 @@ function elementError(element, type, error) {
   }
   if (error) {
     element.addClass(type);
-    element.attr(NG_ERROR, error);
+    element.attr(type, error);
   } else {
     element.removeClass(type);
-    element.removeAttr(NG_ERROR);
+    element.removeAttr(type);
   }
 }
 
@@ -1222,16 +1221,7 @@ Parser.prototype = {
           for ( var i = 0; i < argsFn.length; i++) {
             args.push(argsFn[i](self));
           }
-          var pipeThis = function(){
-            var _this = this;
-            foreach(self, function(v, k) {
-              if (k.charAt(0) == '$') {
-                _this[k] = v;
-              }
-            });
-          };
-          pipeThis.prototype = self.self;
-          return fn.apply(new pipeThis(), args);
+          return fn.apply(self.state, args);
         };
         return function(){
           return fnInvoke;
@@ -2883,12 +2873,17 @@ angularDirective("ng-bind-template", function(expression){
   };
 });
 
+var REMOVE_ATTRIBUTES = {
+  'disabled':true,
+  'readonly':true,
+  'checked':true
+};
 angularDirective("ng-bind-attr", function(expression){
   return function(element){
     this.$onEval(function(){
       foreach(this.$eval(expression), function(bindExp, key) {
         var value = compileBindTemplate(bindExp).call(this, element);
-        if (key == 'disabled' && !toBoolean(value)) {
+        if (REMOVE_ATTRIBUTES[lowercase(key)] && !toBoolean(value)) {
           element.removeAttr('disabled');
         } else {
           element.attr(key, value);
@@ -3129,7 +3124,7 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
-    var error = required && !trim(value) ? "Required" : validator({self:scope, scope:{get:scope.$get, set:scope.$set}}, value);
+    var error = required && !trim(value) ? "Required" : validator({state:scope, scope:{get:scope.$get, set:scope.$set}}, value);
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
@@ -3402,7 +3397,7 @@ angularService("$location", function(browser){
 angularService("$hover", function(browser) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10;
   browser.hover(function(element, show){
-    if (show && (error = element.attr('ng-error'))) {
+    if (show && (error = element.attr(NG_EXCEPTION) || element.attr(NG_VALIDATION_ERROR))) {
       if (!tooltip) {
         tooltip = {
             callout: jqLite('<div id="ng-callout"></div>'),

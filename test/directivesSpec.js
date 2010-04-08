@@ -88,7 +88,7 @@ describe("directives", function(){
   it('should error on wrong parsing of ng-repeat', function(){
     var scope = compile('<ul><li ng-repeat="i dont parse"></li></ul>');
     var log = "";
-    log += element.attr('ng-error') + ';';
+    log += element.attr('ng-exception') + ';';
     log += element.hasClass('ng-exception') + ';';
     expect(log).toEqual("\"Expected ng-repeat in form of 'item in collection' but got 'i dont parse'.\";true;");
   });

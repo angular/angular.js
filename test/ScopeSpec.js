@@ -78,7 +78,7 @@ describe('scope/model', function(){
     var element = jqLite('<div></div>');
     var scope = createScope();
     scope.$tryEval('throw "myError"', element);
-    expect(element.attr('ng-error')).toEqual('"myError"'); // errors are jsonified
+    expect(element.attr('ng-exception')).toEqual('"myError"'); // errors are jsonified
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 

@@ -299,20 +299,20 @@ BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
   var span = childNode(doc, 0);
   assertTrue(span.hasClass('ng-exception'));
   assertEquals('ErrorMsg1', fromJson(span.text()));
-  assertEquals('"ErrorMsg1"', span.attr('ng-error'));
+  assertEquals('"ErrorMsg1"', span.attr('ng-exception'));
 
   a.scope.$set('error.throw', function(){throw "MyError";});
   a.scope.$eval();
   span = childNode(doc, 0);
   assertTrue(span.hasClass('ng-exception'));
   assertTrue(span.text(), span.text().match('MyError') !== null);
-  assertEquals('"MyError"', span.attr('ng-error'));
+  assertEquals('"MyError"', span.attr('ng-exception'));
 
   a.scope.$set('error.throw', function(){return "ok";});
   a.scope.$eval();
   assertFalse(span.hasClass('ng-exception'));
   assertEquals('ok', span.text());
-  assertEquals(null, span.attr('ng-error'));
+  assertEquals(null, span.attr('ng-exception'));
 };
 
 BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheAttribute = function(){
@@ -322,14 +322,14 @@ BinderTest.prototype.testIfAttrBindingThrowsErrorDecorateTheAttribute = function
   a.scope.$set('error.throw', function(){throw "ErrorMsg";});
   a.scope.$eval();
   assertTrue('ng-exception', doc.hasClass('ng-exception'));
-  assertEquals('"ErrorMsg"', doc.attr('ng-error'));
+  assertEquals('"ErrorMsg"', doc.attr('ng-exception'));
   assertEquals('before "ErrorMsg" after', doc.attr('attr'));
 
   a.scope.$set('error.throw', function(){ return 'X';});
   a.scope.$eval();
   assertFalse('!ng-exception', doc.hasClass('ng-exception'));
   assertEquals('before X after', doc.attr('attr'));
-  assertEquals(null, doc.attr('ng-error'));
+  assertEquals(null, doc.attr('ng-exception'));
 
 };
 
@@ -474,7 +474,7 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   };
   var input = c.node;
   input.click();
-  assertEquals({a:"abc", b:2}, fromJson(input.attr('ng-error')));
+  assertEquals({a:"abc", b:2}, fromJson(input.attr('ng-exception')));
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
   // TODO: I think that exception should never get cleared so this portion of test makes no sense

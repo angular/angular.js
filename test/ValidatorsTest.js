@@ -118,7 +118,7 @@ describe('Validator:asynchronous', function(){
     expect(input.hasClass('ng-input-indicator-wait')).toBeTruthy();
     fn("myError");
     expect(input.hasClass('ng-input-indicator-wait')).toBeFalsy();
-    expect(input.attr('ng-error')).toEqual("myError");
+    expect(input.attr('ng-validation-error')).toEqual("myError");
     scope.$element.remove();
   });
 

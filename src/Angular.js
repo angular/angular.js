@@ -10,7 +10,6 @@ var consoleNode,
     PRIORITY_WATCH    = -1000,
     PRIORITY_LAST     =  99999,
     NOOP              = 'noop',
-    NG_ERROR          = 'ng-error',
     NG_EXCEPTION      = 'ng-exception',
     NG_VALIDATION_ERROR = 'ng-validation-error',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
@@ -259,10 +258,10 @@ function elementError(element, type, error) {
   }
   if (error) {
     element.addClass(type);
-    element.attr(NG_ERROR, error);
+    element.attr(type, error);
   } else {
     element.removeClass(type);
-    element.removeAttr(NG_ERROR);
+    element.removeAttr(type);
   }
 }
 

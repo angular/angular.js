@@ -80,12 +80,17 @@ angularDirective("ng-bind-template", function(expression){
   };
 });
 
+var REMOVE_ATTRIBUTES = {
+  'disabled':true,
+  'readonly':true,
+  'checked':true
+};
 angularDirective("ng-bind-attr", function(expression){
   return function(element){
     this.$onEval(function(){
       foreach(this.$eval(expression), function(bindExp, key) {
         var value = compileBindTemplate(bindExp).call(this, element);
-        if (key == 'disabled' && !toBoolean(value)) {
+        if (REMOVE_ATTRIBUTES[lowercase(key)] && !toBoolean(value)) {
           element.removeAttr('disabled');
         } else {
           element.attr(key, value);

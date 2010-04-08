@@ -47,7 +47,7 @@ angularService("$location", function(browser){
 angularService("$hover", function(browser) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10;
   browser.hover(function(element, show){
-    if (show && (error = element.attr('ng-error'))) {
+    if (show && (error = element.attr(NG_EXCEPTION) || element.attr(NG_VALIDATION_ERROR))) {
       if (!tooltip) {
         tooltip = {
             callout: jqLite('<div id="ng-callout"></div>'),

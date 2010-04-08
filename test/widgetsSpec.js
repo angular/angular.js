@@ -54,36 +54,36 @@ describe("input widget", function(){
   it("should process ng-validation", function(){
     compile('<input type="text" name="price" value="abc" ng-validate="number"/>');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
-    expect(element.attr('ng-error')).toEqual('Not a number');
+    expect(element.attr('ng-validation-error')).toEqual('Not a number');
 
     scope.$set('price', '123');
     scope.$eval();
     expect(element.hasClass('ng-validation-error')).toBeFalsy();
-    expect(element.attr('ng-error')).toBeFalsy();
+    expect(element.attr('ng-validation-error')).toBeFalsy();
 
     element.val('x');
     element.trigger('keyup');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
-    expect(element.attr('ng-error')).toEqual('Not a number');
+    expect(element.attr('ng-validation-error')).toEqual('Not a number');
   });
 
   it("should process ng-required", function(){
     compile('<input type="text" name="price" ng-required/>');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
-    expect(element.attr('ng-error')).toEqual('Required');
+    expect(element.attr('ng-validation-error')).toEqual('Required');
 
     scope.$set('price', 'xxx');
     scope.$eval();
     expect(element.hasClass('ng-validation-error')).toBeFalsy();
-    expect(element.attr('ng-error')).toBeFalsy();
+    expect(element.attr('ng-validation-error')).toBeFalsy();
 
     element.val('');
     element.trigger('keyup');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
-    expect(element.attr('ng-error')).toEqual('Required');
+    expect(element.attr('ng-validation-error')).toEqual('Required');
   });
 
-  it("should process ng-required", function() {
+  it("should process ng-required2", function() {
     compile('<textarea name="name">Misko</textarea>');
     expect(scope.$get('name')).toEqual("Misko");
 
