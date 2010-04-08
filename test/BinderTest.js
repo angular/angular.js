@@ -174,34 +174,6 @@ BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
   assertTrue(savedCalled);
 };
 
-BinderTest.prototype.XtestParseEmptyAnchor = function(){
-  var binder = this.compile("<div/>").binder;
-  var location = binder.location;
-  var anchor = binder.anchor;
-  location.url = "a#x=1";
-  binder.parseAnchor();
-  assertEquals(1, binder.anchor.x);
-  location.url = "a#";
-  binder.parseAnchor();
-  assertTrue("old values did not get removed", !binder.anchor.x);
-  assertTrue("anchor gor replaced", anchor === binder.anchor);
-  assertEquals('undefined', typeof (anchor[""]));
-};
-
-BinderTest.prototype.XtestParseAnchor = function(){
-  var binder = this.compile("<div/>").binder;
-  var location = binder.location;
-  location.url = "a#x=1";
-  binder.parseAnchor();
-  assertEquals(binder.anchor.x, "1");
-  location.url = "a#a=b&c=%20&d";
-  binder.parseAnchor();
-  assertEquals(binder.anchor.a, 'b');
-  assertEquals(binder.anchor.c, ' ');
-  assertTrue(binder.anchor.d !== null);
-  assertTrue(!binder.anchor.x);
-};
-
 BinderTest.prototype.testRepeaterUpdateBindings = function(){
   var a = this.compile('<ul><LI ng-repeat="item in model.items" ng-bind="item.a"/></ul>');
   var form = a.node;
@@ -353,18 +325,6 @@ BinderTest.prototype.testNestedRepeater = function() {
         '<ul name="b1" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="0"></ul>'+
         '<ul name="b2" ng-bind-attr="{"name":"{{i}}"}" ng-repeat-index="1"></ul>'+
       '</div></div>', sortedHtml(a.node));
-};
-
-BinderTest.prototype.XtestRadioButtonGetsPrefixed = function () {
-  var a = this.compile('<div><input ng-repeat="m in model" type="radio" name="m.a" value="on"/></div>');
-  a.scope.$set('model', ['a1', 'a2']);
-  a.scope.$eval();
-
-  assertEquals('</div>' +
-      '<#comment></#comment>'+
-      '<input name="0:m.a" ng-repeat-index="0" type="radio" value="on"></input>'+
-      '<input name="1:m.a" ng-repeat-index="1" type="radio" value="on"></input></div>',
-      sortedHtml(a.node));
 };
 
 BinderTest.prototype.testHideBindingExpression = function() {
@@ -525,31 +485,6 @@ BinderTest.prototype.testShouldTemplateBindPreElements = function () {
   assertEquals('<pre ng-bind-template="Hello {{name}}!">Hello World!</pre>', sortedHtml(c.node));
 };
 
-BinderTest.prototype.XtestDissableAutoSubmit = function() {
-  var c = this.compile('<input type="submit" value="S"/>', null, {autoSubmit:true});
-  assertEquals(
-      '<input ng-action="$save()" ng-bind-attr="{"disabled":"{{$invalidWidgets}}"}" type="submit" value="S"></input>',
-      sortedHtml(c.node));
-
-  c = this.compile('<input type="submit" value="S"/>', null, {autoSubmit:false});
-  assertEquals(
-      '<input type="submit" value="S"></input>',
-      sortedHtml(c.node));
-};
-
-BinderTest.prototype.XtestSettingAnchorToNullOrUndefinedRemovesTheAnchorFromURL = function() {
-  var c = this.compile('');
-  c.binder.location.set("http://server/#a=1&b=2");
-  c.binder.parseAnchor();
-  assertEquals('1', c.binder.anchor.a);
-  assertEquals('2', c.binder.anchor.b);
-
-  c.binder.anchor.a = null;
-  c.binder.anchor.b = null;
-  c.binder.updateAnchor();
-  assertEquals('http://server/#', c.binder.location.get());
-};
-
 BinderTest.prototype.testFillInOptionValueWhenMissing = function() {
   var c = this.compile(
       '<select><option selected="true">{{a}}</option><option value="">{{b}}</option><option>C</option></select>');
@@ -570,9 +505,11 @@ BinderTest.prototype.testFillInOptionValueWhenMissing = function() {
   expect(optionC.text()).toEqual('C');
 };
 
-BinderTest.prototype.XtestValidateForm = function() {
-  var c = this.compile('<input name="name" ng-required>' +
-      '<div ng-repeat="item in items"><input name="item.name" ng-required/></div>');
+BinderTest.prototype.testValidateForm = function() {
+  var doc = jqLite(document.body);
+  doc.append('<div><input name="name" ng-required>' +
+          '<div ng-repeat="item in items"><input name="item.name" ng-required/></div></div>');
+  var c = this.compile(doc);
   var items = [{}, {}];
   c.scope.$set("items", items);
   c.scope.$eval();
@@ -599,8 +536,9 @@ BinderTest.prototype.XtestValidateForm = function() {
   assertEquals(0, c.scope.$get("$invalidWidgets.length"));
 };
 
-BinderTest.prototype.XtestValidateOnlyVisibleItems = function(){
-  var c = this.compile('<input name="name" ng-required><input ng-show="show" name="name" ng-required>');
+BinderTest.prototype.testValidateOnlyVisibleItems = function(){
+  var c = this.compile('<div><input name="name" ng-required><input ng-show="show" name="name" ng-required></div>');
+  jqLite(document.body).append(c.node);
   c.scope.$set("show", true);
   c.scope.$eval();
   assertEquals(2, c.scope.$get("$invalidWidgets.length"));
@@ -627,62 +565,6 @@ BinderTest.prototype.testDeleteAttributeIfEvaluatesFalse = function() {
   assertChild(3, false);
   assertChild(4, true);
   assertChild(5, false);
-};
-
-BinderTest.prototype.XtestItShouldCallListenersWhenAnchorChanges = function() {
-  var log = "";
-  var c = this.compile('<div ng-watch="$anchor.counter:count = count+1">');
-  c.scope.$set("count", 0);
-  c.scope.$watch("$anchor.counter", function(newValue, oldValue){
-    log += oldValue + "->" + newValue + ";";
-  });
-  assertEquals(0, c.scope.$get("count"));
-  c.binder.location.url = "#counter=1";
-  c.binder.onUrlChange();
-  assertEquals(1, c.scope.$get("count"));
-
-  c.binder.location.url = "#counter=1";
-  c.binder.onUrlChange();
-  assertEquals(1, c.scope.$get("count"));
-
-  c.binder.location.url = "#counter=2";
-  c.binder.onUrlChange();
-  assertEquals(2, c.scope.$get("count"));
-
-  c.binder.location.url = "#counter=2";
-  c.binder.onUrlChange();
-  assertEquals(2, c.scope.$get("count"));
-
-  c.binder.location.url = "#";
-  c.binder.onUrlChange();
-  assertEquals("undefined->1;1->2;2->undefined;", log);
-  assertEquals(3, c.scope.$get("count"));
-};
-
-BinderTest.prototype.XtestParseQueryString = function(){
-  var binder = new Binder();
-  assertJsonEquals({"a":"1"}, binder.parseQueryString("a=1"));
-  assertJsonEquals({"a":"1", "b":"two"}, binder.parseQueryString("a=1&b=two"));
-  assertJsonEquals({}, binder.parseQueryString(""));
-
-  assertJsonEquals({"a":"1", "b":""}, binder.parseQueryString("a=1&b="));
-  assertJsonEquals({"a":"1", "b":""}, binder.parseQueryString("a=1&b"));
-  assertJsonEquals({"a":"1", "b":" 2 "}, binder.parseQueryString("a=1&b=%202%20"));
-  assertJsonEquals({"a a":"1", "b":"2"}, binder.parseQueryString("a%20a=1&b=2"));
-
-};
-
-BinderTest.prototype.XtestSetBinderAnchorTriggersListeners = function(){
-  expectAsserts(2);
-  var doc = this.compile("<div/>");
-
-  doc.scope.$watch("$anchor.name", function(newVal, oldVal) {
-    assertEquals("new", newVal);
-    assertEquals(undefined, oldVal);
-  });
-
-  doc.$anchor.name = "new";
-  doc.binder.onUrlChange("http://base#name=new");
 };
 
 BinderTest.prototype.testItShouldDisplayErrorWhenActionIsSyntacticlyIncorect = function(){
@@ -768,9 +650,9 @@ BinderTest.prototype.testItBindHiddenInputFields = function(){
   assertEquals("abc", x.scope.$get("myName"));
 };
 
-BinderTest.prototype.xtestItShouldRenderMultiRootHtmlInBinding = function() {
+BinderTest.prototype.XtestItShouldRenderMultiRootHtmlInBinding = function() {
   var x = this.compile('<div>before {{a|html}}after</div>');
-  x.scope.$set("a", "a<b>c</b>d");
+  x.scope.a = "a<b>c</b>d";
   x.scope.$eval();
   assertEquals(
       '<div>before <span ng-bind="a|html">a<b>c</b>d</span>after</div>',
@@ -790,20 +672,3 @@ BinderTest.prototype.testItShouldUseFormaterForText = function() {
   assertEquals('1, 2, 3', input[0].value);
 };
 
-BinderTest.prototype.XtestWriteAnchor = function(){
-  var binder = this.compile("<div/>").binder;
-  binder.location.set('a');
-  binder.anchor.a = 'b';
-  binder.anchor.c = ' ';
-  binder.anchor.d = true;
-  binder.updateAnchor();
-  assertEquals(binder.location.get(), "a#a=b&c=%20&d");
-};
-
-BinderTest.prototype.XtestWriteAnchorAsPartOfTheUpdateView = function(){
-  var binder = this.compile("<div/>").binder;
-  binder.location.set('a');
-  binder.anchor.a = 'b';
-  binder.updateView();
-  assertEquals(binder.location.get(), "a#a=b");
-};

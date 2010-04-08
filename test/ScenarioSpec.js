@@ -19,46 +19,33 @@ describe("ScenarioSpec: Compilation", function(){
 });
 
 describe("ScenarioSpec: Scope", function(){
-  xit("should have set, get, eval, $init, updateView methods", function(){
+  it("should have set, get, eval, $init, updateView methods", function(){
     var scope = compile('<div>{{a}}</div>').$init();
     scope.$eval("$invalidWidgets.push({})");
     expect(scope.$set("a", 2)).toEqual(2);
     expect(scope.$get("a")).toEqual(2);
     expect(scope.$eval("a=3")).toEqual(3);
     scope.$eval();
-    expect(scope.$eval("$invalidWidgets")).toEqual([]);
     expect(jqLite(scope.$element).text()).toEqual('3');
   });
 
-  xit("should have $ objects", function(){
-    var scope = compile('<div></div>', {a:"b"});
-    expect(scope.$get('$anchor')).toBeDefined();
+  it("should have $ objects", function(){
+    var scope = compile('<div></div>', {$config: {a:"b"}});
+    expect(scope.$get('$location')).toBeDefined();
     expect(scope.$get('$eval')).toBeDefined();
     expect(scope.$get('$config')).toBeDefined();
     expect(scope.$get('$config.a')).toEqual("b");
-    expect(scope.$get('$datastore')).toBeDefined();
   });
 });
 
-xdescribe("ScenarioSpec: configuration", function(){
+describe("ScenarioSpec: configuration", function(){
   it("should take location object", function(){
-    var url = "http://server/#book=moby";
-    var onUrlChange;
-    var location = {
-        listen:function(fn){onUrlChange=fn;},
-        set:function(u){url = u;},
-        get:function(){return url;}
-    };
-    var scope = compile("<div>{{$anchor}}</div>", {location:location});
-    var $anchor = scope.$get('$anchor');
-    expect($anchor.book).toBeUndefined();
-    expect(onUrlChange).toBeUndefined();
-    scope.$init();
-    expect($anchor.book).toEqual('moby');
-    expect(onUrlChange).toBeDefined();
-
-    url = "http://server/#book=none";
-    onUrlChange();
-    expect($anchor.book).toEqual('none');
+    var url = "http://server/#?book=moby";
+    var scope = compile("<div>{{$location}}</div>");
+    var $location = scope.$get('$location');
+    expect($location.hashSearch.book).toBeUndefined();
+    scope.$browser.setUrl(url);
+    scope.$browser.fireUrlWatchers();
+    expect($location.hashSearch.book).toEqual('moby');
   });
 });

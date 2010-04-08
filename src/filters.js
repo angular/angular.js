@@ -24,7 +24,7 @@ var angularFilterGoogleChartApi;
 
 foreach({
   'currency': function(amount){
-    jQuery(this.$element).toggleClass('ng-format-negative', amount < 0);
+    this.$element.toggleClass('ng-format-negative', amount < 0);
     return '$' + angularFilter['number'].apply(this, [amount, 2]);
   },
 
@@ -60,7 +60,7 @@ foreach({
   },
 
   'json': function(object) {
-    jQuery(this.$element).addClass("ng-monospace");
+    this.$element.addClass("ng-monospace");
     return toJson(object, true);
   },
 

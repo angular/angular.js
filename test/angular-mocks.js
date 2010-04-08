@@ -45,6 +45,12 @@ MockBrowser.prototype = {
 
   watchUrl: function(fn) {
     this.watches.push(fn);
+  },
+
+  fireUrlWatchers: function() {
+    for(var i=0; i<this.watches.length; i++) {
+      this.watches[i](this.url);
+    }
   }
 };
 

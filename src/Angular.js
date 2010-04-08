@@ -83,7 +83,7 @@ function extensionMap(angular, name) {
 }
 
 function jqLiteWrap(element) {
-  if (typeof element == 'string') {
+  if (isString(element)) {
     var div = document.createElement('div');
     div.innerHTML = element;
     element = div.childNodes[0];
@@ -102,6 +102,12 @@ function lowercase(value){ return isString(value) ? value.toLowerCase() : value;
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function nodeName(element) { return (element[0] || element).nodeName; }
+
+function isVisible(element) {
+  var rect = element[0].getBoundingClientRect();
+  return rect.width !=0 && rect.height !=0;
+}
+
 function map(obj, iterator, context) {
   var results = [];
   foreach(obj, function(value, index, list) {

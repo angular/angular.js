@@ -74,19 +74,18 @@ function sortedHtml(element) {
   return html;
 }
 
-function isVisible(node) {
+function isCssVisible(node) {
   var display = node.css('display');
   if (display == 'block') display = "";
   return display != 'none';
 }
 
 function assertHidden(node) {
-  var display = node.css('display');
-  assertFalse("Node should be hidden but vas visible: " + sortedHtml(node), isVisible(node));
+  assertFalse("Node should be hidden but vas visible: " + sortedHtml(node), isCssVisible(node));
 }
 
 function assertVisible(node) {
-  assertTrue("Node should be visible but vas hidden: " + sortedHtml(node), isVisible(node));
+  assertTrue("Node should be visible but vas hidden: " + sortedHtml(node), isCssVisible(node));
 }
 
 function assertJsonEquals(expected, actual) {

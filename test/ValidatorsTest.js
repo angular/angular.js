@@ -1,20 +1,20 @@
 ValidatorTest = TestCase('ValidatorTest');
 
-ValidatorTest.prototype.XtestItShouldHaveThisSet = function() {
-  expectAsserts(5);
-  var self;
+ValidatorTest.prototype.testItShouldHaveThisSet = function() {
+  var validator = {};
   angular.validator.myValidator = function(first, last){
-    assertEquals('misko', first);
-    assertEquals('hevery', last);
-    self = this;
+    validator.first = first;
+    validator.last = last;
+    validator._this = this;
   };
-  var c = compile('<input name="name" ng-validate="myValidator:\'hevery\'"/>');
-  c.scope.$set('name', 'misko');
-  c.scope.$set('state', 'abc');
-  c.scope.$eval();
-  assertEquals('abc', self.state);
-  assertEquals('misko', self.name);
-  assertEquals('name', self.$element.name);
+  var scope = compile('<input name="name" ng-validate="myValidator:\'hevery\'"/>');
+  scope.name = 'misko';
+  scope.$init();
+  assertEquals('misko', validator.first);
+  assertEquals('hevery', validator.last);
+  assertSame(scope, validator._this);
+  delete angular.validator.myValidator;
+  scope.$element.remove();
 };
 
 ValidatorTest.prototype.testRegexp = function() {

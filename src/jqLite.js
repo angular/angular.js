@@ -140,6 +140,11 @@ JQLite.prototype = {
     this[0].className = trim((" " + this[0].className + " ").replace(/[\n\t]/g, " ").replace(" " + selector + " ", ""));
   },
 
+  toggleClass: function(selector, condition) {
+   var self = this;
+   (condition ? self.addClass : self.removeClass).call(self, selector);
+  },
+
   addClass: function( selector ) {
     if (!this.hasClass(selector)) {
       this[0].className = trim(this[0].className + ' ' + selector);

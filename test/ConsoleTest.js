@@ -7,6 +7,6 @@ ConsoleTest.prototype.XtestConsoleWrite = function(){
   assertEquals(jqLite(consoleNode).text(), 'Hello world');
   assertEquals(jqLite(consoleNode.childNodes[0])[0].className, 'error');
   consoleLog("error",["Bye"]);
-  assertEquals($(consoleNode).text(), 'Hello worldBye');
+  assertEquals(jqLite(consoleNode).text(), 'Hello worldBye');
   consoleNode = null;
 };

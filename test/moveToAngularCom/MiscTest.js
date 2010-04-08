@@ -7,13 +7,13 @@ BinderTest.prototype.testExpandEntityTagWithName = function(){
   assertEquals("friend", c.scope.$get("friend.$$anchor"));
 };
 
-BinderTest.prototype.XtestExpandSubmitButtonToAction = function(){
+BinderTest.prototype.testExpandSubmitButtonToAction = function(){
   var html = this.compileToHtml('<input type="submit" value="Save">');
   assertTrue(html, html.indexOf('ng-action="$save()"') > 0 );
   assertTrue(html, html.indexOf('ng-bind-attr="{"disabled":"{{$invalidWidgets}}"}"') > 0 );
 };
 
-BinderTest.prototype.XtestReplaceFileUploadWithSwf = function(){
+BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
   expectAsserts(1);
   var form = jQuery("body").append('<div id="testTag"><input type="file"></div>');
   form.data('scope', new Scope());

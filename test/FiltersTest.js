@@ -1,8 +1,8 @@
 FiltersTest = TestCase('FiltersTest');
 
-FiltersTest.prototype.XtestCurrency = function(){
-  var html = $('<span/>');
-  var context = {$element:html[0]};
+FiltersTest.prototype.testCurrency = function(){
+  var html = jqLite('<span/>');
+  var context = {$element:html};
   var currency = bind(context, angular.filter.currency);
 
   assertEquals(currency(0), '$0.00');
@@ -24,8 +24,8 @@ FiltersTest.prototype.testFilterThisIsContext = function(){
   delete angular.filter['testFn'];
 };
 
-FiltersTest.prototype.XtestNumberFormat = function(){
-  var context = {jqElement:$('<span/>')};
+FiltersTest.prototype.testNumberFormat = function(){
+  var context = {jqElement:jqLite('<span/>')};
   var number = bind(context, angular.filter.number);
 
   assertEquals('0', number(0, 0));
@@ -37,11 +37,11 @@ FiltersTest.prototype.XtestNumberFormat = function(){
   assertEquals("", number(1/0));
 };
 
-FiltersTest.prototype.XtestJson = function () {
-  assertEquals(toJson({a:"b"}, true), angular.filter.json({a:"b"}));
+FiltersTest.prototype.testJson = function () {
+  assertEquals(toJson({a:"b"}, true), angular.filter.json.call({$element:jqLite('<div></div>')}, {a:"b"}));
 };
 
-FiltersTest.prototype.XtestPackageTracking = function () {
+FiltersTest.prototype.testPackageTracking = function () {
   var assert = function(title, trackingNo) {
     var val = angular.filter.trackPackage(trackingNo, title);
     assertNotNull("Did Not Match: " + trackingNo, val);
@@ -69,7 +69,7 @@ FiltersTest.prototype.XtestPackageTracking = function () {
   assert('USPS', '9102801438635051633253');
 };
 
-FiltersTest.prototype.XtestLink = function() {
+FiltersTest.prototype.testLink = function() {
   var assert = function(text, url, obj){
     var val = angular.filter.link(obj);
     assertEquals(angular.filter.Meta.TAG, val.TAG);
@@ -80,14 +80,7 @@ FiltersTest.prototype.XtestLink = function() {
   assert("a@b.com", "mailto:a@b.com", "a@b.com");
 };
 
-FiltersTest.prototype.XtestBytes = function(){
-  var controller = new FileController();
-  assertEquals(angular.filter.bytes(123), '123 bytes');
-  assertEquals(angular.filter.bytes(1234), '1.2 KB');
-  assertEquals(angular.filter.bytes(1234567), '1.1 MB');
-};
-
-FiltersTest.prototype.XtestImage = function(){
+FiltersTest.prototype.testImage = function(){
   assertEquals(null, angular.filter.image());
   assertEquals(null, angular.filter.image({}));
   assertEquals(null, angular.filter.image(""));
@@ -100,7 +93,7 @@ FiltersTest.prototype.XtestImage = function(){
       angular.filter.image({url:"abc"}, 10, 20).html);
 };
 
-FiltersTest.prototype.XtestQRcode = function() {
+FiltersTest.prototype.testQRcode = function() {
   assertEquals(
       '<img width="200" height="200" src="http://chart.apis.google.com/chart?chl=Hello%20world&chs=200x200&cht=qr"/>',
       angular.filter.qrcode('Hello world').html);
@@ -109,17 +102,17 @@ FiltersTest.prototype.XtestQRcode = function() {
       angular.filter.qrcode('http://server?a&b=c', 100).html);
 };
 
-FiltersTest.prototype.XtestLowercase = function() {
+FiltersTest.prototype.testLowercase = function() {
   assertEquals('abc', angular.filter.lowercase('AbC'));
   assertEquals(null, angular.filter.lowercase(null));
 };
 
-FiltersTest.prototype.XtestUppercase = function() {
+FiltersTest.prototype.testUppercase = function() {
   assertEquals('ABC', angular.filter.uppercase('AbC'));
   assertEquals(null, angular.filter.uppercase(null));
 };
 
-FiltersTest.prototype.XtestLineCount = function() {
+FiltersTest.prototype.testLineCount = function() {
   assertEquals(1, angular.filter.linecount(null));
   assertEquals(1, angular.filter.linecount(''));
   assertEquals(1, angular.filter.linecount('a'));
@@ -127,30 +120,30 @@ FiltersTest.prototype.XtestLineCount = function() {
   assertEquals(3, angular.filter.linecount('a\nb\nc'));
 };
 
-FiltersTest.prototype.XtestIf = function() {
+FiltersTest.prototype.testIf = function() {
   assertEquals('A', angular.filter['if']('A', true));
   assertEquals(undefined, angular.filter['if']('A', false));
 };
 
-FiltersTest.prototype.XtestUnless = function() {
+FiltersTest.prototype.testUnless = function() {
   assertEquals('A', angular.filter.unless('A', false));
   assertEquals(undefined, angular.filter.unless('A', true));
 };
 
-FiltersTest.prototype.XtestGoogleChartApiEncode = function() {
+FiltersTest.prototype.testGoogleChartApiEncode = function() {
   assertEquals(
       '<img width="200" height="200" src="http://chart.apis.google.com/chart?chl=Hello world&chs=200x200&cht=qr"/>',
       angular.filter.googleChartApi.encode({cht:"qr", chl:"Hello world"}).html);
 };
 
-FiltersTest.prototype.XtestHtml = function() {
+FiltersTest.prototype.testHtml = function() {
   assertEquals(
       "a<b>c</b>d",
       angular.filter.html("a<b>c</b>d").html);
   assertTrue(angular.filter.html("a<b>c</b>d") instanceof angular.filter.Meta);
 };
 
-FiltersTest.prototype.XtestLinky = function() {
+FiltersTest.prototype.testLinky = function() {
   var linky = angular.filter.linky;
   assertEquals(
       '<a href="http://ab">http://ab</a> ' +
