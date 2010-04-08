@@ -100,5 +100,12 @@ angularService("$invalidWidgets", function(){
     if (index === -1)
       invalidWidgets.push(element);
   };
+  invalidWidgets.visible = function() {
+    var count = 0;
+    foreach(invalidWidgets, function(widget){
+      count = count + (isVisible(widget) ? 1 : 0);
+    });
+    return count;
+  };
   return invalidWidgets;
 });

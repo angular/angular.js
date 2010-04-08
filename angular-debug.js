@@ -107,7 +107,7 @@ function extensionMap(angular, name) {
 }
 
 function jqLiteWrap(element) {
-  if (typeof element == 'string') {
+  if (isString(element)) {
     var div = document.createElement('div');
     div.innerHTML = element;
     element = div.childNodes[0];
@@ -126,6 +126,12 @@ function lowercase(value){ return isString(value) ? value.toLowerCase() : value;
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function nodeName(element) { return (element[0] || element).nodeName; }
+
+function isVisible(element) {
+  var rect = element[0].getBoundingClientRect();
+  return rect.width !=0 && rect.height !=0;
+}
+
 function map(obj, iterator, context) {
   var results = [];
   foreach(obj, function(value, index, list) {
@@ -1940,6 +1946,11 @@ JQLite.prototype = {
     this[0].className = trim((" " + this[0].className + " ").replace(/[\n\t]/g, " ").replace(" " + selector + " ", ""));
   },
 
+  toggleClass: function(selector, condition) {
+   var self = this;
+   (condition ? self.addClass : self.removeClass).call(self, selector);
+  },
+
   addClass: function( selector ) {
     if (!this.hasClass(selector)) {
       this[0].className = trim(this[0].className + ' ' + selector);
@@ -2361,7 +2372,7 @@ var angularFilterGoogleChartApi;
 
 foreach({
   'currency': function(amount){
-    jQuery(this.$element).toggleClass('ng-format-negative', amount < 0);
+    this.$element.toggleClass('ng-format-negative', amount < 0);
     return '$' + angularFilter['number'].apply(this, [amount, 2]);
   },
 
@@ -2397,7 +2408,7 @@ foreach({
   },
 
   'json': function(object) {
-    jQuery(this.$element).addClass("ng-monospace");
+    this.$element.addClass("ng-monospace");
     return toJson(object, true);
   },
 
@@ -3124,7 +3135,9 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
-    var error = required && !trim(value) ? "Required" : validator({state:scope, scope:{get:scope.$get, set:scope.$set}}, value);
+    var error = required && !trim(value) ?
+            "Required" :
+             validator({state:scope, scope:{get:scope.$get, set:scope.$set}}, value);
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
@@ -3449,6 +3462,13 @@ angularService("$invalidWidgets", function(){
     var index = indexOf(invalidWidgets, element);
     if (index === -1)
       invalidWidgets.push(element);
+  };
+  invalidWidgets.visible = function() {
+    var count = 0;
+    foreach(invalidWidgets, function(widget){
+      count = count + (isVisible(widget) ? 1 : 0);
+    });
+    return count;
   };
   return invalidWidgets;
 });

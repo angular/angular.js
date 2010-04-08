@@ -66,9 +66,7 @@ describe("service $invalidWidgets", function(){
   });
 
   it("should count number of invalid widgets", function(){
-    var doc = jqLite(window.document.body);
-    doc.append('<input name="price" ng-required></input>');
-    var scope = compile(doc).$init();
+    var scope = compile('<input name="price" ng-required></input>').$init();
     expect(scope.$invalidWidgets.length).toEqual(1);
     scope.price = 123;
     scope.$eval();

@@ -506,10 +506,8 @@ BinderTest.prototype.testFillInOptionValueWhenMissing = function() {
 };
 
 BinderTest.prototype.testValidateForm = function() {
-  var doc = jqLite(document.body);
-  doc.append('<div><input name="name" ng-required>' +
+  var c = this.compile('<div><input name="name" ng-required>' +
           '<div ng-repeat="item in items"><input name="item.name" ng-required/></div></div>');
-  var c = this.compile(doc);
   var items = [{}, {}];
   c.scope.$set("items", items);
   c.scope.$eval();
@@ -545,7 +543,7 @@ BinderTest.prototype.testValidateOnlyVisibleItems = function(){
 
   c.scope.$set("show", false);
   c.scope.$eval();
-  assertEquals(1, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(1, c.scope.$invalidWidgets.visible());
 };
 
 BinderTest.prototype.testDeleteAttributeIfEvaluatesFalse = function() {
