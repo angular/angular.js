@@ -42,6 +42,20 @@ describe("services", function(){
     expect(scope.$location.toString()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html#');
   });
 
+  it('should update url on hash change', function(){
+    scope.$location.parse('http://server/#path?a=b');
+    scope.$location.hash = '';
+    expect(scope.$location.toString()).toEqual('http://server/#');
+    expect(scope.$location.hashPath).toEqual('');
+  });
+
+  it('should update url on hashPath change', function(){
+    scope.$location.parse('http://server/#path?a=b');
+    scope.$location.hashPath = '';
+    expect(scope.$location.toString()).toEqual('http://server/#?a=b');
+    expect(scope.$location.hash).toEqual('?a=b');
+  });
+
   xit('should add stylesheets', function(){
     scope.$document = {
       getElementsByTagName: function(name){

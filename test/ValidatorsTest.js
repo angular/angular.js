@@ -12,7 +12,7 @@ ValidatorTest.prototype.testItShouldHaveThisSet = function() {
   scope.$init();
   assertEquals('misko', validator.first);
   assertEquals('hevery', validator.last);
-  assertSame(scope, validator._this);
+  assertSame(scope, validator._this.__proto__);
   delete angular.validator.myValidator;
   scope.$element.remove();
 };

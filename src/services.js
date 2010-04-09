@@ -7,6 +7,7 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(browser){
   var scope = this, location = {parse:parse, toString:toString};
+  var lastHash;
   function parse(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
@@ -18,16 +19,25 @@ angularService("$location", function(browser){
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
         location.hash = match[9];
-        if (location.hash) location.hash = location.hash.substr(1);
+        if (location.hash)
+          location.hash = location.hash.substr(1);
+        lastHash = location.hash;
         location.hashPath = match[11] || '';
         location.hashSearch = parseKeyValue(match[13]);
       }
     }
   }
   function toString() {
-    var hashKeyValue = toKeyValue(location.hashSearch),
-        hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : '');
-    return location.href.split('#')[0] + '#' + (hash ? hash : '');
+    if (lastHash === location.hash) {
+      var hashKeyValue = toKeyValue(location.hashSearch),
+          hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : ''),
+          url = location.href.split('#')[0] + '#' + (hash ? hash : '');
+      if (url !== location.href) parse(url);
+      return url;
+    } else {
+      parse(location.href.split('#')[0] + '#' + location.hash);
+      return toString();
+    }
   }
   browser.watchUrl(function(url){
     parse(url);
@@ -35,11 +45,7 @@ angularService("$location", function(browser){
   });
   parse(browser.getUrl());
   this.$onEval(PRIORITY_LAST, function(){
-    var href = toString();
-    if (href != location.href) {
-      browser.setUrl(href);
-      location.href = href;
-    }
+    browser.setUrl(toString());
   });
   return location;
 }, {inject: ['$browser']});
@@ -69,6 +75,7 @@ angularService("$hover", function(browser) {
         tooltip.arrow.addClass('ng-arrow-right');
         tooltip.arrow.css({left: (width + 1)+'px'});
         tooltip.callout.css({
+          position: 'fixed',
           left: (elementRect.left - arrowWidth - width - 4) + "px",
           top: (elementRect.top - 3) + "px",
           width: width + "px"
@@ -76,6 +83,7 @@ angularService("$hover", function(browser) {
       } else {
         tooltip.arrow.addClass('ng-arrow-left');
         tooltip.callout.css({
+          position: 'fixed',
           left: (elementRect.right + arrowWidth) + "px",
           top: (elementRect.top - 3) + "px",
           width: width + "px"

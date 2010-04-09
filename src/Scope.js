@@ -179,7 +179,10 @@ function createScope(parent, services, existing) {
   }
 
   foreach(services, function(_, name){
-    instance[name] = inject(name);
+    var service = inject(name);
+    if (service) {
+      instance[name] = service;
+    }
   });
 
   return instance;

@@ -43,7 +43,7 @@
   addScript("/JSON.js");
   addScript("/Compiler.js");
   addScript("/Scope.js");
-  addScript("/jqlite.js");
+  addScript("/jqLite.js");
   addScript("/Parser.js");
   addScript("/Resource.js");
   addScript("/Browser.js");

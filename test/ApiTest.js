@@ -250,3 +250,7 @@ ApiTest.prototype.testStringFromUTC = function(){
   assertEquals("2003-09-10T13:02:03Z", angular.Date.toString(date));
   assertEquals("str", angular.String.toDate("str"));
 };
+
+ApiTest.prototype.testObjectShouldHaveExtend = function(){
+  assertEquals(angular.Object.extend, extend);
+};

@@ -143,8 +143,8 @@ Compiler.prototype = {
 };
 
 function eachTextNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
-  for (i = 0; i < size; i++) {
+  var i, chldNodes = element[0].childNodes || [], chld;
+  for (i = 0; i < chldNodes.length; i++) {
     if(isTextNode(chld = chldNodes[i])) {
       fn(jqLite(chld), i);
     }
@@ -152,8 +152,8 @@ function eachTextNode(element, fn){
 }
 
 function eachNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
-  for (i = 0; i < size; i++) {
+  var i, chldNodes = element[0].childNodes || [], chld;
+  for (i = 0; i < chldNodes.length; i++) {
     if(!isTextNode(chld = chldNodes[i])) {
       fn(jqLite(chld), i);
     }
@@ -161,11 +161,11 @@ function eachNode(element, fn){
 }
 
 function eachAttribute(element, fn){
-  var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr, attrValue = {};
-  for (i = 0; i < size; i++) {
+  var i, attrs = element[0].attributes || [], chld, attr, attrValue = {};
+  for (i = 0; i < attrs.length; i++) {
     attr = attrs[i];
     attrValue[attr.name] = attr.value;
   }
-  foreach(attrValue, fn);
+  foreachSorted(attrValue, fn);
 }
 

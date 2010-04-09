@@ -343,7 +343,7 @@ function merge(src, dst) {
 }
 
 function compile(element, parentScope, overrides) {
-  var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
+  var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget),
       $element = jqLite(element),
       parent = extend({}, parentScope);
   parent.$element = $element;
@@ -641,8 +641,8 @@ Compiler.prototype = {
 };
 
 function eachTextNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
-  for (i = 0; i < size; i++) {
+  var i, chldNodes = element[0].childNodes || [], chld;
+  for (i = 0; i < chldNodes.length; i++) {
     if(isTextNode(chld = chldNodes[i])) {
       fn(jqLite(chld), i);
     }
@@ -650,8 +650,8 @@ function eachTextNode(element, fn){
 }
 
 function eachNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], size = chldNodes.length, chld;
-  for (i = 0; i < size; i++) {
+  var i, chldNodes = element[0].childNodes || [], chld;
+  for (i = 0; i < chldNodes.length; i++) {
     if(!isTextNode(chld = chldNodes[i])) {
       fn(jqLite(chld), i);
     }
@@ -659,12 +659,12 @@ function eachNode(element, fn){
 }
 
 function eachAttribute(element, fn){
-  var i, attrs = element[0].attributes || [], size = attrs.length, chld, attr, attrValue = {};
-  for (i = 0; i < size; i++) {
+  var i, attrs = element[0].attributes || [], chld, attr, attrValue = {};
+  for (i = 0; i < attrs.length; i++) {
     attr = attrs[i];
     attrValue[attr.name] = attr.value;
   }
-  foreach(attrValue, fn);
+  foreachSorted(attrValue, fn);
 }
 
 function getter(instance, path, unboundFn) {
@@ -848,7 +848,10 @@ function createScope(parent, services, existing) {
   }
 
   foreach(services, function(_, name){
-    instance[name] = inject(name);
+    var service = inject(name);
+    if (service) {
+      instance[name] = service;
+    }
   });
 
   return instance;
@@ -2026,7 +2029,9 @@ var angularGlobal = {
 var angularCollection = {
   'size': size
 };
-var angularObject = {};
+var angularObject = {
+  'extend': extend
+};
 var angularArray = {
   'indexOf': indexOf,
   'include': includes,
@@ -3135,9 +3140,11 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
-    var error = required && !trim(value) ?
-            "Required" :
-             validator({state:scope, scope:{get:scope.$get, set:scope.$set}}, value);
+    var error,
+        validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
+    error = required && !trim(value) ?
+          "Required" :
+           validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value);
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
@@ -3298,7 +3305,8 @@ angularWidget('NG:INCLUDE', function(element){
 angularWidget('NG:SWITCH', function ngSwitch(element){
   var compiler = this,
       watchExpr = element.attr("on"),
-      whenFn = ngSwitch[element.attr("using") || 'equals'];
+      whenExpr = (element.attr("using") || 'equals').split(":");
+      whenFn = ngSwitch[whenExpr.shift()];
       changeExpr = element.attr('change') || '',
       cases = [];
   if (!whenFn) throw "Using expression '" + usingExpr + "' unknown.";
@@ -3307,7 +3315,11 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     if (when) {
       cases.push({
         when: function(scope, value){
-          return whenFn.call(scope, value, when);
+          var args = [value, when];
+          foreach(whenExpr, function(arg){
+            args.push(arg);
+          });
+          return whenFn.apply(scope, args);
         },
         change: changeExpr,
         element: caseElement,
@@ -3320,13 +3332,10 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     var scope = this, childScope;
     this.$watch(watchExpr, function(value){
       element.html('');
-      childScope = null;
-      var params = {};
+      childScope = createScope(scope);
       foreach(cases, function(switchCase){
-        if (switchCase.when(params, value)) {
+        if (switchCase.when(childScope, value)) {
           element.append(switchCase.element);
-          childScope = createScope(scope);
-          extend(childScope, params);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(switchCase.element, childScope);
           childScope.$init();
@@ -3341,13 +3350,15 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
   equals: function(on, when) {
     return on == when;
   },
-  route: function(on, when) {
-    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$', params = [], self = this;
+  route: function(on, when, dstName) {
+    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
+        params = [],
+        dst = {};
     foreach(when.split(/\W/), function(param){
       if (param) {
         var paramRegExp = new RegExp(":" + param + "([\\W])");
         if (regex.match(paramRegExp)) {
-          regex = regex.replace(paramRegExp, "(.*)$1");
+          regex = regex.replace(paramRegExp, "([^\/]*)$1");
           params.push(param);
         }
       }
@@ -3355,8 +3366,9 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     var match = on.match(new RegExp(regex));
     if (match) {
       foreach(params, function(name, index){
-        self[name] = match[index + 1];
+        dst[name] = match[index + 1];
       });
+      if (dstName) this.$set(dstName, dst);
     }
     return match;
   }
@@ -3370,6 +3382,7 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(browser){
   var scope = this, location = {parse:parse, toString:toString};
+  var lastHash;
   function parse(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
@@ -3381,16 +3394,25 @@ angularService("$location", function(browser){
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
         location.hash = match[9];
-        if (location.hash) location.hash = location.hash.substr(1);
+        if (location.hash)
+          location.hash = location.hash.substr(1);
+        lastHash = location.hash;
         location.hashPath = match[11] || '';
         location.hashSearch = parseKeyValue(match[13]);
       }
     }
   }
   function toString() {
-    var hashKeyValue = toKeyValue(location.hashSearch),
-        hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : '');
-    return location.href.split('#')[0] + '#' + (hash ? hash : '');
+    if (lastHash === location.hash) {
+      var hashKeyValue = toKeyValue(location.hashSearch),
+          hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : ''),
+          url = location.href.split('#')[0] + '#' + (hash ? hash : '');
+      if (url !== location.href) parse(url);
+      return url;
+    } else {
+      parse(location.href.split('#')[0] + '#' + location.hash);
+      return toString();
+    }
   }
   browser.watchUrl(function(url){
     parse(url);
@@ -3398,11 +3420,7 @@ angularService("$location", function(browser){
   });
   parse(browser.getUrl());
   this.$onEval(PRIORITY_LAST, function(){
-    var href = toString();
-    if (href != location.href) {
-      browser.setUrl(href);
-      location.href = href;
-    }
+    browser.setUrl(toString());
   });
   return location;
 }, {inject: ['$browser']});
@@ -3432,6 +3450,7 @@ angularService("$hover", function(browser) {
         tooltip.arrow.addClass('ng-arrow-right');
         tooltip.arrow.css({left: (width + 1)+'px'});
         tooltip.callout.css({
+          position: 'fixed',
           left: (elementRect.left - arrowWidth - width - 4) + "px",
           top: (elementRect.top - 3) + "px",
           width: width + "px"
@@ -3439,6 +3458,7 @@ angularService("$hover", function(browser) {
       } else {
         tooltip.arrow.addClass('ng-arrow-left');
         tooltip.callout.css({
+          position: 'fixed',
           left: (elementRect.right + arrowWidth) + "px",
           top: (elementRect.top - 3) + "px",
           width: width + "px"

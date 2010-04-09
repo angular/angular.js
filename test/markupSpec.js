@@ -47,6 +47,11 @@ describe("markups", function(){
     expect(element.html()).toEqual('<option value="A">A</option>');
   });
 
+  it('should process all bindings when we have leading space', function(){
+    compile('<a> {{a}}<br/>{{b}}</a>');
+    expect(sortedHtml(scope.$element)).toEqual('<a> <span ng-bind="a"></span><br></br><span ng-bind="b"></span></a>');
+  });
+
 });
 
 

@@ -207,11 +207,16 @@ describe("input widget", function(){
 
 describe('ng:switch', function(){
   it("should match urls", function(){
-    var scope = compile('<ng:switch on="url" using="route"><div ng-switch-when="/Book/:name">{{name}}</div></ng:include>');
+    var scope = compile('<ng:switch on="url" using="route:params"><div ng-switch-when="/Book/:name">{{params.name}}</div></ng:include>');
     scope.url = '/Book/Moby';
     scope.$init();
-//    jstestdriver.console.log('text');
     expect(scope.$element.text()).toEqual('Moby');
+  });
+
+  it("should match sandwich ids", function(){
+    var scope = {};
+    var match = angular.widget['NG:SWITCH'].route.call(scope, '/a/123/b', '/a/:id');
+    expect(match).toBeFalsy();
   });
 
   it('should call init on switch', function(){

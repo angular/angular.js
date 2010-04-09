@@ -14,7 +14,9 @@ var angularGlobal = {
 var angularCollection = {
   'size': size
 };
-var angularObject = {};
+var angularObject = {
+  'extend': extend
+};
 var angularArray = {
   'indexOf': indexOf,
   'include': includes,

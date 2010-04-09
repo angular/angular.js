@@ -27,9 +27,11 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
-    var error = required && !trim(value) ?
-            "Required" :
-             validator({state:scope, scope:{get:scope.$get, set:scope.$set}}, value);
+    var error,
+        validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
+    error = required && !trim(value) ?
+          "Required" :
+           validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value);
     if (error !== lastError) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
@@ -190,7 +192,8 @@ angularWidget('NG:INCLUDE', function(element){
 angularWidget('NG:SWITCH', function ngSwitch(element){
   var compiler = this,
       watchExpr = element.attr("on"),
-      whenFn = ngSwitch[element.attr("using") || 'equals'];
+      whenExpr = (element.attr("using") || 'equals').split(":");
+      whenFn = ngSwitch[whenExpr.shift()];
       changeExpr = element.attr('change') || '',
       cases = [];
   if (!whenFn) throw "Using expression '" + usingExpr + "' unknown.";
@@ -199,7 +202,11 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     if (when) {
       cases.push({
         when: function(scope, value){
-          return whenFn.call(scope, value, when);
+          var args = [value, when];
+          foreach(whenExpr, function(arg){
+            args.push(arg);
+          });
+          return whenFn.apply(scope, args);
         },
         change: changeExpr,
         element: caseElement,
@@ -212,13 +219,10 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     var scope = this, childScope;
     this.$watch(watchExpr, function(value){
       element.html('');
-      childScope = null;
-      var params = {};
+      childScope = createScope(scope);
       foreach(cases, function(switchCase){
-        if (switchCase.when(params, value)) {
+        if (switchCase.when(childScope, value)) {
           element.append(switchCase.element);
-          childScope = createScope(scope);
-          extend(childScope, params);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(switchCase.element, childScope);
           childScope.$init();
@@ -233,13 +237,15 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
   equals: function(on, when) {
     return on == when;
   },
-  route: function(on, when) {
-    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$', params = [], self = this;
+  route: function(on, when, dstName) {
+    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
+        params = [],
+        dst = {};
     foreach(when.split(/\W/), function(param){
       if (param) {
         var paramRegExp = new RegExp(":" + param + "([\\W])");
         if (regex.match(paramRegExp)) {
-          regex = regex.replace(paramRegExp, "(.*)$1");
+          regex = regex.replace(paramRegExp, "([^\/]*)$1");
           params.push(param);
         }
       }
@@ -247,8 +253,9 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
     var match = on.match(new RegExp(regex));
     if (match) {
       foreach(params, function(name, index){
-        self[name] = match[index + 1];
+        dst[name] = match[index + 1];
       });
+      if (dstName) this.$set(dstName, dst);
     }
     return match;
   }
