@@ -1,25 +1,3 @@
-angularFilter.Meta = function(obj){
-  if (obj) {
-    for ( var key in obj) {
-      this[key] = obj[key];
-    }
-  }
-};
-angularFilter.Meta.get = function(obj, attr){
-  attr = attr || 'text';
-  switch(typeof obj) {
-  case "string":
-    return attr == "text" ? obj : undefined;
-  case "object":
-    if (obj && typeof obj[attr] !== "undefined") {
-      return obj[attr];
-    }
-    return undefined;
-  default:
-    return obj;
-  }
-};
-
 var angularFilterGoogleChartApi;
 
 foreach({
@@ -92,31 +70,33 @@ foreach({
           if (!returnValue && regexp.test(tNo)) {
             var text = carrier.name + ": " + trackingNo;
             var url = carrier.url + trackingNo;
-            returnValue = new angularFilter.Meta({
-              text:text,
-              url:url,
-              html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
-              trackingNo:trackingNo});
+            returnValue = jqLite('<a></a>');
+            returnValue.text(text);
+            returnValue.attr('href', url);
           }
         });
       });
       if (returnValue)
         return returnValue;
       else if (trackingNo)
-        return noMatch || new angularFilter.Meta({text:trackingNo + " is not recognized"});
+        return noMatch || trackingNo + " is not recognized";
       else
         return null;
     };})(),
 
   'link': function(obj, title) {
-    var text = title || angularFilter.Meta.get(obj);
-    var url = angularFilter.Meta.get(obj, "url") || angularFilter.Meta.get(obj);
-    if (url) {
-      if (angular.validator.email(url) === null) {
-        url = "mailto:" + url;
+    if (obj) {
+      var text = title || obj.text || obj;
+      var url = obj.url || obj;
+      if (url) {
+        if (angular.validator.email(url) === null) {
+          url = "mailto:" + url;
+        }
+        var a = jqLite('<a></a>');
+        a.attr('href', url);
+        a.text(text);
+        return a;
       }
-      var html = '<a href="' + escapeHtml(url) + '">' + text + '</a>';
-      return new angularFilter.Meta({text:text, url:url, html:html});
     }
     return obj;
   },
@@ -143,31 +123,27 @@ foreach({
 
   'image': function(obj, width, height) {
     if (obj && obj.url) {
-      var style = "";
+      var style = "", img = jqLite('<img>');
       if (width) {
-        style = ' style="max-width: ' + width +
-                'px; max-height: ' + (height || width) + 'px;"';
+        img.css('max-width', width + 'px');
+        img.css('max-height', (height || width) + 'px');
       }
-      return new angularFilter.Meta({url:obj.url, text:obj.url,
-        html:'<img src="'+obj.url+'"' + style + '/>'});
+      img.attr('src', obj.url);
+      return img;
     }
     return null;
   },
 
-  'lowercase': function (obj) {
-    var text = angularFilter.Meta.get(obj);
-    return text ? ("" + text).toLowerCase() : text;
-  },
+  'lowercase': lowercase,
 
-  'uppercase': function (obj) {
-    var text = angularFilter.Meta.get(obj);
-    return text ? ("" + text).toUpperCase() : text;
-  },
+  'uppercase': uppercase,
 
   'linecount': function (obj) {
-    var text = angularFilter.Meta.get(obj);
-    if (text==='' || !text) return 1;
-    return text.split(/\n|\f/).length;
+    if (isString(obj)) {
+      if (obj==='') return 1;
+      return obj.split(/\n|\f/).length;
+    }
+    return 1;
   },
 
   'if': function (result, expression) {
@@ -236,8 +212,9 @@ foreach({
       'encode': function(params, width, height) {
         width = width || 200;
         height = height || width;
-        var url = "http://chart.apis.google.com/chart?";
-        var urlParam = [];
+        var url = "http://chart.apis.google.com/chart?",
+            urlParam = [],
+            img = jqLite('<img>');
         params['chs'] = width + "x" + height;
         foreach(params, function(value, key){
           if (value) {
@@ -246,8 +223,9 @@ foreach({
         });
         urlParam.sort();
         url += urlParam.join("&");
-        return new angularFilter.Meta({url:url,
-          html:'<img width="' + width + '" height="' + height + '" src="'+url+'"/>'});
+        img.attr('src', url);
+        img.css({width: width + 'px', height: height + 'px'});
+        return img;
       }
     }
   ),
@@ -291,7 +269,7 @@ foreach({
   },
 
   'html': function(html){
-    return new angularFilter.Meta({html:html});
+    return jqLite(html);
   },
 
   'linky': function(text){
@@ -313,7 +291,7 @@ foreach({
       raw = raw.substring(i + url.length);
     }
     html.push(escapeHtml(raw));
-    return new angularFilter.Meta({text:text, html:html.join('')});
+    return jqLite(html.join(''));
   }
 }, function(v,k){angularFilter[k] = v;});
 

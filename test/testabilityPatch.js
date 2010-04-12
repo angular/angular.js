@@ -35,7 +35,7 @@ function trigger(element, type) {
 
 function sortedHtml(element) {
   var html = "";
-  (function toString(node) {
+  foreach(element, function toString(node) {
     if (node.nodeName == "#text") {
       html += escapeHtml(node.nodeValue);
     } else {
@@ -56,6 +56,7 @@ function sortedHtml(element) {
             attr.name !='size' &&
             attr.name !='start' &&
             attr.name !='tabIndex' &&
+            attr.name !='style' &&
             attr.name.substr(0, 6) != 'jQuery') {
           // in IE we need to check for all of these.
           attrs.push(' ' + attr.name + '="' + attr.value + '"');
@@ -63,6 +64,17 @@ function sortedHtml(element) {
       }
       attrs.sort();
       html += attrs.join('');
+      var style = [];
+      for(var name in node.style) {
+        var value = node.style[name];
+        if (value && isString(value) && (name != 1*name) && (name != 'cssText')) {
+          style.push(name + ': ' + value + ';');
+        }
+      }
+      style.sort();
+      if (style.length) {
+        html += ' style="' + style.join(' ') + '"';
+      }
       html += '>';
       var children = node.childNodes;
       for(var j=0; j<children.length; j++) {
@@ -70,7 +82,7 @@ function sortedHtml(element) {
       }
       html += '</' + node.nodeName.toLowerCase() + '>';
     }
-  })(element[0]);
+  });
   return html;
 }
 

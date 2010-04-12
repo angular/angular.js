@@ -37,6 +37,13 @@ describe("directives", function(){
     expect(element.text()).toEqual('misko');
   });
 
+  it('should ng-bind html', function() {
+    var scope = compile('<div ng-bind="html|html"></div>');
+    scope.html = '<div>hello</div>';
+    scope.$eval();
+    expect(element.html()).toEqual('<div>hello</div>');
+  });
+
   it('should ng-bind-template', function() {
     var scope = compile('<div ng-bind-template="Hello {{name}}!"></div>');
     scope.$set('name', 'Misko');

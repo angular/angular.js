@@ -45,11 +45,8 @@ FiltersTest.prototype.testPackageTracking = function () {
   var assert = function(title, trackingNo) {
     var val = angular.filter.trackPackage(trackingNo, title);
     assertNotNull("Did Not Match: " + trackingNo, val);
-    assertEquals(angular.filter.Meta.TAG, val.TAG);
-    assertEquals(title + ": " + trim(trackingNo), val.text);
-    assertNotNull(val.url);
-    assertEquals(trim(trackingNo), val.trackingNo);
-    assertEquals('<a href="' + val.url + '">' + val.text + '</a>', val.html);
+    assertEquals(title + ": " + trim(trackingNo), val.text());
+    assertNotNull(val.attr('href'));
   };
   assert('UPS', ' 1Z 999 999 99 9999 999 9 ');
   assert('UPS', '1ZW5w5220379084747');
@@ -72,8 +69,7 @@ FiltersTest.prototype.testPackageTracking = function () {
 FiltersTest.prototype.testLink = function() {
   var assert = function(text, url, obj){
     var val = angular.filter.link(obj);
-    assertEquals(angular.filter.Meta.TAG, val.TAG);
-    assertEquals('<a href="' + url + '">' + text + '</a>', val.html);
+    assertEquals('<a href="' + url + '">' + text + '</a>', sortedHtml(val));
   };
   assert("url", "url", "url");
   assert("hello", "url", {text:"hello", url:"url"});
@@ -84,22 +80,22 @@ FiltersTest.prototype.testImage = function(){
   assertEquals(null, angular.filter.image());
   assertEquals(null, angular.filter.image({}));
   assertEquals(null, angular.filter.image(""));
-  assertEquals('<img src="abc"/>', angular.filter.image({url:"abc"}).html);
+  assertEquals('<img src="abc"></img>', sortedHtml(angular.filter.image({url:"abc"})));
   assertEquals(
-      '<img src="abc" style="max-width: 10px; max-height: 10px;"/>',
-      angular.filter.image({url:"abc"}, 10).html);
+      '<img src="abc" style="max-height: 10px; max-width: 10px;"></img>',
+      sortedHtml(angular.filter.image({url:"abc"}, 10)));
   assertEquals(
-      '<img src="abc" style="max-width: 10px; max-height: 20px;"/>',
-      angular.filter.image({url:"abc"}, 10, 20).html);
+      '<img src="abc" style="max-height: 20px; max-width: 10px;"></img>',
+      sortedHtml(angular.filter.image({url:"abc"}, 10, 20)));
 };
 
 FiltersTest.prototype.testQRcode = function() {
   assertEquals(
-      '<img width="200" height="200" src="http://chart.apis.google.com/chart?chl=Hello%20world&chs=200x200&cht=qr"/>',
-      angular.filter.qrcode('Hello world').html);
+      '<img src="http://chart.apis.google.com/chart?chl=Hello%20world&chs=200x200&cht=qr" style="height: 200px; width: 200px;"></img>',
+      sortedHtml(angular.filter.qrcode('Hello world')));
   assertEquals(
-      '<img width="100" height="100" src="http://chart.apis.google.com/chart?chl=http%3A%2F%2Fserver%3Fa%26b%3Dc&chs=100x100&cht=qr"/>',
-      angular.filter.qrcode('http://server?a&b=c', 100).html);
+      '<img src="http://chart.apis.google.com/chart?chl=http%3A%2F%2Fserver%3Fa%26b%3Dc&chs=100x100&cht=qr" style="height: 100px; width: 100px;"></img>',
+      sortedHtml(angular.filter.qrcode('http://server?a&b=c', 100)));
 };
 
 FiltersTest.prototype.testLowercase = function() {
@@ -132,15 +128,14 @@ FiltersTest.prototype.testUnless = function() {
 
 FiltersTest.prototype.testGoogleChartApiEncode = function() {
   assertEquals(
-      '<img width="200" height="200" src="http://chart.apis.google.com/chart?chl=Hello world&chs=200x200&cht=qr"/>',
-      angular.filter.googleChartApi.encode({cht:"qr", chl:"Hello world"}).html);
+      '<img src="http://chart.apis.google.com/chart?chl=Hello world&chs=200x200&cht=qr" style="height: 200px; width: 200px;"></img>',
+      sortedHtml(angular.filter.googleChartApi.encode({cht:"qr", chl:"Hello world"})));
 };
 
 FiltersTest.prototype.testHtml = function() {
-  assertEquals(
-      "a<b>c</b>d",
-      angular.filter.html("a<b>c</b>d").html);
-  assertTrue(angular.filter.html("a<b>c</b>d") instanceof angular.filter.Meta);
+  var div = jqLite('<div></div>');
+  div.append(angular.filter.html("a<b>c</b>d"));
+  assertEquals("a<b>c</b>d", div.html());
 };
 
 FiltersTest.prototype.testLinky = function() {
@@ -150,8 +145,7 @@ FiltersTest.prototype.testLinky = function() {
       '(<a href="http://a">http://a</a>) ' +
       '&lt;<a href="http://a">http://a</a>&gt; \n ' +
       '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
-      linky("http://ab (http://a) <http://a> \n http://1.2/v:~-123. c").html);
-  assertTrue(linky("a") instanceof angular.filter.Meta);
+      sortedHtml(linky("http://ab (http://a) <http://a> \n http://1.2/v:~-123. c")));
   assertEquals(undefined, linky(undefined));
 };
 

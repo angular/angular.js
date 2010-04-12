@@ -23,14 +23,23 @@ angularDirective("ng-eval", function(expression){
 });
 
 angularDirective("ng-bind", function(expression){
-  var templateFn = compileBindTemplate("{{" + expression + "}}");
   return function(element) {
-    var lastValue;
+    var lastValue, lastError;
     this.$onEval(function() {
-      var value = templateFn.call(this, element);
-      if (value != lastValue) {
-        element.text(value);
+      var error, value = this.$tryEval(expression, function(e){
+        error = toJson(e);
+      });
+      if (value != lastValue || error != lastError) {
         lastValue = value;
+        lastError = error;
+        elementError(element, NG_EXCEPTION, error);
+        if (error) value = error;
+        if (isElement(value)) {
+          element.html('');
+          element.append(value);
+        } else {
+          element.text(value);
+        }
       }
     }, element);
   };
@@ -57,7 +66,10 @@ function compileBindTemplate(template){
       var parts = [], self = this;
       foreach(bindings, function(fn){
         var value = fn.call(self, element);
-        if (isObject(value)) value = toJson(value, true);
+        if (isElement(value))
+          value = '';
+        else if (isObject(value))
+          value = toJson(value, true);
         parts.push(value);
       });
       return parts.join('');

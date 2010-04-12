@@ -86,9 +86,12 @@ function jqLiteWrap(element) {
   if (isString(element)) {
     var div = document.createElement('div');
     div.innerHTML = element;
-    element = div.childNodes[0];
+    element = new JQLite(div.childNodes);
+  } else if (element instanceof JQLite) {
+  } else if (isElement(element)) {
+    element =  new JQLite(element);
   }
-  return element instanceof JQLite ? element : new JQLite(element);
+  return element;
 }
 function isUndefined(value){ return typeof value == 'undefined'; }
 function isDefined(value){ return typeof value != 'undefined'; }
@@ -102,6 +105,10 @@ function lowercase(value){ return isString(value) ? value.toLowerCase() : value;
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function nodeName(element) { return (element[0] || element).nodeName; }
+function isElement(node) {
+  if (node && node[0]) node = node[0];
+  return node && node.nodeName;
+}
 
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect();
@@ -183,14 +190,6 @@ function consoleLog(level, objs) {
   }
   log.appendChild(document.createTextNode(msg));
   consoleNode.appendChild(log);
-}
-
-function isNode(inp) {
-  return inp &&
-      inp.tagName &&
-      inp.nodeName &&
-      inp.ownerDocument &&
-      inp.removeAttribute;
 }
 
 function isLeafNode (node) {

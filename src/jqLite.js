@@ -34,7 +34,15 @@ function jqClearData(element) {
 }
 
 function JQLite(element) {
-  this[0] = element;
+  if (element.length && element.item) {
+    for(var i=0; i < element.length; i++) {
+      this[i] = element[i];
+    }
+    this.length = element.length;
+  } else {
+    this[0] = element;
+    this.length = 1;
+  }
 }
 
 JQLite.prototype = {
@@ -111,7 +119,11 @@ JQLite.prototype = {
   },
 
   append: function(node) {
-    this[0].appendChild(jqLite(node)[0]);
+    var self = this[0];
+    node = jqLite(node);
+    foreach(node, function(child){
+      self.appendChild(child);
+    });
   },
 
   remove: function() {

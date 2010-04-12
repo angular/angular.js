@@ -110,9 +110,12 @@ function jqLiteWrap(element) {
   if (isString(element)) {
     var div = document.createElement('div');
     div.innerHTML = element;
-    element = div.childNodes[0];
+    element = new JQLite(div.childNodes);
+  } else if (element instanceof JQLite) {
+  } else if (isElement(element)) {
+    element =  new JQLite(element);
   }
-  return element instanceof JQLite ? element : new JQLite(element);
+  return element;
 }
 function isUndefined(value){ return typeof value == 'undefined'; }
 function isDefined(value){ return typeof value != 'undefined'; }
@@ -126,6 +129,10 @@ function lowercase(value){ return isString(value) ? value.toLowerCase() : value;
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function nodeName(element) { return (element[0] || element).nodeName; }
+function isElement(node) {
+  if (node && node[0]) node = node[0];
+  return node && node.nodeName;
+}
 
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect();
@@ -207,14 +214,6 @@ function consoleLog(level, objs) {
   }
   log.appendChild(document.createTextNode(msg));
   consoleNode.appendChild(log);
-}
-
-function isNode(inp) {
-  return inp &&
-      inp.tagName &&
-      inp.nodeName &&
-      inp.ownerDocument &&
-      inp.removeAttribute;
 }
 
 function isLeafNode (node) {
@@ -1843,7 +1842,15 @@ function jqClearData(element) {
 }
 
 function JQLite(element) {
-  this[0] = element;
+  if (element.length && element.item) {
+    for(var i=0; i < element.length; i++) {
+      this[i] = element[i];
+    }
+    this.length = element.length;
+  } else {
+    this[0] = element;
+    this.length = 1;
+  }
 }
 
 JQLite.prototype = {
@@ -1920,7 +1927,11 @@ JQLite.prototype = {
   },
 
   append: function(node) {
-    this[0].appendChild(jqLite(node)[0]);
+    var self = this[0];
+    node = jqLite(node);
+    foreach(node, function(child){
+      self.appendChild(child);
+    });
   },
 
   remove: function() {
@@ -2351,28 +2362,6 @@ defineApi('Date', [angularGlobal, angularDate], []);
 angular['Date']['toString'] = angularDate['toString'];
 defineApi('Function', [angularGlobal, angularCollection, angularFunction],
     ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
-angularFilter.Meta = function(obj){
-  if (obj) {
-    for ( var key in obj) {
-      this[key] = obj[key];
-    }
-  }
-};
-angularFilter.Meta.get = function(obj, attr){
-  attr = attr || 'text';
-  switch(typeof obj) {
-  case "string":
-    return attr == "text" ? obj : undefined;
-  case "object":
-    if (obj && typeof obj[attr] !== "undefined") {
-      return obj[attr];
-    }
-    return undefined;
-  default:
-    return obj;
-  }
-};
-
 var angularFilterGoogleChartApi;
 
 foreach({
@@ -2445,31 +2434,33 @@ foreach({
           if (!returnValue && regexp.test(tNo)) {
             var text = carrier.name + ": " + trackingNo;
             var url = carrier.url + trackingNo;
-            returnValue = new angularFilter.Meta({
-              text:text,
-              url:url,
-              html: '<a href="' + escapeAttr(url) + '">' + text + '</a>',
-              trackingNo:trackingNo});
+            returnValue = jqLite('<a></a>');
+            returnValue.text(text);
+            returnValue.attr('href', url);
           }
         });
       });
       if (returnValue)
         return returnValue;
       else if (trackingNo)
-        return noMatch || new angularFilter.Meta({text:trackingNo + " is not recognized"});
+        return noMatch || trackingNo + " is not recognized";
       else
         return null;
     };})(),
 
   'link': function(obj, title) {
-    var text = title || angularFilter.Meta.get(obj);
-    var url = angularFilter.Meta.get(obj, "url") || angularFilter.Meta.get(obj);
-    if (url) {
-      if (angular.validator.email(url) === null) {
-        url = "mailto:" + url;
+    if (obj) {
+      var text = title || obj.text || obj;
+      var url = obj.url || obj;
+      if (url) {
+        if (angular.validator.email(url) === null) {
+          url = "mailto:" + url;
+        }
+        var a = jqLite('<a></a>');
+        a.attr('href', url);
+        a.text(text);
+        return a;
       }
-      var html = '<a href="' + escapeHtml(url) + '">' + text + '</a>';
-      return new angularFilter.Meta({text:text, url:url, html:html});
     }
     return obj;
   },
@@ -2496,31 +2487,27 @@ foreach({
 
   'image': function(obj, width, height) {
     if (obj && obj.url) {
-      var style = "";
+      var style = "", img = jqLite('<img>');
       if (width) {
-        style = ' style="max-width: ' + width +
-                'px; max-height: ' + (height || width) + 'px;"';
+        img.css('max-width', width + 'px');
+        img.css('max-height', (height || width) + 'px');
       }
-      return new angularFilter.Meta({url:obj.url, text:obj.url,
-        html:'<img src="'+obj.url+'"' + style + '/>'});
+      img.attr('src', obj.url);
+      return img;
     }
     return null;
   },
 
-  'lowercase': function (obj) {
-    var text = angularFilter.Meta.get(obj);
-    return text ? ("" + text).toLowerCase() : text;
-  },
+  'lowercase': lowercase,
 
-  'uppercase': function (obj) {
-    var text = angularFilter.Meta.get(obj);
-    return text ? ("" + text).toUpperCase() : text;
-  },
+  'uppercase': uppercase,
 
   'linecount': function (obj) {
-    var text = angularFilter.Meta.get(obj);
-    if (text==='' || !text) return 1;
-    return text.split(/\n|\f/).length;
+    if (isString(obj)) {
+      if (obj==='') return 1;
+      return obj.split(/\n|\f/).length;
+    }
+    return 1;
   },
 
   'if': function (result, expression) {
@@ -2589,8 +2576,9 @@ foreach({
       'encode': function(params, width, height) {
         width = width || 200;
         height = height || width;
-        var url = "http://chart.apis.google.com/chart?";
-        var urlParam = [];
+        var url = "http://chart.apis.google.com/chart?",
+            urlParam = [],
+            img = jqLite('<img>');
         params['chs'] = width + "x" + height;
         foreach(params, function(value, key){
           if (value) {
@@ -2599,8 +2587,9 @@ foreach({
         });
         urlParam.sort();
         url += urlParam.join("&");
-        return new angularFilter.Meta({url:url,
-          html:'<img width="' + width + '" height="' + height + '" src="'+url+'"/>'});
+        img.attr('src', url);
+        img.css({width: width + 'px', height: height + 'px'});
+        return img;
       }
     }
   ),
@@ -2644,7 +2633,7 @@ foreach({
   },
 
   'html': function(html){
-    return new angularFilter.Meta({html:html});
+    return jqLite(html);
   },
 
   'linky': function(text){
@@ -2666,7 +2655,7 @@ foreach({
       raw = raw.substring(i + url.length);
     }
     html.push(escapeHtml(raw));
-    return new angularFilter.Meta({text:text, html:html.join('')});
+    return jqLite(html.join(''));
   }
 }, function(v,k){angularFilter[k] = v;});
 
@@ -2832,14 +2821,23 @@ angularDirective("ng-eval", function(expression){
 });
 
 angularDirective("ng-bind", function(expression){
-  var templateFn = compileBindTemplate("{{" + expression + "}}");
   return function(element) {
-    var lastValue;
+    var lastValue, lastError;
     this.$onEval(function() {
-      var value = templateFn.call(this, element);
-      if (value != lastValue) {
-        element.text(value);
+      var error, value = this.$tryEval(expression, function(e){
+        error = toJson(e);
+      });
+      if (value != lastValue || error != lastError) {
         lastValue = value;
+        lastError = error;
+        elementError(element, NG_EXCEPTION, error);
+        if (error) value = error;
+        if (isElement(value)) {
+          element.html('');
+          element.append(value);
+        } else {
+          element.text(value);
+        }
       }
     }, element);
   };
@@ -2866,7 +2864,10 @@ function compileBindTemplate(template){
       var parts = [], self = this;
       foreach(bindings, function(fn){
         var value = fn.call(self, element);
-        if (isObject(value)) value = toJson(value, true);
+        if (isElement(value))
+          value = '';
+        else if (isObject(value))
+          value = toJson(value, true);
         parts.push(value);
       });
       return parts.join('');
