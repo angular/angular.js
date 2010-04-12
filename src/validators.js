@@ -103,9 +103,9 @@ foreach({
       });
     }
 
-    if (state === null){
+    if (state === null && this['$invalidWidgets']){
       // request in flight, mark widget invalid, but don't show it to user
-      (this['$invalidWidgets']||[]).push(this.$element);
+      this['$invalidWidgets'].markInvalid(this.$element);
     }
     return state;
   }
