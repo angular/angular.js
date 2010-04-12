@@ -88,11 +88,15 @@ describe('Validator:asynchronous', function(){
   var value, fn;
 
   beforeEach(function(){
+    var invalidWidgets = [];
+    invalidWidgets.markInvalid = function(element){
+      invalidWidgets.push(element);
+    };
     value = null;
     fn = null;
     self = {
         $element:jqLite('<input />'),
-        $invalidWidgets:[],
+        $invalidWidgets:invalidWidgets,
         $updateView: noop
     };
   });
@@ -125,7 +129,7 @@ describe('Validator:asynchronous', function(){
   it("should not make second request to same value", function(){
     asynchronous.call(self, "kai", function(v,f){value=v; fn=f;});
     expect(value).toEqual('kai');
-    expect(self.$invalidWidgets).toEqual([self.$element]);
+    expect(self.$invalidWidgets[0][0]).toEqual(self.$element[0]);
 
     var spy = jasmine.createSpy();
     asynchronous.call(self, "kai", spy);

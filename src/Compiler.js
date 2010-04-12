@@ -4,17 +4,34 @@
  * bind to a new instance of elements. It also provides a list
  * of child paths which contain child templates
  */
-function Template() {
+function Template(priority) {
   this.paths = [];
   this.children = [];
   this.inits = [];
+  this.priority = priority || 0;
 }
 
 Template.prototype = {
   init: function(element, scope) {
+    var inits = {};
+    this.collectInits(element, inits);
+    foreachSorted(inits, function(queue){
+      foreach(queue, function(fn){
+        fn(scope);
+      });
+    });
+  },
+
+  collectInits: function(element, inits) {
+    var queue = inits[this.priority];
+    if (!queue) {
+      inits[this.priority] = queue = [];
+    }
     element = jqLite(element);
     foreach(this.inits, function(fn) {
-      scope.$tryEval(fn, element, element);
+      queue.push(function(scope) {
+        scope.$tryEval(fn, element, element);
+      });
     });
 
     var i,
@@ -23,7 +40,7 @@ Template.prototype = {
         paths = this.paths,
         length = paths.length;
     for (i = 0; i < length; i++) {
-      children[i].init(childNodes[paths[i]], scope);
+      children[i].collectInits(childNodes[paths[i]], inits);
     }
   },
 
@@ -78,13 +95,13 @@ Compiler.prototype = {
     };
   },
 
-  templatize: function(element){
+  templatize: function(element, priority){
     var self = this,
         widget,
         directiveFns = self.directives,
         descend = true,
         directives = true,
-        template = new Template(),
+        template,
         selfApi = {
           compile: bind(self, self.compile),
           comment:function(text) {return jqLite(document.createComment(text));},
@@ -93,7 +110,11 @@ Compiler.prototype = {
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
           directives: function(value){ if(isDefined(value)) directives = value; return directives;}
         };
-
+    priority = element.attr('ng-eval-order') || priority || 0;
+    if (isString(priority)) {
+      priority = PRIORITY[uppercase(priority)] || 0;
+    }
+    template = new Template(priority);
     eachAttribute(element, function(value, name){
       if (!widget) {
         if (widget = self.widgets['@' + name]) {
@@ -135,7 +156,7 @@ Compiler.prototype = {
     // Process non text child nodes
     if (descend) {
       eachNode(element, function(child, i){
-        template.addChild(i, self.templatize(child));
+        template.addChild(i, self.templatize(child, priority));
       });
     }
     return template.empty() ? null : template;

@@ -181,4 +181,18 @@ describe("directives", function(){
     expect(scope.greet('misko')).toEqual('hello misko!');
     delete window.Greeter;
   });
+
+  it('should eval things according to ng-eval-order', function(){
+    var scope = compile(
+          '<div ng-init="log=\'\'">' +
+            '{{log = log + \'e\'}}' +
+            '<span ng-eval-order="first" ng-eval="log = log + \'a\'">' +
+              '{{log = log + \'b\'}}' +
+              '<span src="{{log = log + \'c\'}}"></span>' +
+              '<span bind-template="{{log = log + \'d\'}}"></span>' +
+            '</span>' +
+          '</div>');
+    expect(scope.log).toEqual('abcde');
+  });
+
 });

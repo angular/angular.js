@@ -252,5 +252,5 @@ ApiTest.prototype.testStringFromUTC = function(){
 };
 
 ApiTest.prototype.testObjectShouldHaveExtend = function(){
-  assertEquals(angular.Object.extend, extend);
+  assertEquals({a:1, b:2}, angular.Object.extend({a:1}, {b:2}));
 };
