@@ -6,9 +6,10 @@ describe("input widget", function(){
     scope = null;
     element = null;
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
-    compile = function(html) {
+    compile = function(html, before) {
       element = jqLite(html);
       scope = compiler.compile(element)(element);
+      (before||noop)();
       scope.$init();
     };
   });
@@ -49,6 +50,14 @@ describe("input widget", function(){
     element.val('1, 2, 3');
     element.trigger('keyup');
     expect(scope.$get('list')).toEqual(['1', '2', '3']);
+  });
+
+  it("should process ng-format for booleans", function(){
+    compile('<input type="checkbox" name="name" value="true" ng-format="boolean"/>', function(){
+      scope.name = false;
+    });
+    expect(scope.name).toEqual(false);
+    expect(scope.$element[0].checked).toEqual(false);
   });
 
   it("should process ng-validation", function(){

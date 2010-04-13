@@ -3185,13 +3185,13 @@ function valueAccessor(scope, element) {
 }
 
 function checkedAccessor(scope, element) {
-  var domElement = element[0];
+  var domElement = element[0], elementValue = domElement.value;
   return {
     get: function(){
       return !!domElement.checked;
     },
     set: function(value){
-      domElement.checked = !!value;
+      domElement.checked = toBoolean(value);
     }
   };
 }
@@ -3444,8 +3444,13 @@ angularService("$location", function(browser){
     scope.$root.$eval();
   });
   parse(browser.getUrl());
+  var lastURL;
   this.$onEval(PRIORITY_LAST, function(){
-    browser.setUrl(toString());
+    var url = toString();
+    if (lastURL != url) {
+      browser.setUrl(url);
+      lastURL = url;
+    }
   });
   return location;
 }, {inject: ['$browser']});

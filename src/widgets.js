@@ -49,13 +49,13 @@ function valueAccessor(scope, element) {
 }
 
 function checkedAccessor(scope, element) {
-  var domElement = element[0];
+  var domElement = element[0], elementValue = domElement.value;
   return {
     get: function(){
       return !!domElement.checked;
     },
     set: function(value){
-      domElement.checked = !!value;
+      domElement.checked = toBoolean(value);
     }
   };
 }

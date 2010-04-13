@@ -44,8 +44,13 @@ angularService("$location", function(browser){
     scope.$root.$eval();
   });
   parse(browser.getUrl());
+  var lastURL;
   this.$onEval(PRIORITY_LAST, function(){
-    browser.setUrl(toString());
+    var url = toString();
+    if (lastURL != url) {
+      browser.setUrl(url);
+      lastURL = url;
+    }
   });
   return location;
 }, {inject: ['$browser']});
