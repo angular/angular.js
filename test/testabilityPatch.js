@@ -64,16 +64,12 @@ function sortedHtml(element) {
       }
       attrs.sort();
       html += attrs.join('');
-      var style = [];
-      for(var name in node.style) {
-        var value = node.style[name];
-        if (value && isString(value) && (name != 1*name) && (name != 'cssText')) {
-          style.push(name + ': ' + value + ';');
-        }
-      }
-      style.sort();
-      if (style.length) {
-        html += ' style="' + style.join(' ') + '"';
+      if (node.style && node.style.cssText) {
+        var style = node.style.cssText.split('; ');
+        style.sort();
+        if (style[0] == '')
+          style.shift();
+        html += ' style="' + style.join('; ') + ';"';
       }
       html += '>';
       var children = node.childNodes;
