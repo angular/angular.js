@@ -225,6 +225,8 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
           element.append(switchCase.element);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(switchCase.element, childScope);
+          if (scope.$invalidWidgets)
+            scope.$invalidWidgets.clearOrphans();
           childScope.$init();
         }
       });

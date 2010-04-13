@@ -80,11 +80,22 @@ describe("service $invalidWidgets", function(){
   });
 
   it("should count number of invalid widgets", function(){
-    var scope = compile('<input name="price" ng-required></input>').$init();
+    var scope = compile('<input name="price" ng-required ng-validate="number"></input>').$init();
     expect(scope.$invalidWidgets.length).toEqual(1);
     scope.price = 123;
     scope.$eval();
     expect(scope.$invalidWidgets.length).toEqual(0);
     scope.$element.remove();
+    scope.price = 'abc';
+    scope.$eval();
+    expect(scope.$invalidWidgets.length).toEqual(1);
+
+    jqLite(document.body).append(scope.$element);
+    scope.$invalidWidgets.clearOrphans();
+    expect(scope.$invalidWidgets.length).toEqual(1);
+
+    jqLite(document.body).html('');
+    scope.$invalidWidgets.clearOrphans();
+    expect(scope.$invalidWidgets.length).toEqual(0);
   });
 });

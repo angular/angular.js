@@ -221,10 +221,15 @@ describe('ng:switch', function(){
 
   it('should call init on switch', function(){
     var scope = compile('<ng:switch on="url" change="name=\'works\'"><div ng-switch-when="a">{{name}}</div></ng:include>');
+    var cleared = false;
     scope.url = 'a';
+    scope.$invalidWidgets = {clearOrphans: function(){
+      cleared = true;
+    }};
     scope.$init();
     expect(scope.name).toEqual(undefined);
     expect(scope.$element.text()).toEqual('works');
+    expect(cleared).toEqual(true);
   });
 });
 

@@ -115,5 +115,20 @@ angularService("$invalidWidgets", function(){
     });
     return count;
   };
+  invalidWidgets.clearOrphans = function() {
+    for(var i = 0; i < invalidWidgets.length;) {
+      var widget = invalidWidgets[i];
+      if (isOrphan(widget[0])) {
+        invalidWidgets.splice(i, 1);
+      } else {
+        i++;
+      }
+    }
+  };
+  function isOrphan(widget) {
+    if (widget == window.document) return false;
+    var parent = widget.parentNode;
+    return !parent || isOrphan(parent);
+  }
   return invalidWidgets;
 });
