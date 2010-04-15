@@ -117,6 +117,8 @@ function createScope(parent, services, existing) {
           exceptionHandler(e);
         } else if (exceptionHandler) {
           errorHandlerFor(exceptionHandler, e);
+        } else if (isFunction(instance.$exceptionHandler)) {
+          instance.$exceptionHandler(e);
         }
       }
     },

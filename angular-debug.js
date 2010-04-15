@@ -807,6 +807,8 @@ function createScope(parent, services, existing) {
           exceptionHandler(e);
         } else if (exceptionHandler) {
           errorHandlerFor(exceptionHandler, e);
+        } else if (isFunction(instance.$exceptionHandler)) {
+          instance.$exceptionHandler(e);
         }
       }
     },
@@ -3395,7 +3397,7 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
       });
       if (dstName) this.$set(dstName, dst);
     }
-    return match;
+    return match ? dst : null;
   }
 });
 angularService("$window", bind(window, identity, window));

@@ -64,12 +64,29 @@ function sortedHtml(element) {
       }
       attrs.sort();
       html += attrs.join('');
-      if (node.style && node.style.cssText) {
-        var style = node.style.cssText.split('; ');
+      if (node.style) {
+        var style = [];
+        if (node.style.cssText) {
+          foreach(node.style.cssText.split(';'), function(value){
+            value = trim(value);
+            if (value) {
+              style.push(value);
+            }
+          });
+        }
+        for(var css in node.style){
+          var value = node.style[css];
+          if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
+            var text = css + ': ' + node.style[css];
+            if (indexOf(style, text) == -1) {
+              style.push(text);
+            }
+          }
+        };
         style.sort();
-        if (style[0] == '')
-          style.shift();
-        html += ' style="' + style.join('; ') + ';"';
+        if (style.length) {
+          html += ' style="' + style.join('; ') + ';"';
+        }
       }
       html += '>';
       var children = node.childNodes;

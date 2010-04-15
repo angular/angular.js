@@ -259,6 +259,6 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
       });
       if (dstName) this.$set(dstName, dst);
     }
-    return match;
+    return match ? dst : null;
   }
 });

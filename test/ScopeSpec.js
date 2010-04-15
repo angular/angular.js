@@ -82,6 +82,16 @@ describe('scope/model', function(){
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 
+  it('should report error on $excetionHandler', function(){
+    var element = jqLite('<div></div>');
+    var scope = createScope();
+    scope.$exceptionHandler = function(e){
+      this.error = e;
+    };
+    scope.$tryEval('throw "myError"');
+    expect(scope.error).toEqual("myError");
+  });
+
   // $onEval
 
   it("should eval using priority", function(){

@@ -99,3 +99,41 @@ describe("service $invalidWidgets", function(){
     expect(scope.$invalidWidgets.length).toEqual(0);
   });
 });
+
+describe("service $route", function(){
+  it('should route and fire change event', function(){
+    var log = '';
+    function BookChapter() {
+      this.log = '<init>';
+    }
+    BookChapter.prototype.init = function(){
+      log += 'init();';
+    };
+    var scope = compile('<div></div>').$init();
+    scope.$route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
+    scope.$route.when('/Blank');
+    scope.$route.onChange(function(){
+      log += 'onChange();';
+    });
+    scope.$location.parse('http://server#/Book/Moby/Chapter/Intro?p=123');
+    scope.$eval();
+    expect(log).toEqual('onChange();init();');
+    expect(scope.$route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
+    expect(scope.$route.current.scope.log).toEqual('<init>');
+    var lastId = scope.$route.current.scope.$id;
+
+    log = '';
+    scope.$location.parse('http://server#/Blank?ignore');
+    scope.$eval();
+    expect(log).toEqual('onChange();');
+    expect(scope.$route.current.params).toEqual({ignore:true});
+    expect(scope.$route.current.scope.$id).not.toEqual(lastId);
+
+    log = '';
+    scope.$location.parse('http://server#/NONE');
+    scope.$eval();
+    expect(log).toEqual('onChange();');
+    expect(scope.$route.current).toEqual(null);
+
+  });
+});

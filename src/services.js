@@ -137,3 +137,43 @@ angularService("$invalidWidgets", function(){
   }
   return invalidWidgets;
 });
+
+angularService('$route', function(location, params){
+  var routes = {},
+      onChange = [],
+      matcher = angularWidget('NG:SWITCH').route,
+      $route = {
+        routes: routes,
+        onChange: bind(onChange, onChange.push),
+        when:function (path, params){
+          if (angular.isUndefined(path)) return routes;
+          var route = routes[path];
+          if (!route) route = routes[path] = {};
+          if (params) angular.extend(route, params);
+          return route;
+        }
+      };
+  this.$watch(function(){return location.hash;}, function(hash){
+    var parentScope = this, childScope;
+    $route.current = null;
+    angular.foreach(routes, function(routeParams, route) {
+      if (!childScope) {
+        var pathParams = matcher(location.hashPath, route);
+        if (pathParams) {
+          childScope = angular.scope(parentScope);
+          $route.current = angular.extend({}, routeParams, {
+            scope: childScope,
+            params: angular.extend({}, location.hashSearch, pathParams)
+          });
+        }
+      }
+    });
+    angular.foreach(onChange, parentScope.$tryEval);
+    if (childScope) {
+      childScope.$become($route.current.controller);
+      parentScope.$tryEval(childScope.init);
+    }
+  });
+  return $route;
+}, {inject: ['$location']});
+

@@ -16,6 +16,7 @@ extend(angular, {
   'extend': extend,
   'foreach': foreach,
   'noop':noop,
+  'bind':bind,
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
