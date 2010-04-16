@@ -102,8 +102,13 @@ angularDirective("ng-bind-attr", function(expression){
     this.$onEval(function(){
       foreach(this.$eval(expression), function(bindExp, key) {
         var value = compileBindTemplate(bindExp).call(this, element);
-        if (REMOVE_ATTRIBUTES[lowercase(key)] && !toBoolean(value)) {
-          element.removeAttr('disabled');
+        if (REMOVE_ATTRIBUTES[lowercase(key)]) {
+          if (!toBoolean(value)) {
+            element.removeAttr('disabled');
+          } else {
+            element.attr(key, value);
+          }
+          (element.data('$validate')||noop)();
         } else {
           element.attr(key, value);
         }

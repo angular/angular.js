@@ -185,7 +185,7 @@ JQLite.prototype = {
     } else if (isDefined(value)) {
       e.setAttribute(name, value);
     } else {
-      return e.getAttribute(name);
+      return e.getAttribute ? e.getAttribute(name) : undefined;
     }
   },
 

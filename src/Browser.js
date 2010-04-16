@@ -83,10 +83,11 @@ Browser.prototype = {
 
   setUrl: function(url) {
    var existingURL = this.location.href;
-   if (!existingURL.match(/#/))
-     existingURL += '#';
-   if (existingURL != url)
-     this.location.href = url;
+   if (!existingURL.match(/#/)) existingURL += '#';
+   if (!url.match(/#/)) url += '#';
+   if (existingURL != url) {
+     this.location.href = this.expectedUrl = url;
+   }
   },
 
   getUrl: function() {

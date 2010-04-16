@@ -57,6 +57,22 @@ describe("directives", function(){
     expect(element.attr('alt')).toEqual('myalt');
   });
 
+  it('should remove special attributes on false', function(){
+    var scope = compile('<div disabled="{{disabled}}"  readonly="{{readonly}}" checked="{{checked}}"/>');
+    expect(scope.$element.attr('disabled')).toEqual(null);
+    expect(scope.$element.attr('readonly')).toEqual(null);
+    expect(scope.$element.attr('checked')).toEqual(null);
+
+    scope.disabled = true;
+    scope.readonly = true;
+    scope.checked = true;
+    scope.$eval();
+
+    expect(scope.$element.attr('disabled')).not.toEqual(null);
+    expect(scope.$element.attr('readonly')).not.toEqual(null);
+    expect(scope.$element.attr('checked')).not.toEqual(null);
+  });
+
   it('should ng-non-bindable', function(){
     var scope = compile('<div ng-non-bindable><span ng-bind="name"></span></div>');
     scope.$set('name', 'misko');

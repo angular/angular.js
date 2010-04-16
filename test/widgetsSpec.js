@@ -76,6 +76,18 @@ describe("input widget", function(){
     expect(element.attr('ng-validation-error')).toEqual('Not a number');
   });
 
+  it("should ignore disabled widgets", function(){
+    compile('<input type="text" name="price" ng-required disabled/>');
+    expect(element.hasClass('ng-validation-error')).toBeFalsy();
+    expect(element.attr('ng-validation-error')).toBeFalsy();
+  });
+
+  it("should ignore readonly widgets", function(){
+    compile('<input type="text" name="price" ng-required readonly/>');
+    expect(element.hasClass('ng-validation-error')).toBeFalsy();
+    expect(element.attr('ng-validation-error')).toBeFalsy();
+  });
+
   it("should process ng-required", function(){
     compile('<input type="text" name="price" ng-required/>');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
@@ -244,13 +256,15 @@ describe('ng:switch', function(){
 
 describe('ng:include', function(){
   it('should include on external file', function() {
-    var element = jqLite('<ng:include src="myUrl"></ng:include>');
+    var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
     var scope = compile(element);
-    scope.$browser.xhr.expect('GET', 'myUrl').respond('{{1+2}}');
+    scope.childScope = createScope();
+    scope.childScope.name = 'misko';
+    scope.url = 'myUrl';
+    scope.$browser.xhr.expect('GET', 'myUrl').respond('{{name}}');
     scope.$init();
-    expect(sortedHtml(element)).toEqual('<ng:include src="myUrl" switch-instance="compiled"></ng:include>');
     scope.$browser.xhr.flush();
-    expect(element.text()).toEqual('3');
+    expect(element.text()).toEqual('misko');
   });
 });
 

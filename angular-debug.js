@@ -62,6 +62,12 @@ function foreach(obj, iterator, context) {
   if (obj) {
     if (obj.forEach) {
       obj.forEach(iterator, context);
+    } else if (isFunction(obj)){
+      for (key in obj) {
+        if (key != 'prototype' && key != 'length' && key != 'name') {
+          iterator.call(context, obj[key], key);
+        }
+      }
     } else if (isObject(obj) && isNumber(obj.length)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
@@ -137,7 +143,7 @@ function isElement(node) {
 
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect();
-  return rect.width !=0 && rect.height !=0;
+  return rect.width && rect.height;
 }
 
 function map(obj, iterator, context) {
@@ -771,7 +777,7 @@ function createScope(parent, services, existing) {
   function API(){}
   function Behavior(){}
 
-  var instance, behavior, api, evalLists = {}, servicesCache = extend({}, existing);
+  var instance, behavior, api, evalLists = {sorted:[]}, servicesCache = extend({}, existing);
 
   parent = Parent.prototype = (parent || {});
   api = API.prototype = new Parent();
@@ -790,7 +796,7 @@ function createScope(parent, services, existing) {
       if (isDefined(exp)) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
-        foreachSorted(evalLists, function(list) {
+        foreach(evalLists.sorted, function(list) {
           foreach(list, function(eval) {
             instance.$tryEval(eval.fn, eval.handler);
           });
@@ -833,7 +839,13 @@ function createScope(parent, services, existing) {
         expr = priority;
         priority = 0;
       }
-      var evalList = evalLists[priority] || (evalLists[priority] = []);
+      var evalList = evalLists[priority];
+      if (!evalList) {
+        evalList = evalLists[priority] = [];
+        evalList.priority = priority;
+        evalLists.sorted.push(evalList);
+        evalLists.sorted.sort(function(a,b){return a.priority-b.priority;});
+      }
       evalList.push({
         fn: expressionCompile(expr),
         handler: exceptionHandler
@@ -1820,10 +1832,11 @@ Browser.prototype = {
 
   setUrl: function(url) {
    var existingURL = this.location.href;
-   if (!existingURL.match(/#/))
-     existingURL += '#';
-   if (existingURL != url)
-     this.location.href = url;
+   if (!existingURL.match(/#/)) existingURL += '#';
+   if (!url.match(/#/)) url += '#';
+   if (existingURL != url) {
+     this.location.href = this.expectedUrl = url;
+   }
   },
 
   getUrl: function() {
@@ -2017,7 +2030,7 @@ JQLite.prototype = {
     } else if (isDefined(value)) {
       e.setAttribute(name, value);
     } else {
-      return e.getAttribute(name);
+      return e.getAttribute ? e.getAttribute(name) : undefined;
     }
   },
 
@@ -2790,33 +2803,52 @@ foreach({
     }
   },
 
-  'asynchronous': function(text, asynchronousFn) {
-    var element = this['$element'];
-    var cache = element.data('$validateState');
+  /*
+   * cache is attached to the element
+   * cache: {
+   *   inputs : {
+   *     'user input': {
+   *        response: server response,
+   *        error: validation error
+   *     },
+   *   current: 'current input'
+   * }
+   *
+   */
+  'asynchronous': function(input, asynchronousFn, updateFn) {
+    if (!input) return;
+    var scope = this;
+    var element = scope.$element;
+    var cache = element.data('$asyncValidator');
     if (!cache) {
-      cache = { state: {}};
-      element.data('$validateState', cache);
-    }
-    var state = cache.state[text];
-    cache.lastKey = text;
-    if (state === undefined) {
-      // we have never seen this before, Request it
-      element.addClass('ng-input-indicator-wait');
-      state = cache.state[text] = null;
-      (asynchronousFn || noop)(text, function(error){
-        state = cache.state[text] = error ? error : false;
-        if (cache.state[cache.lastKey] !== null) {
-          element.removeClass('ng-input-indicator-wait');
-        }
-        elementError(element, NG_VALIDATION_ERROR, error);
-      });
+      element.data('$asyncValidator', cache = {inputs:{}});
     }
 
-    if (state === null && this['$invalidWidgets']){
+    cache.current = input;
+
+    var inputState = cache.inputs[input];
+    if (!inputState) {
+      cache.inputs[input] = inputState = { inFlight: true };
+      scope.$invalidWidgets.markInvalid(scope.$element);
+      element.addClass('ng-input-indicator-wait');
+      asynchronousFn(input, function(error, data) {
+        inputState.response = data;
+        inputState.error = error;
+        inputState.inFlight = false;
+        if (cache.current == input) {
+          element.removeClass('ng-input-indicator-wait');
+          scope.$invalidWidgets.markValid(element);
+        }
+        element.data('$validate')(input);
+        scope.$root.$eval();
+      });
+    } else if (inputState.inFlight) {
       // request in flight, mark widget invalid, but don't show it to user
-      this['$invalidWidgets'].markInvalid(this.$element);
+      scope.$invalidWidgets.markInvalid(scope.$element);
+    } else {
+      (updateFn||noop)(inputState.response);
     }
-    return state;
+    return inputState.error;
   }
 
 }, function(v,k) {angularValidator[k] = v;});
@@ -2924,8 +2956,13 @@ angularDirective("ng-bind-attr", function(expression){
     this.$onEval(function(){
       foreach(this.$eval(expression), function(bindExp, key) {
         var value = compileBindTemplate(bindExp).call(this, element);
-        if (REMOVE_ATTRIBUTES[lowercase(key)] && !toBoolean(value)) {
-          element.removeAttr('disabled');
+        if (REMOVE_ATTRIBUTES[lowercase(key)]) {
+          if (!toBoolean(value)) {
+            element.removeAttr('disabled');
+          } else {
+            element.attr(key, value);
+          }
+          (element.data('$validate')||noop)();
         } else {
           element.attr(key, value);
         }
@@ -3165,6 +3202,11 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
+    if (element[0].disabled || isString(element.attr('readonly'))) {
+      elementError(element, NG_VALIDATION_ERROR, null);
+      invalidWidgets.markValid(element);
+      return value;
+    }
     var error,
         validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
     error = required && !trim(value) ?
@@ -3180,6 +3222,7 @@ function valueAccessor(scope, element) {
     }
     return value;
   }
+  element.data('$validate', validate);
   return {
     get: function(){ return validate(element.val()); },
     set: function(value){ element.val(validate(value)); }
@@ -3305,20 +3348,31 @@ angularWidget('SELECT', function(element){
 
 angularWidget('NG:INCLUDE', function(element){
   var compiler = this,
-      src = element.attr("src");
-  if (element.attr('switch-instance')) {
+      srcExp = element.attr("src"),
+      scopeExp = element.attr("scope") || '';
+  if (element[0]['ng-compiled']) {
     this.descend(true);
     this.directives(true);
   } else {
+    element[0]['ng-compiled'] = true;
     return function(element){
       var scope = this, childScope;
-      element.attr('switch-instance', 'compiled');
-      scope.$browser.xhr('GET', src, function(code, response){
-        element.html(response);
-        childScope = createScope(scope);
-        compiler.compile(element)(element, childScope);
-        childScope.$init();
-        scope.$root.$eval();
+      var changeCounter = 0;
+      function incrementChange(){ changeCounter++;}
+      this.$watch(srcExp, incrementChange);
+      this.$watch(scopeExp, incrementChange);
+      this.$watch(function(){return changeCounter;}, function(){
+        var src = this.$eval(srcExp),
+        useScope = this.$eval(scopeExp);
+        if (src) {
+          scope.$browser.xhr('GET', src, function(code, response){
+            element.html(response);
+            childScope = useScope || createScope(scope);
+            compiler.compile(element)(element, childScope);
+            childScope.$init();
+            scope.$root.$eval();
+          });
+        }
       });
       scope.$onEval(function(){
         if (childScope) childScope.$eval();
@@ -3405,12 +3459,13 @@ angularService("$document", function(window){
   return jqLite(window.document);
 }, {inject:['$window']});
 
-var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?((#([^\?]*))?(\?([^\?]*))?)$/;
+var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?(#(.*))?$/;
+var HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/;
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(browser){
-  var scope = this, location = {parse:parse, toString:toString};
-  var lastHash;
-  function parse(url){
+  var scope = this, location = {parse:parseUrl, toString:toString};
+  var lastHash, lastUrl;
+  function parseUrl(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
       if (match) {
@@ -3420,38 +3475,46 @@ angularService("$location", function(browser){
         location.port = match[5] || DEFAULT_PORTS[location.href] || null;
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
-        location.hash = match[9];
+        location.hash = match[9] || '';
         if (location.hash)
           location.hash = location.hash.substr(1);
-        lastHash = location.hash;
-        location.hashPath = match[11] || '';
-        location.hashSearch = parseKeyValue(match[13]);
+        parseHash(location.hash);
       }
     }
+  }
+  function parseHash(hash) {
+    var match = HASH_MATCH.exec(hash);
+    location.hashPath = match[1] || '';
+    location.hashSearch = parseKeyValue(match[3]);
+    lastHash = hash;
   }
   function toString() {
     if (lastHash === location.hash) {
       var hashKeyValue = toKeyValue(location.hashSearch),
           hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : ''),
           url = location.href.split('#')[0] + '#' + (hash ? hash : '');
-      if (url !== location.href) parse(url);
+      if (url !== location.href) parseUrl(url);
       return url;
     } else {
-      parse(location.href.split('#')[0] + '#' + location.hash);
+      parseUrl(location.href.split('#')[0] + '#' + location.hash);
       return toString();
     }
   }
   browser.watchUrl(function(url){
-    parse(url);
+    parseUrl(url);
     scope.$root.$eval();
   });
-  parse(browser.getUrl());
-  var lastURL;
+  parseUrl(browser.getUrl());
+  this.$onEval(PRIORITY_FIRST, function(){
+    if (location.hash != lastHash) {
+      parseHash(location.hash);
+    }
+  });
   this.$onEval(PRIORITY_LAST, function(){
     var url = toString();
-    if (lastURL != url) {
+    if (lastUrl != url) {
       browser.setUrl(url);
-      lastURL = url;
+      lastUrl = url;
     }
   });
   return location;
@@ -3539,6 +3602,51 @@ angularService("$invalidWidgets", function(){
   }
   return invalidWidgets;
 });
+
+angularService('$route', function(location, params){
+  var routes = {},
+      onChange = [],
+      matcher = angularWidget('NG:SWITCH').route,
+      parentScope = this,
+      $route = {
+        routes: routes,
+        onChange: bind(onChange, onChange.push),
+        when:function (path, params){
+          if (angular.isUndefined(path)) return routes;
+          var route = routes[path];
+          if (!route) route = routes[path] = {};
+          if (params) angular.extend(route, params);
+          if (matcher(location.hashPath, path)) updateRoute();
+          return route;
+        }
+      };
+  function updateRoute(){
+    console.log('updating route');
+    var childScope;
+    $route.current = null;
+    angular.foreach(routes, function(routeParams, route) {
+      if (!childScope) {
+        var pathParams = matcher(location.hashPath, route);
+        if (pathParams) {
+          console.log('new route', routeParams.template, location.hashPath, location.hash);
+          childScope = angular.scope(parentScope);
+          $route.current = angular.extend({}, routeParams, {
+            scope: childScope,
+            params: angular.extend({}, location.hashSearch, pathParams)
+          });
+        }
+      }
+    });
+    angular.foreach(onChange, parentScope.$tryEval);
+    if (childScope) {
+      childScope.$become($route.current.controller);
+      parentScope.$tryEval(childScope.init);
+    }
+  }
+  this.$watch(function(){return location.hash;}, updateRoute);
+  return $route;
+}, {inject: ['$location']});
+
 var browserSingleton;
 angularService('$browser', function browserFactory(){
   if (!browserSingleton) {
@@ -3557,6 +3665,7 @@ extend(angular, {
   'extend': extend,
   'foreach': foreach,
   'noop':noop,
+  'bind':bind,
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,

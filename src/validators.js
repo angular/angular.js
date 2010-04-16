@@ -81,33 +81,52 @@ foreach({
     }
   },
 
-  'asynchronous': function(text, asynchronousFn) {
-    var element = this['$element'];
-    var cache = element.data('$validateState');
+  /*
+   * cache is attached to the element
+   * cache: {
+   *   inputs : {
+   *     'user input': {
+   *        response: server response,
+   *        error: validation error
+   *     },
+   *   current: 'current input'
+   * }
+   *
+   */
+  'asynchronous': function(input, asynchronousFn, updateFn) {
+    if (!input) return;
+    var scope = this;
+    var element = scope.$element;
+    var cache = element.data('$asyncValidator');
     if (!cache) {
-      cache = { state: {}};
-      element.data('$validateState', cache);
-    }
-    var state = cache.state[text];
-    cache.lastKey = text;
-    if (state === undefined) {
-      // we have never seen this before, Request it
-      element.addClass('ng-input-indicator-wait');
-      state = cache.state[text] = null;
-      (asynchronousFn || noop)(text, function(error){
-        state = cache.state[text] = error ? error : false;
-        if (cache.state[cache.lastKey] !== null) {
-          element.removeClass('ng-input-indicator-wait');
-        }
-        elementError(element, NG_VALIDATION_ERROR, error);
-      });
+      element.data('$asyncValidator', cache = {inputs:{}});
     }
 
-    if (state === null && this['$invalidWidgets']){
+    cache.current = input;
+
+    var inputState = cache.inputs[input];
+    if (!inputState) {
+      cache.inputs[input] = inputState = { inFlight: true };
+      scope.$invalidWidgets.markInvalid(scope.$element);
+      element.addClass('ng-input-indicator-wait');
+      asynchronousFn(input, function(error, data) {
+        inputState.response = data;
+        inputState.error = error;
+        inputState.inFlight = false;
+        if (cache.current == input) {
+          element.removeClass('ng-input-indicator-wait');
+          scope.$invalidWidgets.markValid(element);
+        }
+        element.data('$validate')(input);
+        scope.$root.$eval();
+      });
+    } else if (inputState.inFlight) {
       // request in flight, mark widget invalid, but don't show it to user
-      this['$invalidWidgets'].markInvalid(this.$element);
+      scope.$invalidWidgets.markInvalid(scope.$element);
+    } else {
+      (updateFn||noop)(inputState.response);
     }
-    return state;
+    return inputState.error;
   }
 
 }, function(v,k) {angularValidator[k] = v;});

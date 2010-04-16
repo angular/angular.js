@@ -3,12 +3,13 @@ angularService("$document", function(window){
   return jqLite(window.document);
 }, {inject:['$window']});
 
-var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?((#([^\?]*))?(\?([^\?]*))?)$/;
+var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?(#(.*))?$/;
+var HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/;
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(browser){
-  var scope = this, location = {parse:parse, toString:toString};
-  var lastHash;
-  function parse(url){
+  var scope = this, location = {parse:parseUrl, toString:toString};
+  var lastHash, lastUrl;
+  function parseUrl(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
       if (match) {
@@ -18,38 +19,46 @@ angularService("$location", function(browser){
         location.port = match[5] || DEFAULT_PORTS[location.href] || null;
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
-        location.hash = match[9];
+        location.hash = match[9] || '';
         if (location.hash)
           location.hash = location.hash.substr(1);
-        lastHash = location.hash;
-        location.hashPath = match[11] || '';
-        location.hashSearch = parseKeyValue(match[13]);
+        parseHash(location.hash);
       }
     }
+  }
+  function parseHash(hash) {
+    var match = HASH_MATCH.exec(hash);
+    location.hashPath = match[1] || '';
+    location.hashSearch = parseKeyValue(match[3]);
+    lastHash = hash;
   }
   function toString() {
     if (lastHash === location.hash) {
       var hashKeyValue = toKeyValue(location.hashSearch),
           hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : ''),
           url = location.href.split('#')[0] + '#' + (hash ? hash : '');
-      if (url !== location.href) parse(url);
+      if (url !== location.href) parseUrl(url);
       return url;
     } else {
-      parse(location.href.split('#')[0] + '#' + location.hash);
+      parseUrl(location.href.split('#')[0] + '#' + location.hash);
       return toString();
     }
   }
   browser.watchUrl(function(url){
-    parse(url);
+    parseUrl(url);
     scope.$root.$eval();
   });
-  parse(browser.getUrl());
-  var lastURL;
+  parseUrl(browser.getUrl());
+  this.$onEval(PRIORITY_FIRST, function(){
+    if (location.hash != lastHash) {
+      parseHash(location.hash);
+    }
+  });
   this.$onEval(PRIORITY_LAST, function(){
     var url = toString();
-    if (lastURL != url) {
+    if (lastUrl != url) {
       browser.setUrl(url);
-      lastURL = url;
+      lastUrl = url;
     }
   });
   return location;
@@ -142,6 +151,7 @@ angularService('$route', function(location, params){
   var routes = {},
       onChange = [],
       matcher = angularWidget('NG:SWITCH').route,
+      parentScope = this,
       $route = {
         routes: routes,
         onChange: bind(onChange, onChange.push),
@@ -150,16 +160,19 @@ angularService('$route', function(location, params){
           var route = routes[path];
           if (!route) route = routes[path] = {};
           if (params) angular.extend(route, params);
+          if (matcher(location.hashPath, path)) updateRoute();
           return route;
         }
       };
-  this.$watch(function(){return location.hash;}, function(hash){
-    var parentScope = this, childScope;
+  function updateRoute(){
+    console.log('updating route');
+    var childScope;
     $route.current = null;
     angular.foreach(routes, function(routeParams, route) {
       if (!childScope) {
         var pathParams = matcher(location.hashPath, route);
         if (pathParams) {
+          console.log('new route', routeParams.template, location.hashPath, location.hash);
           childScope = angular.scope(parentScope);
           $route.current = angular.extend({}, routeParams, {
             scope: childScope,
@@ -173,7 +186,8 @@ angularService('$route', function(location, params){
       childScope.$become($route.current.controller);
       parentScope.$tryEval(childScope.init);
     }
-  });
+  }
+  this.$watch(function(){return location.hash;}, updateRoute);
   return $route;
 }, {inject: ['$location']});
 

@@ -20,7 +20,7 @@
        <li Xng-repeat="tweet in tweets"
            ng-class-even="'even'" ng-class-odd="'odd'">
          <img src="{{tweet.user.profile_image_url}}"/>
-         [ <a href="" Xng-action="$anchor.user=tweet.user.screen_name">{{tweet.user.nickname || tweet.user.name || tweet.user.screen_name }}</a>
+         [ <a href="" Xng-click="$anchor.user=tweet.user.screen_name">{{tweet.user.nickname || tweet.user.name || tweet.user.screen_name }}</a>
          ]:
          {{tweet.text}} (TODO: I want urls as links)
          <span class="notes">{{tweet.created_at}}</span>

@@ -38,6 +38,12 @@ function foreach(obj, iterator, context) {
   if (obj) {
     if (obj.forEach) {
       obj.forEach(iterator, context);
+    } else if (isFunction(obj)){
+      for (key in obj) {
+        if (key != 'prototype' && key != 'length' && key != 'name') {
+          iterator.call(context, obj[key], key);
+        }
+      }
     } else if (isObject(obj) && isNumber(obj.length)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
@@ -113,7 +119,7 @@ function isElement(node) {
 
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect();
-  return rect.width !=0 && rect.height !=0;
+  return rect.width && rect.height;
 }
 
 function map(obj, iterator, context) {

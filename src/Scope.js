@@ -81,7 +81,7 @@ function createScope(parent, services, existing) {
   function API(){}
   function Behavior(){}
 
-  var instance, behavior, api, evalLists = {}, servicesCache = extend({}, existing);
+  var instance, behavior, api, evalLists = {sorted:[]}, servicesCache = extend({}, existing);
 
   parent = Parent.prototype = (parent || {});
   api = API.prototype = new Parent();
@@ -100,7 +100,7 @@ function createScope(parent, services, existing) {
       if (isDefined(exp)) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
-        foreachSorted(evalLists, function(list) {
+        foreach(evalLists.sorted, function(list) {
           foreach(list, function(eval) {
             instance.$tryEval(eval.fn, eval.handler);
           });
@@ -143,7 +143,13 @@ function createScope(parent, services, existing) {
         expr = priority;
         priority = 0;
       }
-      var evalList = evalLists[priority] || (evalLists[priority] = []);
+      var evalList = evalLists[priority];
+      if (!evalList) {
+        evalList = evalLists[priority] = [];
+        evalList.priority = priority;
+        evalLists.sorted.push(evalList);
+        evalLists.sorted.sort(function(a,b){return a.priority-b.priority;});
+      }
       evalList.push({
         fn: expressionCompile(expr),
         handler: exceptionHandler

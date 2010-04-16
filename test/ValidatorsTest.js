@@ -88,17 +88,16 @@ describe('Validator:asynchronous', function(){
   var value, fn;
 
   beforeEach(function(){
-    var invalidWidgets = [];
-    invalidWidgets.markInvalid = function(element){
-      invalidWidgets.push(element);
-    };
+    var invalidWidgets = angularService('$invalidWidgets')();
     value = null;
     fn = null;
     self = {
         $element:jqLite('<input />'),
         $invalidWidgets:invalidWidgets,
-        $updateView: noop
+        $eval: noop
     };
+    self.$element.data('$validate', noop);
+    self.$root = self;
   });
 
   afterEach(function(){
@@ -122,14 +121,14 @@ describe('Validator:asynchronous', function(){
     expect(input.hasClass('ng-input-indicator-wait')).toBeTruthy();
     fn("myError");
     expect(input.hasClass('ng-input-indicator-wait')).toBeFalsy();
-    expect(input.attr('ng-validation-error')).toEqual("myError");
+    expect(input.attr(NG_VALIDATION_ERROR)).toEqual("myError");
     scope.$element.remove();
   });
 
   it("should not make second request to same value", function(){
     asynchronous.call(self, "kai", function(v,f){value=v; fn=f;});
     expect(value).toEqual('kai');
-    expect(self.$invalidWidgets[0][0]).toEqual(self.$element[0]);
+    expect(self.$invalidWidgets[0]).toEqual(self.$element);
 
     var spy = jasmine.createSpy();
     asynchronous.call(self, "kai", spy);
@@ -145,9 +144,26 @@ describe('Validator:asynchronous', function(){
     asynchronous.call(self, "second", function(v,f){value=v; secondCb=f;});
 
     firstCb();
-    expect(jqLite(self.$element).hasClass('ng-input-indicator-wait')).toBeTruthy();
+    expect(self.$element.hasClass('ng-input-indicator-wait')).toBeTruthy();
 
     secondCb();
-    expect(jqLite(self.$element).hasClass('ng-input-indicator-wait')).toBeFalsy();
+    expect(self.$element.hasClass('ng-input-indicator-wait')).toBeFalsy();
   });
+
+  it("should handle update function", function(){
+    var scope = angular.compile('<input name="name" ng-validate="asynchronous:asyncFn:updateFn"/>');
+    scope.asyncFn = jasmine.createSpy();
+    scope.updateFn = jasmine.createSpy();
+    scope.name = 'misko';
+    scope.$init();
+    scope.$eval();
+    expect(scope.asyncFn).wasCalledWith('misko', scope.asyncFn.mostRecentCall.args[1]);
+    assertTrue(scope.$element.hasClass('ng-input-indicator-wait'));
+    scope.asyncFn.mostRecentCall.args[1]('myError', {id: 1234, data:'data'});
+    assertFalse(scope.$element.hasClass('ng-input-indicator-wait'));
+    assertEquals('myError', scope.$element.attr('ng-validation-error'));
+    expect(scope.updateFn.mostRecentCall.args[0]).toEqual({id: 1234, data:'data'});
+    scope.$element.remove();
+  });
+
 });

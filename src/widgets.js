@@ -27,6 +27,11 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
+    if (element[0].disabled || isString(element.attr('readonly'))) {
+      elementError(element, NG_VALIDATION_ERROR, null);
+      invalidWidgets.markValid(element);
+      return value;
+    }
     var error,
         validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
     error = required && !trim(value) ?
@@ -42,6 +47,7 @@ function valueAccessor(scope, element) {
     }
     return value;
   }
+  element.data('$validate', validate);
   return {
     get: function(){ return validate(element.val()); },
     set: function(value){ element.val(validate(value)); }
@@ -167,20 +173,31 @@ angularWidget('SELECT', function(element){
 
 angularWidget('NG:INCLUDE', function(element){
   var compiler = this,
-      src = element.attr("src");
-  if (element.attr('switch-instance')) {
+      srcExp = element.attr("src"),
+      scopeExp = element.attr("scope") || '';
+  if (element[0]['ng-compiled']) {
     this.descend(true);
     this.directives(true);
   } else {
+    element[0]['ng-compiled'] = true;
     return function(element){
       var scope = this, childScope;
-      element.attr('switch-instance', 'compiled');
-      scope.$browser.xhr('GET', src, function(code, response){
-        element.html(response);
-        childScope = createScope(scope);
-        compiler.compile(element)(element, childScope);
-        childScope.$init();
-        scope.$root.$eval();
+      var changeCounter = 0;
+      function incrementChange(){ changeCounter++;}
+      this.$watch(srcExp, incrementChange);
+      this.$watch(scopeExp, incrementChange);
+      this.$watch(function(){return changeCounter;}, function(){
+        var src = this.$eval(srcExp),
+        useScope = this.$eval(scopeExp);
+        if (src) {
+          scope.$browser.xhr('GET', src, function(code, response){
+            element.html(response);
+            childScope = useScope || createScope(scope);
+            compiler.compile(element)(element, childScope);
+            childScope.$init();
+            scope.$root.$eval();
+          });
+        }
       });
       scope.$onEval(function(){
         if (childScope) childScope.$eval();
