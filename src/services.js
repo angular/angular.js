@@ -165,14 +165,12 @@ angularService('$route', function(location, params){
         }
       };
   function updateRoute(){
-    console.log('updating route');
     var childScope;
     $route.current = null;
     angular.foreach(routes, function(routeParams, route) {
       if (!childScope) {
         var pathParams = matcher(location.hashPath, route);
         if (pathParams) {
-          console.log('new route', routeParams.template, location.hashPath, location.hash);
           childScope = angular.scope(parentScope);
           $route.current = angular.extend({}, routeParams, {
             scope: childScope,

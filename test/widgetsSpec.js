@@ -60,7 +60,7 @@ describe("input widget", function(){
     expect(scope.$element[0].checked).toEqual(false);
   });
 
-  it("should process ng-validation", function(){
+  it("should process ng-validate", function(){
     compile('<input type="text" name="price" value="abc" ng-validate="number"/>');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
     expect(element.attr('ng-validation-error')).toEqual('Not a number');
@@ -74,6 +74,19 @@ describe("input widget", function(){
     element.trigger('keyup');
     expect(element.hasClass('ng-validation-error')).toBeTruthy();
     expect(element.attr('ng-validation-error')).toEqual('Not a number');
+  });
+
+  it("should not call validator if undefinde/empty", function(){
+    var lastValue = "NOT_CALLED";
+    angularValidator.myValidator = function(value){lastValue = value;};
+    compile('<input type="text" name="url" ng-validate="myValidator"/>');
+    expect(lastValue).toEqual("NOT_CALLED");
+
+    scope.url = 'http://server';
+    scope.$eval();
+    expect(lastValue).toEqual("http://server");
+
+    delete angularValidator.myValidator;
   });
 
   it("should ignore disabled widgets", function(){

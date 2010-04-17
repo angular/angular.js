@@ -27,6 +27,11 @@ function valueAccessor(scope, element) {
   required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   function validate(value) {
+    var force = false;
+    if (isUndefined(value)) {
+      value = element.val();
+      force = true;
+    }
     if (element[0].disabled || isString(element.attr('readonly'))) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
@@ -36,8 +41,8 @@ function valueAccessor(scope, element) {
         validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
     error = required && !trim(value) ?
           "Required" :
-           validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value);
-    if (error !== lastError) {
+           (trim(value) ? validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value) : null);
+    if (error !== lastError || force) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
       if (error)
