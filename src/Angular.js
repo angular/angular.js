@@ -36,14 +36,14 @@ function angularAlert(){
 function foreach(obj, iterator, context) {
   var key;
   if (obj) {
-    if (obj.forEach) {
-      obj.forEach(iterator, context);
-    } else if (isFunction(obj)){
+    if (isFunction(obj)){
       for (key in obj) {
-        if (key != 'prototype' && key != 'length' && key != 'name') {
+        if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
           iterator.call(context, obj[key], key);
         }
       }
+    } else if (obj.forEach) {
+      obj.forEach(iterator, context);
     } else if (isObject(obj) && isNumber(obj.length)) {
       for (key = 0; key < obj.length; key++)
         iterator.call(context, obj[key], key);
