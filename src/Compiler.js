@@ -136,7 +136,7 @@ Compiler.prototype = {
       // process markup for text nodes only
       eachTextNode(element, function(textNode){
         var text = textNode.text();
-        foreach(self.textMarkup, function(markup, name){
+        foreach(self.textMarkup, function(markup){
           markup.call(selfApi, text, textNode, element);
         });
       });
@@ -144,7 +144,7 @@ Compiler.prototype = {
 
     if (directives) {
       // Process attributes/directives
-      eachAttribute(element, function(value){
+      eachAttribute(element, function(value, name){
         foreach(self.attrMarkup, function(markup){
           markup.call(selfApi, value, name, element);
         });
