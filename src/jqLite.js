@@ -191,9 +191,9 @@ JQLite.prototype = {
 
   text: function(value) {
     if (isDefined(value)) {
-      this[0].textContent = value;
+      this[0].nodeValue = value;
     }
-    return this[0].textContent;
+    return this[0].nodeValue;
   },
 
   val: function(value) {

@@ -53,7 +53,7 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
 
 // TODO: this should be widget not a markup
 angularTextMarkup('OPTION', function(text, textNode, parentElement){
-  if (parentElement[0].nodeName == "OPTION") {
+  if (nodeName(parentElement) == "OPTION") {
     var select = document.createElement('select');
     select.insertBefore(parentElement[0].cloneNode(true), null);
     if (!select.innerHTML.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
