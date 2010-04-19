@@ -94,8 +94,7 @@ function jqLiteWrap(element) {
     var div = document.createElement('div');
     div.innerHTML = element;
     element = new JQLite(div.childNodes);
-  } else if (element instanceof JQLite) {
-  } else if (isElement(element)) {
+  } else if (!(element instanceof JQLite) && isElement(element)) {
     element =  new JQLite(element);
   }
   return element;
@@ -119,8 +118,8 @@ function isElement(node) {
 
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect(),
-      width = rect.width || (rect.right||0 - rect.left||0),
-      height = rect.height || (rect.bottom||0 - rect.top||0);
+      width = (rect.width || (rect.right||0 - rect.left||0)),
+      height = (rect.height || (rect.bottom||0 - rect.top||0));
   return width>0 && height>0;
 }
 

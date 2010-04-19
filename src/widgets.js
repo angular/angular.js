@@ -214,8 +214,8 @@ angularWidget('NG:INCLUDE', function(element){
 angularWidget('NG:SWITCH', function ngSwitch(element){
   var compiler = this,
       watchExpr = element.attr("on"),
-      whenExpr = (element.attr("using") || 'equals').split(":");
-      whenFn = ngSwitch[whenExpr.shift()];
+      whenExpr = (element.attr("using") || 'equals').split(":"),
+      whenFn = ngSwitch[whenExpr.shift()],
       changeExpr = element.attr('change') || '',
       cases = [];
   if (!whenFn) throw "Using expression '" + usingExpr + "' unknown.";

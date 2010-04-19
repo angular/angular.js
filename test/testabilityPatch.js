@@ -77,13 +77,12 @@ function sortedHtml(element) {
         for(var css in node.style){
           var value = node.style[css];
           if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
-            var value = node.style[css];
             var text = css + ': ' + value;
             if (value != 'false' && indexOf(style, text) == -1) {
               style.push(text);
             }
           }
-        };
+        }
         style.sort();
         if (style.length) {
           html += ' style="' + style.join('; ') + ';"';

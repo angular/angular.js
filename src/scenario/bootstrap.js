@@ -12,10 +12,12 @@
   })();
   function addScript(path) {
     document.write('<script type="text/javascript" src="' + prefix + path + '"></script>');
-  };
+  }
+
   function addCSS(path) {
     document.write('<link rel="stylesheet" type="text/css" href="' + prefix + path + '"/>');
-  };
+  }
+
   window.onload = function(){
     if (!_.stepper) {
       _.stepper = function(collection, iterator, done){

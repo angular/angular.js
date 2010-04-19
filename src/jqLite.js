@@ -231,4 +231,4 @@ if (msie) {
       this[0].fireEvent('on' + type);
     }
   });
-};
+}
