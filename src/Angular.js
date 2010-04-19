@@ -118,8 +118,10 @@ function isElement(node) {
 }
 
 function isVisible(element) {
-  var rect = element[0].getBoundingClientRect();
-  return rect.width && rect.height;
+  var rect = element[0].getBoundingClientRect(),
+      width = rect.width || (rect.right||0 - rect.left||0),
+      height = rect.height || (rect.bottom||0 - rect.top||0);
+  return width>0 && height>0;
 }
 
 function map(obj, iterator, context) {

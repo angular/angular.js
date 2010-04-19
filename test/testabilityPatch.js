@@ -77,8 +77,9 @@ function sortedHtml(element) {
         for(var css in node.style){
           var value = node.style[css];
           if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
-            var text = css + ': ' + node.style[css];
-            if (indexOf(style, text) == -1) {
+            var value = node.style[css];
+            var text = css + ': ' + value;
+            if (value != 'false' && indexOf(style, text) == -1) {
               style.push(text);
             }
           }

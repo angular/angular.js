@@ -100,7 +100,6 @@ JQLite.prototype = {
     });
   },
 
-  //TODO: remove
   trigger: function(type) {
     var evnt = document.createEvent('MouseEvent');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
@@ -191,9 +190,9 @@ JQLite.prototype = {
 
   text: function(value) {
     if (isDefined(value)) {
-      this[0].nodeValue = value;
+      this[0].textContent = value;
     }
-    return this[0].nodeValue;
+    return this[0].textContent;
   },
 
   val: function(value) {
@@ -215,4 +214,21 @@ JQLite.prototype = {
 
   parent: function() { return jqLite(this[0].parentNode);},
   clone: function() { return jqLite(this[0].cloneNode(true)); }
+};
+
+if (msie) {
+  extend(JQLite.prototype, {
+    text: function(value) {
+      var e = this[0];
+      if (isDefined(value)) {
+        e.innerText = value;
+      }
+      // NodeType == 3 is text node
+      return e.nodeType == 3 ? e.nodeValue : e.innerText;
+    },
+
+    trigger: function(type) {
+      this[0].fireEvent('on' + type);
+    }
+  });
 };
