@@ -43,6 +43,12 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
         } else {
           newElement = self.text(text);
         }
+        if (msie && text.charAt(0) == ' ') {
+          newElement = jqLite('<span>&nbsp;</span>');
+          var nbsp = newElement.html();
+          newElement.text(text.substr(1));
+          newElement.html(nbsp + newElement.html());
+        }
         cursor.after(newElement);
         cursor = newElement;
       });

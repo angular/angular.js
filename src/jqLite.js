@@ -29,7 +29,10 @@ function jqClearData(element) {
       removeEventListener(element, type, fn);
     });
     delete jqCache[cacheId];
-    delete element[jqName];
+    if (msie)
+      element[jqName] = ''; // ie does not allow deletion of attributes on elements.
+    else
+      delete element[jqName];
   }
 }
 

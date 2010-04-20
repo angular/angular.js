@@ -182,10 +182,15 @@ function eachNode(element, fn){
 }
 
 function eachAttribute(element, fn){
-  var i, attrs = element[0].attributes || [], chld, attr, attrValue = {};
+  var i, attrs = element[0].attributes || [], chld, attr, name, value, attrValue = {};
   for (i = 0; i < attrs.length; i++) {
     attr = attrs[i];
-    attrValue[attr.name] = attr.value;
+    name = attr.name;
+    value = attr.value;
+    if (msie && name == 'href') {
+      value = decodeURIComponent(element[0].getAttribute(name, 2));
+    }
+    attrValue[name] = value;
   }
   foreachSorted(attrValue, fn);
 }

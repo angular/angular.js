@@ -16,7 +16,9 @@ BinderTest.prototype.setUp = function(){
 };
 
 BinderTest.prototype.tearDown = function(){
-  if (this.element && this.element.dealoc) this.element.dealoc();
+  if (this.element && this.element.dealoc) {
+    this.element.dealoc();
+  }
 };
 
 
@@ -100,8 +102,8 @@ BinderTest.prototype.testBindingSpaceConfusesIE = function() {
       '<b><span ng-bind="a"></span><span>'+nbsp+'</span><span ng-bind="b"></span></b>',
       this.compileToHtml("<b>{{a}} {{b}}</b>"));
   assertEquals(
-      '<span ng-bind="A"></span><span>'+nbsp+'x </span><span ng-bind="B"></span><span>'+nbsp+'(</span><span ng-bind="C"></span>',
-      this.compileToHtml("{{A}} x {{B}} ({{C}})"));
+      '<b><span ng-bind="A"></span><span>'+nbsp+'x </span><span ng-bind="B"></span><span>'+nbsp+'(</span><span ng-bind="C"></span>)</b>',
+      this.compileToHtml("<b>{{A}} x {{B}} ({{C}})</b>"));
 };
 
 BinderTest.prototype.testBindingOfAttributes = function() {
@@ -586,13 +588,13 @@ BinderTest.prototype.testItShouldSelectTheCorrectRadioBox = function() {
   var female = jqLite(c.node[0].childNodes[0]);
   var male = jqLite(c.node[0].childNodes[1]);
 
-  trigger(female, 'click');
+  female.trigger('click');
   assertEquals("female", c.scope.sex);
   assertEquals(true, female[0].checked);
   assertEquals(false, male[0].checked);
   assertEquals("female", female.val());
 
-  trigger(male, 'click');
+  male.trigger('click');
   assertEquals("male", c.scope.sex);
   assertEquals(false, female[0].checked);
   assertEquals(true, male[0].checked);
