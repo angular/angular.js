@@ -27,11 +27,11 @@ describe("markups", function(){
   });
 
   it('should translate {{}} in terminal nodes', function(){
-    compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
-    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!">Greet !</option></select>');
+    compile('<select name="x"><option selected="true" value="">Greet {{name}}!</option></select>');
+    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!" selected="true">Greet !</option></select>');
     scope.$set('name', 'Misko');
     scope.$eval();
-    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!">Greet Misko!</option></select>');
+    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!" selected="true">Greet Misko!</option></select>');
   });
 
   it('should translate {{}} in attributes', function(){
@@ -43,14 +43,18 @@ describe("markups", function(){
   });
 
   it('should populate value attribute on OPTION', function(){
-    compile('<select name="x"><option>a</option></select>');
-    expect(sortedHtml(element)).toEqual('<select name="x"><option value="a">a</option></select>');
+    compile('<select name="x"><option selected="true">a</option></select>');
+    expect(sortedHtml(element)).toEqual('<select name="x"><option selected="true" value="a">a</option></select>');
   });
 
   it('should process all bindings when we have leading space', function(){
-    compile('<a> {{a}}<br/>{{b}}</a>');
-    var space = msie ? '<span>' + NBSP + '</span>': ' ';
-    expect(sortedHtml(scope.$element)).toEqual('<a>' + space + '<span ng-bind="a"></span><br></br><span ng-bind="b"></span></a>');
+    var e = jqLite('<a> {{a}}<br/>{{b}}</a>');
+    if (sortedHtml(e).indexOf('<a>{{') != 0) {
+      // can only run this test if browser respects leading spaces
+      compile(e);
+      var space = msie ? '<span>' + NBSP + '</span>': ' ';
+      expect(sortedHtml(scope.$element)).toEqual('<a>' + space + '<span ng-bind="a"></span><br></br><span ng-bind="b"></span></a>');
+    }
   });
 
 });
@@ -138,7 +142,7 @@ BindingMarkupTest.prototype.testParseMultiline = function(){
 };
 
 BindingMarkupTest.prototype.testHasBinding = function(){
-  assertTrue(hasBindings("{{a}}"));
-  assertTrue(!hasBindings("a"));
-  assertTrue(hasBindings("{{b}}x{{c}}"));
+  assertTrue(hasBindings(parseBindings("{{a}}")));
+  assertTrue(!hasBindings(parseBindings("a")));
+  assertTrue(hasBindings(parseBindings("{{b}}x{{c}}")));
 };

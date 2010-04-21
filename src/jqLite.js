@@ -187,7 +187,7 @@ JQLite.prototype = {
     } else {
       var attributes = e.attributes,
           item = attributes ? attributes.getNamedItem(name) : undefined;
-      return item ? item.value : undefined;
+      return item && item.specified ? item.value : undefined;
     }
   },
 

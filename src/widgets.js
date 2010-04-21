@@ -45,10 +45,11 @@ function valueAccessor(scope, element) {
     if (error !== lastError || force) {
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
-      if (error)
+      if (error) {
         invalidWidgets.markInvalid(element);
-      else
+      } else {
         invalidWidgets.markValid(element);
+      }
     }
     return value;
   }

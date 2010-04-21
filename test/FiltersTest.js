@@ -80,13 +80,13 @@ FiltersTest.prototype.testImage = function(){
   assertEquals(null, angular.filter.image());
   assertEquals(null, angular.filter.image({}));
   assertEquals(null, angular.filter.image(""));
-  assertEquals('<img src="abc"></img>', sortedHtml(angular.filter.image({url:"abc"})));
+  assertEquals('<img src="http://localhost/abc"></img>', sortedHtml(angular.filter.image({url:"http://localhost/abc"})));
   assertEquals(
-      '<img src="abc" style="max-height: 10px; max-width: 10px;"></img>',
-      sortedHtml(angular.filter.image({url:"abc"}, 10)));
+      '<img src="http://localhost/abc" style="max-height: 10px; max-width: 10px;"></img>',
+      sortedHtml(angular.filter.image({url:"http://localhost/abc"}, 10)));
   assertEquals(
-      '<img src="abc" style="max-height: 20px; max-width: 10px;"></img>',
-      sortedHtml(angular.filter.image({url:"abc"}, 10, 20)));
+      '<img src="http://localhost/abc" style="max-height: 20px; max-width: 10px;"></img>',
+      sortedHtml(angular.filter.image({url:"http://localhost/abc"}, 10, 20)));
 };
 
 FiltersTest.prototype.testQRcode = function() {
@@ -141,11 +141,11 @@ FiltersTest.prototype.testHtml = function() {
 FiltersTest.prototype.testLinky = function() {
   var linky = angular.filter.linky;
   assertEquals(
-      '<a href="http://ab">http://ab</a> ' +
-      '(<a href="http://a">http://a</a>) ' +
-      '&lt;<a href="http://a">http://a</a>&gt; ' +
+      '<a href="http://ab/">http://ab/</a> ' +
+      '(<a href="http://a/">http://a/</a>) ' +
+      '&lt;<a href="http://a/">http://a/</a>&gt; ' +
       '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
-      sortedHtml(linky("http://ab (http://a) <http://a> http://1.2/v:~-123. c")));
+      sortedHtml(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c")));
   assertEquals(undefined, linky(undefined));
 };
 
