@@ -27,11 +27,11 @@ describe("markups", function(){
   });
 
   it('should translate {{}} in terminal nodes', function(){
-    compile('<select name="x"><option selected="true" value="">Greet {{name}}!</option></select>');
-    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!" selected="true">Greet !</option></select>');
+    compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
+    expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!">Greet !</option></select>');
     scope.$set('name', 'Misko');
     scope.$eval();
-    expect(sortedHtml(element)).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!" selected="true">Greet Misko!</option></select>');
+    expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option ng-bind-template="Greet {{name}}!">Greet Misko!</option></select>');
   });
 
   it('should translate {{}} in attributes', function(){
@@ -43,8 +43,8 @@ describe("markups", function(){
   });
 
   it('should populate value attribute on OPTION', function(){
-    compile('<select name="x"><option selected="true">a</option></select>');
-    expect(sortedHtml(element)).toEqual('<select name="x"><option selected="true" value="a">a</option></select>');
+    compile('<select name="x"><option>a</option></select>');
+    expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option value="a">a</option></select>');
   });
 
   it('should process all bindings when we have leading space', function(){
