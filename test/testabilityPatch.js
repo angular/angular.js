@@ -1,6 +1,8 @@
 jstd = jstestdriver;
 dump = bind(jstd.console, jstd.console.log);
 
+var NBSP = jqLite('&nbsp;').text();
+
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
 }
@@ -46,6 +48,7 @@ function sortedHtml(element) {
             attr.value !='inherit' &&
             attr.value !='0' &&
             attr.name !='loop' &&
+            attr.name !='complete' &&
             attr.name !='maxLength' &&
             attr.name !='size' &&
             attr.name !='start' &&
@@ -53,7 +56,8 @@ function sortedHtml(element) {
             attr.name !='style' &&
             attr.name.substr(0, 6) != 'jQuery') {
           // in IE we need to check for all of these.
-          attrs.push(' ' + attr.name + '="' + attr.value + '"');
+          if (!/ng-\d+/.exec(attr.name))
+            attrs.push(' ' + attr.name + '="' + attr.value + '"');
         }
       }
       attrs.sort();
@@ -64,14 +68,14 @@ function sortedHtml(element) {
           foreach(node.style.cssText.split(';'), function(value){
             value = trim(value);
             if (value) {
-              style.push(value);
+              style.push(lowercase(value));
             }
           });
         }
         for(var css in node.style){
           var value = node.style[css];
           if (isString(value) && isString(css) && css != 'cssText' && value && (1*css != css)) {
-            var text = css + ': ' + value;
+            var text = lowercase(css + ': ' + value);
             if (value != 'false' && indexOf(style, text) == -1) {
               style.push(text);
             }

@@ -109,7 +109,7 @@ angularDirective("ng-bind-attr", function(expression){
         var value = compileBindTemplate(bindExp).call(this, element);
         if (REMOVE_ATTRIBUTES[lowercase(key)]) {
           if (!toBoolean(value)) {
-            element.removeAttr('disabled');
+            element.removeAttr(key);
           } else {
             element.attr(key, value);
           }

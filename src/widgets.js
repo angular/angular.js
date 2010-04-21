@@ -211,24 +211,25 @@ angularWidget('NG:INCLUDE', function(element){
   }
 });
 
-angularWidget('NG:SWITCH', function ngSwitch(element){
+var ngSwitch = angularWidget('NG:SWITCH', function (element){
   var compiler = this,
       watchExpr = element.attr("on"),
-      whenExpr = (element.attr("using") || 'equals').split(":"),
-      whenFn = ngSwitch[whenExpr.shift()],
+      usingExpr = (element.attr("using") || 'equals'),
+      usingExprParams = usingExpr.split(":");
+      usingFn = ngSwitch[usingExprParams.shift()],
       changeExpr = element.attr('change') || '',
       cases = [];
-  if (!whenFn) throw "Using expression '" + usingExpr + "' unknown.";
+  if (!usingFn) throw "Using expression '" + usingExpr + "' unknown.";
   eachNode(element, function(caseElement){
     var when = caseElement.attr('ng-switch-when');
     if (when) {
       cases.push({
         when: function(scope, value){
           var args = [value, when];
-          foreach(whenExpr, function(arg){
+          foreach(usingExprParams, function(arg){
             args.push(arg);
           });
-          return whenFn.apply(scope, args);
+          return usingFn.apply(scope, args);
         },
         change: changeExpr,
         element: caseElement,
@@ -236,6 +237,7 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
       });
     }
   });
+
   element.html('');
   return function(element){
     var scope = this, childScope;
@@ -244,9 +246,10 @@ angularWidget('NG:SWITCH', function ngSwitch(element){
       childScope = createScope(scope);
       foreach(cases, function(switchCase){
         if (switchCase.when(childScope, value)) {
-          element.append(switchCase.element);
+          var caseElement = switchCase.element.clone();
+          element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
-          switchCase.template(switchCase.element, childScope);
+          switchCase.template(caseElement, childScope);
           if (scope.$invalidWidgets)
             scope.$invalidWidgets.clearOrphans();
           childScope.$init();

@@ -185,7 +185,9 @@ JQLite.prototype = {
     } else if (isDefined(value)) {
       e.setAttribute(name, value);
     } else {
-      return e.getAttribute ? e.getAttribute(name) : undefined;
+      var attributes = e.attributes,
+          item = attributes ? attributes.getNamedItem(name) : undefined;
+      return item ? item.value : undefined;
     }
   },
 
@@ -205,8 +207,11 @@ JQLite.prototype = {
 
   html: function(value) {
     if (isDefined(value)) {
-      for ( var i = 0, children = this[0].childNodes; i < children.length; i++) {
-        jqLite(children[i]).dealoc();
+      var parent = this[0], child;
+      while(parent.childNodes.length) {
+        child = parent.childNodes[0];
+        jqLite(child).dealoc();
+        parent.removeChild(child);
       }
       this[0].innerHTML = value;
     }
@@ -229,6 +234,10 @@ if (msie) {
     },
 
     trigger: function(type) {
+
+      if (nodeName(this) == 'INPUT' && (lowercase(this.attr('type')) == 'radio' || lowercase(this.attr('type')) == 'checkbox')) {
+        this[0].checked = ! this[0].checked;
+      }
       this[0].fireEvent('on' + type);
     }
   });

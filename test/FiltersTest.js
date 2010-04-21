@@ -135,7 +135,7 @@ FiltersTest.prototype.testGoogleChartApiEncode = function() {
 FiltersTest.prototype.testHtml = function() {
   var div = jqLite('<div></div>');
   div.append(angular.filter.html("a<b>c</b>d"));
-  assertEquals("a<b>c</b>d", div.html());
+  assertEquals("a<b>c</b>d", lowercase(div.html()));
 };
 
 FiltersTest.prototype.testLinky = function() {
@@ -143,9 +143,9 @@ FiltersTest.prototype.testLinky = function() {
   assertEquals(
       '<a href="http://ab">http://ab</a> ' +
       '(<a href="http://a">http://a</a>) ' +
-      '&lt;<a href="http://a">http://a</a>&gt; \n ' +
+      '&lt;<a href="http://a">http://a</a>&gt; ' +
       '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
-      sortedHtml(linky("http://ab (http://a) <http://a> \n http://1.2/v:~-123. c")));
+      sortedHtml(linky("http://ab (http://a) <http://a> http://1.2/v:~-123. c")));
   assertEquals(undefined, linky(undefined));
 };
 

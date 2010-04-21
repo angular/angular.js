@@ -43,13 +43,14 @@ describe("markups", function(){
   });
 
   it('should populate value attribute on OPTION', function(){
-    compile('<select name="x"><option>A</option></select>');
-    expect(element.html()).toEqual('<option value="A">A</option>');
+    compile('<select name="x"><option>a</option></select>');
+    expect(sortedHtml(element)).toEqual('<select name="x"><option value="a">a</option></select>');
   });
 
   it('should process all bindings when we have leading space', function(){
     compile('<a> {{a}}<br/>{{b}}</a>');
-    expect(sortedHtml(scope.$element)).toEqual('<a> <span ng-bind="a"></span><br></br><span ng-bind="b"></span></a>');
+    var space = msie ? '<span>' + NBSP + '</span>': ' ';
+    expect(sortedHtml(scope.$element)).toEqual('<a>' + space + '<span ng-bind="a"></span><br></br><span ng-bind="b"></span></a>');
   });
 
 });

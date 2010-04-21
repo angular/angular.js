@@ -27,7 +27,8 @@ var consoleNode,
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
     angularService    = extensionMap(angular, 'service'),
-    angularCallbacks  = extensionMap(angular, 'callbacks');
+    angularCallbacks  = extensionMap(angular, 'callbacks'),
+    nodeName;
 
 function angularAlert(){
   log(arguments); window.alert.apply(window, arguments);
@@ -110,11 +111,21 @@ function isTextNode(node) { return nodeName(node) == '#text'; }
 function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
-function nodeName(element) { return (element[0] || element).nodeName; }
 function isElement(node) {
   if (node && !node.item && isDefined(node.length) && isDefined(node[0]))
     node = node[0];
   return node && node.nodeName;
+}
+
+if (msie) {
+  nodeName = function(element) {
+    element = element[0] || element;
+    return (element.scopeName && element.scopeName != 'HTML' ) ? uppercase(element.scopeName + ':' + element.nodeName) : element.nodeName;
+  };
+} else {
+  nodeName = function(element) {
+    return (element[0] || element).nodeName;
+  };
 }
 
 function isVisible(element) {

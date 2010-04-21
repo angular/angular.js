@@ -41,7 +41,7 @@ describe("directives", function(){
     var scope = compile('<div ng-bind="html|html"></div>');
     scope.html = '<div>hello</div>';
     scope.$eval();
-    expect(element.html()).toEqual('<div>hello</div>');
+    expect(lowercase(element.html())).toEqual('<div>hello</div>');
   });
 
   it('should ng-bind-template', function() {
@@ -58,7 +58,7 @@ describe("directives", function(){
   });
 
   it('should remove special attributes on false', function(){
-    var scope = compile('<div disabled="{{disabled}}"  readonly="{{readonly}}" checked="{{checked}}"/>');
+    var scope = compile('<div ng-bind-attr="{disabled:\'{{disabled}}\', readonly:\'{{readonly}}\', checked:\'{{checked}}\'}"/>');
     expect(scope.$element.attr('disabled')).toEqual(null);
     expect(scope.$element.attr('readonly')).toEqual(null);
     expect(scope.$element.attr('checked')).toEqual(null);
@@ -180,22 +180,24 @@ describe("directives", function(){
     expect(isCssVisible(scope.$element)).toEqual(true);
   });
 
-  it('should ng-controller', function(){
-    window.Greeter = function(){
-      this.greeting = 'hello';
-    };
-    window.Greeter.prototype = {
-      init: function(){
-       this.suffix = '!';
-      },
-      greet: function(name) {
-        return this.greeting + ' ' + name + this.suffix;
-      }
-    };
-    var scope = compile('<div ng-controller="Greeter"></div>');
-    expect(scope.greeting).toEqual('hello');
-    expect(scope.greet('misko')).toEqual('hello misko!');
-    delete window.Greeter;
+  describe('ng-controller', function(){
+    it('should bind', function(){
+      window.Greeter = function(){
+        this.greeting = 'hello';
+      };
+      window.Greeter.prototype = {
+        init: function(){
+          this.suffix = '!';
+        },
+        greet: function(name) {
+          return this.greeting + ' ' + name + this.suffix;
+        }
+      };
+      var scope = compile('<div ng-controller="Greeter"></div>');
+      expect(scope.greeting).toEqual('hello');
+      expect(scope.greet('misko')).toEqual('hello misko!');
+      window.Greeter = undefined;
+    });
   });
 
   it('should eval things according to ng-eval-order', function(){
