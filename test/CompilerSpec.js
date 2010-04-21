@@ -75,21 +75,22 @@ describe('compiler', function(){
 
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
+      var parent = element.parent();
       element.replaceWith(document.createComment("marker"));
       element.removeAttr("duplicate");
       var template = this.compile(element);
       return function(marker) {
         this.$onEval(function() {
-          marker.after(template(element.clone()).element);
+          marker.after(template(element.clone()).$element);
         });
       };
     };
     var scope = compile('before<span duplicate="expr">x</span>after');
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment>after</div>');
+    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span>after</div>');
     scope.$eval();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment>after</div>');
+    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span>after</div>');
     scope.$eval();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment>after</div>');
+    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span><span>x</span>after</div>');
   });
 
   it('should process markup before directives', function(){

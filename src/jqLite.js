@@ -37,14 +37,14 @@ function jqClearData(element) {
 }
 
 function JQLite(element) {
-  if (element.length && element.item) {
+  if (isElement(element)) {
+    this[0] = element;
+    this.length = 1;
+  } else if (isDefined(element.length) && element.item) {
     for(var i=0; i < element.length; i++) {
       this[i] = element[i];
     }
     this.length = element.length;
-  } else {
-    this[0] = element;
-    this.length = 1;
   }
 }
 
@@ -92,8 +92,13 @@ JQLite.prototype = {
             bubbleEvent = bubbleEvent || fn.call(self, event);
           });
           if (!bubbleEvent) {
-            event.preventDefault();
-            event.stopPropagation();
+            if (msie) {
+              event.returnValue = false;
+              event.cancelBubble = true;
+            } else {
+              event.preventDefault();
+              event.stopPropagation();
+            }
           }
         };
         eventHandler.fns = [];
@@ -107,13 +112,6 @@ JQLite.prototype = {
     var evnt = document.createEvent('MouseEvent');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
     this[0].dispatchEvent(evnt);
-  },
-
-  click: function(fn) {
-    if (fn)
-      this.bind('click', fn);
-    else
-      this.trigger('click');
   },
 
   replaceWith: function(replaceNode) {

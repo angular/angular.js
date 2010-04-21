@@ -185,7 +185,7 @@ function eachAttribute(element, fn){
   var i, attrs = element[0].attributes || [], chld, attr, name, value, attrValue = {};
   for (i = 0; i < attrs.length; i++) {
     attr = attrs[i];
-    name = attr.name;
+    name = attr.name.replace(':', '-');
     value = attr.value;
     if (msie && name == 'href') {
       value = decodeURIComponent(element[0].getAttribute(name, 2));

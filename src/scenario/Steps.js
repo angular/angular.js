@@ -29,14 +29,14 @@ angular.scenario.WHEN = {
     // emulate the browser behavior which causes it
     // to be overridden at the end.
     var checked = input.checked = !input.checked;
-    element.click();
+    element.trigger('click');
     input.checked = checked;
   },
   select:function(){
     var element = this.element(this.at);
     var path = "option[value=" + this.option + "]";
     var option = this.assert(element.find(path));
-    option[0].selected = !option[0].selected; 
+    option[0].selected = !option[0].selected;
     element.change();
   }
 };
@@ -48,7 +48,7 @@ angular.scenario.THEN = {
       if (_.isArray(this.should_be))
         should_be = JSON.stringify(should_be);
       if (element.text() != should_be)
-        throw "Expected " + should_be + 
+        throw "Expected " + should_be +
               " but was " + element.text() + ".";
     }
   },

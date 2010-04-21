@@ -133,7 +133,7 @@ describe("directives", function(){
     scope.$eval();
     expect(scope.$get('clicked')).toBeFalsy();
 
-    element.click();
+    element.trigger('click');
     expect(scope.$get('clicked')).toEqual(true);
   });
 

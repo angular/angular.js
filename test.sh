@@ -1,1 +1,1 @@
-java -jar lib/jstestdriver/JsTestDriver.jar --tests BinderTest
+java -jar lib/jstestdriver/JsTestDriver.jar --tests all

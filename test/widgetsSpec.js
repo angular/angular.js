@@ -136,23 +136,23 @@ describe("input widget", function(){
 
   it('should call ng-change on button click', function(){
     compile('<input type="button" value="Click Me" ng-change="clicked = true"/>');
-    element.click();
+    element.trigger('click');
     expect(scope.$get('clicked')).toEqual(true);
   });
 
   it('should support button alias', function(){
     compile('<button ng-change="clicked = true">Click Me</button>');
-    element.click();
+    element.trigger('click');
     expect(scope.$get('clicked')).toEqual(true);
   });
 
   it('should type="checkbox"', function(){
     compile('<input type="checkbox" name="checkbox" checked ng-change="action = true"/>');
     expect(scope.checkbox).toEqual(true);
-    trigger(element, 'click');
+    element.trigger('click');
     expect(scope.checkbox).toEqual(false);
     expect(scope.action).toEqual(true);
-    trigger(element, 'click');
+    element.trigger('click');
     expect(scope.checkbox).toEqual(true);
   });
 
@@ -176,7 +176,7 @@ describe("input widget", function(){
     expect(b.checked).toEqual(true);
     expect(scope.clicked).not.toBeDefined();
 
-    trigger(a, 'click');
+    jqLite(a).trigger('click');
     expect(scope.chose).toEqual('A');
     expect(scope.clicked).toEqual(1);
   });
@@ -218,7 +218,7 @@ describe("input widget", function(){
 
   it('should report error on ng-change exception', function(){
     compile('<button ng-change="a-2=x">click</button>');
-    element.click();
+    element.trigger('click');
     expect(element.hasClass('ng-exception')).toBeTruthy();
   });
 

@@ -29,7 +29,7 @@ Browser.prototype = {
   bind: function() {
     var self = this;
     self.document.bind("mouseover", function(event){
-      self.hoverListener(jqLite(event.target), true);
+      self.hoverListener(jqLite(msie ? event.srcElement : event.target), true);
       return true;
     });
     self.document.bind("mouseleave mouseout click dblclick keypress keyup", function(event){
@@ -43,8 +43,11 @@ Browser.prototype = {
   },
 
   addCss: function(url) {
-    var head = jqLite(this.document[0].getElementsByTagName('head')[0]),
-        link = jqLite('<link rel="stylesheet" type="text/css"></link>');
+    var doc = this.document[0],
+        head = jqLite(doc.getElementsByTagName('head')[0]),
+        link = jqLite(doc.createElement('link'));
+    link.attr('rel', 'stylesheet');
+    link.attr('type', 'text/css');
     link.attr('href', url);
     head.append(link);
   },

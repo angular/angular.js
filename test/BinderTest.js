@@ -151,7 +151,7 @@ BinderTest.prototype.testInputTypeButtonActionExecutesInScope =  function(){
   c.scope.$set("person.save", function(){
     savedCalled = true;
   });
-  c.node.click();
+  c.node.trigger('click');
   assertTrue(savedCalled);
 };
 
@@ -162,7 +162,7 @@ BinderTest.prototype.testInputTypeButtonActionExecutesInScope2 =  function(){
     log += 'click;';
   });
   expect(log).toEqual('');
-  c.node.click();
+  c.node.trigger('click');
   expect(log).toEqual('click;');
 };
 
@@ -172,7 +172,7 @@ BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
   c.scope.$set("person.save", function(){
     savedCalled = true;
   });
-  c.node.click();
+  c.node.trigger('click');
   assertTrue(savedCalled);
 };
 
@@ -435,13 +435,13 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
     throw {a:'abc', b:2};
   };
   var input = c.node;
-  input.click();
+  input.trigger('click');
   assertEquals({a:"abc", b:2}, fromJson(input.attr('ng-exception')));
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
   // TODO: I think that exception should never get cleared so this portion of test makes no sense
   //c.scope.action = noop;
-  //input.click();
+  //input.trigger('click');
   //dump(input.attr('ng-error'));
   //assertFalse('error class should be cleared', input.hasClass('ng-exception'));
 };
@@ -574,10 +574,10 @@ BinderTest.prototype.testItShouldDisplayErrorWhenActionIsSyntacticlyIncorect = f
   var first = jqLite(c.node[0].childNodes[0]);
   var second = jqLite(c.node[0].childNodes[1]);
 
-  first.click();
+  first.trigger('click');
   assertEquals("ABC", c.scope.greeting);
 
-  second.click();
+  second.trigger('click');
   assertTrue(second.hasClass("ng-exception"));
 };
 

@@ -26,15 +26,20 @@ angularDirective("ng-bind", function(expression){
   return function(element) {
     var lastValue, lastError;
     this.$onEval(function() {
-      var error, value = this.$tryEval(expression, function(e){
-        error = toJson(e);
-      });
+      var error,
+          value = this.$tryEval(expression, function(e){
+            error = toJson(e);
+          }),
+          isElem = isElement(value);
+      if (!isElem && isObject(value)) {
+        value = toJson(value);
+      }
       if (value != lastValue || error != lastError) {
         lastValue = value;
         lastError = error;
         elementError(element, NG_EXCEPTION, error);
         if (error) value = error;
-        if (isElement(value)) {
+        if (isElem) {
           element.html('');
           element.append(value);
         } else {
@@ -177,7 +182,7 @@ angularWidget("@ng-repeat", function(expression, element){
 angularDirective("ng-click", function(expression, element){
   return function(element){
     var self = this;
-    element.click(function(){
+    element.bind('click', function(){
       self.$tryEval(expression, element);
       self.$root.$eval();
       return false;

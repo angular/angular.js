@@ -112,7 +112,8 @@ function uppercase(value){ return isString(value) ? value.toUpperCase() : value;
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function nodeName(element) { return (element[0] || element).nodeName; }
 function isElement(node) {
-  if (node && node[0]) node = node[0];
+  if (node && !node.item && isDefined(node.length) && isDefined(node[0]))
+    node = node[0];
   return node && node.nodeName;
 }
 
