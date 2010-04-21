@@ -98,11 +98,11 @@ describe('compiler', function(){
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
         parentNode.attr('hello', text);
-        textNode[0].textContent = 'replaced';
+        textNode[0].nodeValue = 'replaced';
       }
     });
     var scope = compile('before<span>middle</span>after');
-    expect(scope.$element[0].innerHTML).toEqual('before<span hello="middle">replaced</span>after');
+    expect(lowercase(scope.$element[0].innerHTML)).toEqual('before<span hello="middle">replaced</span>after');
     expect(log).toEqual("hello middle");
   });
 
@@ -114,7 +114,7 @@ describe('compiler', function(){
       };
     };
     var scope = compile('<ng:button>push me</ng:button>');
-    expect(scope.$element[0].innerHTML).toEqual('<div>button</div>');
+    expect(lowercase(scope.$element[0].innerHTML)).toEqual('<div>button</div>');
     expect(log).toEqual('init');
   });
 
