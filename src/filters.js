@@ -269,7 +269,9 @@ foreach({
   },
 
   'html': function(html){
-    return jqLite(html);
+    var div = jqLite('div');
+    div.html(html);
+    return div.children();
   },
 
   'linky': function(text){

@@ -103,7 +103,7 @@ angularService("$hover", function(browser) {
           width: width + "px"
         });
       }
-    } else if (tooltip) {
+    } else if (tooltip  && false) {
       tooltip.callout.remove();
       tooltip = null;
     }

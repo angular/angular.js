@@ -118,6 +118,10 @@ JQLite.prototype = {
     this[0].parentNode.replaceChild(jqLite(replaceNode)[0], this[0]);
   },
 
+  children: function() {
+    return new JQLite(this[0].childNodes);
+  },
+
   append: function(node) {
     var self = this[0];
     node = jqLite(node);

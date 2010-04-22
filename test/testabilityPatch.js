@@ -1,7 +1,11 @@
 jstd = jstestdriver;
 dump = bind(jstd.console, jstd.console.log);
 
-var NBSP = jqLite('&nbsp;').text();
+var NBSP = (function(){
+  var div = document.createElement('div');
+  div.innerHtml = '&nbsp;';
+  return msie ? div.innerText : div.textContent;
+})();
 
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
@@ -82,6 +86,12 @@ function sortedHtml(element) {
           }
         }
         style.sort();
+        var tmp = style;
+        style = [];
+        foreach(tmp, function(value){
+          if (!value.match(/^max[^\-]/))
+            style.push(value);
+        });
         if (style.length) {
           html += ' style="' + style.join('; ') + ';"';
         }
