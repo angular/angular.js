@@ -109,7 +109,7 @@ angularDirective("ng-bind-attr", function(expression){
             specialName = REMOVE_ATTRIBUTES[lowercase(key)];
         if (specialName) {
           if (element[specialName] = toBoolean(value)) {
-            element.attr(key, value);
+            element.attr(specialName, value);
           } else {
             element.removeAttr(key);
           }
