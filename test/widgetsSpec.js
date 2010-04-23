@@ -243,7 +243,7 @@ describe("widget", function(){
     });
 
     it("should match urls", function(){
-      var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng-switch-when="/Book/:name">{{params.name}}</div></ng:include>');
+      var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng-switch-when="/Book/:name">{{params.name}}</div></ng:switch>');
       scope.url = '/Book/Moby';
       scope.$init();
       expect(scope.$element.text()).toEqual('Moby');
@@ -256,7 +256,7 @@ describe("widget", function(){
     });
 
     it('should call init on switch', function(){
-      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng-switch-when="a">{{name}}</div></ng:include>');
+      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng-switch-when="a">{{name}}</div></ng:switch>');
       var cleared = false;
       scope.url = 'a';
       scope.$invalidWidgets = {clearOrphans: function(){
