@@ -239,6 +239,11 @@ var ngSwitch = angularWidget('NG:SWITCH', function (element){
     }
   });
 
+  // this needs to be here for IE
+  foreach(cases, function(_case){
+    _case.element.remove();
+  });
+
   element.html('');
   return function(element){
     var scope = this, childScope;

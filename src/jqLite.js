@@ -211,11 +211,9 @@ JQLite.prototype = {
 
   html: function(value) {
     if (isDefined(value)) {
-      var parent = this[0], child;
-      while(parent.childNodes.length) {
-        child = parent.childNodes[0];
-        jqLite(child).dealoc();
-        parent.removeChild(child);
+      var i = 0, childNodes = this[0].childNodes;
+      for ( ; i < childNodes.length; i++) {
+        jqLite(childNodes[i]).dealoc();
       }
       this[0].innerHTML = value;
     }
