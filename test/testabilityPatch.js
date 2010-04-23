@@ -148,3 +148,12 @@ function assertThrows(error, fn){
 
 log = noop;
 error = noop;
+
+function click(element) {
+  element = jqLite(element);
+  if ( (msie || jqLite == window.jQuery) &&
+       nodeName(element) == 'INPUT' && (lowercase(element.attr('type')) == 'radio' || lowercase(element.attr('type')) == 'checkbox')) {
+    element[0].checked = ! element[0].checked;
+  }
+  element.trigger('click');
+}

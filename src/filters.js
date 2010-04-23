@@ -269,9 +269,7 @@ foreach({
   },
 
   'html': function(html){
-    var div = jqLite('div');
-    div.html(html);
-    return div.children();
+    return new HTML(html);
   },
 
   'linky': function(text){
@@ -293,7 +291,7 @@ foreach({
       raw = raw.substring(i + url.length);
     }
     html.push(escapeHtml(raw));
-    return jqLite(html.join(''));
+    return new HTML(html.join(''));
   }
 }, function(v,k){angularFilter[k] = v;});
 

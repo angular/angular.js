@@ -32,7 +32,7 @@ function valueAccessor(scope, element) {
       value = element.val();
       force = true;
     }
-    if (element[0].disabled || isString(element.attr('readonly'))) {
+    if (element[0].disabled || element[0].readOnly) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
       return value;

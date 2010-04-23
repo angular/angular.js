@@ -137,23 +137,23 @@ describe("widget", function(){
 
     it('should call ng-change on button click', function(){
       compile('<input type="button" value="Click Me" ng-change="clicked = true"/>');
-      element.trigger('click');
+      click(element);
       expect(scope.$get('clicked')).toEqual(true);
     });
 
     it('should support button alias', function(){
       compile('<button ng-change="clicked = true">Click Me</button>');
-      element.trigger('click');
+      click(element);
       expect(scope.$get('clicked')).toEqual(true);
     });
 
     it('should support type="checkbox"', function(){
       compile('<input type="checkBox" name="checkbox" checked ng-change="action = true"/>');
       expect(scope.checkbox).toEqual(true);
-      element.trigger('click');
+      click(element);
       expect(scope.checkbox).toEqual(false);
       expect(scope.action).toEqual(true);
-      element.trigger('click');
+      click(element);
       expect(scope.checkbox).toEqual(true);
     });
 
@@ -177,7 +177,7 @@ describe("widget", function(){
       expect(b.checked).toEqual(true);
       expect(scope.clicked).not.toBeDefined();
 
-      jqLite(a).trigger('click');
+      click(a);
       expect(scope.chose).toEqual('A');
       expect(scope.clicked).toEqual(1);
     });
@@ -219,7 +219,7 @@ describe("widget", function(){
 
     it('should report error on ng-change exception', function(){
       compile('<button ng-change="a-2=x">click</button>');
-      element.trigger('click');
+      click(element);
       expect(element.hasClass('ng-exception')).toBeTruthy();
     });
   });

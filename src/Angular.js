@@ -112,7 +112,11 @@ function lowercase(value){ return isString(value) ? value.toLowerCase() : value;
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function isElement(node) {
-  return node && (node.nodeName || node instanceof JQLite || node instanceof jQuery);
+  return node && (node.nodeName || node instanceof JQLite || (jQuery && node instanceof jQuery));
+}
+
+function HTML(html) {
+  this.html = html;
 }
 
 if (msie) {

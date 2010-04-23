@@ -238,10 +238,6 @@ if (msie) {
     },
 
     trigger: function(type) {
-
-      if (nodeName(this) == 'INPUT' && (lowercase(this.attr('type')) == 'radio' || lowercase(this.attr('type')) == 'checkbox')) {
-        this[0].checked = ! this[0].checked;
-      }
       this[0].fireEvent('on' + type);
     }
   });
