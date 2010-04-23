@@ -97,20 +97,21 @@ angularDirective("ng-bind-template", function(expression){
 });
 
 var REMOVE_ATTRIBUTES = {
-  'disabled':true,
-  'readonly':true,
-  'checked':true
+  'disabled':'disabled',
+  'readonly':'readOnly',
+  'checked':'checked'
 };
 angularDirective("ng-bind-attr", function(expression){
   return function(element){
     this.$onEval(function(){
       foreach(this.$eval(expression), function(bindExp, key) {
-        var value = compileBindTemplate(bindExp).call(this, element);
-        if (REMOVE_ATTRIBUTES[lowercase(key)]) {
-          if (!toBoolean(value)) {
-            element.removeAttr(key);
-          } else {
+        var value = compileBindTemplate(bindExp).call(this, element),
+            specialName = REMOVE_ATTRIBUTES[lowercase(key)];
+        if (specialName) {
+          if (element[specialName] = toBoolean(value)) {
             element.attr(key, value);
+          } else {
+            element.removeAttr(key);
           }
           (element.data('$validate')||noop)();
         } else {

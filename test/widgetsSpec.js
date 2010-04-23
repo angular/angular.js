@@ -160,7 +160,7 @@ describe("widget", function(){
     it('should support type="radio"', function(){
       compile('<div>' +
           '<input type="radio" name="chose" value="A" ng-change="clicked = 1"/>' +
-          '<input type="raDio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
+          '<input type="radio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
           '<input type="radio" name="chose" value="C" ng-change="clicked = 3"/>' +
         '</div>');
       var a = element[0].childNodes[0];

@@ -58,19 +58,20 @@ describe("directives", function(){
   });
 
   it('should remove special attributes on false', function(){
-    var scope = compile('<div ng-bind-attr="{disabled:\'{{disabled}}\', readonly:\'{{readonly}}\', checked:\'{{checked}}\'}"/>');
-    expect(scope.$element.attr('disabled')).toEqual(null);
-    expect(scope.$element.attr('readonly')).toEqual(null);
-    expect(scope.$element.attr('checked')).toEqual(null);
+    var scope = compile('<input ng-bind-attr="{disabled:\'{{disabled}}\', readonly:\'{{readonly}}\', checked:\'{{checked}}\'}"/>');
+    var input = scope.$element[0];
+    expect(input.disabled).toEqual(false);
+    expect(input.readOnly).toEqual(false);
+    expect(input.checked).toEqual(false);
 
     scope.disabled = true;
     scope.readonly = true;
     scope.checked = true;
     scope.$eval();
 
-    expect(scope.$element.attr('disabled')).not.toEqual(null);
-    expect(scope.$element.attr('readonly')).not.toEqual(null);
-    expect(scope.$element.attr('checked')).not.toEqual(null);
+    expect(input.disabled).toEqual(true);
+    expect(input.readOnly).toEqual(true);
+    expect(input.checked).toEqual(true);
   });
 
   it('should ng-non-bindable', function(){

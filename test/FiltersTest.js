@@ -80,22 +80,13 @@ FiltersTest.prototype.testImage = function(){
   assertEquals(null, angular.filter.image());
   assertEquals(null, angular.filter.image({}));
   assertEquals(null, angular.filter.image(""));
-  assertEquals('<img src="http://localhost/abc"></img>', sortedHtml(angular.filter.image({url:"http://localhost/abc"})));
-  assertEquals(
-      '<img src="http://localhost/abc" style="max-height: 10px; max-width: 10px;"></img>',
-      sortedHtml(angular.filter.image({url:"http://localhost/abc"}, 10)));
-  assertEquals(
-      '<img src="http://localhost/abc" style="max-height: 20px; max-width: 10px;"></img>',
-      sortedHtml(angular.filter.image({url:"http://localhost/abc"}, 10, 20)));
+  assertEquals('http://localhost/abc', angular.filter.image({url:"http://localhost/abc"}).attr('src'));
 };
 
 FiltersTest.prototype.testQRcode = function() {
   assertEquals(
-      '<img src="http://chart.apis.google.com/chart?chl=Hello%20world&chs=200x200&cht=qr" style="height: 200px; width: 200px;"></img>',
-      sortedHtml(angular.filter.qrcode('Hello world')));
-  assertEquals(
-      '<img src="http://chart.apis.google.com/chart?chl=http%3A%2F%2Fserver%3Fa%26b%3Dc&chs=100x100&cht=qr" style="height: 100px; width: 100px;"></img>',
-      sortedHtml(angular.filter.qrcode('http://server?a&b=c', 100)));
+      'http://chart.apis.google.com/chart?chl=Hello%20world&chs=200x200&cht=qr',
+      angular.filter.qrcode('Hello world').attr('src'));
 };
 
 FiltersTest.prototype.testLowercase = function() {
@@ -128,8 +119,8 @@ FiltersTest.prototype.testUnless = function() {
 
 FiltersTest.prototype.testGoogleChartApiEncode = function() {
   assertEquals(
-      '<img src="http://chart.apis.google.com/chart?chl=Hello world&chs=200x200&cht=qr" style="height: 200px; width: 200px;"></img>',
-      sortedHtml(angular.filter.googleChartApi.encode({cht:"qr", chl:"Hello world"})));
+      'http://chart.apis.google.com/chart?chl=Hello world&chs=200x200&cht=qr',
+      angular.filter.googleChartApi.encode({cht:"qr", chl:"Hello world"}).attr('src'));
 };
 
 FiltersTest.prototype.testHtml = function() {
