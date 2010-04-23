@@ -71,6 +71,8 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
 var NG_BIND_ATTR = 'ng-bind-attr';
 angularAttrMarkup('{{}}', function(value, name, element){
   if (name.substr(0, 3) != 'ng-') {
+    if (msie && name == 'src')
+      value = decodeURI(value);
     var bindings = parseBindings(value),
         bindAttr;
     if (hasBindings(bindings)) {
