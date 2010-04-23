@@ -47,16 +47,6 @@ describe("markups", function(){
     expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option value="a">a</option></select>');
   });
 
-  it('should process all bindings when we have leading space', function(){
-    var e = jqLite('<a> {{a}}<br/>{{b}}</a>');
-    if (sortedHtml(e).indexOf('<a>{{') != 0) {
-      // can only run this test if browser respects leading spaces
-      compile(e);
-      var space = msie ? '<span>' + NBSP + '</span>': ' ';
-      expect(sortedHtml(scope.$element)).toEqual('<a>' + space + '<span ng-bind="a"></span><br></br><span ng-bind="b"></span></a>');
-    }
-  });
-
 });
 
 

@@ -436,7 +436,9 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   };
   var input = c.node;
   input.trigger('click');
-  assertEquals({a:"abc", b:2}, fromJson(input.attr('ng-exception')));
+  var error = fromJson(input.attr('ng-exception'));
+  assertEquals("abc", error.a);
+  assertEquals(2, error.b);
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
   // TODO: I think that exception should never get cleared so this portion of test makes no sense

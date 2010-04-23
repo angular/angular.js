@@ -1,12 +1,6 @@
 jstd = jstestdriver;
 dump = bind(jstd.console, jstd.console.log);
 
-var NBSP = (function(){
-  var div = document.createElement('div');
-  div.innerHtml = '&nbsp;';
-  return msie ? div.innerText : div.textContent;
-})();
-
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
 }
