@@ -108,7 +108,7 @@ describe('compiler', function(){
 
   it('should replace widgets', function(){
     widgets['NG:BUTTON'] = function(element) {
-      element.replaceWith('<div>button</div>', element);
+      element.replaceWith('<div>button</div>');
       return function(element) {
         log += 'init';
       };
@@ -116,6 +116,22 @@ describe('compiler', function(){
     var scope = compile('<ng:button>push me</ng:button>');
     expect(lowercase(scope.$element[0].innerHTML)).toEqual('<div>button</div>');
     expect(log).toEqual('init');
+  });
+
+  it('should use the replaced element after calling widget', function(){
+    widgets['H1'] = function(element) {
+      var span = angular.element('<span>{{1+2}}</span>');
+      element.replaceWith(span);
+      this.descend(true);
+      this.directives(true);
+      return noop;
+    };
+    textMarkup.push(function(text, textNode, parent){
+      if (text == '{{1+2}}')
+        textNode.text('3');
+    });
+    var scope = compile('<div><h1>ignore me</h1></div>');
+    expect(scope.$element.text()).toEqual('3');
   });
 
 });

@@ -77,7 +77,7 @@ function Compiler(textMarkup, attrMarkup, directives, widgets){
 Compiler.prototype = {
   compile: function(rawElement) {
     rawElement = jqLite(rawElement);
-    var template = this.templatize(rawElement) || new Template();
+    var template = this.templatize(rawElement, 0, 0) || new Template();
     return function(element, parentScope){
       element = jqLite(element);
       var scope = parentScope && parentScope.$eval ?
@@ -95,7 +95,7 @@ Compiler.prototype = {
     };
   },
 
-  templatize: function(element, priority){
+  templatize: function(element, elementIndex, priority){
     var self = this,
         widget,
         directiveFns = self.directives,
@@ -130,7 +130,11 @@ Compiler.prototype = {
     if (widget) {
       descend = false;
       directives = false;
+      var parent = element.parent();
       template.addInit(widget.call(selfApi, element));
+      if (parent) {
+        element = jqLite(parent[0].childNodes[elementIndex]);
+      }
     }
     if (descend){
       // process markup for text nodes only
@@ -156,7 +160,7 @@ Compiler.prototype = {
     // Process non text child nodes
     if (descend) {
       eachNode(element, function(child, i){
-        template.addChild(i, self.templatize(child, priority));
+        template.addChild(i, self.templatize(child, i, priority));
       });
     }
     return template.empty() ? null : template;
