@@ -132,7 +132,7 @@ Compiler.prototype = {
       directives = false;
       var parent = element.parent();
       template.addInit(widget.call(selfApi, element));
-      if (parent) {
+      if (parent && parent[0]) {
         element = jqLite(parent[0].childNodes[elementIndex]);
       }
     }

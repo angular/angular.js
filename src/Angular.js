@@ -91,12 +91,15 @@ function extensionMap(angular, name) {
 }
 
 function jqLiteWrap(element) {
-  if (isString(element)) {
-    var div = document.createElement('div');
-    div.innerHTML = element;
-    element = new JQLite(div.childNodes);
-  } else if (!(element instanceof JQLite) && isElement(element)) {
-    element =  new JQLite(element);
+  // for some reasons the parentNode of an orphan looks like null but its typeof is object.
+  if (element) {
+    if (isString(element)) {
+      var div = document.createElement('div');
+      div.innerHTML = element;
+      element = new JQLite(div.childNodes);
+    } else if (!(element instanceof JQLite) && isElement(element)) {
+      element =  new JQLite(element);
+    }
   }
   return element;
 }

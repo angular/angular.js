@@ -220,7 +220,10 @@ JQLite.prototype = {
     return this[0].innerHTML;
   },
 
-  parent: function() { return jqLite(this[0].parentNode);},
+  parent: function() {
+    return jqLite(this[0].parentNode);
+  },
+
   clone: function() { return jqLite(this[0].cloneNode(true)); }
 };
 
@@ -228,11 +231,14 @@ if (msie) {
   extend(JQLite.prototype, {
     text: function(value) {
       var e = this[0];
-      if (isDefined(value)) {
-        e.innerText = value;
-      }
       // NodeType == 3 is text node
-      return e.nodeType == 3 ? e.nodeValue : e.innerText;
+      if (e.nodeType == 3) {
+        if (isDefined(value)) e.nodeValue = value;
+        return e.nodeValue;
+      } else {
+        if (isDefined(value)) e.innerText = value;
+        return e.innerText;
+      }
     },
 
     trigger: function(type) {
