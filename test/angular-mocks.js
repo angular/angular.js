@@ -23,11 +23,19 @@
  */
 
 function MockBrowser() {
-  var self = this, expectations = {}, requests = [];
+  var self = this,
+      expectations = {},
+      requests = [];
   self.url = "http://server";
   self.watches = [];
 
-  self.xhr = function(method, url, callback) {
+  self.xhr = function(method, url, data, callback) {
+    if (isFunction(data)) {
+      callback = data;
+      data = null;
+    }
+    if (data && isObject(data)) data = angular.toJson(data);
+    if (data && isString(data)) url += "|" + data;
     var expect = expectations[method] || {};
     var response = expect[url];
     if (!response) {
@@ -39,7 +47,9 @@ function MockBrowser() {
   };
   self.xhr.expectations = expectations;
   self.xhr.requests = requests;
-  self.xhr.expect = function(method, url) {
+  self.xhr.expect = function(method, url, data) {
+    if (data && isObject(data)) data = angular.toJson(data);
+    if (data && isString(data)) url += "|" + data;
     var expect = expectations[method] || (expectations[method] = {});
     return {
       respond: function(response) {
@@ -47,6 +57,10 @@ function MockBrowser() {
       }
     };
   };
+  self.xhr.expectGET    = angular.bind(self, self.xhr.expect, 'GET');
+  self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
+  self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
+  self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
   self.xhr.flush = function() {
     while(requests.length) {
       requests.pop()();

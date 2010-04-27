@@ -60,8 +60,9 @@ describe("resource", function() {
   var xhr, resource, CreditCard, callback;
 
   beforeEach(function(){
-    xhr = new MockXHR();
-    resource = new ResourceFactory(bind(xhr, xhr.method));
+    var browser = new MockBrowser();
+    xhr = browser.xhr;
+    resource = new ResourceFactory(xhr);
     CreditCard = resource.route('/CreditCard/:id:verb', {id:'@id.key'}, {
       charge:{
         method:'POST',
@@ -95,7 +96,7 @@ describe("resource", function() {
   });
 
   it("should create resource", function(){
-    xhr.expectPOST('/CreditCard').data({name:'misko'}).respond({id:123, name:'misko'});
+    xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123, name:'misko'});
 
     var cc = CreditCard.save({name:'misko'}, callback);
     nakedExpect(cc).toEqual({name:'misko'});
@@ -117,7 +118,7 @@ describe("resource", function() {
   });
 
   it("should update resource", function(){
-    xhr.expectPOST('/CreditCard/123').data({id:{key:123}, name:'misko'}).respond({id:{key:123}, name:'rama'});
+    xhr.expectPOST('/CreditCard/123', {id:{key:123}, name:'misko'}).respond({id:{key:123}, name:'rama'});
 
     var cc = CreditCard.save({id:{key:123}, name:'misko'}, callback);
     nakedExpect(cc).toEqual({id:{key:123}, name:'misko'});
@@ -148,13 +149,13 @@ describe("resource", function() {
   });
 
   it('should post charge verb', function(){
-    xhr.expectPOST('/CreditCard/123!charge?amount=10').data({auth:'abc'}).respond({success:'ok'});
+    xhr.expectPOST('/CreditCard/123!charge?amount=10', {auth:'abc'}).respond({success:'ok'});
 
     CreditCard.charge({id:123, amount:10},{auth:'abc'}, callback);
   });
 
   it('should create on save', function(){
-    xhr.expectPOST('/CreditCard').data({name:'misko'}).respond({id:123});
+    xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123});
     var cc = new CreditCard();
     expect(cc.$get).not.toBeDefined();
     expect(cc.$query).not.toBeDefined();

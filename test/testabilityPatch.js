@@ -10,20 +10,21 @@ function childNode(element, index) {
 }
 
 extend(angular, {
-  'element': jqLite,
+  'bind': bind,
   'compile': compile,
-  'scope': createScope,
   'copy': copy,
+  'element': jqLite,
   'extend': extend,
   'foreach': foreach,
-  'noop':noop,
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
   'isString': isString,
   'isFunction': isFunction,
   'isNumber': isNumber,
-  'isArray': isArray
+  'isArray': isArray,
+  'noop':noop,
+  'scope': createScope
 });
 
 

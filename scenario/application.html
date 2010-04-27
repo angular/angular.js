@@ -3,6 +3,18 @@
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"></link>
     <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
+    <script>
+  function AccountController(){
+  }
+
+  AccountController.prototype = {
+    hello: function(){
+      alert(this.name);
+    }
+
+  };
+
+    </script>
   </head>
   <body ng-init="$window.$scope = this">
     [ <a href="#login">login</a>
@@ -11,8 +23,11 @@
 
     <ng:switch on="$location.hashPath">
       <div ng-switch-when="login">login screen</div>
-      <ng:include ng-switch-when="account" src="application-account.html"></ng:include>
+      <ng:include ng-switch-when="account" src="'application-account.html'"></ng:include>
     </ng:switch>
+
+
+    (( input name ))
 
     <pre>$location={{$location}}</pre>
   </body>
