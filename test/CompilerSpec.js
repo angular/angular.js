@@ -128,7 +128,7 @@ describe('compiler', function(){
     };
     textMarkup.push(function(text, textNode, parent){
       if (text == '{{1+2}}')
-        textNode.text('3');
+        parent.text('3');
     });
     var scope = compile('<div><h1>ignore me</h1></div>');
     expect(scope.$element.text()).toEqual('3');
