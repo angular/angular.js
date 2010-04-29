@@ -189,3 +189,7 @@ angularService('$route', function(location, params){
   return $route;
 }, {inject: ['$location']});
 
+angularService('$resource', function(browser){
+  var resource = new ResourceFactory(bind(browser, browser.xhr));
+  return bind(resource, resource.route);
+}, {inject: ['$browser']});
