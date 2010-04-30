@@ -173,7 +173,7 @@ function createScope(parent, services, existing) {
   }
 
   function inject(name){
-    var service = getter(servicesCache, name), factory, args = [];
+    var service = getter(servicesCache, name, true), factory, args = [];
     if (isUndefined(service)) {
       factory = services[name];
       if (!isFunction(factory))
@@ -189,7 +189,7 @@ function createScope(parent, services, existing) {
   foreach(services, function(_, name){
     var service = inject(name);
     if (service) {
-      instance[name] = service;
+      setter(instance, name, service);
     }
   });
 

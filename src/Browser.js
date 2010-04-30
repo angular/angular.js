@@ -52,12 +52,12 @@ Browser.prototype = {
     head.append(link);
   },
 
-  xhr: function(method, url, callback){
+  xhr: function(method, url, post, callback){
     var xhr = new this.XHR();
     xhr.open(method, url, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
-        callback(xhr.status, xhr.responseText);
+        callback(xhr.status || 200, xhr.responseText);
       }
     };
     xhr.send('');

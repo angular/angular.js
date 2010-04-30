@@ -159,6 +159,88 @@ describe("service", function(){
     });
   });
 
+  describe('$xhr', function(){
+    var log, xhr;
+    function callback(code, response) {
+      expect(code).toEqual(200);
+      log = log + toJson(response) + ';';
+    };
+
+    beforeEach(function(){
+      log = '';
+      xhr = scope.$browser.xhr;
+    });
+
+    it('should forward the request to $browser and decode JSON', function(){
+      xhr.expectGET('/reqGET').respond('first');
+      xhr.expectGET('/reqGETjson').respond('["second"]');
+      xhr.expectPOST('/reqPOST', {post:'data'}).respond('third');
+
+      scope.$xhr('GET', '/reqGET', null, callback);
+      scope.$xhr('GET', '/reqGETjson', null, callback);
+      scope.$xhr('POST', '/reqPOST', {post:'data'}, callback);
+
+      xhr.flush();
+
+      expect(log).toEqual('"third";["second"];"first";');
+    });
+
+    describe('bulk', function(){
+      it('should collect requests', function(){
+        scope.$xhr.bulk.url = "/";
+        scope.$xhr.bulk('GET', '/req1', null, callback);
+        scope.$xhr.bulk('POST', '/req2', {post:'data'}, callback);
+
+        xhr.expectPOST('/', {
+          requests:[{method:'GET',  url:'/req1', data: null},
+                    {method:'POST', url:'/req2', data:{post:'data'} }]
+        }).respond([
+          {status:200, response:'first'},
+          {status:200, response:'second'}
+        ]);
+        scope.$xhr.bulk.flush(function(){ log += 'DONE';});
+        xhr.flush();
+        expect(log).toEqual('"first";"second";DONE');
+      });
+    });
+
+    describe('cache', function(){
+      var cache;
+      beforeEach(function(){ cache = scope.$xhr.cache; });
+      it('should cache requests', function(){
+        xhr.expectGET('/url').respond('first');
+        cache('GET', '/url', null, callback);
+        xhr.flush();
+        xhr.expectGET('/url').respond('ERROR');
+        cache('GET', '/url', null, callback);
+        xhr.flush();
+        expect(log).toEqual('"first";"first";');
+      });
+
+      it('should serve requests from cache', function(){
+        cache.data.url = {value:'123'};
+        cache('GET', 'url', null, callback);
+        expect(log).toEqual('"123";');
+      });
+
+      it('should keep track of in flight requests and request only once', function(){
+        cache.delegate = scope.$xhr.bulk;
+        xhr.expectPOST('/bulk', {
+          requests:[{method:'GET',  url:'/url', data: null}]
+        }).respond([
+          {status:200, response:'123'},
+        ]);
+        cache('GET', '/url', null, callback);
+        cache('GET', '/url', null, callback);
+        cache.delegate.flush();
+        xhr.flush();
+        expect(log).toEqual('"123";"123";');
+      });
+    });
+
+  });
+
+
 });
 
 

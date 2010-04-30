@@ -189,7 +189,88 @@ angularService('$route', function(location, params){
   return $route;
 }, {inject: ['$location']});
 
-angularService('$resource', function(browser){
-  var resource = new ResourceFactory(bind(browser, browser.xhr));
+angularService('$xhr', function($browser){
+  var self = this;
+  return function(method, url, post, callback){
+    if (post && isObject(post)) {
+      post = toJson(post);
+    }
+    $browser.xhr(method, url, post, function(code, response){
+      try {
+        if (isString(response) && /^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
+          response = fromJson(response);
+        }
+        callback(code, response);
+      } finally {
+        self.$eval();
+      }
+    });
+  };
+}, {inject:['$browser']});
+
+angularService('$xhr.bulk', function($xhr){
+  var requests = [],
+      callbacks = [],
+      scope = this;
+  function bulkXHR(method, url, post, callback) {
+    requests.push({method: method, url: url, data:post});
+    callbacks.push(callback);
+  }
+  bulkXHR.url = "/bulk";
+  bulkXHR.flush = function(callback){
+    var currentRequests = requests,
+        currentCallbacks = callbacks;
+    requests = [];
+    callbacks = [];
+    $xhr('POST', bulkXHR.url, {requests:currentRequests}, function(code, response){
+      foreach(response, function(response, i){
+        try {
+          (currentCallbacks[i] || noop)(response.status, response.response);
+        } catch(e) {
+          self.$log.error(e);
+        }
+      });
+      (callback || noop)();
+    });
+    scope.$eval();
+  };
+  return bulkXHR;
+}, {inject:['$xhr']});
+
+angularService('$xhr.cache', function($xhr){
+  var inflight = {};
+  function cache(method, url, post, callback){
+    if (method == 'GET') {
+      var data;
+      if (data = cache.data[url]) {
+        callback(200, copy(data.value));
+      } else if (data = inflight[url]) {
+        data.callbacks.push(callback);
+      } else {
+        inflight[url] = {callbacks: [callback]};
+        cache.delegate(method, url, post, function(status, response){
+          if (status == 200)
+            cache.data[url] = { value: response };
+          foreach(inflight[url].callbacks, function(callback){
+            try {
+              (callback||noop)(status, copy(response));
+            } catch(e) {
+              self.$log.error(e);
+            }
+          });
+          delete inflight[url];
+        });
+      }
+    } else {
+      cache.delegate(method, url, post, callback);
+    }
+  }
+  cache.data = {};
+  cache.delegate = $xhr;
+  return cache;
+}, {inject:['$xhr']});
+
+angularService('$resource', function($xhr){
+  var resource = new ResourceFactory($xhr);
   return bind(resource, resource.route);
-}, {inject: ['$browser']});
+}, {inject: ['$xhr.cache']});

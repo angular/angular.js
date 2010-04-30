@@ -231,12 +231,12 @@ function isLeafNode (node) {
 
 function copy(source, destination){
   if (!destination) {
-    if (!source) {
-      return source;
-    } else if (isArray(source)) {
+    if (isArray(source)) {
       return copy(source, []);
-    } else {
+    } else if (isObject(source)) {
       return copy(source, {});
+    } else {
+      return source;
     }
   } else {
     if (isArray(source)) {

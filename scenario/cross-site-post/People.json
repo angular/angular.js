@@ -1,0 +1,4 @@
+[
+  { name: 'Misko', favorite: ['water melon', 'persimmon', 'passion fruit'] },
+  { name: 'Lenka', favorite: ['strawberry'] }
+]

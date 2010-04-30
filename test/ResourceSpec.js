@@ -120,4 +120,13 @@ describe("resource", function() {
     nakedExpect(visa).toEqual({id:123});
   });
 
+  it('should excersize full stack', function(){
+    var scope = angular.compile('<div></div>');
+    var Person = scope.$resource('/Person/:id');
+    scope.$browser.xhr.expectGET('/Person/123').respond('\n{\nname:\n"misko"\n}\n');
+    var person = Person.get({id:123});
+    scope.$browser.xhr.flush();
+    expect(person.name).toEqual('misko');
+  });
+
 });
