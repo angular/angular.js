@@ -53,6 +53,10 @@ Browser.prototype = {
   },
 
   xhr: function(method, url, post, callback){
+    if (isFunction(post)) {
+      callback = post;
+      post = null;
+    }
     var xhr = new this.XHR();
     xhr.open(method, url, true);
     xhr.onreadystatechange = function() {

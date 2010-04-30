@@ -276,9 +276,8 @@ describe("widget", function(){
       scope.childScope = createScope();
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
-      scope.$browser.xhr.expect('GET', 'myUrl').respond('{{name}}');
+      scope.$xhr.cache.data.myUrl = {value:'{{name}}'};
       scope.$init();
-      scope.$browser.xhr.flush();
       expect(element.text()).toEqual('misko');
     });
   });

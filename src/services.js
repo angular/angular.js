@@ -192,6 +192,10 @@ angularService('$route', function(location, params){
 angularService('$xhr', function($browser){
   var self = this;
   return function(method, url, post, callback){
+    if (isFunction(post)) {
+      callback = post;
+      post = null;
+    }
     if (post && isObject(post)) {
       post = toJson(post);
     }
@@ -213,6 +217,10 @@ angularService('$xhr.bulk', function($xhr){
       callbacks = [],
       scope = this;
   function bulkXHR(method, url, post, callback) {
+    if (isFunction(post)) {
+      callback = post;
+      post = null;
+    }
     requests.push({method: method, url: url, data:post});
     callbacks.push(callback);
   }
@@ -240,6 +248,10 @@ angularService('$xhr.bulk', function($xhr){
 angularService('$xhr.cache', function($xhr){
   var inflight = {};
   function cache(method, url, post, callback){
+    if (isFunction(post)) {
+      callback = post;
+      post = null;
+    }
     if (method == 'GET') {
       var data;
       if (data = cache.data[url]) {
