@@ -207,6 +207,7 @@ describe("service", function(){
     describe('cache', function(){
       var cache;
       beforeEach(function(){ cache = scope.$xhr.cache; });
+
       it('should cache requests', function(){
         xhr.expectGET('/url').respond('first');
         cache('GET', '/url', null, callback);
@@ -235,6 +236,13 @@ describe("service", function(){
         cache.delegate.flush();
         xhr.flush();
         expect(log).toEqual('"123";"123";');
+      });
+
+      it('should clear cache on non GET', function(){
+        xhr.expectPOST('abc', {}).respond({});
+        cache.data.url = {value:123};
+        cache('POST', 'abc', {});
+        expect(cache.data.url).toBeUndefined();
       });
     });
 

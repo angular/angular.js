@@ -262,6 +262,7 @@ angularService('$xhr.cache', function($xhr){
         });
       }
     } else {
+      cache.data = {};
       cache.delegate(method, url, post, callback);
     }
   }
