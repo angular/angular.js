@@ -127,10 +127,11 @@ function createScope(parent, services, existing) {
       var watch = expressionCompile(watchExp),
           last;
       function watcher(){
-        var value = watch.call(instance);
+        var value = watch.call(instance),
+            lastValue = last;
         if (last !== value) {
           last = value;
-          instance.$tryEval(listener, exceptionHandler, value, last);
+          instance.$tryEval(listener, exceptionHandler, value, lastValue);
         }
       }
       instance.$onEval(PRIORITY_WATCH, watcher);
