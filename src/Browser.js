@@ -8,6 +8,7 @@ function Browser(location, document) {
   this.expectedUrl = location.href;
   this.urlListeners = [];
   this.hoverListener = noop;
+  this.isMock = false;
 
   this.XHR = window.XMLHttpRequest || function () {
     try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
@@ -64,7 +65,7 @@ Browser.prototype = {
         callback(xhr.status || 200, xhr.responseText);
       }
     };
-    xhr.send('');
+    xhr.send(post || '');
   },
 
   watchUrl: function(fn){

@@ -149,6 +149,7 @@ describe("service", function(){
       expect(scope.$route.current).toEqual(null);
 
       scope.$route.when('/NONE', {template:'instant update'});
+      scope.$eval();
       expect(scope.$route.current.template).toEqual('instant update');
     });
   });
@@ -187,7 +188,7 @@ describe("service", function(){
 
     describe('bulk', function(){
       it('should collect requests', function(){
-        scope.$xhr.bulk.url = "/";
+        scope.$xhr.bulk.urls["/"] = {match:/.*/};
         scope.$xhr.bulk('GET', '/req1', null, callback);
         scope.$xhr.bulk('POST', '/req2', {post:'data'}, callback);
 
@@ -225,7 +226,11 @@ describe("service", function(){
       });
 
       it('should keep track of in flight requests and request only once', function(){
-        cache.delegate = scope.$xhr.bulk;
+        scope.$xhr.bulk.urls['/bulk'] = {
+          match:function(url){
+            return url == '/url';
+          }
+        };
         xhr.expectPOST('/bulk', {
           requests:[{method:'GET',  url:'/url', data: null}]
         }).respond([

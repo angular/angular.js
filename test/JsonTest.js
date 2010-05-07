@@ -63,9 +63,9 @@ JsonTest.prototype.testItShouldEscapeUnicode = function () {
 
 JsonTest.prototype.testItShouldUTCDates = function() {
   var date = angular.String.toDate("2009-10-09T01:02:03Z");
-  assertEquals('"2009-10-09T01:02:03Z"', toJson(date));  
-  assertEquals(date.getTime(), 
-      fromJson('"2009-10-09T01:02:03Z"').getTime());  
+  assertEquals('"2009-10-09T01:02:03Z"', toJson(date));
+  assertEquals(date.getTime(),
+      fromJson('"2009-10-09T01:02:03Z"').getTime());
 };
 
 JsonTest.prototype.testItShouldPreventRecursion = function () {
@@ -77,4 +77,8 @@ JsonTest.prototype.testItShouldPreventRecursion = function () {
 JsonTest.prototype.testItShouldSerializeSameObjectsMultipleTimes = function () {
   var obj = {a:'b'};
   assertEquals('{"A":{"a":"b"},"B":{"a":"b"}}', angular.toJson({A:obj, B:obj}));
+};
+
+JsonTest.prototype.testItShouldNotSerializeUndefinedValues = function () {
+  assertEquals('{}', angular.toJson({A:undefined}));
 };

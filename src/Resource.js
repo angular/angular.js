@@ -21,7 +21,7 @@ Route.prototype = {
     });
     url = url.replace(/\/?#$/, '');
     var query = [];
-    foreach(params, function(value, key){
+    foreachSorted(params, function(value, key){
       if (!self.urlParams[key]) {
         query.push(encodeURI(key) + '=' + encodeURI(value));
       }
@@ -69,14 +69,18 @@ ResourceFactory.prototype = {
         switch(arguments.length) {
         case 3: callback = a3;
         case 2:
-          if (typeof a2 == 'function') {
+          if (isFunction(a2)) {
             callback = a2;
           } else {
             params = a1;
             data = a2;
             break;
           }
-        case 1: if (isPost) data = a1; else params = a1; break;
+        case 1:
+          if (isFunction(a1)) callback = a1;
+          else if (isPost) data = a1;
+          else params = a1;
+          break;
         case 0: break;
         default:
           throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
@@ -109,7 +113,7 @@ ResourceFactory.prototype = {
           case 1: if (typeof a1 == 'function') callback = a1; else params = a1;
           case 0: break;
           default:
-            throw "Expected between 1-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
+            throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
           }
           var self = this;
           Resource[name](params, this, function(response){

@@ -64,6 +64,12 @@ angularService("$location", function(browser){
   return location;
 }, {inject: ['$browser']});
 
+angularService("$log", function(){
+  return {
+    error: noop
+  };
+});
+
 angularService("$hover", function(browser) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10;
   browser.hover(function(element, show){
@@ -152,6 +158,7 @@ angularService('$route', function(location, params){
       onChange = [],
       matcher = angularWidget('NG:SWITCH').route,
       parentScope = this,
+      dirty = 0,
       $route = {
         routes: routes,
         onChange: bind(onChange, onChange.push),
@@ -160,7 +167,7 @@ angularService('$route', function(location, params){
           var route = routes[path];
           if (!route) route = routes[path] = {};
           if (params) angular.extend(route, params);
-          if (matcher(location.hashPath, path)) updateRoute();
+          dirty++;
           return route;
         }
       };
@@ -185,7 +192,7 @@ angularService('$route', function(location, params){
       parentScope.$tryEval(childScope.init);
     }
   }
-  this.$watch(function(){return location.hash;}, updateRoute);
+  this.$watch(function(){return dirty + location.hash;}, updateRoute);
   return $route;
 }, {inject: ['$location']});
 
@@ -221,32 +228,49 @@ angularService('$xhr.bulk', function($xhr){
       callback = post;
       post = null;
     }
-    requests.push({method: method, url: url, data:post});
-    callbacks.push(callback);
-  }
-  bulkXHR.url = "/bulk";
-  bulkXHR.flush = function(callback){
-    var currentRequests = requests,
-        currentCallbacks = callbacks;
-    requests = [];
-    callbacks = [];
-    $xhr('POST', bulkXHR.url, {requests:currentRequests}, function(code, response){
-      foreach(response, function(response, i){
-        try {
-          (currentCallbacks[i] || noop)(response.status, response.response);
-        } catch(e) {
-          self.$log.error(e);
-        }
-      });
-      (callback || noop)();
+    var currentQueue;
+    foreach(bulkXHR.urls, function(queue){
+      if (isFunction(queue.match) ? queue.match(url) : queue.match.exec(url)) {
+        currentQueue = queue;
+      }
     });
-    scope.$eval();
+    if (currentQueue) {
+      if (!currentQueue.requests) currentQueue.requests = [];
+      if (!currentQueue.callbacks) currentQueue.callbacks = [];
+      currentQueue.requests.push({method: method, url: url, data:post});
+      currentQueue.callbacks.push(callback);
+    } else {
+      $xhr(method, url, post, callback);
+    }
+  }
+  bulkXHR.urls = {};
+  bulkXHR.flush = function(callback){
+    foreach(bulkXHR.urls, function(queue, url){
+      var currentRequests = queue.requests,
+          currentCallbacks = queue.callbacks;
+      if (currentRequests && currentRequests.length) {
+        queue.requests = [];
+        queue.callbacks = [];
+        $xhr('POST', url, {requests:currentRequests}, function(code, response){
+          foreach(response, function(response, i){
+            try {
+              (currentCallbacks[i] || noop)(response.status, response.response);
+            } catch(e) {
+              scope.$log.error(e);
+            }
+          });
+          (callback || noop)();
+        });
+        scope.$eval();
+      }
+    });
   };
+  this.$onEval(PRIORITY_LAST, bulkXHR.flush);
   return bulkXHR;
 }, {inject:['$xhr']});
 
 angularService('$xhr.cache', function($xhr){
-  var inflight = {};
+  var inflight = {}, self = this;;
   function cache(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
@@ -263,14 +287,15 @@ angularService('$xhr.cache', function($xhr){
         cache.delegate(method, url, post, function(status, response){
           if (status == 200)
             cache.data[url] = { value: response };
-          foreach(inflight[url].callbacks, function(callback){
+          var callbacks = inflight[url].callbacks;
+          delete inflight[url];
+          foreach(callbacks, function(callback){
             try {
               (callback||noop)(status, copy(response));
             } catch(e) {
               self.$log.error(e);
             }
           });
-          delete inflight[url];
         });
       }
     } else {
@@ -281,7 +306,7 @@ angularService('$xhr.cache', function($xhr){
   cache.data = {};
   cache.delegate = $xhr;
   return cache;
-}, {inject:['$xhr']});
+}, {inject:['$xhr.bulk']});
 
 angularService('$resource', function($xhr){
   var resource = new ResourceFactory($xhr);

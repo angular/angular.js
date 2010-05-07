@@ -97,7 +97,7 @@ function createScope(parent, services, existing) {
     $set: bind(instance, setter, instance),
 
     $eval: function $eval(exp) {
-      if (isDefined(exp)) {
+      if (exp) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
         foreach(evalLists.sorted, function(list) {
@@ -129,8 +129,8 @@ function createScope(parent, services, existing) {
       function watcher(){
         var value = watch.call(instance);
         if (last !== value) {
-          instance.$tryEval(listener, exceptionHandler, value, last);
           last = value;
+          instance.$tryEval(listener, exceptionHandler, value, last);
         }
       }
       instance.$onEval(PRIORITY_WATCH, watcher);
