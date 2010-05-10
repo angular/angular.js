@@ -22,6 +22,7 @@ extend(angular, {
   'isDefined': isDefined,
   'isString': isString,
   'isFunction': isFunction,
+  'isObject': isObject,
   'isNumber': isNumber,
   'isArray': isArray
 });

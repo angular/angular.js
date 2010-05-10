@@ -44,6 +44,15 @@ describe("directives", function(){
     expect(lowercase(element.html())).toEqual('<div>hello</div>');
   });
 
+  it('should ng-bind element', function() {
+    angularFilter.myElement = function() {
+      return jqLite('<a>hello</a>');
+    };
+    var scope = compile('<div ng-bind="0|myElement"></div>');
+    scope.$eval();
+    expect(lowercase(element.html())).toEqual('<a>hello</a>');
+  });
+
   it('should ng-bind-template', function() {
     var scope = compile('<div ng-bind-template="Hello {{name}}!"></div>');
     scope.$set('name', 'Misko');

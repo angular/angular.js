@@ -30,8 +30,9 @@ angularDirective("ng-bind", function(expression){
           value = this.$tryEval(expression, function(e){
             error = toJson(e);
           }),
-          isHtml = value instanceof HTML;
-      if (!isHtml && isObject(value)) {
+          isHtml = value instanceof HTML,
+          isDomElement = isElement(value);
+      if (!isHtml && !isDomElement && isObject(value)) {
         value = toJson(value);
       }
       if (value != lastValue || error != lastError) {
@@ -41,6 +42,9 @@ angularDirective("ng-bind", function(expression){
         if (error) value = error;
         if (isHtml) {
           element.html(value.html);
+        } else if (isDomElement) {
+          element.html('');
+          element.append(value);
         } else {
           element.text(value);
         }

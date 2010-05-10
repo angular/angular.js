@@ -77,7 +77,18 @@ function Compiler(textMarkup, attrMarkup, directives, widgets){
 Compiler.prototype = {
   compile: function(rawElement) {
     rawElement = jqLite(rawElement);
-    var template = this.templatize(rawElement, 0, 0) || new Template();
+    var index = 0,
+        template,
+        parent = rawElement.parent();
+    if (parent && parent[0]) {
+      parent = parent[0];
+      for(var i = 0; i < parent.childNodes.length; i++) {
+        if (parent.childNodes[i] == rawElement[0]) {
+          index = i;
+        }
+      }
+    }
+    template = this.templatize(rawElement, index, 0) || new Template();
     return function(element, parentScope){
       element = jqLite(element);
       var scope = parentScope && parentScope.$eval ?

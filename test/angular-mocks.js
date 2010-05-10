@@ -26,16 +26,17 @@ function MockBrowser() {
   var self = this,
       expectations = {},
       requests = [];
+  this.isMock = true;
   self.url = "http://server";
   self.watches = [];
 
   self.xhr = function(method, url, data, callback) {
-    if (isFunction(data)) {
+    if (angular.isFunction(data)) {
       callback = data;
       data = null;
     }
-    if (data && isObject(data)) data = angular.toJson(data);
-    if (data && isString(data)) url += "|" + data;
+    if (data && angular.isObject(data)) data = angular.toJson(data);
+    if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || {};
     var response = expect[url];
     if (!response) {
@@ -48,8 +49,8 @@ function MockBrowser() {
   self.xhr.expectations = expectations;
   self.xhr.requests = requests;
   self.xhr.expect = function(method, url, data) {
-    if (data && isObject(data)) data = angular.toJson(data);
-    if (data && isString(data)) url += "|" + data;
+    if (data && angular.isObject(data)) data = angular.toJson(data);
+    if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || (expectations[method] = {});
     return {
       respond: function(response) {

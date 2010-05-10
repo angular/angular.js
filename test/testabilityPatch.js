@@ -19,6 +19,7 @@ extend(angular, {
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
+  'isObject': isObject,
   'isString': isString,
   'isFunction': isFunction,
   'isNumber': isNumber,

@@ -192,21 +192,20 @@ angularWidget('NG:INCLUDE', function(element){
       function incrementChange(){ changeCounter++;}
       this.$watch(srcExp, incrementChange);
       this.$watch(scopeExp, incrementChange);
+      scope.$onEval(function(){
+        if (childScope) childScope.$eval();
+      });
       this.$watch(function(){return changeCounter;}, function(){
         var src = this.$eval(srcExp),
         useScope = this.$eval(scopeExp);
         if (src) {
-          scope.$browser.xhr('GET', src, function(code, response){
+          scope.$xhr.cache('GET', src, function(code, response){
             element.html(response);
             childScope = useScope || createScope(scope);
             compiler.compile(element)(element, childScope);
             childScope.$init();
-            scope.$root.$eval();
           });
         }
-      });
-      scope.$onEval(function(){
-        if (childScope) childScope.$eval();
       });
     };
   }

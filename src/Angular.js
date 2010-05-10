@@ -231,13 +231,14 @@ function isLeafNode (node) {
 
 function copy(source, destination){
   if (!destination) {
-    if (isArray(source)) {
-      return copy(source, []);
-    } else if (isObject(source)) {
-      return copy(source, {});
-    } else {
-      return source;
+    if (source) {
+      if (isArray(source)) {
+        return copy(source, []);
+      } else if (isObject(source)) {
+        return copy(source, {});
+      }
     }
+    return source;
   } else {
     if (isArray(source)) {
       while(destination.length) {
@@ -249,7 +250,11 @@ function copy(source, destination){
       });
     }
     foreach(source, function(value, key){
-      destination[key] = isArray(value) ? copy(value, []) : (isObject(value) ? copy(value, {}) : value);
+      destination[key] = value ?
+              ( isArray(value) ?
+                  copy(value, []) :
+                  (isObject(value) ? copy(value, {}) : value)) :
+              value;
     });
     return destination;
   }

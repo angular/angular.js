@@ -81,6 +81,15 @@ describe("resource", function() {
     expect(callback).wasCalledWith(ccs);
   });
 
+  it("should have all arguments optional", function(){
+    xhr.expectGET('/CreditCard').respond([{id:1}]);
+    var log = '';
+    var ccs = CreditCard.query(function(){ log += 'cb;'; });
+    xhr.flush();
+    nakedExpect(ccs).toEqual([{id:1}]);
+    expect(log).toEqual('cb;');
+  });
+
   it('should delete resource', function(){
     xhr.expectDELETE("/CreditCard/123").respond({});
 

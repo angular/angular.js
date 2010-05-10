@@ -41,4 +41,12 @@ describe("copy", function(){
     assertEquals(src.a, dst.a);
     assertNotSame(src.a, dst.a);
   });
+
+  it("should copy primitives", function(){
+    expect(copy(null)).toEqual(null);
+    expect(copy('')).toEqual('');
+    expect(copy(123)).toEqual(123);
+    expect(copy([{key:null}])).toEqual([{key:null}]);
+  });
+
 });
