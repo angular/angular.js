@@ -164,7 +164,7 @@ describe("service", function(){
     function callback(code, response) {
       expect(code).toEqual(200);
       log = log + toJson(response) + ';';
-    };
+    }
 
     beforeEach(function(){
       log = '';
@@ -229,7 +229,7 @@ describe("service", function(){
         xhr.expectPOST('/bulk', {
           requests:[{method:'GET',  url:'/url', data: null}]
         }).respond([
-          {status:200, response:'123'},
+          {status:200, response:'123'}
         ]);
         cache('GET', '/url', null, callback);
         cache('GET', '/url', null, callback);
