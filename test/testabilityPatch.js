@@ -1,6 +1,31 @@
 jstd = jstestdriver;
 dump = bind(jstd.console, jstd.console.log);
 
+beforeEach(function(){
+  this.addMatchers({
+    toBeInvalid: function(){
+      var element = jqLite(this.actual);
+      var hasClass = element.hasClass('ng-validation-error');
+      var validationError = element.attr('ng-validation-error');
+      this.message = function(){
+        if (!hasClass)
+          return "Expected class 'ng-validation-error' not found.";
+        return "Expected an error message, but none was found.";
+      };
+      return hasClass && validationError;
+    },
+
+    toBeValid: function(){
+      var element = jqLite(this.actual);
+      var hasClass = element.hasClass('ng-validation-error');
+      this.message = function(){
+        return "Expected to not have class 'ng-validation-error' but found.";
+      };
+      return !hasClass;
+    }
+  });
+});
+
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
 }

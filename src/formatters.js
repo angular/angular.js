@@ -1,11 +1,20 @@
-function formater(format, parse) {return {'format':format, 'parse':parse || format};}
-function toString(obj) {return isDefined(obj) ? "" + obj : obj;}
-extend(angularFormatter, {
-  'noop':formater(identity, identity),
-  'boolean':formater(toString, toBoolean),
-  'number':formater(toString, function(obj){return 1*obj;}),
+function formatter(format, parse) {return {'format':format, 'parse':parse || format};}
+function toString(obj) {return (isDefined(obj) && obj !== null) ? "" + obj : obj;}
 
-  'list':formater(
+var NUMBER = /^\s*[-+]?\d*(\.\d*)?\s*$/;
+
+extend(angularFormatter, {
+  'noop':formatter(identity, identity),
+  'boolean':formatter(toString, toBoolean),
+  'number':formatter(toString,
+      function(obj){
+        if (isString(obj) && NUMBER.exec(obj)) {
+          return obj ? 1*obj : null;
+        }
+        throw "Not a number";
+      }),
+
+  'list':formatter(
     function(obj) { return obj ? obj.join(", ") : obj; },
     function(value) {
       var list = [];
@@ -17,7 +26,7 @@ extend(angularFormatter, {
     }
   ),
 
-  'trim':formater(
+  'trim':formatter(
     function(obj) { return obj ? trim("" + obj) : ""; }
   )
 });

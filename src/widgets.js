@@ -1,15 +1,14 @@
 function modelAccessor(scope, element) {
-  var expr = element.attr('name'),
-      farmatterName = element.attr('ng-format') || NOOP,
-      formatter = angularFormatter(farmatterName);
+  var expr = element.attr('name');
   if (!expr) throw "Required field 'name' not found.";
-  if (!formatter) throw "Formatter named '" + farmatterName + "' not found.";
   return {
     get: function() {
-      return formatter['format'](scope.$eval(expr));
+      return scope.$eval(expr);
     },
     set: function(value) {
-      scope.$tryEval(expr + '=' + toJson(formatter['parse'](value)), element);
+      if (value !== undefined) {
+        scope.$tryEval(expr + '=' + toJson(value), element);
+      }
     }
   };
 }
@@ -22,27 +21,49 @@ function valueAccessor(scope, element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = compileValidator(validatorName),
       required = element.attr('ng-required'),
-      lastError,
+      farmatterName = element.attr('ng-format') || NOOP,
+      formatter = angularFormatter(farmatterName),
+      format, parse, lastError;
       invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
-  required = required || required === '';
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
-  function validate(value) {
-    var force = false;
-    if (isUndefined(value)) {
-      value = element.val();
-      force = true;
+  if (!formatter) throw "Formatter named '" + farmatterName + "' not found.";
+  format = formatter.format;
+  parse = formatter.parse;
+  required = required || required === '';
+
+  element.data('$validate', validate);
+  return {
+    get: function(){
+      if (lastError)
+        elementError(element, NG_VALIDATION_ERROR, null);
+      try {
+        return parse(element.val());
+      } catch (e) {
+        lastError = e;
+        elementError(element, NG_VALIDATION_ERROR, e);
+      }
+    },
+    set: function(value) {
+      var oldValue = element.val(),
+          newValue = format(value);
+      if (oldValue != newValue) {
+        element.val(newValue);
+      }
+      validate();
     }
+  };
+
+  function validate() {
+    var value = trim(element.val());
     if (element[0].disabled || element[0].readOnly) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
-      return value;
-    }
-    var error,
-        validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
-    error = required && !trim(value) ?
-          "Required" :
-           (trim(value) ? validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value) : null);
-    if (error !== lastError || force) {
+    } else {
+      var error,
+          validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
+      error = required && !value ?
+            "Required" :
+            (value ? validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value) : null);
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
       if (error) {
@@ -51,13 +72,7 @@ function valueAccessor(scope, element) {
         invalidWidgets.markValid(element);
       }
     }
-    return value;
   }
-  element.data('$validate', validate);
-  return {
-    get: function(){ return validate(element.val()); },
-    set: function(value){ element.val(validate(value)); }
-  };
 }
 
 function checkedAccessor(scope, element) {
@@ -106,7 +121,7 @@ function optionsAccessor(scope, element) {
 
 function noopAccessor() { return { get: noop, set: noop }; }
 
-var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initWidgetValue('')),
+var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initWidgetValue()),
     buttonWidget = inputWidget('click', noopAccessor, noopAccessor, noop),
     INPUT_TYPE = {
       'text':            textWidget,
@@ -126,9 +141,12 @@ var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initW
 
 function initWidgetValue(initValue) {
   return function (model, view) {
-    var value = view.get() || copy(initValue);
-    if (isUndefined(model.get()) && isDefined(value))
+    var value = view.get();
+    if (!value && isDefined(initValue))
+      value = copy(initValue);
+    if (isUndefined(model.get()) && isDefined(value)) {
       model.set(value);
+    }
   };
 }
 

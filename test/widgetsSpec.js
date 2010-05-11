@@ -20,74 +20,115 @@ describe("widget", function(){
 
   describe("input", function(){
 
-    it('should input-text auto init and handle keyup/change events', function(){
-      compile('<input type="Text" name="name" value="Misko" ng-change="count = count + 1" ng-init="count=0"/>');
-      expect(scope.$get('name')).toEqual("Misko");
-      expect(scope.$get('count')).toEqual(0);
+    describe("text", function(){
+      it('should input-text auto init and handle keyup/change events', function(){
+        compile('<input type="Text" name="name" value="Misko" ng-change="count = count + 1" ng-init="count=0"/>');
+        expect(scope.$get('name')).toEqual("Misko");
+        expect(scope.$get('count')).toEqual(0);
 
-      scope.$set('name', 'Adam');
-      scope.$eval();
-      expect(element.val()).toEqual("Adam");
+        scope.$set('name', 'Adam');
+        scope.$eval();
+        expect(element.val()).toEqual("Adam");
 
-      element.val('Shyam');
-      element.trigger('keyup');
-      expect(scope.$get('name')).toEqual('Shyam');
-      expect(scope.$get('count')).toEqual(1);
+        element.val('Shyam');
+        element.trigger('keyup');
+        expect(scope.$get('name')).toEqual('Shyam');
+        expect(scope.$get('count')).toEqual(1);
 
-      element.val('Kai');
-      element.trigger('change');
-      expect(scope.$get('name')).toEqual('Kai');
-      expect(scope.$get('count')).toEqual(2);
-    });
-
-    it("should process ng-format", function(){
-      compile('<input type="Text" name="list" value="a,b,c" ng-format="list"/>');
-      expect(scope.$get('list')).toEqual(['a', 'b', 'c']);
-
-      scope.$set('list', ['x', 'y', 'z']);
-      scope.$eval();
-      expect(element.val()).toEqual("x, y, z");
-
-      element.val('1, 2, 3');
-      element.trigger('keyup');
-      expect(scope.$get('list')).toEqual(['1', '2', '3']);
-    });
-
-    it("should process ng-format for booleans", function(){
-      compile('<input type="checkbox" name="name" value="true" ng-format="boolean"/>', function(){
-        scope.name = false;
+        element.val('Kai');
+        element.trigger('change');
+        expect(scope.$get('name')).toEqual('Kai');
+        expect(scope.$get('count')).toEqual(2);
       });
-      expect(scope.name).toEqual(false);
-      expect(scope.$element[0].checked).toEqual(false);
-    });
 
-    it("should process ng-validate", function(){
-      compile('<input type="text" name="price" value="abc" ng-validate="number"/>');
-      expect(element.hasClass('ng-validation-error')).toBeTruthy();
-      expect(element.attr('ng-validation-error')).toEqual('Not a number');
+      describe("ng-format", function(){
 
-      scope.$set('price', '123');
-      scope.$eval();
-      expect(element.hasClass('ng-validation-error')).toBeFalsy();
-      expect(element.attr('ng-validation-error')).toBeFalsy();
+        it("should farmat text", function(){
+          compile('<input type="Text" name="list" value="a,b,c" ng-format="list"/>');
+          expect(scope.$get('list')).toEqual(['a', 'b', 'c']);
 
-      element.val('x');
-      element.trigger('keyup');
-      expect(element.hasClass('ng-validation-error')).toBeTruthy();
-      expect(element.attr('ng-validation-error')).toEqual('Not a number');
-    });
+          scope.$set('list', ['x', 'y', 'z']);
+          scope.$eval();
+          expect(element.val()).toEqual("x, y, z");
 
-    it("should not call validator if undefinde/empty", function(){
-      var lastValue = "NOT_CALLED";
-      angularValidator.myValidator = function(value){lastValue = value;};
-      compile('<input type="text" name="url" ng-validate="myValidator"/>');
-      expect(lastValue).toEqual("NOT_CALLED");
+          element.val('1, 2, 3');
+          element.trigger('keyup');
+          expect(scope.$get('list')).toEqual(['1', '2', '3']);
+        });
 
-      scope.url = 'http://server';
-      scope.$eval();
-      expect(lastValue).toEqual("http://server");
+        it("should format booleans", function(){
+          compile('<input type="checkbox" name="name" value="true" ng-format="boolean"/>', function(){
+            scope.name = false;
+          });
+          expect(scope.name).toEqual(false);
+          expect(scope.$element[0].checked).toEqual(false);
+        });
 
-      delete angularValidator.myValidator;
+        it("should come up blank if null", function(){
+          compile('<input type="text" name="age" ng-format="number"/>', function(){
+            scope.age = null;
+          });
+          expect(scope.age).toBeNull();
+          expect(scope.$element[0].value).toEqual('');
+        });
+
+        it("should show incorect text while number does not parse", function(){
+          compile('<input type="text" name="age" ng-format="number"/>');
+          scope.age = 123;
+          scope.$eval();
+          scope.$element.val('123X');
+          scope.$element.trigger('change');
+          expect(scope.$element.val()).toEqual('123X');
+          expect(scope.age).toEqual(123);
+          expect(scope.$element).toBeInvalid();
+        });
+
+        it("should clober incorect text if model changes", function(){
+          compile('<input type="text" name="age" ng-format="number" value="123X"/>');
+          scope.age = 456;
+          scope.$eval();
+          expect(scope.$element.val()).toEqual('456');
+        });
+
+        it("should come up blank when no value specifiend", function(){
+          compile('<input type="text" name="age" ng-format="number"/>');
+          scope.$eval();
+          expect(scope.$element.val()).toEqual('');
+          expect(scope.age).toEqual(null);
+        });
+
+      });
+
+      describe("ng-validate", function(){
+        it("should process ng-validate", function(){
+          compile('<input type="text" name="price" value="abc" ng-validate="number"/>');
+          expect(element.hasClass('ng-validation-error')).toBeTruthy();
+          expect(element.attr('ng-validation-error')).toEqual('Not a number');
+
+          scope.$set('price', '123');
+          scope.$eval();
+          expect(element.hasClass('ng-validation-error')).toBeFalsy();
+          expect(element.attr('ng-validation-error')).toBeFalsy();
+
+          element.val('x');
+          element.trigger('keyup');
+          expect(element.hasClass('ng-validation-error')).toBeTruthy();
+          expect(element.attr('ng-validation-error')).toEqual('Not a number');
+        });
+
+        it("should not call validator if undefinde/empty", function(){
+          var lastValue = "NOT_CALLED";
+          angularValidator.myValidator = function(value){lastValue = value;};
+          compile('<input type="text" name="url" ng-validate="myValidator"/>');
+          expect(lastValue).toEqual("NOT_CALLED");
+
+          scope.url = 'http://server';
+          scope.$eval();
+          expect(lastValue).toEqual("http://server");
+
+          delete angularValidator.myValidator;
+        });
+      });
     });
 
     it("should ignore disabled widgets", function(){
