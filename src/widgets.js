@@ -44,17 +44,17 @@ function valueAccessor(scope, element) {
       }
     },
     set: function(value) {
-      var oldValue = element.val(),
+      var oldValue = element[0].value,
           newValue = format(value);
       if (oldValue != newValue) {
-        element.val(newValue);
+        element[0].value = newValue;
       }
       validate();
     }
   };
 
   function validate() {
-    var value = trim(element.val());
+    var value = trim(element[0].value);
     if (element[0].disabled || element[0].readOnly) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
