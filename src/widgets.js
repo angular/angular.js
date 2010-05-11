@@ -44,17 +44,17 @@ function valueAccessor(scope, element) {
       }
     },
     set: function(value) {
-      var oldValue = element[0].value,
+      var oldValue = element.val(),
           newValue = format(value);
       if (oldValue != newValue) {
-        element[0].value = newValue;
+        element.val(newValue || ''); // needed for ie
       }
       validate();
     }
   };
 
   function validate() {
-    var value = trim(element[0].value);
+    var value = trim(element.val());
     if (element[0].disabled || element[0].readOnly) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
@@ -142,8 +142,9 @@ var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initW
 function initWidgetValue(initValue) {
   return function (model, view) {
     var value = view.get();
-    if (!value && isDefined(initValue))
+    if (!value && isDefined(initValue)) {
       value = copy(initValue);
+    }
     if (isUndefined(model.get()) && isDefined(value)) {
       model.set(value);
     }
