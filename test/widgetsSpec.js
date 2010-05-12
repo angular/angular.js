@@ -90,6 +90,30 @@ describe("widget", function(){
           expect(scope.$element.val()).toEqual('456');
         });
 
+        it("should not clober text if model changes doe to itself", function(){
+          compile('<input type="text" name="list" ng-format="list" value="a"/>');
+
+          scope.$element.val('a ');
+          scope.$element.trigger('change');
+          expect(scope.$element.val()).toEqual('a ');
+          expect(scope.list).toEqual(['a']);
+
+          scope.$element.val('a ,');
+          scope.$element.trigger('change');
+          expect(scope.$element.val()).toEqual('a ,');
+          expect(scope.list).toEqual(['a']);
+
+          scope.$element.val('a , ');
+          scope.$element.trigger('change');
+          expect(scope.$element.val()).toEqual('a , ');
+          expect(scope.list).toEqual(['a']);
+
+          scope.$element.val('a , b');
+          scope.$element.trigger('change');
+          expect(scope.$element.val()).toEqual('a , b');
+          expect(scope.list).toEqual(['a', 'b']);
+        });
+
         it("should come up blank when no value specifiend", function(){
           compile('<input type="text" name="age" ng-format="number"/>');
           scope.$eval();

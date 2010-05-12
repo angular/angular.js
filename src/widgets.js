@@ -7,7 +7,7 @@ function modelAccessor(scope, element) {
     },
     set: function(value) {
       if (value !== undefined) {
-        scope.$tryEval(expr + '=' + toJson(value), element);
+        return scope.$tryEval(expr + '=' + toJson(value), element);
       }
     }
   };
@@ -37,7 +37,9 @@ function valueAccessor(scope, element) {
       if (lastError)
         elementError(element, NG_VALIDATION_ERROR, null);
       try {
-        return parse(element.val());
+        var value = parse(element.val());
+        validate();
+        return value;
       } catch (e) {
         lastError = e;
         elementError(element, NG_VALIDATION_ERROR, e);
@@ -163,13 +165,15 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng-change') || '';
+        action = element.attr('ng-change') || '',
+        lastValue;
     initFn.call(scope, model, view, element);
     this.$eval(element.attr('ng-init')||'');
     // Don't register a handler if we are a button (noopAccessor) and there is no action
     if (action || modelAccessor !== noopAccessor) {
       element.bind(events, function(){
         model.set(view.get());
+        lastValue = model.get();
         scope.$tryEval(action, element);
         scope.$root.$eval();
         // if we have noop initFn than we are just a button,
@@ -177,8 +181,12 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
         return initFn != noop;
       });
     }
-    view.set(model.get());
-    scope.$watch(model.get, view.set);
+    view.set(lastValue = model.get());
+    scope.$watch(model.get, function(value){
+      if (lastValue !== value) {
+        view.set(lastValue = value);
+      }
+    });
   };
 }
 
