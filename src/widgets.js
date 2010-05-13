@@ -13,6 +13,21 @@ function modelAccessor(scope, element) {
   };
 }
 
+function modelFormattedAccessor(scope, element) {
+  var accessor = modelAccessor(scope, element),
+      farmatterName = element.attr('ng-format') || NOOP,
+      formatter = angularFormatter(farmatterName);
+  if (!formatter) throw "Formatter named '" + farmatterName + "' not found.";
+  return {
+    get: function() {
+      return formatter.format(accessor.get());
+    },
+    set: function(value) {
+      return accessor.set(formatter.parse(value));
+    }
+  };
+}
+
 function compileValidator(expr) {
   return new Parser(expr).validator()();
 }
@@ -134,10 +149,10 @@ var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initW
       'submit':          buttonWidget,
       'reset':           buttonWidget,
       'image':           buttonWidget,
-      'checkbox':        inputWidget('click', modelAccessor, checkedAccessor, initWidgetValue(false)),
-      'radio':           inputWidget('click', modelAccessor, radioAccessor, radioInit),
-      'select-one':      inputWidget('change', modelAccessor, valueAccessor, initWidgetValue(null)),
-      'select-multiple': inputWidget('change', modelAccessor, optionsAccessor, initWidgetValue([]))
+      'checkbox':        inputWidget('click', modelFormattedAccessor, checkedAccessor, initWidgetValue(false)),
+      'radio':           inputWidget('click', modelFormattedAccessor, radioAccessor, radioInit),
+      'select-one':      inputWidget('change', modelFormattedAccessor, valueAccessor, initWidgetValue(null)),
+      'select-multiple': inputWidget('change', modelFormattedAccessor, optionsAccessor, initWidgetValue([]))
 //      'file':            fileWidget???
     };
 

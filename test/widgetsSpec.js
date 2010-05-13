@@ -56,14 +56,6 @@ describe("widget", function(){
           expect(scope.$get('list')).toEqual(['1', '2', '3']);
         });
 
-        it("should format booleans", function(){
-          compile('<input type="checkbox" name="name" value="true" ng-format="boolean"/>', function(){
-            scope.name = false;
-          });
-          expect(scope.name).toEqual(false);
-          expect(scope.$element[0].checked).toEqual(false);
-        });
-
         it("should come up blank if null", function(){
           compile('<input type="text" name="age" ng-format="number"/>', function(){
             scope.age = null;
@@ -121,6 +113,52 @@ describe("widget", function(){
           expect(scope.age).toEqual(null);
         });
 
+      });
+
+      describe("checkbox", function(){
+        it("should format booleans", function(){
+          compile('<input type="checkbox" name="name"/>', function(){
+            scope.name = false;
+          });
+          expect(scope.name).toEqual(false);
+          expect(scope.$element[0].checked).toEqual(false);
+        });
+
+        it('should support type="checkbox"', function(){
+          compile('<input type="checkBox" name="checkbox" checked ng-change="action = true"/>');
+          expect(scope.checkbox).toEqual(true);
+          click(element);
+          expect(scope.checkbox).toEqual(false);
+          expect(scope.action).toEqual(true);
+          click(element);
+          expect(scope.checkbox).toEqual(true);
+        });
+
+        it("should use ng-format", function(){
+          angularFormatter('testFormat', {
+            parse: function(value){
+              return value ? "Worked" : "Failed";
+            },
+
+            format: function(value) {
+              if (value == undefined) return value;
+              return value == "Worked";
+            }
+
+          });
+          compile('<input type="checkbox" name="state" ng-format="testFormat" checked/>');
+          expect(scope.state).toEqual("Worked");
+          expect(scope.$element[0].checked).toEqual(true);
+
+          click(scope.$element);
+          expect(scope.state).toEqual("Failed");
+          expect(scope.$element[0].checked).toEqual(false);
+
+          scope.state = "Worked";
+          scope.$eval();
+          expect(scope.state).toEqual("Worked");
+          expect(scope.$element[0].checked).toEqual(true);
+        });
       });
 
       describe("ng-validate", function(){
@@ -210,16 +248,6 @@ describe("widget", function(){
       compile('<button ng-change="clicked = true">Click Me</button>');
       click(element);
       expect(scope.$get('clicked')).toEqual(true);
-    });
-
-    it('should support type="checkbox"', function(){
-      compile('<input type="checkBox" name="checkbox" checked ng-change="action = true"/>');
-      expect(scope.checkbox).toEqual(true);
-      click(element);
-      expect(scope.checkbox).toEqual(false);
-      expect(scope.action).toEqual(true);
-      click(element);
-      expect(scope.checkbox).toEqual(true);
     });
 
     describe('radio', function(){
