@@ -97,7 +97,7 @@ function createScope(parent, services, existing) {
     $set: bind(instance, setter, instance),
 
     $eval: function $eval(exp) {
-      if (exp) {
+      if (exp !== undefined) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
         foreach(evalLists.sorted, function(list) {

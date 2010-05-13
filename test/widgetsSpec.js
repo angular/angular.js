@@ -8,7 +8,7 @@ describe("widget", function(){
     compile = function(html, before) {
       element = jqLite(html);
       scope = compiler.compile(element)(element);
-      (before||noop)();
+      (before||noop).apply(scope);
       scope.$init();
     };
   });
@@ -222,29 +222,57 @@ describe("widget", function(){
       expect(scope.checkbox).toEqual(true);
     });
 
-    it('should support type="radio"', function(){
-      compile('<div>' +
-          '<input type="radio" name="chose" value="A" ng-change="clicked = 1"/>' +
-          '<input type="radio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
-          '<input type="radio" name="chose" value="C" ng-change="clicked = 3"/>' +
+    describe('radio', function(){
+
+      it('should support type="radio"', function(){
+        compile('<div>' +
+            '<input type="radio" name="chose" value="A" ng-change="clicked = 1"/>' +
+            '<input type="radio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
+            '<input type="radio" name="chose" value="C" ng-change="clicked = 3"/>' +
         '</div>');
-      var a = element[0].childNodes[0];
-      var b = element[0].childNodes[1];
-      expect(b.name.split('@')[1]).toEqual('chose');
-      expect(scope.chose).toEqual('B');
-      scope.chose = 'A';
-      scope.$eval();
-      expect(a.checked).toEqual(true);
+        var a = element[0].childNodes[0];
+        var b = element[0].childNodes[1];
+        expect(b.name.split('@')[1]).toEqual('chose');
+        expect(scope.chose).toEqual('B');
+        scope.chose = 'A';
+        scope.$eval();
+        expect(a.checked).toEqual(true);
 
-      scope.chose = 'B';
-      scope.$eval();
-      expect(a.checked).toEqual(false);
-      expect(b.checked).toEqual(true);
-      expect(scope.clicked).not.toBeDefined();
+        scope.chose = 'B';
+        scope.$eval();
+        expect(a.checked).toEqual(false);
+        expect(b.checked).toEqual(true);
+        expect(scope.clicked).not.toBeDefined();
 
-      click(a);
-      expect(scope.chose).toEqual('A');
-      expect(scope.clicked).toEqual(1);
+        click(a);
+        expect(scope.chose).toEqual('A');
+        expect(scope.clicked).toEqual(1);
+      });
+
+      it('should honor model over html checked keyword after', function(){
+        compile('<div>' +
+            '<input type="radio" name="choose" value="A""/>' +
+            '<input type="radio" name="choose" value="B" checked/>' +
+            '<input type="radio" name="choose" value="C"/>' +
+        '</div>', function(){
+          this.choose = 'C';
+        });
+
+        expect(scope.choose).toEqual('C');
+      });
+
+      it('should honor model over html checked keyword before', function(){
+        compile('<div>' +
+            '<input type="radio" name="choose" value="A""/>' +
+            '<input type="radio" name="choose" value="B" checked/>' +
+            '<input type="radio" name="choose" value="C"/>' +
+        '</div>', function(){
+          this.choose = 'A';
+        });
+
+        expect(scope.choose).toEqual('A');
+      });
+
     });
 
     it('should support type="select-one"', function(){

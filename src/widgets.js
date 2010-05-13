@@ -155,9 +155,15 @@ function initWidgetValue(initValue) {
 
 function radioInit(model, view, element) {
  var modelValue = model.get(), viewValue = view.get(), input = element[0];
+ input.checked = false;
  input.name = this.$id + '@' + input.name;
- if (isUndefined(modelValue)) model.set(null);
- if (viewValue !== null) model.set(viewValue);
+ if (isUndefined(modelValue)) {
+   model.set(modelValue = null);
+ }
+ if (modelValue == null && viewValue !== null) {
+   model.set(viewValue);
+ }
+ view.set(modelValue);
 }
 
 function inputWidget(events, modelAccessor, viewAccessor, initFn) {
