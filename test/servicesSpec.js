@@ -88,6 +88,14 @@ describe("service", function(){
       expect(log).toEqual('/abc;');
     });
 
+    it("should parse url which contains - in host", function(){
+      scope.$location.parse('http://a-b1.c-d.09/path');
+      expect(scope.$location.href).toEqual('http://a-b1.c-d.09/path');
+      expect(scope.$location.protocol).toEqual('http');
+      expect(scope.$location.host).toEqual('a-b1.c-d.09');
+      expect(scope.$location.path).toEqual('/path');
+    });
+
   });
 
   describe("$invalidWidgets", function(){
@@ -255,5 +263,3 @@ describe("service", function(){
 
 
 });
-
-

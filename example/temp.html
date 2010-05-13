@@ -4,6 +4,9 @@
     <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
   </head>
   <body>
-    <a href="#" ng-click="$window.location.hash='123'"> {{'first'}}<br/>{{'second'}}</a>
+    {{$location.hashSearch.order}} <br/>
+  	<input type="radio" name="$location.hashSearch.order" value="Report"/> Report <br/>
+  	<input type="radio" name="$location.hashSearch.order" value="Problem"/> Problem <br/>
+    {{$location.hashSearch.order}} <br/>
   </body>
 </html>
