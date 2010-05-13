@@ -379,7 +379,8 @@ function toKeyValue(obj) {
 function angularInit(config){
   if (config.autobind) {
     var scope = compile(window.document, null, {'$config':config});
-    scope.$browser.addCss('../css/angular.css');
+    // TODO default to the source of angular.js
+    scope.$browser.addCss('css/angular.css');
     scope.$init();
   }
 }
