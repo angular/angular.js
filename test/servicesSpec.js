@@ -1,8 +1,11 @@
 describe("service", function(){
-  var scope;
+  var scope, xhrErrorHandler;
 
   beforeEach(function(){
-    scope = createScope(null, angularService, {});
+    xhrErrorHandler = jasmine.createSpy('$xhr.error');
+    scope = createScope(null, angularService, {
+      '$xhr.error': xhrErrorHandler
+    });
   });
 
   afterEach(function(){
@@ -194,6 +197,17 @@ describe("service", function(){
       expect(log).toEqual('"third";["second"];"first";');
     });
 
+    it('should handle non 200 status codes by forwarding to error handler', function(){
+      xhr.expectPOST('/req', 'MyData').respond(500, 'MyError');
+      scope.$xhr('POST', '/req', 'MyData', callback);
+      xhr.flush();
+      var cb = xhrErrorHandler.mostRecentCall.args[0].callback;
+      expect(typeof cb).toEqual('function');
+      expect(xhrErrorHandler).wasCalledWith(
+          {url:'/req', method:'POST', data:'MyData', callback:cb},
+          {status:500, body:'MyError'});
+    });
+
     describe('bulk', function(){
       it('should collect requests', function(){
         scope.$xhr.bulk.urls["/"] = {match:/.*/};
@@ -210,6 +224,31 @@ describe("service", function(){
         scope.$xhr.bulk.flush(function(){ log += 'DONE';});
         xhr.flush();
         expect(log).toEqual('"first";"second";DONE');
+      });
+
+      it('should handle non 200 status code by forwarding to error handler', function(){
+        scope.$xhr.bulk.urls['/'] = {match:/.*/};
+        scope.$xhr.bulk('GET', '/req1', null, callback);
+        scope.$xhr.bulk('POST', '/req2', {post:'data'}, callback);
+
+        xhr.expectPOST('/', {
+          requests:[{method:'GET',  url:'/req1', data: null},
+                    {method:'POST', url:'/req2', data:{post:'data'} }]
+        }).respond([
+          {status:404, response:'NotFound'},
+          {status:200, response:'second'}
+        ]);
+        scope.$xhr.bulk.flush(function(){ log += 'DONE';});
+        xhr.flush();
+
+        expect(xhrErrorHandler).wasCalled();
+        var cb = xhrErrorHandler.mostRecentCall.args[0].callback;
+        expect(typeof cb).toEqual('function');
+        expect(xhrErrorHandler).wasCalledWith(
+            {url:'/req1', method:'GET', data:null, callback:cb},
+            {status:404, body:'NotFound'});
+
+        expect(log).toEqual('"second";DONE');
       });
     });
 

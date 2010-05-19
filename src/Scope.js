@@ -174,7 +174,7 @@ function createScope(parent, services, existing) {
   }
 
   function inject(name){
-    var service = getter(servicesCache, name, true), factory, args = [];
+    var service = servicesCache[name], factory, args = [];
     if (isUndefined(service)) {
       factory = services[name];
       if (!isFunction(factory))
@@ -182,7 +182,7 @@ function createScope(parent, services, existing) {
       foreach(factory.inject, function(dependency){
         args.push(inject(dependency));
       });
-      setter(servicesCache, name, service = factory.apply(instance, args));
+      servicesCache[name] = service = factory.apply(instance, args);
     }
     return service;
   }

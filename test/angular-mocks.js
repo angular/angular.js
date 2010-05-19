@@ -43,7 +43,7 @@ function MockBrowser() {
       throw "Unexepected request for method '" + method + "' and url '" + url + "'.";
     }
     requests.push(function(){
-      callback(200, response);
+      callback(response.code, response.response);
     });
   };
   self.xhr.expectations = expectations;
@@ -53,8 +53,12 @@ function MockBrowser() {
     if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || (expectations[method] = {});
     return {
-      respond: function(response) {
-        expect[url] = response;
+      respond: function(code, response) {
+        if (!isNumber(code)) {
+          response = code;
+          code = 200;
+        }
+        expect[url] = {code:code, response:response};
       }
     };
   };

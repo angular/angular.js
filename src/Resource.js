@@ -87,16 +87,25 @@ ResourceFactory.prototype = {
         }
 
         var value = action.isArray ? [] : new Resource(data);
-        self.xhr(action.method, route.url(extend({}, action.params || {}, extractParams(data), params)), data, function(status, response) {
-          if (action.isArray) {
-            foreach(response, function(item){
-              value.push(new Resource(item));
-            });
-          } else {
-            copy(response, value);
+        self.xhr(
+          action.method,
+          route.url(extend({}, action.params || {}, extractParams(data), params)),
+          data,
+          function(status, response) {
+            if (status == 200) {
+              if (action.isArray) {
+                foreach(response, function(item){
+                  value.push(new Resource(item));
+                });
+              } else {
+                copy(response, value);
+              }
+              (callback||noop)(value);
+            } else {
+              throw {status: status, response:response, message: status + ": " + response};
+            }
           }
-          (callback||noop)(value);
-        });
+        );
         return value;
       };
 

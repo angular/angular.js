@@ -138,4 +138,19 @@ describe("resource", function() {
     expect(person.name).toEqual('misko');
   });
 
+  describe('failure mode', function(){
+    it('should report error when non 200', function(){
+      xhr.expectGET('/CreditCard/123').respond(500, "Server Error");
+      var cc = CreditCard.get({id:123});
+      try {
+        xhr.flush();
+        fail('expected exception, non thrown');
+      } catch (e) {
+        expect(e.status).toEqual(500);
+        expect(e.response).toEqual('Server Error');
+        expect(e.message).toEqual('500: Server Error');
+      }
+    });
+  });
+
 });

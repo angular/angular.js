@@ -196,7 +196,7 @@ angularService('$route', function(location, params){
   return $route;
 }, {inject: ['$location']});
 
-angularService('$xhr', function($browser){
+angularService('$xhr', function($browser, $error){
   var self = this;
   return function(method, url, post, callback){
     if (isFunction(post)) {
@@ -211,15 +211,27 @@ angularService('$xhr', function($browser){
         if (isString(response) && /^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
           response = fromJson(response);
         }
-        callback(code, response);
+        if (code == 200) {
+          callback(code, response);
+        } else {
+          $error(
+            {method: method, url:url, data:post, callback:callback},
+            {status: code, body:response});
+        }
       } finally {
         self.$eval();
       }
     });
   };
-}, {inject:['$browser']});
+}, {inject:['$browser', '$xhr.error']});
 
-angularService('$xhr.bulk', function($xhr){
+angularService('$xhr.error', function($log){
+  return function(request, response){
+    $log.error(response);
+  };
+}, {inject:['$log']});
+
+angularService('$xhr.bulk', function($xhr, $error){
   var requests = [],
       callbacks = [],
       scope = this;
@@ -254,7 +266,13 @@ angularService('$xhr.bulk', function($xhr){
         $xhr('POST', url, {requests:currentRequests}, function(code, response){
           foreach(response, function(response, i){
             try {
-              (currentCallbacks[i] || noop)(response.status, response.response);
+              if (response.status == 200) {
+                (currentCallbacks[i] || noop)(response.status, response.response);
+              } else {
+                $error(
+                    extend({}, currentRequests[i], {callback: currentCallbacks[i]}),
+                    {status: response.status, body:response.response});
+              }
             } catch(e) {
               scope.$log.error(e);
             }
@@ -267,7 +285,7 @@ angularService('$xhr.bulk', function($xhr){
   };
   this.$onEval(PRIORITY_LAST, bulkXHR.flush);
   return bulkXHR;
-}, {inject:['$xhr']});
+}, {inject:['$xhr', '$xhr.error']});
 
 angularService('$xhr.cache', function($xhr){
   var inflight = {}, self = this;;
