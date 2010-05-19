@@ -54,7 +54,7 @@ function MockBrowser() {
     var expect = expectations[method] || (expectations[method] = {});
     return {
       respond: function(code, response) {
-        if (!isNumber(code)) {
+        if (!angular.isNumber(code)) {
           response = code;
           code = 200;
         }

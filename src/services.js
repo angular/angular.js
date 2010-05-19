@@ -234,7 +234,7 @@ angularService('$xhr', function($browser, $error, $log){
 
 angularService('$xhr.error', function($log){
   return function(request, response){
-    $log.error(response);
+    $log.error('ERROR: XHR: ' + request.url, request, response);
   };
 }, {inject:['$log']});
 
@@ -272,7 +272,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
               if (response.status == 200) {
                 (currentRequests[i].callback || noop)(response.status, response.response);
               } else {
-                $error(currentRequests[i], {status: response.status, body:response.response});
+                $error(currentRequests[i], response);
               }
             } catch(e) {
               $log.error(e);

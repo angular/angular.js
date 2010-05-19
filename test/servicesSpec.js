@@ -288,7 +288,7 @@ describe("service", function(){
         expect(typeof cb).toEqual('function');
         expect($xhrError).wasCalledWith(
             {url:'/req1', method:'GET', data:null, callback:cb},
-            {status:404, body:'NotFound'});
+            {status:404, response:'NotFound'});
 
         expect(log).toEqual('"second";DONE');
       });
