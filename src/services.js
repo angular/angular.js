@@ -231,9 +231,8 @@ angularService('$xhr.error', function($log){
   };
 }, {inject:['$log']});
 
-angularService('$xhr.bulk', function($xhr, $error){
+angularService('$xhr.bulk', function($xhr, $error, $log){
   var requests = [],
-      callbacks = [],
       scope = this;
   function bulkXHR(method, url, post, callback) {
     if (isFunction(post)) {
@@ -248,9 +247,7 @@ angularService('$xhr.bulk', function($xhr, $error){
     });
     if (currentQueue) {
       if (!currentQueue.requests) currentQueue.requests = [];
-      if (!currentQueue.callbacks) currentQueue.callbacks = [];
-      currentQueue.requests.push({method: method, url: url, data:post});
-      currentQueue.callbacks.push(callback);
+      currentQueue.requests.push({method: method, url: url, data:post, callback:callback});
     } else {
       $xhr(method, url, post, callback);
     }
@@ -258,8 +255,7 @@ angularService('$xhr.bulk', function($xhr, $error){
   bulkXHR.urls = {};
   bulkXHR.flush = function(callback){
     foreach(bulkXHR.urls, function(queue, url){
-      var currentRequests = queue.requests,
-          currentCallbacks = queue.callbacks;
+      var currentRequests = queue.requests;
       if (currentRequests && currentRequests.length) {
         queue.requests = [];
         queue.callbacks = [];
@@ -267,14 +263,12 @@ angularService('$xhr.bulk', function($xhr, $error){
           foreach(response, function(response, i){
             try {
               if (response.status == 200) {
-                (currentCallbacks[i] || noop)(response.status, response.response);
+                (currentRequests[i].callback || noop)(response.status, response.response);
               } else {
-                $error(
-                    extend({}, currentRequests[i], {callback: currentCallbacks[i]}),
-                    {status: response.status, body:response.response});
+                $error(currentRequests[i], {status: response.status, body:response.response});
               }
             } catch(e) {
-              scope.$log.error(e);
+              $log.error(e);
             }
           });
           (callback || noop)();
@@ -285,7 +279,7 @@ angularService('$xhr.bulk', function($xhr, $error){
   };
   this.$onEval(PRIORITY_LAST, bulkXHR.flush);
   return bulkXHR;
-}, {inject:['$xhr', '$xhr.error']});
+}, {inject:['$xhr', '$xhr.error', '$log']});
 
 angularService('$xhr.cache', function($xhr){
   var inflight = {}, self = this;;
