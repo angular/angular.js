@@ -1,10 +1,12 @@
 describe("service", function(){
-  var scope, xhrErrorHandler;
+  var scope, $xhrError, $log;
 
   beforeEach(function(){
-    xhrErrorHandler = jasmine.createSpy('$xhr.error');
+    $xhrError = jasmine.createSpy('$xhr.error');
+    $log = {};
     scope = createScope(null, angularService, {
-      '$xhr.error': xhrErrorHandler
+      '$xhr.error': $xhrError,
+      '$log': $log
     });
   });
 
@@ -201,11 +203,20 @@ describe("service", function(){
       xhr.expectPOST('/req', 'MyData').respond(500, 'MyError');
       scope.$xhr('POST', '/req', 'MyData', callback);
       xhr.flush();
-      var cb = xhrErrorHandler.mostRecentCall.args[0].callback;
+      var cb = $xhrError.mostRecentCall.args[0].callback;
       expect(typeof cb).toEqual('function');
-      expect(xhrErrorHandler).wasCalledWith(
+      expect($xhrError).wasCalledWith(
           {url:'/req', method:'POST', data:'MyData', callback:cb},
           {status:500, body:'MyError'});
+    });
+
+    it('should handle exceptions in callback', function(){
+      $log.error = jasmine.createSpy('$log.error');
+      xhr.expectGET('/reqGET').respond('first');
+      scope.$xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
+      xhr.flush();
+
+      expect($log.error).wasCalledWith("MyException");
     });
 
     describe('bulk', function(){
@@ -241,10 +252,10 @@ describe("service", function(){
         scope.$xhr.bulk.flush(function(){ log += 'DONE';});
         xhr.flush();
 
-        expect(xhrErrorHandler).wasCalled();
-        var cb = xhrErrorHandler.mostRecentCall.args[0].callback;
+        expect($xhrError).wasCalled();
+        var cb = $xhrError.mostRecentCall.args[0].callback;
         expect(typeof cb).toEqual('function');
-        expect(xhrErrorHandler).wasCalledWith(
+        expect($xhrError).wasCalledWith(
             {url:'/req1', method:'GET', data:null, callback:cb},
             {status:404, body:'NotFound'});
 

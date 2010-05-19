@@ -196,7 +196,7 @@ angularService('$route', function(location, params){
   return $route;
 }, {inject: ['$location']});
 
-angularService('$xhr', function($browser, $error){
+angularService('$xhr', function($browser, $error, $log){
   var self = this;
   return function(method, url, post, callback){
     if (isFunction(post)) {
@@ -218,12 +218,14 @@ angularService('$xhr', function($browser, $error){
             {method: method, url:url, data:post, callback:callback},
             {status: code, body:response});
         }
+      } catch (e) {
+        $log.error(e);
       } finally {
         self.$eval();
       }
     });
   };
-}, {inject:['$browser', '$xhr.error']});
+}, {inject:['$browser', '$xhr.error', '$log']});
 
 angularService('$xhr.error', function($log){
   return function(request, response){
