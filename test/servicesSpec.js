@@ -31,6 +31,37 @@ describe("service", function(){
     scope.$document.addStyleSheet('css/angular.css');
   });
 
+  describe("$log", function(){
+    it('should use console if present', function(){
+      function log(){};
+      function warn(){};
+      function info(){};
+      function error(){};
+      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}});
+      expect(scope.$log.log).toEqual(log);
+      expect(scope.$log.warn).toEqual(warn);
+      expect(scope.$log.info).toEqual(info);
+      expect(scope.$log.error).toEqual(error);
+    });
+
+    it('should use console.log if other not present', function(){
+      function log(){};
+      var scope = createScope(null, angularService, {$window: {console:{log:log}}});
+      expect(scope.$log.log).toEqual(log);
+      expect(scope.$log.warn).toEqual(log);
+      expect(scope.$log.info).toEqual(log);
+      expect(scope.$log.error).toEqual(log);
+    });
+
+    it('should use noop if no console', function(){
+      var scope = createScope(null, angularService, {$window: {}});
+      expect(scope.$log.log).toEqual(noop);
+      expect(scope.$log.warn).toEqual(noop);
+      expect(scope.$log.info).toEqual(noop);
+      expect(scope.$log.error).toEqual(noop);
+    });
+  });
+
   describe("$location", function(){
     it("should inject $location", function(){
       scope.$location.parse('http://host:123/p/a/t/h.html?query=value#path?key=value');
