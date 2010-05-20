@@ -29,12 +29,23 @@
   height: 100%;
 }
 
+li.running > span {
+  background-color: yellow;
+}
 
-///////////////
+#runner span {
+  background-color: green;
+}
 
-.collapsed .log {
+#runner .fail > span {
+  background-color: red;
+}
+
+.collapsed > ul {
   display: none;
 }
+
+//////
 
 .run, .info, .error {
   display: block;

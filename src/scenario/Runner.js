@@ -20,8 +20,8 @@ angular.scenario.Runner = function(scope){
     body();
     self.currentSpec = null;
   };
-  this.beginSpec = function returnNoop(){
-    return returnNoop;
+  this.logger = function returnNoop(){
+    return angular.extend(returnNoop, {close:angular.noop, fail:angular.noop});;
   };
 };
 
@@ -29,33 +29,45 @@ angular.scenario.Runner.prototype = {
   run: function(body){
     body.append(
       '<div id="runner">' +
-        '<ul class="console"></ul>' +
+        '<div class="console"></div>' +
       '</div>' +
       '<div id="testView">' +
         '<iframe></iframe>' +
       '</div>');
     var console = body.find('#runner .console');
+    console.find('li').live('click', function(){
+      jQuery(this).toggleClass('collapsed');
+    });
     this.testFrame = body.find('#testView iframe');
     this.testWindow = this.testFrame[0].contentWindow;
-    this.beginSpec = function(name){
-      var specElement = jQuery('<li class="spec"></li>');
-      var stepContainer = jQuery('<ul class="step"></ul>');
-      console.append(specElement);
-      specElement.text(name);
-      specElement.append(stepContainer);
-      return function(name){
-        var stepElement = jQuery('<li class="step"></li>');
-        var logContainer = jQuery('<ul class="log"></ul>');
-        stepContainer.append(stepElement);
-        stepElement.text(name);
-        stepElement.append(logContainer);
-        return function(message) {
-          var logElement = jQuery('<li class="log"></li>');
-          logContainer.append(logElement);
-          logElement.text(message);
-        };
+    function logger(parent) {
+      var container;
+      return function(type, text) {
+        if (!container) {
+          container = jQuery('<ul></ul>');
+          parent.append(container);
+        }
+        var element = jQuery('<li class="collapsed running '+type+'"><span></span></li>');
+        element.find('span').text(text);
+        container.append(element);
+        return angular.extend(logger(element), {
+          close: function(){
+            element.removeClass('running');
+          },
+          fail: function(){
+            element.removeClass('running');
+            var current = element;
+            while (current[0] != console[0]) {
+              if (current.is('li'))
+                current.addClass('fail');
+              current.removeClass('collapsed');
+              current = current.parent();
+            }
+          }
+        });;
       };
-    };
+    }
+    this.logger = logger(console);
     this.execute("widgets: it should verify that basic widgets work");
   },
 
@@ -73,7 +85,7 @@ angular.scenario.Runner.prototype = {
              result.passed = false;
              result.failed = true;
              result.error = error;
-             result.log(angular.isString(error) ? error : angular.toJson(error));
+             result.log('fail', angular.isString(error) ? error : angular.toJson(error)).fail();
            }
          };
        specThis = {
@@ -81,17 +93,20 @@ angular.scenario.Runner.prototype = {
          testWindow: this.testWindow,
          testFrame: this.testFrame
        };
-   var beginStep = this.beginSpec(name);
+   var stepLogger = this.logger('spec', name);
    spec.nextStepIndex = 0;
    function done() {
      result.finished = true;
+     stepLogger.close();
      (callback||angular.noop).call(specThis);
    }
    function next(){
      var step = spec.steps[spec.nextStepIndex];
+       (result.log || {close:angular.noop}).close();
+       result.log = null;
        if (step) {
          spec.nextStepIndex ++;
-         result.log = beginStep(step.name);
+         result.log = stepLogger('step', step.name);
          try {
            step.fn.call(specThis, next);
          } catch (e) {

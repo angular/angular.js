@@ -31,6 +31,9 @@ describe('Runner', function(){
         expect(spec.steps).toEqual([]);
         expect(spec.name).toEqual('describe name: it should text');
       });
+
+      it('should camplain on duplicate it', angular.noop);
+
     });
   });
 
