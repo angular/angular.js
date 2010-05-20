@@ -1,171 +1,109 @@
-var scenario = angular.scenario;
-scenario.SuiteRunner = function(scenarios, body) {
-  this.scenarios = scenarios;
-  this.body = body;
+angular['scenario']  = (angular['scenario'] = {});
+
+angular.scenario.Runner = function(scope){
+  var self = scope.$scenario = this;
+  this.scope = scope;
+
+  var specs = this.specs = {};
+  var path = [];
+  this.scope.describe = function describe(name, body){
+    path.push(name);
+    body();
+    path.pop();
+  };
+  this.scope.it = function it(name, body) {
+    var specName = path.join(' ') + ': it ' + name;
+    self.currentSpec = specs[specName] = {
+        name: specName,
+        steps:[]
+     };
+    body();
+    self.currentSpec = null;
+  };
+  this.beginSpec = function returnNoop(){
+    return returnNoop;
+  };
 };
 
-scenario.SuiteRunner.prototype = {
-  run:function(){
-    this.setUpUI();
-    this.runScenarios();
-  },
-
-
-  setUpUI:function(){
-    this.body.html(
+angular.scenario.Runner.prototype = {
+  run: function(body){
+    body.append(
       '<div id="runner">' +
-        '<div class="console"></div>' +
+        '<ul class="console"></ul>' +
       '</div>' +
       '<div id="testView">' +
         '<iframe></iframe>' +
       '</div>');
-    this.console = this.body.find(".console");
-    this.testFrame = this.body.find("iframe");
-    this.console.find(".run").live("click", function(){
-      jQuery(this).parent().find('.log').toggle();
-    });
-  },
-
-
-  runScenarios:function(){
-    var runner = new scenario.Runner(this.console, this.testFrame);
-    _.stepper(this.scenarios, function(next, scenarioObj, name){
-        new scenario.Scenario(name, scenarioObj).run(runner, next);
-      }, function(){
-      }
-    );
-  }
-};
-
-scenario.Runner = function(console, frame){
-  this.console = console;
-  this.current = null;
-  this.tests = [];
-  this.frame = frame;
-};
-scenario.Runner.prototype = {
-  start:function(name){
-    var current = this.current = {
-      name:name,
-      start:new Date().getTime(),
-      scenario:jQuery('<div class="scenario"></div>')
+    var console = body.find('#runner .console');
+    this.testFrame = body.find('#testView iframe');
+    this.testWindow = this.testFrame[0].contentWindow;
+    this.beginSpec = function(name){
+      var specElement = jQuery('<li class="spec"></li>');
+      var stepContainer = jQuery('<ul class="step"></ul>');
+      console.append(specElement);
+      specElement.text(name);
+      specElement.append(stepContainer);
+      return function(name){
+        var stepElement = jQuery('<li class="step"></li>');
+        var logContainer = jQuery('<ul class="log"></ul>');
+        stepContainer.append(stepElement);
+        stepElement.text(name);
+        stepElement.append(logContainer);
+        return function(message) {
+          var logElement = jQuery('<li class="log"></li>');
+          logContainer.append(logElement);
+          logElement.text(message);
+        };
+      };
     };
-    current.run = current.scenario.append(
-      '<div class="run">' +
-        '<span class="name">.</span>' +
-        '<span class="time">.</span>' +
-        '<span class="state">.</span>' +
-      '</run>').find(".run");
-    current.log = current.scenario.append('<div class="log"></div>').find(".log");
-    current.run.find(".name").text(name);
-    this.tests.push(current);
-    this.console.append(current.scenario);
-  },
-  end:function(name){
-    var current = this.current;
-    var run = current.run;
-    this.current = null;
-    current.end = new Date().getTime();
-    current.time = current.end - current.start;
-    run.find(".time").text(current.time);
-    run.find(".state").text(current.error ? "FAIL" : "PASS");
-    run.addClass(current.error ? "fail" : "pass");
-    if (current.error)
-      run.find(".run").append('<span div="error"></span>').text(current.error);
-    current.scenario.find(".log").hide();
-  },
-  log:function(level) {
-    var buf = [];
-    for ( var i = 1; i < arguments.length; i++) {
-      var arg = arguments[i];
-      buf.push(typeof arg == "string" ?arg:toJson(arg));
-    }
-    var log = jQuery('<div class="' + level + '"></div>');
-    log.text(buf.join(" "));
-    this.current.log.append(log);
-    this.console.scrollTop(this.console[0].scrollHeight);
-    if (level == "error")
-      this.current.error = buf.join(" ");
-  }
-};
-
-scenario.Scenario = function(name, scenario){
-  this.name = name;
-  this.scenario = scenario;
-};
-scenario.Scenario.prototype = {
-  run:function(runner, callback) {
-    var self = this;
-    _.stepper(this.scenario, function(next, steps, name){
-      if (name.charAt(0) == '$') {
-        next();
-      } else {
-        runner.start(self.name + "::" + name);
-        var allSteps = (self.scenario.$before||[]).concat(steps);
-        _.stepper(allSteps, function(next, step){
-          self.executeStep(runner, step, next);
-        }, function(){
-          runner.end();
-          next();
-        });
-      }
-    }, callback);
+    this.execute("widgets: it should verify that basic widgets work");
   },
 
+  addStep: function(name, step) {
+    this.currentSpec.steps.push({name:name, fn:step});
+  },
 
-  verb:function(step){
-    var fn = null;
-    if (!step) fn = function (){ throw "Step is null!"; };
-    else if (step.Given) fn = scenario.GIVEN[step.Given];
-    else if (step.When) fn = scenario.WHEN[step.When];
-    else if (step.Then) fn = scenario.THEN[step.Then];
-      return fn || function (){
-         throw "ERROR: Need Given/When/Then got: " + toJson(step);
+  execute: function(name, callback) {
+   var spec = this.specs[name],
+       result = {
+           passed: false,
+           failed: false,
+           finished: false,
+           fail: function(error) {
+             result.passed = false;
+             result.failed = true;
+             result.error = error;
+             result.log(angular.isString(error) ? error : angular.toJson(error));
+           }
+         };
+       specThis = {
+         result: result,
+         testWindow: this.testWindow,
+         testFrame: this.testFrame
        };
-  },
-
-
-  context: function(runner) {
-    var frame = runner.frame;
-    var window = frame[0].contentWindow;
-    var document;
-    if (window.jQuery)
-      document = window.jQuery(window.document);
-    var context = {
-        frame:frame,
-        window:window,
-        log:_.bind(runner.log, runner, "info"),
-        document:document,
-        assert:function(element, path){
-          if (element.size() != 1) {
-            throw "Expected to find '1' found '"+
-              element.size()+"' for '"+path+"'.";
-          }
-          return element;
-        },
-        element:function(path){
-          var exp = path.replace("{{","[ng-bind=").replace("}}", "]");
-          var element = document.find(exp);
-          return context.assert(element, path);
-        }
-    };
-    return context;
-  },
-
-
-  executeStep:function(runner, step, callback) {
-    if (!step) {
-      callback();
-      return;
-    }
-    runner.log("info", toJson(step));
-    var fn = this.verb(step);
-    var context = this.context(runner);
-    _.extend(context, step);
-    try {
-      (fn.call(context)||function(c){c();})(callback);
-    } catch (e) {
-      runner.log("error", "ERROR: " + toJson(e));
-    }
+   var beginStep = this.beginSpec(name);
+   spec.nextStepIndex = 0;
+   function done() {
+     result.finished = true;
+     (callback||angular.noop).call(specThis);
+   }
+   function next(){
+     var step = spec.steps[spec.nextStepIndex];
+       if (step) {
+         spec.nextStepIndex ++;
+         result.log = beginStep(step.name);
+         try {
+           step.fn.call(specThis, next);
+         } catch (e) {
+           result.fail(e);
+           done();
+         }
+       } else {
+         result.passed = !result.failed;
+         done();
+       }
+   };
+   next();
+   return specThis;
   }
 };

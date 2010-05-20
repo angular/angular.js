@@ -19,22 +19,8 @@
   }
 
   window.onload = function(){
-    if (!_.stepper) {
-      _.stepper = function(collection, iterator, done){
-        var keys = _.keys(collection);
-        function next() {
-          if (keys.length) {
-            var key = keys.shift();
-            iterator(next, collection[key], key);
-          } else {
-            (done||_.identity)();
-          }
-        }
-        next();
-      };
-    }
     _.defer(function(){
-      new angular.scenario.SuiteRunner(angular.scenarioDef, jQuery(document.body)).run();
+      $scenarioRunner.run(jQuery(document.body));
     });
     (onLoadDelegate||function(){})();
   };
@@ -42,8 +28,7 @@
   addScript("../../lib/underscore/underscore.js");
   addScript("../../lib/jquery/jquery-1.4.2.js");
   addScript("../angular-bootstrap.js");
-  addScript("_namespace.js");
-  addScript("Steps.js");
   addScript("Runner.js");
+  document.write('<script type="text/javascript">$scenarioRunner = new angular.scenario.Runner(window);</script>');
 })(window.onload);
 
