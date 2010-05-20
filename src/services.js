@@ -64,11 +64,16 @@ angularService("$location", function(browser){
   return location;
 }, {inject: ['$browser']});
 
-angularService("$log", function(){
+angularService("$log", function($window){
+  var console = $window.console,
+      log = console && console.log || noop;
   return {
-    error: noop
+    log: log,
+    warn: console && console.warn || log,
+    info: console && console.info || log,
+    error: console && console.error || log
   };
-});
+}, {inject:['$window']});
 
 angularService("$hover", function(browser) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10;
@@ -229,7 +234,7 @@ angularService('$xhr', function($browser, $error, $log){
 
 angularService('$xhr.error', function($log){
   return function(request, response){
-    $log.error(response);
+    $log.error('ERROR: XHR: ' + request.url, request, response);
   };
 }, {inject:['$log']});
 
@@ -267,7 +272,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
               if (response.status == 200) {
                 (currentRequests[i].callback || noop)(response.status, response.response);
               } else {
-                $error(currentRequests[i], {status: response.status, body:response.response});
+                $error(currentRequests[i], response);
               }
             } catch(e) {
               $log.error(e);
