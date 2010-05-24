@@ -1,14 +1,18 @@
 describe('Runner', function(){
-  var scenario, runner, log, Describe, It, $scenario;
+  var scenario, runner, log, Describe, It, $scenario, body;
 
   function logger(text) {
-    return function(){log += text;};
+    return function(done){
+      log += text;
+      (done||noop)();
+    };
   }
 
   beforeEach(function(){
     log = '';
     scenario = {};
-    runner = new angular.scenario.Runner(scenario);
+    body = _jQuery('<div></div>');
+    runner = new angular.scenario.Runner(scenario, _jQuery);
     Describe = scenario.describe;
     It = scenario.it;
     $scenario = scenario.$scenario;
@@ -102,6 +106,30 @@ describe('Runner', function(){
         expect(spec.result.failed).toEqual(true);
         expect(spec.result.finished).toEqual(true);
         expect(spec.result.error).toEqual("MyError");
+    });
+  });
+
+  describe('run', function(){
+    var next;
+    it('should execute all specs', function(){
+      Describe('d1', function(){
+        It('it1', function(){ $scenario.addStep('s1', logger('s1,')); });
+        It('it2', function(){
+          $scenario.addStep('s2', logger('s2,'));
+          $scenario.addStep('s2.2', function(done){ next = done; });
+        });
+      });
+      Describe('d2', function(){
+        It('it3', function(){ $scenario.addStep('s3', logger('s3,')); });
+        It('it4', function(){ $scenario.addStep('s4', logger('s4,')); });
+      });
+
+      $scenario.run(body);
+
+      expect(log).toEqual('s1,s2,');
+      next();
+      expect(log).toEqual('s1,s2,s3,s4,');
+
     });
   });
 

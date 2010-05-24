@@ -4,7 +4,7 @@ browser = {
       var self = this;
       self.testFrame.load(function(){
         self.testFrame.unbind();
-        self.testDocument = self.testWindow.angular.element(self.testWindow.document);
+        self.testDocument = jQuery(self.testWindow.document);
         done();
       });
       if (this.testFrame.attr('src') == url) {
@@ -23,6 +23,7 @@ function input(selector) {
         var input = this.testDocument.find('input[name=' + selector + ']');
         input.val(value);
         input.trigger('change');
+        this.testWindow.angular.element(input[0]).trigger('change');
         done();
       });
     }
@@ -49,6 +50,6 @@ describe('widgets', function(){
     browser.navigateTo('widgets.html');
     expect('{{text.basic}}').toEqual('');
     input('text.basic').enter('John');
-    expect('{{text.basic}}').toEqual('JohnXX');
+    expect('{{text.basic}}').toEqual('John');
   });
 });

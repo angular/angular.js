@@ -1,8 +1,9 @@
 angular['scenario']  = (angular['scenario'] = {});
 
-angular.scenario.Runner = function(scope){
+angular.scenario.Runner = function(scope, jQuery){
   var self = scope.$scenario = this;
   this.scope = scope;
+  this.jQuery = jQuery;
 
   var specs = this.specs = {};
   var path = [];
@@ -27,6 +28,7 @@ angular.scenario.Runner = function(scope){
 
 angular.scenario.Runner.prototype = {
   run: function(body){
+    var jQuery = this.jQuery;
     body.append(
       '<div id="runner">' +
         '<div class="console"></div>' +
@@ -68,7 +70,19 @@ angular.scenario.Runner.prototype = {
       };
     }
     this.logger = logger(console);
-    this.execute("widgets: it should verify that basic widgets work");
+    var specNames = [];
+    angular.foreach(this.specs, function(spec, name){
+      specNames.push(name);
+    }, this);
+    specNames.sort();
+    var self = this;
+    function callback(){
+      var next = specNames.shift();
+      if(next) {
+        self.execute(next, callback);
+      }
+    };
+    callback();
   },
 
   addStep: function(name, step) {
@@ -102,21 +116,21 @@ angular.scenario.Runner.prototype = {
    }
    function next(){
      var step = spec.steps[spec.nextStepIndex];
-       (result.log || {close:angular.noop}).close();
-       result.log = null;
-       if (step) {
-         spec.nextStepIndex ++;
-         result.log = stepLogger('step', step.name);
-         try {
-           step.fn.call(specThis, next);
-         } catch (e) {
-           result.fail(e);
-           done();
-         }
-       } else {
-         result.passed = !result.failed;
+     (result.log || {close:angular.noop}).close();
+     result.log = null;
+     if (step) {
+       spec.nextStepIndex ++;
+       result.log = stepLogger('step', step.name);
+       try {
+         step.fn.call(specThis, next);
+       } catch (e) {
+         result.fail(e);
          done();
        }
+     } else {
+       result.passed = !result.failed;
+       done();
+     }
    };
    next();
    return specThis;

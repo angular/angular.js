@@ -20,7 +20,7 @@
 
   window.onload = function(){
     _.defer(function(){
-      $scenarioRunner.run(jQuery(document.body));
+      $scenarioRunner.run(jQuery(window.document.body));
     });
     (onLoadDelegate||function(){})();
   };
@@ -29,6 +29,8 @@
   addScript("../../lib/jquery/jquery-1.4.2.js");
   addScript("../angular-bootstrap.js");
   addScript("Runner.js");
-  document.write('<script type="text/javascript">$scenarioRunner = new angular.scenario.Runner(window);</script>');
+  document.write('<script type="text/javascript">' +
+    '$scenarioRunner = new angular.scenario.Runner(window, jQuery);' +
+    '</script>');
 })(window.onload);
 
