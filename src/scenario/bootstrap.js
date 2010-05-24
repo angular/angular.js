@@ -29,6 +29,7 @@
   addScript("../../lib/jquery/jquery-1.4.2.js");
   addScript("../angular-bootstrap.js");
   addScript("Runner.js");
+  addScript("DSL.js");
   document.write('<script type="text/javascript">' +
     '$scenarioRunner = new angular.scenario.Runner(window, jQuery);' +
     '</script>');

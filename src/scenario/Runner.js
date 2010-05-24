@@ -1,9 +1,11 @@
-angular['scenario']  = (angular['scenario'] = {});
+angular['scenario'] = (angular['scenario'] = {});
+angular.scenario['dsl'] = (angular.scenario['dsl'] = {});
 
 angular.scenario.Runner = function(scope, jQuery){
   var self = scope.$scenario = this;
   this.scope = scope;
   this.jQuery = jQuery;
+  angular.extend(scope, angular.scenario.dsl);
 
   var specs = this.specs = {};
   var path = [];
@@ -18,7 +20,13 @@ angular.scenario.Runner = function(scope, jQuery){
         name: specName,
         steps:[]
      };
-    body();
+    try {
+      body();
+    } catch(err) {
+      self.addStep(err.message || 'ERROR', function(){
+        throw err;
+      });
+    }
     self.currentSpec = null;
   };
   this.logger = function returnNoop(){
@@ -55,6 +63,7 @@ angular.scenario.Runner.prototype = {
         return angular.extend(logger(element), {
           close: function(){
             element.removeClass('running');
+            console.scrollTop(console[0].scrollHeight);
           },
           fail: function(){
             element.removeClass('running');
@@ -66,7 +75,7 @@ angular.scenario.Runner.prototype = {
               current = current.parent();
             }
           }
-        });;
+        });
       };
     }
     this.logger = logger(console);

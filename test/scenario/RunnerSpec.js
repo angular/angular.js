@@ -37,7 +37,23 @@ describe('Runner', function(){
       });
 
       it('should camplain on duplicate it', angular.noop);
-
+      it('should create a failing step if there is a javascript error', function(){
+        var spec;
+        Describe('D1', function(){
+          It('I1', function(){
+            spec = $scenario.currentSpec;
+            throw {message: 'blah'};
+          });
+        });
+        var step = spec.steps[0];
+        expect(step.name).toEqual('blah');
+        try {
+          step.fn();
+          fail();
+        } catch (e) {
+          expect(e.message).toEqual('blah');
+        };
+      });
     });
   });
 

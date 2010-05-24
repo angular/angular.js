@@ -1,4 +1,4 @@
-browser = {
+angular.scenario.dsl.browser = {
   navigateTo: function(url){
     $scenario.addStep('Navigate to: ' + url, function(done){
       var self = this;
@@ -16,21 +16,22 @@ browser = {
   }
 };
 
-function input(selector) {
+angular.scenario.dsl.input = function(selector) {
   return {
     enter: function(value){
-      $scenario.addStep("Set input text of '" + selector + "' to value '" + value + "'", function(done){
-        var input = this.testDocument.find('input[name=' + selector + ']');
-        input.val(value);
-        input.trigger('change');
-        this.testWindow.angular.element(input[0]).trigger('change');
-        done();
+      $scenario.addStep("Set input text of '" + selector + "' to value '" +
+        value + "'", function(done){
+          var input = this.testDocument.find('input[name=' + selector + ']');
+          input.val(value);
+          input.trigger('change');
+          this.testWindow.angular.element(input[0]).trigger('change');
+          done();
       });
     }
   };
-}
+};
 
-function expect(selector) {
+angular.scenario.dsl.expect = function(selector) {
   return {
     toEqual: function(expected) {
       $scenario.addStep("Expect that " + selector + " equals '" + expected + "'", function(done){
@@ -43,13 +44,4 @@ function expect(selector) {
       });
     }
   };
-}
-
-describe('widgets', function(){
-  it('should verify that basic widgets work', function(){
-    browser.navigateTo('widgets.html');
-    expect('{{text.basic}}').toEqual('');
-    input('text.basic').enter('John');
-    expect('{{text.basic}}').toEqual('John');
-  });
-});
+};
