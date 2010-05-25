@@ -3,7 +3,7 @@ include FileUtils
 task :default => [:compile, :test]
 
 desc 'Generate Externs'
-task :compileexterns do
+task :compile_externs do
   out = File.new("externs.js", "w")
 
   out.write("function _(){};\n")
@@ -29,9 +29,31 @@ task :compileexterns do
   out.close
 end
 
+desc 'Compile Scenario'
+task :compile_scenario do
+  concat = %x(cat \
+      lib/underscore/underscore.js \
+      lib/jquery/jquery-1.4.2.js \
+      src/scenario/angular.prefix \
+      src/Angular.js \
+      src/JSON.js \
+      src/scenario/Runner.js \
+      src/scenario/DSL.js \
+      src/scenario/angular.suffix \
+    )
+  css = %x(cat css/angular-scenario.css)
+  f = File.new("angular-scenario.js", 'w')
+  f.write(concat)
+  f.write('document.write(\'<style type="text/css">\n')
+  f.write(css.gsub(/'/, "\\'").gsub(/\n/, "\\n"));
+  f.write('\n</style>\');')
+  f.close
+end
+
 desc 'Compile JavaScript'
 task :compile do
-  Rake::Task['compileexterns'].execute 0
+  Rake::Task['compile_externs'].execute 0
+  Rake::Task['compile_scenario'].execute 0
 
   concat = %x(cat \
       src/angular.prefix \

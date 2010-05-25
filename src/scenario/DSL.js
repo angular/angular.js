@@ -5,6 +5,7 @@ angular.scenario.dsl.browser = {
       self.testFrame.load(function(){
         self.testFrame.unbind();
         self.testDocument = jQuery(self.testWindow.document);
+        self.testWindow = self.testFrame[0].contentWindow;
         done();
       });
       if (this.testFrame.attr('src') == url) {

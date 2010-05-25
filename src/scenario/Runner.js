@@ -1,11 +1,10 @@
-angular['scenario'] = (angular['scenario'] = {});
-angular.scenario['dsl'] = (angular.scenario['dsl'] = {});
+angular['scenario'] = angular['scenario'] || (angular['scenario'] = {});
+angular.scenario['dsl'] = angular.scenario['dsl'] || (angular.scenario['dsl'] = {});
 
 angular.scenario.Runner = function(scope, jQuery){
   var self = scope.$scenario = this;
   this.scope = scope;
   this.jQuery = jQuery;
-  angular.extend(scope, angular.scenario.dsl);
 
   var specs = this.specs = {};
   var path = [];
@@ -30,7 +29,7 @@ angular.scenario.Runner = function(scope, jQuery){
     self.currentSpec = null;
   };
   this.logger = function returnNoop(){
-    return angular.extend(returnNoop, {close:angular.noop, fail:angular.noop});;
+    return _(returnNoop).extend({close:_.identity, fail:_.identity});;
   };
 };
 
@@ -60,7 +59,7 @@ angular.scenario.Runner.prototype = {
         var element = jQuery('<li class="running '+type+'"><span></span></li>');
         element.find('span').text(text);
         container.append(element);
-        return angular.extend(logger(element), {
+        return _(logger(element)).extend({
           close: function(){
             element.removeClass('running');
             if(!element.hasClass('fail'))
@@ -81,7 +80,7 @@ angular.scenario.Runner.prototype = {
     }
     this.logger = logger(console);
     var specNames = [];
-    angular.foreach(this.specs, function(spec, name){
+    _(this.specs).each(function(spec, name){
       specNames.push(name);
     }, this);
     specNames.sort();
@@ -109,7 +108,7 @@ angular.scenario.Runner.prototype = {
              result.passed = false;
              result.failed = true;
              result.error = error;
-             result.log('fail', angular.isString(error) ? error : angular.toJson(error)).fail();
+             result.log('fail', _(error).isString() ? error : toJson(error)).fail();
            }
          };
        specThis = {
@@ -122,11 +121,11 @@ angular.scenario.Runner.prototype = {
    function done() {
      result.finished = true;
      stepLogger.close();
-     (callback||angular.noop).call(specThis);
+     (callback||_.identity).call(specThis);
    }
    function next(){
      var step = spec.steps[spec.nextStepIndex];
-     (result.log || {close:angular.noop}).close();
+     (result.log || {close:_.identity}).close();
      result.log = null;
      if (step) {
        spec.nextStepIndex ++;
@@ -134,6 +133,7 @@ angular.scenario.Runner.prototype = {
        try {
          step.fn.call(specThis, next);
        } catch (e) {
+         console.error(e);
          result.fail(e);
          done();
        }
