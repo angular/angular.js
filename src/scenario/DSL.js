@@ -19,13 +19,23 @@ angular.scenario.dsl.browser = {
 angular.scenario.dsl.input = function(selector) {
   return {
     enter: function(value){
-      $scenario.addStep("Set input text of '" + selector + "' to value '" +
+      $scenario.addStep("Set input text of '" + selector + "' to '" +
         value + "'", function(done){
           var input = this.testDocument.find('input[name=' + selector + ']');
           input.val(value);
-          input.trigger('change');
           this.testWindow.angular.element(input[0]).trigger('change');
           done();
+      });
+    },
+    select: function(value){
+      $scenario.addStep("Select radio '" + selector + "' to '" +
+              value + "'", function(done){
+        var input = this.testDocument.
+          find(':radio[name$=@' + selector + '][value=' + value + ']');
+        var event = this.testWindow.document.createEvent('MouseEvent');
+        event.initMouseEvent('click', true, true, this.testWindow, 0,0,0,0,0, false, false, false, false, 0, null);
+        input[0].dispatchEvent(event);
+        done();
       });
     }
   };
