@@ -14,7 +14,12 @@ describe('widgets', function(){
 
     expect('{{gender}}').toEqual('male');
     input('gender').select('female');
+    input('gender').isChecked('female');
     expect('{{gender}}').toEqual('female');
+
+//    expect('{{tea}}').toBeChecked();
+//    input('gender').select('female');
+//    expect('{{gender}}').toEqual('female');
 
   });
 });

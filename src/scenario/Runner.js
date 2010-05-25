@@ -57,12 +57,14 @@ angular.scenario.Runner.prototype = {
           container = jQuery('<ul></ul>');
           parent.append(container);
         }
-        var element = jQuery('<li class="collapsed running '+type+'"><span></span></li>');
+        var element = jQuery('<li class="running '+type+'"><span></span></li>');
         element.find('span').text(text);
         container.append(element);
         return angular.extend(logger(element), {
           close: function(){
             element.removeClass('running');
+            if(!element.hasClass('fail'))
+              element.addClass('collapsed');
             console.scrollTop(console[0].scrollHeight);
           },
           fail: function(){
@@ -71,7 +73,6 @@ angular.scenario.Runner.prototype = {
             while (current[0] != console[0]) {
               if (current.is('li'))
                 current.addClass('fail');
-              current.removeClass('collapsed');
               current = current.parent();
             }
           }
