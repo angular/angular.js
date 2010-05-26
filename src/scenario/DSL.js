@@ -6,7 +6,9 @@ angular.scenario.dsl.browser = {
         self.testFrame.unbind();
         self.testDocument = jQuery(self.testWindow.document);
         self.testWindow = self.testFrame[0].contentWindow;
-        done();
+        self.$browser = self.testWindow.angular.service.$browser();
+        self.notifyWhenNoOutstandingRequests = bind(self.$browser, self.$browser.notifyWhenNoOutstandingRequests);
+        self.notifyWhenNoOutstandingRequests(done);
       });
       if (this.testFrame.attr('src') == url) {
         this.testWindow.location.reload();
