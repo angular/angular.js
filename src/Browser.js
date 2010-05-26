@@ -8,6 +8,7 @@ function Browser(location, document) {
   this.urlListeners = [];
   this.hoverListener = noop;
   this.isMock = false;
+  this.outstandingRequests = { count: 0, callbacks:[]};
 
   this.XHR = window.XMLHttpRequest || function () {
     try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
@@ -57,14 +58,40 @@ Browser.prototype = {
       callback = post;
       post = null;
     }
-    var xhr = new this.XHR();
+    var xhr = new this.XHR(),
+        self = this;
     xhr.open(method, url, true);
+    this.outstandingRequests.count ++;
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4) {
-        callback(xhr.status || 200, xhr.responseText);
+        try {
+          callback(xhr.status || 200, xhr.responseText);
+        } finally {
+          self.outstandingRequests.count--;
+          self.processRequestCallbacks();
+        }
       }
     };
     xhr.send(post || '');
+  },
+
+  processRequestCallbacks: function(){
+    if (this.outstandingRequests.count === 0) {
+      while(this.outstandingRequests.callbacks.length) {
+        try {
+          this.outstandingRequests.callbacks.pop()();
+        } catch (e) {
+        }
+      }
+    }
+  },
+
+  notifyWhenNoOutstandingRequests: function(callback){
+    if (this.outstandingRequests.count === 0) {
+      callback();
+    } else {
+      this.outstandingRequests.callbacks.push(callback);
+    }
   },
 
   watchUrl: function(fn){
