@@ -29,7 +29,7 @@ angular.scenario.Runner = function(scope, jQuery){
     self.currentSpec = null;
   };
   this.logger = function returnNoop(){
-    return _(returnNoop).extend({close:_.identity, fail:_.identity});;
+    return extend(returnNoop, {close:noop, fail:noop});;
   };
 };
 
@@ -59,7 +59,7 @@ angular.scenario.Runner.prototype = {
         var element = jQuery('<li class="running '+type+'"><span></span></li>');
         element.find('span').text(text);
         container.append(element);
-        return _(logger(element)).extend({
+        return extend(logger(element), {
           close: function(){
             element.removeClass('running');
             if(!element.hasClass('fail'))
@@ -80,7 +80,7 @@ angular.scenario.Runner.prototype = {
     }
     this.logger = logger(console);
     var specNames = [];
-    _(this.specs).each(function(spec, name){
+    foreach(this.specs, function(spec, name){
       specNames.push(name);
     }, this);
     specNames.sort();
@@ -108,7 +108,7 @@ angular.scenario.Runner.prototype = {
              result.passed = false;
              result.failed = true;
              result.error = error;
-             result.log('fail', _(error).isString() ? error : toJson(error)).fail();
+             result.log('fail', isString(error) ? error : toJson(error)).fail();
            }
          };
        specThis = {
@@ -121,11 +121,11 @@ angular.scenario.Runner.prototype = {
    function done() {
      result.finished = true;
      stepLogger.close();
-     (callback||_.identity).call(specThis);
+     (callback||noop).call(specThis);
    }
    function next(){
      var step = spec.steps[spec.nextStepIndex];
-     (result.log || {close:_.identity}).close();
+     (result.log || {close:noop}).close();
      result.log = null;
      if (step) {
        spec.nextStepIndex ++;
