@@ -48,7 +48,6 @@ angular.scenario.Runner.prototype = {
       jQuery(this).toggleClass('collapsed');
     });
     this.testFrame = body.find('#testView iframe');
-    this.testWindow = this.testFrame[0].contentWindow;
     function logger(parent) {
       var container;
       return function(type, text) {
@@ -100,27 +99,30 @@ angular.scenario.Runner.prototype = {
 
   execute: function(name, callback) {
    var spec = this.specs[name],
+       self = this,
        result = {
-           passed: false,
-           failed: false,
-           finished: false,
-           fail: function(error) {
-             result.passed = false;
-             result.failed = true;
-             result.error = error;
-             result.log('fail', isString(error) ? error : toJson(error)).fail();
-           }
-         };
-       specThis = {
+         passed: false,
+         failed: false,
+         finished: false,
+         fail: function(error) {
+           result.passed = false;
+           result.failed = true;
+           result.error = error;
+           result.log('fail', isString(error) ? error : toJson(error)).fail();
+         }
+       },
+       specThis = createScope({
          result: result,
-         testWindow: this.testWindow,
-         testFrame: this.testFrame
-       };
+         testFrame: this.testFrame,
+         testWindow: this.testWindow
+       }, angularService, {});
+   this.self = specThis;
    var stepLogger = this.logger('spec', name);
    spec.nextStepIndex = 0;
    function done() {
      result.finished = true;
      stepLogger.close();
+     self.self = null;
      (callback||noop).call(specThis);
    }
    function next(){

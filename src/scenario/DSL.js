@@ -4,8 +4,8 @@ angular.scenario.dsl.browser = {
       var self = this;
       self.testFrame.load(function(){
         self.testFrame.unbind();
-        self.testDocument = jQuery(self.testWindow.document);
         self.testWindow = self.testFrame[0].contentWindow;
+        self.testDocument = jQuery(self.testWindow.document);
         self.$browser = self.testWindow.angular.service.$browser();
         self.notifyWhenNoOutstandingRequests = bind(self.$browser, self.$browser.notifyWhenNoOutstandingRequests);
         self.notifyWhenNoOutstandingRequests(done);

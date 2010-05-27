@@ -317,26 +317,5 @@ var ngSwitch = angularWidget('NG:SWITCH', function (element){
   equals: function(on, when) {
     return on == when;
   },
-  route: function(on, when, dstName) {
-    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
-        params = [],
-        dst = {};
-    foreach(when.split(/\W/), function(param){
-      if (param) {
-        var paramRegExp = new RegExp(":" + param + "([\\W])");
-        if (regex.match(paramRegExp)) {
-          regex = regex.replace(paramRegExp, "([^\/]*)$1");
-          params.push(param);
-        }
-      }
-    });
-    var match = on.match(new RegExp(regex));
-    if (match) {
-      foreach(params, function(name, index){
-        dst[name] = match[index + 1];
-      });
-      if (dstName) this.$set(dstName, dst);
-    }
-    return match ? dst : null;
-  }
+  route: switchRouteMatcher
 });

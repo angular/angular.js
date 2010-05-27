@@ -158,10 +158,33 @@ angularService("$invalidWidgets", function(){
   return invalidWidgets;
 });
 
+function switchRouteMatcher(on, when, dstName) {
+  var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
+      params = [],
+      dst = {};
+  foreach(when.split(/\W/), function(param){
+    if (param) {
+      var paramRegExp = new RegExp(":" + param + "([\\W])");
+      if (regex.match(paramRegExp)) {
+        regex = regex.replace(paramRegExp, "([^\/]*)$1");
+        params.push(param);
+      }
+    }
+  });
+  var match = on.match(new RegExp(regex));
+  if (match) {
+    foreach(params, function(name, index){
+      dst[name] = match[index + 1];
+    });
+    if (dstName) this.$set(dstName, dst);
+  }
+  return match ? dst : null;
+}
+
 angularService('$route', function(location, params){
   var routes = {},
       onChange = [],
-      matcher = angularWidget('NG:SWITCH').route,
+      matcher = switchRouteMatcher,
       parentScope = this,
       dirty = 0,
       $route = {

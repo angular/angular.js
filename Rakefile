@@ -37,6 +37,13 @@ task :compile_scenario do
       src/scenario/angular.prefix \
       src/Angular.js \
       src/JSON.js \
+      src/Scope.js \
+      src/Parser.js \
+      src/Resource.js \
+      src/Browser.js \
+      src/apis.js \
+      src/services.js \
+      src/AngularPublic.js \
       src/scenario/Runner.js \
       src/scenario/DSL.js \
       src/scenario/angular.suffix \
