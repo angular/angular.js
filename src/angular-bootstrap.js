@@ -50,6 +50,7 @@
   addScript("/AngularPublic.js");
 
   // Extension points
+  addScript("/services.js");
   addScript("/apis.js");
   addScript("/filters.js");
   addScript("/formatters.js");
@@ -57,7 +58,6 @@
   addScript("/directives.js");
   addScript("/markups.js");
   addScript("/widgets.js");
-  addScript("/services.js");
 
   window.onload = function(){
     try {

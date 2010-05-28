@@ -76,10 +76,10 @@ task :compile do
       src/filters.js \
       src/formatters.js \
       src/validators.js \
+      src/services.js \
       src/directives.js \
       src/markups.js \
       src/widgets.js \
-      src/services.js \
       src/AngularPublic.js \
       src/angular.suffix \
     )
