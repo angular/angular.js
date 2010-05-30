@@ -155,16 +155,16 @@ angularWidget("@ng-repeat", function(expression, element){
     this.$onEval(function(){
       var index = 0, childCount = children.length, childScope, lastElement = reference;
       foreach(this.$tryEval(rhs, reference), function(value, key){
-        function assign(scope) {
-          scope[valueIdent] = value;
-          if (keyIdent) scope[keyIdent] = key;
-        }
         if (index < childCount) {
           // reuse existing child
-          assign(childScope = children[index]);
+          childScope = children[index];
+          childScope[valueIdent] = value;
+          if (keyIdent) childScope[keyIdent] = key;
         } else {
           // grow children
-          assign(childScope = template(element.clone(), createScope(currentScope)));
+          childScope = template(element.clone(), createScope(currentScope));
+          childScope[valueIdent] = value;
+          if (keyIdent) childScope[keyIdent] = key;
           lastElement.after(childScope.$element);
           childScope.$index = index;
           childScope.$element.attr('ng-repeat-index', index);

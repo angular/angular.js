@@ -46,16 +46,16 @@ function setter(instance, path, value){
 var compileCache = {};
 function expressionCompile(exp){
   if (isFunction(exp)) return exp;
-  var expFn = compileCache[exp];
-  if (!expFn) {
+  var fn = compileCache[exp];
+  if (!fn) {
     var parser = new Parser(exp);
-    expFn = parser.statements();
+    var fnSelf = parser.statements();
     parser.assertAllConsumed();
-    compileCache[exp] = expFn;
+    fn = compileCache[exp] = extend(
+      function(){ return fnSelf(this);},
+      {fnSelf: fnSelf});
   }
-  return function(){
-    return expFn(this);
-  };
+  return fn;
 }
 
 function rethrow(e) { throw e; }

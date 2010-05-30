@@ -296,10 +296,7 @@ var angularFunction = {
     if (isFunction(expression)){
       return expression;
     } else if (expression){
-      var fn = expressionCompile(expression);
-      return function($) {
-        return fn.apply($);
-      };
+      return expressionCompile(expression).fnSelf;
     } else {
       return identity;
     }
