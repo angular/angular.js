@@ -198,10 +198,9 @@ angularDirective("ng-watch", function(expression, element){
   return function(element){
     var self = this;
     new Parser(expression).watch()({
-      scope:{get: self.$get, set: self.$set},
       addListener:function(watch, exp){
         self.$watch(watch, function(){
-          return exp({scope:{get: self.$get, set: self.$set}, state:self});
+          return exp(self);
         }, element);
       }
     });

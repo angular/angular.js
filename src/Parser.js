@@ -17,7 +17,7 @@ Lexer.OPERATORS = {
     '/':function(self, a,b){return a/b;},
     '%':function(self, a,b){return a%b;},
     '^':function(self, a,b){return a^b;},
-    '=':function(self, a,b){return self.scope.set(a, b);},
+    '=':function(self, a,b){return setter(self, a, b);},
     '==':function(self, a,b){return a==b;},
     '!=':function(self, a,b){return a!=b;},
     '<':function(self, a,b){return a<b;},
@@ -152,7 +152,7 @@ Lexer.prototype = {
     var fn = Lexer.OPERATORS[ident];
     if (!fn) {
       fn = function(self){
-        return self.scope.get(ident);
+        return getter(self, ident);
       };
       fn.isAssignable = ident;
     }
@@ -372,7 +372,7 @@ Parser.prototype = {
           for ( var i = 0; i < argsFn.length; i++) {
             args.push(argsFn[i](self));
           }
-          return fn.apply(self.state, args);
+          return fn.apply(self, args);
         };
         return function(){
           return fnInvoke;
@@ -551,12 +551,12 @@ Parser.prototype = {
     this.consume("}");
     return function(self) {
       return function($){
-        var scope = createScope(self.state);
+        var scope = createScope(self);
         scope['$'] = $;
         for ( var i = 0; i < args.length; i++) {
-          scope.$set(args[i], arguments[i]);
+          setter(scope, args[i], arguments[i]);
         }
-        return statements({scope:{get:scope.$get, set:scope.$set}});
+        return statements(scope);
       };
     };
   },
@@ -680,11 +680,11 @@ Parser.prototype = {
     }
     return function(self) {
       var Entity = self.datastore.entity(entity, defaults);
-      self.scope.set(entity, Entity);
+      setter(self, entity, Entity);
       if (instance) {
         var document = Entity();
         document['$$anchor'] = instance;
-        self.scope.set(instance, document);
+        setter(self, instance, document);
         return "$anchor." + instance + ":{" +
             instance + "=" + entity + ".load($anchor." + instance + ");" +
             instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" +

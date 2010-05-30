@@ -80,7 +80,7 @@ function valueAccessor(scope, element) {
           validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
       error = required && !value ?
             "Required" :
-            (value ? validator({state:validateScope, scope:{get:validateScope.$get, set:validateScope.$set}}, value) : null);
+            (value ? validator(validateScope, value) : null);
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
       if (error) {
