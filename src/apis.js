@@ -178,7 +178,7 @@ var angularArray = {
         descending = $.charAt(0) == '-';
         $ = $.substring(1);
       }
-      var get = $ ? angular['Function']['compile']($) : identity;
+      var get = $ ? expressionCompile($).fnSelf : identity;
       return reverse(function(a,b){
         return compare(get(a),get(b));
       }, descending);
