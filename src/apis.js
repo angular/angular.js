@@ -297,7 +297,7 @@ var angularFunction = {
       return expression;
     } else if (expression){
       return function($) {
-        return createScope($).$eval(expression);
+        return expressionCompile(expression).apply($);
       };
     } else {
       return identity;

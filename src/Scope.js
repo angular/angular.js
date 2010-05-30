@@ -60,11 +60,12 @@ function expressionCompile(exp){
 // TODO(remove this hack)
 function parserNewScopeAdapter(fn) {
   return function(){
+    var self = this;
     return fn({
-      state: this,
+      state: self,
       scope: {
-        set: this.$set,
-        get: this.$get
+        set: function(key, value){ return setter(self, key, value);},
+        get: function(key) { return getter(self, key); }
       }
     });
   };
