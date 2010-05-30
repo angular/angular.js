@@ -3,7 +3,7 @@
 //////////////////////////////
 
 function Browser(location, document) {
-  this.delay = 25;
+  this.delay = 50;
   this.expectedUrl = location.href;
   this.urlListeners = [];
   this.hoverListener = noop;

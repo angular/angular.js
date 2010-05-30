@@ -53,14 +53,8 @@ function expressionCompile(exp){
     parser.assertAllConsumed();
     compileCache[exp] = expFn;
   }
-  return parserNewScopeAdapter(expFn);
-}
-
-// return expFn
-// TODO(remove this hack)
-function parserNewScopeAdapter(fn) {
   return function(){
-    return fn(this);
+    return expFn(this);
   };
 }
 

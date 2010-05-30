@@ -291,12 +291,15 @@ function elementError(element, type, error) {
   while (!isRenderableElement(element)) {
     element = element.parent() || jqLite(document.body);
   }
-  if (error) {
-    element.addClass(type);
-    element.attr(type, error);
-  } else {
-    element.removeClass(type);
-    element.removeAttr(type);
+  if (element[0]['$NG_ERROR'] !== error) {
+    element[0]['$NG_ERROR'] = error;
+    if (error) {
+      element.addClass(type);
+      element.attr(type, error);
+    } else {
+      element.removeClass(type);
+      element.removeAttr(type);
+    }
   }
 }
 
