@@ -43,6 +43,41 @@ function setter(instance, path, value){
   return value;
 }
 
+///////////////////////////////////
+
+var getterFnCache = {};
+function getterFn(path){
+  var fn = getterFnCache[path];
+  if (fn) return fn;
+
+  var code = 'function (self){\n';
+  code += '  var last, fn, type;\n';
+  foreach(path.split('.'), function(key) {
+    code += '  if(!self) return self;\n';
+    code += '  last = self;\n';
+    code += '  self = self.' + key + ';\n';
+    code += '  if(typeof self == "function") \n';
+    code += '    self = function(){ return last.'+key+'.apply(last, arguments); };\n';
+    if (key.charAt(0) == '$') {
+      // special code for super-imposed functions
+      var name = key.substr(1);
+      code += '  if(!self) {\n';
+      code += '    type = angular.Global.typeOf(last);\n';
+      code += '    fn = (angular[type.charAt(0).toUpperCase() + type.substring(1)]||{})["' + name + '"];\n';
+      code += '    if (fn)\n';
+      code += '      self = function(){ return fn.apply(last, [last].concat(slice.call(arguments, 0, arguments.length))); };\n';
+      code += '  }\n';
+    }
+  });
+  code += '  return self;\n}';
+  fn = eval('(' + code + ')');
+  fn.toString = function(){ return code; };
+
+  return getterFnCache[path] = fn;
+}
+
+///////////////////////////////////
+
 var compileCache = {};
 function expressionCompile(exp){
   if (isFunction(exp)) return exp;

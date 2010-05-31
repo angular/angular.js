@@ -157,4 +157,25 @@ describe('scope/model', function(){
       }
     });
   });
+
+  describe('getterFn', function(){
+    it('should get chain', function(){
+      expect(getterFn('a.b')(undefined)).toEqual(undefined);
+      expect(getterFn('a.b')({})).toEqual(undefined);
+      expect(getterFn('a.b')({a:null})).toEqual(undefined);
+      expect(getterFn('a.b')({a:{}})).toEqual(undefined);
+      expect(getterFn('a.b')({a:{b:null}})).toEqual(null);
+      expect(getterFn('a.b')({a:{b:0}})).toEqual(0);
+      expect(getterFn('a.b')({a:{b:'abc'}})).toEqual('abc');
+    });
+
+    it('should map type method on top of expression', function(){
+      expect(getterFn('a.$filter')({a:[]})('')).toEqual([]);
+    });
+
+    it('should bind function this', function(){
+      expect(getterFn('a')({a:function($){return this.b + $;}, b:1})(2)).toEqual(3);
+
+    });
+  });
 });

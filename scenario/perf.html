@@ -25,7 +25,7 @@
     <hr/>
     <ul>
       <li ng-repeat="item in items.$filter('').$orderBy('name')">
-        {{item.name}} {{item.parts.join(', ')}}
+        {{item.name}} <a href="#{{item.name}}">{{item.parts.join(', ')}}</a>
       </li>
     </ul>
   </body>

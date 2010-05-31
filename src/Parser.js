@@ -151,9 +151,7 @@ Lexer.prototype = {
     }
     var fn = Lexer.OPERATORS[ident];
     if (!fn) {
-      fn = function(self){
-        return getter(self, ident);
-      };
+      fn = getterFn(ident);
       fn.isAssignable = ident;
     }
     this.tokens.push({index:start, text:ident, fn:fn});
@@ -563,8 +561,9 @@ Parser.prototype = {
 
   fieldAccess: function(object) {
     var field = this.expect().text;
+    var getter = getterFn(field);
     var fn = function (self){
-      return getter(object(self), field);
+      return getter(object(self));
     };
     fn.isAssignable = field;
     return fn;
