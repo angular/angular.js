@@ -244,18 +244,17 @@ function copy(source, destination){
       while(destination.length) {
         destination.pop();
       }
+      for ( var i = 0; i < source.length; i++) {
+        destination.push(copy(source[i]));
+      }
     } else {
       foreach(destination, function(value, key){
         delete destination[key];
       });
+      for ( var key in source) {
+        destination[key] = copy(source[key]);
+      }
     }
-    foreach(source, function(value, key){
-      destination[key] = value ?
-              ( isArray(value) ?
-                  copy(value, []) :
-                  (isObject(value) ? copy(value, {}) : value)) :
-              value;
-    });
     return destination;
   }
 }

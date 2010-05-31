@@ -190,7 +190,9 @@ var angularArray = {
       }
       return 0;
     };
-    return copy(array).sort(reverse(comparator, descend));
+    var arrayCopy = [];
+    for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
+    return arrayCopy.sort(reverse(comparator, descend));
   },
   'orderByToggle':function(predicate, attribute) {
     var STRIP = /^([+|-])?(.*)/;
