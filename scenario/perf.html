@@ -24,8 +24,7 @@
     <input type="text" name="text"/>
     <hr/>
     <ul>
-      <li Xng-repeat="item in items.$filter('').$orderBy('name')"
-          ng-repeat="item in items">
+      <li ng-repeat="item in items.$filter('').$orderBy('name')">
         {{item.name}} <a href="#{{item.name}}">{{item.parts.join(', ')}}</a>
       </li>
     </ul>

@@ -53,15 +53,14 @@ function getterFn(path){
   var code = 'function (self){\n';
   code += '  var last, fn, type;\n';
   foreach(path.split('.'), function(key) {
-    key = (key == 'this')  ? '["this"]' : '.' + key;
     code += '  if(!self) return self;\n';
     code += '  last = self;\n';
-    code += '  self = self' + key + ';\n';
+    code += '  self = self.' + key + ';\n';
     code += '  if(typeof self == "function") \n';
-    code += '    self = function(){ return last'+key+'.apply(last, arguments); };\n';
-    if (key.charAt(1) == '$') {
+    code += '    self = function(){ return last.'+key+'.apply(last, arguments); };\n';
+    if (key.charAt(0) == '$') {
       // special code for super-imposed functions
-      var name = key.substr(2);
+      var name = key.substr(1);
       code += '  if(!self) {\n';
       code += '    type = angular.Global.typeOf(last);\n';
       code += '    fn = (angular[type.charAt(0).toUpperCase() + type.substring(1)]||{})["' + name + '"];\n';
@@ -124,13 +123,11 @@ function createScope(parent, services, existing) {
       if (exp !== undefined) {
         return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
       } else {
-        for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
-          for ( var queue = evalLists.sorted[i],
-                    jSize = queue.length,
-                    j= 0; j < jSize; j++) {
-            instance.$tryEval(queue[j].fn, queue[j].handler);
-          }
-        }
+        foreach(evalLists.sorted, function(list) {
+          foreach(list, function(eval) {
+            instance.$tryEval(eval.fn, eval.handler);
+          });
+        });
       }
     },
 
