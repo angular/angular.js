@@ -24,14 +24,17 @@ angularDirective("ng-eval", function(expression){
 
 angularDirective("ng-bind", function(expression){
   return function(element) {
-    var lastValue, lastError;
+    var lastValue = noop, lastError = noop;
     this.$onEval(function() {
       var error,
           value = this.$tryEval(expression, function(e){
             error = toJson(e);
           }),
-          isHtml = value instanceof HTML,
-          isDomElement = isElement(value);
+          isHtml,
+          isDomElement;
+      if (lastValue === value && lastError == error) return;
+      isHtml = value instanceof HTML,
+      isDomElement = isElement(value);
       if (!isHtml && !isDomElement && isObject(value)) {
         value = toJson(value);
       }
@@ -72,14 +75,14 @@ function compileBindTemplate(template){
     });
     bindTemplateCache[template] = fn = function(element){
       var parts = [], self = this;
-      foreach(bindings, function(fn){
-        var value = fn.call(self, element);
+      for ( var i = 0; i < bindings.length; i++) {
+        var value = bindings[i].call(self, element);
         if (isElement(value))
           value = '';
         else if (isObject(value))
           value = toJson(value, true);
         parts.push(value);
-      });
+      };
       return parts.join('');
     };
   }
@@ -107,21 +110,26 @@ var REMOVE_ATTRIBUTES = {
 };
 angularDirective("ng-bind-attr", function(expression){
   return function(element){
+    var lastValue = {};
     this.$onEval(function(){
-      foreach(this.$eval(expression), function(bindExp, key) {
-        var value = compileBindTemplate(bindExp).call(this, element),
+      var values = this.$eval(expression);
+      for(var key in values) {
+        var value = compileBindTemplate(values[key]).call(this, element),
             specialName = REMOVE_ATTRIBUTES[lowercase(key)];
-        if (specialName) {
-          if (element[specialName] = toBoolean(value)) {
-            element.attr(specialName, value);
+        if (lastValue[key] !== value) {
+          lastValue[key] = value;
+          if (specialName) {
+            if (element[specialName] = toBoolean(value)) {
+              element.attr(specialName, value);
+            } else {
+              element.removeAttr(key);
+            }
+            (element.data('$validate')||noop)();
           } else {
-            element.removeAttr(key);
+            element.attr(key, value);
           }
-          (element.data('$validate')||noop)();
-        } else {
-          element.attr(key, value);
         }
-      }, this);
+      };
     }, element);
   };
 });
@@ -153,17 +161,18 @@ angularWidget("@ng-repeat", function(expression, element){
 
     var children = [], currentScope = this;
     this.$onEval(function(){
-      var index = 0, childCount = children.length, childScope, lastElement = reference;
-      foreach(this.$tryEval(rhs, reference), function(value, key){
+      var index = 0, childCount = children.length, childScope, lastElement = reference,
+          collection = this.$tryEval(rhs, reference);
+      for ( var key in collection) {
         if (index < childCount) {
           // reuse existing child
           childScope = children[index];
-          childScope[valueIdent] = value;
+          childScope[valueIdent] = collection[key];
           if (keyIdent) childScope[keyIdent] = key;
         } else {
           // grow children
           childScope = template(element.clone(), createScope(currentScope));
-          childScope[valueIdent] = value;
+          childScope[valueIdent] = collection[key];
           if (keyIdent) childScope[keyIdent] = key;
           lastElement.after(childScope.$element);
           childScope.$index = index;
@@ -174,7 +183,7 @@ angularWidget("@ng-repeat", function(expression, element){
         childScope.$eval();
         lastElement = childScope.$element;
         index ++;
-      });
+      };
       // shrink children
       while(children.length > index) {
         children.pop().$element.remove();
