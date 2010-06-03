@@ -45,11 +45,13 @@ function valueAccessor(scope, element) {
   format = formatter.format;
   parse = formatter.parse;
   if (requiredExpr) {
-    scope.$watch(requiredExpr, function(newValue) {required = newValue; validate();});
+    scope.$watch(requiredExpr, function(newValue) {
+      required = newValue;
+      validate();
+    });
   } else {
     required = requiredExpr === '';
   }
-  
 
   element.data('$validate', validate);
   return {

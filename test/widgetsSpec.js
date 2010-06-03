@@ -233,15 +233,16 @@ describe("widget", function(){
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
       expect(element.attr('ng-validation-error')).toBeFalsy();
 
+      scope.$set('price', '');
       scope.$set('ineedz', true);
       scope.$eval();
-      expect(element.hasClass('ng-validation-error')).toBeFalsy();
-      expect(element.attr('ng-validation-error')).toBeFalsy();
-
-      element.val('');
-      element.trigger('keyup');
       expect(element.hasClass('ng-validation-error')).toBeTruthy();
       expect(element.attr('ng-validation-error')).toEqual('Required');
+
+      element.val('abc');
+      element.trigger('keyup');
+      expect(element.hasClass('ng-validation-error')).toBeFalsy();
+      expect(element.attr('ng-validation-error')).toBeFalsy();
     });
 
     it("should process ng-required2", function() {
