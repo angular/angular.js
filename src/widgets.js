@@ -35,16 +35,21 @@ function compileValidator(expr) {
 function valueAccessor(scope, element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = compileValidator(validatorName),
-      required = element.attr('ng-required'),
+      requiredExpr = element.attr('ng-required'),
       farmatterName = element.attr('ng-format') || NOOP,
       formatter = angularFormatter(farmatterName),
-      format, parse, lastError;
+      format, parse, lastError, required;
       invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   if (!formatter) throw "Formatter named '" + farmatterName + "' not found.";
   format = formatter.format;
   parse = formatter.parse;
-  required = required || required === '';
+  if (requiredExpr) {
+    scope.$watch(requiredExpr, function(newValue) {required = newValue; validate();});
+  } else {
+    required = requiredExpr === '';
+  }
+  
 
   element.data('$validate', validate);
   return {

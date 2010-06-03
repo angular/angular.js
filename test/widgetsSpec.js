@@ -221,6 +221,29 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toEqual('Required');
     });
 
+    it('should allow conditions on ng-required', function() {
+      compile('<input type="text" name="price" ng-required="ineedz"/>');
+      scope.$set('ineedz', false);
+      scope.$eval();
+      expect(element.hasClass('ng-validation-error')).toBeFalsy();
+      expect(element.attr('ng-validation-error')).toBeFalsy();
+
+      scope.$set('price', 'xxx');
+      scope.$eval();
+      expect(element.hasClass('ng-validation-error')).toBeFalsy();
+      expect(element.attr('ng-validation-error')).toBeFalsy();
+
+      scope.$set('ineedz', true);
+      scope.$eval();
+      expect(element.hasClass('ng-validation-error')).toBeFalsy();
+      expect(element.attr('ng-validation-error')).toBeFalsy();
+
+      element.val('');
+      element.trigger('keyup');
+      expect(element.hasClass('ng-validation-error')).toBeTruthy();
+      expect(element.attr('ng-validation-error')).toEqual('Required');
+    });
+
     it("should process ng-required2", function() {
       compile('<textarea name="name">Misko</textarea>');
       expect(scope.$get('name')).toEqual("Misko");
