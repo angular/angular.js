@@ -14,6 +14,8 @@ describe('Runner', function(){
     body = _jQuery('<div></div>');
     runner = new angular.scenario.Runner(scenario, _jQuery);
     Describe = scenario.describe;
+    BeforeEach = scenario.beforeEach;
+    AfterEach = scenario.afterEach;
     It = scenario.it;
     $scenario = scenario.$scenario;
   });
@@ -36,7 +38,10 @@ describe('Runner', function(){
         expect(spec.name).toEqual('describe name: it should text');
       });
 
-      it('should camplain on duplicate it', angular.noop);
+      it('should complain on duplicate it', function() {
+        // WRITE ME!!!!
+      });
+
       it('should create a failing step if there is a javascript error', function(){
         var spec;
         Describe('D1', function(){
@@ -53,6 +58,39 @@ describe('Runner', function(){
         } catch (e) {
           expect(e.message).toEqual('blah');
         };
+      });
+    });
+
+    describe('beforeEach', function() {
+      it('should execute beforeEach before every it', function() {
+        Describe('describe name', function(){
+          BeforeEach(logger('before;'));
+          It('should text', logger('body;'));
+          It('should text2', logger('body2;'));
+        });
+        expect(log).toEqual('before;body;before;body2;');
+      });
+    });
+    describe('afterEach', function() {
+      it('should execute afterEach after every it', function() {
+        Describe('describe name', function(){
+          AfterEach(logger('after;'));
+          It('should text', logger('body;'));
+          It('should text2', logger('body2;'));
+        });
+        expect(log).toEqual('body;after;body2;after;');
+      });
+
+      it('should always execute afterEach after every it', function() {
+        Describe('describe name', function(){
+          AfterEach(logger('after;'));
+          It('should text', function() {
+            log = 'body;';
+            throw "MyError";
+          });
+          It('should text2', logger('body2;'));
+        });
+        expect(log).toEqual('body;after;body2;after;');
       });
     });
   });

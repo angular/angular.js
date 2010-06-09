@@ -2,7 +2,7 @@ angular.scenario.dsl.browser = {
   navigateTo: function(url){
     $scenario.addStep('Navigate to: ' + url, function(done){
       var self = this;
-      self.testFrame.load(function(){
+      this.testFrame.load(function(){
         self.testFrame.unbind();
         self.testWindow = self.testFrame[0].contentWindow;
         self.testDocument = jQuery(self.testWindow.document);
@@ -11,7 +11,7 @@ angular.scenario.dsl.browser = {
         self.notifyWhenNoOutstandingRequests(done);
       });
       if (this.testFrame.attr('src') == url) {
-        this.testWindow.location.reload();
+        this.testFrame[0].contentWindow.location.reload();
       } else {
         this.testFrame.attr('src', url);
       }
@@ -44,17 +44,20 @@ angular.scenario.dsl.input = function(selector) {
   };
 };
 
-angular.scenario.dsl.expect = function(selector) {
-  return {
-    toEqual: function(expected) {
-      $scenario.addStep("Expect that " + selector + " equals '" + expected + "'", function(done){
-        var attrName = selector.substring(2, selector.length - 2);
-        var binding = this.testDocument.find('span[ng-bind=' + attrName + ']');
-        if (binding.text() != expected) {
-          this.result.fail("Expected '" + expected + "' but was '" + binding.text() + "'");
+angular.scenario.dsl.expect = {
+  repeater: function(selector) {
+    return {
+      count: {
+        toEqual: function(number) {
+          $scenario.addStep("Expect that there are " + number + " items in Repeater with selector '" + selector + "'", function(done) {
+            var items = this.testDocument.find(selector);
+            if (items.length != number) {
+              this.result.fail("Expected " + number + " but was " + items.length);
+            }
+            done();
+          });
         }
-        done();
-      });
-    }
-  };
+      }
+    };
+  }
 };
