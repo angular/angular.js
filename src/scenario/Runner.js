@@ -8,23 +8,34 @@ angular.scenario.Runner = function(scope, jQuery){
 
   var specs = this.specs = {};
   var path = [];
-  this.scope.describe = function describe(name, body){
+  this.scope.describe = function(name, body){
     path.push(name);
     body();
     path.pop();
   };
-  this.scope.it = function it(name, body) {
+  var beforeEach = noop;
+  var afterEach = noop;
+  this.scope.beforeEach = function(body) {
+    beforeEach = body;
+  };
+  this.scope.afterEach = function(body) {
+    afterEach = body;
+  };
+  this.scope.it = function(name, body) {
     var specName = path.join(' ') + ': it ' + name;
     self.currentSpec = specs[specName] = {
         name: specName,
         steps:[]
      };
     try {
+      beforeEach();
       body();
     } catch(err) {
       self.addStep(err.message || 'ERROR', function(){
         throw err;
       });
+    } finally {
+      afterEach();
     }
     self.currentSpec = null;
   };
