@@ -36,7 +36,7 @@ describe('Runner', function(){
         expect(spec.name).toEqual('describe name: it should text');
       });
 
-      it('should camplain on duplicate it', angular.noop);
+      it('should complain on duplicate it', angular.noop);
       it('should create a failing step if there is a javascript error', function(){
         var spec;
         Describe('D1', function(){

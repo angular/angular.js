@@ -44,17 +44,20 @@ angular.scenario.dsl.input = function(selector) {
   };
 };
 
-angular.scenario.dsl.expect = function(selector) {
-  return {
-    toEqual: function(expected) {
-      $scenario.addStep("Expect that " + selector + " equals '" + expected + "'", function(done){
-        var attrName = selector.substring(2, selector.length - 2);
-        var binding = this.testDocument.find('span[ng-bind=' + attrName + ']');
-        if (binding.text() != expected) {
-          this.result.fail("Expected '" + expected + "' but was '" + binding.text() + "'");
+angular.scenario.dsl.expect = {
+  repeater: function(selector) {
+    return {
+      count: {
+        toEqual: function(number) {
+          $scenario.addStep("Expect to see " + number + " items repeated with selector '" + selector + "'", function(done) {
+            var items = this.testDocument.find(selector);
+            if (items.length != number) {
+              this.result.fail("Expected " + number + " but was " + items.length);
+            }
+            done();
+          });
         }
-        done();
-      });
-    }
-  };
+      }
+    };
+  }
 };

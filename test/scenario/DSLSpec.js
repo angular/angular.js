@@ -40,4 +40,16 @@ describe("DSL", function() {
       expect(lastDocument.find(':radio:checked').val()).toEqual('female');
     });
   });
+
+  describe('expect', function() {
+    var dslExpect = angular.scenario.dsl.expect;
+    describe('repeater', function() {
+      it('should check the count of repeated elements', function() {
+        dslExpect.repeater('.repeater-row').count.toEqual(2);
+        expect(lastStep.name).toEqual("Expect to see 2 items repeated with selector '.repeater-row'");
+        var html = "<div class='repeater-row'>a</div><div class='repeater-row'>b</div>";
+        executeStep(lastStep, html);
+      });
+    });
+  });
 });
