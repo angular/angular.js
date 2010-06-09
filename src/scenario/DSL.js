@@ -49,7 +49,7 @@ angular.scenario.dsl.expect = {
     return {
       count: {
         toEqual: function(number) {
-          $scenario.addStep("Expect to see " + number + " items repeated with selector '" + selector + "'", function(done) {
+          $scenario.addStep("Expect that there are " + number + " items in Repeater with selector '" + selector + "'", function(done) {
             var items = this.testDocument.find(selector);
             if (items.length != number) {
               this.result.fail("Expected " + number + " but was " + items.length);
