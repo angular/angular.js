@@ -2,7 +2,7 @@ angular.scenario.dsl.browser = {
   navigateTo: function(url){
     $scenario.addStep('Navigate to: ' + url, function(done){
       var self = this;
-      self.testFrame.load(function(){
+      this.testFrame.load(function(){
         self.testFrame.unbind();
         self.testWindow = self.testFrame[0].contentWindow;
         self.testDocument = jQuery(self.testWindow.document);
@@ -11,7 +11,7 @@ angular.scenario.dsl.browser = {
         self.notifyWhenNoOutstandingRequests(done);
       });
       if (this.testFrame.attr('src') == url) {
-        this.testWindow.location.reload();
+        this.testFrame[0].contentWindow.location.reload();
       } else {
         this.testFrame.attr('src', url);
       }
