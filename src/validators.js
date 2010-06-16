@@ -1,5 +1,5 @@
 foreach({
-  'noop': noop,
+  'noop': function() { return null; },
 
   'regexp': function(value, regexp, msg) {
     if (!value.match(regexp)) {

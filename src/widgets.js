@@ -15,9 +15,9 @@ function modelAccessor(scope, element) {
 
 function modelFormattedAccessor(scope, element) {
   var accessor = modelAccessor(scope, element),
-      farmatterName = element.attr('ng-format') || NOOP,
-      formatter = angularFormatter(farmatterName);
-  if (!formatter) throw "Formatter named '" + farmatterName + "' not found.";
+      formatterName = element.attr('ng-format') || NOOP,
+      formatter = angularFormatter(formatterName);
+  if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
   return {
     get: function() {
       return formatter.format(accessor.get());
@@ -36,12 +36,12 @@ function valueAccessor(scope, element) {
   var validatorName = element.attr('ng-validate') || NOOP,
       validator = compileValidator(validatorName),
       requiredExpr = element.attr('ng-required'),
-      farmatterName = element.attr('ng-format') || NOOP,
-      formatter = angularFormatter(farmatterName),
+      formatterName = element.attr('ng-format') || NOOP,
+      formatter = angularFormatter(formatterName),
       format, parse, lastError, required;
       invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
-  if (!formatter) throw "Formatter named '" + farmatterName + "' not found.";
+  if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
   format = formatter.format;
   parse = formatter.parse;
   if (requiredExpr) {
@@ -86,8 +86,8 @@ function valueAccessor(scope, element) {
       var error,
           validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
       error = required && !value ?
-            "Required" :
-            (value ? validator(validateScope, value) : null);
+              'Required' :
+              value ? validator(validateScope, value) : null;
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
       if (error) {

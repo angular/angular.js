@@ -43,7 +43,7 @@ describe("widget", function(){
 
       describe("ng-format", function(){
 
-        it("should farmat text", function(){
+        it("should format text", function(){
           compile('<input type="Text" name="list" value="a,b,c" ng-format="list"/>');
           expect(scope.$get('list')).toEqual(['a', 'b', 'c']);
 
@@ -178,7 +178,18 @@ describe("widget", function(){
           expect(element.attr('ng-validation-error')).toEqual('Not a number');
         });
 
-        it("should not call validator if undefinde/empty", function(){
+        it('should not blow up for validation with bound attributes', function() {
+          compile('<input type="text" name="price" boo="{{abc}}" ng-required/>');
+          expect(element.hasClass('ng-validation-error')).toBeTruthy();
+          expect(element.attr('ng-validation-error')).toEqual('Required');
+
+          scope.$set('price', '123');
+          scope.$eval();
+          expect(element.hasClass('ng-validation-error')).toBeFalsy();
+          expect(element.attr('ng-validation-error')).toBeFalsy();
+        });
+
+        it("should not call validator if undefined/empty", function(){
           var lastValue = "NOT_CALLED";
           angularValidator.myValidator = function(value){lastValue = value;};
           compile('<input type="text" name="url" ng-validate="myValidator"/>');
