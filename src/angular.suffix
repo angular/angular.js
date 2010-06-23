@@ -1,0 +1,9 @@
+
+  window.onload = function(){
+    try {
+      if (previousOnLoad) previousOnLoad();
+    } catch(e) {}
+    angularInit(parseKeyValue(angularJsConfig(document)));
+  };
+
+})(window, document, window.onload);
