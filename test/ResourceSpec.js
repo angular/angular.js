@@ -35,11 +35,6 @@ describe("resource", function() {
     var item = LineItem.get({id:456});
     xhr.flush();
     nakedExpect(item).toEqual({id:'abc'});
-
-    item = LineItem.get({id:456});
-    xhr.flush();
-    nakedExpect(item).toEqual({id:'abc'});
-
   });
 
   it("should create resource", function(){
