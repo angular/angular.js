@@ -148,8 +148,14 @@ describe('Runner', function(){
     it('should handle exceptions in a step', function(){
       $scenario.specs['spec'] = {
           steps: [
+            {name: 'first step', fn: function(done) {
+              done();
+            }},
             {name:'error', fn:function(done) {
               throw "MyError";
+            }},
+            {name: 'should not execute', fn: function(done) {
+              done();
             }}
           ]
         };
@@ -160,12 +166,17 @@ describe('Runner', function(){
         expect(spec.result.failed).toEqual(true);
         expect(spec.result.finished).toEqual(true);
         expect(spec.result.error).toEqual("MyError");
+        expect(scenario.$testrun.results).toEqual([{
+          name: 'spec',
+          passed: false,
+          error: 'MyError',
+          steps: ['first step', 'error']}]);
     });
   });
 
   describe('run', function(){
     var next;
-    it('should execute all specs', function(){
+    beforeEach(function() {
       Describe('d1', function(){
         It('it1', function(){ $scenario.addStep('s1', logger('s1,')); });
         It('it2', function(){
@@ -177,13 +188,30 @@ describe('Runner', function(){
         It('it3', function(){ $scenario.addStep('s3', logger('s3,')); });
         It('it4', function(){ $scenario.addStep('s4', logger('s4,')); });
       });
-
+    });
+    it('should execute all specs', function(){
       $scenario.run(body);
 
       expect(log).toEqual('s1,s2,');
       next();
       expect(log).toEqual('s1,s2,s3,s4,');
-
+    });
+    it('should publish done state and results as tests are run', function() {
+      expect(scenario.$testrun.done).toBeFalsy();
+      expect(scenario.$testrun.results).toEqual([]);
+      $scenario.run(body);
+      expect(scenario.$testrun.done).toBeFalsy();
+      expect(scenario.$testrun.results).toEqual([
+        {name: 'd1: it it1', passed: true, steps: ['s1']}
+      ]);
+      next();
+      expect(scenario.$testrun.done).toBeTruthy();
+      expect(scenario.$testrun.results).toEqual([
+        {name: 'd1: it it1', passed: true, steps: ['s1']},
+        {name: 'd1: it it2', passed: true, steps: ['s2', 's2.2']},
+        {name: 'd2: it it3', passed: true, steps: ['s3']},
+        {name: 'd2: it it4', passed: true, steps: ['s4']}
+      ]);
     });
   });
 

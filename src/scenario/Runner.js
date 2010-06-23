@@ -5,6 +5,7 @@ angular.scenario.Runner = function(scope, jQuery){
   var self = scope.$scenario = this;
   this.scope = scope;
   this.jQuery = jQuery;
+  this.scope.$testrun = {done: false, results: []};
 
   var specs = this.specs = {};
   var path = [];
@@ -40,7 +41,7 @@ angular.scenario.Runner = function(scope, jQuery){
     self.currentSpec = null;
   };
   this.logger = function returnNoop(){
-    return extend(returnNoop, {close:noop, fail:noop});;
+    return extend(returnNoop, {close:noop, fail:noop});
   };
 };
 
@@ -99,6 +100,8 @@ angular.scenario.Runner.prototype = {
       var next = specNames.shift();
       if(next) {
         self.execute(next, callback);
+      } else {
+        self.scope.$testrun.done = true;
       }
     };
     callback();
@@ -111,6 +114,7 @@ angular.scenario.Runner.prototype = {
   execute: function(name, callback) {
    var spec = this.specs[name],
        self = this,
+       stepsDone = [],
        result = {
          passed: false,
          failed: false,
@@ -143,15 +147,23 @@ angular.scenario.Runner.prototype = {
      if (step) {
        spec.nextStepIndex ++;
        result.log = stepLogger('step', step.name);
+       stepsDone.push(step.name);
        try {
          step.fn.call(specThis, next);
        } catch (e) {
          console.error(e);
          result.fail(e);
+         self.scope.$testrun.results.push(
+           {name: name, passed: false, error: e, steps: stepsDone});
          done();
        }
      } else {
        result.passed = !result.failed;
+       self.scope.$testrun.results.push({
+         name: name,
+         passed: !result.failed,
+         error: result.error,
+         steps: stepsDone});
        done();
      }
    };
