@@ -306,12 +306,28 @@ describe("service", function(){
         cache('GET', '/url', null, callback);
         xhr.flush();
         expect(log).toEqual('"first";"first";');
+        cache('GET', '/url', null, callback, false);
+        xhr.flush();
+        expect(log).toEqual('"first";"first";"first";');
+      });
+
+      it('should first return cache request, then return server request', function(){
+        xhr.expectGET('/url').respond('first');
+        cache('GET', '/url', null, callback, true);
+        xhr.flush();
+        xhr.expectGET('/url').respond('ERROR');
+        cache('GET', '/url', null, callback, true);
+        expect(log).toEqual('"first";"first";');
+        xhr.flush();
+        expect(log).toEqual('"first";"first";"ERROR";');
       });
 
       it('should serve requests from cache', function(){
         cache.data.url = {value:'123'};
         cache('GET', 'url', null, callback);
         expect(log).toEqual('"123";');
+        cache('GET', 'url', null, callback, false);
+        expect(log).toEqual('"123";"123";');
       });
 
       it('should keep track of in flight requests and request only once', function(){

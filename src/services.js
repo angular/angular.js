@@ -313,7 +313,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
 
 angularService('$xhr.cache', function($xhr){
   var inflight = {}, self = this;;
-  function cache(method, url, post, callback){
+  function cache(method, url, post, callback, cacheThenRetrieve){
     if (isFunction(post)) {
       callback = post;
       post = null;
@@ -322,7 +322,11 @@ angularService('$xhr.cache', function($xhr){
       var data;
       if (data = cache.data[url]) {
         callback(200, copy(data.value));
-      } else if (data = inflight[url]) {
+        if (!cacheThenRetrieve)
+          return;
+      }
+
+      if (data = inflight[url]) {
         data.callbacks.push(callback);
       } else {
         inflight[url] = {callbacks: [callback]};
@@ -340,6 +344,7 @@ angularService('$xhr.cache', function($xhr){
           });
         });
       }
+
     } else {
       cache.data = {};
       cache.delegate(method, url, post, callback);

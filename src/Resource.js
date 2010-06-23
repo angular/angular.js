@@ -94,6 +94,8 @@ ResourceFactory.prototype = {
           function(status, response) {
             if (status == 200) {
               if (action.isArray) {
+                if (action.cacheThenRetrieve)
+                  value = [];
                 foreach(response, function(item){
                   value.push(new Resource(item));
                 });
@@ -104,7 +106,8 @@ ResourceFactory.prototype = {
             } else {
               throw {status: status, response:response, message: status + ": " + response};
             }
-          }
+          },
+          action.cacheThenRetrieve
         );
         return value;
       };
@@ -135,4 +138,3 @@ ResourceFactory.prototype = {
     return Resource;
   }
 };
-
