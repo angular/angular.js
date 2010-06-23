@@ -1,0 +1,21 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
+    <script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="../angular-minified.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        scope = angular.compile(document);
+        scope.set('a', 3);
+        scope.updateView();
+      });
+    </script>
+  </head>
+  <body>
+    Quantity: <input type="text" name="a" value="2">
+    *
+    Cost: <input type="text" name="b" value="3.4">
+    = {{a * b | currency}}
+  </body>
+</html>

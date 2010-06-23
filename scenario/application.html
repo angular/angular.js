@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css"></link>
+    <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
+    <script>
+  function AccountController(){
+  }
+
+  AccountController.prototype = {
+    hello: function(){
+      alert(this.name);
+    }
+
+  };
+
+    </script>
+  </head>
+  <body ng-init="$window.$scope = this">
+    [ <a href="#login">login</a>
+    | <a href="#account">account</a>
+    ]
+
+    <ng:switch on="$location.hashPath">
+      <div ng-switch-when="login">login screen</div>
+      <ng:include ng-switch-when="account" src="'application-account.html'"></ng:include>
+    </ng:switch>
+
+
+    (( input name ))
+
+    <pre>$location={{$location}}</pre>
+  </body>
+ </html>

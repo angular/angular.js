@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .git4_perforce_config
 blaze-eclipse
 google3/blaze-*
@@ -22,3 +23,11 @@ google3/alloc
 google3tomcat
 google3/mbin
 google3/mgenfiles
+=======
+angular-minified.map
+externs.js
+angular.js
+angular-minified.js
+angular-debug.js
+angular-scenario.js
+>>>>>>> b129a1094e6b42ed82c3ccecc2f40daaa0a6cb6a

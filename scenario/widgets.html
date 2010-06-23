@@ -1,0 +1,98 @@
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
+  </head>
+  <body ng:init="$window.$scope = this">
+    <table>
+      <tr>
+        <th width="330">Description</th>
+        <th>Test</th>
+        <th>Result</th>
+      </tr>
+      <tr><th colspan="3">Input text field</th></tr>
+      <tr>
+        <td>basic</td>
+        <td>
+          <input type="text" name="text.basic"/>
+        </td>
+        <td>text.basic={{text.basic}}</td>
+      </tr>
+      <tr>
+        <td>password</td>
+        <td><input type="password" name="text.password" /></td>
+        <td>text.password={{text.password}}</td>
+      </tr>
+      <tr>
+        <td>hidden</td>
+        <td><input type="hidden" name="text.hidden" value="hiddenValue" /></td>
+        <td>text.hidden={{text.hidden}}</td>
+      </tr>
+      <tr><th colspan="3">Input selection field</th></tr>
+      <tr>
+        <td>radio</td>
+        <td>
+         <input type="radio" name="gender" value="female"/> Female <br/>
+         <input type="radio" name="gender" value="male" checked="checked"/> Male
+        </td>
+        <td>gender={{gender}}</td>
+      </tr>
+      <tr>
+        <td>checkbox</td>
+        <td>
+         <input type="checkbox" name="checkbox.tea" checked value="on"/> Tea<br/>
+         <input type="checkbox" name="checkbox.coffee" value="on"/> Coffe
+        </td>
+        <td>
+          <pre>checkbox={{checkbox}}</pre>
+        </td>
+      </tr>
+      <tr>
+        <td>select</td>
+        <td>
+          <select name="select">
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </td>
+        <td>select={{select}}</td>
+      </tr>
+      <tr>
+        <td>multiselect</td>
+        <td>
+          <select name="multiselect" multiple>
+            <option>A</option>
+            <option>B</option>
+            <option>C</option>
+          </select>
+        </td>
+        <td>multiselect={{multiselect}}</td>
+      </tr>
+      <tr><th colspan="3">Buttons</th></tr>
+      <tr>
+        <td>ng-change<br/>ng-click</td>
+        <td ng:init="button.count = 0">
+          <form>
+           <input type="button" value="button" ng-change="button.count = button.count + 1"/> <br/>
+           <input type="submit" value="submit" ng-change="button.count = button.count + 1"/><br/>
+           <input type="image" src="" ng-change="button.count = button.count + 1"/><br/>
+           <a href=""   ng:click="button.count = button.count + 1">action</a>
+          </form>
+        </td>
+        <td>button={{button}}</td>
+      </tr>
+      <tr><th colspan="3">Repeaters</th></tr>
+      <tr>
+        <td>ng-repeat</td>
+        <td>
+          <ul>
+            <li ng-repeat="name in ['misko', 'adam']">{{name}}</li>
+          </ul>
+        </td>
+        <td></td>
+      </tr>
+    </table>
+  </body>
+ </html>

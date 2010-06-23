@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="test/" kind="src" path="src"/>
+	<classpathentry kind="src" path="src/test"/>
+	<classpathentry excluding="test/" kind="src" path="test"/>
+	<classpathentry kind="src" path="test/test"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.baseBrowserLibrary"/>
+</classpath>

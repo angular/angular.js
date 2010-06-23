@@ -1,0 +1,11 @@
+
+  var $scenarioRunner = new angular.scenario.Runner(window, jQuery);
+
+  window.onload = function(){
+    try {
+      if (previousOnLoad) previousOnLoad();
+    } catch(e) {}
+    $scenarioRunner.run(jQuery(window.document.body));
+  };
+
+})(window, document, window.onload);
