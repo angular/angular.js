@@ -75,22 +75,51 @@ describe('Runner', function(){
       it('should execute afterEach after every it', function() {
         Describe('describe name', function(){
           AfterEach(logger('after;'));
-          It('should text', logger('body;'));
+          It('should text1', logger('body1;'));
           It('should text2', logger('body2;'));
         });
-        expect(log).toEqual('body;after;body2;after;');
+        expect(log).toEqual('body1;after;body2;after;');
       });
 
       it('should always execute afterEach after every it', function() {
         Describe('describe name', function(){
           AfterEach(logger('after;'));
           It('should text', function() {
-            log = 'body;';
+            logger('body1;')();
             throw "MyError";
           });
           It('should text2', logger('body2;'));
         });
-        expect(log).toEqual('body;after;body2;after;');
+        expect(log).toEqual('body1;after;body2;after;');
+      });
+
+      it('should report an error if afterEach fails', function() {
+        var next;
+        Describe('describe name', function(){
+          AfterEach(function() {
+            $scenario.addStep('afterEachLog', logger('after;'));
+            $scenario.addStep('afterEachThrow', function() {
+              throw "AfterError";
+            });
+          });
+          It('should text1', function() {
+            $scenario.addStep('step1', logger('step1;'));
+          });
+          It('should text2', function() {
+            $scenario.addStep('step2', logger('step2;'));
+          });
+        });
+        $scenario.run(body);
+        expect(log).toEqual('step1;after;step2;after;');
+        expect(scenario.$testrun.results).toEqual([
+          { name : 'describe name: it should text1',
+            passed : false,
+            error : 'AfterError',
+            steps : [ 'step1', 'afterEachLog', 'afterEachThrow' ] },
+          { name : 'describe name: it should text2',
+            passed : false,
+            error : 'AfterError',
+            steps : [ 'step2', 'afterEachLog', 'afterEachThrow' ] }]);
       });
     });
   });
