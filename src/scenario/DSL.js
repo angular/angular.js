@@ -1,6 +1,6 @@
 angular.scenario.dsl.browser = {
   navigateTo: function(url){
-    $scenario.addStep('Navigate to: ' + url, function(done){
+    $scenario.addFuture('Navigate to: ' + url, function(done){
       var self = this;
       this.testFrame.load(function(){
         self.testFrame.unbind();
@@ -22,7 +22,7 @@ angular.scenario.dsl.browser = {
 angular.scenario.dsl.input = function(selector) {
   return {
     enter: function(value){
-      $scenario.addStep("Set input text of '" + selector + "' to '" +
+      $scenario.addFuture("Set input text of '" + selector + "' to '" +
         value + "'", function(done){
           var input = this.testDocument.find('input[name=' + selector + ']');
           input.val(value);
@@ -31,7 +31,7 @@ angular.scenario.dsl.input = function(selector) {
       });
     },
     select: function(value){
-      $scenario.addStep("Select radio '" + selector + "' to '" +
+      $scenario.addFuture("Select radio '" + selector + "' to '" +
               value + "'", function(done){
         var input = this.testDocument.
           find(':radio[name$=@' + selector + '][value=' + value + ']');
@@ -49,7 +49,7 @@ angular.scenario.dsl.expect = {
     return {
       count: {
         toEqual: function(number) {
-          $scenario.addStep("Expect that there are " + number + " items in Repeater with selector '" + selector + "'", function(done) {
+          $scenario.addFuture("Expect that there are " + number + " items in Repeater with selector '" + selector + "'", function(done) {
             var items = this.testDocument.find(selector);
             if (items.length != number) {
               this.result.fail("Expected " + number + " but was " + items.length);

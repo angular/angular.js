@@ -1,8 +1,8 @@
 function Future(name, behavior) {
-  this.value = undefined;
   this.name = name;
   this.behavior = behavior;
   this.fulfilled = false;
+  this.value = undefined;
 }
 
 Future.prototype = {
@@ -11,25 +11,6 @@ Future.prototype = {
     this.value = value;
   }
 };
-
-function future(name, behavior) {
-  return new Future(name, behavior);
-};
-
-function repeater(selector) {
-  var repeaterFuture = future('repeater ' + selector, function(done) {
-    done($(selector));
-  });
-
-  repeaterFuture.count =  function(){
-    return future(repeaterFuture.name + ' count', function(done) {
-      done(repeaterFuture.value.size());
-    });
-  };
-
-  return repeaterFuture;
-}
-
 function Matcher(future, logger) {
   var self = this;
   this.logger = logger;
@@ -52,6 +33,28 @@ Matcher.addMatcher = function(name, matcher){
 
 Matcher.addMatcher('toEqual', function(a,b){ return a == b; });
 
-function expect(future) {
+/*
+
+function future(name, behavior) {
+  return new Future(name, behavior);
+};
+
+function repeater(selector) {
+  var repeaterFuture = future('repeater ' + selector, function(done) {
+    done($(selector));
+  });
+
+  repeaterFuture.count =  function(){
+    return future(repeaterFuture.name + ' count', function(done) {
+      done(repeaterFuture.value.size());
+    });
+  };
+
+  return repeaterFuture;
+}
+
+function expectX(future) {
   return new Matcher(future, window.alert);
 }
+
+ */
