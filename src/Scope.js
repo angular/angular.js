@@ -46,6 +46,7 @@ function setter(instance, path, value){
 ///////////////////////////////////
 
 var getterFnCache = {};
+var JS_KEYWORDS = ["this", "throw", "for", "foreach", "var", "const"];
 function getterFn(path){
   var fn = getterFnCache[path];
   if (fn) return fn;
@@ -53,7 +54,7 @@ function getterFn(path){
   var code = 'function (self){\n';
   code += '  var last, fn, type;\n';
   foreach(path.split('.'), function(key) {
-    key = (key == 'this')  ? '["this"]' : '.' + key;
+    key = (includes(JS_KEYWORDS, key)) ? '["' + key + '"]' : '.' + key;
     code += '  if(!self) return self;\n';
     code += '  last = self;\n';
     code += '  self = self' + key + ';\n';
