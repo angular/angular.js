@@ -1,7 +1,7 @@
 BinderTest.prototype.testExpandEntityTagWithName = function(){
   var c = this.compile('<div ng-entity="friend=Person"/>');
   assertEquals(
-      '<div ng-entity="friend=Person" ng-watch="$anchor.friend:{friend=Person.load($anchor.friend);friend.$$anchor=\"friend\";};"></div>',
+      '<div ng-entity="friend=Person" ng:watch="$anchor.friend:{friend=Person.load($anchor.friend);friend.$$anchor=\"friend\";};"></div>',
       sortedHtml(c.node));
   assertEquals("Person", c.scope.$get("friend.$entity"));
   assertEquals("friend", c.scope.$get("friend.$$anchor"));
@@ -10,7 +10,7 @@ BinderTest.prototype.testExpandEntityTagWithName = function(){
 BinderTest.prototype.testExpandSubmitButtonToAction = function(){
   var html = this.compileToHtml('<input type="submit" value="Save">');
   assertTrue(html, html.indexOf('ng-action="$save()"') > 0 );
-  assertTrue(html, html.indexOf('ng-bind-attr="{"disabled":"{{$invalidWidgets}}"}"') > 0 );
+  assertTrue(html, html.indexOf('ng:bind-attr="{"disabled":"{{$invalidWidgets}}"}"') > 0 );
 };
 
 BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
@@ -29,7 +29,7 @@ BinderTest.prototype.testReplaceFileUploadWithSwf = function(){
 
 BinderTest.prototype.testExpandEntityTagWithDefaults = function(){
   assertEquals(
-      '<div ng-entity="Person:{a:\"a\"}" ng-watch=""></div>',
+      '<div ng-entity="Person:{a:\"a\"}" ng:watch=""></div>',
       this.compileToHtml('<div ng-entity=\'Person:{a:"a"}\'/>'));
 };
 

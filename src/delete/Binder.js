@@ -112,24 +112,24 @@ Binder.prototype = {
   },
 
   executeInit: function() {
-    this.docFindWithSelf("[ng-init]").each(function() {
+    this.docFindWithSelf("[ng:init]").each(function() {
       var jThis = jQuery(this);
       var scope = jThis.scope();
       try {
-        scope.eval(jThis.attr('ng-init'));
+        scope.eval(jThis.attr('ng:init'));
       } catch (e) {
-        alert("EVAL ERROR:\n" + jThis.attr('ng-init') + '\n' + toJson(e, true));
+        alert("EVAL ERROR:\n" + jThis.attr('ng:init') + '\n' + toJson(e, true));
       }
     });
   },
 
   entity: function (scope) {
     var self = this;
-    this.docFindWithSelf("[ng-entity]").attr("ng-watch", function() {
+    this.docFindWithSelf("[ng-entity]").attr("ng:watch", function() {
       try {
         var jNode = jQuery(this);
         var decl = scope.entity(jNode.attr("ng-entity"), self.datastore);
-        return decl + (jNode.attr('ng-watch') || "");
+        return decl + (jNode.attr('ng:watch') || "");
       } catch (e) {
         log(e);
         alert(e);
@@ -142,7 +142,7 @@ Binder.prototype = {
     if (this.config['autoSubmit']) {
       var submits = this.docFindWithSelf(":submit").not("[ng-action]");
       submits.attr("ng-action", "$save()");
-      submits.not(":disabled").not("ng-bind-attr").attr("ng-bind-attr", '{disabled:"{{$invalidWidgets}}"}');
+      submits.not(":disabled").not("ng:bind-attr").attr("ng:bind-attr", '{disabled:"{{$invalidWidgets}}"}');
     }
     this.precompile(this.doc)(this.doc, jNode.scope(), "");
     this.docFindWithSelf("a[ng-action]").live('click', function (event) {
@@ -168,9 +168,9 @@ Binder.prototype = {
     if (parts.length > 1 || Binder.binding(parts[0])) {
       var parent = node.parentNode;
       if (isLeafNode(parent)) {
-        parent.setAttribute('ng-bind-template', node.nodeValue);
+        parent.setAttribute('ng:bind-template', node.nodeValue);
         factories.push({path:path, fn:function(node, scope, prefix) {
-          return new BindUpdater(node, node.getAttribute('ng-bind-template'));
+          return new BindUpdater(node, node.getAttribute('ng:bind-template'));
         }});
       } else {
         for (var i = 0; i < parts.length; i++) {
@@ -180,7 +180,7 @@ Binder.prototype = {
           if (binding) {
             newNode = document.createElement("span");
             var jNewNode = jQuery(newNode);
-            jNewNode.attr("ng-bind", binding);
+            jNewNode.attr("ng:bind", binding);
             if (i === 0) {
               factories.push({path:path.concat(offset + i), fn:this.ng_bind});
             }
@@ -228,13 +228,13 @@ Binder.prototype = {
     }
 
     if (!node.getAttribute) return;
-    var nonBindable = node.getAttribute('ng-non-bindable');
+    var nonBindable = node.getAttribute('ng:non-bindable');
     if (nonBindable || nonBindable === "") return;
 
     var attributes = node.attributes;
     if (attributes) {
-      var bindings = node.getAttribute('ng-bind-attr');
-      node.removeAttribute('ng-bind-attr');
+      var bindings = node.getAttribute('ng:bind-attr');
+      node.removeAttribute('ng:bind-attr');
       bindings = bindings ? fromJson(bindings) : {};
       var attrLen = attributes.length;
       for (var i = 0; i < attrLen; i++) {
@@ -249,23 +249,23 @@ Binder.prototype = {
       }
       var json = toJson(bindings);
       if (json.length > 2) {
-        node.setAttribute("ng-bind-attr", json);
+        node.setAttribute("ng:bind-attr", json);
       }
     }
 
     if (!node.getAttribute) log(node);
-    var repeaterExpression = node.getAttribute('ng-repeat');
+    var repeaterExpression = node.getAttribute('ng:repeat');
     if (repeaterExpression) {
-      node.removeAttribute('ng-repeat');
+      node.removeAttribute('ng:repeat');
       var precompiled = this.precompile(node);
-      var view = document.createComment("ng-repeat: " + repeaterExpression);
+      var view = document.createComment("ng:repeat: " + repeaterExpression);
       var parentNode = node.parentNode;
       parentNode.insertBefore(view, node);
       parentNode.removeChild(node);
       function template(childScope, prefix, i) {
         var clone = jQuery(node).clone();
         clone.css('display', '');
-        clone.attr('ng-repeat-index', "" + i);
+        clone.attr('ng:repeat-index', "" + i);
         clone.data('scope', childScope);
         precompiled(clone[0], childScope, prefix + i + ":");
         return clone;
@@ -276,16 +276,16 @@ Binder.prototype = {
       return;
     }
 
-    if (node.getAttribute('ng-eval')) factories.push({path:path, fn:this.ng_eval});
-    if (node.getAttribute('ng-bind')) factories.push({path:path, fn:this.ng_bind});
-    if (node.getAttribute('ng-bind-attr')) factories.push({path:path, fn:this.ng_bind_attr});
-    if (node.getAttribute('ng-hide')) factories.push({path:path, fn:this.ng_hide});
-    if (node.getAttribute('ng-show')) factories.push({path:path, fn:this.ng_show});
-    if (node.getAttribute('ng-class')) factories.push({path:path, fn:this.ng_class});
-    if (node.getAttribute('ng-class-odd')) factories.push({path:path, fn:this.ng_class_odd});
-    if (node.getAttribute('ng-class-even')) factories.push({path:path, fn:this.ng_class_even});
-    if (node.getAttribute('ng-style')) factories.push({path:path, fn:this.ng_style});
-    if (node.getAttribute('ng-watch')) factories.push({path:path, fn:this.ng_watch});
+    if (node.getAttribute('ng:eval')) factories.push({path:path, fn:this.ng_eval});
+    if (node.getAttribute('ng:bind')) factories.push({path:path, fn:this.ng_bind});
+    if (node.getAttribute('ng:bind-attr')) factories.push({path:path, fn:this.ng_bind_attr});
+    if (node.getAttribute('ng:hide')) factories.push({path:path, fn:this.ng_hide});
+    if (node.getAttribute('ng:show')) factories.push({path:path, fn:this.ng_show});
+    if (node.getAttribute('ng:class')) factories.push({path:path, fn:this.ng_class});
+    if (node.getAttribute('ng:class-odd')) factories.push({path:path, fn:this.ng_class_odd});
+    if (node.getAttribute('ng:class-even')) factories.push({path:path, fn:this.ng_class_even});
+    if (node.getAttribute('ng:style')) factories.push({path:path, fn:this.ng_style});
+    if (node.getAttribute('ng:watch')) factories.push({path:path, fn:this.ng_watch});
     var nodeName = node.nodeName;
     if ((nodeName == 'INPUT' ) ||
         nodeName == 'TEXTAREA' ||
@@ -301,7 +301,7 @@ Binder.prototype = {
       var html = jQuery('<select/>').append(jQuery(node).clone()).html();
       if (!html.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
         if (Binder.hasBinding(node.text)) {
-          jQuery(node).attr('ng-bind-attr', angular.toJson({'value':node.text}));
+          jQuery(node).attr('ng:bind-attr', angular.toJson({'value':node.text}));
         } else {
           node.value = node.text;
         }
@@ -315,42 +315,42 @@ Binder.prototype = {
   },
 
   ng_eval: function(node) {
-    return new EvalUpdater(node, node.getAttribute('ng-eval'));
+    return new EvalUpdater(node, node.getAttribute('ng:eval'));
   },
 
   ng_bind: function(node) {
-    return new BindUpdater(node, "{{" + node.getAttribute('ng-bind') + "}}");
+    return new BindUpdater(node, "{{" + node.getAttribute('ng:bind') + "}}");
   },
 
   ng_bind_attr: function(node) {
-    return new BindAttrUpdater(node, fromJson(node.getAttribute('ng-bind-attr')));
+    return new BindAttrUpdater(node, fromJson(node.getAttribute('ng:bind-attr')));
   },
 
   ng_hide: function(node) {
-    return new HideUpdater(node, node.getAttribute('ng-hide'));
+    return new HideUpdater(node, node.getAttribute('ng:hide'));
   },
 
   ng_show: function(node) {
-    return new ShowUpdater(node, node.getAttribute('ng-show'));
+    return new ShowUpdater(node, node.getAttribute('ng:show'));
   },
 
   ng_class: function(node) {
-    return new ClassUpdater(node, node.getAttribute('ng-class'));
+    return new ClassUpdater(node, node.getAttribute('ng:class'));
   },
 
   ng_class_even: function(node) {
-    return new ClassEvenUpdater(node, node.getAttribute('ng-class-even'));
+    return new ClassEvenUpdater(node, node.getAttribute('ng:class-even'));
   },
 
   ng_class_odd: function(node) {
-    return new ClassOddUpdater(node, node.getAttribute('ng-class-odd'));
+    return new ClassOddUpdater(node, node.getAttribute('ng:class-odd'));
   },
 
   ng_style: function(node) {
-    return new StyleUpdater(node, node.getAttribute('ng-style'));
+    return new StyleUpdater(node, node.getAttribute('ng:style'));
   },
 
   ng_watch: function(node, scope) {
-    scope.watch(node.getAttribute('ng-watch'));
+    scope.watch(node.getAttribute('ng:watch'));
   }
 };

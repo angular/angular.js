@@ -9,14 +9,14 @@ function ControlBar(document, serverUrl, database) {
 ControlBar.HTML =
   '<div>' +
     '<div class="ui-widget-overlay"></div>' +
-    '<div id="ng-login" ng-non-bindable="true">' +
+    '<div id="ng-login" ng:non-bindable="true">' +
       '<div class="ng-login-container"></div>' +
     '</div>' +
   '</div>';
 
 
 ControlBar.FORBIDEN =
-  '<div ng-non-bindable="true" title="Permission Error:">' +
+  '<div ng:non-bindable="true" title="Permission Error:">' +
     'Sorry, you do not have permission for this!'+
   '</div>';
 

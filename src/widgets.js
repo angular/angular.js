@@ -196,7 +196,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
         action = element.attr('ng-change') || '',
         lastValue;
     initFn.call(scope, model, view, element);
-    this.$eval(element.attr('ng-init')||'');
+    this.$eval(element.attr('ng:init')||'');
     // Don't register a handler if we are a button (noopAccessor) and there is no action
     if (action || modelAccessor !== noopAccessor) {
       element.bind(events, function(){
@@ -236,11 +236,11 @@ angularWidget('NG:INCLUDE', function(element){
   var compiler = this,
       srcExp = element.attr("src"),
       scopeExp = element.attr("scope") || '';
-  if (element[0]['ng-compiled']) {
+  if (element[0]['ng:compiled']) {
     this.descend(true);
     this.directives(true);
   } else {
-    element[0]['ng-compiled'] = true;
+    element[0]['ng:compiled'] = true;
     return function(element){
       var scope = this, childScope;
       var changeCounter = 0;
@@ -276,7 +276,7 @@ var ngSwitch = angularWidget('NG:SWITCH', function (element){
       cases = [];
   if (!usingFn) throw "Using expression '" + usingExpr + "' unknown.";
   eachNode(element, function(caseElement){
-    var when = caseElement.attr('ng-switch-when');
+    var when = caseElement.attr('ng:switch-when');
     if (when) {
       cases.push({
         when: function(scope, value){

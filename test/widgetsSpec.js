@@ -22,7 +22,7 @@ describe("widget", function(){
 
     describe("text", function(){
       it('should input-text auto init and handle keyup/change events', function(){
-        compile('<input type="Text" name="name" value="Misko" ng-change="count = count + 1" ng-init="count=0"/>');
+        compile('<input type="Text" name="name" value="Misko" ng-change="count = count + 1" ng:init="count=0"/>');
         expect(scope.$get('name')).toEqual("Misko");
         expect(scope.$get('count')).toEqual(0);
 
@@ -382,7 +382,7 @@ describe("widget", function(){
 
   describe('ng:switch', function(){
     it('should switch on value change', function(){
-      compile('<ng:switch on="select"><div ng-switch-when="1">first:{{name}}</div><div ng-switch-when="2">second:{{name}}</div></ng:switch>');
+      compile('<ng:switch on="select"><div ng:switch-when="1">first:{{name}}</div><div ng:switch-when="2">second:{{name}}</div></ng:switch>');
       expect(element.html()).toEqual('');
       scope.select = 1;
       scope.$eval();
@@ -399,7 +399,7 @@ describe("widget", function(){
     });
 
     it("should match urls", function(){
-      var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng-switch-when="/Book/:name">{{params.name}}</div></ng:switch>');
+      var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng:switch-when="/Book/:name">{{params.name}}</div></ng:switch>');
       scope.url = '/Book/Moby';
       scope.$init();
       expect(scope.$element.text()).toEqual('Moby');
@@ -412,7 +412,7 @@ describe("widget", function(){
     });
 
     it('should call init on switch', function(){
-      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng-switch-when="a">{{name}}</div></ng:switch>');
+      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>');
       var cleared = false;
       scope.url = 'a';
       scope.$invalidWidgets = {clearOrphans: function(){

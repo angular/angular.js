@@ -111,7 +111,7 @@ RepeaterUpdaterTest.prototype.testShouldThrowInformativeSyntaxError= function(){
   try {
     var repeater = new RepeaterUpdater(null, "a=b");
   } catch (e) {
-    assertEquals("Expected ng-repeat in form of 'item in collection' but got 'a=b'.", e);
+    assertEquals("Expected ng:repeat in form of 'item in collection' but got 'a=b'.", e);
   }
 };
 

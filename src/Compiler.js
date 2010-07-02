@@ -121,7 +121,7 @@ Compiler.prototype = {
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
           directives: function(value){ if(isDefined(value)) directives = value; return directives;}
         };
-    priority = element.attr('ng-eval-order') || priority || 0;
+    priority = element.attr('ng:eval-order') || priority || 0;
     if (isString(priority)) {
       priority = PRIORITY[uppercase(priority)] || 0;
     }
@@ -200,7 +200,7 @@ function eachAttribute(element, fn){
   var i, attrs = element[0].attributes || [], chld, attr, name, value, attrValue = {};
   for (i = 0; i < attrs.length; i++) {
     attr = attrs[i];
-    name = attr.name.replace(':', '-');
+    name = attr.name;
     value = attr.value;
     if (msie && name == 'href') {
       value = decodeURIComponent(element[0].getAttribute(name, 2));

@@ -99,7 +99,7 @@ angularCallbacks['flashEvent'] = function(id, event, args) {
 
 FileController.template = function(id) {
   return jQuery('<span class="ng-upload-widget">' +
-      '<input type="checkbox" ng-non-bindable="true"/>' +
+      '<input type="checkbox" ng:non-bindable="true"/>' +
       '<object id="' + id + '" />' +
       '<a></a>' +
       '<span/>' +
@@ -640,7 +640,7 @@ function RepeaterUpdater(view, repeaterExpression, template, prefix) {
   this.children = [];
   var match = repeaterExpression.match(/^\s*(.+)\s+in\s+(.*)\s*$/);
   if (! match) {
-    throw "Expected ng-repeat in form of 'item in collection' but got '" +
+    throw "Expected ng:repeat in form of 'item in collection' but got '" +
       repeaterExpression + "'.";
   }
   var keyValue = match[1];
