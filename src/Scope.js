@@ -72,8 +72,8 @@ function getterFn(path){
     }
   });
   code += '  return self;\n}';
-  fn = eval('(' + code + ')');
-  fn.toString = function(){ return code; };
+  fn = eval('fn = ' + code);
+  fn["toString"] = function(){ return code; };
 
   return getterFnCache[path] = fn;
 }
