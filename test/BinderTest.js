@@ -396,14 +396,12 @@ BinderTest.prototype.testBindClass = function() {
   c.scope.$set('class', 'testClass');
   c.scope.$eval();
 
-  assertEquals(sortedHtml(c.node),
-      '<div class="testClass" ng:class="class"></div>');
+  assertEquals('<div class="testClass" ng:class="class"></div>', sortedHtml(c.node));
 
   c.scope.$set('class', ['a', 'b']);
   c.scope.$eval();
 
-  assertEquals(sortedHtml(c.node),
-      '<div class="a b" ng:class="class"></div>');
+  assertEquals('<div class="a b" ng:class="class"></div>', sortedHtml(c.node));
 };
 
 BinderTest.prototype.testBindClassEvenOdd = function() {
