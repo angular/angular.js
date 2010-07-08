@@ -36,6 +36,7 @@ task :compile_scenario do
       lib/jquery/jquery-1.4.2.js \
       src/scenario/angular.prefix \
       src/Angular.js \
+      src/jqLite.js \
       src/JSON.js \
       src/Scope.js \
       src/Parser.js \

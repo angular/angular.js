@@ -35,9 +35,8 @@ angular.scenario.dsl.input = function(selector) {
               value + "'", function(done){
         var input = this.testDocument.
           find(':radio[name$=@' + selector + '][value=' + value + ']');
-        var event = this.testWindow.document.createEvent('MouseEvent');
-        event.initMouseEvent('click', true, true, this.testWindow, 0,0,0,0,0, false, false, false, false, 0, null);
-        input[0].dispatchEvent(event);
+        jqLiteWrap(input[0]).trigger('click');
+        input[0].checked = true;
         done();
       });
     }
