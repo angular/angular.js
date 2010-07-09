@@ -93,15 +93,17 @@ describe("directives", function(){
   it('should ng:repeat over array', function(){
     var scope = compile('<ul><li ng:repeat="item in items" ng:init="suffix = \';\'" ng:bind="item + suffix"></li></ul>');
 
-    scope.$set('items', ['misko', 'shyam']);
+    Array.prototype.extraProperty = "should be ignored";
+    scope.items = ['misko', 'shyam'];
     scope.$eval();
     expect(element.text()).toEqual('misko;shyam;');
+    delete Array.prototype.extraProperty;
 
-    scope.$set('items', ['adam', 'kai', 'brad']);
+    scope.items = ['adam', 'kai', 'brad'];
     scope.$eval();
     expect(element.text()).toEqual('adam;kai;brad;');
 
-    scope.$set('items', ['brad']);
+    scope.items = ['brad'];
     scope.$eval();
     expect(element.text()).toEqual('brad;');
   });

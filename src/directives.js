@@ -162,8 +162,9 @@ angularWidget("@ng:repeat", function(expression, element){
     var children = [], currentScope = this;
     this.$onEval(function(){
       var index = 0, childCount = children.length, childScope, lastElement = reference,
-          collection = this.$tryEval(rhs, reference);
+          collection = this.$tryEval(rhs, reference), is_array = isArray(collection);
       for ( var key in collection) {
+        if (is_array && !collection.hasOwnProperty(key)) break;
         if (index < childCount) {
           // reuse existing child
           childScope = children[index];
