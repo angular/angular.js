@@ -22,7 +22,7 @@ describe("widget", function(){
 
     describe("text", function(){
       it('should input-text auto init and handle keyup/change events', function(){
-        compile('<input type="Text" name="name" value="Misko" ng-change="count = count + 1" ng:init="count=0"/>');
+        compile('<input type="Text" name="name" value="Misko" ng:change="count = count + 1" ng:init="count=0"/>');
         expect(scope.$get('name')).toEqual("Misko");
         expect(scope.$get('count')).toEqual(0);
 
@@ -125,7 +125,7 @@ describe("widget", function(){
         });
 
         it('should support type="checkbox"', function(){
-          compile('<input type="checkBox" name="checkbox" checked ng-change="action = true"/>');
+          compile('<input type="checkBox" name="checkbox" checked ng:change="action = true"/>');
           expect(scope.checkbox).toEqual(true);
           click(element);
           expect(scope.checkbox).toEqual(false);
@@ -273,14 +273,14 @@ describe("widget", function(){
       expect(scope.$get('name')).toEqual('Kai');
     });
 
-    it('should call ng-change on button click', function(){
-      compile('<input type="button" value="Click Me" ng-change="clicked = true"/>');
+    it('should call ng:change on button click', function(){
+      compile('<input type="button" value="Click Me" ng:change="clicked = true"/>');
       click(element);
       expect(scope.$get('clicked')).toEqual(true);
     });
 
     it('should support button alias', function(){
-      compile('<button ng-change="clicked = true">Click Me</button>');
+      compile('<button ng:change="clicked = true">Click Me</button>');
       click(element);
       expect(scope.$get('clicked')).toEqual(true);
     });
@@ -289,9 +289,9 @@ describe("widget", function(){
 
       it('should support type="radio"', function(){
         compile('<div>' +
-            '<input type="radio" name="chose" value="A" ng-change="clicked = 1"/>' +
-            '<input type="radio" name="chose" value="B" checked ng-change="clicked = 2"/>' +
-            '<input type="radio" name="chose" value="C" ng-change="clicked = 3"/>' +
+            '<input type="radio" name="chose" value="A" ng:change="clicked = 1"/>' +
+            '<input type="radio" name="chose" value="B" checked ng:change="clicked = 2"/>' +
+            '<input type="radio" name="chose" value="C" ng:change="clicked = 3"/>' +
         '</div>');
         var a = element[0].childNodes[0];
         var b = element[0].childNodes[1];
@@ -373,8 +373,8 @@ describe("widget", function(){
       expect(element.hasClass('ng-exception')).toBeTruthy();
     });
 
-    it('should report error on ng-change exception', function(){
-      compile('<button ng-change="a-2=x">click</button>');
+    it('should report error on ng:change exception', function(){
+      compile('<button ng:change="a-2=x">click</button>');
       click(element);
       expect(element.hasClass('ng-exception')).toBeTruthy();
     });

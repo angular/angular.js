@@ -193,7 +193,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng-change') || '',
+        action = element.attr('ng:change') || '',
         lastValue;
     initFn.call(scope, model, view, element);
     this.$eval(element.attr('ng:init')||'');
