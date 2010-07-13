@@ -1,7 +1,7 @@
 WidgetTest = TestCase('WidgetTest');
 
 WidgetTest.prototype.testRequired = function () {
-  var view = $('<input name="a" ng-required>');
+  var view = $('<input name="a" ng:required>');
   var scope = new Scope({$invalidWidgets:[]});
   var cntl = new TextController(view[0], 'a', angularFormatter.noop);
   cntl.updateView(scope);
@@ -14,7 +14,7 @@ WidgetTest.prototype.testRequired = function () {
 };
 
 WidgetTest.prototype.testValidator = function () {
-  var view = $('<input name="a" ng-validate="testValidator:\'ABC\'">');
+  var view = $('<input name="a" ng:validate="testValidator:\'ABC\'">');
   var scope = new Scope({$invalidWidgets:[]});
   var cntl = new TextController(view[0], 'a', angularFormatter.noop);
   angular.validator.testValidator = function(value, expect){
@@ -42,7 +42,7 @@ WidgetTest.prototype.testValidator = function () {
 };
 
 WidgetTest.prototype.testRequiredValidator = function () {
-  var view = $('<input name="a" ng-required ng-validate="testValidator:\'ABC\'">');
+  var view = $('<input name="a" ng:required ng:validate="testValidator:\'ABC\'">');
   var scope = new Scope({$invalidWidgets:[]});
   var cntl = new TextController(view[0], 'a', angularFormatter.noop);
   angular.validator.testValidator = function(value, expect){

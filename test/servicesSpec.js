@@ -136,7 +136,7 @@ describe("service", function(){
 
   describe("$invalidWidgets", function(){
     it("should count number of invalid widgets", function(){
-      var scope = compile('<input name="price" ng-required ng-validate="number"></input>').$init();
+      var scope = compile('<input name="price" ng:required ng:validate="number"></input>').$init();
       expect(scope.$invalidWidgets.length).toEqual(1);
       scope.price = 123;
       scope.$eval();

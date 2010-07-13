@@ -15,7 +15,7 @@ function modelAccessor(scope, element) {
 
 function modelFormattedAccessor(scope, element) {
   var accessor = modelAccessor(scope, element),
-      formatterName = element.attr('ng-format') || NOOP,
+      formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName);
   if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
   return {
@@ -33,10 +33,10 @@ function compileValidator(expr) {
 }
 
 function valueAccessor(scope, element) {
-  var validatorName = element.attr('ng-validate') || NOOP,
+  var validatorName = element.attr('ng:validate') || NOOP,
       validator = compileValidator(validatorName),
-      requiredExpr = element.attr('ng-required'),
-      formatterName = element.attr('ng-format') || NOOP,
+      requiredExpr = element.attr('ng:required'),
+      formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName),
       format, parse, lastError, required;
       invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};

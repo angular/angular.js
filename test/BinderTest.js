@@ -42,7 +42,7 @@ BinderTest.prototype.testChangingRadioUpdatesModel = function(){
 };
 
 BinderTest.prototype.testChangingCheckboxUpdatesModel = function(){
-  var form = this.compile('<input type="checkbox" name="model.price" value="true" checked ng-format="boolean"/>');
+  var form = this.compile('<input type="checkbox" name="model.price" value="true" checked ng:format="boolean"/>');
   assertEquals(true, form.scope.model.price);
 };
 
@@ -508,8 +508,8 @@ BinderTest.prototype.testFillInOptionValueWhenMissing = function() {
 };
 
 BinderTest.prototype.testValidateForm = function() {
-  var c = this.compile('<div><input name="name" ng-required>' +
-          '<div ng:repeat="item in items"><input name="item.name" ng-required/></div></div>');
+  var c = this.compile('<div><input name="name" ng:required>' +
+          '<div ng:repeat="item in items"><input name="item.name" ng:required/></div></div>');
   var items = [{}, {}];
   c.scope.$set("items", items);
   c.scope.$eval();
@@ -537,7 +537,7 @@ BinderTest.prototype.testValidateForm = function() {
 };
 
 BinderTest.prototype.testValidateOnlyVisibleItems = function(){
-  var c = this.compile('<div><input name="name" ng-required><input ng:show="show" name="name" ng-required></div>');
+  var c = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>');
   jqLite(document.body).append(c.node);
   c.scope.$set("show", true);
   c.scope.$eval();
@@ -660,7 +660,7 @@ BinderTest.prototype.XtestItShouldRenderMultiRootHtmlInBinding = function() {
 };
 
 BinderTest.prototype.testItShouldUseFormaterForText = function() {
-  var x = this.compile('<input name="a" ng-format="list" value="a,b">');
+  var x = this.compile('<input name="a" ng:format="list" value="a,b">');
   x.scope.$eval();
   assertEquals(['a','b'], x.scope.$get('a'));
   var input = x.node;

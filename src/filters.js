@@ -2,7 +2,7 @@ var angularFilterGoogleChartApi;
 
 foreach({
   'currency': function(amount){
-    this.$element.toggleClass('ng-format-negative', amount < 0);
+    this.$element.toggleClass('ng:format-negative', amount < 0);
     return '$' + angularFilter['number'].apply(this, [amount, 2]);
   },
 

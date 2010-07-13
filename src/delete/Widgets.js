@@ -19,7 +19,7 @@ WidgetFactory.prototype = {
     if (exp) exp = exp.split(':').pop();
     var event = "change";
     var bubbleEvent = true;
-    var formatter = angularFormatter[input.attr('ng-format')] || angularFormatter['noop'];
+    var formatter = angularFormatter[input.attr('ng:format')] || angularFormatter['noop'];
     if (type == 'button' || type == 'submit' || type == 'reset' || type == 'image') {
       controller = new ButtonController(input[0], exp, formatter);
       event = "click";
@@ -191,8 +191,8 @@ function TextController(view, exp, formatter) {
   this.view = view;
   this.formatter = formatter;
   this.exp = exp;
-  this.validator = view.getAttribute('ng-validate');
-  this.required = typeof view.attributes['ng-required'] != "undefined";
+  this.validator = view.getAttribute('ng:validate');
+  this.required = typeof view.attributes['ng:required'] != "undefined";
   this.lastErrorText = null;
   this.lastValue = undefined;
   this.initialValue = this.formatter['parse'](view.value);

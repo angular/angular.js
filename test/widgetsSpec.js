@@ -41,10 +41,10 @@ describe("widget", function(){
         expect(scope.$get('count')).toEqual(2);
       });
 
-      describe("ng-format", function(){
+      describe("ng:format", function(){
 
         it("should format text", function(){
-          compile('<input type="Text" name="list" value="a,b,c" ng-format="list"/>');
+          compile('<input type="Text" name="list" value="a,b,c" ng:format="list"/>');
           expect(scope.$get('list')).toEqual(['a', 'b', 'c']);
 
           scope.$set('list', ['x', 'y', 'z']);
@@ -57,7 +57,7 @@ describe("widget", function(){
         });
 
         it("should come up blank if null", function(){
-          compile('<input type="text" name="age" ng-format="number"/>', function(){
+          compile('<input type="text" name="age" ng:format="number"/>', function(){
             scope.age = null;
           });
           expect(scope.age).toBeNull();
@@ -65,7 +65,7 @@ describe("widget", function(){
         });
 
         it("should show incorect text while number does not parse", function(){
-          compile('<input type="text" name="age" ng-format="number"/>');
+          compile('<input type="text" name="age" ng:format="number"/>');
           scope.age = 123;
           scope.$eval();
           scope.$element.val('123X');
@@ -76,14 +76,14 @@ describe("widget", function(){
         });
 
         it("should clober incorect text if model changes", function(){
-          compile('<input type="text" name="age" ng-format="number" value="123X"/>');
+          compile('<input type="text" name="age" ng:format="number" value="123X"/>');
           scope.age = 456;
           scope.$eval();
           expect(scope.$element.val()).toEqual('456');
         });
 
         it("should not clober text if model changes doe to itself", function(){
-          compile('<input type="text" name="list" ng-format="list" value="a"/>');
+          compile('<input type="text" name="list" ng:format="list" value="a"/>');
 
           scope.$element.val('a ');
           scope.$element.trigger('change');
@@ -107,7 +107,7 @@ describe("widget", function(){
         });
 
         it("should come up blank when no value specifiend", function(){
-          compile('<input type="text" name="age" ng-format="number"/>');
+          compile('<input type="text" name="age" ng:format="number"/>');
           scope.$eval();
           expect(scope.$element.val()).toEqual('');
           expect(scope.age).toEqual(null);
@@ -134,7 +134,7 @@ describe("widget", function(){
           expect(scope.checkbox).toEqual(true);
         });
 
-        it("should use ng-format", function(){
+        it("should use ng:format", function(){
           angularFormatter('testFormat', {
             parse: function(value){
               return value ? "Worked" : "Failed";
@@ -146,7 +146,7 @@ describe("widget", function(){
             }
 
           });
-          compile('<input type="checkbox" name="state" ng-format="testFormat" checked/>');
+          compile('<input type="checkbox" name="state" ng:format="testFormat" checked/>');
           expect(scope.state).toEqual("Worked");
           expect(scope.$element[0].checked).toEqual(true);
 
@@ -161,9 +161,9 @@ describe("widget", function(){
         });
       });
 
-      describe("ng-validate", function(){
-        it("should process ng-validate", function(){
-          compile('<input type="text" name="price" value="abc" ng-validate="number"/>');
+      describe("ng:validate", function(){
+        it("should process ng:validate", function(){
+          compile('<input type="text" name="price" value="abc" ng:validate="number"/>');
           expect(element.hasClass('ng-validation-error')).toBeTruthy();
           expect(element.attr('ng-validation-error')).toEqual('Not a number');
 
@@ -179,7 +179,7 @@ describe("widget", function(){
         });
 
         it('should not blow up for validation with bound attributes', function() {
-          compile('<input type="text" name="price" boo="{{abc}}" ng-required/>');
+          compile('<input type="text" name="price" boo="{{abc}}" ng:required/>');
           expect(element.hasClass('ng-validation-error')).toBeTruthy();
           expect(element.attr('ng-validation-error')).toEqual('Required');
 
@@ -192,7 +192,7 @@ describe("widget", function(){
         it("should not call validator if undefined/empty", function(){
           var lastValue = "NOT_CALLED";
           angularValidator.myValidator = function(value){lastValue = value;};
-          compile('<input type="text" name="url" ng-validate="myValidator"/>');
+          compile('<input type="text" name="url" ng:validate="myValidator"/>');
           expect(lastValue).toEqual("NOT_CALLED");
 
           scope.url = 'http://server';
@@ -205,19 +205,19 @@ describe("widget", function(){
     });
 
     it("should ignore disabled widgets", function(){
-      compile('<input type="text" name="price" ng-required disabled/>');
+      compile('<input type="text" name="price" ng:required disabled/>');
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
       expect(element.attr('ng-validation-error')).toBeFalsy();
     });
 
     it("should ignore readonly widgets", function(){
-      compile('<input type="text" name="price" ng-required readonly/>');
+      compile('<input type="text" name="price" ng:required readonly/>');
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
       expect(element.attr('ng-validation-error')).toBeFalsy();
     });
 
-    it("should process ng-required", function(){
-      compile('<input type="text" name="price" ng-required/>');
+    it("should process ng:required", function(){
+      compile('<input type="text" name="price" ng:required/>');
       expect(element.hasClass('ng-validation-error')).toBeTruthy();
       expect(element.attr('ng-validation-error')).toEqual('Required');
 
@@ -232,8 +232,8 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toEqual('Required');
     });
 
-    it('should allow conditions on ng-required', function() {
-      compile('<input type="text" name="price" ng-required="ineedz"/>');
+    it('should allow conditions on ng:required', function() {
+      compile('<input type="text" name="price" ng:required="ineedz"/>');
       scope.$set('ineedz', false);
       scope.$eval();
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
@@ -256,7 +256,7 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toBeFalsy();
     });
 
-    it("should process ng-required2", function() {
+    it("should process ng:required2", function() {
       compile('<textarea name="name">Misko</textarea>');
       expect(scope.$get('name')).toEqual("Misko");
 
