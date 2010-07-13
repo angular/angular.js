@@ -30,7 +30,7 @@ describe("resource", function() {
 
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
-    var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05}, {verifyCache: 'blah'});
+    var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
     var item = LineItem.get({id:456});
     xhr.flush();
     nakedExpect(item).toEqual({id:'abc'});
