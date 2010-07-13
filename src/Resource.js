@@ -1,3 +1,5 @@
+
+
 function Route(template, defaults) {
   this.template = template = template + '#';
   this.defaults = defaults || {};
@@ -86,7 +88,7 @@ ResourceFactory.prototype = {
           throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
         }
 
-        var value = action.isArray ? [] : new Resource(data;)
+        var value = action.isArray ? [] : new Resource(data)
         self.xhr(
           action.method,
           route.url(extend({}, action.params || {}, extractParams(data), params)),
@@ -94,8 +96,7 @@ ResourceFactory.prototype = {
           function(status, response, clear) {
             if (status == 200) {
               if (action.isArray) {
-                if (action.cacheThenRetrieve)
-                  value = [];
+                value.length = 0;
                 foreach(response, function(item){
                   value.push(new Resource(item));
                 });
@@ -107,7 +108,7 @@ ResourceFactory.prototype = {
               throw {status: status, response:response, message: status + ": " + response};
             }
           },
-          action.cacheThenRetrieve
+          action.verifyCache
         );
         return value;
       };
