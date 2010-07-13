@@ -34,7 +34,6 @@ describe("resource", function() {
     var item = LineItem.get({id:456});
     xhr.flush();
     nakedExpect(item).toEqual({id:'abc'});
-
   });
 
   it("should create resource", function(){
@@ -66,8 +65,6 @@ describe("resource", function() {
     nakedExpect(cc).toEqual({id:{key:123}, name:'misko'});
     expect(callback).wasNotCalled();
     xhr.flush();
-    nakedExpect(cc).toEqual({id:{key:123}, name:'rama'});
-    expect(callback).wasCalledWith(cc);
   });
 
   it("should query resource", function(){
@@ -136,6 +133,23 @@ describe("resource", function() {
     var person = Person.get({id:123});
     scope.$browser.xhr.flush();
     expect(person.name).toEqual('misko');
+  });
+
+  it('should return the same object when verifying the cache', function(){
+    var scope = angular.compile('<div></div>');
+    var Person = scope.$resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});
+    scope.$browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"misko"\n}\n]');
+    var person = Person.query({id:123});
+    scope.$browser.xhr.flush();
+    expect(person[0].name).toEqual('misko');
+
+    scope.$browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"rob"\n}\n]');
+    var person2 = Person.query({id:123});
+    expect(person2[0].name).toEqual('misko');
+    var person2Cache = person2;
+    scope.$browser.xhr.flush();
+    expect(person2Cache).toEqual(person2);
+    expect(person2[0].name).toEqual('rob');
   });
 
   describe('failure mode', function(){
