@@ -313,7 +313,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
 
 angularService('$xhr.cache', function($xhr){
   var inflight = {}, self = this;;
-  function cache(method, url, post, callback, cacheThenRetrieve){
+  function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
       callback = post;
       post = null;
@@ -322,7 +322,7 @@ angularService('$xhr.cache', function($xhr){
       var data;
       if (data = cache.data[url]) {
         callback(200, copy(data.value));
-        if (!cacheThenRetrieve)
+        if (!verifyCache)
           return;
       }
 

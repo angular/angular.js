@@ -30,8 +30,7 @@ describe("resource", function() {
 
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
-    xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'ddd'});
-    var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
+    var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05}, {verifyCache: 'blah'});
     var item = LineItem.get({id:456});
     xhr.flush();
     nakedExpect(item).toEqual({id:'abc'});
@@ -134,6 +133,23 @@ describe("resource", function() {
     var person = Person.get({id:123});
     scope.$browser.xhr.flush();
     expect(person.name).toEqual('misko');
+  });
+
+  it('should return the same object when verifying the cache', function(){
+    var scope = angular.compile('<div></div>');
+    var Person = scope.$resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});
+    scope.$browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"misko"\n}\n]');
+    var person = Person.query({id:123});
+    scope.$browser.xhr.flush();
+    expect(person[0].name).toEqual('misko');
+
+    scope.$browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"rob"\n}\n]');
+    var person2 = Person.query({id:123});
+    expect(person2[0].name).toEqual('misko');
+    var person2Cache = person2;
+    scope.$browser.xhr.flush();
+    expect(person2Cache).toEqual(person2);
+    expect(person2[0].name).toEqual('rob');
   });
 
   describe('failure mode', function(){
