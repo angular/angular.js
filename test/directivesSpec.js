@@ -174,6 +174,13 @@ describe("directives", function(){
     expect(element.css('color')).toEqual('red');
   });
 
+  it('should silently ignore undefined ng:style', function() {
+    var scope = compile('<div ng:style="myStyle"></div>');
+    scope.$eval();
+    dump(sortedHtml(element));
+    expect(element.hasClass('ng-exception')).toBeFalsy();
+  });
+
   it('should ng:show', function(){
     var scope = compile('<div ng:hide="hide"></div>');
     scope.$eval();

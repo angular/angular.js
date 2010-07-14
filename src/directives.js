@@ -255,7 +255,7 @@ angularDirective("ng:hide", function(expression, element){
 angularDirective("ng:style", function(expression, element){
   return function(element){
     this.$onEval(function(){
-      element.css(this.$eval(expression));
+      element.css(this.$eval(expression) || {});
     }, element);
   };
 });
