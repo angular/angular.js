@@ -34,7 +34,7 @@ foreach({
     return text;
   },
 
-  'date': function(amount) {
+  'date': function(date) {
   },
 
   'json': function(object) {

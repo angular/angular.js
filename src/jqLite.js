@@ -37,11 +37,18 @@ function jqClearData(element) {
 }
 
 function getStyle(element) {
-  var current = {}, style = element[0].style, value;
-  for (var name in style) {
-    value = style[name];
-    if (1*name != name && name != 'cssText' && value && typeof value == 'string' && value !='false')
-      current[name] = value;
+  var current = {}, style = element[0].style, value, name, i;
+  if (typeof style.length == 'number') {
+    for(i = 0; i < style.length; i++) {
+      name = style[i];
+      current[name] = style[name];
+    }
+  } else {
+    for (name in style) {
+      value = style[name];
+      if (1*name != name && name != 'cssText' && value && typeof value == 'string' && value !='false')
+        current[name] = value;
+    }
   }
   return current;
 }

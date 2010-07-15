@@ -73,12 +73,12 @@ describe("directives", function(){
     });
 
     it('should have $element set to current bind element', function(){
-      var innerText;
+      var innerText = 'blank';
       angularFilter.myFilter = function(text){
         innerText = this.$element.text();
         return text;
       };
-      var scope = compile('<div>before<div ng:bind-template="{{\'HELLO\'|myFilter}}">INNER</div>after</div>');
+      var scope = compile('<div>before<span ng:bind-template="{{\'HELLO\'|myFilter}}">INNER</span>after</div>');
       expect(scope.$element.text()).toEqual("beforeHELLOafter");
       expect(innerText).toEqual('INNER');
     });
@@ -206,7 +206,7 @@ describe("directives", function(){
       expect(element.hasClass('ng-exception')).toBeFalsy();
     });
 
-    it('should preserve and remove previus style', function(){
+    it('should preserve and remove previous style', function(){
       var scope = compile('<div style="color:red;" ng:style="myStyle"></div>');
       scope.$eval();
       expect(getStyle(element)).toEqual({color:'red'});

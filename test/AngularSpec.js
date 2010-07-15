@@ -1,3 +1,7 @@
+beforeEach(function(){
+  compileCache = {};
+});
+
 describe('Angular', function(){
   xit('should fire on updateEvents', function(){
     var onUpdateView = jasmine.createSpy();
