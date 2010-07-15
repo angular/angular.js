@@ -175,8 +175,15 @@ JQLite.prototype = {
       } else {
         return style[name];
       }
-    } else {
+    } else if(name) {
       extend(style, name);
+    } else {
+      var current = {};
+      for (var i=0; i<style.length; i++) {
+        name = style[i];
+        current[name] = style[name];
+      }
+      return current;
     }
   },
 

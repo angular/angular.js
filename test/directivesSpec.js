@@ -168,17 +168,30 @@ describe("directives", function(){
     expect(e2.hasClass('even')).toBeTruthy();
   });
 
-  it('should ng:style', function(){
-    var scope = compile('<div ng:style="{color:\'red\'}"></div>');
-    scope.$eval();
-    expect(element.css('color')).toEqual('red');
-  });
+  describe('ng:style', function(){
+    it('should set', function(){
+      var scope = compile('<div ng:style="{color:\'red\'}"></div>');
+      scope.$eval();
+      expect(element.css('color')).toEqual('red');
+    });
 
-  it('should silently ignore undefined ng:style', function() {
-    var scope = compile('<div ng:style="myStyle"></div>');
-    scope.$eval();
-    dump(sortedHtml(element));
-    expect(element.hasClass('ng-exception')).toBeFalsy();
+    it('should silently ignore undefined style', function() {
+      var scope = compile('<div ng:style="myStyle"></div>');
+      scope.$eval();
+      expect(element.hasClass('ng-exception')).toBeFalsy();
+    });
+
+    it('should preserve and remove previus style', function(){
+      var scope = compile('<div style="color:red;" ng:style="myStyle"></div>');
+      scope.$eval();
+      expect(element.css()).toEqual({color:'red'});
+      scope.myStyle = {color:'blue', width:'10px'};
+      scope.$eval();
+      expect(element.css()).toEqual({color:'blue', width:'10px'});
+      scope.myStyle = {};
+      scope.$eval();
+      expect(element.css()).toEqual({color:'red'});
+    });
   });
 
   it('should ng:show', function(){
