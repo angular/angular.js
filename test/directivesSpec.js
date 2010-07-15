@@ -29,35 +29,57 @@ describe("directives", function(){
     expect(scope.a).toEqual(2);
   });
 
-  it('should ng:bind', function() {
-    var scope = compile('<div ng:bind="a"></div>');
-    expect(element.text()).toEqual('');
-    scope.a = 'misko';
-    scope.$eval();
-    expect(element.text()).toEqual('misko');
+  describe('ng:bind', function(){
+    it('should set text', function() {
+      var scope = compile('<div ng:bind="a"></div>');
+      expect(element.text()).toEqual('');
+      scope.a = 'misko';
+      scope.$eval();
+      expect(element.text()).toEqual('misko');
+    });
+
+    it('should set html', function() {
+      var scope = compile('<div ng:bind="html|html"></div>');
+      scope.html = '<div>hello</div>';
+      scope.$eval();
+      expect(lowercase(element.html())).toEqual('<div>hello</div>');
+    });
+
+    it('should set element element', function() {
+      angularFilter.myElement = function() {
+        return jqLite('<a>hello</a>');
+      };
+      var scope = compile('<div ng:bind="0|myElement"></div>');
+      scope.$eval();
+      expect(lowercase(element.html())).toEqual('<a>hello</a>');
+    });
+
+    it('should have $element set to current bind element', function(){
+      angularFilter.myFilter = function(){
+        this.$element.text('HELLO');
+      };
+      var scope = compile('<div>before<div ng:bind="0|myFilter"></div>after</div>');
+      expect(scope.$element.text()).toEqual("beforeHELLOafter");
+    });
+
   });
 
-  it('should ng:bind html', function() {
-    var scope = compile('<div ng:bind="html|html"></div>');
-    scope.html = '<div>hello</div>';
-    scope.$eval();
-    expect(lowercase(element.html())).toEqual('<div>hello</div>');
-  });
+  describe('ng:bind-template', function(){
+    it('should ng:bind-template', function() {
+      var scope = compile('<div ng:bind-template="Hello {{name}}!"></div>');
+      scope.$set('name', 'Misko');
+      scope.$eval();
+      expect(element.text()).toEqual('Hello Misko!');
+    });
 
-  it('should ng:bind element', function() {
-    angularFilter.myElement = function() {
-      return jqLite('<a>hello</a>');
-    };
-    var scope = compile('<div ng:bind="0|myElement"></div>');
-    scope.$eval();
-    expect(lowercase(element.html())).toEqual('<a>hello</a>');
-  });
+    it('should have $element set to current bind element', function(){
+      angularFilter.myFilter = function(){
+        this.$element.text('HELLO');
+      };
+      var scope = compile('<div>before<div ng:bind-template="{{0|myFilter}}"></div>after</div>');
+      expect(scope.$element.text()).toEqual("beforeHELLOafter");
+    });
 
-  it('should ng:bind-template', function() {
-    var scope = compile('<div ng:bind-template="Hello {{name}}!"></div>');
-    scope.$set('name', 'Misko');
-    scope.$eval();
-    expect(element.text()).toEqual('Hello Misko!');
   });
 
   it('should ng:bind-attr', function(){

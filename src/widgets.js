@@ -83,8 +83,7 @@ function valueAccessor(scope, element) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
     } else {
-      var error,
-          validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
+      var error, validateScope = inherit(scope, {$element:element});
       error = required && !value ?
               'Required' :
               (value ? validator(validateScope, value) : null);

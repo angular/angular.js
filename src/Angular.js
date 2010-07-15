@@ -78,6 +78,10 @@ function extend(dst) {
   return dst;
 }
 
+function inherit(parent, extra) {
+  return extend(new (extend(function(){}, {prototype:parent}))(), extra);
+};
+
 function noop() {}
 function identity($) {return $;}
 function extensionMap(angular, name) {
