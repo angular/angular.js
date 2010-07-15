@@ -48,10 +48,11 @@ function setter(instance, path, value){
 var getterFnCache = {};
 var JS_KEYWORDS = {};
 foreach(
-  ["break", "const", "continue", "class", "delete",
-   "do", "while", "for", "function", "if",
-   "instanceof", "new", "return", "switch",
-   "this", "throw", "try", "catch", "with"],
+   ["abstract", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger", "default",
+    "delete", "do", "double", "else", "enum", "export", "extends", "false", "final", "finally", "float", "for", "function", "goto",
+    "if", "implements", "import", "ininstanceof", "intinterface", "long", "native", "new", "null", "package", "private",
+    "protected", "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws",
+    "transient", "true", "try", "typeof", "var", "volatile", "void", "while", "with"],
   function(key){ JS_KEYWORDS[key] = true;}
 );
 function getterFn(path){
