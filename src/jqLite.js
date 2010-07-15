@@ -36,6 +36,16 @@ function jqClearData(element) {
   }
 }
 
+function getStyle(element) {
+  var current = {}, style = element[0].style, value;
+  for (var name in style) {
+    value = style[name];
+    if (1*name != name && name != 'cssText' && value && typeof value == 'string' && value !='false')
+      current[name] = value;
+  }
+  return current;
+}
+
 function JQLite(element) {
   if (isElement(element)) {
     this[0] = element;
@@ -175,15 +185,8 @@ JQLite.prototype = {
       } else {
         return style[name];
       }
-    } else if(name) {
-      extend(style, name);
     } else {
-      var current = {};
-      for (var i=0; i<style.length; i++) {
-        name = style[i];
-        current[name] = style[name];
-      }
-      return current;
+      extend(style, name);
     }
   },
 

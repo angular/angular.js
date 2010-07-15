@@ -4,4 +4,4 @@ if [[ $tests = "" ]]; then
 fi
 
 java -jar lib/jstestdriver/JsTestDriver.jar --tests "$tests"
-# java -jar lib/jstestdriver/JsTestDriver.jar --tests "$tests" --config jsTestDriver-jquery.conf
+#java -jar lib/jstestdriver/JsTestDriver.jar --tests "$tests" --config jsTestDriver-jquery.conf
