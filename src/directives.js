@@ -76,8 +76,8 @@ function compileBindTemplate(template){
     });
     bindTemplateCache[template] = fn = function(element){
       var parts = [], self = this,
-         oldElement = this.hasOwnProperty('$element') ? this.$element : undefined;
-      this.$element = element;
+         oldElement = this.hasOwnProperty('$element') ? self.$element : undefined;
+      self.$element = element;
       for ( var i = 0; i < bindings.length; i++) {
         var value = bindings[i].call(self, element);
         if (isElement(value))
@@ -86,7 +86,7 @@ function compileBindTemplate(template){
           value = toJson(value, true);
         parts.push(value);
       };
-      this.$element = oldElement;
+      self.$element = oldElement;
       return parts.join('');
     };
   }

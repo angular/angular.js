@@ -73,11 +73,14 @@ describe("directives", function(){
     });
 
     it('should have $element set to current bind element', function(){
-      angularFilter.myFilter = function(){
-        this.$element.text('HELLO');
+      var innerText;
+      angularFilter.myFilter = function(text){
+        innerText = this.$element.text();
+        return text;
       };
-      var scope = compile('<div>before<div ng:bind-template="{{0|myFilter}}"></div>after</div>');
+      var scope = compile('<div>before<div ng:bind-template="{{\'HELLO\'|myFilter}}">INNER</div>after</div>');
       expect(scope.$element.text()).toEqual("beforeHELLOafter");
+      expect(innerText).toEqual('INNER');
     });
 
   });
