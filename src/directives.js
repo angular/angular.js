@@ -26,12 +26,13 @@ angularDirective("ng:bind", function(expression){
   return function(element) {
     var lastValue = noop, lastError = noop;
     this.$onEval(function() {
-      var error,
-          value = this.$tryEval(expression, function(e){
-            error = toJson(e);
-          }),
-          isHtml,
-          isDomElement;
+      var error, value, isHtml, isDomElement,
+          oldElement = this.hasOwnProperty('$element') ? this.$element : undefined;
+      this.$element = element;
+      value = this.$tryEval(expression, function(e){
+        error = toJson(e);
+      });
+      this.$element = oldElement;
       if (lastValue === value && lastError == error) return;
       isHtml = value instanceof HTML,
       isDomElement = isElement(value);
@@ -74,7 +75,9 @@ function compileBindTemplate(template){
       });
     });
     bindTemplateCache[template] = fn = function(element){
-      var parts = [], self = this;
+      var parts = [], self = this,
+         oldElement = this.hasOwnProperty('$element') ? this.$element : undefined;
+      this.$element = element;
       for ( var i = 0; i < bindings.length; i++) {
         var value = bindings[i].call(self, element);
         if (isElement(value))
@@ -83,6 +86,7 @@ function compileBindTemplate(template){
           value = toJson(value, true);
         parts.push(value);
       };
+      this.$element = oldElement;
       return parts.join('');
     };
   }
