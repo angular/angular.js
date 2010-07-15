@@ -254,11 +254,11 @@ angularDirective("ng:hide", function(expression, element){
 
 angularDirective("ng:style", function(expression, element){
   return function(element){
-    var resetStyle = element.css();
+    var resetStyle = getStyle(element);
     this.$onEval(function(){
       var style = this.$eval(expression) || {}, key, mergedStyle = {};
       for(key in style) {
-        if (typeof resetStyle[key] == 'undefined') resetStyle[key] = null;
+        if (resetStyle[key] === undefined) resetStyle[key] = '';
         mergedStyle[key] = style[key];
       }
       for(key in resetStyle) {

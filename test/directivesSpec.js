@@ -184,13 +184,13 @@ describe("directives", function(){
     it('should preserve and remove previus style', function(){
       var scope = compile('<div style="color:red;" ng:style="myStyle"></div>');
       scope.$eval();
-      expect(element.css()).toEqual({color:'red'});
+      expect(getStyle(element)).toEqual({color:'red'});
       scope.myStyle = {color:'blue', width:'10px'};
       scope.$eval();
-      expect(element.css()).toEqual({color:'blue', width:'10px'});
+      expect(getStyle(element)).toEqual({color:'blue', width:'10px'});
       scope.myStyle = {};
       scope.$eval();
-      expect(element.css()).toEqual({color:'red'});
+      expect(getStyle(element)).toEqual({color:'red'});
     });
   });
 

@@ -27,7 +27,7 @@ BinderTest.prototype.testChangingTextfieldUpdatesModel = function(){
   state.scope.$eval();
   assertEquals('abc', state.scope.model.price);
 };
-
+  
 BinderTest.prototype.testChangingTextareaUpdatesModel = function(){
   var c = this.compile('<textarea name="model.note">abc</textarea>');
   c.scope.$eval();
