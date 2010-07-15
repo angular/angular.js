@@ -35,6 +35,10 @@ foreach({
   },
 
   'date': function(date) {
+    if (date instanceof Date)
+      return date.toLocaleDateString();
+    else
+      return date;
   },
 
   'json': function(object) {
