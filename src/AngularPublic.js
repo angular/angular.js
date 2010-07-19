@@ -14,6 +14,7 @@ extend(angular, {
   'scope': createScope,
   'copy': copy,
   'extend': extend,
+  'equals': equals,
   'foreach': foreach,
   'noop':noop,
   'bind':bind,

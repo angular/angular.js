@@ -263,6 +263,32 @@ function copy(source, destination){
   }
 }
 
+function equals(o1, o2) {
+  if (o1 == o2) return true;
+  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
+  if (t1 == t2 && t1 == 'object') {
+    if (o1 instanceof Array) {
+      if ((length = o1.length) == o2.length) {
+        for(key=0; key<length; key++) {
+          if (!equals(o1[key], o2[key])) return false;
+        }
+        return true;
+      }
+    } else {
+      keySet = {};
+      for(key in o1) {
+        if (key.charAt(0) !== '$' && !equals(o1[key], o2[key])) return false;
+        keySet[key] = true;
+      }
+      for(key in o2) {
+        if (key.charAt(0) !== '$' && keySet[key] !== true) return false;
+      }
+      return true;
+    }
+  }
+  return false;
+}
+
 function setHtml(node, html) {
   if (isLeafNode(node)) {
     if (msie) {
@@ -333,7 +359,7 @@ function outerHTML(node) {
 function toBoolean(value) {
   if (value && value.length !== 0) {
     var v = lowercase("" + value);
-    value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == '[]');
+    value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == 'n' || v == '[]');
   } else {
     value = false;
   }
