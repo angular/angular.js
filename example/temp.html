@@ -1,13 +1,20 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
   <head>
-    <script type="text/javascript" src="../src/angular-bootstrap.js#autobind"></script>
+    <script type="text/javascript"
+         src="http://angularjs.org/ng/js/angular-debug.js"></script>
+    <script type="text/javascript">
+      (function(window, previousOnLoad){
+        window.onload = function(){
+          try {
+            (previousOnLoad||angular.noop)();
+          } catch(e) {}
+          angular.compile(window.document).$init();
+        };
+      })(window, window.onload);
+    </script>
   </head>
   <body>
-    {{$location.hashSearch.order}} <br/>
-    <input type="radio" name="$location.hashSearch.order" value="A"/> A <br/>
-    <input type="radio" name="$location.hashSearch.order" checked value="B"/> B <br/>
-    <input type="radio" name="$location.hashSearch.order" value="C"/> C <br/>
-    {{$location.hashSearch.order}} <br/>
+    Hello {{'World'}}!
   </body>
 </html>
