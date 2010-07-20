@@ -65,13 +65,13 @@ angularService("$location", function(browser){
 }, {inject: ['$browser']});
 
 angularService("$log", function($window){
-  var console = $window.console,
-      log = console && console.log || noop;
+  var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
+      log = console.log || noop;
   return {
-    log: log,
-    warn: console && console.warn || log,
-    info: console && console.info || log,
-    error: console && console.error || log
+    log: bind(console, log),
+    warn: bind(console, console.warn || log),
+    info: bind(console, console.info || log),
+    error: bind(console, console.error || log)
   };
 }, {inject:['$window']});
 

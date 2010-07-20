@@ -121,20 +121,25 @@ Compiler.prototype = {
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
           directives: function(value){ if(isDefined(value)) directives = value; return directives;}
         };
-    priority = element.attr('ng:eval-order') || priority || 0;
+    try {
+      priority = element.attr('ng:eval-order') || priority || 0;
+    } catch (e) {
+      // for some reason IE throws error under some weird circumstances. so just assume nothing
+      priority = priority || 0;
+    }
     if (isString(priority)) {
       priority = PRIORITY[uppercase(priority)] || 0;
     }
     template = new Template(priority);
     eachAttribute(element, function(value, name){
       if (!widget) {
-        if (widget = self.widgets['@' + name]) {
+        if (widget = self.widgets('@' + name)) {
           widget = bind(selfApi, widget, value, element);
         }
       }
     });
     if (!widget) {
-      if (widget = self.widgets[nodeName(element)]) {
+      if (widget = self.widgets(nodeName(element))) {
         widget = bind(selfApi, widget, element);
       }
     }

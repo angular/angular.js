@@ -2,19 +2,9 @@
 <html>
   <head>
     <script type="text/javascript"
-         src="http://angularjs.org/ng/js/angular-debug.js"></script>
-    <script type="text/javascript">
-      (function(window, previousOnLoad){
-        window.onload = function(){
-          try {
-            (previousOnLoad||angular.noop)();
-          } catch(e) {}
-          angular.compile(window.document).$init();
-        };
-      })(window, window.onload);
-    </script>
+         src="../src/angular-bootstrap.js#autobind"></script>
   </head>
-  <body>
+  <body ng:init="$window.$root = this">
     Hello {{'World'}}!
   </body>
 </html>
