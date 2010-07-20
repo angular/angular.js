@@ -222,16 +222,16 @@ function inputWidgetSelector(element){
   return INPUT_TYPE[lowercase(element[0].type)] || noop;
 }
 
-angularWidget('INPUT', inputWidgetSelector);
-angularWidget('TEXTAREA', inputWidgetSelector);
-angularWidget('BUTTON', inputWidgetSelector);
-angularWidget('SELECT', function(element){
+angularWidget('input', inputWidgetSelector);
+angularWidget('textarea', inputWidgetSelector);
+angularWidget('button', inputWidgetSelector);
+angularWidget('select', function(element){
   this.descend(true);
   return inputWidgetSelector.call(this, element);
 });
 
 
-angularWidget('NG:INCLUDE', function(element){
+angularWidget('ng:include', function(element){
   var compiler = this,
       srcExp = element.attr("src"),
       scopeExp = element.attr("scope") || '';
@@ -265,7 +265,7 @@ angularWidget('NG:INCLUDE', function(element){
   }
 });
 
-var ngSwitch = angularWidget('NG:SWITCH', function (element){
+var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,
       watchExpr = element.attr("on"),
       usingExpr = (element.attr("using") || 'equals'),

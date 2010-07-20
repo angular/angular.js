@@ -22,7 +22,7 @@ var consoleNode,
     angularTextMarkup = extensionMap(angular, 'textMarkup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
-    angularWidget     = extensionMap(angular, 'widget'),
+    angularWidget     = extensionMap(angular, 'widget', lowercase),
     angularValidator  = extensionMap(angular, 'validator'),
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
@@ -84,9 +84,10 @@ function inherit(parent, extra) {
 
 function noop() {}
 function identity($) {return $;}
-function extensionMap(angular, name) {
+function extensionMap(angular, name, transform) {
   var extPoint;
   return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
+    name = (transform || identity)(name);
     if (isDefined(fn)) {
       extPoint[name] = extend(fn, prop || {});
     }
@@ -419,7 +420,7 @@ function angularInit(config){
 
 function angularJsConfig(document) {
   var filename = /(.*)\/angular(-(.*))?.js(#(.*))?/,
-      scripts = document.getElementsByTagName("SCRIPT"),
+      scripts = document.getElementsByTagName("script"),
       match;
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);

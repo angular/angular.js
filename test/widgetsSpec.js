@@ -407,7 +407,7 @@ describe("widget", function(){
 
     it("should match sandwich ids", function(){
       var scope = {};
-      var match = angular.widget['NG:SWITCH'].route.call(scope, '/a/123/b', '/a/:id');
+      var match = angular.widget('NG:SWITCH').route.call(scope, '/a/123/b', '/a/:id');
       expect(match).toBeFalsy();
     });
 

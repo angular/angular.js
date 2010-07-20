@@ -22,7 +22,7 @@ describe('compiler', function(){
     };
     textMarkup = [];
     attrMarkup = [];
-    widgets = {};
+    widgets = extensionMap({}, 'widget');
     compiler = new Compiler(textMarkup, attrMarkup, directives, widgets);
     compile = function(html){
       var e = jqLite("<div>" + html + "</div>");

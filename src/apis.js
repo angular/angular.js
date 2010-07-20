@@ -12,6 +12,7 @@ var angularGlobal = {
 };
 
 var angularCollection = {
+  'copy': copy,
   'size': size,
   'equals': equals
 };

@@ -18,6 +18,8 @@ extend(angular, {
   'foreach': foreach,
   'noop':noop,
   'bind':bind,
+  'toJson': toJson,
+  'fromJson': fromJson,
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
