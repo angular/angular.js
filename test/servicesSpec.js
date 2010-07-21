@@ -33,32 +33,36 @@ describe("service", function(){
 
   describe("$log", function(){
     it('should use console if present', function(){
-      function log(){};
-      function warn(){};
-      function info(){};
-      function error(){};
+      var logger = "";
+      function log(){ logger+= 'log;'; };
+      function warn(){ logger+= 'warn;'; };
+      function info(){ logger+= 'info;'; };
+      function error(){ logger+= 'error;'; };
       var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}});
-      expect(scope.$log.log).toEqual(log);
-      expect(scope.$log.warn).toEqual(warn);
-      expect(scope.$log.info).toEqual(info);
-      expect(scope.$log.error).toEqual(error);
+      scope.$log.log();
+      scope.$log.warn();
+      scope.$log.info();
+      scope.$log.error();
+      expect(logger).toEqual('log;warn;info;error;');
     });
 
     it('should use console.log if other not present', function(){
-      function log(){};
+      var logger = "";
+      function log(){ logger+= 'log;'; };
       var scope = createScope(null, angularService, {$window: {console:{log:log}}});
-      expect(scope.$log.log).toEqual(log);
-      expect(scope.$log.warn).toEqual(log);
-      expect(scope.$log.info).toEqual(log);
-      expect(scope.$log.error).toEqual(log);
+      scope.$log.log();
+      scope.$log.warn();
+      scope.$log.info();
+      scope.$log.error();
+      expect(logger).toEqual('log;log;log;log;');
     });
 
     it('should use noop if no console', function(){
       var scope = createScope(null, angularService, {$window: {}});
-      expect(scope.$log.log).toEqual(noop);
-      expect(scope.$log.warn).toEqual(noop);
-      expect(scope.$log.info).toEqual(noop);
-      expect(scope.$log.error).toEqual(noop);
+      scope.$log.log();
+      scope.$log.warn();
+      scope.$log.info();
+      scope.$log.error();
     });
   });
 
