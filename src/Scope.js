@@ -147,7 +147,7 @@ function createScope(parent, services, existing) {
       try {
         return expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
       } catch (e) {
-        error(e);
+        (instance.$log || {error:error}).error(e);
         if (isFunction(exceptionHandler)) {
           exceptionHandler(e);
         } else if (exceptionHandler) {

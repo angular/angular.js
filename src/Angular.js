@@ -30,10 +30,6 @@ var consoleNode,
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName;
 
-function angularAlert(){
-  log(arguments); window.alert.apply(window, arguments);
-}
-
 function foreach(obj, iterator, context) {
   var key;
   if (obj) {
@@ -178,21 +174,6 @@ function indexOf(array, obj) {
   return -1;
 }
 
-function log(a, b, c){
-  var console = window['console'];
-  switch(arguments.length) {
-  case 1:
-    console['log'](a);
-    break;
-  case 2:
-    console['log'](a, b);
-    break;
-  default:
-    console['log'](a, b, c);
-    break;
-  }
-}
-
 function error(a, b, c){
   var console = window['console'];
   switch(arguments.length) {
@@ -206,20 +187,6 @@ function error(a, b, c){
     console['error'](a, b, c);
     break;
   }
-}
-
-function consoleLog(level, objs) {
-  var log = document.createElement("div");
-  log.className = level;
-  var msg = "";
-  var sep = "";
-  for ( var i = 0; i < objs.length; i++) {
-    var obj = objs[i];
-    msg += sep + (typeof obj == 'string' ? obj : toJson(obj));
-    sep = " ";
-  }
-  log.appendChild(document.createTextNode(msg));
-  consoleNode.appendChild(log);
 }
 
 function isLeafNode (node) {
