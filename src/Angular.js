@@ -3,8 +3,6 @@
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 
-if (!window['console']) window['console']={'log':noop, 'error':noop};
-
 var consoleNode,
     PRIORITY_FIRST    = -99999,
     PRIORITY_WATCH    = -1000,
@@ -18,6 +16,7 @@ var consoleNode,
     msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
+    error             = window['console'] ? bind(window['console'], window['console']['error']) : noop,
     angular           = window['angular']    || (window['angular'] = {}),
     angularTextMarkup = extensionMap(angular, 'textMarkup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
@@ -172,21 +171,6 @@ function indexOf(array, obj) {
     if (obj === array[i]) return i;
   }
   return -1;
-}
-
-function error(a, b, c){
-  var console = window['console'];
-  switch(arguments.length) {
-  case 1:
-    console['error'](a);
-    break;
-  case 2:
-    console['error'](a, b);
-    break;
-  default:
-    console['error'](a, b, c);
-    break;
-  }
 }
 
 function isLeafNode (node) {
