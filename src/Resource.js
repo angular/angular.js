@@ -28,6 +28,7 @@ Route.prototype = {
         query.push(encodeURI(key) + '=' + encodeURI(value));
       }
     });
+    url = url.replace(/\/*$/, '');
     return url + (query.length ? '?' + query.join('&') : '');
   }
 };
@@ -88,7 +89,7 @@ ResourceFactory.prototype = {
           throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
         }
 
-        var value = action.isArray ? [] : new Resource(data)
+        var value = action.isArray ? [] : new Resource(data);
         self.xhr(
           action.method,
           route.url(extend({}, action.params || {}, extractParams(data), params)),

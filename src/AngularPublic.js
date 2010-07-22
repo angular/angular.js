@@ -1,7 +1,10 @@
 var browserSingleton;
 angularService('$browser', function browserFactory(){
   if (!browserSingleton) {
-    browserSingleton = new Browser(window.location, window.document);
+    browserSingleton = new Browser(
+        window.location,
+        jqLite(window.document),
+        jqLite(window.document.getElementsByTagName('head')[0]));
     browserSingleton.startUrlWatcher();
     browserSingleton.bind();
   }

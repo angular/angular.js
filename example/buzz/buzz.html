@@ -1,0 +1,30 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:ng="http://angularjs.org">
+  <head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+    <script type="text/javascript" src="../../src/angular-bootstrap.js#autobind"></script>
+    <script type="text/javascript" src="buzz.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css"/>
+  </head>
+  <body ng:init="$window.$root = this" ng:controller="BuzzController">
+  <div class="bar">
+    <input type="text" name="userId"/>
+    <button ng:click="$location.hashPath = userId">fetch</button>
+  </div>
+  <ul>
+    <li ng:repeat="item in activities.data.items">
+      <img src="{{item.actor.thumbnailUrl}}"/>
+      <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+      {{item.object.content | html}}
+      <a href="">Replies: {{item.links.replies[0].count}}</a>
+      <ul>
+        <li ng:repeat="reply in item.replies.items">
+          <img src="{{reply.actor.thumbnailUrl}}"/>
+          <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>
+          {{reply.content | html}}
+        </li>
+      </ul>
+    </li>
+  </ul>
+  </body>
+</html>

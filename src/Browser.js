@@ -2,7 +2,7 @@
 // Browser
 //////////////////////////////
 
-function Browser(location, document) {
+function Browser(location, document, head) {
   this.delay = 50;
   this.expectedUrl = location.href;
   this.urlListeners = [];
@@ -21,8 +21,9 @@ function Browser(location, document) {
   };
 
   this.location = location;
-  this.document = jqLite(document);
-  this.body = jqLite(document.body);
+  this.document = document;
+  this.head = head;
+  this.idCounter = 0;
 }
 
 Browser.prototype = {
@@ -58,21 +59,34 @@ Browser.prototype = {
       callback = post;
       post = null;
     }
-    var xhr = new this.XHR(),
-        self = this;
-    xhr.open(method, url, true);
-    this.outstandingRequests.count ++;
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4) {
-        try {
-          callback(xhr.status || 200, xhr.responseText);
-        } finally {
-          self.outstandingRequests.count--;
-          self.processRequestCallbacks();
+    if (lowercase(method) == 'json') {
+      var callbackId = "angular_" + Math.random() + '_' + (this.idCounter++);
+      callbackId = callbackId.replace(/\d\./, '');
+      var script = this.document[0].createElement('script');
+      script.type = 'text/javascript';
+      script.src = url.replace('JSON_CALLBACK', callbackId);
+      this.head.append(script);
+      window[callbackId] = function(data){
+        delete window[callbackId];
+        callback(200, data);
+      };
+    } else {
+      var xhr = new this.XHR(),
+      self = this;
+      xhr.open(method, url, true);
+      this.outstandingRequests.count ++;
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+          try {
+            callback(xhr.status || 200, xhr.responseText);
+          } finally {
+            self.outstandingRequests.count--;
+            self.processRequestCallbacks();
+          }
         }
-      }
-    };
-    xhr.send(post || '');
+      };
+      xhr.send(post || '');
+    }
   },
 
   processRequestCallbacks: function(){
