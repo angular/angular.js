@@ -27,7 +27,7 @@ BinderTest.prototype.testChangingTextfieldUpdatesModel = function(){
   state.scope.$eval();
   assertEquals('abc', state.scope.model.price);
 };
-  
+
 BinderTest.prototype.testChangingTextareaUpdatesModel = function(){
   var c = this.compile('<textarea name="model.note">abc</textarea>');
   c.scope.$eval();
@@ -470,13 +470,6 @@ BinderTest.prototype.testRepeaterShouldBindInputsDefaults = function () {
 
   assertEquals("123", c.scope.$eval('items[0].name'));
   assertEquals("misko", c.scope.$eval('items[1].name'));
-};
-
-BinderTest.prototype.testRepeaterShouldCreateArray = function () {
-  var c = this.compile('<input value="123" name="item.name" ng:repeat="item in items">');
-  c.scope.$eval();
-
-  assertEquals(0, c.scope.$get('items').length);
 };
 
 BinderTest.prototype.testShouldTemplateBindPreElements = function () {

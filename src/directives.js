@@ -161,8 +161,6 @@ angularWidget("@ng:repeat", function(expression, element){
     valueIdent = match[3] || match[1];
     keyIdent = match[2];
 
-    if (isUndefined(this.$eval(rhs))) this.$set(rhs, []);
-
     var children = [], currentScope = this;
     this.$onEval(function(){
       var index = 0, childCount = children.length, childScope, lastElement = reference,

@@ -1,0 +1,45 @@
+body {
+  background: -webkit-gradient(linear, left top, left 400, from(#1C4070), to(#fff));
+  background-repeat: no-repeat;
+  margin: 0px;
+}
+
+.bar {
+  border-top: 1px solid white;
+  border-bottom: 1px solid black;
+  text-align: right;
+  background: -webkit-gradient(linear, left top, left bottom, from(#CCC), to(#888));
+  -webkit-background-origin: padding; -webkit-background-clip: content;
+}
+.bar button {
+  margin: 5px;
+}
+
+.bar span {
+  float: left;
+  font-family: monospace;
+  font-size: 1.5em;
+  color: black;
+}
+
+ul.buzz {
+  list-style: none;
+  padding: 5px;
+  margin: 0;
+}
+
+ul.buzz > li {
+  border: 1px solid yellow;
+  margin: 5px;
+  padding: 0;
+}
+
+ul.buzz > li > h1 {
+  border: 1px solid yellow;
+  margin: 0;
+}
+
+ul.buzz > li > div {
+  border: 1px solid yellow;
+  margin: 0;
+}
