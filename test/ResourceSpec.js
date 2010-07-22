@@ -28,6 +28,18 @@ describe("resource", function() {
     resource.route('URL').query();
   });
 
+  it('should ignore slashes of undefinend parameters', function(){
+    var R = resource.route('/Path/:a/:b/:c');
+    xhr.expectGET('/Path').respond({});
+    xhr.expectGET('/Path/1').respond({});
+    xhr.expectGET('/Path/2/3').respond({});
+    xhr.expectGET('/Path/4/5/6').respond({});
+    R.get({});
+    R.get({a:1});
+    R.get({a:2, b:3});
+    R.get({a:4, b:5, c:6});
+  });
+
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
     var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
