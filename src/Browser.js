@@ -22,6 +22,7 @@ function Browser(location, document, head) {
 
   this.location = location;
   this.document = document;
+  this.body = jqLite(document[0].body);
   this.head = head;
   this.idCounter = 0;
 }

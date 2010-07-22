@@ -2,28 +2,36 @@
 <html xmlns:ng="http://angularjs.org">
   <head>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
+    <!--script type="text/javascript" src="http://angularjs.org/ng/js/angular-debug.js#autobind"></script-->
     <script type="text/javascript" src="../../src/angular-bootstrap.js#autobind"></script>
     <script type="text/javascript" src="buzz.js"></script>
-    <link rel="stylesheet" type="text/css" href="style.css"/>
+    <link rel="stylesheet" type="text/css" href="buzz.css"/>
   </head>
   <body ng:init="$window.$root = this" ng:controller="BuzzController">
   <div class="bar">
-    <input type="text" name="userId"/>
+    <span>&lt;angular/&gt; Buzz</span>
+    <input type="text" name="userId" ng:required/>
     <button ng:click="$location.hashPath = userId">fetch</button>
   </div>
-  <ul>
+  <ul class="buzz">
     <li ng:repeat="item in activities.data.items">
-      <img src="{{item.actor.thumbnailUrl}}"/>
-      <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-      {{item.object.content | html}}
-      <a href="">Replies: {{item.links.replies[0].count}}</a>
-      <ul>
-        <li ng:repeat="reply in item.replies.items">
-          <img src="{{reply.actor.thumbnailUrl}}"/>
-          <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>
-          {{reply.content | html}}
-        </li>
-      </ul>
+      <h1>
+        <img src="{{item.actor.thumbnailUrl}}"/>
+        <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+      </h1>
+      <div>
+        {{item.object.content | html}}
+        <a href="#" ng:click="expandReplies(item)">Replies: {{item.links.replies[0].count}}</a>
+      </div>
+      <my:expand expand="item.replies.show">
+        <ul>
+          <li ng:repeat="reply in item.replies.data.items">
+            <img src="{{reply.actor.thumbnailUrl}}"/>
+            <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>
+            {{reply.content | html}}
+          </li>
+        </ul>
+      </my:expand>
     </li>
   </ul>
   </body>
