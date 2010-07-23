@@ -4,7 +4,6 @@ describe('browser', function(){
 
   beforeEach(function(){
     location = {href:"http://server", hash:""};
-    document = jqLite(window.document);
     head = {
         scripts: [],
         append: function(node){head.scripts.push(node);}

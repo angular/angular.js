@@ -1,5 +1,5 @@
 describe("service", function(){
-  var scope, $xhrError, $log;
+  var scope, $xhrError, $log, mockServices;
 
   beforeEach(function(){
     $xhrError = jasmine.createSpy('$xhr.error');
@@ -38,7 +38,7 @@ describe("service", function(){
       function warn(){ logger+= 'warn;'; };
       function info(){ logger+= 'info;'; };
       function error(){ logger+= 'error;'; };
-      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}});
+      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -49,7 +49,7 @@ describe("service", function(){
     it('should use console.log if other not present', function(){
       var logger = "";
       function log(){ logger+= 'log;'; };
-      var scope = createScope(null, angularService, {$window: {console:{log:log}}});
+      var scope = createScope(null, angularService, {$window: {console:{log:log}}, $document:[{}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -58,7 +58,7 @@ describe("service", function(){
     });
 
     it('should use noop if no console', function(){
-      var scope = createScope(null, angularService, {$window: {}});
+      var scope = createScope(null, angularService, {$window: {}, $document:[{}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
