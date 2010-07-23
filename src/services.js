@@ -75,8 +75,8 @@ angularService("$log", function($window){
   };
 }, {inject:['$window']});
 
-angularService("$hover", function(browser) {
-  var tooltip, self = this, error, width = 300, arrowWidth = 10;
+angularService("$hover", function(browser, document) {
+  var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);;
   browser.hover(function(element, show){
     if (show && (error = element.attr(NG_EXCEPTION) || element.attr(NG_VALIDATION_ERROR))) {
       if (!tooltip) {
@@ -89,9 +89,9 @@ angularService("$hover", function(browser) {
         tooltip.callout.append(tooltip.arrow);
         tooltip.callout.append(tooltip.title);
         tooltip.callout.append(tooltip.content);
-        self.$browser.body.append(tooltip.callout);
+        body.append(tooltip.callout);
       }
-      var docRect = self.$browser.body[0].getBoundingClientRect(),
+      var docRect = body[0].getBoundingClientRect(),
           elementRect = element[0].getBoundingClientRect(),
           leftSpace = docRect.right - elementRect.right - arrowWidth;
       tooltip.title.text(element.hasClass("ng-exception") ? "EXCEPTION:" : "Validation error...");
@@ -119,7 +119,7 @@ angularService("$hover", function(browser) {
       tooltip = null;
     }
   });
-}, {inject:['$browser']});
+}, {inject:['$browser', '$document']});
 
 angularService("$invalidWidgets", function(){
   var invalidWidgets = [];
