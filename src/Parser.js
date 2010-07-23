@@ -602,6 +602,8 @@ Parser.prototype = {
       var fnPtr = fn(self);
       if (typeof fnPtr === 'function') {
         return fnPtr.apply(self, args);
+      } else if (fnPtr === undefined) {
+        return fnPtr;
       } else {
         throw "Expression '" + fn.isAssignable + "' is not a function.";
       }
