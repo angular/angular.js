@@ -224,8 +224,8 @@ function ngClass(selector) {
     var existing = element[0].className + ' ';
     return function(element){
       this.$onEval(function(){
-        var value = this.$eval(expression);
         if (selector(this.$index)) {
+          var value = this.$eval(expression);
           if (isArray(value)) value = value.join(' ');
           element[0].className = trim(existing + value);
         }
