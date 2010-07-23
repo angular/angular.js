@@ -166,26 +166,27 @@ angularWidget("@ng:repeat", function(expression, element){
       var index = 0, childCount = children.length, childScope, lastElement = reference,
           collection = this.$tryEval(rhs, reference), is_array = isArray(collection);
       for ( var key in collection) {
-        if (is_array && !collection.hasOwnProperty(key)) break;
-        if (index < childCount) {
-          // reuse existing child
-          childScope = children[index];
-          childScope[valueIdent] = collection[key];
-          if (keyIdent) childScope[keyIdent] = key;
-        } else {
-          // grow children
-          childScope = template(element.clone(), createScope(currentScope));
-          childScope[valueIdent] = collection[key];
-          if (keyIdent) childScope[keyIdent] = key;
-          lastElement.after(childScope.$element);
-          childScope.$index = index;
-          childScope.$element.attr('ng:repeat-index', index);
-          childScope.$init();
-          children.push(childScope);
+        if (!is_array || collection.hasOwnProperty(key)) {
+          if (index < childCount) {
+            // reuse existing child
+            childScope = children[index];
+            childScope[valueIdent] = collection[key];
+            if (keyIdent) childScope[keyIdent] = key;
+          } else {
+            // grow children
+            childScope = template(element.clone(), createScope(currentScope));
+            childScope[valueIdent] = collection[key];
+            if (keyIdent) childScope[keyIdent] = key;
+            lastElement.after(childScope.$element);
+            childScope.$index = index;
+            childScope.$element.attr('ng:repeat-index', index);
+            childScope.$init();
+            children.push(childScope);
+          }
+          childScope.$eval();
+          lastElement = childScope.$element;
+          index ++;
         }
-        childScope.$eval();
-        lastElement = childScope.$element;
-        index ++;
       };
       // shrink children
       while(children.length > index) {
