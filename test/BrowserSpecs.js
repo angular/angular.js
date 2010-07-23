@@ -63,7 +63,6 @@ describe('browser', function(){
         window[url[1]]('data');
         expect(log).toEqual('200:data;');
         expect(typeof window[url[1]]).toEqual('undefined');
-
       });
     });
   });
