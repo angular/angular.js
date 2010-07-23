@@ -63,6 +63,8 @@ function sortedHtml(element) {
       html += '<' + node.nodeName.toLowerCase();
       var attributes = node.attributes || [];
       var attrs = [];
+      if (node.className)
+        attrs.push(' class="' + node.className + '"');
       for(var i=0; i<attributes.length; i++) {
         var attr = attributes[i];
         if(attr.name.match(/^ng:/) ||
@@ -76,6 +78,7 @@ function sortedHtml(element) {
             attr.name !='complete' &&
             attr.name !='maxLength' &&
             attr.name !='size' &&
+            attr.name !='class' &&
             attr.name !='start' &&
             attr.name !='tabIndex' &&
             attr.name !='style' &&
