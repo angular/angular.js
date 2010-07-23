@@ -67,7 +67,7 @@ Browser.prototype = {
       script.src = url.replace('JSON_CALLBACK', callbackId);
       this.head.append(script);
       window[callbackId] = function(data){
-        delete window[callbackId];
+        window[callbackId] = undefined;
         callback(200, data);
       };
     } else {
