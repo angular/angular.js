@@ -407,6 +407,10 @@ BinderTest.prototype.testBindClass = function() {
 BinderTest.prototype.testBindClassEvenOdd = function() {
   var x = this.compile('<div><div ng:repeat="i in [0,1]" ng:class-even="\'e\'" ng:class-odd="\'o\'"/></div>');
   x.scope.$eval();
+  var d1 = jqLite(x.node[0].childNodes[1]);
+  var d2 = jqLite(x.node[0].childNodes[2]);
+  expect(d1.hasClass('o')).toBeTruthy();
+  expect(d2.hasClass('e')).toBeTruthy();
   assertEquals(
       '<div><#comment></#comment>' +
       '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat-index="0"></div>' +
