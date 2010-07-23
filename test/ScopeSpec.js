@@ -15,6 +15,11 @@ describe('scope/model', function(){
     expect(model.$root).toEqual(model);
   });
 
+  it('should return noop function when LHS is undefined', function(){
+    var model = createScope();
+    expect(model.$eval('x.$filter()')).toEqual(undefined);
+  });
+
   describe('$eval', function(){
     it('should eval function with correct this and pass arguments', function(){
       var model = createScope();
