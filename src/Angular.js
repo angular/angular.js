@@ -16,7 +16,7 @@ var consoleNode,
     msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
-    error             = window['console'] ? bind(window['console'], window['console']['error']) : noop,
+    error             = window['console'] ? bind(window['console'], window['console']['error'] || noop) : noop,
     angular           = window['angular']    || (window['angular'] = {}),
     angularTextMarkup = extensionMap(angular, 'textMarkup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
@@ -292,12 +292,14 @@ function escapeAttr(html) {
 }
 
 function bind(_this, _function) {
-  if (!isFunction(_function))
-    throw "Not a function!";
   var curryArgs = slice.call(arguments, 2, arguments.length);
-  return function() {
-    return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
-  };
+  return curryArgs.length == 0 ?
+    function() {
+      return _function.apply(_this, arguments);
+    } :
+    function() {
+      return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
+    };
 }
 
 function outerHTML(node) {
@@ -331,12 +333,12 @@ function merge(src, dst) {
   }
 }
 
-function compile(element, parentScope, overrides) {
+function compile(element, parentScope) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget),
       $element = jqLite(element),
       parent = extend({}, parentScope);
   parent.$element = $element;
-  return compiler.compile($element)($element, parent, overrides);
+  return compiler.compile($element)($element, parent);
 }
 /////////////////////////////////////////////////
 
