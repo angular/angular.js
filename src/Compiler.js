@@ -30,7 +30,9 @@ Template.prototype = {
     element = jqLite(element);
     foreach(this.inits, function(fn) {
       queue.push(function(scope) {
-        scope.$tryEval(fn, element, element);
+        scope.$tryEval(function(){
+          return fn.call(scope, element);
+        }, element);
       });
     });
 

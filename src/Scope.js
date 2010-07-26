@@ -131,7 +131,7 @@ function createScope(parent, services, existing) {
 
     $eval: function $eval(exp) {
       if (exp !== undefined) {
-        return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
+        return expressionCompile(exp).call(instance);
       } else {
         for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
           for ( var queue = evalLists.sorted[i],
@@ -145,7 +145,7 @@ function createScope(parent, services, existing) {
 
     $tryEval: function (expression, exceptionHandler) {
       try {
-        return expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
+        return expressionCompile(expression).call(instance);
       } catch (e) {
         (instance.$log || {error:error}).error(e);
         if (isFunction(exceptionHandler)) {
@@ -161,12 +161,15 @@ function createScope(parent, services, existing) {
     $watch: function(watchExp, listener, exceptionHandler) {
       var watch = expressionCompile(watchExp),
           last;
+      listener = expressionCompile(listener);
       function watcher(){
         var value = watch.call(instance),
             lastValue = last;
         if (last !== value) {
           last = value;
-          instance.$tryEval(listener, exceptionHandler, value, lastValue);
+          instance.$tryEval(function(){
+            return listener.call(instance, value, lastValue);
+          }, exceptionHandler);
         }
       }
       instance.$onEval(PRIORITY_WATCH, watcher);

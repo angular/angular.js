@@ -21,11 +21,11 @@ describe('scope/model', function(){
   });
 
   describe('$eval', function(){
-    it('should eval function with correct this and pass arguments', function(){
+    it('should eval function with correct this', function(){
       var model = createScope();
-      model.$eval(function(name){
-        this.name = name;
-      }, 'works');
+      model.$eval(function(){
+        this.name = 'works';
+      });
       expect(model.name).toEqual('works');
     });
 
