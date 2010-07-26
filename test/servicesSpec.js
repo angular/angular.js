@@ -66,6 +66,15 @@ describe("service", function(){
     });
   });
 
+  describe("$exceptionHandler", function(){
+    it('should log errors', function(){
+      var error = '';
+      $log.error = function(m) { error += m; };
+      scope.$exceptionHandler('myError');
+      expect(error).toEqual('myError');
+    });
+  });
+
   describe("$location", function(){
     it("should inject $location", function(){
       scope.$location.parse('http://host:123/p/a/t/h.html?query=value#path?key=value');

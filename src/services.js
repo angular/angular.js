@@ -75,6 +75,12 @@ angularService("$log", function($window){
   };
 }, {inject:['$window']});
 
+angularService('$exceptionHandler', function($log){
+  return function(e) {
+    $log.error(e);
+  };
+}, {inject:['$log']});
+
 angularService("$hover", function(browser, document) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);;
   browser.hover(function(element, show){
