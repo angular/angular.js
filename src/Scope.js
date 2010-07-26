@@ -90,7 +90,7 @@ function getterFn(path){
 
 var compileCache = {};
 function expressionCompile(exp){
-  if (isFunction(exp)) return exp;
+  if (typeof exp === 'function') return exp;
   var fn = compileCache[exp];
   if (!fn) {
     var parser = new Parser(exp);
@@ -130,22 +130,28 @@ function createScope(parent, services, existing) {
     $set: bind(instance, setter, instance),
 
     $eval: function $eval(exp) {
-      if (exp !== undefined) {
-        return expressionCompile(exp).call(instance);
-      } else {
+      if (exp === undefined) {
         for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
           for ( var queue = evalLists.sorted[i],
-                    jSize = queue.length,
-                    j= 0; j < jSize; j++) {
+              jSize = queue.length,
+              j= 0; j < jSize; j++) {
             instance.$tryEval(queue[j].fn, queue[j].handler);
           }
         }
+      } else if (typeof exp === 'function'){
+        return exp.call(instance);
+      } else {
+        return expressionCompile(exp).call(instance);
       }
     },
 
     $tryEval: function (expression, exceptionHandler) {
       try {
-        return expressionCompile(expression).call(instance);
+        if (typeof expression == 'function') {
+          return expression.call(instance);
+        } else {
+          return expressionCompile(expression).call(instance);
+        }
       } catch (e) {
         (instance.$log || {error:error}).error(e);
         if (isFunction(exceptionHandler)) {
