@@ -66,6 +66,7 @@ function MockBrowser() {
   self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
   self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
   self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
+  self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
   self.xhr.flush = function() {
     while(requests.length) {
       requests.pop()();

@@ -12,7 +12,9 @@ var angularGlobal = {
 };
 
 var angularCollection = {
-  'size': size
+  'copy': copy,
+  'size': size,
+  'equals': equals
 };
 var angularObject = {
   'extend': extend

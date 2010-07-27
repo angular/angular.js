@@ -15,7 +15,7 @@ function modelAccessor(scope, element) {
 
 function modelFormattedAccessor(scope, element) {
   var accessor = modelAccessor(scope, element),
-      formatterName = element.attr('ng-format') || NOOP,
+      formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName);
   if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
   return {
@@ -33,10 +33,10 @@ function compileValidator(expr) {
 }
 
 function valueAccessor(scope, element) {
-  var validatorName = element.attr('ng-validate') || NOOP,
+  var validatorName = element.attr('ng:validate') || NOOP,
       validator = compileValidator(validatorName),
-      requiredExpr = element.attr('ng-required'),
-      formatterName = element.attr('ng-format') || NOOP,
+      requiredExpr = element.attr('ng:required'),
+      formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName),
       format, parse, lastError, required;
       invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
@@ -83,8 +83,7 @@ function valueAccessor(scope, element) {
       elementError(element, NG_VALIDATION_ERROR, null);
       invalidWidgets.markValid(element);
     } else {
-      var error,
-          validateScope = extend(new (extend(function(){}, {prototype:scope}))(), {$element:element});
+      var error, validateScope = inherit(scope, {$element:element});
       error = required && !value ?
               'Required' :
               (value ? validator(validateScope, value) : null);
@@ -193,10 +192,10 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng-change') || '',
+        action = element.attr('ng:change') || '',
         lastValue;
     initFn.call(scope, model, view, element);
-    this.$eval(element.attr('ng-init')||'');
+    this.$eval(element.attr('ng:init')||'');
     // Don't register a handler if we are a button (noopAccessor) and there is no action
     if (action || modelAccessor !== noopAccessor) {
       element.bind(events, function(){
@@ -223,24 +222,24 @@ function inputWidgetSelector(element){
   return INPUT_TYPE[lowercase(element[0].type)] || noop;
 }
 
-angularWidget('INPUT', inputWidgetSelector);
-angularWidget('TEXTAREA', inputWidgetSelector);
-angularWidget('BUTTON', inputWidgetSelector);
-angularWidget('SELECT', function(element){
+angularWidget('input', inputWidgetSelector);
+angularWidget('textarea', inputWidgetSelector);
+angularWidget('button', inputWidgetSelector);
+angularWidget('select', function(element){
   this.descend(true);
   return inputWidgetSelector.call(this, element);
 });
 
 
-angularWidget('NG:INCLUDE', function(element){
+angularWidget('ng:include', function(element){
   var compiler = this,
       srcExp = element.attr("src"),
       scopeExp = element.attr("scope") || '';
-  if (element[0]['ng-compiled']) {
+  if (element[0]['ng:compiled']) {
     this.descend(true);
     this.directives(true);
   } else {
-    element[0]['ng-compiled'] = true;
+    element[0]['ng:compiled'] = true;
     return function(element){
       var scope = this, childScope;
       var changeCounter = 0;
@@ -266,7 +265,7 @@ angularWidget('NG:INCLUDE', function(element){
   }
 });
 
-var ngSwitch = angularWidget('NG:SWITCH', function (element){
+var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,
       watchExpr = element.attr("on"),
       usingExpr = (element.attr("using") || 'equals'),
@@ -276,7 +275,7 @@ var ngSwitch = angularWidget('NG:SWITCH', function (element){
       cases = [];
   if (!usingFn) throw "Using expression '" + usingExpr + "' unknown.";
   eachNode(element, function(caseElement){
-    var when = caseElement.attr('ng-switch-when');
+    var when = caseElement.attr('ng:switch-when');
     if (when) {
       cases.push({
         when: function(scope, value){

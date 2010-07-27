@@ -4,7 +4,7 @@
     <script type="text/javascript" src="../../src/angular-bootstrap.js#autobind"></script>
   </head>
   <body ng:init="$window.$scope = this; People = $resource('People.json')">
-  <button ng-click="people = People.query()">Load People</button>
+  <button ng:click="people = People.query()">Load People</button>
   <pre>people = {{people}}</pre>
   </body>
  </html>

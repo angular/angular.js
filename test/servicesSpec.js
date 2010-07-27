@@ -1,5 +1,5 @@
 describe("service", function(){
-  var scope, $xhrError, $log;
+  var scope, $xhrError, $log, mockServices;
 
   beforeEach(function(){
     $xhrError = jasmine.createSpy('$xhr.error');
@@ -33,32 +33,45 @@ describe("service", function(){
 
   describe("$log", function(){
     it('should use console if present', function(){
-      function log(){};
-      function warn(){};
-      function info(){};
-      function error(){};
-      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}});
-      expect(scope.$log.log).toEqual(log);
-      expect(scope.$log.warn).toEqual(warn);
-      expect(scope.$log.info).toEqual(info);
-      expect(scope.$log.error).toEqual(error);
+      var logger = "";
+      function log(){ logger+= 'log;'; };
+      function warn(){ logger+= 'warn;'; };
+      function info(){ logger+= 'info;'; };
+      function error(){ logger+= 'error;'; };
+      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{}]});
+      scope.$log.log();
+      scope.$log.warn();
+      scope.$log.info();
+      scope.$log.error();
+      expect(logger).toEqual('log;warn;info;error;');
     });
 
     it('should use console.log if other not present', function(){
-      function log(){};
-      var scope = createScope(null, angularService, {$window: {console:{log:log}}});
-      expect(scope.$log.log).toEqual(log);
-      expect(scope.$log.warn).toEqual(log);
-      expect(scope.$log.info).toEqual(log);
-      expect(scope.$log.error).toEqual(log);
+      var logger = "";
+      function log(){ logger+= 'log;'; };
+      var scope = createScope(null, angularService, {$window: {console:{log:log}}, $document:[{}]});
+      scope.$log.log();
+      scope.$log.warn();
+      scope.$log.info();
+      scope.$log.error();
+      expect(logger).toEqual('log;log;log;log;');
     });
 
     it('should use noop if no console', function(){
-      var scope = createScope(null, angularService, {$window: {}});
-      expect(scope.$log.log).toEqual(noop);
-      expect(scope.$log.warn).toEqual(noop);
-      expect(scope.$log.info).toEqual(noop);
-      expect(scope.$log.error).toEqual(noop);
+      var scope = createScope(null, angularService, {$window: {}, $document:[{}]});
+      scope.$log.log();
+      scope.$log.warn();
+      scope.$log.info();
+      scope.$log.error();
+    });
+  });
+
+  describe("$exceptionHandler", function(){
+    it('should log errors', function(){
+      var error = '';
+      $log.error = function(m) { error += m; };
+      scope.$exceptionHandler('myError');
+      expect(error).toEqual('myError');
     });
   });
 
@@ -136,7 +149,7 @@ describe("service", function(){
 
   describe("$invalidWidgets", function(){
     it("should count number of invalid widgets", function(){
-      var scope = compile('<input name="price" ng-required ng-validate="number"></input>').$init();
+      var scope = compile('<input name="price" ng:required ng:validate="number"></input>').$init();
       expect(scope.$invalidWidgets.length).toEqual(1);
       scope.price = 123;
       scope.$eval();

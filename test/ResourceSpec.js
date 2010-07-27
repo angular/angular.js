@@ -28,13 +28,24 @@ describe("resource", function() {
     resource.route('URL').query();
   });
 
+  it('should ignore slashes of undefinend parameters', function(){
+    var R = resource.route('/Path/:a/:b/:c');
+    xhr.expectGET('/Path').respond({});
+    xhr.expectGET('/Path/1').respond({});
+    xhr.expectGET('/Path/2/3').respond({});
+    xhr.expectGET('/Path/4/5/6').respond({});
+    R.get({});
+    R.get({a:1});
+    R.get({a:2, b:3});
+    R.get({a:4, b:5, c:6});
+  });
+
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
     var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
     var item = LineItem.get({id:456});
     xhr.flush();
     nakedExpect(item).toEqual({id:'abc'});
-
   });
 
   it("should create resource", function(){
@@ -66,8 +77,6 @@ describe("resource", function() {
     nakedExpect(cc).toEqual({id:{key:123}, name:'misko'});
     expect(callback).wasNotCalled();
     xhr.flush();
-    nakedExpect(cc).toEqual({id:{key:123}, name:'rama'});
-    expect(callback).wasCalledWith(cc);
   });
 
   it("should query resource", function(){
@@ -136,6 +145,23 @@ describe("resource", function() {
     var person = Person.get({id:123});
     scope.$browser.xhr.flush();
     expect(person.name).toEqual('misko');
+  });
+
+  it('should return the same object when verifying the cache', function(){
+    var scope = angular.compile('<div></div>');
+    var Person = scope.$resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});
+    scope.$browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"misko"\n}\n]');
+    var person = Person.query({id:123});
+    scope.$browser.xhr.flush();
+    expect(person[0].name).toEqual('misko');
+
+    scope.$browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"rob"\n}\n]');
+    var person2 = Person.query({id:123});
+    expect(person2[0].name).toEqual('misko');
+    var person2Cache = person2;
+    scope.$browser.xhr.flush();
+    expect(person2Cache).toEqual(person2);
+    expect(person2[0].name).toEqual('rob');
   });
 
   describe('failure mode', function(){

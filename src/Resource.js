@@ -1,3 +1,5 @@
+
+
 function Route(template, defaults) {
   this.template = template = template + '#';
   this.defaults = defaults || {};
@@ -26,6 +28,7 @@ Route.prototype = {
         query.push(encodeURI(key) + '=' + encodeURI(value));
       }
     });
+    url = url.replace(/\/*$/, '');
     return url + (query.length ? '?' + query.join('&') : '');
   }
 };
@@ -91,11 +94,10 @@ ResourceFactory.prototype = {
           action.method,
           route.url(extend({}, action.params || {}, extractParams(data), params)),
           data,
-          function(status, response) {
+          function(status, response, clear) {
             if (status == 200) {
               if (action.isArray) {
-                if (action.cacheThenRetrieve)
-                  value = [];
+                value.length = 0;
                 foreach(response, function(item){
                   value.push(new Resource(item));
                 });
@@ -107,7 +109,7 @@ ResourceFactory.prototype = {
               throw {status: status, response:response, message: status + ": " + response};
             }
           },
-          action.cacheThenRetrieve
+          action.verifyCache
         );
         return value;
       };

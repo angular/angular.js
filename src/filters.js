@@ -2,7 +2,7 @@ var angularFilterGoogleChartApi;
 
 foreach({
   'currency': function(amount){
-    this.$element.toggleClass('ng-format-negative', amount < 0);
+    this.$element.toggleClass('ng:format-negative', amount < 0);
     return '$' + angularFilter['number'].apply(this, [amount, 2]);
   },
 
@@ -34,7 +34,11 @@ foreach({
     return text;
   },
 
-  'date': function(amount) {
+  'date': function(date) {
+    if (date instanceof Date)
+      return date.toLocaleDateString();
+    else
+      return date;
   },
 
   'json': function(object) {

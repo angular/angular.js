@@ -65,18 +65,24 @@ angularService("$location", function(browser){
 }, {inject: ['$browser']});
 
 angularService("$log", function($window){
-  var console = $window.console,
-      log = console && console.log || noop;
+  var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
+      log = console.log || noop;
   return {
-    log: log,
-    warn: console && console.warn || log,
-    info: console && console.info || log,
-    error: console && console.error || log
+    log: bind(console, log),
+    warn: bind(console, console.warn || log),
+    info: bind(console, console.info || log),
+    error: bind(console, console.error || log)
   };
 }, {inject:['$window']});
 
-angularService("$hover", function(browser) {
-  var tooltip, self = this, error, width = 300, arrowWidth = 10;
+angularService('$exceptionHandler', function($log){
+  return function(e) {
+    $log.error(e);
+  };
+}, {inject:['$log']});
+
+angularService("$hover", function(browser, document) {
+  var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);;
   browser.hover(function(element, show){
     if (show && (error = element.attr(NG_EXCEPTION) || element.attr(NG_VALIDATION_ERROR))) {
       if (!tooltip) {
@@ -89,9 +95,9 @@ angularService("$hover", function(browser) {
         tooltip.callout.append(tooltip.arrow);
         tooltip.callout.append(tooltip.title);
         tooltip.callout.append(tooltip.content);
-        self.$browser.body.append(tooltip.callout);
+        body.append(tooltip.callout);
       }
-      var docRect = self.$browser.body[0].getBoundingClientRect(),
+      var docRect = body[0].getBoundingClientRect(),
           elementRect = element[0].getBoundingClientRect(),
           leftSpace = docRect.right - elementRect.right - arrowWidth;
       tooltip.title.text(element.hasClass("ng-exception") ? "EXCEPTION:" : "Validation error...");
@@ -119,7 +125,7 @@ angularService("$hover", function(browser) {
       tooltip = null;
     }
   });
-}, {inject:['$browser']});
+}, {inject:['$browser', '$document']});
 
 angularService("$invalidWidgets", function(){
   var invalidWidgets = [];
@@ -313,7 +319,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
 
 angularService('$xhr.cache', function($xhr){
   var inflight = {}, self = this;;
-  function cache(method, url, post, callback, cacheThenRetrieve){
+  function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
       callback = post;
       post = null;
@@ -322,7 +328,7 @@ angularService('$xhr.cache', function($xhr){
       var data;
       if (data = cache.data[url]) {
         callback(200, copy(data.value));
-        if (!cacheThenRetrieve)
+        if (!verifyCache)
           return;
       }
 

@@ -8,9 +8,9 @@
       $(document).ready(function(){angular.compile(document).init();});
     </script>
   </head>
-  <body ng-entity="book=Book" ng-init="books=Book.all()">
+  <body ng-entity="book=Book" ng:init="books=Book.all()">
     <p>{{book.$id}}</p>
-    <li ng-repeat="book in books.$orderBy('name')">
+    <li ng:repeat="book in books.$orderBy('name')">
       <li>{{book.name}}</li>
     </li>
   </body>
