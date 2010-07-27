@@ -6,11 +6,12 @@ function Future(name, behavior) {
 }
 
 Future.prototype = {
-  fulfill: function(value){
+  fulfill: function(value) {
     this.fulfilled = true;
     this.value = value;
   }
 };
+
 function Matcher(future, logger) {
   var self = this;
   this.logger = logger;
@@ -32,29 +33,3 @@ Matcher.addMatcher = function(name, matcher){
 };
 
 Matcher.addMatcher('toEqual', function(a,b){ return a == b; });
-
-/*
-
-function future(name, behavior) {
-  return new Future(name, behavior);
-};
-
-function repeater(selector) {
-  var repeaterFuture = future('repeater ' + selector, function(done) {
-    done($(selector));
-  });
-
-  repeaterFuture.count =  function(){
-    return future(repeaterFuture.name + ' count', function(done) {
-      done(repeaterFuture.value.size());
-    });
-  };
-
-  return repeaterFuture;
-}
-
-function expectX(future) {
-  return new Matcher(future, window.alert);
-}
-
- */
