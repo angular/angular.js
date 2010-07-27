@@ -1,14 +1,11 @@
 describe("DSL", function() {
 
-  var lastFuture, executeFuture, lastDocument;
+  var scenario, runner, $scenario, lastDocument, executeFuture;
 
   beforeEach(function() {
-    lastFuture = null;
-    $scenario = {
-      addFuture: function(name, behavior) {
-        lastFuture = { name:name, behavior: behavior};
-      }
-    };
+    scenario = {};
+    runner = new angular.scenario.Runner(scenario, _jQuery);
+    $scenario = scenario.$scenario;
     executeFuture = function(future, html, callback) {
       lastDocument =_jQuery('<div>' + html + '</div>');
       _jQuery(document.body).append(lastDocument);
@@ -23,17 +20,18 @@ describe("DSL", function() {
   describe("input", function() {
 
     var input = angular.scenario.dsl.input;
+
     it('should enter', function() {
-      input('name').enter('John');
-      expect(lastFuture.name).toEqual("Set input text of 'name' to 'John'");
-      executeFuture(lastFuture, '<input type="text" name="name" />');
+      var future = input('name').enter('John');
+      expect(future.name).toEqual("input 'name' enter 'John'");
+      executeFuture(future, '<input type="text" name="name" />');
       expect(lastDocument.find('input').val()).toEqual('John');
     });
 
     it('should select', function() {
-      input('gender').select('female');
-      expect(lastFuture.name).toEqual("Select radio 'gender' to 'female'");
-      executeFuture(lastFuture,
+      var future = input('gender').select('female');
+      expect(future.name).toEqual("input 'gender' select 'female'");
+      executeFuture(future,
         '<input type="radio" name="0@gender" value="male" checked/>' +
         '<input type="radio" name="0@gender" value="female"/>');
       expect(lastDocument.find(':radio:checked').length).toEqual(1);
@@ -41,15 +39,16 @@ describe("DSL", function() {
     });
   });
 
-  describe('expect', function() {
-    var dslExpect = angular.scenario.dsl.expect;
-    describe('repeater', function() {
-      it('should check the count of repeated elements', function() {
-        dslExpect.repeater('.repeater-row').count.toEqual(2);
-        expect(lastFuture.name).toEqual("Expect that there are 2 items in Repeater with selector '.repeater-row'");
-        var html = "<div class='repeater-row'>a</div><div class='repeater-row'>b</div>";
-        executeFuture(lastFuture, html);
-      });
+  describe('repeater', function() {
+
+    var repeater = angular.scenario.dsl.repeater;
+
+    it('should fetch the count of repeated elements', function() {
+      var future = repeater('.repeater-row').count();
+      expect(future.name).toEqual("repeater '.repeater-row' count");
+      executeFuture(future, "<div class='repeater-row'>a</div>" +
+                            "<div class='repeater-row'>b</div>");
+//      Expect(future).toEqual(2);
     });
   });
 });

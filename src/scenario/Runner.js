@@ -22,6 +22,9 @@ angular.scenario.Runner = function(scope, jQuery){
   this.scope.afterEach = function(body) {
     afterEach = body;
   };
+//  this.scope.expect = function(future) {
+//    return new Matcher(future, self.logger);
+//  };
   this.scope.it = function(name, body) {
     var specName = path.join(' ') + ': it ' + name;
     self.currentSpec = specs[specName] = {
