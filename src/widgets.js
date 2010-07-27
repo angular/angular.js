@@ -198,14 +198,15 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
     this.$eval(element.attr('ng:init')||'');
     // Don't register a handler if we are a button (noopAccessor) and there is no action
     if (action || modelAccessor !== noopAccessor) {
-      element.bind(events, function(){
+      element.bind(events, function(event){
         model.set(view.get());
         lastValue = model.get();
         scope.$tryEval(action, element);
         scope.$root.$eval();
         // if we have noop initFn than we are just a button,
         // therefore we want to prevent default action
-        return initFn != noop;
+        if(initFn == noop)
+          event.preventDefault();
       });
     }
     view.set(lastValue = model.get());

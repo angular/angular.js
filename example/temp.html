@@ -1,10 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js"></script>
     <script type="text/javascript"
          src="../src/angular-bootstrap.js#autobind"></script>
   </head>
   <body ng:init="$window.$root = this">
-    Hello {{'World'}}!
+    <div ng:click="$window.alert('outter')">
+      outter
+      <div ng:click="$window.alert('inner')">inner</div>
+      <a href="#ERROR" ng:click="$window.alert('link')">link</a>
+    </div>
   </body>
 </html>
