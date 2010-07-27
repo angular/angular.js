@@ -204,45 +204,45 @@ describe('Runner', function() {
     });
   });
 
-//  describe('run', function() {
-//    var next;
-//    beforeEach(function() {
-//      Describe('d1', function() {
-//        It('it1', function() { $scenario.addFuture('s1', logger('s1,')); });
-//        It('it2', function() {
-//          $scenario.addFuture('s2', logger('s2,'));
-//          $scenario.addFuture('s2.2', function(done){ next = done; });
-//        });
-//      });
-//      Describe('d2', function() {
-//        It('it3', function() { $scenario.addFuture('s3', logger('s3,')); });
-//        It('it4', function() { $scenario.addFuture('s4', logger('s4,')); });
-//      });
-//    });
-//    it('should execute all specs', function() {
-//      $scenario.run(body);
-//
-//      expect(log).toEqual('s1,s2,');
-//      next();
-//      expect(log).toEqual('s1,s2,s3,s4,');
-//    });
-//    it('should publish done state and results as tests are run', function() {
-//      expect(scenario.$testrun.done).toBeFalsy();
-//      expect(scenario.$testrun.results).toEqual([]);
-//      $scenario.run(body);
-//      expect(scenario.$testrun.done).toBeFalsy();
-//      expect(scenario.$testrun.results).toEqual([
-//        {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']}
-//      ]);
-//      next();
-//      expect(scenario.$testrun.done).toBeTruthy();
-//      expect(scenario.$testrun.results).toEqual([
-//        {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']},
-//        {name: 'd1: it it2', passed: true, error: undefined, steps: ['s2', 's2.2']},
-//        {name: 'd2: it it3', passed: true, error: undefined, steps: ['s3']},
-//        {name: 'd2: it it4', passed: true, error: undefined, steps: ['s4']}
-//      ]);
-//    });
-//  });
+  describe('run', function() {
+    var next;
+    beforeEach(function() {
+      Describe('d1', function() {
+        It('it1', function() { $scenario.addFuture('s1', logger('s1,')); });
+        It('it2', function() {
+          $scenario.addFuture('s2', logger('s2,'));
+          $scenario.addFuture('s2.2', function(done){ next = done; });
+        });
+      });
+      Describe('d2', function() {
+        It('it3', function() { $scenario.addFuture('s3', logger('s3,')); });
+        It('it4', function() { $scenario.addFuture('s4', logger('s4,')); });
+      });
+    });
+    it('should execute all specs', function() {
+      $scenario.run(body);
+
+      expect(log).toEqual('s1,s2,');
+      next();
+      expect(log).toEqual('s1,s2,s3,s4,');
+    });
+    it('should publish done state and results as tests are run', function() {
+      expect(scenario.$testrun.done).toBeFalsy();
+      expect(scenario.$testrun.results).toEqual([]);
+      $scenario.run(body);
+      expect(scenario.$testrun.done).toBeFalsy();
+      expect(scenario.$testrun.results).toEqual([
+        {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']}
+      ]);
+      next();
+      expect(scenario.$testrun.done).toBeTruthy();
+      expect(scenario.$testrun.results).toEqual([
+        {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']},
+        {name: 'd1: it it2', passed: true, error: undefined, steps: ['s2', 's2.2']},
+        {name: 'd2: it it3', passed: true, error: undefined, steps: ['s3']},
+        {name: 'd2: it it4', passed: true, error: undefined, steps: ['s4']}
+      ]);
+    });
+  });
 
 });
