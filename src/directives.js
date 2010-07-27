@@ -199,10 +199,10 @@ angularWidget("@ng:repeat", function(expression, element){
 angularDirective("ng:click", function(expression, element){
   return function(element){
     var self = this;
-    element.bind('click', function(){
+    element.bind('click', function(event){
       self.$tryEval(expression, element);
       self.$root.$eval();
-      return false;
+      event.preventDefault();
     });
   };
 });
