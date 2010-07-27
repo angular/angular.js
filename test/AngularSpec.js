@@ -1,3 +1,7 @@
+beforeEach(function(){
+  compileCache = {};
+});
+
 describe('Angular', function(){
   xit('should fire on updateEvents', function(){
     var onUpdateView = jasmine.createSpy();
@@ -47,6 +51,33 @@ describe("copy", function(){
     expect(copy('')).toEqual('');
     expect(copy(123)).toEqual(123);
     expect(copy([{key:null}])).toEqual([{key:null}]);
+  });
+
+});
+
+describe('equals', function(){
+  it('should return true if same object', function(){
+    var o = {};
+    expect(equals(o, o)).toEqual(true);
+    expect(equals(1, '1')).toEqual(true);
+    expect(equals(1, '2')).toEqual(false);
+  });
+
+  it('should recurse into object', function(){
+    expect(equals({}, {})).toEqual(true);
+    expect(equals({name:'misko'}, {name:'misko'})).toEqual(true);
+    expect(equals({name:'misko', age:1}, {name:'misko'})).toEqual(false);
+    expect(equals({name:'misko'}, {name:'misko', age:1})).toEqual(false);
+    expect(equals({name:'misko'}, {name:'adam'})).toEqual(false);
+    expect(equals(['misko'], ['misko'])).toEqual(true);
+    expect(equals(['misko'], ['adam'])).toEqual(false);
+    expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
+  });
+
+  it('should ignore $ member variables', function(){
+    expect(equals({name:'misko', $id:1}, {name:'misko', $id:2})).toEqual(true);
+    expect(equals({name:'misko'}, {name:'misko', $id:2})).toEqual(true);
+    expect(equals({name:'misko', $id:1}, {name:'misko'})).toEqual(true);
   });
 
 });

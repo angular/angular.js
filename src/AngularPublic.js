@@ -1,7 +1,10 @@
 var browserSingleton;
 angularService('$browser', function browserFactory(){
   if (!browserSingleton) {
-    browserSingleton = new Browser(window.location, window.document);
+    browserSingleton = new Browser(
+        window.location,
+        jqLite(window.document),
+        jqLite(window.document.getElementsByTagName('head')[0]));
     browserSingleton.startUrlWatcher();
     browserSingleton.bind();
   }
@@ -14,9 +17,12 @@ extend(angular, {
   'scope': createScope,
   'copy': copy,
   'extend': extend,
+  'equals': equals,
   'foreach': foreach,
   'noop':noop,
   'bind':bind,
+  'toJson': toJson,
+  'fromJson': fromJson,
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,

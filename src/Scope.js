@@ -46,7 +46,15 @@ function setter(instance, path, value){
 ///////////////////////////////////
 
 var getterFnCache = {};
-var JS_KEYWORDS = ["this", "throw", "for", "foreach", "var", "const"];
+var JS_KEYWORDS = {};
+foreach(
+   ["abstract", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger", "default",
+    "delete", "do", "double", "else", "enum", "export", "extends", "false", "final", "finally", "float", "for", "function", "goto",
+    "if", "implements", "import", "ininstanceof", "intinterface", "long", "native", "new", "null", "package", "private",
+    "protected", "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws",
+    "transient", "true", "try", "typeof", "var", "volatile", "void", "while", "with"],
+  function(key){ JS_KEYWORDS[key] = true;}
+);
 function getterFn(path){
   var fn = getterFnCache[path];
   if (fn) return fn;
@@ -54,7 +62,7 @@ function getterFn(path){
   var code = 'function (self){\n';
   code += '  var last, fn, type;\n';
   foreach(path.split('.'), function(key) {
-    key = (includes(JS_KEYWORDS, key)) ? '["' + key + '"]' : '.' + key;
+    key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
     code += '  if(!self) return self;\n';
     code += '  last = self;\n';
     code += '  self = self' + key + ';\n';
@@ -72,8 +80,8 @@ function getterFn(path){
     }
   });
   code += '  return self;\n}';
-  fn = eval('(' + code + ')');
-  fn.toString = function(){ return code; };
+  fn = eval('fn = ' + code);
+  fn["toString"] = function(){ return code; };
 
   return getterFnCache[path] = fn;
 }
@@ -82,7 +90,7 @@ function getterFn(path){
 
 var compileCache = {};
 function expressionCompile(exp){
-  if (isFunction(exp)) return exp;
+  if (typeof exp === 'function') return exp;
   var fn = compileCache[exp];
   if (!fn) {
     var parser = new Parser(exp);
@@ -122,24 +130,30 @@ function createScope(parent, services, existing) {
     $set: bind(instance, setter, instance),
 
     $eval: function $eval(exp) {
-      if (exp !== undefined) {
-        return expressionCompile(exp).apply(instance, slice.call(arguments, 1, arguments.length));
-      } else {
+      if (exp === undefined) {
         for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
           for ( var queue = evalLists.sorted[i],
-                    jSize = queue.length,
-                    j= 0; j < jSize; j++) {
+              jSize = queue.length,
+              j= 0; j < jSize; j++) {
             instance.$tryEval(queue[j].fn, queue[j].handler);
           }
         }
+      } else if (typeof exp === 'function'){
+        return exp.call(instance);
+      } else {
+        return expressionCompile(exp).call(instance);
       }
     },
 
     $tryEval: function (expression, exceptionHandler) {
       try {
-        return expressionCompile(expression).apply(instance, slice.call(arguments, 2, arguments.length));
+        if (typeof expression == 'function') {
+          return expression.call(instance);
+        } else {
+          return expressionCompile(expression).call(instance);
+        }
       } catch (e) {
-        error(e);
+        (instance.$log || {error:error}).error(e);
         if (isFunction(exceptionHandler)) {
           exceptionHandler(e);
         } else if (exceptionHandler) {
@@ -153,12 +167,15 @@ function createScope(parent, services, existing) {
     $watch: function(watchExp, listener, exceptionHandler) {
       var watch = expressionCompile(watchExp),
           last;
+      listener = expressionCompile(listener);
       function watcher(){
         var value = watch.call(instance),
             lastValue = last;
         if (last !== value) {
           last = value;
-          instance.$tryEval(listener, exceptionHandler, value, lastValue);
+          instance.$tryEval(function(){
+            return listener.call(instance, value, lastValue);
+          }, exceptionHandler);
         }
       }
       instance.$onEval(PRIORITY_WATCH, watcher);

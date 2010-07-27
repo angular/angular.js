@@ -32,14 +32,14 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
       self = this;
   if (hasBindings(bindings)) {
     if (isLeafNode(parentElement[0])) {
-      parentElement.attr('ng-bind-template', text);
+      parentElement.attr('ng:bind-template', text);
     } else {
       var cursor = textNode, newElement;
       foreach(parseBindings(text), function(text){
         var exp = binding(text);
         if (exp) {
           newElement = self.element('span');
-          newElement.attr('ng-bind', exp);
+          newElement.attr('ng:bind', exp);
         } else {
           newElement = self.text(text);
         }
@@ -68,18 +68,18 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
   }
 });
 
-var NG_BIND_ATTR = 'ng-bind-attr';
+var NG_BIND_ATTR = 'ng:bind-attr';
 angularAttrMarkup('{{}}', function(value, name, element){
-  if (name.substr(0, 3) != 'ng-') {
-    if (msie && name == 'src')
-      value = decodeURI(value);
-    var bindings = parseBindings(value),
-        bindAttr;
-    if (hasBindings(bindings)) {
-      element.removeAttr(name);
-      bindAttr = fromJson(element.attr(NG_BIND_ATTR) || "{}");
-      bindAttr[name] = value;
-      element.attr(NG_BIND_ATTR, toJson(bindAttr));
-    }
+  // don't process existing attribute markup
+  if (angularDirective(name) || angularDirective("@" + name)) return;
+  if (msie && name == 'src')
+    value = decodeURI(value);
+  var bindings = parseBindings(value),
+      bindAttr;
+  if (hasBindings(bindings)) {
+    element.removeAttr(name);
+    bindAttr = fromJson(element.attr(NG_BIND_ATTR) || "{}");
+    bindAttr[name] = value;
+    element.attr(NG_BIND_ATTR, toJson(bindAttr));
   }
 });

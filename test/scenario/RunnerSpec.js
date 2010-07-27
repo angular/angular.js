@@ -164,7 +164,7 @@ describe('Runner', function(){
       expect(log).toEqual('first;second;');
       next();
       expect(log).toEqual('first;second;done;');
-      expect(spec).not.toEqual(window);
+      expect(spec === window).toEqual(false);
       expect(spec).toEqual(firstThis);
       expect(spec).toEqual(secondThis);
       expect(spec).toEqual(doneThis);

@@ -1,6 +1,6 @@
 describe("ScenarioSpec: Compilation", function(){
   it("should compile dom node and return scope", function(){
-    var node = jqLite('<div ng-init="a=1">{{b=a+1}}</div>')[0];
+    var node = jqLite('<div ng:init="a=1">{{b=a+1}}</div>')[0];
     var scope = compile(node);
     scope.$init();
     expect(scope.a).toEqual(1);

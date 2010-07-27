@@ -1,10 +1,14 @@
 describe('browser', function(){
 
-  var browser, location;
+  var browser, location, head;
 
   beforeEach(function(){
     location = {href:"http://server", hash:""};
-    browser = new Browser(location, {});
+    head = {
+        scripts: [],
+        append: function(node){head.scripts.push(node);}
+    };
+    browser = new Browser(location, jqLite(window.document), head);
     browser.setTimeout = noop;
   });
 
@@ -42,6 +46,24 @@ describe('browser', function(){
       browser.outstandingRequests.count = 0;
       browser.processRequestCallbacks();
       expect(callback).wasCalled();
+    });
+  });
+
+  describe('xhr', function(){
+    describe('JSON', function(){
+      it('should add script tag for request', function() {
+        var log = "";
+        browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', function(code, data){
+          log += code + ':' + data + ';';
+        });
+        expect(head.scripts.length).toEqual(1);
+        var url = head.scripts[0].src.split('?cb=');
+        expect(url[0]).toEqual('http://example.org/path');
+        expect(typeof window[url[1]]).toEqual('function');
+        window[url[1]]('data');
+        expect(log).toEqual('200:data;');
+        expect(typeof window[url[1]]).toEqual('undefined');
+      });
     });
   });
 

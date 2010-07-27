@@ -3,8 +3,6 @@
 if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 
-if (!window['console']) window['console']={'log':noop, 'error':noop};
-
 var consoleNode,
     PRIORITY_FIRST    = -99999,
     PRIORITY_WATCH    = -1000,
@@ -18,21 +16,18 @@ var consoleNode,
     msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
+    error             = window['console'] ? bind(window['console'], window['console']['error'] || noop) : noop,
     angular           = window['angular']    || (window['angular'] = {}),
     angularTextMarkup = extensionMap(angular, 'textMarkup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
-    angularWidget     = extensionMap(angular, 'widget'),
+    angularWidget     = extensionMap(angular, 'widget', lowercase),
     angularValidator  = extensionMap(angular, 'validator'),
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName;
-
-function angularAlert(){
-  log(arguments); window.alert.apply(window, arguments);
-}
 
 function foreach(obj, iterator, context) {
   var key;
@@ -78,11 +73,16 @@ function extend(dst) {
   return dst;
 }
 
+function inherit(parent, extra) {
+  return extend(new (extend(function(){}, {prototype:parent}))(), extra);
+};
+
 function noop() {}
 function identity($) {return $;}
-function extensionMap(angular, name) {
+function extensionMap(angular, name, transform) {
   var extPoint;
   return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
+    name = (transform || identity)(name);
     if (isDefined(fn)) {
       extPoint[name] = extend(fn, prop || {});
     }
@@ -173,50 +173,6 @@ function indexOf(array, obj) {
   return -1;
 }
 
-function log(a, b, c){
-  var console = window['console'];
-  switch(arguments.length) {
-  case 1:
-    console['log'](a);
-    break;
-  case 2:
-    console['log'](a, b);
-    break;
-  default:
-    console['log'](a, b, c);
-    break;
-  }
-}
-
-function error(a, b, c){
-  var console = window['console'];
-  switch(arguments.length) {
-  case 1:
-    console['error'](a);
-    break;
-  case 2:
-    console['error'](a, b);
-    break;
-  default:
-    console['error'](a, b, c);
-    break;
-  }
-}
-
-function consoleLog(level, objs) {
-  var log = document.createElement("div");
-  log.className = level;
-  var msg = "";
-  var sep = "";
-  for ( var i = 0; i < objs.length; i++) {
-    var obj = objs[i];
-    msg += sep + (typeof obj == 'string' ? obj : toJson(obj));
-    sep = " ";
-  }
-  log.appendChild(document.createTextNode(msg));
-  consoleNode.appendChild(log);
-}
-
 function isLeafNode (node) {
   if (node) {
     switch (node.nodeName) {
@@ -257,6 +213,32 @@ function copy(source, destination){
     }
     return destination;
   }
+}
+
+function equals(o1, o2) {
+  if (o1 == o2) return true;
+  var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
+  if (t1 == t2 && t1 == 'object') {
+    if (o1 instanceof Array) {
+      if ((length = o1.length) == o2.length) {
+        for(key=0; key<length; key++) {
+          if (!equals(o1[key], o2[key])) return false;
+        }
+        return true;
+      }
+    } else {
+      keySet = {};
+      for(key in o1) {
+        if (key.charAt(0) !== '$' && !equals(o1[key], o2[key])) return false;
+        keySet[key] = true;
+      }
+      for(key in o2) {
+        if (key.charAt(0) !== '$' && keySet[key] !== true) return false;
+      }
+      return true;
+    }
+  }
+  return false;
 }
 
 function setHtml(node, html) {
@@ -310,12 +292,14 @@ function escapeAttr(html) {
 }
 
 function bind(_this, _function) {
-  if (!isFunction(_function))
-    throw "Not a function!";
   var curryArgs = slice.call(arguments, 2, arguments.length);
-  return function() {
-    return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
-  };
+  return curryArgs.length == 0 ?
+    function() {
+      return _function.apply(_this, arguments);
+    } :
+    function() {
+      return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
+    };
 }
 
 function outerHTML(node) {
@@ -329,7 +313,7 @@ function outerHTML(node) {
 function toBoolean(value) {
   if (value && value.length !== 0) {
     var v = lowercase("" + value);
-    value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == '[]');
+    value = !(v == 'f' || v == '0' || v == 'false' || v == 'no' || v == 'n' || v == '[]');
   } else {
     value = false;
   }
@@ -349,12 +333,12 @@ function merge(src, dst) {
   }
 }
 
-function compile(element, parentScope, overrides) {
+function compile(element, parentScope) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget),
       $element = jqLite(element),
       parent = extend({}, parentScope);
   parent.$element = $element;
-  return compiler.compile($element)($element, parent, overrides);
+  return compiler.compile($element)($element, parent);
 }
 /////////////////////////////////////////////////
 
@@ -389,7 +373,7 @@ function angularInit(config){
 
 function angularJsConfig(document) {
   var filename = /(.*)\/angular(-(.*))?.js(#(.*))?/,
-      scripts = document.getElementsByTagName("SCRIPT"),
+      scripts = document.getElementsByTagName("script"),
       match;
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
