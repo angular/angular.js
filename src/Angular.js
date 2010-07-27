@@ -293,13 +293,18 @@ function escapeAttr(html) {
 
 function bind(_this, _function) {
   var curryArgs = slice.call(arguments, 2, arguments.length);
-  return curryArgs.length == 0 ?
-    function() {
-      return _function.apply(_this, arguments);
-    } :
-    function() {
-      return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
-    };
+  if (typeof _function == 'function') {
+    return curryArgs.length == 0 ?
+      function() {
+        return _function.apply(_this, arguments);
+      } :
+      function() {
+        return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
+      }
+  } else {
+    // in IE, native methonds ore not functions and so they can not be bound (but they don't need to be)
+    return function(a, b, c, d, e){ return _function(a, b, c, d, e); };
+  }
 }
 
 function outerHTML(node) {

@@ -105,7 +105,9 @@ JQLite.prototype = {
       if (!eventHandler) {
         bind[type] = eventHandler = function(event) {
           if (!event.preventDefault) {
-            event.returnValue = false;
+            event.preventDefault = function(){
+              event.returnValue = false;
+            }
           }
           foreach(eventHandler.fns, function(fn){
             fn.call(self, event);
