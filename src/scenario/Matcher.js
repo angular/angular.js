@@ -1,10 +1,10 @@
-function Matcher(future, logger) {
-  var self = this;
+function Matcher(scope, future, logger) {
+  var self = scope.$scenario = this;
   this.logger = logger;
   this.future = future;
 }
 
-Matcher.addMatcher = function(name, matcher){
+Matcher.addMatcher = function(name, matcher) {
   Matcher.prototype[name] = function(expected) {
     var future = this.future;
     $scenario.addFuture(
@@ -18,4 +18,4 @@ Matcher.addMatcher = function(name, matcher){
   };
 };
 
-Matcher.addMatcher('toEqual', function(a,b){ return a == b; });
+Matcher.addMatcher('toEqual', function(a,b) { return a == b; });

@@ -8,6 +8,7 @@ angular.scenario.Runner = function(scope, jQuery){
   this.scope.$testrun = {done: false, results: []};
 
   var specs = this.specs = {};
+  this.currentSpec = {name: '', futures: []};
   var path = [];
   this.scope.describe = function(name, body){
     path.push(name);
@@ -23,7 +24,7 @@ angular.scenario.Runner = function(scope, jQuery){
     afterEach = body;
   };
   this.scope.expect = function(future) {
-    return new Matcher(future, self.logger);
+    return new Matcher(self, future, self.logger);
   };
   this.scope.it = function(name, body) {
     var specName = path.join(' ') + ': it ' + name;

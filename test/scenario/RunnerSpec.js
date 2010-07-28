@@ -1,7 +1,14 @@
 describe('Runner', function() {
 
+  var Describe, It, BeforeEach, AfterEach, body;
+
   beforeEach(function() {
     setUpContext();
+    Describe = scenario.describe;
+    It = scenario.it;
+    BeforeEach = scenario.beforeEach;
+    AfterEach = scenario.afterEach;
+    body = _jQuery('<div></div>');
   });
 
   describe('describe', function() {
