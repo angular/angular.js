@@ -1,11 +1,9 @@
 describe("DSL", function() {
 
-  var scenario, runner, $scenario, lastDocument, executeFuture;
+  var lastDocument, executeFuture, Expect;
 
   beforeEach(function() {
-    scenario = {};
-    runner = new angular.scenario.Runner(scenario, _jQuery);
-    $scenario = scenario.$scenario;
+    setUpContext();
     executeFuture = function(future, html, callback) {
       lastDocument =_jQuery('<div>' + html + '</div>');
       _jQuery(document.body).append(lastDocument);
@@ -15,6 +13,7 @@ describe("DSL", function() {
       };
       future.behavior.call(specThis, callback || noop);
     };
+    Expect = scenario.expect;
   });
 
   describe("input", function() {
@@ -48,7 +47,7 @@ describe("DSL", function() {
       expect(future.name).toEqual("repeater '.repeater-row' count");
       executeFuture(future, "<div class='repeater-row'>a</div>" +
                             "<div class='repeater-row'>b</div>");
-//      Expect(future).toEqual(2);
+      Expect(future).toEqual(2);
     });
   });
 });
