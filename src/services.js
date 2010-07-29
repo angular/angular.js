@@ -7,61 +7,78 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
 var HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/;
 var DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
 angularService("$location", function(browser){
-  var scope = this, location = {parse:parseUrl, toString:toString};
-  var lastHash, lastUrl;
+  var scope = this,
+      location = {parse:parseUrl, toString:toString, update:update},
+      lastLocation = {};
+
+  browser.watchUrl(function(url){
+    update(url);
+    scope.$root.$eval();
+  });
+  this.$onEval(PRIORITY_FIRST, update);
+  this.$onEval(PRIORITY_LAST, update);
+  update(browser.getUrl());
+  return location;
+
+  function update(href){
+    if (href) {
+      parseUrl(href);
+    } else {
+      href = check('href') || check('protocol', '://', 'host', ':', 'port', '', 'path', '?', 'search');
+      var hash = check('hash');
+      if (isUndefined(hash)) hash = check('hashPath', '?', 'hashSearch');
+      if (isDefined(hash)) {
+        href = (href || location.href).split('#')[0];
+        href+= '#' + hash;
+      }
+      if (isDefined(href)) {
+        parseUrl(href);
+        browser.setUrl(href);
+      }
+    }
+  }
+
+  function check() {
+    var i = -1,
+        length=arguments.length,
+        name, seperator, parts = [],
+        value, same = true;
+    for(; i<length; i = i+2) {
+      parts.push(seperator = (arguments[i] || ''));
+      name = arguments[i + 1];
+      value=location[name];
+      parts.push(typeof value == 'object' ? toKeyValue(value) : value);
+      same = same && equals(lastLocation[name], value);
+    }
+    return same ? undefined : parts.join('');
+  }
+
   function parseUrl(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
       if (match) {
-        location.href = url;
+        location.href = url.replace('#$', '');
         location.protocol = match[1];
         location.host = match[3] || '';
-        location.port = match[5] || DEFAULT_PORTS[location.href] || null;
+        location.port = match[5] || DEFAULT_PORTS[location.protocol] || null;
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
         location.hash = match[9] || '';
         if (location.hash)
           location.hash = location.hash.substr(1);
-        parseHash(location.hash);
+        match = HASH_MATCH.exec(location.hash);
+        location.hashPath = match[1] || '';
+        location.hashSearch = parseKeyValue(match[3]);
+
+        copy(location, lastLocation);
       }
     }
   }
-  function parseHash(hash) {
-    var match = HASH_MATCH.exec(hash);
-    location.hashPath = match[1] || '';
-    location.hashSearch = parseKeyValue(match[3]);
-    lastHash = hash;
-  }
+
   function toString() {
-    if (lastHash === location.hash) {
-      var hashKeyValue = toKeyValue(location.hashSearch),
-          hash = (location.hashPath ? location.hashPath : '') + (hashKeyValue ? '?' + hashKeyValue : ''),
-          url = location.href.split('#')[0] + '#' + (hash ? hash : '');
-      if (url !== location.href) parseUrl(url);
-      return url;
-    } else {
-      parseUrl(location.href.split('#')[0] + '#' + location.hash);
-      return toString();
-    }
+    update();
+    return location.href;
   }
-  browser.watchUrl(function(url){
-    parseUrl(url);
-    scope.$root.$eval();
-  });
-  parseUrl(browser.getUrl());
-  this.$onEval(PRIORITY_FIRST, function(){
-    if (location.hash != lastHash) {
-      parseHash(location.hash);
-    }
-  });
-  this.$onEval(PRIORITY_LAST, function(){
-    var url = toString();
-    if (lastUrl != url) {
-      browser.setUrl(url);
-      lastUrl = url;
-    }
-  });
-  return location;
 }, {inject: ['$browser']});
 
 angularService("$log", function($window){
