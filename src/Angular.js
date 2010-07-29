@@ -389,7 +389,7 @@ function angularJsConfig(document, config) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
       config.base_url = match[1] + '/';
-      extend(match, config, toKeyValue(match[5]));
+      extend(config, parseKeyValue(match[5]));
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {
           name = name.substring(3).replace(/-/g, '_');
