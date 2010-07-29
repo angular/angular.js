@@ -369,22 +369,35 @@ function toKeyValue(obj) {
 
 function angularInit(config){
   if (config.autobind) {
-    var scope = compile(window.document, null, {'$config':config});
     // TODO default to the source of angular.js
-    scope.$browser.addCss('css/angular.css');
+    var scope = compile(window.document, null, {'$config':config});
+    if (config.css)
+      scope.$browser.addCss(config.base_url + config.css);
     scope.$init();
   }
 }
 
-function angularJsConfig(document) {
-  var filename = /(.*)\/angular(-(.*))?.js(#(.*))?/,
+function angularJsConfig(document, config) {
+  var filename = /^(.*)\/angular(-([^\/]*))?.js(#(.*))?$/,
       scripts = document.getElementsByTagName("script"),
       match;
+  config = extend({
+    base_url: '',
+    css: '../css/angular.css'
+  }, config);
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
-      return match[5];
+      config.base_url = match[1] + '/';
+      extend(match, config, toKeyValue(match[5]));
+      eachAttribute(jqLite(scripts[j]), function(value, name){
+        if (/^ng:/.exec(name)) {
+          name = name.substring(3).replace(/-/g, '_');
+          if (name == 'autobind') value = true;
+          config[name] = value;
+        }
+      });
     }
   }
-  return "";
+  return config;
 }

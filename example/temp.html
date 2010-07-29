@@ -2,7 +2,7 @@
 <html xmlns:ng="http://angularjs.org">
   <head>
     <script type="text/javascript"
-         src="../src/angular-bootstrap.js#autobind"></script>
+         src="../angular-debug.js" ng:autobind ng:css="css/angular.css"></script>
   </head>
   <body ng:init="$window.$root = this">
 
@@ -17,10 +17,7 @@ function TicTacToeCntl(){
     'cursor': 'pointer'
   };
   this.reset();
-  this.$watch('$location.hashPath', this.setMemento);
-  this.$onEval(function(){
-    this.$location.hashPath = this.getMemento();
-  });
+  this.$watch('$location.hashPath', this.readUrl);
 }
 TicTacToeCntl.prototype = {
   dropPiece: function(row, col) {
@@ -28,6 +25,7 @@ TicTacToeCntl.prototype = {
       this.board[row][col] = this.nextMove;
       this.nextMove = this.nextMove == 'X' ? 'O' : 'X';
       this.grade();
+      this.setUrl();
     }
   },
   reset: function(){
@@ -38,6 +36,7 @@ TicTacToeCntl.prototype = {
     ];
     this.nextMove = 'X';
     this.winner = '';
+    this.setUrl();
   },
   grade: function(){
    var b = this.board;
@@ -50,14 +49,14 @@ TicTacToeCntl.prototype = {
    function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
    function same(a, b, c) { return (a==b && b==c) ? a : '';};
   },
-  getMemento: function(){
+  setUrl: function(){
     var rows = [];
     angular.foreach(this.board, function(row){
       rows.push(row.join(','));
     });
-    return rows.join(';') + '/' + this.nextMove;
+    this.$location.hashPath = rows.join(';') + '/' + this.nextMove;
   },
-  setMemento: function(value) {
+  readUrl: function(value) {
     if (value) {
       value = value.split('/');
       this.nextMove = value[1];

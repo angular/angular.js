@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 (function(previousOnLoad){
-  var filename = /(.*)\/angular-(.*).js(#.*)?/,
+  var filename = /^(.*)\/angular-bootstrap.js(#.*)?$/,
       scripts = document.getElementsByTagName("SCRIPT"),
       serverPath,
       match;
@@ -61,7 +61,7 @@
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    angularInit(parseKeyValue(angularJsConfig(document)));
+    angularInit(angularJsConfig(document));
   };
 
 })(window.onload);
