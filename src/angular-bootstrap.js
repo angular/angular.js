@@ -22,16 +22,14 @@
  * THE SOFTWARE.
  */
 (function(previousOnLoad){
-  var filename = /(.*)\/angular-(.*).js(#(.*))?/,
+  var filename = /(.*)\/angular-(.*).js(#.*)?/,
       scripts = document.getElementsByTagName("SCRIPT"),
       serverPath,
-      config,
       match;
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
       serverPath = match[1];
-      config = match[4];
     }
   }
 
@@ -63,7 +61,7 @@
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    angularInit(parseKeyValue(config));
+    angularInit(parseKeyValue(angularJsConfig(document)));
   };
 
 })(window.onload);

@@ -300,10 +300,10 @@ function bind(_this, _function) {
       } :
       function() {
         return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
-      }
+      };
   } else {
-    // in IE, native methonds ore not functions and so they can not be bound (but they don't need to be)
-    return function(a, b, c, d, e){ return _function(a, b, c, d, e); };
+    // in IE, native methods ore not functions and so they can not be bound (but they don't need to be)
+    return _function;
   }
 }
 

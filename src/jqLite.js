@@ -107,7 +107,7 @@ JQLite.prototype = {
           if (!event.preventDefault) {
             event.preventDefault = function(){
               event.returnValue = false;
-            }
+            };
           }
           foreach(eventHandler.fns, function(fn){
             fn.call(self, event);
