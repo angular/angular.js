@@ -1,5 +1,5 @@
 describe('compiler', function(){
-  var compiler, textMarkup, directives, widgets, compile, log;
+  var compiler, markup, directives, widgets, compile, log;
 
   beforeEach(function(){
     log = "";
@@ -20,10 +20,10 @@ describe('compiler', function(){
       }
 
     };
-    textMarkup = [];
+    markup = [];
     attrMarkup = [];
     widgets = extensionMap({}, 'widget');
-    compiler = new Compiler(textMarkup, attrMarkup, directives, widgets);
+    compiler = new Compiler(markup, attrMarkup, directives, widgets);
     compile = function(html){
       var e = jqLite("<div>" + html + "</div>");
       var scope = compiler.compile(e)(e);
@@ -94,7 +94,7 @@ describe('compiler', function(){
   });
 
   it('should process markup before directives', function(){
-    textMarkup.push(function(text, textNode, parentNode) {
+    markup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
         parentNode.attr('hello', text);
@@ -126,7 +126,7 @@ describe('compiler', function(){
       this.directives(true);
       return noop;
     };
-    textMarkup.push(function(text, textNode, parent){
+    markup.push(function(text, textNode, parent){
       if (text == '{{1+2}}')
         parent.text('3');
     });
