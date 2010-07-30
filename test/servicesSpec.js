@@ -91,7 +91,7 @@ describe("service", function(){
       scope.$location.hashPath = 'page=http://path';
       scope.$location.hashSearch = {k:'a=b'};
 
-      expect(scope.$location.toString()).toEqual('http://host:123/p/a/t/h.html?query=value#page=http://path?k=a%3Db');
+      expect(scope.$location.toString()).toEqual('http://host:123/p/a/t/h.html?query=value#page%3Dhttp%3A//path?k=a%3Db');
     });
 
     it('should parse file://', function(){

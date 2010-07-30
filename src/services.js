@@ -26,7 +26,7 @@ angularService("$location", function(browser){
     } else {
       href = check('href') || check('protocol', '://', 'host', ':', 'port', '', 'path', '?', 'search');
       var hash = check('hash');
-      if (isUndefined(hash)) hash = check('hashPath', '?', 'hashSearch');
+      if (isUndefined(hash)) hash = checkHashPathSearch();
       if (isDefined(hash)) {
         href = (href || location.href).split('#')[0];
         href+= '#' + hash;
@@ -53,6 +53,14 @@ angularService("$location", function(browser){
     return same ? undefined : parts.join('');
   }
 
+  function checkHashPathSearch(){
+    if (lastLocation.hashPath === location.hashPath &&
+        equals(lastLocation.hashSearch, location.hashSearch) )
+      return undefined;
+    var url = toKeyValue(location.hashSearch);
+    return escape(location.hashPath) + (url ? '?' + url : '');
+  }
+
   function parseUrl(url){
     if (isDefined(url)) {
       var match = URL_MATCH.exec(url);
@@ -67,7 +75,7 @@ angularService("$location", function(browser){
         if (location.hash)
           location.hash = location.hash.substr(1);
         match = HASH_MATCH.exec(location.hash);
-        location.hashPath = match[1] || '';
+        location.hashPath = unescape(match[1] || '');
         location.hashSearch = parseKeyValue(match[3]);
 
         copy(location, lastLocation);

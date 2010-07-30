@@ -352,8 +352,8 @@ function parseKeyValue(keyValue) {
   foreach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
-      key = decodeURIComponent(key_value[0]);
-      obj[key] = key_value[1] ? decodeURIComponent(key_value[1]) : true;
+      key = unescape(key_value[0]);
+      obj[key] = key_value[1] ? unescape(key_value[1]) : true;
     }
   });
   return obj;
@@ -362,7 +362,7 @@ function parseKeyValue(keyValue) {
 function toKeyValue(obj) {
   var parts = [];
   foreach(obj, function(value, key){
-    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+    parts.push(escape(key) + '=' + escape(value));
   });
   return parts.length ? parts.join('&') : '';
 }

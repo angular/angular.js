@@ -6,6 +6,10 @@
   </head>
   <body ng:init="$window.$scope = this">
     <pre>$location={{$location}}</pre>
+    Hash Search:
+    <ul>
+      <li ng:repeat="(key, value) in $location.hashSearch"><tt>{{key}}={{value}}</tt></li>
+    </ul>
     <hr/>
     href: <input type="text" name="$location.href" size="120"/> <br/>
     hash: <input type="text" name="$location.hash" size="120"/> <br/>
