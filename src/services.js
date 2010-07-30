@@ -24,7 +24,7 @@ angularService("$location", function(browser){
     if (href) {
       parseUrl(href);
     } else {
-      href = check('href') || check('protocol', '://', 'host', ':', 'port', '', 'path', '?', 'search');
+      href = check('href') || checkProtocol();
       var hash = check('hash');
       if (isUndefined(hash)) hash = checkHashPathSearch();
       if (isDefined(hash)) {
@@ -38,19 +38,22 @@ angularService("$location", function(browser){
     }
   }
 
-  function check() {
-    var i = -1,
-        length=arguments.length,
-        name, seperator, parts = [],
-        value, same = true;
-    for(; i<length; i = i+2) {
-      parts.push(seperator = (arguments[i] || ''));
-      name = arguments[i + 1];
-      value=location[name];
-      parts.push(typeof value == 'object' ? toKeyValue(value) : value);
-      same = same && equals(lastLocation[name], value);
-    }
-    return same ? undefined : parts.join('');
+  function check(param) {
+    return lastLocation[param] == location[param] ? undefined : location[param];
+  }
+
+  function checkProtocol(){
+    if (lastLocation.protocol === location.protocol &&
+        lastLocation.host === location.host &&
+        lastLocation.port === location.port &&
+        lastLocation.path === location.path &&
+        equals(lastLocation.search, location.search))
+      return undefined;
+    var url = toKeyValue(location.search);
+    var port = (location.port == DEFAULT_PORTS[location.protocol] ? null : location.port);
+    return location.protocol  + '://' + location.host +
+          (port ? ':' + port : '') + location.path +
+          (url ? '?' + url : '');
   }
 
   function checkHashPathSearch(){
@@ -71,9 +74,7 @@ angularService("$location", function(browser){
         location.port = match[5] || DEFAULT_PORTS[location.protocol] || null;
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
-        location.hash = match[9] || '';
-        if (location.hash)
-          location.hash = location.hash.substr(1);
+        location.hash = match[10] || '';
         match = HASH_MATCH.exec(location.hash);
         location.hashPath = unescape(match[1] || '');
         location.hashSearch = parseKeyValue(match[3]);
