@@ -7,78 +7,30 @@
   <body ng:init="$window.$root = this">
 
 <script>
-function TicTacToeCntl(){
-  this.cellStyle= {
-    'height': '20px',
-    'width': '20px',
-    'border': '1px solid black',
-    'text-align': 'center',
-    'vertical-align': 'middle',
-    'cursor': 'pointer'
-  };
-  this.reset();
-  this.$watch('$location.hashPath', this.readUrl);
-}
-TicTacToeCntl.prototype = {
-  dropPiece: function(row, col) {
-    if (!this.winner && !this.board[row][col]) {
-      this.board[row][col] = this.nextMove;
-      this.nextMove = this.nextMove == 'X' ? 'O' : 'X';
-      this.grade();
-      this.setUrl();
-    }
-  },
-  reset: function(){
-    this.board = [
-      ['', '', ''],
-      ['', '', ''],
-      ['', '', '']
-    ];
-    this.nextMove = 'X';
-    this.winner = '';
-    this.setUrl();
-  },
-  grade: function(){
-   var b = this.board;
-   this.winner =
-    row(0) || row(1) || row(2) ||
-    col(0) || col(1) || col(2) ||
-    diagonal(-1) || diagonal(1);
-   function row(r) { return same(b[r][0], b[r][1], b[r][2]);}
-   function col(c) { return same(b[0][c], b[1][c], b[2][c]);}
-   function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
-   function same(a, b, c) { return (a==b && b==c) ? a : '';};
-  },
-  setUrl: function(){
-    var rows = [];
-    angular.foreach(this.board, function(row){
-      rows.push(row.join(','));
+angular.widget('my:greeter', function(compileElement){
+  var compiler = this;
+  compileElement.css('style', 'block');
+  var salutaitonExp = compileElement.attr('salutation');
+  var nameExp = compileElement.attr('name');
+  return function(linkElement){
+    var salutaitonSpan = angular.element('<span class="salutation"></span');
+    var nameSpan = angular.element('<span class="name"></span>');
+    linkElement.append(salutaitonSpan);
+    linkElement.append(compiler.text(' '));
+    linkElement.append(nameSpan);
+    linkElement.append(compiler.text('!'));
+    this.$watch(salutaitonExp, function(value){
+      salutaitonSpan.text(value);
     });
-    this.$location.hashPath = rows.join(';') + '/' + this.nextMove;
-  },
-  readUrl: function(value) {
-    if (value) {
-      value = value.split('/');
-      this.nextMove = value[1];
-      angular.foreach(value[0].split(';'), function(row, i){
-        this.board[i] = row.split(',');
-      }, this);
-    } else {
-      this.reset();
-    }
-  }
-};
+    this.$watch(nameExp, function(value){
+      nameSpan.text(value);
+    });
+  };
+});
 </script>
-<h3>Tic-Tac-Toe</h3>
-Next Player: {{nextMove}}
-<div ng:show="winner">Player {{winner}} has won!</div>
-<table ng:controller="TicTacToeCntl">
-  <tr ng:repeat="row in board" style="height:15px;">
-    <td ng:repeat="cell in row" ng:style="cellStyle"
-            ng:click="dropPiece($parent.$index, $index)">{{cell}}</td>
-  </tr>
-</table>
-<button ng:click="reset()">reset board</button>
+<div ng:init="salutation='Hello'; name='World'">
+  <my:greeter salutation="salutation" name="name"/>
+</div>
 
   </body>
 </html>
