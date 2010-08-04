@@ -15,7 +15,6 @@ Matcher.addMatcher = function(name, matcher) {
         done();
       }
     );
-    dump('future added');
   };
 };
 
