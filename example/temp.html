@@ -1,10 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html xmlns:ng="http://angularjs.org">
   <head>
     <script type="text/javascript"
-         src="../src/angular-bootstrap.js#autobind"></script>
+         src="../angular-debug.js" ng:autobind ng:css="css/angular.css"></script>
   </head>
   <body ng:init="$window.$root = this">
-    Hello {{'World'}}!
+
+<script>
+angular.widget('my:greeter', function(compileElement){
+  var compiler = this;
+  compileElement.css('style', 'block');
+  var salutaitonExp = compileElement.attr('salutation');
+  var nameExp = compileElement.attr('name');
+  return function(linkElement){
+    var salutaitonSpan = angular.element('<span class="salutation"></span');
+    var nameSpan = angular.element('<span class="name"></span>');
+    linkElement.append(salutaitonSpan);
+    linkElement.append(compiler.text(' '));
+    linkElement.append(nameSpan);
+    linkElement.append(compiler.text('!'));
+    this.$watch(salutaitonExp, function(value){
+      salutaitonSpan.text(value);
+    });
+    this.$watch(nameExp, function(value){
+      nameSpan.text(value);
+    });
+  };
+});
+</script>
+<div ng:init="salutation='Hello'; name='World'">
+  <my:greeter salutation="salutation" name="name"/>
+</div>
+
   </body>
 </html>

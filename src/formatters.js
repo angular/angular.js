@@ -5,6 +5,7 @@ var NUMBER = /^\s*[-+]?\d*(\.\d*)?\s*$/;
 
 extend(angularFormatter, {
   'noop':formatter(identity, identity),
+  'json':formatter(toJson, fromJson),
   'boolean':formatter(toString, toBoolean),
   'number':formatter(toString,
       function(obj){
