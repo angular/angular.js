@@ -10,11 +10,12 @@ Matcher.addMatcher = function(name, matcher) {
     $scenario.addFuture(
       'expect ' + future.name + ' ' + name + ' ' + expected,
       function(done){
-        if (matcher(future.value, expected))
+        if (!matcher(future.value, expected))
           throw "Expected " + expected + ' but was ' + future.value;
         done();
       }
     );
+    dump('future added');
   };
 };
 

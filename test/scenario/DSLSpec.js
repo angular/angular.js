@@ -46,8 +46,12 @@ describe("DSL", function() {
       var future = repeater('.repeater-row').count();
       expect(future.name).toEqual("repeater '.repeater-row' count");
       executeFuture(future, "<div class='repeater-row'>a</div>" +
-                            "<div class='repeater-row'>b</div>");
-      Expect(future).toEqual(2);
+                            "<div class='repeater-row'>b</div>",
+                            function(value) {
+        future.fulfill(value);
+      });
+      expect(future.fulfilled).toBeTruthy();
+      expect(future.value).toEqual(2);
     });
   });
 });
