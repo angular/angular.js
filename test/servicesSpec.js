@@ -91,7 +91,7 @@ describe("service", function(){
       scope.$location.hashPath = 'page=http://path';
       scope.$location.hashSearch = {k:'a=b'};
 
-      expect(scope.$location.toString()).toEqual('http://host:123/p/a/t/h.html?query=value#page=http://path?k=a%3Db');
+      expect(scope.$location.toString()).toEqual('http://host:123/p/a/t/h.html?query=value#page%3Dhttp%3A//path?k=a%3Db');
     });
 
     it('should parse file://', function(){
@@ -106,7 +106,7 @@ describe("service", function(){
       expect(scope.$location.hashPath).toEqual('');
       expect(scope.$location.hashSearch).toEqual({});
 
-      expect(scope.$location.toString()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html#');
+      expect(scope.$location.toString()).toEqual('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
     });
 
     it('should update url on hash change', function(){
@@ -123,6 +123,14 @@ describe("service", function(){
       expect(scope.$location.hash).toEqual('?a=b');
     });
 
+    it("should parse url which contains - in host", function(){
+      scope.$location.parse('http://a-b1.c-d.09/path');
+      expect(scope.$location.href).toEqual('http://a-b1.c-d.09/path');
+      expect(scope.$location.protocol).toEqual('http');
+      expect(scope.$location.host).toEqual('a-b1.c-d.09');
+      expect(scope.$location.path).toEqual('/path');
+    });
+
     it('should update hash before any processing', function(){
       var scope = compile('<div>');
       var log = '';
@@ -136,15 +144,6 @@ describe("service", function(){
       scope.$eval();
       expect(log).toEqual('/abc;');
     });
-
-    it("should parse url which contains - in host", function(){
-      scope.$location.parse('http://a-b1.c-d.09/path');
-      expect(scope.$location.href).toEqual('http://a-b1.c-d.09/path');
-      expect(scope.$location.protocol).toEqual('http');
-      expect(scope.$location.host).toEqual('a-b1.c-d.09');
-      expect(scope.$location.path).toEqual('/path');
-    });
-
   });
 
   describe("$invalidWidgets", function(){

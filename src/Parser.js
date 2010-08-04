@@ -599,14 +599,11 @@ Parser.prototype = {
       for ( var i = 0; i < argsFn.length; i++) {
         args.push(argsFn[i](self));
       }
-      var fnPtr = fn(self);
-      if (typeof fnPtr === 'function') {
-        return fnPtr.apply(self, args);
-      } else if (fnPtr === undefined) {
-        return fnPtr;
-      } else {
-        throw "Expression '" + fn.isAssignable + "' is not a function.";
-      }
+    var fnPtr = fn(self) || noop;
+    // IE stupidity!
+    return fnPtr.apply ? 
+      fnPtr.apply(self, args) : 
+      fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
   },
 

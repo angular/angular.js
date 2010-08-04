@@ -74,6 +74,9 @@ Browser.prototype = {
       var xhr = new this.XHR(),
       self = this;
       xhr.open(method, url, true);
+      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+      xhr.setRequestHeader("Accept", "application/json, text/plain, */*");
+      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
       this.outstandingRequests.count ++;
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {

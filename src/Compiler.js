@@ -69,8 +69,8 @@ Template.prototype = {
 ///////////////////////////////////
 //Compiler
 //////////////////////////////////
-function Compiler(textMarkup, attrMarkup, directives, widgets){
-  this.textMarkup = textMarkup;
+function Compiler(markup, attrMarkup, directives, widgets){
+  this.markup = markup;
   this.attrMarkup = attrMarkup;
   this.directives = directives;
   this.widgets = widgets;
@@ -158,7 +158,7 @@ Compiler.prototype = {
       // process markup for text nodes only
       eachTextNode(element, function(textNode){
         var text = textNode.text();
-        foreach(self.textMarkup, function(markup){
+        foreach(self.markup, function(markup){
           markup.call(selfApi, text, textNode, element);
         });
       });

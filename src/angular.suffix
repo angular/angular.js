@@ -3,7 +3,7 @@
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    angularInit(parseKeyValue(angularJsConfig(document)));
+    angularInit(angularJsConfig(document));
   };
 
 })(window, document, window.onload);

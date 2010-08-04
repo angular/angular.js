@@ -160,13 +160,15 @@ describe("directives", function(){
     expect(scope.$get('count')).toEqual(1);
   });
 
-  it('should ng:click', function(){
-    var scope = compile('<div ng:click="clicked = true"></div>');
-    scope.$eval();
-    expect(scope.$get('clicked')).toBeFalsy();
+  describe('ng:click', function(){
+    it('should fire event', function(){
+      var scope = compile('<div ng:click="clicked = true"></div>');
+      scope.$eval();
+      expect(scope.$get('clicked')).toBeFalsy();
 
-    element.trigger('click');
-    expect(scope.$get('clicked')).toEqual(true);
+      element.trigger('click');
+      expect(scope.$get('clicked')).toEqual(true);
+    });
   });
 
   it('should ng:class', function(){

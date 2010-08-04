@@ -104,19 +104,14 @@ JQLite.prototype = {
       eventHandler = bind[type];
       if (!eventHandler) {
         bind[type] = eventHandler = function(event) {
-          var bubbleEvent = false;
-          foreach(eventHandler.fns, function(fn){
-            bubbleEvent = bubbleEvent || fn.call(self, event);
-          });
-          if (!bubbleEvent) {
-            if (msie) {
+          if (!event.preventDefault) {
+            event.preventDefault = function(){
               event.returnValue = false;
-              event.cancelBubble = true;
-            } else {
-              event.preventDefault();
-              event.stopPropagation();
-            }
+            };
           }
+          foreach(eventHandler.fns, function(fn){
+            fn.call(self, event);
+          });
         };
         eventHandler.fns = [];
         addEventListener(element, type, eventHandler);

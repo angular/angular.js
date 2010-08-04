@@ -18,7 +18,7 @@ var consoleNode,
     slice             = Array.prototype.slice,
     error             = window['console'] ? bind(window['console'], window['console']['error'] || noop) : noop,
     angular           = window['angular']    || (window['angular'] = {}),
-    angularTextMarkup = extensionMap(angular, 'textMarkup'),
+    angularTextMarkup = extensionMap(angular, 'markup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
     angularWidget     = extensionMap(angular, 'widget', lowercase),
@@ -293,13 +293,18 @@ function escapeAttr(html) {
 
 function bind(_this, _function) {
   var curryArgs = slice.call(arguments, 2, arguments.length);
-  return curryArgs.length == 0 ?
-    function() {
-      return _function.apply(_this, arguments);
-    } :
-    function() {
-      return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
-    };
+  if (typeof _function == 'function') {
+    return curryArgs.length == 0 ?
+      function() {
+        return _function.apply(_this, arguments);
+      } :
+      function() {
+        return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
+      };
+  } else {
+    // in IE, native methods ore not functions and so they can not be bound (but they don't need to be)
+    return _function;
+  }
 }
 
 function outerHTML(node) {
@@ -347,8 +352,8 @@ function parseKeyValue(keyValue) {
   foreach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
-      key = decodeURIComponent(key_value[0]);
-      obj[key] = key_value[1] ? decodeURIComponent(key_value[1]) : true;
+      key = unescape(key_value[0]);
+      obj[key] = key_value[1] ? unescape(key_value[1]) : true;
     }
   });
   return obj;
@@ -357,29 +362,42 @@ function parseKeyValue(keyValue) {
 function toKeyValue(obj) {
   var parts = [];
   foreach(obj, function(value, key){
-    parts.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+    parts.push(escape(key) + '=' + escape(value));
   });
   return parts.length ? parts.join('&') : '';
 }
 
 function angularInit(config){
   if (config.autobind) {
-    var scope = compile(window.document, null, {'$config':config});
     // TODO default to the source of angular.js
-    scope.$browser.addCss('css/angular.css');
+    var scope = compile(window.document, null, {'$config':config});
+    if (config.css)
+      scope.$browser.addCss(config.base_url + config.css);
     scope.$init();
   }
 }
 
-function angularJsConfig(document) {
-  var filename = /(.*)\/angular(-(.*))?.js(#(.*))?/,
+function angularJsConfig(document, config) {
+  var filename = /^(.*)\/angular(-([^\/]*))?.js(#(.*))?$/,
       scripts = document.getElementsByTagName("script"),
       match;
+  config = extend({
+    base_url: '',
+    css: '../css/angular.css'
+  }, config);
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
-      return match[5];
+      config.base_url = match[1] + '/';
+      extend(config, parseKeyValue(match[5]));
+      eachAttribute(jqLite(scripts[j]), function(value, name){
+        if (/^ng:/.exec(name)) {
+          name = name.substring(3).replace(/-/g, '_');
+          if (name == 'autobind') value = true;
+          config[name] = value;
+        }
+      });
     }
   }
-  return "";
+  return config;
 }
