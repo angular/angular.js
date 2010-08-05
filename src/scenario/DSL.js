@@ -20,15 +20,11 @@ angular.scenario.dsl.browser = {
   }
 };
 
-function future(name, behavior) {
-  return new Future(name, behavior);
-};
-
 angular.scenario.dsl.input = function(selector) {
   var namePrefix = "input '" + selector + "'";
   return {
     enter: function(value) {
-      return future(namePrefix + " enter '" + value + "'", function(done) {
+    $scenario.addFuture(namePrefix + " enter '" + value + "'", function(done) {
         var input = this.testDocument.find('input[name=' + selector + ']');
         input.val(value);
         this.testWindow.angular.element(input[0]).trigger('change');
@@ -36,7 +32,7 @@ angular.scenario.dsl.input = function(selector) {
       });
     },
     select: function(value) {
-      return future(namePrefix + " select '" + value + "'", function(done) {
+      $scenario.addFuture(namePrefix + " select '" + value + "'", function(done) {
         var input = this.testDocument.
           find(':radio[name$=@' + selector + '][value=' + value + ']');
         jqLiteWrap(input[0]).trigger('click');
@@ -51,7 +47,7 @@ angular.scenario.dsl.repeater = function(selector) {
   var namePrefix = "repeater '" + selector + "'";
   return {
     count: function() {
-      return future(namePrefix + ' count', function(done) {
+    $scenario.addFuture(namePrefix + ' count', function(done) {
           done(this.testDocument.find(selector).size());
       });
     }
