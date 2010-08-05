@@ -338,12 +338,11 @@ function merge(src, dst) {
   }
 }
 
-function compile(element, parentScope) {
+function compile(element, existingScope) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget),
-      $element = jqLite(element),
-      parent = extend({}, parentScope);
+      $element = jqLite(element);
   parent.$element = $element;
-  return compiler.compile($element)($element, parent);
+  return compiler.compile($element)($element, existingScope);
 }
 /////////////////////////////////////////////////
 
