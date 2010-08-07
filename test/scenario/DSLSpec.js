@@ -42,16 +42,41 @@ describe("DSL", function() {
 
     var repeater = angular.scenario.dsl.repeater;
 
-    it('should fetch the count of repeated elements', function() {
+    it('should count', function() {
       var future = repeater('.repeater-row').count();
       expect(future.name).toEqual("repeater '.repeater-row' count");
-      executeFuture(future, "<div class='repeater-row'>a</div>" +
-                            "<div class='repeater-row'>b</div>",
-                            function(value) {
-        future.fulfill(value);
+      executeFuture(future,
+        "<div class='repeater-row'>a</div>" +
+        "<div class='repeater-row'>b</div>",
+        function(value) {
+          future.fulfill(value);
       });
       expect(future.fulfilled).toBeTruthy();
       expect(future.value).toEqual(2);
+    });
+
+    it('should collect', function() {
+      var future = repeater('.epic').collect();
+      expect(future.name).toEqual("repeater '.epic' collect");
+      executeFuture(future,
+        "<table>" +
+        "<tr class='epic'>" +
+          "<td ng:bind='hero'>John Marston</td>" +
+          "<td ng:bind='game'>Red Dead Redemption</td>" +
+        "</tr>" +
+        "<tr class='epic'>" +
+          "<td ng:bind='hero'>Nathan Drake</td>" +
+          "<td ng:bind='game'>Uncharted 2</td>" +
+        "</tr>" +
+        "</table>",
+        function(value) {
+          future.fulfill(value);
+      });
+      expect(future.fulfilled).toBeTruthy();
+      expect(future.value[0].boundTo('hero')).toEqual('John Marston');
+      expect(future.value[0].boundTo('game')).toEqual('Red Dead Redemption');
+      expect(future.value[1].boundTo('hero')).toEqual('Nathan Drake');
+      expect(future.value[1].boundTo('game')).toEqual('Uncharted 2');
     });
   });
 });

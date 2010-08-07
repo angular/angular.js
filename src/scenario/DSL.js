@@ -50,6 +50,26 @@ angular.scenario.dsl.repeater = function(selector) {
       return $scenario.addFuture(namePrefix + ' count', function(done) {
           done(this.testDocument.find(selector).size());
       });
+    },
+    collect: function() {
+      return $scenario.addFuture(namePrefix + ' collect', function(done) {
+        var doCollect = bind(this, function() {
+          var repeaterArray = [];
+          this.testDocument.find(selector).each(function(index) {
+            var element = angular.extend(_jQuery(this),
+                {bindings: [],
+                 boundTo: function(name) { return this.bindings[name]; }}
+            );
+            element.find('*').each(function(index) {
+              var bindName = _jQuery(this).attr('ng:bind');
+              element.bindings[bindName] = _jQuery(this).text();
+            });
+            repeaterArray[index] = element;
+          });
+          return repeaterArray;
+        });
+        done(doCollect());
+      });
     }
   };
 };
