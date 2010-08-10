@@ -45,8 +45,10 @@ task :compile_scenario do
       src/apis.js \
       src/services.js \
       src/AngularPublic.js \
-      src/scenario/Runner.js \
       src/scenario/DSL.js \
+      src/scenario/Future.js \
+      src/scenario/Matcher.js \
+      src/scenario/Runner.js \
       src/scenario/angular.suffix \
     )
   css = %x(cat css/angular-scenario.css)

@@ -1,40 +1,30 @@
-describe('Runner', function(){
-  var scenario, runner, log, Describe, It, $scenario, body;
+describe('Runner', function() {
 
-  function logger(text) {
-    return function(done){
-      log += text;
-      (done||noop)();
-    };
-  }
+  var Describe, It, BeforeEach, AfterEach, body;
 
-  beforeEach(function(){
-    log = '';
-    scenario = {};
+  beforeEach(function() {
+    setUpContext();
+    Describe = _window.describe;
+    It = _window.it;
+    BeforeEach = _window.beforeEach;
+    AfterEach = _window.afterEach;
     body = _jQuery('<div></div>');
-    runner = new angular.scenario.Runner(scenario, _jQuery);
-    Describe = scenario.describe;
-    BeforeEach = scenario.beforeEach;
-    AfterEach = scenario.afterEach;
-    It = scenario.it;
-    $scenario = scenario.$scenario;
   });
 
-  describe('describe', function(){
-    it('should consume the describe functions', function(){
+  describe('describe', function() {
+    it('should consume the describe functions', function() {
       Describe('describe name',  logger('body'));
-
       expect(log).toEqual('body');
     });
 
-    describe('it', function(){
-      it('should consume it', function(){
-        Describe('describe name', function(){
+    describe('it', function() {
+      it('should consume it', function() {
+        Describe('describe name', function() {
           It('should text', logger('body'));
         });
         expect(log).toEqual('body');
         var spec = $scenario.specs['describe name: it should text'];
-        expect(spec.steps).toEqual([]);
+        expect(spec.futures).toEqual([]);
         expect(spec.name).toEqual('describe name: it should text');
       });
 
@@ -42,18 +32,18 @@ describe('Runner', function(){
         // WRITE ME!!!!
       });
 
-      it('should create a failing step if there is a javascript error', function(){
+      it('should create a failing future if there is a javascript error', function() {
         var spec;
-        Describe('D1', function(){
-          It('I1', function(){
+        Describe('D1', function() {
+          It('I1', function() {
             spec = $scenario.currentSpec;
             throw {message: 'blah'};
           });
         });
-        var step = spec.steps[0];
-        expect(step.name).toEqual('blah');
+        var future = spec.futures[0];
+        expect(future.name).toEqual('blah');
         try {
-          step.fn();
+          future.behavior();
           fail();
         } catch (e) {
           expect(e.message).toEqual('blah');
@@ -63,7 +53,7 @@ describe('Runner', function(){
 
     describe('beforeEach', function() {
       it('should execute beforeEach before every it', function() {
-        Describe('describe name', function(){
+        Describe('describe name', function() {
           BeforeEach(logger('before;'));
           It('should text', logger('body;'));
           It('should text2', logger('body2;'));
@@ -73,7 +63,7 @@ describe('Runner', function(){
     });
     describe('afterEach', function() {
       it('should execute afterEach after every it', function() {
-        Describe('describe name', function(){
+        Describe('describe name', function() {
           AfterEach(logger('after;'));
           It('should text1', logger('body1;'));
           It('should text2', logger('body2;'));
@@ -82,7 +72,7 @@ describe('Runner', function(){
       });
 
       it('should always execute afterEach after every it', function() {
-        Describe('describe name', function(){
+        Describe('describe name', function() {
           AfterEach(logger('after;'));
           It('should text', function() {
             logger('body1;')();
@@ -95,62 +85,63 @@ describe('Runner', function(){
 
       it('should report an error if afterEach fails', function() {
         var next;
-        Describe('describe name', function(){
+        Describe('describe name', function() {
           AfterEach(function() {
-            $scenario.addStep('afterEachLog', logger('after;'));
-            $scenario.addStep('afterEachThrow', function() {
+            $scenario.addFuture('afterEachLog', logger('after;'));
+            $scenario.addFuture('afterEachThrow', function() {
               throw "AfterError";
             });
           });
           It('should text1', function() {
-            $scenario.addStep('step1', logger('step1;'));
+            $scenario.addFuture('future1', logger('future1;'));
           });
           It('should text2', function() {
-            $scenario.addStep('step2', logger('step2;'));
+            $scenario.addFuture('future2', logger('future2;'));
           });
         });
         $scenario.run(body);
-        expect(log).toEqual('step1;after;step2;after;');
-        expect(scenario.$testrun.results).toEqual([
+        expect(log).toEqual('future1;after;future2;after;');
+        expect(_window.$testrun.results).toEqual([
           { name : 'describe name: it should text1',
             passed : false,
             error : 'AfterError',
-            steps : [ 'step1', 'afterEachLog', 'afterEachThrow' ] },
+            steps : [ 'future1', 'afterEachLog', 'afterEachThrow' ] },
           { name : 'describe name: it should text2',
             passed : false,
             error : 'AfterError',
-            steps : [ 'step2', 'afterEachLog', 'afterEachThrow' ] }]);
+            steps : [ 'future2', 'afterEachLog', 'afterEachThrow' ] }]);
       });
     });
   });
 
-  describe('steps building', function(){
-    it('should queue steps', function(){
-      function step(){};
-      Describe('name', function(){
-        It('should', function(){
-          $scenario.addStep('stepname', step);
+  describe('future building', function() {
+    it('should queue futures', function() {
+      function behavior(){};
+      Describe('name', function() {
+        It('should', function() {
+          $scenario.addFuture('futureName', behavior);
         });
       });
-      expect($scenario.specs['name: it should'].steps).toEqual([{name:'stepname', fn:step}]);
+      expect($scenario.specs['name: it should'].futures[0].name).
+        toEqual('futureName');
     });
   });
 
-  describe('execution', function(){
-    it('should execute the queued steps', function(){
+  describe('execution', function() {
+    it('should execute the queued futures', function() {
       var next, firstThis, secondThis, doneThis, spec;
       $scenario.specs['spec'] = {
-        steps: [
-          {name:'step1', fn: function(done) {
-            next = done;
-            log += 'first;';
-            firstThis = this;
-          }},
-          {name:'step2', fn:function(done){
-            next = done;
-            log += 'second;';
-            secondThis = this;
-          }}
+        futures: [
+            new Future('future1', function(done) {
+              next = done;
+              log += 'first;';
+              firstThis = this;
+            }),
+            new Future('future2', function(done) {
+              next = done;
+              log += 'second;';
+              secondThis = this;
+            })
         ]
       };
 
@@ -174,18 +165,18 @@ describe('Runner', function(){
       expect(spec.result.passed).toEqual(true);
     });
 
-    it('should handle exceptions in a step', function(){
+    it('should handle exceptions in a future', function() {
       $scenario.specs['spec'] = {
-          steps: [
-            {name: 'first step', fn: function(done) {
+          futures: [
+            new Future('first future', function(done) {
               done();
-            }},
-            {name:'error', fn:function(done) {
+            }),
+            new Future('error', function(done) {
               throw "MyError";
-            }},
-            {name: 'should not execute', fn: function(done) {
+            }),
+            new Future('should not execute', function(done) {
               done();
-            }}
+            })
           ]
         };
 
@@ -195,30 +186,30 @@ describe('Runner', function(){
         expect(spec.result.failed).toEqual(true);
         expect(spec.result.finished).toEqual(true);
         expect(spec.result.error).toEqual("MyError");
-        expect(scenario.$testrun.results).toEqual([{
+        expect(_window.$testrun.results).toEqual([{
           name: 'spec',
           passed: false,
           error: 'MyError',
-          steps: ['first step', 'error']}]);
+          steps: ['first future', 'error']}]);
     });
   });
 
-  describe('run', function(){
+  describe('run', function() {
     var next;
     beforeEach(function() {
-      Describe('d1', function(){
-        It('it1', function(){ $scenario.addStep('s1', logger('s1,')); });
-        It('it2', function(){
-          $scenario.addStep('s2', logger('s2,'));
-          $scenario.addStep('s2.2', function(done){ next = done; });
+      Describe('d1', function() {
+        It('it1', function() { $scenario.addFuture('s1', logger('s1,')); });
+        It('it2', function() {
+          $scenario.addFuture('s2', logger('s2,'));
+          $scenario.addFuture('s2.2', function(done){ next = done; });
         });
       });
-      Describe('d2', function(){
-        It('it3', function(){ $scenario.addStep('s3', logger('s3,')); });
-        It('it4', function(){ $scenario.addStep('s4', logger('s4,')); });
+      Describe('d2', function() {
+        It('it3', function() { $scenario.addFuture('s3', logger('s3,')); });
+        It('it4', function() { $scenario.addFuture('s4', logger('s4,')); });
       });
     });
-    it('should execute all specs', function(){
+    it('should execute all specs', function() {
       $scenario.run(body);
 
       expect(log).toEqual('s1,s2,');
@@ -226,20 +217,20 @@ describe('Runner', function(){
       expect(log).toEqual('s1,s2,s3,s4,');
     });
     it('should publish done state and results as tests are run', function() {
-      expect(scenario.$testrun.done).toBeFalsy();
-      expect(scenario.$testrun.results).toEqual([]);
+      expect(_window.$testrun.done).toBeFalsy();
+      expect(_window.$testrun.results).toEqual([]);
       $scenario.run(body);
-      expect(scenario.$testrun.done).toBeFalsy();
-      expect(scenario.$testrun.results).toEqual([
-        {name: 'd1: it it1', passed: true, steps: ['s1']}
+      expect(_window.$testrun.done).toBeFalsy();
+      expect(_window.$testrun.results).toEqual([
+        {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']}
       ]);
       next();
-      expect(scenario.$testrun.done).toBeTruthy();
-      expect(scenario.$testrun.results).toEqual([
-        {name: 'd1: it it1', passed: true, steps: ['s1']},
-        {name: 'd1: it it2', passed: true, steps: ['s2', 's2.2']},
-        {name: 'd2: it it3', passed: true, steps: ['s3']},
-        {name: 'd2: it it4', passed: true, steps: ['s4']}
+      expect(_window.$testrun.done).toBeTruthy();
+      expect(_window.$testrun.results).toEqual([
+        {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']},
+        {name: 'd1: it it2', passed: true, error: undefined, steps: ['s2', 's2.2']},
+        {name: 'd2: it it3', passed: true, error: undefined, steps: ['s3']},
+        {name: 'd2: it it4', passed: true, error: undefined, steps: ['s4']}
       ]);
     });
   });
