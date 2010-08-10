@@ -130,7 +130,8 @@ function createScope(parent, services, existing) {
     $set: bind(instance, setter, instance),
 
     $eval: function $eval(exp) {
-      if (exp === undefined) {
+      var type = typeof exp;
+      if (type == 'undefined') {
         for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
           for ( var queue = evalLists.sorted[i],
               jSize = queue.length,
@@ -138,18 +139,19 @@ function createScope(parent, services, existing) {
             instance.$tryEval(queue[j].fn, queue[j].handler);
           }
         }
-      } else if (typeof exp === 'function'){
+      } else if (type === 'function') {
         return exp.call(instance);
-      } else {
+      } else  if (type === 'string') {
         return expressionCompile(exp).call(instance);
       }
     },
 
     $tryEval: function (expression, exceptionHandler) {
+      var type = typeof expression;
       try {
-        if (typeof expression == 'function') {
+        if (type == 'function') {
           return expression.call(instance);
-        } else {
+        } else if (type == 'string'){
           return expressionCompile(expression).call(instance);
         }
       } catch (e) {

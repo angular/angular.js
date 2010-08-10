@@ -21,8 +21,11 @@ describe('scope/model', function(){
   });
 
   describe('$eval', function(){
+    var model;
+
+    beforeEach(function(){model = createScope();});
+
     it('should eval function with correct this', function(){
-      var model = createScope();
       model.$eval(function(){
         this.name = 'works';
       });
@@ -30,18 +33,24 @@ describe('scope/model', function(){
     });
 
     it('should eval expression with correct this', function(){
-      var model = createScope();
       model.$eval('name="works"');
       expect(model.name).toEqual('works');
     });
 
     it('should do nothing on empty string and not update view', function(){
-      var model = createScope();
       var onEval = jasmine.createSpy('onEval');
       model.$onEval(onEval);
       model.$eval('');
       expect(onEval).wasNotCalled();
     });
+
+    it('should ignore none string/function', function(){
+      model.$eval(null);
+      model.$eval({});
+      model.$tryEval(null);
+      model.$tryEval({});
+    });
+
   });
 
   describe('$watch', function(){
