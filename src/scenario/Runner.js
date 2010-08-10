@@ -8,6 +8,7 @@ angular.scenario.Runner = function(scope, jQuery){
   this.scope.$testrun = {done: false, results: []};
 
   var specs = this.specs = {};
+  this.currentSpec = {name: '', futures: []};
   var path = [];
   this.scope.describe = function(name, body){
     path.push(name);
@@ -22,17 +23,20 @@ angular.scenario.Runner = function(scope, jQuery){
   this.scope.afterEach = function(body) {
     afterEach = body;
   };
+  this.scope.expect = function(future) {
+    return new Matcher(self, future, self.logger);
+  };
   this.scope.it = function(name, body) {
     var specName = path.join(' ') + ': it ' + name;
     self.currentSpec = specs[specName] = {
         name: specName,
-        steps:[]
+        futures: []
      };
     try {
       beforeEach();
       body();
     } catch(err) {
-      self.addStep(err.message || 'ERROR', function(){
+      self.addFuture(err.message || 'ERROR', function(){
         throw err;
       });
     } finally {
@@ -107,14 +111,16 @@ angular.scenario.Runner.prototype = {
     callback();
   },
 
-  addStep: function(name, step) {
-    this.currentSpec.steps.push({name:name, fn:step});
+  addFuture: function(name, behavior) {
+    var future = new Future(name, behavior);
+    this.currentSpec.futures.push(future);
+    return future;
   },
 
   execute: function(name, callback) {
    var spec = this.specs[name],
        self = this,
-       stepsDone = [],
+       futuresFulfilled = [],
        result = {
          passed: false,
          failed: false,
@@ -128,33 +134,37 @@ angular.scenario.Runner.prototype = {
        },
        specThis = createScope({
          result: result,
+         jQuery: this.jQuery,
          testFrame: this.testFrame,
          testWindow: this.testWindow
        }, angularService, {});
    this.self = specThis;
-   var stepLogger = this.logger('spec', name);
-   spec.nextStepIndex = 0;
+   var futureLogger = this.logger('spec', name);
+   spec.nextFutureIndex = 0;
    function done() {
      result.finished = true;
-     stepLogger.close();
+     futureLogger.close();
      self.self = null;
      (callback||noop).call(specThis);
    }
-   function next(){
-     var step = spec.steps[spec.nextStepIndex];
+   function next(value){
+     if (spec.nextFutureIndex > 0) {
+       spec.futures[spec.nextFutureIndex - 1].fulfill(value);
+     }
+     var future = spec.futures[spec.nextFutureIndex];
      (result.log || {close:noop}).close();
      result.log = null;
-     if (step) {
-       spec.nextStepIndex ++;
-       result.log = stepLogger('step', step.name);
-       stepsDone.push(step.name);
+     if (future) {
+       spec.nextFutureIndex ++;
+       result.log = futureLogger('future', future.name);
+       futuresFulfilled.push(future.name);
        try {
-         step.fn.call(specThis, next);
+         future.behavior.call(specThis, next);
        } catch (e) {
          console.error(e);
          result.fail(e);
          self.scope.$testrun.results.push(
-           {name: name, passed: false, error: e, steps: stepsDone});
+           {name: name, passed: false, error: e, steps: futuresFulfilled});
          done();
        }
      } else {
@@ -163,7 +173,7 @@ angular.scenario.Runner.prototype = {
          name: name,
          passed: !result.failed,
          error: result.error,
-         steps: stepsDone});
+         steps: futuresFulfilled});
        done();
      }
    };
