@@ -82,3 +82,7 @@ JsonTest.prototype.testItShouldSerializeSameObjectsMultipleTimes = function () {
 JsonTest.prototype.testItShouldNotSerializeUndefinedValues = function () {
   assertEquals('{}', angular.toJson({A:undefined}));
 };
+
+JsonTest.prototype.testItShouldParseFloats = function () {
+  expect(fromJson("{value:2.55, name:'misko'}")).toEqual({value:2.55, name:'misko'});
+};
