@@ -85,14 +85,14 @@ describe("DSL", function() {
     var html;
     beforeEach(function() {
       html = '<div class="container">' +
-          '<table class="reports-detail">' +
+          '<div class="reports-detail">' +
             '<span class="desc">Description : ' +
               '<span ng:bind="report.description">Details...</span>' +
             '</span>' +
             '<span>Date created: ' +
               '<span ng:bind="report.creationDate">01/01/01</span>' +
             '</span>' +
-          '</table>' +
+          '</div>' +
         '</div>';
     });
     it('should find elements on the page and provide jquery api', function() {
