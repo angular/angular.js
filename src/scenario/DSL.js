@@ -56,12 +56,12 @@ angular.scenario.dsl.repeater = function(selector) {
         var self = this;
         var doCollect = bind(this, function() {
           var repeaterArray = [];
-          this.testDocument.find(selector).each(function(index) {
+          this.testDocument.find(selector).each(function() {
             var element = angular.extend(self.jQuery(this),
                 {bindings: [],
                  boundTo: function(name) { return this.bindings[name]; }}
             );
-            element.find('*').each(function(index) {
+            element.find('*').each(function() {
               var bindName = self.jQuery(this).attr('ng:bind');
               if (bindName) {
                 element.bindings[bindName] = self.jQuery(this).text();
@@ -85,10 +85,10 @@ angular.scenario.dsl.element = function(selector) {
       bindings: [],
       boundTo: function(name) { return this.bindings[name]; }
     });
-    element.find('*').each(function(index) {
-      var bindName = self.jQuery(this).attr('ng:bind');
+    element.find('*').each(function() {
+      var bindName = self.jQuery(elem).attr('ng:bind');
       if (bindName) {
-        element.bindings[bindName] = self.jQuery(this).text();
+        element.bindings[bindName] = self.jQuery(elem).text();
       }
     });
     done(element);
