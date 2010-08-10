@@ -5,15 +5,16 @@ describe("DSL", function() {
   beforeEach(function() {
     setUpContext();
     executeFuture = function(future, html, callback) {
-      lastDocument =_jQuery('<div>' + html + '</div>');
+      lastDocument = _jQuery('<div>' + html + '</div>');
       _jQuery(document.body).append(lastDocument);
       var specThis = {
         testWindow: window,
-        testDocument: lastDocument
+        testDocument: lastDocument,
+        jQuery: _jQuery
       };
       future.behavior.call(specThis, callback || noop);
     };
-    Expect = scenario.expect;
+    Expect = _window.expect;
   });
 
   describe("input", function() {

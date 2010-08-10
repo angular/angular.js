@@ -134,6 +134,7 @@ angular.scenario.Runner.prototype = {
        },
        specThis = createScope({
          result: result,
+         jQuery: this.jQuery,
          testFrame: this.testFrame,
          testWindow: this.testWindow
        }, angularService, {});
