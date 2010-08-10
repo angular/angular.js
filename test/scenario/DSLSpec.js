@@ -41,7 +41,6 @@ describe("DSL", function() {
   describe('repeater', function() {
 
     var repeater = angular.scenario.dsl.repeater;
-
     it('should count', function() {
       var future = repeater('.repeater-row').count();
       expect(future.name).toEqual("repeater '.repeater-row' count");
@@ -77,6 +76,42 @@ describe("DSL", function() {
       expect(future.value[0].boundTo('game')).toEqual('Red Dead Redemption');
       expect(future.value[1].boundTo('hero')).toEqual('Nathan Drake');
       expect(future.value[1].boundTo('game')).toEqual('Uncharted 2');
+    });
+  });
+
+  describe('element', function() {
+    var element = angular.scenario.dsl.element;
+    var html;
+    beforeEach(function() {
+      html = '<div class="container">' +
+          '<table class="reports-detail">' +
+            '<span class="desc">Description : ' +
+              '<span ng:bind="report.description">Details...</span>' +
+            '</span>' +
+            '<span>Date created: ' +
+              '<span ng:bind="report.creationDate">01/01/01</span>' +
+            '</span>' +
+          '</table>' +
+        '</div>';
+    });
+    it('should find elements on the page and provide jquery api', function() {
+      var future = element('.reports-detail');
+      expect(future.name).toEqual("Find element '.reports-detail'");
+      executeFuture(future, html, function(value) { future.fulfill(value); });
+      expect(future.fulfilled).toBeTruthy();
+      expect(future.value.text()).
+        toEqual('Description : Details...Date created: 01/01/01');
+      expect(future.value.find('.desc').text()).
+        toEqual('Description : Details...');
+    });
+    it('should know how to find ng:bind elements on page', function() {
+      var future = element('.reports-detail');
+      expect(future.name).toEqual("Find element '.reports-detail'");
+      executeFuture(future, html, function(value) { future.fulfill(value); });
+      expect(future.fulfilled).toBeTruthy();
+      expect(future.value.boundTo('report.description')).toEqual('Details...');
+      expect(future.value.boundTo('report.creationDate')).toEqual('01/01/01');
+      expect(future.value.boundTo('doesnotexist')).not.toBeDefined();
     });
   });
 });
