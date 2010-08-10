@@ -114,6 +114,13 @@ describe("resource", function() {
     CreditCard.charge({id:123, amount:10},{auth:'abc'}, callback);
   });
 
+  it('should post charge verb on instance', function(){
+    xhr.expectPOST('/CreditCard/123!charge?amount=10', {id:{key:123}, name:'misko'}).respond({success:'ok'});
+
+    var card = new CreditCard({id:{key:123}, name:'misko'});
+    card.$charge({amount:10}, callback);
+  });
+
   it('should create on save', function(){
     xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123});
     var cc = new CreditCard();

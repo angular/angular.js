@@ -213,7 +213,7 @@ function switchRouteMatcher(on, when, dstName) {
   return match ? dst : null;
 }
 
-angularService('$route', function(location, params){
+angularService('$route', function(location){
   var routes = {},
       onChange = [],
       matcher = switchRouteMatcher,
