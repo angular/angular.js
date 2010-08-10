@@ -62,7 +62,9 @@ angular.scenario.dsl.repeater = function(selector) {
             );
             element.find('*').each(function(index) {
               var bindName = _jQuery(this).attr('ng:bind');
-              element.bindings[bindName] = _jQuery(this).text();
+              if (bindName) {
+                element.bindings[bindName] = _jQuery(this).text();
+              }
             });
             repeaterArray[index] = element;
           });
@@ -72,4 +74,21 @@ angular.scenario.dsl.repeater = function(selector) {
       });
     }
   };
+};
+
+angular.scenario.dsl.element = function(selector) {
+  var nameSuffix = "element '" + selector + "'";
+  return $scenario.addFuture('Find ' + nameSuffix, function(done) {
+    var element = angular.extend(this.testDocument.find(selector), {
+      bindings: [],
+      boundTo: function(name) { return this.bindings[name]; }
+    });
+    element.find('*').each(function(index) {
+      var bindName = _jQuery(this).attr('ng:bind');
+      if (bindName) {
+        element.bindings[bindName] = _jQuery(this).text();
+      }
+    });
+    done(element);
+  });
 };
