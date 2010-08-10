@@ -4,10 +4,10 @@ describe('Runner', function() {
 
   beforeEach(function() {
     setUpContext();
-    Describe = scenario.describe;
-    It = scenario.it;
-    BeforeEach = scenario.beforeEach;
-    AfterEach = scenario.afterEach;
+    Describe = _window.describe;
+    It = _window.it;
+    BeforeEach = _window.beforeEach;
+    AfterEach = _window.afterEach;
     body = _jQuery('<div></div>');
   });
 
@@ -101,7 +101,7 @@ describe('Runner', function() {
         });
         $scenario.run(body);
         expect(log).toEqual('future1;after;future2;after;');
-        expect(scenario.$testrun.results).toEqual([
+        expect(_window.$testrun.results).toEqual([
           { name : 'describe name: it should text1',
             passed : false,
             error : 'AfterError',
@@ -186,7 +186,7 @@ describe('Runner', function() {
         expect(spec.result.failed).toEqual(true);
         expect(spec.result.finished).toEqual(true);
         expect(spec.result.error).toEqual("MyError");
-        expect(scenario.$testrun.results).toEqual([{
+        expect(_window.$testrun.results).toEqual([{
           name: 'spec',
           passed: false,
           error: 'MyError',
@@ -217,16 +217,16 @@ describe('Runner', function() {
       expect(log).toEqual('s1,s2,s3,s4,');
     });
     it('should publish done state and results as tests are run', function() {
-      expect(scenario.$testrun.done).toBeFalsy();
-      expect(scenario.$testrun.results).toEqual([]);
+      expect(_window.$testrun.done).toBeFalsy();
+      expect(_window.$testrun.results).toEqual([]);
       $scenario.run(body);
-      expect(scenario.$testrun.done).toBeFalsy();
-      expect(scenario.$testrun.results).toEqual([
+      expect(_window.$testrun.done).toBeFalsy();
+      expect(_window.$testrun.results).toEqual([
         {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']}
       ]);
       next();
-      expect(scenario.$testrun.done).toBeTruthy();
-      expect(scenario.$testrun.results).toEqual([
+      expect(_window.$testrun.done).toBeTruthy();
+      expect(_window.$testrun.results).toEqual([
         {name: 'd1: it it1', passed: true, error: undefined, steps: ['s1']},
         {name: 'd1: it it2', passed: true, error: undefined, steps: ['s2', 's2.2']},
         {name: 'd2: it it3', passed: true, error: undefined, steps: ['s3']},

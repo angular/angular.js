@@ -1,4 +1,4 @@
-var scenario, runner, log, $scenario;
+var _window, runner, log, $scenario;
 
 function logger(text) {
   return function(done){
@@ -8,8 +8,8 @@ function logger(text) {
 }
 
 function setUpContext() {
-  scenario = {};
-  runner = new angular.scenario.Runner(scenario, _jQuery);
-  $scenario = scenario.$scenario;
+  _window = {};
+  runner = new angular.scenario.Runner(_window, _jQuery);
+  $scenario = _window.$scenario;
   log = '';
 }
