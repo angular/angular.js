@@ -147,6 +147,11 @@ LexerTest.prototype.testStatements = function(){
   assertEquals(tokens[3].text, ';');
 };
 
+LexerTest.prototype.testNumber = function(){
+  var tokens = new Lexer("0.5").parse();
+  expect(tokens[0].text).toEqual(0.5);
+};
+
 ParserTest = TestCase('ParserTest');
 
 ParserTest.prototype.testExpressions = function(){
