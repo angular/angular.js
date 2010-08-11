@@ -1,13 +1,9 @@
-array = [].constructor;
+var array = [].constructor;
 
 function toJson(obj, pretty){
   var buf = [];
   toJsonArray(buf, obj, pretty ? "\n  " : null, []);
   return buf.join('');
-}
-
-function toPrettyJson(obj)  {
-  return toJson(obj, true);
 }
 
 function fromJson(json) {
