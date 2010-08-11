@@ -42,6 +42,27 @@ describe("DSL", function() {
   describe('repeater', function() {
 
     var repeater = angular.scenario.dsl.repeater;
+    var html;
+    beforeEach(function() {
+      html = "<table>" +
+          "<tr class='epic'>" +
+            "<td class='hero-name'>" +
+              "<span ng:bind='hero'>John Marston</span>" +
+            "</td>" +
+            "<td class='game-name'>" +
+              "<span ng:bind='game'>Red Dead Redemption</span>" +
+            "</td>" +
+          "</tr>" +
+          "<tr class='epic'>" +
+            "<td class='hero-name'>" +
+              "<span ng:bind='hero'>Nathan Drake</span>" +
+            "</td>" +
+            "<td class='game-name'>" +
+              "<span ng:bind='game'>Uncharted</span>" +
+            "</td>" +
+          "</tr>" +
+        "</table>";
+    });
     it('should count', function() {
       var future = repeater('.repeater-row').count();
       expect(future.name).toEqual("repeater '.repeater-row' count");
@@ -55,29 +76,31 @@ describe("DSL", function() {
       expect(future.value).toEqual(2);
     });
 
-    it('should collect', function() {
-      var future = repeater('.epic').collect();
-      expect(future.name).toEqual("repeater '.epic' collect");
-      executeFuture(future,
-        "<table>" +
-        "<tr class='epic'>" +
-          "<td ng:bind='hero'>John Marston</td>" +
-          "<td ng:bind='game'>Red Dead Redemption</td>" +
-        "</tr>" +
-        "<tr class='epic'>" +
-          "<td ng:bind='hero'>Nathan Drake</td>" +
-          "<td ng:bind='game'>Uncharted 2</td>" +
-        "</tr>" +
-        "</table>",
-        function(value) {
-          future.fulfill(value);
+    function assertFutureState(future, expectedName, expectedValue) {
+      expect(future.name).toEqual(expectedName);
+      executeFuture(future, html, function(value) {
+        future.fulfill(value);
       });
       expect(future.fulfilled).toBeTruthy();
-      expect(future.value[0].boundTo('hero')).toEqual('John Marston');
-      expect(future.value[0].boundTo('game')).toEqual('Red Dead Redemption');
-      expect(future.value[1].boundTo('hero')).toEqual('Nathan Drake');
-      expect(future.value[1].boundTo('game')).toEqual('Uncharted 2');
+      expect(future.value).toEqual(expectedValue);
+    }
+    it('should collect bindings', function() {
+      assertFutureState(repeater('.epic').collect('{{hero}}'),
+        "repeater '.epic' collect '{{hero}}'",
+        ['John Marston', 'Nathan Drake']);
+      assertFutureState(repeater('.epic').collect('{{game}}'),
+        "repeater '.epic' collect '{{game}}'",
+        ['Red Dead Redemption', 'Uncharted']);
     });
+    it('should collect normal selectors', function() {
+      assertFutureState(repeater('.epic').collect('.hero-name'),
+        "repeater '.epic' collect '.hero-name'",
+        ['John Marston', 'Nathan Drake']);
+      assertFutureState(repeater('.epic').collect('.game-name'),
+        "repeater '.epic' collect '.game-name'",
+        ['Red Dead Redemption', 'Uncharted']);
+    });
+    it('should collect normal attributes', function() {});
   });
 
   describe('element', function() {
