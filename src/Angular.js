@@ -307,14 +307,6 @@ function bind(_this, _function) {
   }
 }
 
-function outerHTML(node) {
-  var temp = document.createElement('div');
-  temp.appendChild(node);
-  var outerHTML = temp.innerHTML;
-  temp.removeChild(node);
-  return outerHTML;
-}
-
 function toBoolean(value) {
   if (value && value.length !== 0) {
     var v = lowercase("" + value);
