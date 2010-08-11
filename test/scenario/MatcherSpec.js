@@ -27,4 +27,12 @@ describe('Matcher', function () {
       expect(e).toEqual('Expected 456 but was 123');
     }
   });
+  it('should correctly match arrays', function() {
+    var future = $scenario.addFuture('Calculate first future', function(done) {
+      done(['a', 'b']);
+    });
+    matcher = new Matcher(this, future);
+    matcher.toEqual(['a', 'b']);
+    executeFutures();
+  });
 });
