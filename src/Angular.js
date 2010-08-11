@@ -291,19 +291,17 @@ function escapeAttr(html) {
       '&quot;');
 }
 
-function bind(_this, _function) {
-  var curryArgs = slice.call(arguments, 2, arguments.length);
-  if (typeof _function == 'function') {
-    return curryArgs.length == 0 ?
-      function() {
-        return _function.apply(_this, arguments);
-      } :
-      function() {
-        return _function.apply(_this, curryArgs.concat(slice.call(arguments, 0, arguments.length)));
-      };
+function bind(self, fn) {
+  var curryArgs = arguments.length > 2 ? slice.call(arguments, 2, arguments.length) : [];
+  if (typeof fn == 'function') {
+    return curryArgs.length ? function() {
+      return arguments.length ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0, arguments.length))) : fn.apply(self, curryArgs);
+    }: function() {
+      return arguments.length ? fn.apply(self, arguments) : fn.call(self);
+    };
   } else {
     // in IE, native methods ore not functions and so they can not be bound (but they don't need to be)
-    return _function;
+    return fn;
   }
 }
 
