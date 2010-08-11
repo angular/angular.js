@@ -100,7 +100,9 @@ describe("DSL", function() {
         "repeater '.epic' collect '.game-name'",
         ['Red Dead Redemption', 'Uncharted']);
     });
-    it('should collect normal attributes', function() {});
+    it('should collect normal attributes', function() {
+      //TODO(shyamseshadri) : Left as an exercise to the user
+    });
   });
 
   describe('element', function() {
@@ -118,24 +120,25 @@ describe("DSL", function() {
           '</div>' +
         '</div>';
     });
+    function timeTravel(future) {
+      executeFuture(future, html, function(value) { future.fulfill(value); });
+      expect(future.fulfilled).toBeTruthy();
+    }
     it('should find elements on the page and provide jquery api', function() {
       var future = element('.reports-detail');
       expect(future.name).toEqual("Find element '.reports-detail'");
-      executeFuture(future, html, function(value) { future.fulfill(value); });
-      expect(future.fulfilled).toBeTruthy();
+      timeTravel(future);
       expect(future.value.text()).
         toEqual('Description : Details...Date created: 01/01/01');
       expect(future.value.find('.desc').text()).
         toEqual('Description : Details...');
     });
-    it('should know how to find ng:bind elements on page', function() {
-      var future = element('.reports-detail');
-      expect(future.name).toEqual("Find element '.reports-detail'");
-      executeFuture(future, html, function(value) { future.fulfill(value); });
-      expect(future.fulfilled).toBeTruthy();
-      expect(future.value.boundTo('report.description')).toEqual('Details...');
-      expect(future.value.boundTo('report.creationDate')).toEqual('01/01/01');
-      expect(future.value.boundTo('doesnotexist')).not.toBeDefined();
+    it('should find elements with angular syntax', function() {
+      var future = element('{{report.description}}');
+      expect(future.name).toEqual("Find element '{{report.description}}'");
+      timeTravel(future);
+      expect(future.value.text()).toEqual('Details...');
+      expect(future.value.attr('ng:bind')).toEqual('report.description');
     });
   });
 });
