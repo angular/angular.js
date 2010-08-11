@@ -43,6 +43,8 @@ angular.scenario.dsl.input = function(selector) {
   };
 },
 
+angular.scenario.dsl.NG_BIND_PATTERN =/\{\{[^\}]+\}\}/;
+
 angular.scenario.dsl.repeater = function(selector) {
   var namePrefix = "repeater '" + selector + "'";
   return {
@@ -51,23 +53,30 @@ angular.scenario.dsl.repeater = function(selector) {
           done(this.testDocument.find(selector).size());
       });
     },
-    collect: function() {
-      return $scenario.addFuture(namePrefix + ' collect', function(done) {
+    collect: function(collectSelector) {
+      return $scenario.addFuture(
+          namePrefix + " collect '" + collectSelector + "'",
+          function(done) {
         var self = this;
         var doCollect = bind(this, function() {
-          var repeaterArray = [];
+          var repeaterArray = [], ngBindPattern;
+          var startIndex = collectSelector.search(
+              angular.scenario.dsl.NG_BIND_PATTERN);
+          if (startIndex >= 0) {
+            ngBindPattern = collectSelector.substring(
+                startIndex + 2, collectSelector.length - 2);
+            collectSelector = '*';
+            
+          }
           this.testDocument.find(selector).each(function() {
-            var element = angular.extend(self.jQuery(this),
-                {bindings: [],
-                 boundTo: function(name) { return this.bindings[name]; }}
-            );
-            element.find('*').each(function() {
-              var bindName = self.jQuery(this).attr('ng:bind');
-              if (bindName) {
-                element.bindings[bindName] = self.jQuery(this).text();
-              }
+            var element = self.jQuery(this);
+            element.find(collectSelector).
+              each(function() {
+                var foundElem = self.jQuery(this);
+                if (foundElem.attr('ng:bind') == ngBindPattern) {
+                  repeaterArray.push(foundElem.text());
+                }
             });
-            repeaterArray[index] = element;
           });
           return repeaterArray;
         });
@@ -80,17 +89,16 @@ angular.scenario.dsl.repeater = function(selector) {
 angular.scenario.dsl.element = function(selector) {
   var nameSuffix = "element '" + selector + "'";
   return $scenario.addFuture('Find ' + nameSuffix, function(done) {
-    var self = this;
-    var element = angular.extend(this.testDocument.find(selector), {
-      bindings: [],
-      boundTo: function(name) { return this.bindings[name]; }
-    });
-    element.find('*').each(function() {
-      var bindName = self.jQuery(elem).attr('ng:bind');
-      if (bindName) {
-        element.bindings[bindName] = self.jQuery(elem).text();
-      }
-    });
-    done(element);
+    var self = this, repeaterArray = [], ngBindPattern;
+    var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
+    if (startIndex >= 0) {
+      ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
+      var element = this.testDocument.find('*').filter(function() {
+        return self.jQuery(this).attr('ng:bind') == ngBindPattern;
+      }); 
+      done(element);
+    } else {
+      done(this.testDocument.find(selector));
+    }
   });
 };
