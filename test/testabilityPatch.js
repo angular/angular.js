@@ -35,22 +35,25 @@ function childNode(element, index) {
 }
 
 extend(angular, {
-  'bind': bind,
-  'compile': compile,
-  'copy': copy,
   'element': jqLite,
+  'compile': compile,
+  'scope': createScope,
+  'copy': copy,
   'extend': extend,
+  'equals': equals,
   'foreach': foreach,
+  'noop':noop,
+  'bind':bind,
+  'toJson': toJson,
+  'fromJson': fromJson,
   'identity':identity,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
-  'isObject': isObject,
   'isString': isString,
   'isFunction': isFunction,
+  'isObject': isObject,
   'isNumber': isNumber,
-  'isArray': isArray,
-  'noop':noop,
-  'scope': createScope
+  'isArray': isArray
 });
 
 

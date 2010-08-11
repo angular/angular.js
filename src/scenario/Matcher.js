@@ -18,4 +18,4 @@ Matcher.addMatcher = function(name, matcher) {
   };
 };
 
-Matcher.addMatcher('toEqual', function(a,b) { return a == b; });
+Matcher.addMatcher('toEqual', angular.equals);
