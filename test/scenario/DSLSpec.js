@@ -159,20 +159,27 @@ describe("DSL", function() {
       expect(future.fulfilled).toBeTruthy();
     }
     it('should find elements on the page and provide jquery api', function() {
-      var future = element('.reports-detail');
-      expect(future.name).toEqual("Find element '.reports-detail'");
+      var future = element('.reports-detail').text();
+      expect(future.name).toEqual("Element '.reports-detail'.text()");
       timeTravel(future);
-      expect(future.value.text()).
+      expect(future.value).
         toEqual('Description : Details...Date created: 01/01/01');
-      expect(future.value.find('.desc').text()).
-        toEqual('Description : Details...');
+//      expect(future.value.find('.desc').text()).
+//        toEqual('Description : Details...');
     });
     it('should find elements with angular syntax', function() {
-      var future = element('{{report.description}}');
-      expect(future.name).toEqual("Find element '{{report.description}}'");
+      var future = element('{{report.description}}').text();
+      expect(future.name).toEqual("Element '{{report.description}}'.text()");
       timeTravel(future);
-      expect(future.value.text()).toEqual('Details...');
-      expect(future.value.attr('ng:bind')).toEqual('report.description');
+      expect(future.value).toEqual('Details...');
+//      expect(future.value.attr('ng:bind')).toEqual('report.description');
+    });
+    it('should be able to click elements', function(){
+      var future = element('.link-class').click();
+      expect(future.name).toEqual("Element '.link-class'.click()");
+      executeFuture(future, html, function(value) { future.fulfill(value); });
+      expect(future.fulfilled).toBeTruthy();
+      // TODO(rajat): look for some side effect from click happening?
     });
   });
 });
