@@ -1,5 +1,6 @@
 angular.scenario.dsl.browser = {
   navigateTo: function(url){
+    var location = this.location;
     return $scenario.addFuture('Navigate to: ' + url, function(done){
       var self = this;
       this.testFrame.load(function(){
@@ -15,8 +16,22 @@ angular.scenario.dsl.browser = {
         this.testFrame[0].contentWindow.location.reload();
       } else {
         this.testFrame.attr('src', url);
+        location.setLocation(url);
       }
     });
+  },
+  location: {
+    href: "",
+    hash: "",
+    toEqual: function(url) {
+      return (this.hash == "" ? (url == this.href) :
+        (url == (this.href + "/#/" + this.hash)));
+    },
+    setLocation: function(url) {
+      var urlParts = url.split("/#/");
+      this.href = urlParts[0] || "";
+      this.hash = urlParts[1] || "";
+    }
   }
 };
 
