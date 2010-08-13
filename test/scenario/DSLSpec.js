@@ -159,7 +159,7 @@ describe("DSL", function() {
       expect(future.fulfilled).toBeTruthy();
     }
     it('should find elements on the page and provide jquery api', function() {
-      var future = element('.reports-detail').find();
+      var future = element('.reports-detail');
       expect(future.name).toEqual("Find element '.reports-detail'");
       timeTravel(future);
       expect(future.value.text()).
@@ -168,7 +168,7 @@ describe("DSL", function() {
         toEqual('Description : Details...');
     });
     it('should find elements with angular syntax', function() {
-      var future = element('{{report.description}}').find();
+      var future = element('{{report.description}}');
       expect(future.name).toEqual("Find element '{{report.description}}'");
       timeTravel(future);
       expect(future.value.text()).toEqual('Details...');
