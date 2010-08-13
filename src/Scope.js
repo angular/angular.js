@@ -76,7 +76,7 @@ function getterFn(path){
       code += '    type = angular.Global.typeOf(last);\n';
       code += '    fn = (angular[type.charAt(0).toUpperCase() + type.substring(1)]||{})["' + name + '"];\n';
       code += '    if (fn)\n';
-      code += '      self = function(){ return fn.apply(last, [last].concat(slice.call(arguments, 0, arguments.length))); };\n';
+      code += '      self = function(){ return fn.apply(last, [last].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n';
       code += '  }\n';
     }
   });
