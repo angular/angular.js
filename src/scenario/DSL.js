@@ -102,18 +102,30 @@ angular.scenario.dsl.repeater = function(selector) {
 };
 
 angular.scenario.dsl.element = function(selector) {
-  var nameSuffix = "element '" + selector + "'";
-  return $scenario.addFuture('Find ' + nameSuffix, function(done) {
-    var self = this, repeaterArray = [], ngBindPattern;
-    var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
-    if (startIndex >= 0) {
-      ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
-      var element = this.testDocument.find('*').filter(function() {
-        return self.jQuery(this).attr('ng:bind') == ngBindPattern;
-      }); 
-      done(element);
-    } else {
-      done(this.testDocument.find(selector));
-    }
-  });
+  var namePrefix = "Element '" + selector + "'";
+  var futureJquery = {};
+  for (key in _jQuery.fn) {
+    (function(){
+      var jqFnName = key;
+      var jqFn = _jQuery.fn[key];
+      futureJquery[key] = function() {
+        var jqArgs = arguments;
+        return $scenario.addFuture(namePrefix + "." + jqFnName + "()",
+                function(done) {
+          var self = this, repeaterArray = [], ngBindPattern;
+          var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
+          if (startIndex >= 0) {
+            ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
+            var element = this.testDocument.find('*').filter(function() {
+              return self.jQuery(this).attr('ng:bind') == ngBindPattern;
+            });
+            done(jqFn.apply(element, jqArgs));
+          } else {
+            done(jqFn.apply(this.testDocument.find(selector), jqArgs));
+          }
+        });
+      };
+    })();
+  }
+  return futureJquery;
 };
