@@ -103,28 +103,17 @@ angular.scenario.dsl.repeater = function(selector) {
 
 angular.scenario.dsl.element = function(selector) {
   var nameSuffix = "element '" + selector + "'";
-  return {
-    find: function() {
-      return $scenario.addFuture('Find ' + nameSuffix, function(done) {
-        var self = this, repeaterArray = [], ngBindPattern;
-        var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
-        if (startIndex >= 0) {
-          ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
-          var element = this.testDocument.find('*').filter(function() {
-            return self.jQuery(this).attr('ng:bind') == ngBindPattern;
-          }); 
-          done(element);
-        } else {
-          done(this.testDocument.find(selector));
-        }
-      });
-    },
-    click: function() {
-      var self = this;
-      return $scenario.addFuture('Click ' + nameSuffix, function(done) {
-       _jQuery(self).click();
-        done();
-      });
+  return $scenario.addFuture('Find ' + nameSuffix, function(done) {
+    var self = this, repeaterArray = [], ngBindPattern;
+    var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
+    if (startIndex >= 0) {
+      ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
+      var element = this.testDocument.find('*').filter(function() {
+        return self.jQuery(this).attr('ng:bind') == ngBindPattern;
+      }); 
+      done(element);
+    } else {
+      done(this.testDocument.find(selector));
     }
-  };
+  });
 };

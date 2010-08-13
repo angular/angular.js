@@ -174,12 +174,5 @@ describe("DSL", function() {
       expect(future.value.text()).toEqual('Details...');
       expect(future.value.attr('ng:bind')).toEqual('report.description');
     });
-    it('should be able to click elements', function(){
-      var future = element('.link-class').click();
-      expect(future.name).toEqual("Click element '.link-class'");
-      executeFuture(future, html, function(value) { future.fulfill(value); });
-      expect(future.fulfilled).toBeTruthy();
-      // TODO(rajat): look for some side effect from click happening?
-    });
   });
 });
