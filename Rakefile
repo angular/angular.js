@@ -120,3 +120,9 @@ task :lint do
   out = %x(lib/jsl/jsl -conf lib/jsl/jsl.default.conf)
   print out
 end
+
+desc 'push_angularajs'
+task :push_angularjs do
+  Rake::Task['compile'].execute 0
+  sh %(cat angularjs.ftp | ftp -N angularjs.netrc angularjs.org)
+end
