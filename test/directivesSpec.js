@@ -216,6 +216,12 @@ describe("directives", function(){
     });
   });
 
+  it('should silently ignore undefined ng:style', function() {
+    var scope = compile('<div ng:style="myStyle"></div>');
+    scope.$eval();
+    expect(element.hasClass('ng-exception')).toBeFalsy();
+  });
+
   it('should ng:show', function(){
     var scope = compile('<div ng:hide="hide"></div>');
     scope.$eval();
