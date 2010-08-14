@@ -104,10 +104,10 @@ angular.scenario.dsl.repeater = function(selector) {
 angular.scenario.dsl.element = function(selector) {
   var namePrefix = "Element '" + selector + "'";
   var futureJquery = {};
-  for (key in _jQuery.fn) {
+  for (key in (jQuery || _jQuery).fn) {
     (function(){
       var jqFnName = key;
-      var jqFn = _jQuery.fn[key];
+      var jqFn = (jQuery || _jQuery).fn[key];
       futureJquery[key] = function() {
         var jqArgs = arguments;
         return $scenario.addFuture(namePrefix + "." + jqFnName + "()",
