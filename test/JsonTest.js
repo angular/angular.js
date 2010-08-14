@@ -74,6 +74,13 @@ JsonTest.prototype.testItShouldPreventRecursion = function () {
   assertEquals('{"a":"b","recursion":RECURSION}', angular.toJson(obj));
 };
 
+JsonTest.prototype.testItShouldSerializeOnlyOwnProperties = function() {
+  var parent = { p: 'p'};
+  var child = { c: 'c'};
+  child.__proto__ = parent;
+  assertEquals('{"c":"c"}', angular.toJson(child));
+}
+
 JsonTest.prototype.testItShouldSerializeSameObjectsMultipleTimes = function () {
   var obj = {a:'b'};
   assertEquals('{"A":{"a":"b"},"B":{"a":"b"}}', angular.toJson({A:obj, B:obj}));
