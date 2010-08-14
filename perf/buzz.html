@@ -3,6 +3,7 @@
   <head>
     <link rel="stylesheet" type="text/css" href="buzz.css"/>
     <script type="text/javascript">
+      var log = [];
       function time(timerName){
         var started = new Date().getTime();
         return {
@@ -15,7 +16,7 @@
             var lapDuration = this.lapped - this.lastLap.time;
             var lastName = this.lastLap.name;
             this.lastLap = {duration:lapDuration, name:lapName, time:this.lapped};
-            console.log(timerName, lapName + ': ' + this.lastLap.duration + ' ms.', '(' + totalDuration + ' ms.)');
+            log.push(timerName + ' ' + lapName + ': ' + this.lastLap.duration + ' ms. (' + totalDuration + ' ms.)');
           }
         };
       }
@@ -24,10 +25,11 @@
     <script type="text/javascript" src="../angular-minified.js" ng:autobind ng:css="css/angular.css"></script>
     <script type="text/javascript">
       window.browser.lap('parse <angular/>');
-      function onInit() {
+      function onInit(scope) {
         window.browser.lap('compile DOM');
         window.setTimeout(function(){
           window.browser.lap('DOM render');
+          scope.$eval();
         }, 1);
       }
     </script>
@@ -39,8 +41,9 @@
       window.browser.lap('parse model');
     </script>
   </head>
-  <body ng:init="$window.$scope = this;$window.onInit(); activities = $window.googlebuzz" style="display:none;" ng:show="true">
-   <a href="{{$location.href}}">reload</a>
+  <body ng:init="$window.$scope = this;$window.onInit(this); activities = $window.googlebuzz; log = $window.log" style="display:none;" ng:show="true">
+   <a href="{{$location.href}}">reload</a><br/>
+   <tt ng:repeat="line in log">{{line}}<br/></tt>
    <hr/>
    <div>
      <span>&lt;angular/&gt; Buzz</span>
