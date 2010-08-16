@@ -436,6 +436,21 @@ describe("widget", function(){
       scope.$init();
       expect(element.text()).toEqual('misko');
     });
+
+    it('should remove previously included text if a falsy value is bound to src', function() {
+      var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+      var scope = angular.compile(element);
+      scope.childScope = createScope();
+      scope.childScope.name = 'igor';
+      scope.url = 'myUrl';
+      scope.$xhr.cache.data.myUrl = {value:'{{name}}'};
+      scope.$init();
+
+      scope.url = undefined;
+      scope.$eval();
+      
+      expect(element.text()).toEqual('');
+    });
   });
 });
 
