@@ -21,17 +21,6 @@ var angularObject = {
 };
 var angularArray = {
   'indexOf': indexOf,
-  'include': includes,
-  'includeIf':function(array, value, condition) {
-    var index = indexOf(array, value);
-    if (condition) {
-      if (index == -1)
-        array.push(value);
-    } else {
-      array.splice(index, 1);
-    }
-    return array;
-  },
   'sum':function(array, expression) {
     var fn = angular['Function']['compile'](expression);
     var sum = 0;
@@ -48,20 +37,6 @@ var angularArray = {
     if (index >=0)
       array.splice(index, 1);
     return value;
-  },
-  'find':function(array, condition, defaultValue) {
-    if (!condition) return undefined;
-    var fn = angular['Function']['compile'](condition);
-    foreach(array, function($){
-      if (fn($)){
-        defaultValue = $;
-        return true;
-      }
-    });
-    return defaultValue;
-  },
-  'findById':function(array, id) {
-    return angular.Array.find(array, function($){return $.$id == id;}, null);
   },
   'filter':function(array, expression) {
     var predicates = [];
@@ -195,52 +170,6 @@ var angularArray = {
     var arrayCopy = [];
     for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
     return arrayCopy.sort(reverse(comparator, descend));
-  },
-  'orderByToggle':function(predicate, attribute) {
-    var STRIP = /^([+|-])?(.*)/;
-    var ascending = false;
-    var index = -1;
-    foreach(predicate, function($, i){
-      if (index == -1) {
-        if ($ == attribute) {
-          ascending = true;
-          index = i;
-          return true;
-        }
-        if (($.charAt(0)=='+'||$.charAt(0)=='-') && $.substring(1) == attribute) {
-          ascending = $.charAt(0) == '+';
-          index = i;
-          return true;
-        }
-      }
-    });
-    if (index >= 0) {
-      predicate.splice(index, 1);
-    }
-    predicate.unshift((ascending ? "-" : "+") + attribute);
-    return predicate;
-  },
-  'orderByDirection':function(predicate, attribute, ascend, descend) {
-    ascend = ascend || 'ng-ascend';
-    descend = descend || 'ng-descend';
-    var att = predicate[0] || '';
-    var direction = true;
-    if (att.charAt(0) == '-') {
-      att = att.substring(1);
-      direction = false;
-    } else if(att.charAt(0) == '+') {
-      att = att.substring(1);
-    }
-    return att == attribute ? (direction ? ascend : descend) : "";
-  },
-  'merge':function(array, index, mergeValue) {
-    var value = array[index];
-    if (!value) {
-      value = {};
-      array[index] = value;
-    }
-    merge(mergeValue, value);
-    return array;
   }
 };
 
