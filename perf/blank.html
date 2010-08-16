@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+    <script type="text/javascript">
+      function time(timerName){
+        var started = new Date().getTime();
+        return {
+          name: timerName,
+          started: started,
+          lastLap: {duration:0, name:'BEGIN'},
+          lap: function(lapName){
+            var duration = (this.lapped = new Date().getTime()) - this.started;
+            var lastName = this.lastLap.name;
+            this.lastLap = {duration:duration-this.lastLap.duration, name:lapName};
+            console.log(timerName, lapName, 'TOTAL: ' + duration + ' ms.', 'since ' + lastName + ': ' + this.lastLap.duration + ' ms.');
+            return duration;
+          }
+        };
+      }
+      window.browser = time('BROWSER');
+    </script>
+    <script type="text/javascript" src="../angular-minified.js" ng:autobind ng:css="css/angular.css"></script>
+    <script type="text/javascript">
+      window.browser.lap('parse');
+
+    </script>
+  </head>
+  <body ng:init="$window.$scope = this; $window.browser.lap('ready')" style="display:none;" ng:show="true">
+   <a href="startup.html">reload</a>
+   <hr/>
+   READY
+  </body>
+ </html>

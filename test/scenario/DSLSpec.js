@@ -6,10 +6,12 @@ describe("DSL", function() {
     setUpContext();
     executeFuture = function(future, html, callback) {
       lastDocument = _jQuery('<div>' + html + '</div>');
+      lastFrame = _jQuery('<iframe>' + lastDocument + '</iframe>');
       _jQuery(document.body).append(lastDocument);
       var specThis = {
         testWindow: window,
         testDocument: lastDocument,
+        testFrame: lastFrame,
         jQuery: _jQuery
       };
       future.behavior.call(specThis, callback || noop);
@@ -36,6 +38,38 @@ describe("DSL", function() {
         '<input type="radio" name="0@gender" value="female"/>');
       expect(lastDocument.find(':radio:checked').length).toEqual(1);
       expect(lastDocument.find(':radio:checked').val()).toEqual('female');
+    });
+  });
+
+  describe('browser', function() {
+    var browser = angular.scenario.dsl.browser;
+    it('shoud return true if location with empty hash provided is same '
+        + 'as location of the page', function() {
+      browser.location.href = "http://server";
+      expect(browser.location.toEqual("http://server")).toEqual(true);
+    });
+    it('shoud return true if location with hash provided is same '
+        + 'as location of the page', function() {
+      browser.location.href = "http://server";
+      browser.location.hash = "hashPath";
+      expect(browser.location.toEqual("http://server/#/hashPath"))
+        .toEqual(true);
+    });
+    it('should return true if the location provided is the same as which '
+        + 'browser navigated to', function() {
+      var future = browser.navigateTo("http://server/#/hashPath");
+      expect(future.name).toEqual("Navigate to: http://server/#/hashPath");
+      executeFuture(future, '<input type="text" name="name" />');
+      expect(browser.location.toEqual("http://server/#/hashPath"))
+        .toEqual(true);
+      expect(browser.location.toEqual("http://server/"))
+        .toEqual(false);
+
+      future = browser.navigateTo("http://server/");
+      expect(future.name).toEqual("Navigate to: http://server/");
+      executeFuture(future, '<input type="text" name="name" />');
+      expect(browser.location.toEqual("http://server/"))
+        .toEqual(true);
     });
   });
 
@@ -125,20 +159,27 @@ describe("DSL", function() {
       expect(future.fulfilled).toBeTruthy();
     }
     it('should find elements on the page and provide jquery api', function() {
-      var future = element('.reports-detail');
-      expect(future.name).toEqual("Find element '.reports-detail'");
+      var future = element('.reports-detail').text();
+      expect(future.name).toEqual("Element '.reports-detail'.text()");
       timeTravel(future);
-      expect(future.value.text()).
+      expect(future.value).
         toEqual('Description : Details...Date created: 01/01/01');
-      expect(future.value.find('.desc').text()).
-        toEqual('Description : Details...');
+//      expect(future.value.find('.desc').text()).
+//        toEqual('Description : Details...');
     });
     it('should find elements with angular syntax', function() {
-      var future = element('{{report.description}}');
-      expect(future.name).toEqual("Find element '{{report.description}}'");
+      var future = element('{{report.description}}').text();
+      expect(future.name).toEqual("Element '{{report.description}}'.text()");
       timeTravel(future);
-      expect(future.value.text()).toEqual('Details...');
-      expect(future.value.attr('ng:bind')).toEqual('report.description');
+      expect(future.value).toEqual('Details...');
+//      expect(future.value.attr('ng:bind')).toEqual('report.description');
+    });
+    it('should be able to click elements', function(){
+      var future = element('.link-class').click();
+      expect(future.name).toEqual("Element '.link-class'.click()");
+      executeFuture(future, html, function(value) { future.fulfill(value); });
+      expect(future.fulfilled).toBeTruthy();
+      // TODO(rajat): look for some side effect from click happening?
     });
   });
 });

@@ -44,9 +44,10 @@ function setter(instance, path, value){
 }
 
 ///////////////////////////////////
-
-var getterFnCache = {};
-var JS_KEYWORDS = {};
+var scopeId = 0;
+    getterFnCache = {},
+    compileCache = {},
+    JS_KEYWORDS = {};
 foreach(
    ["abstract", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger", "default",
     "delete", "do", "double", "else", "enum", "export", "extends", "false", "final", "finally", "float", "for", "function", "goto",
@@ -75,7 +76,7 @@ function getterFn(path){
       code += '    type = angular.Global.typeOf(last);\n';
       code += '    fn = (angular[type.charAt(0).toUpperCase() + type.substring(1)]||{})["' + name + '"];\n';
       code += '    if (fn)\n';
-      code += '      self = function(){ return fn.apply(last, [last].concat(slice.call(arguments, 0, arguments.length))); };\n';
+      code += '      self = function(){ return fn.apply(last, [last].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n';
       code += '  }\n';
     }
   });
@@ -88,7 +89,6 @@ function getterFn(path){
 
 ///////////////////////////////////
 
-var compileCache = {};
 function expressionCompile(exp){
   if (typeof exp === 'function') return exp;
   var fn = compileCache[exp];
@@ -108,7 +108,6 @@ function errorHandlerFor(element, error) {
   elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
 }
 
-var scopeId = 0;
 function createScope(parent, services, existing) {
   function Parent(){}
   function API(){}

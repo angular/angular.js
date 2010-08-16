@@ -18,27 +18,6 @@ ApiTest.prototype.testItShouldReturnSize = function(){
   assertEquals(1, angular.Array.size([0]));
 };
 
-ApiTest.prototype.testIncludeIf = function() {
-  var array = [];
-  var obj = {};
-
-  angular.Array.includeIf(array, obj, true);
-  angular.Array.includeIf(array, obj, true);
-  assertTrue(includes(array, obj));
-  assertEquals(1, array.length);
-
-  angular.Array.includeIf(array, obj, false);
-  assertFalse(includes(array, obj));
-  assertEquals(0, array.length);
-
-  angular.Array.includeIf(array, obj, 'x');
-  assertTrue(includes(array, obj));
-  assertEquals(1, array.length);
-  angular.Array.includeIf(array, obj, '');
-  assertFalse(includes(array, obj));
-  assertEquals(0, array.length);
-};
-
 ApiTest.prototype.testSum = function(){
   assertEquals(3, angular.Array.sum([{a:"1"}, {a:"2"}], 'a'));
 };
@@ -46,13 +25,6 @@ ApiTest.prototype.testSum = function(){
 ApiTest.prototype.testSumContainingNaN = function(){
   assertEquals(1, angular.Array.sum([{a:1}, {a:Number.NaN}], 'a'));
   assertEquals(1, angular.Array.sum([{a:1}, {a:Number.NaN}], function($){return $.a;}));
-};
-
-ApiTest.prototype.testInclude = function(){
-  assertTrue(angular.Array.include(['a'], 'a'));
-  assertTrue(angular.Array.include(['a', 'b'], 'a'));
-  assertTrue(!angular.Array.include(['c'], 'a'));
-  assertTrue(!angular.Array.include(['c', 'b'], 'a'));
 };
 
 ApiTest.prototype.testIndex = function(){
@@ -78,14 +50,6 @@ ApiTest.prototype.testRemove = function(){
 
   assertEquals(angular.Array.remove(items, 'q'), 'q');
   assertEquals(items.length, 0);
-};
-
-ApiTest.prototype.testFindById = function() {
-  var items = [{$id:1}, {$id:2}, {$id:3}];
-  assertNull(angular.Array.findById(items, 0));
-  assertEquals(items[0], angular.Array.findById(items, 1));
-  assertEquals(items[1], angular.Array.findById(items, 2));
-  assertEquals(items[2], angular.Array.findById(items, 3));
 };
 
 ApiTest.prototype.testFilter = function() {
@@ -161,16 +125,6 @@ ApiTest.prototype.testCount = function() {
   assertEquals(1, angular.Array.count(array, 'name=="a"'));
 };
 
-ApiTest.prototype.testFind = function() {
-  var array = [{name:'a'},{name:'b'},{name:''}];
-  var obj = {};
-
-  assertEquals(undefined, angular.Array.find(array, 'false'));
-  assertEquals('default', angular.Array.find(array, 'false', 'default'));
-  assertEquals('a', angular.Array.find(array, 'name == "a"').name);
-  assertEquals('', angular.Array.find(array, 'name == ""').name);
-};
-
 ApiTest.prototype.testItShouldSortArray = function() {
   assertEquals([2,15], angular.Array.orderBy([15,2]));
   assertEquals(["a","B", "c"], angular.Array.orderBy(["c","B", "a"]));
@@ -209,33 +163,6 @@ ApiTest.prototype.testQuoteStringBug = function(){
 
 ApiTest.prototype.testQuoteUnicode = function(){
   assertEquals('"abc\\u00a0def"', angular.String.quoteUnicode('abc\u00A0def'));
-};
-
-ApiTest.prototype.testMerge = function() {
-  var array = [{name:"misko"}];
-  angular.Array.merge(array, 0, {name:"", email:"email1"});
-  angular.Array.merge(array, 1, {name:"adam", email:"email2"});
-  assertJsonEquals([{"email":"email1","name":"misko"},{"email":"email2","name":"adam"}], array);
-};
-
-ApiTest.prototype.testOrderByToggle = function() {
-  var orderByToggle = angular.Array.orderByToggle;
-  var predicate = [];
-  assertEquals(['+a'], orderByToggle(predicate, 'a'));
-  assertEquals(['-a'], orderByToggle(predicate, 'a'));
-
-  assertEquals(['-a', '-b'], orderByToggle(['-b', 'a'], 'a'));
-};
-
-ApiTest.prototype.testOrderByToggle = function() {
-  var orderByDirection = angular.Array.orderByDirection;
-  assertEquals("", orderByDirection(['+a','b'], 'x'));
-  assertEquals("", orderByDirection(['+a','b'], 'b'));
-  assertEquals('ng-ascend', orderByDirection(['a','b'], 'a'));
-  assertEquals('ng-ascend', orderByDirection(['+a','b'], 'a'));
-  assertEquals('ng-descend', orderByDirection(['-a','b'], 'a'));
-  assertEquals('up', orderByDirection(['+a','b'], 'a', 'up', 'down'));
-  assertEquals('down', orderByDirection(['-a','b'], 'a', 'up', 'down'));
 };
 
 ApiTest.prototype.testDateToUTC = function(){

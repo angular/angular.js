@@ -1,5 +1,6 @@
 angular.scenario.dsl.browser = {
   navigateTo: function(url){
+    var location = this.location;
     return $scenario.addFuture('Navigate to: ' + url, function(done){
       var self = this;
       this.testFrame.load(function(){
@@ -15,8 +16,22 @@ angular.scenario.dsl.browser = {
         this.testFrame[0].contentWindow.location.reload();
       } else {
         this.testFrame.attr('src', url);
+        location.setLocation(url);
       }
     });
+  },
+  location: {
+    href: "",
+    hash: "",
+    toEqual: function(url) {
+      return (this.hash == "" ? (url == this.href) :
+        (url == (this.href + "/#/" + this.hash)));
+    },
+    setLocation: function(url) {
+      var urlParts = url.split("/#/");
+      this.href = urlParts[0] || "";
+      this.hash = urlParts[1] || "";
+    }
   }
 };
 
@@ -87,18 +102,30 @@ angular.scenario.dsl.repeater = function(selector) {
 };
 
 angular.scenario.dsl.element = function(selector) {
-  var nameSuffix = "element '" + selector + "'";
-  return $scenario.addFuture('Find ' + nameSuffix, function(done) {
-    var self = this, repeaterArray = [], ngBindPattern;
-    var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
-    if (startIndex >= 0) {
-      ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
-      var element = this.testDocument.find('*').filter(function() {
-        return self.jQuery(this).attr('ng:bind') == ngBindPattern;
-      }); 
-      done(element);
-    } else {
-      done(this.testDocument.find(selector));
-    }
-  });
+  var namePrefix = "Element '" + selector + "'";
+  var futureJquery = {};
+  for (key in (jQuery || _jQuery).fn) {
+    (function(){
+      var jqFnName = key;
+      var jqFn = (jQuery || _jQuery).fn[key];
+      futureJquery[key] = function() {
+        var jqArgs = arguments;
+        return $scenario.addFuture(namePrefix + "." + jqFnName + "()",
+                function(done) {
+          var self = this, repeaterArray = [], ngBindPattern;
+          var startIndex = selector.search(angular.scenario.dsl.NG_BIND_PATTERN);
+          if (startIndex >= 0) {
+            ngBindPattern = selector.substring(startIndex + 2, selector.length - 2);
+            var element = this.testDocument.find('*').filter(function() {
+              return self.jQuery(this).attr('ng:bind') == ngBindPattern;
+            });
+            done(jqFn.apply(element, jqArgs));
+          } else {
+            done(jqFn.apply(this.testDocument.find(selector), jqArgs));
+          }
+        });
+      };
+    })();
+  }
+  return futureJquery;
 };
