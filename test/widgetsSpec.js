@@ -446,6 +446,8 @@ describe("widget", function(){
       scope.$xhr.cache.data.myUrl = {value:'{{name}}'};
       scope.$init();
 
+      expect(element.text()).toEqual('igor');
+
       scope.url = undefined;
       scope.$eval();
       
