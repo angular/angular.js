@@ -178,9 +178,18 @@ error = noop;
 
 function click(element) {
   element = jqLite(element);
-  if ( msie &&
-       nodeName(element) == 'INPUT' && (lowercase(element.attr('type')) == 'radio' || lowercase(element.attr('type')) == 'checkbox')) {
-    element[0].checked = ! element[0].checked;
+  var type = lowercase(element.attr('type'));
+  var name = lowercase(nodeName(element));
+  if (msie) {
+    if (name == 'input') {
+      if (type == 'radio' || type == 'checkbox') {
+        element[0].checked = ! element[0].checked;
+      }
+    }
   }
-  JQLite.prototype.trigger.call(element, 'click');
+  if (name == 'option') {
+    JQLite.prototype.trigger.call(element.parent(), 'change');
+  } else {
+    JQLite.prototype.trigger.call(element, 'click');
+  }
 }

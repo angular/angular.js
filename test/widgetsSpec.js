@@ -338,17 +338,35 @@ describe("widget", function(){
 
     });
 
-    it('should support type="select-one"', function(){
-      compile(
-        '<select name="selection">' +
-          '<option>A</option>' +
-          '<option selected>B</option>' +
+    describe('select-one', function(){
+      it('should initialize to selected', function(){
+        compile(
+            '<select name="selection">' +
+            '<option>A</option>' +
+            '<option selected>B</option>' +
         '</select>');
-      expect(scope.selection).toEqual('B');
-      scope.selection = 'A';
-      scope.$eval();
-      expect(scope.selection).toEqual('A');
-      expect(element[0].childNodes[0].selected).toEqual(true);
+        expect(scope.selection).toEqual('B');
+        scope.selection = 'A';
+        scope.$eval();
+        expect(scope.selection).toEqual('A');
+        expect(element[0].childNodes[0].selected).toEqual(true);
+      });
+
+      it('should honor the value field in option', function(){
+        compile(
+            '<select name="selection" ng:format="number">' +
+              '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\']">{{name}}</option>' +
+            '</select>');
+        // childNodes[0] is repeater
+        expect(scope.selection).toEqual(undefined);
+
+        click(element[0].childNodes[1]);
+        expect(scope.selection).toEqual(0);
+
+        scope.selection = 1;
+        scope.$eval();
+        expect(element[0].childNodes[2].selected).toEqual(true);
+      });
     });
 
     it('should support type="select-multiple"', function(){
