@@ -4,6 +4,8 @@ if (typeof document.getAttribute == 'undefined')
   document.getAttribute = function() {};
 
 var consoleNode,
+    NULL              = null,
+    UNDEFIEND         = undefined,
     PRIORITY_FIRST    = -99999,
     PRIORITY_WATCH    = -1000,
     PRIORITY_LAST     =  99999,
@@ -105,7 +107,7 @@ function jqLiteWrap(element) {
 }
 function isUndefined(value){ return typeof value == 'undefined'; }
 function isDefined(value){ return typeof value != 'undefined'; }
-function isObject(value){ return typeof value == 'object';}
+function isObject(value){ return value!=null && typeof value == 'object';}
 function isString(value){ return typeof value == 'string';}
 function isNumber(value){ return typeof value == 'number';}
 function isArray(value) { return value instanceof Array; }
