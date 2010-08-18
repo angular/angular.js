@@ -7,7 +7,7 @@ angularFilter.number = function(amount, fractionSize){
   if (isNaN(amount) || !isFinite(amount)) {
     return '';
   }
-  fractionSize = typeof fractionSize == 'undefined' ? 2 : fractionSize;
+  fractionSize = typeof fractionSize == $undefined ? 2 : fractionSize;
   var isNegative = amount < 0;
   amount = Math.abs(amount);
   var pow = Math.pow(10, fractionSize);

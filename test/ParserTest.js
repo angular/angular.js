@@ -409,34 +409,6 @@ ParserTest.prototype.testMissingThrowsError = function() {
   }
 };
 
-ParserTest.prototype.testItShouldCreateClosureFunctionWithNoArguments = function () {
-  var scope = createScope();
-  var fn = scope.$eval("{:value}");
-  scope.$set("value", 1);
-  assertEquals(1, fn());
-  scope.$set("value", 2);
-  assertEquals(2, fn());
-  fn = scope.$eval("{():value}");
-  assertEquals(2, fn());
-};
-
-ParserTest.prototype.testItShouldCreateClosureFunctionWithArguments = function () {
-  var scope = createScope();
-  scope.$set("value", 1);
-  var fn = scope.$eval("{(a):value+a}");
-  assertEquals(11, fn(10));
-  scope.$set("value", 2);
-  assertEquals(12, fn(10));
-  fn = scope.$eval("{(a,b):value+a+b}");
-  assertEquals(112, fn(10, 100));
-};
-
-ParserTest.prototype.testItShouldHaveDefaultArugument = function(){
-  var scope = createScope();
-  var fn = scope.$eval("{:$*2}");
-  assertEquals(4, fn(2));
-};
-
 ParserTest.prototype.testDoubleNegationBug = function (){
   var scope = createScope();
   assertEquals(true, scope.$eval('true'));

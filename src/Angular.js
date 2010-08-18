@@ -1,25 +1,42 @@
 ////////////////////////////////////
 
-if (typeof document.getAttribute == 'undefined')
+if (typeof document.getAttribute == $undefined)
   document.getAttribute = function() {};
 
-var consoleNode,
-    NULL              = null,
-    UNDEFIEND         = undefined,
+var _undefined        = undefined,
+    _null             = null,
+    $$element         = '$element',
+    $angular          = 'angular',
+    $array            = 'array',
+    $boolean          = 'boolean',
+    $console          = 'console',
+    $date             = 'date',
+    $display          = 'display',
+    $element          = 'element',
+    $function         = 'function',
+    $length           = 'length',
+    $name             = 'name',
+    $none             = 'none',
+    $noop             = 'noop',
+    $null             = 'null',
+    $number           = 'number',
+    $object           = 'object',
+    $string           = 'string',
+    $undefined        = 'undefined',
+    NG_EXCEPTION      = 'ng-exception',
+    NG_VALIDATION_ERROR = 'ng-validation-error',
+    NOOP              = 'noop',
     PRIORITY_FIRST    = -99999,
     PRIORITY_WATCH    = -1000,
     PRIORITY_LAST     =  99999,
     PRIORITY          = {'FIRST': PRIORITY_FIRST, 'LAST': PRIORITY_LAST, 'WATCH':PRIORITY_WATCH},
-    NOOP              = 'noop',
-    NG_EXCEPTION      = 'ng-exception',
-    NG_VALIDATION_ERROR = 'ng-validation-error',
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     _                 = window['_'],
     msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
-    error             = window['console'] ? bind(window['console'], window['console']['error'] || noop) : noop,
-    angular           = window['angular']    || (window['angular'] = {}),
+    error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
+    angular           = window[$angular]    || (window[$angular] = {}),
     angularTextMarkup = extensionMap(angular, 'markup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
@@ -36,7 +53,7 @@ function foreach(obj, iterator, context) {
   if (obj) {
     if (isFunction(obj)){
       for (key in obj) {
-        if (key != 'prototype' && key != 'length' && key != 'name' && obj.hasOwnProperty(key)) {
+        if (key != 'prototype' && key != $length && key != $name && obj.hasOwnProperty(key)) {
           iterator.call(context, obj[key], key);
         }
       }
@@ -93,7 +110,7 @@ function extensionMap(angular, name, transform) {
 }
 
 function jqLiteWrap(element) {
-  // for some reasons the parentNode of an orphan looks like null but its typeof is object.
+  // for some reasons the parentNode of an orphan looks like _null but its typeof is object.
   if (element) {
     if (isString(element)) {
       var div = document.createElement('div');
@@ -105,13 +122,13 @@ function jqLiteWrap(element) {
   }
   return element;
 }
-function isUndefined(value){ return typeof value == 'undefined'; }
-function isDefined(value){ return typeof value != 'undefined'; }
-function isObject(value){ return value!=null && typeof value == 'object';}
+function isUndefined(value){ return typeof value == $undefined; }
+function isDefined(value){ return typeof value != $undefined; }
+function isObject(value){ return value!=_null && typeof value == 'object';}
 function isString(value){ return typeof value == 'string';}
 function isNumber(value){ return typeof value == 'number';}
 function isArray(value) { return value instanceof Array; }
-function isFunction(value){ return typeof value == 'function';}
+function isFunction(value){ return typeof value == $function;}
 function isTextNode(node) { return nodeName(node) == '#text'; }
 function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
 function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
@@ -295,7 +312,7 @@ function escapeAttr(html) {
 
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? slice.call(arguments, 2, arguments.length) : [];
-  if (typeof fn == 'function') {
+  if (typeof fn == $function) {
     return curryArgs.length ? function() {
       return arguments.length ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0, arguments.length))) : fn.apply(self, curryArgs);
     }: function() {
@@ -321,7 +338,7 @@ function merge(src, dst) {
   for ( var key in src) {
     var value = dst[key];
     var type = typeof value;
-    if (type == 'undefined') {
+    if (type == $undefined) {
       dst[key] = fromJson(toJson(src[key]));
     } else if (type == 'object' && value.constructor != array &&
         key.substring(0, 1) != "$") {
@@ -361,7 +378,7 @@ function toKeyValue(obj) {
 function angularInit(config){
   if (config.autobind) {
     // TODO default to the source of angular.js
-    var scope = compile(window.document, null, {'$config':config});
+    var scope = compile(window.document, _null, {'$config':config});
     if (config.css)
       scope.$browser.addCss(config.base_url + config.css);
     scope.$init();

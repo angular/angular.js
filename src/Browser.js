@@ -57,7 +57,7 @@ Browser.prototype = {
   xhr: function(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
-      post = null;
+      post = _null;
     }
     if (lowercase(method) == 'json') {
       var callbackId = "angular_" + Math.random() + '_' + (this.idCounter++);
@@ -67,7 +67,7 @@ Browser.prototype = {
       script.src = url.replace('JSON_CALLBACK', callbackId);
       this.head.append(script);
       window[callbackId] = function(data){
-        window[callbackId] = undefined;
+        window[callbackId] = _undefined;
         callback(200, data);
       };
     } else {

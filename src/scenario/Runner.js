@@ -42,7 +42,7 @@ angular.scenario.Runner = function(scope, jQuery){
     } finally {
       afterEach();
     }
-    self.currentSpec = null;
+    self.currentSpec = _null;
   };
   this.logger = function returnNoop(){
     return extend(returnNoop, {close:noop, fail:noop});
@@ -144,7 +144,7 @@ angular.scenario.Runner.prototype = {
    function done() {
      result.finished = true;
      futureLogger.close();
-     self.self = null;
+     self.self = _null;
      (callback||noop).call(specThis);
    }
    function next(value){
@@ -153,7 +153,7 @@ angular.scenario.Runner.prototype = {
      }
      var future = spec.futures[spec.nextFutureIndex];
      (result.log || {close:noop}).close();
-     result.log = null;
+     result.log = _null;
      if (future) {
        spec.nextFutureIndex ++;
        result.log = futureLogger('future', future.name);

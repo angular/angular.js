@@ -1,11 +1,11 @@
 var angularGlobal = {
   'typeOf':function(obj){
-    if (obj === null) return "null";
+    if (obj === _null) return $null;
     var type = typeof obj;
-    if (type == "object") {
-      if (obj instanceof Array) return "array";
-      if (obj instanceof Date) return "date";
-      if (obj.nodeType == 1) return "element";
+    if (type == $object) {
+      if (obj instanceof Array) return $array;
+      if (obj instanceof Date) return $date;
+      if (obj.nodeType == 1) return $element;
     }
     return type;
   }
@@ -102,7 +102,7 @@ var angularArray = {
           }
         }
         break;
-      case "function":
+      case $function:
         predicates.push(expression);
         break;
       default:
@@ -236,34 +236,18 @@ var angularFunction = {
   }
 };
 
-function defineApi(dst, chain, underscoreNames){
-  if (_) {
-    var lastChain = _.last(chain);
-    foreach(underscoreNames, function(name){
-      lastChain[name] = _[name];
-    });
-  }
+function defineApi(dst, chain){
   angular[dst] = angular[dst] || {};
   foreach(chain, function(parent){
     extend(angular[dst], parent);
   });
 }
-defineApi('Global', [angularGlobal],
-    ['extend', 'clone','isEqual',
-     'isElement', 'isArray', 'isFunction', 'isUndefined']);
-defineApi('Collection', [angularGlobal, angularCollection],
-    ['each', 'map', 'reduce', 'reduceRight', 'detect',
-     'select', 'reject', 'all', 'any', 'include',
-     'invoke', 'pluck', 'max', 'min', 'sortBy',
-     'sortedIndex', 'toArray', 'size']);
-defineApi('Array', [angularGlobal, angularCollection, angularArray],
-    ['first', 'last', 'compact', 'flatten', 'without',
-     'uniq', 'intersect', 'zip', 'indexOf', 'lastIndexOf']);
-defineApi('Object', [angularGlobal, angularCollection, angularObject],
-    ['keys', 'values']);
-defineApi('String', [angularGlobal, angularString], []);
-defineApi('Date', [angularGlobal, angularDate], []);
+defineApi('Global', [angularGlobal]);
+defineApi('Collection', [angularGlobal, angularCollection]);
+defineApi('Array', [angularGlobal, angularCollection, angularArray]);
+defineApi('Object', [angularGlobal, angularCollection, angularObject]);
+defineApi('String', [angularGlobal, angularString]);
+defineApi('Date', [angularGlobal, angularDate]);
 //IE bug
 angular['Date']['toString'] = angularDate['toString'];
-defineApi('Function', [angularGlobal, angularCollection, angularFunction],
-    ['bind', 'bindAll', 'delay', 'defer', 'wrap', 'compose']);
+defineApi('Function', [angularGlobal, angularCollection, angularFunction]);

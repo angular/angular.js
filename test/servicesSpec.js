@@ -247,7 +247,7 @@ describe("service", function(){
       scope.$xhr('POST', '/req', 'MyData', callback);
       xhr.flush();
       var cb = $xhrError.mostRecentCall.args[0].callback;
-      expect(typeof cb).toEqual('function');
+      expect(typeof cb).toEqual($function);
       expect($xhrError).wasCalledWith(
           {url:'/req', method:'POST', data:'MyData', callback:cb},
           {status:500, body:'MyError'});
@@ -297,7 +297,7 @@ describe("service", function(){
 
         expect($xhrError).wasCalled();
         var cb = $xhrError.mostRecentCall.args[0].callback;
-        expect(typeof cb).toEqual('function');
+        expect(typeof cb).toEqual($function);
         expect($xhrError).wasCalledWith(
             {url:'/req1', method:'GET', data:null, callback:cb},
             {status:404, response:'NotFound'});
