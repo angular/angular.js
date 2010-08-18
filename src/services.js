@@ -40,7 +40,7 @@ angularService("$location", function(browser){
   }
 
   function check(param) {
-    return lastLocation[param] == location[param] ? undefined : location[param];
+    return lastLocation[param] == location[param] ? _undefined : location[param];
   }
 
   function checkProtocol(){
@@ -49,9 +49,9 @@ angularService("$location", function(browser){
         lastLocation.port === location.port &&
         lastLocation.path === location.path &&
         equals(lastLocation.search, location.search))
-      return undefined;
+      return _undefined;
     var url = toKeyValue(location.search);
-    var port = (location.port == DEFAULT_PORTS[location.protocol] ? null : location.port);
+    var port = (location.port == DEFAULT_PORTS[location.protocol] ? _null : location.port);
     return location.protocol  + '://' + location.host +
           (port ? ':' + port : '') + location.path +
           (url ? '?' + url : '');
@@ -60,7 +60,7 @@ angularService("$location", function(browser){
   function checkHashPathSearch(){
     if (lastLocation.hashPath === location.hashPath &&
         equals(lastLocation.hashSearch, location.hashSearch) )
-      return undefined;
+      return _undefined;
     var url = toKeyValue(location.hashSearch);
     return escape(location.hashPath) + (url ? '?' + url : '');
   }
@@ -72,7 +72,7 @@ angularService("$location", function(browser){
         location.href = url.replace('#$', '');
         location.protocol = match[1];
         location.host = match[3] || '';
-        location.port = match[5] || DEFAULT_PORTS[location.protocol] || null;
+        location.port = match[5] || DEFAULT_PORTS[location.protocol] || _null;
         location.path = match[6];
         location.search = parseKeyValue(match[8]);
         location.hash = match[10] || '';
@@ -149,7 +149,7 @@ angularService("$hover", function(browser, document) {
       }
     } else if (tooltip) {
       tooltip.callout.remove();
-      tooltip = null;
+      tooltip = _null;
     }
   });
 }, {inject:['$browser', '$document']});
@@ -211,7 +211,7 @@ function switchRouteMatcher(on, when, dstName) {
     });
     if (dstName) this.$set(dstName, dst);
   }
-  return match ? dst : null;
+  return match ? dst : _null;
 }
 
 angularService('$route', function(location){
@@ -234,7 +234,7 @@ angularService('$route', function(location){
       };
   function updateRoute(){
     var childScope;
-    $route.current = null;
+    $route.current = _null;
     angular.foreach(routes, function(routeParams, route) {
       if (!childScope) {
         var pathParams = matcher(location.hashPath, route);
@@ -262,7 +262,7 @@ angularService('$xhr', function($browser, $error, $log){
   return function(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
-      post = null;
+      post = _null;
     }
     if (post && isObject(post)) {
       post = toJson(post);
@@ -300,7 +300,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
   function bulkXHR(method, url, post, callback) {
     if (isFunction(post)) {
       callback = post;
-      post = null;
+      post = _null;
     }
     var currentQueue;
     foreach(bulkXHR.urls, function(queue){
@@ -349,7 +349,7 @@ angularService('$xhr.cache', function($xhr){
   function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
       callback = post;
-      post = null;
+      post = _null;
     }
     if (method == 'GET') {
       var data;

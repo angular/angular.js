@@ -20,11 +20,11 @@ function parseBindings(string) {
 
 function binding(string) {
   var binding = string.replace(/\n/gm, ' ').match(/^\{\{(.*)\}\}$/);
-  return binding ? binding[1] : null;
+  return binding ? binding[1] : _null;
 }
 
 function hasBindings(bindings) {
-  return bindings.length > 1 || binding(bindings[0]) !== null;
+  return bindings.length > 1 || binding(bindings[0]) !== _null;
 }
 
 angularTextMarkup('{{}}', function(text, textNode, parentElement) {
@@ -61,7 +61,7 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
 angularTextMarkup('OPTION', function(text, textNode, parentElement){
   if (nodeName(parentElement) == "OPTION") {
     var select = document.createElement('select');
-    select.insertBefore(parentElement[0].cloneNode(true), null);
+    select.insertBefore(parentElement[0].cloneNode(true), _null);
     if (!select.innerHTML.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
       parentElement.attr('value', text);
     }

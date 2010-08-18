@@ -124,7 +124,7 @@ ResourceFactory.prototype = {
           var callback = noop;
           switch(arguments.length) {
           case 2: params = a1; callback = a2;
-          case 1: if (typeof a1 == 'function') callback = a1; else params = a1;
+          case 1: if (typeof a1 == $function) callback = a1; else params = a1;
           case 0: break;
           default:
             throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";

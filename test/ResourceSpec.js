@@ -15,12 +15,12 @@ describe("resource", function() {
   });
 
   it("should build resource", function(){
-    expect(typeof CreditCard).toBe('function');
-    expect(typeof CreditCard.get).toBe('function');
-    expect(typeof CreditCard.save).toBe('function');
-    expect(typeof CreditCard.remove).toBe('function');
-    expect(typeof CreditCard['delete']).toBe('function');
-    expect(typeof CreditCard.query).toBe('function');
+    expect(typeof CreditCard).toBe($function);
+    expect(typeof CreditCard.get).toBe($function);
+    expect(typeof CreditCard.save).toBe($function);
+    expect(typeof CreditCard.remove).toBe($function);
+    expect(typeof CreditCard['delete']).toBe($function);
+    expect(typeof CreditCard.query).toBe($function);
   });
 
   it('should default to empty parameters', function(){

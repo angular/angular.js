@@ -2,7 +2,7 @@ function Future(name, behavior) {
   this.name = name;
   this.behavior = behavior;
   this.fulfilled = false;
-  this.value = undefined;
+  this.value = _undefined;
 }
 
 Future.prototype = {

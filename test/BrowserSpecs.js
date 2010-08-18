@@ -59,7 +59,7 @@ describe('browser', function(){
         expect(head.scripts.length).toEqual(1);
         var url = head.scripts[0].src.split('?cb=');
         expect(url[0]).toEqual('http://example.org/path');
-        expect(typeof window[url[1]]).toEqual('function');
+        expect(typeof window[url[1]]).toEqual($function);
         window[url[1]]('data');
         expect(log).toEqual('200:data;');
         expect(typeof window[url[1]]).toEqual('undefined');

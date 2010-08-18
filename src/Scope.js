@@ -15,7 +15,7 @@ function getter(instance, path, unboundFn) {
     if (isUndefined(instance)  && key.charAt(0) == '$') {
       var type = angular['Global']['typeOf'](lastInstance);
       type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
-      var fn = type ? type[[key.substring(1)]] : undefined;
+      var fn = type ? type[[key.substring(1)]] : _undefined;
       if (fn) {
         instance = bind(lastInstance, fn, lastInstance);
         return instance;
@@ -50,37 +50,37 @@ var scopeId = 0;
     JS_KEYWORDS = {};
 foreach(
    ["abstract", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger", "default",
-    "delete", "do", "double", "else", "enum", "export", "extends", "false", "final", "finally", "float", "for", "function", "goto",
-    "if", "implements", "import", "ininstanceof", "intinterface", "long", "native", "new", "null", "package", "private",
+    "delete", "do", "double", "else", "enum", "export", "extends", "false", "final", "finally", "float", "for", $function, "goto",
+    "if", "implements", "import", "ininstanceof", "intinterface", "long", "native", "new", $null, "package", "private",
     "protected", "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "throws",
-    "transient", "true", "try", "typeof", "var", "volatile", "void", "while", "with"],
+    "transient", "true", "try", "typeof", "var", "volatile", "void", $undefined, "while", "with"],
   function(key){ JS_KEYWORDS[key] = true;}
 );
 function getterFn(path){
   var fn = getterFnCache[path];
   if (fn) return fn;
 
-  var code = 'function (self){\n';
-  code += '  var last, fn, type;\n';
+  var code = 'function (s){\n';
+  code += '  var l, fn, t;\n';
   foreach(path.split('.'), function(key) {
     key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
-    code += '  if(!self) return self;\n';
-    code += '  last = self;\n';
-    code += '  self = self' + key + ';\n';
-    code += '  if(typeof self == "function") \n';
-    code += '    self = function(){ return last'+key+'.apply(last, arguments); };\n';
+    code += '  if(!s) return s;\n';
+    code += '  l = s;\n';
+    code += '  s = s' + key + ';\n';
+    code += '  if(typeof s == "'+$function+'") \n';
+    code += '    s = function(){ return l'+key+'.apply(l, arguments); };\n';
     if (key.charAt(1) == '$') {
       // special code for super-imposed functions
       var name = key.substr(2);
-      code += '  if(!self) {\n';
-      code += '    type = angular.Global.typeOf(last);\n';
-      code += '    fn = (angular[type.charAt(0).toUpperCase() + type.substring(1)]||{})["' + name + '"];\n';
+      code += '  if(!s) {\n';
+      code += '    t = angular.Global.typeOf(l);\n';
+      code += '    fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n';
       code += '    if (fn)\n';
-      code += '      self = function(){ return fn.apply(last, [last].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n';
+      code += '      s = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n';
       code += '  }\n';
     }
   });
-  code += '  return self;\n}';
+  code += '  return s;\n}';
   fn = eval('fn = ' + code);
   fn["toString"] = function(){ return code; };
 
@@ -90,7 +90,7 @@ function getterFn(path){
 ///////////////////////////////////
 
 function expressionCompile(exp){
-  if (typeof exp === 'function') return exp;
+  if (typeof exp === $function) return exp;
   var fn = compileCache[exp];
   if (!fn) {
     var parser = new Parser(exp);
@@ -130,7 +130,7 @@ function createScope(parent, services, existing) {
 
     $eval: function $eval(exp) {
       var type = typeof exp;
-      if (type == 'undefined') {
+      if (type == $undefined) {
         for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
           for ( var queue = evalLists.sorted[i],
               jSize = queue.length,
@@ -138,7 +138,7 @@ function createScope(parent, services, existing) {
             instance.$tryEval(queue[j].fn, queue[j].handler);
           }
         }
-      } else if (type === 'function') {
+      } else if (type === $function) {
         return exp.call(instance);
       } else  if (type === 'string') {
         return expressionCompile(exp).call(instance);
@@ -148,7 +148,7 @@ function createScope(parent, services, existing) {
     $tryEval: function (expression, exceptionHandler) {
       var type = typeof expression;
       try {
-        if (type == 'function') {
+        if (type == $function) {
           return expression.call(instance);
         } else if (type == 'string'){
           return expressionCompile(expression).call(instance);

@@ -6,7 +6,7 @@ function modelAccessor(scope, element) {
       return scope.$eval(expr);
     },
     set: function(value) {
-      if (value !== undefined) {
+      if (value !== _undefined) {
         return scope.$tryEval(expr + '=' + toJson(value), element);
       }
     }
@@ -57,7 +57,7 @@ function valueAccessor(scope, element) {
   return {
     get: function(){
       if (lastError)
-        elementError(element, NG_VALIDATION_ERROR, null);
+        elementError(element, NG_VALIDATION_ERROR, _null);
       try {
         var value = parse(element.val());
         validate();
@@ -80,13 +80,13 @@ function valueAccessor(scope, element) {
   function validate() {
     var value = trim(element.val());
     if (element[0].disabled || element[0].readOnly) {
-      elementError(element, NG_VALIDATION_ERROR, null);
+      elementError(element, NG_VALIDATION_ERROR, _null);
       invalidWidgets.markValid(element);
     } else {
       var error, validateScope = inherit(scope, {$element:element});
       error = required && !value ?
               'Required' :
-              (value ? validator(validateScope, value) : null);
+              (value ? validator(validateScope, value) : _null);
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
       if (error) {
@@ -114,7 +114,7 @@ function radioAccessor(scope, element) {
   var domElement = element[0];
   return {
     get: function(){
-      return domElement.checked ? domElement.value : null;
+      return domElement.checked ? domElement.value : _null;
     },
     set: function(value){
       domElement.checked = value == domElement.value;
@@ -157,7 +157,7 @@ var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initW
       'image':           buttonWidget,
       'checkbox':        inputWidget('click', modelFormattedAccessor, checkedAccessor, initWidgetValue(false)),
       'radio':           inputWidget('click', modelFormattedAccessor, radioAccessor, radioInit),
-      'select-one':      inputWidget('change', modelFormattedAccessor, valueAccessor, initWidgetValue(null)),
+      'select-one':      inputWidget('change', modelFormattedAccessor, valueAccessor, initWidgetValue(_null)),
       'select-multiple': inputWidget('change', modelFormattedAccessor, optionsAccessor, initWidgetValue([]))
 //      'file':            fileWidget???
     };
@@ -179,9 +179,9 @@ function radioInit(model, view, element) {
  input.checked = false;
  input.name = this.$id + '@' + input.name;
  if (isUndefined(modelValue)) {
-   model.set(modelValue = null);
+   model.set(modelValue = _null);
  }
- if (modelValue == null && viewValue !== null) {
+ if (modelValue == _null && viewValue !== _null) {
    model.set(viewValue);
  }
  view.set(modelValue);

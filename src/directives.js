@@ -27,7 +27,7 @@ angularDirective("ng:bind", function(expression){
     var lastValue = noop, lastError = noop;
     this.$onEval(function() {
       var error, value, isHtml, isDomElement,
-          oldElement = this.hasOwnProperty('$element') ? this.$element : undefined;
+          oldElement = this.hasOwnProperty($$element) ? this.$element : _undefined;
       this.$element = element;
       value = this.$tryEval(expression, function(e){
         error = toJson(e);
@@ -76,7 +76,7 @@ function compileBindTemplate(template){
     });
     bindTemplateCache[template] = fn = function(element){
       var parts = [], self = this,
-         oldElement = this.hasOwnProperty('$element') ? self.$element : undefined;
+         oldElement = this.hasOwnProperty($$element) ? self.$element : _undefined;
       self.$element = element;
       for ( var i = 0; i < bindings.length; i++) {
         var value = bindings[i].call(self, element);
@@ -242,7 +242,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
 angularDirective("ng:show", function(expression, element){
   return function(element){
     this.$onEval(function(){
-      element.css('display', toBoolean(this.$eval(expression)) ? '' : 'none');
+      element.css($display, toBoolean(this.$eval(expression)) ? '' : $none);
     }, element);
   };
 });
@@ -250,7 +250,7 @@ angularDirective("ng:show", function(expression, element){
 angularDirective("ng:hide", function(expression, element){
   return function(element){
     this.$onEval(function(){
-      element.css('display', toBoolean(this.$eval(expression)) ? 'none' : '');
+      element.css($display, toBoolean(this.$eval(expression)) ? $none : '');
     }, element);
   };
 });
@@ -261,7 +261,7 @@ angularDirective("ng:style", function(expression, element){
     this.$onEval(function(){
       var style = this.$eval(expression) || {}, key, mergedStyle = {};
       for(key in style) {
-        if (resetStyle[key] === undefined) resetStyle[key] = '';
+        if (resetStyle[key] === _undefined) resetStyle[key] = '';
         mergedStyle[key] = style[key];
       }
       for(key in resetStyle) {

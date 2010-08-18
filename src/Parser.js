@@ -7,10 +7,10 @@ function Lexer(text, parsStrings){
 }
 
 Lexer.OPERATORS = {
-    'null':function(self){return null;},
+    'null':function(self){return _null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
-    'undefined':noop,
+    $undefined:noop,
     '+':function(self, a,b){return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
     '-':function(self, a,b){return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
     '*':function(self, a,b){return a*b;},
@@ -490,7 +490,7 @@ Parser.prototype = {
       if (instance)
         instance = instance[key];
     }
-    if (typeof instance != 'function') {
+    if (typeof instance != $function) {
       throw "Function '" + token.text + "' at column '" +
       (token.index+1)  + "' in '" + this.text + "' is not defined.";
     }
@@ -507,10 +507,6 @@ Parser.prototype = {
       primary = this.arrayDeclaration();
     } else if (this.expect('{')) {
       primary = this.object();
-    } else if (this.expect('{:')) {
-      primary = this.closure(false);
-    } else if (this.expect('{(')) {
-      primary = this.closure(true);
     } else {
       var token = this.expect();
       primary = token.fn;
@@ -531,32 +527,6 @@ Parser.prototype = {
       }
     }
     return primary;
-  },
-
-  closure: function(hasArgs) {
-    var args = [];
-    if (hasArgs) {
-      if (!this.expect(')')) {
-        args.push(this.expect().text);
-        while(this.expect(',')) {
-          args.push(this.expect().text);
-        }
-        this.consume(')');
-      }
-      this.consume(":");
-    }
-    var statements = this.statements();
-    this.consume("}");
-    return function(self) {
-      return function($){
-        var scope = createScope(self);
-        scope['$'] = $;
-        for ( var i = 0; i < args.length; i++) {
-          setter(scope, args[i], arguments[i]);
-        }
-        return statements(scope);
-      };
-    };
   },
 
   fieldAccess: function(object) {
@@ -581,7 +551,7 @@ Parser.prototype = {
       return function (self){
         var o = obj(self);
         var i = indexFn(self);
-        return (o) ? o[i] : undefined;
+        return (o) ? o[i] : _undefined;
       };
     }
   },
@@ -601,8 +571,8 @@ Parser.prototype = {
       }
     var fnPtr = fn(self) || noop;
     // IE stupidity!
-    return fnPtr.apply ? 
-      fnPtr.apply(self, args) : 
+    return fnPtr.apply ?
+      fnPtr.apply(self, args) :
       fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
   },
@@ -645,51 +615,6 @@ Parser.prototype = {
         object[keyValue.key] = value;
       }
       return object;
-    };
-  },
-
-  entityDeclaration: function () {
-    var decl = [];
-    while(this.hasTokens()) {
-      decl.push(this.entityDecl());
-      if (!this.expect(';')) {
-        this.assertAllConsumed();
-      }
-    }
-    return function (self){
-      var code = "";
-      for ( var i = 0; i < decl.length; i++) {
-        code += decl[i](self);
-      }
-      return code;
-    };
-  },
-
-  entityDecl: function () {
-    var entity = this.expect().text;
-    var instance;
-    var defaults;
-    if (this.expect('=')) {
-      instance = entity;
-      entity = this.expect().text;
-    }
-    if (this.expect(':')) {
-      defaults = this.primary()(null);
-    }
-    return function(self) {
-      var Entity = self.datastore.entity(entity, defaults);
-      setter(self, entity, Entity);
-      if (instance) {
-        var document = Entity();
-        document['$$anchor'] = instance;
-        setter(self, instance, document);
-        return "$anchor." + instance + ":{" +
-            instance + "=" + entity + ".load($anchor." + instance + ");" +
-            instance + ".$$anchor=" + angular['String']['quote'](instance) + ";" +
-          "};";
-      } else {
-        return "";
-      }
     };
   },
 

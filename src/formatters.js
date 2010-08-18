@@ -1,6 +1,6 @@
 function formatter(format, parse) {return {'format':format, 'parse':parse || format};}
 function toString(obj) {
-  return (isDefined(obj) && obj !== null) ? "" + obj : obj;
+  return (isDefined(obj) && obj !== _null) ? "" + obj : obj;
 }
 
 var NUMBER = /^\s*[-+]?\d*(\.\d*)?\s*$/;
@@ -9,8 +9,8 @@ angularFormatter.noop = formatter(identity, identity);
 angularFormatter.json = formatter(toJson, fromJson);
 angularFormatter['boolean'] = formatter(toString, toBoolean);
 angularFormatter.number = formatter(toString, function(obj){
-  if (obj == null || NUMBER.exec(obj)) {
-    return obj===null || obj === '' ? null : 1*obj;
+  if (obj == _null || NUMBER.exec(obj)) {
+    return obj===_null || obj === '' ? _null : 1*obj;
   } else {
     throw "Not a number";
   }
