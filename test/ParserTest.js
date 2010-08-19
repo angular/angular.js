@@ -1,8 +1,7 @@
 LexerTest = TestCase('LexerTest');
 
 LexerTest.prototype.testTokenizeAString = function(){
-  var lexer = new Lexer("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
-  var tokens = lexer.parse();
+  var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
   var i = 0;
   assertEquals(tokens[i].index, 0);
   assertEquals(tokens[i].text, 'a.bc');
@@ -53,8 +52,7 @@ LexerTest.prototype.testTokenizeAString = function(){
 };
 
 LexerTest.prototype.testTokenizeUndefined = function(){
-  var lexer = new Lexer("undefined");
-  var tokens = lexer.parse();
+  var tokens = lex("undefined");
   var i = 0;
   assertEquals(tokens[i].index, 0);
   assertEquals(tokens[i].text, 'undefined');
@@ -64,8 +62,7 @@ LexerTest.prototype.testTokenizeUndefined = function(){
 
 
 LexerTest.prototype.testTokenizeRegExp = function(){
-  var lexer = new Lexer("/r 1/");
-  var tokens = lexer.parse();
+  var tokens = lex("/r 1/");
   var i = 0;
   assertEquals(tokens[i].index, 0);
   assertEquals(tokens[i].text, 'r 1');
@@ -74,8 +71,7 @@ LexerTest.prototype.testTokenizeRegExp = function(){
 
 LexerTest.prototype.testQuotedString = function(){
   var str = "['\\'', \"\\\"\"]";
-  var lexer = new Lexer(str);
-  var tokens = lexer.parse();
+  var tokens = lex(str);
 
   assertEquals(1, tokens[1].index);
   assertEquals("'", tokens[1].string);
@@ -87,22 +83,19 @@ LexerTest.prototype.testQuotedString = function(){
 
 LexerTest.prototype.testQuotedStringEscape = function(){
   var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
-  var lexer = new Lexer(str);
-  var tokens = lexer.parse();
+  var tokens = lex(str);
 
   assertEquals('"\n\f\r\t\v\u00A0', tokens[0].string);
 };
 
 LexerTest.prototype.testTokenizeUnicode = function(){
-  var lexer = new Lexer('"\\u00A0"');
-  var tokens = lexer.parse();
+  var tokens = lex('"\\u00A0"');
   assertEquals(1, tokens.length);
   assertEquals('\u00a0', tokens[0].string);
 };
 
 LexerTest.prototype.testTokenizeRegExpWithOptions = function(){
-  var lexer = new Lexer("/r/g");
-  var tokens = lexer.parse();
+  var tokens = lex("/r/g");
   var i = 0;
   assertEquals(tokens[i].index, 0);
   assertEquals(tokens[i].text, 'r');
@@ -111,8 +104,7 @@ LexerTest.prototype.testTokenizeRegExpWithOptions = function(){
 };
 
 LexerTest.prototype.testTokenizeRegExpWithEscape = function(){
-  var lexer = new Lexer("/\\/\\d/");
-  var tokens = lexer.parse();
+  var tokens = lex("/\\/\\d/");
   var i = 0;
   assertEquals(tokens[i].index, 0);
   assertEquals(tokens[i].text, '\\/\\d');
@@ -120,15 +112,13 @@ LexerTest.prototype.testTokenizeRegExpWithEscape = function(){
 };
 
 LexerTest.prototype.testIgnoreWhitespace = function(){
-  var lexer = new Lexer("a \t \n \r b");
-  var tokens = lexer.parse();
+  var tokens = lex("a \t \n \r b");
   assertEquals(tokens[0].text, 'a');
   assertEquals(tokens[1].text, 'b');
 };
 
 LexerTest.prototype.testRelation = function(){
-  var lexer = new Lexer("! == != < > <= >=");
-  var tokens = lexer.parse();
+  var tokens = lex("! == != < > <= >=");
   assertEquals(tokens[0].text, '!');
   assertEquals(tokens[1].text, '==');
   assertEquals(tokens[2].text, '!=');
@@ -139,8 +129,7 @@ LexerTest.prototype.testRelation = function(){
 };
 
 LexerTest.prototype.testStatements = function(){
-  var lexer = new Lexer("a;b;");
-  var tokens = lexer.parse();
+  var tokens = lex("a;b;");
   assertEquals(tokens[0].text, 'a');
   assertEquals(tokens[1].text, ';');
   assertEquals(tokens[2].text, 'b');
@@ -148,7 +137,7 @@ LexerTest.prototype.testStatements = function(){
 };
 
 LexerTest.prototype.testNumber = function(){
-  var tokens = new Lexer("0.5").parse();
+  var tokens = lex("0.5");
   expect(tokens[0].text).toEqual(0.5);
 };
 
