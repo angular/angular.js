@@ -224,7 +224,7 @@ function Parser(text, parseStrings){
   this.index = 0;
 }
 
-Parser.ZERO = function(){
+ZERO = function(){
   return 0;
 };
 
@@ -452,7 +452,7 @@ Parser.prototype = {
     if (this.expect('+')) {
       return this.primary();
     } else if (token = this.expect('-')) {
-      return this._binary(Parser.ZERO, token.fn, this.unary());
+      return this._binary(ZERO, token.fn, this.unary());
     } else if (token = this.expect('!')) {
       return this._unary(token.fn, this.unary());
     } else {
