@@ -1,11 +1,3 @@
-function Lexer(text, parsStrings){
-  this.text = text;
-  // UTC dates have 20 characters, we send them through parser
-  this.dateParseLength = parsStrings ? 20 : -1;
-  this.tokens = [];
-  this.index = 0;
-}
-
 OPERATORS = {
     'null':function(self){return _null;},
     'true':function(self){return true;},
@@ -33,143 +25,133 @@ OPERATORS = {
 };
 ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-Lexer.prototype = {
-  peek: function() {
-    if (this.index + 1 < this.text.length) {
-      return this.text.charAt(this.index + 1);
-    } else {
-      return false;
-    }
-  },
+function lex(text, parseStrings){
+  var dateParseLength = parseStrings ? 20 : -1,
+      tokens = [],
+      index = 0,
+      canStartRegExp = true;
 
-  parse: function() {
-    var tokens = this.tokens;
-    var canStartRegExp = true;
-    while (this.index < this.text.length) {
-      var ch = this.text.charAt(this.index);
-      if (ch == '"' || ch == "'") {
-        this.readString(ch);
-        canStartRegExp = true;
-      } else if (ch == '(' || ch == '[') {
-        tokens.push({index:this.index, text:ch});
-        this.index++;
-      } else if (ch == '{' ) {
-        var peekCh = this.peek();
-        if (peekCh == ':' || peekCh == '(') {
-          tokens.push({index:this.index, text:ch + peekCh});
-          this.index++;
-        } else {
-          tokens.push({index:this.index, text:ch});
-        }
-        this.index++;
-        canStartRegExp = true;
-      } else if (ch == ')' || ch == ']' || ch == '}' ) {
-        tokens.push({index:this.index, text:ch});
-        this.index++;
-        canStartRegExp = false;
-      } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
-        tokens.push({index:this.index, text:ch});
-        this.index++;
-        canStartRegExp = true;
-      } else if ( canStartRegExp && ch == '/' ) {
-        this.readRegexp();
-        canStartRegExp = false;
-      } else if ( this.isNumber(ch) ) {
-        this.readNumber();
-        canStartRegExp = false;
-      } else if (this.isIdent(ch)) {
-        this.readIdent();
-        canStartRegExp = false;
-      } else if (this.isWhitespace(ch)) {
-        this.index++;
+  while (index < text.length) {
+    var ch = text.charAt(index);
+    if (ch == '"' || ch == "'") {
+      readString(ch);
+      canStartRegExp = true;
+    } else if (ch == '(' || ch == '[') {
+      tokens.push({index:index, text:ch});
+      index++;
+    } else if (ch == '{' ) {
+      var peekCh = peek();
+      if (peekCh == ':' || peekCh == '(') {
+        tokens.push({index:index, text:ch + peekCh});
+        index++;
       } else {
-        var ch2 = ch + this.peek();
-        var fn = OPERATORS[ch];
-        var fn2 = OPERATORS[ch2];
-        if (fn2) {
-          tokens.push({index:this.index, text:ch2, fn:fn2});
-          this.index += 2;
-        } else if (fn) {
-          tokens.push({index:this.index, text:ch, fn:fn});
-          this.index += 1;
-        } else {
-          throw "Lexer Error: Unexpected next character [" +
-              this.text.substring(this.index) +
-              "] in expression '" + this.text +
-              "' at column '" + (this.index+1) + "'.";
-        }
-        canStartRegExp = true;
+        tokens.push({index:index, text:ch});
       }
+      index++;
+      canStartRegExp = true;
+    } else if (ch == ')' || ch == ']' || ch == '}' ) {
+      tokens.push({index:index, text:ch});
+      index++;
+      canStartRegExp = false;
+    } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
+      tokens.push({index:index, text:ch});
+      index++;
+      canStartRegExp = true;
+    } else if ( canStartRegExp && ch == '/' ) {
+      readRegexp();
+      canStartRegExp = false;
+    } else if ( isNumber(ch) ) {
+      readNumber();
+      canStartRegExp = false;
+    } else if (isIdent(ch)) {
+      readIdent();
+      canStartRegExp = false;
+    } else if (isWhitespace(ch)) {
+      index++;
+    } else {
+      var ch2 = ch + peek(),
+          fn = OPERATORS[ch],
+          fn2 = OPERATORS[ch2];
+      if (fn2) {
+        tokens.push({index:index, text:ch2, fn:fn2});
+        index += 2;
+      } else if (fn) {
+        tokens.push({index:index, text:ch, fn:fn});
+        index += 1;
+      } else {
+        throw "Lexer Error: Unexpected next character [" +
+            text.substring(index) +
+            "] in expression '" + text +
+            "' at column '" + (index+1) + "'.";
+      }
+      canStartRegExp = true;
     }
-    return tokens;
-  },
+  }
+  return tokens;
 
-  isNumber: function(ch) {
+  function peek() {
+    return index + 1 < text.length ? text.charAt(index + 1) : false;
+  }
+  function isNumber(ch) {
     return '0' <= ch && ch <= '9';
-  },
-
-  isWhitespace: function(ch) {
+  }
+  function isWhitespace(ch) {
     return ch == ' ' || ch == '\r' || ch == '\t' ||
            ch == '\n' || ch == '\v';
-  },
-
-  isIdent: function(ch) {
+  }
+  function isIdent(ch) {
     return 'a' <= ch && ch <= 'z' ||
            'A' <= ch && ch <= 'Z' ||
            '_' == ch || ch == '$';
-  },
-
-  readNumber: function() {
+  }
+  function readNumber() {
     var number = "";
-    var start = this.index;
-    while (this.index < this.text.length) {
-      var ch = this.text.charAt(this.index);
-      if (ch == '.' || this.isNumber(ch)) {
+    var start = index;
+    while (index < text.length) {
+      var ch = text.charAt(index);
+      if (ch == '.' || isNumber(ch)) {
         number += ch;
       } else {
         break;
       }
-      this.index++;
+      index++;
     }
     number = 1 * number;
-    this.tokens.push({index:start, text:number,
+    tokens.push({index:start, text:number,
       fn:function(){return number;}});
-  },
-
-  readIdent: function() {
+  }
+  function readIdent() {
     var ident = "";
-    var start = this.index;
-    while (this.index < this.text.length) {
-      var ch = this.text.charAt(this.index);
-      if (ch == '.' || this.isIdent(ch) || this.isNumber(ch)) {
+    var start = index;
+    while (index < text.length) {
+      var ch = text.charAt(index);
+      if (ch == '.' || isIdent(ch) || isNumber(ch)) {
         ident += ch;
       } else {
         break;
       }
-      this.index++;
+      index++;
     }
     var fn = OPERATORS[ident];
     if (!fn) {
       fn = getterFn(ident);
       fn.isAssignable = ident;
     }
-    this.tokens.push({index:start, text:ident, fn:fn});
-  },
-
-  readString: function(quote) {
-    var start = this.index;
-    var dateParseLength = this.dateParseLength;
-    this.index++;
+    tokens.push({index:start, text:ident, fn:fn});
+  }
+  function readString(quote) {
+    var start = index;
+    index++;
     var string = "";
     var rawString = quote;
     var escape = false;
-    while (this.index < this.text.length) {
-      var ch = this.text.charAt(this.index);
+    while (index < text.length) {
+      var ch = text.charAt(index);
       rawString += ch;
       if (escape) {
         if (ch == 'u') {
-          var hex = this.text.substring(this.index + 1, this.index + 5);
-          this.index += 4;
+          var hex = text.substring(index + 1, index + 5);
+          index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
         } else {
           var rep = ESCAPE[ch];
@@ -183,8 +165,8 @@ Lexer.prototype = {
       } else if (ch == '\\') {
         escape = true;
       } else if (ch == quote) {
-        this.index++;
-        this.tokens.push({index:start, text:rawString, string:string,
+        index++;
+        tokens.push({index:start, text:rawString, string:string,
           fn:function(){
             return (string.length == dateParseLength) ?
               angular['String']['toDate'](string) : string;
@@ -193,20 +175,19 @@ Lexer.prototype = {
       } else {
         string += ch;
       }
-      this.index++;
+      index++;
     }
     throw "Lexer Error: Unterminated quote [" +
-        this.text.substring(start) + "] starting at column '" +
-        (start+1) + "' in expression '" + this.text + "'.";
-  },
-
-  readRegexp: function(quote) {
-    var start = this.index;
-    this.index++;
+        text.substring(start) + "] starting at column '" +
+        (start+1) + "' in expression '" + text + "'.";
+  }
+  function readRegexp(quote) {
+    var start = index;
+    index++;
     var regexp = "";
     var escape = false;
-    while (this.index < this.text.length) {
-      var ch = this.text.charAt(this.index);
+    while (index < text.length) {
+      var ch = text.charAt(index);
       if (escape) {
         regexp += ch;
         escape = false;
@@ -214,32 +195,32 @@ Lexer.prototype = {
         regexp += ch;
         escape = true;
       } else if (ch === '/') {
-        this.index++;
+        index++;
         var flags = "";
-        if (this.isIdent(this.text.charAt(this.index))) {
-          this.readIdent();
-          flags = this.tokens.pop().text;
+        if (isIdent(text.charAt(index))) {
+          readIdent();
+          flags = tokens.pop().text;
         }
         var compiledRegexp = new RegExp(regexp, flags);
-        this.tokens.push({index:start, text:regexp, flags:flags,
+        tokens.push({index:start, text:regexp, flags:flags,
           fn:function(){return compiledRegexp;}});
         return;
       } else {
         regexp += ch;
       }
-      this.index++;
+      index++;
     }
     throw "Lexer Error: Unterminated RegExp [" +
-        this.text.substring(start) + "] starting at column '" +
-        (start+1) + "' in expression '" + this.text + "'.";
+        text.substring(start) + "] starting at column '" +
+        (start+1) + "' in expression '" + text + "'.";
   }
-};
+}
 
 /////////////////////////////////////////
 
 function Parser(text, parseStrings){
   this.text = text;
-  this.tokens = new Lexer(text, parseStrings).parse();
+  this.tokens = lex(text, parseStrings);
   this.index = 0;
 }
 
