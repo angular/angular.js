@@ -6,7 +6,7 @@ function Lexer(text, parsStrings){
   this.index = 0;
 }
 
-Lexer.OPERATORS = {
+OPERATORS = {
     'null':function(self){return _null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
@@ -31,7 +31,7 @@ Lexer.OPERATORS = {
     '|':function(self, a,b){return b(self, a);},
     '!':function(self, a){return !a;}
 };
-Lexer.ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
 Lexer.prototype = {
   peek: function() {
@@ -44,7 +44,6 @@ Lexer.prototype = {
 
   parse: function() {
     var tokens = this.tokens;
-    var OPERATORS = Lexer.OPERATORS;
     var canStartRegExp = true;
     while (this.index < this.text.length) {
       var ch = this.text.charAt(this.index);
@@ -149,7 +148,7 @@ Lexer.prototype = {
       }
       this.index++;
     }
-    var fn = Lexer.OPERATORS[ident];
+    var fn = OPERATORS[ident];
     if (!fn) {
       fn = getterFn(ident);
       fn.isAssignable = ident;
@@ -173,7 +172,7 @@ Lexer.prototype = {
           this.index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
         } else {
-          var rep = Lexer.ESCAPE[ch];
+          var rep = ESCAPE[ch];
           if (rep) {
             string += rep;
           } else {
