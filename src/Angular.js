@@ -350,7 +350,6 @@ function merge(src, dst) {
 function compile(element, existingScope) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget),
       $element = jqLite(element);
-  parent.$element = $element;
   return compiler.compile($element)($element, existingScope);
 }
 /////////////////////////////////////////////////
