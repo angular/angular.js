@@ -6,6 +6,7 @@ angularService('$browser', function browserFactory(){
         jqLite(window.document),
         jqLite(window.document.getElementsByTagName('head')[0]));
     browserSingleton.startUrlWatcher();
+    browserSingleton.startCookieWatcher();
     browserSingleton.bind();
   }
   return browserSingleton;

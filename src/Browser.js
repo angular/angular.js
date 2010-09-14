@@ -22,8 +22,50 @@ function Browser(location, document, head) {
 
   this.location = location;
   this.document = document;
+  var rawDocument = document[0];
   this.head = head;
   this.idCounter = 0;
+
+  this.cookies = cookies;
+  this.watchCookies = function(fn){ cookieListeners.push(fn); };
+
+  // functions
+  var lastCookies = {};
+  var lastCookieString = '';
+  var cookieListeners = [];
+  /**
+   * cookies() -> hash of all cookies
+   * cookies(name, value) -> set name to value
+   *   if value is undefined delete it
+   * cookies(name) -> should get value, but deletes (no one calls it right now that way)
+   */
+  function cookies(name, value){
+    if (name) {
+      if (value === _undefined) {
+        delete lastCookies[name];
+        rawDocument.cookie = escape(name) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      } else {
+        rawDocument.cookie = escape(name) + '=' + escape(lastCookies[name] = ''+value);
+      }
+    } else {
+      if (rawDocument.cookie !== lastCookieString) {
+        lastCookieString = rawDocument.cookie;
+        var cookieArray = lastCookieString.split("; ");
+        lastCookies = {};
+
+        for (var i = 0; i < cookieArray.length; i++) {
+          var keyValue = cookieArray[i].split("=");
+          if (keyValue.length === 2) { //ignore nameless cookies
+            lastCookies[unescape(keyValue[0])] = unescape(keyValue[1]);
+          }
+        }
+        foreach(cookieListeners, function(fn){
+          fn(lastCookies);
+        });
+      }
+      return lastCookies;
+    }
+  }
 }
 
 Browser.prototype = {
@@ -130,6 +172,14 @@ Browser.prototype = {
      }
      self.setTimeout(pull, self.delay);
    })();
+  },
+
+  startCookieWatcher: function() {
+    var self = this;
+    (function poll() {
+      self.cookies();
+      self.setTimeout(poll, self.delay);
+    })();
   },
 
   setUrl: function(url) {

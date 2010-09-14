@@ -26,6 +26,7 @@ function MockBrowser() {
   var self = this,
       expectations = {},
       requests = [];
+
   this.isMock = true;
   self.url = "http://server";
   self.watches = [];
@@ -72,6 +73,8 @@ function MockBrowser() {
       requests.pop()();
     }
   };
+
+  self.cookieHash = {};
 }
 MockBrowser.prototype = {
 
@@ -90,11 +93,28 @@ MockBrowser.prototype = {
     this.watches.push(fn);
   },
 
+  watchCookies: function(fn) {
+    this.watches.push(fn);
+  },
+
   fireUrlWatchers: function() {
     for(var i=0; i<this.watches.length; i++) {
       this.watches[i](this.url);
     }
+  },
+
+  cookies:  function(name, value) {
+    if (name) {
+      if (value == undefined) {
+        delete this.cookieHash[name];
+      } else {
+        this.cookieHash[name] = ""+value;
+      }
+    } else {
+      return copy(this.cookieHash);
+    }
   }
+
 };
 
 angular.service('$browser', function(){
