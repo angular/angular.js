@@ -44,7 +44,7 @@ function setter(instance, path, value){
 }
 
 ///////////////////////////////////
-var scopeId = 0;
+var scopeId = 0,
     getterFnCache = {},
     compileCache = {},
     JS_KEYWORDS = {};

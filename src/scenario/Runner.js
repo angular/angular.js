@@ -107,7 +107,7 @@ angular.scenario.Runner.prototype = {
       } else {
         self.scope.$testrun.done = true;
       }
-    };
+    }
     callback();
   },
 
@@ -176,7 +176,7 @@ angular.scenario.Runner.prototype = {
          steps: futuresFulfilled});
        done();
      }
-   };
+   }
    next();
    return specThis;
   }

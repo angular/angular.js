@@ -24,7 +24,7 @@ angular.scenario.dsl.browser = {
     href: "",
     hash: "",
     toEqual: function(url) {
-      return (this.hash == "" ? (url == this.href) :
+      return (this.hash === "" ? (url == this.href) :
         (url == (this.href + "/#/" + this.hash)));
     },
     setLocation: function(url) {
@@ -56,7 +56,7 @@ angular.scenario.dsl.input = function(selector) {
       });
     }
   };
-},
+};
 
 angular.scenario.dsl.NG_BIND_PATTERN =/\{\{[^\}]+\}\}/;
 
