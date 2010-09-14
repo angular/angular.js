@@ -77,19 +77,16 @@ function toJsonArray(buf, obj, pretty, stack){
       keys.sort();
       for ( var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
         var key = keys[keyIndex];
-        try {
-          var value = obj[key];
-          if (typeof value != $function) {
-            if (comma) {
-              buf.push(",");
-              if (pretty) buf.push(pretty);
-            }
-            buf.push(angular['String']['quote'](key));
-            buf.push(":");
-            toJsonArray(buf, value, childPretty, stack);
-            comma = true;
+        var value = obj[key];
+        if (typeof value != $function) {
+          if (comma) {
+            buf.push(",");
+            if (pretty) buf.push(pretty);
           }
-        } catch (e) {
+          buf.push(angular['String']['quote'](key));
+          buf.push(":");
+          toJsonArray(buf, value, childPretty, stack);
+          comma = true;
         }
       }
       buf.push("}");

@@ -260,6 +260,8 @@ angularWidget('ng:include', function(element){
             compiler.compile(element)(element, childScope);
             childScope.$init();
           });
+        } else {
+          element.html('');
         }
       });
     };
