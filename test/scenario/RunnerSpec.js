@@ -47,7 +47,7 @@ describe('Runner', function() {
           fail();
         } catch (e) {
           expect(e.message).toEqual('blah');
-        };
+        }
       });
     });
 
@@ -116,7 +116,7 @@ describe('Runner', function() {
 
   describe('future building', function() {
     it('should queue futures', function() {
-      function behavior(){};
+      function behavior(){}
       Describe('name', function() {
         It('should', function() {
           $scenario.addFuture('futureName', behavior);

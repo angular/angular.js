@@ -94,7 +94,7 @@ function extend(dst) {
 
 function inherit(parent, extra) {
   return extend(new (extend(function(){}, {prototype:parent}))(), extra);
-};
+}
 
 function noop() {}
 function identity($) {return $;}

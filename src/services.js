@@ -109,7 +109,7 @@ angularService('$exceptionHandler', function($log){
 }, {inject:['$log']});
 
 angularService("$hover", function(browser, document) {
-  var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);;
+  var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);
   browser.hover(function(element, show){
     if (show && (error = element.attr(NG_EXCEPTION) || element.attr(NG_VALIDATION_ERROR))) {
       if (!tooltip) {
@@ -345,7 +345,7 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
 }, {inject:['$xhr', '$xhr.error', '$log']});
 
 angularService('$xhr.cache', function($xhr){
-  var inflight = {}, self = this;;
+  var inflight = {}, self = this;
   function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
       callback = post;
@@ -418,7 +418,7 @@ angularService('$cookies', function($browser) {
         //delete cookies[name];
       }
     }
-  };
+  }
 }, {inject: ['$browser']});
 
 

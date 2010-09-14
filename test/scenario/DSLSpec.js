@@ -43,33 +43,29 @@ describe("DSL", function() {
 
   describe('browser', function() {
     var browser = angular.scenario.dsl.browser;
-    it('shoud return true if location with empty hash provided is same '
-        + 'as location of the page', function() {
+    it('shoud return true if location with empty hash provided is same ' +
+        'as location of the page', function() {
       browser.location.href = "http://server";
       expect(browser.location.toEqual("http://server")).toEqual(true);
     });
-    it('shoud return true if location with hash provided is same '
-        + 'as location of the page', function() {
+    it('shoud return true if location with hash provided is same ' +
+        'as location of the page', function() {
       browser.location.href = "http://server";
       browser.location.hash = "hashPath";
-      expect(browser.location.toEqual("http://server/#/hashPath"))
-        .toEqual(true);
+      expect(browser.location.toEqual("http://server/#/hashPath")).toEqual(true);
     });
-    it('should return true if the location provided is the same as which '
-        + 'browser navigated to', function() {
+    it('should return true if the location provided is the same as which ' +
+        'browser navigated to', function() {
       var future = browser.navigateTo("http://server/#/hashPath");
       expect(future.name).toEqual("Navigate to: http://server/#/hashPath");
       executeFuture(future, '<input type="text" name="name" />');
-      expect(browser.location.toEqual("http://server/#/hashPath"))
-        .toEqual(true);
-      expect(browser.location.toEqual("http://server/"))
-        .toEqual(false);
+      expect(browser.location.toEqual("http://server/#/hashPath")).toEqual(true);
+      expect(browser.location.toEqual("http://server/")).toEqual(false);
 
       future = browser.navigateTo("http://server/");
       expect(future.name).toEqual("Navigate to: http://server/");
       executeFuture(future, '<input type="text" name="name" />');
-      expect(browser.location.toEqual("http://server/"))
-        .toEqual(true);
+      expect(browser.location.toEqual("http://server/")).toEqual(true);
     });
   });
 

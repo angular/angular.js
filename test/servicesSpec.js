@@ -34,10 +34,10 @@ describe("service", function(){
   describe("$log", function(){
     it('should use console if present', function(){
       var logger = "";
-      function log(){ logger+= 'log;'; };
-      function warn(){ logger+= 'warn;'; };
-      function info(){ logger+= 'info;'; };
-      function error(){ logger+= 'error;'; };
+      function log(){ logger+= 'log;'; }
+      function warn(){ logger+= 'warn;'; }
+      function info(){ logger+= 'info;'; }
+      function error(){ logger+= 'error;'; }
       var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
@@ -48,7 +48,7 @@ describe("service", function(){
 
     it('should use console.log if other not present', function(){
       var logger = "";
-      function log(){ logger+= 'log;'; };
+      function log(){ logger+= 'log;'; }
       var scope = createScope(null, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();

@@ -34,7 +34,7 @@ angularDirective("ng:bind", function(expression){
       });
       this.$element = oldElement;
       if (lastValue === value && lastError == error) return;
-      isHtml = value instanceof HTML,
+      isHtml = value instanceof HTML;
       isDomElement = isElement(value);
       if (!isHtml && !isDomElement && isObject(value)) {
         value = toJson(value);
@@ -85,7 +85,7 @@ function compileBindTemplate(template){
         else if (isObject(value))
           value = toJson(value, true);
         parts.push(value);
-      };
+      }
       self.$element = oldElement;
       return parts.join('');
     };
@@ -133,7 +133,7 @@ angularDirective("ng:bind-attr", function(expression){
             element.attr(key, value);
           }
         }
-      };
+      }
     }, element);
   };
 });
@@ -187,7 +187,7 @@ angularWidget("@ng:repeat", function(expression, element){
           lastElement = childScope.$element;
           index ++;
         }
-      };
+      }
       // shrink children
       while(children.length > index) {
         children.pop().$element.remove();
