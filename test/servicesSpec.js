@@ -38,7 +38,7 @@ describe("service", function(){
       function warn(){ logger+= 'warn;'; };
       function info(){ logger+= 'info;'; };
       function error(){ logger+= 'error;'; };
-      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{}]});
+      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -49,7 +49,7 @@ describe("service", function(){
     it('should use console.log if other not present', function(){
       var logger = "";
       function log(){ logger+= 'log;'; };
-      var scope = createScope(null, angularService, {$window: {console:{log:log}}, $document:[{}]});
+      var scope = createScope(null, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -58,7 +58,7 @@ describe("service", function(){
     });
 
     it('should use noop if no console', function(){
-      var scope = createScope(null, angularService, {$window: {}, $document:[{}]});
+      var scope = createScope(null, angularService, {$window: {}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -371,4 +371,95 @@ describe("service", function(){
   });
 
 
+  describe('$cookies', function() {
+
+    it('should provide access to existing cookies via object properties', function(){
+      expect(scope.$cookies).toEqual({});
+
+      scope.$browser.cookies('brandNew', 'cookie');
+      //TODO: This is a hacky way of calling the watch function, once pooling is refactored, this will go away.
+      scope.$browser.watches[1](scope.$browser.cookies());
+
+      expect(scope.$cookies).toEqual({'brandNew':'cookie'});
+    });
+
+
+    it('should create or update a cookie when a value is assigned to a property', function() {
+      scope.$cookies.oatmealCookie = 'nom nom';
+      scope.$eval();
+
+      expect(scope.$browser.cookies()).toEqual({'oatmealCookie':'nom nom'});
+
+      scope.$cookies.oatmealCookie = 'gone';
+      scope.$eval();
+
+      expect(scope.$browser.cookies()).toEqual({'oatmealCookie':'gone'});
+    });
+
+
+    it('should turn non-string into String when creating a cookie', function() {
+      scope.$cookies.nonString = [1, 2, 3];
+      scope.$eval();
+      expect(scope.$browser.cookies()).toEqual({'nonString':'1,2,3'});
+    });
+
+
+    it('should drop any null or undefined properties', function() {
+      scope.$cookies.nullVal = null;
+      scope.$cookies.undefVal = undefined;
+      scope.$eval();
+
+      expect(scope.$browser.cookies()).toEqual({});
+    });
+
+
+    it('should remove a cookie when a $cookies property is deleted', function() {
+      scope.$cookies.oatmealCookie = 'nom nom';
+      scope.$eval();
+      expect(scope.$browser.cookies()).toEqual({'oatmealCookie':'nom nom'});
+
+      delete scope.$cookies.oatmealCookie;
+      scope.$eval();
+
+      expect(scope.$browser.cookies()).toEqual({});
+    });
+  });
+
+
+  describe('$sessionStore', function() {
+
+    it('should serialize objects to json', function() {
+      scope.$sessionStore.put('objectCookie', {id: 123, name: 'blah'});
+      scope.$eval();
+      expect(scope.$browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
+    });
+
+
+    it('should return all persisted items as a has via getAll', function() {
+      expect(scope.$sessionStore.getAll()).toEqual({});
+
+      scope.$sessionStore.put('object1', {id:1,foo:'bar1'});
+      scope.$sessionStore.put('object2', {id:2,foo:'bar2'});
+
+      expect(scope.$sessionStore.getAll()).toEqual({'object1':{id:1,foo:'bar1'},
+                                                    'object2':{id:2,foo:'bar2'}});
+    });
+
+
+    it('should deserialize json to object', function() {
+      scope.$browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
+      //TODO: This is a hacky way of calling the watch function, once pooling is refactored, this will go away.
+      scope.$browser.watches[1](scope.$browser.cookies());
+      expect(scope.$sessionStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
+    });
+
+
+    it('should delete objects from the store when remove is called', function() {
+      scope.$sessionStore.put('gonner', { "I'll":"Be Back"});
+      // TODO: Is this $eval necessary (why was it not here before?)
+      scope.$eval();
+      expect(scope.$browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
+    });
+
+  });
 });

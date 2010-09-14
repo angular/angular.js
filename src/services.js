@@ -392,3 +392,67 @@ angularService('$resource', function($xhr){
   var resource = new ResourceFactory($xhr);
   return bind(resource, resource.route);
 }, {inject: ['$xhr.cache']});
+
+
+angularService('$cookies', function($browser) {
+  var cookies = {}, rootScope = this;
+  $browser.watchCookies(function(newCookies){
+    copy(newCookies, cookies);
+    rootScope.$eval();
+  });
+  this.$onEval(PRIORITY_FIRST, update);
+  this.$onEval(PRIORITY_LAST, update);
+  return cookies;
+
+  function update(){
+    var name, browserCookies = $browser.cookies();
+    for(name in cookies) {
+      if (browserCookies[name] !== cookies[name]) {
+        $browser.cookies(name, browserCookies[name] = cookies[name]);
+      }
+    }
+    for(name in browserCookies) {
+      if (browserCookies[name] !== cookies[name]) {
+        $browser.cookies(name, _undefined);
+        //TODO: write test for this delete
+        //delete cookies[name];
+      }
+    }
+  };
+}, {inject: ['$browser']});
+
+
+angularService('$sessionStore', function($store) {
+
+  function SessionStore() {}
+
+  SessionStore.prototype.get = function(key) {
+    return fromJson($store[key]);
+  };
+
+  SessionStore.prototype.getAll = function() {
+    var all = {},
+        key;
+
+    for (key in $store) {
+      if (!$store.hasOwnProperty(key)) continue;
+      all[key] = fromJson($store[key]);
+    }
+
+    return all;
+  };
+
+
+  SessionStore.prototype.put = function(key, value) {
+    $store[key] = toJson(value);
+  };
+
+
+  SessionStore.prototype.remove = function(key) {
+    delete $store[key];
+  };
+
+
+  return new SessionStore();
+
+}, {inject: ['$cookies']});
