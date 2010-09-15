@@ -414,8 +414,6 @@ angularService('$cookies', function($browser) {
     for(name in browserCookies) {
       if (browserCookies[name] !== cookies[name]) {
         $browser.cookies(name, _undefined);
-        //TODO: write test for this delete
-        //delete cookies[name];
       }
     }
   }
