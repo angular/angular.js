@@ -70,6 +70,21 @@ describe("resource", function() {
     expect(callback).wasCalledWith(cc);
   });
 
+  it("should read partial resource", function(){
+    xhr.expectGET("/CreditCard").respond([{id:{key:123}}]);
+    xhr.expectGET("/CreditCard/123").respond({id:{key:123}, number:'9876'});
+    var ccs = CreditCard.query();
+    xhr.flush();
+    expect(ccs.length).toEqual(1);
+    var cc = ccs[0];
+    expect(cc instanceof CreditCard).toBeTruthy();
+    expect(cc.number).not.toBeDefined();
+    cc.$get(callback);
+    xhr.flush();
+    expect(callback).wasCalledWith(cc);
+    expect(cc.number).toEqual('9876');
+  });
+
   it("should update resource", function(){
     xhr.expectPOST('/CreditCard/123', {id:{key:123}, name:'misko'}).respond({id:{key:123}, name:'rama'});
 
@@ -124,8 +139,8 @@ describe("resource", function() {
   it('should create on save', function(){
     xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123});
     var cc = new CreditCard();
-    expect(cc.$get).not.toBeDefined();
-    expect(cc.$query).not.toBeDefined();
+    expect(cc.$get).toBeDefined();
+    expect(cc.$query).toBeDefined();
     expect(cc.$remove).toBeDefined();
     expect(cc.$save).toBeDefined();
 
