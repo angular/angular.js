@@ -63,7 +63,6 @@ ResourceFactory.prototype = {
     }
 
     foreach(actions, function(action, name){
-      var isGet = action.method == 'GET';
       var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
       Resource[name] = function (a1, a2, a3) {
         var params = {};
@@ -118,25 +117,23 @@ ResourceFactory.prototype = {
         return self.route(url, extend({}, paramDefaults, additionalParamDefaults), actions);
       };
 
-      if (!isGet) {
-        Resource.prototype['$' + name] = function(a1, a2){
-          var self = this;
-          var params = extractParams(self);
-          var callback = noop;
-          switch(arguments.length) {
-          case 2: params = a1; callback = a2;
-          case 1: if (typeof a1 == $function) callback = a1; else params = a1;
-          case 0: break;
-          default:
-            throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
-          }
-          var data = isPostOrPut ? self : _undefined;
-          Resource[name](params, data, function(response){
-            copy(response, self);
-            callback(self);
-          });
-        };
-      }
+      Resource.prototype['$' + name] = function(a1, a2){
+        var self = this;
+        var params = extractParams(self);
+        var callback = noop;
+        switch(arguments.length) {
+        case 2: params = a1; callback = a2;
+        case 1: if (typeof a1 == $function) callback = a1; else params = a1;
+        case 0: break;
+        default:
+          throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
+        }
+        var data = isPostOrPut ? self : _undefined;
+        Resource[name](params, data, function(response){
+          copy(response, self);
+          callback(self);
+        });
+      };
     });
     return Resource;
   }
