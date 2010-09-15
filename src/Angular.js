@@ -385,7 +385,7 @@ function angularInit(config){
 }
 
 function angularJsConfig(document, config) {
-  var filename = /^(.*)\/angular(-([^\/]*))?.js(#(.*))?$/,
+  var filename = /^(.*)\/angular(-([^\/]*))?.js(\?[^#]*)?(#(.*))?$/,
       scripts = document.getElementsByTagName("script"),
       match;
   config = extend({
@@ -396,7 +396,7 @@ function angularJsConfig(document, config) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
       config.base_url = match[1] + '/';
-      extend(config, parseKeyValue(match[5]));
+      extend(config, parseKeyValue(match[6]));
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {
           name = name.substring(3).replace(/-/g, '_');
