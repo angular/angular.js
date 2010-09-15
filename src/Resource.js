@@ -64,7 +64,7 @@ ResourceFactory.prototype = {
 
     foreach(actions, function(action, name){
       var isGet = action.method == 'GET';
-      var isPost = action.method == 'POST';
+      var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
       Resource[name] = function (a1, a2, a3) {
         var params = {};
         var data;
@@ -81,7 +81,7 @@ ResourceFactory.prototype = {
           }
         case 1:
           if (isFunction(a1)) callback = a1;
-          else if (isPost) data = a1;
+          else if (isPostOrPut) data = a1;
           else params = a1;
           break;
         case 0: break;
@@ -120,7 +120,8 @@ ResourceFactory.prototype = {
 
       if (!isGet) {
         Resource.prototype['$' + name] = function(a1, a2){
-          var params = {};
+          var self = this;
+          var params = extractParams(self);
           var callback = noop;
           switch(arguments.length) {
           case 2: params = a1; callback = a2;
@@ -129,8 +130,8 @@ ResourceFactory.prototype = {
           default:
             throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
           }
-          var self = this;
-          Resource[name](params, this, function(response){
+          var data = isPostOrPut ? self : _undefined;
+          Resource[name](params, data, function(response){
             copy(response, self);
             callback(self);
           });
