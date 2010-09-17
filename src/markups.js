@@ -69,6 +69,7 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
 });
 
 var NG_BIND_ATTR = 'ng:bind-attr';
+var SPECIAL_ATTRS = {'ng:src': 'src', 'ng:href': 'href'};
 angularAttrMarkup('{{}}', function(value, name, element){
   // don't process existing attribute markup
   if (angularDirective(name) || angularDirective("@" + name)) return;
@@ -79,7 +80,7 @@ angularAttrMarkup('{{}}', function(value, name, element){
   if (hasBindings(bindings)) {
     element.removeAttr(name);
     bindAttr = fromJson(element.attr(NG_BIND_ATTR) || "{}");
-    bindAttr[name] = value;
+    bindAttr[SPECIAL_ATTRS[name] || name] = value;
     element.attr(NG_BIND_ATTR, toJson(bindAttr));
   }
 });
