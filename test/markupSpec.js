@@ -47,6 +47,20 @@ describe("markups", function(){
     expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option value="a">a</option></select>');
   });
 
+  it('should bind href', function() {
+    compile('<a ng:href="{{url}}"></a>');
+    expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}"}"></a>');
+  });
+
+  it('should bind src', function() {
+    compile('<img ng:src="{{url}}" />');
+    expect(sortedHtml(element)).toEqual('<img ng:bind-attr="{"src":"{{url}}"}"></img>');
+  });
+
+  it('should bind href and merge with other attrs', function() {
+    compile('<a ng:href="{{url}}" rel="{{rel}}"></a>');
+    expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}","rel":"{{rel}}"}"></a>');
+  });
 });
 
 
