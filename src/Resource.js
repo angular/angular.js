@@ -62,12 +62,17 @@ ResourceFactory.prototype = {
       copy(value || {}, this);
     }
 
+    function defaultCallback(value, status, response) {
+      if (status != 200)
+        throw {status: status, response:response, message: status + ": " + response};
+    }
+
     foreach(actions, function(action, name){
       var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
       Resource[name] = function (a1, a2, a3) {
         var params = {};
         var data;
-        var callback = noop;
+        var callback = defaultCallback;
         switch(arguments.length) {
         case 3: callback = a3;
         case 2:
@@ -94,18 +99,14 @@ ResourceFactory.prototype = {
           route.url(extend({}, action.params || {}, extractParams(data), params)),
           data,
           function(status, response, clear) {
-            if (status == 200) {
-              if (action.isArray) {
-                value.length = 0;
-                foreach(response, function(item){
-                  value.push(new Resource(item));
-                });
-              } else {
-                copy(response, value);
-              }
-              (callback||noop)(value);
+            (callback)(value, status, response);
+            if (action.isArray) {
+              value.length = 0;
+              foreach(response, function(item){
+                value.push(new Resource(item));
+              });
             } else {
-              throw {status: status, response:response, message: status + ": " + response};
+              copy(response, value);
             }
           },
           action.verifyCache
@@ -119,7 +120,7 @@ ResourceFactory.prototype = {
 
       Resource.prototype['$' + name] = function(a1, a2){
         var params = extractParams(this);
-        var callback = noop;
+        var callback = defaultCallback;
         switch(arguments.length) {
         case 2: params = a1; callback = a2;
         case 1: if (typeof a1 == $function) callback = a1; else params = a1;
@@ -128,8 +129,8 @@ ResourceFactory.prototype = {
           throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
         }
         var data = isPostOrPut ? this : _undefined;
-        Resource[name].call(this, params, data, function(self){
-          callback(self);
+        Resource[name].call(this, params, data, function(self, status, response){
+          callback(self, status, response);
         });
       };
     });

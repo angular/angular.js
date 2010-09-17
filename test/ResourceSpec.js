@@ -56,7 +56,7 @@ describe("resource", function() {
     expect(callback).wasNotCalled();
     xhr.flush();
     nakedExpect(cc).toEqual({id:123, name:'misko'});
-    expect(callback).wasCalledWith(cc);
+    expect(callback).wasCalledWith(cc, 200, {id:123, name:'misko'});
   });
 
   it("should read resource", function(){
@@ -67,7 +67,7 @@ describe("resource", function() {
     expect(callback).wasNotCalled();
     xhr.flush();
     nakedExpect(cc).toEqual({id:123, number:'9876'});
-    expect(callback).wasCalledWith(cc);
+    expect(callback).wasCalledWith(cc, 200, {id:123, number:'9876'});
   });
 
   it("should read partial resource", function(){
@@ -78,10 +78,10 @@ describe("resource", function() {
     expect(ccs.length).toEqual(1);
     var cc = ccs[0];
     expect(cc instanceof CreditCard).toBeTruthy();
-    expect(cc.number).not.toBeDefined();
+    nakedExpect(cc).toEqual({id:{key:123}});
     cc.$get(callback);
     xhr.flush();
-    expect(callback).wasCalledWith(cc);
+    expect(callback).wasCalledWith(cc, 200, {id:{key:123}, number:'9876'});
     expect(cc.number).toEqual('9876');
   });
 
@@ -102,7 +102,7 @@ describe("resource", function() {
     expect(callback).wasNotCalled();
     xhr.flush();
     nakedExpect(ccs).toEqual([{id:1}, {id:2}]);
-    expect(callback).wasCalledWith(ccs);
+    expect(callback).wasCalledWith(ccs, 200, [{id:1}, {id:2}]);
   });
 
   it("should have all arguments optional", function(){
@@ -120,7 +120,7 @@ describe("resource", function() {
     CreditCard.remove({id:123}, callback);
     expect(callback).wasNotCalled();
     xhr.flush();
-    nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
+    nakedExpect(callback.mostRecentCall.args).toEqual([{}, 200, {}]);
   });
 
   it('should post charge verb', function(){
@@ -145,11 +145,11 @@ describe("resource", function() {
     expect(cc.$save).toBeDefined();
 
     cc.name = 'misko';
-    cc.$save(callback);
     nakedExpect(cc).toEqual({name:'misko'});
+    cc.$save(callback);
     xhr.flush();
     nakedExpect(cc).toEqual({id:123});
-    expect(callback).wasCalledWith(cc);
+    expect(callback).wasCalledWith(cc, 200, {id:123});
   });
 
   it('should bind default parameters', function(){
