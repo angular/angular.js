@@ -154,6 +154,7 @@ system have been added.
 Code in:
 lib/libtrunk_rhino_parser_jarjared.jar
 
+Rhino
 URL: http://www.mozilla.org/rhino
 Version:  Trunk
 License:  Netscape Public License and MPL / GPL dual license
@@ -167,13 +168,66 @@ http://code.google.com/p/jarjar/
 
 -----
 Code in:
-lib/google_common.jar
+lib/args4j_deploy.jar
 
+Args4j
+URL: https://args4j.dev.java.net/
+Version: 2.0.9
+License: MIT
+
+Description:
+args4j is a small Java class library that makes it easy to parse command line
+options/arguments in your CUI application.
+
+Local Modifications: None.
+
+
+-----
+Code in:
+lib/guava-r06.jar
+
+Guava Libraries
 URL: http://code.google.com/p/guava-libraries/
-Version:  Trunk
+Version:  R6
 License: Apache License 2.0
 
 Description: Google's core Java libraries.
+
+Local Modifications: None.
+
+
+-----
+Code in:
+lib/hamcrest-core-1.1.jar
+
+Hamcrest
+URL: http://code.google.com/p/hamcrest
+License: BSD
+License File: LICENSE
+
+Description:
+Provides a library of matcher objects (also known as constraints or
+predicates) allowing 'match' rules to be defined declaratively, to be used in
+other frameworks. Typical scenarios include testing frameworks, mocking
+libraries and UI validation rules.
+
+Local modifications:
+The original jars contained both source code and compiled classes.
+
+hamcrest-core-1.1.jar just contains the compiled classes.
+
+
+
+-----
+Code in:
+lib/jsr305.jar
+
+Annotations for software defect detection
+URL: http://code.google.com/p/jsr-305/
+Version: svn revision 47
+License: BSD License
+
+Description: Annotations for software defect detection.
 
 Local Modifications: None.
 
@@ -182,12 +236,54 @@ Local Modifications: None.
 Code in:
 lib/junit.jar
 
-URL: http://sourceforge.net/projects/junit/
-Version: 3.8.1
-License: Common Public License 1.0
+JUnit
+URL:  http://sourceforge.net/projects/junit/
+Version:  4.5
+License:  Common Public License 1.0
 
 Description: A framework for writing and running automated tests in Java.
 
 Local Modifications: None.
 
+
+---
+Code in:
+lib/protobuf-java-2.3.0.jar
+
+Protocol Buffers
+URL: http://code.google.com/p/protobuf/
+Version: 2.3.0
+License: New BSD License
+
+Description: Supporting libraries for protocol buffers,
+an encoding of structured data.
+
+Local Modifications: None
+
+
+---
+Code in:
+lib/ant_deploy.jar
+
+URL: http://ant.apache.org/bindownload.cgi
+Version: 1.6.5
+License: Apache License 2.0
+Description:
+  Ant is a Java based build tool. In theory it is kind of like "make"
+  without make's wrinkles and with the full portability of pure java code.
+
+Local Modifications:
+  Modified apache-ant-1.6.5/bin/ant to look in the ant.runfiles directory
+
+
+---
+Code in:
+lib/json.jar
+URL: http://json.org/java/index.html
+Version: JSON version 2
+License: MIT license
+Description:
+JSON is a set of java files for use in transmitting data in JSON format.
+
+Local Modifications: None
 
