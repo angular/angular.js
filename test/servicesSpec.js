@@ -429,19 +429,8 @@ describe("service", function(){
 
     it('should serialize objects to json', function() {
       scope.$sessionStore.put('objectCookie', {id: 123, name: 'blah'});
-      scope.$eval();
+      scope.$eval(); //force eval in test
       expect(scope.$browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
-    });
-
-
-    it('should return all persisted items as a has via getAll', function() {
-      expect(scope.$sessionStore.getAll()).toEqual({});
-
-      scope.$sessionStore.put('object1', {id:1,foo:'bar1'});
-      scope.$sessionStore.put('object2', {id:2,foo:'bar2'});
-
-      expect(scope.$sessionStore.getAll()).toEqual({'object1':{id:1,foo:'bar1'},
-                                                    'object2':{id:2,foo:'bar2'}});
     });
 
 
@@ -454,8 +443,7 @@ describe("service", function(){
 
     it('should delete objects from the store when remove is called', function() {
       scope.$sessionStore.put('gonner', { "I'll":"Be Back"});
-      // TODO: Is this $eval necessary (why was it not here before?)
-      scope.$eval();
+      scope.$eval(); //force eval in test
       expect(scope.$browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
     });
 
