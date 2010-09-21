@@ -205,6 +205,21 @@ function isLeafNode (node) {
   return false;
 }
 
+/**
+ * Copies stuff.
+ *
+ * If destination is not provided and source is an object or an array, a copy is created & returned,
+ * otherwise the source is returned.
+ *
+ * If destination is provided, all of its properties will be deleted and if source is an object or
+ * an array, all of its members will be copied into the destination object. Finally the destination
+ * is returned just for kicks.
+ *
+ * @param {*} source The source to be used during copy.
+ *                   Can be any type including primitives, null and undefined.
+ * @param {(Object|Array)=} destination Optional destination into which the source is copied
+ * @return {*}
+ */
 function copy(source, destination){
   if (!destination) {
     if (source) {
