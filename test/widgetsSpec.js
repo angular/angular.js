@@ -355,9 +355,9 @@ describe("widget", function(){
       it('should honor the value field in option', function(){
         compile(
             '<select name="selection" ng:format="number">' +
-              '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\']">{{name}}</option>' +
+              '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\', \'C\']">{{name}}</option>' +
             '</select>');
-        // childNodes[0] is repeater
+        // childNodes[0] is repeater comment
         expect(scope.selection).toEqual(undefined);
 
         click(element[0].childNodes[1]);
@@ -366,6 +366,32 @@ describe("widget", function(){
         scope.selection = 1;
         scope.$eval();
         expect(element[0].childNodes[2].selected).toEqual(true);
+      });
+
+      it('should unroll select options before eval', function(){
+        compile(
+            '<select name="selection" ng:required>' +
+              '<option value="{{$index}}" ng:repeat="opt in options">{{opt}}</option>' +
+            '</select>');
+        scope.selection = 1;
+        scope.options = ['one', 'two'];
+        scope.$eval();
+        expect(element[0].value).toEqual('1');
+        expect(element.hasClass(NG_VALIDATION_ERROR)).toEqual(false);
+      });
+
+      it('should update select when value changes', function(){
+        compile(
+            '<select name="selection">' +
+              '<option value="...">...</option>' +
+              '<option value="{{value}}">B</option>' +
+            '</select>');
+        scope.selection = 'B';
+        scope.$eval();
+        expect(element[0].childNodes[1].selected).toEqual(false);
+        scope.value = 'B';
+        scope.$eval();
+        expect(element[0].childNodes[1].selected).toEqual(true);
       });
     });
 
@@ -468,7 +494,7 @@ describe("widget", function(){
 
       scope.url = undefined;
       scope.$eval();
-      
+
       expect(element.text()).toEqual('');
     });
   });

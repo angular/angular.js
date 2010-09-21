@@ -22,7 +22,7 @@ function getter(instance, path, unboundFn) {
       }
     }
   }
-  if (!unboundFn && isFunction(instance) && !instance['$$factory']) {
+  if (!unboundFn && isFunction(instance)) {
     return bind(lastInstance, instance);
   }
   return instance;
@@ -113,12 +113,13 @@ function createScope(parent, services, existing) {
   function API(){}
   function Behavior(){}
 
-  var instance, behavior, api, evalLists = {sorted:[]}, servicesCache = extend({}, existing);
-
   parent = Parent.prototype = (parent || {});
-  api = API.prototype = new Parent();
-  behavior = Behavior.prototype = new API();
-  instance = new Behavior();
+  var evalLists = {sorted:[]};
+  var postList = [], postHash = {}, postId = 0;
+  var servicesCache = extend({}, existing);
+  var api = API.prototype = new Parent();
+  var behavior = Behavior.prototype = new API();
+  var instance = new Behavior();
 
   extend(api, {
     'this': instance,
@@ -130,13 +131,22 @@ function createScope(parent, services, existing) {
 
     $eval: function $eval(exp) {
       var type = typeof exp;
+      var i, iSize;
+      var j, jSize;
+      var queue;
+      var fn;
       if (type == $undefined) {
-        for ( var i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
-          for ( var queue = evalLists.sorted[i],
+        for ( i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
+          for ( queue = evalLists.sorted[i],
               jSize = queue.length,
               j= 0; j < jSize; j++) {
             instance.$tryEval(queue[j].fn, queue[j].handler);
           }
+        }
+        while(postList.length) {
+          fn = postList.shift();
+          delete postHash[fn.$postEvalId];
+          instance.$tryEval(fn);
         }
       } else if (type === $function) {
         return exp.call(instance);
@@ -200,6 +210,20 @@ function createScope(parent, services, existing) {
         fn: expressionCompile(expr),
         handler: exceptionHandler
       });
+    },
+
+    $postEval: function(expr) {
+      if (expr) {
+        var fn = expressionCompile(expr);
+        var id = fn.$postEvalId;
+        if (!id) {
+          id = '$' + instance.$id + "_" + (postId++);
+          fn.$postEvalId = id;
+        }
+        if (!postHash[id]) {
+          postList.push(postHash[id] = fn);
+        }
+      }
     },
 
     $become: function(Class) {
