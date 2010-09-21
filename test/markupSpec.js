@@ -54,7 +54,9 @@ describe("markups", function(){
 
   it('should bind src', function() {
     compile('<img ng:src="{{url}}" />');
-    expect(sortedHtml(element)).toEqual('<img ng:bind-attr="{"src":"{{url}}"}"></img>');
+    scope.url = 'http://localhost/';
+    scope.$eval();
+    expect(sortedHtml(element)).toEqual('<img ng:bind-attr="{"src":"{{url}}"}" src="http://localhost/"></img>');
   });
 
   it('should bind href and merge with other attrs', function() {
