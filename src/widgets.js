@@ -209,7 +209,11 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
           event.preventDefault();
       });
     }
-    view.set(lastValue = model.get());
+    function updateView(){
+      view.set(lastValue = model.get());
+    }
+    updateView();
+    element.data('$update', updateView);
     scope.$watch(model.get, function(value){
       if (lastValue !== value) {
         view.set(lastValue = value);
@@ -229,6 +233,14 @@ angularWidget('button', inputWidgetSelector);
 angularWidget('select', function(element){
   this.descend(true);
   return inputWidgetSelector.call(this, element);
+});
+
+angularWidget('option', function(){
+  this.descend(true);
+  this.directives(true);
+  return function(element) {
+    this.$postEval(element.parent().data('$update'));
+  };
 });
 
 

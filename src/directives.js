@@ -115,6 +115,7 @@ var REMOVE_ATTRIBUTES = {
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
     var lastValue = {};
+    var updateFn = element.parent().data('$update');
     this.$onEval(function(){
       var values = this.$eval(expression);
       for(var key in values) {
@@ -132,6 +133,7 @@ angularDirective("ng:bind-attr", function(expression){
           } else {
             element.attr(key, value);
           }
+          this.$postEval(updateFn);
         }
       }
     }, element);

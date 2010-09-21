@@ -192,4 +192,27 @@ describe('scope/model', function(){
 
     });
   });
+
+  describe('$postEval', function(){
+    it('should eval function once and last', function(){
+      var log = '';
+      var scope = createScope();
+      function onceOnly(){log+= '@';}
+      scope.$onEval(function(){log+= '.';});
+      scope.$postEval(function(){log+= '!';});
+      scope.$postEval(onceOnly);
+      scope.$postEval(onceOnly);
+      scope.$postEval(); // ignore
+      scope.$eval();
+      expect(log).toEqual('.!@');
+      scope.$eval();
+      expect(log).toEqual('.!@.');
+
+      scope.$postEval(onceOnly);
+      scope.$postEval(onceOnly);
+      scope.$eval();
+      expect(log).toEqual('.!@..@');
+    });
+  });
+
 });

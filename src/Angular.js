@@ -124,9 +124,9 @@ function jqLiteWrap(element) {
 }
 function isUndefined(value){ return typeof value == $undefined; }
 function isDefined(value){ return typeof value != $undefined; }
-function isObject(value){ return value!=_null && typeof value == 'object';}
-function isString(value){ return typeof value == 'string';}
-function isNumber(value){ return typeof value == 'number';}
+function isObject(value){ return value!=_null && typeof value == $object;}
+function isString(value){ return typeof value == $string;}
+function isNumber(value){ return typeof value == $number;}
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == $function;}
 function isTextNode(node) { return nodeName(node) == '#text'; }

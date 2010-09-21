@@ -8,7 +8,7 @@ function Template(priority) {
   this.paths = [];
   this.children = [];
   this.inits = [];
-  this.priority = priority || 0;
+  this.priority = priority;
 }
 
 Template.prototype = {
@@ -130,7 +130,7 @@ Compiler.prototype = {
       priority = priority || 0;
     }
     if (isString(priority)) {
-      priority = PRIORITY[uppercase(priority)] || 0;
+      priority = PRIORITY[uppercase(priority)] || parseInt(priority);
     }
     template = new Template(priority);
     eachAttribute(element, function(value, name){

@@ -59,7 +59,7 @@ extend(angular, {
 
 function sortedHtml(element) {
   var html = "";
-  foreach(element, function toString(node) {
+  foreach(jqLite(element), function toString(node) {
     if (node.nodeName == "#text") {
       html += escapeHtml(node.nodeValue);
     } else {
@@ -188,6 +188,7 @@ function click(element) {
     }
   }
   if (name == 'option') {
+    element.parent().val(element.val());
     JQLite.prototype.trigger.call(element.parent(), 'change');
   } else {
     JQLite.prototype.trigger.call(element, 'click');
