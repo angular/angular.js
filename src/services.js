@@ -429,35 +429,18 @@ angularService('$cookies', function($browser) {
 
 angularService('$sessionStore', function($store) {
 
-  function SessionStore() {}
+  return {
+    get: function(key) {
+      return fromJson($store[key]);
+    },
 
-  SessionStore.prototype.get = function(key) {
-    return fromJson($store[key]);
-  };
+    put: function(key, value) {
+      $store[key] = toJson(value);
+    },
 
-  SessionStore.prototype.getAll = function() {
-    var all = {},
-        key;
-
-    for (key in $store) {
-      if (!$store.hasOwnProperty(key)) continue;
-      all[key] = fromJson($store[key]);
+    remove: function(key) {
+      delete $store[key];
     }
-
-    return all;
   };
-
-
-  SessionStore.prototype.put = function(key, value) {
-    $store[key] = toJson(value);
-  };
-
-
-  SessionStore.prototype.remove = function(key) {
-    delete $store[key];
-  };
-
-
-  return new SessionStore();
 
 }, {inject: ['$cookies']});
