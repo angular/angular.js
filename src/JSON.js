@@ -70,7 +70,7 @@ function toJsonArray(buf, obj, pretty, stack){
       var childPretty = pretty ? pretty + "  " : false;
       var keys = [];
       for(var k in obj) {
-        if (!obj.hasOwnProperty(k) || k.indexOf('$$') === 0 || obj[k] === _undefined)
+        if (k.indexOf('$') === 0 || obj[k] === _undefined)
           continue;
         keys.push(k);
       }
