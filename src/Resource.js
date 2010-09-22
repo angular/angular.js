@@ -88,7 +88,7 @@ ResourceFactory.prototype = {
           throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
         }
 
-        var value = action.isArray ? [] : new Resource(data);
+        var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
         self.xhr(
           action.method,
           route.url(extend({}, action.params || {}, extractParams(data), params)),
@@ -118,8 +118,7 @@ ResourceFactory.prototype = {
       };
 
       Resource.prototype['$' + name] = function(a1, a2){
-        var self = this;
-        var params = extractParams(self);
+        var params = extractParams(this);
         var callback = noop;
         switch(arguments.length) {
         case 2: params = a1; callback = a2;
@@ -128,11 +127,8 @@ ResourceFactory.prototype = {
         default:
           throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
         }
-        var data = isPostOrPut ? self : _undefined;
-        Resource[name](params, data, function(response){
-          copy(response, self);
-          callback(self);
-        });
+        var data = isPostOrPut ? this : _undefined;
+        Resource[name].call(this, params, data, callback);
       };
     });
     return Resource;
