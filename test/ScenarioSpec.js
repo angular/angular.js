@@ -42,10 +42,10 @@ describe("ScenarioSpec: configuration", function(){
   it("should take location object", function(){
     var url = "http://server/#?book=moby";
     var scope = compile("<div>{{$location}}</div>");
-    var $location = scope.$get('$location');
+    var $location = scope.$location;
     expect($location.hashSearch.book).toBeUndefined();
     scope.$browser.setUrl(url);
-    scope.$browser.fireUrlWatchers();
+    scope.$browser.poll();
     expect($location.hashSearch.book).toEqual('moby');
   });
 });

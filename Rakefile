@@ -121,7 +121,7 @@ task :lint do
   print out
 end
 
-desc 'push_angularajs'
+desc 'push_angularjs'
 task :push_angularjs do
   Rake::Task['compile'].execute 0
   sh %(cat angularjs.ftp | ftp -N angularjs.netrc angularjs.org)

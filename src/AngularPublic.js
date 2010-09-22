@@ -4,9 +4,9 @@ angularService('$browser', function browserFactory(){
     browserSingleton = new Browser(
         window.location,
         jqLite(window.document),
-        jqLite(window.document.getElementsByTagName('head')[0]));
-    browserSingleton.startUrlWatcher();
-    browserSingleton.startCookieWatcher();
+        jqLite(window.document.getElementsByTagName('head')[0]),
+        XHR);
+    browserSingleton.startPoller(50, function(delay, fn){setTimeout(delay,fn);});
     browserSingleton.bind();
   }
   return browserSingleton;

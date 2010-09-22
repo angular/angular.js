@@ -377,8 +377,7 @@ describe("service", function(){
       expect(scope.$cookies).toEqual({});
 
       scope.$browser.cookies('brandNew', 'cookie');
-      //TODO: This is a hacky way of calling the watch function, once pooling is refactored, this will go away.
-      scope.$browser.watches[1](scope.$browser.cookies());
+      scope.$browser.poll();
 
       expect(scope.$cookies).toEqual({'brandNew':'cookie'});
     });
@@ -448,8 +447,7 @@ describe("service", function(){
 
     it('should deserialize json to object', function() {
       scope.$browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
-      //TODO: This is a hacky way of calling the watch function, once pooling is refactored, this will go away.
-      scope.$browser.watches[1](scope.$browser.cookies());
+      scope.$browser.poll();
       expect(scope.$sessionStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
     });
 

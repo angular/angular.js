@@ -29,7 +29,7 @@ function MockBrowser() {
 
   this.isMock = true;
   self.url = "http://server";
-  self.watches = [];
+  self.pollFns = [];
 
   self.xhr = function(method, url, data, callback) {
     if (angular.isFunction(data)) {
@@ -78,6 +78,14 @@ function MockBrowser() {
 }
 MockBrowser.prototype = {
 
+  poll: function poll(){
+    foreach(this.pollFns, function(pollFn){ pollFn(); });
+  },
+
+  addPollFn: function(pollFn) {
+    this.pollFns.push(pollFn);
+  },
+
   hover: function(onHover) {
   },
 
@@ -87,20 +95,6 @@ MockBrowser.prototype = {
 
   setUrl: function(url){
     this.url = url;
-  },
-
-  watchUrl: function(fn) {
-    this.watches.push(fn);
-  },
-
-  watchCookies: function(fn) {
-    this.watches.push(fn);
-  },
-
-  fireUrlWatchers: function() {
-    for(var i=0; i<this.watches.length; i++) {
-      this.watches[i](this.url);
-    }
   },
 
   cookies:  function(name, value) {
