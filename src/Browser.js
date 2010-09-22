@@ -8,7 +8,7 @@ var XHR = window.XMLHttpRequest || function () {
   throw new Error("This browser does not support XMLHttpRequest.");
 };
 
-function Browser(location, document, head, XHR) {
+function Browser(location, document, head, XHR, $log) {
   var self = this;
   self.isMock = false;
 
@@ -106,28 +106,50 @@ function Browser(location, document, head, XHR) {
   var rawDocument = document[0];
   var lastCookies = {};
   var lastCookieString = '';
+
   /**
-   * cookies() -> hash of all cookies
-   * cookies(name, value) -> set name to value
-   *   if value is undefined delete it
-   * cookies(name) -> should get value, but deletes (no one calls it right now that way)
+   * The cookies method provides a 'private' low level access to browser cookies. It is not meant to
+   * be used directly, use the $cookie service instead.
+   *
+   * The return values vary depending on the arguments that the method was called with as follows:
+   * <ul><li>
+   * cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify it
+   * </li><li>
+   * cookies(name, value) -> set name to value, if value is undefined delete the cookie
+   * </li><li>
+   * cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)
+   * </li></ul>
    */
-  self.cookies = function (name, value){
+  self.cookies = function (/**string*/name, /**string*/value){
+    var cookieLength, cookieArray, i, keyValue;
+
     if (name) {
       if (value === _undefined) {
         delete lastCookies[name];
         rawDocument.cookie = escape(name) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
-        rawDocument.cookie = escape(name) + '=' + escape(lastCookies[name] = ''+value);
+        if (isString(value)) {
+          rawDocument.cookie = escape(name) + '=' + escape(lastCookies[name] = value);
+
+          cookieLength = name.length + value.length + 1;
+          if (cookieLength > 4096) {
+            $log.warn("Cookie '"+ name +"' possibly not set or overflowed because it was too large ("+
+              cookieLength + " > 4096 bytes)!");
+          }
+          if (lastCookies.length > 20) {
+            $log.warn("Cookie '"+ name +"' possibly not set or overflowed because too many cookies " +
+              "were already set (" + lastCookies.length + " > 20 )");
+          }
+        }
       }
     } else {
       if (rawDocument.cookie !== lastCookieString) {
         lastCookieString = rawDocument.cookie;
-        var cookieArray = lastCookieString.split("; ");
+        cookieArray = lastCookieString.split("; ");
         lastCookies = {};
 
-        for (var i = 0; i < cookieArray.length; i++) {
-          var keyValue = cookieArray[i].split("=");
+        for (i = 0; i < cookieArray.length; i++) {
+          keyValue = cookieArray[i].split("=");
           if (keyValue.length === 2) { //ignore nameless cookies
             lastCookies[unescape(keyValue[0])] = unescape(keyValue[1]);
           }

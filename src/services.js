@@ -397,8 +397,18 @@ angularService('$resource', function($xhr){
 }, {inject: ['$xhr.cache']});
 
 
+/**
+ * $cookies service provides read/write access to the browser cookies. Currently only session
+ * cookies are supported.
+ *
+ * Only a simple Object is exposed and by adding or removing properties to/from this object, new
+ * cookies are created or deleted from the browser at the end of the current eval.
+ */
 angularService('$cookies', function($browser) {
-  var cookies = {}, rootScope = this, lastCookies;
+  var cookies = {},
+      rootScope = this,
+      lastCookies;
+
   $browser.addPollFn(function(){
     var currentCookies = $browser.cookies();
     if (lastCookies != currentCookies) {
@@ -407,38 +417,61 @@ angularService('$cookies', function($browser) {
       rootScope.$eval();
     }
   });
+
   this.$onEval(PRIORITY_FIRST, update);
   this.$onEval(PRIORITY_LAST, update);
+
   return cookies;
 
   function update(){
-    var name, browserCookies = $browser.cookies();
+    var name,
+        browserCookies = $browser.cookies();
+
+    //$cookies -> $browser
     for(name in cookies) {
-      if (browserCookies[name] !== cookies[name]) {
-        $browser.cookies(name, browserCookies[name] = cookies[name]);
+      if (cookies[name] !== browserCookies[name]) {
+        $browser.cookies(name, cookies[name]);
       }
     }
+
+    //get what was actually stored in the browser
+    browserCookies = $browser.cookies();
+
+    //$browser -> $cookies
     for(name in browserCookies) {
-      if (browserCookies[name] !== cookies[name]) {
+      if (isUndefined(cookies[name])) {
         $browser.cookies(name, _undefined);
+      } else {
+        cookies[name] = browserCookies[name];
+      }
+    }
+
+    //drop cookies in $cookies for cookies that $browser or real browser dropped
+    for (name in cookies) {
+      if (isUndefined(browserCookies[name])) {
+        delete cookies[name];
       }
     }
   }
 }, {inject: ['$browser']});
 
 
-angularService('$sessionStore', function($store) {
+/**
+ * $cookieStore provides a key-value (string-object) storage that is backed by session cookies.
+ * Objects put or retrieved from this storage are automatically serialized or deserialized.
+ */
+angularService('$cookieStore', function($store) {
 
   return {
-    get: function(key) {
+    get: function(/**string*/key) {
       return fromJson($store[key]);
     },
 
-    put: function(key, value) {
+    put: function(/**string*/key, /**Object*/value) {
       $store[key] = toJson(value);
     },
 
-    remove: function(key) {
+    remove: function(/**string*/key) {
       delete $store[key];
     }
   };

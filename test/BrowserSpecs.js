@@ -72,11 +72,16 @@ describe('browser', function(){
       }
     }
 
-    var browser;
+    var browser, log, logs;
 
     beforeEach(function() {
       deleteAllCookies();
-      browser = new Browser({}, jqLite(document));
+      logs = {log:[], warn:[], info:[], error:[]}
+      log = {log: function() {logs.log.push(Array.prototype.slice.call(arguments))},
+             warn: function() {logs.warn.push(Array.prototype.slice.call(arguments))},
+             info: function() {logs.info.push(Array.prototype.slice.call(arguments))},
+             error: function() {logs.error.push(Array.prototype.slice.call(arguments))}};
+      browser = new Browser({}, jqLite(document), undefined, XHR, log);
       expect(document.cookie).toEqual('');
     });
 
@@ -121,7 +126,7 @@ describe('browser', function(){
 
       it('should create and store a cookie', function() {
         browser.cookies('cookieName', 'cookieValue');
-        expect(document.cookie).toEqual('cookieName=cookieValue');
+        expect(document.cookie).toMatch(/cookieName=cookieValue;? ?/);
         expect(browser.cookies()).toEqual({'cookieName':'cookieValue'});
       });
 
@@ -145,6 +150,47 @@ describe('browser', function(){
         expect(rawCookies).toContain('cookie1%3D=val%3Bue');
         expect(rawCookies).toContain('cookie2%3Dbar%3Bbaz=val%3Due');
       });
+
+      it('should log warnings when 4kb per cookie storage limit is reached', function() {
+        var i, longVal = '', cookieString;
+
+        for(i=0; i<4092; i++) {
+          longVal += '+';
+        }
+
+        cookieString = document.cookie;
+        browser.cookies('x', longVal); //total size 4094-4096, so it should go through
+        expect(document.cookie).not.toEqual(cookieString);
+        expect(browser.cookies()['x']).toEqual(longVal);
+        expect(logs.warn).toEqual([]);
+
+        browser.cookies('x', longVal + 'xxx') //total size 4097-4099, a warning should be logged
+        //browser behavior is undefined, so we test for existance of warning logs only
+        expect(logs.warn).toEqual(
+          [[ "Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
+             "bytes)!" ]]);
+      });
+
+      it('should log warnings when 20 cookies per domain storage limit is reached', function() {
+        var i, str;
+
+        for (i=0; i<20; i++) {
+          str = '' + i;
+          browser.cookies(str, str);
+        }
+
+        i=0;
+        for (str in browser.cookies()) {
+          i++;
+        }
+        expect(i).toEqual(20);
+        expect(logs.warn).toEqual([]);
+
+        browser.cookies('one', 'more');
+        //browser behavior is undefined, so we test for existance of warning logs only
+        expect(logs.warn).toEqual([]);
+      });
+
     });
 
 
@@ -157,14 +203,12 @@ describe('browser', function(){
 
       it ('should return a value for an existing cookie', function() {
         document.cookie = "foo=bar";
-        browser.cookies(true);
         expect(browser.cookies().foo).toEqual('bar');
       });
 
 
       it ('should unescape cookie values that were escaped by puts', function() {
         document.cookie = "cookie2%3Dbar%3Bbaz=val%3Due";
-        browser.cookies(true);
         expect(browser.cookies()['cookie2=bar;baz']).toEqual('val=ue');
       });
 
@@ -197,7 +241,6 @@ describe('browser', function(){
       expect(browser.cookies()).toEqual({'oatmealCookie':'drool'});
 
       document.cookie = 'oatmealCookie=changed';
-      browser.cookies(true);
       expect(browser.cookies().oatmealCookie).toEqual('changed');
     });
 
@@ -233,4 +276,3 @@ describe('browser', function(){
     });
   });
 });
-

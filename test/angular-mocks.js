@@ -102,7 +102,9 @@ MockBrowser.prototype = {
       if (value == undefined) {
         delete this.cookieHash[name];
       } else {
-        this.cookieHash[name] = ""+value;
+        if (isString(value)) {
+          this.cookieHash[name] = value;
+        }
       }
     } else {
       return copy(this.cookieHash);

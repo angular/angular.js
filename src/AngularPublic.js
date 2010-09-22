@@ -1,16 +1,17 @@
 var browserSingleton;
-angularService('$browser', function browserFactory(){
+angularService('$browser', function($log){
   if (!browserSingleton) {
     browserSingleton = new Browser(
         window.location,
         jqLite(window.document),
         jqLite(window.document.getElementsByTagName('head')[0]),
-        XHR);
+        XHR,
+        $log);
     browserSingleton.startPoller(50, function(delay, fn){setTimeout(delay,fn);});
     browserSingleton.bind();
   }
   return browserSingleton;
-});
+}, {inject:['$log']});
 
 extend(angular, {
   'element': jqLite,
