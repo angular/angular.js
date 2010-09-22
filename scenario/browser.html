@@ -1,0 +1,22 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns:ng="http://angularjs.org">
+  <head>
+    <script type="text/javascript" src="../src/angular-bootstrap.js" ng:autobind></script>
+  </head>
+  <body ng:init="$window.$scope = this">
+
+  <h1>Should mark input field red and create hover</h1>
+  <input type="text" name="name" ng:required/>
+
+  <h1>Should reflect changes in URL</h1>
+  <pre>$location={{$location}}</pre>
+  hash: <input type="text" name="$location.hash"/> <br/>
+  hashPath: <input type="text" name="$location.hashPath"/> <br/>
+  hashSearch: <input type="text" name="$location.hashSearch" ng:format="json"/> <br/>
+
+  <h1>Should reflect changes in Cookie</h1>
+  <pre>$cookies={{$cookies}}</pre>
+  $cookies: <input type="text" name="$cookies" ng:format="json"/> <br/>
+
+  </body>
+ </html>

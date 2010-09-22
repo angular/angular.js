@@ -1,6 +1,6 @@
 describe('browser', function(){
 
-  var browser, location, head;
+  var browser, location, head, xhr;
 
   beforeEach(function(){
     location = {href:"http://server", hash:""};
@@ -8,42 +8,17 @@ describe('browser', function(){
         scripts: [],
         append: function(node){head.scripts.push(node);}
     };
-    browser = new Browser(location, jqLite(window.document), head);
-    browser.setTimeout = noop;
-  });
-
-  it('should watch url', function(){
-    browser.delay = 1;
-    expectAsserts(2);
-    browser.watchUrl(function(url){
-      assertEquals('http://getangular.test', url);
+    xhr = null;
+    browser = new Browser(location, jqLite(window.document), head, function(){
+      xhr = this;
+      this.open = noop;
+      this.setRequestHeader = noop;
+      this.send = noop;
     });
-    browser.setTimeout = function(fn, delay){
-      assertEquals(1, delay);
-      location.href = "http://getangular.test";
-      browser.setTimeout = function(fn, delay) {};
-      fn();
-    };
-    browser.startUrlWatcher();
   });
 
   it('should contain cookie cruncher', function() {
     expect(browser.cookies).toBeDefined();
-  });
-
-  it('should be able to start cookie watcher', function() {
-    browser.delay = 1;
-    expectAsserts(2);
-    browser.watchCookies(function(cookies){
-      assertEquals({'foo':'bar'}, cookies);
-    });
-    browser.setTimeout = function(fn, delay){
-      assertEquals(1, delay);
-      document.cookie = 'foo=bar';
-      browser.setTimeout = function(fn, delay) {};
-      fn();
-    };
-    browser.startCookieWatcher();
   });
 
   describe('outstading requests', function(){
@@ -55,15 +30,12 @@ describe('browser', function(){
 
     it('should queue callbacks with outstanding requests', function(){
       var callback = jasmine.createSpy('callback');
-      browser.outstandingRequests.count = 1;
+      browser.xhr('GET', '/url', noop);
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).not.wasCalled();
 
-      browser.processRequestCallbacks();
-      expect(callback).not.wasCalled();
-
-      browser.outstandingRequests.count = 0;
-      browser.processRequestCallbacks();
+      xhr.readyState = 4;
+      xhr.onreadystatechange();
       expect(callback).wasCalled();
     });
   });
@@ -220,44 +192,6 @@ describe('browser', function(){
     });
 
 
-    describe('watch', function() {
-
-      it('should allow listeners to be registered', function() {
-        expectAsserts(1);
-
-        browser.watchCookies(function(cookies) {
-          assertEquals({'aaa':'bbb'}, cookies);
-        });
-
-        browser.cookies('aaa','bbb');
-        browser.cookies();
-      });
-
-
-      it('should fire listeners when cookie changes are discovered', function() {
-        expectAsserts(1);
-
-        browser.watchCookies(function(cookies) {
-          assertEquals({'foo':'bar'}, cookies);
-        });
-
-        document.cookie = 'foo=bar';
-        browser.cookies();
-      });
-
-
-      it('should not fire listeners when no cookies were changed', function() {
-        expectAsserts(0);
-
-        browser.cookies(function(cookies) {
-          assertEquals({'shouldnt':'fire'}, cookies);
-        });
-
-        browser.cookies(true);
-      });
-    });
-
-
     it('should pick up external changes made to browser cookies', function() {
       browser.cookies('oatmealCookie', 'drool');
       expect(browser.cookies()).toEqual({'oatmealCookie':'drool'});
@@ -273,6 +207,30 @@ describe('browser', function(){
       expect(browser.cookies()).toEqual({'existingCookie':'existingValue'});
     });
 
+  });
+
+  describe('poll', function(){
+    it('should call all fns on poll', function(){
+      var log = '';
+      browser.addPollFn(function(){log+='a';});
+      browser.addPollFn(function(){log+='b';});
+      expect(log).toEqual('');
+      browser.poll();
+      expect(log).toEqual('ab');
+      browser.poll();
+      expect(log).toEqual('abab');
+    });
+
+    it('should startPoller', function(){
+      var log = '';
+      var setTimeoutSpy = jasmine.createSpy('setTimeout');
+      browser.addPollFn(function(){log+='.';});
+      browser.startPoller(50, setTimeoutSpy);
+      expect(log).toEqual('.');
+      expect(setTimeoutSpy.mostRecentCall.args[1]).toEqual(50);
+      setTimeoutSpy.mostRecentCall.args[0]();
+      expect(log).toEqual('..');
+    });
   });
 });
 

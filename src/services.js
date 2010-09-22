@@ -11,14 +11,17 @@ angularService("$location", function(browser){
   var scope = this,
       location = {parse:parseUrl, toString:toString, update:update},
       lastLocation = {};
+  var lastBrowserUrl = browser.getUrl();
 
-  browser.watchUrl(function(url){
-    update(url);
-    scope.$root.$eval();
+  browser.addPollFn(function(){
+    if (lastBrowserUrl !== browser.getUrl()) {
+      update(lastBrowserUrl = browser.getUrl());
+      scope.$eval();
+    }
   });
   this.$onEval(PRIORITY_FIRST, update);
   this.$onEval(PRIORITY_LAST, update);
-  update(browser.getUrl());
+  update(lastBrowserUrl);
   return location;
 
   function update(href){
@@ -395,10 +398,14 @@ angularService('$resource', function($xhr){
 
 
 angularService('$cookies', function($browser) {
-  var cookies = {}, rootScope = this;
-  $browser.watchCookies(function(newCookies){
-    copy(newCookies, cookies);
-    rootScope.$eval();
+  var cookies = {}, rootScope = this, lastCookies;
+  $browser.addPollFn(function(){
+    var currentCookies = $browser.cookies();
+    if (lastCookies != currentCookies) {
+      lastCookies = currentCookies;
+      copy(currentCookies, cookies);
+      rootScope.$eval();
+    }
   });
   this.$onEval(PRIORITY_FIRST, update);
   this.$onEval(PRIORITY_LAST, update);
