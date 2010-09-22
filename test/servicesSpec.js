@@ -373,13 +373,22 @@ describe("service", function(){
 
   describe('$cookies', function() {
 
-    it('should provide access to existing cookies via object properties', function(){
+    it('should provide access to existing cookies via object properties and keep them in sync',
+        function(){
       expect(scope.$cookies).toEqual({});
 
       scope.$browser.cookies('brandNew', 'cookie');
       scope.$browser.poll();
 
       expect(scope.$cookies).toEqual({'brandNew':'cookie'});
+
+      scope.$browser.cookies('brandNew', 'cookie2');
+      scope.$browser.poll();
+      expect(scope.$cookies).toEqual({'brandNew':'cookie2'});
+
+      scope.$browser.cookies('brandNew', undefined);
+      scope.$browser.poll();
+      expect(scope.$cookies).toEqual({});
     });
 
 
@@ -396,10 +405,11 @@ describe("service", function(){
     });
 
 
-    it('should turn non-string into String when creating a cookie', function() {
+    it('should ignore non-string values when asked to create a cookie', function() {
       scope.$cookies.nonString = [1, 2, 3];
       scope.$eval();
-      expect(scope.$browser.cookies()).toEqual({'nonString':'1,2,3'});
+      expect(scope.$browser.cookies()).toEqual({});
+      expect(scope.$cookies).toEqual({});
     });
 
 
@@ -425,10 +435,10 @@ describe("service", function(){
   });
 
 
-  describe('$sessionStore', function() {
+  describe('$cookieStore', function() {
 
     it('should serialize objects to json', function() {
-      scope.$sessionStore.put('objectCookie', {id: 123, name: 'blah'});
+      scope.$cookieStore.put('objectCookie', {id: 123, name: 'blah'});
       scope.$eval(); //force eval in test
       expect(scope.$browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
     });
@@ -437,12 +447,12 @@ describe("service", function(){
     it('should deserialize json to object', function() {
       scope.$browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
       scope.$browser.poll();
-      expect(scope.$sessionStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
+      expect(scope.$cookieStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
     });
 
 
     it('should delete objects from the store when remove is called', function() {
-      scope.$sessionStore.put('gonner', { "I'll":"Be Back"});
+      scope.$cookieStore.put('gonner', { "I'll":"Be Back"});
       scope.$eval(); //force eval in test
       expect(scope.$browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
     });
