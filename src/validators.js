@@ -34,11 +34,14 @@ foreach({
     return _null;
   },
 
-  'date': function(value, min, max) {
-    if (value.match(/^\d\d?\/\d\d?\/\d\d\d\d$/)) {
-      return _null;
-    }
-    return "Value is not a date. (Expecting format: 12/31/2009).";
+  'date': function(value) {
+    var fields = /^(\d\d?)\/(\d\d?)\/(\d\d\d\d)$/.exec(value);
+    var date = fields ? new Date(fields[3], fields[1]-1, fields[2]) : 0;
+    return (date &&
+            date.getFullYear() == fields[3] &&
+            date.getMonth() == fields[1]-1 &&
+            date.getDate() == fields[2]) ?
+              _null : "Value is not a date. (Expecting format: 12/31/2009).";
   },
 
   'ssn': function(value) {

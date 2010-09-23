@@ -46,8 +46,19 @@ ValidatorTest.prototype.testInteger = function() {
 
 ValidatorTest.prototype.testDate = function() {
   var error = "Value is not a date. (Expecting format: 12/31/2009).";
-  assertEquals(angular.validator.date("ab"), error);
-  assertEquals(angular.validator.date("12/31/2009"), null);
+  expect(angular.validator.date("ab")).toEqual(error);
+  expect(angular.validator.date("12/31/2009")).toEqual(null);
+  expect(angular.validator.date("1/1/1000")).toEqual(null);
+  expect(angular.validator.date("12/31/9999")).toEqual(null);
+  expect(angular.validator.date("2/29/2004")).toEqual(null);
+  expect(angular.validator.date("2/29/2000")).toEqual(null);
+  expect(angular.validator.date("2/29/2100")).toEqual(error);
+  expect(angular.validator.date("2/29/2003")).toEqual(error);
+  expect(angular.validator.date("41/1/2009")).toEqual(error);
+  expect(angular.validator.date("13/1/2009")).toEqual(error);
+  expect(angular.validator.date("1/1/209")).toEqual(error);
+  expect(angular.validator.date("1/32/2010")).toEqual(error);
+  expect(angular.validator.date("001/031/2009")).toEqual(error);
 };
 
 ValidatorTest.prototype.testPhone = function() {
