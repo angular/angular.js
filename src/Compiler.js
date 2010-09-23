@@ -130,7 +130,7 @@ Compiler.prototype = {
       priority = priority || 0;
     }
     if (isString(priority)) {
-      priority = PRIORITY[uppercase(priority)] || parseInt(priority);
+      priority = PRIORITY[uppercase(priority)] || parseInt(priority, 10);
     }
     template = new Template(priority);
     eachAttribute(element, function(value, name){
