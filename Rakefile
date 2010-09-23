@@ -6,15 +6,6 @@ desc 'Generate Externs'
 task :compile_externs do
   out = File.new("externs.js", "w")
 
-  out.write("function _(){};\n")
-  file = File.new("lib/underscore/underscore.js", "r")
-  while (line = file.gets)
-    if line =~ /^\s*_\.(\w+)\s*=.*$/
-      out.write("_.#{$1}=function(){};\n")
-    end
-  end
-  file.close
-
   out.write("function jQuery(){};\n")
   file = File.new("lib/jquery/jquery-1.4.2.js", "r")
   while (line = file.gets)
@@ -32,7 +23,6 @@ end
 desc 'Compile Scenario'
 task :compile_scenario do
   concat = %x(cat \
-      lib/underscore/underscore.js \
       lib/jquery/jquery-1.4.2.js \
       src/scenario/angular.prefix \
       src/Angular.js \

@@ -25,13 +25,12 @@
   };
 
   window.onload = function(){
-    _.defer(function(){
+    setTimeout(function(){
       $scenarioRunner.run(jQuery(window.document.body));
-    });
+    }, 0);
     (onLoadDelegate||function(){})();
   };
   addCSS("../../css/angular-scenario.css");
-  addScript("../../lib/underscore/underscore.js");
   addScript("../../lib/jquery/jquery-1.4.2.js");
   addScript("Runner.js");
   addScript("../Angular.js");
