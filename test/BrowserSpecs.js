@@ -76,11 +76,11 @@ describe('browser', function(){
 
     beforeEach(function() {
       deleteAllCookies();
-      logs = {log:[], warn:[], info:[], error:[]}
-      log = {log: function() {logs.log.push(Array.prototype.slice.call(arguments))},
-             warn: function() {logs.warn.push(Array.prototype.slice.call(arguments))},
-             info: function() {logs.info.push(Array.prototype.slice.call(arguments))},
-             error: function() {logs.error.push(Array.prototype.slice.call(arguments))}};
+      logs = {log:[], warn:[], info:[], error:[]};
+      log = {log: function() { logs.log.push(slice.call(arguments)); },
+             warn: function() { logs.warn.push(slice.call(arguments)); },
+             info: function() { logs.info.push(slice.call(arguments)); },
+             error: function() { logs.error.push(slice.call(arguments)); }};
       browser = new Browser({}, jqLite(document), undefined, XHR, log);
       expect(document.cookie).toEqual('');
     });
@@ -102,7 +102,7 @@ describe('browser', function(){
 
     });
 
-    describe('remove via (cookieName, undefined)', function() {
+    describe('remove via cookies(cookieName, undefined)', function() {
 
       it('should remove a cookie when it is present', function() {
         document.cookie = 'foo=bar';
@@ -122,7 +122,7 @@ describe('browser', function(){
     });
 
 
-    describe('put via (cookieName, string)', function() {
+    describe('put via cookies(cookieName, string)', function() {
 
       it('should create and store a cookie', function() {
         browser.cookies('cookieName', 'cookieValue');
@@ -194,10 +194,10 @@ describe('browser', function(){
     });
 
 
-    describe('get via (cookieName)', function() {
+    describe('get via cookies()[cookieName]', function() {
 
       it('should return undefined for nonexistent cookie', function() {
-        expect(browser.cookies('nonexistent')).not.toBeDefined();
+        expect(browser.cookies().nonexistent).not.toBeDefined();
       });
 
 
@@ -221,7 +221,7 @@ describe('browser', function(){
     });
 
 
-    describe('getAll', function() {
+    describe('getAll via cookies()', function() {
 
       it('should return cookies as hash', function() {
         document.cookie = "foo1=bar1";
@@ -252,7 +252,7 @@ describe('browser', function(){
 
   });
 
-  describe('poll', function(){
+  describe('poller', function(){
     it('should call all fns on poll', function(){
       var log = '';
       browser.addPollFn(function(){log+='a';});
@@ -273,6 +273,12 @@ describe('browser', function(){
       expect(setTimeoutSpy.mostRecentCall.args[1]).toEqual(50);
       setTimeoutSpy.mostRecentCall.args[0]();
       expect(log).toEqual('..');
+    });
+
+    it('should return fn that was passed into addPollFn', function() {
+      var fn = function() { return 1; };
+      var returnedFn = browser.addPollFn(fn);
+      expect(returnedFn).toBe(fn);
     });
   });
 });

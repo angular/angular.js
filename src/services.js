@@ -409,16 +409,17 @@ angularService('$cookies', function($browser) {
       rootScope = this,
       lastCookies;
 
-  $browser.addPollFn(function(){
+  //creates a poller fn that copies all cookies from the $browser to service & inits the service
+  $browser.addPollFn(function() {
     var currentCookies = $browser.cookies();
     if (lastCookies != currentCookies) {
       lastCookies = currentCookies;
       copy(currentCookies, cookies);
       rootScope.$eval();
     }
-  });
+  })();
 
-  this.$onEval(PRIORITY_FIRST, update);
+  //at the end of each eval, push cookies
   this.$onEval(PRIORITY_LAST, update);
 
   return cookies;

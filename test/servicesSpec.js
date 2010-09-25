@@ -373,22 +373,33 @@ describe("service", function(){
 
   describe('$cookies', function() {
 
+    var scope;
+
+    beforeEach(function() {
+      var browser = new MockBrowser();
+      browser.cookieHash['preexisting'] = 'oldCookie';
+      scope = createScope(null, angularService, {$browser: browser});
+    });
+
+
     it('should provide access to existing cookies via object properties and keep them in sync',
         function(){
-      expect(scope.$cookies).toEqual({});
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
 
-      scope.$browser.cookies('brandNew', 'cookie');
+      // access internal cookie storage of the browser mock directly to simulate behavior of 
+      // document.cookie
+      scope.$browser.cookieHash['brandNew'] = 'cookie';
       scope.$browser.poll();
 
-      expect(scope.$cookies).toEqual({'brandNew':'cookie'});
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'brandNew':'cookie'});
 
-      scope.$browser.cookies('brandNew', 'cookie2');
+      scope.$browser.cookieHash['brandNew'] = 'cookie2';
       scope.$browser.poll();
-      expect(scope.$cookies).toEqual({'brandNew':'cookie2'});
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'brandNew':'cookie2'});
 
-      scope.$browser.cookies('brandNew', undefined);
+      delete scope.$browser.cookieHash['brandNew'];
       scope.$browser.poll();
-      expect(scope.$cookies).toEqual({});
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
     });
 
 
@@ -396,20 +407,22 @@ describe("service", function(){
       scope.$cookies.oatmealCookie = 'nom nom';
       scope.$eval();
 
-      expect(scope.$browser.cookies()).toEqual({'oatmealCookie':'nom nom'});
+      expect(scope.$browser.cookies()).
+        toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
       scope.$cookies.oatmealCookie = 'gone';
       scope.$eval();
 
-      expect(scope.$browser.cookies()).toEqual({'oatmealCookie':'gone'});
+      expect(scope.$browser.cookies()).
+        toEqual({'preexisting': 'oldCookie', 'oatmealCookie': 'gone'});
     });
 
 
     it('should ignore non-string values when asked to create a cookie', function() {
       scope.$cookies.nonString = [1, 2, 3];
       scope.$eval();
-      expect(scope.$browser.cookies()).toEqual({});
-      expect(scope.$cookies).toEqual({});
+      expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
     });
 
 
@@ -418,19 +431,20 @@ describe("service", function(){
       scope.$cookies.undefVal = undefined;
       scope.$eval();
 
-      expect(scope.$browser.cookies()).toEqual({});
+      expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     });
 
 
     it('should remove a cookie when a $cookies property is deleted', function() {
       scope.$cookies.oatmealCookie = 'nom nom';
       scope.$eval();
-      expect(scope.$browser.cookies()).toEqual({'oatmealCookie':'nom nom'});
+      expect(scope.$browser.cookies()).
+        toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
       delete scope.$cookies.oatmealCookie;
       scope.$eval();
 
-      expect(scope.$browser.cookies()).toEqual({});
+      expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     });
   });
 

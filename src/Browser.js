@@ -79,8 +79,21 @@ function Browser(location, document, head, XHR, $log) {
     foreach(pollFns, function(pollFn){ pollFn(); });
   }
   self.poll = poll;
-  self.addPollFn = bind(pollFns, push);
-  self.startPoller = function(interval, setTimeout){
+
+  /**
+   * Adds a function to the list of functions that poller periodically executes
+   * @return {Function} the added function
+   */
+  self.addPollFn = function(/**Function*/fn){
+    pollFns.push(fn);
+    return fn;
+  };
+
+  /**
+   * Configures the poller to run in the specified intervals, using the specified setTimeout fn and
+   * kicks it off.
+   */
+  self.startPoller = function(/**number*/interval, /**Function*/setTimeout){
     (function check(){
       poll();
       setTimeout(check, interval);
