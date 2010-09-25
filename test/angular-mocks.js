@@ -84,6 +84,7 @@ MockBrowser.prototype = {
 
   addPollFn: function(pollFn) {
     this.pollFns.push(pollFn);
+    return pollFn;
   },
 
   hover: function(onHover) {
