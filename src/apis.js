@@ -132,6 +132,31 @@ var angularArray = {
     return count;
   },
   'orderBy':function(array, expression, descend) {
+    expression = isArray(expression) ? expression: [expression];
+    expression = map(expression, function($){
+      var descending = false, get = $ || identity;
+      if (isString($)) {
+        if (($.charAt(0) == '+' || $.charAt(0) == '-')) {
+          descending = $.charAt(0) == '-';
+          $ = $.substring(1);
+        }
+        get = expressionCompile($).fnSelf;
+      }
+      return reverse(function(a,b){
+        return compare(get(a),get(b));
+      }, descending);
+    });
+    var arrayCopy = [];
+    for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
+    return arrayCopy.sort(reverse(comparator, descend));
+
+    function comparator(o1, o2){
+      for ( var i = 0; i < expression.length; i++) {
+        var comp = expression[i](o1, o2);
+        if (comp !== 0) return comp;
+      }
+      return 0;
+    }
     function reverse(comp, descending) {
       return toBoolean(descending) ?
           function(a,b){return comp(b,a);} : comp;
@@ -148,28 +173,7 @@ var angularArray = {
         return t1 < t2 ? -1 : 1;
       }
     }
-    expression = isArray(expression) ? expression: [expression];
-    expression = map(expression, function($){
-      var descending = false;
-      if (typeof $ == "string" && ($.charAt(0) == '+' || $.charAt(0) == '-')) {
-        descending = $.charAt(0) == '-';
-        $ = $.substring(1);
-      }
-      var get = $ ? expressionCompile($).fnSelf : identity;
-      return reverse(function(a,b){
-        return compare(get(a),get(b));
-      }, descending);
-    });
-    var comparator = function(o1, o2){
-      for ( var i = 0; i < expression.length; i++) {
-        var comp = expression[i](o1, o2);
-        if (comp !== 0) return comp;
-      }
-      return 0;
-    };
-    var arrayCopy = [];
-    for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
-    return arrayCopy.sort(reverse(comparator, descend));
+
   }
 };
 
