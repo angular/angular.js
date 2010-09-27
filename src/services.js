@@ -405,52 +405,71 @@ angularService('$resource', function($xhr){
  * cookies are created or deleted from the browser at the end of the current eval.
  */
 angularService('$cookies', function($browser) {
-  var cookies = {},
-      rootScope = this,
-      lastCookies;
+  var rootScope = this,
+      cookies = {},
+      lastCookies = {},
+      lastBrowserCookies;
 
   //creates a poller fn that copies all cookies from the $browser to service & inits the service
   $browser.addPollFn(function() {
     var currentCookies = $browser.cookies();
-    if (lastCookies != currentCookies) {
-      lastCookies = currentCookies;
+    if (lastBrowserCookies != currentCookies) { //relies on browser.cookies() impl
+      lastBrowserCookies = currentCookies;
+      copy(currentCookies, lastCookies);
       copy(currentCookies, cookies);
       rootScope.$eval();
     }
   })();
 
   //at the end of each eval, push cookies
-  this.$onEval(PRIORITY_LAST, update);
+  this.$onEval(PRIORITY_LAST, push);
 
   return cookies;
 
-  function update(){
+
+  /**
+   * Pushes all the cookies from the service to the browser and verifies if all cookies were stored.
+   */
+  function push(){
     var name,
-        browserCookies = $browser.cookies();
+        browserCookies,
+        updated;
 
-    //$cookies -> $browser
-    for(name in cookies) {
-      if (cookies[name] !== browserCookies[name]) {
-        $browser.cookies(name, cookies[name]);
-      }
-    }
-
-    //get what was actually stored in the browser
-    browserCookies = $browser.cookies();
-
-    //$browser -> $cookies
-    for(name in browserCookies) {
+    //delete any cookies deleted in $cookies
+    for (name in lastCookies) {
       if (isUndefined(cookies[name])) {
         $browser.cookies(name, _undefined);
-      } else {
-        cookies[name] = browserCookies[name];
       }
     }
 
-    //drop cookies in $cookies for cookies that $browser or real browser dropped
-    for (name in cookies) {
-      if (isUndefined(browserCookies[name])) {
-        delete cookies[name];
+    //update all cookies updated in $cookies
+    for(name in cookies) {
+      if (cookies[name] !== lastCookies[name]) {
+        $browser.cookies(name, cookies[name]);
+        updated = true;
+      }
+    }
+
+    //verify what was actually stored
+    if (updated){
+      updated = !updated;
+      browserCookies = $browser.cookies();
+
+      for (name in cookies) {
+        if (cookies[name] !== browserCookies[name]) {
+          //delete or reset all cookies that the browser dropped from $cookies
+          if (isUndefined(browserCookies[name])) {
+            delete cookies[name];
+          } else {
+            cookies[name] = browserCookies[name];
+          }
+          updated = true;
+        }
+
+      }
+
+      if (updated) {
+        rootScope.$eval();
       }
     }
   }

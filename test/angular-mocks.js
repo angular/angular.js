@@ -75,6 +75,7 @@ function MockBrowser() {
   };
 
   self.cookieHash = {};
+  self.lastCookieHash = {};
 }
 MockBrowser.prototype = {
 
@@ -103,12 +104,17 @@ MockBrowser.prototype = {
       if (value == undefined) {
         delete this.cookieHash[name];
       } else {
-        if (isString(value)) {
+        if (isString(value) &&       //strings only
+            value.length <= 4096) {  //strict cookie storage limits
           this.cookieHash[name] = value;
         }
       }
     } else {
-      return copy(this.cookieHash);
+      if (!equals(this.cookieHash, this.lastCookieHash)) {
+        this.lastCookieHash = copy(this.cookieHash);
+        this.cookieHash = copy(this.cookieHash);
+      }
+      return this.cookieHash;
     }
   }
 

@@ -138,11 +138,10 @@ function Browser(location, document, head, XHR, $log) {
 
     if (name) {
       if (value === _undefined) {
-        delete lastCookies[name];
         rawDocument.cookie = escape(name) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
-          rawDocument.cookie = escape(name) + '=' + escape(lastCookies[name] = value);
+          rawDocument.cookie = escape(name) + '=' + escape(value);
 
           cookieLength = name.length + value.length + 1;
           if (cookieLength > 4096) {
