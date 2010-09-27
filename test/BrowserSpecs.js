@@ -152,27 +152,39 @@ describe('browser', function(){
       });
 
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
-        var i, longVal = '', cookieString;
+        var i, longVal = '', cookieStr;
 
         for(i=0; i<4092; i++) {
           longVal += '+';
         }
 
-        cookieString = document.cookie;
+        cookieStr = document.cookie;
         browser.cookies('x', longVal); //total size 4094-4096, so it should go through
-        expect(document.cookie).not.toEqual(cookieString);
+        expect(document.cookie).not.toEqual(cookieStr);
         expect(browser.cookies()['x']).toEqual(longVal);
         expect(logs.warn).toEqual([]);
 
-        browser.cookies('x', longVal + 'xxx') //total size 4097-4099, a warning should be logged
-        //browser behavior is undefined, so we test for existance of warning logs only
+        browser.cookies('x', longVal + 'xxx'); //total size 4097-4099, a warning should be logged
         expect(logs.warn).toEqual(
           [[ "Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
              "bytes)!" ]]);
+
+        //force browser to dropped a cookie and make sure that the cache is not out of sync
+        browser.cookies('x', 'shortVal');
+        expect(browser.cookies().x).toEqual('shortVal'); //needed to prime the cache
+        cookieStr = document.cookie;
+        browser.cookies('x', longVal + longVal + longVal); //should be too long for all browsers
+
+        if (document.cookie !== cookieStr) {
+          fail("browser didn't drop long cookie when it was expected. make the cookie in this " +
+              "test longer");
+        }
+
+        expect(browser.cookies().x).toEqual('shortVal');
       });
 
       it('should log warnings when 20 cookies per domain storage limit is reached', function() {
-        var i, str;
+        var i, str, cookieStr;
 
         for (i=0; i<20; i++) {
           str = '' + i;
@@ -185,12 +197,18 @@ describe('browser', function(){
         }
         expect(i).toEqual(20);
         expect(logs.warn).toEqual([]);
+        cookieStr = document.cookie;
 
         browser.cookies('one', 'more');
-        //browser behavior is undefined, so we test for existance of warning logs only
         expect(logs.warn).toEqual([]);
-      });
 
+        //if browser dropped a cookie (very likely), make sure that the cache is not out of sync
+        if (document.cookie === cookieStr) {
+          expect(size(browser.cookies())).toEqual(20);
+        } else {
+          expect(size(browser.cookies())).toEqual(21);
+        }
+      });
     });
 
 

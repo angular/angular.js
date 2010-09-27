@@ -438,6 +438,7 @@ describe("service", function(){
     it('should remove a cookie when a $cookies property is deleted', function() {
       scope.$cookies.oatmealCookie = 'nom nom';
       scope.$eval();
+      scope.$browser.poll();
       expect(scope.$browser.cookies()).
         toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
@@ -445,6 +446,29 @@ describe("service", function(){
       scope.$eval();
 
       expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
+    });
+
+
+    it('should drop or reset cookies that browser refused to store', function() {
+      var i, longVal;
+
+      for (i=0; i<5000; i++) {
+        longVal += '*';
+      }
+
+      //drop if no previous value
+      scope.$cookies.longCookie = longVal;
+      scope.$eval();
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
+
+
+      //reset if previous value existed
+      scope.$cookies.longCookie = 'shortVal';
+      scope.$eval();
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'longCookie': 'shortVal'});
+      scope.$cookies.longCookie = longVal;
+      scope.$eval();
+      expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'longCookie': 'shortVal'});
     });
   });
 
