@@ -79,5 +79,17 @@ describe('equals', function(){
     expect(equals({name:'misko'}, {name:'misko', $id:2})).toEqual(true);
     expect(equals({name:'misko', $id:1}, {name:'misko'})).toEqual(true);
   });
-
 });
+
+describe('parseKeyValue', function() {
+  it('should parse a string into key-value pairs', function() {
+    expect(parseKeyValue('')).toEqual({});
+    expect(parseKeyValue('simple=pair')).toEqual({simple: 'pair'});
+    expect(parseKeyValue('first=1&second=2')).toEqual({first: '1', second: '2'});
+    expect(parseKeyValue('escaped%20key=escaped%20value')).
+      toEqual({'escaped key': 'escaped value'});
+    expect(parseKeyValue('emptyKey=')).toEqual({emptyKey: ''});
+    expect(parseKeyValue('flag1&key=value&flag2')).
+      toEqual({flag1: true, key: 'value', flag2: true});
+  });
+})

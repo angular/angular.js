@@ -370,13 +370,17 @@ function compile(element, existingScope) {
 }
 /////////////////////////////////////////////////
 
-function parseKeyValue(keyValue) {
+/**
+ * Parses an escaped url query string into key-value pairs.
+ * @return Object.<(string|boolean)>
+ */
+function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
   foreach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
       key = unescape(key_value[0]);
-      obj[key] = key_value[1] ? unescape(key_value[1]) : true;
+      obj[key] = isDefined(key_value[1]) ? unescape(key_value[1]) : true;
     }
   });
   return obj;
