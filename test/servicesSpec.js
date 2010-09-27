@@ -77,21 +77,23 @@ describe("service", function(){
 
   describe("$location", function(){
     it("should inject $location", function(){
-      scope.$location.parse('http://host:123/p/a/t/h.html?query=value#path?key=value');
-      expect(scope.$location.href).toEqual("http://host:123/p/a/t/h.html?query=value#path?key=value");
+      scope.$location.parse('http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=');
+      expect(scope.$location.href).
+        toEqual("http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=");
       expect(scope.$location.protocol).toEqual("http");
       expect(scope.$location.host).toEqual("host");
       expect(scope.$location.port).toEqual("123");
       expect(scope.$location.path).toEqual("/p/a/t/h.html");
       expect(scope.$location.search).toEqual({query:'value'});
-      expect(scope.$location.hash).toEqual('path?key=value');
+      expect(scope.$location.hash).toEqual('path?key=value&flag&key2=');
       expect(scope.$location.hashPath).toEqual('path');
-      expect(scope.$location.hashSearch).toEqual({key:'value'});
+      expect(scope.$location.hashSearch).toEqual({key: 'value', flag: true, key2: ''});
 
       scope.$location.hashPath = 'page=http://path';
       scope.$location.hashSearch = {k:'a=b'};
 
-      expect(scope.$location.toString()).toEqual('http://host:123/p/a/t/h.html?query=value#page%3Dhttp%3A//path?k=a%3Db');
+      expect(scope.$location.toString()).
+        toEqual('http://host:123/p/a/t/h.html?query=value#page%3Dhttp%3A//path?k=a%3Db');
     });
 
     it('should parse file://', function(){
