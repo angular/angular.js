@@ -340,3 +340,25 @@ var ngSwitch = angularWidget('ng:switch', function (element){
   },
   route: switchRouteMatcher
 });
+
+
+/*
+ * Modifies the default behavior of html A tag, so that the default action is prevented when href
+ * attribute is empty.
+ *
+ * The reasoning for this change is to allow easy creation of action links with ng:click without
+ * changing the location or causing page reloads, e.g.:
+ * <a href="" ng:click="model.$save()">Save</a>
+ */
+angular.widget('a', function() {
+  this.descend(true);
+  this.directives(true);
+
+  return function(element) {
+    if (element.attr('href') === '') {
+      element.bind('click', function(event){
+        event.preventDefault();
+      });
+    }
+  };
+});

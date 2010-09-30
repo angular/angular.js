@@ -169,6 +169,19 @@ describe("directives", function(){
       element.trigger('click');
       expect(scope.$get('clicked')).toEqual(true);
     });
+
+    it('should stop event propagation', function() {
+      var scope = compile('<div ng:click="outer = true"><div ng:click="inner = true"></div></div>');
+      scope.$eval();
+      expect(scope.$get('outer')).not.toBeDefined();
+      expect(scope.$get('inner')).not.toBeDefined();
+
+      var innerDiv = jqLite(element.children()[0]);
+
+      innerDiv.trigger('click');
+      expect(scope.$get('outer')).not.toBeDefined();
+      expect(scope.$get('inner')).toEqual(true);
+    })
   });
 
   it('should ng:class', function(){

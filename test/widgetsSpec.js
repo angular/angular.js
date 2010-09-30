@@ -498,5 +498,40 @@ describe("widget", function(){
       expect(element.text()).toEqual('');
     });
   });
+
+  describe('a', function() {
+    it('should prevent default action to be executed when href is empty', function() {
+      var orgLocation = document.location.href,
+          preventDefaultCalled = false,
+          event;
+
+      compile('<a href="">empty link</a>');
+
+      if (msie) {
+
+        event = document.createEventObject();
+        expect(event.returnValue).not.toBeDefined();
+        element[0].fireEvent('onclick', event);
+        expect(event.returnValue).toEqual(false);
+
+      } else {
+
+        event = document.createEvent('MouseEvent');
+        event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, _null);
+
+        event.preventDefaultOrg = event.preventDefault;
+        event.preventDefault = function() {
+          preventDefaultCalled = true;
+          if (this.preventDefaultOrg) this.preventDefaultOrg();
+        };
+
+        element[0].dispatchEvent(event);
+
+        expect(preventDefaultCalled).toEqual(true);
+      }
+
+      expect(document.location.href).toEqual(orgLocation);
+    });
+  })
 });
 
