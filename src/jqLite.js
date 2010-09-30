@@ -99,8 +99,13 @@ JQLite.prototype = {
         bind[type] = eventHandler = function(event) {
           if (!event.preventDefault) {
             event.preventDefault = function(){
-              event.returnValue = false;
+              event.returnValue = false; //ie
             };
+          }
+          if (!event.stopPropagation) {
+            event.stopPropagation = function() {
+              event.cancelBubble = true; //ie
+            }
           }
           foreach(eventHandler.fns, function(fn){
             fn.call(self, event);
@@ -194,9 +199,8 @@ JQLite.prototype = {
     } else if (isDefined(value)) {
       e.setAttribute(name, value);
     } else {
-      var attributes = e.attributes,
-          item = attributes ? attributes.getNamedItem(name) : _undefined;
-      return item && item.specified ? item.value : _undefined;
+      // the extra argument is to get the right thing for a.href in IE, see jQuery code
+      return e.getAttribute(name, 2);
     }
   },
 
