@@ -198,13 +198,22 @@ angularWidget("@ng:repeat", function(expression, element){
   };
 });
 
+
+/*
+ * A directive that allows creation of custom onclick handlers that are defined as angular
+ * expressions and are compiled and executed within the current scope.
+ *
+ * Events that are handled via these handler are always configured not to propagate further.
+ *
+ * TODO: maybe we should consider allowing users to control even propagation in the future.
+ */
 angularDirective("ng:click", function(expression, element){
   return function(element){
     var self = this;
     element.bind('click', function(event){
       self.$tryEval(expression, element);
       self.$root.$eval();
-      event.preventDefault();
+      event.stopPropagation();
     });
   };
 });
