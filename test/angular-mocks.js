@@ -22,6 +22,40 @@
  * THE SOFTWARE.
  */
 
+
+/*
+
+ NUGGGGGH MUST TONGUE WANGS
+                           \
+                                .....
+                               C C  /
+                              /<   /
+               ___ __________/_#__=o
+              /(- /(\_\________   \
+              \ ) \ )_      \o     \
+              /|\ /|\       |'     |
+                            |     _|
+                            /o   __\
+                           / '     |
+                          / /      |
+                         /_/\______|
+                        (   _(    <
+                         \    \    \
+                          \    \    |
+                           \____\____\
+                           ____\_\__\_\
+                         /`   /`     o\
+                         |___ |_______|.. . b'ger
+
+
+ IN THE FINAL BUILD THIS FILE DOESN'T HAVE DIRECT ACCESS TO GLOBAL FUNCTIONS
+ DEFINED IN Angular.js YOU *MUST* REFER TO THEM VIA angular OBJECT
+ (e.g. angular.forEach(...)) AND MAKE SURE THAT THE GIVEN FUNCTION IS EXPORTED
+ TO THE angular NAMESPACE in AngularPublic.js
+
+ */
+
+
 function MockBrowser() {
   var self = this,
       expectations = {},
@@ -80,7 +114,9 @@ function MockBrowser() {
 MockBrowser.prototype = {
 
   poll: function poll(){
-    foreach(this.pollFns, function(pollFn){ pollFn(); });
+    angular.foreach(this.pollFns, function(pollFn){
+      pollFn();
+    });
   },
 
   addPollFn: function(pollFn) {
@@ -104,13 +140,13 @@ MockBrowser.prototype = {
       if (value == undefined) {
         delete this.cookieHash[name];
       } else {
-        if (isString(value) &&       //strings only
-            value.length <= 4096) {  //strict cookie storage limits
+        if (angular.isString(value) &&       //strings only
+            value.length <= 4096) {          //strict cookie storage limits
           this.cookieHash[name] = value;
         }
       }
     } else {
-      if (!equals(this.cookieHash, this.lastCookieHash)) {
+      if (!angular.equals(this.cookieHash, this.lastCookieHash)) {
         this.lastCookieHash = copy(this.cookieHash);
         this.cookieHash = copy(this.cookieHash);
       }
