@@ -153,6 +153,10 @@ if (msie) {
   };
 }
 
+function quickClone(element) {
+  return jqLite(element[0].cloneNode(true));
+}
+
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect(),
       width = (rect.width || (rect.right||0 - rect.left||0)),
