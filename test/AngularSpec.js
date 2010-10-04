@@ -92,4 +92,4 @@ describe('parseKeyValue', function() {
     expect(parseKeyValue('flag1&key=value&flag2')).
       toEqual({flag1: true, key: 'value', flag2: true});
   });
-})
+});

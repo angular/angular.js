@@ -181,7 +181,7 @@ describe("directives", function(){
       innerDiv.trigger('click');
       expect(scope.$get('outer')).not.toBeDefined();
       expect(scope.$get('inner')).toEqual(true);
-    })
+    });
   });
 
   it('should ng:class', function(){
