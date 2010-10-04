@@ -105,7 +105,7 @@ JQLite.prototype = {
           if (!event.stopPropagation) {
             event.stopPropagation = function() {
               event.cancelBubble = true; //ie
-            }
+            };
           }
           foreach(eventHandler.fns, function(fn){
             fn.call(self, event);
