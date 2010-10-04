@@ -320,7 +320,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
       childScope = createScope(scope);
       foreach(cases, function(switchCase){
         if (switchCase.when(childScope, value)) {
-          var caseElement = switchCase.element.clone();
+          var caseElement = quickClone(switchCase.element);
           element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(caseElement, childScope);

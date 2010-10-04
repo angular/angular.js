@@ -176,7 +176,7 @@ angularWidget("@ng:repeat", function(expression, element){
             if (keyIdent) childScope[keyIdent] = key;
           } else {
             // grow children
-            childScope = template(element.clone(), createScope(currentScope));
+            childScope = template(quickClone(element), createScope(currentScope));
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
             lastElement.after(childScope.$element);
