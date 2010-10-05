@@ -273,6 +273,7 @@ angularWidget('ng:include', function(element){
             childScope.$init();
           });
         } else {
+          childScope = null;
           element.html('');
         }
       });
