@@ -500,20 +500,6 @@ describe("widget", function(){
   });
 
   describe('a', function() {
-
-    beforeEach(function() {
-      //TODO (igor): lame workaround for
-      //http://code.google.com/p/js-test-driver/issues/detail?id=144
-      document.location.hash = '';
-    });
-
-
-    afterEach(function() {
-      //TODO (igor): see beforeEach
-      document.location.hash = '';
-    });
-
-
     it('should prevent default action to be executed when href is empty', function() {
       var orgLocation = document.location.href,
           preventDefaultCalled = false,
@@ -545,15 +531,6 @@ describe("widget", function(){
       }
 
       expect(document.location.href).toEqual(orgLocation);
-    });
-
-
-    it('should change location when href is nonempty', function() {
-      var orgLocation = document.location.href;
-
-      compile('<a href="#newLocation">goto</a>');
-      click(element);
-      expect(document.location.href).toEqual(orgLocation + 'newLocation');
     });
   });
 });
