@@ -119,9 +119,10 @@ JQLite.prototype = {
   },
 
   trigger: function(type) {
-    var evnt = document.createEvent('MouseEvent');
-    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, _null);
-    this[0].dispatchEvent(evnt);
+    var evnt = document.createEvent('MouseEvents'),
+        element = this[0];
+    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
+    element.dispatchEvent(evnt);
   },
 
   replaceWith: function(replaceNode) {
