@@ -55,7 +55,8 @@ describe("copy", function(){
 
   it("should copy primitives", function(){
     expect(copy(null)).toEqual(null);
-    expect(copy('')).toEqual('');
+    expect(copy('')).toBe('');
+    expect(copy('lala')).toBe('lala');
     expect(copy(123)).toEqual(123);
     expect(copy([{key:null}])).toEqual([{key:null}]);
   });
