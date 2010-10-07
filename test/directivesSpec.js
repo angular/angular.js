@@ -254,23 +254,53 @@ describe("directives", function(){
   });
 
   describe('ng:controller', function(){
-    it('should bind', function(){
-      window.Greeter = function(){
+
+    var temp;
+
+    beforeEach(function(){
+      temp = window.temp = {};
+      temp.Greeter = function(){
+        this.$root.greeter = this;
         this.greeting = 'hello';
+        this.suffix = '!';
       };
-      window.Greeter.prototype = {
-        init: function(){
-          this.suffix = '!';
-        },
+      temp.Greeter.prototype = {
         greet: function(name) {
           return this.greeting + ' ' + name + this.suffix;
         }
       };
-      var scope = compile('<div ng:controller="Greeter"></div>');
-      expect(scope.greeting).toEqual('hello');
-      expect(scope.greet('misko')).toEqual('hello misko!');
-      window.Greeter = undefined;
     });
+
+    afterEach(function(){
+      window.temp = undefined;
+    });
+
+    it('should bind', function(){
+      var scope = compile('<div ng:controller="temp.Greeter"></div>');
+      expect(scope.greeter.greeting).toEqual('hello');
+      expect(scope.greeter.greet('misko')).toEqual('hello misko!');
+    });
+
+    it('should support nested controllers', function(){
+      temp.ChildGreeter = function() {
+        this.greeting = 'hey';
+        this.$root.childGreeter = this;
+      };
+      temp.ChildGreeter.prototype = {
+        greet: function() {
+          return this.greeting + ' dude' + this.suffix;
+        }
+      };
+      var scope = compile('<div ng:controller="temp.Greeter"><div ng:controller="temp.ChildGreeter">{{greet("misko")}}</div></div>');
+      expect(scope.greeting).not.toBeDefined();
+      expect(scope.greeter.greeting).toEqual('hello');
+      expect(scope.greeter.greet('misko')).toEqual('hello misko!');
+      expect(scope.greeter.greeting).toEqual('hello');
+      expect(scope.childGreeter.greeting).toEqual('hey');
+      expect(scope.childGreeter.$parent.greeting).toEqual('hello');
+      expect(scope.$element.text()).toEqual('hey dude!');
+    });
+
   });
 
   it('should eval things according to ng:eval-order', function(){

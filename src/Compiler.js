@@ -9,40 +9,42 @@ function Template(priority) {
   this.children = [];
   this.inits = [];
   this.priority = priority;
+  this.newScope = false;
 }
 
 Template.prototype = {
   init: function(element, scope) {
     var inits = {};
-    this.collectInits(element, inits);
+    this.collectInits(element, inits, scope);
     foreachSorted(inits, function(queue){
-      foreach(queue, function(fn){
-        fn(scope);
-      });
+      foreach(queue, function(fn) {fn();});
     });
   },
 
-  collectInits: function(element, inits) {
-    var queue = inits[this.priority];
+  collectInits: function(element, inits, scope) {
+    var queue = inits[this.priority], childScope = scope;
     if (!queue) {
       inits[this.priority] = queue = [];
     }
     element = jqLite(element);
+    if (this.newScope) {
+      childScope = createScope(scope);
+      scope.$onEval(childScope.$eval);
+    }
     foreach(this.inits, function(fn) {
-      queue.push(function(scope) {
-        scope.$tryEval(function(){
-          return fn.call(scope, element);
+      queue.push(function() {
+        childScope.$tryEval(function(){
+          return fn.call(childScope, element);
         }, element);
       });
     });
-
     var i,
         childNodes = element[0].childNodes,
         children = this.children,
         paths = this.paths,
         length = paths.length;
     for (i = 0; i < length; i++) {
-      children[i].collectInits(childNodes[paths[i]], inits);
+      children[i].collectInits(childNodes[paths[i]], inits, childScope);
     }
   },
 
@@ -121,7 +123,8 @@ Compiler.prototype = {
           element:function(type) {return jqLite(document.createElement(type));},
           text:function(text) {return jqLite(document.createTextNode(text));},
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
-          directives: function(value){ if(isDefined(value)) directives = value; return directives;}
+          directives: function(value){ if(isDefined(value)) directives = value; return directives;},
+          scope: function(value){ if(isDefined(value)) template.newScope = template.newScope || value ; return template.newScope;}
         };
     try {
       priority = element.attr('ng:eval-order') || priority || 0;
