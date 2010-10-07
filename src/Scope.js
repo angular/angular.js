@@ -232,7 +232,16 @@ function createScope(parent, services, existing) {
       foreach((Class || noop).prototype, function(fn, name){
         behavior[name] = bind(instance, fn);
       });
-      (Class || noop).call(instance);
+      if (Class) {
+        var args = [];
+        foreach(Class.$inject || [], function(name) { 
+          if (!parent || !parent[name]) {
+            throw "Don't know how to inject '" + name + "'.";
+          }
+          args.push(parent[name]);
+        });
+        Class.apply(instance, args);
+      }
       (behavior.init || noop)();
     }
 
