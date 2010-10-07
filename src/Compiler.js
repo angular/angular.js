@@ -124,7 +124,7 @@ Compiler.prototype = {
           text:function(text) {return jqLite(document.createTextNode(text));},
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
           directives: function(value){ if(isDefined(value)) directives = value; return directives;},
-          scope: function(value){ if(isDefined(value)) template.newScope = value; return template.newScope;}
+          scope: function(value){ if(isDefined(value)) template.newScope = template.newScope || value ; return template.newScope;}
         };
     try {
       priority = element.attr('ng:eval-order') || priority || 0;
