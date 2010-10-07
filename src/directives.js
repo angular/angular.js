@@ -5,6 +5,7 @@ angularDirective("ng:init", function(expression){
 });
 
 angularDirective("ng:controller", function(expression){
+  this.scope(true);
   return function(element){
     var controller = getter(window, expression, true) || getter(this, expression, true);
     if (!controller)
