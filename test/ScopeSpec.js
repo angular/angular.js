@@ -5,7 +5,7 @@ describe('scope/model', function(){
     expect(model.name).toEqual('Misko');
   });
 
-  it('should have $get/set$/parent$', function(){
+  it('should have $get/$set/$parent', function(){
     var parent = {};
     var model = createScope(parent);
     model.$set('name', 'adam');
