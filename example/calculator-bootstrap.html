@@ -1,14 +1,14 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
   <head>
-    <script type="text/javascript" src="../lib/underscore/underscore.js"></script>
-    <script type="text/javascript" src="../lib/jquery/jquery-1.3.2.js"></script>
+    <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
     <script type="text/javascript" src="../src/angular-bootstrap.js"></script>
     <script type="text/javascript">
       $(document).ready(function(){
-        var scope = angular.compile(document);
-        scope.set('a', 3);
-        scope.updateView();
+        scope = angular.compile(document);
+        scope.$init();
+        scope.a = 3;
+        scope.$eval();
       });
     </script>
   </head>
