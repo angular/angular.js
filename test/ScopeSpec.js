@@ -1,5 +1,21 @@
 describe('scope/model', function(){
 
+  var temp;
+
+  beforeEach(function() {
+    temp = window.temp = {};
+    temp.InjectController = function(exampleService, extra) {
+      this.localService = exampleService;
+      this.extra = 10;
+      this.$root.injectController = this;
+    };
+    temp.InjectController.$inject = ["exampleService"];
+  });
+
+  afterEach(function() {
+    window.temp = undefined;
+  });
+
   it('should create a scope with parent', function(){
     var model = createScope({name:'Misko'});
     expect(model.name).toEqual('Misko');
@@ -212,6 +228,27 @@ describe('scope/model', function(){
       scope.$postEval(onceOnly);
       scope.$eval();
       expect(log).toEqual('.!@..@');
+    });
+  });
+
+  describe('$new', function(){
+    it('should $new should create new child scope and $become controller', function(){
+      var parent = createScope();
+      parent.$root.exampleService = 'Example Service';
+      var child = parent.$new(temp.InjectController, 10);
+      expect(child.localService).toEqual('Example Service');
+      expect(child.extra).toEqual(10);
+    });
+  });
+
+  describe('$become', function(){
+    it('should inject properties on controller defined in $inject', function(){
+      var parent = createScope();
+      var child = createScope(parent);
+      parent.$root.exampleService = 'Example Service';
+      child.$become(temp.InjectController, 10);
+      expect(child.localService).toEqual('Example Service');
+      expect(child.extra).toEqual(10);
     });
   });
 

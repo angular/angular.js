@@ -283,19 +283,6 @@ describe("directives", function(){
       expect(scope.greeter.greet('misko')).toEqual('hello misko!');
     });
 
-    it('should call inject properties defined in $inject on controller', function(){
-      temp.InjectController = function($window) {
-        this.window = $window;
-        this.$root.injectController = this;
-      };
-      temp.InjectController.$inject = ["$window"];
-      var scope = compile('<div ng:controller="temp.InjectController"></div>');
-      temp.example = 10;
-      expect(scope.injectController.window).toBeDefined();
-      expect(scope.injectController.window.temp).toBeDefined();
-      expect(scope.injectController.window.temp.example).toEqual(10);
-    });
-
     it('should support nested controllers', function(){
       temp.ChildGreeter = function(){
         this.greeting = 'hey';

@@ -240,9 +240,18 @@ function createScope(parent, services, existing) {
           }
           args.push(parent[name]);
         });
+        for (var i=1; i < arguments.length; ++i) {
+          args.push(arguments[i]);
+        }
         Class.apply(instance, args);
       }
       (behavior.init || noop)();
+    },
+
+    $new: function(Class) {
+      var scope = createScope(instance);
+      scope.$become.apply(scope, arguments);
+      return scope;
     }
 
   });
