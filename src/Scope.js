@@ -233,6 +233,7 @@ function createScope(parent, services, existing) {
         behavior[name] = bind(instance, fn);
       });
       (Class || noop).call(instance);
+      (behavior.init || noop)();
     }
 
   });
