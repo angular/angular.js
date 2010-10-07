@@ -262,11 +262,9 @@ describe("directives", function(){
       temp.Greeter = function(){
         this.$root.greeter = this;
         this.greeting = 'hello';
+        this.suffix = '!';
       };
       temp.Greeter.prototype = {
-        init: function(){
-          this.suffix = '!';
-        },
         greet: function(name) {
           return this.greeting + ' ' + name + this.suffix;
         }

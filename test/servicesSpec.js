@@ -177,9 +177,6 @@ describe("service", function(){
       function BookChapter() {
         this.log = '<init>';
       }
-      BookChapter.prototype.init = function(){
-        log += 'init();';
-      };
       var scope = compile('<div></div>').$init();
       scope.$route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
       scope.$route.when('/Blank');
@@ -188,7 +185,7 @@ describe("service", function(){
       });
       scope.$location.parse('http://server#/Book/Moby/Chapter/Intro?p=123');
       scope.$eval();
-      expect(log).toEqual('onChange();init();');
+      expect(log).toEqual('onChange();');
       expect(scope.$route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
       expect(scope.$route.current.scope.log).toEqual('<init>');
       var lastId = scope.$route.current.scope.$id;

@@ -245,7 +245,6 @@ function createScope(parent, services, existing) {
         }
         Class.apply(instance, args);
       }
-      (behavior.init || noop)();
     },
 
     $new: function(Class) {
