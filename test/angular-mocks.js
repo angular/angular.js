@@ -75,7 +75,10 @@ function MockBrowser() {
     var expect = expectations[method] || {};
     var response = expect[url];
     if (!response) {
-      throw "Unexepected request for method '" + method + "' and url '" + url + "'.";
+      throw {
+        message: "Unexpected request for method '" + method + "' and url '" + url + "'.",
+        name: "Unexpected Request"
+      };
     }
     requests.push(function(){
       callback(response.code, response.response);
