@@ -1,181 +1,232 @@
-describe("DSL", function() {
+/**
+ * Very basic Mock of angular.
+ */
+function AngularMock() {
+  this.reset();
+  this.service = this;
+}
 
-  var lastDocument, executeFuture, Expect;
+AngularMock.prototype.reset = function() {
+  this.log = [];
+};
 
+AngularMock.prototype.element = function(node) {
+  this.log.push('element(' + node.nodeName.toLowerCase() + ')');
+  return this;
+};
+
+AngularMock.prototype.trigger = function(value) {
+  this.log.push('element().trigger(' + value + ')');
+};
+
+AngularMock.prototype.$browser = function() {
+  this.log.push('$brower()');
+  return this;
+};
+
+AngularMock.prototype.poll = function() {
+  this.log.push('$brower.poll()');
+  return this;
+};
+
+AngularMock.prototype.notifyWhenNoOutstandingRequests = function(fn) {
+  this.log.push('$brower.notifyWhenNoOutstandingRequests()');
+  fn();
+};
+
+describe("angular.scenario.dsl", function() {
+  var $window;
+  var $root;
+  var application;
+  
   beforeEach(function() {
-    setUpContext();
-    executeFuture = function(future, html, callback) {
-      lastDocument = _jQuery('<div>' + html + '</div>');
-      lastFrame = _jQuery('<iframe>' + lastDocument + '</iframe>');
-      _jQuery(document.body).append(lastDocument);
-      var specThis = {
-        testWindow: window,
-        testDocument: lastDocument,
-        testFrame: lastFrame,
-        jQuery: _jQuery
-      };
-      future.behavior.call(specThis, callback || noop);
+    $window = {
+      document: _jQuery("<div></div>"),
+      angular: new AngularMock()
     };
-    Expect = _window.expect;
-  });
-
-  describe("input", function() {
-
-    var input = angular.scenario.dsl.input;
-
-    it('should enter', function() {
-      var future = input('name').enter('John');
-      expect(future.name).toEqual("input 'name' enter 'John'");
-      executeFuture(future, '<input type="text" name="name" />');
-      expect(lastDocument.find('input').val()).toEqual('John');
-    });
-
-    it('should select', function() {
-      var future = input('gender').select('female');
-      expect(future.name).toEqual("input 'gender' select 'female'");
-      executeFuture(future,
-        '<input type="radio" name="0@gender" value="male" checked/>' +
-        '<input type="radio" name="0@gender" value="female"/>');
-      expect(lastDocument.find(':radio:checked').length).toEqual(1);
-      expect(lastDocument.find(':radio:checked').val()).toEqual('female');
-    });
-  });
-
-  describe('browser', function() {
-    var browser = angular.scenario.dsl.browser;
-    it('shoud return true if location with empty hash provided is same ' +
-        'as location of the page', function() {
-      browser.location.href = "http://server";
-      expect(browser.location.toEqual("http://server")).toEqual(true);
-    });
-    it('shoud return true if location with hash provided is same ' +
-        'as location of the page', function() {
-      browser.location.href = "http://server";
-      browser.location.hash = "hashPath";
-      expect(browser.location.toEqual("http://server/#/hashPath")).toEqual(true);
-    });
-    it('should return true if the location provided is the same as which ' +
-        'browser navigated to', function() {
-      var future = browser.navigateTo("http://server/#/hashPath");
-      expect(future.name).toEqual("Navigate to: http://server/#/hashPath");
-      executeFuture(future, '<input type="text" name="name" />');
-      expect(browser.location.toEqual("http://server/#/hashPath")).toEqual(true);
-      expect(browser.location.toEqual("http://server/")).toEqual(false);
-
-      future = browser.navigateTo("http://server/");
-      expect(future.name).toEqual("Navigate to: http://server/");
-      executeFuture(future, '<input type="text" name="name" />');
-      expect(browser.location.toEqual("http://server/")).toEqual(true);
-    });
-  });
-
-  describe('repeater', function() {
-
-    var repeater = angular.scenario.dsl.repeater;
-    var html;
-    beforeEach(function() {
-      html = "<table>" +
-          "<tr class='epic'>" +
-            "<td class='hero-name'>" +
-              "<span ng:bind='hero'>John Marston</span>" +
-            "</td>" +
-            "<td class='game-name'>" +
-              "<span ng:bind='game'>Red Dead Redemption</span>" +
-            "</td>" +
-          "</tr>" +
-          "<tr class='epic'>" +
-            "<td class='hero-name'>" +
-              "<span ng:bind='hero'>Nathan Drake</span>" +
-            "</td>" +
-            "<td class='game-name'>" +
-              "<span ng:bind='game'>Uncharted</span>" +
-            "</td>" +
-          "</tr>" +
-        "</table>";
-    });
-    it('should count', function() {
-      var future = repeater('.repeater-row').count();
-      expect(future.name).toEqual("repeater '.repeater-row' count");
-      executeFuture(future,
-        "<div class='repeater-row'>a</div>" +
-        "<div class='repeater-row'>b</div>",
-        function(value) {
-          future.fulfill(value);
+    $root = angular.scope({}, angular.service);
+    $root.futures = [];
+    $root.addFuture = function(name, fn) {
+      this.futures.push(name);
+      fn.call(this, function(error, result) {
+        $root.futureError = error;
+        $root.futureResult = result;
       });
-      expect(future.fulfilled).toBeTruthy();
-      expect(future.value).toEqual(2);
-    });
-
-    function assertFutureState(future, expectedName, expectedValue) {
-      expect(future.name).toEqual(expectedName);
-      executeFuture(future, html, function(value) {
-        future.fulfill(value);
-      });
-      expect(future.fulfilled).toBeTruthy();
-      expect(future.value).toEqual(expectedValue);
-    }
-    it('should collect bindings', function() {
-      assertFutureState(repeater('.epic').collect('{{hero}}'),
-        "repeater '.epic' collect '{{hero}}'",
-        ['John Marston', 'Nathan Drake']);
-      assertFutureState(repeater('.epic').collect('{{game}}'),
-        "repeater '.epic' collect '{{game}}'",
-        ['Red Dead Redemption', 'Uncharted']);
-    });
-    it('should collect normal selectors', function() {
-      assertFutureState(repeater('.epic').collect('.hero-name'),
-        "repeater '.epic' collect '.hero-name'",
-        ['John Marston', 'Nathan Drake']);
-      assertFutureState(repeater('.epic').collect('.game-name'),
-        "repeater '.epic' collect '.game-name'",
-        ['Red Dead Redemption', 'Uncharted']);
-    });
-    it('should collect normal attributes', function() {
-      //TODO(shyamseshadri) : Left as an exercise to the user
-    });
+    };
+    $root.application = new angular.scenario.Application($window.document);
+    $root.application.getWindow = function() {
+      return $window; 
+    };
+    $root.application.navigateTo = function(url, callback) { 
+      $window.location = url;
+      callback();
+    };
+    // Just use the real one since it delegates to this.addFuture
+    $root.addFutureAction = angular.scenario.
+      SpecRunner.prototype.addFutureAction;
   });
-
-  describe('element', function() {
-    var element = angular.scenario.dsl.element;
-    var html;
+  
+  describe('Pause', function() {
     beforeEach(function() {
-      html = '<div class="container">' +
-          '<div class="reports-detail">' +
-            '<span class="desc">Description : ' +
-              '<span ng:bind="report.description">Details...</span>' +
-            '</span>' +
-            '<span>Date created: ' +
-              '<span ng:bind="report.creationDate">01/01/01</span>' +
-            '</span>' +
-          '</div>' +
-        '</div>';
+      $root.setTimeout = function(fn, value) {
+        $root.timerValue = value;
+        fn();
+      };
     });
-    function timeTravel(future) {
-      executeFuture(future, html, function(value) { future.fulfill(value); });
-      expect(future.fulfilled).toBeTruthy();
-    }
-    it('should find elements on the page and provide jquery api', function() {
-      var future = element('.reports-detail').text();
-      expect(future.name).toEqual("Element '.reports-detail'.text()");
-      timeTravel(future);
-      expect(future.value).
-        toEqual('Description : Details...Date created: 01/01/01');
-//      expect(future.value.find('.desc').text()).
-//        toEqual('Description : Details...');
-    });
-    it('should find elements with angular syntax', function() {
-      var future = element('{{report.description}}').text();
-      expect(future.name).toEqual("Element '{{report.description}}'.text()");
-      timeTravel(future);
-      expect(future.value).toEqual('Details...');
-//      expect(future.value.attr('ng:bind')).toEqual('report.description');
-    });
-    it('should be able to click elements', function(){
-      var future = element('.link-class').click();
-      expect(future.name).toEqual("Element '.link-class'.click()");
-      executeFuture(future, html, function(value) { future.fulfill(value); });
-      expect(future.fulfilled).toBeTruthy();
-      // TODO(rajat): look for some side effect from click happening?
+    
+    it('should pause for specified seconds', function() {
+      angular.scenario.dsl.pause.call($root).call($root, 10);
+      expect($root.timerValue).toEqual(10000);
+      expect($root.futureResult).toEqual(10000);
+    });    
+  });
+  
+  describe('Expect', function() {
+    it('should chain and execute matcher', function() {
+      var future = {value: 10};
+      var result = angular.scenario.dsl.expect.call($root).call($root, future);
+      result.toEqual(10);
+      expect($root.futureError).toBeUndefined();
+      expect($root.futureResult).toBeUndefined();
+      var result = angular.scenario.dsl.expect.call($root).call($root, future);
+      result.toEqual(20);
+      expect($root.futureError).toBeDefined();
     });
   });
+  
+  describe('NavigateTo', function() {    
+    it('should allow a string url', function() {
+      angular.scenario.dsl.navigateTo.call($root).call($root, 'http://myurl');
+      expect($window.location).toEqual('http://myurl');
+      expect($root.futureResult).toEqual('http://myurl');
+    });
+    
+    it('should allow a future url', function() {
+      var future = {name: 'future name', value: 'http://myurl'};
+      angular.scenario.dsl.navigateTo.call($root).call($root, future);
+      expect($window.location).toEqual('http://myurl');
+      expect($root.futureResult).toEqual('http://myurl');
+    });
+    
+    it('should complete if angular is missing from app frame', function() {
+      delete $window.angular;
+      angular.scenario.dsl.navigateTo.call($root).call($root, 'http://myurl');
+      expect($window.location).toEqual('http://myurl');
+      expect($root.futureResult).toEqual('http://myurl');
+    });
+    
+    it('should wait for angular notify when no requests pending', function() {
+      angular.scenario.dsl.navigateTo.call($root).call($root, 'url');
+      expect($window.angular.log).toContain('$brower.poll()');
+      expect($window.angular.log)
+        .toContain('$brower.notifyWhenNoOutstandingRequests()');
+    });
+  });
+  
+  describe('Element Finding', function() {
+    var doc;
+    //TODO(esprehn): Work around a bug in jQuery where attribute selectors
+    //  only work if they are executed on a real document, not an element.
+    //
+    //  ex. jQuery('#foo').find('[name="bar"]') // fails
+    //  ex. jQuery('#foo [name="bar"]') // works, wtf?
+    //
+    beforeEach(function() {
+      doc = _jQuery('<div id="angular-scenario-binding"></div>');
+      _jQuery(document.body).append(doc);
+     $window.document = window.document;
+    });
+    
+    afterEach(function() {
+      _jQuery(document.body)
+        .find('#angular-scenario-binding')
+        .remove();
+    });
+
+    describe('Binding', function() {
+      it('should select binding by name', function() {
+        doc.append('<span ng:bind="foo.bar">some value</span>');
+        angular.scenario.dsl.binding.call($root).call($root, 'foo.bar');
+        expect($root.futureResult).toEqual('some value');
+      });
+    
+      it('should return error if no binding exists', function() {
+        angular.scenario.dsl.binding.call($root).call($root, 'foo.bar');
+        expect($root.futureError).toMatch(/does not exist/);
+      });
+    });
+  
+    describe('Input', function() {
+      it('should change value in text input', function() {
+        doc.append('<input name="test.input" value="something">');
+        var chain = angular.scenario.dsl.input
+          .call($root).call($root, 'test.input');
+        chain.enter('foo');
+        expect($window.angular.log).toContain('element(input)');
+        expect($window.angular.log).toContain('element().trigger(change)');
+        expect(_jQuery('input[name="test.input"]').val()).toEqual('foo');
+      });
+      
+      it('should return error if no input exists', function() {
+        var chain = angular.scenario.dsl.input
+          .call($root).call($root, 'test.input');
+        chain.enter('foo');
+        expect($root.futureError).toMatch(/does not exist/);
+      });
+      
+      it('should toggle checkbox state', function() {
+        doc.append('<input type="checkbox" name="test.input" checked>');
+        expect(_jQuery('input[name="test.input"]')
+          .attr('checked')).toBeTruthy();
+        var chain = angular.scenario.dsl.input
+          .call($root).call($root, 'test.input');
+        chain.check();
+        expect($window.angular.log).toContain('element(input)');
+        expect($window.angular.log).toContain('element().trigger(click)');
+        expect(_jQuery('input[name="test.input"]')
+          .attr('checked')).toBeFalsy();
+        $window.angular.reset();
+        chain.check();
+        expect($window.angular.log).toContain('element(input)');
+        expect($window.angular.log).toContain('element().trigger(click)');
+        expect(_jQuery('input[name="test.input"]')
+          .attr('checked')).toBeTruthy();
+      });
+      
+      it('should return error if checkbox does not exist', function() {
+        var chain = angular.scenario.dsl.input
+          .call($root).call($root, 'test.input');
+        chain.check();
+        expect($root.futureError).toMatch(/does not exist/);
+      });
+
+      it('should select option from radio group', function() {
+        doc.append(
+          '<input type="radio" name="0@test.input" value="foo">' +
+          '<input type="radio" name="0@test.input" value="bar" checked>'
+        );
+        expect(_jQuery('input[name="0@test.input"][value="bar"]')
+          .attr('checked')).toBeTruthy();
+        expect(_jQuery('input[name="0@test.input"][value="foo"]')
+          .attr('checked')).toBeFalsy();
+        var chain = angular.scenario.dsl.input
+          .call($root).call($root, 'test.input');
+        chain.select('foo');
+        expect($window.angular.log).toContain('element(input)');
+        expect($window.angular.log).toContain('element().trigger(click)');
+        expect(_jQuery('input[name="0@test.input"][value="bar"]')
+          .attr('checked')).toBeFalsy();
+        expect(_jQuery('input[name="0@test.input"][value="foo"]')
+          .attr('checked')).toBeTruthy();
+      });
+      
+      it('should return error if radio button does not exist', function() {
+        var chain = angular.scenario.dsl.input
+          .call($root).call($root, 'test.input');
+        chain.select('foo');
+        expect($root.futureError).toMatch(/does not exist/);
+      });
+    });
+  });
+  
 });

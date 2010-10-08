@@ -1,25 +1,58 @@
-describe('widgets', function(){
+describe('widgets', function() {
   it('should verify that basic widgets work', function(){
-    browser.navigateTo('widgets.html');
-
-    expect('{{text.basic}}').toEqual('');
-    input('text.basic').enter('John');
-    expect('{{text.basic}}').toEqual('John');
-
-    expect('{{text.password}}').toEqual('');
+    navigateTo('widgets.html');
+    input('text.basic').enter('Carlos');
+    expect(binding('text.basic')).toEqual('Carlos');
+    pause(2);
+    input('text.basic').enter('Carlos Santana');
+    pause(2);
+    expect(binding('text.basic')).not().toEqual('Carlos Boozer');
+    pause(2);
     input('text.password').enter('secret');
-    expect('{{text.password}}').toEqual('secret');
-
-    expect('{{text.hidden}}').toEqual('hiddenValue');
-
-    expect('{{gender}}').toEqual('male');
+    expect(binding('text.password')).toEqual('secret');
+    expect(binding('text.hidden')).toEqual('hiddenValue');
+    expect(binding('gender')).toEqual('male');
+    pause(2);
     input('gender').select('female');
-    input('gender').isChecked('female');
-    expect('{{gender}}').toEqual('female');
-
-//    expect('{{tea}}').toBeChecked();
-//    input('gender').select('female');
-//    expect('{{gender}}').toEqual('female');
-
+    expect(binding('gender')).toEqual('female');
+    pause(2);
+  });
+  describe('do it again', function() {
+    it('should verify that basic widgets work', function(){
+      navigateTo('widgets.html');
+      input('text.basic').enter('Carlos');
+      expect(binding('text.basic')).toEqual('Carlos');
+      pause(2);
+      input('text.basic').enter('Carlos Santana');
+      pause(2);
+      expect(binding('text.basic')).toEqual('Carlos Santana');
+      pause(2);
+      input('text.password').enter('secret');
+      expect(binding('text.password')).toEqual('secret');
+      expect(binding('text.hidden')).toEqual('hiddenValue');
+      expect(binding('gender')).toEqual('male');
+      pause(2);
+      input('gender').select('female');
+      expect(binding('gender')).toEqual('female');
+      pause(2);
+    });
+  });
+  it('should verify that basic widgets work', function(){
+    navigateTo('widgets.html');
+    input('text.basic').enter('Carlos');
+    expect(binding('text.basic')).toEqual('Carlos');
+    pause(2);
+    input('text.basic').enter('Carlos Santana');
+    pause(2);
+    expect(binding('text.basic')).toEqual('Carlos Santana');
+    pause(2);
+    input('text.password').enter('secret');
+    expect(binding('text.password')).toEqual('secret');
+    expect(binding('text.hidden')).toEqual('hiddenValue');
+    expect(binding('gender')).toEqual('male');
+    pause(2);
+    input('gender').select('female');
+    expect(binding('gender')).toEqual('female');
+    pause(2);
   });
 });

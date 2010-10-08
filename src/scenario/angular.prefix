@@ -22,9 +22,3 @@
  * THE SOFTWARE.
  */
 (function(window, document, previousOnLoad){
-  window.angular = {
-    scenario: {
-      dsl: window
-    }
-  };
-

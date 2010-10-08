@@ -5,3 +5,7 @@ th {
 tr {
   border: 1px solid black;
 }
+
+.redbox {
+  background-color: red;
+}

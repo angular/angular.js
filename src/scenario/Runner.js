@@ -1,183 +1,95 @@
-angular['scenario'] = angular['scenario'] || (angular['scenario'] = {});
-angular.scenario['dsl'] = angular.scenario['dsl'] || (angular.scenario['dsl'] = {});
-
-angular.scenario.Runner = function(scope, jQuery){
-  var self = scope.$scenario = this;
-  this.scope = scope;
-  this.jQuery = jQuery;
-  this.scope.$testrun = {done: false, results: []};
-
-  var specs = this.specs = {};
-  this.currentSpec = {name: '', futures: []};
-  var path = [];
-  this.scope.describe = function(name, body){
-    path.push(name);
-    body();
-    path.pop();
+/**
+ * Runner for scenarios.
+ */
+angular.scenario.Runner = function($window) {
+  this.$window = $window;
+  this.rootDescribe = new angular.scenario.Describe();
+  this.currentDescribe = this.rootDescribe;
+  this.api = {
+    it: this.it,
+    xit: angular.noop,
+    describe: this.describe,
+    xdescribe: angular.noop,
+    beforeEach: this.beforeEach,
+    afterEach: this.afterEach
   };
-  var beforeEach = noop;
-  var afterEach = noop;
-  this.scope.beforeEach = function(body) {
-    beforeEach = body;
-  };
-  this.scope.afterEach = function(body) {
-    afterEach = body;
-  };
-  this.scope.expect = function(future) {
-    return new Matcher(self, future, self.logger);
-  };
-  this.scope.it = function(name, body) {
-    var specName = path.join(' ') + ': it ' + name;
-    self.currentSpec = specs[specName] = {
-        name: specName,
-        futures: []
-     };
-    try {
-      beforeEach();
-      body();
-    } catch(err) {
-      self.addFuture(err.message || 'ERROR', function(){
-        throw err;
-      });
-    } finally {
-      afterEach();
-    }
-    self.currentSpec = _null;
-  };
-  this.logger = function returnNoop(){
-    return extend(returnNoop, {close:noop, fail:noop});
-  };
+  angular.foreach(this.api, angular.bind(this, function(fn, key) {
+    this.$window[key] = angular.bind(this, fn);
+  }));
 };
 
-angular.scenario.Runner.prototype = {
-  run: function(body){
-    var jQuery = this.jQuery;
-    body.append(
-      '<div id="runner">' +
-        '<div class="console"></div>' +
-      '</div>' +
-      '<div id="testView">' +
-        '<iframe></iframe>' +
-      '</div>');
-    var console = body.find('#runner .console');
-    console.find('li').live('click', function(){
-      jQuery(this).toggleClass('collapsed');
-    });
-    this.testFrame = body.find('#testView iframe');
-    function logger(parent) {
-      var container;
-      return function(type, text) {
-        if (!container) {
-          container = jQuery('<ul></ul>');
-          parent.append(container);
-        }
-        var element = jQuery('<li class="running '+type+'"><span></span></li>');
-        element.find('span').text(text);
-        container.append(element);
-        return extend(logger(element), {
-          close: function(){
-            element.removeClass('running');
-            if(!element.hasClass('fail'))
-              element.addClass('collapsed');
-            console.scrollTop(console[0].scrollHeight);
-          },
-          fail: function(){
-            element.removeClass('running');
-            var current = element;
-            while (current[0] != console[0]) {
-              if (current.is('li'))
-                current.addClass('fail');
-              current = current.parent();
-            }
-          }
-        });
-      };
+/**
+ * Defines a describe block of a spec.
+ *
+ * @param {String} Name of the block
+ * @param {Function} Body of the block
+ */
+angular.scenario.Runner.prototype.describe = function(name, body) {
+  var self = this;
+  this.currentDescribe.describe(name, function() {
+    var parentDescribe = self.currentDescribe;
+    self.currentDescribe = this;
+    try {
+      body.call(this);
+    } finally {
+      self.currentDescribe = parentDescribe;
     }
-    this.logger = logger(console);
-    var specNames = [];
-    foreach(this.specs, function(spec, name){
-      specNames.push(name);
-    }, this);
-    specNames.sort();
-    var self = this;
-    function callback(){
-      var next = specNames.shift();
-      if(next) {
-        self.execute(next, callback);
-      } else {
-        self.scope.$testrun.done = true;
+  });
+};
+
+/**
+ * Defines a test in a describe block of a spec.
+ *
+ * @param {String} Name of the block
+ * @param {Function} Body of the block
+ */
+angular.scenario.Runner.prototype.it = function(name, body) { 
+  this.currentDescribe.it(name, body); 
+};
+
+/**
+ * Defines a function to be called before each it block in the describe
+ * (and before all nested describes).
+ *
+ * @param {Function} Callback to execute
+ */
+angular.scenario.Runner.prototype.beforeEach = function(body) {
+  this.currentDescribe.beforeEach(body); 
+};
+
+/**
+ * Defines a function to be called after each it block in the describe
+ * (and before all nested describes).
+ *
+ * @param {Function} Callback to execute
+ */
+angular.scenario.Runner.prototype.afterEach = function(body) {
+  this.currentDescribe.afterEach(body); 
+};
+
+/**
+ * Defines a function to be called before each it block in the describe
+ * (and before all nested describes).
+ *
+ * @param {Function} Callback to execute
+ */
+angular.scenario.Runner.prototype.run = function(ui, application, specRunnerClass, specsDone) {
+  var $root = angular.scope({}, angular.service);
+  var self = this;
+  var specs = this.rootDescribe.getSpecs();
+  $root.application = application;
+  $root.ui = ui;
+  $root.setTimeout = function() { 
+    return self.$window.setTimeout.apply(self.$window, arguments);
+  };
+  asyncForEach(specs, angular.bind(this, function(spec, specDone) {
+    var runner = angular.scope($root);
+    runner.$become(specRunnerClass);
+    angular.foreach(angular.scenario.dsl, angular.bind(this, function(fn, key) {
+      this.$window[key] = function() {
+        return fn.call($root).apply(angular.scope(runner), arguments);
       }
-    }
-    callback();
-  },
-
-  addFuture: function(name, behavior) {
-    var future = new Future(name, behavior);
-    this.currentSpec.futures.push(future);
-    return future;
-  },
-
-  execute: function(name, callback) {
-   var spec = this.specs[name],
-       self = this,
-       futuresFulfilled = [],
-       result = {
-         passed: false,
-         failed: false,
-         finished: false,
-         fail: function(error) {
-           result.passed = false;
-           result.failed = true;
-           result.error = error;
-           result.log('fail', isString(error) ? error : toJson(error)).fail();
-         }
-       },
-       specThis = createScope({
-         result: result,
-         jQuery: this.jQuery,
-         testFrame: this.testFrame,
-         testWindow: this.testWindow
-       }, angularService, {});
-   this.self = specThis;
-   var futureLogger = this.logger('spec', name);
-   spec.nextFutureIndex = 0;
-   function done() {
-     result.finished = true;
-     futureLogger.close();
-     self.self = _null;
-     (callback||noop).call(specThis);
-   }
-   function next(value){
-     if (spec.nextFutureIndex > 0) {
-       spec.futures[spec.nextFutureIndex - 1].fulfill(value);
-     }
-     var future = spec.futures[spec.nextFutureIndex];
-     (result.log || {close:noop}).close();
-     result.log = _null;
-     if (future) {
-       spec.nextFutureIndex ++;
-       result.log = futureLogger('future', future.name);
-       futuresFulfilled.push(future.name);
-       try {
-         future.behavior.call(specThis, next);
-       } catch (e) {
-         console.error(e);
-         result.fail(e);
-         self.scope.$testrun.results.push(
-           {name: name, passed: false, error: e, steps: futuresFulfilled});
-         done();
-       }
-     } else {
-       result.passed = !result.failed;
-       self.scope.$testrun.results.push({
-         name: name,
-         passed: !result.failed,
-         error: result.error,
-         steps: futuresFulfilled});
-       done();
-     }
-   }
-   next();
-   return specThis;
-  }
+    }));
+    runner.run(ui, spec, specDone);
+  }), specsDone || angular.noop);
 };

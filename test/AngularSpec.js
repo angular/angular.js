@@ -86,6 +86,10 @@ describe('equals', function(){
     expect(equals({name:'misko'}, {name:'misko', $id:2})).toEqual(true);
     expect(equals({name:'misko', $id:1}, {name:'misko'})).toEqual(true);
   });
+
+  it('should ignore functions', function(){
+    expect(equals({func: function() {}}, {bar: function() {}})).toEqual(true);
+  });
 });
 
 describe('parseKeyValue', function() {
