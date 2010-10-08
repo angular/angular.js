@@ -6,7 +6,7 @@
     <script type="text/javascript">
       $(document).ready(function(){
         var scope = angular.compile(document);
-        scope.$set('a', 3);
+        scope.a = 3;
         scope.$init();
         scope.$eval();
       });
