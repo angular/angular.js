@@ -1,4 +1,4 @@
-(function(onLoadDelegate){
+(function(previousOnLoad){
   var prefix = (function(){
     var filename = /(.*\/)bootstrap.js(#(.*))?/;
     var scripts = document.getElementsByTagName("script");
@@ -10,6 +10,7 @@
       }
     }
   })();
+  
   function addScript(path) {
     document.write('<script type="text/javascript" src="' + prefix + path + '"></script>');
   }
@@ -18,26 +19,51 @@
     document.write('<link rel="stylesheet" type="text/css" href="' + prefix + path + '"/>');
   }
 
-  window.angular = {
-    scenario: {
-      dsl: window
-    }
+  window.onload = function(){
+    try {
+      if (previousOnLoad) previousOnLoad();
+    } catch(e) {}
+    _jQuery(document.body).append(
+      '<div id="runner"></div>' +
+      '<div id="frame"></div>'
+    );
+    var frame = _jQuery('#frame');
+    var runner = _jQuery('#runner');
+    var application = new angular.scenario.Application(frame);
+    var ui = new angular.scenario.ui.Html(runner);
+    $scenario.run(ui, application, angular.scenario.SpecRunner, function(error) {
+      frame.remove();
+      if (error) {
+        if (window.console) {
+          console.log(error.stack || error);
+        } else {
+          // Do something for IE
+          alert(error);
+        }
+      }
+    });
   };
 
-  window.onload = function(){
-    setTimeout(function(){
-      $scenarioRunner.run(jQuery(window.document.body));
-    }, 0);
-    (onLoadDelegate||function(){})();
-  };
   addCSS("../../css/angular-scenario.css");
   addScript("../../lib/jquery/jquery-1.4.2.js");
-  addScript("Runner.js");
-  addScript("../Angular.js");
-  addScript("../JSON.js");
-  addScript("DSL.js");
-  document.write('<script type="text/javascript">' +
-    '$scenarioRunner = new angular.scenario.Runner(window, jQuery);' +
-    '</script>');
-})(window.onload);
+  addScript("../angular-bootstrap.js");
 
+  addScript("Scenario.js");
+  addScript("Application.js");
+  addScript("Describe.js");
+  addScript("Future.js");
+  addScript("HtmlUI.js");
+  addScript("Runner.js");
+  addScript("SpecRunner.js");
+  addScript("dsl.js");
+  addScript("matchers.js");
+
+  // Create the runner (which also sets up the global API)
+  document.write(
+    '<script type="text/javascript">' +
+    'var _jQuery = jQuery.noConflict(true);' +
+    'var $scenario = new angular.scenario.Runner(window);' +
+    '</script>'
+  );
+
+})(window.onload);

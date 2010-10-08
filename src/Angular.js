@@ -270,11 +270,11 @@ function equals(o1, o2) {
     } else {
       keySet = {};
       for(key in o1) {
-        if (key.charAt(0) !== '$' && !equals(o1[key], o2[key])) return false;
+        if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) return false;
         keySet[key] = true;
       }
       for(key in o2) {
-        if (key.charAt(0) !== '$' && keySet[key] !== true) return false;
+        if (!keySet[key] && key.charAt(0) !== '$' && !isFunction(o2[key])) return false;
       }
       return true;
     }

@@ -1,5 +1,46 @@
 include FileUtils
 
+ANGULAR = [
+  'src/Angular.js',
+  'src/JSON.js',
+  'src/Compiler.js',
+  'src/Scope.js',
+  'src/Injector.js',
+  'src/Parser.js',
+  'src/Resource.js',
+  'src/Browser.js',
+  'src/jqLite.js',
+  'src/apis.js',
+  'src/filters.js',
+  'src/formatters.js',
+  'src/validators.js',
+  'src/services.js',
+  'src/directives.js',
+  'src/markups.js',
+  'src/widgets.js',
+  'src/AngularPublic.js',
+]
+
+ANGULAR_SCENARIO = [
+  'src/scenario/Scenario.js',
+  'src/scenario/Application.js',
+  'src/scenario/Describe.js',
+  'src/scenario/Future.js',
+  'src/scenario/HtmlUI.js',
+  'src/scenario/Describe.js',
+  'src/scenario/Runner.js',
+  'src/scenario/SpecRunner.js',
+  'src/scenario/dsl.js',
+  'src/scenario/matchers.js',
+]
+
+GENERATED_FILES = [
+  'angular-debug.js',
+  'angular-minified.js',
+  'angular-minified.map',
+  'angular-scenario.js',
+]
+
 task :default => [:compile, :test]
 
 desc 'Generate Externs'
@@ -20,31 +61,27 @@ task :compile_externs do
   out.close
 end
 
+desc 'Clean Generated Files'
+task :clean do  
+  GENERATED_FILES.each do |file|
+    `rm #{file}`
+  end
+end
+
 desc 'Compile Scenario'
 task :compile_scenario do
-  concat = %x(cat \
-      lib/jquery/jquery-1.4.2.js \
-      src/scenario/angular.prefix \
-      src/Angular.js \
-      src/jqLite.js \
-      src/JSON.js \
-      src/Scope.js \
-      src/Injector.js \
-      src/Parser.js \
-      src/Resource.js \
-      src/Browser.js \
-      src/apis.js \
-      src/services.js \
-      src/AngularPublic.js \
-      src/scenario/DSL.js \
-      src/scenario/Future.js \
-      src/scenario/Matcher.js \
-      src/scenario/Runner.js \
-      src/scenario/angular.suffix \
-    )
+  
+  deps = [
+      'lib/jquery/jquery-1.4.2.js',
+      'src/scenario/angular.prefix',
+      ANGULAR,
+      ANGULAR_SCENARIO,
+      'src/scenario/angular.suffix',
+  ]
   css = %x(cat css/angular-scenario.css)
+  concat = 'cat ' + deps.flatten.join(' ')
   f = File.new("angular-scenario.js", 'w')
-  f.write(concat)
+  f.write(%x{#{concat}})
   f.write('document.write(\'<style type="text/css">\n')
   f.write(css.gsub(/'/, "\\'").gsub(/\n/, "\\n"));
   f.write('\n</style>\');')
@@ -54,30 +91,14 @@ end
 desc 'Compile JavaScript'
 task :compile => [:compile_externs, :compile_scenario] do
 
-  concat = %x(cat \
-      src/angular.prefix \
-      src/Angular.js \
-      src/JSON.js \
-      src/Compiler.js \
-      src/Scope.js \
-      src/Injector.js \
-      src/Parser.js \
-      src/Resource.js \
-      src/Browser.js \
-      src/jqLite.js \
-      src/apis.js \
-      src/filters.js \
-      src/formatters.js \
-      src/validators.js \
-      src/services.js \
-      src/directives.js \
-      src/markups.js \
-      src/widgets.js \
-      src/AngularPublic.js \
-      src/angular.suffix \
-    )
+  deps = [
+      'src/angular.prefix',
+      ANGULAR,
+      'src/angular.suffix',
+  ]
   f = File.new("angular-debug.js", 'w')
-  f.write(concat)
+  concat = 'cat ' + deps.flatten.join(' ')
+  f.write(%x{#{concat}})
   f.close
 
   %x(java -jar lib/compiler-closure/compiler.jar \

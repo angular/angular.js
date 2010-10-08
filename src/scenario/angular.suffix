@@ -1,11 +1,31 @@
+  var $scenario = new angular.scenario.Runner(window);
 
-  var $scenarioRunner = new angular.scenario.Runner(window, jQuery);
-
-  window.onload = function(){
+  window.onload = function() {
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    $scenarioRunner.run(jQuery(window.document.body));
+    jQuery(document.body).append(
+      '<div id="runner"></div>' +
+      '<div id="frame"></div>'
+    );
+    var frame = jQuery('#frame');
+    var runner = jQuery('#runner');
+    var application = new angular.scenario.Application(frame);
+    var ui = new angular.scenario.ui.Html(runner);
+    $scenario.run(ui, application, function(error) {
+      frame.remove();
+      if (error) {
+        if (window.console) {
+          console.log(error);
+          if (error.stack) {
+            console.log(error.stack);
+          }
+        } else {
+          // Do something for IE
+          alert(error);
+        }
+      }
+    });
   };
 
 })(window, document, window.onload);

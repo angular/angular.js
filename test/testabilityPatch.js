@@ -22,6 +22,19 @@ beforeEach(function(){
         return "Expected to not have class 'ng-validation-error' but found.";
       };
       return !hasClass;
+    },
+
+    toEqualData: function(expected) {
+      return equals(this.actual, expected);
+    },
+
+    toHaveClass: function(clazz) {
+      this.message = function(){
+        return "Expected '" + sortedHtml(this.actual) + "' to have class '" + clazz + "'.";
+      };
+      return this.actual.hasClass ? 
+              this.actual.hasClass(clazz) :
+              jqLite(this.actual).hasClass(clazz);
     }
   });
 });
@@ -192,5 +205,11 @@ function click(element) {
     JQLite.prototype.trigger.call(element.parent(), 'change');
   } else {
     JQLite.prototype.trigger.call(element, 'click');
+  }
+}
+
+function rethrow(e) { 
+  if(e) {
+    throw e; 
   }
 }
