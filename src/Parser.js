@@ -1,4 +1,4 @@
-OPERATORS = {
+var OPERATORS = {
     'null':function(self){return _null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
@@ -23,7 +23,7 @@ OPERATORS = {
     '|':function(self, a,b){return b(self, a);},
     '!':function(self, a){return !a;}
 };
-ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
+var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
 function lex(text, parseStrings){
   var dateParseLength = parseStrings ? 20 : -1,
@@ -224,7 +224,7 @@ function Parser(text, parseStrings){
   this.index = 0;
 }
 
-ZERO = function(){
+var ZERO = function(){
   return 0;
 };
 
