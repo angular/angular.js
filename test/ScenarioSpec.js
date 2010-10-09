@@ -43,9 +43,10 @@ describe("ScenarioSpec: configuration", function(){
     var url = "http://server/#?book=moby";
     var scope = compile("<div>{{$location}}</div>");
     var $location = scope.$location;
+    var $browser = scope.$inject('$browser');
     expect($location.hashSearch.book).toBeUndefined();
-    scope.$browser.setUrl(url);
-    scope.$browser.poll();
+    $browser.setUrl(url);
+    $browser.poll();
     expect($location.hashSearch.book).toEqual('moby');
   });
 });

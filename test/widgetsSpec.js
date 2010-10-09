@@ -476,7 +476,7 @@ describe("widget", function(){
       scope.childScope = createScope();
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
-      scope.$xhr.cache.data.myUrl = {value:'{{name}}'};
+      scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
       expect(element.text()).toEqual('misko');
     });
@@ -487,7 +487,7 @@ describe("widget", function(){
       scope.childScope = createScope();
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
-      scope.$xhr.cache.data.myUrl = {value:'{{name}}'};
+      scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
 
       expect(element.text()).toEqual('igor');

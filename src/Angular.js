@@ -330,6 +330,10 @@ function escapeAttr(html) {
       '&quot;');
 }
 
+function concat(array1, array2, index) {
+  return array1.concat(slice.call(array2, index, array2.length));
+}
+
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? slice.call(arguments, 2, arguments.length) : [];
   if (typeof fn == $function) {
@@ -403,7 +407,7 @@ function angularInit(config){
     // TODO default to the source of angular.js
     var scope = compile(window.document, _null, {'$config':config});
     if (config.css)
-      scope.$browser.addCss(config.base_url + config.css);
+      scope.$inject('$browser').addCss(config.base_url + config.css);
     scope.$init();
   }
 }

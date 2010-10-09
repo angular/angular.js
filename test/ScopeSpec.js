@@ -1,11 +1,27 @@
 describe('scope/model', function(){
 
+  var temp;
+
+  beforeEach(function() {
+    temp = window.temp = {};
+    temp.InjectController = function(exampleService, extra) {
+      this.localService = exampleService;
+      this.extra = extra;
+      this.$root.injectController = this;
+    };
+    temp.InjectController.$inject = ["exampleService"];
+  });
+
+  afterEach(function() {
+    window.temp = undefined;
+  });
+
   it('should create a scope with parent', function(){
     var model = createScope({name:'Misko'});
     expect(model.name).toEqual('Misko');
   });
 
-  it('should have $get/set$/parent$', function(){
+  it('should have $get/$set/$parent', function(){
     var parent = {};
     var model = createScope(parent);
     model.$set('name', 'adam');
@@ -138,40 +154,6 @@ describe('scope/model', function(){
     });
   });
 
-  describe('service injection', function(){
-    it('should inject services', function(){
-      var scope = createScope(null, {
-        service:function(){
-        return "ABC";
-      }
-      });
-      expect(scope.service).toEqual("ABC");
-    });
-
-    it('should inject arugments', function(){
-      var scope = createScope(null, {
-        name:function(){
-        return "misko";
-      },
-      greet: extend(function(name) {
-        return 'hello ' + name;
-      }, {inject:['name']})
-      });
-      expect(scope.greet).toEqual("hello misko");
-    });
-
-    it('should throw error on missing dependency', function(){
-      try {
-        createScope(null, {
-          greet: extend(function(name) {
-          }, {inject:['name']})
-        });
-      } catch(e) {
-        expect(e).toEqual("Don't know how to inject 'name'.");
-      }
-    });
-  });
-
   describe('getterFn', function(){
     it('should get chain', function(){
       expect(getterFn('a.b')(undefined)).toEqual(undefined);
@@ -212,6 +194,29 @@ describe('scope/model', function(){
       scope.$postEval(onceOnly);
       scope.$eval();
       expect(log).toEqual('.!@..@');
+    });
+  });
+
+  describe('$new', function(){
+    it('should $new should create new child scope and $become controller', function(){
+      var parent = createScope(null, {exampleService: function(){return 'Example Service';}});
+      var child = parent.$new(temp.InjectController, 10);
+      expect(child.localService).toEqual('Example Service');
+      expect(child.extra).toEqual(10);
+
+      child.$onEval(function(){ this.run = true; });
+      parent.$eval();
+      expect(child.run).toEqual(true);
+    });
+  });
+
+  describe('$become', function(){
+    it('should inject properties on controller defined in $inject', function(){
+      var parent = createScope(null, {exampleService: function(){return 'Example Service';}});
+      var child = createScope(parent);
+      child.$become(temp.InjectController, 10);
+      expect(child.localService).toEqual('Example Service');
+      expect(child.extra).toEqual(10);
     });
   });
 

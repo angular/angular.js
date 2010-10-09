@@ -41,6 +41,7 @@
   addScript("/JSON.js");
   addScript("/Compiler.js");
   addScript("/Scope.js");
+  addScript("/Injector.js");
   addScript("/jqLite.js");
   addScript("/Parser.js");
   addScript("/Resource.js");
