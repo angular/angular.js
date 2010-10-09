@@ -108,20 +108,14 @@ function errorHandlerFor(element, error) {
   elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
 }
 
-function createScope(parent, services, existing) {
+function createScope(parent, providers, instanceCache) {
   function Parent(){}
-  function API(){}
-  function Behavior(){}
-
   parent = Parent.prototype = (parent || {});
+  var instance = new Parent();
   var evalLists = {sorted:[]};
   var postList = [], postHash = {}, postId = 0;
-  var servicesCache = extend({}, existing);
-  var api = API.prototype = new Parent();
-  var behavior = Behavior.prototype = new API();
-  var instance = new Behavior();
 
-  extend(api, {
+  extend(instance, {
     'this': instance,
     $id: (scopeId++),
     $parent: parent,
@@ -227,46 +221,29 @@ function createScope(parent, services, existing) {
     },
 
     $become: function(Class) {
-      // remove existing
-      foreach(behavior, function(value, key){ delete behavior[key]; });
-      foreach((Class || noop).prototype, function(fn, name){
-        behavior[name] = bind(instance, fn);
-      });
-      (Class || noop).call(instance);
-
-      //TODO: backwards compatibility hack, remove when Feedback's init methods are removed
-      if (behavior.hasOwnProperty('init')) {
-        behavior.init();
+      if (isFunction(Class)) {
+        instance.constructor = Class;
+        foreach(Class.prototype, function(fn, name){
+          instance[name] = bind(instance, fn);
+        });
+        instance.$inject.apply(instance, concat([Class, instance], arguments, 1));
       }
+    },
+
+    $new: function(Class) {
+      var child = createScope(instance);
+      child.$become.apply(instance, concat([Class], arguments, 1));
+      instance.$onEval(child.$eval);
+      return child;
     }
 
   });
 
   if (!parent.$root) {
-    api.$root = instance;
-    api.$parent = instance;
+    instance.$root = instance;
+    instance.$parent = instance;
+    (instance.$inject = createInjector(instance, providers, instanceCache))();
   }
-
-  function inject(name){
-    var service = servicesCache[name], factory, args = [];
-    if (isUndefined(service)) {
-      factory = services[name];
-      if (!isFunction(factory))
-        throw "Don't know how to inject '" + name + "'.";
-      foreach(factory.inject, function(dependency){
-        args.push(inject(dependency));
-      });
-      servicesCache[name] = service = factory.apply(instance, args);
-    }
-    return service;
-  }
-
-  foreach(services, function(_, name){
-    var service = inject(name);
-    if (service) {
-      setter(instance, name, service);
-    }
-  });
 
   return instance;
 }

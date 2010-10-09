@@ -1,13 +1,19 @@
 describe("service", function(){
-  var scope, $xhrError, $log, mockServices;
+  var scope, $xhrError, $log, mockServices, inject, $browser, $browserXhr, $xhrBulk, $xhr, $route;
 
   beforeEach(function(){
     $xhrError = jasmine.createSpy('$xhr.error');
     $log = {};
-    scope = createScope(null, angularService, {
+    scope = createScope({}, angularService, {
       '$xhr.error': $xhrError,
       '$log': $log
     });
+    inject = scope.$inject;
+    $browser = inject('$browser');
+    $browserXhr = $browser.xhr;
+    $xhrBulk = scope.$inject('$xhr.bulk');
+    $xhr = scope.$inject('$xhr');
+    $route = scope.$inject('$route');
   });
 
   afterEach(function(){
@@ -38,7 +44,7 @@ describe("service", function(){
       function warn(){ logger+= 'warn;'; }
       function info(){ logger+= 'info;'; }
       function error(){ logger+= 'error;'; }
-      var scope = createScope(null, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]});
+      var scope = createScope({}, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -49,7 +55,7 @@ describe("service", function(){
     it('should use console.log if other not present', function(){
       var logger = "";
       function log(){ logger+= 'log;'; }
-      var scope = createScope(null, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
+      var scope = createScope({}, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -58,7 +64,7 @@ describe("service", function(){
     });
 
     it('should use noop if no console', function(){
-      var scope = createScope(null, angularService, {$window: {}, $document:[{cookie:''}]});
+      var scope = createScope({}, angularService, {$window: {}, $document:[{cookie:''}]});
       scope.$log.log();
       scope.$log.warn();
       scope.$log.info();
@@ -182,49 +188,47 @@ describe("service", function(){
       function BookChapter() {
         this.log = '<init>';
       }
-      BookChapter.prototype.init = function(){
-        log += 'init();';
-      };
       var scope = compile('<div></div>').$init();
-      scope.$route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
-      scope.$route.when('/Blank');
-      scope.$route.onChange(function(){
+      var $route = scope.$inject('$route');
+      $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
+      $route.when('/Blank');
+      $route.onChange(function(){
         log += 'onChange();';
       });
       scope.$location.parse('http://server#/Book/Moby/Chapter/Intro?p=123');
       scope.$eval();
-      expect(log).toEqual('onChange();init();');
-      expect(scope.$route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
-      expect(scope.$route.current.scope.log).toEqual('<init>');
-      var lastId = scope.$route.current.scope.$id;
+      expect(log).toEqual('onChange();');
+      expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
+      expect($route.current.scope.log).toEqual('<init>');
+      var lastId = $route.current.scope.$id;
 
       log = '';
       scope.$location.parse('http://server#/Blank?ignore');
       scope.$eval();
       expect(log).toEqual('onChange();');
-      expect(scope.$route.current.params).toEqual({ignore:true});
-      expect(scope.$route.current.scope.$id).not.toEqual(lastId);
+      expect($route.current.params).toEqual({ignore:true});
+      expect($route.current.scope.$id).not.toEqual(lastId);
 
       log = '';
       scope.$location.parse('http://server#/NONE');
       scope.$eval();
       expect(log).toEqual('onChange();');
-      expect(scope.$route.current).toEqual(null);
+      expect($route.current).toEqual(null);
 
-      scope.$route.when('/NONE', {template:'instant update'});
+      $route.when('/NONE', {template:'instant update'});
       scope.$eval();
-      expect(scope.$route.current.template).toEqual('instant update');
+      expect($route.current.template).toEqual('instant update');
     });
   });
 
   describe('$resource', function(){
     it('should publish to root scope', function(){
-      expect(scope.$resource).toBeTruthy();
+      expect(scope.$inject('$resource')).toBeTruthy();
     });
   });
 
   describe('$xhr', function(){
-    var log, xhr;
+    var log;
     function callback(code, response) {
       expect(code).toEqual(200);
       log = log + toJson(response) + ';';
@@ -232,27 +236,26 @@ describe("service", function(){
 
     beforeEach(function(){
       log = '';
-      xhr = scope.$browser.xhr;
     });
 
     it('should forward the request to $browser and decode JSON', function(){
-      xhr.expectGET('/reqGET').respond('first');
-      xhr.expectGET('/reqGETjson').respond('["second"]');
-      xhr.expectPOST('/reqPOST', {post:'data'}).respond('third');
+      $browserXhr.expectGET('/reqGET').respond('first');
+      $browserXhr.expectGET('/reqGETjson').respond('["second"]');
+      $browserXhr.expectPOST('/reqPOST', {post:'data'}).respond('third');
 
-      scope.$xhr('GET', '/reqGET', null, callback);
-      scope.$xhr('GET', '/reqGETjson', null, callback);
-      scope.$xhr('POST', '/reqPOST', {post:'data'}, callback);
+      $xhr('GET', '/reqGET', null, callback);
+      $xhr('GET', '/reqGETjson', null, callback);
+      $xhr('POST', '/reqPOST', {post:'data'}, callback);
 
-      xhr.flush();
+      $browserXhr.flush();
 
       expect(log).toEqual('"third";["second"];"first";');
     });
 
     it('should handle non 200 status codes by forwarding to error handler', function(){
-      xhr.expectPOST('/req', 'MyData').respond(500, 'MyError');
-      scope.$xhr('POST', '/req', 'MyData', callback);
-      xhr.flush();
+      $browserXhr.expectPOST('/req', 'MyData').respond(500, 'MyError');
+      $xhr('POST', '/req', 'MyData', callback);
+      $browserXhr.flush();
       var cb = $xhrError.mostRecentCall.args[0].callback;
       expect(typeof cb).toEqual($function);
       expect($xhrError).wasCalledWith(
@@ -262,45 +265,45 @@ describe("service", function(){
 
     it('should handle exceptions in callback', function(){
       $log.error = jasmine.createSpy('$log.error');
-      xhr.expectGET('/reqGET').respond('first');
-      scope.$xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
-      xhr.flush();
+      $browserXhr.expectGET('/reqGET').respond('first');
+      $xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
+      $browserXhr.flush();
 
       expect($log.error).wasCalledWith("MyException");
     });
 
     describe('bulk', function(){
       it('should collect requests', function(){
-        scope.$xhr.bulk.urls["/"] = {match:/.*/};
-        scope.$xhr.bulk('GET', '/req1', null, callback);
-        scope.$xhr.bulk('POST', '/req2', {post:'data'}, callback);
+        $xhrBulk.urls["/"] = {match:/.*/};
+        $xhrBulk('GET', '/req1', null, callback);
+        $xhrBulk('POST', '/req2', {post:'data'}, callback);
 
-        xhr.expectPOST('/', {
+        $browserXhr.expectPOST('/', {
           requests:[{method:'GET',  url:'/req1', data: null},
                     {method:'POST', url:'/req2', data:{post:'data'} }]
         }).respond([
           {status:200, response:'first'},
           {status:200, response:'second'}
         ]);
-        scope.$xhr.bulk.flush(function(){ log += 'DONE';});
-        xhr.flush();
+        $xhrBulk.flush(function(){ log += 'DONE';});
+        $browserXhr.flush();
         expect(log).toEqual('"first";"second";DONE');
       });
 
       it('should handle non 200 status code by forwarding to error handler', function(){
-        scope.$xhr.bulk.urls['/'] = {match:/.*/};
-        scope.$xhr.bulk('GET', '/req1', null, callback);
-        scope.$xhr.bulk('POST', '/req2', {post:'data'}, callback);
+        $xhrBulk.urls['/'] = {match:/.*/};
+        $xhrBulk('GET', '/req1', null, callback);
+        $xhrBulk('POST', '/req2', {post:'data'}, callback);
 
-        xhr.expectPOST('/', {
+        $browserXhr.expectPOST('/', {
           requests:[{method:'GET',  url:'/req1', data: null},
                     {method:'POST', url:'/req2', data:{post:'data'} }]
         }).respond([
           {status:404, response:'NotFound'},
           {status:200, response:'second'}
         ]);
-        scope.$xhr.bulk.flush(function(){ log += 'DONE';});
-        xhr.flush();
+        $xhrBulk.flush(function(){ log += 'DONE';});
+        $browserXhr.flush();
 
         expect($xhrError).wasCalled();
         var cb = $xhrError.mostRecentCall.args[0].callback;
@@ -315,29 +318,29 @@ describe("service", function(){
 
     describe('cache', function(){
       var cache;
-      beforeEach(function(){ cache = scope.$xhr.cache; });
+      beforeEach(function(){ cache = scope.$inject('$xhr.cache'); });
 
       it('should cache requests', function(){
-        xhr.expectGET('/url').respond('first');
+        $browserXhr.expectGET('/url').respond('first');
         cache('GET', '/url', null, callback);
-        xhr.flush();
-        xhr.expectGET('/url').respond('ERROR');
+        $browserXhr.flush();
+        $browserXhr.expectGET('/url').respond('ERROR');
         cache('GET', '/url', null, callback);
-        xhr.flush();
+        $browserXhr.flush();
         expect(log).toEqual('"first";"first";');
         cache('GET', '/url', null, callback, false);
-        xhr.flush();
+        $browserXhr.flush();
         expect(log).toEqual('"first";"first";"first";');
       });
 
       it('should first return cache request, then return server request', function(){
-        xhr.expectGET('/url').respond('first');
+        $browserXhr.expectGET('/url').respond('first');
         cache('GET', '/url', null, callback, true);
-        xhr.flush();
-        xhr.expectGET('/url').respond('ERROR');
+        $browserXhr.flush();
+        $browserXhr.expectGET('/url').respond('ERROR');
         cache('GET', '/url', null, callback, true);
         expect(log).toEqual('"first";"first";');
-        xhr.flush();
+        $browserXhr.flush();
         expect(log).toEqual('"first";"first";"ERROR";');
       });
 
@@ -350,12 +353,12 @@ describe("service", function(){
       });
 
       it('should keep track of in flight requests and request only once', function(){
-        scope.$xhr.bulk.urls['/bulk'] = {
+        scope.$inject('$xhr.bulk').urls['/bulk'] = {
           match:function(url){
             return url == '/url';
           }
         };
-        xhr.expectPOST('/bulk', {
+        $browserXhr.expectPOST('/bulk', {
           requests:[{method:'GET',  url:'/url', data: null}]
         }).respond([
           {status:200, response:'123'}
@@ -363,12 +366,12 @@ describe("service", function(){
         cache('GET', '/url', null, callback);
         cache('GET', '/url', null, callback);
         cache.delegate.flush();
-        xhr.flush();
+        $browserXhr.flush();
         expect(log).toEqual('"123";"123";');
       });
 
       it('should clear cache on non GET', function(){
-        xhr.expectPOST('abc', {}).respond({});
+        $browserXhr.expectPOST('abc', {}).respond({});
         cache.data.url = {value:123};
         cache('POST', 'abc', {});
         expect(cache.data.url).toBeUndefined();
@@ -380,12 +383,12 @@ describe("service", function(){
 
   describe('$cookies', function() {
 
-    var scope;
+    var scope, $browser;
 
     beforeEach(function() {
-      var browser = new MockBrowser();
-      browser.cookieHash['preexisting'] = 'oldCookie';
-      scope = createScope(null, angularService, {$browser: browser});
+      $browser = new MockBrowser();
+      $browser.cookieHash['preexisting'] = 'oldCookie';
+      scope = createScope(null, angularService, {$browser: $browser});
     });
 
 
@@ -393,19 +396,19 @@ describe("service", function(){
         function(){
       expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
 
-      // access internal cookie storage of the browser mock directly to simulate behavior of 
+      // access internal cookie storage of the browser mock directly to simulate behavior of
       // document.cookie
-      scope.$browser.cookieHash['brandNew'] = 'cookie';
-      scope.$browser.poll();
+      $browser.cookieHash['brandNew'] = 'cookie';
+      $browser.poll();
 
       expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'brandNew':'cookie'});
 
-      scope.$browser.cookieHash['brandNew'] = 'cookie2';
-      scope.$browser.poll();
+      $browser.cookieHash['brandNew'] = 'cookie2';
+      $browser.poll();
       expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'brandNew':'cookie2'});
 
-      delete scope.$browser.cookieHash['brandNew'];
-      scope.$browser.poll();
+      delete $browser.cookieHash['brandNew'];
+      $browser.poll();
       expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
     });
 
@@ -414,13 +417,13 @@ describe("service", function(){
       scope.$cookies.oatmealCookie = 'nom nom';
       scope.$eval();
 
-      expect(scope.$browser.cookies()).
+      expect($browser.cookies()).
         toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
       scope.$cookies.oatmealCookie = 'gone';
       scope.$eval();
 
-      expect(scope.$browser.cookies()).
+      expect($browser.cookies()).
         toEqual({'preexisting': 'oldCookie', 'oatmealCookie': 'gone'});
     });
 
@@ -428,7 +431,7 @@ describe("service", function(){
     it('should ignore non-string values when asked to create a cookie', function() {
       scope.$cookies.nonString = [1, 2, 3];
       scope.$eval();
-      expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
+      expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
       expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
     });
 
@@ -438,21 +441,21 @@ describe("service", function(){
       scope.$cookies.undefVal = undefined;
       scope.$eval();
 
-      expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
+      expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     });
 
 
     it('should remove a cookie when a $cookies property is deleted', function() {
       scope.$cookies.oatmealCookie = 'nom nom';
       scope.$eval();
-      scope.$browser.poll();
-      expect(scope.$browser.cookies()).
+      $browser.poll();
+      expect($browser.cookies()).
         toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
       delete scope.$cookies.oatmealCookie;
       scope.$eval();
 
-      expect(scope.$browser.cookies()).toEqual({'preexisting': 'oldCookie'});
+      expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     });
 
 
@@ -485,13 +488,13 @@ describe("service", function(){
     it('should serialize objects to json', function() {
       scope.$cookieStore.put('objectCookie', {id: 123, name: 'blah'});
       scope.$eval(); //force eval in test
-      expect(scope.$browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
+      expect($browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
     });
 
 
     it('should deserialize json to object', function() {
-      scope.$browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
-      scope.$browser.poll();
+      $browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
+      $browser.poll();
       expect(scope.$cookieStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
     });
 
@@ -499,7 +502,7 @@ describe("service", function(){
     it('should delete objects from the store when remove is called', function() {
       scope.$cookieStore.put('gonner', { "I'll":"Be Back"});
       scope.$eval(); //force eval in test
-      expect(scope.$browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
+      expect($browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
     });
 
   });

@@ -1,13 +1,19 @@
 var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?(#(.*))?$/,
     HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/,
-    DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
+    DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21},
+    EAGER = 'eager',
+    EAGER_PUBLISHED = EAGER + '-published';
 
-angularService("$window", bind(window, identity, window));
-angularService("$document", function(window){
+function angularServiceInject(name, fn, inject, eager) {
+  angularService(name, fn, {$inject:inject, $creation:eager});
+}
+
+angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLISHED);
+angularServiceInject("$document", function(window){
   return jqLite(window.document);
-}, {inject:['$window']});
+}, ['$window'], EAGER_PUBLISHED);
 
-angularService("$location", function(browser){
+angularServiceInject("$location", function(browser){
   var scope = this,
       location = {parse:parseUrl, toString:toString, update:update},
       lastLocation = {};
@@ -92,9 +98,9 @@ angularService("$location", function(browser){
     update();
     return location.href;
   }
-}, {inject: ['$browser']});
+}, ['$browser'], EAGER_PUBLISHED);
 
-angularService("$log", function($window){
+angularServiceInject("$log", function($window){
   var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
       log = console.log || noop;
   return {
@@ -103,15 +109,15 @@ angularService("$log", function($window){
     info: bind(console, console.info || log),
     error: bind(console, console.error || log)
   };
-}, {inject:['$window']});
+}, ['$window'], EAGER_PUBLISHED);
 
-angularService('$exceptionHandler', function($log){
+angularServiceInject('$exceptionHandler', function($log){
   return function(e) {
     $log.error(e);
   };
-}, {inject:['$log']});
+}, ['$log'], EAGER_PUBLISHED);
 
-angularService("$hover", function(browser, document) {
+angularServiceInject("$hover", function(browser, document) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);
   browser.hover(function(element, show){
     if (show && (error = element.attr(NG_EXCEPTION) || element.attr(NG_VALIDATION_ERROR))) {
@@ -155,14 +161,13 @@ angularService("$hover", function(browser, document) {
       tooltip = _null;
     }
   });
-}, {inject:['$browser', '$document']});
-
+}, ['$browser', '$document'], EAGER);
 
 
 /* Keeps references to all invalid widgets found during validation. Can be queried to find if there
  * are invalid widgets currently displayed
  */
-angularService("$invalidWidgets", function(){
+angularServiceInject("$invalidWidgets", function(){
   var invalidWidgets = [];
 
 
@@ -217,7 +222,7 @@ angularService("$invalidWidgets", function(){
   }
 
   return invalidWidgets;
-});
+}, [], EAGER_PUBLISHED);
 
 
 
@@ -244,7 +249,7 @@ function switchRouteMatcher(on, when, dstName) {
   return match ? dst : _null;
 }
 
-angularService('$route', function(location){
+angularServiceInject('$route', function(location){
   var routes = {},
       onChange = [],
       matcher = switchRouteMatcher,
@@ -284,9 +289,9 @@ angularService('$route', function(location){
   }
   this.$watch(function(){return dirty + location.hash;}, updateRoute);
   return $route;
-}, {inject: ['$location']});
+}, ['$location']);
 
-angularService('$xhr', function($browser, $error, $log){
+angularServiceInject('$xhr', function($browser, $error, $log){
   var self = this;
   return function(method, url, post, callback){
     if (isFunction(post)) {
@@ -315,15 +320,15 @@ angularService('$xhr', function($browser, $error, $log){
       }
     });
   };
-}, {inject:['$browser', '$xhr.error', '$log']});
+}, ['$browser', '$xhr.error', '$log']);
 
-angularService('$xhr.error', function($log){
+angularServiceInject('$xhr.error', function($log){
   return function(request, response){
     $log.error('ERROR: XHR: ' + request.url, request, response);
   };
-}, {inject:['$log']});
+}, ['$log']);
 
-angularService('$xhr.bulk', function($xhr, $error, $log){
+angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   var requests = [],
       scope = this;
   function bulkXHR(method, url, post, callback) {
@@ -371,9 +376,9 @@ angularService('$xhr.bulk', function($xhr, $error, $log){
   };
   this.$onEval(PRIORITY_LAST, bulkXHR.flush);
   return bulkXHR;
-}, {inject:['$xhr', '$xhr.error', '$log']});
+}, ['$xhr', '$xhr.error', '$log']);
 
-angularService('$xhr.cache', function($xhr){
+angularServiceInject('$xhr.cache', function($xhr){
   var inflight = {}, self = this;
   function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
@@ -415,12 +420,12 @@ angularService('$xhr.cache', function($xhr){
   cache.data = {};
   cache.delegate = $xhr;
   return cache;
-}, {inject:['$xhr.bulk']});
+}, ['$xhr.bulk']);
 
-angularService('$resource', function($xhr){
+angularServiceInject('$resource', function($xhr){
   var resource = new ResourceFactory($xhr);
   return bind(resource, resource.route);
-}, {inject: ['$xhr.cache']});
+}, ['$xhr.cache']);
 
 
 /**
@@ -430,7 +435,7 @@ angularService('$resource', function($xhr){
  * Only a simple Object is exposed and by adding or removing properties to/from this object, new
  * cookies are created or deleted from the browser at the end of the current eval.
  */
-angularService('$cookies', function($browser) {
+angularServiceInject('$cookies', function($browser) {
   var rootScope = this,
       cookies = {},
       lastCookies = {},
@@ -499,14 +504,14 @@ angularService('$cookies', function($browser) {
       }
     }
   }
-}, {inject: ['$browser']});
+}, ['$browser'], EAGER_PUBLISHED);
 
 
 /**
  * $cookieStore provides a key-value (string-object) storage that is backed by session cookies.
  * Objects put or retrieved from this storage are automatically serialized or deserialized.
  */
-angularService('$cookieStore', function($store) {
+angularServiceInject('$cookieStore', function($store) {
 
   return {
     get: function(/**string*/key) {
@@ -522,4 +527,4 @@ angularService('$cookieStore', function($store) {
     }
   };
 
-}, {inject: ['$cookies']});
+}, ['$cookies'], EAGER_PUBLISHED);

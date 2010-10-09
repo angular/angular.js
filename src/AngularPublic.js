@@ -21,6 +21,7 @@ extend(angular, {
   'extend': extend,
   'equals': equals,
   'foreach': foreach,
+  'injector': createInjector,
   'noop':noop,
   'bind':bind,
   'toJson': toJson,

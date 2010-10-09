@@ -282,7 +282,7 @@ describe("directives", function(){
     });
 
     it('should support nested controllers', function(){
-      temp.ChildGreeter = function() {
+      temp.ChildGreeter = function(){
         this.greeting = 'hey';
         this.$root.childGreeter = this;
       };

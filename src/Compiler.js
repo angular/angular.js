@@ -34,7 +34,7 @@ Template.prototype = {
     foreach(this.inits, function(fn) {
       queue.push(function() {
         childScope.$tryEval(function(){
-          return fn.call(childScope, element);
+          return childScope.$inject(fn, childScope, element);
         }, element);
       });
     });
@@ -96,8 +96,7 @@ Compiler.prototype = {
     return function(element, parentScope){
       element = jqLite(element);
       var scope = parentScope && parentScope.$eval ?
-          parentScope :
-          createScope(parentScope || {}, angularService);
+          parentScope : createScope(parentScope);
       return extend(scope, {
         $element:element,
         $init: function() {
@@ -124,7 +123,7 @@ Compiler.prototype = {
           text:function(text) {return jqLite(document.createTextNode(text));},
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
           directives: function(value){ if(isDefined(value)) directives = value; return directives;},
-          scope: function(value){ if(isDefined(value)) template.newScope = template.newScope || value ; return template.newScope;}
+          scope: function(value){ if(isDefined(value)) template.newScope = template.newScope || value; return template.newScope;}
         };
     try {
       priority = element.attr('ng:eval-order') || priority || 0;

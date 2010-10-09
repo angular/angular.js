@@ -253,7 +253,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return function(element){
+    return extend(function(xhr, element){
       var scope = this, childScope;
       var changeCounter = 0;
       function incrementChange(){ changeCounter++;}
@@ -266,7 +266,7 @@ angularWidget('ng:include', function(element){
         var src = this.$eval(srcExp),
         useScope = this.$eval(scopeExp);
         if (src) {
-          scope.$xhr.cache('GET', src, function(code, response){
+          xhr('GET', src, function(code, response){
             element.html(response);
             childScope = useScope || createScope(scope);
             compiler.compile(element)(element, childScope);
@@ -276,7 +276,7 @@ angularWidget('ng:include', function(element){
           element.html('');
         }
       });
-    };
+    }, {$inject:['$xhr.cache']});
   }
 });
 

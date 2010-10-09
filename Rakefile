@@ -29,6 +29,7 @@ task :compile_scenario do
       src/jqLite.js \
       src/JSON.js \
       src/Scope.js \
+      src/Injector.js \
       src/Parser.js \
       src/Resource.js \
       src/Browser.js \
