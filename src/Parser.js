@@ -53,6 +53,9 @@ function lex(text, parseStrings){
       tokens.push({index:index, text:ch});
       index++;
       canStartRegExp = false;
+    } else if (ch == '.' && isNumber(peek())) {
+      readNumber();
+      canStartRegExp = false;
     } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
       tokens.push({index:index, text:ch});
       index++;
@@ -104,6 +107,9 @@ function lex(text, parseStrings){
            'A' <= ch && ch <= 'Z' ||
            '_' == ch || ch == '$';
   }
+  function isExpOperator(ch) {
+    return ch == '-' || ch == '+';
+  }
   function readNumber() {
     var number = "";
     var start = index;
@@ -112,7 +118,20 @@ function lex(text, parseStrings){
       if (ch == '.' || isNumber(ch)) {
         number += ch;
       } else {
-        break;
+        var peekCh = peek();
+        if (ch == 'E' && isExpOperator(peekCh)) {
+          number += ch;
+        } else if (isExpOperator(ch) &&
+            peekCh && isNumber(peekCh) &&
+            number.charAt(number.length - 1) == 'E') {
+          number += ch;
+        } else if (isExpOperator(ch) &&
+            (!peekCh || !isNumber(peekCh)) &&
+            number.charAt(number.length - 1) == 'E') {
+          throw 'Lexer found invalid exponential value "' + text + '"';
+        } else {
+          break;
+        }
       }
       index++;
     }

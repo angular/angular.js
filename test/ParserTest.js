@@ -141,6 +141,43 @@ LexerTest.prototype.testNumber = function(){
   expect(tokens[0].text).toEqual(0.5);
 };
 
+// TODO(misko): DO THIS!!!
+LexerTest.prototype.xtestNegativeNumber = function(){
+  var tokens = lex("-0.5");
+  expect(tokens[0].text).toEqual(-0.5);
+};
+
+LexerTest.prototype.testNumberExponent = function(){
+  var tokens = lex("0.5E-10");
+  expect(tokens[0].text).toEqual(0.5E-10);
+
+  tokens = lex("0.5E+10");
+  expect(tokens[0].text).toEqual(0.5E+10);
+};
+
+LexerTest.prototype.testNumberExponentInvalid = function(){
+  try {
+    lex("0.5E-");
+    fail('Invalid Exponential expression should have thrown error');
+  } catch (e) {
+    expect(e.message || e).
+        toEqual('Lexer found invalid exponential value "0.5E-"');
+  }
+  try {
+    lex("0.5E-A");
+    fail('Invalid Exponential expression should have thrown error');
+  } catch (e) {
+    expect(e.message || e).
+        toEqual('Lexer found invalid exponential value "0.5E-A"');
+  }
+};
+
+LexerTest.prototype.testNumberStartingWithDot = function(){
+  var tokens = lex(".5");
+  expect(tokens[0].text).toEqual(0.5);
+};
+
+
 ParserTest = TestCase('ParserTest');
 
 ParserTest.prototype.testExpressions = function(){
