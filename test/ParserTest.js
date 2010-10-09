@@ -141,6 +141,38 @@ LexerTest.prototype.testNumber = function(){
   expect(tokens[0].text).toEqual(0.5);
 };
 
+LexerTest.prototype.testNegativeNumber = function(){
+  var value = createScope().$eval("-0.5");
+  expect(value).toEqual(-0.5);
+
+  value = createScope().$eval("{a:-0.5}");
+  expect(value).toEqual({a:-0.5});
+};
+
+LexerTest.prototype.testNumberExponent = function(){
+  var tokens = lex("0.5E-10");
+  expect(tokens[0].text).toEqual(0.5E-10);
+  expect(createScope().$eval("0.5E-10")).toEqual(0.5E-10);
+
+  tokens = lex("0.5E+10");
+  expect(tokens[0].text).toEqual(0.5E+10);
+};
+
+LexerTest.prototype.testNumberExponentInvalid = function(){
+  assertThrows('Lexer found invalid exponential value "0.5E-"', function(){
+    lex("0.5E-");
+  });
+  assertThrows('Lexer found invalid exponential value "0.5E-A"', function(){
+    lex("0.5E-A");
+  });
+};
+
+LexerTest.prototype.testNumberStartingWithDot = function(){
+  var tokens = lex(".5");
+  expect(tokens[0].text).toEqual(0.5);
+};
+
+
 ParserTest = TestCase('ParserTest');
 
 ParserTest.prototype.testExpressions = function(){
