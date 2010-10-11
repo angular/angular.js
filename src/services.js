@@ -253,7 +253,6 @@ angularService('$route', function(location){
     angular.foreach(onChange, parentScope.$tryEval);
     if (childScope) {
       childScope.$become($route.current.controller);
-      parentScope.$tryEval(childScope.init);
     }
   }
   this.$watch(function(){return dirty + location.hash;}, updateRoute);
