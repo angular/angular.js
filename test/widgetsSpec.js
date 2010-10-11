@@ -5,10 +5,11 @@ describe("widget", function(){
     scope = null;
     element = null;
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
-    compile = function(html, before) {
+    compile = function(html, before, parent) {
       element = jqLite(html);
       scope = compiler.compile(element)(element);
       (before||noop).apply(scope);
+      if (parent) parent.append(element);
       scope.$init();
     };
   });
@@ -163,7 +164,8 @@ describe("widget", function(){
 
       describe("ng:validate", function(){
         it("should process ng:validate", function(){
-          compile('<input type="text" name="price" value="abc" ng:validate="number"/>');
+          compile('<input type="text" name="price" value="abc" ng:validate="number"/>',
+                  undefined, jqLite(document.body));
           expect(element.hasClass('ng-validation-error')).toBeTruthy();
           expect(element.attr('ng-validation-error')).toEqual('Not a number');
 
@@ -217,7 +219,7 @@ describe("widget", function(){
     });
 
     it("should process ng:required", function(){
-      compile('<input type="text" name="price" ng:required/>');
+      compile('<input type="text" name="price" ng:required/>', undefined, jqLite(document.body));
       expect(element.hasClass('ng-validation-error')).toBeTruthy();
       expect(element.attr('ng-validation-error')).toEqual('Required');
 
@@ -233,7 +235,8 @@ describe("widget", function(){
     });
 
     it('should allow conditions on ng:required', function() {
-      compile('<input type="text" name="price" ng:required="ineedz"/>');
+      compile('<input type="text" name="price" ng:required="ineedz"/>',
+              undefined, jqLite(document.body));
       scope.$set('ineedz', false);
       scope.$eval();
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
@@ -372,7 +375,8 @@ describe("widget", function(){
         compile(
             '<select name="selection" ng:required>' +
               '<option value="{{$index}}" ng:repeat="opt in options">{{opt}}</option>' +
-            '</select>');
+            '</select>',
+            undefined, jqLite(document.body));
         scope.selection = 1;
         scope.options = ['one', 'two'];
         scope.$eval();
@@ -459,13 +463,9 @@ describe("widget", function(){
       var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>');
       var cleared = false;
       scope.url = 'a';
-      scope.$invalidWidgets = {clearOrphans: function(){
-        cleared = true;
-      }};
       scope.$init();
       expect(scope.name).toEqual(undefined);
       expect(scope.$element.text()).toEqual('works');
-      expect(cleared).toEqual(true);
     });
   });
 

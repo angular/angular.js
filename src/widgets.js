@@ -324,8 +324,6 @@ var ngSwitch = angularWidget('ng:switch', function (element){
           element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(caseElement, childScope);
-          if (scope.$invalidWidgets)
-            scope.$invalidWidgets.clearOrphans();
           childScope.$init();
         }
       });
