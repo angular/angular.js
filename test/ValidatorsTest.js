@@ -99,16 +99,13 @@ describe('Validator:asynchronous', function(){
   var value, fn;
 
   beforeEach(function(){
-    var invalidWidgets = angularService('$invalidWidgets')();
     value = null;
     fn = null;
-    self = {
-        $element:jqLite('<input />'),
-        $invalidWidgets:invalidWidgets,
-        $eval: noop
-    };
+    self = compile('<input />');
+    jqLite(document.body).append(self.$element);
     self.$element.data('$validate', noop);
     self.$root = self;
+    self.$init();
   });
 
   afterEach(function(){
@@ -121,6 +118,7 @@ describe('Validator:asynchronous', function(){
   it('should make a request and show spinner', function(){
     var value, fn;
     var scope = compile('<input type="text" name="name" ng:validate="asynchronous:asyncFn"/>');
+    jqLite(document.body).append(scope.$element);
     scope.$init();
     var input = scope.$element;
     scope.asyncFn = function(v,f){

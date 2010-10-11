@@ -157,18 +157,32 @@ angularService("$hover", function(browser, document) {
   });
 }, {inject:['$browser', '$document']});
 
+
+
+/* Keeps references to all invalid widgets found during validation. Can be queried to find if there
+ * are invalid widgets currently displayed
+ */
 angularService("$invalidWidgets", function(){
   var invalidWidgets = [];
+
+
+  /** Remove an element from the array of invalid widgets */
   invalidWidgets.markValid = function(element){
     var index = indexOf(invalidWidgets, element);
     if (index != -1)
       invalidWidgets.splice(index, 1);
   };
+
+
+  /** Add an element to the array of invalid widgets */
   invalidWidgets.markInvalid = function(element){
     var index = indexOf(invalidWidgets, element);
     if (index === -1)
       invalidWidgets.push(element);
   };
+
+
+  /** Return count of all invalid widgets that are currently visible */
   invalidWidgets.visible = function() {
     var count = 0;
     foreach(invalidWidgets, function(widget){
@@ -176,23 +190,36 @@ angularService("$invalidWidgets", function(){
     });
     return count;
   };
-  invalidWidgets.clearOrphans = function() {
+
+
+  /* At the end of each eval removes all invalid widgets that are not part of the current DOM. */
+  this.$onEval(PRIORITY_LAST, function() {
     for(var i = 0; i < invalidWidgets.length;) {
       var widget = invalidWidgets[i];
       if (isOrphan(widget[0])) {
-        invalidWidgets.splice(i, 1);
+        invalidWidgets.splice(i, 1)
+        if (widget.dealoc) widget.dealoc();
       } else {
         i++;
       }
     }
-  };
+  });
+
+
+  /**
+   * Traverses DOM element's (widget's) parents and considers the element to be an orphant if one of
+   * it's parents isn't the current window.document.
+   */
   function isOrphan(widget) {
     if (widget == window.document) return false;
     var parent = widget.parentNode;
     return !parent || isOrphan(parent);
   }
+
   return invalidWidgets;
 });
+
+
 
 function switchRouteMatcher(on, when, dstName) {
   var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',

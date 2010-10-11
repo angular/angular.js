@@ -2,10 +2,14 @@ BinderTest = TestCase('BinderTest');
 
 BinderTest.prototype.setUp = function(){
   var self = this;
-  this.compile = function(html, initialScope, config) {
+
+  this.compile = function(html, initialScope, parent) {
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
     var element = self.element = jqLite(html);
     var scope = compiler.compile(element)(element);
+
+    if (parent) parent.append(element);
+
     extend(scope, initialScope);
     scope.$init();
     return {node:element, scope:scope};
@@ -506,7 +510,8 @@ BinderTest.prototype.testFillInOptionValueWhenMissing = function() {
 
 BinderTest.prototype.testValidateForm = function() {
   var c = this.compile('<div><input name="name" ng:required>' +
-          '<div ng:repeat="item in items"><input name="item.name" ng:required/></div></div>');
+          '<div ng:repeat="item in items"><input name="item.name" ng:required/></div></div>',
+          undefined, jqLite(document.body));
   var items = [{}, {}];
   c.scope.$set("items", items);
   c.scope.$eval();
@@ -534,8 +539,7 @@ BinderTest.prototype.testValidateForm = function() {
 };
 
 BinderTest.prototype.testValidateOnlyVisibleItems = function(){
-  var c = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>');
-  jqLite(document.body).append(c.node);
+  var c = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>', undefined, jqLite(document.body));
   c.scope.$set("show", true);
   c.scope.$eval();
   assertEquals(2, c.scope.$get("$invalidWidgets.length"));
