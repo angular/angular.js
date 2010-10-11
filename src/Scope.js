@@ -233,6 +233,11 @@ function createScope(parent, services, existing) {
         behavior[name] = bind(instance, fn);
       });
       (Class || noop).call(instance);
+
+      //TODO: backwards compatibility hack, remove when Feedback's init methods are removed
+      if (behavior.hasOwnProperty('init')) {
+        behavior.init();
+      }
     }
 
   });
