@@ -1,4 +1,4 @@
-  include FileUtils
+include FileUtils
 
 task :default => [:compile, :test]
 
@@ -51,9 +51,7 @@ task :compile_scenario do
 end
 
 desc 'Compile JavaScript'
-task :compile do
-  Rake::Task['compile_externs'].execute 0
-  Rake::Task['compile_scenario'].execute 0
+task :compile => [:compile_externs, :compile_scenario] do
 
   concat = %x(cat \
       src/angular.prefix \
@@ -86,6 +84,21 @@ task :compile do
         --externs externs.js \
         --create_source_map ./angular-minified.map \
         --js_output_file angular-minified.js)
+end
+
+desc 'Create angular distribution'
+task :package => :compile do
+  date = Time.now.strftime('%y%m%d_%H%M')
+  sha = %x(git rev-parse HEAD)[0..7]
+  filename = "angular-#{date}-#{sha}.tgz"
+
+  %x(tar -czf #{filename} \
+         angular-debug.js \
+         angular-minified.js \
+         angular-scenario.js \
+         css/)
+
+  puts "Package created: #{filename}"
 end
 
 namespace :server do
