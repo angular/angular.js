@@ -93,11 +93,17 @@ task :package => :compile do
   sha = %x(git rev-parse HEAD)[0..7]
   filename = "angular-#{date}-#{sha}.tgz"
 
-  %x(tar -czf #{filename} \
+  %x(cp test/angular-mocks.js ./)
+
+  %x(tar -cf #{filename} \
          angular-debug.js \
          angular-minified.js \
          angular-scenario.js \
-         css/)
+         angular-mocks.js \
+         css/angular.css \
+         css/angular_images/ )
+
+  %x( rm angular-mocks.js)
 
   puts "Package created: #{filename}"
 end
