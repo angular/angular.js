@@ -197,7 +197,7 @@ angularService("$invalidWidgets", function(){
     for(var i = 0; i < invalidWidgets.length;) {
       var widget = invalidWidgets[i];
       if (isOrphan(widget[0])) {
-        invalidWidgets.splice(i, 1)
+        invalidWidgets.splice(i, 1);
         if (widget.dealoc) widget.dealoc();
       } else {
         i++;
