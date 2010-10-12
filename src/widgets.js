@@ -38,7 +38,7 @@ function valueAccessor(scope, element) {
       requiredExpr = element.attr('ng:required'),
       formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName),
-      format, parse, lastError, required;
+      format, parse, lastError, required,
       invalidWidgets = scope.$invalidWidgets || {markValid:noop, markInvalid:noop};
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
