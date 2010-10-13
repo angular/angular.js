@@ -50,7 +50,7 @@ angularDirective("ng:bind", function(expression){
           element.html('');
           element.append(value);
         } else {
-          element.text(value);
+          element.text(value === _undefined ? '' : value);
         }
       }
     }, element);
