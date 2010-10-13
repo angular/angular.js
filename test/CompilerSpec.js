@@ -134,4 +134,27 @@ describe('compiler', function(){
     expect(scope.$element.text()).toEqual('3');
   });
 
+  it('should allow multiple markups per text element', function(){
+    markup.push(function(text, textNode, parent){
+      var index = text.indexOf('---');
+      if (index > -1) {
+        textNode.after(text.substring(index + 3));
+        textNode.after("<hr/>");
+        textNode.after(text.substring(0, index));
+        textNode.remove();
+      }
+    });
+    markup.push(function(text, textNode, parent){
+      var index = text.indexOf('===');
+      if (index > -1) {
+        textNode.after(text.substring(index + 3));
+        textNode.after("<p>");
+        textNode.after(text.substring(0, index));
+        textNode.remove();
+      }
+    });
+    var scope = compile('A---B---C===D');
+    expect(sortedHtml(scope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
+  });
+
 });
