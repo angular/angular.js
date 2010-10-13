@@ -60,6 +60,7 @@ task :compile => [:compile_externs, :compile_scenario] do
       src/JSON.js \
       src/Compiler.js \
       src/Scope.js \
+      src/Injector.js \
       src/Parser.js \
       src/Resource.js \
       src/Browser.js \
