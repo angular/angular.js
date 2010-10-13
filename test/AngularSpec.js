@@ -21,6 +21,13 @@ describe("copy", function(){
     assertSame(arr, copy([], arr));
   });
 
+  it("should copy Date", function(){
+    var date = new Date(123);
+    expect(copy(date) instanceof Date).toBeTruthy();
+    expect(copy(date).getTime()).toEqual(123);
+    expect(copy(date) === date).toBeFalsy();
+  });
+
   it("should copy array", function(){
     var src = [1, {name:"value"}];
     var dst = [{key:"v"}];
