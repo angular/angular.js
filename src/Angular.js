@@ -226,14 +226,16 @@ function isLeafNode (node) {
  */
 function copy(source, destination){
   if (!destination) {
+    destination = source;
     if (source) {
       if (isArray(source)) {
-        return copy(source, []);
+        destination = copy(source, []);
+      } else if (source instanceof Date) {
+        destination = new Date(source.getTime());
       } else if (isObject(source)) {
-        return copy(source, {});
+        destination = copy(source, {});
       }
     }
-    return source;
   } else {
     if (isArray(source)) {
       while(destination.length) {
@@ -250,8 +252,8 @@ function copy(source, destination){
         destination[key] = copy(source[key]);
       }
     }
-    return destination;
   }
+  return destination;
 }
 
 function equals(o1, o2) {
