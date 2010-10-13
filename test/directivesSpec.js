@@ -38,6 +38,16 @@ describe("directives", function(){
       expect(element.text()).toEqual('misko');
     });
 
+    it('should set text to blank if undefined', function() {
+      var scope = compile('<div ng:bind="a"></div>');
+      scope.a = 'misko';
+      scope.$eval();
+      expect(element.text()).toEqual('misko');
+      scope.a = undefined;
+      scope.$eval();
+      expect(element.text()).toEqual('');
+    });
+
     it('should set html', function() {
       var scope = compile('<div ng:bind="html|html"></div>');
       scope.html = '<div>hello</div>';
@@ -56,10 +66,11 @@ describe("directives", function(){
 
     it('should have $element set to current bind element', function(){
       angularFilter.myFilter = function(){
-        this.$element.text('HELLO');
+        this.$element.addClass("filter");
+        return 'HELLO';
       };
       var scope = compile('<div>before<div ng:bind="0|myFilter"></div>after</div>');
-      expect(scope.$element.text()).toEqual("beforeHELLOafter");
+      expect(sortedHtml(scope.$element)).toEqual('<div>before<div class="filter" ng:bind="0|myFilter">HELLO</div>after</div>');
     });
 
   });
