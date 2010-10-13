@@ -158,12 +158,17 @@ Compiler.prototype = {
     }
     if (descend){
       // process markup for text nodes only
-      eachTextNode(element, function(textNode){
-        var text = textNode.text();
-        foreach(self.markup, function(markup){
-          markup.call(selfApi, text, textNode, element);
-        });
-      });
+      for(var i=0, child=element[0].childNodes;
+          i<child.length; i++) {
+        if (isTextNode(child[i])) {
+          foreach(self.markup, function(markup){
+            if (i<child.length) {
+              var textNode = jqLite(child[i]);
+              markup.call(selfApi, textNode.text(), textNode, element);
+            }
+          });
+        }
+      }
     }
 
     if (directives) {
@@ -186,15 +191,6 @@ Compiler.prototype = {
     return template.empty() ? _null : template;
   }
 };
-
-function eachTextNode(element, fn){
-  var i, chldNodes = element[0].childNodes || [], chld;
-  for (i = 0; i < chldNodes.length; i++) {
-    if(isTextNode(chld = chldNodes[i])) {
-      fn(jqLite(chld), i);
-    }
-  }
-}
 
 function eachNode(element, fn){
   var i, chldNodes = element[0].childNodes || [], chld;

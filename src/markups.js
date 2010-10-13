@@ -52,8 +52,8 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
         cursor.after(newElement);
         cursor = newElement;
       });
+      textNode.remove();
     }
-    textNode.remove();
   }
 });
 
