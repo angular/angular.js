@@ -289,7 +289,7 @@ angularServiceInject('$route', function(location){
   }
   this.$watch(function(){return dirty + location.hash;}, updateRoute);
   return $route;
-}, ['$location']);
+}, ['$location'], EAGER_PUBLISHED);
 
 angularServiceInject('$xhr', function($browser, $error, $log){
   var self = this;
