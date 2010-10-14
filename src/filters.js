@@ -66,7 +66,6 @@ var DATE_FORMATS = {
 };
 var DATE_FORMATS_SPLIT = new RegExp('('+
     map(DATE_FORMATS, function(value, key){return key;}).join('|')+')');
-console.log(DATE_FORMATS_SPLIT);
 
 angularFilter.date = function(date, format) {
   if (!date instanceof Date) return date;
