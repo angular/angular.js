@@ -227,6 +227,11 @@ function createScope(parent, providers, instanceCache) {
           instance[name] = bind(instance, fn);
         });
         instance.$inject.apply(instance, concat([Class, instance], arguments, 1));
+
+        //TODO: backwards compatibility hack, remove when we don't depend on init methods
+        if (isFunction(Class.prototype.init)) {
+          instance.init();
+        }
       }
     },
 
