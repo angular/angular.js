@@ -100,7 +100,6 @@ function expressionCompile(exp){
   return fn;
 }
 
-function rethrow(e) { throw e; }
 function errorHandlerFor(element, error) {
   elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
 }
