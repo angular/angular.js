@@ -1,4 +1,4 @@
-desccribe('parser', function(){
+describe('parser', function(){
   describe('lexer', function(){
     it('should TokenizeAString', function(){
       var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
@@ -170,6 +170,13 @@ desccribe('parser', function(){
       var tokens = lex(".5");
       expect(tokens[0].text).toEqual(0.5);
     });
+
+    it('should throw error on invalid unicode', function(){
+      assertThrows("Lexer Error: Invalid unicode escape [\\u1''b] starting at column '0' in expression ''\\u1''bla''.", function(){
+        lex("'\\u1''bla'");
+      });
+    });
+
   });
 
   it('should parse Expressions', function(){
@@ -392,12 +399,6 @@ desccribe('parser', function(){
 //    Dont know how to make this work....
 //    assertEquals("moby", scope.$eval('books[1] = "moby"'));
 //    assertEquals("moby", scope.$eval('books[1]'));
-  });
-
-  it('should parse FiltersCanBeGrouped', function () {
-    var scope = createScope({name:'MISKO'});
-    assertEquals('misko', scope.$eval('n = (name|lowercase)'));
-    assertEquals('misko', scope.$eval('n'));
   });
 
   it('should parse FiltersCanBeGrouped', function () {
