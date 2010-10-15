@@ -31,9 +31,9 @@ angular.scenario.ui.Html.prototype.addSpec = function(spec) {
     '<li class="status-pending test-it"></li>'
   );
   specContext = specContext.find('> .tests li:last');
-  return new angular.scenario.ui.Html.Spec(specContext, spec.name, 
+  return new angular.scenario.ui.Html.Spec(specContext, spec.name,
     angular.bind(this, function(status) {
-      var status = this.context.find('#status-legend .status-' + status);
+      status = this.context.find('#status-legend .status-' + status);
       var parts = status.text().split(' ');
       var value = (parts[0] * 1) + 1;
       status.text(value + ' ' + parts[1]);
@@ -91,7 +91,7 @@ angular.scenario.ui.Html.Spec = function(context, name, doneFn) {
     '  </p>' +
     '</div>' +
     '<ol class="test-actions">' +
-    '</ol>'    
+    '</ol>'
   );
   context.find('> .test-info .test-name').text('it ' + name);
 };
@@ -116,8 +116,8 @@ angular.scenario.ui.Html.Spec.prototype.addStep = function(name) {
 angular.scenario.ui.Html.Spec.prototype.complete = function() {
   this.context.removeClass('status-pending');
   var endTime = new Date().getTime();
-  this.context.find("> .test-info .timer-result")
-    .text((endTime - this.startTime) + "ms");
+  this.context.find("> .test-info .timer-result").
+    text((endTime - this.startTime) + "ms");
 };
 
 /**
@@ -172,8 +172,8 @@ angular.scenario.ui.Html.Step = function(context, name, doneFn) {
 angular.scenario.ui.Html.Step.prototype.complete = function() {
   this.context.removeClass('status-pending');
   var endTime = new Date().getTime();
-  this.context.find(".timer-result")
-    .text((endTime - this.startTime) + "ms");
+  this.context.find(".timer-result").
+    text((endTime - this.startTime) + "ms");
 };
 
 /**

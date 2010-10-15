@@ -38,7 +38,7 @@ describe("angular.scenario.dsl", function() {
   var $window;
   var $root;
   var application;
-  
+
   beforeEach(function() {
     $window = {
       document: _jQuery("<div></div>"),
@@ -55,9 +55,9 @@ describe("angular.scenario.dsl", function() {
     };
     $root.application = new angular.scenario.Application($window.document);
     $root.application.getWindow = function() {
-      return $window; 
+      return $window;
     };
-    $root.application.navigateTo = function(url, callback) { 
+    $root.application.navigateTo = function(url, callback) {
       $window.location = url;
       callback();
     };
@@ -65,7 +65,7 @@ describe("angular.scenario.dsl", function() {
     $root.addFutureAction = angular.scenario.
       SpecRunner.prototype.addFutureAction;
   });
-  
+
   describe('Pause', function() {
     beforeEach(function() {
       $root.setTimeout = function(fn, value) {
@@ -73,14 +73,14 @@ describe("angular.scenario.dsl", function() {
         fn();
       };
     });
-    
+
     it('should pause for specified seconds', function() {
       angular.scenario.dsl.pause.call($root).call($root, 10);
       expect($root.timerValue).toEqual(10000);
       expect($root.futureResult).toEqual(10000);
-    });    
+    });
   });
-  
+
   describe('Expect', function() {
     it('should chain and execute matcher', function() {
       var future = {value: 10};
@@ -88,41 +88,41 @@ describe("angular.scenario.dsl", function() {
       result.toEqual(10);
       expect($root.futureError).toBeUndefined();
       expect($root.futureResult).toBeUndefined();
-      var result = angular.scenario.dsl.expect.call($root).call($root, future);
+      result = angular.scenario.dsl.expect.call($root).call($root, future);
       result.toEqual(20);
       expect($root.futureError).toBeDefined();
     });
   });
-  
-  describe('NavigateTo', function() {    
+
+  describe('NavigateTo', function() {
     it('should allow a string url', function() {
       angular.scenario.dsl.navigateTo.call($root).call($root, 'http://myurl');
       expect($window.location).toEqual('http://myurl');
       expect($root.futureResult).toEqual('http://myurl');
     });
-    
+
     it('should allow a future url', function() {
       var future = {name: 'future name', value: 'http://myurl'};
       angular.scenario.dsl.navigateTo.call($root).call($root, future);
       expect($window.location).toEqual('http://myurl');
       expect($root.futureResult).toEqual('http://myurl');
     });
-    
+
     it('should complete if angular is missing from app frame', function() {
       delete $window.angular;
       angular.scenario.dsl.navigateTo.call($root).call($root, 'http://myurl');
       expect($window.location).toEqual('http://myurl');
       expect($root.futureResult).toEqual('http://myurl');
     });
-    
+
     it('should wait for angular notify when no requests pending', function() {
       angular.scenario.dsl.navigateTo.call($root).call($root, 'url');
       expect($window.angular.log).toContain('$brower.poll()');
-      expect($window.angular.log)
-        .toContain('$brower.notifyWhenNoOutstandingRequests()');
+      expect($window.angular.log).
+        toContain('$brower.notifyWhenNoOutstandingRequests()');
     });
   });
-  
+
   describe('Element Finding', function() {
     var doc;
     //TODO(esprehn): Work around a bug in jQuery where attribute selectors
@@ -133,14 +133,14 @@ describe("angular.scenario.dsl", function() {
     //
     beforeEach(function() {
       doc = _jQuery('<div id="angular-scenario-binding"></div>');
-      _jQuery(document.body).append(doc);
+      _jQuery(document.body).html('').append(doc);
      $window.document = window.document;
     });
-    
+
     afterEach(function() {
-      _jQuery(document.body)
-        .find('#angular-scenario-binding')
-        .remove();
+      _jQuery(document.body).
+        find('#angular-scenario-binding').
+        remove();
     });
 
     describe('Binding', function() {
@@ -149,53 +149,53 @@ describe("angular.scenario.dsl", function() {
         angular.scenario.dsl.binding.call($root).call($root, 'foo.bar');
         expect($root.futureResult).toEqual('some value');
       });
-    
+
       it('should return error if no binding exists', function() {
         angular.scenario.dsl.binding.call($root).call($root, 'foo.bar');
         expect($root.futureError).toMatch(/does not exist/);
       });
     });
-  
+
     describe('Input', function() {
       it('should change value in text input', function() {
         doc.append('<input name="test.input" value="something">');
-        var chain = angular.scenario.dsl.input
-          .call($root).call($root, 'test.input');
+        var chain = angular.scenario.dsl.input.
+          call($root).call($root, 'test.input');
         chain.enter('foo');
         expect($window.angular.log).toContain('element(input)');
         expect($window.angular.log).toContain('element().trigger(change)');
         expect(_jQuery('input[name="test.input"]').val()).toEqual('foo');
       });
-      
+
       it('should return error if no input exists', function() {
-        var chain = angular.scenario.dsl.input
-          .call($root).call($root, 'test.input');
+        var chain = angular.scenario.dsl.input.
+          call($root).call($root, 'test.input');
         chain.enter('foo');
         expect($root.futureError).toMatch(/does not exist/);
       });
-      
+
       it('should toggle checkbox state', function() {
         doc.append('<input type="checkbox" name="test.input" checked>');
-        expect(_jQuery('input[name="test.input"]')
-          .attr('checked')).toBeTruthy();
-        var chain = angular.scenario.dsl.input
-          .call($root).call($root, 'test.input');
+        expect(_jQuery('input[name="test.input"]').
+          attr('checked')).toBeTruthy();
+        var chain = angular.scenario.dsl.input.
+          call($root).call($root, 'test.input');
         chain.check();
         expect($window.angular.log).toContain('element(input)');
         expect($window.angular.log).toContain('element().trigger(click)');
-        expect(_jQuery('input[name="test.input"]')
-          .attr('checked')).toBeFalsy();
+        expect(_jQuery('input[name="test.input"]').
+          attr('checked')).toBeFalsy();
         $window.angular.reset();
         chain.check();
         expect($window.angular.log).toContain('element(input)');
         expect($window.angular.log).toContain('element().trigger(click)');
-        expect(_jQuery('input[name="test.input"]')
-          .attr('checked')).toBeTruthy();
+        expect(_jQuery('input[name="test.input"]').
+          attr('checked')).toBeTruthy();
       });
-      
+
       it('should return error if checkbox does not exist', function() {
-        var chain = angular.scenario.dsl.input
-          .call($root).call($root, 'test.input');
+        var chain = angular.scenario.dsl.input.
+          call($root).call($root, 'test.input');
         chain.check();
         expect($root.futureError).toMatch(/does not exist/);
       });
@@ -203,30 +203,31 @@ describe("angular.scenario.dsl", function() {
       it('should select option from radio group', function() {
         doc.append(
           '<input type="radio" name="0@test.input" value="foo">' +
-          '<input type="radio" name="0@test.input" value="bar" checked>'
-        );
-        expect(_jQuery('input[name="0@test.input"][value="bar"]')
-          .attr('checked')).toBeTruthy();
-        expect(_jQuery('input[name="0@test.input"][value="foo"]')
-          .attr('checked')).toBeFalsy();
-        var chain = angular.scenario.dsl.input
-          .call($root).call($root, 'test.input');
+          '<input type="radio" name="0@test.input" value="bar" checked="checked">');
+        // HACK! We don't know why this is sometimes false on chrome
+        _jQuery('input[name="0@test.input"][value="bar"]').attr('checked', true);
+        expect(_jQuery('input[name="0@test.input"][value="bar"]').
+          attr('checked')).toBeTruthy();
+        expect(_jQuery('input[name="0@test.input"][value="foo"]').
+          attr('checked')).toBeFalsy();
+        var chain = angular.scenario.dsl.input.
+          call($root).call($root, 'test.input');
         chain.select('foo');
         expect($window.angular.log).toContain('element(input)');
         expect($window.angular.log).toContain('element().trigger(click)');
-        expect(_jQuery('input[name="0@test.input"][value="bar"]')
-          .attr('checked')).toBeFalsy();
-        expect(_jQuery('input[name="0@test.input"][value="foo"]')
-          .attr('checked')).toBeTruthy();
+        expect(_jQuery('input[name="0@test.input"][value="bar"]').
+          attr('checked')).toBeFalsy();
+        expect(_jQuery('input[name="0@test.input"][value="foo"]').
+          attr('checked')).toBeTruthy();
       });
-      
+
       it('should return error if radio button does not exist', function() {
-        var chain = angular.scenario.dsl.input
-          .call($root).call($root, 'test.input');
+        var chain = angular.scenario.dsl.input.
+          call($root).call($root, 'test.input');
         chain.select('foo');
         expect($root.futureError).toMatch(/does not exist/);
       });
     });
   });
-  
+
 });

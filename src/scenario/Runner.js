@@ -43,8 +43,8 @@ angular.scenario.Runner.prototype.describe = function(name, body) {
  * @param {String} Name of the block
  * @param {Function} Body of the block
  */
-angular.scenario.Runner.prototype.it = function(name, body) { 
-  this.currentDescribe.it(name, body); 
+angular.scenario.Runner.prototype.it = function(name, body) {
+  this.currentDescribe.it(name, body);
 };
 
 /**
@@ -54,7 +54,7 @@ angular.scenario.Runner.prototype.it = function(name, body) {
  * @param {Function} Callback to execute
  */
 angular.scenario.Runner.prototype.beforeEach = function(body) {
-  this.currentDescribe.beforeEach(body); 
+  this.currentDescribe.beforeEach(body);
 };
 
 /**
@@ -64,7 +64,7 @@ angular.scenario.Runner.prototype.beforeEach = function(body) {
  * @param {Function} Callback to execute
  */
 angular.scenario.Runner.prototype.afterEach = function(body) {
-  this.currentDescribe.afterEach(body); 
+  this.currentDescribe.afterEach(body);
 };
 
 /**
@@ -79,7 +79,7 @@ angular.scenario.Runner.prototype.run = function(ui, application, specRunnerClas
   var specs = this.rootDescribe.getSpecs();
   $root.application = application;
   $root.ui = ui;
-  $root.setTimeout = function() { 
+  $root.setTimeout = function() {
     return self.$window.setTimeout.apply(self.$window, arguments);
   };
   asyncForEach(specs, angular.bind(this, function(spec, specDone) {
@@ -88,7 +88,7 @@ angular.scenario.Runner.prototype.run = function(ui, application, specRunnerClas
     angular.foreach(angular.scenario.dsl, angular.bind(this, function(fn, key) {
       this.$window[key] = function() {
         return fn.call($root).apply(angular.scope(runner), arguments);
-      }
+      };
     }));
     runner.run(ui, spec, specDone);
   }), specsDone || angular.noop);

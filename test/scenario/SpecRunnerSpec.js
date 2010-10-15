@@ -30,8 +30,8 @@ UIMock.prototype = {
         log.push('spec error:' + (e ? e : ''));
         return this;
       }
-    }; 
-  },
+    };
+  }
 };
 
 /**
@@ -56,7 +56,7 @@ describe('angular.scenario.SpecRunner', function() {
     runner.application = new ApplicationMock($window);
     runner.$become(angular.scenario.SpecRunner);
   });
-  
+
   it('should bind futures to the spec', function() {
     runner.addFuture('test future', function(done) {
       this.application.value = 10;
@@ -65,7 +65,7 @@ describe('angular.scenario.SpecRunner', function() {
     runner.futures[0].execute(angular.noop);
     expect(runner.application.value).toEqual(10);
   });
-  
+
   it('should pass done to future action behavior', function() {
     runner.addFutureAction('test future', function(done) {
       expect(angular.isFunction(done)).toBeTruthy();
@@ -76,7 +76,7 @@ describe('angular.scenario.SpecRunner', function() {
       expect(result).toEqual(20);
     });
   });
-  
+
   it('should pass execute future action on the $window', function() {
     runner.addFutureAction('test future', function(done) {
       this.test = 'test value';
@@ -123,7 +123,7 @@ describe('angular.scenario.SpecRunner', function() {
       'spec error:message'
     ]);
   });
-  
+
   it('should execute notify UI on step failure', function() {
     var finished = false;
     var ui = new UIMock();
