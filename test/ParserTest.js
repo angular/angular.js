@@ -1,177 +1,177 @@
-LexerTest = TestCase('LexerTest');
+desccribe('parser', function(){
+  describe('lexer', function(){
+    it('should TokenizeAString', function(){
+      var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
+      var i = 0;
+      assertEquals(tokens[i].index, 0);
+      assertEquals(tokens[i].text, 'a.bc');
 
-LexerTest.prototype.testTokenizeAString = function(){
-  var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
-  var i = 0;
-  assertEquals(tokens[i].index, 0);
-  assertEquals(tokens[i].text, 'a.bc');
+      i++;
+      assertEquals(tokens[i].index, 4);
+      assertEquals(tokens[i].text, '[');
 
-  i++;
-  assertEquals(tokens[i].index, 4);
-  assertEquals(tokens[i].text, '[');
+      i++;
+      assertEquals(tokens[i].index, 5);
+      assertEquals(tokens[i].text, 22);
 
-  i++;
-  assertEquals(tokens[i].index, 5);
-  assertEquals(tokens[i].text, 22);
+      i++;
+      assertEquals(tokens[i].index, 7);
+      assertEquals(tokens[i].text, ']');
 
-  i++;
-  assertEquals(tokens[i].index, 7);
-  assertEquals(tokens[i].text, ']');
+      i++;
+      assertEquals(tokens[i].index, 8);
+      assertEquals(tokens[i].text, '+');
 
-  i++;
-  assertEquals(tokens[i].index, 8);
-  assertEquals(tokens[i].text, '+');
+      i++;
+      assertEquals(tokens[i].index, 9);
+      assertEquals(tokens[i].text, 1.3);
 
-  i++;
-  assertEquals(tokens[i].index, 9);
-  assertEquals(tokens[i].text, 1.3);
+      i++;
+      assertEquals(tokens[i].index, 12);
+      assertEquals(tokens[i].text, '|');
 
-  i++;
-  assertEquals(tokens[i].index, 12);
-  assertEquals(tokens[i].text, '|');
+      i++;
+      assertEquals(tokens[i].index, 13);
+      assertEquals(tokens[i].text, 'f');
 
-  i++;
-  assertEquals(tokens[i].index, 13);
-  assertEquals(tokens[i].text, 'f');
+      i++;
+      assertEquals(tokens[i].index, 14);
+      assertEquals(tokens[i].text, ':');
 
-  i++;
-  assertEquals(tokens[i].index, 14);
-  assertEquals(tokens[i].text, ':');
+      i++;
+      assertEquals(tokens[i].index, 15);
+      assertEquals(tokens[i].string, "a'c");
 
-  i++;
-  assertEquals(tokens[i].index, 15);
-  assertEquals(tokens[i].string, "a'c");
+      i++;
+      assertEquals(tokens[i].index, 21);
+      assertEquals(tokens[i].text, ':');
 
-  i++;
-  assertEquals(tokens[i].index, 21);
-  assertEquals(tokens[i].text, ':');
+      i++;
+      assertEquals(tokens[i].index, 22);
+      assertEquals(tokens[i].string, 'd"e');
+    });
 
-  i++;
-  assertEquals(tokens[i].index, 22);
-  assertEquals(tokens[i].string, 'd"e');
-};
-
-LexerTest.prototype.testTokenizeUndefined = function(){
-  var tokens = lex("undefined");
-  var i = 0;
-  assertEquals(tokens[i].index, 0);
-  assertEquals(tokens[i].text, 'undefined');
-  assertEquals(undefined, tokens[i].fn());
-};
+    it('should TokenizeUndefined', function(){
+      var tokens = lex("undefined");
+      var i = 0;
+      assertEquals(tokens[i].index, 0);
+      assertEquals(tokens[i].text, 'undefined');
+      assertEquals(undefined, tokens[i].fn());
+    });
 
 
 
-LexerTest.prototype.testTokenizeRegExp = function(){
-  var tokens = lex("/r 1/");
-  var i = 0;
-  assertEquals(tokens[i].index, 0);
-  assertEquals(tokens[i].text, 'r 1');
-  assertEquals("r 1".match(tokens[i].fn())[0], 'r 1');
-};
+    it('should TokenizeRegExp', function(){
+      var tokens = lex("/r 1/");
+      var i = 0;
+      assertEquals(tokens[i].index, 0);
+      assertEquals(tokens[i].text, 'r 1');
+      assertEquals("r 1".match(tokens[i].fn())[0], 'r 1');
+    });
 
-LexerTest.prototype.testQuotedString = function(){
-  var str = "['\\'', \"\\\"\"]";
-  var tokens = lex(str);
+    it('should QuotedString', function(){
+      var str = "['\\'', \"\\\"\"]";
+      var tokens = lex(str);
 
-  assertEquals(1, tokens[1].index);
-  assertEquals("'", tokens[1].string);
+      assertEquals(1, tokens[1].index);
+      assertEquals("'", tokens[1].string);
 
-  assertEquals(7, tokens[3].index);
-  assertEquals('"', tokens[3].string);
+      assertEquals(7, tokens[3].index);
+      assertEquals('"', tokens[3].string);
+    });
 
-};
+    it('should QuotedStringEscape', function(){
+      var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
+      var tokens = lex(str);
 
-LexerTest.prototype.testQuotedStringEscape = function(){
-  var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
-  var tokens = lex(str);
+      assertEquals('"\n\f\r\t\v\u00A0', tokens[0].string);
+    });
 
-  assertEquals('"\n\f\r\t\v\u00A0', tokens[0].string);
-};
+    it('should TokenizeUnicode', function(){
+      var tokens = lex('"\\u00A0"');
+      assertEquals(1, tokens.length);
+      assertEquals('\u00a0', tokens[0].string);
+    });
 
-LexerTest.prototype.testTokenizeUnicode = function(){
-  var tokens = lex('"\\u00A0"');
-  assertEquals(1, tokens.length);
-  assertEquals('\u00a0', tokens[0].string);
-};
+    it('should TokenizeRegExpWithOptions', function(){
+      var tokens = lex("/r/g");
+      var i = 0;
+      assertEquals(tokens[i].index, 0);
+      assertEquals(tokens[i].text, 'r');
+      assertEquals(tokens[i].flags, 'g');
+      assertEquals("rr".match(tokens[i].fn()).length, 2);
+    });
 
-LexerTest.prototype.testTokenizeRegExpWithOptions = function(){
-  var tokens = lex("/r/g");
-  var i = 0;
-  assertEquals(tokens[i].index, 0);
-  assertEquals(tokens[i].text, 'r');
-  assertEquals(tokens[i].flags, 'g');
-  assertEquals("rr".match(tokens[i].fn()).length, 2);
-};
+    it('should TokenizeRegExpWithEscape', function(){
+      var tokens = lex("/\\/\\d/");
+      var i = 0;
+      assertEquals(tokens[i].index, 0);
+      assertEquals(tokens[i].text, '\\/\\d');
+      assertEquals("/1".match(tokens[i].fn())[0], '/1');
+    });
 
-LexerTest.prototype.testTokenizeRegExpWithEscape = function(){
-  var tokens = lex("/\\/\\d/");
-  var i = 0;
-  assertEquals(tokens[i].index, 0);
-  assertEquals(tokens[i].text, '\\/\\d');
-  assertEquals("/1".match(tokens[i].fn())[0], '/1');
-};
+    it('should IgnoreWhitespace', function(){
+      var tokens = lex("a \t \n \r b");
+      assertEquals(tokens[0].text, 'a');
+      assertEquals(tokens[1].text, 'b');
+    });
 
-LexerTest.prototype.testIgnoreWhitespace = function(){
-  var tokens = lex("a \t \n \r b");
-  assertEquals(tokens[0].text, 'a');
-  assertEquals(tokens[1].text, 'b');
-};
+    it('should Relation', function(){
+      var tokens = lex("! == != < > <= >=");
+      assertEquals(tokens[0].text, '!');
+      assertEquals(tokens[1].text, '==');
+      assertEquals(tokens[2].text, '!=');
+      assertEquals(tokens[3].text, '<');
+      assertEquals(tokens[4].text, '>');
+      assertEquals(tokens[5].text, '<=');
+      assertEquals(tokens[6].text, '>=');
+    });
 
-LexerTest.prototype.testRelation = function(){
-  var tokens = lex("! == != < > <= >=");
-  assertEquals(tokens[0].text, '!');
-  assertEquals(tokens[1].text, '==');
-  assertEquals(tokens[2].text, '!=');
-  assertEquals(tokens[3].text, '<');
-  assertEquals(tokens[4].text, '>');
-  assertEquals(tokens[5].text, '<=');
-  assertEquals(tokens[6].text, '>=');
-};
+    it('should Statements', function(){
+      var tokens = lex("a;b;");
+      assertEquals(tokens[0].text, 'a');
+      assertEquals(tokens[1].text, ';');
+      assertEquals(tokens[2].text, 'b');
+      assertEquals(tokens[3].text, ';');
+    });
 
-LexerTest.prototype.testStatements = function(){
-  var tokens = lex("a;b;");
-  assertEquals(tokens[0].text, 'a');
-  assertEquals(tokens[1].text, ';');
-  assertEquals(tokens[2].text, 'b');
-  assertEquals(tokens[3].text, ';');
-};
+    it('should Number', function(){
+      var tokens = lex("0.5");
+      expect(tokens[0].text).toEqual(0.5);
+    });
 
-LexerTest.prototype.testNumber = function(){
-  var tokens = lex("0.5");
-  expect(tokens[0].text).toEqual(0.5);
-};
+    it('should NegativeNumber', function(){
+      var value = createScope().$eval("-0.5");
+      expect(value).toEqual(-0.5);
 
-LexerTest.prototype.testNegativeNumber = function(){
-  var value = createScope().$eval("-0.5");
-  expect(value).toEqual(-0.5);
+      value = createScope().$eval("{a:-0.5}");
+      expect(value).toEqual({a:-0.5});
+    });
 
-  value = createScope().$eval("{a:-0.5}");
-  expect(value).toEqual({a:-0.5});
-};
+    it('should NumberExponent', function(){
+      var tokens = lex("0.5E-10");
+      expect(tokens[0].text).toEqual(0.5E-10);
+      expect(createScope().$eval("0.5E-10")).toEqual(0.5E-10);
 
-LexerTest.prototype.testNumberExponent = function(){
-  var tokens = lex("0.5E-10");
-  expect(tokens[0].text).toEqual(0.5E-10);
-  expect(createScope().$eval("0.5E-10")).toEqual(0.5E-10);
+      tokens = lex("0.5E+10");
+      expect(tokens[0].text).toEqual(0.5E+10);
+    });
 
-  tokens = lex("0.5E+10");
-  expect(tokens[0].text).toEqual(0.5E+10);
-};
+    it('should NumberExponentInvalid', function(){
+      assertThrows('Lexer found invalid exponential value "0.5E-"', function(){
+        lex("0.5E-");
+      });
+      assertThrows('Lexer found invalid exponential value "0.5E-A"', function(){
+        lex("0.5E-A");
+      });
+    });
 
-LexerTest.prototype.testNumberExponentInvalid = function(){
-  assertThrows('Lexer found invalid exponential value "0.5E-"', function(){
-    lex("0.5E-");
+    it('should NumberStartingWithDot', function(){
+      var tokens = lex(".5");
+      expect(tokens[0].text).toEqual(0.5);
+    });
   });
-  assertThrows('Lexer found invalid exponential value "0.5E-A"', function(){
-    lex("0.5E-A");
-  });
-};
-
-LexerTest.prototype.testNumberStartingWithDot = function(){
-  var tokens = lex(".5");
-  expect(tokens[0].text).toEqual(0.5);
-};
-
+});
 
 ParserTest = TestCase('ParserTest');
 
