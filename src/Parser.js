@@ -170,6 +170,10 @@ function lex(text, parseStrings){
       if (escape) {
         if (ch == 'u') {
           var hex = text.substring(index + 1, index + 5);
+          if (!hex.match(/[\da-f]{4}/i))
+            throw "Lexer Error: Invalid unicode escape [\\u" +
+              hex + "] starting at column '" +
+              start + "' in expression '" + text + "'.";
           index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
         } else {
