@@ -19,7 +19,7 @@ TestCase("formatterTest", {
     assertEquals(true, angular.formatter['boolean'].parse("true"));
     assertEquals(false, angular.formatter['boolean'].parse(""));
     assertEquals(false, angular.formatter['boolean'].parse("false"));
-    assertEquals(null, angular.formatter['boolean'].parse(null));
+    assertEquals(false, angular.formatter['boolean'].parse(null));
   },
 
   testNumber: function() {
