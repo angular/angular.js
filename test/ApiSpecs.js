@@ -159,11 +159,9 @@ describe('api', function(){
     it('should use function', function(){
       expect(
         orderBy(
-          [{a:15, b:1},{a:2, b:1}], 
-          function(value){ return value.a; }
-        )
-      ).toEqual([{a:2, b:1},{a:15, b:1}]);
-
+          [{a:15, b:1},{a:2, b:1}],
+          function(value){ return value.a; })).
+      toEqual([{a:2, b:1},{a:15, b:1}]);
     });
 
   });

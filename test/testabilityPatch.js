@@ -32,7 +32,7 @@ beforeEach(function(){
       this.message = function(){
         return "Expected '" + sortedHtml(this.actual) + "' to have class '" + clazz + "'.";
       };
-      return this.actual.hasClass ? 
+      return this.actual.hasClass ?
               this.actual.hasClass(clazz) :
               jqLite(this.actual).hasClass(clazz);
     }
@@ -208,8 +208,8 @@ function click(element) {
   }
 }
 
-function rethrow(e) { 
+function rethrow(e) {
   if(e) {
-    throw e; 
+    throw e;
   }
 }

@@ -108,8 +108,7 @@ ResourceFactory.prototype = {
               throw {status: status, response:response, message: status + ": " + response};
             }
           },
-          action.verifyCache
-        );
+          action.verifyCache);
         return value;
       };
 
