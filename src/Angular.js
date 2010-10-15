@@ -99,6 +99,7 @@ function inherit(parent, extra) {
 
 function noop() {}
 function identity($) {return $;}
+function valueFn(value) {return function(){ return value; };}
 function extensionMap(angular, name, transform) {
   var extPoint;
   return angular[name] || (extPoint = angular[name] = function (name, fn, prop){

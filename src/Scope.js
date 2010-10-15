@@ -90,9 +90,9 @@ function expressionCompile(exp){
   if (typeof exp === $function) return exp;
   var fn = compileCache[exp];
   if (!fn) {
-    var parser = new Parser(exp);
-    var fnSelf = parser.statements();
-    parser.assertAllConsumed();
+    var p = parser(exp);
+    var fnSelf = p.statements();
+    p.assertAllConsumed();
     fn = compileCache[exp] = extend(
       function(){ return fnSelf(this);},
       {fnSelf: fnSelf});

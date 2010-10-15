@@ -29,7 +29,7 @@ function modelFormattedAccessor(scope, element) {
 }
 
 function compileValidator(expr) {
-  return new Parser(expr).validator()();
+  return parser(expr).validator()();
 }
 
 function valueAccessor(scope, element) {

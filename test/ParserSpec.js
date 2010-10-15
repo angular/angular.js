@@ -443,7 +443,7 @@ describe('parser', function(){
     assertEquals(12/6/2, scope.$eval("12/6/2"));
   });
 
-  it('should parse BugStringConfusesParser', function(){
+  it('should parse BugStringConfusesparser', function(){
     var scope = createScope();
     assertEquals('!', scope.$eval('suffix = "!"'));
   });

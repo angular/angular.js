@@ -25,52 +25,37 @@ var OPERATORS = {
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-function lex(text, parseStrings){
-  var dateParseLength = parseStrings ? 20 : -1,
+function lex(text, parseStringsForObjects){
+  var dateParseLength = parseStringsForObjects ? 20 : -1,
       tokens = [],
+      token,
       index = 0,
-      canStartRegExp = true;
+      json = [],
+      ch,
+      lastCh = ','; // can start regexp
 
   while (index < text.length) {
-    var ch = text.charAt(index);
-    if (ch == '"' || ch == "'") {
+    ch = text.charAt(index);
+    if (is('"\'')) {
       readString(ch);
-      canStartRegExp = true;
-    } else if (ch == '(' || ch == '[') {
-      tokens.push({index:index, text:ch});
-      index++;
-    } else if (ch == '{' ) {
-      var peekCh = peek();
-      if (peekCh == ':' || peekCh == '(') {
-        tokens.push({index:index, text:ch + peekCh});
-        index++;
-      } else {
-        tokens.push({index:index, text:ch});
-      }
-      index++;
-      canStartRegExp = true;
-    } else if (ch == ')' || ch == ']' || ch == '}' ) {
-      tokens.push({index:index, text:ch});
-      index++;
-      canStartRegExp = false;
-    } else if (ch == '.' && isNumber(peek())) {
+    } else if (isNumber(ch) || is('.') && isNumber(peek())) {
       readNumber();
-      canStartRegExp = false;
-    } else if ( ch == ':' || ch == '.' || ch == ',' || ch == ';') {
-      tokens.push({index:index, text:ch});
-      index++;
-      canStartRegExp = true;
-    } else if ( canStartRegExp && ch == '/' ) {
+    } else if ( was('({[:,;') && is('/') ) {
       readRegexp();
-      canStartRegExp = false;
-    } else if ( isNumber(ch) ) {
-      readNumber();
-      canStartRegExp = false;
     } else if (isIdent(ch)) {
       readIdent();
-      canStartRegExp = false;
+      if (was('{,') && json[0]=='{' &&
+         (token=tokens[tokens.length-1])) {
+        token.json = token.text.indexOf('.') == -1;
+      }
+    } else if (is('(){}[].,;:')) {
+      tokens.push({index:index, text:ch, json:is('{}[]:,')});
+      if (is('{[')) json.unshift(ch);
+      if (is('}]')) json.shift();
+      index++;
     } else if (isWhitespace(ch)) {
       index++;
+      continue;
     } else {
       var ch2 = ch + peek(),
           fn = OPERATORS[ch],
@@ -87,10 +72,18 @@ function lex(text, parseStrings){
             "] in expression '" + text +
             "' at column '" + (index+1) + "'.";
       }
-      canStartRegExp = true;
     }
+    lastCh = ch;
   }
   return tokens;
+
+  function is(chars) {
+    return chars.indexOf(ch) != -1;
+  }
+
+  function was(chars) {
+    return chars.indexOf(lastCh) != -1;
+  }
 
   function peek() {
     return index + 1 < text.length ? text.charAt(index + 1) : false;
@@ -136,7 +129,7 @@ function lex(text, parseStrings){
       index++;
     }
     number = 1 * number;
-    tokens.push({index:start, text:number,
+    tokens.push({index:start, text:number, json:true,
       fn:function(){return number;}});
   }
   function readIdent() {
@@ -156,8 +149,9 @@ function lex(text, parseStrings){
       fn = getterFn(ident);
       fn.isAssignable = ident;
     }
-    tokens.push({index:start, text:ident, fn:fn});
+    tokens.push({index:start, text:ident, fn:fn, json: OPERATORS[ident]});
   }
+
   function readString(quote) {
     var start = index;
     index++;
@@ -189,7 +183,7 @@ function lex(text, parseStrings){
         escape = true;
       } else if (ch == quote) {
         index++;
-        tokens.push({index:start, text:rawString, string:string,
+        tokens.push({index:start, text:rawString, string:string, json:true,
           fn:function(){
             return (string.length == dateParseLength) ?
               angular['String']['toDate'](string) : string;
@@ -241,32 +235,34 @@ function lex(text, parseStrings){
 
 /////////////////////////////////////////
 
-function Parser(text, parseStrings){
-  this.text = text;
-  this.tokens = lex(text, parseStrings);
-  this.index = 0;
-}
+function parser(text, json){
+  var ZERO = valueFn(0),
+      tokens = lex(text, json);
+  return {
+      assertAllConsumed: assertAllConsumed,
+      primary: primary,
+      statements: statements,
+      validator: validator,
+      filter: filter,
+      watch: watch
+  };
 
-var ZERO = function(){
-  return 0;
-};
+  ///////////////////////////////////
 
-Parser.prototype = {
-  error: function(msg, token) {
+  function error(msg, token) {
     throw "Token '" + token.text +
       "' is " + msg + " at column='" +
       (token.index + 1) + "' of expression '" +
-      this.text + "' starting at '" + this.text.substring(token.index) + "'.";
-  },
+      text + "' starting at '" + text.substring(token.index) + "'.";
+  }
 
-  peekToken: function() {
-    if (this.tokens.length === 0)
-      throw "Unexpected end of expression: " + this.text;
-    return this.tokens[0];
-  },
+  function peekToken() {
+    if (tokens.length === 0)
+      throw "Unexpected end of expression: " + text;
+    return tokens[0];
+  }
 
-  peek: function(e1, e2, e3, e4) {
-    var tokens = this.tokens;
+  function peek(e1, e2, e3, e4) {
     if (tokens.length > 0) {
       var token = tokens[0];
       var t = token.text;
@@ -276,57 +272,64 @@ Parser.prototype = {
       }
     }
     return false;
-  },
+  }
 
-  expect: function(e1, e2, e3, e4){
-    var token = this.peek(e1, e2, e3, e4);
+  function expect(e1, e2, e3, e4){
+    var token = peek(e1, e2, e3, e4);
     if (token) {
-      this.tokens.shift();
+      if (json && !token.json) {
+        index = token.index;
+        throw "Expression at column='" +
+          token.index + "' of expression '" +
+          text + "' starting at '" + text.substring(token.index) +
+          "' is not valid json.";
+      }
+      tokens.shift();
       this.currentToken = token;
       return token;
     }
     return false;
-  },
+  }
 
-  consume: function(e1){
-    if (!this.expect(e1)) {
-      var token = this.peek();
+  function consume(e1){
+    if (!expect(e1)) {
+      var token = peek();
       throw "Expecting '" + e1 + "' at column '" +
           (token.index+1) + "' in '" +
-          this.text + "' got '" +
-          this.text.substring(token.index) + "'.";
+          text + "' got '" +
+          text.substring(token.index) + "'.";
     }
-  },
+  }
 
-  _unary: function(fn, right) {
+  function unaryFn(fn, right) {
     return function(self) {
       return fn(self, right(self));
     };
-  },
+  }
 
-  _binary: function(left, fn, right) {
+  function binaryFn(left, fn, right) {
     return function(self) {
       return fn(self, left(self), right(self));
     };
-  },
+  }
 
-  hasTokens: function () {
-    return this.tokens.length > 0;
-  },
+  function hasTokens () {
+    return tokens.length > 0;
+  }
 
-  assertAllConsumed: function(){
-    if (this.tokens.length !== 0) {
-      throw "Did not understand '" + this.text.substring(this.tokens[0].index) +
-          "' while evaluating '" + this.text + "'.";
+  function assertAllConsumed(){
+    if (tokens.length !== 0) {
+      throw "Did not understand '" + text.substring(tokens[0].index) +
+          "' while evaluating '" + text + "'.";
     }
-  },
+  }
 
-  statements: function(){
+  function statements(){
     var statements = [];
     while(true) {
-      if (this.tokens.length > 0 && !this.peek('}', ')', ';', ']'))
-        statements.push(this.filterChain());
-      if (!this.expect(';')) {
+      if (tokens.length > 0 && !peek('}', ')', ';', ']'))
+        statements.push(filterChain());
+      if (!expect(';')) {
         return function (self){
           var value;
           for ( var i = 0; i < statements.length; i++) {
@@ -338,35 +341,35 @@ Parser.prototype = {
         };
       }
     }
-  },
+  }
 
-  filterChain: function(){
-    var left = this.expression();
+  function filterChain(){
+    var left = expression();
     var token;
     while(true) {
-      if ((token = this.expect('|'))) {
-        left = this._binary(left, token.fn, this.filter());
+      if ((token = expect('|'))) {
+        left = binaryFn(left, token.fn, filter());
       } else {
         return left;
       }
     }
-  },
+  }
 
-  filter: function(){
-    return this._pipeFunction(angularFilter);
-  },
+  function filter(){
+    return pipeFunction(angularFilter);
+  }
 
-  validator: function(){
-    return this._pipeFunction(angularValidator);
-  },
+  function validator(){
+    return pipeFunction(angularValidator);
+  }
 
-  _pipeFunction: function(fnScope){
-    var fn = this.functionIdent(fnScope);
+  function pipeFunction(fnScope){
+    var fn = functionIdent(fnScope);
     var argsFn = [];
     var token;
     while(true) {
-      if ((token = this.expect(':'))) {
-        argsFn.push(this.expression());
+      if ((token = expect(':'))) {
+        argsFn.push(expression());
       } else {
         var fnInvoke = function(self, input){
           var args = [input];
@@ -380,111 +383,111 @@ Parser.prototype = {
         };
       }
     }
-  },
+  }
 
-  expression: function(){
-    return this.throwStmt();
-  },
+  function expression(){
+    return throwStmt();
+  }
 
-  throwStmt: function(){
-    if (this.expect('throw')) {
-      var throwExp = this.assignment();
+  function throwStmt(){
+    if (expect('throw')) {
+      var throwExp = assignment();
       return function (self) {
         throw throwExp(self);
       };
     } else {
-     return this.assignment();
+      return assignment();
     }
-  },
+  }
 
-  assignment: function(){
-    var left = this.logicalOR();
+  function assignment(){
+    var left = logicalOR();
     var token;
-    if (token = this.expect('=')) {
+    if (token = expect('=')) {
       if (!left.isAssignable) {
         throw "Left hand side '" +
-            this.text.substring(0, token.index) + "' of assignment '" +
-            this.text.substring(token.index) + "' is not assignable.";
+        text.substring(0, token.index) + "' of assignment '" +
+        text.substring(token.index) + "' is not assignable.";
       }
       var ident = function(){return left.isAssignable;};
-      return this._binary(ident, token.fn, this.logicalOR());
+      return binaryFn(ident, token.fn, logicalOR());
     } else {
-     return left;
+      return left;
     }
-  },
+  }
 
-  logicalOR: function(){
-    var left = this.logicalAND();
+  function logicalOR(){
+    var left = logicalAND();
     var token;
     while(true) {
-      if ((token = this.expect('||'))) {
-        left = this._binary(left, token.fn, this.logicalAND());
+      if ((token = expect('||'))) {
+        left = binaryFn(left, token.fn, logicalAND());
       } else {
         return left;
       }
     }
-  },
+  }
 
-  logicalAND: function(){
-    var left = this.equality();
+  function logicalAND(){
+    var left = equality();
     var token;
-    if ((token = this.expect('&&'))) {
-      left = this._binary(left, token.fn, this.logicalAND());
+    if ((token = expect('&&'))) {
+      left = binaryFn(left, token.fn, logicalAND());
     }
     return left;
-  },
+  }
 
-  equality: function(){
-    var left = this.relational();
+  function equality(){
+    var left = relational();
     var token;
-    if ((token = this.expect('==','!='))) {
-      left = this._binary(left, token.fn, this.equality());
+    if ((token = expect('==','!='))) {
+      left = binaryFn(left, token.fn, equality());
     }
     return left;
-  },
+  }
 
-  relational: function(){
-    var left = this.additive();
+  function relational(){
+    var left = additive();
     var token;
-    if (token = this.expect('<', '>', '<=', '>=')) {
-      left = this._binary(left, token.fn, this.relational());
+    if (token = expect('<', '>', '<=', '>=')) {
+      left = binaryFn(left, token.fn, relational());
     }
     return left;
-  },
+  }
 
-  additive: function(){
-    var left = this.multiplicative();
+  function additive(){
+    var left = multiplicative();
     var token;
-    while(token = this.expect('+','-')) {
-      left = this._binary(left, token.fn, this.multiplicative());
+    while(token = expect('+','-')) {
+      left = binaryFn(left, token.fn, multiplicative());
     }
     return left;
-  },
+  }
 
-  multiplicative: function(){
-    var left = this.unary();
+  function multiplicative(){
+    var left = unary();
     var token;
-    while(token = this.expect('*','/','%')) {
-        left = this._binary(left, token.fn, this.unary());
+    while(token = expect('*','/','%')) {
+      left = binaryFn(left, token.fn, unary());
     }
     return left;
-  },
+  }
 
-  unary: function(){
+  function unary(){
     var token;
-    if (this.expect('+')) {
-      return this.primary();
-    } else if (token = this.expect('-')) {
-      return this._binary(ZERO, token.fn, this.unary());
-    } else if (token = this.expect('!')) {
-      return this._unary(token.fn, this.unary());
+    if (expect('+')) {
+      return primary();
+    } else if (token = expect('-')) {
+      return binaryFn(ZERO, token.fn, unary());
+    } else if (token = expect('!')) {
+      return unaryFn(token.fn, unary());
     } else {
-     return this.primary();
+      return primary();
     }
-  },
+  }
 
-  functionIdent: function(fnScope) {
-    var token = this.expect();
+  function functionIdent(fnScope) {
+    var token = expect();
     var element = token.text.split('.');
     var instance = fnScope;
     var key;
@@ -495,58 +498,58 @@ Parser.prototype = {
     }
     if (typeof instance != $function) {
       throw "Function '" + token.text + "' at column '" +
-      (token.index+1)  + "' in '" + this.text + "' is not defined.";
+      (token.index+1)  + "' in '" + text + "' is not defined.";
     }
     return instance;
-  },
+  }
 
-  primary: function() {
+  function primary() {
     var primary;
-    if (this.expect('(')) {
-      var expression = this.filterChain();
-      this.consume(')');
+    if (expect('(')) {
+      var expression = filterChain();
+      consume(')');
       primary = expression;
-    } else if (this.expect('[')) {
-      primary = this.arrayDeclaration();
-    } else if (this.expect('{')) {
-      primary = this.object();
+    } else if (expect('[')) {
+      primary = arrayDeclaration();
+    } else if (expect('{')) {
+      primary = object();
     } else {
-      var token = this.expect();
+      var token = expect();
       primary = token.fn;
       if (!primary) {
-        this.error("not a primary expression", token);
+        error("not a primary expression", token);
       }
     }
     var next;
-    while (next = this.expect('(', '[', '.')) {
+    while (next = expect('(', '[', '.')) {
       if (next.text === '(') {
-        primary = this.functionCall(primary);
+        primary = functionCall(primary);
       } else if (next.text === '[') {
-        primary = this.objectIndex(primary);
+        primary = objectIndex(primary);
       } else if (next.text === '.') {
-        primary = this.fieldAccess(primary);
+        primary = fieldAccess(primary);
       } else {
         throw "IMPOSSIBLE";
       }
     }
     return primary;
-  },
+  }
 
-  fieldAccess: function(object) {
-    var field = this.expect().text;
+  function fieldAccess(object) {
+    var field = expect().text;
     var getter = getterFn(field);
     var fn = function (self){
       return getter(object(self));
     };
     fn.isAssignable = field;
     return fn;
-  },
+  }
 
-  objectIndex: function(obj) {
-    var indexFn = this.expression();
-    this.consume(']');
-    if (this.expect('=')) {
-      var rhs = this.expression();
+  function objectIndex(obj) {
+    var indexFn = expression();
+    consume(']');
+    if (expect('=')) {
+      var rhs = expression();
       return function (self){
         return obj(self)[indexFn(self)] = rhs(self);
       };
@@ -557,38 +560,38 @@ Parser.prototype = {
         return (o) ? o[i] : _undefined;
       };
     }
-  },
+  }
 
-  functionCall: function(fn) {
+  function functionCall(fn) {
     var argsFn = [];
-    if (this.peekToken().text != ')') {
+    if (peekToken().text != ')') {
       do {
-        argsFn.push(this.expression());
-      } while (this.expect(','));
+        argsFn.push(expression());
+      } while (expect(','));
     }
-    this.consume(')');
+    consume(')');
     return function (self){
       var args = [];
       for ( var i = 0; i < argsFn.length; i++) {
         args.push(argsFn[i](self));
       }
-    var fnPtr = fn(self) || noop;
-    // IE stupidity!
-    return fnPtr.apply ?
-      fnPtr.apply(self, args) :
-      fnPtr(args[0], args[1], args[2], args[3], args[4]);
+      var fnPtr = fn(self) || noop;
+      // IE stupidity!
+      return fnPtr.apply ?
+          fnPtr.apply(self, args) :
+            fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
-  },
+  }
 
   // This is used with json array declaration
-  arrayDeclaration: function () {
+  function arrayDeclaration () {
     var elementFns = [];
-    if (this.peekToken().text != ']') {
+    if (peekToken().text != ']') {
       do {
-        elementFns.push(this.expression());
-      } while (this.expect(','));
+        elementFns.push(expression());
+      } while (expect(','));
     }
-    this.consume(']');
+    consume(']');
     return function (self){
       var array = [];
       for ( var i = 0; i < elementFns.length; i++) {
@@ -596,20 +599,20 @@ Parser.prototype = {
       }
       return array;
     };
-  },
+  }
 
-  object: function () {
+  function object () {
     var keyValues = [];
-    if (this.peekToken().text != '}') {
+    if (peekToken().text != '}') {
       do {
-        var token = this.expect(),
-            key = token.string || token.text;
-        this.consume(":");
-        var value = this.expression();
+        var token = expect(),
+        key = token.string || token.text;
+        consume(":");
+        var value = expression();
         keyValues.push({key:key, value:value});
-      } while (this.expect(','));
+      } while (expect(','));
     }
-    this.consume('}');
+    consume('}');
     return function (self){
       var object = {};
       for ( var i = 0; i < keyValues.length; i++) {
@@ -619,39 +622,42 @@ Parser.prototype = {
       }
       return object;
     };
-  },
+  }
 
-  watch: function () {
+  function watch () {
     var decl = [];
-    while(this.hasTokens()) {
-      decl.push(this.watchDecl());
-      if (!this.expect(';')) {
-        this.assertAllConsumed();
+    while(hasTokens()) {
+      decl.push(watchDecl());
+      if (!expect(';')) {
+        assertAllConsumed();
       }
     }
-    this.assertAllConsumed();
+    assertAllConsumed();
     return function (self){
       for ( var i = 0; i < decl.length; i++) {
         var d = decl[i](self);
         self.addListener(d.name, d.fn);
       }
     };
-  },
+  }
 
-  watchDecl: function () {
-    var anchorName = this.expect().text;
-    this.consume(":");
-    var expression;
-    if (this.peekToken().text == '{') {
-      this.consume("{");
-      expression = this.statements();
-      this.consume("}");
+  function watchDecl () {
+    var anchorName = expect().text;
+    consume(":");
+    var expressionFn;
+    if (peekToken().text == '{') {
+      consume("{");
+      expressionFn = statements();
+      consume("}");
     } else {
-      expression = this.expression();
+      expressionFn = expression();
     }
     return function(self) {
-      return {name:anchorName, fn:expression};
+      return {name:anchorName, fn:expressionFn};
     };
   }
-};
+}
+
+
+
 
