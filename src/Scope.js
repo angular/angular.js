@@ -60,28 +60,25 @@ function getterFn(path){
   var fn = getterFnCache[path];
   if (fn) return fn;
 
-  var code = 'function (s){\n';
-  code += '  var l, fn, t;\n';
+  var code = 'var l, fn, t;\n';
   foreach(path.split('.'), function(key) {
     key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
-    code += '  if(!s) return s;\n';
-    code += '  l = s;\n';
-    code += '  s = s' + key + ';\n';
-    code += '  if(typeof s == "'+$function+'") \n';
-    code += '    s = function(){ return l'+key+'.apply(l, arguments); };\n';
+    code += 'if(!s) return s;\n' +
+            'l=s;\n' +
+            's=s' + key + ';\n' +
+            'if(typeof s=="function") s = function(){ return l'+key+'.apply(l, arguments); };\n';
     if (key.charAt(1) == '$') {
       // special code for super-imposed functions
       var name = key.substr(2);
-      code += '  if(!s) {\n';
-      code += '    t = angular.Global.typeOf(l);\n';
-      code += '    fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n';
-      code += '    if (fn)\n';
-      code += '      s = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n';
-      code += '  }\n';
+      code += 'if(!s) {\n' +
+              '  t = angular.Global.typeOf(l);\n' +
+              '  fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n' +
+              '  if (fn) s = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n' +
+              '}\n';
     }
   });
-  code += '  return s;\n}';
-  fn = eval('fn = ' + code);
+  code += 'return s;';
+  fn = Function('s', code);
   fn["toString"] = function(){ return code; };
 
   return getterFnCache[path] = fn;
