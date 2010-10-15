@@ -221,7 +221,7 @@ angularDirective("ng:click", function(expression, element){
 angularDirective("ng:watch", function(expression, element){
   return function(element){
     var self = this;
-    new Parser(expression).watch()({
+    parser(expression).watch()({
       addListener:function(watch, exp){
         self.$watch(watch, function(){
           return exp(self);

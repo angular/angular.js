@@ -43,7 +43,7 @@
   addScript("/Scope.js");
   addScript("/Injector.js");
   addScript("/jqLite.js");
-  addScript("/Parser.js");
+  addScript("/parser.js");
   addScript("/Resource.js");
   addScript("/Browser.js");
   addScript("/AngularPublic.js");

@@ -9,9 +9,9 @@ function toJson(obj, pretty){
 function fromJson(json) {
   if (!json) return json;
   try {
-    var parser = new Parser(json, true);
-    var expression =  parser.primary();
-    parser.assertAllConsumed();
+    var p = parser(json, true);
+    var expression =  p.primary();
+    p.assertAllConsumed();
     return expression();
   } catch (e) {
     error("fromJson error: ", json, e);
