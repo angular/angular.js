@@ -1,8 +1,8 @@
 angular-minified.map
-externs.js
 angular.js
 angular-minified.js
 angular-debug.js
+angular-ie-compat.js
 angular-scenario.js
 angularjs.netrc
 jstd.log
