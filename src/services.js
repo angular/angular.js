@@ -13,90 +13,213 @@ angularServiceInject("$document", function(window){
   return jqLite(window.document);
 }, ['$window'], EAGER_PUBLISHED);
 
-angularServiceInject("$location", function(browser){
+angularServiceInject("$location", function(browser) {
   var scope = this,
-      location = {parse:parseUrl, toString:toString, update:update},
-      lastLocation = {};
-  var lastBrowserUrl = browser.getUrl();
+      location = {toString:toString, update:update, updateHash: updateHash, cancel: cancel},
+      lastLocationHref = browser.getUrl(),
+      lastLocationHash;
 
   browser.addPollFn(function(){
-    if (lastBrowserUrl !== browser.getUrl()) {
-      update(lastBrowserUrl = browser.getUrl());
+    if (lastLocationHref !== browser.getUrl()) {
+      update(lastLocationHref = browser.getUrl());
       scope.$eval();
     }
   });
-  this.$onEval(PRIORITY_FIRST, update);
-  this.$onEval(PRIORITY_LAST, update);
-  update(lastBrowserUrl);
+  
+  this.$onEval(PRIORITY_FIRST, updateBrowser);
+  this.$onEval(PRIORITY_LAST, updateBrowser);
+  
+  update(lastLocationHref);
+  lastLocationHash = location.hash;
+  
   return location;
-
-  function update(href){
-    if (href) {
-      parseUrl(href);
-    } else {
-      href = check('href') || checkProtocol();
-      var hash = check('hash');
-      if (isUndefined(hash)) hash = checkHashPathSearch();
-      if (isDefined(hash)) {
-        href = (href || location.href).split('#')[0];
-        href+= '#' + hash;
+  
+  // PUBLIC METHODS
+  
+  /**
+   * Update location object
+   * Does not immediately update the browser
+   * Browser is updated at the end of $eval()
+   * 
+   * @example
+   * scope.$location.update('http://www.angularjs.org/path#hash?search=x');
+   * scope.$location.update({host: 'www.google.com', protocol: 'https'});
+   * scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
+   * 
+   * @param {String | Object} Full href as a string or hash object with properties
+   */
+  function update(href) {
+    if (isString(href)) {
+      extend(location, parseHref(href));
+    }
+    else {
+      if (isDefined(href.hash)) {
+        extend(href, parseHash(href.hash));
       }
-      if (isDefined(href)) {
-        parseUrl(href);
-        browser.setUrl(href);
+      
+      extend(location, href);
+      
+      if (isDefined(href.hashPath || href.hashSearch)) {
+        location.hash = composeHash(location);
       }
+      
+      location.href = composeHref(location);
     }
   }
-
-  function check(param) {
-    return lastLocation[param] == location[param] ? _undefined : location[param];
-  }
-
-  function checkProtocol(){
-    if (lastLocation.protocol === location.protocol &&
-        lastLocation.host === location.host &&
-        lastLocation.port === location.port &&
-        lastLocation.path === location.path &&
-        equals(lastLocation.search, location.search))
-      return _undefined;
-    var url = toKeyValue(location.search);
-    var port = (location.port == DEFAULT_PORTS[location.protocol] ? _null : location.port);
-    return location.protocol  + '://' + location.host +
-          (port ? ':' + port : '') + location.path +
-          (url ? '?' + url : '');
-  }
-
-  function checkHashPathSearch(){
-    if (lastLocation.hashPath === location.hashPath &&
-        equals(lastLocation.hashSearch, location.hashSearch) )
-      return _undefined;
-    var url = toKeyValue(location.hashSearch);
-    return escape(location.hashPath) + (url ? '?' + url : '');
-  }
-
-  function parseUrl(url){
-    if (isDefined(url)) {
-      var match = URL_MATCH.exec(url);
-      if (match) {
-        location.href = url.replace('#$', '');
-        location.protocol = match[1];
-        location.host = match[3] || '';
-        location.port = match[5] || DEFAULT_PORTS[location.protocol] || _null;
-        location.path = match[6];
-        location.search = parseKeyValue(match[8]);
-        location.hash = match[10] || '';
-        match = HASH_MATCH.exec(location.hash);
-        location.hashPath = unescape(match[1] || '');
-        location.hashSearch = parseKeyValue(match[3]);
-
-        copy(location, lastLocation);
-      }
+  
+  /**
+   * Update location hash
+   * @see update()
+   * 
+   * @example
+   * scope.$location.updateHash('/hp')
+   *   ==> update({hashPath: '/hp'})
+   *   
+   * scope.$location.updateHash({a: true, b: 'val'})
+   *   ==> update({hashSearch: {a: true, b: 'val'}})
+   *   
+   * scope.$location.updateHash('/hp', {a: true})
+   *   ==> update({hashPath: '/hp', hashSearch: {a: true}})
+   * 
+   * @param {String | Object} hashPath as String or hashSearch as Object
+   * @param {String | Object} hashPath as String or hashSearch as Object [optional]
+   */
+  function updateHash() {
+    var hash = {};
+    for (var i = 0; i < Math.min(arguments.length, 2); i++) {
+      hash[isString(arguments[i]) ? 'hashPath' : 'hashSearch'] = arguments[i];
     }
+    update(hash);
   }
-
+  
+  /**
+   * Returns string representation - href
+   * 
+   * @return {String} Location's href property
+   */
   function toString() {
-    update();
+    updateLocation();
     return location.href;
+  }
+  
+  /**
+   * Cancel change of the location
+   * 
+   * Calling update(), updateHash() or setting a property does not immediately
+   * change the browser's url. Url is changed at the end of $eval()
+   * 
+   * By calling this method, you can cancel the change (before end of $eval())
+   * 
+   */
+  function cancel() {
+    update(lastLocationHref);
+  }
+  
+  // INNER METHODS
+
+  /**
+   * Update location object
+   * 
+   * User is allowed to change properties, so after property change,
+   * location object is not in consistent state.
+   * 
+   * @example
+   * scope.$location.href = 'http://www.angularjs.org/path#a/b'
+   * immediately after this call, other properties are still the old ones...
+   * 
+   * This method checks the changes and update location to the consistent state
+   */
+  function updateLocation() {
+    if (location.href == lastLocationHref) {
+      if (location.hash == lastLocationHash) {
+        location.hash = composeHash(location);
+      }
+      location.href = composeHref(location);
+    }
+    update(location.href);
+  }
+  
+  /**
+   * If location has changed, update the browser
+   * This method is called at the end of $eval() phase
+   */
+  function updateBrowser() {
+    updateLocation();
+    
+    if (location.href != lastLocationHref) {
+      browser.setUrl(lastLocationHref = location.href);
+      lastLocationHash = location.hash;
+    }
+  }
+
+  /**
+   * Compose href string from a location object
+   * 
+   * @param {Object} Location object with all properties
+   * @return {String} Composed href
+   */
+  function composeHref(loc) {
+    var url = toKeyValue(loc.search);
+    var port = (loc.port == DEFAULT_PORTS[loc.protocol] ? _null : loc.port);
+
+    return loc.protocol  + '://' + loc.host +
+          (port ? ':' + port : '') + loc.path +
+          (url ? '?' + url : '') + (loc.hash ? '#' + loc.hash : '');
+  }
+  
+  /**
+   * Compose hash string from location object
+   * 
+   * @param {Object} Object with hashPath and hashSearch properties
+   * @return {String} Hash string
+   */
+  function composeHash(loc) {
+    var hashSearch = toKeyValue(loc.hashSearch);
+    return escape(loc.hashPath) + (hashSearch ? '?' + hashSearch : '');
+  }
+
+  /**
+   * Parse href string into location object
+   * 
+   * @param {String} Href
+   * @return {Object} Location
+   */
+  function parseHref(href) {
+    var loc = {};
+    var match = URL_MATCH.exec(href);
+    
+    if (match) {
+      loc.href = href.replace('#$', '');
+      loc.protocol = match[1];
+      loc.host = match[3] || '';
+      loc.port = match[5] || DEFAULT_PORTS[loc.protocol] || _null;
+      loc.path = match[6];
+      loc.search = parseKeyValue(match[8]);
+      loc.hash = match[10] || '';
+      
+      extend(loc, parseHash(loc.hash));
+    }
+    
+    return loc;
+  }
+  
+  /**
+   * Parse hash string into object
+   * 
+   * @param {String} Hash
+   * @param {Object} Object with hashPath and hashSearch properties
+   */
+  function parseHash(hash) {
+    var h = {};
+    var match = HASH_MATCH.exec(hash);
+    
+    if (match) {
+      h.hash = hash;
+      h.hashPath = unescape(match[1] || '');
+      h.hashSearch = parseKeyValue(match[3]);
+    }
+    
+    return h;
   }
 }, ['$browser'], EAGER_PUBLISHED);
 
