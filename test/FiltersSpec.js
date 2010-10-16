@@ -88,7 +88,11 @@ describe('filter', function(){
 
   describe('date', function(){
     var date = angular.String.toDate('2010-10-13T14:45:23Z');
+
+    //butt-ugly hack: force the date to be 2pm PDT for locale testing
     date.setHours(14);
+    date.getTimezoneOffset = function() { return 7 * 60; };
+
 
     it('should do basic filter', function() {
       expect(filter.date(date)).toEqual(date.toLocaleDateString());
