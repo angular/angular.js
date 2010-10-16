@@ -398,8 +398,8 @@ function parseKeyValue(/**string*/keyValue) {
 
 function toKeyValue(obj) {
   var parts = [];
-  foreach(obj, function(value, key){
-    parts.push(escape(key) + '=' + escape(value));
+  foreach(obj, function(value, key) {
+    parts.push(escape(key) + (value === true ? '' : '=' + escape(value)));
   });
   return parts.length ? parts.join('&') : '';
 }
