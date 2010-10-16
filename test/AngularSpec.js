@@ -104,3 +104,14 @@ describe('parseKeyValue', function() {
       toEqual({flag1: true, key: 'value', flag2: true});
   });
 });
+
+describe('toKeyValue', function() {
+  it('should parse key-value pairs into string', function() {
+    expect(toKeyValue({})).toEqual('');
+    expect(toKeyValue({simple: 'pair'})).toEqual('simple=pair');
+    expect(toKeyValue({first: '1', second: '2'})).toEqual('first=1&second=2');
+    expect(toKeyValue({'escaped key': 'escaped value'})).
+      toEqual('escaped%20key=escaped%20value');
+    expect(toKeyValue({emptyKey: ''})).toEqual('emptyKey=');
+  });
+});
