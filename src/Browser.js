@@ -188,11 +188,26 @@ function Browser(location, document, head, XHR, $log) {
   };
 
 
-  self.addCss = function(url) {
+  /**
+   * Adds a stylesheet tag to the head.
+   */
+  self.addCss = function(/**string*/url) {
     var link = jqLite(rawDocument.createElement('link'));
     link.attr('rel', 'stylesheet');
     link.attr('type', 'text/css');
     link.attr('href', url);
     head.append(link);
+  };
+
+
+  /**
+   * Adds a script tag to the head.
+   */
+  self.addJs = function(/**string*/url, /**string*/dom_id) {
+    var script = jqLite(rawDocument.createElement('script'));
+    script.attr('type', 'text/javascript');
+    script.attr('src', url);
+    if (dom_id) script.attr('id', dom_id);
+    head.append(script);
   };
 }

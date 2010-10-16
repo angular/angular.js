@@ -32,7 +32,8 @@ var _undefined        = undefined,
     PRIORITY          = {'FIRST': PRIORITY_FIRST, 'LAST': PRIORITY_LAST, 'WATCH':PRIORITY_WATCH},
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     _                 = window['_'],
-    msie              = !!/(msie) ([\w.]+)/.exec(lowercase(navigator.userAgent)),
+    /** holds major version number for IE or NaN for real browsers */
+    msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
     jqLite            = jQuery || jqLiteWrap,
     slice             = Array.prototype.slice,
     push              = Array.prototype.push,
@@ -408,25 +409,31 @@ function toKeyValue(obj) {
 function angularInit(config){
   if (config.autobind) {
     // TODO default to the source of angular.js
-    var scope = compile(window.document, _null, {'$config':config});
+    var scope = compile(window.document, _null, {'$config':config}),
+        $browser = scope.$inject('$browser');
+
     if (config.css)
-      scope.$inject('$browser').addCss(config.base_url + config.css);
+      $browser.addCss(config.base_url + config.css);
+    else if(msie<8)
+      $browser.addJs(config.base_url + config.ie_compat, config.ie_compat_id);
+
     scope.$init();
   }
 }
 
 function angularJsConfig(document, config) {
-  var filename = /^(.*)\/angular(-([^\/]*))?.js(\?[^#]*)?(#(.*))?$/,
+  var filename = /^(.*)angular(-([^\/]*))?.js(\?[^#]*)?(#(.*))?$/,
       scripts = document.getElementsByTagName("script"),
       match;
   config = extend({
     base_url: '',
-    css: '../css/angular.css'
+    ie_compat: 'angular-ie-compat.js',
+    ie_compat_id: 'ng-ie-compat'
   }, config);
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
-      config.base_url = match[1] + '/';
+      config.base_url = match[1];
       extend(config, parseKeyValue(match[6]));
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {

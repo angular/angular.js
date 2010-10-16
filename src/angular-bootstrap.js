@@ -37,6 +37,13 @@
     document.write('<script type="text/javascript" src="' + serverPath + file +'"></script>');
   }
 
+  function addCss(file) {
+    document.write('<link rel="stylesheet" type="text/css" href="' +
+                      serverPath + '/../css' + file  + '"/>');
+  }
+
+  addCss("/angular.css");
+
   addScript("/Angular.js");
   addScript("/JSON.js");
   addScript("/Compiler.js");
@@ -58,10 +65,15 @@
   addScript("/markups.js");
   addScript("/widgets.js");
 
+
   window.onload = function(){
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
+
+    //angular-ie-compat.js needs to be pregenerated for development with IE<8
+    if (msie<8) addScript('../angular-ie-compat.js');
+
     angularInit(angularJsConfig(document));
   };
 
