@@ -114,4 +114,8 @@ describe('toKeyValue', function() {
       toEqual('escaped%20key=escaped%20value');
     expect(toKeyValue({emptyKey: ''})).toEqual('emptyKey=');
   });
+  
+  it('should parse true values into flags', function() {
+    expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
+  });
 });
