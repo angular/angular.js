@@ -42,37 +42,49 @@ function padNumber(num, digits, trim) {
     num = num.substr(num.length - digits);
   return neg + num;
 }
-function dateGetter(name, size, option) {
+function dateGetter(name, size, offset, trim) {
   return function(date) {
-    var value = date[name].call(date) + 1*(option===1);
-    if (option == -12 && value > 12) value += option;
-    return padNumber(value, size, option === true);
+    var value = date['get' + name].call(date);
+    if (offset > 0 || value > -offset)
+      value += offset;
+    if (value == 0 && offset == -12 ) value = 12;
+    return padNumber(value, size, trim);
   };
 }
 var DATE_FORMATS = {
-  yyyy: dateGetter('getFullYear', 4),
-  yy:   dateGetter('getFullYear', 2, true),
-  MM:   dateGetter('getMonth', 2, 1),
-  dd:   dateGetter('getDate', 2),
-  HH:   dateGetter('getHours', 2),
-  KK:   dateGetter('getHours', 2, -12),
-  mm:   dateGetter('getMinutes', 2),
-  ss:   dateGetter('getSeconds', 2),
+  yyyy: dateGetter('FullYear', 4),
+  yy:   dateGetter('FullYear', 2, 0, true),
+  MM:   dateGetter('Month', 2, 1),
+   M:   dateGetter('Month', 1, 1),
+  dd:   dateGetter('Date', 2),
+   d:   dateGetter('Date', 1),
+  HH:   dateGetter('Hours', 2),
+   H:   dateGetter('Hours', 1),
+  hh:   dateGetter('Hours', 2, -12),
+   h:   dateGetter('Hours', 1, -12),
+  mm:   dateGetter('Minutes', 2),
+   m:   dateGetter('Minutes', 1),
+  ss:   dateGetter('Seconds', 2),
+   s:   dateGetter('Seconds', 1),
   a:    function(date){return date.getHours() < 12 ? 'am' : 'pm'; },
   Z:    function(date){
           var offset = date.getTimezoneOffset();
           return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
         }
 };
-var DATE_FORMATS_SPLIT = new RegExp('('+
-    map(DATE_FORMATS, function(value, key){return key;}).join('|')+')');
+var DATE_FORMATS_SPLIT = /([^yMdHhmsaZ]*)(y+|M+|d+|H+|h+|m+|s+|a|Z)(.*)/;
 
 angularFilter.date = function(date, format) {
   if (!date instanceof Date) return date;
   var text = date.toLocaleDateString(), fn;
   if (format && isString(format)) {
     text = '';
-    foreach(format.split(DATE_FORMATS_SPLIT), function(value){
+    var parts = [];
+    while(format) {
+      parts = concat(parts, DATE_FORMATS_SPLIT.exec(format), 1);
+      format = parts.pop();
+    }
+    foreach(parts, function(value){
       fn = DATE_FORMATS[value];
       text += fn ? fn(date) : value;
     });
