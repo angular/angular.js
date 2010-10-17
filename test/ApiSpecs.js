@@ -186,6 +186,7 @@ describe('api', function(){
     var date = new Date("Sep 10 2003 13:02:03 GMT");
     assertEquals("date", angular.Object.typeOf(date));
     assertEquals("2003-09-10T13:02:03Z", angular.Date.toString(date));
+    assertEquals(date.getTime(), angular.String.toDate(angular.Date.toString(date)).getTime());
   });
 
   it('StringFromUTC', function(){
