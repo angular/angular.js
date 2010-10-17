@@ -363,12 +363,12 @@ describe("widget", function(){
         // childNodes[0] is repeater comment
         expect(scope.selection).toEqual(undefined);
 
-        click(element[0].childNodes[1]);
-        expect(scope.selection).toEqual(0);
+        click(element[0].childNodes[2]);
+        expect(scope.selection).toEqual(1);
 
-        scope.selection = 1;
+        scope.selection = 2;
         scope.$eval();
-        expect(element[0].childNodes[2].selected).toEqual(true);
+        expect(element[0].childNodes[3].selected).toEqual(true);
       });
 
       it('should unroll select options before eval', function(){
