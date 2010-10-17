@@ -87,21 +87,34 @@ describe('filter', function(){
   });
 
   describe('date', function(){
-    var date = angular.String.toDate('2010-10-13T14:45:23Z');
+    var morning  = angular.String.toDate('2010-09-03T23:05:08Z');
+    var midnight = angular.String.toDate('2010-09-03T23:05:08Z');
+    var noon =     angular.String.toDate('2010-09-03T23:05:08Z');
+    morning.setHours(7);
+    noon.setHours(12);
+    midnight.setHours(0);
 
     //butt-ugly hack: force the date to be 2pm PDT for locale testing
-    date.setHours(14);
-    date.getTimezoneOffset = function() { return 7 * 60; };
-
+    morning.getTimezoneOffset =
+      noon.getTimezoneOffset =
+        midnight.getTimezoneOffset =
+          function() { return 7 * 60; };
 
     it('should do basic filter', function() {
-      expect(filter.date(date)).toEqual(date.toLocaleDateString());
-      expect(filter.date(date, '')).toEqual(date.toLocaleDateString());
+      expect(filter.date(noon)).toEqual(noon.toLocaleDateString());
+      expect(filter.date(noon, '')).toEqual(noon.toLocaleDateString());
     });
 
     it('should accept format', function() {
-      expect(filter.date(date, "yyyy-MM-dd HH:mm:ss")).toEqual('2010-10-13 14:45:23');
-      expect(filter.date(date, "yy-MM-dd KK:mm:ssaZ")).toEqual('10-10-13 02:45:23pm0700');
+      expect(filter.date(midnight, "yyyy-M-d h=H:m:saZ")).
+                           toEqual('2010-9-3 12=0:5:8am0700');
+
+      expect(filter.date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
+                           toEqual('2010-09-03 12=00:05:08am0700');
+
+      expect(filter.date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
+                       toEqual('2010-09-03 12=12:05:08pm0700');
+
     });
 
 
