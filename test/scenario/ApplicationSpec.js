@@ -18,20 +18,21 @@ describe('angular.scenario.Application', function() {
       testDocument = $document;
     });
     app.navigateTo('http://www.google.com/');
-    app.executeAction(function($document, $window) {
+    app.executeAction(function($window, $document) {
       expect($window).not.toEqual(testWindow);
       expect($document).not.toEqual(testDocument);
     });
   });
 
-  it('should execute callback on $window of frame', function() {
+  it('should execute callback with correct arguments', function() {
     var testWindow = {document: {}};
     app.getWindow = function() { 
       return testWindow; 
     };
-    app.executeAction(function($document, $window) {
-      expect(this).toEqual($window);
-      expect(this).toEqual(testWindow);
+    app.executeAction(function($window, $document) {
+      expect(this).toEqual(app);
+      expect($document).toEqual(_jQuery($window.document));
+      expect($window).toEqual(testWindow);
     });
   });
   
@@ -52,7 +53,7 @@ describe('angular.scenario.Application', function() {
   
   it('should call onload handler when frame loads', function() {
     var called;
-    app.getFrame = function() { 
+    app.getFrame = function() {
       // Mock a little jQuery
       var result = {
         remove: function() { 

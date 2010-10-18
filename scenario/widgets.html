@@ -2,6 +2,7 @@
 <html xmlns:ng="http://angularjs.org">
   <head>
     <link rel="stylesheet" type="text/css" href="style.css"/>
+    <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
     <script type="text/javascript" src="../src/angular-bootstrap.js" ng:autobind></script>
   </head>
   <body ng:init="$window.$scope = this">
@@ -14,7 +15,7 @@
       <tr><th colspan="3">Input text field</th></tr>
       <tr>
         <td>basic</td>
-        <td>
+        <td id="text-basic-box">
           <input type="text" name="text.basic"/>
         </td>
         <td>text.basic={{text.basic}}</td>
@@ -30,7 +31,7 @@
         <td>text.hidden={{text.hidden}}</td>
       </tr>
       <tr><th colspan="3">Input selection field</th></tr>
-      <tr>
+      <tr id="gender-box">
         <td>radio</td>
         <td>
          <input type="radio" name="gender" value="female"/> Female <br/>
@@ -78,13 +79,13 @@
            <input type="button" value="button" ng:change="button.count = button.count + 1"/> <br/>
            <input type="submit" value="submit" ng:change="button.count = button.count + 1"/><br/>
            <input type="image" src="" ng:change="button.count = button.count + 1"/><br/>
-           <a href=""   ng:click="button.count = button.count + 1">action</a>
+           <a href="" ng:click="button.count = button.count + 1">action</a>
           </form>
         </td>
         <td>button={{button}}</td>
       </tr>
       <tr><th colspan="3">Repeaters</th></tr>
-      <tr>
+      <tr id="repeater-row">
         <td>ng:repeat</td>
         <td>
           <ul>
