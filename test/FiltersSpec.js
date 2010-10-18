@@ -9,11 +9,11 @@ describe('filter', function(){
       var currency = bind(context, filter.currency);
 
       assertEquals(currency(0), '$0.00');
-      assertEquals(html.hasClass('ng:format-negative'), false);
+      assertEquals(html.hasClass('ng-format-negative'), false);
       assertEquals(currency(-999), '$-999.00');
-      assertEquals(html.hasClass('ng:format-negative'), true);
+      assertEquals(html.hasClass('ng-format-negative'), true);
       assertEquals(currency(1234.5678), '$1,234.57');
-      assertEquals(html.hasClass('ng:format-negative'), false);
+      assertEquals(html.hasClass('ng-format-negative'), false);
     });
   });
 
