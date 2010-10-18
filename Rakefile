@@ -51,25 +51,6 @@ task :clean do
 end
 
 
-desc 'Generate Externs'
-task :compile_externs do
-  File.open('externs.js', 'w') do |out|
-    out.write("function jQuery(){};\n")
-
-    File.open('lib/jquery/jquery-1.4.2.js', 'r') do |file|
-      while (line = file.gets)
-        if line =~ /^\s*(\w+)\s*:\s*function.*$/
-          out.write("jQuery.#{$1}=function(){};\n")
-        end
-      end
-    end
-
-    out.write("jQuery.scope=function(){};\n")
-    out.write("jQuery.controller=function(){};\n")
-  end
-end
-
-
 desc 'Compile Scenario'
 task :compile_scenario do
   
@@ -150,7 +131,7 @@ end
 
 
 desc 'Compile JavaScript'
-task :compile => [:compile_externs, :compile_scenario, :generate_ie_compat] do
+task :compile => [:compile_scenario, :generate_ie_compat] do
 
   deps = [
       'src/angular.prefix',
@@ -167,7 +148,6 @@ task :compile => [:compile_externs, :compile_scenario, :generate_ie_compat] do
   %x(java -jar lib/compiler-closure/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --js angular-debug.js \
-        --externs externs.js \
         --create_source_map ./angular-minified.map \
         --js_output_file angular-minified.js)
 end
