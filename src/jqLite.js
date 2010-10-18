@@ -119,10 +119,14 @@ JQLite.prototype = {
   },
 
   trigger: function(type) {
-    var evnt = document.createEvent('MouseEvents'),
-        element = this[0];
-    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
-    element.dispatchEvent(evnt);
+    if (msie) {
+      this[0].fireEvent('on' + type);
+    } else {
+      var evnt = document.createEvent('MouseEvents'),
+          element = this[0];
+      evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
+      element.dispatchEvent(evnt);
+    }
   },
 
   replaceWith: function(replaceNode) {
@@ -249,10 +253,6 @@ if (msie) {
         if (isDefined(value)) e.innerText = value;
         return e.innerText;
       }
-    },
-
-    trigger: function(type) {
-      this[0].fireEvent('on' + type);
     }
   });
 }

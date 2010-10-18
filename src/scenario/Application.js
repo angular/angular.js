@@ -47,5 +47,5 @@ angular.scenario.Application.prototype.navigateTo = function(url, onloadFn) {
  */
 angular.scenario.Application.prototype.executeAction = function(action) {
   var $window = this.getWindow();
-  return action.call($window, _jQuery($window.document), $window);
+  return action.call(this, $window, _jQuery($window.document));
 };

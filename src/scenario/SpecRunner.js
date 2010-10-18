@@ -41,7 +41,7 @@ angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
         });
       } catch (e) {
         stepUI.error(e);
-        rethrow(e);
+        throw e;
       }
     }, 
     function(e) {
@@ -71,8 +71,56 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior) {
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior) {
   return this.addFuture(name, function(done) {
-    this.application.executeAction(function() {
-      behavior.call(this, done);
-    });
+    this.application.executeAction(angular.bind(this, function($window, $document) {
+
+      $document.elements = angular.bind(this, function(selector) {
+        var args = Array.prototype.slice.call(arguments, 1);
+        if (this.selector) {
+          selector = this.selector + ' ' + (selector || '');
+        }
+        angular.foreach(args, function(value, index) {
+          selector = selector.replace('$' + (index + 1), value);
+        });
+        var result = $document.find(selector);
+        if (!result.length) {
+          throw {
+            type: 'selector',
+            message: 'Selector ' + selector + ' did not match any elements.'
+          };
+        }
+
+        result.trigger = function(type) {
+          result.each(function(index, node) {
+            var element = $window.angular.element(node);
+            //TODO(esprehn): HACK!!! Something is broken in angular event dispatching
+            //  and if the real jQuery is used we need to set the attribtue after too
+            if (angular.isDefined(element.selector)) {
+              if (type === 'click' && node.nodeName.toLowerCase() === 'input') {
+                element.attr('checked', !element.attr('checked'));
+              }
+            }
+            //TODO(esprehn): HACK!! See above comment.
+            element.trigger(type);
+            if (angular.isDefined(element.selector)) {
+              if (type === 'click' && node.nodeName.toLowerCase() === 'input') {
+                element.attr('checked', !element.attr('checked'));
+              }
+            }
+          });
+        };
+
+        return result;
+      });
+      
+      try {
+        behavior.call(this, $window, $document, done);
+      } catch(e) {
+        if (e.type && e.type === 'selector') {
+          done(e.message);
+        } else {
+          throw e;
+        }
+      }
+    }));
   });
 };

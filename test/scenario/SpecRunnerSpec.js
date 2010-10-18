@@ -42,7 +42,7 @@ function ApplicationMock($window) {
 }
 ApplicationMock.prototype = {
   executeAction: function(callback) {
-    callback.call(this.$window);
+    callback.call(this.$window, _jQuery(this.$window.document), this.$window);
   }
 };
 
@@ -59,15 +59,15 @@ describe('angular.scenario.SpecRunner', function() {
 
   it('should bind futures to the spec', function() {
     runner.addFuture('test future', function(done) {
-      this.application.value = 10;
+      this.value = 10;
       done();
     });
     runner.futures[0].execute(angular.noop);
-    expect(runner.application.value).toEqual(10);
+    expect(runner.value).toEqual(10);
   });
 
   it('should pass done to future action behavior', function() {
-    runner.addFutureAction('test future', function(done) {
+    runner.addFutureAction('test future', function($window, $document, done) {
       expect(angular.isFunction(done)).toBeTruthy();
       done(10, 20);
     });
@@ -75,15 +75,6 @@ describe('angular.scenario.SpecRunner', function() {
       expect(error).toEqual(10);
       expect(result).toEqual(20);
     });
-  });
-
-  it('should pass execute future action on the $window', function() {
-    runner.addFutureAction('test future', function(done) {
-      this.test = 'test value';
-      done();
-    });
-    runner.futures[0].execute(angular.noop);
-    expect($window.test).toEqual('test value');
   });
 
   it('should execute spec function and notify UI', function() {

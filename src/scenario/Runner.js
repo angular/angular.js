@@ -82,14 +82,36 @@ angular.scenario.Runner.prototype.run = function(ui, application, specRunnerClas
   $root.setTimeout = function() {
     return self.$window.setTimeout.apply(self.$window, arguments);
   };
-  asyncForEach(specs, angular.bind(this, function(spec, specDone) {
+  asyncForEach(specs, function(spec, specDone) {
+    var dslCache = {};
     var runner = angular.scope($root);
     runner.$become(specRunnerClass);
-    angular.foreach(angular.scenario.dsl, angular.bind(this, function(fn, key) {
-      this.$window[key] = function() {
-        return fn.call($root).apply(angular.scope(runner), arguments);
+    angular.foreach(angular.scenario.dsl, function(fn, key) {
+      dslCache[key] = fn.call($root);
+    });
+    angular.foreach(angular.scenario.dsl, function(fn, key) {
+      self.$window[key] = function() {
+        var scope = angular.scope(runner);
+
+        // Make the dsl accessible on the current chain
+        scope.dsl = {};
+        angular.foreach(dslCache, function(fn, key) {
+          scope.dsl[key] = function() {
+            return dslCache[key].apply(scope, arguments);
+          };
+        });
+
+        // Make these methods work on the current chain
+        scope.addFuture = function() {
+          return angular.scenario.SpecRunner.prototype.addFuture.apply(scope, arguments);
+        };
+        scope.addFutureAction = function() {
+          return angular.scenario.SpecRunner.prototype.addFutureAction.apply(scope, arguments);
+        };
+
+        return scope.dsl[key].apply(scope, arguments);
       };
-    }));
+    });
     runner.run(ui, spec, specDone);
-  }), specsDone || angular.noop);
+  }, specsDone || angular.noop);
 };
