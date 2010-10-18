@@ -15,7 +15,7 @@ angularServiceInject("$document", function(window){
 
 angularServiceInject("$location", function(browser) {
   var scope = this,
-      location = {toString:toString, update:update, updateHash: updateHash, cancel: cancel},
+      location = {toString:toString, update:update, updateHash: updateHash},
       lastLocationHref = browser.getUrl(),
       lastLocationHash;
 
@@ -99,19 +99,6 @@ angularServiceInject("$location", function(browser) {
   function toString() {
     updateLocation();
     return location.href;
-  }
-
-  /**
-   * Cancel change of the location
-   *
-   * Calling update(), updateHash() or setting a property does not immediately
-   * change the browser's url. Url is changed at the end of $eval()
-   *
-   * By calling this method, you can cancel the change (before end of $eval())
-   *
-   */
-  function cancel() {
-    update(lastLocationHref);
   }
 
   // INNER METHODS

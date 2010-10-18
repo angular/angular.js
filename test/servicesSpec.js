@@ -227,16 +227,6 @@ describe("service", function(){
       expect(scope.$location.hash).toEqual('path?a=b');
       expect(scope.$location.hashSearch).toEqual({a: 'b'});
       expect(scope.$location.hashPath).toEqual('path');
-    });
-    
-    it('should not update browser if you call cancel()', function() {
-      spyOn($browser, 'setUrl');
-      
-      scope.$location.update('http://www.angularjs.org/a/b#a/b');
-      scope.$location.cancel();
-      scope.$eval();
-
-      expect($browser.setUrl).not.toHaveBeenCalled();
     });    
   });
 
