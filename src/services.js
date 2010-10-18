@@ -1,4 +1,4 @@
-var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?([^\?#]+)(\?([^#]*))?(#(.*))?$/,
+var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
     HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21},
     EAGER = 'eager',
@@ -184,7 +184,7 @@ angularServiceInject("$location", function(browser) {
       loc.protocol = match[1];
       loc.host = match[3] || '';
       loc.port = match[5] || DEFAULT_PORTS[loc.protocol] || _null;
-      loc.path = match[6];
+      loc.path = match[6] || '';
       loc.search = parseKeyValue(match[8]);
       loc.hash = match[10] || '';
 

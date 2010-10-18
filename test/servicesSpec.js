@@ -128,19 +128,6 @@ describe("service", function(){
       expect($browser.getUrl()).toEqual('http://www.angularjs.org/a/b');
     });
 
-    it('should parse file://', function(){
-      scope.$location.update('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
-      expect(scope.$location.href).toEqual("file:///Users/Shared/misko/work/angular.js/scenario/widgets.html");
-      expect(scope.$location.protocol).toEqual("file");
-      expect(scope.$location.host).toEqual("");
-      expect(scope.$location.port).toEqual(null);
-      expect(scope.$location.path).toEqual("/Users/Shared/misko/work/angular.js/scenario/widgets.html");
-      expect(scope.$location.search).toEqual({});
-      expect(scope.$location.hash).toEqual('');
-      expect(scope.$location.hashPath).toEqual('');
-      expect(scope.$location.hashSearch).toEqual({});
-    });
-
     it('should update hashPath and hashSearch on hash update', function(){
       scope.$location.update('http://server/#path?a=b');
       scope.$eval();
@@ -176,14 +163,6 @@ describe("service", function(){
 
       expect(scope.$location.toString()).toEqual('http://server/');
       expect(scope.$location.hash).toEqual('');
-    });
-
-    it("should parse url which contains - in host", function(){
-      scope.$location.update('http://a-b1.c-d.09/path');
-      expect(scope.$location.href).toEqual('http://a-b1.c-d.09/path');
-      expect(scope.$location.protocol).toEqual('http');
-      expect(scope.$location.host).toEqual('a-b1.c-d.09');
-      expect(scope.$location.path).toEqual('/path');
     });
 
     it('should update hash before any processing', function(){
@@ -581,5 +560,56 @@ describe("service", function(){
       expect($browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
     });
 
+  });
+  
+  
+  describe('URL_MATCH', function() {
+
+    it('should parse basic url', function() {
+      var match = URL_MATCH.exec('http://www.angularjs.org/path?search#hash?x=x');
+      
+      expect(match[1]).toEqual('http');
+      expect(match[3]).toEqual('www.angularjs.org');
+      expect(match[6]).toEqual('/path');
+      expect(match[8]).toEqual('search');
+      expect(match[10]).toEqual('hash?x=x');
+    });
+    
+    it('should parse file://', function(){
+      var match = URL_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
+      
+      expect(match[1]).toEqual('file');
+      expect(match[3]).toEqual('');
+      expect(match[5]).toEqual(null);
+      expect(match[6]).toEqual('/Users/Shared/misko/work/angular.js/scenario/widgets.html');
+      expect(match[8]).not.toBeDefined();
+    });
+    
+    it('should parse url with "-" in host', function(){
+      var match = URL_MATCH.exec('http://a-b1.c-d.09/path');
+      
+      expect(match[1]).toEqual('http');
+      expect(match[3]).toEqual('a-b1.c-d.09');
+      expect(match[5]).toEqual(null);
+      expect(match[6]).toEqual('/path');
+      expect(match[8]).not.toBeDefined();
+    });
+    
+    it('should parse host without "/" at the end', function() {
+      var match = URL_MATCH.exec('http://host.org');
+      expect(match[3]).toEqual('host.org');
+      
+      match = URL_MATCH.exec('http://host.org#');
+      expect(match[3]).toEqual('host.org');
+      
+      match = URL_MATCH.exec('http://host.org?');
+      expect(match[3]).toEqual('host.org');
+    });
+    
+    it('should match with just "/" path', function() {
+      var match = URL_MATCH.exec('http://server/#?book=moby');
+      
+      expect(match[10]).toEqual('?book=moby');
+    });
   });
 });
