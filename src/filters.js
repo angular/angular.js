@@ -111,8 +111,12 @@ angularFilter.lowercase = lowercase;
 
 angularFilter.uppercase = uppercase;
 
-angularFilter.html =  function(html){
-  return new HTML(html);
+/**</>
+ * @exportedAs filter:html
+ * @param {string=} option if 'unsafe' then do not sanitize the HTML input
+ */
+angularFilter.html =  function(html, option){
+  return new HTML(html, option);
 };
 
 angularFilter.linky = function(text){
@@ -124,15 +128,18 @@ angularFilter.linky = function(text){
   var match;
   var raw = text;
   var html = [];
+  var writer = htmlSanitizeWriter(html);
+  var url;
+  var i;
   while (match=raw.match(URL)) {
-    var url = match[0].replace(/[\.\;\,\(\)\{\}\<\>]$/,'');
-    var i = raw.indexOf(url);
-    html.push(escapeHtml(raw.substr(0, i)));
-    html.push('<a href="' + url + '">');
-    html.push(url);
-    html.push('</a>');
+    url = match[0].replace(/[\.\;\,\(\)\{\}\<\>]$/,'');
+    i = raw.indexOf(url);
+    writer.chars(raw.substr(0, i));
+    writer.start('a', {href:url});
+    writer.chars(url);
+    writer.end('a');
     raw = raw.substring(i + url.length);
   }
-  html.push(escapeHtml(raw));
+  writer.chars(raw);
   return new HTML(html.join(''));
 };

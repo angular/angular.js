@@ -85,7 +85,10 @@ function sortedHtml(element) {
   var html = "";
   foreach(jqLite(element), function toString(node) {
     if (node.nodeName == "#text") {
-      html += escapeHtml(node.nodeValue);
+      html += node.nodeValue.
+        replace(/&(\w+[&;\W])?/g, function(match, entity){return entity?match:'&amp;';}).
+        replace(/</g, '&lt;').
+        replace(/>/g, '&gt;');
     } else {
       html += '<' + node.nodeName.toLowerCase();
       var attributes = node.attributes || [];
