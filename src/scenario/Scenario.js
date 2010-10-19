@@ -22,7 +22,7 @@ angular.scenario.ui = angular.scenario.ui || {};
  * @param {Function} Factory function(application), return a function for
  *  the statement.
  */
-angular.scenario.dsl = function(name, fn) {
+angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
   angular.scenario.dsl[name] = function() {
     function executeStatement(statement, args) {
       var result = statement.apply(this, args);
@@ -57,7 +57,7 @@ angular.scenario.dsl = function(name, fn) {
  * @param {String} The name of the matcher
  * @param {Function} The matching function(expected).
  */
-angular.scenario.matcher = function(name, fn) {
+angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
   angular.scenario.matcher[name] = function(expected) {
     var prefix = 'expect ' + this.future.name + ' ';
     if (this.inverse) {
