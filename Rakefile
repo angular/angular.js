@@ -9,6 +9,7 @@ ANGULAR = [
   'src/Parser.js',
   'src/Resource.js',
   'src/Browser.js',
+  'src/sanitizer.js',
   'src/jqLite.js',
   'src/apis.js',
   'src/filters.js',

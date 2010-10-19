@@ -54,6 +54,7 @@
   addScript("/Resource.js");
   addScript("/Browser.js");
   addScript("/AngularPublic.js");
+  addScript("/htmlparser_modified.js");
 
   // Extension points
   addScript("/services.js");

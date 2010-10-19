@@ -13,6 +13,15 @@ describe('Angular', function(){
   });
 });
 
+describe('case', function(){
+  it('should change case', function(){
+    expect(lowercase('ABC90')).toEqual('abc90');
+    expect(manualLowercase('ABC90')).toEqual('abc90');
+    expect(uppercase('abc90')).toEqual('ABC90');
+    expect(manualUppercase('abc90')).toEqual('ABC90');
+  });
+});
+
 describe("copy", function(){
   it("should return same object", function (){
     var obj = {};
@@ -115,7 +124,7 @@ describe('toKeyValue', function() {
       toEqual('escaped%20key=escaped%20value');
     expect(toKeyValue({emptyKey: ''})).toEqual('emptyKey=');
   });
-  
+
   it('should parse true values into flags', function() {
     expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
   });
