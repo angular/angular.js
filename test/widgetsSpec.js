@@ -128,10 +128,10 @@ describe("widget", function(){
         it('should support type="checkbox"', function(){
           compile('<input type="checkBox" name="checkbox" checked ng:change="action = true"/>');
           expect(scope.checkbox).toEqual(true);
-          click(element);
+          browserTrigger(element);
           expect(scope.checkbox).toEqual(false);
           expect(scope.action).toEqual(true);
-          click(element);
+          browserTrigger(element);
           expect(scope.checkbox).toEqual(true);
         });
 
@@ -151,7 +151,7 @@ describe("widget", function(){
           expect(scope.state).toEqual("Worked");
           expect(scope.$element[0].checked).toEqual(true);
 
-          click(scope.$element);
+          browserTrigger(scope.$element);
           expect(scope.state).toEqual("Failed");
           expect(scope.$element[0].checked).toEqual(false);
 
@@ -278,13 +278,13 @@ describe("widget", function(){
 
     it('should call ng:change on button click', function(){
       compile('<input type="button" value="Click Me" ng:change="clicked = true"/>');
-      click(element);
+      browserTrigger(element);
       expect(scope.$get('clicked')).toEqual(true);
     });
 
     it('should support button alias', function(){
       compile('<button ng:change="clicked = true">Click Me</button>');
-      click(element);
+      browserTrigger(element);
       expect(scope.$get('clicked')).toEqual(true);
     });
 
@@ -310,7 +310,7 @@ describe("widget", function(){
         expect(b.checked).toEqual(true);
         expect(scope.clicked).not.toBeDefined();
 
-        click(a);
+        browserTrigger(a);
         expect(scope.chose).toEqual('A');
         expect(scope.clicked).toEqual(1);
       });
@@ -363,7 +363,7 @@ describe("widget", function(){
         // childNodes[0] is repeater comment
         expect(scope.selection).toEqual(undefined);
 
-        click(element[0].childNodes[2]);
+        browserTrigger(element[0].childNodes[2], 'change');
         expect(scope.selection).toEqual(1);
 
         scope.selection = 2;
@@ -423,7 +423,7 @@ describe("widget", function(){
 
     it('should report error on ng:change exception', function(){
       compile('<button ng:change="a-2=x">click</button>');
-      click(element);
+      browserTrigger(element);
       expect(element.hasClass('ng-exception')).toBeTruthy();
     });
   });

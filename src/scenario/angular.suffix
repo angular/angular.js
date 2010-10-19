@@ -4,22 +4,19 @@
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    jQuery(document.body).append(
+    _jQuery(document.body).append(
       '<div id="runner"></div>' +
       '<div id="frame"></div>'
     );
-    var frame = jQuery('#frame');
-    var runner = jQuery('#runner');
+    var frame = _jQuery('#frame');
+    var runner = _jQuery('#runner');
     var application = new angular.scenario.Application(frame);
     var ui = new angular.scenario.ui.Html(runner);
-    $scenario.run(ui, application, function(error) {
+    $scenario.run(ui, application, angular.scenario.SpecRunner, function(error) {
       frame.remove();
       if (error) {
         if (window.console) {
-          console.log(error);
-          if (error.stack) {
-            console.log(error.stack);
-          }
+          console.log(error.stack || error);
         } else {
           // Do something for IE
           alert(error);

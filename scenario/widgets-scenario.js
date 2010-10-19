@@ -1,17 +1,17 @@
 describe('widgets', function() {
   it('should verify that basic widgets work', function(){
     navigateTo('widgets.html');
-            
+
     using('#text-basic-box').input('text.basic').enter('Carlos');
     expect(binding('text.basic')).toEqual('Carlos');
     input('text.basic').enter('Carlos Santana');
     expect(binding('text.basic')).not().toEqual('Carlos Boozer');
-    
+
     input('text.password').enter('secret');
     expect(binding('text.password')).toEqual('secret');
-    
+
     expect(binding('text.hidden')).toEqual('hiddenValue');
-    
+
     expect(binding('gender')).toEqual('male');
     input('gender').select('female');
     expect(using('#gender-box').binding('gender')).toEqual('female');
@@ -19,10 +19,11 @@ describe('widgets', function() {
     expect(repeater('#repeater-row ul li').count()).toEqual(2);
     expect(repeater('#repeater-row ul li').row(1)).toEqual(['adam']);
     expect(repeater('#repeater-row ul li').column('name')).toEqual(['misko', 'adam']);
-    
+
     select('select').option('B');
     expect(binding('select')).toEqual('B');
-    
+
+
     select('multiselect').options('A', 'C');
     expect(binding('multiselect').fromJson()).toEqual(['A', 'C']);
 
@@ -35,14 +36,14 @@ describe('widgets', function() {
     expect(binding('button').fromJson()).toEqual({'count': 3});
     element('input[type="image"]').click();
     expect(binding('button').fromJson()).toEqual({'count': 4});
-    
+
     /**
      * Custom value parser for futures.
      */
     function checkboxParser(value) {
       return angular.fromJson(value.substring(value.indexOf('=')+1));
     }
-    
+
     input('checkbox.tea').check();
     expect(binding('checkbox').parsedWith(checkboxParser)).toEqual({coffee: false, tea: false});
     input('checkbox.coffee').check();

@@ -589,13 +589,13 @@ BinderTest.prototype.testItShouldSelectTheCorrectRadioBox = function() {
   var female = jqLite(c.node[0].childNodes[0]);
   var male = jqLite(c.node[0].childNodes[1]);
 
-  click(female);
+  browserTrigger(female);
   assertEquals("female", c.scope.sex);
   assertEquals(true, female[0].checked);
   assertEquals(false, male[0].checked);
   assertEquals("female", female.val());
 
-  click(male);
+  browserTrigger(male);
   assertEquals("male", c.scope.sex);
   assertEquals(false, female[0].checked);
   assertEquals(true, male[0].checked);

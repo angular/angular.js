@@ -146,12 +146,12 @@ function HTML(html) {
 
 if (msie) {
   nodeName = function(element) {
-    element = element[0] || element;
+    element = element.nodeName ? element : element[0];
     return (element.scopeName && element.scopeName != 'HTML' ) ? uppercase(element.scopeName + ':' + element.nodeName) : element.nodeName;
   };
 } else {
   nodeName = function(element) {
-    return (element[0] || element).nodeName;
+    return element.nodeName ? element.nodeName : element[0].nodeName;
   };
 }
 

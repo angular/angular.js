@@ -10,24 +10,6 @@ AngularMock.prototype.reset = function() {
   this.log = [];
 };
 
-AngularMock.prototype.element = function(node) {
-  this.log.push('element(' + node.nodeName.toLowerCase() + ')');
-  var mock = this;
-  return {
-    selector: '',
-    attr: function(name, value) {
-      mock.log.push('attr(' + name + (angular.isDefined(value) ? ',' + value : '') + ')');
-      return _jQuery.fn.attr.apply(_jQuery(node), arguments); 
-    },
-    trigger: function(type) {
-      mock.log.push('element().trigger(' + type + ')');
-      //TODO(esprehn): See the HACK!! in the SpecRunner. This avoids
-      // triggering the second part of the hack in tests
-      delete this.selector;
-    }
-  };
-};
-
 AngularMock.prototype.$browser = function() {
   this.log.push('$brower()');
   return this;
@@ -181,7 +163,7 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.select('test').options('A', 'B');
         expect(_jQuery('[name="test"]').val()).toEqual(['A','B']);
       });
-      
+
       it('should fail to select multiple options on non-multiple select', function() {
         doc.append('<select name="test"></select>');
         $root.dsl.select('test').options('A', 'B');
@@ -198,7 +180,7 @@ describe("angular.scenario.dsl", function() {
         });
         $root.dsl.element('a').click();
       });
-      
+
       it('should get attribute', function() {
         doc.append('<div id="test" class="foo"></div>');
         $root.dsl.element('#test').attr('class');
@@ -210,13 +192,13 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.element('#test').attr('class', 'bam');
         expect(doc.find('div').attr('class')).toEqual('bam');
       });
-      
+
       it('should get val', function() {
         doc.append('<input value="bar">');
         $root.dsl.element('input').val();
         expect($root.futureResult).toEqual('bar');
       });
-      
+
       it('should set val', function() {
         doc.append('<input value="bar">');
         $root.dsl.element('input').val('baz');
@@ -259,7 +241,7 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.binding('foo.bar');
         expect($root.futureResult).toEqual('some value');
       });
-      
+
       it('should select binding in template by name', function() {
         doc.append('<pre ng:bind-template="foo {{bar}} baz">foo some baz</pre>');
         $root.dsl.binding('bar');
@@ -271,7 +253,7 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureError).toMatch(/did not match/);
       });
     });
-    
+
     describe('Using', function() {
       it('should prefix selector in $document.elements()', function() {
         var chain;
@@ -281,8 +263,6 @@ describe("angular.scenario.dsl", function() {
         );
         chain = $root.dsl.using('div#test2');
         chain.input('test.input').enter('foo');
-        expect($window.angular.log).toContain('element(input)');
-        expect($window.angular.log).toContain('element().trigger(change)');
         var inputs = _jQuery('input[name="test.input"]');
         expect(inputs.first().val()).toEqual('something');
         expect(inputs.last().val()).toEqual('foo');
@@ -294,8 +274,6 @@ describe("angular.scenario.dsl", function() {
         doc.append('<input name="test.input" value="something">');
         var chain = $root.dsl.input('test.input');
         chain.enter('foo');
-        expect($window.angular.log).toContain('element(input)');
-        expect($window.angular.log).toContain('element().trigger(change)');
         expect(_jQuery('input[name="test.input"]').val()).toEqual('foo');
       });
 
@@ -311,14 +289,10 @@ describe("angular.scenario.dsl", function() {
           attr('checked')).toBeTruthy();
         var chain = $root.dsl.input('test.input');
         chain.check();
-        expect($window.angular.log).toContain('element(input)');
-        expect($window.angular.log).toContain('element().trigger(click)');
         expect(_jQuery('input[name="test.input"]').
           attr('checked')).toBeFalsy();
         $window.angular.reset();
         chain.check();
-        expect($window.angular.log).toContain('element(input)');
-        expect($window.angular.log).toContain('element().trigger(click)');
         expect(_jQuery('input[name="test.input"]').
           attr('checked')).toBeTruthy();
       });
@@ -342,8 +316,6 @@ describe("angular.scenario.dsl", function() {
           attr('checked')).toBeFalsy();
         var chain = $root.dsl.input('test.input');
         chain.select('foo');
-        expect($window.angular.log).toContain('element(input)');
-        expect($window.angular.log).toContain('element().trigger(click)');
         expect(_jQuery('input[name="0@test.input"][value="bar"]').
           attr('checked')).toBeFalsy();
         expect(_jQuery('input[name="0@test.input"][value="foo"]').
@@ -356,6 +328,6 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureError).toMatch(/did not match/);
       });
     });
-    
+
   });
 });

@@ -118,17 +118,6 @@ JQLite.prototype = {
     });
   },
 
-  trigger: function(type) {
-    if (msie) {
-      this[0].fireEvent('on' + type);
-    } else {
-      var evnt = document.createEvent('MouseEvents'),
-          element = this[0];
-      evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
-      element.dispatchEvent(evnt);
-    }
-  },
-
   replaceWith: function(replaceNode) {
     this[0].parentNode.replaceChild(jqLite(replaceNode)[0], this[0]);
   },

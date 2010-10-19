@@ -1,5 +1,5 @@
 /**
- * Setup file for the Scenario. 
+ * Setup file for the Scenario.
  * Must be first in the compilation/bootstrap list.
  */
 
@@ -19,7 +19,7 @@ angular.scenario.ui = {};
  *   functions.
  *
  * @param {String} The name of the statement
- * @param {Function} Factory function(application), return a function for 
+ * @param {Function} Factory function(application), return a function for
  *  the statement.
  */
 angular.scenario.dsl = function(name, fn) {
@@ -50,7 +50,7 @@ angular.scenario.dsl = function(name, fn) {
 
 /**
  * Defines a new matcher for use with the expects() statement. The value
- * this.actual (like in Jasmine) is available in your matcher to compare 
+ * this.actual (like in Jasmine) is available in your matcher to compare
  * against. Your function should return a boolean. The future is automatically
  * created for you.
  *
@@ -83,7 +83,7 @@ angular.scenario.matcher = function(name, fn) {
  *
  * @param {Array} list to iterate over
  * @param {Function} Callback function(value, continueFunction)
- * @param {Function} Callback function(error, result) called when iteration 
+ * @param {Function} Callback function(error, result) called when iteration
  *   finishes or an error occurs.
  */
 function asyncForEach(list, iterator, done) {
@@ -101,3 +101,44 @@ function asyncForEach(list, iterator, done) {
   }
   loop();
 }
+
+
+function browserTrigger(element, type) {
+  if (!element.nodeName) element = element[0];
+  if (!type) {
+    type = {
+        'text':            'change',
+        'textarea':        'change',
+        'hidden':          'change',
+        'password':        'change',
+        'button':          'click',
+        'submit':          'click',
+        'reset':           'click',
+        'image':           'click',
+        'checkbox':        'click',
+        'radio':           'click',
+        'select-one':      'change',
+        'select-multiple': 'change'
+    }[element.type] || 'click';
+  }
+  if (lowercase(nodeName(element)) == 'option') {
+    element.parentNode.value = element.value;
+    element = element.parentNode;
+    type = 'change';
+  }
+  if (msie) {
+    element.fireEvent('on' + type);
+  } else {
+    var evnt = document.createEvent('MouseEvents');
+    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
+    element.dispatchEvent(evnt);
+  }
+}
+
+_jQuery.fn.trigger = function(type) {
+  return this.each(function(index, node) {
+    browserTrigger(node, type);
+  });
+};
+
+

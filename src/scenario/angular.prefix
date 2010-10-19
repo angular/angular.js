@@ -22,3 +22,4 @@
  * THE SOFTWARE.
  */
 (function(window, document, previousOnLoad){
+  var _jQuery = window.jQuery.noConflict(true);
