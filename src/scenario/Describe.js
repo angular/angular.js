@@ -78,12 +78,10 @@ angular.scenario.Describe.prototype.it = function(name, body) {
   var self = this;
   this.its.push({
     definition: this,
-    name: name, 
-    fn: function() {
-      self.setupBefore.call(this);
-      body.call(this);
-      self.setupAfter.call(this);
-    }
+    name: name,
+    before: self.setupBefore,
+    body: body,
+    after: self.setupAfter
   });
 };
 

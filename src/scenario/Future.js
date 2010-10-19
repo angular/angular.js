@@ -1,12 +1,17 @@
 /**
  * A future action in a spec.
+ *
+ * @param {String} name of the future action
+ * @param {Function} future callback(error, result)
+ * @param {String} Optional. function that returns the file/line number.
  */
-angular.scenario.Future = function(name, behavior) {
+angular.scenario.Future = function(name, behavior, line) {
   this.name = name;
   this.behavior = behavior;
   this.fulfilled = false;
   this.value = undefined;
   this.parser = angular.identity;
+  this.line = line || function() { return ''; };
 };
 
 /**
@@ -15,18 +20,19 @@ angular.scenario.Future = function(name, behavior) {
  * @param {Function} Callback function(error, result)
  */
 angular.scenario.Future.prototype.execute = function(doneFn) {
-  this.behavior(angular.bind(this, function(error, result) {
-    this.fulfilled = true;
+  var self = this;
+  this.behavior(function(error, result) {
+    self.fulfilled = true;
     if (result) {
       try {
-        result = this.parser(result);
+        result = self.parser(result);
       } catch(e) {
         error = e;
       }
     }
-    this.value = error || result;
+    self.value = error || result;
     doneFn(error, result);
-  }));
+  });
 };
 
 /**

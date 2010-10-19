@@ -23,7 +23,6 @@ describe('widgets', function() {
     select('select').option('B');
     expect(binding('select')).toEqual('B');
 
-
     select('multiselect').options('A', 'C');
     expect(binding('multiselect').fromJson()).toEqual(['A', 'C']);
 
