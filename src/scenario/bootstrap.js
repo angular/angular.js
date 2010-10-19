@@ -10,7 +10,7 @@
       }
     }
   })();
-  
+
   function addScript(path) {
     document.write('<script type="text/javascript" src="' + prefix + path + '"></script>');
   }
@@ -46,6 +46,11 @@
 
   addCSS("../../css/angular-scenario.css");
   addScript("../../lib/jquery/jquery-1.4.2.js");
+  document.write(
+      '<script type="text/javascript">' +
+      'var _jQuery = jQuery.noConflict(true);' +
+      '</script>'
+    );
   addScript("../angular-bootstrap.js");
 
   addScript("Scenario.js");
@@ -61,7 +66,6 @@
   // Create the runner (which also sets up the global API)
   document.write(
     '<script type="text/javascript">' +
-    'var _jQuery = jQuery.noConflict(true);' +
     'var $scenario = new angular.scenario.Runner(window);' +
     '</script>'
   );

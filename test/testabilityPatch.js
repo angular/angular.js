@@ -189,25 +189,6 @@ function assertThrows(error, fn){
 log = noop;
 error = noop;
 
-function click(element) {
-  element = jqLite(element);
-  var type = lowercase(element.attr('type'));
-  var name = lowercase(nodeName(element));
-  if (msie) {
-    if (name == 'input') {
-      if (type == 'radio' || type == 'checkbox') {
-        element[0].checked = ! element[0].checked;
-      }
-    }
-  }
-  if (name == 'option') {
-    element.parent().val(element.val());
-    JQLite.prototype.trigger.call(element.parent(), 'change');
-  } else {
-    JQLite.prototype.trigger.call(element, 'click');
-  }
-}
-
 function rethrow(e) {
   if(e) {
     throw e;

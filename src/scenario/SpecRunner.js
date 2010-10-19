@@ -21,7 +21,7 @@ angular.scenario.SpecRunner = function() {
  */
 angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
   var specUI = ui.addSpec(spec);
-  
+
   try {
     spec.fn.call(this);
   } catch (e) {
@@ -29,9 +29,9 @@ angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
     specDone();
     return;
   }
-  
+
   asyncForEach(
-    this.futures, 
+    this.futures,
     function(future, futureDone) {
       var stepUI = specUI.addStep(future.name);
       try {
@@ -43,10 +43,10 @@ angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
         stepUI.error(e);
         throw e;
       }
-    }, 
+    },
     function(e) {
-      specUI.finish(e); 
-      specDone(); 
+      specUI.finish(e);
+      specDone();
     }
   );
 };
@@ -89,29 +89,9 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior)
           };
         }
 
-        result.trigger = function(type) {
-          result.each(function(index, node) {
-            var element = $window.angular.element(node);
-            //TODO(esprehn): HACK!!! Something is broken in angular event dispatching
-            //  and if the real jQuery is used we need to set the attribtue after too
-            if (angular.isDefined(element.selector)) {
-              if (type === 'click' && node.nodeName.toLowerCase() === 'input') {
-                element.attr('checked', !element.attr('checked'));
-              }
-            }
-            //TODO(esprehn): HACK!! See above comment.
-            element.trigger(type);
-            if (angular.isDefined(element.selector)) {
-              if (type === 'click' && node.nodeName.toLowerCase() === 'input') {
-                element.attr('checked', !element.attr('checked'));
-              }
-            }
-          });
-        };
-
         return result;
       });
-      
+
       try {
         behavior.call(this, $window, $document, done);
       } catch(e) {

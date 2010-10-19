@@ -53,7 +53,7 @@ end
 
 desc 'Compile Scenario'
 task :compile_scenario do
-  
+
   deps = [
       'lib/jquery/jquery-1.4.2.js',
       'src/scenario/angular.prefix',
@@ -66,7 +66,7 @@ task :compile_scenario do
 
   File.open('angular-scenario.js', 'w') do |f|
     f.write(%x{#{concat}})
-    f.write(gen_css('css/angular.css'))
+    f.write(gen_css('css/angular.css') + "\n")
     f.write(gen_css('css/angular-scenario.css'))
   end
 end
@@ -234,7 +234,8 @@ def gen_css(cssFile, minify = false)
   end
 
   #escape for js
-  css.gsub! /'/, "\\'"
+  css.gsub! /\\/, "\\\\\\"
+  css.gsub! /'/, "\\\\'"
   css.gsub! /\n/, "\\n"
 
   return %Q{document.write('<style type="text/css">#{css}</style>');}
