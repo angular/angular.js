@@ -4,10 +4,10 @@
  */
 
 // Public namespace
-angular.scenario = {};
+angular.scenario = angular.scenario || {};
 
 // Namespace for the UI
-angular.scenario.ui = {};
+angular.scenario.ui = angular.scenario.ui || {};
 
 /**
  * Defines a new DSL statement. If your factory function returns a Future
@@ -104,7 +104,8 @@ function asyncForEach(list, iterator, done) {
 
 
 function browserTrigger(element, type) {
-  if (!element.nodeName) element = element[0];
+  if (element && !element.nodeName) element = element[0];
+  if (!element) return;
   if (!type) {
     type = {
         'text':            'change',

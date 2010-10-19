@@ -32,12 +32,12 @@ describe("widget", function(){
         expect(element.val()).toEqual("Adam");
 
         element.val('Shyam');
-        element.trigger('keyup');
+        browserTrigger(element, 'keyup');
         expect(scope.$get('name')).toEqual('Shyam');
         expect(scope.$get('count')).toEqual(1);
 
         element.val('Kai');
-        element.trigger('change');
+        browserTrigger(element, 'change');
         expect(scope.$get('name')).toEqual('Kai');
         expect(scope.$get('count')).toEqual(2);
       });
@@ -53,7 +53,7 @@ describe("widget", function(){
           expect(element.val()).toEqual("x, y, z");
 
           element.val('1, 2, 3');
-          element.trigger('keyup');
+          browserTrigger(element, 'keyup');
           expect(scope.$get('list')).toEqual(['1', '2', '3']);
         });
 
@@ -70,7 +70,7 @@ describe("widget", function(){
           scope.age = 123;
           scope.$eval();
           scope.$element.val('123X');
-          scope.$element.trigger('change');
+          browserTrigger(scope.$element, 'change');
           expect(scope.$element.val()).toEqual('123X');
           expect(scope.age).toEqual(123);
           expect(scope.$element).toBeInvalid();
@@ -87,22 +87,22 @@ describe("widget", function(){
           compile('<input type="text" name="list" ng:format="list" value="a"/>');
 
           scope.$element.val('a ');
-          scope.$element.trigger('change');
+          browserTrigger(scope.$element, 'change');
           expect(scope.$element.val()).toEqual('a ');
           expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a ,');
-          scope.$element.trigger('change');
+          browserTrigger(scope.$element, 'change');
           expect(scope.$element.val()).toEqual('a ,');
           expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a , ');
-          scope.$element.trigger('change');
+          browserTrigger(scope.$element, 'change');
           expect(scope.$element.val()).toEqual('a , ');
           expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a , b');
-          scope.$element.trigger('change');
+          browserTrigger(scope.$element, 'change');
           expect(scope.$element.val()).toEqual('a , b');
           expect(scope.list).toEqual(['a', 'b']);
         });
@@ -175,7 +175,7 @@ describe("widget", function(){
           expect(element.attr('ng-validation-error')).toBeFalsy();
 
           element.val('x');
-          element.trigger('keyup');
+          browserTrigger(element, 'keyup');
           expect(element.hasClass('ng-validation-error')).toBeTruthy();
           expect(element.attr('ng-validation-error')).toEqual('Not a number');
         });
@@ -229,7 +229,7 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toBeFalsy();
 
       element.val('');
-      element.trigger('keyup');
+      browserTrigger(element, 'keyup');
       expect(element.hasClass('ng-validation-error')).toBeTruthy();
       expect(element.attr('ng-validation-error')).toEqual('Required');
     });
@@ -254,7 +254,7 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toEqual('Required');
 
       element.val('abc');
-      element.trigger('keyup');
+      browserTrigger(element, 'keyup');
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
       expect(element.attr('ng-validation-error')).toBeFalsy();
     });
@@ -268,11 +268,11 @@ describe("widget", function(){
       expect(element.val()).toEqual("Adam");
 
       element.val('Shyam');
-      element.trigger('keyup');
+      browserTrigger(element, 'keyup');
       expect(scope.$get('name')).toEqual('Shyam');
 
       element.val('Kai');
-      element.trigger('change');
+      browserTrigger(element, 'change');
       expect(scope.$get('name')).toEqual('Kai');
     });
 

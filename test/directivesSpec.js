@@ -177,7 +177,7 @@ describe("directives", function(){
       scope.$eval();
       expect(scope.$get('clicked')).toBeFalsy();
 
-      element.trigger('click');
+      browserTrigger(element, 'click');
       expect(scope.$get('clicked')).toEqual(true);
     });
 
@@ -189,7 +189,7 @@ describe("directives", function(){
 
       var innerDiv = jqLite(element.children()[0]);
 
-      innerDiv.trigger('click');
+      browserTrigger(innerDiv, 'click');
       expect(scope.$get('outer')).not.toBeDefined();
       expect(scope.$get('inner')).toEqual(true);
     });
