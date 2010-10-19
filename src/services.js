@@ -46,7 +46,7 @@ angularServiceInject("$location", function(browser) {
    * scope.$location.update({host: 'www.google.com', protocol: 'https'});
    * scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
    *
-   * @param {String | Object} Full href as a string or hash object with properties
+   * @param {(string|Object)} href Full href as a string or hash object with properties
    */
   function update(href) {
     if (isString(href)) {
@@ -80,21 +80,26 @@ angularServiceInject("$location", function(browser) {
    * scope.$location.updateHash('/hp', {a: true})
    *   ==> update({hashPath: '/hp', hashSearch: {a: true}})
    *
-   * @param {String | Object} hashPath as String or hashSearch as Object
-   * @param {String | Object} hashPath as String or hashSearch as Object [optional]
+   * @param {(string|Object)} path A hashPath or hashSearch object
+   * @param {Object=} search A hashSearch object
    */
-  function updateHash() {
+  function updateHash(path, search) {
     var hash = {};
-    for (var i = 0; i < Math.min(arguments.length, 2); i++) {
-      hash[isString(arguments[i]) ? 'hashPath' : 'hashSearch'] = arguments[i];
-    }
+
+    if (isString(path)) {
+      hash.hashPath = path;
+      if (isDefined(search))
+        hash.hashSearch = search;
+    } else
+      hash.hashSearch = path;
+
     update(hash);
   }
 
   /**
    * Returns string representation - href
    *
-   * @return {String} Location's href property
+   * @return {string} Location's href property
    */
   function toString() {
     updateLocation();
@@ -141,8 +146,8 @@ angularServiceInject("$location", function(browser) {
   /**
    * Compose href string from a location object
    *
-   * @param {Object} Location object with all properties
-   * @return {String} Composed href
+   * @param {Object} loc The location object with all properties
+   * @return {string} Composed href
    */
   function composeHref(loc) {
     var url = toKeyValue(loc.search);
@@ -156,8 +161,8 @@ angularServiceInject("$location", function(browser) {
   /**
    * Compose hash string from location object
    *
-   * @param {Object} Object with hashPath and hashSearch properties
-   * @return {String} Hash string
+   * @param {Object} loc Object with hashPath and hashSearch properties
+   * @return {string} Hash string
    */
   function composeHash(loc) {
     var hashSearch = toKeyValue(loc.hashSearch);
@@ -167,8 +172,8 @@ angularServiceInject("$location", function(browser) {
   /**
    * Parse href string into location object
    *
-   * @param {String} Href
-   * @return {Object} Location
+   * @param {string} href
+   * @return {Object} The location object
    */
   function parseHref(href) {
     var loc = {};
@@ -192,8 +197,7 @@ angularServiceInject("$location", function(browser) {
   /**
    * Parse hash string into object
    *
-   * @param {String} Hash
-   * @param {Object} Object with hashPath and hashSearch properties
+   * @param {string} hash
    */
   function parseHash(hash) {
     var h = {};
@@ -208,6 +212,7 @@ angularServiceInject("$location", function(browser) {
     return h;
   }
 }, ['$browser'], EAGER_PUBLISHED);
+
 
 angularServiceInject("$log", function($window){
   var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
