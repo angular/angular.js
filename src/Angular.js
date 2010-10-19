@@ -3,6 +3,25 @@
 if (typeof document.getAttribute == $undefined)
   document.getAttribute = function() {};
 
+//The below may not be true on browsers in the Turkish locale.
+var lowercase = function (value){ return isString(value) ? value.toLowerCase() : value; };
+var uppercase = function (value){ return isString(value) ? value.toUpperCase() : value; };
+var manualLowercase = function (s) {
+  return isString(s) ? s.replace(/[A-Z]/g,
+      function (ch) {return fromCharCode(ch.charCodeAt(0) | 32); }) : s;
+};
+var manualUppercase = function (s) {
+  return isString(s) ? s.replace(/[a-z]/g,
+      function (ch) {return fromCharCode(ch.charCodeAt(0) & ~32); }) : s;
+};
+if ('i' !== 'I'.toLowerCase()) {
+  lowercase = manualLowercase;
+  uppercase = manulaUppercase;
+}
+
+function fromCharCode(code) { return String.fromCharCode(code); }
+
+
 var _undefined        = undefined,
     _null             = null,
     $$element         = '$element',
@@ -134,15 +153,26 @@ function isNumber(value){ return typeof value == $number;}
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == $function;}
 function isTextNode(node) { return nodeName(node) == '#text'; }
-function lowercase(value){ return isString(value) ? value.toLowerCase() : value; }
-function uppercase(value){ return isString(value) ? value.toUpperCase() : value; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function isElement(node) {
   return node && (node.nodeName || node instanceof JQLite || (jQuery && node instanceof jQuery));
 }
 
-function HTML(html) {
+/**
+ * HTML class which is the only class which can be used in ng:bind to inline HTML for security reasons.
+ * @constructor
+ * @param html raw (unsafe) html
+ * @param {string=} option if set to 'usafe' then get method will return raw (unsafe/unsanitized) html
+ */
+function HTML(html, option) {
   this.html = html;
+  this.get = lowercase(option) == 'unsafe' ?
+    valueFn(html) :
+    function htmlSanitize() {
+      var buf = [];
+      htmlParser(html, htmlSanitizeWriter(buf));
+      return buf.join('');
+    };
 }
 
 if (msie) {
@@ -297,16 +327,6 @@ function setHtml(node, html) {
   }
 }
 
-function escapeHtml(html) {
-  if (!html || !html.replace)
-    return html;
-  return html.
-      replace(/&/g, '&amp;').
-      replace(/</g, '&lt;').
-      replace(/>/g, '&gt;');
-}
-
-
 function isRenderableElement(element) {
   var name = element && element[0] && element[0].nodeName;
   return name && name.charAt(0) != '#' &&
@@ -326,13 +346,6 @@ function elementError(element, type, error) {
       element.removeAttr(type);
     }
   }
-}
-
-function escapeAttr(html) {
-  if (!html || !html.replace)
-    return html;
-  return html.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\"/g,
-      '&quot;');
 }
 
 function concat(array1, array2, index) {

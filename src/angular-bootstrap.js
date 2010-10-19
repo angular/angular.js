@@ -53,6 +53,7 @@
   addScript("/parser.js");
   addScript("/Resource.js");
   addScript("/Browser.js");
+  addScript("/sanitizer.js");
   addScript("/AngularPublic.js");
 
   // Extension points

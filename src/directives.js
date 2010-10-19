@@ -26,15 +26,19 @@ angularDirective("ng:bind", function(expression){
   return function(element) {
     var lastValue = noop, lastError = noop;
     this.$onEval(function() {
-      var error, value, isHtml, isDomElement,
+      var error, value, html, isHtml, isDomElement,
           oldElement = this.hasOwnProperty($$element) ? this.$element : _undefined;
       this.$element = element;
       value = this.$tryEval(expression, function(e){
         error = toJson(e);
       });
       this.$element = oldElement;
+      // If we are HTML than save the raw HTML data so that we don't
+      // recompute sanitization since it is expensive.
+      // TODO: turn this into a more generic way to compute this
+      if (isHtml = (value instanceof HTML))
+        value = (html = value).html;
       if (lastValue === value && lastError == error) return;
-      isHtml = value instanceof HTML;
       isDomElement = isElement(value);
       if (!isHtml && !isDomElement && isObject(value)) {
         value = toJson(value);
@@ -45,7 +49,7 @@ angularDirective("ng:bind", function(expression){
         elementError(element, NG_EXCEPTION, error);
         if (error) value = error;
         if (isHtml) {
-          element.html(value.html);
+          element.html(html.get());
         } else if (isDomElement) {
           element.html('');
           element.append(value);

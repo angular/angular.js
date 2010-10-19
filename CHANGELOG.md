@@ -3,13 +3,13 @@
 ### Breaking changes
 - $cookieStore service is not globally published any more, if you use it, you must request it via
   $inject as any other non-global service
-
+- html filter now sanitizes html content for XSS attacks which may result in different behavior
 
 
 # <angular/> 0.9.0 dragon-breath (2010-10-20) #
 
 ### Security
-- angular.fromJson not safei (issue #57)
+- angular.fromJson not safer (issue #57)
 - readString consumes invalid escapes (issue #56)
 - use new Function instead of eval (issue #52)
 

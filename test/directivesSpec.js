@@ -50,9 +50,16 @@ describe("directives", function(){
 
     it('should set html', function() {
       var scope = compile('<div ng:bind="html|html"></div>');
-      scope.html = '<div>hello</div>';
+      scope.html = '<div unknown>hello</div>';
       scope.$eval();
       expect(lowercase(element.html())).toEqual('<div>hello</div>');
+    });
+
+    it('should set unsafe html', function() {
+      var scope = compile('<div ng:bind="html|html:\'unsafe\'"></div>');
+      scope.html = '<div onclick="">hello</div>';
+      scope.$eval();
+      expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
     });
 
     it('should set element element', function() {
