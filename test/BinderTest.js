@@ -155,7 +155,7 @@ BinderTest.prototype.testInputTypeButtonActionExecutesInScope =  function(){
   c.scope.$set("person.save", function(){
     savedCalled = true;
   });
-  c.node.trigger('click');
+  browserTrigger(c.node, 'click');
   assertTrue(savedCalled);
 };
 
@@ -166,7 +166,7 @@ BinderTest.prototype.testInputTypeButtonActionExecutesInScope2 =  function(){
     log += 'click;';
   });
   expect(log).toEqual('');
-  c.node.trigger('click');
+  browserTrigger(c.node, 'click');
   expect(log).toEqual('click;');
 };
 
@@ -176,7 +176,7 @@ BinderTest.prototype.testButtonElementActionExecutesInScope =  function(){
   c.scope.$set("person.save", function(){
     savedCalled = true;
   });
-  c.node.trigger('click');
+  browserTrigger(c.node, 'click');
   assertTrue(savedCalled);
 };
 
@@ -247,7 +247,7 @@ BinderTest.prototype.testRepeaterAdd = function(){
   assertEquals('b', second.val());
 
   first.val('ABC');
-  first.trigger('keyup');
+  browserTrigger(first, 'keyup');
   assertEquals(c.scope.items[0].x, 'ABC');
 };
 
@@ -441,7 +441,7 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
     throw {a:'abc', b:2};
   };
   var input = c.node;
-  input.trigger('click');
+  browserTrigger(input, 'click');
   var error = fromJson(input.attr('ng-exception'));
   assertEquals("abc", error.a);
   assertEquals(2, error.b);
@@ -449,7 +449,7 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
 
   // TODO: I think that exception should never get cleared so this portion of test makes no sense
   //c.scope.action = noop;
-  //input.trigger('click');
+  //browserTrigger(input, 'click');
   //dump(input.attr('ng-error'));
   //assertFalse('error class should be cleared', input.hasClass('ng-exception'));
 };
@@ -575,10 +575,10 @@ BinderTest.prototype.testItShouldDisplayErrorWhenActionIsSyntacticlyIncorect = f
   var first = jqLite(c.node[0].childNodes[0]);
   var second = jqLite(c.node[0].childNodes[1]);
 
-  first.trigger('click');
+  browserTrigger(first, 'click');
   assertEquals("ABC", c.scope.greeting);
 
-  second.trigger('click');
+  browserTrigger(second, 'click');
   assertTrue(second.hasClass("ng-exception"));
 };
 
@@ -666,7 +666,7 @@ BinderTest.prototype.testItShouldUseFormaterForText = function() {
   assertEquals(['a','b'], x.scope.$get('a'));
   var input = x.node;
   input[0].value = ' x,,yz';
-  input.trigger('change');
+  browserTrigger(input, 'change');
   assertEquals(['x','yz'], x.scope.$get('a'));
   x.scope.$set('a', [1 ,2, 3]);
   x.scope.$eval();
