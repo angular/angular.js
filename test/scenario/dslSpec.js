@@ -35,13 +35,16 @@ describe("angular.scenario.dsl", function() {
       document: _jQuery("<div></div>"),
       angular: new AngularMock()
     };
-    $root = angular.scope({}, angular.service);
+    $root = angular.scope();
     $root.futures = [];
+    $root.futureLog = [];
+    $root.$window = $window;
     $root.addFuture = function(name, fn) {
       this.futures.push(name);
       fn.call(this, function(error, result) {
         $root.futureError = error;
         $root.futureResult = result;
+        $root.futureLog.push(name);
       });
     };
     $root.dsl = {};
@@ -61,6 +64,18 @@ describe("angular.scenario.dsl", function() {
     // Just use the real one since it delegates to this.addFuture
     $root.addFutureAction = angular.scenario.
       SpecRunner.prototype.addFutureAction;
+  });
+
+  describe('Wait', function() {
+    it('should wait until resume to complete', function() {
+      expect($window.resume).toBeUndefined();
+      $root.dsl.wait();
+      expect(angular.isFunction($window.resume)).toBeTruthy();
+      expect($root.futureLog).toEqual([]);
+      $window.resume();
+      expect($root.futureLog).
+        toEqual(['waiting for you to call resume() in the console']);
+    });
   });
 
   describe('Pause', function() {
@@ -99,10 +114,11 @@ describe("angular.scenario.dsl", function() {
     });
 
     it('should allow a future url', function() {
-      var future = {name: 'future name', value: 'http://myurl'};
-      $root.dsl.navigateTo(future);
-      expect($window.location).toEqual('http://myurl');
-      expect($root.futureResult).toEqual('http://myurl');
+      $root.dsl.navigateTo('http://myurl', function() {
+        return 'http://futureUrl/';
+      });
+      expect($window.location).toEqual('http://futureUrl/');
+      expect($root.futureResult).toEqual('http://futureUrl/');
     });
 
     it('should complete if angular is missing from app frame', function() {
@@ -205,6 +221,13 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('input').val()).toEqual('baz');
       });
 
+      it('should execute custom query', function() {
+        doc.append('<a id="test" href="myUrl"></a>');
+        $root.dsl.element('#test').query(function(elements, done) {
+          done(null, elements.attr('href'));
+        });
+        expect($root.futureResult).toEqual('myUrl');
+      });
     });
 
     describe('Repeater', function() {

@@ -8,6 +8,7 @@
  */
 angular.scenario.SpecRunner = function() {
   this.futures = [];
+  this.afterIndex = 0;
 };
 
 /**
@@ -20,32 +21,52 @@ angular.scenario.SpecRunner = function() {
  * @param {Function} Callback function that is called when the  spec finshes.
  */
 angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
+  var self = this;
   var specUI = ui.addSpec(spec);
 
   try {
-    spec.fn.call(this);
+    spec.before.call(this);
+    spec.body.call(this);
+    this.afterIndex = this.futures.length;
+    spec.after.call(this);
   } catch (e) {
     specUI.error(e);
     specDone();
     return;
   }
 
+  var handleError = function(error, done) {
+    if (self.error) {
+      return done();
+    }
+    self.error = true;
+    done(null, self.afterIndex);
+  };
+  
+  var spec = this;
   asyncForEach(
     this.futures,
     function(future, futureDone) {
-      var stepUI = specUI.addStep(future.name);
+      var stepUI = specUI.addStep(future.name, future.line);
       try {
         future.execute(function(error) {
           stepUI.finish(error);
-          futureDone(error);
+          if (error) {
+            return handleError(error, futureDone);
+          }
+          spec.$window.setTimeout( function() { futureDone(); }, 0);
         });
       } catch (e) {
         stepUI.error(e);
-        throw e;
+        handleError(e, futureDone);
       }
     },
     function(e) {
-      specUI.finish(e);
+      if (e) {
+        specUI.error(e);
+      } else {
+        specUI.finish();
+      }
       specDone();
     }
   );
@@ -54,11 +75,14 @@ angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
 /**
  * Adds a new future action.
  *
+ * Note: Do not pass line manually. It happens automatically.
+ *
  * @param {String} Name of the future
  * @param {Function} Behavior of the future
+ * @param {Function} fn() that returns file/line number
  */
-angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior) {
-  var future = new angular.scenario.Future(name, angular.bind(this, behavior));
+angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line) {
+  var future = new angular.scenario.Future(name, angular.bind(this, behavior), line);
   this.futures.push(future);
   return future;
 };
@@ -66,17 +90,20 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior) {
 /**
  * Adds a new future action to be executed on the application window.
  *
+ * Note: Do not pass line manually. It happens automatically.
+ *
  * @param {String} Name of the future
  * @param {Function} Behavior of the future
+ * @param {Function} fn() that returns file/line number 
  */
-angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior) {
+angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
+  var self = this;
   return this.addFuture(name, function(done) {
-    this.application.executeAction(angular.bind(this, function($window, $document) {
-
-      $document.elements = angular.bind(this, function(selector) {
+    this.application.executeAction(function($window, $document) {
+      $document.elements = function(selector) {
         var args = Array.prototype.slice.call(arguments, 1);
-        if (this.selector) {
-          selector = this.selector + ' ' + (selector || '');
+        if (self.selector) {
+          selector = self.selector + ' ' + (selector || '');
         }
         angular.foreach(args, function(value, index) {
           selector = selector.replace('$' + (index + 1), value);
@@ -90,10 +117,10 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior)
         }
 
         return result;
-      });
+      };
 
       try {
-        behavior.call(this, $window, $document, done);
+        behavior.call(self, $window, $document, done);
       } catch(e) {
         if (e.type && e.type === 'selector') {
           done(e.message);
@@ -101,6 +128,6 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior)
           throw e;
         }
       }
-    }));
-  });
+    });
+  }, line);
 };

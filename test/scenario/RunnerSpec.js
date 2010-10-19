@@ -3,8 +3,14 @@
  */
 function MockSpecRunner() {}
 MockSpecRunner.prototype.run = function(ui, spec, specDone) {
-  spec.fn.call(this);
+  spec.before.call(this);
+  spec.body.call(this);
+  spec.after.call(this);
   specDone();
+};
+
+MockSpecRunner.prototype.addFuture = function(name, fn, line) {
+  return {name: name, fn: fn, line: line};
 };
 
 describe('angular.scenario.Runner', function() {
@@ -12,6 +18,12 @@ describe('angular.scenario.Runner', function() {
   var runner;
   
   beforeEach(function() {
+    // Trick to get the scope out of a DSL statement
+    angular.scenario.dsl('dslAddFuture', function() {
+      return function() {
+        return this.addFuture('future name', angular.noop);
+      };
+    });
     // Trick to get the scope out of a DSL statement
     angular.scenario.dsl('dslScope', function() {
       var scope = this;
@@ -25,7 +37,9 @@ describe('angular.scenario.Runner', function() {
         return this;
       };
     });
-    $window = {};
+    $window = {
+      location: {}
+    };
     runner = new angular.scenario.Runner($window);
   });
   
@@ -63,7 +77,9 @@ describe('angular.scenario.Runner', function() {
       });
     });
     var specs = runner.rootDescribe.getSpecs();
-    specs[0].fn();
+    specs[0].before();
+    specs[0].body();
+    specs[0].after();
     expect(before).toEqual(['A', 'B', 'C']);
     expect(after).toEqual(['C', 'B', 'A']);
     expect(specs[2].definition.parent).toEqual(runner.rootDescribe);

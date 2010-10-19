@@ -32,9 +32,9 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
       var chain = angular.extend({}, result);
       angular.foreach(chain, function(value, name) {
         if (angular.isFunction(value)) {
-          chain[name] = angular.bind(self, function() {
+          chain[name] = function() {
             return executeStatement.call(self, value, arguments);
-          });
+          };
         } else {
           chain[name] = value;
         }
@@ -63,17 +63,18 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
     if (this.inverse) {
       prefix += 'not ';
     }
-    this.addFuture(prefix + name + ' ' + angular.toJson(expected),
-      angular.bind(this, function(done) {
-        this.actual = this.future.value;
-        if ((this.inverse && fn.call(this, expected)) ||
-            (!this.inverse && !fn.call(this, expected))) {
-          this.error = 'expected ' + angular.toJson(expected) +
-            ' but was ' + angular.toJson(this.actual);
+    var self = this;
+    this.addFuture(prefix + name + ' ' + angular.toJson(expected), 
+      function(done) {
+        var error;
+        self.actual = self.future.value;
+        if ((self.inverse && fn.call(self, expected)) ||
+            (!self.inverse && !fn.call(self, expected))) {
+          error = 'expected ' + angular.toJson(expected) +
+            ' but was ' + angular.toJson(self.actual);
         }
-        done(this.error);
-      })
-    );
+        done(error);
+    });
   };
 };
 
@@ -88,7 +89,10 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  */
 function asyncForEach(list, iterator, done) {
   var i = 0;
-  function loop(error) {
+  function loop(error, index) {
+    if (index && index > i) {
+      i = index;
+    }
     if (error || i >= list.length) {
       done(error);
     } else {
@@ -102,7 +106,63 @@ function asyncForEach(list, iterator, done) {
   loop();
 }
 
+/**
+ * Formats an exception into a string with the stack trace, but limits
+ * to a specific line length.
+ *
+ * @param {Object} the exception to format, can be anything throwable
+ * @param {Number} Optional. max lines of the stack trace to include
+ *  default is 5.
+ */
+function formatException(error, maxStackLines) {
+  maxStackLines = maxStackLines || 5;
+  var message = error.toString();
+  if (error.stack) {
+    var stack = error.stack.split('\n');
+    if (stack[0].indexOf(message) === -1) {
+      maxStackLines++;
+      stack.unshift(error.message);
+    }
+    message = stack.slice(0, maxStackLines).join('\n');
+  }
+  return message;
+}
 
+/**
+ * Returns a function that gets the file name and line number from a 
+ * location in the stack if available based on the call site.
+ *
+ * Note: this returns another function because accessing .stack is very
+ * expensive in Chrome.
+ */
+function callerFile(offset) {
+  var error = new Error();
+  
+  return function() {
+    var line = (error.stack || '').split('\n')[offset];
+  
+    // Clean up the stack trace line
+    if (line) {
+      if (line.indexOf('@') !== -1) {
+        // Firefox
+        line = line.substring(line.indexOf('@')+1);
+      } else {
+        // Chrome
+        line = line.substring(line.indexOf('(')+1).replace(')', '');
+      }
+    }
+    
+    return line || '';
+  };
+}
+
+/**
+ * Triggers a browser event. Attempts to choose the right event if one is
+ * not specified.
+ *
+ * @param {Object} Either a wrapped jQuery/jqLite node or a DOMElement
+ * @param {String} Optional event type.
+ */
 function browserTrigger(element, type) {
   if (element && !element.nodeName) element = element[0];
   if (!element) return;
@@ -136,10 +196,17 @@ function browserTrigger(element, type) {
   }
 }
 
+/**
+ * Don't use the jQuery trigger method since it works incorrectly.
+ *
+ * jQuery notifies listeners and then changes the state of a checkbox and
+ * does not create a real browser event. A real click changes the state of 
+ * the checkbox and then notifies listeners.
+ * 
+ * To work around this we instead use our own handler that fires a real event.
+ */
 _jQuery.fn.trigger = function(type) {
   return this.each(function(index, node) {
     browserTrigger(node, type);
   });
 };
-
-

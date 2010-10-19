@@ -49,11 +49,24 @@ ApplicationMock.prototype = {
 describe('angular.scenario.SpecRunner', function() {
   var $window;
   var runner;
+  
+  function createSpec(name, body) {
+    return {
+      name: name,
+      before: angular.noop,
+      body: body || angular.noop,
+      after: angular.noop
+    };
+  }
 
   beforeEach(function() {
     $window = {};
+    $window.setTimeout = function(fn, timeout) {
+      fn();
+    };
     runner = angular.scope();
     runner.application = new ApplicationMock($window);
+    runner.$window = $window;
     runner.$become(angular.scenario.SpecRunner);
   });
 
@@ -78,11 +91,11 @@ describe('angular.scenario.SpecRunner', function() {
   });
 
   it('should execute spec function and notify UI', function() {
-    var finished = false;
+    var finished;
     var ui = new UIMock();
-    var spec = {name: 'test spec', fn: function() {
-      this.test = 'some value';
-    }};
+    var spec = createSpec('test spec', function() { 
+      this.test = 'some value'; 
+    });
     runner.addFuture('test future', function(done) {
       done();
     });
@@ -100,11 +113,11 @@ describe('angular.scenario.SpecRunner', function() {
   });
 
   it('should execute notify UI on spec setup error', function() {
-    var finished = false;
+    var finished;
     var ui = new UIMock();
-    var spec = {name: 'test spec', fn: function() {
+    var spec = createSpec('test spec', function() { 
       throw 'message';
-    }};
+    });
     runner.run(ui, spec, function() {
       finished = true;
     });
@@ -116,9 +129,9 @@ describe('angular.scenario.SpecRunner', function() {
   });
 
   it('should execute notify UI on step failure', function() {
-    var finished = false;
+    var finished;
     var ui = new UIMock();
-    var spec = {name: 'test spec', fn: angular.noop};
+    var spec = createSpec('test spec');
     runner.addFuture('test future', function(done) {
       done('failure message');
     });
@@ -130,16 +143,17 @@ describe('angular.scenario.SpecRunner', function() {
       'addSpec:test spec',
       'addStep:test future',
       'step finish:failure message',
-      'spec finish:failure message'
+      'spec finish:'
     ]);
   });
 
   it('should execute notify UI on step error', function() {
-    var finished = false;
+    var finished;
     var ui = new UIMock();
-    var spec = {name: 'test spec', fn: angular.noop};
-    runner.addFuture('test future', function(done) {
-      throw 'error message';
+    var spec = createSpec('test spec', function() {
+      this.addFuture('test future', function(done) {
+        throw 'error message';
+      });
     });
     runner.run(ui, spec, function() {
       finished = true;
@@ -149,7 +163,36 @@ describe('angular.scenario.SpecRunner', function() {
       'addSpec:test spec',
       'addStep:test future',
       'step error:error message',
-      'spec finish:error message'
+      'spec finish:'
+    ]);
+  });
+  
+  it('should run after handlers even if error in body of spec', function() {
+    var finished, after;
+    var ui = new UIMock();
+    var spec = createSpec('test spec', function() {
+      this.addFuture('body', function(done) {
+        throw 'error message';
+      });
+    });
+    spec.after = function() {
+      this.addFuture('after', function(done) {
+        after = true;
+        done();
+      });
+    };
+    runner.run(ui, spec, function() {
+      finished = true;
+    });
+    expect(finished).toBeTruthy();
+    expect(after).toBeTruthy();
+    expect(ui.log).toEqual([
+      'addSpec:test spec',
+      'addStep:body',
+      'step error:error message',
+      'addStep:after',
+      'step finish:',
+      'spec finish:'
     ]);
   });
 

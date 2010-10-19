@@ -38,12 +38,16 @@ describe('angular.scenario.Describe', function() {
     expect(specs.length).toEqual(2);
 
     expect(specs[0].name).toEqual('2');
-    specs[0].fn();
+    specs[0].before();
+    specs[0].body();
+    specs[0].after();
     expect(log.text).toEqual('{(2)}');
 
     log.reset();
     expect(specs[1].name).toEqual('1');
-    specs[1].fn();
+    specs[1].before();
+    specs[1].body();
+    specs[1].after();
     expect(log.text).toEqual('{1}');
   });
     

@@ -89,6 +89,20 @@ body {
   border-radius: 8px 0 0 8px;
   -webkit-border-radius: 8px 0 0 8px;
   -moz-border-radius: 8px 0 0 8px;
+  cursor: pointer;
+}
+
+.test-info:hover .test-name {
+  text-decoration: underline;
+}
+
+.test-info .closed:before {
+  content: '\25b8\00A0';
+}
+
+.test-info .open:before {
+  content: '\25be\00A0';
+  font-weight: bold;
 }
 
 .test-it ol {
@@ -111,6 +125,21 @@ body {
   padding: 4px;
 }
 
+.test-actions .test-title,
+.test-actions .test-result {
+  display: table-cell;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.test-actions {
+  display: table;
+}
+
+.test-actions li {
+  display: table-row;
+}
+
 .timer-result {
   width: 4em;
   padding: 0 10px;
@@ -121,6 +150,7 @@ body {
 .test-it pre,
 .test-actions pre {
   clear: left;
+  color: black;
   margin-left: 6em;
 }
 
@@ -130,6 +160,11 @@ body {
 
 .test-actions .status-pending .test-title:before {
   content: '\00bb\00A0';
+}
+
+.scrollpane {
+   max-height: 20em;
+   overflow: auto;
 }
 
 /** Colors */

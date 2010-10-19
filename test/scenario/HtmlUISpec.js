@@ -2,6 +2,8 @@ describe('angular.scenario.HtmlUI', function() {
   var ui;
   var context;
   var spec;
+  
+  function line() { return 'unknown:-1'; }
 
   beforeEach(function() {
     spec = {
@@ -35,44 +37,44 @@ describe('angular.scenario.HtmlUI', function() {
   it('should update totals when steps complete', function() {
     // Error
     ui.addSpec(spec).error('error');
-    // Error
-    specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish();
-    specUI.finish('error');
     // Failure
     specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish('failure');
-    specUI.finish('failure');
+    specUI.addStep('some step', line).finish('failure');
+    specUI.finish();
     // Failure
     specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish('failure');
-    specUI.finish('failure');
+    specUI.addStep('some step', line).finish('failure');
+    specUI.finish();
     // Failure
     specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish('failure');
-    specUI.finish('failure');
+    specUI.addStep('some step', line).finish('failure');
+    specUI.finish();
     // Success
     specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish();
+    specUI.addStep('some step', line).finish();
+    specUI.finish();
+    // Success
+    specUI = ui.addSpec(spec);
+    specUI.addStep('another step', line).finish();
     specUI.finish();
 
     expect(parseInt(context.find('#status-legend .status-failure').text(), 10)).
       toEqual(3);
-    expect(parseInt(context.find('#status-legend .status-error').text(), 10)).
-      toEqual(2);
     expect(parseInt(context.find('#status-legend .status-success').text(), 10)).
+      toEqual(2);
+    expect(parseInt(context.find('#status-legend .status-error').text(), 10)).
       toEqual(1);
   });
 
   it('should update timer when test completes', function() {
     // Success
     specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish();
+    specUI.addStep('some step', line).finish();
     specUI.finish();
 
     // Failure
     specUI = ui.addSpec(spec);
-    specUI.addStep('some step').finish('failure');
+    specUI.addStep('some step', line).finish('failure');
     specUI.finish('failure');
 
     // Error
@@ -82,6 +84,15 @@ describe('angular.scenario.HtmlUI', function() {
       each(function(index, timer) {
         expect(timer.innerHTML).toMatch(/ms$/);
     });
+  });
+  
+  it('should include line if provided', function() {
+    specUI = ui.addSpec(spec);
+    specUI.addStep('some step', line).finish('error!');
+    specUI.finish();
+
+    var errorHtml = context.find('#describe-10 .tests li pre').html();
+    expect(errorHtml.indexOf('unknown:-1')).toEqual(0);
   });
 
 });

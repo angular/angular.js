@@ -91,6 +91,7 @@ angular.scenario.Runner.prototype.run = function(ui, application, specRunnerClas
     });
     angular.foreach(angular.scenario.dsl, function(fn, key) {
       self.$window[key] = function() {
+        var line = callerFile(3);
         var scope = angular.scope(runner);
 
         // Make the dsl accessible on the current chain
@@ -103,10 +104,12 @@ angular.scenario.Runner.prototype.run = function(ui, application, specRunnerClas
 
         // Make these methods work on the current chain
         scope.addFuture = function() {
-          return angular.scenario.SpecRunner.prototype.addFuture.apply(scope, arguments);
+          Array.prototype.push.call(arguments, line);
+          return specRunnerClass.prototype.addFuture.apply(scope, arguments);
         };
         scope.addFutureAction = function() {
-          return angular.scenario.SpecRunner.prototype.addFutureAction.apply(scope, arguments);
+          Array.prototype.push.call(arguments, line);
+          return specRunnerClass.prototype.addFutureAction.apply(scope, arguments);
         };
 
         return scope.dsl[key].apply(scope, arguments);

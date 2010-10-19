@@ -3,9 +3,10 @@ describe('angular.scenario.Future', function() {
   
   it('should set the sane defaults', function() {
     var behavior = function() {};
-    var future = new angular.scenario.Future('test name', behavior);
+    var future = new angular.scenario.Future('test name', behavior, 'foo');
     expect(future.name).toEqual('test name');
     expect(future.behavior).toEqual(behavior);
+    expect(future.line).toEqual('foo');
     expect(future.value).toBeUndefined();
     expect(future.fulfilled).toBeFalsy();
     expect(future.parser).toEqual(angular.identity);

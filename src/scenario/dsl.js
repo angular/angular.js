@@ -1,6 +1,18 @@
 /**
  * Shared DSL statements that are useful to all scenarios.
  */
+ 
+ /**
+ * Usage:
+ *    wait() waits until you call resume() in the console
+ */
+ angular.scenario.dsl('wait', function() {
+  return function() {
+    return this.addFuture('waiting for you to call resume() in the console', function(done) {
+      this.$window.resume = function() { done(); };
+    });
+  };
+ });
 
 /**
 * Usage:
@@ -41,23 +53,22 @@ angular.scenario.dsl('expect', function() {
  *    of a  URL to navigate to
  */
 angular.scenario.dsl('navigateTo', function() {
-  return function(url) {
+  return function(url, delegate) {
     var application = this.application;
-    var name = url;
-    if (url.name) {
-      name = ' value of ' + url.name;
-    }
-    return this.addFuture('navigate to ' + name, function(done) {
-      application.navigateTo(url.value || url, function() {
+    return this.addFuture('navigate to ' + url, function(done) {
+      if (delegate) {
+        url = delegate.call(this, url);
+      }
+      application.navigateTo(url, function() {
         application.executeAction(function($window) {
           if ($window.angular) {
             var $browser = $window.angular.service.$browser();
             $browser.poll();
             $browser.notifyWhenNoOutstandingRequests(function() {
-              done(null, url.value || url);
+              done(null, url);
             });
           } else {
-            done(null, url.value || url);
+            done(null, url);
           }
         });
       });
@@ -142,9 +153,9 @@ angular.scenario.dsl('input', function() {
 
 /**
  * Usage:
- *    repeater('#products table').count() // number of rows
- *    repeater('#products table').row(1) // all bindings in row as an array
- *    repeater('#products table').column('product.name') // all values across all rows in an array
+ *    repeater('#products table').count() number of rows
+ *    repeater('#products table').row(1) all bindings in row as an array
+ *    repeater('#products table').column('product.name') all values across all rows in an array
  */
 angular.scenario.dsl('repeater', function() {
   var chain = {};
@@ -194,8 +205,8 @@ angular.scenario.dsl('repeater', function() {
 
 /**
  * Usage:
- *    select(selector).option('value') // select one option
- *    select(selector).options('value1', 'value2', ...) // select options from a multi select
+ *    select(selector).option('value') select one option
+ *    select(selector).options('value1', 'value2', ...) select options from a multi select
  */
 angular.scenario.dsl('select', function() {
   var chain = {};
@@ -227,11 +238,12 @@ angular.scenario.dsl('select', function() {
 
 /**
  * Usage:
- *    element(selector).click() // clicks an element
- *    element(selector).attr(name) // gets the value of an attribute
- *    element(selector).attr(name, value) // sets the value of an attribute
- *    element(selector).val() // gets the value (as defined by jQuery)
- *    element(selector).val(value) // sets the value (as defined by jQuery)
+ *    element(selector).click() clicks an element
+ *    element(selector).attr(name) gets the value of an attribute
+ *    element(selector).attr(name, value) sets the value of an attribute
+ *    element(selector).val() gets the value (as defined by jQuery)
+ *    element(selector).val(value) sets the value (as defined by jQuery)
+ *    element(selector).query(fn) executes fn(selectedElements, done)
  */
 angular.scenario.dsl('element', function() {
   var chain = {};
@@ -260,6 +272,12 @@ angular.scenario.dsl('element', function() {
     }
     return this.addFutureAction(futureName, function($window, $document, done) {
       done(null, $document.elements().val(value));
+    });
+  };
+
+  chain.query = function(fn) {
+    return this.addFutureAction('element ' + this.selector + ' custom query', function($window, $document, done) {
+      fn.call(this, $document.elements(), done);
     });
   };
 
