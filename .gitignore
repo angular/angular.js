@@ -1,8 +1,3 @@
-angular-minified.map
-angular.js
-angular-minified.js
-angular-debug.js
-angular-ie-compat.js
-angular-scenario.js
+build/
 angularjs.netrc
 jstd.log
