@@ -34,20 +34,15 @@ ANGULAR_SCENARIO = [
   'src/scenario/matchers.js',
 ]
 
-GENERATED_FILES = [
-  'angular-debug.js',
-  'angular-minified.js',
-  'angular-minified.map',
-  'angular-ie-compat.js',
-  'angular-scenario.js',
-]
+BUILD_DIR = 'build'
 
 task :default => [:compile, :test]
 
 
 desc 'Clean Generated Files'
 task :clean do
-  FileUtils.rm(GENERATED_FILES, :force => true)
+  FileUtils.rm_r(BUILD_DIR, :force => true)
+  FileUtils.mkdir(BUILD_DIR)
 end
 
 
@@ -64,7 +59,7 @@ task :compile_scenario do
 
   concat = 'cat ' + deps.flatten.join(' ')
 
-  File.open('angular-scenario.js', 'w') do |f|
+  File.open(path_to('angular-scenario.js'), 'w') do |f|
     f.write(%x{#{concat}})
     f.write(gen_css('css/angular.css') + "\n")
     f.write(gen_css('css/angular-scenario.css'))
@@ -87,10 +82,11 @@ task :generate_ie_compat do
 
   # create a js file with multipart header containing the extracted images. the entire file *must*
   # be CRLF (\r\n) delimited
-  File.open('angular-ie-compat.js', 'w') do |f|
+  File.open(path_to('angular-ie-compat.js'), 'w') do |f|
     f.write("/*\r\n" +
             "Content-Type: multipart/related; boundary=\"_\"\r\n" +
             "\r\n")
+
     images.each_index do |idx|
       f.write("--_\r\n" +
               "Content-Location:img#{idx}\r\n" +
@@ -139,7 +135,7 @@ task :compile => [:compile_scenario, :generate_ie_compat] do
       'src/angular.suffix',
   ]
 
-  File.open('angular-debug.js', 'w') do |f|
+  File.open(path_to('angular.js'), 'w') do |f|
     concat = 'cat ' + deps.flatten.join(' ')
     f.write(%x{#{concat}})
     f.write(gen_css('css/angular.css', true))
@@ -147,30 +143,36 @@ task :compile => [:compile_scenario, :generate_ie_compat] do
 
   %x(java -jar lib/compiler-closure/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
-        --js angular-debug.js \
-        --create_source_map ./angular-minified.map \
-        --js_output_file angular-minified.js)
+        --js #{path_to('angular.js')} \
+        --js_output_file #{path_to('angular.min.js')})
 end
 
 
 desc 'Create angular distribution'
 task :package => :compile do
-  date = Time.now.strftime('%y%m%d_%H%M')
-  sha = %x(git rev-parse HEAD)[0..7]
-  filename = "angular-#{date}-#{sha}.tgz"
+  v = YAML::load( File.open( 'version.yaml' ) )['version']
+  match = v.match(/^([^-]*)(-snapshot)?$/)
+  version = match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : '')
 
-  %x(cp test/angular-mocks.js ./)
+  tarball = "angular-#{version}.tgz"
 
-  %x(tar -czf #{filename} \
-         angular-debug.js \
-         angular-minified.js \
-         angular-scenario.js \
-         angular-mocks.js \
-         angular-ie-compat.js )
+  pkg_dir = path_to("pkg/angular-#{version}")
+  FileUtils.rm_r(path_to('pkg'), :force => true)
+  FileUtils.mkdir_p(pkg_dir)
 
-  %x( rm angular-mocks.js)
+  ['test/angular-mocks.js',
+    path_to('angular.js'),
+    path_to('angular.min.js'),
+    path_to('angular-ie-compat.js'),
+    path_to('angular-scenario.js')
+  ].each do |src|
+    dest = src.gsub(/^[^\/]+\//, '').gsub(/((\.min)?\.js)$/, "-#{version}\\1")
+    FileUtils.cp(src, pkg_dir + '/' + dest)
+  end
 
-  puts "Package created: #{filename}"
+  %x(tar -czf #{path_to(tarball)} -C #{path_to('pkg')} .)
+
+  puts "Package created: #{path_to(tarball)}"
 end
 
 
@@ -239,4 +241,12 @@ def gen_css(cssFile, minify = false)
   css.gsub! /\n/, "\\n"
 
   return %Q{document.write('<style type="text/css">#{css}</style>');}
+end
+
+
+##
+# returns path to the file in the build directory
+#
+def path_to(filename)
+  return File.join(BUILD_DIR, filename)
 end
