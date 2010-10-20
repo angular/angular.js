@@ -120,3 +120,71 @@ describe('toKeyValue', function() {
     expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
   });
 });
+
+
+describe ('rngScript', function() {
+  it('should match angular.js', function() {
+    expect('angular.js'.match(rngScript)).not.toBeNull();
+    expect('../angular.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular.js'.match(rngScript)).not.toBeNull();
+
+    expect('foo.js'.match(rngScript)).toBeNull();
+    expect('foo/foo.js'.match(rngScript)).toBeNull();
+    expect('my-angular-app.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular.min.js', function() {
+    expect('angular.min.js'.match(rngScript)).not.toBeNull();
+    expect('../angular.min.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular.min.js'.match(rngScript)).not.toBeNull();
+
+    expect('my-angular-app.min.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app.min.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular-bootstrap.js', function() {
+    expect('angular-bootstrap.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-bootstrap.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-bootstrap.js'.match(rngScript)).not.toBeNull();
+
+    expect('my-angular-app-bootstrap.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app-bootstrap.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular-0.9.0.js', function() {
+    expect('angular-0.9.0.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-0.9.0.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-0.9.0.js'.match(rngScript)).not.toBeNull();
+
+    expect('my-angular-app-0.9.0.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app-0.9.0.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular-0.9.0.min.js', function() {
+    expect('angular-0.9.0.min.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-0.9.0.min.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-0.9.0.min.js'.match(rngScript)).not.toBeNull();
+
+    expect('my-angular-app-0.9.0.min.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app-0.9.0.min.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular-0.9.0-de0a8612.js', function() {
+    expect('angular-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
+
+    expect('my-angular-app-0.9.0-de0a8612.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app-0.9.0-de0a8612.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular-0.9.0-de0a8612.min.js', function() {
+    expect('angular-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
+
+    expect('my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
+    expect('foo/../my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
+  });
+});
