@@ -223,4 +223,30 @@ describe('angularJsConfig', function() {
                                           ie_compat: 'myjs/angular-ie-compat.js',
                                           ie_compat_id: 'ngcompat'});
   });
+
+
+  it("should default to versioned ie-compat file if angular file is versioned", function() {
+    var doc = { getElementsByTagName: function(tagName) {
+                  expect(lowercase(tagName)).toEqual('script');
+                  return [{nodeName: 'SCRIPT',
+                           src: 'js/angular-0.9.0.js'}];
+               }};
+
+    expect(angularJsConfig(doc)).toEqual({base_url: 'js/',
+                                          ie_compat: 'js/angular-ie-compat-0.9.0.js',
+                                          ie_compat_id: 'ng-ie-compat'});
+  });
+
+
+  it("should default to versioned ie-compat file if angular file is versioned and minified", function() {
+    var doc = { getElementsByTagName: function(tagName) {
+                  expect(lowercase(tagName)).toEqual('script');
+                  return [{nodeName: 'SCRIPT',
+                           src: 'js/angular-0.9.0-cba23f00.min.js'}];
+               }};
+
+    expect(angularJsConfig(doc)).toEqual({base_url: 'js/',
+                                          ie_compat: 'js/angular-ie-compat-0.9.0-cba23f00.js',
+                                          ie_compat_id: 'ng-ie-compat'});
+  });
 });
