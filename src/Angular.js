@@ -49,7 +49,7 @@ var _undefined        = undefined,
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName,
-    rngScript         = /^(|.*\/)angular(-.*)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
+    rngScript         = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
 
 function foreach(obj, iterator, context) {
   var key;
@@ -426,14 +426,13 @@ function angularJsConfig(document, config) {
   var scripts = document.getElementsByTagName("script"),
       match;
   config = extend({
-    base_url: '',
-    ie_compat: 'angular-ie-compat.js',
     ie_compat_id: 'ng-ie-compat'
   }, config);
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(rngScript);
     if (match) {
       config.base_url = match[1];
+      config.ie_compat = match[1] + 'angular-ie-compat' + (match[2] || '') + '.js';
       extend(config, parseKeyValue(match[6]));
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {
