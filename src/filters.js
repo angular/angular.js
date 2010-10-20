@@ -75,7 +75,7 @@ var DATE_FORMATS = {
 var DATE_FORMATS_SPLIT = /([^yMdHhmsaZ]*)(y+|M+|d+|H+|h+|m+|s+|a|Z)(.*)/;
 
 angularFilter.date = function(date, format) {
-  if (!date instanceof Date) return date;
+  if (!(date instanceof Date)) return date;
   var text = date.toLocaleDateString(), fn;
   if (format && isString(format)) {
     text = '';

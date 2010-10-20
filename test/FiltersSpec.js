@@ -100,6 +100,12 @@ describe('filter', function(){
         midnight.getTimezoneOffset =
           function() { return 7 * 60; };
 
+    it('should ignore falsy inputs', function() {
+      expect(filter.date(null)).toEqual(null);
+      expect(filter.date('')).toEqual('');
+      expect(filter.date(123)).toEqual(123);
+    });
+
     it('should do basic filter', function() {
       expect(filter.date(noon)).toEqual(noon.toLocaleDateString());
       expect(filter.date(noon, '')).toEqual(noon.toLocaleDateString());
