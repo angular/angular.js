@@ -30,11 +30,11 @@ function Browser(location, document, head, XHR, $log) {
       var script = document[0].createElement('script');
       script.type = 'text/javascript';
       script.src = url.replace('JSON_CALLBACK', callbackId);
-      head.append(script);
       window[callbackId] = function(data){
         window[callbackId] = _undefined;
         callback(200, data);
       };
+      head.append(script);
     } else {
       var xhr = new XHR();
       xhr.open(method, url, true);
