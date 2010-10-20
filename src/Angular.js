@@ -48,7 +48,8 @@ var _undefined        = undefined,
     angularFormatter  = extensionMap(angular, 'formatter'),
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
-    nodeName;
+    nodeName,
+    rngScript         = /^(|.*\/)angular(-.*)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
 
 function foreach(obj, iterator, context) {
   var key;
@@ -422,8 +423,7 @@ function angularInit(config){
 }
 
 function angularJsConfig(document, config) {
-  var filename = /^(.*)angular(-([^\/]*))?.js(\?[^#]*)?(#(.*))?$/,
-      scripts = document.getElementsByTagName("script"),
+  var scripts = document.getElementsByTagName("script"),
       match;
   config = extend({
     base_url: '',
@@ -431,7 +431,7 @@ function angularJsConfig(document, config) {
     ie_compat_id: 'ng-ie-compat'
   }, config);
   for(var j = 0; j < scripts.length; j++) {
-    match = (scripts[j].src || "").match(filename);
+    match = (scripts[j].src || "").match(rngScript);
     if (match) {
       config.base_url = match[1];
       extend(config, parseKeyValue(match[6]));
