@@ -32,7 +32,7 @@ function lex(text, parseStringsForObjects){
       index = 0,
       json = [],
       ch,
-      lastCh = ','; // can start regexp
+      lastCh = ':'; // can start regexp
 
   while (index < text.length) {
     ch = text.charAt(index);
@@ -64,7 +64,7 @@ function lex(text, parseStringsForObjects){
         tokens.push({index:index, text:ch2, fn:fn2});
         index += 2;
       } else if (fn) {
-        tokens.push({index:index, text:ch, fn:fn});
+        tokens.push({index:index, text:ch, fn:fn, json: was('[,:') && is('+-')});
         index += 1;
       } else {
         throw "Lexer Error: Unexpected next character [" +

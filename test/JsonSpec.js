@@ -100,6 +100,10 @@ describe('json', function(){
     expect(fromJson("{value:2.55, name:'misko'}")).toEqual({value:2.55, name:'misko'});
   });
 
+  it('should parse negative / possitve numbers', function() {
+    expect(fromJson("{neg:-2.55, pos:+.3, a:[-2, +.1, -.2, +.3]}")).toEqual({neg:-2.55, pos:+.3, a:[-2, +.1, -.2, +.3]});
+  });
+
   describe('security', function(){
     it('should not allow naked expressions', function(){
       expect(function(){fromJson('1+2');}).toThrow("Did not understand '+2' while evaluating '1+2'.");
