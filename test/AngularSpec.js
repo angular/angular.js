@@ -188,3 +188,39 @@ describe ('rngScript', function() {
     expect('foo/../my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
   });
 });
+
+
+describe('angularJsConfig', function() {
+  it('should find angular.js script tag and config', function() {
+    var doc = { getElementsByTagName: function(tagName) {
+                  expect(tagName).toEqual('script');
+                  return [{nodeName: 'SCRIPT', src: 'random.js'},
+                          {nodeName: 'SCRIPT', src: 'angular.js'},
+                          {nodeName: 'SCRIPT', src: 'my-angular-app.js'}];
+                }
+              };
+
+    expect(angularJsConfig(doc)).toEqual({base_url: '',
+                                          ie_compat: 'angular-ie-compat.js',
+                                          ie_compat_id: 'ng-ie-compat'});
+  });
+
+
+  it('should extract angular config from the ng: attributes', function() {
+    var doc = { getElementsByTagName: function(tagName) {
+                  expect(lowercase(tagName)).toEqual('script');
+                  return [{nodeName: 'SCRIPT',
+                           src: 'angularjs/angular.js',
+                           attributes: [{name: 'ng:autobind', value:undefined},
+                                        {name: 'ng:css', value: 'css/my_custom_angular.css'},
+                                        {name: 'ng:ie-compat', value: 'myjs/angular-ie-compat.js'},
+                                        {name: 'ng:ie-compat-id', value: 'ngcompat'}] }];
+               }};
+
+    expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
+                                          autobind: true,
+                                          css: 'css/my_custom_angular.css',
+                                          ie_compat: 'myjs/angular-ie-compat.js',
+                                          ie_compat_id: 'ngcompat'});
+  });
+});
