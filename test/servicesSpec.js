@@ -85,7 +85,7 @@ describe("service", function(){
     it("should inject $location", function() {
       expect(scope.$location).toBeDefined();
     });
-    
+
     it("update should update location object immediately", function() {
       var href = 'http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=';
       scope.$location.update(href);
@@ -99,25 +99,25 @@ describe("service", function(){
       expect(scope.$location.hashPath).toEqual('path');
       expect(scope.$location.hashSearch).toEqual({key: 'value', flag: true, key2: ''});
     });
-    
+
     it('toString() should return actual representation', function() {
       var href = 'http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=';
       scope.$location.update(href);
       expect(scope.$location.toString()).toEqual(href);
       scope.$eval();
-      
+
       scope.$location.host = 'new';
       scope.$location.path = '';
       expect(scope.$location.toString()).toEqual('http://new:123?query=value#path?key=value&flag&key2=');
     });
-    
+
     it('toString() should not update browser', function() {
       var url = $browser.getUrl();
       scope.$location.update('http://www.angularjs.org');
       expect(scope.$location.toString()).toEqual('http://www.angularjs.org');
       expect($browser.getUrl()).toEqual(url);
     });
-    
+
     it('should update browser at the end of $eval', function() {
       var url = $browser.getUrl();
       scope.$location.update('http://www.angularjs.org/');
@@ -136,12 +136,12 @@ describe("service", function(){
       expect(scope.$location.hashPath).toEqual('');
       expect(scope.$location.hashSearch).toEqual({});
     });
-    
+
     it('should update hash on hashPath or hashSearch update', function() {
       scope.$location.update('http://server/#path?a=b');
       scope.$eval();
       scope.$location.update({hashPath: '', hashSearch: {}});
-      
+
       expect(scope.$location.hash).toEqual('');
     });
 
@@ -154,7 +154,7 @@ describe("service", function(){
       expect(scope.$location.hashPath).toEqual('');
       expect(scope.$location.hashSearch).toEqual({});
     });
-    
+
     it('should update hash on hashPath or hashSearch property change', function() {
       scope.$location.update('http://server/#path?a=b');
       scope.$eval();
@@ -178,35 +178,35 @@ describe("service", function(){
       scope.$eval();
       expect(log).toEqual('/abc;');
     });
-    
+
     it('udpate() should accept hash object and update only given properties', function() {
       scope.$location.update("http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=");
       scope.$location.update({host: 'new', port: 24});
-      
+
       expect(scope.$location.host).toEqual('new');
       expect(scope.$location.port).toEqual(24);
       expect(scope.$location.protocol).toEqual('http');
       expect(scope.$location.href).toEqual("http://new:24/p/a/t/h.html?query=value#path?key=value&flag&key2=");
     });
-    
+
     it('updateHash() should accept one string argument to update path', function() {
       scope.$location.updateHash('path');
       expect(scope.$location.hash).toEqual('path');
       expect(scope.$location.hashPath).toEqual('path');
     });
-    
+
     it('updateHash() should accept one hash argument to update search', function() {
       scope.$location.updateHash({a: 'b'});
       expect(scope.$location.hash).toEqual('?a=b');
       expect(scope.$location.hashSearch).toEqual({a: 'b'});
     });
-    
+
     it('updateHash() should accept path and search both', function() {
       scope.$location.updateHash('path', {a: 'b'});
       expect(scope.$location.hash).toEqual('path?a=b');
       expect(scope.$location.hashSearch).toEqual({a: 'b'});
       expect(scope.$location.hashPath).toEqual('path');
-    });    
+    });
   });
 
   describe("$invalidWidgets", function(){
@@ -561,54 +561,54 @@ describe("service", function(){
     });
 
   });
-  
-  
+
+
   describe('URL_MATCH', function() {
 
     it('should parse basic url', function() {
       var match = URL_MATCH.exec('http://www.angularjs.org/path?search#hash?x=x');
-      
+
       expect(match[1]).toEqual('http');
       expect(match[3]).toEqual('www.angularjs.org');
       expect(match[6]).toEqual('/path');
       expect(match[8]).toEqual('search');
       expect(match[10]).toEqual('hash?x=x');
     });
-    
+
     it('should parse file://', function(){
       var match = URL_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
-      
+
       expect(match[1]).toEqual('file');
       expect(match[3]).toEqual('');
-      expect(match[5]).toEqual(null);
+      expect(match[5]).toBeFalsy();
       expect(match[6]).toEqual('/Users/Shared/misko/work/angular.js/scenario/widgets.html');
-      expect(match[8]).not.toBeDefined();
+      expect(match[8]).toBeFalsy();
     });
-    
+
     it('should parse url with "-" in host', function(){
       var match = URL_MATCH.exec('http://a-b1.c-d.09/path');
-      
+
       expect(match[1]).toEqual('http');
       expect(match[3]).toEqual('a-b1.c-d.09');
-      expect(match[5]).toEqual(null);
+      expect(match[5]).toBeFalsy();
       expect(match[6]).toEqual('/path');
-      expect(match[8]).not.toBeDefined();
+      expect(match[8]).toBeFalsy();
     });
-    
+
     it('should parse host without "/" at the end', function() {
       var match = URL_MATCH.exec('http://host.org');
       expect(match[3]).toEqual('host.org');
-      
+
       match = URL_MATCH.exec('http://host.org#');
       expect(match[3]).toEqual('host.org');
-      
+
       match = URL_MATCH.exec('http://host.org?');
       expect(match[3]).toEqual('host.org');
     });
-    
+
     it('should match with just "/" path', function() {
       var match = URL_MATCH.exec('http://server/#?book=moby');
-      
+
       expect(match[10]).toEqual('?book=moby');
     });
   });
