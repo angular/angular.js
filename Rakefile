@@ -39,6 +39,12 @@ BUILD_DIR = 'build'
 task :default => [:compile, :test]
 
 
+desc 'Init the build workspace'
+task :init do
+  FileUtils.mkdir(BUILD_DIR) unless File.directory?(BUILD_DIR)
+end
+
+
 desc 'Clean Generated Files'
 task :clean do
   FileUtils.rm_r(BUILD_DIR, :force => true)
@@ -47,7 +53,7 @@ end
 
 
 desc 'Compile Scenario'
-task :compile_scenario do
+task :compile_scenario => :init do
 
   deps = [
       'lib/jquery/jquery-1.4.2.js',
@@ -67,11 +73,8 @@ task :compile_scenario do
 end
 
 
-
-
-
 desc 'Generate IE css js patch'
-task :generate_ie_compat do
+task :generate_ie_compat => :init do
   css = File.open('css/angular.css', 'r') {|f| f.read }
 
   # finds all css rules that contain backround images and extracts the rule name(s), content type of
@@ -127,7 +130,7 @@ end
 
 
 desc 'Compile JavaScript'
-task :compile => [:compile_scenario, :generate_ie_compat] do
+task :compile => [:init, :compile_scenario, :generate_ie_compat] do
 
   deps = [
       'src/angular.prefix',
@@ -149,7 +152,7 @@ end
 
 
 desc 'Create angular distribution'
-task :package => :compile do
+task :package => [:clean, :compile] do
   v = YAML::load( File.open( 'version.yaml' ) )['version']
   match = v.match(/^([^-]*)(-snapshot)?$/)
   version = match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : '')
