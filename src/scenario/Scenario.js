@@ -64,7 +64,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
       prefix += 'not ';
     }
     var self = this;
-    this.addFuture(prefix + name + ' ' + angular.toJson(expected), 
+    this.addFuture(prefix + name + ' ' + angular.toJson(expected),
       function(done) {
         var error;
         self.actual = self.future.value;
@@ -129,7 +129,7 @@ function formatException(error, maxStackLines) {
 }
 
 /**
- * Returns a function that gets the file name and line number from a 
+ * Returns a function that gets the file name and line number from a
  * location in the stack if available based on the call site.
  *
  * Note: this returns another function because accessing .stack is very
@@ -137,10 +137,10 @@ function formatException(error, maxStackLines) {
  */
 function callerFile(offset) {
   var error = new Error();
-  
+
   return function() {
     var line = (error.stack || '').split('\n')[offset];
-  
+
     // Clean up the stack trace line
     if (line) {
       if (line.indexOf('@') !== -1) {
@@ -151,7 +151,7 @@ function callerFile(offset) {
         line = line.substring(line.indexOf('(')+1).replace(')', '');
       }
     }
-    
+
     return line || '';
   };
 }
@@ -188,6 +188,12 @@ function browserTrigger(element, type) {
     type = 'change';
   }
   if (msie) {
+    switch(element.type) {
+    case 'radio':
+    case 'checkbox':
+      element.checked = !element.checked;
+      break;
+    }
     element.fireEvent('on' + type);
   } else {
     var evnt = document.createEvent('MouseEvents');
@@ -200,9 +206,9 @@ function browserTrigger(element, type) {
  * Don't use the jQuery trigger method since it works incorrectly.
  *
  * jQuery notifies listeners and then changes the state of a checkbox and
- * does not create a real browser event. A real click changes the state of 
+ * does not create a real browser event. A real click changes the state of
  * the checkbox and then notifies listeners.
- * 
+ *
  * To work around this we instead use our own handler that fires a real event.
  */
 _jQuery.fn.trigger = function(type) {
