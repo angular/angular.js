@@ -93,7 +93,7 @@ function lex(text, parseStringsForObjects){
   }
   function isWhitespace(ch) {
     return ch == ' ' || ch == '\r' || ch == '\t' ||
-           ch == '\n' || ch == '\v';
+           ch == '\n' || ch == '\v' || ch == '\u00A0'; // IE treats non-breaking space as \u00A0
   }
   function isIdent(ch) {
     return 'a' <= ch && ch <= 'z' ||

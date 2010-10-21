@@ -222,11 +222,11 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should execute custom query', function() {
-        doc.append('<a id="test" href="myUrl"></a>');
+        doc.append('<a id="test" href="http://example.com/myUrl"></a>');
         $root.dsl.element('#test').query(function(elements, done) {
           done(null, elements.attr('href'));
         });
-        expect($root.futureResult).toEqual('myUrl');
+        expect($root.futureResult).toEqual('http://example.com/myUrl');
       });
     });
 
