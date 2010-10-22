@@ -541,7 +541,7 @@ describe("service", function(){
   describe('$cookieStore', function() {
 
     it('should serialize objects to json', function() {
-      scope.$cookieStore.put('objectCookie', {id: 123, name: 'blah'});
+      scope.$inject('$cookieStore').put('objectCookie', {id: 123, name: 'blah'});
       scope.$eval(); //force eval in test
       expect($browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
     });
@@ -550,12 +550,12 @@ describe("service", function(){
     it('should deserialize json to object', function() {
       $browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
       $browser.poll();
-      expect(scope.$cookieStore.get('objectCookie')).toEqual({id: 123, name: 'blah'});
+      expect(scope.$inject('$cookieStore').get('objectCookie')).toEqual({id: 123, name: 'blah'});
     });
 
 
     it('should delete objects from the store when remove is called', function() {
-      scope.$cookieStore.put('gonner', { "I'll":"Be Back"});
+      scope.$inject('$cookieStore').put('gonner', { "I'll":"Be Back"});
       scope.$eval(); //force eval in test
       expect($browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
     });
