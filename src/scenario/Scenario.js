@@ -189,10 +189,10 @@ function browserTrigger(element, type) {
   }
   if (msie) {
     switch(element.type) {
-    case 'radio':
-    case 'checkbox':
-      element.checked = !element.checked;
-      break;
+      case 'radio':
+      case 'checkbox':
+        element.checked = !element.checked;
+        break;
     }
     element.fireEvent('on' + type);
   } else {
@@ -211,8 +211,14 @@ function browserTrigger(element, type) {
  *
  * To work around this we instead use our own handler that fires a real event.
  */
-_jQuery.fn.trigger = function(type) {
-  return this.each(function(index, node) {
-    browserTrigger(node, type);
-  });
-};
+(function(fn){
+  var parentTrigger = fn.trigger;
+  fn.trigger = function(type) {
+    if (/(click|change)/.test(type)) {
+      return this.each(function(index, node) {
+        browserTrigger(node, type);
+      });
+    }
+    return parentTrigger.apply(this, arguments);
+  };
+})(_jQuery.fn);
