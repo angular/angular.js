@@ -195,6 +195,20 @@ describe("directives", function(){
     });
   });
 
+
+  describe('ng:submit', function() {
+    it('should get called on form submit', function() {
+      var scope = compile('<form action="" ng:submit="submitted = true">' +
+                            '<input id="submit" type="submit"/>' +
+                          '</form>');
+      scope.$eval();
+      expect(scope.submitted).not.toBeDefined();
+
+      browserTrigger(element.children()[0]);
+      expect(scope.submitted).toEqual(true);
+    });
+  });
+
   it('should ng:class', function(){
     var scope = compile('<div class="existing" ng:class="[\'A\', \'B\']"></div>');
     scope.$eval();
