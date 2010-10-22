@@ -193,6 +193,13 @@ function browserTrigger(element, type) {
       case 'checkbox':
         element.checked = !element.checked;
         break;
+      case 'text':
+      case 'textarea':
+      case 'password':
+        // TODO: FIX THIS HACK
+        // for some reason on IE 'change' event does not fire in
+        // jQuery but keyup does. So we are hacking it!
+        type = 'keyup';
     }
     element.fireEvent('on' + type);
   } else {
@@ -214,7 +221,7 @@ function browserTrigger(element, type) {
 (function(fn){
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
-    if (/(click|change)/.test(type)) {
+    if (/(click|change|keyup)/.test(type)) {
       return this.each(function(index, node) {
         browserTrigger(node, type);
       });
