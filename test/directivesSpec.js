@@ -172,7 +172,7 @@ describe("directives", function(){
   });
 
   describe('ng:click', function(){
-    it('should fire event', function(){
+    it('should get called on a click', function(){
       var scope = compile('<div ng:click="clicked = true"></div>');
       scope.$eval();
       expect(scope.$get('clicked')).toBeFalsy();
@@ -184,14 +184,14 @@ describe("directives", function(){
     it('should stop event propagation', function() {
       var scope = compile('<div ng:click="outer = true"><div ng:click="inner = true"></div></div>');
       scope.$eval();
-      expect(scope.$get('outer')).not.toBeDefined();
-      expect(scope.$get('inner')).not.toBeDefined();
+      expect(scope.outer).not.toBeDefined();
+      expect(scope.inner).not.toBeDefined();
 
-      var innerDiv = jqLite(element.children()[0]);
+      var innerDiv = element.children()[0];
 
       browserTrigger(innerDiv, 'click');
-      expect(scope.$get('outer')).not.toBeDefined();
-      expect(scope.$get('inner')).toEqual(true);
+      expect(scope.outer).not.toBeDefined();
+      expect(scope.inner).toEqual(true);
     });
   });
 
