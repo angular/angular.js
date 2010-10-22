@@ -23,7 +23,7 @@
   <ul>
     <li ng:repeat="item in activities.data.items.$filter(filterText)">
       <h1>
-        <img src="{{item.actor.thumbnailUrl}}"/>
+        <img ng:src="{{item.actor.thumbnailUrl}}"/>
         <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
         <a href="#" ng:click="expandReplies(item)">Replies: {{item.links.replies[0].count}}</a>
       </h1>
@@ -31,14 +31,14 @@
         {{item.object.content | html}}
         <div>
           <a href="{{attachment.links.enclosure[0].href}}" ng:repeat="attachment in item.object.attachments">
-            <img src="{{attachment.links.preview[0].href}}"/>
+            <img ng:src="{{attachment.links.preview[0].href}}"/>
           </a>
         </div>
       </div>
       <my:expand expand="item.replies.show">
         <ul>
           <li ng:repeat="reply in item.replies.data.items">
-            <img src="{{reply.actor.thumbnailUrl}}"/>
+            <img ng:src="{{reply.actor.thumbnailUrl}}"/>
             <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
             {{reply.content | html}}
           </li>
