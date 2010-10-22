@@ -1,1 +1,1 @@
-node lib/nodeserver/server.js
+node lib/nodeserver/server.js $1
