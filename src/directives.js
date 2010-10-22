@@ -205,7 +205,7 @@ angularWidget("@ng:repeat", function(expression, element){
  *
  * Events that are handled via these handler are always configured not to propagate further.
  *
- * TODO: maybe we should consider allowing users to control even propagation in the future.
+ * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 angularDirective("ng:click", function(expression, element){
   return function(element){
