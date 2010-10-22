@@ -641,4 +641,4 @@ angularServiceInject('$cookieStore', function($store) {
     }
   };
 
-}, ['$cookies'], EAGER_PUBLISHED);
+}, ['$cookies']);

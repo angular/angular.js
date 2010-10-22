@@ -1,3 +1,11 @@
+# <angular/> 0.9.1 repulsion-field (in-progress) #
+
+### Breaking changes
+- $cookieStore service is not globally published any more, if you use it, you must request it via
+  $inject as any other non-global service
+
+
+
 # <angular/> 0.9.0 dragon-breath (2010-10-20) #
 
 ### Security
