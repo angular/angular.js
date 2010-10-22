@@ -218,6 +218,25 @@ angularDirective("ng:click", function(expression, element){
   };
 });
 
+
+/**
+ * Enables binding angular expressions to onsubmit events.
+ *
+ * Additionally it prevents the default action (which for form means sending the request to the
+ * server and reloading the current page).
+ */
+angularDirective("ng:submit", function(expression, element) {
+  return function(element) {
+    var self = this;
+    element.bind('submit', function(event) {
+      self.$tryEval(expression, element);
+      self.$root.$eval();
+      event.preventDefault();
+    });
+  };
+});
+
+
 angularDirective("ng:watch", function(expression, element){
   return function(element){
     var self = this;
