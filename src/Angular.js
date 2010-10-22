@@ -141,6 +141,11 @@ function isElement(node) {
   return node && (node.nodeName || node instanceof JQLite || (jQuery && node instanceof jQuery));
 }
 
+function isJson(value) {
+  return isString(value) && (/^\s*\{/.test(value) && /\}\s*$/.test(value) || 
+      /^\s*\[/.test(value) && /\]\s*$/.test(value));
+}
+
 function HTML(html) {
   this.html = html;
 }

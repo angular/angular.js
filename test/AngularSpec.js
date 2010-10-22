@@ -250,3 +250,24 @@ describe('angularJsConfig', function() {
                                           ie_compat_id: 'ng-ie-compat'});
   });
 });
+
+describe('isJson', function() {
+  it('should return false on non-string', function() {
+    expect(isJson()).toBeFalsy();
+    expect(isJson({})).toBeFalsy();
+    expect(isJson([])).toBeFalsy();
+    expect(isJson(10)).toBeFalsy();
+  });
+  
+  it('should return true on strings starting and ending with curly or square brackets', function() {
+    expect(isJson('{a: "b"}')).toBeTruthy();
+    expect(isJson('[1, 2, 3]')).toBeTruthy();
+    expect(isJson('\t\n{a: "b"} ')).toBeTruthy();
+    expect(isJson(' [1, 2, 3] ')).toBeTruthy();
+  });
+  
+  it('should return false on other strings', function() {
+    expect(isJson('{ ]')).toBeFalsy();
+    expect(isJson(' abc ')).toBeFalsy();
+  });
+});
