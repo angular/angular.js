@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <title>Jasmine Test Runner</title>
+  <link rel="stylesheet" type="text/css" href="../lib/jasmine-1.0.1/jasmine.css">
+  <script type="text/javascript" src="../lib/jasmine-1.0.1/jasmine.js"></script>
+  <script type="text/javascript" src="../lib/jasmine-1.0.1/jasmine-html.js"></script>
+
+
+  <!-- include source files here... -->
+  <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
+  <script type="text/javascript"> var _jQuery = $;</script>
+
+  <script type="text/javascript" src="../src/Angular.js"></script>
+  <script type="text/javascript" src="../src/JSON.js"></script>
+  <script type="text/javascript" src="../src/Compiler.js"></script>
+  <script type="text/javascript" src="../src/Scope.js"></script>
+  <script type="text/javascript" src="../src/Injector.js"></script>
+  <script type="text/javascript" src="../src/jqLite.js"></script>
+  <script type="text/javascript" src="../src/parser.js"></script>
+  <script type="text/javascript" src="../src/Resource.js"></script>
+  <script type="text/javascript" src="../src/Browser.js"></script>
+  <script type="text/javascript" src="../src/AngularPublic.js"></script>
+  <script type="text/javascript" src="../src/services.js"></script>
+  <script type="text/javascript" src="../src/apis.js"></script>
+  <script type="text/javascript" src="../src/filters.js"></script>
+  <script type="text/javascript" src="../src/formatters.js"></script>
+  <script type="text/javascript" src="../src/validators.js"></script>
+  <script type="text/javascript" src="../src/directives.js"></script>
+  <script type="text/javascript" src="../src/markups.js"></script>
+  <script type="text/javascript" src="../src/widgets.js"></script>
+
+  <script type="text/javascript" src="../src/scenario/Scenario.js"></script>
+  <script type="text/javascript" src="../src/scenario/Application.js"></script>
+  <script type="text/javascript" src="../src/scenario/Describe.js"></script>
+  <script type="text/javascript" src="../src/scenario/Future.js"></script>
+  <script type="text/javascript" src="../src/scenario/HtmlUI.js"></script>
+  <script type="text/javascript" src="../src/scenario/Runner.js"></script>
+  <script type="text/javascript" src="../src/scenario/SpecRunner.js"></script>
+  <script type="text/javascript" src="../src/scenario/dsl.js"></script>
+  <script type="text/javascript" src="../src/scenario/matchers.js"></script>
+
+  <script type="text/javascript" src="angular-mocks.js"></script>
+  <script type="text/javascript" src="testabilityPatch.js"></script>
+
+  <!-- include spec files here... -->
+<script type="text/javascript">
+describe('manual', function(){
+  var scope;
+
+  function compile(html, initialScope, parent) {
+    var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
+    var element = self.element = jqLite(html);
+    scope = compiler.compile(element)(element);
+
+    if (parent) parent.append(element);
+
+    extend(scope, initialScope);
+    scope.$init();
+    return {node:element, scope:scope};
+  };
+
+  it('should debug', function(){
+    var x = compile(
+        '<select name="selection" ng:format="number">' +
+        '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\', \'C\']">{{name}}</option>' +
+      '</select>');
+    expect(scope.selection).toEqual(undefined);
+
+    browserTrigger(element[0].childNodes[2], 'change');
+    expect(scope.selection).toEqual(1);
+
+    scope.selection = 2;
+    scope.$eval();
+    expect(element[0].childNodes[3].selected).toEqual(true);
+  });
+
+  it('should reproduce', function(){
+    var select = $('<select name=""><option>a</option></select>');
+    var log = '';
+    select.bind('change', function(){ log += 'change;'; });
+    select.bind('click', function(){ log += 'click;'; });
+    select.bind('keyup', function(){ log += 'keyup;'; });
+    select[0].attachEvent('onchange', function(){ log += 'CHANGE;';});
+    select[0].fireEvent('onfocusout');
+    select[0].fireEvent('onchange');
+    select[0].fireEvent('onclick');
+    select[0].fireEvent('onkeyup');
+    expect(log).toEqual('CHANGE;change;click;keyup;');
+  });
+});
+</script>
+
+</head>
+<body>
+
+<script type="text/javascript">
+  jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
+  jasmine.getEnv().execute();
+</script>
+
+</body>
+</html>

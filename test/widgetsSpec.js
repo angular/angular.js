@@ -345,9 +345,9 @@ describe("widget", function(){
       it('should initialize to selected', function(){
         compile(
             '<select name="selection">' +
-            '<option>A</option>' +
-            '<option selected>B</option>' +
-        '</select>');
+                '<option>A</option>' +
+                '<option selected>B</option>' +
+            '</select>');
         expect(scope.selection).toEqual('B');
         scope.selection = 'A';
         scope.$eval();
