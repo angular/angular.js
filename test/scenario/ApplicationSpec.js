@@ -9,8 +9,8 @@ describe('angular.scenario.Application', function() {
   it('should return new $window and $document after navigate', function() {
     var testWindow, testDocument, counter = 0;
     app.navigateTo = noop;
-    app.getWindow = function() { 
-      return {x:counter++, document:{x:counter++}}; 
+    app.getWindow = function() {
+      return {x:counter++, document:{x:counter++}};
     };
     app.navigateTo('http://www.google.com/');
     app.executeAction(function($document, $window) {
@@ -26,8 +26,8 @@ describe('angular.scenario.Application', function() {
 
   it('should execute callback with correct arguments', function() {
     var testWindow = {document: {}};
-    app.getWindow = function() { 
-      return testWindow; 
+    app.getWindow = function() {
+      return testWindow;
     };
     app.executeAction(function($window, $document) {
       expect(this).toEqual(app);
@@ -35,7 +35,7 @@ describe('angular.scenario.Application', function() {
       expect($window).toEqual(testWindow);
     });
   });
-  
+
   it('should create a new iframe each time', function() {
     app.navigateTo('about:blank');
     var frame = app.getFrame();
@@ -43,27 +43,27 @@ describe('angular.scenario.Application', function() {
     app.navigateTo('about:blank');
     expect(app.getFrame().attr('test')).toBeFalsy();
   });
-  
+
   it('should URL description bar', function() {
     app.navigateTo('about:blank');
     var anchor = frames.find('> h2 a');
     expect(anchor.attr('href')).toEqual('about:blank');
     expect(anchor.text()).toEqual('about:blank');
   });
-  
+
   it('should call onload handler when frame loads', function() {
     var called;
     app.getFrame = function() {
       // Mock a little jQuery
       var result = {
-        remove: function() { 
-          return result; 
+        remove: function() {
+          return result;
         },
-        attr: function(key, value) { 
+        attr: function(key, value) {
           return (!value) ? 'attribute value' : result;
         },
-        load: function() { 
-          called = true; 
+        load: function() {
+          called = true;
         }
       };
       return result;

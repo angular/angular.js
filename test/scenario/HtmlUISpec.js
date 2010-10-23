@@ -2,7 +2,7 @@ describe('angular.scenario.HtmlUI', function() {
   var ui;
   var context;
   var spec;
-  
+
   function line() { return 'unknown:-1'; }
 
   beforeEach(function() {
@@ -85,7 +85,7 @@ describe('angular.scenario.HtmlUI', function() {
         expect(timer.innerHTML).toMatch(/ms$/);
     });
   });
-  
+
   it('should include line if provided', function() {
     specUI = ui.addSpec(spec);
     specUI.addStep('some step', line).finish('error!');

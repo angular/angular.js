@@ -1,6 +1,6 @@
 describe('angular.scenario.matchers', function () {
   var matchers;
-  
+
   function expectMatcher(value, test) {
     delete matchers.error;
     delete matchers.future.value;
@@ -10,9 +10,9 @@ describe('angular.scenario.matchers', function () {
     test();
     expect(matchers.error).toBeUndefined();
   }
-  
+
   beforeEach(function() {
-    /** 
+    /**
      * Mock up the future system wrapped around matchers.
      *
      * @see Scenario.js#angular.scenario.matcher
@@ -27,7 +27,7 @@ describe('angular.scenario.matchers', function () {
     };
     angular.extend(matchers, angular.scenario.matcher);
   });
-  
+
   it('should handle basic matching', function() {
     expectMatcher(10, function() { matchers.toEqual(10); });
     expectMatcher('value', function() { matchers.toBeDefined(); });
