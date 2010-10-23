@@ -217,17 +217,17 @@ function createScope(parent, providers, instanceCache) {
     },
 
     $become: function(Class) {
-      if (isFunction(Class)) {
-        instance.constructor = Class;
-        foreach(Class.prototype, function(fn, name){
-          instance[name] = bind(instance, fn);
-        });
-        instance.$inject.apply(instance, concat([Class, instance], arguments, 1));
+      if (!isFunction(Class)) throw {name: 'Function is required'};
 
-        //TODO: backwards compatibility hack, remove when we don't depend on init methods
-        if (isFunction(Class.prototype.init)) {
-          instance.init();
-        }
+      instance.constructor = Class;
+      foreach(Class.prototype, function(fn, name){
+        instance[name] = bind(instance, fn);
+      });
+      instance.$inject.apply(instance, concat([Class, instance], arguments, 1));
+
+      //TODO: backwards compatibility hack, remove when we don't depend on init methods
+      if (isFunction(Class.prototype.init)) {
+        instance.init();
       }
     },
 

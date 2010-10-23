@@ -208,6 +208,11 @@ describe('scope/model', function(){
       parent.$eval();
       expect(child.run).toEqual(true);
     });
+
+    it('should throw an exception for debugging purposes if called with no fn', function() {
+      var scope = createScope();
+      expect(function() { scope.$new() }).toThrow({name: 'Function is required'});
+    });
   });
 
   describe('$become', function(){
@@ -217,6 +222,11 @@ describe('scope/model', function(){
       child.$become(temp.InjectController, 10);
       expect(child.localService).toEqual('Example Service');
       expect(child.extra).toEqual(10);
+    });
+
+    it('should throw an exception for debugging purposes if called with no fn', function() {
+      var scope = createScope();
+      expect(function() { scope.$become() }).toThrow({name: 'Function is required'});
     });
   });
 
