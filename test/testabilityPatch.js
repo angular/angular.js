@@ -1,5 +1,16 @@
-jstd = jstestdriver;
-dump = bind(jstd.console, jstd.console.log);
+/**
+ * Here is the problem: http://bugs.jquery.com/ticket/7292
+ * basically jQuery treats change event on some browsers (IE) as a
+ * special event and changes it form 'change' to 'click/keyup' and
+ * few others. This horrible hack removes the special treatment
+ */
+_jQuery.event.special.change = undefined;
+
+
+if (window.jstestdriver) {
+  jstd = jstestdriver;
+  dump = bind(jstd.console, jstd.console.log);
+}
 
 beforeEach(function(){
   this.addMatchers({
