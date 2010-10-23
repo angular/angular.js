@@ -18,7 +18,7 @@
     <hr/>
     <h2>Logs:</h2>
     <ul>
-      <li ng:repeat="log in logs">
+      <li ng:repeat="log in logs.$orderBy('-at')">
         {{log.at | date:'yy-MM-dd HH:mm'}} {{log.msg}}
         [<a href="" ng:click="rmLog($index)">x</a>]
       </li>
