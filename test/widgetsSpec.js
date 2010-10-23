@@ -497,6 +497,17 @@ describe("widget", function(){
 
       expect(element.text()).toEqual('');
     });
+
+    it('should allow this for scope', function(){
+      var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
+      var scope = angular.compile(element);
+      scope.url = 'myUrl';
+      scope.$inject('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
+      scope.$init();
+      // This should not be 4, but to fix this properly
+      // we need to have real events on the scopes.
+      expect(element.text()).toEqual('4');
+    });
   });
 
   describe('a', function() {
