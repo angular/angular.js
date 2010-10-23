@@ -16,7 +16,7 @@ MockSpecRunner.prototype.addFuture = function(name, fn, line) {
 describe('angular.scenario.Runner', function() {
   var $window;
   var runner;
-  
+
   beforeEach(function() {
     // Trick to get the scope out of a DSL statement
     angular.scenario.dsl('dslAddFuture', function() {
@@ -42,12 +42,12 @@ describe('angular.scenario.Runner', function() {
     };
     runner = new angular.scenario.Runner($window);
   });
-  
+
   afterEach(function() {
     delete angular.scenario.dsl.dslScope;
     delete angular.scenario.dsl.dslChain;
   });
-  
+
   it('should publish the functions in the public API', function() {
     angular.foreach(runner.api, function(fn, name) {
       var func;
@@ -57,7 +57,7 @@ describe('angular.scenario.Runner', function() {
       expect(angular.isFunction(func)).toBeTruthy();
     });
   });
-  
+
   it('should construct valid describe trees with public API', function() {
     var before = [];
     var after = [];
@@ -85,7 +85,7 @@ describe('angular.scenario.Runner', function() {
     expect(specs[2].definition.parent).toEqual(runner.rootDescribe);
     expect(specs[0].definition.parent).toEqual(specs[2].definition.children[0]);
   });
-  
+
   it('should publish the DSL statements to the $window', function() {
     $window.describe('describe', function() {
       $window.it('1', function() {
@@ -94,7 +94,7 @@ describe('angular.scenario.Runner', function() {
     });
     runner.run(null/*ui*/, null/*application*/, MockSpecRunner, rethrow);
   });
-  
+
   it('should create a new scope for each DSL chain', function() {
     $window.describe('describe', function() {
       $window.it('1', function() {

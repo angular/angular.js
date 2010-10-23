@@ -4,21 +4,21 @@ describe('angular.scenario.Describe', function() {
 
   beforeEach(function() {
     root = new angular.scenario.Describe();
-    
+
     /**
      * Simple callback logging system. Use to assert proper order of calls.
      */
-    log = function(text) { 
-      log.text = log.text + text; 
+    log = function(text) {
+      log.text = log.text + text;
     };
     log.fn = function(text) {
-      return function(done){ 
-        log(text); 
-        (done || angular.noop)(); 
+      return function(done){
+        log(text);
+        (done || angular.noop)();
       };
     };
-    log.reset = function() { 
-      log.text = ''; 
+    log.reset = function() {
+      log.text = '';
     };
     log.reset();
   });
@@ -50,7 +50,7 @@ describe('angular.scenario.Describe', function() {
     specs[1].after();
     expect(log.text).toEqual('{1}');
   });
-    
+
   it('should link nested describe blocks with parent and children', function() {
     root.describe('A', function() {
       this.it('1', angular.noop);
@@ -65,7 +65,7 @@ describe('angular.scenario.Describe', function() {
     expect(specs[2].definition.parent).toEqual(root);
     expect(specs[0].definition.parent).toEqual(specs[2].definition.children[0]);
   });
-  
+
   it('should not process xit and xdescribe', function() {
     root.describe('A', function() {
       this.xit('1', angular.noop);
@@ -79,7 +79,7 @@ describe('angular.scenario.Describe', function() {
     var specs = root.getSpecs();
     expect(specs.length).toEqual(0);
   });
-  
+
   it('should create uniqueIds in the tree', function() {
     angular.scenario.Describe.id = 0;
     var a = new angular.scenario.Describe();

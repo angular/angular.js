@@ -190,7 +190,9 @@ describe("angular.scenario.dsl", function() {
     describe('Element', function() {
       it('should execute click', function() {
         var clicked;
-        doc.append('<a href=""></a>');
+        // Hash is important, otherwise we actually
+        // go to a different page and break the runner
+        doc.append('<a href="#"></a>');
         doc.find('a').click(function() {
           clicked = true;
         });

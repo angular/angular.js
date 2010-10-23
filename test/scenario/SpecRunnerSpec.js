@@ -49,7 +49,7 @@ ApplicationMock.prototype = {
 describe('angular.scenario.SpecRunner', function() {
   var $window;
   var runner;
-  
+
   function createSpec(name, body) {
     return {
       name: name,
@@ -93,8 +93,8 @@ describe('angular.scenario.SpecRunner', function() {
   it('should execute spec function and notify UI', function() {
     var finished;
     var ui = new UIMock();
-    var spec = createSpec('test spec', function() { 
-      this.test = 'some value'; 
+    var spec = createSpec('test spec', function() {
+      this.test = 'some value';
     });
     runner.addFuture('test future', function(done) {
       done();
@@ -115,7 +115,7 @@ describe('angular.scenario.SpecRunner', function() {
   it('should execute notify UI on spec setup error', function() {
     var finished;
     var ui = new UIMock();
-    var spec = createSpec('test spec', function() { 
+    var spec = createSpec('test spec', function() {
       throw 'message';
     });
     runner.run(ui, spec, function() {
@@ -166,7 +166,7 @@ describe('angular.scenario.SpecRunner', function() {
       'spec finish:'
     ]);
   });
-  
+
   it('should run after handlers even if error in body of spec', function() {
     var finished, after;
     var ui = new UIMock();
