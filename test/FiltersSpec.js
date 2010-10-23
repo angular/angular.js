@@ -103,7 +103,6 @@ describe('filter', function(){
     it('should ignore falsy inputs', function() {
       expect(filter.date(null)).toEqual(null);
       expect(filter.date('')).toEqual('');
-      expect(filter.date(123)).toEqual(123);
     });
 
     it('should do basic filter', function() {
@@ -123,6 +122,9 @@ describe('filter', function(){
 
     });
 
+    it('should accept miliseconds as date', function(){
+      expect(filter.date("123", "yyyy")).toEqual('1969');
+    });
 
   });
 });
