@@ -1,5 +1,20 @@
-//app namespace
-var example = {};
+/**
+ * @fileOverview Very simple personal log demo application to demostrate angular functionality,
+ *               especially:
+ *               - the MVC model
+ *               - testability of controllers
+ *               - dependency injection for controllers via $inject and constructor function
+ *               - $cookieStore for persistent cookie-backed storage
+ *               - simple templating constructs such as ng:repeat and {{}}
+ *               - date filter
+ *               - and binding onSubmit and onClick events to angular expressions
+ * @author Igor Minar
+ */
+
+
+/** @namespace the 'example' namespace */
+var example = example || {};
+/** @namespace namespace of the personal log app */
 example.personalLog = {};
 
 
@@ -13,11 +28,12 @@ var LOGS = 'logs';
  */
 function LogCtrl($cookieStore) {
   var self = this,
-      logs = self.logs = $cookieStore.get(LOGS) || [];
+      logs = self.logs = $cookieStore.get(LOGS) || []; //main model
 
 
   /**
    * Adds newMsg to the logs array as a log, persists it and clears newMsg.
+   * @param {string} msg Message to add (message is passed as parameter to make testing easier).
    */
   this.addLog = function(msg) {
     var newMsg = msg || self.newMsg;
