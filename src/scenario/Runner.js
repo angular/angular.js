@@ -24,6 +24,8 @@ angular.scenario.Runner = function($window) {
 /**
  * Emits an event which notifies listeners and passes extra
  * arguments.
+ *
+ * @param {string} eventName Name of the event to fire.
  */
 angular.scenario.Runner.prototype.emit = function(eventName) {
   var self = this;
@@ -38,6 +40,9 @@ angular.scenario.Runner.prototype.emit = function(eventName) {
 
 /**
  * Adds a listener for an event.
+ *
+ * @param {string} eventName The name of the event to add a handler for
+ * @param {string} listener The fn(...) that takes the extra arguments from emit()
  */
 angular.scenario.Runner.prototype.on = function(eventName, listener) {
   eventName = eventName.toLowerCase();
@@ -48,8 +53,10 @@ angular.scenario.Runner.prototype.on = function(eventName, listener) {
 /**
  * Defines a describe block of a spec.
  *
- * @param {String} Name of the block
- * @param {Function} Body of the block
+ * @see Describe.js
+ *
+ * @param {string} name Name of the block
+ * @param {Function} body Body of the block
  */
 angular.scenario.Runner.prototype.describe = function(name, body) {
   var self = this;
@@ -65,10 +72,12 @@ angular.scenario.Runner.prototype.describe = function(name, body) {
 };
 
 /**
- * Same as describe, but makes this the only block to run.
+ * Same as describe, but makes ddescribe the only blocks to run.
  *
- * @param {String} Name of the block
- * @param {Function} Body of the block
+ * @see Describe.js
+ *
+ * @param {string} name Name of the block
+ * @param {Function} body Body of the block
  */
 angular.scenario.Runner.prototype.ddescribe = function(name, body) {
   var self = this;
@@ -86,18 +95,22 @@ angular.scenario.Runner.prototype.ddescribe = function(name, body) {
 /**
  * Defines a test in a describe block of a spec.
  *
- * @param {String} Name of the block
- * @param {Function} Body of the block
+ * @see Describe.js
+ *
+ * @param {string} name Name of the block
+ * @param {Function} body Body of the block
  */
 angular.scenario.Runner.prototype.it = function(name, body) {
   this.currentDescribe.it(name, body);
 };
 
 /**
- * Same as it, but makes this the only test to run.
+ * Same as it, but makes iit tests the only tests to run.
  *
- * @param {String} Name of the block
- * @param {Function} Body of the block
+ * @see Describe.js
+ *
+ * @param {string} name Name of the block
+ * @param {Function} body Body of the block
  */
 angular.scenario.Runner.prototype.iit = function(name, body) {
   this.currentDescribe.iit(name, body);
@@ -106,6 +119,8 @@ angular.scenario.Runner.prototype.iit = function(name, body) {
 /**
  * Defines a function to be called before each it block in the describe
  * (and before all nested describes).
+ *
+ * @see Describe.js
  *
  * @param {Function} Callback to execute
  */
@@ -117,6 +132,8 @@ angular.scenario.Runner.prototype.beforeEach = function(body) {
  * Defines a function to be called after each it block in the describe
  * (and before all nested describes).
  *
+ * @see Describe.js
+ *
  * @param {Function} Callback to execute
  */
 angular.scenario.Runner.prototype.afterEach = function(body) {
@@ -127,7 +144,7 @@ angular.scenario.Runner.prototype.afterEach = function(body) {
  * Creates a new spec runner.
  *
  * @private
- * @param {Object} parent scope
+ * @param {Object} scope parent scope
  */
 angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
   return scope.$new(angular.scenario.SpecRunner);
@@ -137,8 +154,7 @@ angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
  * Runs all the loaded tests with the specified runner class on the
  * provided application.
  *
- * @param {Object} Application to remote control.
- * @param {Function} SpecRunner class to run the specs.
+ * @param {angular.scenario.Application} application App to remote control.
  */
 angular.scenario.Runner.prototype.run = function(application) {
   var self = this;

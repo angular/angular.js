@@ -1,7 +1,7 @@
 /**
  * Maintains an object tree from the runner events.
  *
- * @param {Object} The scenario Runner instance to connect to.
+ * @param {Object} runner The scenario Runner instance to connect to.
  *
  * TODO(esprehn): Every output type creates one of these, but we probably
  *  want one glonal shared instance. Need to handle events better too
@@ -85,6 +85,7 @@ angular.scenario.ObjectModel = function(runner) {
  * Computes the path of definition describe blocks that wrap around
  * this spec.
  *
+ * @param spec Spec to compute the path for.
  * @return {Array<Describe>} The describe block path
  */
 angular.scenario.ObjectModel.prototype.getDefinitionPath = function(spec) {
@@ -100,6 +101,7 @@ angular.scenario.ObjectModel.prototype.getDefinitionPath = function(spec) {
 /**
  * Gets a spec by id.
  *
+ * @param {string} The id of the spec to get the object for.
  * @return {Object} the Spec instance
  */
 angular.scenario.ObjectModel.prototype.getSpec = function(id) {
@@ -108,6 +110,9 @@ angular.scenario.ObjectModel.prototype.getSpec = function(id) {
 
 /**
  * A single it block.
+ *
+ * @param {string} id Id of the spec
+ * @param {string} name Name of the spec
  */
 angular.scenario.ObjectModel.Spec = function(id, name) {
   this.id = id;
@@ -119,6 +124,7 @@ angular.scenario.ObjectModel.Spec = function(id, name) {
 /**
  * Adds a new step to the Spec.
  *
+ * @param {string} step Name of the step (really name of the future)
  * @return {Object} the added step
  */
 angular.scenario.ObjectModel.Spec.prototype.addStep = function(name) {
@@ -138,6 +144,8 @@ angular.scenario.ObjectModel.Spec.prototype.getLastStep = function() {
 
 /**
  * A single step inside a Spec.
+ *
+ * @param {string} step Name of the step
  */
 angular.scenario.ObjectModel.Step = function(name) {
   this.name = name;

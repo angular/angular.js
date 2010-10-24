@@ -115,7 +115,7 @@ describe('toKeyValue', function() {
       toEqual('escaped%20key=escaped%20value');
     expect(toKeyValue({emptyKey: ''})).toEqual('emptyKey=');
   });
-  
+
   it('should parse true values into flags', function() {
     expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
   });
@@ -186,6 +186,27 @@ describe ('rngScript', function() {
 
     expect('my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
     expect('foo/../my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
+  });
+
+  it('should match angular-scenario.js', function() {
+    expect('angular-scenario.js'.match(rngScript)).not.toBeNull();
+    expect('angular-scenario.min.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-scenario.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-scenario.min.js'.match(rngScript)).not.toBeNull();
+  });
+
+  it('should match angular-scenario-0.9.0(.min).js', function() {
+    expect('angular-scenario-0.9.0.js'.match(rngScript)).not.toBeNull();
+    expect('angular-scenario-0.9.0.min.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-scenario-0.9.0.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-scenario-0.9.0.min.js'.match(rngScript)).not.toBeNull();
+  });
+
+  it('should match angular-scenario-0.9.0-de0a8612(.min).js', function() {
+    expect('angular-scenario-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
+    expect('angular-scenario-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
+    expect('../angular-scenario-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
+    expect('foo/angular-scenario-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
   });
 });
 

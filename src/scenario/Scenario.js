@@ -8,6 +8,9 @@ angular.scenario = angular.scenario || {};
 
 /**
  * Defines a new output format.
+ *
+ * @param {string} name the name of the new output format
+ * @param {Function} fn function(context, runner) that generates the output
  */
 angular.scenario.output = angular.scenario.output || function(name, fn) {
   angular.scenario.output[name] = fn;
@@ -22,8 +25,8 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  *   set on "this" in your statement function are available in the chained
  *   functions.
  *
- * @param {String} The name of the statement
- * @param {Function} Factory function(application), return a function for
+ * @param {string} name The name of the statement
+ * @param {Function} fn Factory function(), return a function for
  *  the statement.
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
@@ -58,8 +61,8 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
  * against. Your function should return a boolean. The future is automatically
  * created for you.
  *
- * @param {String} The name of the matcher
- * @param {Function} The matching function(expected).
+ * @param {string} name The name of the matcher
+ * @param {Function} fn The matching function(expected).
  */
 angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
   angular.scenario.matcher[name] = function(expected) {
@@ -84,10 +87,12 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
 
 /**
  * Initialization function for the scenario runner.
+ *
+ * @param {angular.scenario.Runner} $scenario The runner to setup
+ * @param {Object} config Config options
  */
 function angularScenarioInit($scenario, config) {
   var body = _jQuery(document.body);
-  var config = angularJsConfig(document);
   var output = [];
 
   if (config.scenario_output) {
@@ -126,10 +131,10 @@ function angularScenarioInit($scenario, config) {
  * Iterates through list with iterator function that must call the
  * continueFunction to continute iterating.
  *
- * @param {Array} list to iterate over
- * @param {Function} Callback function(value, continueFunction)
- * @param {Function} Callback function(error, result) called when iteration
- *   finishes or an error occurs.
+ * @param {Array} list list to iterate over
+ * @param {Function} iterator Callback function(value, continueFunction)
+ * @param {Function} done Callback function(error, result) called when 
+ *   iteration finishes or an error occurs.
  */
 function asyncForEach(list, iterator, done) {
   var i = 0;
@@ -154,8 +159,8 @@ function asyncForEach(list, iterator, done) {
  * Formats an exception into a string with the stack trace, but limits
  * to a specific line length.
  *
- * @param {Object} the exception to format, can be anything throwable
- * @param {Number} Optional. max lines of the stack trace to include
+ * @param {Object} error The exception to format, can be anything throwable
+ * @param {Number} maxStackLines Optional. max lines of the stack trace to include
  *  default is 5.
  */
 function formatException(error, maxStackLines) {
@@ -178,6 +183,8 @@ function formatException(error, maxStackLines) {
  *
  * Note: this returns another function because accessing .stack is very
  * expensive in Chrome.
+ *
+ * @param {Number} offset Number of stack lines to skip
  */
 function callerFile(offset) {
   var error = new Error();
@@ -205,7 +212,7 @@ function callerFile(offset) {
  * not specified.
  *
  * @param {Object} Either a wrapped jQuery/jqLite node or a DOMElement
- * @param {String} Optional event type.
+ * @param {string} Optional event type.
  */
 function browserTrigger(element, type) {
   if (element && !element.nodeName) element = element[0];

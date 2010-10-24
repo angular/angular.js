@@ -141,7 +141,7 @@ angular.scenario.output('html', function(context, runner) {
   /**
    * Updates the test counter for the status.
    *
-   * @param {String} the status.
+   * @param {string} the status.
    */
   function updateTotals(status) {
     var legend = context.find('#status-legend .status-' + status);

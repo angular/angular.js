@@ -15,8 +15,8 @@ angular.scenario.SpecRunner = function() {
  * Executes a spec which is an it block with associated before/after functions
  * based on the describe nesting.
  *
- * @param {Object} A spec object
- * @param {Object} An angular.scenario.Application instance
+ * @param {Object} spec A spec object
+ * @param {Object} specDone An angular.scenario.Application instance
  * @param {Function} Callback function that is called when the  spec finshes.
  */
 angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
@@ -88,9 +88,9 @@ angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
  *
  * Note: Do not pass line manually. It happens automatically.
  *
- * @param {String} Name of the future
- * @param {Function} Behavior of the future
- * @param {Function} fn() that returns file/line number
+ * @param {string} name Name of the future
+ * @param {Function} behavior Behavior of the future
+ * @param {Function} line fn() that returns file/line number
  */
 angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line) {
   var future = new angular.scenario.Future(name, angular.bind(this, behavior), line);
@@ -103,14 +103,16 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
  *
  * Note: Do not pass line manually. It happens automatically.
  *
- * @param {String} Name of the future
- * @param {Function} Behavior of the future
- * @param {Function} fn() that returns file/line number
+ * @param {string} name Name of the future
+ * @param {Function} behavior Behavior of the future
+ * @param {Function} line fn() that returns file/line number
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;
   return this.addFuture(name, function(done) {
     this.application.executeAction(function($window, $document) {
+
+      //TODO(esprehn): Refactor this so it doesn't need to be in here.
       $document.elements = function(selector) {
         var args = Array.prototype.slice.call(arguments, 1);
         if (self.selector) {

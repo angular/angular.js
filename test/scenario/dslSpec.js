@@ -173,6 +173,24 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.element('a').click();
       });
 
+      it('should navigate page if click on anchor', function() {
+        expect($window.location).not.toEqual('#foo');
+        doc.append('<a href="#foo"></a>');
+        $root.dsl.element('a').click();
+        expect($window.location).toEqual('#foo');
+      });
+
+      it('should count matching elements', function() {
+        doc.append('<span></span><span></span>');
+        $root.dsl.element('span').count();
+        expect($root.futureResult).toEqual(2);
+      });
+
+      it('should return count of 0 if no matching elements', function() {
+        $root.dsl.element('span').count();
+        expect($root.futureResult).toEqual(0);
+      });
+
       it('should get attribute', function() {
         doc.append('<div id="test" class="foo"></div>');
         $root.dsl.element('#test').attr('class');
@@ -221,6 +239,12 @@ describe("angular.scenario.dsl", function() {
       it('should get the row count', function() {
         chain.count();
         expect($root.futureResult).toEqual(2);
+      });
+
+      it('should return 0 if repeater doesnt match', function() {
+        doc.find('ul').html('');
+        chain.count();
+        expect($root.futureResult).toEqual(0);
       });
 
       it('should get a row of bindings', function() {

@@ -1,6 +1,8 @@
 /**
  * Represents the application currently being tested and abstracts usage
  * of iframes or separate windows.
+ *
+ * @param {Object} context jQuery wrapper around HTML context.
  */
 angular.scenario.Application = function(context) {
   this.context = context;
@@ -37,6 +39,10 @@ angular.scenario.Application.prototype.getWindow_ = function() {
 
 /**
  * Changes the location of the frame.
+ *
+ * @param {string} url The URL. If it begins with a # then only the 
+ *   hash of the page is changed.
+ * @param {Function} onloadFn function($window, $document)
  */
 angular.scenario.Application.prototype.navigateTo = function(url, onloadFn) {
   var self = this;
@@ -61,7 +67,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, onloadFn) {
  * Executes a function in the context of the tested application. Will wait
  * for all pending angular xhr requests before executing.
  *
- * @param {Function} The callback to execute. function($window, $document)
+ * @param {Function} action The callback to execute. function($window, $document)
  *  $document is a jQuery wrapped document.
  */
 angular.scenario.Application.prototype.executeAction = function(action) {

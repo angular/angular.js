@@ -12,7 +12,7 @@ angular.scenario.output('xml', function(context, runner) {
   /**
    * Convert the tree into XML.
    *
-   * @param {Object} jQuery context to add the XML to.
+   * @param {Object} context jQuery context to add the XML to.
    * @param {Object} tree node to serialize
    */
   function serializeXml(context, tree) {
