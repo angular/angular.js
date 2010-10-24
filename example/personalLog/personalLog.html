@@ -6,8 +6,10 @@
     <script type="text/javascript" src="personalLog.js"></script>
   </head>
 
-  
-  <body ng:controller="example.personalLog.LogCtrl">
+
+  <!-- TODO: we need to expose $root so that we can delete cookies in the scenario runner, there
+             must be a better way to do this -->
+  <body ng:controller="example.personalLog.LogCtrl" ng:init="$window.$root = $root">
 
     <form action="" ng:submit="addLog(newMsg)">
       <input type="text" name="newMsg" />
@@ -20,7 +22,7 @@
     <ul>
       <li ng:repeat="log in logs.$orderBy('-at')">
         {{log.at | date:'yy-MM-dd HH:mm'}} {{log.msg}}
-        [<a href="" ng:click="rmLog($index)">x</a>]
+        [<a href="" ng:click="rmLog(log)">x</a>]
       </li>
     </ul>
 

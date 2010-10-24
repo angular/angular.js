@@ -51,10 +51,10 @@ function LogCtrl($cookieStore) {
 
   /**
    * Persistently removes a log from logs.
-   * @param {number} msgIdx Index of the log to remove.
+   * @param {object} log The log to remove.
    */
-  this.rmLog = function(msgIdx) {
-    logs.splice(msgIdx,1);
+  this.rmLog = function(log) {
+    angular.Array.remove(logs, log);
     $cookieStore.put(LOGS, logs);
   };
 
