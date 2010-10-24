@@ -1,40 +1,4 @@
 /**
- * Mock of all required UI classes/methods. (UI, Spec, Step).
- */
-function UIMock() {
-  this.log = [];
-}
-UIMock.prototype = {
-  addSpec: function(spec) {
-    var log = this.log;
-    log.push('addSpec:' + spec.name);
-    return {
-      addStep: function(name) {
-        log.push('addStep:' + name);
-        return {
-          finish: function(e) {
-            log.push('step finish:' + (e ? e : ''));
-            return this;
-          },
-          error: function(e) {
-            log.push('step error:' + (e ? e : ''));
-            return this;
-          }
-        };
-      },
-      finish: function(e) {
-        log.push('spec finish:' + (e ? e : ''));
-        return this;
-      },
-      error: function(e) {
-        log.push('spec error:' + (e ? e : ''));
-        return this;
-      }
-    };
-  }
-};
-
-/**
  * Mock Application
  */
 function ApplicationMock($window) {
@@ -47,7 +11,7 @@ ApplicationMock.prototype = {
 };
 
 describe('angular.scenario.SpecRunner', function() {
-  var $window;
+  var $window, $root, log;
   var runner;
 
   function createSpec(name, body) {
@@ -60,14 +24,22 @@ describe('angular.scenario.SpecRunner', function() {
   }
 
   beforeEach(function() {
+    log = [];
     $window = {};
     $window.setTimeout = function(fn, timeout) {
       fn();
     };
-    runner = angular.scope();
-    runner.application = new ApplicationMock($window);
-    runner.$window = $window;
-    runner.$become(angular.scenario.SpecRunner);
+    $root = angular.scope({
+      emit: function(eventName) {
+        log.push(eventName);
+      },
+      on: function(eventName) {
+        log.push('Listener Added for ' + eventName);
+      }
+    });
+    $root.application = new ApplicationMock($window);
+    $root.$window = $window;
+    runner = $root.$new(angular.scenario.SpecRunner);
   });
 
   it('should bind futures to the spec', function() {
@@ -92,84 +64,82 @@ describe('angular.scenario.SpecRunner', function() {
 
   it('should execute spec function and notify UI', function() {
     var finished;
-    var ui = new UIMock();
     var spec = createSpec('test spec', function() {
       this.test = 'some value';
     });
     runner.addFuture('test future', function(done) {
       done();
     });
-    runner.run(ui, spec, function() {
+    runner.run(spec, function() {
       finished = true;
     });
     expect(runner.test).toEqual('some value');
     expect(finished).toBeTruthy();
-    expect(ui.log).toEqual([
-      'addSpec:test spec',
-      'addStep:test future',
-      'step finish:',
-      'spec finish:'
+    expect(log).toEqual([
+      'SpecBegin',
+      'StepBegin',
+      'StepEnd',
+      'SpecEnd'
     ]);
   });
 
   it('should execute notify UI on spec setup error', function() {
     var finished;
-    var ui = new UIMock();
     var spec = createSpec('test spec', function() {
       throw 'message';
     });
-    runner.run(ui, spec, function() {
+    runner.run(spec, function() {
       finished = true;
     });
     expect(finished).toBeTruthy();
-    expect(ui.log).toEqual([
-      'addSpec:test spec',
-      'spec error:message'
+    expect(log).toEqual([
+      'SpecBegin',
+      'SpecError',
+      'SpecEnd'
     ]);
   });
 
   it('should execute notify UI on step failure', function() {
     var finished;
-    var ui = new UIMock();
     var spec = createSpec('test spec');
     runner.addFuture('test future', function(done) {
       done('failure message');
     });
-    runner.run(ui, spec, function() {
+    runner.run(spec, function() {
       finished = true;
     });
     expect(finished).toBeTruthy();
-    expect(ui.log).toEqual([
-      'addSpec:test spec',
-      'addStep:test future',
-      'step finish:failure message',
-      'spec finish:'
+    expect(log).toEqual([
+      'SpecBegin',
+      'StepBegin',
+      'StepFailure',
+      'StepEnd',
+      'SpecEnd'
     ]);
   });
 
   it('should execute notify UI on step error', function() {
     var finished;
-    var ui = new UIMock();
     var spec = createSpec('test spec', function() {
       this.addFuture('test future', function(done) {
         throw 'error message';
       });
     });
-    runner.run(ui, spec, function() {
+    runner.run(spec, function() {
       finished = true;
     });
     expect(finished).toBeTruthy();
-    expect(ui.log).toEqual([
-      'addSpec:test spec',
-      'addStep:test future',
-      'step error:error message',
-      'spec finish:'
+    expect(log).toEqual([
+      'SpecBegin',
+      'StepBegin',
+      'StepError',
+      'StepEnd',
+      'SpecEnd'
     ]);
   });
 
   it('should run after handlers even if error in body of spec', function() {
     var finished, after;
-    var ui = new UIMock();
     var spec = createSpec('test spec', function() {
       this.addFuture('body', function(done) {
         throw 'error message';
@@ -181,18 +151,19 @@ describe('angular.scenario.SpecRunner', function() {
         done();
       });
     };
-    runner.run(ui, spec, function() {
+    runner.run(spec, function() {
       finished = true;
     });
     expect(finished).toBeTruthy();
     expect(after).toBeTruthy();
-    expect(ui.log).toEqual([
-      'addSpec:test spec',
-      'addStep:body',
-      'step error:error message',
-      'addStep:after',
-      'step finish:',
-      'spec finish:'
+    expect(log).toEqual([
+      'SpecBegin',
+      'StepBegin',
+      'StepError',
+      'StepEnd',
+      'StepBegin',
+      'StepEnd',
+      'SpecEnd'
     ]);
   });
 

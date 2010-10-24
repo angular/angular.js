@@ -36,6 +36,9 @@ describe('widgets', function() {
     element('input[type="image"]').click();
     expect(binding('button').fromJson()).toEqual({'count': 4});
 
+    element('#navigate a').click();
+    expect(binding('$location.hash')).toEqual('route');
+
     /**
      * Custom value parser for futures.
      */

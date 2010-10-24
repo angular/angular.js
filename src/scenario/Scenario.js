@@ -6,8 +6,15 @@
 // Public namespace
 angular.scenario = angular.scenario || {};
 
-// Namespace for the UI
-angular.scenario.ui = angular.scenario.ui || {};
+/**
+ * Defines a new output format.
+ *
+ * @param {string} name the name of the new output format
+ * @param {Function} fn function(context, runner) that generates the output
+ */
+angular.scenario.output = angular.scenario.output || function(name, fn) {
+  angular.scenario.output[name] = fn;
+};
 
 /**
  * Defines a new DSL statement. If your factory function returns a Future
@@ -18,8 +25,8 @@ angular.scenario.ui = angular.scenario.ui || {};
  *   set on "this" in your statement function are available in the chained
  *   functions.
  *
- * @param {String} The name of the statement
- * @param {Function} Factory function(application), return a function for
+ * @param {string} name The name of the statement
+ * @param {Function} fn Factory function(), return a function for
  *  the statement.
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
@@ -54,8 +61,8 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
  * against. Your function should return a boolean. The future is automatically
  * created for you.
  *
- * @param {String} The name of the matcher
- * @param {Function} The matching function(expected).
+ * @param {string} name The name of the matcher
+ * @param {Function} fn The matching function(expected).
  */
 angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
   angular.scenario.matcher[name] = function(expected) {
@@ -79,13 +86,55 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
 };
 
 /**
+ * Initialization function for the scenario runner.
+ *
+ * @param {angular.scenario.Runner} $scenario The runner to setup
+ * @param {Object} config Config options
+ */
+function angularScenarioInit($scenario, config) {
+  var body = _jQuery(document.body);
+  var output = [];
+
+  if (config.scenario_output) {
+    output = config.scenario_output.split(',');
+  }
+
+  angular.foreach(angular.scenario.output, function(fn, name) {
+    if (!output.length || indexOf(output,name) != -1) {
+      var context = body.append('<div></div>').find('div:last');
+      context.attr('id', name);
+      fn.call({}, context, $scenario);
+    }
+  });
+
+  var appFrame = body.append('<div id="application"></div>').find('#application');
+  var application = new angular.scenario.Application(appFrame);
+
+  $scenario.on('RunnerEnd', function() {
+    appFrame.css('display', 'none');
+    appFrame.find('iframe').attr('src', 'about:blank');
+  });
+
+  $scenario.on('RunnerError', function(error) {
+    if (window.console) {
+      console.log(formatException(error));
+    } else {
+      // Do something for IE
+      alert(error);
+    }
+  });
+
+  $scenario.run(application);
+}
+
+/**
  * Iterates through list with iterator function that must call the
  * continueFunction to continute iterating.
  *
- * @param {Array} list to iterate over
- * @param {Function} Callback function(value, continueFunction)
- * @param {Function} Callback function(error, result) called when iteration
- *   finishes or an error occurs.
+ * @param {Array} list list to iterate over
+ * @param {Function} iterator Callback function(value, continueFunction)
+ * @param {Function} done Callback function(error, result) called when 
+ *   iteration finishes or an error occurs.
  */
 function asyncForEach(list, iterator, done) {
   var i = 0;
@@ -110,8 +159,8 @@ function asyncForEach(list, iterator, done) {
  * Formats an exception into a string with the stack trace, but limits
  * to a specific line length.
  *
- * @param {Object} the exception to format, can be anything throwable
- * @param {Number} Optional. max lines of the stack trace to include
+ * @param {Object} error The exception to format, can be anything throwable
+ * @param {Number} maxStackLines Optional. max lines of the stack trace to include
  *  default is 5.
  */
 function formatException(error, maxStackLines) {
@@ -134,6 +183,8 @@ function formatException(error, maxStackLines) {
  *
  * Note: this returns another function because accessing .stack is very
  * expensive in Chrome.
+ *
+ * @param {Number} offset Number of stack lines to skip
  */
 function callerFile(offset) {
   var error = new Error();
@@ -161,7 +212,7 @@ function callerFile(offset) {
  * not specified.
  *
  * @param {Object} Either a wrapped jQuery/jqLite node or a DOMElement
- * @param {String} Optional event type.
+ * @param {string} Optional event type.
  */
 function browserTrigger(element, type) {
   if (element && !element.nodeName) element = element[0];

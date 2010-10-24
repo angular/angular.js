@@ -27,12 +27,16 @@ ANGULAR_SCENARIO = [
   'src/scenario/Application.js',
   'src/scenario/Describe.js',
   'src/scenario/Future.js',
-  'src/scenario/HtmlUI.js',
+  'src/scenario/ObjectModel.js',
   'src/scenario/Describe.js',
   'src/scenario/Runner.js',
   'src/scenario/SpecRunner.js',
   'src/scenario/dsl.js',
   'src/scenario/matchers.js',
+  'src/scenario/output/Html.js',
+  'src/scenario/output/Json.js',
+  'src/scenario/output/Xml.js',
+  'src/scenario/output/Object.js',
 ]
 
 BUILD_DIR = 'build'
