@@ -38,7 +38,7 @@ angular.scenario.Future.prototype.execute = function(doneFn) {
 /**
  * Configures the future to convert it's final with a function fn(value)
  *
- * @param {Function} fn function(value) that returns the parser
+ * @param {Function} fn function(value) that returns the parsed value
  */
 angular.scenario.Future.prototype.parsedWith = function(fn) {
   this.parser = fn;
