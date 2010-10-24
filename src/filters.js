@@ -73,9 +73,19 @@ var DATE_FORMATS = {
         }
 };
 var DATE_FORMATS_SPLIT = /([^yMdHhmsaZ]*)(y+|M+|d+|H+|h+|m+|s+|a|Z)(.*)/;
+var NUMBER_STRING = /^\d+$/;
 
 angularFilter.date = function(date, format) {
-  if (!(date instanceof Date)) return date;
+  if (isString(date) && NUMBER_STRING.test(date)) {
+    date = parseInt(date, 10);
+  }
+
+  if (isNumber(date)) {
+    date = new Date(date);
+  } else if (!(date instanceof Date)) {
+    return date;
+  }
+
   var text = date.toLocaleDateString(), fn;
   if (format && isString(format)) {
     text = '';

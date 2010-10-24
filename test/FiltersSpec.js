@@ -98,17 +98,21 @@ describe('filter', function(){
     morning.getTimezoneOffset =
       noon.getTimezoneOffset =
         midnight.getTimezoneOffset =
-          function() { return 7 * 60; };
+          function() {return 7 * 60;};
 
     it('should ignore falsy inputs', function() {
       expect(filter.date(null)).toEqual(null);
       expect(filter.date('')).toEqual('');
-      expect(filter.date(123)).toEqual(123);
     });
 
     it('should do basic filter', function() {
       expect(filter.date(noon)).toEqual(noon.toLocaleDateString());
       expect(filter.date(noon, '')).toEqual(noon.toLocaleDateString());
+    });
+
+    it('should accept number or number string representing milliseconds as input', function() {
+      expect(filter.date(noon.getTime())).toEqual(noon.toLocaleDateString());
+      expect(filter.date(noon.getTime() + "")).toEqual(noon.toLocaleDateString());
     });
 
     it('should accept format', function() {
@@ -122,8 +126,6 @@ describe('filter', function(){
                        toEqual('2010-09-03 12=12:05:08pm0700');
 
     });
-
-
   });
 });
 
