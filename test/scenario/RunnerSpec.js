@@ -2,7 +2,7 @@
  * Mock spec runner.
  */
 function MockSpecRunner() {}
-MockSpecRunner.prototype.run = function(ui, spec, specDone) {
+MockSpecRunner.prototype.run = function(spec, specDone) {
   spec.before.call(this);
   spec.body.call(this);
   spec.after.call(this);
@@ -41,6 +41,11 @@ describe('angular.scenario.Runner', function() {
       location: {}
     };
     runner = new angular.scenario.Runner($window);
+    runner.createSpecRunner_ = function(scope) {
+      return scope.$new(MockSpecRunner);
+    };
+    runner.on('SpecError', rethrow);
+    runner.on('StepError', rethrow);
   });
 
   afterEach(function() {
@@ -92,7 +97,7 @@ describe('angular.scenario.Runner', function() {
         expect($window.dslScope).toBeDefined();
       });
     });
-    runner.run(null/*ui*/, null/*application*/, MockSpecRunner, rethrow);
+    runner.run(null/*application*/);
   });
 
   it('should create a new scope for each DSL chain', function() {
@@ -107,6 +112,6 @@ describe('angular.scenario.Runner', function() {
         expect(scope.chained).toEqual(2);
       });
     });
-    runner.run(null/*ui*/, null/*application*/, MockSpecRunner, rethrow);
+    runner.run(null/*application*/);
   });
 });

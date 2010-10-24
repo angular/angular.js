@@ -1,8 +1,12 @@
 /**
  * The representation of define blocks. Don't used directly, instead use
  * define() in your tests.
+ *
+ * @param {string} descName Name of the block
+ * @param {Object} parent describe or undefined if the root.
  */
 angular.scenario.Describe = function(descName, parent) {
+  this.only = parent && parent.only;
   this.beforeEachFns = [];
   this.afterEachFns = [];
   this.its = [];
@@ -10,7 +14,7 @@ angular.scenario.Describe = function(descName, parent) {
   this.name = descName;
   this.parent = parent;
   this.id = angular.scenario.Describe.id++;
-  
+
   /**
    * Calls all before functions.
    */
@@ -36,7 +40,7 @@ angular.scenario.Describe.id = 0;
 /**
  * Defines a block to execute before each it or nested describe.
  *
- * @param {Function} Body of the block.
+ * @param {Function} body Body of the block.
  */
 angular.scenario.Describe.prototype.beforeEach = function(body) {
   this.beforeEachFns.push(body);
@@ -45,7 +49,7 @@ angular.scenario.Describe.prototype.beforeEach = function(body) {
 /**
  * Defines a block to execute after each it or nested describe.
  *
- * @param {Function} Body of the block.
+ * @param {Function} body Body of the block.
  */
 angular.scenario.Describe.prototype.afterEach = function(body) {
   this.afterEachFns.push(body);
@@ -54,11 +58,24 @@ angular.scenario.Describe.prototype.afterEach = function(body) {
 /**
  * Creates a new describe block that's a child of this one.
  *
- * @param {String} Name of the block. Appended to the parent block's name.
- * @param {Function} Body of the block.
+ * @param {string} name Name of the block. Appended to the parent block's name.
+ * @param {Function} body Body of the block.
  */
 angular.scenario.Describe.prototype.describe = function(name, body) {
   var child = new angular.scenario.Describe(name, this);
+  this.children.push(child);
+  body.call(child);
+};
+
+/**
+ * Same as describe() but makes ddescribe blocks the only to run.
+ *
+ * @param {string} name Name of the test.
+ * @param {Function} body Body of the block.
+ */
+angular.scenario.Describe.prototype.ddescribe = function(name, body) {
+  var child = new angular.scenario.Describe(name, this);
+  child.only = true;
   this.children.push(child);
   body.call(child);
 };
@@ -71,18 +88,29 @@ angular.scenario.Describe.prototype.xdescribe = angular.noop;
 /**
  * Defines a test.
  *
- * @param {String} Name of the test.
- * @param {Function} Body of the block.
+ * @param {string} name Name of the test.
+ * @param {Function} vody Body of the block.
  */
 angular.scenario.Describe.prototype.it = function(name, body) {
-  var self = this;
   this.its.push({
     definition: this,
+    only: this.only,
     name: name,
-    before: self.setupBefore,
+    before: this.setupBefore,
     body: body,
-    after: self.setupAfter
+    after: this.setupAfter
   });
+};
+
+/**
+ * Same as it() but makes iit tests the only test to run.
+ *
+ * @param {string} name Name of the test.
+ * @param {Function} body Body of the block.
+ */
+angular.scenario.Describe.prototype.iit = function(name, body) {
+  this.it.apply(this, arguments);
+  this.its[this.its.length-1].only = true;
 };
 
 /**
@@ -93,6 +121,15 @@ angular.scenario.Describe.prototype.xit = angular.noop;
 /**
  * Gets an array of functions representing all the tests (recursively).
  * that can be executed with SpecRunner's.
+ *
+ * @return {Array<Object>} Array of it blocks {
+ *   definition : Object // parent Describe
+ *   only: boolean
+ *   name: string
+ *   before: Function
+ *   body: Function
+ *   after: Function
+ *  }
  */
 angular.scenario.Describe.prototype.getSpecs = function() {
   var specs = arguments[0] || [];
@@ -102,5 +139,11 @@ angular.scenario.Describe.prototype.getSpecs = function() {
   angular.foreach(this.its, function(it) {
     specs.push(it);
   });
-  return specs;
+  var only = [];
+  angular.foreach(specs, function(it) {
+    if (it.only) {
+      only.push(it);
+    }
+  });
+  return (only.length && only) || specs;
 };

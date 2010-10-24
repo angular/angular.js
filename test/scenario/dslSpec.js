@@ -1,41 +1,21 @@
-/**
- * Very basic Mock of angular.
- */
-function AngularMock() {
-  this.reset();
-  this.service = this;
-}
-
-AngularMock.prototype.reset = function() {
-  this.log = [];
-};
-
-AngularMock.prototype.$browser = function() {
-  this.log.push('$brower()');
-  return this;
-};
-
-AngularMock.prototype.poll = function() {
-  this.log.push('$brower.poll()');
-  return this;
-};
-
-AngularMock.prototype.notifyWhenNoOutstandingRequests = function(fn) {
-  this.log.push('$brower.notifyWhenNoOutstandingRequests()');
-  fn();
-};
-
 describe("angular.scenario.dsl", function() {
-  var $window;
-  var $root;
-  var application;
+  var $window, $root;
+  var application, eventLog;
 
   beforeEach(function() {
+    eventLog = [];
     $window = {
       document: _jQuery("<div></div>"),
-      angular: new AngularMock()
+      angular: new angular.scenario.testing.MockAngular()
     };
-    $root = angular.scope();
+    $root = angular.scope({
+      emit: function(eventName) {
+        eventLog.push(eventName);
+      },
+      on: function(eventName) {
+        eventLog.push('Listener Added for ' + eventName);
+      }
+    });
     $root.futures = [];
     $root.futureLog = [];
     $root.$window = $window;
@@ -54,7 +34,7 @@ describe("angular.scenario.dsl", function() {
       };
     });
     $root.application = new angular.scenario.Application($window.document);
-    $root.application.getWindow = function() {
+    $root.application.getWindow_ = function() {
       return $window;
     };
     $root.application.navigateTo = function(url, callback) {
@@ -74,13 +54,14 @@ describe("angular.scenario.dsl", function() {
       expect($root.futureLog).toEqual([]);
       $window.resume();
       expect($root.futureLog).
-        toEqual(['waiting for you to call resume() in the console']);
+        toEqual(['waiting for you to resume']);
+      expect(eventLog).toContain('InteractiveWait');
     });
   });
 
   describe('Pause', function() {
     beforeEach(function() {
-      $root.setTimeout = function(fn, value) {
+      $root.$window.setTimeout = function(fn, value) {
         $root.timerValue = value;
         fn();
       };
@@ -126,13 +107,6 @@ describe("angular.scenario.dsl", function() {
       $root.dsl.navigateTo('http://myurl');
       expect($window.location).toEqual('http://myurl');
       expect($root.futureResult).toEqual('http://myurl');
-    });
-
-    it('should wait for angular notify when no requests pending', function() {
-      $root.dsl.navigateTo('url');
-      expect($window.angular.log).toContain('$brower.poll()');
-      expect($window.angular.log).
-        toContain('$brower.notifyWhenNoOutstandingRequests()');
     });
   });
 
@@ -199,6 +173,24 @@ describe("angular.scenario.dsl", function() {
         $root.dsl.element('a').click();
       });
 
+      it('should navigate page if click on anchor', function() {
+        expect($window.location).not.toEqual('#foo');
+        doc.append('<a href="#foo"></a>');
+        $root.dsl.element('a').click();
+        expect($window.location).toEqual('#foo');
+      });
+
+      it('should count matching elements', function() {
+        doc.append('<span></span><span></span>');
+        $root.dsl.element('span').count();
+        expect($root.futureResult).toEqual(2);
+      });
+
+      it('should return count of 0 if no matching elements', function() {
+        $root.dsl.element('span').count();
+        expect($root.futureResult).toEqual(0);
+      });
+
       it('should get attribute', function() {
         doc.append('<div id="test" class="foo"></div>');
         $root.dsl.element('#test').attr('class');
@@ -247,6 +239,12 @@ describe("angular.scenario.dsl", function() {
       it('should get the row count', function() {
         chain.count();
         expect($root.futureResult).toEqual(2);
+      });
+
+      it('should return 0 if repeater doesnt match', function() {
+        doc.find('ul').html('');
+        chain.count();
+        expect($root.futureResult).toEqual(0);
       });
 
       it('should get a row of bindings', function() {
