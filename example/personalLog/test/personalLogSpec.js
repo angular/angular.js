@@ -72,10 +72,10 @@ describe('example.personalLog.LogCtrl', function() {
 
 
     it('should delete a message identified by index', function() {
-      logCtrl.rmLog(1);
+      logCtrl.rmLog(logCtrl.logs[1]);
       expect(logCtrl.logs.length).toBe(3);
 
-      logCtrl.rmLog(2);
+      logCtrl.rmLog(logCtrl.logs[2]);
       expect(logCtrl.logs.length).toBe(2);
       expect(logCtrl.logs[0].msg).toBe('message1');
       expect(logCtrl.logs[1].msg).toBe('message3');
@@ -85,12 +85,12 @@ describe('example.personalLog.LogCtrl', function() {
     it('should update cookies when a log is deleted', function() {
       expect(logCtrl.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){3}\]/);
 
-      logCtrl.rmLog(1);
+      logCtrl.rmLog(logCtrl.logs[1]);
       expect(logCtrl.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){2}\]/);
 
-      logCtrl.rmLog(0);
-      logCtrl.rmLog(0);
-      logCtrl.rmLog(0);
+      logCtrl.rmLog(logCtrl.logs[0]);
+      logCtrl.rmLog(logCtrl.logs[0]);
+      logCtrl.rmLog(logCtrl.logs[0]);
       expect(logCtrl.$cookies.logs).toMatch(/\[\]/);
     });
   });
