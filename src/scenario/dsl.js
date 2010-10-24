@@ -1,18 +1,19 @@
 /**
  * Shared DSL statements that are useful to all scenarios.
  */
- 
+
  /**
  * Usage:
  *    wait() waits until you call resume() in the console
  */
- angular.scenario.dsl('wait', function() {
+angular.scenario.dsl('wait', function() {
   return function() {
-    return this.addFuture('waiting for you to call resume() in the console', function(done) {
+    return this.addFuture('waiting for you to resume', function(done) {
+      this.emit('InteractiveWait', this.spec, this.step);
       this.$window.resume = function() { done(); };
     });
   };
- });
+});
 
 /**
 * Usage:
@@ -21,7 +22,7 @@
 angular.scenario.dsl('pause', function() {
  return function(time) {
    return this.addFuture('pause for ' + time + ' seconds', function(done) {
-     this.setTimeout(function() { done(null, time * 1000); }, time * 1000);
+     this.$window.setTimeout(function() { done(null, time * 1000); }, time * 1000);
    });
  };
 });
@@ -49,8 +50,8 @@ angular.scenario.dsl('expect', function() {
 
 /**
  * Usage:
- *    navigateTo(future|string) where url a string or future with a value
- *    of a  URL to navigate to
+ *    navigateTo(url) Loads the url into the frame
+ *    navigateTo(url, fn) where fn(url) is called and returns the URL to navigate to
  */
 angular.scenario.dsl('navigateTo', function() {
   return function(url, delegate) {
@@ -60,17 +61,7 @@ angular.scenario.dsl('navigateTo', function() {
         url = delegate.call(this, url);
       }
       application.navigateTo(url, function() {
-        application.executeAction(function($window) {
-          if ($window.angular) {
-            var $browser = $window.angular.service.$browser();
-            $browser.poll();
-            $browser.notifyWhenNoOutstandingRequests(function() {
-              done(null, url);
-            });
-          } else {
-            done(null, url);
-          }
-        });
+        done(null, url);
       });
     });
   };
@@ -162,7 +153,11 @@ angular.scenario.dsl('repeater', function() {
 
   chain.count = function() {
     return this.addFutureAction('repeater ' + this.selector + ' count', function($window, $document, done) {
-      done(null, $document.elements().size());
+      try {
+        done(null, $document.elements().length);
+      } catch (e) {
+        done(null, 0);
+      }
     });
   };
 
@@ -238,6 +233,7 @@ angular.scenario.dsl('select', function() {
 
 /**
  * Usage:
+ *    element(selector).count() get the number of elements that match selector
  *    element(selector).click() clicks an element
  *    element(selector).attr(name) gets the value of an attribute
  *    element(selector).attr(name, value) sets the value of an attribute
@@ -248,10 +244,28 @@ angular.scenario.dsl('select', function() {
 angular.scenario.dsl('element', function() {
   var chain = {};
 
+  chain.count = function() {
+    return this.addFutureAction('element ' + this.selector + ' count', function($window, $document, done) {
+      try {
+        done(null, $document.elements().length);
+      } catch (e) {
+        done(null, 0);
+      }
+    });
+  };
+
   chain.click = function() {
     return this.addFutureAction('element ' + this.selector + ' click', function($window, $document, done) {
-      $document.elements().trigger('click');
-      done();
+      var elements = $document.elements();
+      var href = elements.attr('href');
+      elements.trigger('click');
+      if (href && elements[0].nodeName.toUpperCase() === 'A') {
+        this.application.navigateTo(href, function() {
+          done();
+        });
+      } else {
+        done();
+      }
     });
   };
 

@@ -3,6 +3,7 @@
  * define() in your tests.
  */
 angular.scenario.Describe = function(descName, parent) {
+  this.only = parent && parent.only;
   this.beforeEachFns = [];
   this.afterEachFns = [];
   this.its = [];
@@ -10,7 +11,7 @@ angular.scenario.Describe = function(descName, parent) {
   this.name = descName;
   this.parent = parent;
   this.id = angular.scenario.Describe.id++;
-  
+
   /**
    * Calls all before functions.
    */
@@ -64,6 +65,19 @@ angular.scenario.Describe.prototype.describe = function(name, body) {
 };
 
 /**
+ * Same as describe() but makes this the only describe block to run.
+ *
+ * @param {String} Name of the test.
+ * @param {Function} Body of the block.
+ */
+angular.scenario.Describe.prototype.ddescribe = function(name, body) {
+  var child = new angular.scenario.Describe(name, this);
+  child.only = true;
+  this.children.push(child);
+  body.call(child);
+};
+
+/**
  * Use to disable a describe block.
  */
 angular.scenario.Describe.prototype.xdescribe = angular.noop;
@@ -75,14 +89,25 @@ angular.scenario.Describe.prototype.xdescribe = angular.noop;
  * @param {Function} Body of the block.
  */
 angular.scenario.Describe.prototype.it = function(name, body) {
-  var self = this;
   this.its.push({
     definition: this,
+    only: this.only,
     name: name,
-    before: self.setupBefore,
+    before: this.setupBefore,
     body: body,
-    after: self.setupAfter
+    after: this.setupAfter
   });
+};
+
+/**
+ * Same as it() but makes this the only test to run.
+ *
+ * @param {String} Name of the test.
+ * @param {Function} Body of the block.
+ */
+angular.scenario.Describe.prototype.iit = function(name, body) {
+  this.it.apply(this, arguments);
+  this.its[this.its.length-1].only = true;
 };
 
 /**
@@ -102,5 +127,11 @@ angular.scenario.Describe.prototype.getSpecs = function() {
   angular.foreach(this.its, function(it) {
     specs.push(it);
   });
-  return specs;
+  var only = [];
+  angular.foreach(specs, function(it) {
+    if (it.only) {
+      only.push(it);
+    }
+  });
+  return (only.length && only) || specs;
 };

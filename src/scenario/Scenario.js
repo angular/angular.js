@@ -6,8 +6,12 @@
 // Public namespace
 angular.scenario = angular.scenario || {};
 
-// Namespace for the UI
-angular.scenario.ui = angular.scenario.ui || {};
+/**
+ * Defines a new output format.
+ */
+angular.scenario.output = angular.scenario.output || function(name, fn) {
+  angular.scenario.output[name] = fn;
+};
 
 /**
  * Defines a new DSL statement. If your factory function returns a Future
@@ -77,6 +81,46 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
     });
   };
 };
+
+/**
+ * Initialization function for the scenario runner.
+ */
+function angularScenarioInit($scenario, config) {
+  var body = _jQuery(document.body);
+  var config = angularJsConfig(document);
+  var output = [];
+
+  if (config.scenario_output) {
+    output = config.scenario_output.split(',');
+  }
+
+  angular.foreach(angular.scenario.output, function(fn, name) {
+    if (!output.length || indexOf(output,name) != -1) {
+      var context = body.append('<div></div>').find('div:last');
+      context.attr('id', name);
+      fn.call({}, context, $scenario);
+    }
+  });
+
+  var appFrame = body.append('<div id="application"></div>').find('#application');
+  var application = new angular.scenario.Application(appFrame);
+
+  $scenario.on('RunnerEnd', function() {
+    appFrame.css('display', 'none');
+    appFrame.find('iframe').attr('src', 'about:blank');
+  });
+
+  $scenario.on('RunnerError', function(error) {
+    if (window.console) {
+      console.log(formatException(error));
+    } else {
+      // Do something for IE
+      alert(error);
+    }
+  });
+
+  $scenario.run(application);
+}
 
 /**
  * Iterates through list with iterator function that must call the

@@ -6,6 +6,10 @@ angular.scenario.matcher('toEqual', function(expected) {
   return angular.equals(this.actual, expected);
 });
 
+angular.scenario.matcher('toBe', function(expected) {
+  return this.actual === expected;
+});
+
 angular.scenario.matcher('toBeDefined', function() {
   return angular.isDefined(this.actual);
 });

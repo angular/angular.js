@@ -15,14 +15,16 @@ angular.scenario.SpecRunner = function() {
  * Executes a spec which is an it block with associated before/after functions
  * based on the describe nesting.
  *
- * @param {Object} An angular.scenario.UI implementation
  * @param {Object} A spec object
  * @param {Object} An angular.scenario.Application instance
  * @param {Function} Callback function that is called when the  spec finshes.
  */
-angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
+angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
   var self = this;
-  var specUI = ui.addSpec(spec);
+  var count = 0;
+  this.spec = spec;
+
+  this.emit('SpecBegin', spec);
 
   try {
     spec.before.call(this);
@@ -30,7 +32,8 @@ angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
     this.afterIndex = this.futures.length;
     spec.after.call(this);
   } catch (e) {
-    specUI.error(e);
+    this.emit('SpecError', spec, e);
+    this.emit('SpecEnd', spec);
     specDone();
     return;
   }
@@ -42,32 +45,40 @@ angular.scenario.SpecRunner.prototype.run = function(ui, spec, specDone) {
     self.error = true;
     done(null, self.afterIndex);
   };
-  
-  var spec = this;
+
   asyncForEach(
     this.futures,
     function(future, futureDone) {
-      var stepUI = specUI.addStep(future.name, future.line);
+      self.step = future;
+      self.emit('StepBegin', spec, future);
       try {
         future.execute(function(error) {
-          stepUI.finish(error);
           if (error) {
+            self.emit('StepFailure', spec, future, error);
+            self.emit('StepEnd', spec, future);
             return handleError(error, futureDone);
           }
-          spec.$window.setTimeout( function() { futureDone(); }, 0);
+          self.emit('StepEnd', spec, future);
+          if ((count++) % 10 === 0) {
+            self.$window.setTimeout(function() { futureDone(); }, 0);
+          } else {
+            futureDone();
+          }
         });
       } catch (e) {
-        stepUI.error(e);
+        self.emit('StepError', spec, future, e);
+        self.emit('StepEnd', spec, future);
         handleError(e, futureDone);
       }
     },
     function(e) {
       if (e) {
-        specUI.error(e);
-      } else {
-        specUI.finish();
+        self.emit('SpecError', spec, e);
       }
-      specDone();
+      self.emit('SpecEnd', spec);
+      // Call done in a timeout so exceptions don't recursively
+      // call this function
+      self.$window.setTimeout(function() { specDone(); }, 0);
     }
   );
 };
@@ -94,7 +105,7 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
  *
  * @param {String} Name of the future
  * @param {Function} Behavior of the future
- * @param {Function} fn() that returns file/line number 
+ * @param {Function} fn() that returns file/line number
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;

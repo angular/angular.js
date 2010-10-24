@@ -80,6 +80,27 @@ describe('angular.scenario.Describe', function() {
     expect(specs.length).toEqual(0);
   });
 
+  it('should only return iit and ddescribe if present', function() {
+    root.describe('A', function() {
+      this.it('1', angular.noop);
+      this.iit('2', angular.noop);
+      this.describe('B', function() {
+        this.it('3', angular.noop);
+        this.ddescribe('C', function() {
+          this.it('4', angular.noop);
+          this.describe('D', function() {
+            this.it('5', angular.noop);
+          });
+        });
+      });
+    });
+    var specs = root.getSpecs();
+    expect(specs.length).toEqual(3);
+    expect(specs[0].name).toEqual('5');
+    expect(specs[1].name).toEqual('4');
+    expect(specs[2].name).toEqual('2');
+  });
+
   it('should create uniqueIds in the tree', function() {
     angular.scenario.Describe.id = 0;
     var a = new angular.scenario.Describe();
