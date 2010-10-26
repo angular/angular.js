@@ -195,7 +195,7 @@ angular.service('$browser', function(){
 function TzDate(offset, timestamp) {
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
-    timestamp = new Date(timestamp).getTime();
+    timestamp = angular.String.toDate(timestamp).getTime();
     if (isNaN(timestamp))
       throw {
         name: "Illegal Argument",
