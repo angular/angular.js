@@ -44,7 +44,7 @@ function padNumber(num, digits, trim) {
 }
 function dateGetter(name, size, offset, trim) {
   return function(date) {
-    var value = date['get' + name].call(date);
+    var value = date['get' + name]();
     if (offset > 0 || value > -offset)
       value += offset;
     if (value === 0 && offset == -12 ) value = 12;
