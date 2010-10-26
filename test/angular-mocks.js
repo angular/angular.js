@@ -162,3 +162,105 @@ MockBrowser.prototype = {
 angular.service('$browser', function(){
   return new MockBrowser();
 });
+
+
+/**
+ * Mock of the Date type which has its timezone specified via constroctor arg.
+ *
+ * The main purpose is to create Date-like instances with timezone fixed to the specified timezone
+ * offset, so that we can test code that depends on local timezone settings without dependency on
+ * the time zone settings of the machine where the code is running.
+ *
+ * @param {number} offset Offset of the *desired* timezone in hours (fractions will be honored)
+ * @param {(number|string)} timestamp Timestamp representing the desired time in *UTC*
+ *
+ * @example
+ * var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00Z');
+ * newYearInBratislava.getTimezoneOffset() => -60;
+ * newYearInBratislava.getFullYear() => 2010;
+ * newYearInBratislava.getMonth() => 0;
+ * newYearInBratislava.getDate() => 1;
+ * newYearInBratislava.getHours() => 0;
+ * newYearInBratislava.getMinutes() => 0;
+ *
+ *
+ * !!!! WARNING !!!!!
+ * This is not a complete Date object so only methods that were implemented can be called safely.
+ * To make matters worse, TzDate instances inherit stuff from Date via a prototype.
+ *
+ * We do our best to intercept calls to "unimplemented" methods, but since the list of methods is
+ * incomplete we might be missing some non-standard methods. This can result in errors like:
+ * "Date.prototype.foo called on incompatible Object".
+ */
+function TzDate(offset, timestamp) {
+  if (angular.isString(timestamp)) {
+    var tsStr = timestamp;
+    timestamp = new Date(timestamp).getTime();
+    if (isNaN(timestamp))
+      throw {
+        name: "Illegal Argument",
+        message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
+      };
+  }
+
+  var localOffset = new Date(timestamp).getTimezoneOffset();
+  this.offsetDiff = localOffset*60*1000 - offset*1000*60*60;
+  this.date = new Date(timestamp + this.offsetDiff);
+
+  this.getTime = function() {
+    return this.date.getTime() - this.offsetDiff;
+  };
+
+  this.toLocaleDateString = function() {
+    return this.date.toLocaleDateString();
+  };
+
+  this.getFullYear = function() {
+    return this.date.getFullYear();
+  };
+
+  this.getMonth = function() {
+    return this.date.getMonth();
+  };
+
+  this.getDate = function() {
+    return this.date.getDate();
+  };
+
+  this.getHours = function() {
+    return this.date.getHours();
+  };
+
+  this.getMinutes = function() {
+    return this.date.getMinutes();
+  };
+
+  this.getSeconds = function() {
+    return this.date.getSeconds();
+  };
+
+  this.getTimezoneOffset = function() {
+    return offset * 60;
+  };
+
+  //hide all methods not implemented in this mock that the Date prototype exposes
+  var unimplementedMethods = ['getDay', 'getMilliseconds', 'getTime', 'getUTCDate', 'getUTCDay',
+      'getUTCFullYear', 'getUTCHours', 'getUTCMilliseconds', 'getUTCMinutes', 'getUTCMonth',
+      'getUTCSeconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
+      'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
+      'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
+      'setYear', 'toDateString', 'toJSON', 'toGMTString', 'toLocaleFormat', 'toLocaleString',
+      'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString', 'valueOf'];
+
+  angular.foreach(unimplementedMethods, function(methodName) {
+    this[methodName] = function() {
+      throw {
+        name: "MethodNotImplemented",
+        message: "Method '" + methodName + "' is not implemented in the TzDate mock"
+      };
+    };
+  });
+}
+
+//make "tzDateInstance instanceof Date" return true
+TzDate.prototype = Date.prototype;
