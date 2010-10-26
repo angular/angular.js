@@ -39,56 +39,80 @@
   <script type="text/javascript" src="../src/scenario/SpecRunner.js"></script>
   <script type="text/javascript" src="../src/scenario/dsl.js"></script>
   <script type="text/javascript" src="../src/scenario/matchers.js"></script>
+  <script type="text/javascript" src="../src/scenario/ObjectModel.js"></script>
+
+  <script type="text/javascript" src="../src/scenario/output/Html.js"></script>
+  <script type="text/javascript" src="../src/scenario/output/Object.js"></script>
+  <script type="text/javascript" src="../src/scenario/output/Json.js"></script>
+  <script type="text/javascript" src="../src/scenario/output/Xml.js"></script>
 
   <script type="text/javascript" src="angular-mocks.js"></script>
+  <script type="text/javascript" src="../test/scenario/mocks.js"></script>
   <script type="text/javascript" src="testabilityPatch.js"></script>
 
   <!-- include spec files here... -->
 <script type="text/javascript">
 describe('manual', function(){
-  var scope;
+  var compile, model, element;
 
-  function compile(html, initialScope, parent) {
+  beforeEach(function() {
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
-    var element = self.element = jqLite(html);
-    scope = compiler.compile(element)(element);
-
-    if (parent) parent.append(element);
-
-    extend(scope, initialScope);
-    scope.$init();
-    return {node:element, scope:scope};
-  };
-
-  it('should debug', function(){
-    var x = compile(
-        '<select name="selection" ng:format="number">' +
-        '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\', \'C\']">{{name}}</option>' +
-      '</select>');
-    expect(scope.selection).toEqual(undefined);
-
-    browserTrigger(element[0].childNodes[2], 'change');
-    expect(scope.selection).toEqual(1);
-
-    scope.selection = 2;
-    scope.$eval();
-    expect(element[0].childNodes[3].selected).toEqual(true);
+    compile = function(html) {
+      element = jqLite(html);
+      model = compiler.compile(element)(element);
+      model.$init();
+      return model;
+    };
   });
 
-  it('should reproduce', function(){
-    var select = $('<select name=""><option>a</option></select>');
-    var log = '';
-    select.bind('change', function(){ log += 'change;'; });
-    select.bind('click', function(){ log += 'click;'; });
-    select.bind('keyup', function(){ log += 'keyup;'; });
-    select[0].attachEvent('onchange', function(){ log += 'CHANGE;';});
-    select[0].fireEvent('onfocusout');
-    select[0].fireEvent('onchange');
-    select[0].fireEvent('onclick');
-    select[0].fireEvent('onkeyup');
-    expect(log).toEqual('CHANGE;change;click;keyup;');
+  it('should get called on form submit', function() {
+    var scope = compile('<form action="" ng:submit="submitted = true">' +
+                          '<input type="submit"/>' +
+                        '</form>');
+    scope.$eval();
+    expect(scope.submitted).not.toBeDefined();
+
+    browserTrigger(element.children()[0]);
+    expect(scope.submitted).toEqual(true);
   });
 });
+
+describe('angular.scenario.output.json', function() {
+  var output, context;
+  var runner, $window;
+  var spec, step;
+
+  beforeEach(function() {
+    $window = {};
+    context = _jQuery('<div>text</div>');
+    $(document.body).append(context);
+    runner = new angular.scenario.testing.MockRunner();
+    output = angular.scenario.output.xml(context, runner);
+    spec = {
+      name: 'test spec',
+      definition: {
+        id: 10,
+        name: 'describe'
+      }
+    };
+    step = {
+      name: 'some step',
+      line: function() { return 'unknown:-1'; }
+    };
+  });
+
+  it('should create XML nodes for object model', function() {
+    runner.emit('SpecBegin', spec);
+    runner.emit('StepBegin', spec, step);
+    runner.emit('StepEnd', spec, step);
+    runner.emit('SpecEnd', spec);
+    runner.emit('RunnerEnd');
+    expect(_jQuery(context).find('it').attr('status')).toEqual('success');
+    expect(_jQuery(context).find('it step').attr('status')).toEqual('success');
+  });
+});
+
+
 </script>
 
 </head>
@@ -96,7 +120,10 @@ describe('manual', function(){
 
 <script type="text/javascript">
   jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
-  jasmine.getEnv().execute();
+  function run(){
+    jasmine.getEnv().execute();
+  }
+  run();
 </script>
 
 </body>

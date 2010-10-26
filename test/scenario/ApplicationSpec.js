@@ -88,7 +88,7 @@ describe('angular.scenario.Application', function() {
     var testWindow = {
       document: _jQuery('<div class="test-foo"></div>'),
       angular: {
-        service: {},
+        service: {}
       }
     };
     testWindow.angular.service.$browser = function() {
