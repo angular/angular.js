@@ -1,84 +1,83 @@
 describe('json', function(){
-  it('should parse Primitives', function() {
-    assertEquals("null", toJson(0/0));
-    assertEquals("null", toJson(null));
-    assertEquals("true", toJson(true));
-    assertEquals("false", toJson(false));
-    assertEquals("123.45", toJson(123.45));
-    assertEquals('"abc"', toJson("abc"));
-    assertEquals('"a \\t \\n \\r b \\\\"', toJson("a \t \n \r b \\"));
+  it('should serialize primitives', function() {
+    expect(toJson(0/0)).toEqual('null');
+    expect(toJson(null)).toEqual('null');
+    expect(toJson(true)).toEqual('true');
+    expect(toJson(false)).toEqual('false');
+    expect(toJson(123.45)).toEqual("123.45");
+    expect(toJson("abc")).toEqual('"abc"');
+    expect(toJson("a \t \n \r b \\")).toEqual('"a \\t \\n \\r b \\\\"');
   });
 
-  it('should parse Escaping', function() {
-    assertEquals("\"7\\\\\\\"7\"", toJson("7\\\"7"));
+  it('should serialize strings with escaped characters', function() {
+    expect(toJson("7\\\"7")).toEqual("\"7\\\\\\\"7\"");
   });
 
-  it('should parse Objects', function() {
-    assertEquals('{"a":1,"b":2}', toJson({a:1,b:2}));
-    assertEquals('{"a":{"b":2}}', toJson({a:{b:2}}));
-    assertEquals('{"a":{"b":{"c":0}}}', toJson({a:{b:{c:0}}}));
-    assertEquals('{"a":{"b":null}}', toJson({a:{b:0/0}}));
+  it('should serialize objects', function() {
+    expect(toJson({a:1,b:2})).toEqual('{"a":1,"b":2}');
+    expect(toJson({a:{b:2}})).toEqual('{"a":{"b":2}}');
+    expect(toJson({a:{b:{c:0}}})).toEqual('{"a":{"b":{"c":0}}}');
+    expect(toJson({a:{b:0/0}})).toEqual('{"a":{"b":null}}');
   });
 
-  it('should parse ObjectPretty', function() {
-    assertEquals('{\n  "a":1,\n  "b":2}', toJson({a:1,b:2}, true));
-    assertEquals('{\n  "a":{\n    "b":2}}', toJson({a:{b:2}}, true));
+  it('should format objects pretty', function() {
+    expect(toJson({a:1,b:2}, true)).toEqual('{\n  "a":1,\n  "b":2}');
+    expect(toJson({a:{b:2}}, true)).toEqual('{\n  "a":{\n    "b":2}}');
   });
 
-  it('should parse Array', function() {
-    assertEquals('[]', toJson([]));
-    assertEquals('[1,"b"]', toJson([1,"b"]));
+  it('should serialize array', function() {
+    expect(toJson([])).toEqual('[]');
+    expect(toJson([1,"b"])).toEqual('[1,"b"]');
   });
 
-  it('should parse RegExp', function() {
-    assertEquals('"/foo/"', toJson(/foo/));
-    assertEquals('[1,"/foo/"]', toJson([1,new RegExp("foo")]));
+  it('should serialize RegExp', function() {
+    expect(toJson(/foo/)).toEqual('"/foo/"');
+    expect(toJson([1,new RegExp("foo")])).toEqual('[1,"/foo/"]');
   });
 
-  it('should parse IgnoreFunctions', function() {
-    assertEquals('[null,1]', toJson([function(){},1]));
-    assertEquals('{}', toJson({a:function(){}}));
+  it('should ignore functions', function() {
+    expect(toJson([function(){},1])).toEqual('[null,1]');
+    expect(toJson({a:function(){}})).toEqual('{}');
   });
 
-  it('should parse ParseNull', function() {
-    assertNull(fromJson("null"));
+  it('should parse null', function() {
+    expect(fromJson("null")).toBeNull();
   });
 
-  it('should parse ParseBoolean', function() {
-    assertTrue(fromJson("true"));
-    assertFalse(fromJson("false"));
+  it('should parse boolean', function() {
+    expect(fromJson("true")).toBeTruthy();
+    expect(fromJson("false")).toBeFalsy();
   });
 
-  it('should parse $$isIgnored', function() {
-    assertEquals("{}", toJson({$$:0}));
+  it('should ignore $$ properties', function() {
+    expect(toJson({$$:0})).toEqual("{}");
   });
 
-  it('should parse ArrayWithEmptyItems', function() {
+  it('should serialize array with empty items', function() {
     var a = [];
     a[1] = "X";
-    assertEquals('[null,"X"]', toJson(a));
+    expect(toJson(a)).toEqual('[null,"X"]');
   });
 
-  it('should parse ItShouldEscapeUnicode', function() {
-    assertEquals(1, "\u00a0".length);
-    assertEquals(8, toJson("\u00a0").length);
-    assertEquals(1, fromJson(toJson("\u00a0")).length);
+  it('should escape unicode', function() {
+    expect("\u00a0".length).toEqual(1);
+    expect(toJson("\u00a0").length).toEqual(8);
+    expect(fromJson(toJson("\u00a0")).length).toEqual(1);
   });
 
-  it('should parse ItShouldUTCDates', function() {
+  it('should serialize UTC dates', function() {
     var date = angular.String.toDate("2009-10-09T01:02:03Z");
-    assertEquals('"2009-10-09T01:02:03Z"', toJson(date));
-    assertEquals(date.getTime(),
-        fromJson('"2009-10-09T01:02:03Z"').getTime());
+    expect(toJson(date)).toEqual('"2009-10-09T01:02:03Z"');
+    expect(fromJson('"2009-10-09T01:02:03Z"').getTime()).toEqual(date.getTime());
   });
 
-  it('should parse ItShouldPreventRecursion', function() {
+  it('should prevent recursion', function() {
     var obj = {a:'b'};
     obj.recursion = obj;
-    assertEquals('{"a":"b","recursion":RECURSION}', angular.toJson(obj));
+    expect(angular.toJson(obj)).toEqual('{"a":"b","recursion":RECURSION}');
   });
 
-  it('should parse ItShouldIgnore$Properties', function() {
+  it('should ignore $ properties', function() {
     var scope = createScope();
     scope.a = 'a';
     scope['$b'] = '$b';
@@ -86,22 +85,22 @@ describe('json', function(){
     expect(angular.toJson(scope)).toEqual('{"a":"a","c":"c","this":RECURSION}');
   });
 
-  it('should parse ItShouldSerializeInheritedProperties', function() {
+  it('should serialize inherited properties', function() {
     var scope = createScope({p:'p'});
     scope.a = 'a';
     expect(angular.toJson(scope)).toEqual('{"a":"a","p":"p","this":RECURSION}');
   });
 
-  it('should parse ItShouldSerializeSameObjectsMultipleTimes', function() {
+  it('should serialize same objects multiple times', function() {
     var obj = {a:'b'};
-    assertEquals('{"A":{"a":"b"},"B":{"a":"b"}}', angular.toJson({A:obj, B:obj}));
+    expect(angular.toJson({A:obj, B:obj})).toEqual('{"A":{"a":"b"},"B":{"a":"b"}}');
   });
 
-  it('should parse ItShouldNotSerializeUndefinedValues', function() {
-    assertEquals('{}', angular.toJson({A:undefined}));
+  it('should not serialize undefined values', function() {
+    expect(angular.toJson({A:undefined})).toEqual('{}');
   });
 
-  it('should parse ItShouldParseFloats', function() {
+  it('should parse floats', function() {
     expect(fromJson("{value:2.55, name:'misko'}")).toEqual({value:2.55, name:'misko'});
   });
 
@@ -147,4 +146,3 @@ describe('json', function(){
   });
 
 });
-
