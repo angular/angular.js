@@ -209,8 +209,15 @@ var angularString = {
    * @return {(Date|string)}
    */
   'toDate':function(string){
-    var date = new Date(string);
-    return isNaN(date.getTime()) ? string : date;
+    var match;
+    if (typeof string == 'string' &&
+        (match = string.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){
+      var date = new Date(0);
+      date.setUTCFullYear(match[1], match[2] - 1, match[3]);
+      date.setUTCHours(match[4], match[5], match[6], 0);
+      return date;
+    }
+    return string;
   }
 };
 
