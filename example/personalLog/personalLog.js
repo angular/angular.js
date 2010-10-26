@@ -1,5 +1,5 @@
 /**
- * @fileOverview Very simple personal log demo application to demostrate angular functionality,
+ * @fileOverview Very simple personal log demo application to demonstrate angular functionality,
  *               especially:
  *               - the MVC model
  *               - testability of controllers
@@ -46,7 +46,7 @@ function LogCtrl($cookieStore) {
     logs.push(log);
     $cookieStore.put(LOGS, logs);
     self.newMsg = '';
-  }
+  };
 
 
   /**
@@ -56,16 +56,16 @@ function LogCtrl($cookieStore) {
   this.rmLog = function(msgIdx) {
     logs.splice(msgIdx,1);
     $cookieStore.put(LOGS, logs);
-  }
+  };
 
 
   /**
    * Persistently removes all logs.
    */
   this.rmLogs = function() {
-    logs.splice(0);
+    logs.splice(0, logs.length);
     $cookieStore.remove(LOGS);
-  }
+  };
 }
 
 //inject

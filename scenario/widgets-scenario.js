@@ -27,12 +27,22 @@ describe('widgets', function() {
     expect(binding('multiselect').fromJson()).toEqual(['A', 'C']);
 
     expect(binding('button').fromJson()).toEqual({'count': 0});
+    expect(binding('form').fromJson()).toEqual({'count': 0});
+
     element('form a').click();
     expect(binding('button').fromJson()).toEqual({'count': 1});
-    element('input[value="submit"]').click();
+
+    element('input[value="submit input"]').click();
     expect(binding('button').fromJson()).toEqual({'count': 2});
+    expect(binding('form').fromJson()).toEqual({'count': 1});
+
+    element('button:contains("submit button")').click();
+    expect(binding('button').fromJson()).toEqual({'count': 2});
+    expect(binding('form').fromJson()).toEqual({'count': 2});
+
     element('input[value="button"]').click();
     expect(binding('button').fromJson()).toEqual({'count': 3});
+
     element('input[type="image"]').click();
     expect(binding('button').fromJson()).toEqual({'count': 4});
 

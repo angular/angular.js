@@ -19,7 +19,7 @@ describe('angular.scenario.output.html', function() {
     };
     step = {
       name: 'some step',
-      line: function() { return 'unknown:-1'; },
+      line: function() { return 'unknown:-1'; }
     };
     runner = new angular.scenario.testing.MockRunner();
     context = _jQuery("<div></div>");
@@ -44,7 +44,7 @@ describe('angular.scenario.output.html', function() {
     runner.emit('StepBegin', spec, step);
     runner.emit('InteractiveWait', spec, step);
     expect(context.find('.test-actions .test-title:first').text()).toEqual('some step');
-    expect(context.find('.test-actions .test-title:last').html()).toEqual(
+    expect(lowercase(context.find('.test-actions .test-title:last').html())).toEqual(
       'waiting for you to <a href="javascript:resume()">resume</a>.'
     );
   });

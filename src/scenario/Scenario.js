@@ -246,6 +246,15 @@ function browserTrigger(element, type) {
         break;
     }
     element.fireEvent('on' + type);
+    if (lowercase(element.type) == 'submit') {
+      while(element) {
+        if (lowercase(element.nodeName) == 'form') {
+          element.fireEvent('onsubmit');
+          break;
+        }
+        element = element.parentNode;
+      }
+    }
   } else {
     var evnt = document.createEvent('MouseEvents');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);

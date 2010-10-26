@@ -206,7 +206,7 @@ describe("directives", function(){
   describe('ng:submit', function() {
     it('should get called on form submit', function() {
       var scope = compile('<form action="" ng:submit="submitted = true">' +
-                            '<input id="submit" type="submit"/>' +
+                            '<input type="submit"/>' +
                           '</form>');
       scope.$eval();
       expect(scope.submitted).not.toBeDefined();

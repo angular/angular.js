@@ -203,10 +203,6 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
         lastValue = model.get();
         scope.$tryEval(action, element);
         scope.$root.$eval();
-        // if we have noop initFn than we are just a button,
-        // therefore we want to prevent default action
-        if(initFn == noop)
-          event.preventDefault();
       });
     }
     function updateView(){

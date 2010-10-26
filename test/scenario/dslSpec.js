@@ -177,7 +177,7 @@ describe("angular.scenario.dsl", function() {
         expect($window.location).not.toEqual('#foo');
         doc.append('<a href="#foo"></a>');
         $root.dsl.element('a').click();
-        expect($window.location).toEqual('#foo');
+        expect($window.location).toMatch(/#foo$/);
       });
 
       it('should count matching elements', function() {

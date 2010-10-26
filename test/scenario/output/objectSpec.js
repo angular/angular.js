@@ -18,19 +18,19 @@ describe('angular.scenario.output.object', function() {
     };
     step = {
       name: 'some step',
-      line: function() { return 'unknown:-1'; },
+      line: function() { return 'unknown:-1'; }
     };
   });
-  
+
   it('should create a global variable $result', function() {
     expect($window.$result).toBeDefined();
   });
-  
+
   it('should maintain live state in $result', function() {
     runner.emit('SpecBegin', spec);
     runner.emit('StepBegin', spec, step);
     runner.emit('StepEnd', spec, step);
-    
+
     expect($window.$result.children['describe']
       .specs['test spec'].steps[0].duration).toBeDefined();
   });
