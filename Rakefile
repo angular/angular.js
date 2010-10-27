@@ -6,7 +6,7 @@ ANGULAR = [
   'src/Compiler.js',
   'src/Scope.js',
   'src/Injector.js',
-  'src/Parser.js',
+  'src/parser.js',
   'src/Resource.js',
   'src/Browser.js',
   'src/sanitizer.js',
