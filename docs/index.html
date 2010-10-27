@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html xmlns:ng="http://angularjs.org" wiki:ng="http://angularjs.org">
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+  <script type="text/javascript" src="docs-data.js"></script>
+  <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
+  <script type="text/javascript" src="http://angularjs.org/extensions/wiki_widgets.js"></script>
+  <link rel="stylesheet" href="http://angularjs.org/extensions/wiki_widgets.css" type="text/css" media="screen" />
+</head>
+<body ng:init="docs=$window.NG_DOC; $window.$root = $root">
+  <table>
+    <tr>
+      <td valign="top">
+        <div ng:repeat="(name, type) in docs.section">
+          <b>{{name}}</b>
+          <div ng:repeat="page in type">
+            <a href="#{{page.name}}"><tt>{{page.shortName}}</tt></a>
+          </div>
+         </div>
+      </td>
+      <td valign="top"><ng:include src="$location.hashPath + '.html' "></ng:include></td>
+    </tr>
+  </table>
+</body>
+</html>

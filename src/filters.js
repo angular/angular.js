@@ -6,31 +6,31 @@
  * @description
  *   Formats a number as a currency (ie $1,234.56).
  *
- * @param {number} amout Input to filter.
+ * @param {number} amount Input to filter.
  * @returns {string} Formated number.
  *
  * @css ng-format-negative
  *   When the value is negative, this css class is applied to the binding making it by default red.
- *   
+ *
  * @example
  *   <input type="text" name="amount" value="1234.56"/> <br/>
  *   {{amount | currency}}
  *
  * @scenario
  *   it('should init with 1234.56', function(){
- *     expect(bind('amount')).toEqual('$1,234.56');
+ *     expect(binding('amount')).toEqual('$1,234.56');
  *   });
  *   it('should update', function(){
- *     element(':input[name=amount]').value('-1234');
- *     expect(bind('amount')).toEqual('-$1,234.00');
- *     expect(bind('amount')).toHaveColor('red');
+ *     input('amount').enter('-1234');
+ *     expect(binding('amount')).toEqual('$-1,234.00');
+ *     // TODO: implement
+ *     // expect(binding('amount')).toHaveColor('red');
  *   });
  */
 angularFilter.currency = function(amount){
   this.$element.toggleClass('ng-format-negative', amount < 0);
   return '$' + angularFilter['number'].apply(this, [amount, 2]);
 };
-
 
 /**
  * @ngdoc filter
@@ -43,7 +43,7 @@ angularFilter.currency = function(amount){
  *   If the input is not a number empty string is returned.
  *
  * @param {(number|string)} number Number to format.
- * @param {(number|string)=} fractionSize Number of decimal places to round the number to. Default 2.
+ * @param {(number|string)=2} fractionSize Number of decimal places to round the number to. Default 2.
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
@@ -54,10 +54,10 @@ angularFilter.currency = function(amount){
  *
  * @scenario
  *   it('should format numbers', function(){
- *     expect(element('span[ng\\:bind="1234.56789|number"]').val()).toBe('1,234.57');
- *     expect(element('span[ng\\:bind="1234.56789|number:0"]').val()).toBe('1,234');
- *     expect(element('span[ng\\:bind="1234.56789|number:2"]').val()).toBe('1,234.56');
- *     expect(element('span[ng\\:bind="-1234.56789|number:4"]').val()).toBe('-1,234.56789');
+ *     expect(binding('1234.56789|number')).toEqual('1,234.57');
+ *     expect(binding('1234.56789|number:0')).toEqual('1,235');
+ *     expect(binding('1234.56789|number:2')).toEqual('1,234.57');
+ *     expect(binding('-1234.56789|number:4')).toEqual('-1,234.5679');
  *   });
  */
 angularFilter.number = function(number, fractionSize){
@@ -204,10 +204,10 @@ angularFilter.date = function(date, format) {
  *
  * @scenario
  *   it('should jsonify filtered objects', function() {
- *     expect(element('pre[ng\\:bind-template="{{ {a:1, b:[]} | json }}"]').val()).toBe(
+ *     expect(binding('{{ {a:1, b:[]} | json')).toEqual(
  *      '{\n  "a":1,\n  "b":[]}'
  *     );
- *   }
+ *   });
  *
  */
 angularFilter.json = function(object) {
@@ -257,7 +257,7 @@ angularFilter.uppercase = uppercase;
  *   filtered and you can't get the content through the sanitizer.
  *
  * @param {string} html Html input.
- * @param {string=} option If 'unsafe' then do not sanitize the HTML input.
+ * @param {string='safe'} option If 'unsafe' then do not sanitize the HTML input.
  * @returns {string} Sanitized or raw html.
  */
 angularFilter.html =  function(html, option){

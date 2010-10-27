@@ -156,8 +156,14 @@ task :compile => [:init, :compile_scenario, :generate_ie_compat] do
 end
 
 
+desc 'Generate docs'
+task :docs do
+  `node docs/collect.js`
+end
+
+
 desc 'Create angular distribution'
-task :package => [:clean, :compile] do
+task :package => [:clean, :compile, :docs] do
   v = YAML::load( File.open( 'version.yaml' ) )['version']
   match = v.match(/^([^-]*)(-snapshot)?$/)
   version = match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : '')
@@ -176,6 +182,20 @@ task :package => [:clean, :compile] do
   ].each do |src|
     dest = src.gsub(/^[^\/]+\//, '').gsub(/((\.min)?\.js)$/, "-#{version}\\1")
     FileUtils.cp(src, pkg_dir + '/' + dest)
+  end
+
+  FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{version}"
+
+  File.open("#{pkg_dir}/docs-#{version}/index.html", File::RDWR) do |f|
+    text = f.read
+    f.rewind
+    f.write text.sub('angular.min.js', "angular-#{version}.min.js")
+  end
+
+  File.open("#{pkg_dir}/docs-#{version}/docs-scenario.html", File::RDWR) do |f|
+    text = f.read
+    f.rewind
+    f.write text.sub('angular-scenario.js', "angular-scenario-#{version}.js")
   end
 
   %x(tar -czf #{path_to(tarball)} -C #{path_to('pkg')} .)
@@ -256,5 +276,5 @@ end
 # returns path to the file in the build directory
 #
 def path_to(filename)
-  return File.join(BUILD_DIR, filename)
+  return File.join(BUILD_DIR, *filename)
 end

@@ -1,0 +1,58 @@
+WIKI\:SOURCE,
+WIKI\:SOURCE>ul.tabs,
+WIKI\:SOURCE>ul.tabs>li {
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+WIKI\:SOURCE>ul.tabs {
+  margin: 0 !important;
+  padding: 0 !important;	
+}
+
+WIKI\:SOURCE > ul.tabs > li.tab {
+  margin: 0 0 0 .8em !important;
+  display: inline-block;
+  border: 1px solid gray;
+  padding: .1em .8em .4em .8em !important;
+  -moz-border-radius-topleft: 5px;
+  -moz-border-radius-topright: 5px;
+  -webkit-border-top-left-radius: 5px;
+  -webkit-border-top-right-radius: 5px;
+  border-bottom: none;
+  cursor: pointer;
+  background-color: lightgray;
+  margin-bottom: -2px;
+  position: relative;
+  z-index: 0;
+}
+
+WIKI\:SOURCE > ul.tabs > li.tab.selected {
+  z-index: 2;
+  background-color: white;
+  font-weight: bold;
+  border-width: 2px;
+}
+
+WIKI\:SOURCE > ul.tabs > li.pane {
+  border: 2px solid gray;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-color: white;
+  padding: 5px !important;
+}
+
+WIKI\:SOURCE > ul.tabs > li.pane {
+  display:none;
+}
+
+WIKI\:SOURCE > ul.tabs > li.pane.selected {
+  position: relative;
+  z-index: 1;
+  display:block;
+}
+WIKI\:SOURCE > ul.tabs > li.pane.source {
+  font-size: .8em !important;
+}
+//////////////////

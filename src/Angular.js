@@ -10,7 +10,7 @@ if (typeof document.getAttribute == $undefined)
  *
  * @description Converts string to lowercase
  * @param {string} value
- * @return {string} Lowercased string.
+ * @returns {string} Lowercased string.
  */
 var lowercase = function (value){ return isString(value) ? value.toLowerCase() : value; };
 
@@ -22,7 +22,7 @@ var lowercase = function (value){ return isString(value) ? value.toLowerCase() :
  *
  * @description Converts string to uppercase.
  * @param {string} value
- * @return {string} Uppercased string.
+ * @returns {string} Uppercased string.
  */
 var uppercase = function (value){ return isString(value) ? value.toUpperCase() : value; };
 
@@ -100,7 +100,7 @@ var _undefined        = undefined,
      * @ngdoc overview
      * @name angular.filter
      * @namespace Namespace for all filters.
-     *
+     * @description
      * # Overview
      * Filters are a standard way to format your data for display to the user. For example, you
      * might have the number 1234.5678 and would like to display it as US currency: $1,234.57.
@@ -364,7 +364,7 @@ function isLeafNode (node) {
  * @param {*} source The source to be used during copy.
  *                   Can be any type including primitives, null and undefined.
  * @param {(Object|Array)=} destination Optional destination into which the source is copied
- * @return {*}
+ * @returns {*}
  */
 function copy(source, destination){
   if (!destination) {
@@ -507,7 +507,7 @@ function compile(element, existingScope) {
 
 /**
  * Parses an escaped url query string into key-value pairs.
- * @return Object.<(string|boolean)>
+ * @returns Object.<(string|boolean)>
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
