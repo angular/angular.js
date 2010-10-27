@@ -46,6 +46,7 @@ describe('compiler', function(){
     var init = template(e).$init;
     expect(log).toEqual("found");
     init();
+    expect(e.hasClass('ng-directive')).toEqual(true);
     expect(log).toEqual("found:init");
   });
 
@@ -102,12 +103,13 @@ describe('compiler', function(){
       }
     });
     var scope = compile('before<span>middle</span>after');
-    expect(lowercase(scope.$element[0].innerHTML)).toEqual('before<span hello="middle">replaced</span>after');
+    expect(sortedHtml(scope.$element[0], true)).toEqual('<div>before<span class="ng-directive" hello="middle">replaced</span>after</div>');
     expect(log).toEqual("hello middle");
   });
 
   it('should replace widgets', function(){
     widgets['NG:BUTTON'] = function(element) {
+      expect(element.hasClass('ng-widget')).toEqual(true);
       element.replaceWith('<div>button</div>');
       return function(element) {
         log += 'init';
@@ -120,6 +122,8 @@ describe('compiler', function(){
 
   it('should use the replaced element after calling widget', function(){
     widgets['H1'] = function(element) {
+      // HTML elements which are augmented by acting as widgets, should not be marked as so
+      expect(element.hasClass('ng-widget')).toEqual(false);
       var span = angular.element('<span>{{1+2}}</span>');
       element.replaceWith(span);
       this.descend(true);
