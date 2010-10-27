@@ -1,3 +1,7 @@
+/**
+ *
+ */
+
 function modelAccessor(scope, element) {
   var expr = element.attr('name');
   if (!expr) throw "Required field 'name' not found.";
@@ -240,6 +244,16 @@ angularWidget('option', function(){
 });
 
 
+/*ng:doc
+ * @type widget
+ * @name ng:include
+ *
+ * @description
+ *
+ * @example
+ *
+ * @scenario
+ */
 angularWidget('ng:include', function(element){
   var compiler = this,
       srcExp = element.attr("src"),

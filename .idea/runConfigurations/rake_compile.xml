@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="rake compile" type="BashConfigurationType" factoryName="Bash">
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="INTERPRETER_PATH" value="/System/Library/Frameworks/Ruby.framework/Versions/1.8/usr/bin/ruby" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs />
+    <module name="" />
+    <option name="SCRIPT_NAME" value="/usr/bin/rake" />
+    <option name="PARAMETERS" value="compile" />
+    <RunnerSettings RunnerId="BashRunner" />
+    <ConfigurationWrapper RunnerId="BashRunner" />
+    <method />
+  </configuration>
+</component>

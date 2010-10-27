@@ -1,0 +1,15 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="gen_docs" type="BashConfigurationType" factoryName="Bash">
+    <option name="INTERPRETER_OPTIONS" value="" />
+    <option name="INTERPRETER_PATH" value="/bin/bash" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <option name="PARENT_ENVS" value="true" />
+    <envs />
+    <module name="" />
+    <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gen_docs.sh" />
+    <option name="PARAMETERS" value="" />
+    <RunnerSettings RunnerId="BashRunner" />
+    <ConfigurationWrapper RunnerId="BashRunner" />
+    <method />
+  </configuration>
+</component>

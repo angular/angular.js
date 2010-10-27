@@ -3,10 +3,7 @@
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
-  <component name="ProjectDetails">
-    <option name="projectName" value="master" />
-  </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Ruby SDK 1.8.7 (/usr/bin/ruby)" project-jdk-type="RUBY_SDK" />
+  <component name="ProjectRootManager" version="2" />
   <component name="SvnBranchConfigurationManager">
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>

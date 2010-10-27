@@ -1,0 +1,33 @@
+<h1><tt>{{name}}</tt></h1>
+<h2>Usage</h2>
+<h3>In HTML Template Binding</h3>
+<tt>
+  <span>{{</span>
+  {{paramFirst.name}}_expression
+  | {{shortName}}{{#paramRest}}{{^default}}:{{name}}{{/default}}{{#default}}<i>[:{{name}}={{default}}]</i>{{/default}}{{/paramRest}}
+  <span> }}</span>
+</tt>
+<h3>In JavaScript</h3>
+<tt ng:non-bindable>
+angular.filter.{{shortName}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/paramRest}} );
+</tt>
+
+<h3>Parameters</h3>
+<ul>
+  {{#param}}
+  <li><tt>{{name}}{{#type}}({{type}}){{/type}}</tt>: {{description}}</li>
+  {{/param}}
+</ul>
+
+<h3>Returns</h3>
+{{{returns}}}
+
+<h3>CSS</h3>
+{{{css}}}
+
+<h2>Description</h2>
+{{{description}}}
+
+<WIKI:SOURCE style="display:block;">
+{{example}}
+</WIKI:SOURCE>
