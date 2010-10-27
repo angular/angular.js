@@ -81,7 +81,7 @@ extend(angular, {
 });
 
 
-function sortedHtml(element) {
+function sortedHtml(element, showNgClass) {
   var html = "";
   foreach(jqLite(element), function toString(node) {
     if (node.nodeName == "#text") {
@@ -93,8 +93,14 @@ function sortedHtml(element) {
       html += '<' + node.nodeName.toLowerCase();
       var attributes = node.attributes || [];
       var attrs = [];
-      if (node.className)
-        attrs.push(' class="' + node.className + '"');
+      var className = node.className || '';
+      if (!showNgClass) {
+        className = className.replace(/ng-[\w-]+\s*/g, '');
+      }
+      className = trim(className);
+      if (className) {
+        attrs.push(' class="' + className + '"');
+      }
       for(var i=0; i<attributes.length; i++) {
         var attr = attributes[i];
         if(attr.name.match(/^ng:/) ||

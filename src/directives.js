@@ -22,7 +22,8 @@ angularDirective("ng:eval", function(expression){
   };
 });
 
-angularDirective("ng:bind", function(expression){
+angularDirective("ng:bind", function(expression, element){
+  element.addClass('ng-binding');
   return function(element) {
     var lastValue = noop, lastError = noop;
     this.$onEval(function() {
@@ -97,7 +98,8 @@ function compileBindTemplate(template){
   return fn;
 }
 
-angularDirective("ng:bind-template", function(expression){
+angularDirective("ng:bind-template", function(expression, element){
+  element.addClass('ng-binding');
   var templateFn = compileBindTemplate(expression);
   return function(element) {
     var lastValue;
