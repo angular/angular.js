@@ -1,4 +1,22 @@
-# <angular/> 0.9.1 repulsion-field (in-progress) #
+# <angular/> 0.9.1 repulsion-field (2010-10-26) #
+
+### Security
+- added html sanitizer to fix the last few known security issues (issues #33 and #34)
+
+### API
+- new ng:submit directive for creating onSubmit handlers on forms (issue #76)
+- the date filter now accepts milliseconds as well as date strings (issue #78)
+- the html filter now supports 'unsafe' option to bypass html sanitization
+
+### Testability
+- lots of improvements related to the scenario runner (commit 40d7e66f)
+
+### Demo
+- added a new demo application: Personal Log (src example/personalLog)
+
+### Chores
+- lots of fixes to get all tests pass on IE
+- added TzDate type to allow us to create timezone idependent tests (issue #88)
 
 ### Breaking changes
 - $cookieStore service is not globally published any more, if you use it, you must request it via
