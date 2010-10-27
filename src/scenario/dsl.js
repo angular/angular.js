@@ -69,14 +69,19 @@ angular.scenario.dsl('navigateTo', function() {
 
 /**
  * Usage:
- *    using(selector) scopes the next DSL element selection
+ *    using(selector, label) scopes the next DSL element selection
  *
  * ex.
- *   using('#foo').input('bar')
+ *   using('#foo', "'Foo' text field").input('bar')
  */
 angular.scenario.dsl('using', function() {
-  return function(selector) {
+  return function(selector, label) {
     this.selector = (this.selector||'') + ' ' + selector;
+    if (angular.isString(label) && label.length) {
+      this.label = label + ' (' + this.selector + ' )';
+    } else {
+      this.label = this.selector;
+    }
     return this.dsl;
   };
 });
@@ -148,15 +153,15 @@ angular.scenario.dsl('input', function() {
 
 /**
  * Usage:
- *    repeater('#products table').count() number of rows
- *    repeater('#products table').row(1) all bindings in row as an array
- *    repeater('#products table').column('product.name') all values across all rows in an array
+ *    repeater('#products table', 'Product List').count() number of rows
+ *    repeater('#products table', 'Product List').row(1) all bindings in row as an array
+ *    repeater('#products table', 'Product List').column('product.name') all values across all rows in an array
  */
 angular.scenario.dsl('repeater', function() {
   var chain = {};
 
   chain.count = function() {
-    return this.addFutureAction('repeater ' + this.selector + ' count', function($window, $document, done) {
+    return this.addFutureAction('repeater ' + this.label + ' count', function($window, $document, done) {
       try {
         done(null, $document.elements().length);
       } catch (e) {
@@ -166,7 +171,7 @@ angular.scenario.dsl('repeater', function() {
   };
 
   chain.column = function(binding) {
-    return this.addFutureAction('repeater ' + this.selector + ' column ' + binding, function($window, $document, done) {
+    return this.addFutureAction('repeater ' + this.label + ' column ' + binding, function($window, $document, done) {
       var values = [];
       $document.elements().each(function() {
         _jQuery(this).find(':visible').each(function() {
@@ -181,7 +186,7 @@ angular.scenario.dsl('repeater', function() {
   };
 
   chain.row = function(index) {
-    return this.addFutureAction('repeater ' + this.selector + ' row ' + index, function($window, $document, done) {
+    return this.addFutureAction('repeater ' + this.label + ' row ' + index, function($window, $document, done) {
       var values = [];
       var matches = $document.elements().slice(index, index + 1);
       if (!matches.length)
@@ -196,16 +201,16 @@ angular.scenario.dsl('repeater', function() {
     });
   };
 
-  return function(selector) {
-    this.dsl.using(selector);
+  return function(selector, label) {
+    this.dsl.using(selector, label);
     return chain;
   };
 });
 
 /**
  * Usage:
- *    select(selector).option('value') select one option
- *    select(selector).options('value1', 'value2', ...) select options from a multi select
+ *    select(name).option('value') select one option
+ *    select(name).options('value1', 'value2', ...) select options from a multi select
  */
 angular.scenario.dsl('select', function() {
   var chain = {};
@@ -237,19 +242,19 @@ angular.scenario.dsl('select', function() {
 
 /**
  * Usage:
- *    element(selector).count() get the number of elements that match selector
- *    element(selector).click() clicks an element
- *    element(selector).attr(name) gets the value of an attribute
- *    element(selector).attr(name, value) sets the value of an attribute
- *    element(selector).val() gets the value (as defined by jQuery)
- *    element(selector).val(value) sets the value (as defined by jQuery)
- *    element(selector).query(fn) executes fn(selectedElements, done)
+ *    element(selector, label).count() get the number of elements that match selector
+ *    element(selector, label).click() clicks an element
+ *    element(selector, label).attr(name) gets the value of an attribute
+ *    element(selector, label).attr(name, value) sets the value of an attribute
+ *    element(selector, label).val() gets the value (as defined by jQuery)
+ *    element(selector, label).val(value) sets the value (as defined by jQuery)
+ *    element(selector, label).query(fn) executes fn(selectedElements, done)
  */
 angular.scenario.dsl('element', function() {
   var chain = {};
 
   chain.count = function() {
-    return this.addFutureAction('element ' + this.selector + ' count', function($window, $document, done) {
+    return this.addFutureAction('element ' + this.label + ' count', function($window, $document, done) {
       try {
         done(null, $document.elements().length);
       } catch (e) {
@@ -259,7 +264,7 @@ angular.scenario.dsl('element', function() {
   };
 
   chain.click = function() {
-    return this.addFutureAction('element ' + this.selector + ' click', function($window, $document, done) {
+    return this.addFutureAction('element ' + this.label + ' click', function($window, $document, done) {
       var elements = $document.elements();
       var href = elements.attr('href');
       elements.trigger('click');
@@ -274,9 +279,9 @@ angular.scenario.dsl('element', function() {
   };
 
   chain.attr = function(name, value) {
-    var futureName = 'element ' + this.selector + ' get attribute ' + name;
+    var futureName = 'element ' + this.label + ' get attribute ' + name;
     if (value) {
-      futureName = 'element ' + this.selector + ' set attribute ' + name + ' to ' + value;
+      futureName = 'element ' + this.label + ' set attribute ' + name + ' to ' + value;
     }
     return this.addFutureAction(futureName, function($window, $document, done) {
       done(null, $document.elements().attr(name, value));
@@ -284,9 +289,9 @@ angular.scenario.dsl('element', function() {
   };
 
   chain.val = function(value) {
-    var futureName = 'element ' + this.selector + ' value';
+    var futureName = 'element ' + this.label + ' value';
     if (value) {
-      futureName = 'element ' + this.selector + ' set value to ' + value;
+      futureName = 'element ' + this.label + ' set value to ' + value;
     }
     return this.addFutureAction(futureName, function($window, $document, done) {
       done(null, $document.elements().val(value));
@@ -294,13 +299,13 @@ angular.scenario.dsl('element', function() {
   };
 
   chain.query = function(fn) {
-    return this.addFutureAction('element ' + this.selector + ' custom query', function($window, $document, done) {
+    return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
       fn.call(this, $document.elements(), done);
     });
   };
 
-  return function(selector) {
-    this.dsl.using(selector);
+  return function(selector, label) {
+    this.dsl.using(selector, label);
     return chain;
   };
 });
