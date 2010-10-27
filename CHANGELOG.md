@@ -1,3 +1,6 @@
+# <angular/> 0.9.2 faunal-mimicry (in-progress) #
+
+
 # <angular/> 0.9.1 repulsion-field (2010-10-26) #
 
 ### Security
