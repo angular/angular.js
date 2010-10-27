@@ -222,6 +222,16 @@ describe("angular.scenario.dsl", function() {
         });
         expect($root.futureResult).toEqual('http://example.com/myUrl');
       });
+
+      it('should use the selector as label if none is given', function() {
+        $root.dsl.element('mySelector');
+        expect($root.label).toEqual(' mySelector');
+      });
+
+      it('should include the selector in paren when a label is given', function() {
+        $root.dsl.element('mySelector', 'myLabel');
+        expect($root.label).toEqual('myLabel ( mySelector )');
+      });
     });
 
     describe('Repeater', function() {
@@ -255,6 +265,15 @@ describe("angular.scenario.dsl", function() {
       it('should get a column of bindings', function() {
         chain.column('gender');
         expect($root.futureResult).toEqual(['male', 'female']);
+      });
+
+      it('should use the selector as label if none is given', function() {
+        expect($root.label).toEqual(' ul li');
+      });
+
+      it('should include the selector in paren when a label is given', function() {
+        $root.dsl.repeater('mySelector', 'myLabel');
+        expect($root.label).toEqual('myLabel ( ul li mySelector )');
       });
     });
 
@@ -302,6 +321,17 @@ describe("angular.scenario.dsl", function() {
         expect(inputs.first().val()).toEqual('something');
         expect(inputs.last().val()).toEqual('foo');
       });
+
+      it('should use the selector as label if none is given', function() {
+        $root.dsl.using('mySelector');
+        expect($root.label).toEqual(' mySelector');
+      });
+
+      it('should include the selector in paren when a label is given', function() {
+        $root.dsl.using('mySelector', 'myLabel');
+        expect($root.label).toEqual('myLabel ( mySelector )');
+      });
+
     });
 
     describe('Input', function() {
