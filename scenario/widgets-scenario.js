@@ -29,24 +29,24 @@ describe('widgets', function() {
     expect(binding('button').fromJson()).toEqual({'count': 0});
     expect(binding('form').fromJson()).toEqual({'count': 0});
 
-    element('form a').click();
+    element('form a', "'action' link").click();
     expect(binding('button').fromJson()).toEqual({'count': 1});
 
-    element('input[value="submit input"]').click();
+    element('input[value="submit input"]', "'submit input' button").click();
     expect(binding('button').fromJson()).toEqual({'count': 2});
     expect(binding('form').fromJson()).toEqual({'count': 1});
 
-    element('button:contains("submit button")').click();
+    element('button:contains("submit button")', "'submit button' button").click();
     expect(binding('button').fromJson()).toEqual({'count': 2});
     expect(binding('form').fromJson()).toEqual({'count': 2});
 
-    element('input[value="button"]').click();
+    element('input[value="button"]', "'button' button").click();
     expect(binding('button').fromJson()).toEqual({'count': 3});
 
-    element('input[type="image"]').click();
+    element('input[type="image"]', 'form image').click();
     expect(binding('button').fromJson()).toEqual({'count': 4});
 
-    element('#navigate a').click();
+    element('#navigate a', "'Go to #route' link").click();
     expect(binding('$location.hash')).toEqual('route');
 
     /**
