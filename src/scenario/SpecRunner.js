@@ -21,7 +21,6 @@ angular.scenario.SpecRunner = function() {
  */
 angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
   var self = this;
-  var count = 0;
   this.spec = spec;
 
   this.emit('SpecBegin', spec);
@@ -59,11 +58,7 @@ angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
             return handleError(error, futureDone);
           }
           self.emit('StepEnd', spec, future);
-          if ((count++) % 10 === 0) {
-            self.$window.setTimeout(function() { futureDone(); }, 0);
-          } else {
-            futureDone();
-          }
+          self.$window.setTimeout(function() { futureDone(); }, 0);
         });
       } catch (e) {
         self.emit('StepError', spec, future, e);
