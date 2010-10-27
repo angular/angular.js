@@ -35,6 +35,7 @@ describe("directives", function(){
       expect(element.text()).toEqual('');
       scope.a = 'misko';
       scope.$eval();
+      expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual('misko');
     });
 
@@ -87,6 +88,7 @@ describe("directives", function(){
       var scope = compile('<div ng:bind-template="Hello {{name}}!"></div>');
       scope.$set('name', 'Misko');
       scope.$eval();
+      expect(element.hasClass('ng-binding')).toEqual(true);
       expect(element.text()).toEqual('Hello Misko!');
     });
 

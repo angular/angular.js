@@ -112,9 +112,11 @@ Compiler.prototype = {
   templatize: function(element, elementIndex, priority){
     var self = this,
         widget,
+        fn,
         directiveFns = self.directives,
         descend = true,
         directives = true,
+        elementName = nodeName(element),
         template,
         selfApi = {
           compile: bind(self, self.compile),
@@ -138,12 +140,15 @@ Compiler.prototype = {
     eachAttribute(element, function(value, name){
       if (!widget) {
         if (widget = self.widgets('@' + name)) {
+          element.addClass('ng-attr-widget');
           widget = bind(selfApi, widget, value, element);
         }
       }
     });
     if (!widget) {
-      if (widget = self.widgets(nodeName(element))) {
+      if (widget = self.widgets(elementName)) {
+        if (elementName.indexOf(':') > 0)
+          element.addClass('ng-widget');
         widget = bind(selfApi, widget, element);
       }
     }
@@ -179,7 +184,11 @@ Compiler.prototype = {
         });
       });
       eachAttribute(element, function(value, name){
-        template.addInit((directiveFns[name]||noop).call(selfApi, value, element));
+        fn = directiveFns[name];
+        if (fn) {
+          element.addClass('ng-directive');
+          template.addInit((directiveFns[name]).call(selfApi, value, element));
+        }
       });
     }
     // Process non text child nodes

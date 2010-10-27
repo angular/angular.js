@@ -86,17 +86,21 @@ angular.scenario.dsl('using', function() {
  *    binding(name) returns the value of a binding
  */
 angular.scenario.dsl('binding', function() {
+  function contains(text, value) {
+    return text && text.indexOf(value) >=0;
+  }
   return function(name) {
     return this.addFutureAction("select binding '" + name + "'", function($window, $document, done) {
-      var element;
-      try {
-        element = $document.elements('[ng\\:bind-template*="{{$1}}"]', name);
-      } catch(e) {
-        if (e.type !== 'selector')
-          throw e;
-        element = $document.elements('[ng\\:bind="$1"]', name);
+      var elements = $document.elements('.ng-binding');
+      for ( var i = 0; i < elements.length; i++) {
+        var element = new elements.init(elements[i]);
+        if (contains(element.attr('ng:bind'), name) >= 0 ||
+            contains(element.attr('ng:bind-template'), name) >= 0) {
+          done(null, element.text());
+          return;
+        }
       }
-      done(null, element.text());
+      throw "Could not find binding: " + name;
     });
   };
 });
