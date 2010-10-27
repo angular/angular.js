@@ -197,7 +197,7 @@ var htmlParser = function( html, handler ) {
 
 /**
  * @param str 'key1,key2,...'
- * @returns {key1:true, key2:true, ...}
+ * @returns {object} in the form of {key1:true, key2:true, ...}
  */
 function makeMap(str){
   var obj = {}, items = str.split(","), i;
@@ -233,7 +233,7 @@ function isJavaScriptUrl(url) {
 /**
  * create an HTML/XML writer which writes to buffer
  * @param {Array} buf use buf.jain('') to get out sanitized html string
- * @returns {
+ * @returns {object} in the form of {
  *     start: function(tag, attrs, unary) {},
  *     end: function(tag) {},
  *     chars: function(text) {},
