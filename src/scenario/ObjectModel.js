@@ -19,7 +19,7 @@ angular.scenario.ObjectModel = function(runner) {
 
   runner.on('SpecBegin', function(spec) {
     var block = self.value;
-    angular.foreach(self.getDefinitionPath(spec), function(def) {
+    angular.forEach(self.getDefinitionPath(spec), function(def) {
       if (!block.children[def.name]) {
         block.children[def.name] = {
           id: def.id,

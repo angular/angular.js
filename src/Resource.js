@@ -4,7 +4,7 @@ function Route(template, defaults) {
   this.template = template = template + '#';
   this.defaults = defaults || {};
   var urlParams = this.urlParams = {};
-  foreach(template.split(/\W/), function(param){
+  forEach(template.split(/\W/), function(param){
     if (param && template.match(new RegExp(":" + param + "\\W"))) {
       urlParams[param] = true;
     }
@@ -17,13 +17,13 @@ Route.prototype = {
     var self = this;
     var url = this.template;
     params = params || {};
-    foreach(this.urlParams, function(_, urlParam){
+    forEach(this.urlParams, function(_, urlParam){
       var value = params[urlParam] || self.defaults[urlParam] || "";
       url = url.replace(new RegExp(":" + urlParam + "(\\W)"), value + "$1");
     });
     url = url.replace(/\/?#$/, '');
     var query = [];
-    foreachSorted(params, function(value, key){
+    forEachSorted(params, function(value, key){
       if (!self.urlParams[key]) {
         query.push(encodeURI(key) + '=' + encodeURI(value));
       }
@@ -52,7 +52,7 @@ ResourceFactory.prototype = {
     actions = extend({}, ResourceFactory.DEFAULT_ACTIONS, actions);
     function extractParams(data){
       var ids = {};
-      foreach(paramDefaults || {}, function(value, key){
+      forEach(paramDefaults || {}, function(value, key){
         ids[key] = value.charAt && value.charAt(0) == '@' ? getter(data, value.substr(1)) : value;
       });
       return ids;
@@ -62,7 +62,7 @@ ResourceFactory.prototype = {
       copy(value || {}, this);
     }
 
-    foreach(actions, function(action, name){
+    forEach(actions, function(action, name){
       var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
       Resource[name] = function (a1, a2, a3) {
         var params = {};
@@ -97,7 +97,7 @@ ResourceFactory.prototype = {
             if (status == 200) {
               if (action.isArray) {
                 value.length = 0;
-                foreach(response, function(item){
+                forEach(response, function(item){
                   value.push(new Resource(item));
                 });
               } else {

@@ -56,10 +56,10 @@ afterEach(clearJqCache);
 
 function clearJqCache(){
   var count = 0;
-  foreachSorted(jqCache, function(value, key){
+  forEachSorted(jqCache, function(value, key){
     count ++;
     delete jqCache[key];
-    foreach(value, function(value, key){
+    forEach(value, function(value, key){
       if (value.$element) 
         dump(key, sortedHtml(value.$element));
       else 
@@ -91,7 +91,6 @@ extend(angular, {
   'copy': copy,
   'extend': extend,
   'equals': equals,
-  'foreach': foreach,
   'noop':noop,
   'bind':bind,
   'toJson': toJson,
@@ -106,10 +105,11 @@ extend(angular, {
   'isArray': isArray
 });
 
+angular.forEach = forEach;
 
 function sortedHtml(element, showNgClass) {
   var html = "";
-  foreach(jqLite(element), function toString(node) {
+  forEach(jqLite(element), function toString(node) {
     if (node.nodeName == "#text") {
       html += node.nodeValue.
         replace(/&(\w+[&;\W])?/g, function(match, entity){return entity?match:'&amp;';}).
@@ -155,7 +155,7 @@ function sortedHtml(element, showNgClass) {
       if (node.style) {
         var style = [];
         if (node.style.cssText) {
-          foreach(node.style.cssText.split(';'), function(value){
+          forEach(node.style.cssText.split(';'), function(value){
             value = trim(value);
             if (value) {
               style.push(lowercase(value));
@@ -174,7 +174,7 @@ function sortedHtml(element, showNgClass) {
         style.sort();
         var tmp = style;
         style = [];
-        foreach(tmp, function(value){
+        forEach(tmp, function(value){
           if (!value.match(/^max[^\-]/))
             style.push(value);
         });

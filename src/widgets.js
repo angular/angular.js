@@ -359,15 +359,15 @@ function optionsAccessor(scope, element) {
   return {
     get: function(){
       var values = [];
-      foreach(options, function(option){
+      forEach(options, function(option){
         if (option.selected) values.push(option.value);
       });
       return values;
     },
     set: function(values){
       var keys = {};
-      foreach(values, function(value){ keys[value] = true; });
-      foreach(options, function(option){
+      forEach(values, function(value){ keys[value] = true; });
+      forEach(options, function(option){
         option.selected = keys[option.value];
       });
     }
@@ -698,7 +698,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
     if (isString(when)) {
       switchCase.when = function(scope, value){
         var args = [value, when];
-        foreach(usingExprParams, function(arg){
+        forEach(usingExprParams, function(arg){
           args.push(arg);
         });
         return usingFn.apply(scope, args);
@@ -711,7 +711,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
   });
 
   // this needs to be here for IE
-  foreach(cases, function(_case){
+  forEach(cases, function(_case){
     _case.element.remove();
   });
 
@@ -722,7 +722,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
       var found = false;
       element.html('');
       childScope = createScope(scope);
-      foreach(cases, function(switchCase){
+      forEach(cases, function(switchCase){
         if (!found && switchCase.when(childScope, value)) {
           found = true;
           var caseElement = quickClone(switchCase.element);

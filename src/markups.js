@@ -35,7 +35,7 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
       parentElement.attr('ng:bind-template', text);
     } else {
       var cursor = textNode, newElement;
-      foreach(parseBindings(text), function(text){
+      forEach(parseBindings(text), function(text){
         var exp = binding(text);
         if (exp) {
           newElement = self.element('span');
