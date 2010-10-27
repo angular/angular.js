@@ -58,7 +58,7 @@ ResourceFactory.prototype = {
       return ids;
     }
 
-    function Resource(value){
+    var Resource = function Resource(value){
       copy(value || {}, this);
     }
 
