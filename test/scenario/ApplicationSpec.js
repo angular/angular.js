@@ -1,15 +1,24 @@
 describe('angular.scenario.Application', function() {
   var app, frames;
 
+  function callLoadHandlers(app) {
+    var handlers = app.getFrame_().data('events').load;
+    expect(handlers).toBeDefined();
+    expect(handlers.length).toEqual(1);
+    handlers[0].handler();
+  }
+
   beforeEach(function() {
     frames = _jQuery("<div></div>");
     app = new angular.scenario.Application(frames);
+    app.checkUrlStatus_ = function(url, callback) {
+      callback.call(this);
+    };
   });
 
   it('should return new $window and $document after navigate', function() {
     var called;
     var testWindow, testDocument, counter = 0;
-    app.navigateTo = noop;
     app.getWindow_ = function() {
       return {x:counter++, document:{x:counter++}};
     };
@@ -50,6 +59,31 @@ describe('angular.scenario.Application', function() {
     expect(app.getFrame_().attr('test')).toBeFalsy();
   });
 
+  it('should call error handler if document not accessible', function() {
+    app.getWindow_ = function() {
+      return {};
+    };
+    app.navigateTo('about:blank', angular.noop, function(error) {
+      expect(error).toMatch(/Sandbox Error/);
+    });
+    callLoadHandlers(app);
+  });
+
+  it('should call error handler if using file:// URL', function() {
+    app.navigateTo('file://foo/bar.txt', angular.noop, function(error) {
+      expect(error).toMatch(/Sandbox Error/);
+    });
+  });
+
+  it('should call error handler if status check fails', function() {
+    app.checkUrlStatus_ = function(url, callback) {
+      callback.call(this, 'Example Error');
+    };
+    app.navigateTo('about:blank', angular.noop, function(error) {
+      expect(error).toEqual('Example Error');
+    });
+  });
+
   it('should hide old iframes and navigate to about:blank', function() {
     app.navigateTo('about:blank#foo');
     app.navigateTo('about:blank#bar');
@@ -70,15 +104,12 @@ describe('angular.scenario.Application', function() {
   it('should call onload handler when frame loads', function() {
     var called;
     app.getWindow_ = function() {
-      return {};
+      return {document: {}};
     };
     app.navigateTo('about:blank', function($window, $document) {
       called = true;
     });
-    var handlers = app.getFrame_().data('events').load;
-    expect(handlers).toBeDefined();
-    expect(handlers.length).toEqual(1);
-    handlers[0].handler();
+    callLoadHandlers(app);
     expect(called).toBeTruthy();
   });
 
@@ -112,5 +143,68 @@ describe('angular.scenario.Application', function() {
     expect(polled).toBeTruthy();
     expect(handlers.length).toEqual(1);
     handlers[0]();
+  });
+
+  describe('jQuery ajax', function() {
+    var options;
+    var response;
+    var jQueryAjax;
+
+    beforeEach(function() {
+      response = {
+        status: 200,
+        statusText: 'OK'
+      };
+      jQueryAjax = _jQuery.ajax;
+      _jQuery.ajax = function(opts) {
+        options = opts;
+        opts.complete.call(this, response);
+      };
+      app.checkUrlStatus_ = angular.scenario.Application.
+        prototype.checkUrlStatus_;
+    });
+
+    afterEach(function() {
+      _jQuery.ajax = jQueryAjax;
+    });
+
+    it('should perform a HEAD request to verify file existence', function() {
+      app.navigateTo('http://www.google.com/', angular.noop, angular.noop);
+      expect(options.type).toEqual('HEAD');
+      expect(options.url).toEqual('http://www.google.com/');
+    });
+    
+    it('should call error handler if status code is less than 200', function() {
+      var finished;
+      response.status = 199;
+      response.statusText = 'Error Message';
+      app.navigateTo('about:blank', angular.noop, function(error) {
+        expect(error).toEqual('199 Error Message');
+        finished = true;
+      });
+      expect(finished).toBeTruthy();
+    });
+    
+    it('should call error handler if status code is greater than 299', function() {
+      var finished;
+      response.status = 300;
+      response.statusText = 'Error';
+      app.navigateTo('about:blank', angular.noop, function(error) {
+        expect(error).toEqual('300 Error');
+        finished = true;
+      });
+      expect(finished).toBeTruthy();
+    });
+    
+    it('should call error handler if status code is 0 for sandbox error', function() {
+      var finished;
+      response.status = 0;
+      response.statusText = '';
+      app.navigateTo('about:blank', angular.noop, function(error) {
+        expect(error).toEqual('Sandbox Error: Cannot access about:blank');
+        finished = true;
+      });
+      expect(finished).toBeTruthy();
+    });
   });
 });
