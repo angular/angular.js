@@ -77,7 +77,7 @@ angular.scenario.dsl('navigateTo', function() {
 angular.scenario.dsl('using', function() {
   return function(selector, label) {
     this.selector = (this.selector||'') + ' ' + selector;
-    if (label != undefined) {
+    if (angular.isString(label) && label.length) {
       this.label = label + ' (' + this.selector + ' )';
     } else {
       this.label = this.selector;
