@@ -271,7 +271,19 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureResult).toEqual('foo some baz');
       });
 
-      it('should return error if no binding exists', function() {
+      it('should match bindings by substring match', function() {
+        doc.append('<pre class="ng-binding" ng:bind="foo.bar() && test.baz() | filter">binding value</pre>');
+        $root.dsl.binding('test.baz');
+        expect($root.futureResult).toEqual('binding value');
+      });
+
+      it('should return error if no bindings in document', function() {
+        $root.dsl.binding('foo.bar');
+        expect($root.futureError).toMatch(/did not match/);
+      });
+
+      it('should return error if no binding matches', function() {
+        doc.append('<span class="ng-binding" ng:bind="foo">some value</span>');
         $root.dsl.binding('foo.bar');
         expect($root.futureError).toMatch(/did not match/);
       });
