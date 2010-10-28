@@ -38,27 +38,70 @@ angular.scenario.Application.prototype.getWindow_ = function() {
 };
 
 /**
+ * Checks that a URL would return a 2xx success status code. Callback is called
+ * with no arguments on success, or with an error on failure.
+ *
+ * Warning: This requires the server to be able to respond to HEAD requests 
+ * and not modify the state of your application.
+ *
+ * @param {string} url Url to check
+ * @param {Function} callback function(error) that is called with result.
+ */
+angular.scenario.Application.prototype.checkUrlStatus_ = function(url, callback) {
+  var self = this;
+  _jQuery.ajax({
+    url: url,
+    type: 'HEAD',
+    complete: function(request) {
+      if (request.status < 200 || request.status >= 300) {
+        if (!request.status) {
+          callback.call(self, 'Sandbox Error: Cannot access ' + url);
+        } else {
+          callback.call(self, request.status + ' ' + request.statusText);
+        }
+      } else {
+        callback.call(self);
+      }
+    }
+  });
+};
+
+/**
  * Changes the location of the frame.
  *
  * @param {string} url The URL. If it begins with a # then only the 
  *   hash of the page is changed.
- * @param {Function} onloadFn function($window, $document)
+ * @param {Function} loadFn function($window, $document) Called when frame loads.
+ * @param {Function} errorFn function(error) Called if any error when loading.
  */
-angular.scenario.Application.prototype.navigateTo = function(url, onloadFn) {
+angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorFn) {
   var self = this;
   var frame = this.getFrame_();
-  if (url.charAt(0) === '#') {
+  //TODO(esprehn): Refactor to use rethrow()
+  errorFn = errorFn || function(e) { throw e; };
+  if (/^file:\/\//.test(url)) {
+    errorFn('Sandbox Error: Cannot load file:// URL.');
+  } else if (url.charAt(0) === '#') {
     url = frame.attr('src').split('#')[0] + url;
     frame.attr('src', url);
-    this.executeAction(onloadFn);
+    this.executeAction(loadFn);
   } else {
     frame.css('display', 'none').attr('src', 'about:blank');
-    this.context.find('#test-frames').append('<iframe>');
-    frame = this.getFrame_();
-    frame.load(function() {
-      self.executeAction(onloadFn);
-      frame.unbind();
-    }).attr('src', url);
+    this.checkUrlStatus_(url, function(error) {
+      if (error) {
+        return errorFn(error);
+      }
+      self.context.find('#test-frames').append('<iframe>');
+      frame = this.getFrame_();
+      frame.load(function() {
+        frame.unbind();
+        try {
+          self.executeAction(loadFn);
+        } catch (e) {
+          errorFn(e);
+        }
+      }).attr('src', url);
+    });
   }
   this.context.find('> h2 a').attr('href', url).text(url);
 };
@@ -73,6 +116,9 @@ angular.scenario.Application.prototype.navigateTo = function(url, onloadFn) {
 angular.scenario.Application.prototype.executeAction = function(action) {
   var self = this;
   var $window = this.getWindow_();
+  if (!$window.document) {
+    throw 'Sandbox Error: Application document not accessible.';
+  }
   if (!$window.angular) {
     return action.call(this, $window, _jQuery($window.document));
   }

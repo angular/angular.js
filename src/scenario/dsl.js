@@ -62,7 +62,7 @@ angular.scenario.dsl('navigateTo', function() {
       }
       application.navigateTo(url, function() {
         done(null, url);
-      });
+      }, done);
     });
   };
 });
@@ -271,7 +271,7 @@ angular.scenario.dsl('element', function() {
       if (href && elements[0].nodeName.toUpperCase() === 'A') {
         this.application.navigateTo(href, function() {
           done();
-        });
+        }, done);
       } else {
         done();
       }
