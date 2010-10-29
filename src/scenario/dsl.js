@@ -251,6 +251,10 @@ angular.scenario.dsl('select', function() {
  *    element(selector, label).query(fn) executes fn(selectedElements, done)
  */
 angular.scenario.dsl('element', function() {
+  var VALUE_METHODS = [
+    'val', 'text', 'html', 'height', 'innerHeight', 'outerHeight', 'width',
+    'innerWidth', 'outerWidth', 'position', 'scrollLeft', 'scrollTop', 'offset'
+  ];
   var chain = {};
 
   chain.count = function() {
@@ -288,21 +292,24 @@ angular.scenario.dsl('element', function() {
     });
   };
 
-  chain.val = function(value) {
-    var futureName = 'element ' + this.label + ' value';
-    if (value) {
-      futureName = 'element ' + this.label + ' set value to ' + value;
-    }
-    return this.addFutureAction(futureName, function($window, $document, done) {
-      done(null, $document.elements().val(value));
-    });
-  };
-
   chain.query = function(fn) {
     return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
       fn.call(this, $document.elements(), done);
     });
   };
+
+  angular.foreach(VALUE_METHODS, function(methodName) {
+    chain[methodName] = function(value) {
+      var futureName = 'element ' + this.label + ' ' + methodName;
+      if (value) {
+        futureName = 'element ' + this.label + ' set ' + methodName + ' to ' + value;
+      }
+      return this.addFutureAction(futureName, function($window, $document, done) {
+        var element = $document.elements();
+        done(null, element[methodName].call(element, value));
+      });
+    };
+  });
 
   return function(selector, label) {
     this.dsl.using(selector, label);
