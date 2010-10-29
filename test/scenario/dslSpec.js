@@ -215,6 +215,17 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('input').val()).toEqual('baz');
       });
 
+      it('should add all jQuery property methods', function() {
+        var METHODS = [
+          'val', 'text', 'html', 'height', 'innerHeight', 'outerHeight', 'width',
+          'innerWidth', 'outerWidth', 'position', 'scrollLeft', 'scrollTop', 'offset'
+        ];
+        var chain = $root.dsl.element('input');
+        angular.foreach(METHODS, function(name) {
+          expect(angular.isFunction(chain[name])).toBeTruthy();
+        });
+      });
+
       it('should execute custom query', function() {
         doc.append('<a id="test" href="http://example.com/myUrl"></a>');
         $root.dsl.element('#test').query(function(elements, done) {
