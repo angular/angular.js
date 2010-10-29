@@ -16,15 +16,87 @@ angular.scenario.dsl('wait', function() {
 });
 
 /**
-* Usage:
-*    pause(seconds) pauses the test for specified number of seconds
-*/
+ * Usage:
+ *    pause(seconds) pauses the test for specified number of seconds
+ */
 angular.scenario.dsl('pause', function() {
- return function(time) {
-   return this.addFuture('pause for ' + time + ' seconds', function(done) {
-     this.$window.setTimeout(function() { done(null, time * 1000); }, time * 1000);
-   });
- };
+  return function(time) {
+    return this.addFuture('pause for ' + time + ' seconds', function(done) {
+      this.$window.setTimeout(function() { done(null, time * 1000); }, time * 1000);
+    });
+  };
+});
+
+/**
+ * Usage:
+ *    browser().navigateTo(url) Loads the url into the frame
+ *    browser().navigateTo(url, fn) where fn(url) is called and returns the URL to navigate to
+ *    browser().location().href() the full URL of the page
+ *    browser().location().hash() the full hash in the url
+ *    browser().location().path() the full path in the url
+ *    browser().location().hashSearch() the hashSearch Object from angular
+ *    browser().location().hashPath() the hashPath string from angular
+ */
+angular.scenario.dsl('browser', function() {
+  var chain = {};
+
+  chain.navigateTo = function(url, delegate) {
+    var application = this.application;
+    return this.addFuture('browser navigate to ' + url, function(done) {
+      if (delegate) {
+        url = delegate.call(this, url);
+      }
+      application.navigateTo(url, function() {
+        done(null, url);
+      }, done);
+    });
+  };
+
+  chain.location = function() {
+    var api = {};
+
+    api.href = function() {
+      return this.addFutureAction('browser url', function($window, $document, done) {
+        done(null, $window.location.href);
+      });
+    };
+
+    api.hash = function() {
+      return this.addFutureAction('browser url hash', function($window, $document, done) {
+        done(null, $window.location.hash.replace('#', ''));
+      });
+    };
+
+    api.path = function() {
+      return this.addFutureAction('browser url path', function($window, $document, done) {
+        done(null, $window.location.pathname);
+      });
+    };
+
+    api.search = function() {
+      return this.addFutureAction('browser url search', function($window, $document, done) {
+        done(null, $window.angular.scope().$location.search);
+      });
+    };
+
+    api.hashSearch = function() {
+      return this.addFutureAction('browser url hash search', function($window, $document, done) {
+        done(null, $window.angular.scope().$location.hashSearch);
+      });
+    };
+
+    api.hashPath = function() {
+      return this.addFutureAction('browser url hash path', function($window, $document, done) {
+        done(null, $window.angular.scope().$location.hashPath);
+      });
+    };
+
+    return api;
+  };
+
+  return function(time) {
+    return chain;
+  };
 });
 
 /**
@@ -45,25 +117,6 @@ angular.scenario.dsl('expect', function() {
   return function(future) {
     this.future = future;
     return chain;
-  };
-});
-
-/**
- * Usage:
- *    navigateTo(url) Loads the url into the frame
- *    navigateTo(url, fn) where fn(url) is called and returns the URL to navigate to
- */
-angular.scenario.dsl('navigateTo', function() {
-  return function(url, delegate) {
-    var application = this.application;
-    return this.addFuture('navigate to ' + url, function(done) {
-      if (delegate) {
-        url = delegate.call(this, url);
-      }
-      application.navigateTo(url, function() {
-        done(null, url);
-      }, done);
-    });
   };
 });
 

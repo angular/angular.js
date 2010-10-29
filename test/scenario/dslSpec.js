@@ -87,26 +87,78 @@ describe("angular.scenario.dsl", function() {
     });
   });
 
-  describe('NavigateTo', function() {
-    it('should allow a string url', function() {
-      $root.dsl.navigateTo('http://myurl');
-      expect($window.location).toEqual('http://myurl');
-      expect($root.futureResult).toEqual('http://myurl');
-    });
-
-    it('should allow a future url', function() {
-      $root.dsl.navigateTo('http://myurl', function() {
-        return 'http://futureUrl/';
+  describe('Browser', function() {
+    describe('NavigateTo', function() {
+      it('should allow a string url', function() {
+        $root.dsl.browser().navigateTo('http://myurl');
+        expect($window.location).toEqual('http://myurl');
+        expect($root.futureResult).toEqual('http://myurl');
       });
-      expect($window.location).toEqual('http://futureUrl/');
-      expect($root.futureResult).toEqual('http://futureUrl/');
+
+      it('should allow a future url', function() {
+        $root.dsl.browser().navigateTo('http://myurl', function() {
+          return 'http://futureUrl/';
+        });
+        expect($window.location).toEqual('http://futureUrl/');
+        expect($root.futureResult).toEqual('http://futureUrl/');
+      });
+
+      it('should complete if angular is missing from app frame', function() {
+        delete $window.angular;
+        $root.dsl.browser().navigateTo('http://myurl');
+        expect($window.location).toEqual('http://myurl');
+        expect($root.futureResult).toEqual('http://myurl');
+      });
     });
 
-    it('should complete if angular is missing from app frame', function() {
-      delete $window.angular;
-      $root.dsl.navigateTo('http://myurl');
-      expect($window.location).toEqual('http://myurl');
-      expect($root.futureResult).toEqual('http://myurl');
+    describe('Location', function() {
+      beforeEach(function() {
+        $window.location = {
+          href: 'http://myurl/some/path?foo=10#/bar?x=2',
+          pathname: '/some/path',
+          search: '?foo=10',
+          hash: '#bar?x=2'
+        };
+        $window.angular.scope = function() {
+          return {
+            $location: {
+              hashSearch: {x: 2},
+              hashPath: '/bar',
+              search: {foo: 10}
+            }
+          };
+        };
+      });
+
+      it('should return full URL for href', function() {
+        $root.dsl.browser().location().href();
+        expect($root.futureResult).toEqual($window.location.href);
+      });
+
+      it('should return the pathname', function() {
+        $root.dsl.browser().location().path();
+        expect($root.futureResult).toEqual($window.location.pathname);
+      });
+
+      it('should return the hash without the #', function() {
+        $root.dsl.browser().location().hash();
+        expect($root.futureResult).toEqual('bar?x=2');
+      });
+
+      it('should return the query string as an object', function() {
+        $root.dsl.browser().location().search();
+        expect($root.futureResult).toEqual({foo: 10});
+      });
+
+      it('should return the hashSearch as an object', function() {
+        $root.dsl.browser().location().hashSearch();
+        expect($root.futureResult).toEqual({x: 2});
+      });
+
+      it('should return the hashPath', function() {
+        $root.dsl.browser().location().hashPath();
+        expect($root.futureResult).toEqual('/bar');
+      });
     });
   });
 

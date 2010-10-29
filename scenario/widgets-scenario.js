@@ -1,6 +1,6 @@
 describe('widgets', function() {
   it('should verify that basic widgets work', function(){
-    navigateTo('widgets.html');
+    browser().navigateTo('widgets.html');
 
     using('#text-basic-box').input('text.basic').enter('Carlos');
     expect(binding('text.basic')).toEqual('Carlos');
@@ -48,6 +48,7 @@ describe('widgets', function() {
 
     element('#navigate a', "'Go to #route' link").click();
     expect(binding('$location.hash')).toEqual('route');
+    expect(browser().location().hash()).toEqual('route');
 
     /**
      * Custom value parser for futures.
