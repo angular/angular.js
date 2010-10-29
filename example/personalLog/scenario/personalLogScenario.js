@@ -1,7 +1,7 @@
 describe('personal log', function() {
 
   beforeEach(function() {
-    navigateTo('../personalLog.html');
+    browser().navigateTo('../personalLog.html');
   });
 
 
@@ -64,8 +64,8 @@ describe('personal log', function() {
     element('form input[type="submit"]').click();
     expect(repeater('ul li').count()).toEqual(1);
 
-    navigateTo('about:blank');
-    navigateTo('../personalLog.html');
+    browser().navigateTo('about:blank');
+    browser().navigateTo('../personalLog.html');
 
     expect(repeater('ul li').column('log.msg')).toEqual('my persistent message');
     expect(repeater('ul li').count()).toEqual(1);
