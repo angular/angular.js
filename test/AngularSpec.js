@@ -280,3 +280,23 @@ describe('angularJsConfig', function() {
                                           ie_compat_id: 'ng-ie-compat'});
   });
 });
+
+describe('extensionMap', function() {
+  it('should preserve $ properties on override', function() {
+    var extension = extensionMap({}, 'fake');
+    extension('first', {$one: true, $two: true});
+    var result = extension('first', {$one: false, $three: true});
+
+    expect(result.$one).toBeFalsy();
+    expect(result.$two).toBeTruthy();
+    expect(result.$three).toBeTruthy();
+  });
+  
+  it('should not preserve non-angular properties', function() {
+    var extension = extensionMap({}, 'fake');
+    extension('first', {two: true});
+    var result = extension('first', {$one: false, $three: true});
+
+    expect(result.two).not.toBeDefined();
+  });
+});
