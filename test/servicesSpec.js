@@ -207,6 +207,18 @@ describe("service", function(){
       expect(scope.$location.hashSearch).toEqual({a: 'b'});
       expect(scope.$location.hashPath).toEqual('path');
     });
+    
+    it('should remove # if hash is empty', function() {
+      scope.$location.update('http://www.angularjs.org/index.php#');
+      expect(scope.$location.href).toEqual('http://www.angularjs.org/index.php');
+    });
+    
+    it('should not change browser\'s url with empty hash', function() {
+      $browser.setUrl('http://www.angularjs.org/index.php#');
+      spyOn($browser, 'setUrl');
+      $browser.poll();
+      expect($browser.setUrl).not.toHaveBeenCalled();
+    });
   });
 
   describe("$invalidWidgets", function(){
