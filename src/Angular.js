@@ -16,7 +16,7 @@ var manualUppercase = function (s) {
 };
 if ('i' !== 'I'.toLowerCase()) {
   lowercase = manualLowercase;
-  uppercase = manulaUppercase;
+  uppercase = manualUppercase;
 }
 
 function fromCharCode(code) { return String.fromCharCode(code); }
