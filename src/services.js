@@ -23,8 +23,7 @@ angularServiceInject("$location", function(browser) {
   browser.addPollFn(function() {
     if (lastBrowserUrl != browser.getUrl()) {
       update(lastBrowserUrl = browser.getUrl());
-      lastLocationHref = location.href;
-      lastLocationHash = location.hash;
+      updateLastLocation();
       scope.$eval();
     }
   });
@@ -33,8 +32,7 @@ angularServiceInject("$location", function(browser) {
   this.$onEval(PRIORITY_LAST, updateBrowser);
 
   update(lastBrowserUrl);
-  lastLocationHref = location.href;
-  lastLocationHash = location.hash;
+  updateLastLocation();
 
   return location;
 
@@ -135,6 +133,14 @@ angularServiceInject("$location", function(browser) {
   }
 
   /**
+   * Update information about last location
+   */
+  function updateLastLocation() {
+    lastLocationHref = location.href;
+    lastLocationHash = location.hash;
+  }
+
+  /**
    * If location has changed, update the browser
    * This method is called at the end of $eval() phase
    */
@@ -143,8 +149,7 @@ angularServiceInject("$location", function(browser) {
 
     if (location.href != lastLocationHref) {    	
       browser.setUrl(lastBrowserUrl = location.href);
-      lastLocationHref = location.href;
-      lastLocationHash = location.hash;
+      updateLastLocation();
     }
   }
 
