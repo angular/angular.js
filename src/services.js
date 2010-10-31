@@ -16,12 +16,15 @@ angularServiceInject("$document", function(window){
 angularServiceInject("$location", function(browser) {
   var scope = this,
       location = {toString:toString, update:update, updateHash: updateHash},
-      lastLocationHref = browser.getUrl(),
+      lastBrowserUrl = browser.getUrl(),
+      lastLocationHref,
       lastLocationHash;
 
-  browser.addPollFn(function(){
-    if (lastLocationHref !== browser.getUrl()) {
-      update(lastLocationHref = browser.getUrl());
+  browser.addPollFn(function() {
+    if (lastBrowserUrl != browser.getUrl()) {
+      update(lastBrowserUrl = browser.getUrl());
+      lastLocationHref = location.href;
+      lastLocationHash = location.hash;
       scope.$eval();
     }
   });
@@ -29,7 +32,8 @@ angularServiceInject("$location", function(browser) {
   this.$onEval(PRIORITY_FIRST, updateBrowser);
   this.$onEval(PRIORITY_LAST, updateBrowser);
 
-  update(lastLocationHref);
+  update(lastBrowserUrl);
+  lastLocationHref = location.href;
   lastLocationHash = location.hash;
 
   return location;
@@ -137,8 +141,9 @@ angularServiceInject("$location", function(browser) {
   function updateBrowser() {
     updateLocation();
 
-    if (location.href != lastLocationHref) {
-      browser.setUrl(lastLocationHref = location.href);
+    if (location.href != lastLocationHref) {    	
+      browser.setUrl(lastBrowserUrl = location.href);
+      lastLocationHref = location.href;
       lastLocationHash = location.hash;
     }
   }
@@ -180,7 +185,7 @@ angularServiceInject("$location", function(browser) {
     var match = URL_MATCH.exec(href);
 
     if (match) {
-      loc.href = href.replace('#$', '');
+      loc.href = href.replace(/#$/, '');
       loc.protocol = match[1];
       loc.host = match[3] || '';
       loc.port = match[5] || DEFAULT_PORTS[loc.protocol] || _null;
