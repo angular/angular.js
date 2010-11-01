@@ -278,6 +278,18 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('input').val()).toEqual('baz');
       });
 
+      it('should use correct future name for generated set methods', function() {
+        doc.append('<input value="bar">');
+        $root.dsl.element('input').val(false);
+        expect($root.futures.pop()).toMatch(/element 'input' set val/);
+      });
+
+      it('should use correct future name for generated get methods', function() {
+        doc.append('<input value="bar">');
+        $root.dsl.element('input').val();
+        expect($root.futures.pop()).toMatch(/element 'input' val/);
+      });
+
       it('should add all jQuery property methods', function() {
         var METHODS = [
           'val', 'text', 'html', 'height', 'innerHeight', 'outerHeight', 'width',
@@ -299,7 +311,7 @@ describe("angular.scenario.dsl", function() {
 
       it('should use the selector as label if none is given', function() {
         $root.dsl.element('mySelector');
-        expect($root.label).toEqual(' mySelector');
+        expect($root.label).toEqual('mySelector');
       });
 
       it('should include the selector in paren when a label is given', function() {
@@ -342,7 +354,7 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should use the selector as label if none is given', function() {
-        expect($root.label).toEqual(' ul li');
+        expect($root.label).toEqual('ul li');
       });
 
       it('should include the selector in paren when a label is given', function() {
@@ -398,7 +410,7 @@ describe("angular.scenario.dsl", function() {
 
       it('should use the selector as label if none is given', function() {
         $root.dsl.using('mySelector');
-        expect($root.label).toEqual(' mySelector');
+        expect($root.label).toEqual('mySelector');
       });
 
       it('should include the selector in paren when a label is given', function() {

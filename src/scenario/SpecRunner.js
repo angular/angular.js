@@ -110,9 +110,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
       //TODO(esprehn): Refactor this so it doesn't need to be in here.
       $document.elements = function(selector) {
         var args = Array.prototype.slice.call(arguments, 1);
-        if (self.selector) {
-          selector = self.selector + ' ' + (selector || '');
-        }
+        selector = (self.selector || '') + ' ' + (selector || '');
         angular.foreach(args, function(value, index) {
           selector = selector.replace('$' + (index + 1), value);
         });
