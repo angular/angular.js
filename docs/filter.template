@@ -29,5 +29,5 @@ angular.filter.{{shortName}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/param
 {{{description}}}
 
 <WIKI:SOURCE style="display:block;">
-{{example}}
+{{{example}}}
 </WIKI:SOURCE>

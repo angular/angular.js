@@ -88,13 +88,17 @@ function valueTag(doc, name, value) {
   doc[name] = value;
 }
 
+function escapedHtmlTag(doc, name, value) {
+  doc[name] = value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
 function markdownTag(doc, name, value) {
   doc[name] = markdown.toHTML(value);
 }
 
 var TAG = {
   ngdoc: valueTag,
-  example: valueTag,
+  example: escapedHtmlTag,
   scenario: valueTag,
   namespace: valueTag,
   css: valueTag,
