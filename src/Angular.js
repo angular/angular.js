@@ -3,9 +3,30 @@
 if (typeof document.getAttribute == $undefined)
   document.getAttribute = function() {};
 
-//The below may not be true on browsers in the Turkish locale.
+/**
+ * @ngdoc
+ * @name angular.lowercase
+ * @function
+ *
+ * @description Converts string to lowercase
+ * @param {string} value
+ * @return {string} Lowercased string.
+ */
 var lowercase = function (value){ return isString(value) ? value.toLowerCase() : value; };
+
+
+/**
+ * @ngdoc
+ * @name angular#uppercase
+ * @function
+ *
+ * @description Converts string to uppercase.
+ * @param {string} value
+ * @return {string} Uppercased string.
+ */
 var uppercase = function (value){ return isString(value) ? value.toUpperCase() : value; };
+
+
 var manualLowercase = function (s) {
   return isString(s) ? s.replace(/[A-Z]/g,
       function (ch) {return fromCharCode(ch.charCodeAt(0) | 32); }) : s;
@@ -14,6 +35,11 @@ var manualUppercase = function (s) {
   return isString(s) ? s.replace(/[a-z]/g,
       function (ch) {return fromCharCode(ch.charCodeAt(0) & ~32); }) : s;
 };
+
+
+// String#toLowerCase and String#toUpperCase don't produce correct results in browsers with Turkish
+// locale, for this reason we need to detect this case and redefine lowercase/uppercase methods with
+// correct but slower alternatives.
 if ('i' !== 'I'.toLowerCase()) {
   lowercase = manualLowercase;
   uppercase = manualUppercase;
@@ -57,12 +83,95 @@ var _undefined        = undefined,
     slice             = Array.prototype.slice,
     push              = Array.prototype.push,
     error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
+
+    /**
+     * @name angular
+     * @namespace The exported angular namespace.
+     */
     angular           = window[$angular]    || (window[$angular] = {}),
     angularTextMarkup = extensionMap(angular, 'markup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
     angularWidget     = extensionMap(angular, 'widget', lowercase),
     angularValidator  = extensionMap(angular, 'validator'),
+
+
+    /**
+     * @ngdoc overview
+     * @name angular.filter
+     * @namespace Namespace for all filters.
+     *
+     * # Overview
+     * Filters are a standard way to format your data for display to the user. For example, you
+     * might have the number 1234.5678 and would like to display it as US currency: $1,234.57.
+     * Filters allow you to do just that. In addition to transforming the data, filters also modify
+     * the DOM. This allows the filters to for example apply css styles to the filtered output if
+     * certain conditions were met.
+     *
+     *
+     * # Standard Filters
+     *
+     * The Angular framework provides a standard set of filters for common operations, including:
+     * {@link angular.filter.currency}, {@link angular.filter.json}, {@link angular.filter.number},
+     * and {@link angular.filter.html}. You can also add your own filters.
+     *
+     *
+     * # Syntax
+     *
+     * Filters can be part of any {@link angular.scope} evaluation but are typically used with
+     * {{bindings}}. Filters typically transform the data to a new data type, formating the data in
+     * the process. Filters can be chained and take optional arguments. Here are few examples:
+     *
+     * * No filter: {{1234.5678}} => 1234.5678
+     * * Number filter: {{1234.5678|number}} => 1,234.57. Notice the “,” and rounding to two
+     *   significant digits.
+     * * Filter with arguments: {{1234.5678|number:5}} => 1,234.56780. Filters can take optional
+     *   arguments, separated by colons in a binding. To number, the argument “5” requests 5 digits
+     *   to the right of the decimal point.
+     *
+     *
+     * # Writing your own Filters
+     *
+     * Writing your own filter is very easy: just define a JavaScript function on `angular.filter`.
+     * The framework passes in the input value as the first argument to your function. Any filter
+     * arguments are passed in as additional function arguments.
+     *
+     * You can use these variables in the function:
+     *
+     * * `this` — The current scope.
+     * * `$element` — The DOM element containing the binding. This allows the filter to manipulate
+     *   the DOM in addition to transforming the input.
+     *
+     * The following example filter reverses a text string. In addition, it conditionally makes the
+     * text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
+     * modification).
+     *
+     * @example
+         <script type="text/javascript">
+           angular.filter.reverse = function(input, uppercase, color) {
+             var out = "";
+             for (var i = 0; i < input.length; i++) {
+               out = input.charAt(i) + out;
+             }
+             if (uppercase) {
+               out = out.toUpperCase();
+             }
+             if (color) {
+               this.$element.css('color', color);
+             }
+             return out;
+           };
+         </script>
+         <span ng:non-bindable="true">{{"hello"|reverse}}</span>: {{"hello"|reverse}}<br>
+         <span ng:non-bindable="true">{{"hello"|reverse:true}}</span>: {{"hello"|reverse:true}}<br>
+         <span ng:non-bindable="true">{{"hello"|reverse:true:"blue"}}</span>:
+           {{"hello"|reverse:true:"blue"}}
+
+     * //TODO: I completely dropped a mention of using the other option (setter method), it's
+     * confusing to have two ways to do the same thing. I just wonder if we should prefer using the
+     * setter way over direct assignment because in the future we might want to be able to intercept
+     * filter registrations for some reason.
+     */
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),
     angularService    = extensionMap(angular, 'service'),
