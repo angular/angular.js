@@ -13,19 +13,19 @@
  *   When the value is negative, this css class is applied to the binding making it by default red.
  *
  * @example
- *   <input type="text" name="amount" value="1234.56"/> <br/>
- *   {{amount | currency}}
+     <input type="text" name="amount" value="1234.56"/> <br/>
+     {{amount | currency}}
  *
  * @scenario
- *   it('should init with 1234.56', function(){
- *     expect(binding('amount')).toEqual('$1,234.56');
- *   });
- *   it('should update', function(){
- *     input('amount').enter('-1234');
- *     expect(binding('amount')).toEqual('$-1,234.00');
- *     // TODO: implement
- *     // expect(binding('amount')).toHaveColor('red');
- *   });
+     it('should init with 1234.56', function(){
+       expect(binding('amount | currency')).toBe('$1,234.56');
+     });
+     it('should update', function(){
+       input('amount').enter('-1234');
+       expect(binding('amount | currency')).toBe('$-1,234.00');
+       // TODO: implement
+       // expect(binding('amount')).toHaveColor('red'); //what about toHaveCssClass instead?
+     });
  */
 angularFilter.currency = function(amount){
   this.$element.toggleClass('ng-format-negative', amount < 0);
@@ -47,18 +47,18 @@ angularFilter.currency = function(amount){
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
- *   <span ng:non-bindable="true">{{1234.56789|number}}</span>: {{1234.56789|number}}<br/>
- *   <span ng:non-bindable="true">{{1234.56789|number:0}}</span>: {{1234.56789|number:0}}<br/>
- *   <span ng:non-bindable="true">{{1234.56789|number:2}}</span>: {{1234.56789|number:2}}<br/>
- *   <span ng:non-bindable="true">{{-1234.56789|number:4}}</span>: {{-1234.56789|number:4}}
+     <span ng:non-bindable>{{1234.56789 | number}}</span>: {{1234.56789 | number}}<br/>
+     <span ng:non-bindable>{{1234.56789 | number:0}}</span>: {{1234.56789 | number:0}}<br/>
+     <span ng:non-bindable>{{1234.56789 | number:2}}</span>: {{1234.56789 | number:2}}<br/>
+     <span ng:non-bindable>{{-1234.56789 | number:4}}</span>: {{-1234.56789 | number:4}}
  *
  * @scenario
- *   it('should format numbers', function(){
- *     expect(binding('1234.56789|number')).toEqual('1,234.57');
- *     expect(binding('1234.56789|number:0')).toEqual('1,235');
- *     expect(binding('1234.56789|number:2')).toEqual('1,234.57');
- *     expect(binding('-1234.56789|number:4')).toEqual('-1,234.5679');
- *   });
+     it('should format numbers', function(){
+       expect(binding('1234.56789 | number')).toBe('1,234.57');
+       expect(binding('1234.56789 | number:0')).toBe('1,235');
+       expect(binding('1234.56789 | number:2')).toBe('1,234.57');
+       expect(binding('-1234.56789 | number:4')).toBe('-1,234.5679');
+     });
  */
 angularFilter.number = function(number, fractionSize){
   if (isNaN(number) || !isFinite(number)) {
@@ -149,11 +149,43 @@ var NUMBER_STRING = /^\d+$/;
  * @description
  *   Formats `date` to a string based on the requested `format`.
  *
+ *   `format` string can be composed of the following elements:
+ *
+ *   * `'yyyy'`: 4 digit representation of year e.g. 2010
+ *   * `'yy'`: 2 digit representation of year, padded (00-99)
+ *   * `'MM'`: Month in year, padded (01‒12)
+ *   * `'M'`: Month in year (1‒12)
+ *   * `'dd'`: Day in month, padded (01‒31)
+ *   * `'d'`: Day in month (1-31)
+ *   * `'HH'`: Hour in day, padded (00‒23)
+ *   * `'H'`: Hour in day (0-23)
+ *   * `'hh'`: Hour in am/pm, padded (01‒12)
+ *   * `'h'`: Hour in am/pm, (1-12)
+ *   * `'mm'`: Minute in hour, padded (00‒59)
+ *   * `'m'`: Minute in hour (0-59)
+ *   * `'ss'`: Second in minute, padded (00‒59)
+ *   * `'s'`: Second in minute (0‒59)
+ *   * `'a'`: am/pm marker
+ *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200‒1200)
+ *
  * @param {(Date|number|string)} date Date to format either as Date object or milliseconds.
  * @param {string=} format Formatting rules. If not specified, Date#toLocaleDateString is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
- * //TODO example + scenario
+ * @example
+     <span ng:non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
+        {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br/>
+     <span ng:non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
+        {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
+ *
+ * @scenario
+     it('should format date', function(){
+       expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
+          toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
+       expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
+          toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(am|pm)/);
+     });
+ *
  */
 angularFilter.date = function(date, format) {
   if (isString(date) && NUMBER_STRING.test(date)) {
@@ -200,14 +232,12 @@ angularFilter.date = function(date, format) {
  * @css ng-monospace Always applied to the encapsulating element.
  *
  * @example
- *   <span ng:non-bindable>{{   {a:1, b:[]} | json   }}</span>: <pre>{{ {a:1, b:[]} | json }}</pre>
+     <span ng:non-bindable>{{ {a:1, b:[]} | json }}</span>: <pre>{{ {a:1, b:[]} | json }}</pre>
  *
  * @scenario
- *   it('should jsonify filtered objects', function() {
- *     expect(binding('{{ {a:1, b:[]} | json')).toEqual(
- *      '{\n  "a":1,\n  "b":[]}'
- *     );
- *   });
+     it('should jsonify filtered objects', function() {
+       expect(binding('{{ {a:1, b:[]} | json')).toBe('{\n  "a":1,\n  "b":[]}');
+     });
  *
  */
 angularFilter.json = function(object) {
@@ -259,6 +289,65 @@ angularFilter.uppercase = uppercase;
  * @param {string} html Html input.
  * @param {string='safe'} option If 'unsafe' then do not sanitize the HTML input.
  * @returns {string} Sanitized or raw html.
+ *
+ * @example
+     Snippet: <textarea name="snippet" cols="60" rows="3">
+&lt;p style="color:blue"&gt;an html
+&lt;em onmouseover="this.textContent='PWN3D!'"&gt;click here&lt;/em&gt;
+snippet&lt;/p&gt;</textarea>
+     <table>
+       <tr>
+         <td>Filter</td>
+         <td>Source</td>
+         <td>Rendered</td>
+       </tr>
+       <tr id="html-filter">
+         <td>html filter</td>
+         <td>
+           <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
+         </td>
+         <td>
+           <div ng:bind="snippet | html"></div>
+         </td>
+       </tr>
+       <tr id="escaped-html">
+         <td>no filter</td>
+         <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+         <td><div ng:bind="snippet"></div></td>
+       </tr>
+       <tr id="html-unsafe-filter">
+         <td>unsafe html filter</td>
+         <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
+         <td><div ng:bind="snippet | html:'unsafe'"></div></td>
+       </tr>
+     </table>
+ *
+ * @scenario
+     it('should sanitize the html snippet ', function(){
+       expect(using('#html-filter').binding('snippet | html')).
+         toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
+     });
+
+     it ('should escape snippet without any filter', function() {
+       expect(using('#escaped-html').binding('snippet')).
+         toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
+              "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
+              "snippet&lt;/p&gt;");
+     });
+
+     it ('should inline raw snippet if filtered as unsafe', function() {
+       expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).
+         toBe("<p style=\"color:blue\">an html\n" +
+              "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
+              "snippet</p>");
+     });
+
+     it('should update', function(){
+       textarea('snippet').enter('new <b>text</b>');
+       expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
+       expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
+       expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).toBe('new <b>text</b>');
+     });
  */
 angularFilter.html =  function(html, option){
   return new HTML(html, option);
@@ -275,6 +364,58 @@ angularFilter.html =  function(html, option){
  *
  * @param {string} text Input text.
  * @returns {string} Html-linkified text.
+ *
+ * @example
+     Snippet: <textarea name="snippet" cols="60" rows="3">
+Pretty text with some links:
+http://angularjs.org/,
+mailto:us@somewhere.org
+and one more: ftp://127.0.0.1/.</textarea>
+     <table>
+       <tr>
+         <td>Filter</td>
+         <td>Source</td>
+         <td>Rendered</td>
+       </tr>
+       <tr id="linky-filter">
+         <td>linky filter</td>
+         <td>
+           <pre>&lt;div ng:bind="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
+         </td>
+         <td>
+           <div ng:bind="snippet | linky"></div>
+         </td>
+       </tr>
+       <tr id="escaped-html">
+         <td>no filter</td>
+         <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+         <td><div ng:bind="snippet"></div></td>
+       </tr>
+     </table>
+
+ * @scenario
+     it('should linkify the snippet with urls', function(){
+       expect(using('#linky-filter').binding('snippet | linky')).
+         toBe('Pretty text with some links:\n' +
+              '<a href="http://angularjs.org/">http://angularjs.org/</a>,' +
+              '<a href="mailto:us@somewhere.org">mailto:us@somewhere.org</a>\n' +
+              'and one more: <a href="ftp://127.0.0.1/">ftp://127.0.0.1/</a>.');
+     });
+
+     it ('should not linkify snippet without the linky filter', function() {
+       expect(using('#escaped-html').binding('snippet')).
+         toBe("Pretty text with some links:\n" +
+              "http://angularjs.org/,\n" +
+              "mailto:us@somewhere.org\n" +
+              "and one more: ftp://127.0.0.1/.");
+     });
+
+     it('should update', function(){
+       textarea('snippet').enter('new http://link.');
+       expect(using('#linky-filter').binding('snippet | linky')).
+         toBe('new <a href="http://link">http://link</a>.');
+       expect(using('#escaped-html').binding('snippet')).toBe('new http://link.');
+     });
  */
 //TODO: externalize all regexps
 angularFilter.linky = function(text){
