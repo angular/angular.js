@@ -376,6 +376,24 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureResult).toEqual('some value');
       });
 
+      it('should return value for input elements', function() {
+        doc.append('<input type="text" class="ng-binding" ng:bind="foo.bar" value="some value"/>');
+        $root.dsl.binding('foo.bar');
+        expect($root.futureResult).toEqual('some value');
+      });
+
+      it('should return value for textarea elements', function() {
+        doc.append('<textarea class="ng-binding" ng:bind="foo.bar">some value</textarea>');
+        $root.dsl.binding('foo.bar');
+        expect($root.futureResult).toEqual('some value');
+      });
+
+      it('should return innerHTML for all the other elements', function() {
+        doc.append('<div class="ng-binding" ng:bind="foo.bar">some <b>value</b></div>');
+        $root.dsl.binding('foo.bar');
+        expect($root.futureResult).toEqual('some <b>value</b>');
+      });
+
       it('should select binding in template by name', function() {
         doc.append('<pre class="ng-binding" ng:bind-template="foo {{bar}} baz">foo some baz</pre>');
         $root.dsl.binding('bar');
