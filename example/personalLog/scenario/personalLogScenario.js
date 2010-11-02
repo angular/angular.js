@@ -64,8 +64,7 @@ describe('personal log', function() {
     element('form input[type="submit"]').click();
     expect(repeater('ul li').count()).toEqual(1);
 
-    browser().navigateTo('about:blank');
-    browser().navigateTo('../personalLog.html');
+    browser().reload();
 
     expect(repeater('ul li').column('log.msg')).toEqual('my persistent message');
     expect(repeater('ul li').count()).toEqual(1);

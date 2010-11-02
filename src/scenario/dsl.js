@@ -31,6 +31,7 @@ angular.scenario.dsl('pause', function() {
  * Usage:
  *    browser().navigateTo(url) Loads the url into the frame
  *    browser().navigateTo(url, fn) where fn(url) is called and returns the URL to navigate to
+ *    browser().reload() refresh the page (reload the same URL)
  *    browser().location().href() the full URL of the page
  *    browser().location().hash() the full hash in the url
  *    browser().location().path() the full path in the url
@@ -48,6 +49,16 @@ angular.scenario.dsl('browser', function() {
       }
       application.navigateTo(url, function() {
         done(null, url);
+      }, done);
+    });
+  };
+
+  chain.reload = function() {
+    var application = this.application;
+    return this.addFutureAction('browser reload', function($window, $document, done) {
+      var href = $window.location.href;
+      application.navigateTo(href, function() {
+        done(null, href);
       }, done);
     });
   };

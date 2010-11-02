@@ -88,6 +88,17 @@ describe("angular.scenario.dsl", function() {
   });
 
   describe('Browser', function() {
+    describe('Reload', function() {
+      it('should navigateTo', function() {
+        $window.location = {
+          href: '#foo'
+        };
+        $root.dsl.browser().reload();
+        expect($root.futureResult).toEqual('#foo');
+        expect($window.location).toEqual('#foo');
+      });
+    });
+
     describe('NavigateTo', function() {
       it('should allow a string url', function() {
         $root.dsl.browser().navigateTo('http://myurl');
