@@ -370,6 +370,12 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureResult).toEqual('some value');
       });
 
+      it('should select binding by regexp', function() {
+        doc.append('<span class="ng-binding" ng:bind="foo.bar">some value</span>');
+        $root.dsl.binding(/^foo\..+/);
+        expect($root.futureResult).toEqual('some value');
+      });
+
       it('should select binding in template by name', function() {
         doc.append('<pre class="ng-binding" ng:bind-template="foo {{bar}} baz">foo some baz</pre>');
         $root.dsl.binding('bar');

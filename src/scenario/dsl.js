@@ -156,7 +156,9 @@ angular.scenario.dsl('using', function() {
  */
 angular.scenario.dsl('binding', function() {
   function contains(text, value) {
-    return text && text.indexOf(value) >= 0;
+    return value instanceof RegExp ?
+             value.test(text) :
+             text && text.indexOf(value) >= 0;
   }
   return function(name) {
     return this.addFutureAction("select binding '" + name + "'", function($window, $document, done) {

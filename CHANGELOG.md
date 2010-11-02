@@ -4,12 +4,16 @@
 - binding DSL in Scenario can now match bindings without specifying filters
 - dsl statements now accept a label argument to make test output more readable (issue #94)
 - dsl element() statement now implements most of the jQuery API (issue #106)
-- file:// URLs are no longer supported for running a scenario. You must use a web server that implements HEAD
 - new browser() dsl statement for getting info about the emulated browser running the app (issue #109)
-- navigateTo() is now browser().navigateTo(). Old code must be updated
-- navigating to about:blank is no longer supported. It results in a sandbox error
 - scenario runner is now compatible with IE8 (issue #93)
 - scenarior runner checks if URL would return a non-success status code (issue #100)
+- binding() DSL now accepts regular expressions
+
+### Breaking changes
+#### Scenario Runner
+- navigating to about:blank is no longer supported. It results in a sandbox error
+- navigateTo() is now browser().navigateTo(). Old code must be updated
+- file:// URLs are no longer supported for running a scenario. You must use a web server that implements HEAD
 
 
 # <angular/> 0.9.1 repulsion-field (2010-10-26) #
