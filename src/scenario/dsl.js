@@ -167,7 +167,12 @@ angular.scenario.dsl('binding', function() {
         var element = new elements.init(elements[i]);
         if (contains(element.attr('ng:bind'), name) ||
             contains(element.attr('ng:bind-template'), name)) {
-          done(null, element.text());
+          if (element.is('input, textarea')) {
+            done(null, element.val());
+          } else {
+            console.log('element.html(): ', element.html());
+            done(null, element.html());
+          }
           return;
         }
       }
