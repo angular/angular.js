@@ -41,7 +41,7 @@ angular.scenario.Application.prototype.getWindow_ = function() {
  * Checks that a URL would return a 2xx success status code. Callback is called
  * with no arguments on success, or with an error on failure.
  *
- * Warning: This requires the server to be able to respond to HEAD requests 
+ * Warning: This requires the server to be able to respond to HEAD requests
  * and not modify the state of your application.
  *
  * @param {string} url Url to check
@@ -69,7 +69,7 @@ angular.scenario.Application.prototype.checkUrlStatus_ = function(url, callback)
 /**
  * Changes the location of the frame.
  *
- * @param {string} url The URL. If it begins with a # then only the 
+ * @param {string} url The URL. If it begins with a # then only the
  *   hash of the page is changed.
  * @param {Function} loadFn function($window, $document) Called when frame loads.
  * @param {Function} errorFn function(error) Called if any error when loading.
@@ -79,8 +79,8 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
   var frame = this.getFrame_();
   //TODO(esprehn): Refactor to use rethrow()
   errorFn = errorFn || function(e) { throw e; };
-  if (/^file:\/\//.test(url)) {
-    errorFn('Sandbox Error: Cannot load file:// URL.');
+  if (url === 'about:blank') {
+    errorFn('Sandbox Error: Navigating to about:blank is not allowed.');
   } else if (url.charAt(0) === '#') {
     url = frame.attr('src').split('#')[0] + url;
     frame.attr('src', url);

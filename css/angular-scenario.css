@@ -8,6 +8,11 @@ body {
   font-size: 14px;
 }
 
+#system-error {
+  font-size: 1.5em;
+  text-align: center;
+}
+
 #json, #xml {
   display: none;
 }
