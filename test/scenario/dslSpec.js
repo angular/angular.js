@@ -486,5 +486,21 @@ describe("angular.scenario.dsl", function() {
       });
     });
 
+
+    describe('Textarea', function() {
+
+      it('should change value in textarea', function() {
+        doc.append('<textarea name="test.textarea">something</textarea>');
+        var chain = $root.dsl.textarea('test.textarea');
+        chain.enter('foo');
+        expect(_jQuery('textarea[name="test.textarea"]').val()).toEqual('foo');
+      });
+
+      it('should return error if no textarea exists', function() {
+        var chain = $root.dsl.input('test.textarea');
+        chain.enter('foo');
+        expect($root.futureError).toMatch(/did not match/);
+      });
+    });
   });
 });
