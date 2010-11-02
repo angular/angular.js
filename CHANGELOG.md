@@ -1,6 +1,7 @@
 # <angular/> 0.9.2 faunal-mimicry (in-progress) #
 
 ### Testability
+#### Scenario Runner
 - binding DSL in Scenario can now match bindings without specifying filters
 - dsl statements now accept a label argument to make test output more readable (issue #94)
 - dsl element() statement now implements most of the jQuery API (issue #106)
@@ -8,6 +9,7 @@
 - scenario runner is now compatible with IE8 (issue #93)
 - scenarior runner checks if URL would return a non-success status code (issue #100)
 - binding() DSL now accepts regular expressions
+- new textarea() scenario runner DSL for entering text into textareas
 
 ### Breaking changes
 #### Scenario Runner

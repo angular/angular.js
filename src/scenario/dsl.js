@@ -217,6 +217,30 @@ angular.scenario.dsl('input', function() {
   };
 });
 
+
+/**
+ * Usage:
+ *    textarea(name).enter(value) enters value in the text area with specified name
+ */
+angular.scenario.dsl('textarea', function() {
+  var chain = {};
+
+  chain.enter = function(value) {
+    return this.addFutureAction("textarea '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
+      var textarea = $document.elements('textarea[name="$1"]', this.name);
+      textarea.val(value);
+      textarea.trigger('change');
+      done();
+    });
+  };
+
+  return function(name) {
+    this.name = name;
+    return chain;
+  };
+});
+
+
 /**
  * Usage:
  *    repeater('#products table', 'Product List').count() number of rows
