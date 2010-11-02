@@ -93,6 +93,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  * @param {Object} config Config options
  */
 function angularScenarioInit($scenario, config) {
+  var href = window.location.href;
   var body = _jQuery(document.body);
   var output = [];
 
@@ -107,6 +108,15 @@ function angularScenarioInit($scenario, config) {
       fn.call({}, context, $scenario);
     }
   });
+
+  if (!/^http/.test(href) && !/^https/.test(href)) {
+    body.append('<p id="system-error"></p>');
+    body.find('#system-error').text(
+      'Scenario runner must be run using http or https. The protocol ' +
+      href.split(':')[0] + ':// is not supported.'
+    );
+    return;
+  }
 
   var appFrame = body.append('<div id="application"></div>').find('#application');
   var application = new angular.scenario.Application(appFrame);
@@ -134,7 +144,7 @@ function angularScenarioInit($scenario, config) {
  *
  * @param {Array} list list to iterate over
  * @param {Function} iterator Callback function(value, continueFunction)
- * @param {Function} done Callback function(error, result) called when 
+ * @param {Function} done Callback function(error, result) called when
  *   iteration finishes or an error occurs.
  */
 function asyncForEach(list, iterator, done) {
