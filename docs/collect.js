@@ -113,13 +113,13 @@ var TAG = {
   param: function(doc, name, value){
     doc.param = doc.param || [];
     doc.paramRest = doc.paramRest || [];
-    var match = value.match(/^({([^\s=]+)(=([^\s]+))?}\s*)?([^\s]+)\s*(.*)/);
+    var match = value.match(/^({([^\s=]+)(=)?}\s*)?([^\s]+|\[(\S+)+=([^\]]+)\])\s+(.*)/);
     if (match) {
       var param = {
           type: match[2],
-          'default':match[4],
-          name: match[5],
-          description:match[6]};
+          name: match[4] || match[5],
+          'default':match[6],
+          description:match[7]};
       doc.param.push(param);
       if (!doc.paramFirst) {
         doc.paramFirst = param;
