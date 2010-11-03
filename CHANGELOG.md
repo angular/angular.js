@@ -1,21 +1,38 @@
-# <angular/> 0.9.2 faunal-mimicry (in-progress) #
+# <angular/> 0.9.2 faunal-mimicry (2010-11-03) #
+
+### Docs
+- created documentation framework based on jsdoc syntax (commit 659af29a)
+  - jsdoc parser
+  - template generator
+  - json generator
+  - angular doc viewer app
+  - scenario runner for all example code
+- documentation for all angular filters (commits 1fe7e3a1 & 1ba8c2a33)
+  - docs
+  - example code
+  - scenario tests for example code
 
 ### Testability
 #### Scenario Runner
 - binding DSL in Scenario can now match bindings without specifying filters
 - dsl statements now accept a label argument to make test output more readable (issue #94)
 - dsl element() statement now implements most of the jQuery API (issue #106)
-- new browser() dsl statement for getting info about the emulated browser running the app (issue #109)
+- new browser() dsl statement for getting info about the emulated browser running the app
+  (issue #109)
 - scenario runner is now compatible with IE8 (issue #93)
 - scenarior runner checks if URL would return a non-success status code (issue #100)
 - binding() DSL now accepts regular expressions
 - new textarea() scenario runner DSL for entering text into textareas
 
+### Misc
+- lots of small bugfixes
+
 ### Breaking changes
 #### Scenario Runner
 - navigating to about:blank is no longer supported. It results in a sandbox error
 - navigateTo() is now browser().navigateTo(). Old code must be updated
-- file:// URLs are no longer supported for running a scenario. You must use a web server that implements HEAD
+- file:// URLs are no longer supported for running a scenario. You must use a web server that
+  implements HEAD
 
 
 # <angular/> 0.9.1 repulsion-field (2010-10-26) #
