@@ -142,11 +142,15 @@ var _undefined        = undefined,
      * * `$element` — The DOM element containing the binding. This allows the filter to manipulate
      *   the DOM in addition to transforming the input.
      *
-     * The following example filter reverses a text string. In addition, it conditionally makes the
-     * text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
-     * modification).
      *
      * @example
+     *   //TODO this example current doesn't show up anywhere because the overview template doesn't
+     *   //     render it.
+     *
+     *   The following example filter reverses a text string. In addition, it conditionally makes the
+     *   text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
+     *   modification).
+
          <script type="text/javascript">
            angular.filter.reverse = function(input, uppercase, color) {
              var out = "";
