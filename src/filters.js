@@ -360,7 +360,8 @@ angularFilter.html =  function(html, option){
  * @function
  *
  * @description
- *   Finds links in text input and turns them into html links. Supports http/https/ftp/mailto links.
+ *   Finds links in text input and turns them into html links. Supports http/https/ftp/mailto and
+ *   plane email address links.
  *
  * @param {string} text Input text.
  * @returns {string} Html-linkified text.
@@ -369,7 +370,8 @@ angularFilter.html =  function(html, option){
      Snippet: <textarea name="snippet" cols="60" rows="3">
 Pretty text with some links:
 http://angularjs.org/,
-mailto:us@somewhere.org
+mailto:us@somewhere.org,
+another@somewhere.org,
 and one more: ftp://127.0.0.1/.</textarea>
      <table>
        <tr>
@@ -392,13 +394,14 @@ and one more: ftp://127.0.0.1/.</textarea>
          <td><div ng:bind="snippet"></div></td>
        </tr>
      </table>
-
+ *
  * @scenario
      it('should linkify the snippet with urls', function(){
        expect(using('#linky-filter').binding('snippet | linky')).
          toBe('Pretty text with some links:\n' +
-              '<a href="http://angularjs.org/">http://angularjs.org/</a>,' +
-              '<a href="mailto:us@somewhere.org">mailto:us@somewhere.org</a>\n' +
+              '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
+              '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,\n' +
+              '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,\n' +
               'and one more: <a href="ftp://127.0.0.1/">ftp://127.0.0.1/</a>.');
      });
 
@@ -406,7 +409,8 @@ and one more: ftp://127.0.0.1/.</textarea>
        expect(using('#escaped-html').binding('snippet')).
          toBe("Pretty text with some links:\n" +
               "http://angularjs.org/,\n" +
-              "mailto:us@somewhere.org\n" +
+              "mailto:us@somewhere.org,\n" +
+              "another@somewhere.org,\n" +
               "and one more: ftp://127.0.0.1/.");
      });
 
@@ -420,10 +424,7 @@ and one more: ftp://127.0.0.1/.</textarea>
 //TODO: externalize all regexps
 angularFilter.linky = function(text){
   if (!text) return text;
-  function regExpEscape(text) {
-    return text.replace(/([\/\.\*\+\?\|\(\)\[\]\{\}\\])/g, '\\$1');
-  }
-  var URL = /(ftp|http|https|mailto):\/\/([^\(\)|\s]+)/;
+  var URL = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/;
   var match;
   var raw = text;
   var html = [];
@@ -431,13 +432,16 @@ angularFilter.linky = function(text){
   var url;
   var i;
   while (match=raw.match(URL)) {
-    url = match[0].replace(/[\.\;\,\(\)\{\}\<\>]$/,'');
-    i = raw.indexOf(url);
+    // We can not end in these as they are sometimes found at the end of the sentence
+    url = match[0];
+    // if we did not match ftp/http/mailto then assume mailto
+    if (match[2]==match[3]) url = 'mailto:' + url;
+    i = match.index;
     writer.chars(raw.substr(0, i));
     writer.start('a', {href:url});
-    writer.chars(url);
+    writer.chars(match[0].replace(/^mailto:/, ''));
     writer.end('a');
-    raw = raw.substring(i + url.length);
+    raw = raw.substring(i + match[0].length);
   }
   writer.chars(raw);
   return new HTML(html.join(''));

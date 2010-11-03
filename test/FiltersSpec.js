@@ -74,8 +74,8 @@ describe('filter', function(){
   });
 
   describe('Linky', function() {
+    var linky = filter.linky;
     it('should do basic filter', function(){
-      var linky = filter.linky;
       assertEquals(
           '<a href="http://ab/">http://ab/</a> ' +
           '(<a href="http://a/">http://a/</a>) ' +
@@ -83,6 +83,13 @@ describe('filter', function(){
           '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
           linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c").html);
       assertEquals(undefined, linky(undefined));
+    });
+
+    it('should handle mailto:', function(){
+      expect(linky("mailto:me@example.com").html).toEqual('<a href="mailto:me@example.com">me@example.com</a>');
+      expect(linky("me@example.com").html).toEqual('<a href="mailto:me@example.com">me@example.com</a>');
+      expect(linky("send email to me@example.com, but").html).
+        toEqual('send email to <a href="mailto:me@example.com">me@example.com</a>, but');
     });
   });
 

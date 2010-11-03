@@ -170,7 +170,6 @@ angular.scenario.dsl('binding', function() {
           if (element.is('input, textarea')) {
             done(null, element.val());
           } else {
-            console.log('element.html(): ', element.html());
             done(null, element.html());
           }
           return;
