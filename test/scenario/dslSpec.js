@@ -391,7 +391,7 @@ describe("angular.scenario.dsl", function() {
       it('should return innerHTML for all the other elements', function() {
         doc.append('<div class="ng-binding" ng:bind="foo.bar">some <b>value</b></div>');
         $root.dsl.binding('foo.bar');
-        expect($root.futureResult).toEqual('some <b>value</b>');
+        expect($root.futureResult.toLowerCase()).toEqual('some <b>value</b>');
       });
 
       it('should select binding in template by name', function() {
