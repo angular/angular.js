@@ -33,6 +33,8 @@ function toJsonArray(buf, obj, pretty, stack){
   var type = typeof obj;
   if (obj === _null) {
     buf.push($null);
+  } else if (obj instanceof RegExp) {
+      buf.push(angular['String']['quoteUnicode'](obj.toString()));
   } else if (type === $function) {
     return;
   } else if (type === $boolean) {
