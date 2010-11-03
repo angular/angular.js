@@ -43,7 +43,7 @@ angularFilter.currency = function(amount){
  *   If the input is not a number empty string is returned.
  *
  * @param {(number|string)} number Number to format.
- * @param {(number|string)=2} fractionSize Number of decimal places to round the number to. Default 2.
+ * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to. Default 2.
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
@@ -287,7 +287,7 @@ angularFilter.uppercase = uppercase;
  *   filtered and you can't get the content through the sanitizer.
  *
  * @param {string} html Html input.
- * @param {string='safe'} option If 'unsafe' then do not sanitize the HTML input.
+ * @param {string=} option If 'unsafe' then do not sanitize the HTML input.
  * @returns {string} Sanitized or raw html.
  *
  * @example
