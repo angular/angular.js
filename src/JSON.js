@@ -34,7 +34,7 @@ function toJsonArray(buf, obj, pretty, stack){
   if (obj === _null) {
     buf.push($null);
   } else if (obj instanceof RegExp) {
-      buf.push(angular['String']['quoteUnicode'](obj.toString()));
+    buf.push(angular['String']['quoteUnicode'](obj.toString()));
   } else if (type === $function) {
     return;
   } else if (type === $boolean) {
@@ -55,7 +55,7 @@ function toJsonArray(buf, obj, pretty, stack){
       for(var i=0; i<len; i++) {
         var item = obj[i];
         if (sep) buf.push(",");
-        if (typeof item == $function || typeof item == $undefined) {
+        if (!(item instanceof RegExp) && (typeof item == $function || typeof item == $undefined)) {
           buf.push($null);
         } else {
           toJsonArray(buf, item, pretty, stack);
