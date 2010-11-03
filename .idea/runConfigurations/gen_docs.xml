@@ -5,7 +5,7 @@
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
     <option name="PARENT_ENVS" value="true" />
     <envs />
-    <module name="" />
+    <module name="angular.js" />
     <option name="SCRIPT_NAME" value="$PROJECT_DIR$/gen_docs.sh" />
     <option name="PARAMETERS" value="" />
     <RunnerSettings RunnerId="BashRunner" />

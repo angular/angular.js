@@ -1,3 +1,4 @@
+#!/bin/sh
 tests=$1
 if [[ $tests = "" ]]; then
   tests="all"
