@@ -30,6 +30,11 @@ describe('json', function(){
     assertEquals('[1,"b"]', toJson([1,"b"]));
   });
 
+  it('should parse RegExp', function() {
+    assertEquals('"/foo/"', toJson(/foo/));
+    assertEquals('[1,"/foo/"]', toJson([1,new RegExp("foo")]));
+  });
+
   it('should parse IgnoreFunctions', function() {
     assertEquals('[null,1]', toJson([function(){},1]));
     assertEquals('{}', toJson({a:function(){}}));
