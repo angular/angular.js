@@ -1,1 +1,6 @@
+<h1><tt>{{name}}</tt></h1>
 {{{description}}}
+
+<WIKI:SOURCE style="display:block;">
+{{{example}}}
+</WIKI:SOURCE>

@@ -1,4 +1,4 @@
-foreach({
+extend(angularValidator, {
   'noop': function() { return _null; },
 
   'regexp': function(value, regexp, msg) {
@@ -132,4 +132,4 @@ foreach({
     return inputState.error;
   }
 
-}, function(v,k) {angularValidator[k] = v;});
+});

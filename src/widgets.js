@@ -244,13 +244,28 @@ angularWidget('option', function(){
 });
 
 
-/*ng:doc
- * @type widget
- * @name ng:include
+/**
+ * @ngdoc widget
+ * @name angular.widget.ng:include
  *
  * @description
+ * Include external HTML fragment.
+ * 
+ * Keep in mind that Same Origin Policy applies to included resources 
+ * (e.g. ng:include won't work for file:// access).
+ *
+ * @param {string} src expression evaluating to URL.
+ * @param {Scope=} [scope=new_child_scope] expression evaluating to angular.scope
  *
  * @example
+ *   <select name="url">
+ *    <option value="angular.filter.date.html">date filter</option>
+ *    <option value="angular.filter.html.html">html filter</option>
+ *    <option value="">(blank)</option>
+ *   </select>
+ *   <tt>url = <a href="{{url}}">{{url}}</a></tt>
+ *   <hr/>
+ *   <ng:include src="url"></ng:include>
  *
  * @scenario
  */
@@ -299,6 +314,36 @@ angularWidget('ng:include', function(element){
   }
 });
 
+/**
+ * @ngdoc widget
+ * @name angular.widget.ng:switch
+ *
+ * @description
+ * Conditionally change the DOM structure.
+ * 
+ * @usageContent
+ *   <any ng:switch-when="matchValue1"/>...</any>
+ *   <any ng:switch-when="matchValue2"/>...</any>
+ *   ...
+ *   <any ng:switch-when="matchValueN"/>...</any>
+ * 
+ * @param {*} on expression to match against <tt>ng:switch-when</tt>.
+ *
+ * @example
+    <select name="switch">
+      <option>settings</option>
+      <option>home</option>
+    </select>
+    <tt>switch={{switch}}</tt>
+    </hr>
+    <ng:switch on="switch" >
+      <div ng:switch-when="settings">Settings Div</div>
+      <span ng:switch-when="home">Home Span</span>
+    </ng:switch>
+    </code>
+ *
+ * @scenario
+ */
 var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,
       watchExpr = element.attr("on"),

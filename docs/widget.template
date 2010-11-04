@@ -2,14 +2,12 @@
 <h2>Usage</h2>
 <h3>In HTML Template Binding</h3>
 <tt>
-  <span>{{</span>
-  {{paramFirst.name}}_expression
-  | {{shortName}}{{#paramRest}}{{^default}}:{{name}}{{/default}}{{#default}}<i>[:{{name}}={{default}}]</i>{{/default}}{{/paramRest}}
-  <span> }}</span>
-</tt>
-<h3>In JavaScript</h3>
-<tt ng:non-bindable>
-angular.filter.{{shortName}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/paramRest}} );
+  <pre>
+&lt;{{shortName}}{{#param}} {{#default}}<i>[</i>{{/default}}{{name}}="..."{{#default}}<i>]</i>{{/default}}{{/param}}&gt;{{#usageContent}} 
+
+  {{usageContent}}
+{{/usageContent}}&lt;/{{shortName}}&gt;
+  </pre>
 </tt>
 
 <h3>Parameters</h3>
@@ -18,9 +16,6 @@ angular.filter.{{shortName}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/param
   <li><tt>{{name}}:{{#type}}{{type}}{{/type}}{{^type}}:*{{/type}}{{#default}}={{default}}{{/default}}</tt>: {{{description}}}</li>
   {{/param}}
 </ul>
-
-<h3>Returns</h3>
-{{{returns}}}
 
 <h3>CSS</h3>
 {{{css}}}
