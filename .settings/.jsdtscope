@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="test/" kind="src" path="src"/>
-	<classpathentry kind="src" path="docs"/>
-	<classpathentry kind="src" path="src/test"/>
+	<classpathentry excluding="docs-data.js|docs-scenario.js" kind="src" path="docs"/>
 	<classpathentry excluding="test/" kind="src" path="test"/>
 	<classpathentry kind="src" path="test/test"/>
 	<classpathentry kind="con" path="org.eclipse.wst.jsdt.launching.JRE_CONTAINER"/>
