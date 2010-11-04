@@ -1,8 +1,10 @@
+require.paths.push("./lib");
+require.paths.push(__dirname);
 var fs       = require('fs'),
     spawn    = require('child_process').spawn,
-    mustache = require('../lib/mustache'),
-    callback = require('./callback'),
-    markdown = require('../lib/markdown');
+    mustache = require('mustache'),
+    callback = require('callback'),
+    markdown = require('markdown');
 
 var documentation = {
     section:{},
@@ -44,7 +46,7 @@ var work = callback.chain(function () {
   mergeTemplate('wiki_widgets.js', 'wiki_widgets.js', documentation, callback.chain());
   console.log('DONE');
 });
-work();
+if (!this.testmode) work();
 ////////////////////
 
 function noop(){}
@@ -78,6 +80,10 @@ function mergeTemplate(template, output, doc, callback){
 }
 
 
+function trim(string) {
+  return string.replace(/^[\s\n\r]+/g, '').replace(/[\s\n\r]+$/g, '');
+}
+
 function unknownTag(doc, name) {
   var error = "[" + doc.raw.file + ":" + doc.raw.line + "]: unknown tag: " + name;
   console.log(error);
@@ -93,7 +99,7 @@ function escapedHtmlTag(doc, name, value) {
 }
 
 function markdownTag(doc, name, value) {
-  doc[name] = markdown.toHTML(value);
+  doc[name] = markdown.toHTML(value.replace(/^#/gm, '##'));
 }
 
 var TAG = {
@@ -103,8 +109,10 @@ var TAG = {
   namespace: valueTag,
   css: valueTag,
   see: valueTag,
+  usageContent: valueTag,
   'function': valueTag,
   description: markdownTag,
+  TODO: markdownTag,
   returns: markdownTag,
   name: function(doc, name, value) {
     doc.name = value;
@@ -113,13 +121,13 @@ var TAG = {
   param: function(doc, name, value){
     doc.param = doc.param || [];
     doc.paramRest = doc.paramRest || [];
-    var match = value.match(/^({([^\s=]+)(=)?}\s*)?([^\s]+|\[(\S+)+=([^\]]+)\])\s+(.*)/);
+    var match = value.match(/^({([^\s=]+)(=)?}\s*)?(([^\s=]+)|\[(\S+)+=([^\]]+)\])\s+(.*)/);
     if (match) {
       var param = {
           type: match[2],
-          name: match[4] || match[5],
-          'default':match[6],
-          description:match[7]};
+          name: match[6] || match[5],
+          'default':match[7],
+          description:match[8]};
       doc.param.push(param);
       if (!doc.paramFirst) {
         doc.paramFirst = param;
@@ -138,11 +146,11 @@ function parseNgDoc(doc){
   var atText;
   var match;
   doc.raw.text.split(/\n/).forEach(function(line, lineNumber){
-    if (match = line.match(/^@(\w+)(\s+(.*))?/)) {
+    if (match = line.match(/^\s*@(\w+)(\s+(.*))?/)) {
       // we found @name ...
       // if we have existing name
       if (atName) {
-        (TAG[atName] || unknownTag)(doc, atName, atText.join('\n'));
+        (TAG[atName] || unknownTag)(doc, atName, trim(atText.join('\n')));
       }
       atName = match[1];
       atText = [];
@@ -178,8 +186,9 @@ function findNgDoc(file, callback) {
       if (inDoc && line.match(/\*\//)) {
         doc.raw.text = doc.raw.text.join('\n');
         doc.raw.text = doc.raw.text.replace(/^\n/, '');
-        if (doc.raw.text.match(/@ngdoc/))
+        if (doc.raw.text.match(/@ngdoc/)){
           callback(doc);
+        }
         doc = null;
         inDoc = false;
       }

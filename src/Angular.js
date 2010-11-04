@@ -144,13 +144,6 @@ var _undefined        = undefined,
      *
      *
      * @example
-     *   //TODO this example current doesn't show up anywhere because the overview template doesn't
-     *   //     render it.
-     *
-     *   The following example filter reverses a text string. In addition, it conditionally makes the
-     *   text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
-     *   modification).
-
          <script type="text/javascript">
            angular.filter.reverse = function(input, uppercase, color) {
              var out = "";
@@ -166,12 +159,17 @@ var _undefined        = undefined,
              return out;
            };
          </script>
+       The following example filter reverses a text string. In addition, it conditionally makes the
+       text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
+       modification).
+
+         <hr/>
          <span ng:non-bindable="true">{{"hello"|reverse}}</span>: {{"hello"|reverse}}<br>
          <span ng:non-bindable="true">{{"hello"|reverse:true}}</span>: {{"hello"|reverse:true}}<br>
          <span ng:non-bindable="true">{{"hello"|reverse:true:"blue"}}</span>:
            {{"hello"|reverse:true:"blue"}}
 
-     * //TODO: I completely dropped a mention of using the other option (setter method), it's
+     * @TODO: I completely dropped a mention of using the other option (setter method), it's
      * confusing to have two ways to do the same thing. I just wonder if we should prefer using the
      * setter way over direct assignment because in the future we might want to be able to intercept
      * filter registrations for some reason.
