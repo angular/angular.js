@@ -1,6 +1,6 @@
 var array = [].constructor;
 
-function toJson(obj, pretty){
+function toJson(obj, pretty) {
   var buf = [];
   toJsonArray(buf, obj, pretty ? "\n  " : _null, []);
   return buf.join('');
@@ -35,37 +35,36 @@ function toJsonArray(buf, obj, pretty, stack) {
     }
 
     if (includes(stack, obj)) {
-      buf.push("RECURSION");
+      buf.push('RECURSION');
       return;
     }
     stack.push(obj);
   }
-  var type = typeof obj;
   if (obj === _null) {
     buf.push($null);
   } else if (obj instanceof RegExp) {
     buf.push(angular['String']['quoteUnicode'](obj.toString()));
-  } else if (type === $function) {
+  } else if (isFunction(obj)) {
     return;
-  } else if (type === $boolean) {
+  } else if (isBoolean(obj)) {
     buf.push('' + obj);
-  } else if (type === $number) {
+  } else if (isNumber(obj)) {
     if (isNaN(obj)) {
       buf.push($null);
     } else {
       buf.push('' + obj);
     }
-  } else if (type === $string) {
+  } else if (isString(obj)) {
     return buf.push(angular['String']['quoteUnicode'](obj));
-  } else if (type === $object) {
-    if (obj instanceof Array) {
+  } else if (isObject(obj)) {
+    if (isArray(obj)) {
       buf.push("[");
       var len = obj.length;
       var sep = false;
       for(var i=0; i<len; i++) {
         var item = obj[i];
         if (sep) buf.push(",");
-        if (!(item instanceof RegExp) && (typeof item == $function || typeof item == $undefined)) {
+        if (!(item instanceof RegExp) && (isFunction(item) || isUndefined(item))) {
           buf.push($null);
         } else {
           toJsonArray(buf, item, pretty, stack);
@@ -104,7 +103,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       buf.push("}");
     }
   }
-  if (typeof obj == $object) {
+  if (isObject(obj)) {
     stack.pop();
   }
 }
