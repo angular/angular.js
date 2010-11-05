@@ -312,6 +312,7 @@ function isString(value){ return typeof value == $string;}
 function isNumber(value){ return typeof value == $number;}
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == $function;}
+function isBoolean(value) { return typeof value == $boolean;}
 function isTextNode(node) { return nodeName(node) == '#text'; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function isElement(node) {
