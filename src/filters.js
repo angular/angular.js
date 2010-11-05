@@ -192,9 +192,7 @@ angularFilter.date = function(date, format) {
     date = parseInt(date, 10);
   }
 
-  if (isNumber(date)) {
-    date = new Date(date);
-  } else if (isString(date) && Date.parse(date)) {
+  if (isNumber(date) || Date.parse(date.toString())) {
     date = new Date(date);
   } else if (!(date instanceof Date)) {
     return date;
