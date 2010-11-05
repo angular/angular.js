@@ -268,6 +268,17 @@ angularWidget('option', function(){
  *   <ng:include src="url"></ng:include>
  *
  * @scenario
+ * it('should load date filter', function(){
+ *   expect(element('.example ng\\:include').text()).toMatch(/angular\.filter\.date/);
+ * });
+ * it('should change to hmtl filter', function(){
+ *   select('url').option('angular.filter.html.html');
+ *   expect(element('.example ng\\:include').text()).toMatch(/angular\.filter\.html/);
+ * });
+ * it('should change to blank', function(){
+ *   select('url').option('(blank)');
+ *   expect(element('.example ng\\:include').text()).toEqual('');
+ * });
  */
 angularWidget('ng:include', function(element){
   var compiler = this,
@@ -328,6 +339,11 @@ angularWidget('ng:include', function(element){
  *   <any ng:switch-when="matchValueN"/>...</any>
  * 
  * @param {*} on expression to match against <tt>ng:switch-when</tt>.
+ * @paramDescription 
+ * On child elments add:
+ * 
+ * * `ng:switch-when`: the case statement to match against. If match then this
+ *   case will be displayed.
  *
  * @example
     <select name="switch">
@@ -343,6 +359,13 @@ angularWidget('ng:include', function(element){
     </code>
  *
  * @scenario
+ * it('should start in settings', function(){
+ *   expect(element('.example ng\\:switch').text()).toEqual('Settings Div');
+ * });
+ * it('should change to home', function(){
+ *   select('switch').option('home');
+ *   expect(element('.example ng\\:switch').text()).toEqual('Home Span');
+ * });
  */
 var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,

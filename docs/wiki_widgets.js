@@ -20,7 +20,7 @@
 			'<li class="tab selected" to="angular">&lt;angular/&gt;</li>' +
 			'<li class="tab" to="plain">plain</li>' +
 			'<li class="tab" to="source">source</li>' +
-			'<li class="pane selected angular">' + html + '</li>' +
+			'<li class="pane selected angular example">' + html + '</li>' +
 			'<li class="pane plain" ng:non-bindable>' + html + '</li>' +
 			'<li class="pane source" ng:non-bindable><pre class="brush: js; html-script: true"></pre></li>' +
 			'</ul>');
