@@ -20,6 +20,7 @@
   <li><tt>{{name}}:{{#type}}{{type}}{{/type}}{{^type}}:*{{/type}}{{#default}}={{default}}{{/default}}</tt>: {{{description}}}</li>
   {{/param}}
 </ul>
+{{{paramDescription}}}
 
 <h3>CSS</h3>
 {{{css}}}

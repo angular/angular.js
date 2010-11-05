@@ -116,28 +116,44 @@ extend(angularValidator, {
    * 
    *    * `data`: data object as passed from validate function
    * 
-   * @css ng-input-indicator-wait
+   * @css ng-input-indicator-wait, ng-validation-error
    * 
    * @exampleDescription
    * <pre>
-   * function myValidator (value, callback) {
+   * function myValidator (inputToValidate, validationDone) {
    *  // simulate delayed response, validate on even input length
    *  setTimeout(function(){
-   *    callback(value.length % 2);
-   *  }, 2000);
+   *    validationDone(inputToValidate.length % 2);
+   *  }, 500);
    * };
    * </pre>
    * 
    * @example
    * <script>
-   *   function myValidator(value, callback) {
+   *   function myValidator(inputToValidate, validationDone) {
    *    setTimeout(function(){
-   *      callback(value.length % 2);
-   *    }, 2000);
+   *      validationDone(inputToValidate.length % 2);
+   *    }, 500);
    *  }
    * </script>
    *  This input is validated asynchronously:
    *  <input name="text" ng:validate="asynchronous:$window.myValidator">
+   * 
+   * @scenario
+   * it('should change color in delayed way', function(){
+   *   var textBox = element('.example :input');
+   *   expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
+   *   expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
+   *   
+   *   input('text').enter('X');
+   *   expect(textBox.attr('className')).toMatch(/ng-input-indicator-wait/);
+   *   
+   *   pause(.6);
+   *   
+   *   expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
+   *   expect(textBox.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   * });
    * 
    */
   /*
