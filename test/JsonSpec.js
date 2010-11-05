@@ -49,10 +49,6 @@ describe('json', function(){
     expect(fromJson("false")).toBeFalsy();
   });
 
-  it('should ignore $$ properties', function() {
-    expect(toJson({$$:0})).toEqual("{}");
-  });
-
   it('should serialize array with empty items', function() {
     var a = [];
     a[1] = "X";
@@ -77,18 +73,15 @@ describe('json', function(){
     expect(angular.toJson(obj)).toEqual('{"a":"b","recursion":RECURSION}');
   });
 
-  it('should ignore $ properties', function() {
-    var scope = createScope();
-    scope.a = 'a';
-    scope['$b'] = '$b';
-    scope.c = 'c';
-    expect(angular.toJson(scope)).toEqual('{"a":"a","c":"c","this":RECURSION}');
+  it('should serialize $ properties', function() {
+    var obj = {$a: 'a'}
+    expect(angular.toJson(obj)).toEqual('{"$a":"a"}');
   });
 
   it('should serialize inherited properties', function() {
-    var scope = createScope({p:'p'});
-    scope.a = 'a';
-    expect(angular.toJson(scope)).toEqual('{"a":"a","p":"p","this":RECURSION}');
+    var obj = inherit({p:'p'});
+    obj.a = 'a';
+    expect(angular.toJson(obj)).toEqual('{"a":"a","p":"p"}');
   });
 
   it('should serialize same objects multiple times', function() {
