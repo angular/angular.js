@@ -1,4 +1,8 @@
 <h1><tt>{{name}}</tt></h1>
+
+<h2>Description</h2>
+{{{description}}}
+
 <h2>Usage</h2>
 <h3>In HTML Template Binding</h3>
 <tt>
@@ -19,9 +23,6 @@
 
 <h3>CSS</h3>
 {{{css}}}
-
-<h2>Description</h2>
-{{{description}}}
 
 <WIKI:SOURCE style="display:block;">
 {{{example}}}

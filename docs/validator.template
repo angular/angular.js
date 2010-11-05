@@ -1,18 +1,12 @@
 <h1><tt>{{name}}</tt></h1>
+
 <h2>Description</h2>
 {{{description}}}
 
 <h2>Usage</h2>
 <h3>In HTML Template Binding</h3>
 <tt>
-  <span>{{</span>
-  {{paramFirst.name}}_expression
-  | {{shortName}}{{#paramRest}}{{^default}}:{{name}}{{/default}}{{#default}}<i>[:{{name}}={{default}}]</i>{{/default}}{{/paramRest}}
-  <span> }}</span>
-</tt>
-<h3>In JavaScript</h3>
-<tt ng:non-bindable>
-angular.filter.{{shortName}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/paramRest}} );
+  &lt;input type="text" ng:validate="{{shortName}}{{#paramRest}}{{^default}}:{{name}}{{/default}}{{#default}}<i>[:{{name}}]</i>{{/default}}{{/paramRest}}"/>
 </tt>
 
 <h3>Parameters</h3>
@@ -21,13 +15,13 @@ angular.filter.{{shortName}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/param
   <li><tt>{{name}}:{{#type}}{{type}}{{/type}}{{^type}}:*{{/type}}{{#default}}={{default}}{{/default}}</tt>: {{{description}}}</li>
   {{/param}}
 </ul>
-
-<h3>Returns</h3>
-{{{returns}}}
+{{{paramDescription}}}
 
 <h3>CSS</h3>
 {{{css}}}
 
+<h2>Example</h2>
+{{{exampleDescription}}}
 <WIKI:SOURCE style="display:block;">
 {{{example}}}
 </WIKI:SOURCE>

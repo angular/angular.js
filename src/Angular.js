@@ -93,6 +93,59 @@ var _undefined        = undefined,
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
     angularWidget     = extensionMap(angular, 'widget', lowercase),
+    
+    /**
+     * @ngdoc overview
+     * @name angular.validator
+     * @namespace Namespace for all filters.
+     * @description
+     * # Overview
+     * Validators are a standard way to check the user input against a specific criteria. For 
+     * example, you might need to check that an input field contains a well-formed phone number.
+     * 
+     * # Syntax
+     * Attach a validator on user input widgets using the `ng:validate` attribute.
+     * 
+     * <WIKI:SOURCE>
+     *    Change me: &lt;input type="text" name="number" ng:validate="integer" value="123"&gt;
+     * </WIKI:SOURCE>
+     * 
+     * # Writing your own Validators
+     * Writing your own validator is easy. To make a function available as a 
+     * validator, just define the JavaScript function on the `angular.validator` 
+     * object. <angular/> passes in the input to validate as the first argument 
+     * to your function. Any additional validator arguments are passed in as 
+     * additional arguments to your function.
+     * 
+     * You can use these variables in the function:
+     *
+     * * `this` — The current scope.
+     * * `this.$element` — The DOM element containing the binding. This allows the filter to manipulate
+     *   the DOM in addition to transforming the input.
+     *   
+     * In this example we have written a upsTrackingNo validator. 
+     * It marks the input text "valid" only when the user enters a well-formed 
+     * UPS tracking number.
+     * 
+     * <pre>
+     * angular.validator('upsTrackingNo', function(input, format) {
+     *  var regexp = new RegExp("^" + format.replace(/9/g, '\\d') + "$");
+     *  return input.match(regexp) ? "" : "The format must match " + format;
+     * });
+     * </pre>
+     * 
+     * @example
+     * <script>
+     *  angular.validator('upsTrackingNo', function(input, format) {
+     *    var regexp = new RegExp("^" + format.replace(/9/g, '\\d') + "$");
+     *    return input.match(regexp)?"":"The format must match " + format;
+     *  });
+     * </script>
+     * <input type="text" name="trackNo" size="40"
+     *       ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'" 
+     *       value="1Z 123 456 78 9012 345 6"/>
+     * 
+     */
     angularValidator  = extensionMap(angular, 'validator'),
 
 
@@ -139,13 +192,13 @@ var _undefined        = undefined,
      * You can use these variables in the function:
      *
      * * `this` — The current scope.
-     * * `$element` — The DOM element containing the binding. This allows the filter to manipulate
+     * * `this.$element` — The DOM element containing the binding. This allows the filter to manipulate
      *   the DOM in addition to transforming the input.
      *
      *
      * @example
          <script type="text/javascript">
-           angular.filter.reverse = function(input, uppercase, color) {
+           angular.filter('reverse', function(input, uppercase, color) {
              var out = "";
              for (var i = 0; i < input.length; i++) {
                out = input.charAt(i) + out;
@@ -157,7 +210,7 @@ var _undefined        = undefined,
                this.$element.css('color', color);
              }
              return out;
-           };
+           });
          </script>
        The following example filter reverses a text string. In addition, it conditionally makes the
        text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
@@ -169,10 +222,6 @@ var _undefined        = undefined,
          <span ng:non-bindable="true">{{"hello"|reverse:true:"blue"}}</span>:
            {{"hello"|reverse:true:"blue"}}
 
-     * @TODO: I completely dropped a mention of using the other option (setter method), it's
-     * confusing to have two ways to do the same thing. I just wonder if we should prefer using the
-     * setter way over direct assignment because in the future we might want to be able to intercept
-     * filter registrations for some reason.
      */
     angularFilter     = extensionMap(angular, 'filter'),
     angularFormatter  = extensionMap(angular, 'formatter'),

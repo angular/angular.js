@@ -84,6 +84,62 @@ extend(angularValidator, {
     }
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.asynchronous
+   * @description
+   * Use asynchronous validator if the validation can not be computed 
+   * immediately, but is provided through a callback. The widget 
+   * automatically shows a spinning indicator while the validity of 
+   * the widget is computed. This validator caches the result.
+   * 
+   * @param {string} value value to validate
+   * @param {function(inputToValidate,validationDone)} validate function to call to validate the state
+   *         of the input.
+   * @param {function(data)=} [update=noop] function to call when state of the 
+   *    validator changes
+   *    
+   * @paramDescription
+   * The `validate` function (specified by you) is called as 
+   * `validate(inputToValidate, validationDone)`:
+   * 
+   *    * `inputToValidate`: value of the input box.
+   *    * `validationDone`: `function(error, data){...}`
+   *       * `error`: error text to display if validation fails
+   *       * `data`: data object to pass to update function
+   *       
+   * The `update` function is optionally specified by you and is
+   * called by <angular/> on input change. Since the 
+   * asynchronous validator caches the results, the update 
+   * function can be called without a call to `validate` 
+   * function. The function is called as `update(data)`:
+   * 
+   *    * `data`: data object as passed from validate function
+   * 
+   * @css ng-input-indicator-wait
+   * 
+   * @exampleDescription
+   * <pre>
+   * function myValidator (value, callback) {
+   *  // simulate delayed response, validate on even input length
+   *  setTimeout(function(){
+   *    callback(value.length % 2);
+   *  }, 2000);
+   * };
+   * </pre>
+   * 
+   * @example
+   * <script>
+   *   function myValidator(value, callback) {
+   *    setTimeout(function(){
+   *      callback(value.length % 2);
+   *    }, 2000);
+   *  }
+   * </script>
+   *  This input is validated asynchronously:
+   *  <input name="text" ng:validate="asynchronous:$window.myValidator">
+   * 
+   */
   /*
    * cache is attached to the element
    * cache: {
