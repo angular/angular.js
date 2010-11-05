@@ -101,26 +101,26 @@ function lex(text, parseStringsForObjects){
            '_' == ch || ch == '$';
   }
   function isExpOperator(ch) {
-    return ch == '-' || ch == '+';
+    return ch == '-' || ch == '+' || isNumber(ch);
   }
   function readNumber() {
     var number = "";
     var start = index;
     while (index < text.length) {
-      var ch = text.charAt(index);
+      var ch = lowercase(text.charAt(index));
       if (ch == '.' || isNumber(ch)) {
         number += ch;
       } else {
         var peekCh = peek();
-        if (ch == 'E' && isExpOperator(peekCh)) {
+        if (ch == 'e' && isExpOperator(peekCh)) {
           number += ch;
         } else if (isExpOperator(ch) &&
             peekCh && isNumber(peekCh) &&
-            number.charAt(number.length - 1) == 'E') {
+            number.charAt(number.length - 1) == 'e') {
           number += ch;
         } else if (isExpOperator(ch) &&
             (!peekCh || !isNumber(peekCh)) &&
-            number.charAt(number.length - 1) == 'E') {
+            number.charAt(number.length - 1) == 'e') {
           throw 'Lexer found invalid exponential value "' + text + '"';
         } else {
           break;

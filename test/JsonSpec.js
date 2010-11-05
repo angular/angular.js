@@ -109,6 +109,13 @@ describe('json', function(){
     expect(fromJson("{neg:-2.55, pos:+.3, a:[-2, +.1, -.2, +.3]}")).toEqual({neg:-2.55, pos:+.3, a:[-2, +.1, -.2, +.3]});
   });
 
+  it('should parse exponents', function() {
+    expect(fromJson("{exp:1.2E10}")).toEqual({exp:1.2E10});
+    expect(fromJson("{exp:1.2E-10}")).toEqual({exp:1.2E-10});
+    expect(fromJson("{exp:1.2e+10}")).toEqual({exp:1.2E10});
+    expect(fromJson("{exp:1.2e-10}")).toEqual({exp:1.2E-10});
+  });
+
   describe('security', function(){
     it('should not allow naked expressions', function(){
       expect(function(){fromJson('1+2');}).toThrow("Did not understand '+2' while evaluating '1+2'.");
