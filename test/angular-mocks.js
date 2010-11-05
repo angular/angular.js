@@ -243,6 +243,10 @@ function TzDate(offset, timestamp) {
     return offset * 60;
   };
 
+  this.toISOString = function() {
+    return this.date.toISOString();
+  };
+
   //hide all methods not implemented in this mock that the Date prototype exposes
   var unimplementedMethods = ['getDay', 'getMilliseconds', 'getTime', 'getUTCDate', 'getUTCDay',
       'getUTCFullYear', 'getUTCHours', 'getUTCMilliseconds', 'getUTCMinutes', 'getUTCMonth',

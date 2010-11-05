@@ -115,6 +115,10 @@ describe('filter', function(){
       expect(filter.date(noon.getTime() + "")).toEqual(noon.toLocaleDateString());
     });
 
+    it('should be able to parse ISO 8601 dates/times using', function() {
+      expect(filter.date(noon.toISOString())).toEqual(noon.toLocaleDateString());
+    });
+
     it('should accept format', function() {
       expect(filter.date(morning, "yy-MM-dd HH:mm:ss")).
                            toEqual('10-09-03 07:05:08');
