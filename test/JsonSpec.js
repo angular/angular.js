@@ -92,6 +92,14 @@ describe('json', function(){
   it('should not serialize undefined values', function() {
     expect(angular.toJson({A:undefined})).toEqual('{}');
   });
+  
+  it('should not serialize $window object', function() {
+    expect(toJson(window)).toEqual('WINDOW');
+  });
+  
+  it('should not serialize $document object', function() {
+    expect(toJson(document)).toEqual('DOCUMENT');
+  });
 
   it('should parse floats', function() {
     expect(fromJson("{value:2.55, name:'misko'}")).toEqual({value:2.55, name:'misko'});
