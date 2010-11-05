@@ -22,8 +22,18 @@ function fromJson(json) {
 angular['toJson'] = toJson;
 angular['fromJson'] = fromJson;
 
-function toJsonArray(buf, obj, pretty, stack){
-  if (typeof obj == "object") {
+function toJsonArray(buf, obj, pretty, stack) {
+  if (isObject(obj)) {
+    if (obj === window) {
+      buf.push('WINDOW');
+      return;
+    }
+
+    if (obj === document) {
+      buf.push('DOCUMENT');
+      return;
+    }
+
     if (includes(stack, obj)) {
       buf.push("RECURSION");
       return;
