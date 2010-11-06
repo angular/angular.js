@@ -1,0 +1,36 @@
+@namespace doc url("http://docs.angularjs.org/");
+
+doc\:example {
+  display: none;
+}
+
+ul.doc-example {
+  list-style-type: none;
+  position: relative;
+  width: 700px;
+  font-size: 14px;
+}
+
+ul.doc-example > li {
+  border: 2px solid gray;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background-color: white;
+  margin-bottom: 20px;
+}
+
+ul.doc-example > li.doc-example-heading {
+  border: none;
+  border-radius: none;
+  margin-bottom: -10px;
+}
+
+li.doc-example-live {
+  padding: 10px;
+  font-size: 1.2em;
+}
+
+div.syntaxhighlighter {
+  padding-bottom: 1px !important; /* fix to remove unnecessary scrollbars http://is.gd/gSMgC */
+}

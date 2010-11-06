@@ -165,9 +165,11 @@ var _undefined        = undefined,
      * # Syntax
      * Attach a validator on user input widgets using the `ng:validate` attribute.
      * 
-     * <WIKI:SOURCE>
+     * <doc:example>
+     *   <doc:source>
      *    Change me: &lt;input type="text" name="number" ng:validate="integer" value="123"&gt;
-     * </WIKI:SOURCE>
+     *   </doc:source>
+     * </doc:example>
      * 
      * # Writing your own Validators
      * Writing your own validator is easy. To make a function available as a 
@@ -255,6 +257,11 @@ var _undefined        = undefined,
      *   the DOM in addition to transforming the input.
      *
      *
+     * @exampleDescription
+     *  The following example filter reverses a text string. In addition, it conditionally makes the
+     *  text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
+     *  modification).
+     *
      * @example
          <script type="text/javascript">
            angular.filter('reverse', function(input, uppercase, color) {
@@ -271,11 +278,6 @@ var _undefined        = undefined,
              return out;
            });
          </script>
-       The following example filter reverses a text string. In addition, it conditionally makes the
-       text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
-       modification).
-
-         <hr/>
          <span ng:non-bindable="true">{{"hello"|reverse}}</span>: {{"hello"|reverse}}<br>
          <span ng:non-bindable="true">{{"hello"|reverse:true}}</span>: {{"hello"|reverse:true}}<br>
          <span ng:non-bindable="true">{{"hello"|reverse:true:"blue"}}</span>:
@@ -340,20 +342,22 @@ var _undefined        = undefined,
      *   }
      * });
      * </script>
+     *
      * Formatted: <input type="text" name="data" value="&lt;angular/&gt;" ng:format="reverse"/><br/>
      * Stored: <input type="text" name="data"/><br/>
      * <pre>{{data}}</pre>
+     *
      * 
      * @scenario
      * it('should store reverse', function(){
-     *  expect(element('.example :input:first').val()).toEqual('<angular/>');
-     *  expect(element('.example :input:last').val()).toEqual('>/RALUGNA<');
+     *  expect(element('.doc-example input:first').val()).toEqual('<angular/>');
+     *  expect(element('.doc-example input:last').val()).toEqual('>/RALUGNA<');
      *  
      *  this.addFutureAction('change to XYZ', function($window, $document, done){
-     *    $document.elements('.example :input:last').val('XYZ').trigger('change');
+     *    $document.elements('.doc-example input:last').val('XYZ').trigger('change');
      *    done();
      *  });
-     *  expect(element('.example :input:first').val()).toEqual('zyx');
+     *  expect(element('input:first').val()).toEqual('zyx');
      * });
      */
     angularFormatter  = extensionMap(angular, 'formatter'),

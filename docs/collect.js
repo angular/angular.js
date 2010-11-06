@@ -42,8 +42,8 @@ var work = callback.chain(function () {
   copy('docs-scenario.html', callback.chain());
   copy('index.html', callback.chain());
   mergeTemplate('docs.js', 'docs.js', documentation, callback.chain());
-  mergeTemplate('wiki_widgets.css', 'wiki_widgets.css', documentation, callback.chain());
-  mergeTemplate('wiki_widgets.js', 'wiki_widgets.js', documentation, callback.chain());
+  mergeTemplate('doc_widgets.css', 'doc_widgets.css', documentation, callback.chain());
+  mergeTemplate('doc_widgets.js', 'doc_widgets.js', documentation, callback.chain());
   console.log('DONE');
 });
 if (!this.testmode) work();

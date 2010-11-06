@@ -398,15 +398,15 @@ angularWidget('option', function(){
  *
  * @scenario
  * it('should load date filter', function(){
- *   expect(element('.example ng\\:include').text()).toMatch(/angular\.filter\.date/);
+ *   expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.date/);
  * });
  * it('should change to hmtl filter', function(){
  *   select('url').option('angular.filter.html.html');
- *   expect(element('.example ng\\:include').text()).toMatch(/angular\.filter\.html/);
+ *   expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.html/);
  * });
  * it('should change to blank', function(){
  *   select('url').option('(blank)');
- *   expect(element('.example ng\\:include').text()).toEqual('');
+ *   expect(element('.doc-example ng\\:include').text()).toEqual('');
  * });
  */
 angularWidget('ng:include', function(element){
@@ -489,11 +489,11 @@ angularWidget('ng:include', function(element){
  *
  * @scenario
  * it('should start in settings', function(){
- *   expect(element('.example ng\\:switch').text()).toEqual('Settings Div');
+ *   expect(element('.doc-example ng\\:switch').text()).toEqual('Settings Div');
  * });
  * it('should change to home', function(){
  *   select('switch').option('home');
- *   expect(element('.example ng\\:switch').text()).toEqual('Home Span');
+ *   expect(element('.doc-example ng\\:switch').text()).toEqual('Home Span');
  * });
  */
 var ngSwitch = angularWidget('ng:switch', function (element){
