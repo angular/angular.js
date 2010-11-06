@@ -1,0 +1,15 @@
+<h1><tt>{{name}}</tt></h1>
+<h2>Description</h2>
+{{{description}}}
+
+<h2>Dependencies</h2>
+
+<h2>Methods</h2>
+
+<h2>Properties</h2>
+
+<h2>Usage</h2>
+
+<WIKI:SOURCE style="display:block;">
+{{{example}}}
+</WIKI:SOURCE>

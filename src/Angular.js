@@ -245,7 +245,6 @@ var _undefined        = undefined,
      */
     angularValidator  = extensionMap(angular, 'validator'),
 
-
     /**
      * @ngdoc overview
      * @name angular.filter
@@ -403,6 +402,54 @@ var _undefined        = undefined,
      * });
      */
     angularFormatter  = extensionMap(angular, 'formatter'),
+    
+    /**
+     * @ngdoc overview
+     * @name angular.service
+     * 
+     * @description
+     * # Overview
+     * Services are substituable objects, which are wired together using dependency injection.
+     * Each service could have dependencies (other services), which are passed in constructor.
+     * Because JS is dynamicaly typed language, dependency injection can not use static types
+     * to satisfy these dependencies, so each service must explicitely define its dependencies.
+     * This is done by $inject property.
+     * 
+     * For now, life time of all services is the same as the life time of page.
+     * 
+     * 
+     * # Standard services
+     * The Angular framework provides a standard set of services for common operations.
+     * You can write your own services and rewrite these standard services as well.
+     * Like other core angular variables, standard services always start with $.
+     * <ul>
+     *   <li><a href="#angular.service.%24window">angular.service.$window</a></li>
+     *   <li><a href="#angular.service.%24document">angular.service.$document</a></li>
+     *   <li><a href="#angular.service.%24location">angular.service.$location</a></li>
+     *   <li><a href="#angular.service.%24log">angular.service.$log</a></li>
+     *   <li><a href="#angular.service.%24exceptionHandler">angular.service.$exceptionHandler</a></li>
+     *   <li><a href="#angular.service.%24hover">angular.service.$hover</a></li>
+     *   <li><a href="#angular.service.%24invalidWidgets">angular.service.$invalidWidgets</a></li>
+     *   <li><a href="#angular.service.%24route">angular.service.$route</a></li>
+     *   <li><a href="#angular.service.%24xhr">angular.service.$xhr</a></li>
+     *   <li><a href="#angular.service.%24xhr.error">angular.service.$xhr.error</a></li>
+     *   <li><a href="#angular.service.%24xhr.bulk">angular.service.$xhr.bulk</a></li>
+     *   <li><a href="#angular.service.%24xhr.cache">angular.service.$xhr.cache</a></li>
+     *   <li><a href="#angular.service.%24resource">angular.service.$resource</a></li>
+     *   <li><a href="#angular.service.%24cookies">angular.service.$cookies</a></li>
+     *   <li><a href="#angular.service.%24cookieStore">angular.service.$cookieStore</a></li>
+     * </ul>
+     * 
+     * # Writing your own services
+     * <code class="">
+     * angular.service('notify', function(location) {
+     *   this.one = function() {
+     *   }
+     * }, {$inject: ['$location']});
+     * </code>
+     * 
+     * # Using services in controller
+     */
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName,

@@ -8,11 +8,47 @@ function angularServiceInject(name, fn, inject, eager) {
   angularService(name, fn, {$inject:inject, $creation:eager});
 }
 
+/**
+ * @ngdoc service
+ * @name angular.service.$window
+ * 
+ * @description
+ * Is reference to the browser's <b>window</b> object. While <b>window</b>
+ * is globally available in JavaScript, it causes testability problems, because
+ * it is a global variable. In <b><angular/></b> we always refer to it through the
+ * $window service, so it may be overriden, removed or mocked for testing.
+ * 
+ * All expressions are evaluated with respect to current scope so they don't
+ * suffer from window globality.
+ * 
+ * @example
+   <input ng:init="greeting='Hello World!'" type="text" name="greeting" />
+   <button ng:click="$window.alert(greeting)">ALERT</button>
+ */
 angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLISHED);
+
+/**
+ * @ngdoc service
+ * @name angular.service.$document
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject("$document", function(window){
   return jqLite(window.document);
 }, ['$window'], EAGER_PUBLISHED);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$location
+ * 
+ * @description
+ * Parses the browser location url and makes it available to your application.
+ * Any changes to the url are reflected into $location service and changes to
+ * $location are reflected to url.
+ * Notice that using browser's forward/back buttons changes the $location.
+ */
 angularServiceInject("$location", function(browser) {
   var scope = this,
       location = {toString:toString, update:update, updateHash: updateHash},
@@ -224,6 +260,14 @@ angularServiceInject("$location", function(browser) {
 }, ['$browser'], EAGER_PUBLISHED);
 
 
+/**
+ * @ngdoc service
+ * @name angular.service.$log
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject("$log", function($window){
   var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
       log = console.log || noop;
@@ -235,12 +279,28 @@ angularServiceInject("$log", function($window){
   };
 }, ['$window'], EAGER_PUBLISHED);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$exceptionHandler
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$exceptionHandler', function($log){
   return function(e) {
     $log.error(e);
   };
 }, ['$log'], EAGER_PUBLISHED);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$hover
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject("$hover", function(browser, document) {
   var tooltip, self = this, error, width = 300, arrowWidth = 10, body = jqLite(document[0].body);
   browser.hover(function(element, show){
@@ -287,9 +347,15 @@ angularServiceInject("$hover", function(browser, document) {
   });
 }, ['$browser', '$document'], EAGER);
 
-
-/* Keeps references to all invalid widgets found during validation. Can be queried to find if there
- * are invalid widgets currently displayed
+/**
+ * @ngdoc service
+ * @name angular.service.$invalidWidgets
+ * 
+ * @description
+ * Keeps references to all invalid widgets found during validation.
+ * Can be queried to find whether there are any invalid widgets currently displayed.
+ * 
+ * @example
  */
 angularServiceInject("$invalidWidgets", function(){
   var invalidWidgets = [];
@@ -373,6 +439,14 @@ function switchRouteMatcher(on, when, dstName) {
   return match ? dst : _null;
 }
 
+/**
+ * @ngdoc service
+ * @name angular.service.$route
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$route', function(location){
   var routes = {},
       onChange = [],
@@ -415,6 +489,14 @@ angularServiceInject('$route', function(location){
   return $route;
 }, ['$location'], EAGER_PUBLISHED);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$xhr
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$xhr', function($browser, $error, $log){
   var self = this;
   return function(method, url, post, callback){
@@ -446,12 +528,28 @@ angularServiceInject('$xhr', function($browser, $error, $log){
   };
 }, ['$browser', '$xhr.error', '$log']);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$xhr.error
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$xhr.error', function($log){
   return function(request, response){
     $log.error('ERROR: XHR: ' + request.url, request, response);
   };
 }, ['$log']);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$xhr.bulk
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   var requests = [],
       scope = this;
@@ -502,6 +600,14 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   return bulkXHR;
 }, ['$xhr', '$xhr.error', '$log']);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$xhr.cache
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$xhr.cache', function($xhr){
   var inflight = {}, self = this;
   function cache(method, url, post, callback, verifyCache){
@@ -546,18 +652,30 @@ angularServiceInject('$xhr.cache', function($xhr){
   return cache;
 }, ['$xhr.bulk']);
 
+/**
+ * @ngdoc service
+ * @name angular.service.$resource
+ * 
+ * @description
+ * 
+ * @example
+ */
 angularServiceInject('$resource', function($xhr){
   var resource = new ResourceFactory($xhr);
   return bind(resource, resource.route);
 }, ['$xhr.cache']);
 
-
 /**
- * $cookies service provides read/write access to the browser cookies. Currently only session
- * cookies are supported.
- *
- * Only a simple Object is exposed and by adding or removing properties to/from this object, new
- * cookies are created or deleted from the browser at the end of the current eval.
+ * @ngdoc service
+ * @name angular.service.$cookies
+ * 
+ * @description
+ * Provides read/write access to browser's cookies.
+ * 
+ * Only a simple Object is exposed and by adding or removing properties to/from
+ * this object, new cookies are created/deleted at the end of current $eval.
+ * 
+ * @example
  */
 angularServiceInject('$cookies', function($browser) {
   var rootScope = this,
@@ -630,10 +748,15 @@ angularServiceInject('$cookies', function($browser) {
   }
 }, ['$browser'], EAGER_PUBLISHED);
 
-
 /**
- * $cookieStore provides a key-value (string-object) storage that is backed by session cookies.
- * Objects put or retrieved from this storage are automatically serialized or deserialized.
+ * @ngdoc service
+ * @name angular.service.$cookieStore
+ * 
+ * @description
+ * Provides a key-value (string-object) storage, that is backed by session cookies.
+ * Objects put or retrieved from this storage are automatically serialized or
+ * deserialized by angular's toJson/fromJson.
+ * @example
  */
 angularServiceInject('$cookieStore', function($store) {
 
