@@ -3,6 +3,6 @@
 # run: watch watchr.rb
 # note: make sure that you have jstd server running (server.sh) and a browser captured
 
-watch( '^src/' )  do
+watch( '^src/|^docs/' )  do
    %x{ echo "\n\ndoc run started @ `date`" > logs/docs.log; node docs/collect.js &> logs/docs.log & }
 end
