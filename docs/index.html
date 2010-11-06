@@ -1,12 +1,18 @@
 <!DOCTYPE HTML>
-<html xmlns:ng="http://angularjs.org" wiki:ng="http://angularjs.org">
+<html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/">
 <head>
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
   <script type="text/javascript" src="docs-data.js"></script>
   <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
-  <script type="text/javascript" src="wiki_widgets.js"></script>
-  <link rel="stylesheet" href="wiki_widgets.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="doc_widgets.js"></script>
+  <link rel="stylesheet" href="doc_widgets.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
+  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
+  <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" type="text/css" media="screen" />
   <script type="text/javascript">
+    SyntaxHighlighter['defaults'].toolbar = false;
+
   	function DocsController() {
   	  this.docs = NG_DOC;
   	  window.$root = this.$root;

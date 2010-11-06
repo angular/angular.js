@@ -17,7 +17,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate non ssn', function(){
-   *   var textBox = element('.example :input');
+   *   var textBox = element('.doc-example :input');
    *   expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
    *   expect(textBox.val()).toEqual('123-45-6789');
    *   
@@ -54,17 +54,17 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate number', function(){
-   *   var n1 = element('.example :input[name=n1]');
+   *   var n1 = element('.doc-example :input[name=n1]');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('n1').enter('1.x');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
    *   
-   *   var n2 = element('.example :input[name=n2]');
+   *   var n2 = element('.doc-example :input[name=n2]');
    *   expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('n2').enter('9');
    *   expect(n2.attr('className')).toMatch(/ng-validation-error/);
    *   
-   *   var n3 = element('.example :input[name=n3]');
+   *   var n3 = element('.doc-example :input[name=n3]');
    *   expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('n3').enter('201');
    *   expect(n3.attr('className')).toMatch(/ng-validation-error/);
@@ -106,17 +106,17 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate integer', function(){
-   *   var n1 = element('.example :input[name=n1]');
+   *   var n1 = element('.doc-example :input[name=n1]');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('n1').enter('1.1');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
    *   
-   *   var n2 = element('.example :input[name=n2]');
+   *   var n2 = element('.doc-example :input[name=n2]');
    *   expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('n2').enter('10.1');
    *   expect(n2.attr('className')).toMatch(/ng-validation-error/);
    *   
-   *   var n3 = element('.example :input[name=n3]');
+   *   var n3 = element('.doc-example :input[name=n3]');
    *   expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('n3').enter('100.1');
    *   expect(n3.attr('className')).toMatch(/ng-validation-error/);
@@ -148,7 +148,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate date', function(){
-   *   var n1 = element('.example :input');
+   *   var n1 = element('.doc-example :input');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('text').enter('123/123/123');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
@@ -180,7 +180,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate email', function(){
-   *   var n1 = element('.example :input');
+   *   var n1 = element('.doc-example :input');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('text').enter('a@b.c');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
@@ -209,7 +209,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate phone', function(){
-   *   var n1 = element('.example :input');
+   *   var n1 = element('.doc-example :input');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('text').enter('+12345678');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
@@ -241,7 +241,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate url', function(){
-   *   var n1 = element('.example :input');
+   *   var n1 = element('.doc-example :input');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('text').enter('abc://server/path');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
@@ -271,7 +271,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should invalidate json', function(){
-   *   var n1 = element('.example :input');
+   *   var n1 = element('.doc-example :input');
    *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
    *   input('json').enter('{name}');
    *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
@@ -344,7 +344,7 @@ extend(angularValidator, {
    * 
    * @scenario
    * it('should change color in delayed way', function(){
-   *   var textBox = element('.example :input');
+   *   var textBox = element('.doc-example :input');
    *   expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
    *   expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
    *   

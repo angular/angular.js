@@ -25,9 +25,15 @@ angular.validator.{{shortName}}({{paramFirst.name}}{{#paramRest}}{{^default}}, {
 <h3>CSS</h3>
 {{{css}}}
 
+{{#example}}
 <h2>Example</h2>
 {{{exampleDescription}}}
-
-<WIKI:SOURCE style="display:block;">
-{{{example}}}
-</WIKI:SOURCE>
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  <doc:scenario>{{{scenario}}}</doc:scenario>
+</doc:example>
+{{/example}}

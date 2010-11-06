@@ -1,6 +1,15 @@
 <h1><tt>{{name}}</tt></h1>
 {{{description}}}
 
-{{#example}}<WIKI:SOURCE style="display:block;">{{/example}}
-{{{example}}}
-{{#example}}</WIKI:SOURCE>{{/example}}
+{{#example}}
+<h2>Example</h2>
+{{{exampleDescription}}}
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  <doc:scenario>{{{scenario}}}</doc:scenario>
+</doc:example>
+{{/example}}

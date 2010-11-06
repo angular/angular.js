@@ -25,6 +25,15 @@
 <h3>CSS</h3>
 {{{css}}}
 
-<WIKI:SOURCE style="display:block;">
-{{{example}}}
-</WIKI:SOURCE>
+{{#example}}
+<h2>Example</h2>
+{{{exampleDescription}}}
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  <doc:scenario>{{{scenario}}}</doc:scenario>
+</doc:example>
+{{/example}}
