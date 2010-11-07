@@ -300,3 +300,31 @@ describe('extensionMap', function() {
     expect(result.two).not.toBeDefined();
   });
 });
+
+describe('angular service', function() {
+  it('should override services', function() {
+    var scope = createScope();
+    angular.service('fake', function() { return 'old'; });
+    angular.service('fake', function() { return 'new'; });
+    
+    expect(scope.$inject('fake')).toEqual('new');
+  });
+  
+  it('should preserve $ properties on override', function() {
+    angular.service('fake', {$one: true}, {$two: true});
+    var result = angular.service('fake', {$third: true});
+    
+    expect(result.$one).toBeTruthy();
+    expect(result.$two).toBeTruthy();
+    expect(result.$third).toBeTruthy();
+  });
+  
+  it('should not preserve non-angular properties on override', function() {
+    angular.service('fake', {one: true}, {two: true});
+    var result = angular.service('fake', {third: true});
+    
+    expect(result.one).not.toBeDefined();
+    expect(result.two).not.toBeDefined();
+    expect(result.third).toBeTruthy();
+  });
+});
