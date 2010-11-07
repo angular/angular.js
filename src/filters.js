@@ -199,7 +199,9 @@ angularFilter.date = function(date, format) {
 
   if (isNumber(date)) {
     date = new Date(date);
-  } else if (!(date instanceof Date)) {
+  }
+
+  if (!isDate(date)) {
     return date;
   }
 
