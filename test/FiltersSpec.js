@@ -128,5 +128,11 @@ describe('filter', function(){
       expect(filter.date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
                        toEqual('2010-09-03 12=12:05:08pm0500');
     });
+
+    it('should be able to parse ISO 8601 dates/times using', function() {
+      var isoString = '2010-09-03T05:05:08Z';
+      expect(filter.date(isoString)).
+          toEqual(angular.String.toDate(isoString).toLocaleDateString());
+    });
   });
 });

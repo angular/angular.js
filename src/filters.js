@@ -168,7 +168,8 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200‒1200)
  *
- * @param {(Date|number|string)} date Date to format either as Date object or milliseconds.
+ * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
+ *    number) or ISO 8601 string (yyyy-MM-ddTHH:mm:ssZ).
  * @param {string=} format Formatting rules. If not specified, Date#toLocaleDateString is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
@@ -188,8 +189,12 @@ var NUMBER_STRING = /^\d+$/;
  *
  */
 angularFilter.date = function(date, format) {
-  if (isString(date) && NUMBER_STRING.test(date)) {
-    date = parseInt(date, 10);
+  if (isString(date)) {
+    if (NUMBER_STRING.test(date)) {
+      date = parseInt(date, 10);
+    } else {
+      date = angularString.toDate(date);
+    }
   }
 
   if (isNumber(date)) {
