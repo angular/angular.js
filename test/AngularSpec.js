@@ -328,3 +328,16 @@ describe('angular service', function() {
     expect(result.third).toBeTruthy();
   });
 });
+
+describe('isDate', function() {
+  it('should return true for Date object', function() {
+    expect(isDate(new Date())).toBe(true);
+  });
+
+  it('should return false for non Date objects', function() {
+    expect(isDate([])).toBe(false);
+    expect(isDate('')).toBe(false);
+    expect(isDate(23)).toBe(false);
+    expect(isDate({})).toBe(false);
+  });
+});

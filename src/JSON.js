@@ -72,7 +72,7 @@ function toJsonArray(buf, obj, pretty, stack) {
         sep = true;
       }
       buf.push("]");
-    } else if (obj instanceof Date) {
+    } else if (isDate(obj)) {
       buf.push(angular['String']['quoteUnicode'](angular['Date']['toString'](obj)));
     } else {
       buf.push("{");

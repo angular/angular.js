@@ -4,7 +4,7 @@ var angularGlobal = {
     var type = typeof obj;
     if (type == $object) {
       if (obj instanceof Array) return $array;
-      if (obj instanceof Date) return $date;
+      if (isDate(obj)) return $date;
       if (obj.nodeType == 1) return $element;
     }
     return type;

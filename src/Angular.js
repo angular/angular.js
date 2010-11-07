@@ -317,6 +317,7 @@ function isDefined(value){ return typeof value != $undefined; }
 function isObject(value){ return value!=_null && typeof value == $object;}
 function isString(value){ return typeof value == $string;}
 function isNumber(value){ return typeof value == $number;}
+function isDate(value){ return value instanceof Date; }
 function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == $function;}
 function isBoolean(value) { return typeof value == $boolean;}
@@ -431,7 +432,7 @@ function copy(source, destination){
     if (source) {
       if (isArray(source)) {
         destination = copy(source, []);
-      } else if (source instanceof Date) {
+      } else if (isDate(source)) {
         destination = new Date(source.getTime());
       } else if (isObject(source)) {
         destination = copy(source, {});
