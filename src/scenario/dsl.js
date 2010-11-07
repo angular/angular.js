@@ -191,7 +191,7 @@ angular.scenario.dsl('input', function() {
 
   chain.enter = function(value) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
-      var input = $document.elements('input[name="$1"]', this.name);
+      var input = $document.elements(':input[name="$1"]', this.name);
       input.val(value);
       input.trigger('change');
       done();
@@ -200,7 +200,7 @@ angular.scenario.dsl('input', function() {
 
   chain.check = function() {
     return this.addFutureAction("checkbox '" + this.name + "' toggle", function($window, $document, done) {
-      var input = $document.elements('input:checkbox[name="$1"]', this.name);
+      var input = $document.elements(':checkbox[name="$1"]', this.name);
       input.trigger('click');
       done();
     });
@@ -209,31 +209,8 @@ angular.scenario.dsl('input', function() {
   chain.select = function(value) {
     return this.addFutureAction("radio button '" + this.name + "' toggle '" + value + "'", function($window, $document, done) {
       var input = $document.
-        elements('input:radio[name$="@$1"][value="$2"]', this.name, value);
+        elements(':radio[name$="@$1"][value="$2"]', this.name, value);
       input.trigger('click');
-      done();
-    });
-  };
-
-  return function(name) {
-    this.name = name;
-    return chain;
-  };
-});
-
-
-/**
- * Usage:
- *    textarea(name).enter(value) enters value in the text area with specified name
- */
-angular.scenario.dsl('textarea', function() {
-  var chain = {};
-
-  chain.enter = function(value) {
-    return this.addFutureAction("textarea '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
-      var textarea = $document.elements('textarea[name="$1"]', this.name);
-      textarea.val(value);
-      textarea.trigger('change');
       done();
     });
   };

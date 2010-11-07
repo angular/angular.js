@@ -1,6 +1,31 @@
 extend(angularValidator, {
   'noop': function() { return _null; },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.regexp
+   * @description
+   * Use regexp validator to restrict the input to any Regular Expression.
+   * 
+   * @param {string} value value to validate
+   * @param {regexp} expression regular expression.
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter valid SSN:
+   * <input name="ssn" value="123-45-6789" ng:validate="regexp:/^\d\d\d-\d\d-\d\d\d\d$/" >
+   * 
+   * @scenario
+   * it('should invalidate non ssn', function(){
+   *   var textBox = element('.example :input');
+   *   expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
+   *   expect(textBox.val()).toEqual('123-45-6789');
+   *   
+   *   input('ssn').enter('123-45-67890');
+   *   expect(textBox.attr('className')).toMatch(/ng-validation-error/);
+   * });
+   * 
+   */
   'regexp': function(value, regexp, msg) {
     if (!value.match(regexp)) {
       return msg ||
@@ -10,6 +35,43 @@ extend(angularValidator, {
     }
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.number
+   * @description
+   * Use number validator to restrict the input to numbers with an 
+   * optional range. (See integer for whole numbers validator).
+   * 
+   * @param {string} value value to validate
+   * @param {int=} [min=MIN_INT] minimum value.
+   * @param {int=} [max=MAX_INT] maximum value.
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter number: <input name="n1" ng:validate="number" > <br>
+   * Enter number greater than 10: <input name="n2" ng:validate="number:10" > <br>
+   * Enter number between 100 and 200: <input name="n3" ng:validate="number:100:200" > <br>
+   * 
+   * @scenario
+   * it('should invalidate number', function(){
+   *   var n1 = element('.example :input[name=n1]');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('n1').enter('1.x');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   *   var n2 = element('.example :input[name=n2]');
+   *   expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('n2').enter('9');
+   *   expect(n2.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   *   var n3 = element('.example :input[name=n3]');
+   *   expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('n3').enter('201');
+   *   expect(n3.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   * });
+   * 
+   */
   'number': function(value, min, max) {
     var num = 1 * value;
     if (num == value) {
@@ -25,6 +87,42 @@ extend(angularValidator, {
     }
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.integer
+   * @description
+   * Use number validator to restrict the input to integers with an 
+   * optional range. (See integer for whole numbers validator).
+   * 
+   * @param {string} value value to validate
+   * @param {int=} [min=MIN_INT] minimum value.
+   * @param {int=} [max=MAX_INT] maximum value.
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter integer: <input name="n1" ng:validate="integer" > <br>
+   * Enter integer equal or greater than 10: <input name="n2" ng:validate="integer:10" > <br>
+   * Enter integer between 100 and 200 (inclusive): <input name="n3" ng:validate="integer:100:200" > <br>
+   * 
+   * @scenario
+   * it('should invalidate integer', function(){
+   *   var n1 = element('.example :input[name=n1]');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('n1').enter('1.1');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   *   var n2 = element('.example :input[name=n2]');
+   *   expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('n2').enter('10.1');
+   *   expect(n2.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   *   var n3 = element('.example :input[name=n3]');
+   *   expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('n3').enter('100.1');
+   *   expect(n3.attr('className')).toMatch(/ng-validation-error/);
+   *   
+   * });
+   */
   'integer': function(value, min, max) {
     var numberError = angularValidator['number'](value, min, max);
     if (numberError) return numberError;
@@ -34,6 +132,29 @@ extend(angularValidator, {
     return _null;
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.date
+   * @description
+   * Use date validator to restrict the user input to a valid date
+   * in format in format MM/DD/YYYY.
+   * 
+   * @param {string} value value to validate
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter valid date:
+   * <input name="text" value="1/1/2009" ng:validate="date" >
+   * 
+   * @scenario
+   * it('should invalidate date', function(){
+   *   var n1 = element('.example :input');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('text').enter('123/123/123');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   * });
+   * 
+   */
   'date': function(value) {
     var fields = /^(\d\d?)\/(\d\d?)\/(\d\d\d\d)$/.exec(value);
     var date = fields ? new Date(fields[3], fields[1]-1, fields[2]) : 0;
@@ -44,13 +165,28 @@ extend(angularValidator, {
               _null : "Value is not a date. (Expecting format: 12/31/2009).";
   },
 
-  'ssn': function(value) {
-    if (value.match(/^\d\d\d-\d\d-\d\d\d\d$/)) {
-      return _null;
-    }
-    return "SSN needs to be in 999-99-9999 format.";
-  },
-
+  /**
+   * @ngdoc validator
+   * @name angular.validator.email
+   * @description
+   * Use email validator if you wist to restrict the user input to a valid email.
+   * 
+   * @param {string} value value to validate
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter valid email:
+   * <input name="text" ng:validate="email" value="me@example.com">
+   * 
+   * @scenario
+   * it('should invalidate email', function(){
+   *   var n1 = element('.example :input');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('text').enter('a@b.c');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   * });
+   * 
+   */
   'email': function(value) {
     if (value.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)) {
       return _null;
@@ -58,6 +194,28 @@ extend(angularValidator, {
     return "Email needs to be in username@host.com format.";
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.phone
+   * @description
+   * Use phone validator to restrict the input phone numbers.
+   * 
+   * @param {string} value value to validate
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter valid phone number:
+   * <input name="text" value="1(234)567-8901" ng:validate="phone" >
+   * 
+   * @scenario
+   * it('should invalidate phone', function(){
+   *   var n1 = element('.example :input');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('text').enter('+12345678');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   * });
+   * 
+   */
   'phone': function(value) {
     if (value.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/)) {
       return _null;
@@ -68,6 +226,28 @@ extend(angularValidator, {
     return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.url
+   * @description
+   * Use phone validator to restrict the input URLs.
+   * 
+   * @param {string} value value to validate
+   * @css ng-validation-error
+   * 
+   * @example
+   * Enter valid phone number:
+   * <input name="text" value="http://example.com/abc.html" size="40" ng:validate="url" >
+   * 
+   * @scenario
+   * it('should invalidate url', function(){
+   *   var n1 = element('.example :input');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('text').enter('abc://server/path');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   * });
+   * 
+   */
   'url': function(value) {
     if (value.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/)) {
       return _null;
@@ -75,6 +255,29 @@ extend(angularValidator, {
     return "URL needs to be in http://server[:port]/path format.";
   },
 
+  /**
+   * @ngdoc validator
+   * @name angular.validator.json
+   * @description
+   * Use json validator if you wish to restrict the user input to a valid JSON.
+   * 
+   * @param {string} value value to validate
+   * @css ng-validation-error
+   * 
+   * @example
+   * <textarea name="json" cols="60" rows="5" ng:validate="json">
+   * {name:'abc'}
+   * </textarea>
+   * 
+   * @scenario
+   * it('should invalidate json', function(){
+   *   var n1 = element('.example :input');
+   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+   *   input('json').enter('{name}');
+   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
+   * });
+   * 
+   */
   'json': function(value) {
     try {
       fromJson(value);

@@ -343,7 +343,7 @@ snippet&lt;/p&gt;</textarea>
      });
 
      it('should update', function(){
-       textarea('snippet').enter('new <b>text</b>');
+       input('snippet').enter('new <b>text</b>');
        expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
        expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
        expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).toBe('new <b>text</b>');
@@ -415,7 +415,7 @@ and one more: ftp://127.0.0.1/.</textarea>
      });
 
      it('should update', function(){
-       textarea('snippet').enter('new http://link.');
+       input('snippet').enter('new http://link.');
        expect(using('#linky-filter').binding('snippet | linky')).
          toBe('new <a href="http://link">http://link</a>.');
        expect(using('#escaped-html').binding('snippet')).toBe('new http://link.');

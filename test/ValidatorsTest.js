@@ -69,12 +69,6 @@ ValidatorTest.prototype.testPhone = function() {
   assertEquals(null, angular.validator.phone("+421 0905 933 297"));
 };
 
-ValidatorTest.prototype.testSSN = function() {
-  var error = "SSN needs to be in 999-99-9999 format.";
-  assertEquals(angular.validator.ssn("ab"), error);
-  assertEquals(angular.validator.ssn("123-45-6789"), null);
-};
-
 ValidatorTest.prototype.testURL = function() {
   var error = "URL needs to be in http://server[:port]/path format.";
   assertEquals(angular.validator.url("ab"), error);
