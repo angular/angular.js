@@ -9,6 +9,11 @@
   &lt;input type="text" ng:validate="{{shortName}}{{#paramRest}}{{^default}}:{{name}}{{/default}}{{#default}}<i>[:{{name}}]</i>{{/default}}{{/paramRest}}"/>
 </tt>
 
+<h3>In JavaScript</h3>
+<tt ng:non-bindable>
+angular.validator.{{shortName}}({{paramFirst.name}}{{#paramRest}}{{^default}}, {{name}}{{/default}}{{#default}}<i>[, {{name}}]</i>{{/default}}{{/paramRest}} );
+</tt>
+
 <h3>Parameters</h3>
 <ul>
   {{#param}}

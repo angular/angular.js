@@ -1,5 +1,134 @@
 /**
+ * @ngdoc widget
+ * @name angular.widget.HTML
  *
+ * @description
+ * The most common widgets you will use will be in the from of the
+ * standard HTML set. These widgets are bound using the name attribute
+ * to an expression. In addition they can have `ng:validate`, `ng:required`,
+ * `ng:format`, `ng:change` attribute to further control their behavior.
+ * 
+ * @usageContent
+ *   see example below for usage
+ * 
+ *   <input type="text|checkbox|..." ... />
+ *   <textarea ... />
+ *   <select ...>
+ *     <option>...</option>
+ *   </select>
+ * 
+ * @example
+<table style="font-size:.9em;">
+  <tr>
+    <th>Name</th>
+    <th>Format</th>
+    <th>HTML</th>
+    <th>UI</th>
+    <th ng:non-bindable>{{input#}}</th>
+  </tr>
+  <tr>
+    <th>text</th>
+    <td>String</td>
+    <td><tt>&lt;input type="text" name="input1"&gt;</tt></td>
+    <td><input type="text" name="input1" size="4"></td>
+    <td><tt>{{input1|json}}</tt></td>
+  </tr>
+  <tr>
+    <th>textarea</th>
+    <td>String</td>
+    <td><tt>&lt;textarea name="input2"&gt;&lt;/textarea&gt;</tt></td>
+    <td><textarea name="input2" cols='6'></textarea></td>
+    <td><tt>{{input2|json}}</tt></td>
+  </tr>
+  <tr>
+    <th>radio</th>
+    <td>String</td>
+    <td><tt>
+      &lt;input type="radio" name="input3" value="A"&gt;<br>
+      &lt;input type="radio" name="input3" value="B"&gt;
+    </tt></td>
+    <td>
+      <input type="radio" name="input3" value="A">
+      <input type="radio" name="input3" value="B">
+    </td>
+    <td><tt>{{input3|json}}</tt></td>
+  </tr>
+  <tr>
+    <th>checkbox</th>
+    <td>Boolean</td>
+    <td><tt>&lt;input type="checkbox" name="input4" value="checked"&gt;</tt></td>
+    <td><input type="checkbox" name="input4" value="checked"></td>
+    <td><tt>{{input4|json}}</tt></td>
+  </tr>
+  <tr>
+    <th>pulldown</th>
+    <td>String</td>
+    <td><tt>
+      &lt;select name="input5"&gt;<br>
+      &nbsp;&nbsp;&lt;option value="c"&gt;C&lt;/option&gt;<br>
+      &nbsp;&nbsp;&lt;option value="d"&gt;D&lt;/option&gt;<br>
+      &lt;/select&gt;<br>
+    </tt></td>
+    <td>
+      <select name="input5">
+        <option value="c">C</option>
+        <option value="d">D</option>
+      </select>
+    </td>
+    <td><tt>{{input5|json}}</tt></td>
+  </tr>
+  <tr>
+    <th>multiselect</th>
+    <td>Array</td>
+    <td><tt>
+      &lt;select name="input6" multiple size="4"&gt;<br>
+      &nbsp;&nbsp;&lt;option value="e"&gt;E&lt;/option&gt;<br>
+      &nbsp;&nbsp;&lt;option value="f"&gt;F&lt;/option&gt;<br>
+      &lt;/select&gt;<br>
+    </tt></td>
+    <td>
+      <select name="input6" multiple size="4">
+        <option value="e">E</option>
+        <option value="f">F</option>
+      </select>
+    </td>
+    <td><tt>{{input6|json}}</tt></td>
+  </tr>
+</table>
+ 
+ * @scenario
+ * it('should exercise text', function(){
+ *   input('input1').enter('Carlos');
+ *   expect(binding('input1')).toEqual('"Carlos"');
+ * });
+ * it('should exercise textarea', function(){
+ *   input('input2').enter('Carlos');
+ *   expect(binding('input2')).toEqual('"Carlos"');
+ * });
+ * it('should exercise radio', function(){
+ *   expect(binding('input3')).toEqual('null');
+ *   input('input3').select('A');
+ *   expect(binding('input3')).toEqual('"A"');
+ *   input('input3').select('B');
+ *   expect(binding('input3')).toEqual('"B"');
+ * });
+ * it('should exercise checkbox', function(){
+ *   expect(binding('input4')).toEqual('false');
+ *   input('input4').check();
+ *   expect(binding('input4')).toEqual('true');
+ * });
+ * it('should exercise pulldown', function(){
+ *   expect(binding('input5')).toEqual('"c"');
+ *   select('input5').option('d');
+ *   expect(binding('input5')).toEqual('"d"');
+ * });
+ * it('should exercise multiselect', function(){
+ *   expect(binding('input6')).toEqual('[]');
+ *   select('input6').options('e');
+ *   expect(binding('input6')).toEqual('["e"]');
+ *   select('input6').options('e', 'f');
+ *   expect(binding('input6')).toEqual('["e","f"]');
+ * });
  */
 
 function modelAccessor(scope, element) {
