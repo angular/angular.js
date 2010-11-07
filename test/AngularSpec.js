@@ -26,8 +26,8 @@ describe("copy", function(){
   it("should return same object", function (){
     var obj = {};
     var arr = [];
-    assertSame(obj, copy({}, obj));
-    assertSame(arr, copy([], arr));
+    expect(copy({}, obj)).toBe(obj);
+    expect(copy([], arr)).toBe(arr);
   });
 
   it("should copy Date", function(){
@@ -40,26 +40,26 @@ describe("copy", function(){
   it("should copy array", function(){
     var src = [1, {name:"value"}];
     var dst = [{key:"v"}];
-    assertSame(dst, copy(src, dst));
-    assertEquals([1, {name:"value"}], dst);
-    assertEquals({name:"value"}, dst[1]);
-    assertNotSame(src[1], dst[1]);
+    expect(copy(src, dst)).toBe(dst);
+    expect(dst).toEqual([1, {name:"value"}]);
+    expect(dst[1]).toEqual({name:"value"});
+    expect(dst[1]).not.toBe(src[1]);
   });
 
   it('should copy empty array', function() {
     var src = [];
     var dst = [{key: "v"}];
-    assertEquals([], copy(src, dst));
-    assertEquals([], dst);
+    expect(copy(src, dst)).toEqual([]);
+    expect(dst).toEqual([]);
   });
 
   it("should copy object", function(){
     var src = {a:{name:"value"}};
     var dst = {b:{key:"v"}};
-    assertSame(dst, copy(src, dst));
-    assertEquals({a:{name:"value"}}, dst);
-    assertEquals(src.a, dst.a);
-    assertNotSame(src.a, dst.a);
+    expect(copy(src, dst)).toBe(dst);
+    expect(dst).toEqual({a:{name:"value"}});
+    expect(dst.a).toEqual(src.a);
+    expect(dst.a).not.toBe(src.a);
   });
 
   it("should copy primitives", function(){
