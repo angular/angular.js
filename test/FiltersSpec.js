@@ -115,7 +115,7 @@ describe('filter', function(){
       expect(filter.date(noon.getTime() + "")).toEqual(noon.toLocaleDateString());
     });
 
-    it('should accept format', function() {
+    it('should accept various format strings', function() {
       expect(filter.date(morning, "yy-MM-dd HH:mm:ss")).
                            toEqual('10-09-03 07:05:08');
 
