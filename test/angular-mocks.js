@@ -195,12 +195,17 @@ angular.service('$browser', function(){
 function TzDate(offset, timestamp) {
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
-    timestamp = angular.String.toDate(timestamp).getTime();
+
+    this.origDate = angular.String.toDate(timestamp);
+
+    timestamp = this.origDate.getTime();
     if (isNaN(timestamp))
       throw {
         name: "Illegal Argument",
         message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
       };
+  } else {
+    this.origDate = new Date(timestamp);
   }
 
   var localOffset = new Date(timestamp).getTimezoneOffset();
@@ -243,10 +248,34 @@ function TzDate(offset, timestamp) {
     return offset * 60;
   };
 
+  this.getUTCFullYear = function() {
+    return this.origDate.getUTCFullYear();
+  };
+
+  this.getUTCMonth = function() {
+    return this.origDate.getUTCMonth();
+  };
+
+  this.getUTCDate = function() {
+    return this.origDate.getUTCDate();
+  };
+
+  this.getUTCHours = function() {
+    return this.origDate.getUTCHours();
+  };
+
+  this.getUTCMinutes = function() {
+    return this.origDate.getUTCMinutes();
+  };
+
+  this.getUTCSeconds = function() {
+    return this.origDate.getUTCSeconds();
+  };
+
+
   //hide all methods not implemented in this mock that the Date prototype exposes
-  var unimplementedMethods = ['getDay', 'getMilliseconds', 'getTime', 'getUTCDate', 'getUTCDay',
-      'getUTCFullYear', 'getUTCHours', 'getUTCMilliseconds', 'getUTCMinutes', 'getUTCMonth',
-      'getUTCSeconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
+  var unimplementedMethods = ['getDay', 'getMilliseconds', 'getTime', 'getUTCDay',
+      'getUTCMilliseconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
       'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
       'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
       'setYear', 'toDateString', 'toJSON', 'toGMTString', 'toLocaleFormat', 'toLocaleString',
