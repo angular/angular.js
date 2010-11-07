@@ -1,5 +1,8 @@
 # <angular/> 0.9.3 cold-resistance (in-progress) #
 
+### Api
+- date filter now accepts strings that angular.String.toDate can convert to Date objects
+
 
 # <angular/> 0.9.2 faunal-mimicry (2010-11-03) #
 
