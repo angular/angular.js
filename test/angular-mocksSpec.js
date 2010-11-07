@@ -96,4 +96,26 @@ describe('TzDate', function() {
     expect(newYearInBratislava.getHours()).toBe(0);
     expect(newYearInBratislava.getMinutes()).toBe(0);
   });
+
+
+  it('should delegate all the UTC methods to the original UTC Date object', function() {
+    //from when created from string
+    var date1 = new TzDate(-1, '2009-12-31T23:00:00Z');
+    expect(date1.getUTCFullYear()).toBe(2009);
+    expect(date1.getUTCMonth()).toBe(11);
+    expect(date1.getUTCDate()).toBe(31);
+    expect(date1.getUTCHours()).toBe(23);
+    expect(date1.getUTCMinutes()).toBe(0);
+    expect(date1.getUTCSeconds()).toBe(0);
+
+
+    //from when created from millis
+    var date2 = new TzDate(-1, angular.String.toDate('2009-12-31T23:00:00Z').getTime());
+    expect(date2.getUTCFullYear()).toBe(2009);
+    expect(date2.getUTCMonth()).toBe(11);
+    expect(date2.getUTCDate()).toBe(31);
+    expect(date2.getUTCHours()).toBe(23);
+    expect(date2.getUTCMinutes()).toBe(0);
+    expect(date2.getUTCSeconds()).toBe(0);
+  });
 });
