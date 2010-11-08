@@ -95,9 +95,9 @@ describe('filter', function(){
 
   describe('date', function(){
 
-    var morning  = new TzDate(+5, '2010-09-03T12:05:08Z'); //7am
-    var noon =     new TzDate(+5, '2010-09-03T17:05:08Z'); //12pm
-    var midnight = new TzDate(+5, '2010-09-03T05:05:08Z'); //12am
+    var morning  = new TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
+    var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
+    var midnight = new TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
 
 
     it('should ignore falsy inputs', function() {
@@ -130,7 +130,7 @@ describe('filter', function(){
     });
 
     it('should be able to parse ISO 8601 dates/times using', function() {
-      var isoString = '2010-09-03T05:05:08Z';
+      var isoString = '2010-09-03T05:05:08.872Z';
       expect(filter.date(isoString)).
           toEqual(angular.String.toDate(isoString).toLocaleDateString());
     });

@@ -211,10 +211,10 @@ var angularString = {
   'toDate':function(string){
     var match;
     if (typeof string == 'string' &&
-        (match = string.match(/^(\d\d\d\d)-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)Z$/))){
+        (match = string.match(/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)\.(\d{3})Z$/))){
       var date = new Date(0);
       date.setUTCFullYear(match[1], match[2] - 1, match[3]);
-      date.setUTCHours(match[4], match[5], match[6], 0);
+      date.setUTCHours(match[4], match[5], match[6], match[7]);
       return date;
     }
     return string;
@@ -223,14 +223,14 @@ var angularString = {
 
 var angularDate = {
     'toString':function(date){
-      function pad(n) { return n < 10 ? "0" + n : n; }
       return  !date ? date :
-        date.getUTCFullYear() + '-' +
-        pad(date.getUTCMonth() + 1) + '-' +
-        pad(date.getUTCDate()) + 'T' +
-        pad(date.getUTCHours()) + ':' +
-        pad(date.getUTCMinutes()) + ':' +
-        pad(date.getUTCSeconds()) + 'Z' ;
+        padNumber(date.getUTCFullYear(), 4) + '-' +
+        padNumber(date.getUTCMonth() + 1, 2) + '-' +
+        padNumber(date.getUTCDate(), 2) + 'T' +
+        padNumber(date.getUTCHours(), 2) + ':' +
+        padNumber(date.getUTCMinutes(), 2) + ':' +
+        padNumber(date.getUTCSeconds(), 2) + '.' +
+        padNumber(date.getUTCMilliseconds(), 3) + 'Z';
     }
   };
 

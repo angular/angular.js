@@ -185,18 +185,19 @@ describe('api', function(){
   it('DateToUTC', function(){
     var date = new Date("Sep 10 2003 13:02:03 GMT");
     assertEquals("date", angular.Object.typeOf(date));
-    assertEquals("2003-09-10T13:02:03Z", angular.Date.toString(date));
+    assertEquals("2003-09-10T13:02:03.000Z", angular.Date.toString(date));
     assertEquals(date.getTime(), angular.String.toDate(angular.Date.toString(date)).getTime());
   });
 
   it('UTCtoDate', function(){
-    expect(angular.String.toDate("2003-09-10T13:02:03Z")).toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+    expect(angular.String.toDate("2003-09-10T13:02:03.000Z")).
+      toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
   });
 
   it('StringFromUTC', function(){
-    var date = angular.String.toDate("2003-09-10T13:02:03Z");
+    var date = angular.String.toDate("2003-09-10T13:02:03.000Z");
     assertEquals("date", angular.Object.typeOf(date));
-    assertEquals("2003-09-10T13:02:03Z", angular.Date.toString(date));
+    assertEquals("2003-09-10T13:02:03.000Z", angular.Date.toString(date));
     assertEquals("str", angular.String.toDate("str"));
   });
 
