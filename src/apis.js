@@ -177,6 +177,8 @@ var angularArray = {
   }
 };
 
+var R_ISO8061_STR = /^(\d{4})-(\d\d)-(\d\d)(?:T(\d\d)(?:\:(\d\d)(?:\:(\d\d)(?:\.(\d{3}))?)?)?Z)?$/
+
 var angularString = {
   'quote':function(string) {
     return '"' + string.replace(/\\/g, '\\\\').
@@ -210,11 +212,10 @@ var angularString = {
    */
   'toDate':function(string){
     var match;
-    if (typeof string == 'string' &&
-        (match = string.match(/^(\d{4})-(\d\d)-(\d\d)T(\d\d):(\d\d):(\d\d)\.(\d{3})Z$/))){
+    if (isString(string) && (match = string.match(R_ISO8061_STR))){
       var date = new Date(0);
       date.setUTCFullYear(match[1], match[2] - 1, match[3]);
-      date.setUTCHours(match[4], match[5], match[6], match[7]);
+      date.setUTCHours(match[4]||0, match[5]||0, match[6]||0, match[7]||0);
       return date;
     }
     return string;
