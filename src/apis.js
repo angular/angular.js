@@ -223,14 +223,17 @@ var angularString = {
 
 var angularDate = {
     'toString':function(date){
-      return  !date ? date :
-        padNumber(date.getUTCFullYear(), 4) + '-' +
-        padNumber(date.getUTCMonth() + 1, 2) + '-' +
-        padNumber(date.getUTCDate(), 2) + 'T' +
-        padNumber(date.getUTCHours(), 2) + ':' +
-        padNumber(date.getUTCMinutes(), 2) + ':' +
-        padNumber(date.getUTCSeconds(), 2) + '.' +
-        padNumber(date.getUTCMilliseconds(), 3) + 'Z';
+      return !date ?
+                date :
+                date.toISOString ?
+                  date.toISOString() :
+                  padNumber(date.getUTCFullYear(), 4) + '-' +
+                  padNumber(date.getUTCMonth() + 1, 2) + '-' +
+                  padNumber(date.getUTCDate(), 2) + 'T' +
+                  padNumber(date.getUTCHours(), 2) + ':' +
+                  padNumber(date.getUTCMinutes(), 2) + ':' +
+                  padNumber(date.getUTCSeconds(), 2) + '.' +
+                  padNumber(date.getUTCMilliseconds(), 3) + 'Z';
     }
   };
 
