@@ -1,146 +1,144 @@
-describe('parser', function(){
-  describe('lexer', function(){
-    it('should TokenizeAString', function(){
+describe('parser', function() {
+  describe('lexer', function() {
+    it('should tokenize a string', function() {
       var tokens = lex("a.bc[22]+1.3|f:'a\\\'c':\"d\\\"e\"");
       var i = 0;
-      assertEquals(tokens[i].index, 0);
-      assertEquals(tokens[i].text, 'a.bc');
+      expect(tokens[i].index).toEqual(0);
+      expect(tokens[i].text).toEqual('a.bc');
 
       i++;
-      assertEquals(tokens[i].index, 4);
-      assertEquals(tokens[i].text, '[');
+      expect(tokens[i].index).toEqual(4);
+      expect(tokens[i].text).toEqual('[');
 
       i++;
-      assertEquals(tokens[i].index, 5);
-      assertEquals(tokens[i].text, 22);
+      expect(tokens[i].index).toEqual(5);
+      expect(tokens[i].text).toEqual(22);
 
       i++;
-      assertEquals(tokens[i].index, 7);
-      assertEquals(tokens[i].text, ']');
+      expect(tokens[i].index).toEqual(7);
+      expect(tokens[i].text).toEqual(']');
 
       i++;
-      assertEquals(tokens[i].index, 8);
-      assertEquals(tokens[i].text, '+');
+      expect(tokens[i].index).toEqual(8);
+      expect(tokens[i].text).toEqual('+');
 
       i++;
-      assertEquals(tokens[i].index, 9);
-      assertEquals(tokens[i].text, 1.3);
+      expect(tokens[i].index).toEqual(9);
+      expect(tokens[i].text).toEqual(1.3);
 
       i++;
-      assertEquals(tokens[i].index, 12);
-      assertEquals(tokens[i].text, '|');
+      expect(tokens[i].index).toEqual(12);
+      expect(tokens[i].text).toEqual('|');
 
       i++;
-      assertEquals(tokens[i].index, 13);
-      assertEquals(tokens[i].text, 'f');
+      expect(tokens[i].index).toEqual(13);
+      expect(tokens[i].text).toEqual('f');
 
       i++;
-      assertEquals(tokens[i].index, 14);
-      assertEquals(tokens[i].text, ':');
+      expect(tokens[i].index).toEqual(14);
+      expect(tokens[i].text).toEqual(':');
 
       i++;
-      assertEquals(tokens[i].index, 15);
-      assertEquals(tokens[i].string, "a'c");
+      expect(tokens[i].index).toEqual(15);
+      expect(tokens[i].string).toEqual("a'c");
 
       i++;
-      assertEquals(tokens[i].index, 21);
-      assertEquals(tokens[i].text, ':');
+      expect(tokens[i].index).toEqual(21);
+      expect(tokens[i].text).toEqual(':');
 
       i++;
-      assertEquals(tokens[i].index, 22);
-      assertEquals(tokens[i].string, 'd"e');
+      expect(tokens[i].index).toEqual(22);
+      expect(tokens[i].string).toEqual('d"e');
     });
 
-    it('should TokenizeUndefined', function(){
+    it('should tokenize undefined', function() {
       var tokens = lex("undefined");
       var i = 0;
-      assertEquals(tokens[i].index, 0);
-      assertEquals(tokens[i].text, 'undefined');
-      assertEquals(undefined, tokens[i].fn());
+      expect(tokens[i].index).toEqual(0);
+      expect(tokens[i].text).toEqual('undefined');
+      expect(undefined).toEqual(tokens[i].fn());
     });
-
-
-
-    it('should TokenizeRegExp', function(){
+    
+    it('should tokenize RegExp', function() {
       var tokens = lex("/r 1/");
       var i = 0;
-      assertEquals(tokens[i].index, 0);
-      assertEquals(tokens[i].text, 'r 1');
-      assertEquals("r 1".match(tokens[i].fn())[0], 'r 1');
+      expect(tokens[i].index).toEqual(0);
+      expect(tokens[i].text).toEqual('r 1');
+      expect("r 1".match(tokens[i].fn())[0]).toEqual('r 1');
     });
 
-    it('should QuotedString', function(){
+    it('should tokenize quoted string', function() {
       var str = "['\\'', \"\\\"\"]";
       var tokens = lex(str);
 
-      assertEquals(1, tokens[1].index);
-      assertEquals("'", tokens[1].string);
+      expect(tokens[1].index).toEqual(1);
+      expect(tokens[1].string).toEqual("'");
 
-      assertEquals(7, tokens[3].index);
-      assertEquals('"', tokens[3].string);
+      expect(tokens[3].index).toEqual(7);
+      expect(tokens[3].string).toEqual('"');
     });
 
-    it('should QuotedStringEscape', function(){
+    it('should tokenize escaped quoted string', function() {
       var str = '"\\"\\n\\f\\r\\t\\v\\u00A0"';
       var tokens = lex(str);
 
-      assertEquals('"\n\f\r\t\v\u00A0', tokens[0].string);
+      expect(tokens[0].string).toEqual('"\n\f\r\t\v\u00A0');
     });
 
-    it('should TokenizeUnicode', function(){
+    it('should tokenize unicode', function() {
       var tokens = lex('"\\u00A0"');
-      assertEquals(1, tokens.length);
-      assertEquals('\u00a0', tokens[0].string);
+      expect(tokens.length).toEqual(1);
+      expect(tokens[0].string).toEqual('\u00a0');
     });
 
-    it('should TokenizeRegExpWithOptions', function(){
+    it('should tokenize RegExp with options', function() {
       var tokens = lex("/r/g");
       var i = 0;
-      assertEquals(tokens[i].index, 0);
-      assertEquals(tokens[i].text, 'r');
-      assertEquals(tokens[i].flags, 'g');
-      assertEquals("rr".match(tokens[i].fn()).length, 2);
+      expect(tokens[i].index).toEqual(0);
+      expect(tokens[i].text).toEqual('r');
+      expect(tokens[i].flags).toEqual('g');
+      expect("rr".match(tokens[i].fn()).length).toEqual(2);
     });
 
-    it('should TokenizeRegExpWithEscape', function(){
+    it('should tokenize RegExp with escaping', function() {
       var tokens = lex("/\\/\\d/");
       var i = 0;
-      assertEquals(tokens[i].index, 0);
-      assertEquals(tokens[i].text, '\\/\\d');
-      assertEquals("/1".match(tokens[i].fn())[0], '/1');
+      expect(tokens[i].index).toEqual(0);
+      expect(tokens[i].text).toEqual('\\/\\d');
+      expect("/1".match(tokens[i].fn())[0]).toEqual('/1');
     });
 
-    it('should IgnoreWhitespace', function(){
+    it('should ignore whitespace', function() {
       var tokens = lex("a \t \n \r b");
-      assertEquals(tokens[0].text, 'a');
-      assertEquals(tokens[1].text, 'b');
+      expect(tokens[0].text).toEqual('a');
+      expect(tokens[1].text).toEqual('b');
     });
 
-    it('should Relation', function(){
+    it('should tokenize relation', function() {
       var tokens = lex("! == != < > <= >=");
-      assertEquals(tokens[0].text, '!');
-      assertEquals(tokens[1].text, '==');
-      assertEquals(tokens[2].text, '!=');
-      assertEquals(tokens[3].text, '<');
-      assertEquals(tokens[4].text, '>');
-      assertEquals(tokens[5].text, '<=');
-      assertEquals(tokens[6].text, '>=');
+      expect(tokens[0].text).toEqual('!');
+      expect(tokens[1].text).toEqual('==');
+      expect(tokens[2].text).toEqual('!=');
+      expect(tokens[3].text).toEqual('<');
+      expect(tokens[4].text).toEqual('>');
+      expect(tokens[5].text).toEqual('<=');
+      expect(tokens[6].text).toEqual('>=');
     });
 
-    it('should Statements', function(){
+    it('should tokenize statements', function() {
       var tokens = lex("a;b;");
-      assertEquals(tokens[0].text, 'a');
-      assertEquals(tokens[1].text, ';');
-      assertEquals(tokens[2].text, 'b');
-      assertEquals(tokens[3].text, ';');
+      expect(tokens[0].text).toEqual('a');
+      expect(tokens[1].text).toEqual(';');
+      expect(tokens[2].text).toEqual('b');
+      expect(tokens[3].text).toEqual(';');
     });
 
-    it('should Number', function(){
+    it('should tokenize number', function() {
       var tokens = lex("0.5");
       expect(tokens[0].text).toEqual(0.5);
     });
 
-    it('should NegativeNumber', function(){
+    it('should tokenize negative number', function() {
       var value = createScope().$eval("-0.5");
       expect(value).toEqual(-0.5);
 
@@ -148,7 +146,7 @@ describe('parser', function(){
       expect(value).toEqual({a:-0.5});
     });
 
-    it('should NumberExponent', function(){
+    it('should tokenize number with exponent', function() {
       var tokens = lex("0.5E-10");
       expect(tokens[0].text).toEqual(0.5E-10);
       expect(createScope().$eval("0.5E-10")).toEqual(0.5E-10);
@@ -157,308 +155,270 @@ describe('parser', function(){
       expect(tokens[0].text).toEqual(0.5E+10);
     });
 
-    it('should NumberExponentInvalid', function(){
-      assertThrows('Lexer found invalid exponential value "0.5E-"', function(){
+    it('should throws exception for invalid exponent', function() {
+      expect(function() {
         lex("0.5E-");
-      });
-      assertThrows('Lexer found invalid exponential value "0.5E-A"', function(){
+      }).toThrow('Lexer found invalid exponential value "0.5E-"');
+      
+      expect(function() {
         lex("0.5E-A");
-      });
+      }).toThrow('Lexer found invalid exponential value "0.5E-A"');
     });
 
-    it('should NumberStartingWithDot', function(){
+    it('should tokenize number starting with a dot', function() {
       var tokens = lex(".5");
       expect(tokens[0].text).toEqual(0.5);
     });
 
-    it('should throw error on invalid unicode', function(){
-      assertThrows("Lexer Error: Invalid unicode escape [\\u1''b] starting at column '0' in expression ''\\u1''bla''.", function(){
+    it('should throw error on invalid unicode', function() {
+      expect(function() {
         lex("'\\u1''bla'");
-      });
+      }).toThrow("Lexer Error: Invalid unicode escape [\\u1''b] starting at column '0' in expression ''\\u1''bla''.");
     });
-
+  });
+  
+  var scope;
+  beforeEach(function () {
+    scope = createScope();
   });
 
-  it('should parse Expressions', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("-1"), -1);
-    assertEquals(scope.$eval("1 + 2.5"), 3.5);
-    assertEquals(scope.$eval("1 + -2.5"), -1.5);
-    assertEquals(scope.$eval("1+2*3/4"), 1+2*3/4);
-    assertEquals(scope.$eval("0--1+1.5"), 0- -1 + 1.5);
-    assertEquals(scope.$eval("-0--1++2*-3/-4"), -0- -1+ +2*-3/-4);
-    assertEquals(scope.$eval("1/2*3"), 1/2*3);
+  it('should parse expressions', function() {
+    expect(scope.$eval("-1")).toEqual(-1);
+    expect(scope.$eval("1 + 2.5")).toEqual(3.5);
+    expect(scope.$eval("1 + -2.5")).toEqual(-1.5);
+    expect(scope.$eval("1+2*3/4")).toEqual(1+2*3/4);
+    expect(scope.$eval("0--1+1.5")).toEqual(0- -1 + 1.5);
+    expect(scope.$eval("-0--1++2*-3/-4")).toEqual(-0- -1+ +2*-3/-4);
+    expect(scope.$eval("1/2*3")).toEqual(1/2*3);
   });
 
-  it('should parse Comparison', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("false"), false);
-    assertEquals(scope.$eval("!true"), false);
-    assertEquals(scope.$eval("1==1"), true);
-    assertEquals(scope.$eval("1!=2"), true);
-    assertEquals(scope.$eval("1<2"), true);
-    assertEquals(scope.$eval("1<=1"), true);
-    assertEquals(scope.$eval("1>2"), 1>2);
-    assertEquals(scope.$eval("2>=1"), 2>=1);
-
-    assertEquals(true === 2<3, scope.$eval("true==2<3"));
-
+  it('should parse comparison', function() {
+    expect(scope.$eval("false")).toBeFalsy();
+    expect(scope.$eval("!true")).toBeFalsy();
+    expect(scope.$eval("1==1")).toBeTruthy();
+    expect(scope.$eval("1!=2")).toBeTruthy();
+    expect(scope.$eval("1<2")).toBeTruthy();
+    expect(scope.$eval("1<=1")).toBeTruthy();
+    expect(scope.$eval("1>2")).toEqual(1>2);
+    expect(scope.$eval("2>=1")).toEqual(2>=1);
+    expect(scope.$eval("true==2<3")).toEqual(true === 2<3);
   });
 
-  it('should parse Logical', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("0&&2"), 0&&2);
-    assertEquals(scope.$eval("0||2"), 0||2);
-    assertEquals(scope.$eval("0||1&&2"), 0||1&&2);
+  it('should parse logical', function() {
+    expect(scope.$eval("0&&2")).toEqual(0&&2);
+    expect(scope.$eval("0||2")).toEqual(0||2);
+    expect(scope.$eval("0||1&&2")).toEqual(0||1&&2);
   });
 
-  it('should parse String', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("'a' + 'b c'"), "ab c");
+  it('should parse string', function() {
+    expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse Filters', function(){
+  it('should parse filters', function(){
     angular.filter.substring = function(input, start, end) {
       return input.substring(start, end);
     };
 
-    angular.filter.upper = {_case:function(input) {
+    angular.filter.upper = {_case: function(input) {
       return input.toUpperCase();
     }};
-    var scope = createScope();
-    try {
+
+    expect(function() {
       scope.$eval("1|nonExistant");
-      fail();
-    } catch (e) {
-      assertEquals(e, "Function 'nonExistant' at column '3' in '1|nonExistant' is not defined.");
-    }
+    }).toThrow("Function 'nonExistant' at column '3' in '1|nonExistant' is not defined.");
+    
     scope.$set('offset', 3);
-    assertEquals(scope.$eval("'abcd'|upper._case"), "ABCD");
-    assertEquals(scope.$eval("'abcd'|substring:1:offset"), "bc");
-    assertEquals(scope.$eval("'abcd'|substring:1:3|upper._case"), "BC");
+    expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
+    expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
+    expect(scope.$eval("'abcd'|substring:1:3|upper._case")).toEqual("BC");
   });
 
-  it('should parse ScopeAccess', function(){
-    var scope = createScope();
+  it('should access scope', function() {
     scope.$set('a', 123);
     scope.$set('b.c', 456);
-    assertEquals(scope.$eval("a", scope), 123);
-    assertEquals(scope.$eval("b.c", scope), 456);
-    assertEquals(scope.$eval("x.y.z", scope), undefined);
+    expect(scope.$eval("a", scope)).toEqual(123);
+    expect(scope.$eval("b.c", scope)).toEqual(456);
+    expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
   });
 
-  it('should parse Grouping', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("(1+2)*3"), (1+2)*3);
+  it('should evaluate grouped expressions', function() {
+    expect(scope.$eval("(1+2)*3")).toEqual((1+2)*3);
   });
 
-  it('should parse Assignments', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("a=12"), 12);
-    assertEquals(scope.$get("a"), 12);
+  it('should evaluate assignments', function() {
+    expect(scope.$eval("a=12")).toEqual(12);
+    expect(scope.$get("a")).toEqual(12);
 
     scope = createScope();
-    assertEquals(scope.$eval("x.y.z=123;"), 123);
-    assertEquals(scope.$get("x.y.z"), 123);
+    expect(scope.$eval("x.y.z=123;")).toEqual(123);
+    expect(scope.$get("x.y.z")).toEqual(123);
 
-    assertEquals(234, scope.$eval("a=123; b=234"));
-    assertEquals(123, scope.$get("a"));
-    assertEquals(234, scope.$get("b"));
+    expect(scope.$eval("a=123; b=234")).toEqual(234);
+    expect(scope.$get("a")).toEqual(123);
+    expect(scope.$get("b")).toEqual(234);
   });
 
-  it('should parse FunctionCallsNoArgs', function(){
-    var scope = createScope();
+  it('should evaluate function call without arguments', function() {
     scope.$set('const', function(a,b){return 123;});
-    assertEquals(scope.$eval("const()"), 123);
+    expect(scope.$eval("const()")).toEqual(123);
   });
 
-  it('should parse FunctionCalls', function(){
-    var scope = createScope();
-    scope.$set('add', function(a,b){
+  it('should evaluate function call with arguments', function() {
+    scope.$set('add', function(a,b) {
       return a+b;
     });
-    assertEquals(3, scope.$eval("add(1,2)"));
+    expect(scope.$eval("add(1,2)")).toEqual(3);
   });
 
-  it('should parse CalculationBug', function(){
-    var scope = createScope();
+  it('should evaluate multiplication and division', function() {
     scope.$set('taxRate', 8);
     scope.$set('subTotal', 100);
-    assertEquals(scope.$eval("taxRate / 100 * subTotal"), 8);
-    assertEquals(scope.$eval("subTotal * taxRate / 100"), 8);
+    expect(scope.$eval("taxRate / 100 * subTotal")).toEqual(8);
+    expect(scope.$eval("subTotal * taxRate / 100")).toEqual(8);
   });
 
-  it('should parse Array', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("[]").length, 0);
-    assertEquals(scope.$eval("[1, 2]").length, 2);
-    assertEquals(scope.$eval("[1, 2]")[0], 1);
-    assertEquals(scope.$eval("[1, 2]")[1], 2);
+  it('should evaluate array', function() {
+    expect(scope.$eval("[]").length).toEqual(0);
+    expect(scope.$eval("[1, 2]").length).toEqual(2);
+    expect(scope.$eval("[1, 2]")[0]).toEqual(1);
+    expect(scope.$eval("[1, 2]")[1]).toEqual(2);
   });
 
-  it('should parse ArrayAccess', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("[1][0]"), 1);
-    assertEquals(scope.$eval("[[1]][0][0]"), 1);
-    assertEquals(scope.$eval("[].length"), 0);
-    assertEquals(scope.$eval("[1, 2].length"), 2);
+  it('should evaluate array access', function() {
+    expect(scope.$eval("[1][0]")).toEqual(1);
+    expect(scope.$eval("[[1]][0][0]")).toEqual(1);
+    expect(scope.$eval("[].length")).toEqual(0);
+    expect(scope.$eval("[1, 2].length")).toEqual(2);
   });
 
-  it('should parse Object', function(){
-    var scope = createScope();
-    assertEquals(toJson(scope.$eval("{}")), "{}");
-    assertEquals(toJson(scope.$eval("{a:'b'}")), '{"a":"b"}');
-    assertEquals(toJson(scope.$eval("{'a':'b'}")), '{"a":"b"}');
-    assertEquals(toJson(scope.$eval("{\"a\":'b'}")), '{"a":"b"}');
+  it('should evaluate object', function() {
+    expect(toJson(scope.$eval("{}"))).toEqual("{}");
+    expect(toJson(scope.$eval("{a:'b'}"))).toEqual('{"a":"b"}');
+    expect(toJson(scope.$eval("{'a':'b'}"))).toEqual('{"a":"b"}');
+    expect(toJson(scope.$eval("{\"a\":'b'}"))).toEqual('{"a":"b"}');
   });
 
-  it('should parse ObjectAccess', function(){
-    var scope = createScope();
-    assertEquals("WC", scope.$eval("{false:'WC', true:'CC'}[false]"));
+  it('should evaluate object access', function() {
+    expect(scope.$eval("{false:'WC', true:'CC'}[false]")).toEqual("WC");
   });
 
-  it('should parse JSON', function(){
-    var scope = createScope();
-    assertEquals(toJson(scope.$eval("[{}]")), "[{}]");
-    assertEquals(toJson(scope.$eval("[{a:[]}, {b:1}]")), '[{"a":[]},{"b":1}]');
+  it('should evaluate JSON', function() {
+    expect(toJson(scope.$eval("[{}]"))).toEqual("[{}]");
+    expect(toJson(scope.$eval("[{a:[]}, {b:1}]"))).toEqual('[{"a":[]},{"b":1}]');
   });
 
-  it('should parse MultippleStatements', function(){
-    var scope = createScope();
-    assertEquals(scope.$eval("a=1;b=3;a+b"), 4);
-    assertEquals(scope.$eval(";;1;;"), 1);
+  it('should evaluate multipple statements', function() {
+    expect(scope.$eval("a=1;b=3;a+b")).toEqual(4);
+    expect(scope.$eval(";;1;;")).toEqual(1);
   });
 
-  it('should parse ParseThrow', function(){
-    expectAsserts(1);
-    var scope = createScope();
+  it('should evaluate throw', function() {
     scope.$set('e', 'abc');
-    try {
+    
+    expect(function() {
       scope.$eval("throw e");
-    } catch(e) {
-      assertEquals(e, 'abc');
-    }
+    }).toThrow('abc');
   });
 
-  it('should parse MethodsGetDispatchedWithCorrectThis', function(){
-    var scope = createScope();
-    var C = function (){
-      this.a=123;
+  it('should evaluate object methods in correct context (this)', function() {
+    var C = function () {
+      this.a = 123;
     };
-    C.prototype.getA = function(){
+    C.prototype.getA = function() {
       return this.a;
     };
 
     scope.$set("obj", new C());
-    assertEquals(123, scope.$eval("obj.getA()"));
+    expect(scope.$eval("obj.getA()")).toEqual(123);
   });
-  it('should parse MethodsArgumentsGetCorrectThis', function(){
-    var scope = createScope();
-    var C = function (){
-      this.a=123;
+  
+  it('should evaluate methods in correct context (this) in argument', function() {
+    var C = function () {
+      this.a = 123;
     };
-    C.prototype.sum = function(value){
+    C.prototype.sum = function(value) {
       return this.a + value;
     };
-    C.prototype.getA = function(){
+    C.prototype.getA = function() {
       return this.a;
     };
 
     scope.$set("obj", new C());
-    assertEquals(246, scope.$eval("obj.sum(obj.getA())"));
+    expect(scope.$eval("obj.sum(obj.getA())")).toEqual(246);
   });
 
-  it('should parse ObjectPointsToScopeValue', function(){
-    var scope = createScope();
+  it('should evaluate objects on scope context', function() {
     scope.$set('a', "abc");
-    assertEquals("abc", scope.$eval("{a:a}").a);
+    expect(scope.$eval("{a:a}").a).toEqual("abc");
   });
 
-  it('should parse FieldAccess', function(){
-    var scope = createScope();
-    var fn = function(){
-        return {name:'misko'};
-      };
-    scope.$set('a', fn);
-    assertEquals("misko", scope.$eval("a().name"));
+  it('should evaluate field access on function call result', function() {
+    scope.$set('a', function() {
+      return {name:'misko'};
+    });
+    expect(scope.$eval("a().name")).toEqual("misko");
   });
 
-  it('should parse ArrayIndexBug', function () {
-    var scope = createScope();
+  it('should evaluate field access after array access', function () {
     scope.$set('items', [{}, {name:'misko'}]);
-
-    assertEquals("misko", scope.$eval('items[1].name'));
+    expect(scope.$eval('items[1].name')).toEqual("misko");
   });
 
-  it('should parse ArrayAssignment', function () {
-    var scope = createScope();
+  it('should evaluate array assignment', function() {
     scope.$set('items', []);
 
-    assertEquals("abc", scope.$eval('items[1] = "abc"'));
-    assertEquals("abc", scope.$eval('items[1]'));
+    expect(scope.$eval('items[1] = "abc"')).toEqual("abc");
+    expect(scope.$eval('items[1]')).toEqual("abc");
 //    Dont know how to make this work....
-//    assertEquals("moby", scope.$eval('books[1] = "moby"'));
-//    assertEquals("moby", scope.$eval('books[1]'));
+//    expect(scope.$eval('books[1] = "moby"')).toEqual("moby");
+//    expect(scope.$eval('books[1]')).toEqual("moby");
   });
 
-  it('should parse FiltersCanBeGrouped', function () {
-    var scope = createScope({name:'MISKO'});
-    assertEquals('misko', scope.$eval('n = (name|lowercase)'));
-    assertEquals('misko', scope.$eval('n'));
+  it('should evaluate grouped filters', function() {
+    scope.name = 'MISKO';
+    expect(scope.$eval('n = (name|lowercase)')).toEqual('misko');
+    expect(scope.$eval('n')).toEqual('misko');
   });
 
-  it('should parse Remainder', function () {
-    var scope = createScope();
-    assertEquals(1, scope.$eval('1%2'));
+  it('should evaluate remainder', function() {
+    expect(scope.$eval('1%2')).toEqual(1);
   });
 
-  it('should parse SumOfUndefinedIsNotUndefined', function () {
-    var scope = createScope();
-    assertEquals(1, scope.$eval('1+undefined'));
-    assertEquals(1, scope.$eval('undefined+1'));
+  it('should evaluate sum with undefined', function() {
+    expect(scope.$eval('1+undefined')).toEqual(1);
+    expect(scope.$eval('undefined+1')).toEqual(1);
   });
 
-  it('should parse MissingThrowsError', function(){
-    var scope = createScope();
-    try {
+  it('should throw exception on non-closed bracket', function() {
+    expect(function() {
       scope.$eval('[].count(');
-      fail();
-    } catch (e) {
-      assertEquals('Unexpected end of expression: [].count(', e);
-    }
+    }).toThrow('Unexpected end of expression: [].count(');
   });
 
-  it('should parse DoubleNegationBug', function (){
-    var scope = createScope();
-    assertEquals(true, scope.$eval('true'));
-    assertEquals(false, scope.$eval('!true'));
-    assertEquals(true, scope.$eval('!!true'));
-    assertEquals('a', scope.$eval('{true:"a", false:"b"}[!!true]'));
+  it('should evaluate double negation', function() {
+    expect(scope.$eval('true')).toBeTruthy();
+    expect(scope.$eval('!true')).toBeFalsy();
+    expect(scope.$eval('!!true')).toBeTruthy();
+    expect(scope.$eval('{true:"a", false:"b"}[!!true]')).toEqual('a');
   });
 
-  it('should parse NegationBug', function () {
-    var scope = createScope();
-    assertEquals(!false || true, scope.$eval("!false || true"));
-    assertEquals(!11 == 10, scope.$eval("!11 == 10"));
-    assertEquals(12/6/2, scope.$eval("12/6/2"));
+  it('should evaluate negation', function() {
+    expect(scope.$eval("!false || true")).toEqual(!false || true);
+    expect(scope.$eval("!11 == 10")).toEqual(!11 == 10);
+    expect(scope.$eval("12/6/2")).toEqual(12/6/2);
   });
 
-  it('should parse BugStringConfusesparser', function(){
-    var scope = createScope();
-    assertEquals('!', scope.$eval('suffix = "!"'));
+  it('should evaluate exclamation mark', function() {
+    expect(scope.$eval('suffix = "!"')).toEqual('!');
   });
 
-  it('should parse ParsingBug', function () {
-    var scope = createScope();
-    assertEquals({a: "-"}, scope.$eval("{a:'-'}"));
+  it('should evaluate minus', function() {
+    expect(scope.$eval("{a:'-'}")).toEqual({a: "-"});
   });
 
-  it('should parse Undefined', function () {
-    var scope = createScope();
-    assertEquals(undefined, scope.$eval("undefined"));
-    assertEquals(undefined, scope.$eval("a=undefined"));
-    assertEquals(undefined, scope.$get("a"));
+  it('should evaluate undefined', function() {
+    expect(scope.$eval("undefined")).not.toBeDefined();
+    expect(scope.$eval("a=undefined")).not.toBeDefined();
+    expect(scope.$get("a")).not.toBeDefined();
   });
 });
-
-
