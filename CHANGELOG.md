@@ -2,6 +2,7 @@
 
 ### Api
 - date filter now accepts strings that angular.String.toDate can convert to Date objects
+- angular.String.toDate supports ISO8061 formated strings with all time fractions being optional
 
 ### Breaking changes
 - we now support ISO 8601 extended format datetime strings (YYYY-MM-DDTHH:mm:ss.SSSZ) as defined

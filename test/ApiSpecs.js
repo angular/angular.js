@@ -190,8 +190,25 @@ describe('api', function(){
   });
 
   it('UTCtoDate', function(){
+    //full ISO8061
     expect(angular.String.toDate("2003-09-10T13:02:03.000Z")).
       toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+
+    //no millis
+    expect(angular.String.toDate("2003-09-10T13:02:03Z")).
+      toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+
+    //no seconds
+    expect(angular.String.toDate("2003-09-10T13:02Z")).
+      toEqual(new Date("Sep 10 2003 13:02:00 GMT"));
+
+    //no minutes
+    expect(angular.String.toDate("2003-09-10T13Z")).
+      toEqual(new Date("Sep 10 2003 13:00:00 GMT"));
+
+    //no time
+    expect(angular.String.toDate("2003-09-10")).
+      toEqual(new Date("Sep 10 2003 00:00:00 GMT"));
   });
 
   it('StringFromUTC', function(){
