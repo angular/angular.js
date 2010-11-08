@@ -169,7 +169,7 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200‒1200)
  *
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
- *    number) or ISO 8601 string (yyyy-MM-ddTHH:mm:ssZ).
+ *    number) or ISO 8601 extended datetime string (yyyy-MM-ddTHH:mm:ss.SSSZ).
  * @param {string=} format Formatting rules. If not specified, Date#toLocaleDateString is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *

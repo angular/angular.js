@@ -10,8 +10,8 @@ describe('TzDate', function() {
   });
 
   it('should take dateString as constructor argument', function() {
-    expect(new TzDate(0, '1970-01-01T00:00:00Z').getTime()).toBe(0);
-    expect(new TzDate(0, '2010-09-03T23:05:08Z').getTime()).toBe(1283555108000);
+    expect(new TzDate(0, '1970-01-01T00:00:00.000Z').getTime()).toBe(0);
+    expect(new TzDate(0, '2010-09-03T23:05:08.023Z').getTime()).toBe(1283555108023);
   });
 
 
@@ -88,7 +88,7 @@ describe('TzDate', function() {
 
 
   it('should create a date representing new year in Bratislava', function() {
-    var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00Z');
+    var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00.000Z');
     expect(newYearInBratislava.getTimezoneOffset()).toBe(-60);
     expect(newYearInBratislava.getFullYear()).toBe(2010);
     expect(newYearInBratislava.getMonth()).toBe(0);
@@ -100,7 +100,7 @@ describe('TzDate', function() {
 
   it('should delegate all the UTC methods to the original UTC Date object', function() {
     //from when created from string
-    var date1 = new TzDate(-1, '2009-12-31T23:00:00Z');
+    var date1 = new TzDate(-1, '2009-12-31T23:00:00.000Z');
     expect(date1.getUTCFullYear()).toBe(2009);
     expect(date1.getUTCMonth()).toBe(11);
     expect(date1.getUTCDate()).toBe(31);
@@ -110,7 +110,7 @@ describe('TzDate', function() {
 
 
     //from when created from millis
-    var date2 = new TzDate(-1, angular.String.toDate('2009-12-31T23:00:00Z').getTime());
+    var date2 = new TzDate(-1, angular.String.toDate('2009-12-31T23:00:00.000Z').getTime());
     expect(date2.getUTCFullYear()).toBe(2009);
     expect(date2.getUTCMonth()).toBe(11);
     expect(date2.getUTCDate()).toBe(31);

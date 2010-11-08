@@ -3,6 +3,14 @@
 ### Api
 - date filter now accepts strings that angular.String.toDate can convert to Date objects
 
+### Breaking changes
+- we now support ISO 8601 extended format datetime strings (YYYY-MM-DDTHH:mm:ss.SSSZ) as defined
+  in EcmaScript 5 throughout angular. This means that the following apis switched from
+  YYYY-MM-DDTHH:mm:ssZ to YYYY-MM-DDTHH:mm:ss.SSSZ (note the added millis) when representing dates:
+  - angular.Date.toString
+  - angular.String.fromDate
+  - JSON serialization and deserialization (used by json filter, $xhr and $resource)
+
 
 # <angular/> 0.9.2 faunal-mimicry (2010-11-03) #
 

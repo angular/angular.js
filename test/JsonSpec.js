@@ -62,9 +62,9 @@ describe('json', function(){
   });
 
   it('should serialize UTC dates', function() {
-    var date = angular.String.toDate("2009-10-09T01:02:03Z");
-    expect(toJson(date)).toEqual('"2009-10-09T01:02:03Z"');
-    expect(fromJson('"2009-10-09T01:02:03Z"').getTime()).toEqual(date.getTime());
+    var date = angular.String.toDate("2009-10-09T01:02:03.027Z");
+    expect(toJson(date)).toEqual('"2009-10-09T01:02:03.027Z"');
+    expect(fromJson('"2009-10-09T01:02:03.027Z"').getTime()).toEqual(date.getTime());
   });
 
   it('should prevent recursion', function() {
