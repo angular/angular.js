@@ -1,91 +1,100 @@
-describe('filter', function(){
+describe('filter', function() {
 
   var filter = angular.filter;
+  
+  it('should called the filter when evaluating expression', function() {
+    var scope = createScope();
+    filter.fakeFilter = function(){};
+    spyOn(filter, 'fakeFilter');
+    
+    scope.$eval('10|fakeFilter');
+    expect(filter.fakeFilter).toHaveBeenCalledWith(10);
+    delete filter['fakeFilter'];
+  });
+  
+  it('should call filter on scope context', function() {
+    var scope = createScope();
+    scope.name = 'misko';
+    filter.fakeFilter = function() {
+      expect(this.name).toEqual('misko');
+    };
+    spyOn(filter, 'fakeFilter').andCallThrough();
+    
+    scope.$eval('10|fakeFilter');
+    expect(filter.fakeFilter).toHaveBeenCalled();
+    delete filter['fakeFilter'];
+  });
 
-  describe('Currency', function(){
-    it('should do basic filter', function(){
+  describe('currency', function() {
+    it('should do basic filter', function() {
       var html = jqLite('<span/>');
       var context = {$element:html};
       var currency = bind(context, filter.currency);
 
-      assertEquals(currency(0), '$0.00');
-      assertEquals(html.hasClass('ng-format-negative'), false);
-      assertEquals(currency(-999), '$-999.00');
-      assertEquals(html.hasClass('ng-format-negative'), true);
-      assertEquals(currency(1234.5678), '$1,234.57');
-      assertEquals(html.hasClass('ng-format-negative'), false);
+      expect(currency(0)).toEqual('$0.00');
+      expect(html.hasClass('ng-format-negative')).toBeFalsy();
+      expect(currency(-999)).toEqual('$-999.00');
+      expect(html.hasClass('ng-format-negative')).toBeTruthy();
+      expect(currency(1234.5678)).toEqual('$1,234.57');
+      expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
   });
-
-  describe('FilterThisIsContext', function(){
-    it('should do basic filter', function(){
-      expectAsserts(1);
-      var scope = createScope();
-      scope.name = 'misko';
-      filter.testFn = function () {
-        assertEquals('scope not equal', 'misko', this.name);
-      };
-      scope.$eval("0|testFn");
-      delete angular.filter['testFn'];
-    });
-  });
-
-  describe('NumberFormat', function(){
-    it('should do basic filter', function(){
+  
+  describe('number', function() {
+    it('should do basic filter', function() {
       var context = {jqElement:jqLite('<span/>')};
       var number = bind(context, filter.number);
 
-      assertEquals('0', number(0, 0));
-      assertEquals('0.00', number(0));
-      assertEquals('-999.00', number(-999));
-      assertEquals('1,234.57', number(1234.5678));
-      assertEquals('', number(Number.NaN));
-      assertEquals('1,234.57', number("1234.5678"));
-      assertEquals("", number(1/0));
+      expect(number(0, 0)).toEqual('0');
+      expect(number(0)).toEqual('0.00');
+      expect(number(-999)).toEqual('-999.00');
+      expect(number(1234.5678)).toEqual('1,234.57');
+      expect(number(Number.NaN)).toEqual('');
+      expect(number("1234.5678")).toEqual('1,234.57');
+      expect(number(1/0)).toEqual("");
     });
   });
 
-  describe('Json', function () {
-    it('should do basic filter', function(){
-      assertEquals(toJson({a:"b"}, true), filter.json.call({$element:jqLite('<div></div>')}, {a:"b"}));
+  describe('json', function () {
+    it('should do basic filter', function() {
+      expect(filter.json.call({$element:jqLite('<div></div>')}, {a:"b"})).toEqual(toJson({a:"b"}, true));
     });
   });
 
-  describe('Lowercase', function() {
-    it('should do basic filter', function(){
-      assertEquals('abc', filter.lowercase('AbC'));
-      assertEquals(null, filter.lowercase(null));
+  describe('lowercase', function() {
+    it('should do basic filter', function() {
+      expect(filter.lowercase('AbC')).toEqual('abc');
+      expect(filter.lowercase(null)).toBeNull();
     });
   });
 
-  describe('Uppercase', function() {
-    it('should do basic filter', function(){
-      assertEquals('ABC', filter.uppercase('AbC'));
-      assertEquals(null, filter.uppercase(null));
+  describe('uppercase', function() {
+    it('should do basic filter', function() {
+      expect(filter.uppercase('AbC')).toEqual('ABC');
+      expect(filter.uppercase(null)).toBeNull();
     });
   });
 
-  describe('Html', function() {
-    it('should do basic filter', function(){
+  describe('html', function() {
+    it('should do basic filter', function() {
       var html = filter.html("a<b>c</b>d");
       expect(html instanceof HTML).toBeTruthy();
       expect(html.html).toEqual("a<b>c</b>d");
     });
   });
 
-  describe('Linky', function() {
+  describe('linky', function() {
     var linky = filter.linky;
-    it('should do basic filter', function(){
-      assertEquals(
-          '<a href="http://ab/">http://ab/</a> ' +
-          '(<a href="http://a/">http://a/</a>) ' +
-          '&lt;<a href="http://a/">http://a/</a>&gt; ' +
-          '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c',
-          linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c").html);
-      assertEquals(undefined, linky(undefined));
+    it('should do basic filter', function() {
+      expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c").html).
+        toEqual('<a href="http://ab/">http://ab/</a> ' +
+                '(<a href="http://a/">http://a/</a>) ' +
+                '&lt;<a href="http://a/">http://a/</a>&gt; ' +
+                '<a href="http://1.2/v:~-123">http://1.2/v:~-123</a>. c');
+      expect(linky(undefined)).not.toBeDefined();
     });
 
-    it('should handle mailto:', function(){
+    it('should handle mailto:', function() {
       expect(linky("mailto:me@example.com").html).toEqual('<a href="mailto:me@example.com">me@example.com</a>');
       expect(linky("me@example.com").html).toEqual('<a href="mailto:me@example.com">me@example.com</a>');
       expect(linky("send email to me@example.com, but").html).
@@ -99,9 +108,8 @@ describe('filter', function(){
     var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
     var midnight = new TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
 
-
     it('should ignore falsy inputs', function() {
-      expect(filter.date(null)).toEqual(null);
+      expect(filter.date(null)).toBeNull();
       expect(filter.date('')).toEqual('');
     });
 
