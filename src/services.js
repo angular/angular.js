@@ -265,8 +265,19 @@ angularServiceInject("$location", function(browser) {
  * @name angular.service.$log
  * 
  * @description
+ * Is simple service for logging. Default implementation writes the message
+ * into the browser's console (if present).
+ * 
+ * This is useful for debugging.
  * 
  * @example
+   <p>Reload this page with open console, enter text and hit the log button...</p>
+   Message:
+   <input type="text" name="message" value="Hello World!"/>
+   <button ng:click="$log.log(message)">log</button>
+   <button ng:click="$log.warn(message)">warn</button>
+   <button ng:click="$log.info(message)">info</button>
+   <button ng:click="$log.error(message)">error</button>
  */
 angularServiceInject("$log", function($window){
   var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
@@ -284,6 +295,14 @@ angularServiceInject("$log", function($window){
  * @name angular.service.$exceptionHandler
  * 
  * @description
+ * Any uncaught exception in <angular/> is delegated to this service.
+ * The default implementation simply delegates to $log.error which logs it into
+ * the browser console.
+ * 
+ * When unit testing it is useful to have uncaught exceptions propagate
+ * to the test so the test will fail rather than silently log the exception
+ * to the browser console. For this purpose you can override this service with
+ * a simple rethrow. 
  * 
  * @example
  */
@@ -444,8 +463,48 @@ function switchRouteMatcher(on, when, dstName) {
  * @name angular.service.$route
  * 
  * @description
+ * Watches $location.hashPath and tries to map the hash to an existing route
+ * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
+ * 
+ * $route is typically used in conjunction with ng:include widget. 
  * 
  * @example
+<p>
+	This example shows how changing the URL hash causes the <tt>$route</tt>
+	to match a route against the URL, and the <tt>[[ng:include]]</tt> pulls in the partial.
+	Try changing the URL in the input box to see changes.
+</p>
+   
+<script>
+	angular.service('myApp', function($route) {
+	  $route.when('/Book/:bookId', {template:'rsrc/book.html', controller:BookCntl});
+	  $route.when('/Book/:bookId/ch/:chapterId', {template:'rsrc/chapter.html', controller:ChapterCntl});
+	  $route.onChange(function() {
+	    $route.current.scope.params = $route.current.params;
+	  });
+	}, {$inject: ['$route']});
+	
+	function BookCntl() {
+	  this.name = "BookCntl";
+	}
+	
+	function ChapterCntl() {
+	  this.name = "ChapterCntl";
+	}
+</script>
+
+Chose: 
+<a href="#/Book/Moby">Moby</a> | 
+<a href="#/Book/Moby/ch/1">Moby: Ch1</a> | 
+<a href="#/Book/Gatsby">Gatsby</a> | 
+<a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
+<input type="text" name="$location.hashPath" size="80" />
+<pre>$location={{$location}}</pre>
+<pre>$route.current.template={{$route.current.template}}</pre>
+<pre>$route.current.params={{$route.current.params}}</pre>
+<pre>$route.current.scope.name={{$route.current.scope.name}}</pre>
+<hr/>
+<ng:include src="$route.current.template" scope="$route.current.scope"/>
  */
 angularServiceInject('$route', function(location){
   var routes = {},
@@ -657,8 +716,50 @@ angularServiceInject('$xhr.cache', function($xhr){
  * @name angular.service.$resource
  * 
  * @description
+ * Is a factory which creates a resource object which lets you interact with 
+ * <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer" target="_blank">RESTful</a>
+ * server-side data sources.
+ * Resource object has action methods which provide high-level behaviors without
+ * the need to interact with the low level $xhr or XMLHttpRequest(). 
  * 
  * @example
+   <script>
+     function BuzzController($resource) {
+       this.Activity = $resource(
+         'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
+         {alt:'json', callback:'JSON_CALLBACK'},
+         {get:{method:'JSON', params:{visibility:'@self'}}, replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}}
+       );
+     }
+     
+     BuzzController.prototype = {
+       fetch: function() {
+         this.activities = this.Activity.get({userId:this.userId});
+       },
+       expandReplies: function(activity) {
+         activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
+       }
+     };
+     BuzzController.$inject = ['$resource'];
+   </script>
+
+   <div ng:controller="BuzzController">
+     <input name="userId" value="googlebuzz"/>
+     <button ng:click="fetch()">fetch</button>
+     <hr/>
+     <div ng:repeat="item in activities.data.items">
+       <h1 style="font-size: 15px;">
+	       <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+	       <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+	       <a href="#" ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
+       </h1>
+       {{item.object.content | html}}
+       <div ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+         <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+         <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
+       </div>
+     </div>
+   </div>
  */
 angularServiceInject('$resource', function($xhr){
   var resource = new ResourceFactory($xhr);
