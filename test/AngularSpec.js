@@ -255,6 +255,20 @@ describe('angularJsConfig', function() {
   });
 
 
+  it('should extract angular autobind config from the script hashpath attributes', function() {
+    var doc = { getElementsByTagName: function(tagName) {
+                  expect(lowercase(tagName)).toEqual('script');
+                  return [{nodeName: 'SCRIPT',
+                           src: 'angularjs/angular.js#autobind'}];
+               }};
+
+    expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
+                                          autobind: true,
+                                          ie_compat: 'angularjs/angular-ie-compat.js',
+                                          ie_compat_id: 'ng-ie-compat'});
+  });
+
+
   it("should default to versioned ie-compat file if angular file is versioned", function() {
     var doc = { getElementsByTagName: function(tagName) {
                   expect(lowercase(tagName)).toEqual('script');
