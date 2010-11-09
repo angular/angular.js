@@ -266,6 +266,26 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('div').attr('class')).toEqual('bam');
       });
 
+      it('should get css', function() {
+        doc.append('<div id="test" style="border: 1px solid red"></div>');
+        $root.dsl.element('#test').css('border');
+        expect($root.futureResult).toMatch(/red/);
+      });
+
+      it('should set css', function() {
+        doc.append('<div id="test" style="border: 1px solid red"></div>');
+        $root.dsl.element('#test').css('border', '1px solid green');
+        expect(doc.find('#test').css('border')).toMatch(/green/);
+      });
+
+      it('should add all jQuery key/value methods', function() {
+        var METHODS = ['css', 'attr'];
+        var chain = $root.dsl.element('input');
+        angular.foreach(METHODS, function(name) {
+          expect(angular.isFunction(chain[name])).toBeTruthy();
+        });
+      });
+
       it('should get val', function() {
         doc.append('<input value="bar">');
         $root.dsl.element('input').val();
