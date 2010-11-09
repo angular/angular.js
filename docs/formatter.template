@@ -1,0 +1,24 @@
+<h1><tt>{{name}}</tt></h1>
+<h2>Description</h2>
+{{{description}}}
+
+<h2>Usage</h2>
+<h3>In HTML Template Binding</h3>
+<tt>
+  &lt;input type="text" ng:format="{{shortName}}"&gt;
+</tt>
+<h3>In JavaScript</h3>
+<tt ng:non-bindable>
+var userInputString = angular.formatter.{{shortName}}.format(modelValue);<br/>
+var modelValue = angular.formatter.{{shortName}}.parse(userInputString);
+</tt>
+
+<h3>Returns</h3>
+{{{returns}}}
+
+<h3>CSS</h3>
+{{{css}}}
+
+<WIKI:SOURCE style="display:block;">
+{{{example}}}
+</WIKI:SOURCE>
