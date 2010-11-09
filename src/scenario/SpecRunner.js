@@ -111,6 +111,7 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
       $document.elements = function(selector) {
         var args = Array.prototype.slice.call(arguments, 1);
         selector = (self.selector || '') + ' ' + (selector || '');
+        selector = _jQuery.trim(selector) || '*';
         angular.foreach(args, function(value, index) {
           selector = selector.replace('$' + (index + 1), value);
         });
