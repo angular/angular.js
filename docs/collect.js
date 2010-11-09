@@ -144,6 +144,11 @@ function markdownNoP(text) {
   return lines.join('\n');
 }
 
+function requiresTag(doc, name, value) {
+  doc.requires = doc.requires || [];
+  doc.requires.push({name: value});
+}
+
 var TAG = {
   ngdoc: valueTag,
   example: escapedHtmlTag,
@@ -185,7 +190,8 @@ var TAG = {
       throw "[" + doc.raw.file + ":" + doc.raw.line +
             "]: @param must be in format '{type} name=value description' got: " + value;
     }
-  }
+  },
+  requires: requiresTag
 };
 
 function parseNgDoc(doc){

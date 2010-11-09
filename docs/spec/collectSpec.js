@@ -41,6 +41,18 @@ describe('collect', function(){
       });
     });
     
+    describe('@requires', function() {
+      it('should parse more @requires tag into array', function() {
+        TAG.requires(doc, 'requires', '$service');
+        TAG.requires(doc, 'requires', '$another');
+        
+        expect(doc.requires).toEqual([
+          {name: '$service'},
+          {name: '$another'}
+        ]);
+      });
+    });
+    
     describe('@describe', function(){
       it('should support pre blocks', function(){
         TAG.description(doc, 'description', '<pre class="brush: xml;" ng:non-bindable>abc</pre>');
