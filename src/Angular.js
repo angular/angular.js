@@ -167,10 +167,22 @@ var _undefined        = undefined,
      * 
      * <doc:example>
      *   <doc:source>
-     *    Change me: &lt;input type="text" name="number" ng:validate="integer" value="123"&gt;
+     *     Change me: &lt;input type="text" name="number" ng:validate="integer" value="123"&gt;
      *   </doc:source>
+     *   <doc:scenario>
+     *     it('should validate the default number string', function() {
+     *       expect(element('input[name=number]').attr('class')).
+     *          not().toMatch(/ng-validation-error/);
+     *     });
+     *     it('should not validate "foo"', function() {
+     *       input('number').enter('foo');
+     *       expect(element('input[name=number]').attr('class')).
+     *          toMatch(/ng-validation-error/);
+     *     });
+     *   </doc:scenario>
      * </doc:example>
      * 
+     *
      * # Writing your own Validators
      * Writing your own validator is easy. To make a function available as a 
      * validator, just define the JavaScript function on the `angular.validator` 
@@ -187,13 +199,10 @@ var _undefined        = undefined,
      * In this example we have written a upsTrackingNo validator. 
      * It marks the input text "valid" only when the user enters a well-formed 
      * UPS tracking number.
-     * 
-     * <pre>
-     * angular.validator('upsTrackingNo', function(input, format) {
-     *  var regexp = new RegExp("^" + format.replace(/9/g, '\\d') + "$");
-     *  return input.match(regexp) ? "" : "The format must match " + format;
-     * });
-     * </pre>
+     *
+     * @css ng-validation-error
+     *   When validation fails, this css class is applied to the binding, making its borders red by
+     *   default.
      * 
      * @example
      * <script>
@@ -205,7 +214,19 @@ var _undefined        = undefined,
      * <input type="text" name="trackNo" size="40"
      *       ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'" 
      *       value="1Z 123 456 78 9012 345 6"/>
-     * 
+     *
+     * @scenario
+     * it('should validate correct UPS tracking number', function() {
+     *   expect(element('input[name=trackNo]').attr('class')).
+     *      not().toMatch(/ng-validation-error/);
+     * });
+     *
+     * it('should not validate in correct UPS tracking number', function() {
+     *   input('trackNo').enter('foo');
+     *   expect(element('input[name=trackNo]').attr('class')).
+     *      toMatch(/ng-validation-error/);
+     * });
+     *
      */
     angularValidator  = extensionMap(angular, 'validator'),
 
@@ -278,10 +299,12 @@ var _undefined        = undefined,
              return out;
            });
          </script>
-         <span ng:non-bindable="true">{{"hello"|reverse}}</span>: {{"hello"|reverse}}<br>
-         <span ng:non-bindable="true">{{"hello"|reverse:true}}</span>: {{"hello"|reverse:true}}<br>
-         <span ng:non-bindable="true">{{"hello"|reverse:true:"blue"}}</span>:
-           {{"hello"|reverse:true:"blue"}}
+
+         <input name="text" type="text" value="hello" /><br>
+         No filter: {{text}}<br>
+         Reverse: {{text|reverse}}<br>
+         Reverse + uppercase: {{text|reverse:true}}<br>
+         Reverse + uppercase + blue:  {{text|reverse:true:"blue"}}
 
      */
     angularFilter     = extensionMap(angular, 'filter'),
@@ -324,7 +347,7 @@ var _undefined        = undefined,
      * </pre>
      * 
      * @example
-     * <script>
+     * <script type="text/javascript">
      * function reverse(text) {
      *   var reversed = [];
      *   for (var i = 0; i < text.length; i++) {

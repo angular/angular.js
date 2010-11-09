@@ -23,8 +23,8 @@
      it('should update', function(){
        input('amount').enter('-1234');
        expect(binding('amount | currency')).toBe('$-1,234.00');
-       // TODO: implement
-       // expect(binding('amount')).toHaveColor('red'); //what about toHaveCssClass instead?
+       expect(element('span[ng\\:bind="amount | currency"]').attr('class')).
+          toMatch(/ng-format-negative/);
      });
  */
 angularFilter.currency = function(amount){
@@ -47,17 +47,23 @@ angularFilter.currency = function(amount){
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
-     <span ng:non-bindable>{{1234.56789 | number}}</span>: {{1234.56789 | number}}<br/>
-     <span ng:non-bindable>{{1234.56789 | number:0}}</span>: {{1234.56789 | number:0}}<br/>
-     <span ng:non-bindable>{{1234.56789 | number:2}}</span>: {{1234.56789 | number:2}}<br/>
-     <span ng:non-bindable>{{-1234.56789 | number:4}}</span>: {{-1234.56789 | number:4}}
- *
+     Enter number: <input name='val' value='1234.56789' /><br/>
+     Default formatting: {{val | number}}<br/>
+     No fractions: {{val | number:0}}<br/>
+     Negative number: {{-val | number:4}}
+
  * @scenario
      it('should format numbers', function(){
-       expect(binding('1234.56789 | number')).toBe('1,234.57');
-       expect(binding('1234.56789 | number:0')).toBe('1,235');
-       expect(binding('1234.56789 | number:2')).toBe('1,234.57');
-       expect(binding('-1234.56789 | number:4')).toBe('-1,234.5679');
+       expect(binding('val | number')).toBe('1,234.57');
+       expect(binding('val | number:0')).toBe('1,235');
+       expect(binding('-val | number:4')).toBe('-1,234.5679');
+     });
+
+     it('should update', function(){
+       input('val').enter('3374.333');
+       expect(binding('val | number')).toBe('3,374.33');
+       expect(binding('val | number:0')).toBe('3,374');
+       expect(binding('-val | number:4')).toBe('-3,374.3330');
      });
  */
 angularFilter.number = function(number, fractionSize){
@@ -238,12 +244,19 @@ angularFilter.date = function(date, format) {
  *
  * @css ng-monospace Always applied to the encapsulating element.
  *
- * @example
-     <span ng:non-bindable>{{ {a:1, b:[]} | json }}</span>: <pre>{{ {a:1, b:[]} | json }}</pre>
+ * @example:
+     <input type="text" name="objTxt" value="{a:1, b:[]}"
+            ng:eval="obj = $eval(objTxt)"/>
+     <pre>{{ obj | json }}</pre>
  *
  * @scenario
      it('should jsonify filtered objects', function() {
-       expect(binding('{{ {a:1, b:[]} | json')).toBe('{\n  "a":1,\n  "b":[]}');
+       expect(binding('obj | json')).toBe('{\n  "a":1,\n  "b":[]}');
+     });
+
+     it('should update', function() {
+       input('objTxt').enter('[1, 2, 3]');
+       expect(binding('obj | json')).toBe('[1,2,3]');
      });
  *
  */
@@ -401,8 +414,8 @@ and one more: ftp://127.0.0.1/.</textarea>
          <td><div ng:bind="snippet"></div></td>
        </tr>
      </table>
- *
- * @scenario
+
+   @scenario
      it('should linkify the snippet with urls', function(){
        expect(using('#linky-filter').binding('snippet | linky')).
          toBe('Pretty text with some links:\n' +

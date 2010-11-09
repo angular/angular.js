@@ -321,16 +321,6 @@ extend(angularValidator, {
    * 
    * @css ng-input-indicator-wait, ng-validation-error
    * 
-   * @exampleDescription
-   * <pre>
-   * function myValidator (inputToValidate, validationDone) {
-   *  // simulate delayed response, validate on even input length
-   *  setTimeout(function(){
-   *    validationDone(inputToValidate.length % 2);
-   *  }, 500);
-   * };
-   * </pre>
-   * 
    * @example
    * <script>
    *   function myValidator(inputToValidate, validationDone) {
