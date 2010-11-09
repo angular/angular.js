@@ -58,6 +58,16 @@ describe('collect', function(){
 
   });
   
+  describe('trim', function(){
+    var trim = collect.trim;
+    it('should remove leading/trailing space', function(){
+      expect(trim('  \nabc\n  ')).toEqual('abc');
+    });
+    
+    it('should remove leading space on every line', function(){
+      expect(trim('\n 1\n  2\n   3\n')).toEqual('1\n 2\n  3');
+    });
+  });
   
 });
 

@@ -12,13 +12,21 @@
   <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" type="text/css" media="screen" />
   <script type="text/javascript">
     SyntaxHighlighter['defaults'].toolbar = false;
-
-  	function DocsController() {
+    
+    DocsController.$inject = ['$location']
+  	function DocsController($location) {
   	  this.docs = NG_DOC;
   	  window.$root = this.$root;
   	  
   	  this.getUrl = function(page){
   	    return '#' + encodeURIComponent(page.name);
+  	  }
+  	  
+  	  this.getCurrentPartial = function(){
+  	    if ($location.hashPath.match(/^angular\./)) {
+  	      this.partialUrl = './' + $location.hashPath + '.html';
+  	    }
+  	    return this.partialUrl;
   	  }
   	}
   </script>
@@ -34,7 +42,7 @@
           </div>
          </div>
       </td>
-      <td valign="top"><ng:include src=" './' + $location.hashPath + '.html' "></ng:include></td>
+      <td valign="top"><ng:include src=" getCurrentPartial() "></ng:include></td>
     </tr>
   </table>
 </body>
