@@ -92,6 +92,65 @@ var _undefined        = undefined,
     angularTextMarkup = extensionMap(angular, 'markup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     angularDirective  = extensionMap(angular, 'directive'),
+
+    /**
+     * @ngdoc overview
+     * @name angular.widget
+     * @namespace Namespace for all widgets.
+     * @description
+     * # Overview
+     * Widgets allow you to create DOM elements that the browser doesn't 
+     * already understand. You create the widget in your namespace and 
+     * assign it behavior. You can only bind one widget per DOM element 
+     * (unlike directives, in which you can use any number per DOM 
+     * element). Widgets are expected to manipulate the DOM tree by 
+     * adding new elements whereas directives are expected to only modify
+     * element properties.
+     * 
+     * Widgets come in two flavors: element and attribute.
+     * 
+     * # Element Widget
+     * Let's say we would like to create a new element type in the 
+     * namespace `my` that can watch an expression and alert() the user 
+     * with each new value.
+     * 
+     * <pre>
+     * &lt;my:watch exp="name"/&gt;
+     * </pre>
+     * 
+     * You can implement `my:watch` like this:
+     * <pre>
+     * angular.widget('my:watch', function(compileElement) {
+     *   var compiler = this;
+     *   var exp = compileElement.attr('exp');
+     *   return function(linkElement) {
+     *     var currentScope = this;
+     *     currentScope.$watch(exp, function(value){
+     *       alert(value);
+     *     }};
+     *   };
+     * });
+     * </pre>
+     * 
+     * # Attribute Widget
+     * Let's implement the same widget, but this time as an attribute 
+     * that can be added to any existing DOM element.
+     * <pre>
+     * &lt;div my-watch="name"&gt;text&lt;/div&gt;
+     * </pre>
+     * You can implement `my:watch` attribute like this:
+     * <pre>
+     * angular.widget('@my:watch', function(expression, compileElement) {
+     *   var compiler = this;
+     *   return function(linkElement) {
+     *     var currentScope = this;
+     *     currentScope.$watch(expression, function(value){
+     *       alert(value);
+     *     });
+     *   };
+     * });
+     * </pre>
+     */
     angularWidget     = extensionMap(angular, 'widget', lowercase),
     
     /**
@@ -224,6 +283,79 @@ var _undefined        = undefined,
 
      */
     angularFilter     = extensionMap(angular, 'filter'),
+    /**
+     * @ngdoc overview
+     * @name angular.formatter
+     * @namespace Namespace for all formats.
+     * @description
+     * # Overview
+     * The formatters are responsible for translating user readable text in an input widget to a
+     * data model stored in an application.
+     * 
+     * # Writting your own Fromatter
+     * Writing your own formatter is easy. Just register a pair of JavaScript functions with 
+     * `angular.formatter`. One function for parsing user input text to the stored form, 
+     * and one for formatting the stored data to user-visible text.
+     * 
+     * Here is an example of a "reverse" formatter: The data is stored in uppercase and in 
+     * reverse, while it is displayed in lower case and non-reversed. User edits are 
+     * automatically parsed into the internal form and data changes are automatically 
+     * formatted to the viewed form.
+     * 
+     * <pre>
+     * function reverse(text) {
+     *   var reversed = [];
+     *   for (var i = 0; i < text.length; i++) {
+     *     reversed.unshift(text.charAt(i));
+     *   }
+     *   return reversed.join('');
+     * }
+     * 
+     * angular.formatter('reverse', {
+     *   parse: function(value){
+     *     return reverse(value||'').toUpperCase();
+     *   },
+     *   format: function(value){
+     *     return reverse(value||'').toLowerCase();
+     *   }
+     * });
+     * </pre>
+     * 
+     * @example
+     * <script>
+     * function reverse(text) {
+     *   var reversed = [];
+     *   for (var i = 0; i < text.length; i++) {
+     *     reversed.unshift(text.charAt(i));
+     *   }
+     *   return reversed.join('');
+     * }
+     * 
+     * angular.formatter('reverse', {
+     *   parse: function(value){
+     *     return reverse(value||'').toUpperCase();
+     *   },
+     *   format: function(value){
+     *     return reverse(value||'').toLowerCase();
+     *   }
+     * });
+     * </script>
+     * Formatted: <input type="text" name="data" value="&lt;angular/&gt;" ng:format="reverse"/><br/>
+     * Stored: <input type="text" name="data"/><br/>
+     * <pre>{{data}}</pre>
+     * 
+     * @scenario
+     * it('should store reverse', function(){
+     *  expect(element('.example :input:first').val()).toEqual('<angular/>');
+     *  expect(element('.example :input:last').val()).toEqual('>/RALUGNA<');
+     *  
+     *  this.addFutureAction('change to XYZ', function($window, $document, done){
+     *    $document.elements('.example :input:last').val('XYZ').trigger('change');
+     *    done();
+     *  });
+     *  expect(element('.example :input:first').val()).toEqual('zyx');
+     * });
+     */
     angularFormatter  = extensionMap(angular, 'formatter'),
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
