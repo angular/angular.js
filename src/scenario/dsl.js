@@ -152,30 +152,16 @@ angular.scenario.dsl('using', function() {
 
 /**
  * Usage:
- *    binding(name) returns the value of a binding
+ *    binding(name) returns the value of the first matching binding
  */
 angular.scenario.dsl('binding', function() {
-  function contains(text, value) {
-    return value instanceof RegExp ?
-             value.test(text) :
-             text && text.indexOf(value) >= 0;
-  }
   return function(name) {
     return this.addFutureAction("select binding '" + name + "'", function($window, $document, done) {
-      var elements = $document.elements('.ng-binding');
-      for ( var i = 0; i < elements.length; i++) {
-        var element = new elements.init(elements[i]);
-        if (contains(element.attr('ng:bind'), name) ||
-            contains(element.attr('ng:bind-template'), name)) {
-          if (element.is('input, textarea')) {
-            done(null, element.val());
-          } else {
-            done(null, element.html());
-          }
-          return;
-        }
+      var values = $document.elements().bindings(name);
+      if (!values.length) {
+        return done("Binding selector '" + name + "' did not match.");
       }
-      done("Binding selector '" + name + "' did not match.");
+      done(null, values[0]);
     });
   };
 });
@@ -243,16 +229,7 @@ angular.scenario.dsl('repeater', function() {
 
   chain.column = function(binding) {
     return this.addFutureAction("repeater '" + this.label + "' column '" + binding + "'", function($window, $document, done) {
-      var values = [];
-      $document.elements().each(function() {
-        _jQuery(this).find(':visible').each(function() {
-          var element = _jQuery(this);
-          if (element.attr('ng:bind') === binding) {
-            values.push(element.text());
-          }
-        });
-      });
-      done(null, values);
+      done(null, $document.elements().bindings(binding));
     });
   };
 
@@ -262,13 +239,7 @@ angular.scenario.dsl('repeater', function() {
       var matches = $document.elements().slice(index, index + 1);
       if (!matches.length)
         return done('row ' + index + ' out of bounds');
-      _jQuery(matches[0]).find(':visible').each(function() {
-        var element = _jQuery(this);
-        if (angular.isDefined(element.attr('ng:bind'))) {
-          values.push(element.text());
-        }
-      });
-      done(null, values);
+      done(null, matches.bindings());
     });
   };
 
