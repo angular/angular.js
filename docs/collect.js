@@ -13,6 +13,7 @@ var documentation = {
 
 var SRC_DIR = "docs/";
 var OUTPUT_DIR = "build/docs/";
+var NEW_LINE = /\n\r?/;
 
 var work = callback.chain(function () {
   console.log('Parsing Angular Reference Documentation');
@@ -80,8 +81,35 @@ function mergeTemplate(template, output, doc, callback){
 }
 
 
-function trim(string) {
-  return string.replace(/^[\s\n\r]+/g, '').replace(/[\s\n\r]+$/g, '');
+function trim(text) {
+  var MAX = 9999;
+  var empty = RegExp.prototype.test.bind(/^\s*$/);
+  var lines = text.split('\n');
+  var minIndent = MAX;
+  lines.forEach(function(line){
+    minIndent = Math.min(minIndent, indent(line));
+  });
+  for ( var i = 0; i < lines.length; i++) {
+    lines[i] = lines[i].substring(minIndent);
+  }
+  // remove leading lines
+  while (empty(lines[0])) {
+    lines.shift();
+  }
+  // remove trailing
+  while (empty(lines[lines.length - 1])) {
+    lines.pop();
+  }
+  return lines.join('\n');
+  
+  function indent(line) {
+    for(var i = 0; i < line.length; i++) {
+      if (line.charAt(i) != ' ')  {
+        return i;
+      }
+    }
+    return MAX;
+  }
 }
 
 function unknownTag(doc, name) {
@@ -123,7 +151,8 @@ var TAG = {
   exampleDescription: markdownTag,
   name: function(doc, name, value) {
     doc.name = value;
-    doc.shortName  = value.split(/\./).pop();
+    var match = value.match(/^angular[\.\#](([^\.]+)\.(.*)|(.*))/);
+    doc.shortName  = match[3] || match[4];
   },
   param: function(doc, name, value){
     doc.param = doc.param || [];
@@ -153,7 +182,7 @@ function parseNgDoc(doc){
   var atName;
   var atText;
   var match;
-  doc.raw.text.split(/\n/).forEach(function(line, lineNumber){
+  doc.raw.text.split(NEW_LINE).forEach(function(line, lineNumber){
     if (match = line.match(/^\s*@(\w+)(\s+(.*))?/)) {
       // we found @name ...
       // if we have existing name
@@ -178,7 +207,7 @@ function parseNgDoc(doc){
 
 function findNgDoc(file, callback) {
   fs.readFile(file, callback.waitFor(function(err, content){
-    var lines = content.toString().split(/\n\r?/);
+    var lines = content.toString().split(NEW_LINE);
     var doc;
     var match;
     var inDoc = false;
