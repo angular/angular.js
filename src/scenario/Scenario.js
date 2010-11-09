@@ -294,3 +294,31 @@ function browserTrigger(element, type) {
   };
 })(_jQuery.fn);
 
+/**
+ * Finds all bindings with the substring match of name and returns an
+ * array of their values.
+ *
+ * @param {string} name The name to match
+ * @return {Array.<string>} String of binding values
+ */
+_jQuery.fn.bindings = function(name) {
+  function contains(text, value) {
+    return value instanceof RegExp ?
+      value.test(text) :
+      text && text.indexOf(value) >= 0;
+  }
+  var result = [];
+  this.find('.ng-binding').each(function() {
+    var element = new _jQuery(this);
+    if (!angular.isDefined(name) ||
+      contains(element.attr('ng:bind'), name) ||
+      contains(element.attr('ng:bind-template'), name)) {
+      if (element.is('input, textarea')) {
+        result.push(element.val());
+      } else {
+        result.push(element.html());
+      }
+    }
+  });
+  return result;
+};
