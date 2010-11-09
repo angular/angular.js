@@ -30,6 +30,7 @@ angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLIS
 /**
  * @ngdoc service
  * @name angular.service.$document
+ * @requires $window
  * 
  * @description
  * 
@@ -42,6 +43,7 @@ angularServiceInject("$document", function(window){
 /**
  * @ngdoc service
  * @name angular.service.$location
+ * @requires $browser
  * 
  * @description
  * Parses the browser location url and makes it available to your application.
@@ -263,6 +265,7 @@ angularServiceInject("$location", function(browser) {
 /**
  * @ngdoc service
  * @name angular.service.$log
+ * @requires $window
  * 
  * @description
  * Is simple service for logging. Default implementation writes the message
@@ -293,6 +296,7 @@ angularServiceInject("$log", function($window){
 /**
  * @ngdoc service
  * @name angular.service.$exceptionHandler
+ * @requires $log
  * 
  * @description
  * Any uncaught exception in <angular/> is delegated to this service.
@@ -315,6 +319,8 @@ angularServiceInject('$exceptionHandler', function($log){
 /**
  * @ngdoc service
  * @name angular.service.$hover
+ * @requires $browser
+ * @requires $document
  * 
  * @description
  * 
@@ -461,6 +467,7 @@ function switchRouteMatcher(on, when, dstName) {
 /**
  * @ngdoc service
  * @name angular.service.$route
+ * @requires $location
  * 
  * @description
  * Watches $location.hashPath and tries to map the hash to an existing route
@@ -551,6 +558,9 @@ angularServiceInject('$route', function(location){
 /**
  * @ngdoc service
  * @name angular.service.$xhr
+ * @requires $browser
+ * @requires $error
+ * @requires $log
  * 
  * @description
  * 
@@ -590,6 +600,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
 /**
  * @ngdoc service
  * @name angular.service.$xhr.error
+ * @requires $log
  * 
  * @description
  * 
@@ -604,6 +615,9 @@ angularServiceInject('$xhr.error', function($log){
 /**
  * @ngdoc service
  * @name angular.service.$xhr.bulk
+ * @requires $xhr
+ * @requires $xhr.error
+ * @requires $log
  * 
  * @description
  * 
@@ -662,6 +676,7 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
 /**
  * @ngdoc service
  * @name angular.service.$xhr.cache
+ * @requires $xhr
  * 
  * @description
  * 
@@ -714,6 +729,7 @@ angularServiceInject('$xhr.cache', function($xhr){
 /**
  * @ngdoc service
  * @name angular.service.$resource
+ * @requires $xhr
  * 
  * @description
  * Is a factory which creates a resource object which lets you interact with 
@@ -769,6 +785,7 @@ angularServiceInject('$resource', function($xhr){
 /**
  * @ngdoc service
  * @name angular.service.$cookies
+ * @requires $browser
  * 
  * @description
  * Provides read/write access to browser's cookies.
@@ -852,6 +869,7 @@ angularServiceInject('$cookies', function($browser) {
 /**
  * @ngdoc service
  * @name angular.service.$cookieStore
+ * @requires $cookies
  * 
  * @description
  * Provides a key-value (string-object) storage, that is backed by session cookies.

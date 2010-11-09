@@ -3,6 +3,11 @@
 {{{description}}}
 
 <h2>Dependencies</h2>
+<ul>
+  {{#requires}}
+  <li><tt>{{name}}</tt></li>
+  {{/requires}}
+</ul>
 
 <h2>Methods</h2>
 
