@@ -315,13 +315,14 @@ angular.scenario.dsl('select', function() {
  * Usage:
  *    element(selector, label).count() get the number of elements that match selector
  *    element(selector, label).click() clicks an element
- *    element(selector, label).attr(name) gets the value of an attribute
- *    element(selector, label).attr(name, value) sets the value of an attribute
- *    element(selector, label).val() gets the value (as defined by jQuery)
- *    element(selector, label).val(value) sets the value (as defined by jQuery)
  *    element(selector, label).query(fn) executes fn(selectedElements, done)
+ *    element(selector, label).{method}() gets the value (as defined by jQuery, ex. val)
+ *    element(selector, label).{method}(value) sets the value (as defined by jQuery, ex. val)
+ *    element(selector, label).{method}(key) gets the value (as defined by jQuery, ex. attr)
+ *    element(selector, label).{method}(key, value) sets the value (as defined by jQuery, ex. attr)
  */
 angular.scenario.dsl('element', function() {
+  var KEY_VALUE_METHODS = ['attr', 'css'];
   var VALUE_METHODS = [
     'val', 'text', 'html', 'height', 'innerHeight', 'outerHeight', 'width',
     'innerWidth', 'outerWidth', 'position', 'scrollLeft', 'scrollTop', 'offset'
@@ -353,21 +354,24 @@ angular.scenario.dsl('element', function() {
     });
   };
 
-  chain.attr = function(name, value) {
-    var futureName = "element '" + this.label + "' get attribute '" + name + "'";
-    if (angular.isDefined(value)) {
-      futureName = "element '" + this.label + "' set attribute '" + name + "' to " + "'" + value + "'";
-    }
-    return this.addFutureAction(futureName, function($window, $document, done) {
-      done(null, $document.elements().attr(name, value));
-    });
-  };
-
   chain.query = function(fn) {
     return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
       fn.call(this, $document.elements(), done);
     });
   };
+
+  angular.foreach(KEY_VALUE_METHODS, function(methodName) {
+    chain[methodName] = function(name, value) {
+      var futureName = "element '" + this.label + "' get " + methodName + " '" + name + "'";
+      if (angular.isDefined(value)) {
+        futureName = "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" + value + "'";
+      }
+      return this.addFutureAction(futureName, function($window, $document, done) {
+        var element = $document.elements();
+        done(null, element[methodName].call(element, name, value));
+      });
+    };
+  });
 
   angular.foreach(VALUE_METHODS, function(methodName) {
     chain[methodName] = function(value) {
