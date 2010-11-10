@@ -1,0 +1,37 @@
+<h1>{{name}}</h1>
+<h2>Description</h2>
+{{{description}}}
+
+<h2>Usage</h2>
+<h3>In HTML Template Binding</h3>
+<tt>
+  <pre>
+&lt;{{element}} {{shortName}}="{{paramFirst.name}}"&gt;
+  ...
+&lt;/{{element}}&gt;
+  </pre>
+</tt>
+
+<h3>Parameters</h3>
+<ul>
+  {{#param}}
+  <li><tt>{{name}}:{{#type}}{{type}}{{/type}}{{^type}}:*{{/type}}{{#default}}={{default}}{{/default}}</tt>: {{{description}}}</li>
+  {{/param}}
+</ul>
+{{{paramDescription}}}
+
+{{#css}}<h3>CSS</h3>{{/css}}
+{{{css}}}
+
+{{#example}}
+<h2>Example</h2>
+{{{exampleDescription}}}
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  <doc:scenario>{{{scenario}}}</doc:scenario>
+</doc:example>
+{{/example}}

@@ -1,5 +1,5 @@
 <!DOCTYPE HTML>
-<html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/">
+<html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/" ng:controller="DocsController">
 <head>
   <title>&lt;Angular/&gt; Docs</title>
   <link rel="stylesheet" href="wiki_widgets.css" type="text/css" media="screen">
@@ -11,32 +11,33 @@
   <script type="text/javascript" src="doc_widgets.js"></script>
   <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
   <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
+  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushXml.js"></script>
   <script type="text/javascript" src="docs-data.js"></script>
   <script type="text/javascript">
     SyntaxHighlighter['defaults'].toolbar = false;
 
-    DocsController.$inject = ['$location']
-  	function DocsController($location) {
+    DocsController.$inject = ['$location', '$browser']
+  	function DocsController($location, $browser) {
   	  this.docs = NG_DOC;
   	  window.$root = this.$root;
-
+  	  
   	  this.getUrl = function(page){
   	    return '#' + encodeURIComponent(page.name);
   	  };
-
-  	  this.getTitle = function() {
-        if ($location.hashPath.match(/^angular\./)) {
-          return $location.hashPath;
-        }
-        return '';
-	    };
 
   	  this.getCurrentPartial = function(){
   	    if ($location.hashPath.match(/^angular\./)) {
   	      this.partialUrl = './' + $location.hashPath + '.html';
   	    }
   	    return this.partialUrl;
-  	  };
+  	  }
+  	  
+  	  this.getTitle = function(){
+  	    if ($location.hashPath.match(/^angular\./)) {
+  	      this.partialTitle = $location.hashPath;
+  	    }
+  	    return this.partialTitle;
+  	  }
   	}
   </script>
   <style type="text/css" media="screen">
@@ -122,8 +123,9 @@
       float: right;
     }
   </style>
+  <title>&lt;angular/&gt;: {{getTitle()}}</title>
 </head>
-<body ng:controller="DocsController">
+<body>
   <div id="header">
     <h1>
       <span class="section-title">{{getTitle()}}</span>
@@ -134,7 +136,7 @@
     <div ng:repeat="(name, type) in docs.section" class="nav-section">
       <h2>{{name}}</h2>
       <ul>
-        <li ng:repeat="page in type">
+        <li ng:repeat="page in type.$orderBy('shortName')">
           <a href="{{getUrl(page)}}" ng:click="">{{page.shortName}}</a>
         </li>
       </ul>

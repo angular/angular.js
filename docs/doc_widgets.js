@@ -23,7 +23,7 @@
     var tabs = angular.element(
         '<ul class="doc-example">' +
           '<li class="doc-example-heading"><h3>Source</h3></li>' +
-          '<li class="doc-example-source" ng:non-bindable><pre class="brush: js"></pre></li>' +
+          '<li class="doc-example-source" ng:non-bindable><pre class="brush: js; brush: xml;"></pre></li>' +
           '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
           '<li class="doc-example-live">' + exampleSrc +'</li>' +
           '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
@@ -44,6 +44,6 @@
 
     return function() {
       SyntaxHighlighter.highlight();
-    }
+    };
   });
 })();

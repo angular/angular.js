@@ -17,7 +17,7 @@ var lowercase = function (value){ return isString(value) ? value.toLowerCase() :
 
 /**
  * @ngdoc
- * @name angular#uppercase
+ * @name angular.uppercase
  * @function
  *
  * @description Converts string to uppercase.
@@ -150,6 +150,21 @@ var _undefined        = undefined,
      *   };
      * });
      * </pre>
+     * 
+     * @example
+     * <script>
+     *   angular.widget('my:time', function(compileElement){
+     *     compileElement.css('display', 'block');
+     *     return function(linkElement){
+     *       function update(){
+     *         linkElement.text('Current time is: ' + new Date());
+     *         setTimeout(update, 1000);
+     *       }
+     *       update();
+     *     };
+     *   });
+     * </script>
+     * <my:time></my:time>
      */
     angularWidget     = extensionMap(angular, 'widget', lowercase),
     
@@ -366,15 +381,19 @@ var _undefined        = undefined,
      * });
      * </script>
      *
-     * Formatted: <input type="text" name="data" value="&lt;angular/&gt;" ng:format="reverse"/><br/>
-     * Stored: <input type="text" name="data"/><br/>
+     * Formatted: 
+     * <input type="text" name="data" value="angular" ng:format="reverse"/>
+     * <br/>
+     * 
+     * Stored: 
+     * <input type="text" name="data"/><br/>
      * <pre>{{data}}</pre>
      *
      * 
      * @scenario
      * it('should store reverse', function(){
-     *  expect(element('.doc-example input:first').val()).toEqual('<angular/>');
-     *  expect(element('.doc-example input:last').val()).toEqual('>/RALUGNA<');
+     *  expect(element('.doc-example input:first').val()).toEqual('angular');
+     *  expect(element('.doc-example input:last').val()).toEqual('RALUGNA');
      *  
      *  this.addFutureAction('change to XYZ', function($window, $document, done){
      *    $document.elements('.doc-example input:last').val('XYZ').trigger('change');
