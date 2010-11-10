@@ -10,6 +10,11 @@
 </ul>
 
 <h2>Methods</h2>
+<ul>
+  {{#method}}
+  <li><tt>{{name}}</tt>: {{{description}}}</li>
+  {{/method}}
+</ul>
 
 <h2>Properties</h2>
 <ul>

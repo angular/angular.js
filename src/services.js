@@ -87,6 +87,11 @@ angularServiceInject("$location", function(browser) {
   // PUBLIC METHODS
 
   /**
+   * @ngdoc method
+   * @name angular.service.$location#update
+   * @methodOf angular.service.$location
+   * 
+   * @description
    * Update location object
    * Does not immediately update the browser
    * Browser is updated at the end of $eval()
@@ -117,7 +122,12 @@ angularServiceInject("$location", function(browser) {
   }
 
   /**
-   * Update location hash
+   * @ngdoc method
+   * @name angular.service.$location#updateHash
+   * @methodOf angular.service.$location
+   * 
+   * @description
+   * Update location hash part
    * @see update()
    *
    * @example
@@ -147,9 +157,12 @@ angularServiceInject("$location", function(browser) {
   }
 
   /**
+   * @ngdoc method
+   * @name angular.service.$location#toString
+   * @methodOf angular.service.$location
+   * 
+   * @description
    * Returns string representation - href
-   *
-   * @return {string} Location's href property
    */
   function toString() {
     updateLocation();
