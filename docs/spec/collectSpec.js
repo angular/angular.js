@@ -52,6 +52,38 @@ describe('collect', function(){
         ]);
       });
     });
+
+    describe('@property', function() {
+      it('should parse @property tags into array', function() {
+        TAG.property(doc, 'property', '{type} name1 desc');
+        TAG.property(doc, 'property', '{type} name2 desc');
+        expect(doc.property.length).toEqual(2);
+      });
+      
+      it('should parse @property with only name', function() {
+        TAG.property(doc, 'property', 'fake');
+        expect(doc.property[0].name).toEqual('fake');
+      });
+      
+      it('should parse @property with optional type', function() {
+        TAG.property(doc, 'property', '{string} name');
+        expect(doc.property[0].name).toEqual('name');
+        expect(doc.property[0].type).toEqual('string');
+      });
+      
+      it('should parse @property with optional description', function() {
+        TAG.property(doc, 'property', 'name desc rip tion');
+        expect(doc.property[0].name).toEqual('name');
+        expect(doc.property[0].description).toEqual('desc rip tion');
+      });
+      
+      it('should parse @property with type and description both', function() {
+        TAG.property(doc, 'property', '{bool} name desc rip tion');
+        expect(doc.property[0].name).toEqual('name');
+        expect(doc.property[0].type).toEqual('bool');
+        expect(doc.property[0].description).toEqual('desc rip tion');
+      });
+    });
     
     describe('@describe', function(){
       it('should support pre blocks', function(){

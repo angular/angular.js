@@ -149,6 +149,23 @@ function requiresTag(doc, name, value) {
   doc.requires.push({name: value});
 }
 
+function propertyTag(doc, name, value) {
+  doc[name] = doc[name] || [];
+  var match = value.match(/^({(\S+)}\s*)?(\S+)(\s+(.*))?/);
+  
+  if (match) {
+    var tag = {
+      type: match[2],
+      name: match[3],
+      description: match[5]
+    };
+  } else {
+    throw "[" + doc.raw.file + ":" + doc.raw.line +
+          "]: @" + name + " must be in format '{type} name description' got: " + value;
+  }
+  return doc[name].push(tag);
+}
+
 var TAG = {
   ngdoc: valueTag,
   example: escapedHtmlTag,
@@ -191,6 +208,7 @@ var TAG = {
             "]: @param must be in format '{type} name=value description' got: " + value;
     }
   },
+  property: propertyTag,
   requires: requiresTag
 };
 
