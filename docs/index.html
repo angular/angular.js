@@ -1,49 +1,147 @@
 <!DOCTYPE HTML>
 <html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/">
 <head>
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-  <script type="text/javascript" src="docs-data.js"></script>
-  <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
-  <script type="text/javascript" src="doc_widgets.js"></script>
+  <title>&lt;Angular/&gt; Docs</title>
+  <link rel="stylesheet" href="wiki_widgets.css" type="text/css" media="screen">
   <link rel="stylesheet" href="doc_widgets.css" type="text/css" media="screen" />
-  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
-  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
   <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" type="text/css" media="screen" />
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+  <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
+  <script type="text/javascript" src="doc_widgets.js"></script>
+  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
+  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
+  <script type="text/javascript" src="docs-data.js"></script>
   <script type="text/javascript">
     SyntaxHighlighter['defaults'].toolbar = false;
-    
+
     DocsController.$inject = ['$location']
   	function DocsController($location) {
   	  this.docs = NG_DOC;
   	  window.$root = this.$root;
-  	  
+
   	  this.getUrl = function(page){
   	    return '#' + encodeURIComponent(page.name);
-  	  }
-  	  
+  	  };
+
+  	  this.getTitle = function() {
+        if ($location.hashPath.match(/^angular\./)) {
+          return $location.hashPath;
+        }
+        return '';
+	    };
+
   	  this.getCurrentPartial = function(){
   	    if ($location.hashPath.match(/^angular\./)) {
   	      this.partialUrl = './' + $location.hashPath + '.html';
   	    }
   	    return this.partialUrl;
-  	  }
+  	  };
   	}
   </script>
+  <style type="text/css" media="screen">
+    body {
+      font-family: Arial, sans-serif;
+      font-size: 14px;
+      margin: 0;
+      padding: 0;
+    }
+
+    #sidebar {
+      width: 15em;
+      float: left;
+    }
+
+    #header {
+      background-color: #F2C200;
+      margin-bottom: 1em;
+    }
+
+    #header h1 {
+      font-weight: normal;
+      font-size: 30px;
+      line-height: 30px;
+      margin: 0;
+      padding: 10px 10px;
+      height: 30px;
+    }
+
+    #header .angular {
+      font-family: Courier New, monospace;
+      font-weight: bold;
+    }
+
+    #header h1 a {
+      color: black;
+      text-decoration: none;
+    }
+
+    #header h1 a:hover {
+      text-decoration: underline;
+    }
+
+    #section {
+      position: absolute;
+      z-index: -1;
+      width: 100%;
+    }
+
+    #section ng\:include {
+      margin: 0 1em 1em 15em;
+      display: block;
+    }
+
+    #section h1 {
+      font-family: monospace;
+      margin-top: 0;
+    }
+
+    #sidebar h2 {
+      font-size: 1.2em;
+      margin: 5px 5px 5px 0.8em;
+    }
+
+    #sidebar ul {
+      list-style-type: none;
+      /*TODO(esprehn): Can we just reset globally and not break examples?*/
+      margin: 0;
+      padding: 0;
+    }
+
+    #sidebar ul li {
+      margin: 0;
+      padding: 1px 1px 1px 1.5em;
+    }
+
+    .nav-section {
+      margin-left: 1em;
+      margin-top: 0.5em;
+    }
+    
+    .section-title {
+      float: right;
+    }
+  </style>
 </head>
 <body ng:controller="DocsController">
-  <table>
-    <tr>
-      <td valign="top">
-        <div ng:repeat="(name, type) in docs.section">
-          <b>{{name}}</b>
-          <div ng:repeat="page in type">
-            <a href="{{getUrl(page)}}"><tt>{{page.shortName}}</tt></a>
-          </div>
-         </div>
-      </td>
-      <td valign="top"><ng:include src=" getCurrentPartial() "></ng:include></td>
-    </tr>
-  </table>
+  <div id="header">
+    <h1>
+      <span class="section-title">{{getTitle()}}</span>
+      <a href="index.html"><span class="angular">&lt;angular/&gt;</span> Docs</a>
+    </h1>
+  </div>
+  <div id="sidebar" class="nav">
+    <div ng:repeat="(name, type) in docs.section" class="nav-section">
+      <h2>{{name}}</h2>
+      <ul>
+        <li ng:repeat="page in type">
+          <a href="{{getUrl(page)}}" ng:click="">{{page.shortName}}</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div id="section">
+    <ng:include src="getCurrentPartial()"></ng:include>
+  </div>
 </body>
 </html>

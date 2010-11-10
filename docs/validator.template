@@ -1,4 +1,4 @@
-<h1><tt>{{name}}</tt></h1>
+<h1>{{name}}</h1>
 
 <h2>Description</h2>
 {{{description}}}
