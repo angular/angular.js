@@ -13,6 +13,48 @@ describe('collect', function(){
     });
   });
   
+  describe('processNgDoc', function() {
+    var processNgDoc = collect.processNgDoc,
+        documentation;
+
+    beforeEach(function() {
+      documentation = {
+        section: {},
+        all: [],
+        byName: {}
+      };
+    });
+    
+    it('should store references to docs by name', function() {
+      var doc = {ngdoc: 'section', name: 'fake', raw: {}};
+      processNgDoc(documentation, doc);
+      expect(documentation.byName.fake).toBe(doc);
+    });
+    
+    it('should connect doc to owner (specified by @methodOf)', function() {
+      var parentDoc = {ngdoc: 'section', name: 'parent', raw: {}};
+      var doc = {ngdoc: 'section', name: 'child', methodOf: 'parent', raw: {}};
+      processNgDoc(documentation, parentDoc);
+      processNgDoc(documentation, doc);
+      expect(documentation.byName.parent.method).toBeDefined();
+      expect(documentation.byName.parent.method[0]).toBe(doc);
+    });
+    
+    it('should throw exception if owner does not exist', function() {
+      expect(function() {
+        processNgDoc(documentation, {ngdoc: 'section', methodOf: 'not.exist', raw: {}});
+      }).toThrow('Owner "not.exist" is not defined.');
+    });
+    
+    it('should ignore non-ng docs', function() {
+      var doc = {name: 'anything'};
+      expect(function() {
+        processNgDoc(documentation, doc);
+      }).not.toThrow();
+      expect(documentation.all).not.toContain(doc);
+    });
+  });
+  
   describe('TAG', function(){
     var TAG = collect.TAG;
     var doc;
@@ -91,6 +133,15 @@ describe('collect', function(){
       it('should set undefined description to "false"', function() {
         TAG.property(doc, 'property', 'name');
         expect(doc.property[0].description).toBe(false);
+      });
+    });
+    
+    describe('@methodOf', function() {
+      it('should parse @methodOf tag', function() {
+        expect(function() {
+          TAG.methodOf(doc, 'methodOf', 'parentName');
+        }).not.toThrow();
+        expect(doc.methodOf).toEqual('parentName');
       });
     });
     

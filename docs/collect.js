@@ -8,7 +8,8 @@ var fs       = require('fs'),
 
 var documentation = {
     section:{},
-    all:[]
+    all:[],
+    byName: {}
 };
 
 var SRC_DIR = "docs/";
@@ -22,22 +23,14 @@ var work = callback.chain(function () {
       //console.log('reading', file, '...');
       findNgDoc(file, work.waitMany(function(doc) {
         parseNgDoc(doc);
-        if (doc.ngdoc) {
-          delete doc.raw.text;
-          var section = documentation.section;
-          (section[doc.ngdoc] = section[doc.ngdoc] || []).push(doc);
-          documentation.all.push(doc);
-          console.log('Found:', doc.ngdoc + ':' + doc.shortName);
-          mergeTemplate(
-                    doc.ngdoc + '.template',
-                    doc.name + '.html', doc, work.waitFor());
-        }
+        processNgDoc(documentation, doc);
       }));
     }));
   }));
 }).onError(function(err){
   console.log('ERROR:', err.stack || err);
 }).onDone(function(){
+  writeDoc(documentation.section);
   mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(documentation)}, callback.chain());
   mergeTemplate('docs-scenario.js', 'docs-scenario.js', documentation, callback.chain());
   copy('docs-scenario.html', callback.chain());
@@ -181,6 +174,7 @@ var TAG = {
   paramDescription: markdownTag,
   exampleDescription: markdownTag,
   element: valueTag,
+  methodOf: valueTag,
   name: function(doc, name, value) {
     doc.name = value;
     var match = value.match(/^angular[\.\#](([^\.]+)\.(.*)|(.*))/);
@@ -287,4 +281,33 @@ function findJsFiles(dir, callback){
     });
     callback.done();
   }));
+}
+
+function processNgDoc(documentation, doc) {
+  if (!doc.ngdoc) return;
+  console.log('Found:', doc.ngdoc + ':' + doc.shortName);
+  delete doc.raw.text;
+  
+  var section = documentation.section;
+  (section[doc.ngdoc] = section[doc.ngdoc] || []).push(doc);
+  documentation.all.push(doc);
+  documentation.byName[doc.name] = doc;
+  
+  if (doc.methodOf) {
+    if (parent = documentation.byName[doc.methodOf]) {
+      (parent.method = parent.method || []).push(doc);
+    } else {
+      throw 'Owner "' + doc.methodOf + '" is not defined.';
+    }
+  }
+}
+
+function writeDoc(sections) {
+  for (var name in sections) {
+    sections[name].forEach(function(doc) {
+      mergeTemplate(
+          doc.ngdoc + '.template',
+          doc.name + '.html', doc, callback.chain());
+    });
+  }
 }
