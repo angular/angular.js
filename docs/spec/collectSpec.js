@@ -83,6 +83,15 @@ describe('collect', function(){
         expect(doc.property[0].type).toEqual('bool');
         expect(doc.property[0].description).toEqual('desc rip tion');
       });
+      
+      /**
+       * If property description is undefined, this variable is not set in the template,
+       * so the whole @description tag is used instead
+       */
+      it('should set undefined description to "false"', function() {
+        TAG.property(doc, 'property', 'name');
+        expect(doc.property[0].description).toBe(false);
+      });
     });
     
     describe('@describe', function(){

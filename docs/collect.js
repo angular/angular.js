@@ -157,7 +157,7 @@ function propertyTag(doc, name, value) {
     var tag = {
       type: match[2],
       name: match[3],
-      description: match[5]
+      description: match[5] || false
     };
   } else {
     throw "[" + doc.raw.file + ":" + doc.raw.line +
