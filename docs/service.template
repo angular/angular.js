@@ -12,6 +12,11 @@
 <h2>Methods</h2>
 
 <h2>Properties</h2>
+<ul>
+  {{#property}}
+  <li><tt>{{name}}:{{#type}}{{type}}{{/type}}</tt>{{#description}}: {{{description}}}{{/description}}</li>
+  {{/property}}
+</ul>
 
 <h2>Usage</h2>
 

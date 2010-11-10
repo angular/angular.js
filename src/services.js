@@ -45,6 +45,16 @@ angularServiceInject("$document", function(window){
  * @name angular.service.$location
  * @requires $browser
  * 
+ * @property {string} href
+ * @property {string} protocol
+ * @property {string} host
+ * @property {number} port
+ * @property {string} path
+ * @property {Object.<string|boolean>} search
+ * @property {string} hash
+ * @property {string} hashPath
+ * @property {Object.<string|boolean>} hashSearch
+ * 
  * @description
  * Parses the browser location url and makes it available to your application.
  * Any changes to the url are reflected into $location service and changes to
