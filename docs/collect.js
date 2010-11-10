@@ -127,12 +127,21 @@ function escapedHtmlTag(doc, name, value) {
 }
 
 function markdownTag(doc, name, value) {
-  doc[name] = markdown(value.replace(/^#/gm, '##'));
+  doc[name] = markdown(value.replace(/^#/gm, '##')).
+    replace(/\<pre\>/gmi, '<pre class="brush: xml; brush: js;" ng:non-bindable>');
 }
 
 function markdown(text) {
   text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
   return new Showdown.converter().makeHtml(text);
+}
+
+function markdownNoP(text) {
+  var lines = markdown(text).split(NEW_LINE);
+  var last = lines.length - 1;
+  lines[0] = lines[0].replace(/^<p>/, '');
+  lines[last] = lines[last].replace(/<\/p>$/, '');
+  return lines.join('\n');
 }
 
 var TAG = {
@@ -149,6 +158,7 @@ var TAG = {
   returns: markdownTag,
   paramDescription: markdownTag,
   exampleDescription: markdownTag,
+  element: valueTag,
   name: function(doc, name, value) {
     doc.name = value;
     var match = value.match(/^angular[\.\#](([^\.]+)\.(.*)|(.*))/);
@@ -163,7 +173,7 @@ var TAG = {
           type: match[2],
           name: match[6] || match[5],
           'default':match[7],
-          description:value.replace(match[0], match[8])
+          description:markdownNoP(value.replace(match[0], match[8]))
         };
       doc.param.push(param);
       if (!doc.paramFirst) {

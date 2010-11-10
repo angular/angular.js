@@ -23,8 +23,8 @@
      it('should update', function(){
        input('amount').enter('-1234');
        expect(binding('amount | currency')).toBe('$-1,234.00');
-       expect(element('span[ng\\:bind="amount | currency"]').attr('class')).
-          toMatch(/ng-format-negative/);
+       expect(element('.doc-example-live .ng-binding').attr('className')).
+         toMatch(/ng-format-negative/);
      });
  */
 angularFilter.currency = function(amount){
