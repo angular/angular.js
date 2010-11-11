@@ -607,13 +607,13 @@ BinderTest.prototype.testItShouldListenOnRightScope = function() {
       '<ul ng:init="counter=0; gCounter=0" ng:watch="w:counter=counter+1">' +
       '<li ng:repeat="n in [1,2,4]" ng:watch="w:counter=counter+1;w:$root.gCounter=$root.gCounter+n"/></ul>');
   c.scope.$eval();
-  assertEquals(0, c.scope.$get("counter"));
-  assertEquals(0, c.scope.$get("gCounter"));
+  assertEquals(1, c.scope.$get("counter"));
+  assertEquals(7, c.scope.$get("gCounter"));
 
   c.scope.$set("w", "something");
   c.scope.$eval();
-  assertEquals(1, c.scope.$get("counter"));
-  assertEquals(7, c.scope.$get("gCounter"));
+  assertEquals(2, c.scope.$get("counter"));
+  assertEquals(14, c.scope.$get("gCounter"));
 };
 
 BinderTest.prototype.testItShouldRepeatOnHashes = function() {

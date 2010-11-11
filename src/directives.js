@@ -622,9 +622,9 @@ angularDirective("ng:submit", function(expression, element) {
     </div>
  * @scenario
    it('should check ng:watch', function(){
-     expect(using('.doc-example-live').binding('counter')).toBe('1');
-     using('.doc-example-live').input('name').enter('abc');
      expect(using('.doc-example-live').binding('counter')).toBe('2');
+     using('.doc-example-live').input('name').enter('abc');
+     expect(using('.doc-example-live').binding('counter')).toBe('3');
    });
  */
 angularDirective("ng:watch", function(expression, element){

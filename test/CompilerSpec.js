@@ -14,7 +14,8 @@ describe('compiler', function(){
       watch: function(expression, element){
         return function() {
           this.$watch(expression, function(val){
-            log += ":" + val;
+            if (val)
+              log += ":" + val;
           });
         };
       }

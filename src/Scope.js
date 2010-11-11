@@ -167,7 +167,7 @@ function createScope(parent, providers, instanceCache) {
 
     $watch: function(watchExp, listener, exceptionHandler) {
       var watch = expressionCompile(watchExp),
-          last;
+          last = {};
       listener = expressionCompile(listener);
       function watcher(){
         var value = watch.call(instance),

@@ -462,10 +462,10 @@ angularWidget('ng:include', function(element){
  * Conditionally change the DOM structure.
  * 
  * @usageContent
- *   <any ng:switch-when="matchValue1"/>...</any>
- *   <any ng:switch-when="matchValue2"/>...</any>
+ * <any ng:switch-when="matchValue1">...</any>
+ *   <any ng:switch-when="matchValue2">...</any>
  *   ...
- *   <any ng:switch-when="matchValueN"/>...</any>
+ *   <any ng:switch-default>...</any>
  * 
  * @param {*} on expression to match against <tt>ng:switch-when</tt>.
  * @paramDescription 
@@ -473,17 +473,20 @@ angularWidget('ng:include', function(element){
  * 
  * * `ng:switch-when`: the case statement to match against. If match then this
  *   case will be displayed.
+ * * `ng:switch-default`: the default case when no other casses match.
  *
  * @example
     <select name="switch">
       <option>settings</option>
       <option>home</option>
+      <option>other</option>
     </select>
     <tt>switch={{switch}}</tt>
     </hr>
     <ng:switch on="switch" >
       <div ng:switch-when="settings">Settings Div</div>
       <span ng:switch-when="home">Home Span</span>
+      <span ng:switch-default>default</span>
     </ng:switch>
     </code>
  *
@@ -495,6 +498,10 @@ angularWidget('ng:include', function(element){
  *   select('switch').option('home');
  *   expect(element('.doc-example ng\\:switch').text()).toEqual('Home Span');
  * });
+ * it('should select deafault', function(){
+ *   select('switch').option('other');
+ *   expect(element('.doc-example ng\\:switch').text()).toEqual('default');
+ * });
  */
 var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,
@@ -505,21 +512,26 @@ var ngSwitch = angularWidget('ng:switch', function (element){
       changeExpr = element.attr('change') || '',
       cases = [];
   if (!usingFn) throw "Using expression '" + usingExpr + "' unknown.";
+  if (!watchExpr) throw "Missing 'on' attribute.";
   eachNode(element, function(caseElement){
     var when = caseElement.attr('ng:switch-when');
-    if (when) {
-      cases.push({
-        when: function(scope, value){
-          var args = [value, when];
-          foreach(usingExprParams, function(arg){
-            args.push(arg);
-          });
-          return usingFn.apply(scope, args);
-        },
+    var switchCase = {
         change: changeExpr,
         element: caseElement,
         template: compiler.compile(caseElement)
-      });
+      };
+    if (isString(when)) {
+      switchCase.when = function(scope, value){
+        var args = [value, when];
+        foreach(usingExprParams, function(arg){
+          args.push(arg);
+        });
+        return usingFn.apply(scope, args);
+      };
+      cases.unshift(switchCase);
+    } else if (isString(caseElement.attr('ng:switch-default'))) {
+      switchCase.when = valueFn(true);
+      cases.push(switchCase);
     }
   });
 
@@ -532,10 +544,12 @@ var ngSwitch = angularWidget('ng:switch', function (element){
   return function(element){
     var scope = this, childScope;
     this.$watch(watchExpr, function(value){
+      var found = false;
       element.html('');
       childScope = createScope(scope);
       foreach(cases, function(switchCase){
-        if (switchCase.when(childScope, value)) {
+        if (!found && switchCase.when(childScope, value)) {
+          found = true;
           var caseElement = quickClone(switchCase.element);
           element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
@@ -550,7 +564,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
   };
 }, {
   equals: function(on, when) {
-    return on == when;
+    return ''+on == when;
   },
   route: switchRouteMatcher
 });
