@@ -1,8 +1,18 @@
-# <angular/> 0.9.3 cold-resistance (in-progress) #
+# <angular/> 0.9.3 cold-resistance (2010-11-10) #
+
+### Docs
+- prettier docs app with syntax highlighting for examples, etc
+- added documentation, examples and scenario tests for many more apis including:
+  - all directives
+  - all formatters
+  - all validators
+  - some widgets
 
 ### Api
 - date filter now accepts strings that angular.String.toDate can convert to Date objects
 - angular.String.toDate supports ISO8061 formated strings with all time fractions being optional
+- ng:repeat now exposes $position with values set to 'first', 'middle' or 'last'
+- ng:switch now supports ng:switch-default as fallback switch option
 
 ### Breaking changes
 - we now support ISO 8601 extended format datetime strings (YYYY-MM-DDTHH:mm:ss.SSSZ) as defined
@@ -11,6 +21,8 @@
   - angular.Date.toString
   - angular.String.fromDate
   - JSON serialization and deserialization (used by json filter, $xhr and $resource)
+- removed SSN validator. It's unlikely that most people will need it and if they do, it can be added
+  simple RegExp validator.
 
 
 # <angular/> 0.9.2 faunal-mimicry (2010-11-03) #
