@@ -172,12 +172,12 @@ describe("directives", function(){
     var scope = compile('<div ng:watch="i: count = count + 1" ng:init="count = 0">');
     scope.$eval();
     scope.$eval();
-    expect(scope.$get('count')).toEqual(0);
+    expect(scope.$get('count')).toEqual(1);
 
     scope.$set('i', 0);
     scope.$eval();
     scope.$eval();
-    expect(scope.$get('count')).toEqual(1);
+    expect(scope.$get('count')).toEqual(2);
   });
 
   describe('ng:click', function(){

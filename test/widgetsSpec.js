@@ -430,7 +430,11 @@ describe("widget", function(){
 
   describe('ng:switch', function(){
     it('should switch on value change', function(){
-      compile('<ng:switch on="select"><div ng:switch-when="1">first:{{name}}</div><div ng:switch-when="2">second:{{name}}</div></ng:switch>');
+      compile('<ng:switch on="select">' +
+          '<div ng:switch-when="1">first:{{name}}</div>' +
+          '<div ng:switch-when="2">second:{{name}}</div>' +
+          '<div ng:switch-when="true">true:{{name}}</div>' +
+        '</ng:switch>');
       expect(element.html()).toEqual('');
       scope.select = 1;
       scope.$eval();
@@ -444,8 +448,28 @@ describe("widget", function(){
       scope.name = 'misko';
       scope.$eval();
       expect(element.text()).toEqual('second:misko');
+      scope.select = true;
+      scope.$eval();
+      expect(element.text()).toEqual('true:misko');
+    });
+    
+    it("should compare stringified versions", function(){
+      var switchWidget = angular.widget('ng:switch');
+      expect(switchWidget.equals(true, 'true')).toEqual(true);
     });
 
+    it('should switch on switch-when-default', function(){
+      compile('<ng:switch on="select">' +
+          '<div ng:switch-when="1">one</div>' +
+          '<div ng:switch-default>other</div>' +
+        '</ng:switch>');
+      scope.$eval();
+      expect(element.text()).toEqual('other');
+      scope.select = 1;
+      scope.$eval();
+      expect(element.text()).toEqual('one');
+    });
+    
     it("should match urls", function(){
       var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng:switch-when="/Book/:name">{{params.name}}</div></ng:switch>');
       scope.url = '/Book/Moby';
@@ -459,7 +483,7 @@ describe("widget", function(){
       expect(match).toBeFalsy();
     });
 
-    it('should call init on switch', function(){
+    it('should call change on switch', function(){
       var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>');
       var cleared = false;
       scope.url = 'a';
