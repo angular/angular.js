@@ -308,7 +308,7 @@ _jQuery.fn.bindings = function(name) {
       text && text.indexOf(value) >= 0;
   }
   var result = [];
-  this.find('.ng-binding').each(function() {
+  this.find('.ng-binding:visible').each(function() {
     var element = new _jQuery(this);
     if (!angular.isDefined(name) ||
       contains(element.attr('ng:bind'), name) ||
