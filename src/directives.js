@@ -434,6 +434,10 @@ angularWidget("@ng:non-bindable", noop);
  *     scope expression giving the collection to enumerate. 
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
  *
+ * Special properties set on the local scope:
+ *   * {number} $index - iterator offset of the repeated element (0..length-1)
+ *   * {string} $position - position of the repeated element in the iterator ('first', 'middle', 'last')
+ *
  * @exampleDescription
  * This example initializes the scope to a list of names and 
  * than uses `ng:repeat` to display every person.
@@ -477,9 +481,24 @@ angularWidget("@ng:repeat", function(expression, element){
 
     var children = [], currentScope = this;
     this.$onEval(function(){
-      var index = 0, childCount = children.length, childScope, lastElement = reference,
-          collection = this.$tryEval(rhs, reference), is_array = isArray(collection);
-      for ( var key in collection) {
+      var index = 0,
+          childCount = children.length,
+          lastElement = reference,
+          collection = this.$tryEval(rhs, reference), 
+          is_array = isArray(collection),
+          collectionLength = 0,
+          childScope,
+          key;
+
+      if (is_array) {
+        collectionLength = collection.length;
+      } else {
+        for (key in collection)
+          if (collection.hasOwnProperty(key))
+            collectionLength++;
+      }
+
+      for (key in collection) {
         if (!is_array || collection.hasOwnProperty(key)) {
           if (index < childCount) {
             // reuse existing child
@@ -493,6 +512,9 @@ angularWidget("@ng:repeat", function(expression, element){
             if (keyIdent) childScope[keyIdent] = key;
             lastElement.after(childScope.$element);
             childScope.$index = index;
+            childScope.$position = index == 0 ?
+                                      'first' :
+                                      (index == collectionLength - 1 ? 'last' : 'middle');
             childScope.$element.attr('ng:repeat-index', index);
             childScope.$init();
             children.push(childScope);
