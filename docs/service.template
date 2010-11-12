@@ -12,7 +12,7 @@
 <h2>Methods</h2>
 <ul>
   {{#method}}
-  <li><tt>{{name}}</tt>: {{{description}}}</li>
+  <li><tt>{{shortName}}</tt>: {{{description}}}</li>
   {{/method}}
 </ul>
 
