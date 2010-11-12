@@ -165,14 +165,31 @@ function createScope(parent, providers, instanceCache) {
       }
     },
 
-    $watch: function(watchExp, listener, exceptionHandler) {
+
+    /**
+     * Registers `listener` as a watcher of the `watchExp` and executes it (optional, see `initRun`
+     * flag). Afterwards `listener` is executed every time the result of `watchExp` changes.
+     *
+     * The `listener` function will be called with two parameters `newValue` and `oldValue`.
+     *
+     * @param {Function|string} watchExp Expression that yields results. Can be an angular string
+     *    expression or a function.
+     * @param {Function|string} listener Function (or angular string expression) that gets called
+     *    every time the value of the `watchExp` changes.
+     * @param {Function} exceptionHanlder Handler that gets called when listeners throws an
+     *    exception.
+     * @param {boolean} [initRun=true] Flag that prevents the first execution of the listener upon
+     *    registration.
+     */
+    $watch: function(watchExp, listener, exceptionHandler, initRun) {
       var watch = expressionCompile(watchExp),
-          last = {};
+          last = watch.call(instance);
       listener = expressionCompile(listener);
-      function watcher(){
+      function watcher(firstRun){
         var value = watch.call(instance),
+            // we have to save the value because listener can call ourselves => inf loop
             lastValue = last;
-        if (last !== value) {
+        if (firstRun || lastValue !== value) {
           last = value;
           instance.$tryEval(function(){
             return listener.call(instance, value, lastValue);
@@ -180,7 +197,8 @@ function createScope(parent, providers, instanceCache) {
         }
       }
       instance.$onEval(PRIORITY_WATCH, watcher);
-      watcher();
+      if (isUndefined(initRun)) initRun = true;
+      if (initRun) watcher(true);
     },
 
     $onEval: function(priority, expr, exceptionHandler){
