@@ -40,6 +40,14 @@ describe('collect', function(){
       expect(documentation.byName.parent.method[0]).toBe(doc);
     });
     
+    it('should not add doc to sections if @memberOf specified', function() {
+      var parentDoc = {ngdoc: 'parent', name: 'parent', raw: {}};
+      var doc = {ngdoc: 'child', name: 'child', methodOf: 'parent', raw: {}};
+      processNgDoc(documentation, parentDoc);
+      processNgDoc(documentation, doc);
+      expect(documentation.section.child).not.toBeDefined();
+    });
+    
     it('should throw exception if owner does not exist', function() {
       expect(function() {
         processNgDoc(documentation, {ngdoc: 'section', methodOf: 'not.exist', raw: {}});

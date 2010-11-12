@@ -304,8 +304,6 @@ function processNgDoc(documentation, doc) {
   console.log('Found:', doc.ngdoc + ':' + doc.shortName);
   delete doc.raw.text;
   
-  var section = documentation.section;
-  (section[doc.ngdoc] = section[doc.ngdoc] || []).push(doc);
   documentation.all.push(doc);
   documentation.byName[doc.name] = doc;
   
@@ -315,6 +313,9 @@ function processNgDoc(documentation, doc) {
     } else {
       throw 'Owner "' + doc.methodOf + '" is not defined.';
     }
+  } else {
+    var section = documentation.section;
+    (section[doc.ngdoc] = section[doc.ngdoc] || []).push(doc);
   }
 }
 
