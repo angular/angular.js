@@ -96,6 +96,40 @@ describe('scope/model', function(){
       model.$eval();
       expect(count).toEqual(1);
     });
+
+    it('should run listener upon registration by default', function() {
+      var model = createScope();
+      var count = 0,
+          nameNewVal = 'crazy val 1',
+          nameOldVal = 'crazy val 2';
+
+      model.$watch('name', function(newVal, oldVal){
+        count ++;
+        nameNewVal = newVal;
+        nameOldVal = oldVal
+      });
+
+      expect(count).toBe(1);
+      expect(nameNewVal).not.toBeDefined();
+      expect(nameOldVal).not.toBeDefined();
+    });
+
+    it('should not run listener upon registration if flag is passed in', function() {
+      var model = createScope();
+      var count = 0,
+          nameNewVal = 'crazy val 1',
+          nameOldVal = 'crazy val 2';
+
+      model.$watch('name', function(newVal, oldVal){
+        count ++;
+        nameNewVal = newVal;
+        nameOldVal = oldVal
+      }, undefined, false);
+
+      expect(count).toBe(0);
+      expect(nameNewVal).toBe('crazy val 1');
+      expect(nameOldVal).toBe('crazy val 2')
+    });
   });
 
   describe('$bind', function(){
