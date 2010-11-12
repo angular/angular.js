@@ -1,4 +1,4 @@
-{{#all}}
+{{#pages}}
 describe('{{name}}', function(){
   beforeEach(function(){
     browser().navigateTo('index.html#{{name}}');
@@ -6,4 +6,4 @@ describe('{{name}}', function(){
   // {{raw.file}}:{{raw.line}}
 {{{scenario}}}
 });
-{{/all}}
+{{/pages}}

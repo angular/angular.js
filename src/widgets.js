@@ -165,6 +165,82 @@ function compileValidator(expr) {
   return parser(expr).validator()();
 }
 
+/**
+ * @ngdoc directive
+ * @name angular.directive.ng:validate
+ *
+ * @description
+ * This directive validates the user input. If the input does not
+ * pass validation, this sets an `ng-validation-error` CSS class and 
+ * an `ng:error` attribute on the input element. Visit validators to 
+ * find out more.
+ * 
+ * @element INPUT
+ * @css ng-validation-error
+ * @param {function} validation call this function to validate input
+ *   falsy return means validation passed, To return error, simply 
+ *   return the error string.
+ *
+ * @exampleDescription
+ * @example
+    I don't validate: <input type="text" name="value"><br/>
+    I cannot be blank: <input type="text" name="value" ng:required><br/>
+    I need an integer or nothing: <input type="text" name="value" ng:validate="integer"><br/>
+    I must have an integer: <input type="text" name="value" ng:required ng:validate="integer"><br/>
+ * 
+ * @scenario
+   it('should check ng:validate', function(){
+     expect(element('.doc-example-live :input:last').attr('className')).toMatch(/ng-validation-error/);
+     input('value').enter('123');
+     expect(element('.doc-example-live :input:last').attr('className')).not().toMatch(/ng-validation-error/);
+   });
+ */
+/**
+ * @ngdoc directive
+ * @name angular.directive.ng:required
+ *
+ * @description
+ * This directive requires the user input to be present.
+ * 
+ * @element INPUT
+ * @css ng-validation-error
+ *
+ * @exampleDescription
+ * @example
+    I cannot be blank: <input type="text" name="value" ng:required><br/>
+ * 
+ * @scenario
+   it('should check ng:required', function(){
+     expect(element('.doc-example-live :input').attr('className')).toMatch(/ng-validation-error/);
+     input('value').enter('123');
+     expect(element('.doc-example-live :input').attr('className')).not().toMatch(/ng-validation-error/);
+   });
+ */
+/**
+ * @ngdoc directive
+ * @name angular.directive.ng:format
+ *
+ * @description
+ * The `ng:format` directive formats stored data to user-readable 
+ * text and parses the text back to the stored form. You might 
+ * find this useful for example if you collect user input in a 
+ * text field but need to store the data in the model as a list.
+ * 
+ * @element INPUT
+ *
+ * @exampleDescription
+ * @example
+    Enter a comma separated list of items: 
+    <input type="text" name="list" ng:format="list" value="table, chairs, plate">
+    <pre>list={{list}}</pre>
+ * 
+ * @scenario
+   it('should check ng:format', function(){
+     expect(binding('list')).toBe('list=["table","chairs","plate"]');
+     input('list').enter(',,, a ,,,');
+     expect(binding('list')).toBe('list=["a"]');
+   });
+ */
 function valueAccessor(scope, element) {
   var validatorName = element.attr('ng:validate') || NOOP,
       validator = compileValidator(validatorName),
@@ -320,6 +396,39 @@ function radioInit(model, view, element) {
  view.set(modelValue);
 }
 
+/**
+ * @ngdoc directive
+ * @name angular.directive.ng:change
+ *
+ * @description
+ * The directive executes an expression whenever the input widget changes.
+ * 
+ * @element INPUT
+ * @param {expression} expression to execute.
+ *
+ * @exampleDescription
+ * @example
+    <div ng:init="checkboxCount=0; textCount=0"></div>
+    <input type="text" name="text" ng:change="textCount = 1 + textCount">
+       changeCount {{textCount}}<br/>
+    <input type="checkbox" name="checkbox" ng:change="checkboxCount = 1 + checkboxCount">
+       changeCount {{checkboxCount}}<br/>
+ * 
+ * @scenario
+   it('should check ng:change', function(){
+     expect(binding('textCount')).toBe('0');
+     expect(binding('checkboxCount')).toBe('0');
+     
+     using('.doc-example-live').input('text').enter('abc');
+     expect(binding('textCount')).toBe('1');
+     expect(binding('checkboxCount')).toBe('0');
+     
+     
+     using('.doc-example-live').input('checkbox').check();
+     expect(binding('textCount')).toBe('1');
+     expect(binding('checkboxCount')).toBe('1');
+   });
+ */
 function inputWidget(events, modelAccessor, viewAccessor, initFn) {
   return function(element) {
     var scope = this,

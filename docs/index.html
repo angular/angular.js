@@ -26,18 +26,22 @@
   	  };
 
   	  this.getCurrentPartial = function(){
-  	    if ($location.hashPath.match(/^angular\./)) {
-  	      this.partialUrl = './' + $location.hashPath + '.html';
-  	    }
-  	    return this.partialUrl;
+        return './' + this.getTitle() + '.html';
   	  }
   	  
   	  this.getTitle = function(){
-  	    if ($location.hashPath.match(/^angular\./)) {
-  	      this.partialTitle = $location.hashPath;
+        var hashPath = $location.hashPath || 'angular';
+        if (hashPath.match(/^angular/)) {
+  	      this.partialTitle = hashPath;
   	    }
   	    return this.partialTitle;
   	  }
+  	  
+  	  this.getClass = function(page) {
+  	    return 'level-' + page.depth + 
+  	     (page.name == this.getTitle() ? ' selected' : '');
+  	  };
+  	  
   	}
   </script>
   <style type="text/css" media="screen">
@@ -47,12 +51,20 @@
       margin: 0;
       padding: 0;
     }
-
-    #sidebar {
-      width: 15em;
-      float: left;
+    
+    a {
+      color: blue;
     }
-
+    
+    .nav-section {
+      margin-left: 1em;
+      margin-top: 0.5em;
+    }
+    
+    .section-title {
+      float: right;
+    }
+    
     #header {
       background-color: #F2C200;
       margin-bottom: 1em;
@@ -95,11 +107,27 @@
     #section h1 {
       font-family: monospace;
       margin-top: 0;
+      padding-bottom: 5px;
+      border-bottom: 1px solid #CCC;
     }
 
-    #sidebar h2 {
-      font-size: 1.2em;
-      margin: 5px 5px 5px 0.8em;
+    #sidebar {
+      width: 180px;
+      float: left;
+      padding-left: 1em;
+    }
+    
+    #sidebar a {
+      text-decoration: none;
+    }
+    
+    #sidebar a:hover {
+      text-decoration: underline;
+    }
+    
+    #sidebar input {
+      width: 175px;
+      margin-bottom: 1em;
     }
 
     #sidebar ul {
@@ -110,18 +138,39 @@
     }
 
     #sidebar ul li {
-      margin: 0;
-      padding: 1px 1px 1px 1.5em;
-    }
-
-    .nav-section {
-      margin-left: 1em;
-      margin-top: 0.5em;
     }
     
-    .section-title {
-      float: right;
+    #sidebar ul li a {
+      display: block;
+      padding: 2px 2px 2px 4px;
+    } 
+
+    #sidebar ul li.selected a {
+      background-color: #DDD;
+      border-radius: 5px;
+      -moz-border-radius: 5px;
+      border: 1px solid #CCC;
+      padding: 1px 1px 1px 3px;
     }
+    
+    #sidebar ul li.level-0 {
+      margin-left: 0em;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+    
+    #sidebar ul li.level-1 {
+      margin-left: 1em;
+      margin-top: 5px;
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+    
+    #sidebar ul li.level-2 {
+      margin-left: 2em;
+      font-family: monospace;
+    }
+    
   </style>
   <title>&lt;angular/&gt;: {{getTitle()}}</title>
 </head>
@@ -133,14 +182,14 @@
     </h1>
   </div>
   <div id="sidebar" class="nav">
-    <div ng:repeat="(name, type) in docs.section" class="nav-section">
-      <h2>{{name}}</h2>
-      <ul>
-        <li ng:repeat="page in type.$orderBy('shortName')">
-          <a href="{{getUrl(page)}}" ng:click="">{{page.shortName}}</a>
-        </li>
-      </ul>
-    </div>
+   <div>
+     <input type="text" name="filterText" placeholder="search documentaiton"/>
+	   <ul>
+	     <li ng:repeat="page in docs.pages.$filter(filterText)" ng:class="getClass(page)">
+	       <a href="{{getUrl(page)}}" ng:click="">{{page.shortName}}</a>
+	     </li>
+	   </ul>
+   </div>
   </div>
   <div id="section">
     <ng:include src="getCurrentPartial()"></ng:include>

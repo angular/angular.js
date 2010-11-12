@@ -244,6 +244,7 @@ function parser(text, json){
       statements: statements,
       validator: validator,
       filter: filter,
+      //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
       watch: watch
   };
 
@@ -624,6 +625,7 @@ function parser(text, json){
     };
   }
 
+  //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
   function watch () {
     var decl = [];
     while(hasTokens()) {
