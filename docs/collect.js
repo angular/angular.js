@@ -7,8 +7,7 @@ var fs       = require('fs'),
     Showdown = require('showdown').Showdown;
 
 var documentation = {
-    section:{},
-    all:[]
+    pages:[]
 };
 
 var SRC_DIR = "docs/";
@@ -24,9 +23,7 @@ var work = callback.chain(function () {
         parseNgDoc(doc);
         if (doc.ngdoc) {
           delete doc.raw.text;
-          var section = documentation.section;
-          (section[doc.ngdoc] = section[doc.ngdoc] || []).push(doc);
-          documentation.all.push(doc);
+          documentation.pages.push(doc);
           console.log('Found:', doc.ngdoc + ':' + doc.shortName);
           mergeTemplate(
                     doc.ngdoc + '.template',
@@ -38,6 +35,7 @@ var work = callback.chain(function () {
 }).onError(function(err){
   console.log('ERROR:', err.stack || err);
 }).onDone(function(){
+  documentation.pages.sort(function(a,b){ return a.name == b.name ? 0:(a.name < b.name ? -1 : 1);});
   mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(documentation)}, callback.chain());
   mergeTemplate('docs-scenario.js', 'docs-scenario.js', documentation, callback.chain());
   copy('docs-scenario.html', callback.chain());
@@ -128,12 +126,16 @@ function escapedHtmlTag(doc, name, value) {
 
 function markdownTag(doc, name, value) {
   doc[name] = markdown(value.replace(/^#/gm, '##')).
-    replace(/\<pre\>/gmi, '<pre class="brush: xml; brush: js;" ng:non-bindable>');
+    replace(/\<pre\>/gmi, '<div ng:non-bindable><pre class="brush: js; html-script: true; toolbar: false;">').
+    replace(/\<\/pre\>/gmi, '</pre></div>');
 }
 
 function markdown(text) {
   text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
-  return new Showdown.converter().makeHtml(text);
+  text = text.replace(/(angular\.[\w\._\-:]+)/gm, '<a href="#$1">$1</a>');
+  text = text.replace(/(`(ng:[\w\._\-]+)`)/gm, '<a href="#angular.directive.$2">$1</a>');
+  text = new Showdown.converter().makeHtml(text);
+  return text;
 }
 
 function markdownNoP(text) {
@@ -161,8 +163,8 @@ var TAG = {
   element: valueTag,
   name: function(doc, name, value) {
     doc.name = value;
-    var match = value.match(/^angular[\.\#](([^\.]+)\.(.*)|(.*))/);
-    doc.shortName  = match[3] || match[4];
+    doc.shortName  = value.split(/\./).pop();
+    doc.depth = value.split(/\./).length - 1;
   },
   param: function(doc, name, value){
     doc.param = doc.param || [];

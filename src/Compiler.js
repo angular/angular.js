@@ -109,6 +109,57 @@ Compiler.prototype = {
     };
   },
 
+  
+  /**
+   * @ngdoc directive
+   * @name angular.directive.ng:eval-order
+   *
+   * @description
+   * Normally the view is updated from top to bottom. This usually is 
+   * not a problem, but under some circumstances the values for data 
+   * is not available until after the full view is computed. If such 
+   * values are needed before they are computed the order of 
+   * evaluation can be change using ng:eval-order
+   * 
+   * @element ANY
+   * @param {integer|string=} [priority=0] priority integer, or FIRST, LAST constant
+   *
+   * @exampleDescription
+   * try changing the invoice and see that the Total will lag in evaluation
+   * @example
+      <div>TOTAL: without ng:eval-order {{ items.$sum('total') | currency }}</div>
+      <div ng:eval-order='LAST'>TOTAL: with ng:eval-order {{ items.$sum('total') | currency }}</div>
+      <table ng:init="items=[{qty:1, cost:9.99, desc:'gadget'}]">
+        <tr>
+          <td>QTY</td>
+          <td>Description</td>
+          <td>Cost</td>
+          <td>Total</td>
+          <td></td>
+        </tr>
+        <tr ng:repeat="item in items">
+          <td><input name="item.qty"/></td>
+          <td><input name="item.desc"/></td>
+          <td><input name="item.cost"/></td>
+          <td>{{item.total = item.qty * item.cost | currency}}</td>
+          <td><a href="" ng:click="items.$remove(item)">X</a></td>
+        </tr>
+        <tr>
+          <td colspan="3"><a href="" ng:click="items.$add()">add</a></td>
+          <td>{{ items.$sum('total') | currency }}</td>
+        </tr>
+      </table>
+   * 
+   * @scenario
+     it('should check ng:format', function(){
+       expect(using('.doc-example-live div:first').binding("items.$sum('total')")).toBe('$9.99');
+       expect(using('.doc-example-live div:last').binding("items.$sum('total')")).toBe('$9.99');
+       input('item.qty').enter('2');
+       expect(using('.doc-example-live div:first').binding("items.$sum('total')")).toBe('$9.99');
+       expect(using('.doc-example-live div:last').binding("items.$sum('total')")).toBe('$19.98');
+     });
+   */
+
   templatize: function(element, elementIndex, priority){
     var self = this,
         widget,

@@ -155,7 +155,7 @@ angularDirective("ng:eval", function(expression){
  * HTML element with the value of the given expression and kept it up to 
  * date when the expression's value changes. Usually you just write 
  * {{expression}} and let <angular/> compile it into 
- * <span ng:bind="expression"></span> at bootstrap time.
+ * `<span ng:bind="expression"></span>` at bootstrap time.
  * 
  * @element ANY
  * @param {expression} expression to eval.
@@ -649,6 +649,7 @@ angularDirective("ng:submit", function(expression, element) {
      expect(using('.doc-example-live').binding('counter')).toBe('3');
    });
  */
+//TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
 angularDirective("ng:watch", function(expression, element){
   return function(element){
     var self = this;
@@ -862,15 +863,28 @@ angularDirective("ng:hide", function(expression, element){
  * @name angular.directive.ng:style
  *
  * @description
+ * The ng:style allows you to set CSS style on an HTML element conditionally.
  * 
  * @element ANY
- * @param {expression} expression to eval.
+ * @param {expression} expression which evals to an object whes key's are 
+ *        CSS style names and values are coresponding values for those 
+ *        CSS keys.
  *
  * @exampleDescription
  * @example
+    <input type="button" value="set" ng:click="myStyle={color:'red'}">
+    <input type="button" value="clear" ng:click="myStyle={}">
+    <br/>
+    <span ng:style="myStyle">Sample Text</span>
+    <pre>myStyle={{myStyle}}</pre>
  * 
  * @scenario
    it('should check ng:style', function(){
+     expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
+     element('.doc-example-live :button[value=set]').click();
+     expect(element('.doc-example-live span').css('color')).toBe('red');
+     element('.doc-example-live :button[value=clear]').click();
+     expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
    });
  */
 angularDirective("ng:style", function(expression, element){

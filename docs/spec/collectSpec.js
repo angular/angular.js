@@ -43,8 +43,8 @@ describe('collect', function(){
     
     describe('@describe', function(){
       it('should support pre blocks', function(){
-        TAG.description(doc, 'description', '<pre class="brush: xml;" ng:non-bindable>abc</pre>');
-        expect(doc.description).toEqual('<pre class="brush: xml;" ng:non-bindable>abc</pre>');
+        TAG.description(doc, 'description', '<pre>abc</pre>');
+        expect(doc.description).toEqual('<div ng:non-bindable><pre class="brush: js; html-script: true; toolbar: false;">abc</pre></div>');
       });
       
       describe('@example', function(){

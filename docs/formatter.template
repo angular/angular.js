@@ -31,3 +31,5 @@ var modelValue = angular.formatter.{{shortName}}.parse(userInputString);
   <doc:scenario>{{{scenario}}}</doc:scenario>
 </doc:example>
 {{/example}}
+
+<script>SyntaxHighlighter.highlight();</script>
