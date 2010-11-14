@@ -23,8 +23,15 @@
   {{/property}}
 </ul>
 
-<h2>Usage</h2>
-
-<WIKI:SOURCE style="display:block;">
-{{{example}}}
-</WIKI:SOURCE>
+{{#example}}
+<h2>Example</h2>
+{{{exampleDescription}}}
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  {{#scenario}}<doc:scenario>{{{scenario}}}</doc:scenario>{{/scenario}}
+</doc:example>
+{{/example}}

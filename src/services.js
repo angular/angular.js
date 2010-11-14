@@ -33,8 +33,7 @@ angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLIS
  * @requires $window
  * 
  * @description
- * 
- * @example
+ * Reference to the browser window.document, but wrapped into angular.element().
  */
 angularServiceInject("$document", function(window){
   return jqLite(window.document);
@@ -60,6 +59,12 @@ angularServiceInject("$document", function(window){
  * Any changes to the url are reflected into $location service and changes to
  * $location are reflected to url.
  * Notice that using browser's forward/back buttons changes the $location.
+ * 
+ * @example
+   <a href="#">clear hash</a> | 
+   <a href="#myPath?name=misko">test hash</a><br/>
+   <input type='text' name="$location.hash"/>
+   <pre>$location = {{$location}}</pre>
  */
 angularServiceInject("$location", function(browser) {
   var scope = this,
@@ -309,9 +314,44 @@ angularServiceInject("$log", function($window){
   var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
       log = console.log || noop;
   return {
+    /**
+     * @ngdoc method
+     * @name angular.service.$log#log
+     * @methodOf angular.service.$log
+     * 
+     * @description
+     * Write a log message
+     */
     log: bind(console, log),
+    
+    /**
+     * @ngdoc method
+     * @name angular.service.$log#warn
+     * @methodOf angular.service.$log
+     * 
+     * @description
+     * Write a warning message
+     */
     warn: bind(console, console.warn || log),
+    
+    /**
+     * @ngdoc method
+     * @name angular.service.$log#info
+     * @methodOf angular.service.$log
+     * 
+     * @description
+     * Write an information message
+     */
     info: bind(console, console.info || log),
+    
+    /**
+     * @ngdoc method
+     * @name angular.service.$log#error
+     * @methodOf angular.service.$log
+     * 
+     * @description
+     * Write an error message
+     */
     error: bind(console, console.error || log)
   };
 }, ['$window'], EAGER_PUBLISHED);
