@@ -532,6 +532,9 @@ function switchRouteMatcher(on, when, dstName) {
  * @name angular.service.$route
  * @requires $location
  * 
+ * @property {Object} current Name of the current route
+ * @property {Array.<Object>} routes List of configured routes
+ * 
  * @description
  * Watches $location.hashPath and tries to map the hash to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
@@ -576,7 +579,7 @@ Chose:
 <hr/>
 <ng:include src="$route.current.template" scope="$route.current.scope"/>
  */
-angularServiceInject('$route', function(location){
+angularServiceInject('$route', function(location) {
   var routes = {},
       onChange = [],
       matcher = switchRouteMatcher,
@@ -584,8 +587,32 @@ angularServiceInject('$route', function(location){
       dirty = 0,
       $route = {
         routes: routes,
+        
+        /**
+         * @ngdoc method
+         * @name angular.service.$route#onChange
+         * @methodOf angular.service.$route
+         * 
+         * @param {function} fn Function that will be called on route change
+         * 
+         * @description
+         * Register a handler function that will be called when route changes
+         */
         onChange: bind(onChange, onChange.push),
-        when:function (path, params){
+        
+        /**
+         * @ngdoc method
+         * @name angular.service.$route#when
+         * @methodOf angular.service.$route
+         * 
+         * @param {string} path Route path (matched against $location.hash)
+         * @param {Object} params
+         * @returns {Object} route object
+         * 
+         * @description
+         * Add new route
+         */
+        when:function (path, params) {
           if (angular.isUndefined(path)) return routes;
           var route = routes[path];
           if (!route) route = routes[path] = {};
