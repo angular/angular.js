@@ -9,6 +9,8 @@ var fs       = require('fs'),
 var documentation = {
     pages:[]
 };
+var keywordPages = [];
+
 
 var SRC_DIR = "docs/";
 var OUTPUT_DIR = "build/docs/";
@@ -22,7 +24,11 @@ var work = callback.chain(function () {
       findNgDoc(file, work.waitMany(function(doc) {
         parseNgDoc(doc);
         if (doc.ngdoc) {
-          delete doc.raw.text;
+          keywordPages.push({
+            name:doc.name,
+            keywords:keywords(doc.raw.text)
+            }
+          );
           documentation.pages.push(doc);
           console.log('Found:', doc.ngdoc + ':' + doc.shortName);
           mergeTemplate(
@@ -35,11 +41,12 @@ var work = callback.chain(function () {
 }).onError(function(err){
   console.log('ERROR:', err.stack || err);
 }).onDone(function(){
-  documentation.pages.sort(function(a,b){ return a.name == b.name ? 0:(a.name < b.name ? -1 : 1);});
-  mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(documentation)}, callback.chain());
+  keywordPages.sort(function(a,b){ return a.name == b.name ? 0:(a.name < b.name ? -1 : 1);});
+  mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(keywordPages)}, callback.chain());
   mergeTemplate('docs-scenario.js', 'docs-scenario.js', documentation, callback.chain());
   copy('docs-scenario.html', callback.chain());
   copy('index.html', callback.chain());
+  copy('docs.css', callback.chain());
   mergeTemplate('docs.js', 'docs.js', documentation, callback.chain());
   mergeTemplate('doc_widgets.css', 'doc_widgets.css', documentation, callback.chain());
   mergeTemplate('doc_widgets.js', 'doc_widgets.js', documentation, callback.chain());
@@ -47,6 +54,24 @@ var work = callback.chain(function () {
 });
 if (!this.testmode) work();
 ////////////////////
+
+function keywords(text){
+  var keywords = {};
+  var words = [];
+  var tokens = text.toLowerCase().split(/[,\.\`\'\"\s]+/mg);
+  tokens.forEach(function(key){
+    var match = key.match(/^(([a-z]|ng\:)[\w\_\-]{2,})/);
+    if (match){
+      key = match[1];
+      if (!keywords[key]) {
+        keywords[key] = true;
+        words.push(key);
+      }
+    }
+  });
+  words.sort();
+  return words.join(' ');
+}
 
 function noop(){}
 function mkdirPath(path, callback) {

@@ -1,0 +1,127 @@
+body {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  margin: 0;
+  padding: 0;
+}
+
+#page {
+  display: table-row;
+}
+
+#sidebar,
+#section {
+  display: table-cell;
+}
+
+a {
+  color: blue;
+}
+
+.nav-section {
+  margin-left: 1em;
+  margin-top: 0.5em;
+}
+
+.section-title {
+  float: right;
+}
+
+#header {
+  background-color: #F2C200;
+  border-bottom: 1px solid #957800;
+}
+
+#header h1 {
+  font-weight: normal;
+  font-size: 30px;
+  line-height: 30px;
+  margin: 0;
+  padding: 10px 10px;
+  height: 30px;
+}
+
+#header .angular {
+  font-family: Courier New, monospace;
+  font-weight: bold;
+}
+
+#header h1 a {
+  color: black;
+  text-decoration: none;
+}
+
+#header h1 a:hover {
+  text-decoration: underline;
+}
+
+#section {
+	padding: 1em;
+}
+
+#section h1 {
+  font-family: monospace;
+  margin-top: 0;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #CCC;
+}
+
+#sidebar {
+  padding: 10px;
+  background-color: #EEE;
+  border-right: 1px solid #DDD;
+}
+
+#sidebar a {
+  text-decoration: none;
+}
+
+#sidebar a:hover {
+  text-decoration: underline;
+}
+
+#sidebar input {
+  width: 175px;
+  margin-bottom: 1em;
+}
+
+#sidebar ul {
+  list-style-type: none;
+  /*TODO(esprehn): Can we just reset globally and not break examples?*/
+  margin: 0;
+  padding: 0;
+}
+
+#sidebar ul li {
+}
+
+#sidebar ul li a {
+  display: block;
+  padding: 2px 2px 2px 4px;
+} 
+
+#sidebar ul li.selected a {
+  background-color: #DDD;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  border: 1px solid #CCC;
+  padding: 1px 1px 1px 3px;
+}
+
+#sidebar ul li.level-0 {
+  margin-left: 0em;
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+#sidebar ul li.level-1 {
+  margin-left: 1em;
+  margin-top: 5px;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+#sidebar ul li.level-2 {
+  margin-left: 2em;
+  font-family: monospace;
+}

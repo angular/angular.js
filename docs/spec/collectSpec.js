@@ -69,6 +69,14 @@ describe('collect', function(){
     });
   });
   
+  describe('keywords', function(){
+    var keywords = collect.keywords;
+    it('should collect keywords', function(){
+      expect(keywords('\nHello: World! @ignore.')).toEqual('hello world');
+      expect(keywords('The `ng:class-odd` and ')).toEqual('and ng:class-odd the');
+    });
+  });
+
 });
 
 function load(path){
