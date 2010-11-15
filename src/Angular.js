@@ -461,7 +461,7 @@ var _undefined        = undefined,
      *
      * 
      * @scenario
-     * iit('should store reverse', function(){
+     * it('should store reverse', function(){
      *  expect(element('.doc-example input:first').val()).toEqual('angular');
      *  expect(element('.doc-example input:last').val()).toEqual('RALUGNA');
      *  
