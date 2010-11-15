@@ -7,7 +7,8 @@ var fs       = require('fs'),
     Showdown = require('showdown').Showdown;
 
 var documentation = {
-    pages:[]
+    pages:[],
+    byName: {}
 };
 var keywordPages = [];
 
@@ -23,18 +24,7 @@ var work = callback.chain(function () {
       //console.log('reading', file, '...');
       findNgDoc(file, work.waitMany(function(doc) {
         parseNgDoc(doc);
-        if (doc.ngdoc) {
-          keywordPages.push({
-            name:doc.name,
-            keywords:keywords(doc.raw.text)
-            }
-          );
-          documentation.pages.push(doc);
-          console.log('Found:', doc.ngdoc + ':' + doc.shortName);
-          mergeTemplate(
-                    doc.ngdoc + '.template',
-                    doc.name + '.html', doc, work.waitFor());
-        }
+        processNgDoc(documentation, doc);
       }));
     }));
   }));
@@ -42,6 +32,7 @@ var work = callback.chain(function () {
   console.log('ERROR:', err.stack || err);
 }).onDone(function(){
   keywordPages.sort(function(a,b){ return a.name == b.name ? 0:(a.name < b.name ? -1 : 1);});
+  writeDoc(documentation.pages);
   mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(keywordPages)}, callback.chain());
   mergeTemplate('docs-scenario.js', 'docs-scenario.js', documentation, callback.chain());
   copy('docs-scenario.html', callback.chain());
@@ -156,11 +147,17 @@ function markdownTag(doc, name, value) {
 }
 
 function markdown(text) {
-  text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
-  text = text.replace(/(angular\.[\w\._\-:]+)/gm, '<a href="#$1">$1</a>');
-  text = text.replace(/(`(ng:[\w\._\-]+)`)/gm, '<a href="#angular.directive.$2">$1</a>');
-  text = new Showdown.converter().makeHtml(text);
-  return text;
+  var parts = text.split(/(<pre>[\s\S]*<\/pre>)/);
+  parts.forEach(function(text, i){
+    if (!text.match(/^<pre>/)) {
+      text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
+      text = new Showdown.converter().makeHtml(text);
+      text = text.replace(/(angular\.[\$\w\._\-:]+)/gm, '<a href="#!$1">$1</a>');
+      text = text.replace(/(`(ng:[\w\._\-]+)`)/gm, '<a href="#!angular.directive.$2">$1</a>');
+      parts[i] = text;
+    }
+  });
+  return parts.join('');
 }
 
 function markdownNoP(text) {
@@ -169,6 +166,43 @@ function markdownNoP(text) {
   lines[0] = lines[0].replace(/^<p>/, '');
   lines[last] = lines[last].replace(/<\/p>$/, '');
   return lines.join('\n');
+}
+
+function requiresTag(doc, name, value) {
+  doc.requires = doc.requires || [];
+  doc.requires.push({name: value});
+}
+
+function propertyTag(doc, name, value) {
+  doc[name] = doc[name] || [];
+  var match = value.match(/^({(\S+)}\s*)?(\S+)(\s+(.*))?/);
+  
+  if (match) {
+    var tag = {
+      type: match[2],
+      name: match[3],
+      description: match[5] || false
+    };
+  } else {
+    throw "[" + doc.raw.file + ":" + doc.raw.line +
+          "]: @" + name + " must be in format '{type} name description' got: " + value;
+  }
+  return doc[name].push(tag);
+}
+
+function returnsTag(doc, name, value) {
+  var match = value.match(/^({(\S+)}\s*)?(.*)?/);
+  
+  if (match) {
+    var tag = {
+      type: match[2],
+      description: match[3] || false
+    };
+  } else {
+    throw "[" + doc.raw.file + ":" + doc.raw.line +
+          "]: @" + name + " must be in format '{type} description' got: " + value;
+  }
+  return doc[name] = tag;
 }
 
 var TAG = {
@@ -186,6 +220,7 @@ var TAG = {
   paramDescription: markdownTag,
   exampleDescription: markdownTag,
   element: valueTag,
+  methodOf: valueTag,
   name: function(doc, name, value) {
     doc.name = value;
     doc.shortName  = value.split(/\./).pop();
@@ -212,7 +247,10 @@ var TAG = {
       throw "[" + doc.raw.file + ":" + doc.raw.line +
             "]: @param must be in format '{type} name=value description' got: " + value;
     }
-  }
+  },
+  property: propertyTag,
+  requires: requiresTag,
+  returns: returnsTag
 };
 
 function parseNgDoc(doc){
@@ -290,4 +328,33 @@ function findJsFiles(dir, callback){
     });
     callback.done();
   }));
+}
+
+function processNgDoc(documentation, doc) {
+  if (!doc.ngdoc) return;
+  console.log('Found:', doc.ngdoc + ':' + doc.name);
+  
+  documentation.byName[doc.name] = doc;
+  
+  if (doc.methodOf) {
+    if (parent = documentation.byName[doc.methodOf]) {
+      (parent.method = parent.method || []).push(doc);
+    } else {
+      throw 'Owner "' + doc.methodOf + '" is not defined.';
+    }
+  } else {
+    documentation.pages.push(doc);
+    keywordPages.push({
+      name:doc.name,
+      keywords:keywords(doc.raw.text)
+    });
+  }
+}
+
+function writeDoc(pages) {
+  pages.forEach(function(doc) {
+    mergeTemplate(
+        doc.ngdoc + '.template',
+        doc.name + '.html', doc, callback.chain());
+  });
 }

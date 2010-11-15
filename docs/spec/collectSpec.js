@@ -11,6 +11,63 @@ describe('collect', function(){
       expect(collect.markdown('<angular/>')).
         toEqual('<p><tt>&lt;angular/&gt;</tt></p>');
     });
+    
+    it('should not replace anything in <pre>', function(){
+      expect(collect.markdown('angular.x\n<pre>\nangular.k\n</pre>\nangular.x')).
+        toEqual(
+            '<p><a href="#!angular.x">angular.x</a></p>' + 
+            '<pre>\nangular.k\n</pre>' + 
+            '<p><a href="#!angular.x">angular.x</a></p>');
+    });
+  });
+  
+  describe('processNgDoc', function() {
+    var processNgDoc = collect.processNgDoc,
+        documentation;
+
+    beforeEach(function() {
+      documentation = {
+        pages: [],
+        byName: {}
+      };
+    });
+    
+    it('should store references to docs by name', function() {
+      var doc = {ngdoc: 'section', name: 'fake', raw: {text:''}};
+      processNgDoc(documentation, doc);
+      expect(documentation.byName.fake).toBe(doc);
+    });
+    
+    it('should connect doc to owner (specified by @methodOf)', function() {
+      var parentDoc = {ngdoc: 'section', name: 'parent', raw: {text:''}};
+      var doc = {ngdoc: 'section', name: 'child', methodOf: 'parent', raw: {text:''}};
+      processNgDoc(documentation, parentDoc);
+      processNgDoc(documentation, doc);
+      expect(documentation.byName.parent.method).toBeDefined();
+      expect(documentation.byName.parent.method[0]).toBe(doc);
+    });
+    
+    it('should not add doc to sections if @memberOf specified', function() {
+      var parentDoc = {ngdoc: 'parent', name: 'parent', raw: {text:''}};
+      var doc = {ngdoc: 'child', name: 'child', methodOf: 'parent', raw: {text:''}};
+      processNgDoc(documentation, parentDoc);
+      processNgDoc(documentation, doc);
+      expect(documentation.pages.child).not.toBeDefined();
+    });
+    
+    it('should throw exception if owner does not exist', function() {
+      expect(function() {
+        processNgDoc(documentation, {ngdoc: 'section', methodOf: 'not.exist', raw: {text:''}});
+      }).toThrow('Owner "not.exist" is not defined.');
+    });
+    
+    it('should ignore non-ng docs', function() {
+      var doc = {name: 'anything'};
+      expect(function() {
+        processNgDoc(documentation, doc);
+      }).not.toThrow();
+      expect(documentation.pages).not.toContain(doc);
+    });
   });
   
   describe('TAG', function(){
@@ -38,6 +95,90 @@ describe('collect', function(){
           name : 'fractionSize', 
           'default' : '2', 
           description : 'desc' }]);
+      });
+    });
+    
+    describe('@requires', function() {
+      it('should parse more @requires tag into array', function() {
+        TAG.requires(doc, 'requires', '$service');
+        TAG.requires(doc, 'requires', '$another');
+        
+        expect(doc.requires).toEqual([
+          {name: '$service'},
+          {name: '$another'}
+        ]);
+      });
+    });
+
+    describe('@property', function() {
+      it('should parse @property tags into array', function() {
+        TAG.property(doc, 'property', '{type} name1 desc');
+        TAG.property(doc, 'property', '{type} name2 desc');
+        expect(doc.property.length).toEqual(2);
+      });
+      
+      it('should parse @property with only name', function() {
+        TAG.property(doc, 'property', 'fake');
+        expect(doc.property[0].name).toEqual('fake');
+      });
+      
+      it('should parse @property with optional type', function() {
+        TAG.property(doc, 'property', '{string} name');
+        expect(doc.property[0].name).toEqual('name');
+        expect(doc.property[0].type).toEqual('string');
+      });
+      
+      it('should parse @property with optional description', function() {
+        TAG.property(doc, 'property', 'name desc rip tion');
+        expect(doc.property[0].name).toEqual('name');
+        expect(doc.property[0].description).toEqual('desc rip tion');
+      });
+      
+      it('should parse @property with type and description both', function() {
+        TAG.property(doc, 'property', '{bool} name desc rip tion');
+        expect(doc.property[0].name).toEqual('name');
+        expect(doc.property[0].type).toEqual('bool');
+        expect(doc.property[0].description).toEqual('desc rip tion');
+      });
+      
+      /**
+       * If property description is undefined, this variable is not set in the template,
+       * so the whole @description tag is used instead
+       */
+      it('should set undefined description to "false"', function() {
+        TAG.property(doc, 'property', 'name');
+        expect(doc.property[0].description).toBe(false);
+      });
+    });
+    
+    describe('@methodOf', function() {
+      it('should parse @methodOf tag', function() {
+        expect(function() {
+          TAG.methodOf(doc, 'methodOf', 'parentName');
+        }).not.toThrow();
+        expect(doc.methodOf).toEqual('parentName');
+      });
+    });
+    
+    describe('@returns', function() {
+      it('should parse @returns', function() {
+      expect(function() {TAG.returns(doc, 'returns', '');})
+        .not.toThrow();
+      });
+      
+      it('should parse @returns with type', function() {
+        TAG.returns(doc, 'returns', '{string}');
+        expect(doc.returns.type).toEqual('string');
+      });
+      
+      it('should parse @returns with description', function() {
+        TAG.returns(doc, 'returns', 'descrip tion');
+        expect(doc.returns.description).toEqual('descrip tion');
+      });
+      
+      it('should parse @returns with type and description', function() {
+        TAG.returns(doc, 'returns', '{string} description');
+        expect(doc.returns).toEqual({type: 'string', description: 'description'});
       });
     });
     

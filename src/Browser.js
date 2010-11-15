@@ -19,7 +19,20 @@ function Browser(location, document, head, XHR, $log) {
   var outstandingRequestCount = 0;
   var outstandingRequestCallbacks = [];
 
-  self.xhr = function(method, url, post, callback){
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#xhr
+   * @methodOf angular.service.$browser
+   * 
+   * @param {string} method Requested method (get|post|put|delete|head|json)
+   * @param {string} url Requested url
+   * @param {string=} post Post data to send 
+   * @param {function(number, string)} callback Function that will be called on response
+   * 
+   * @description
+   * Send ajax request
+   */
+  self.xhr = function(method, url, post, callback) {
     if (isFunction(post)) {
       callback = post;
       post = _null;
@@ -63,7 +76,14 @@ function Browser(location, document, head, XHR, $log) {
     }
   };
 
-  self.notifyWhenNoOutstandingRequests = function(callback){
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#notifyWhenNoOutstandingRequests
+   * @methodOf angular.service.$browser
+   * 
+   * @param {function} callback Function that will be called when no outstanding request
+   */
+  self.notifyWhenNoOutstandingRequests = function(callback) {
     if (outstandingRequestCount === 0) {
       callback();
     } else {
@@ -75,27 +95,48 @@ function Browser(location, document, head, XHR, $log) {
   // Poll Watcher API
   //////////////////////////////////////////////////////////////
   var pollFns = [];
-  function poll(){
-    foreach(pollFns, function(pollFn){ pollFn(); });
-  }
-  self.poll = poll;
 
   /**
-   * Adds a function to the list of functions that poller periodically executes
-   * @return {Function} the added function
+   * @ngdoc method
+   * @name angular.service.$browser#poll
+   * @methodOf angular.service.$browser
    */
-  self.addPollFn = function(/**Function*/fn){
+  self.poll = function() {
+    foreach(pollFns, function(pollFn){ pollFn(); });
+  };
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#addPollFn
+   * @methodOf angular.service.$browser
+   * 
+   * @param {function} fn Poll function to add
+   * 
+   * @description
+   * Adds a function to the list of functions that poller periodically executes
+   * 
+   * @returns {function} the added function
+   */
+  self.addPollFn = function(fn) {
     pollFns.push(fn);
     return fn;
   };
 
   /**
-   * Configures the poller to run in the specified intervals, using the specified setTimeout fn and
-   * kicks it off.
+   * @ngdoc method
+   * @name angular.service.$browser#startPoller
+   * @methodOf angular.service.$browser
+   * 
+   * @param {number} interval How often should browser call poll functions (ms)
+   * @param {function} setTimeout
+   * 
+   * @description
+   * Configures the poller to run in the specified intervals, using the specified
+   * setTimeout fn and kicks it off.
    */
-  self.startPoller = function(/**number*/interval, /**Function*/setTimeout){
+  self.startPoller = function(interval, setTimeout) {
     (function check(){
-      poll();
+      self.poll();
       setTimeout(check, interval);
     })();
   };
@@ -103,15 +144,37 @@ function Browser(location, document, head, XHR, $log) {
   //////////////////////////////////////////////////////////////
   // URL API
   //////////////////////////////////////////////////////////////
+  
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#setUrl
+   * @methodOf angular.service.$browser
+   * 
+   * @param {string} url New url
+   * 
+   * @description
+   * Sets browser's url
+   */
   self.setUrl = function(url) {
     var existingURL = location.href;
     if (!existingURL.match(/#/)) existingURL += '#';
     if (!url.match(/#/)) url += '#';
     location.href = url;
    };
-   self.getUrl = function() {
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#getUrl
+   * @methodOf angular.service.$browser
+   * 
+   * @description
+   * Get current browser's url
+   * 
+   * @returns {string} Browser's url
+   */
+  self.getUrl = function() {
     return location.href;
-   };
+  };
 
   //////////////////////////////////////////////////////////////
   // Cookies API
@@ -121,19 +184,27 @@ function Browser(location, document, head, XHR, $log) {
   var lastCookieString = '';
 
   /**
-   * The cookies method provides a 'private' low level access to browser cookies. It is not meant to
-   * be used directly, use the $cookie service instead.
+   * @ngdoc method
+   * @name angular.service.$browser#cookies
+   * @methodOf angular.service.$browser
+   * 
+   * @param {string=} name Cookie name
+   * @param {string=} value Cokkie value
+   * 
+   * @description
+   * The cookies method provides a 'private' low level access to browser cookies.
+   * It is not meant to be used directly, use the $cookie service instead.
    *
    * The return values vary depending on the arguments that the method was called with as follows:
-   * <ul><li>
-   * cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify it
-   * </li><li>
-   * cookies(name, value) -> set name to value, if value is undefined delete the cookie
-   * </li><li>
-   * cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)
-   * </li></ul>
+   * <ul>
+   *   <li>cookies() -> hash of all cookies, this is NOT a copy of the internal state, so do not modify it</li>
+   *   <li>cookies(name, value) -> set name to value, if value is undefined delete the cookie</li>
+   *   <li>cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)</li>
+   * </ul>
+   * 
+   * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = function (/**string*/name, /**string*/value){
+  self.cookies = function (name, value) {
     var cookieLength, cookieArray, i, keyValue;
 
     if (name) {
@@ -175,7 +246,27 @@ function Browser(location, document, head, XHR, $log) {
   // Misc API
   //////////////////////////////////////////////////////////////
   var hoverListener = noop;
+  
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#hover
+   * @methodOf angular.service.$browser
+   * 
+   * @param {function(Object, boolean)} listener
+   * 
+   * @description
+   * Set hover listener - function that will be called when hover event occurs.
+   */
   self.hover = function(listener) { hoverListener = listener; };
+  
+  /**
+   * @ngdoc method
+   * @name angular.service.$browser#bind
+   * @methodOf angular.service.$browser
+   * 
+   * @description
+   * Register hover function to real browser
+   */
   self.bind = function() {
     document.bind("mouseover", function(event){
       hoverListener(jqLite(msie ? event.srcElement : event.target), true);
@@ -189,9 +280,15 @@ function Browser(location, document, head, XHR, $log) {
 
 
   /**
+   * @ngdoc method
+   * @name angular.service.$browser#addCss
+   * @methodOf angular.service.$browser
+   * 
+   * @param {string} url Url to css file
+   * @description
    * Adds a stylesheet tag to the head.
    */
-  self.addCss = function(/**string*/url) {
+  self.addCss = function(url) {
     var link = jqLite(rawDocument.createElement('link'));
     link.attr('rel', 'stylesheet');
     link.attr('type', 'text/css');
@@ -201,9 +298,17 @@ function Browser(location, document, head, XHR, $log) {
 
 
   /**
+   * @ngdoc method
+   * @name angular.service.$browser#addJs
+   * @methodOf angular.service.$browser
+   * 
+   * @param {string} url Url to js file
+   * @param {string=} dom_id Optional id for the script tag 
+   * 
+   * @description
    * Adds a script tag to the head.
    */
-  self.addJs = function(/**string*/url, /**string*/dom_id) {
+  self.addJs = function(url, dom_id) {
     var script = jqLite(rawDocument.createElement('script'));
     script.attr('type', 'text/javascript');
     script.attr('src', url);

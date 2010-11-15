@@ -1,6 +1,6 @@
 require.paths.push("./lib");
 var jasmine = require('jasmine-1.0.1');
-var sys = require('sys');
+var sys = require('util');
 
 for(var key in jasmine) {
   global[key] = jasmine[key];
