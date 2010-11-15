@@ -125,3 +125,8 @@ a {
   margin-left: 2em;
   font-family: monospace;
 }
+
+#sidebar ul li.level-3 {
+  margin-left: 3em;
+  font-family: monospace;
+}

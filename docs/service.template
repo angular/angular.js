@@ -1,0 +1,37 @@
+<h1><tt>{{name}}</tt></h1>
+<h2>Description</h2>
+{{{description}}}
+
+<h2>Dependencies</h2>
+<ul>
+  {{#requires}}
+  <li><tt>{{name}}</tt></li>
+  {{/requires}}
+</ul>
+
+<h2>Methods</h2>
+<ul>
+  {{#method}}
+  <li><tt>{{shortName}}</tt>: {{{description}}}</li>
+  {{/method}}
+</ul>
+
+<h2>Properties</h2>
+<ul>
+  {{#property}}
+  <li><tt>{{name}}:{{#type}}{{type}}{{/type}}</tt>{{#description}}: {{{description}}}{{/description}}</li>
+  {{/property}}
+</ul>
+
+{{#example}}
+<h2>Example</h2>
+{{{exampleDescription}}}
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  {{#scenario}}<doc:scenario>{{{scenario}}}</doc:scenario>{{/scenario}}
+</doc:example>
+{{/example}}

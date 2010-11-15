@@ -315,7 +315,6 @@ var _undefined        = undefined,
      */
     angularValidator  = extensionMap(angular, 'validator'),
 
-
     /**
      * @ngdoc overview
      * @name angular.filter
@@ -473,6 +472,53 @@ var _undefined        = undefined,
      * });
      */
     angularFormatter  = extensionMap(angular, 'formatter'),
+    
+    /**
+     * @ngdoc overview
+     * @name angular.service
+     * 
+     * @description
+     * # Overview
+     * Services are substituable objects, which are wired together using dependency injection.
+     * Each service could have dependencies (other services), which are passed in constructor.
+     * Because JS is dynamicaly typed language, dependency injection can not use static types
+     * to satisfy these dependencies, so each service must explicitely define its dependencies.
+     * This is done by $inject property.
+     * 
+     * For now, life time of all services is the same as the life time of page.
+     * 
+     * 
+     * # Standard services
+     * The Angular framework provides a standard set of services for common operations.
+     * You can write your own services and rewrite these standard services as well.
+     * Like other core angular variables, standard services always start with $.
+     * 
+     *   * `angular.service.$window`
+     *   * `angular.service.$document`
+     *   * `angular.service.$location`
+     *   * `angular.service.$log`
+     *   * `angular.service.$exceptionHandler`
+     *   * `angular.service.$hover`
+     *   * `angular.service.$invalidWidgets`
+     *   * `angular.service.$route`
+     *   * `angular.service.$xhr`
+     *   * `angular.service.$xhr.error`
+     *   * `angular.service.$xhr.bulk`
+     *   * `angular.service.$xhr.cache`
+     *   * `angular.service.$resource`
+     *   * `angular.service.$cookies`
+     *   * `angular.service.$cookieStore`
+     * 
+     * # Writing your own services
+     * <pre>
+     * angular.service('notify', function(location) {
+     *   this.one = function() {
+     *   }
+     * }, {$inject: ['$location']});
+     * </pre>
+     * 
+     * # Using services in controller
+     */
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName,
