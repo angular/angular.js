@@ -1,179 +1,24 @@
 <!DOCTYPE HTML>
 <html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/" ng:controller="DocsController">
 <head>
-  <title>&lt;Angular/&gt; Docs</title>
+  <title>&lt;angular/&gt;: {{getTitle()}}</title>
+
   <meta name="fragment" content="!">
-  <link rel="stylesheet" href="wiki_widgets.css" type="text/css" media="screen">
-  <link rel="stylesheet" href="doc_widgets.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" type="text/css" media="screen" />
-  <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" type="text/css" media="screen" />
+
+  <link rel="stylesheet" href="doc_widgets.css" type="text/css" />
+  <link rel="stylesheet" href="docs.css" type="text/css"/>
+  <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" type="text/css"/>
+  <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" type="text/css"/>
+
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-  <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
-  <script type="text/javascript" src="doc_widgets.js"></script>
   <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
   <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
   <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushXml.js"></script>
+
+  <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
+  <script type="text/javascript" src="docs.js"></script>
+  <script type="text/javascript" src="doc_widgets.js"></script>
   <script type="text/javascript" src="docs-data.js"></script>
-  <script type="text/javascript">
-    SyntaxHighlighter['defaults'].toolbar = false;
-
-    DocsController.$inject = ['$location', '$browser']
-  	function DocsController($location, $browser) {
-  	  this.docs = NG_DOC;
-  	  window.$root = this.$root;
-  	  
-  	  this.getUrl = function(page){
-  	    return '#!' + encodeURIComponent(page.name);
-  	  };
-
-  	  this.getCurrentPartial = function(){
-        return './' + this.getTitle() + '.html';
-  	  }
-  	  
-  	  this.getTitle = function(){
-        var hashPath = $location.hashPath || '!angular';
-        if (hashPath.match(/^!angular/)) {
-  	      this.partialTitle = hashPath.substring(1);
-  	    }
-  	    return this.partialTitle;
-  	  }
-  	  
-  	  this.getClass = function(page) {
-  	    return 'level-' + page.depth + 
-  	     (page.name == this.getTitle() ? ' selected' : '');
-  	  };
-  	  
-  	}
-  </script>
-  <style type="text/css" media="screen">
-    body {
-      font-family: Arial, sans-serif;
-      font-size: 14px;
-      margin: 0;
-      padding: 0;
-    }
-    
-    a {
-      color: blue;
-    }
-    
-    .nav-section {
-      margin-left: 1em;
-      margin-top: 0.5em;
-    }
-    
-    .section-title {
-      float: right;
-    }
-    
-    #header {
-      background-color: #F2C200;
-      margin-bottom: 1em;
-    }
-
-    #header h1 {
-      font-weight: normal;
-      font-size: 30px;
-      line-height: 30px;
-      margin: 0;
-      padding: 10px 10px;
-      height: 30px;
-    }
-
-    #header .angular {
-      font-family: Courier New, monospace;
-      font-weight: bold;
-    }
-
-    #header h1 a {
-      color: black;
-      text-decoration: none;
-    }
-
-    #header h1 a:hover {
-      text-decoration: underline;
-    }
-
-    #section {
-      position: absolute;
-      z-index: -1;
-      width: 100%;
-    }
-
-    #section ng\:include {
-      margin: 0 1em 1em 15em;
-      display: block;
-    }
-
-    #section h1 {
-      font-family: monospace;
-      margin-top: 0;
-      padding-bottom: 5px;
-      border-bottom: 1px solid #CCC;
-    }
-
-    #sidebar {
-      width: 180px;
-      float: left;
-      padding-left: 1em;
-    }
-    
-    #sidebar a {
-      text-decoration: none;
-    }
-    
-    #sidebar a:hover {
-      text-decoration: underline;
-    }
-    
-    #sidebar input {
-      width: 175px;
-      margin-bottom: 1em;
-    }
-
-    #sidebar ul {
-      list-style-type: none;
-      /*TODO(esprehn): Can we just reset globally and not break examples?*/
-      margin: 0;
-      padding: 0;
-    }
-
-    #sidebar ul li {
-    }
-    
-    #sidebar ul li a {
-      display: block;
-      padding: 2px 2px 2px 4px;
-    } 
-
-    #sidebar ul li.selected a {
-      background-color: #DDD;
-      border-radius: 5px;
-      -moz-border-radius: 5px;
-      border: 1px solid #CCC;
-      padding: 1px 1px 1px 3px;
-    }
-    
-    #sidebar ul li.level-0 {
-      margin-left: 0em;
-      font-weight: bold;
-      font-size: 1.2em;
-    }
-    
-    #sidebar ul li.level-1 {
-      margin-left: 1em;
-      margin-top: 5px;
-      font-size: 1.1em;
-      font-weight: bold;
-    }
-    
-    #sidebar ul li.level-2 {
-      margin-left: 2em;
-      font-family: monospace;
-    }
-    
-  </style>
-  <title>&lt;angular/&gt;: {{getTitle()}}</title>
 </head>
 <body>
   <div id="header">
@@ -182,18 +27,20 @@
       <a href="index.html"><span class="angular">&lt;angular/&gt;</span> Docs</a>
     </h1>
   </div>
-  <div id="sidebar" class="nav">
-   <div>
-     <input type="text" name="filterText" placeholder="search documentaiton"/>
-	   <ul>
-	     <li ng:repeat="page in docs.pages.$filter(filterText)" ng:class="getClass(page)">
-	       <a href="{{getUrl(page)}}" ng:click="">{{page.shortName}}</a>
-	     </li>
-	   </ul>
-   </div>
-  </div>
-  <div id="section">
-    <ng:include src="getCurrentPartial()"></ng:include>
+  <div id="page">
+	  <div id="sidebar" class="nav">
+	   <div class="doc-list">
+	     <input type="text" name="filterText" placeholder="search documentaiton"/>
+		   <ul>
+		     <li ng:repeat="page in pages.$filter(filterText)" ng:class="getClass(page)">
+		       <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
+		     </li>
+		   </ul>
+	   </div>
+	  </div>
+	  <div id="section">
+	    <ng:include src="getCurrentPartial()"></ng:include>
+	  </div>
   </div>
 </body>
 </html>

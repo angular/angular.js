@@ -1,1 +1,1 @@
-NG_DOC={{{JSON}}};
+NG_PAGES={{{JSON}}};

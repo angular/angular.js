@@ -19,8 +19,9 @@ function createInjector(providerScope, providers, cache) {
    *   string: return an instance for the injection key.
    *   array of keys: returns an array of instances.
    *   function: look at $inject property of function to determine instances
-   *             and then call the function with instances and scope. Any
-   *             additional arguments are passed on to function.
+   *             and then call the function with instances and `scope`. Any
+   *             additional arguments (`args`) are appended to the function 
+   *             arguments.
    *   object: initialize eager providers and publish them the ones with publish here.
    *   none:   same as object but use providerScope as place to publish.
    */
