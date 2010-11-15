@@ -2,6 +2,7 @@
 <html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/" ng:controller="DocsController">
 <head>
   <title>&lt;Angular/&gt; Docs</title>
+  <meta name="fragment" content="!">
   <link rel="stylesheet" href="wiki_widgets.css" type="text/css" media="screen">
   <link rel="stylesheet" href="doc_widgets.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" type="text/css" media="screen" />
@@ -22,7 +23,7 @@
   	  window.$root = this.$root;
   	  
   	  this.getUrl = function(page){
-  	    return '#' + encodeURIComponent(page.name);
+  	    return '#!' + encodeURIComponent(page.name);
   	  };
 
   	  this.getCurrentPartial = function(){
@@ -30,9 +31,9 @@
   	  }
   	  
   	  this.getTitle = function(){
-        var hashPath = $location.hashPath || 'angular';
-        if (hashPath.match(/^angular/)) {
-  	      this.partialTitle = hashPath;
+        var hashPath = $location.hashPath || '!angular';
+        if (hashPath.match(/^!angular/)) {
+  	      this.partialTitle = hashPath.substring(1);
   	    }
   	    return this.partialTitle;
   	  }
