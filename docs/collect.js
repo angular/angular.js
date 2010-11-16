@@ -229,7 +229,8 @@ var TAG = {
   param: function(doc, name, value){
     doc.param = doc.param || [];
     doc.paramRest = doc.paramRest || [];
-    var match = value.match(/^({([^\s=]+)(=)?}\s*)?(([^\s=]+)|\[(\S+)+=([^\]]+)\])\s+(.*)/);
+    var match = value.match(/^({([^\s=]+)(=)?}\s*)?(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
+                           // 1 2       23 3     1 45       5   6   6 7      7  4   8  8
     if (match) {
       var param = {
           type: match[2],
