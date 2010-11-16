@@ -1,4 +1,12 @@
 <h1>{{name}}</h1>
+
+{{#deprecated}}
+<fieldset class="deprecated">
+  <legend>Deprecated API</legend>
+  {{deprecated}}
+</fieldset>
+{{/deprecated}}
+
 {{{description}}}
 
 {{#example}}

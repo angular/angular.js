@@ -130,3 +130,12 @@ a {
   margin-left: 3em;
   font-family: monospace;
 }
+
+.deprecated {
+  border: 2px solid red;
+}
+
+.deprecated legend {
+  font-weight: bold;
+  color: red;
+}
