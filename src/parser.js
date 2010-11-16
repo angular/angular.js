@@ -67,10 +67,7 @@ function lex(text, parseStringsForObjects){
         tokens.push({index:index, text:ch, fn:fn, json: was('[,:') && is('+-')});
         index += 1;
       } else {
-        throw "Lexer Error: Unexpected next character [" +
-            text.substring(index) +
-            "] in expression '" + text +
-            "' at column '" + (index+1) + "'.";
+        throwError("Unexpected next character ", index, index+1);
       }
     }
     lastCh = ch;
@@ -103,6 +100,16 @@ function lex(text, parseStringsForObjects){
   function isExpOperator(ch) {
     return ch == '-' || ch == '+' || isNumber(ch);
   }
+
+  function throwError(error, start, end) {
+    end = end || index;
+    throw Error("Lexer Error: " + error + " at column" +
+        (isDefined(start) ?
+            "s " + start +  "-" + index + " [" + text.substring(start, end) + "]" : 
+            " " + end) + 
+        " in expression [" + text + "].");
+  }
+
   function readNumber() {
     var number = "";
     var start = index;
@@ -121,7 +128,7 @@ function lex(text, parseStringsForObjects){
         } else if (isExpOperator(ch) &&
             (!peekCh || !isNumber(peekCh)) &&
             number.charAt(number.length - 1) == 'e') {
-          throw 'Lexer found invalid exponential value "' + text + '"';
+          throwError('Invalid exponent');
         } else {
           break;
         }
@@ -151,7 +158,7 @@ function lex(text, parseStringsForObjects){
     }
     tokens.push({index:start, text:ident, fn:fn, json: OPERATORS[ident]});
   }
-
+  
   function readString(quote) {
     var start = index;
     index++;
@@ -165,9 +172,7 @@ function lex(text, parseStringsForObjects){
         if (ch == 'u') {
           var hex = text.substring(index + 1, index + 5);
           if (!hex.match(/[\da-f]{4}/i))
-            throw "Lexer Error: Invalid unicode escape [\\u" +
-              hex + "] starting at column '" +
-              start + "' in expression '" + text + "'.";
+            throwError( "Invalid unicode escape [\\u" + hex + "]");
           index += 4;
           string += String.fromCharCode(parseInt(hex, 16));
         } else {
@@ -194,9 +199,7 @@ function lex(text, parseStringsForObjects){
       }
       index++;
     }
-    throw "Lexer Error: Unterminated quote [" +
-        text.substring(start) + "] starting at column '" +
-        (start+1) + "' in expression '" + text + "'.";
+    throwError("Unterminated quote", start);
   }
   function readRegexp(quote) {
     var start = index;
@@ -227,9 +230,7 @@ function lex(text, parseStringsForObjects){
       }
       index++;
     }
-    throw "Lexer Error: Unterminated RegExp [" +
-        text.substring(start) + "] starting at column '" +
-        (start+1) + "' in expression '" + text + "'.";
+    throwError("Unterminated RegExp", start);
   }
 }
 
@@ -249,17 +250,16 @@ function parser(text, json){
   };
 
   ///////////////////////////////////
-
-  function error(msg, token) {
-    throw "Token '" + token.text +
-      "' is " + msg + " at column='" +
-      (token.index + 1) + "' of expression '" +
-      text + "' starting at '" + text.substring(token.index) + "'.";
+  function throwError(msg, token) {
+    throw Error("Parse Error: Token '" + token.text +
+      "' " + msg + " at column " +
+      (token.index + 1) + " of expression [" +
+      text + "] starting at [" + text.substring(token.index) + "].");
   }
 
   function peekToken() {
     if (tokens.length === 0)
-      throw "Unexpected end of expression: " + text;
+      throw Error("Unexpected end of expression: " + text);
     return tokens[0];
   }
 
@@ -280,10 +280,7 @@ function parser(text, json){
     if (token) {
       if (json && !token.json) {
         index = token.index;
-        throw "Expression at column='" +
-          token.index + "' of expression '" +
-          text + "' starting at '" + text.substring(token.index) +
-          "' is not valid json.";
+        throwError("is not valid json", token);
       }
       tokens.shift();
       this.currentToken = token;
@@ -294,11 +291,7 @@ function parser(text, json){
 
   function consume(e1){
     if (!expect(e1)) {
-      var token = peek();
-      throw "Expecting '" + e1 + "' at column '" +
-          (token.index+1) + "' in '" +
-          text + "' got '" +
-          text.substring(token.index) + "'.";
+      throwError("is unexpected, expecting [" + e1 + "]", peek());
     }
   }
 
@@ -320,8 +313,7 @@ function parser(text, json){
 
   function assertAllConsumed(){
     if (tokens.length !== 0) {
-      throw "Did not understand '" + text.substring(tokens[0].index) +
-          "' while evaluating '" + text + "'.";
+      throwError("is extra token not part of expression", tokens[0]);
     }
   }
 
@@ -387,18 +379,7 @@ function parser(text, json){
   }
 
   function expression(){
-    return throwStmt();
-  }
-
-  function throwStmt(){
-    if (expect('throw')) {
-      var throwExp = assignment();
-      return function (self) {
-        throw throwExp(self);
-      };
-    } else {
-      return assignment();
-    }
+    return assignment();
   }
 
   function assignment(){
@@ -406,9 +387,8 @@ function parser(text, json){
     var token;
     if (token = expect('=')) {
       if (!left.isAssignable) {
-        throw "Left hand side '" +
-        text.substring(0, token.index) + "' of assignment '" +
-        text.substring(token.index) + "' is not assignable.";
+        throwError("implies assignment but [" +
+          text.substring(0, token.index) + "] can not be assigned to", token);
       }
       var ident = function(){return left.isAssignable;};
       return binaryFn(ident, token.fn, logicalOR());
@@ -498,8 +478,7 @@ function parser(text, json){
         instance = instance[key];
     }
     if (typeof instance != $function) {
-      throw "Function '" + token.text + "' at column '" +
-      (token.index+1)  + "' in '" + text + "' is not defined.";
+      throwError("should be a function", token);
     }
     return instance;
   }
@@ -518,7 +497,7 @@ function parser(text, json){
       var token = expect();
       primary = token.fn;
       if (!primary) {
-        error("not a primary expression", token);
+        throwError("not a primary expression", token);
       }
     }
     var next;
@@ -530,7 +509,7 @@ function parser(text, json){
       } else if (next.text === '.') {
         primary = fieldAccess(primary);
       } else {
-        throw "IMPOSSIBLE";
+        throwError("IMPOSSIBLE");
       }
     }
     return primary;

@@ -84,6 +84,7 @@ var _undefined        = undefined,
     PRIORITY_WATCH    = -1000,
     PRIORITY_LAST     =  99999,
     PRIORITY          = {'FIRST': PRIORITY_FIRST, 'LAST': PRIORITY_LAST, 'WATCH':PRIORITY_WATCH},
+    Error             = window.Error,
     jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
     _                 = window['_'],
     /** holds major version number for IE or NaN for real browsers */
@@ -554,6 +555,18 @@ function foreachSorted(obj, iterator, context) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
   return keys;
+}
+
+
+function formatError(arg) {
+  if (arg instanceof Error) {
+    if (arg.stack) {
+      arg = arg.stack;
+    } else if (arg.sourceURL) {
+      arg = arg.message + '\n' + arg.sourceURL + ':' + arg.line;
+    }
+  }
+  return arg;
 }
 
 

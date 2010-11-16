@@ -101,7 +101,7 @@ function expressionCompile(exp){
 }
 
 function errorHandlerFor(element, error) {
-  elementError(element, NG_EXCEPTION, isDefined(error) ? toJson(error) : error);
+  elementError(element, NG_EXCEPTION, isDefined(error) ? formatError(error) : error);
 }
 
 function createScope(parent, providers, instanceCache) {

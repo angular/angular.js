@@ -168,7 +168,7 @@ describe("directives", function(){
       var log = "";
       log += element.attr('ng-exception') + ';';
       log += element.hasClass('ng-exception') + ';';
-      expect(log).toEqual("\"Expected ng:repeat in form of 'item in collection' but got 'i dont parse'.\";true;");
+      expect(log.match(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'./)).toBeTruthy();
     });
 
     it('should expose iterator offset as $index when iterating over arrays', function() {
