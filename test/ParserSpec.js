@@ -158,11 +158,11 @@ describe('parser', function() {
     it('should throws exception for invalid exponent', function() {
       expect(function() {
         lex("0.5E-");
-      }).toThrow('Lexer found invalid exponential value "0.5E-"');
+      }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-].'));
       
       expect(function() {
         lex("0.5E-A");
-      }).toThrow('Lexer found invalid exponential value "0.5E-A"');
+      }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].'));
     });
 
     it('should tokenize number starting with a dot', function() {
@@ -173,7 +173,7 @@ describe('parser', function() {
     it('should throw error on invalid unicode', function() {
       expect(function() {
         lex("'\\u1''bla'");
-      }).toThrow("Lexer Error: Invalid unicode escape [\\u1''b] starting at column '0' in expression ''\\u1''bla''.");
+      }).toThrow(new Error("Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
     });
   });
   
@@ -225,7 +225,7 @@ describe('parser', function() {
 
     expect(function() {
       scope.$eval("1|nonExistant");
-    }).toThrow("Function 'nonExistant' at column '3' in '1|nonExistant' is not defined.");
+    }).toThrow(new Error("Parse Error: Token 'nonExistant' should be a function at column 3 of expression [1|nonExistant] starting at [nonExistant]."));
     
     scope.$set('offset', 3);
     expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
@@ -310,14 +310,6 @@ describe('parser', function() {
   it('should evaluate multipple statements', function() {
     expect(scope.$eval("a=1;b=3;a+b")).toEqual(4);
     expect(scope.$eval(";;1;;")).toEqual(1);
-  });
-
-  it('should evaluate throw', function() {
-    scope.$set('e', 'abc');
-    
-    expect(function() {
-      scope.$eval("throw e");
-    }).toThrow('abc');
   });
 
   it('should evaluate object methods in correct context (this)', function() {

@@ -106,7 +106,7 @@ describe('scope/model', function(){
       model.$watch('name', function(newVal, oldVal){
         count ++;
         nameNewVal = newVal;
-        nameOldVal = oldVal
+        nameOldVal = oldVal;
       });
 
       expect(count).toBe(1);
@@ -123,12 +123,12 @@ describe('scope/model', function(){
       model.$watch('name', function(newVal, oldVal){
         count ++;
         nameNewVal = newVal;
-        nameOldVal = oldVal
+        nameOldVal = oldVal;
       }, undefined, false);
 
       expect(count).toBe(0);
       expect(nameNewVal).toBe('crazy val 1');
-      expect(nameOldVal).toBe('crazy val 2')
+      expect(nameOldVal).toBe('crazy val 2');
     });
   });
 
@@ -143,17 +143,17 @@ describe('scope/model', function(){
   describe('$tryEval', function(){
     it('should report error on element', function(){
       var scope = createScope();
-      scope.$tryEval('throw "myerror";', function(error){
+      scope.$tryEval(function(){throw "myError";}, function(error){
         scope.error = error;
       });
-      expect(scope.error).toEqual('myerror');
+      expect(scope.error).toEqual('myError');
     });
 
     it('should report error on visible element', function(){
       var element = jqLite('<div></div>');
       var scope = createScope();
-      scope.$tryEval('throw "myError"', element);
-      expect(element.attr('ng-exception')).toEqual('"myError"'); // errors are jsonified
+      scope.$tryEval(function(){throw "myError";}, element);
+      expect(element.attr('ng-exception')).toEqual('myError'); 
       expect(element.hasClass('ng-exception')).toBeTruthy();
     });
 
@@ -163,7 +163,7 @@ describe('scope/model', function(){
       scope.$exceptionHandler = function(e){
         this.error = e;
       };
-      scope.$tryEval('throw "myError"');
+      scope.$tryEval(function(){throw "myError";});
       expect(scope.error).toEqual("myError");
     });
   });

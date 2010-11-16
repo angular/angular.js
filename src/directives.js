@@ -182,7 +182,7 @@ angularDirective("ng:bind", function(expression, element){
           oldElement = this.hasOwnProperty($$element) ? this.$element : _undefined;
       this.$element = element;
       value = this.$tryEval(expression, function(e){
-        error = toJson(e);
+        error = formatError(e);
       });
       this.$element = oldElement;
       // If we are HTML than save the raw HTML data so that we don't
@@ -466,15 +466,15 @@ angularWidget("@ng:repeat", function(expression, element){
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
     if (! match) {
-      throw "Expected ng:repeat in form of 'item in collection' but got '" +
-      expression + "'.";
+      throw Error("Expected ng:repeat in form of 'item in collection' but got '" +
+      expression + "'.");
     }
     lhs = match[1];
     rhs = match[2];
     match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
     if (!match) {
-      throw "'item' in 'item in collection' should be identifier or (key, value) but got '" +
-      keyValue + "'.";
+      throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+      keyValue + "'.");
     }
     valueIdent = match[3] || match[1];
     keyIdent = match[2];

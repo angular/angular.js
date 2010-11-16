@@ -311,8 +311,6 @@ angularServiceInject("$location", function(browser) {
    <button ng:click="$log.error(message)">error</button>
  */
 angularServiceInject("$log", function($window){
-  var console = $window.console || {log: noop, warn: noop, info: noop, error: noop},
-      log = console.log || noop;
   return {
     /**
      * @ngdoc method
@@ -322,7 +320,7 @@ angularServiceInject("$log", function($window){
      * @description
      * Write a log message
      */
-    log: bind(console, log),
+    log: consoleLog('log'),
     
     /**
      * @ngdoc method
@@ -332,7 +330,7 @@ angularServiceInject("$log", function($window){
      * @description
      * Write a warning message
      */
-    warn: bind(console, console.warn || log),
+    warn: consoleLog('warn'),
     
     /**
      * @ngdoc method
@@ -342,7 +340,7 @@ angularServiceInject("$log", function($window){
      * @description
      * Write an information message
      */
-    info: bind(console, console.info || log),
+    info: consoleLog('info'),
     
     /**
      * @ngdoc method
@@ -352,8 +350,25 @@ angularServiceInject("$log", function($window){
      * @description
      * Write an error message
      */
-    error: bind(console, console.error || log)
+    error: consoleLog('error')
   };
+  
+  function consoleLog(type) {
+    var console = $window.console || {};
+    var logFn = console[type] || console.log || noop;
+    if (logFn.apply) {
+      return function(){
+        var args = [];
+        foreach(arguments, function(arg){
+          args.push(formatError(arg));
+        });
+        return logFn.apply(console, args);
+      };
+    } else {
+      // we are IE, in which case there is nothing we can do
+      return logFn;
+    }
+  }
 }, ['$window'], EAGER_PUBLISHED);
 
 /**

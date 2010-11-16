@@ -70,6 +70,42 @@ describe("service", function(){
       scope.$log.info();
       scope.$log.error();
     });
+    
+    describe('Error', function(){
+      var e, $log, $console, errorArgs;
+      beforeEach(function(){
+        e = new Error('');
+        e.message = undefined;
+        e.sourceURL = undefined;
+        e.line = undefined;
+        e.stack = undefined;
+        
+        $console = angular.service('$log')({console:{error:function(){
+          errorArgs = arguments;
+        }}});
+      });
+      
+      it('should pass error if does not have trace', function(){
+        $console.error('abc', e);
+        expect(errorArgs).toEqual(['abc', e]);
+      });
+
+      it('should print stack', function(){
+        e.stack = 'stack';
+        $console.error('abc', e);
+        expect(errorArgs).toEqual(['abc', 'stack']);
+      });
+
+      it('should print line', function(){
+        e.message = 'message';
+        e.sourceURL = 'sourceURL';
+        e.line = '123';
+        $console.error('abc', e);
+        expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
+      });
+      
+    });
+    
   });
 
   describe("$exceptionHandler", function(){

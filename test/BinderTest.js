@@ -276,15 +276,15 @@ BinderTest.prototype.testIfTextBindingThrowsErrorDecorateTheSpan = function(){
   a.scope.$eval();
   var span = childNode(doc, 0);
   assertTrue(span.hasClass('ng-exception'));
-  assertEquals('ErrorMsg1', fromJson(span.text()));
-  assertEquals('"ErrorMsg1"', span.attr('ng-exception'));
+  assertTrue(!!span.text().match(/ErrorMsg1/));
+  assertTrue(!!span.attr('ng-exception').match(/ErrorMsg1/));
 
   a.scope.$set('error.throw', function(){throw "MyError";});
   a.scope.$eval();
   span = childNode(doc, 0);
   assertTrue(span.hasClass('ng-exception'));
   assertTrue(span.text(), span.text().match('MyError') !== null);
-  assertEquals('"MyError"', span.attr('ng-exception'));
+  assertEquals('MyError', span.attr('ng-exception'));
 
   a.scope.$set('error.throw', function(){return "ok";});
   a.scope.$eval();
@@ -438,13 +438,12 @@ BinderTest.prototype.testActionOnAHrefThrowsError = function(){
   var model = {books:[]};
   var c = this.compile('<a ng:click="action()">Add Phone</a>', model);
   c.scope.action = function(){
-    throw {a:'abc', b:2};
+    throw new Error('MyError');
   };
   var input = c.node;
   browserTrigger(input, 'click');
-  var error = fromJson(input.attr('ng-exception'));
-  assertEquals("abc", error.a);
-  assertEquals(2, error.b);
+  var error = input.attr('ng-exception');
+  assertTrue(!!error.match(/MyError/));
   assertTrue("should have an error class", input.hasClass('ng-exception'));
 
   // TODO: I think that exception should never get cleared so this portion of test makes no sense
