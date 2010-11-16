@@ -494,6 +494,7 @@ angularWidget('option', function(){
  *
  * @param {string} src expression evaluating to URL.
  * @param {Scope=} [scope=new_child_scope] expression evaluating to angular.scope
+ * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @example
  *   <select name="url">
@@ -521,7 +522,8 @@ angularWidget('option', function(){
 angularWidget('ng:include', function(element){
   var compiler = this,
       srcExp = element.attr("src"),
-      scopeExp = element.attr("scope") || '';
+      scopeExp = element.attr("scope") || '',
+      onloadExp = element[0].getAttribute('onload') || ''; //workaround for jquery bug #7537
   if (element[0]['ng:compiled']) {
     this.descend(true);
     this.directives(true);
@@ -546,13 +548,15 @@ angularWidget('ng:include', function(element){
       });
       this.$watch(function(){return changeCounter;}, function(){
         var src = this.$eval(srcExp),
-        useScope = this.$eval(scopeExp);
+            useScope = this.$eval(scopeExp);
+
         if (src) {
           xhr('GET', src, function(code, response){
             element.html(response);
             childScope = useScope || createScope(scope);
             compiler.compile(element)(element, childScope);
             childScope.$init();
+            scope.$eval(onloadExp);
           });
         } else {
           childScope = null;
