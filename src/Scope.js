@@ -167,19 +167,44 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
-     * Registers `listener` as a watcher of the `watchExp` and executes it (optional, see `initRun`
-     * flag). Afterwards `listener` is executed every time the result of `watchExp` changes.
+     * @ngdoc
+     * @name angular.scope#$watch
+     * @function
      *
-     * The `listener` function will be called with two parameters `newValue` and `oldValue`.
+     * @description
+     * Registers `listener` as a callback to be executed every time the `watchExp` changes. Be aware
+     * that callback gets, by default, called upon registration, this can be prevented via the
+     * `initRun` parameter.
      *
-     * @param {Function|string} watchExp Expression that yields results. Can be an angular string
-     *    expression or a function.
+     * @param {Function|string} watchExp Expression that should be evaluated and checked for change
+     *    during each eval cycle. Can be an angular string expression or a function.
      * @param {Function|string} listener Function (or angular string expression) that gets called
-     *    every time the value of the `watchExp` changes.
-     * @param {Function} exceptionHanlder Handler that gets called when listeners throws an
+     *    every time the value of the `watchExp` changes. The function will be called with two
+     *    parameters, `newValue` and `oldValue`.
+     * @param {(Function|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
+     *    that gets called when `watchExp` or `listener` throws an exception. If a DOMElement is
+     *    specified as handler, the element gets decorated by angular with the information about the
      *    exception.
-     * @param {boolean} [initRun=true] Flag that prevents the first execution of the listener upon
+     * @param {boolean=} [initRun=true] Flag that prevents the first execution of the listener upon
      *    registration.
+     *
+     * @example
+        <script type="text/javascript">
+          var scope = angular.scope();
+          scope.name = 'misko';
+          scope.counter = 0;
+
+          expect(scope.counter).toEqual(0);
+          scope.$watch('name', 'counter = counter + 1');
+          expect(scope.counter).toEqual(1);
+
+          scope.$eval();
+          expect(scope.counter).toEqual(1);
+
+          scope.name = 'adam';
+          scope.$eval();
+          expect(scope.counter).toEqual(2);
+        </script>
      */
     $watch: function(watchExp, listener, exceptionHandler, initRun) {
       var watch = expressionCompile(watchExp),
@@ -234,6 +259,36 @@ function createScope(parent, providers, instanceCache) {
       }
     },
 
+
+    /**
+       @ngdoc
+       @name angular.scope#$become
+       @function
+       @deprecated This method will be removed before 1.0
+
+       @description
+       Modifies the scope to act like an instance of the given class by:
+
+       - copying the class's prototype methods
+       - applying the class's initialization function to the scope instance (without using the new
+         operator)
+       -
+
+       That makes the scope be a `this` for the given class's methods — effectively an instance of
+       the given class with additional (scope) stuff. A scope can later `$become` another class.
+
+       `$become` gets used to make the current scope act like an instance of a controller class.
+       This allows for use of a controller class in two ways.
+
+       - as an ordinary JavaScript class for standalone testing, instantiated using the new
+         operator, with no attached view.
+       - as a controller for an angular model stored in a scope, "instantiated" by
+         `scope.$become(ControllerClass)`.
+
+       Either way, the controller's methods refer to the model  variables like `this.name`. When
+       stored in a scope, the model supports data binding. When bound to a view, {{name}} in the
+       HTML template refers to the same variable.
+     */
     $become: function(Class) {
       if (isFunction(Class)) {
         instance.constructor = Class;
