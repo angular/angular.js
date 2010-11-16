@@ -212,6 +212,7 @@ var TAG = {
   namespace: valueTag,
   css: valueTag,
   see: valueTag,
+  deprecated: valueTag,
   usageContent: valueTag,
   'function': valueTag,
   description: markdownTag,

@@ -182,19 +182,25 @@ describe('collect', function(){
       });
     });
     
-    describe('@describe', function(){
+    describe('@description', function(){
       it('should support pre blocks', function(){
         TAG.description(doc, 'description', '<pre>abc</pre>');
         expect(doc.description).toEqual('<div ng:non-bindable><pre class="brush: js; html-script: true; toolbar: false;">abc</pre></div>');
       });
-      
-      describe('@example', function(){
-        it('should not remove {{}}', function(){
-          TAG.example(doc, 'example', 'text {{ abc }}');
-          expect(doc.example).toEqual('text {{ abc }}');
-        });
-        
+    });
+
+    describe('@example', function(){
+      it('should not remove {{}}', function(){
+        TAG.example(doc, 'example', 'text {{ abc }}');
+        expect(doc.example).toEqual('text {{ abc }}');
       });
+    });
+
+    describe('@deprecated', function() {
+      it('should parse @deprecated', function() {
+        TAG.deprecated(doc, 'deprecated', 'Replaced with foo.');
+        expect(doc.deprecated).toBe('Replaced with foo.');
+      })
     });
 
   });
