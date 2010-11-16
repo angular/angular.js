@@ -13,5 +13,3 @@
   <doc:scenario>{{{scenario}}}</doc:scenario>
 </doc:example>
 {{/example}}
-
-<script>SyntaxHighlighter.highlight();</script>

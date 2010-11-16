@@ -1,7 +1,7 @@
 SyntaxHighlighter['defaults'].toolbar = false;
 
-DocsController.$inject = ['$location', '$browser'];
-function DocsController($location, $browser) {
+DocsController.$inject = ['$location', '$browser', '$window'];
+function DocsController($location, $browser, $window) {
   this.pages = NG_PAGES;
   window.$root = this.$root;
   
@@ -25,6 +25,11 @@ function DocsController($location, $browser) {
     var depth = page.name.split(/\./).length - 1;
     return 'level-' + depth + 
      (page.name == this.getTitle() ? ' selected' : '');
+  };
+
+  this.afterPartialLoaded = function() {
+    $window.scroll(0,0);
+    SyntaxHighlighter.highlight();
   };
   
 }

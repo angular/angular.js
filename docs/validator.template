@@ -37,5 +37,3 @@ angular.validator.{{shortName}}({{paramFirst.name}}{{#paramRest}}{{^default}}, {
   <doc:scenario>{{{scenario}}}</doc:scenario>
 </doc:example>
 {{/example}}
-
-<script>SyntaxHighlighter.highlight();</script>

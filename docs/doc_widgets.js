@@ -54,10 +54,6 @@
     } catch (e) {
       alert(e);
     }
-
-    return function() {
-      SyntaxHighlighter.highlight();
-    };
   });
   
   function indent(text) {
