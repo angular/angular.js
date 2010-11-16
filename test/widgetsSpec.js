@@ -532,6 +532,19 @@ describe("widget", function(){
       // we need to have real events on the scopes.
       expect(element.text()).toEqual('4');
     });
+
+    it('should evaluate onload expression when a partial is loaded', function() {
+      var element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
+      var scope = angular.compile(element);
+
+      expect(scope.loaded).not.toBeDefined();
+
+      scope.url = 'myUrl';
+      scope.$inject('$xhr.cache').data.myUrl = {value:'my partial'};
+      scope.$init();
+      expect(element.text()).toEqual('my partial');
+      expect(scope.loaded).toBe(true);
+    });
   });
 
   describe('a', function() {
