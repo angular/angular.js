@@ -18,7 +18,7 @@ if (typeof document.getAttribute == $undefined)
  * @function
  *
  * @description Converts string to lowercase
- * @param {string} value
+ * @param {string} value String to be lowercased.
  * @returns {string} Lowercased string.
  */
 var lowercase = function (value){ return isString(value) ? value.toLowerCase() : value; };
