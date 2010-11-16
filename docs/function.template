@@ -1,0 +1,31 @@
+<h1>{{name}}</h1>
+<h2>Description</h2>
+{{{description}}}
+
+<h2>Usage</h2>
+<tt ng:non-bindable>
+{{name}}({{paramFirst.name}}{{#paramRest}}, {{name}}{{/paramRest}} );
+</tt>
+
+<h3>Parameters</h3>
+<ul>
+  {{#param}}
+  <li><tt>{{name}}:{{#type}}{{type}}{{/type}}{{^type}}:*{{/type}}{{#default}}={{default}}{{/default}}</tt>: {{{description}}}</li>
+  {{/param}}
+</ul>
+
+<h3>Returns</h3>
+{{{returns}}}
+
+{{#example}}
+<h2>Example</h2>
+{{{exampleDescription}}}
+<doc:example>
+  <doc:source>
+{{/example}}
+    {{{example}}}
+{{#example}}
+  </doc:source>
+  <doc:scenario>{{{scenario}}}</doc:scenario>
+</doc:example>
+{{/example}}
