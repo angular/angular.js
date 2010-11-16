@@ -74,7 +74,7 @@ describe('json', function(){
   });
 
   it('should serialize $ properties', function() {
-    var obj = {$a: 'a'}
+    var obj = {$a: 'a'};
     expect(angular.toJson(obj)).toEqual('{"$a":"a"}');
   });
 
@@ -118,31 +118,38 @@ describe('json', function(){
 
   describe('security', function(){
     it('should not allow naked expressions', function(){
-      expect(function(){fromJson('1+2');}).toThrow("Did not understand '+2' while evaluating '1+2'.");
+      expect(function(){fromJson('1+2');}).
+        toThrow(new Error("Parse Error: Token '+' is extra token not part of expression at column 2 of expression [1+2] starting at [+2]."));
     });
 
     it('should not allow naked expressions group', function(){
-      expect(function(){fromJson('(1+2)');}).toThrow("Expression at column='0' of expression '(1+2)' starting at '(1+2)' is not valid json.");
+      expect(function(){fromJson('(1+2)');}).
+        toThrow(new Error("Parse Error: Token '(' is not valid json at column 1 of expression [(1+2)] starting at [(1+2)]."));
     });
 
     it('should not allow expressions in objects', function(){
-      expect(function(){fromJson('{a:abc()}');}).toThrow("Expression at column='3' of expression '{a:abc()}' starting at 'abc()}' is not valid json.");
+      expect(function(){fromJson('{a:abc()}');}).
+        toThrow(new Error("Parse Error: Token 'abc' is not valid json at column 4 of expression [{a:abc()}] starting at [abc()}]."));
     });
 
     it('should not allow expressions in arrays', function(){
-      expect(function(){fromJson('[1+2]');}).toThrow("Expression at column='2' of expression '[1+2]' starting at '+2]' is not valid json.");
+      expect(function(){fromJson('[1+2]');}).
+        toThrow(new Error("Parse Error: Token '+' is not valid json at column 3 of expression [[1+2]] starting at [+2]]."));
     });
 
     it('should not allow vars', function(){
-      expect(function(){fromJson('[1, x]');}).toThrow("Expression at column='4' of expression '[1, x]' starting at 'x]' is not valid json.");
+      expect(function(){fromJson('[1, x]');}).
+        toThrow(new Error("Parse Error: Token 'x' is not valid json at column 5 of expression [[1, x]] starting at [x]]."));
     });
 
     it('should not allow dereference', function(){
-      expect(function(){fromJson('["".constructor]');}).toThrow("Expression at column='3' of expression '[\"\".constructor]' starting at '.constructor]' is not valid json.");
+      expect(function(){fromJson('["".constructor]');}).
+        toThrow(new Error("Parse Error: Token '.' is not valid json at column 4 of expression [[\"\".constructor]] starting at [.constructor]]."));
     });
 
     it('should not allow expressions ofter valid json', function(){
-      expect(function(){fromJson('[].constructor');}).toThrow("Expression at column='2' of expression '[].constructor' starting at '.constructor' is not valid json.");
+      expect(function(){fromJson('[].constructor');}).
+        toThrow(new Error("Parse Error: Token '.' is not valid json at column 3 of expression [[].constructor] starting at [.constructor]."));
     });
   });
 

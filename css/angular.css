@@ -8,6 +8,7 @@
   border: 2px solid #FF0000;
   font-family: "Courier New", Courier, monospace;
   font-size: smaller;
+  white-space: pre;
 }
 
 .ng-validation-error {
