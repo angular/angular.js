@@ -1,19 +1,10 @@
-/**
- * @ngdoc overview
- * @name angular
- * @namespace Namespace for angular.
- * @description
- * Hello world!
- * 
- * @example
- */
 ////////////////////////////////////
 
 if (typeof document.getAttribute == $undefined)
   document.getAttribute = function() {};
 
 /**
- * @ngdoc
+ * @ngdoc function
  * @name angular.lowercase
  * @function
  *
@@ -25,7 +16,7 @@ var lowercase = function (value){ return isString(value) ? value.toLowerCase() :
 
 
 /**
- * @ngdoc
+ * @ngdoc function
  * @name angular.uppercase
  * @function
  *
@@ -95,6 +86,7 @@ var _undefined        = undefined,
     error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
 
     /**
+     * @ngdoc overview
      * @name angular
      * @namespace The exported angular namespace.
      */
