@@ -185,7 +185,19 @@ describe('collect', function(){
     describe('@description', function(){
       it('should support pre blocks', function(){
         TAG.description(doc, 'description', '<pre>abc</pre>');
-        expect(doc.description).toEqual('<div ng:non-bindable><pre class="brush: js; html-script: true; toolbar: false;">abc</pre></div>');
+        expect(doc.description).
+          toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>');
+      });
+
+      it('should support multiple pre blocks', function() {
+        TAG.description(doc, 'description', 'foo \n<pre>abc</pre>\n#bah\nfoo \n<pre>cba</pre>');
+        expect(doc.description).
+          toBe('<p>foo </p>' +
+               '<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>' +
+               '<h2>bah</h2>\n\n' +
+               '<p>foo </p>' +
+               '<div ng:non-bindable><pre class="brush: js; html-script: true;">cba</pre></div>');
+
       });
     });
 

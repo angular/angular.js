@@ -142,12 +142,12 @@ function escapedHtmlTag(doc, name, value) {
 
 function markdownTag(doc, name, value) {
   doc[name] = markdown(value.replace(/^#/gm, '##')).
-    replace(/\<pre\>/gmi, '<div ng:non-bindable><pre class="brush: js; html-script: true; toolbar: false;">').
+    replace(/\<pre\>/gmi, '<div ng:non-bindable><pre class="brush: js; html-script: true;">').
     replace(/\<\/pre\>/gmi, '</pre></div>');
 }
 
 function markdown(text) {
-  var parts = text.split(/(<pre>[\s\S]*<\/pre>)/);
+  var parts = text.split(/(<pre>[\s\S]*?<\/pre>)/);
   parts.forEach(function(text, i){
     if (!text.match(/^<pre>/)) {
       text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
