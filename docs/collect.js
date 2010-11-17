@@ -217,7 +217,6 @@ var TAG = {
   'function': valueTag,
   description: markdownTag,
   TODO: markdownTag,
-  returns: markdownTag,
   paramDescription: markdownTag,
   exampleDescription: markdownTag,
   element: valueTag,
