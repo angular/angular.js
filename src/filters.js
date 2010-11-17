@@ -42,8 +42,8 @@ angularFilter.currency = function(amount){
  *
  *   If the input is not a number empty string is returned.
  *
- * @param {(number|string)} number Number to format.
- * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to. Default 2.
+ * @param {number|string} number Number to format.
+ * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
