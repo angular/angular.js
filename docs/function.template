@@ -18,12 +18,17 @@
 <h3>Parameters</h3>
 <ul>
   {{#param}}
-  <li><tt>{{name}}:{{#type}}{{type}}{{/type}}{{^type}}:*{{/type}}{{#default}}={{default}}{{/default}}</tt>: {{{description}}}</li>
+  <li><tt>{{name}}</tt> –
+      <tt>&#123;{{#type}}{{type}}{{/type}}{{^type}}*{{/type}}{{#optional}}={{/optional}}&#125;</tt>
+      <tt>{{#default}}[{{default}}]{{/default}}</tt>
+      – {{{description}}}</li>
   {{/param}}
 </ul>
 
+{{#returns}}
 <h3>Returns</h3>
-{{{returns}}}
+<tt>&#123;{{{type}}}&#125;</tt> {{{description}}}
+{{/returns}}
 
 {{#example}}
 <h2>Example</h2>
