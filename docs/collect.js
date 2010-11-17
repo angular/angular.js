@@ -169,7 +169,7 @@ function markdown(text) {
     if (!text.match(/^<pre>/)) {
       text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
       text = new Showdown.converter().makeHtml(text);
-      text = text.replace(/(angular\.[\$\w\._\-:]+)/gm, '<a href="#!$1">$1</a>');
+      text = text.replace(/[^#][^!](angular\.[\$\w\._\-:]+)/gm, '<a href="#!$1">$1</a>');
       text = text.replace(/(`(ng:[\w\._\-]+)`)/gm, '<a href="#!angular.directive.$2">$1</a>');
       parts[i] = text;
     }
