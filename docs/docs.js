@@ -22,9 +22,12 @@ function DocsController($location, $browser, $window) {
   };
   
   this.getClass = function(page) {
-    var depth = page.name.split(/\./).length - 1;
-    return 'level-' + depth + 
-     (page.name == this.getTitle() ? ' selected' : '');
+    var depth = page.name.split(/\./).length - 1,
+        cssClass = 'level-' + depth + (page.name == this.getTitle() ? ' selected' : '');
+
+    if (depth == 1 && page.type !== 'overview') cssClass += ' level-angular';
+
+    return cssClass;
   };
 
   this.afterPartialLoaded = function() {
