@@ -213,7 +213,7 @@ function returnsTag(doc, name, value) {
   if (match) {
     var tag = {
       type: match[1],
-      description: match[2] || false
+      description: markdownNoP(match[2]) || false
     };
   } else {
     throw "[" + doc.raw.file + ":" + doc.raw.line +
