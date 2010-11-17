@@ -31,7 +31,24 @@ var work = callback.chain(function () {
 }).onError(function(err){
   console.log('ERROR:', err.stack || err);
 }).onDone(function(){
-  keywordPages.sort(function(a,b){ return a.name == b.name ? 0:(a.name < b.name ? -1 : 1);});
+  keywordPages.sort(function(a,b){
+    // supper ugly comparator that orders all utility methods and objects before all the other stuff
+    // like widgets, directives, services, etc.
+    // Mother of all beatiful code please forgive me for the sin that this code certainly is.
+
+    if (a.name === b.name) return 0;
+    if (a.name === 'angular') return -1;
+    if (b.name === 'angular') return 1;
+
+    function namespacedName(page) {
+      return (page.name.match(/\./g).length === 1 && page.type !== 'overview' ? '0' : '1') + page.name;
+    }
+
+    var namespacedA = namespacedName(a),
+        namespacedB = namespacedName(b);
+
+    return namespacedA < namespacedB ? -1 : 1;
+  });
   writeDoc(documentation.pages);
   mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(keywordPages)}, callback.chain());
   mergeTemplate('docs-scenario.js', 'docs-scenario.js', documentation, callback.chain());
@@ -347,6 +364,7 @@ function processNgDoc(documentation, doc) {
     documentation.pages.push(doc);
     keywordPages.push({
       name:doc.name,
+      type: doc.ngdoc,
       keywords:keywords(doc.raw.text)
     });
   }

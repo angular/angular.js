@@ -67,7 +67,7 @@ a {
 }
 
 #sidebar {
-  padding: 10px;
+  padding: 10px 10px 20px 10px;
   background-color: #EEE;
   border-right: 1px solid #DDD;
 }
@@ -112,6 +112,14 @@ a {
   margin-left: 0em;
   font-weight: bold;
   font-size: 1.2em;
+}
+
+#sidebar ul li.level-1.level-angular {
+  font-family: monospace;
+  font-weight: normal;
+  font-size: 1em;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 
 #sidebar ul li.level-1 {
