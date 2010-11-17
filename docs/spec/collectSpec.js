@@ -83,16 +83,18 @@ describe('collect', function(){
             '{(number|string)} number Number \n to format.');
         expect(doc.param).toEqual([{ 
           type : '(number|string)', 
-          name : 'number', 
+          name : 'number',
+          optional: false,
           'default' : undefined, 
           description : 'Number \n to format.' }]);
       });
-      it('should parse with default', function(){
+      it('should parse with default and optional', function(){
         TAG.param(doc, 'param', 
             '{(number|string)=} [fractionSize=2] desc');
         expect(doc.param).toEqual([{ 
           type : '(number|string)', 
-          name : 'fractionSize', 
+          name : 'fractionSize',
+          optional: true,
           'default' : '2', 
           description : 'desc' }]);
       });

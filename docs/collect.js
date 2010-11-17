@@ -252,6 +252,7 @@ var TAG = {
       var param = {
           type: match[2],
           name: match[6] || match[5],
+          optional: !!match[3],
           'default':match[7],
           description:markdownNoP(value.replace(match[0], match[8]))
         };
