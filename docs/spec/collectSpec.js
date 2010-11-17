@@ -170,6 +170,11 @@ describe('collect', function(){
         TAG.returns(doc, 'returns', '{string} descrip tion');
         expect(doc.returns).toEqual({type: 'string', description: 'descrip tion'});
       });
+
+      it('should transform description of @returns with markdown', function() {
+        TAG.returns(doc, 'returns', '{string} descrip *tion*');
+        expect(doc.returns).toEqual({type: 'string', description: 'descrip <em>tion</em>'});
+      });
     });
     
     describe('@description', function(){
