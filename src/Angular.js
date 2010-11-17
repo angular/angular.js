@@ -525,16 +525,17 @@ var _undefined        = undefined,
      * Each service could have dependencies (other services), which are passed in constructor.
      * Because JS is dynamicaly typed language, dependency injection can not use static types
      * to satisfy these dependencies, so each service must explicitely define its dependencies.
-     * This is done by $inject property.
+     * This is done by `$inject` property.
      * 
      * For now, life time of all services is the same as the life time of page.
      * 
      * 
-     * # Standard services
+     * # Built-in services
      * The Angular framework provides a standard set of services for common operations.
      * You can write your own services and rewrite these standard services as well.
-     * Like other core angular variables, standard services always start with $.
-     * 
+     * Like other core angular variables, the built-in services always start with $.
+     *
+     *   * `angular.service.$browser`
      *   * `angular.service.$window`
      *   * `angular.service.$document`
      *   * `angular.service.$location`
@@ -551,15 +552,128 @@ var _undefined        = undefined,
      *   * `angular.service.$cookies`
      *   * `angular.service.$cookieStore`
      * 
-     * # Writing your own services
+     * # Writing your own custom services
+     * Angular provides only set of basic services, so you will probably need to write your custom
+     * service very soon. To do so, you need to write a factory function and register this function
+     * to angular's dependency injector. This factory function must return an object - your service
+     * (it is not called with new operator).
+     * 
+     * **angular.service** has three parameters:
+     * 
+     *   - `{string} name` - Name of the service
+     *   - `{function()} factory` - Factory function (called just once by DI)
+     *   - `{Object} config` -  Hash of configuration (`$inject`, `$creation`)
+     * 
+     * If your service requires - depends on other services, you need to specify them 
+     * in config hash - property $inject. This property is an array of strings (service names).
+     * These dependencies will be passed as parameters to the factory function by DI.
+     * This approach is very useful when testing, as you can inject mocks/stubs/dummies.
+     * 
+     * Here is an example of very simple service. This service requires $window service (it's
+     * passed as a parameter to factory function) and it's just a function.
+     * 
+     * This service simple stores all notifications and after third one, it displays all of them by
+     * window alert.
      * <pre>
-     * angular.service('notify', function(location) {
-     *   this.one = function() {
-     *   }
-     * }, {$inject: ['$location']});
+       angular.service('notify', function(win) {
+         var msgs = [];
+         return function(msg) {
+           msgs.push(msg);
+           if (msgs.length == 3) {
+             win.alert(msgs.join("\n"));
+             msgs = [];
+           }
+         };
+       }, {$inject: ['$window']});
+     * </pre>
+     *  
+     * And here is a unit test for this service. We use Jasmine spy (mock) instead of real browser's alert.
+     * <pre>
+     * var mock, notify;
+     *
+     * beforeEach(function() {
+     *   mock = {alert: jasmine.createSpy()};
+     *   notify = angular.service('notify')(mock);
+     * });
+     *  
+     * it('should not alert first two notifications', function() {
+     *   notify('one');
+     *   notify('two');
+     *   expect(mock.alert).not.toHaveBeenCalled();
+     * });
+     *
+     * it('should alert all after third notification', function() {
+     *   notify('one');
+     *   notify('two');
+     *   notify('three');
+     *   expect(mock.alert).toHaveBeenCalledWith("one\ntwo\nthree");
+     * });
+     *
+     * it('should clear messages after alert', function() {
+     *   notify('one');
+     *   notify('two');
+     *   notify('third');
+     *   notify('more');
+     *   notify('two');
+     *   notify('third');
+     *   expect(mock.alert.callCount).toEqual(2);
+     *   expect(mock.alert.mostRecentCall.args).toEqual(["more\ntwo\nthird"]);
+     * });
+     * </pre>
+     *
+     * # Injecting services into controllers
+     * Using services in a controllers is very similar to using service in other service.
+     * Again, we will use dependency injection.
+     * 
+     * JavaScript is dynamic language, so DI is not able to figure out which services to inject by
+     * static types (like in static typed languages). Therefore you must specify the service name
+     * by the `$inject` property - it's an array that contains strings with names of services to be
+     * injected. The name must match the id that service has been registered as with angular.
+     * The order of the services in the array matters, because this order will be used when calling
+     * the factory function with injected parameters. The names of parameters in factory function
+     * don't matter, but by convention they match the service ids.
+     * <pre>
+     * function myController($loc, $log) {
+     *   this.firstMethod = function() {
+     *     // use $location service
+     *     $loc.setHash();
+     *   };
+     *   this.secondMethod = function() {
+     *     // use $log service
+     *     $log.info('...');
+     *   };
+     * }
+     * // which services to inject ?
+     * myController.$inject = ['$location', '$log']; 
      * </pre>
      * 
-     * # Using services in controller
+     * @example
+     * <script type="text/javascript">
+     *  angular.service('notify', function(win) {
+     *    var msgs = [];
+     *    return function(msg) {
+     *      msgs.push(msg);
+     *      if (msgs.length == 3) {
+     *        win.alert(msgs.join("\n"));
+     *        msgs = [];
+     *      }
+     *    };
+     *  }, {$inject: ['$window']});
+     *  
+     *  function myController(notifyService) {
+     *    this.callNotify = function(msg) {
+     *      notifyService(msg);
+     *    };
+     *  }
+     *  
+     *  myController.$inject = ['notify'];
+     * </script>
+     * 
+     * <div ng:controller="myController">
+     * <p>Let's try this simple notify service, injected into the controller...</p>
+     * <input ng:init="message='test'" type="text" name="message" />
+     * <button ng:click="callNotify(message);">NOTIFY</button>
+     * </div>
      */
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),

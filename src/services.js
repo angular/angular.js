@@ -897,7 +897,7 @@ angularServiceInject('$xhr.cache', function($xhr){
        <h1 style="font-size: 15px;">
 	       <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
 	       <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-	       <a href="#" ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
+	       <a href ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
        </h1>
        {{item.object.content | html}}
        <div ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
