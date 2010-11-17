@@ -994,7 +994,7 @@ angularServiceInject('$cookieStore', function($store) {
      * Returns the value of given cookie key
      * 
      * @param {string} key
-     * @returns Cookie value
+     * @returns {Object} Deserialized cookie value
      */
     get: function(/**string*/key) {
       return fromJson($store[key]);
