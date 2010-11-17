@@ -252,9 +252,10 @@ var TAG = {
   element: valueTag,
   methodOf: valueTag,
   name: function(doc, name, value) {
+    var parts = value.split(/\./);
     doc.name = value;
-    doc.shortName  = value.split(/\./).pop();
-    doc.depth = value.split(/\./).length - 1;
+    doc.shortName  = parts.pop();
+    doc.depth = parts.length;
   },
   param: function(doc, name, value){
     doc.param = doc.param || [];
