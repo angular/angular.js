@@ -1,11 +1,34 @@
 var array = [].constructor;
 
+/**
+ * @ngdoc function
+ * @name angular.toJson
+ * @function
+ *
+ * @description
+ * Serializes the input into a JSON formated string.
+ *
+ * @param {Object|Array|Date|string|number} obj Input to jsonify.
+ * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
+ * @returns {string} Jsonified string representing `obj`.
+ */
 function toJson(obj, pretty) {
   var buf = [];
   toJsonArray(buf, obj, pretty ? "\n  " : _null, []);
   return buf.join('');
 }
 
+/**
+ * @ngdoc function
+ * @name angular.fromJson
+ * @function
+ *
+ * @description
+ * Deserializes a string in the JSON format.
+ *
+ * @param {string} json JSON string to deserialize.
+ * @returns {Object|Array|Date|string|number} Deserialized thingy.
+ */
 function fromJson(json) {
   if (!json) return json;
   try {
