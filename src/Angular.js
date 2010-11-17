@@ -9,10 +9,10 @@ if (typeof document.getAttribute == $undefined)
  * @function
  *
  * @description Converts string to lowercase
- * @param {string} value String to be lowercased.
+ * @param {string} string String to be lowercased.
  * @returns {string} Lowercased string.
  */
-var lowercase = function (value){ return isString(value) ? value.toLowerCase() : value; };
+var lowercase = function (string){ return isString(string) ? string.toLowerCase() : string; };
 
 
 /**
@@ -21,10 +21,10 @@ var lowercase = function (value){ return isString(value) ? value.toLowerCase() :
  * @function
  *
  * @description Converts string to uppercase.
- * @param {string} value
+ * @param {string} string String to be uppercased.
  * @returns {string} Uppercased string.
  */
-var uppercase = function (value){ return isString(value) ? value.toUpperCase() : value; };
+var uppercase = function (string){ return isString(string) ? string.toUpperCase() : string; };
 
 
 var manualLowercase = function (s) {
