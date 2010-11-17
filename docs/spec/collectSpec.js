@@ -161,24 +161,14 @@ describe('collect', function(){
     });
     
     describe('@returns', function() {
-      it('should parse @returns', function() {
-      expect(function() {TAG.returns(doc, 'returns', '');})
-        .not.toThrow();
-      });
-      
-      it('should parse @returns with type', function() {
-        TAG.returns(doc, 'returns', '{string}');
-        expect(doc.returns.type).toEqual('string');
-      });
-      
-      it('should parse @returns with description', function() {
-        TAG.returns(doc, 'returns', 'descrip tion');
-        expect(doc.returns.description).toEqual('descrip tion');
+      it('should not parse @returns without type', function() {
+      expect(function() {TAG.returns(doc, 'returns', 'lala');})
+        .toThrow();
       });
       
       it('should parse @returns with type and description', function() {
-        TAG.returns(doc, 'returns', '{string} description');
-        expect(doc.returns).toEqual({type: 'string', description: 'description'});
+        TAG.returns(doc, 'returns', '{string} descrip tion');
+        expect(doc.returns).toEqual({type: 'string', description: 'descrip tion'});
       });
     });
     

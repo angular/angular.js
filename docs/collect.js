@@ -208,12 +208,12 @@ function propertyTag(doc, name, value) {
 }
 
 function returnsTag(doc, name, value) {
-  var match = value.match(/^({(\S+)}\s*)?(.*)?/);
+  var match = value.match(/^{(\S+)}\s+(.*)?/);
   
   if (match) {
     var tag = {
-      type: match[2],
-      description: match[3] || false
+      type: match[1],
+      description: match[2] || false
     };
   } else {
     throw "[" + doc.raw.file + ":" + doc.raw.line +

@@ -38,7 +38,7 @@ angularFormatter.json = formatter(toJson, fromJson);
  * @description
  *   Use boolean formatter if you wish to store the data as boolean.
  *
- * @returns Convert to `true` unless user enters (blank), `f`, `false`, `0`, `no`, `[]`.
+ * @returns {boolean} Converts to `true` unless user enters (blank), `f`, `false`, `0`, `no`, `[]`.
  *
  * @example
  * Enter truthy text:
@@ -62,7 +62,7 @@ angularFormatter['boolean'] = formatter(toString, toBoolean);
  * @description
  * Use number formatter if you wish to convert the user entered string to a number.
  *
- * @returns parse string to number.
+ * @returns {number} Number from the parsed string.
  *
  * @example
  * Enter valid number:
@@ -89,9 +89,9 @@ angularFormatter.number = formatter(toString, function(obj){
  * @name angular.formatter.list
  *
  * @description
- * Use number formatter if you wish to convert the user entered string to a number.
+ * Use list formatter if you wish to convert the user entered string to an array.
  *
- * @returns parse string to number.
+ * @returns {Array} Array parsed from the entered string.
  *
  * @example
  * Enter a list of items:
