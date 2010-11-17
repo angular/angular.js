@@ -621,7 +621,8 @@ angularServiceInject('$route', function(location) {
          * @methodOf angular.service.$route
          * 
          * @param {string} path Route path (matched against $location.hash)
-         * @param {Object} params
+         * @param {Object} params Mapping information to be assigned to `$route.current` on route
+         *    match.
          * @returns {Object} route object
          * 
          * @description
@@ -993,10 +994,10 @@ angularServiceInject('$cookieStore', function($store) {
      * @description
      * Returns the value of given cookie key
      * 
-     * @param {string} key
-     * @returns {Object} Deserialized cookie value
+     * @param {string} key Id to use for lookup.
+     * @returns {Object} Deserialized cookie value.
      */
-    get: function(/**string*/key) {
+    get: function(key) {
       return fromJson($store[key]);
     },
 
@@ -1008,8 +1009,8 @@ angularServiceInject('$cookieStore', function($store) {
      * @description
      * Sets a value for given cookie key
      * 
-     * @param {string} key
-     * @param {Object} value
+     * @param {string} key Id for the `value`.
+     * @param {Object} value Value to be stored.
      */
     put: function(key, value) {
       $store[key] = toJson(value);
@@ -1023,7 +1024,7 @@ angularServiceInject('$cookieStore', function($store) {
      * @description
      * Remove given cookie
      * 
-     * @param {string} key
+     * @param {string} key Id of the key-value pair to delete.
      */
     remove: function(key) {
       delete $store[key];

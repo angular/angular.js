@@ -246,15 +246,15 @@ var TAG = {
   param: function(doc, name, value){
     doc.param = doc.param || [];
     doc.paramRest = doc.paramRest || [];
-    var match = value.match(/^({([^\s=]+)(=)?}\s*)?(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
-                           // 1 2       23 3     1 45       5   6   6 7      7  4   8  8
+    var match = value.match(/^{([^}=]+)(=)?}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
+                           //  1      12 2     34       4   5   5 6      6  3   7  7
     if (match) {
       var param = {
-          type: match[2],
-          name: match[6] || match[5],
-          optional: !!match[3],
-          'default':match[7],
-          description:markdownNoP(value.replace(match[0], match[8]))
+          type: match[1],
+          name: match[5] || match[4],
+          optional: !!match[2],
+          'default':match[6],
+          description:markdownNoP(value.replace(match[0], match[7]))
         };
       doc.param.push(param);
       if (!doc.paramFirst) {

@@ -128,7 +128,7 @@ function Browser(location, document, head, XHR, $log) {
    * @methodOf angular.service.$browser
    * 
    * @param {number} interval How often should browser call poll functions (ms)
-   * @param {function} setTimeout
+   * @param {function} setTimeout Reference to a real or fake `setTimeout` function.
    * 
    * @description
    * Configures the poller to run in the specified intervals, using the specified
@@ -251,11 +251,12 @@ function Browser(location, document, head, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#hover
    * @methodOf angular.service.$browser
-   * 
-   * @param {function(Object, boolean)} listener
-   * 
+   *
    * @description
-   * Set hover listener - function that will be called when hover event occurs.
+   * Set hover listener.
+   *
+   * @param {function(Object, boolean)} listener Function that will be called when hover event
+   *    occurs.
    */
   self.hover = function(listener) { hoverListener = listener; };
   
