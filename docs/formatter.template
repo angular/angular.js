@@ -21,11 +21,15 @@ var userInputString = angular.formatter.{{shortName}}.format(modelValue);<br/>
 var modelValue = angular.formatter.{{shortName}}.parse(userInputString);
 </tt>
 
+{{#returns}}
 <h3>Returns</h3>
-{{{returns}}}
+<tt>&#123;{{{type}}}&#125;</tt> {{{description}}}
+{{/returns}}
 
+{{#css}}
 <h3>CSS</h3>
 {{{css}}}
+{{/css}}
 
 {{#example}}
 <h2>Example</h2>
