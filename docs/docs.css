@@ -66,6 +66,18 @@ a {
   border-bottom: 1px solid #CCC;
 }
 
+#section h2 {
+  margin-top: 1.8em;
+}
+
+#section h1 + h2 {
+  margin-top: 1.3em;
+}
+
+#section h3 {
+  margin-top: 1.5em;
+}
+
 #sidebar {
   padding: 10px 10px 20px 10px;
   background-color: #EEE;
