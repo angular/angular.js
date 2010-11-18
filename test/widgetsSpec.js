@@ -11,6 +11,7 @@ describe("widget", function(){
       (before||noop).apply(scope);
       if (parent) parent.append(element);
       scope.$init();
+      return scope;
     };
   });
 
@@ -579,6 +580,86 @@ describe("widget", function(){
       }
 
       expect(document.location.href).toEqual(orgLocation);
+    });
+  });
+
+
+  describe('@ng:repeat', function() {
+
+    it('should ng:repeat over array', function(){
+      var scope = compile('<ul><li ng:repeat="item in items" ng:init="suffix = \';\'" ng:bind="item + suffix"></li></ul>');
+
+      Array.prototype.extraProperty = "should be ignored";
+      scope.items = ['misko', 'shyam'];
+      scope.$eval();
+      expect(element.text()).toEqual('misko;shyam;');
+      delete Array.prototype.extraProperty;
+
+      scope.items = ['adam', 'kai', 'brad'];
+      scope.$eval();
+      expect(element.text()).toEqual('adam;kai;brad;');
+
+      scope.items = ['brad'];
+      scope.$eval();
+      expect(element.text()).toEqual('brad;');
+    });
+
+    it('should ng:repeat over object', function(){
+      var scope = compile('<ul><li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li></ul>');
+      scope.$set('items', {misko:'swe', shyam:'set'});
+      scope.$eval();
+      expect(element.text()).toEqual('misko:swe;shyam:set;');
+    });
+
+    it('should error on wrong parsing of ng:repeat', function(){
+      var scope = compile('<ul><li ng:repeat="i dont parse"></li></ul>');
+      var log = "";
+      log += element.attr('ng-exception') + ';';
+      log += element.hasClass('ng-exception') + ';';
+      expect(log.match(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'./)).toBeTruthy();
+    });
+
+    it('should expose iterator offset as $index when iterating over arrays', function() {
+      var scope = compile('<ul><li ng:repeat="item in items" ' +
+                                  'ng:bind="item + $index + \'|\'"></li></ul>');
+      scope.items = ['misko', 'shyam', 'frodo'];
+      scope.$eval();
+      expect(element.text()).toEqual('misko0|shyam1|frodo2|');
+    });
+
+    it('should expose iterator offset as $index when iterating over objects', function() {
+      var scope = compile('<ul><li ng:repeat="(key, val) in items" ' +
+                                  'ng:bind="key + \':\' + val + $index + \'|\'"></li></ul>');
+      scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
+      scope.$eval();
+      expect(element.text()).toEqual('misko:m0|shyam:s1|frodo:f2|');
+    });
+
+    it('should expose iterator position as $position when iterating over arrays', function() {
+      var scope = compile('<ul><li ng:repeat="item in items" ' +
+                                  'ng:bind="item + \':\' + $position + \'|\'"></li></ul>');
+      scope.items = ['misko', 'shyam', 'doug', 'frodo'];
+      scope.$eval();
+      expect(element.text()).toEqual('misko:first|shyam:middle|doug:middle|frodo:last|');
+    });
+
+    it('should expose iterator position as $position when iterating over objects', function() {
+      var scope = compile('<ul><li ng:repeat="(key, val) in items" ' +
+                                  'ng:bind="key + \':\' + val + \':\' + $position + \'|\'"></li></ul>');
+      scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
+      scope.$eval();
+      expect(element.text()).toEqual('misko:m:first|shyam:s:middle|doug:d:middle|frodo:f:last|');
+    });
+  });
+
+
+  describe('@ng:non-bindable', function() {
+
+    it('should prevent compilation of the owning element and its children', function(){
+      var scope = compile('<div ng:non-bindable><span ng:bind="name"></span></div>');
+      scope.$set('name', 'misko');
+      scope.$eval();
+      expect(element.text()).toEqual('');
     });
   });
 });
