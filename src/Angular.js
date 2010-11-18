@@ -97,20 +97,18 @@ var _undefined        = undefined,
      * @ngdoc overview
      * @name angular.directive
      * @namespace Namespace for all directives.
+     *
      * @description
-     * A directive is an XML attribute that you can use in an existing HTML 
-     * element type or in a DOM element type that you create using 
-     * `angular.widget`, to modify that element's properties. You can use 
-     * any number of directives per element.
+     * A directive is an HTML attribute that you can use in an existing HTML element type or in a
+     * DOM element type that you create as {@link angular.widget}, to modify that element's
+     * properties. You can use any number of directives per element.
      * 
-     * For example, you can add the ng:bind directive as an attribute of an 
-     * HTML span element, as in `<span ng:bind="1+2"></span>`. 
-     * How does this work? The compiler passes the attribute value `1+2` 
-     * to the ng:bind extension, which in turn tells the Scope to watch
-     * that expression and report changes. On any change it sets the span
-     * text to the expression value.
+     * For example, you can add the ng:bind directive as an attribute of an HTML span element, as in
+     * `<span ng:bind="1+2"></span>`. How does this work? The compiler passes the attribute value
+     * `1+2` to the ng:bind extension, which in turn tells the {@link angular.scope} to watch that
+     * expression and report changes. On any change it sets the span text to the expression value.
      * 
-     * Here's how to define ng:bind:
+     * Here's how to define {@link angular.directive.ng:bind ng:bind}:
      * <pre>
         angular.directive('ng:bind', function(expression, compiledElement) {
           var compiler = this;
@@ -123,36 +121,31 @@ var _undefined        = undefined,
         });
      * </pre>
      * 
-     * ## Directive vs. Attribute Widget
-     * Both attribute widgets and directives can compile a DOM element 
-     * attribute. So why have two different ways to do the same thing? 
-     * The answer is that order matters, but you have no control over 
-     * the order in which attributes are read. To solve this we
-     * apply attribute widget before the directive. 
+     * # Directive vs. Attribute Widget
+     * Both [attribute widgets](#!angular.widget) and directives can compile a DOM element
+     * attribute. So why have two different ways to do the same thing? The answer is that order
+     * matters, but we have no control over the order in which attributes are read. To solve this
+     * we apply attribute widget before the directive.
      * 
-     * For example, consider this piece of HTML, which uses the 
-     * directives `ng:repeat`, `ng:init`, and `ng:bind`:
+     * For example, consider this piece of HTML, which uses the directives `ng:repeat`, `ng:init`,
+     * and `ng:bind`:
      * <pre>
         <ul ng:init="people=['mike', 'mary']">
           <li ng:repeat="person in people" ng:init="a=a+1" ng:bind="person"></li>
         </ul>
      * </pre>
      * 
-     * Notice that the order of execution matters here. We need to 
-     * execute ng:repeat before we run the `ng:init` and `ng:bind` 
-     * on the `<li/>;`. This is because we want to run the 
-     * `ng:init="a=a+1` and `ng:bind="person"` once for each 
-     * person in people. We could not have used directive to 
-     * create this template because attributes are read in an 
-     * unspecified order and there is no way of guaranteeing 
-     * that the repeater attribute would execute first. Using 
-     * the `ng:repeat` attribute directive ensures that we can 
-     * transform the DOM element into a template.
+     * Notice that the order of execution matters here. We need to execute
+     * {@link angular.directive.ng:repeat ng:repeat} before we run the
+     * {@link angular.directive.ng:init ng:init} and `ng:bind` on the `<li/>;`. This is because we
+     * want to run the `ng:init="a=a+1` and `ng:bind="person"` once for each person in people. We
+     * could not have used directive to create this template because attributes are read in an
+     * unspecified order and there is no way of guaranteeing that the repeater attribute would
+     * execute first. Using the `ng:repeat` attribute directive ensures that we can transform the
+     * DOM element into a template.
      * 
-     * Widgets run before directives. Widgets are expected to 
-     * manipulate the DOM whereas directives are not expected 
-     * to manipulate the DOM, and they run last.
-     * 
+     * Widgets run before directives. Widgets may manipulate the DOM whereas directives are not
+     * expected to do so, and so they run last.
      */
     angularDirective  = extensionMap(angular, 'directive'),
 
@@ -324,8 +317,9 @@ var _undefined        = undefined,
      * # Standard Filters
      *
      * The Angular framework provides a standard set of filters for common operations, including:
-     * {@link angular.filter.currency}, {@link angular.filter.json}, {@link angular.filter.number},
-     * and {@link angular.filter.html}. You can also add your own filters.
+     * {@link angular.filter.currency currency}, {@link angular.filter.json json},
+     * {@link angular.filter.number number}, and {@link angular.filter.html html}. You can also add
+     * your own filters.
      *
      *
      * # Syntax
@@ -893,66 +887,103 @@ function toKeyValue(obj) {
  * @name angular.directive.ng:autobind
  * @element script
  *
+ * @TODO ng:autobind is not a directive!! it should be documented as bootstrap parameter in a
+ *     separate bootstrap section.
+ * @TODO rename to ng:autobind to ng:autoboot
+ *
  * @description
- * This section explains how to bootstrap your application to 
- * the <angular/> environment using either the 
- * `angular-x.x.x.js` or `angular-x.x.x.min.js` script.
+ * This section explains how to bootstrap your application with angular using either the angular
+ * javascript file.
+ *
+ *
+ * ## The angular distribution
+ * Note that there are two versions of the angular javascript file that you can use:
  * 
- * ## The bootstrap code
- * Note that there are two versions of the bootstrap code that you can use:
- * 
- * * `angular-x.x.x.js` - this file is unobfuscated, uncompressed, and thus 
- *     human-readable. Note that despite the name of the file, there is 
- *     no additional functionality built in to help you debug your 
- *     application; it has the prefix debug because you can read 
- *     the source code.
- * * `angular-x.x.x.min.js` - this is a compressed and obfuscated version 
- *     of `angular-x.x.x.js`. You might want to use this version if you 
- *     want to load a smaller but functionally equivalent version of the 
- *     code in your application. Note: this minified version was created 
- *     using the Closure Compiler.
+ * * `angular.js` - the development version - this file is unobfuscated, uncompressed, and thus
+ *    human-readable and useful when developing your angular applications.
+ * * `angular.min.js` - the production version - this is a minified and obfuscated version of
+ *    `angular.js`. You want to use this version when you want to load a smaller but functionally
+ *    equivalent version of the code in your application. We use the Closure compiler to create this
+ *    file.
  *     
  * 
- * ## Auto bind using: <tt>ng:autobind</tt>
- * The simplest way to get an <angular/> application up and running is by
- * inserting a script tag in your HTML file that bootstraps the 
- * `http://code.angularjs.org/angular-x.x.x.min.js` code and uses the 
- * special `ng:autobind` attribute, like in this snippet of HTML:
+ * ## Auto-bootstrap with `ng:autobind`
+ * The simplest way to get an <angular/> application up and running is by inserting a script tag in
+ * your HTML file that bootstraps the `http://code.angularjs.org/angular-x.x.x.min.js` code and uses
+ * the special `ng:autobind` attribute, like in this snippet of HTML:
  * 
  * <pre>
     &lt;!doctype html&gt;
     &lt;html xmlns:ng="http://angularjs.org"&gt;
      &lt;head&gt;
-      &lt;script type="text/javascript" ng:autobind
-              src="http://code.angularjs.org/angular-0.9.3.min.js"&gt;&lt;/script&gt;
+      &lt;script type="text/javascript" src="http://code.angularjs.org/angular-0.9.3.min.js"
+              ng:autobind&gt;&lt;/script&gt;
      &lt;/head&gt;
      &lt;body&gt;
        Hello {{'world'}}!
      &lt;/body&gt;
     &lt;/html&gt;
  * </pre>
- * 
- * The `ng:autobind` attribute tells <angular/> to compile and manage 
- * the whole HTML document. The compilation occurs in the page's 
- * `onLoad` handler. Note that you don't need to explicitly add an 
+ *
+ * The `ng:autobind` attribute tells <angular/> to compile and manage the whole HTML document. The
+ * compilation occurs in the page's `onLoad` handler. Note that you don't need to explicitly add an
  * `onLoad` event; auto bind mode takes care of all the magic for you.
+ *
+ *
+ * ## Auto-bootstrap with `#autobind`
+ * In rare cases when you can't define the `ng` namespace before the script tag (e.g. in some CMS
+ * systems, etc), it is possible to auto-bootstrap angular by appending `#autobind` to the script
+ * src URL, like in this snippet:
+ *
+ * <pre>
+    &lt;!doctype html&gt;
+    &lt;html&gt;
+     &lt;head&gt;
+      &lt;script type="text/javascript"
+              src="http://code.angularjs.org/angular-0.9.3.min.js#autobind"&gt;&lt;/script&gt;
+     &lt;/head&gt;
+     &lt;body&gt;
+       &lt;div xmlns:ng="http://angularjs.org"&gt;
+         Hello {{'world'}}!
+       &lt;/div&gt;
+     &lt;/body&gt;
+    &lt;/html&gt;
+ * </pre>
+ *
+ * In this case it's the `#autobind` URL fragment that tells angular to auto-bootstrap.
+ *
+ *
+ * ## Filename Restrictions for Auto-bootstrap
+ * In order for us to find the auto-bootstrap script attribute or URL fragment, the value of the
+ * `script` `src` attribute that loads angular script must match one of these naming
+ * conventions:
+ *
+ * - `angular.js`
+ * - `angular-min.js`
+ * - `angular-x.x.x.js`
+ * - `angular-x.x.x.min.js`
+ * - `angular-x.x.x-xxxxxxxx.js` (dev snapshot)
+ * - `angular-x.x.x-xxxxxxxx.min.js` (dev snapshot)
+ * - `angular-bootstrap.js` (used for development of angular)
+ *
+ * Optionally, any of the filename format above can be prepended with relative or absolute URL that
+ * ends with `/`.
+ *
+ *
+ * ## Manual Bootstrap
+ * Using auto-bootstrap is a handy way to start using <angular/>, but advanced users who want more
+ * control over the initialization process might prefer to use manual bootstrap instead.
  * 
- * # Manual Bind
- * Using autobind mode is a handy way to start using <angular/>, but 
- * advanced users who want more control over the initialization process 
- * might prefer to use manual bind mode instead.
- * 
- * The best way to get started with manual bind mode is to look at the 
- * magic behind `ng:autobind` by writing out each step of the autobind 
- * process explicitly. Note that the following code is equivalent to 
- * the code in the previous section.
+ * The best way to get started with manual bootstraping is to look at the magic behind `ng:autobind`
+ * by writing out each step of the autobind process explicitly. Note that the following code is
+ * equivalent to the code in the previous section.
  * 
  * <pre>
     &lt;!doctype html&gt;
     &lt;html xmlns:ng="http://angularjs.org"&gt;
      &lt;head&gt;
-      &lt;script type="text/javascript" ng:autobind
-              src="http://code.angularjs.org/angular-0.9.3.min.js"&gt;&lt;/script&gt;
+      &lt;script type="text/javascript" src="http://code.angularjs.org/angular-0.9.3.min.js"
+              ng:autobind&gt;&lt;/script&gt;
       &lt;script type="text/javascript"&gt;
        (function(window, previousOnLoad){
          window.onload = function(){
@@ -968,39 +999,37 @@ function toKeyValue(obj) {
     &lt;/html&gt;
  * </pre>
  * 
- * This is the sequence that your code should follow if you're writing 
- * your own manual binding code:
+ * This is the sequence that your code should follow if you're bootstrapping angular on your own:
  * 
- * * After the page is loaded, find the root of the HTML template, 
- *   which is typically the root of the document.
- * * Run the HTML compiler, which converts the templates into an 
- *   executable, bi-directionally bound application.
- *   
- * #XML Namespace
- * *IMPORTANT:* When using <angular/> you must declare the ng namespace
- *    using the xmlsn tag. If you don't declare the namespace, 
- *    Internet Explorer does not render widgets properly.
+ * * After the page is loaded, find the root of the HTML template, which is typically the root of
+ *   the document.
+ * * Run the HTML compiler, which converts the templates into an executable, bi-directionally bound
+ *   application.
+ *
+ *
+ * ##XML Namespace
+ * *IMPORTANT:* When using <angular/> you must declare the ng namespace using the xmlns tag. If you
+ * don't declare the namespace, Internet Explorer does not render widgets properly.
  *    
  * <pre>
  * &lt;html xmlns:ng="http://angularjs.org"&gt;
  * </pre>
- * 
- * # Create your own namespace
- * If you want to define your own widgets, you must create your own 
- * namespace and use that namespace to form the fully qualified 
- * widget name. For example, you could map the alias `my` to your 
- * domain and create a widget called my:widget. To create your own 
- * namespace, simply add another xmlsn tag to your page, create an 
- * alias, and set it to your unique domain:
+ *
+ *
+ * ## Create your own namespace
+ * If you want to define your own widgets, you must create your own namespace and use that namespace
+ * to form the fully qualified widget name. For example, you could map the alias `my` to your domain
+ * and create a widget called my:widget. To create your own namespace, simply add another xmlsn tag
+ * to your page, create an alias, and set it to your unique domain:
  * 
  * <pre>
  * &lt;html xmlns:ng="http://angularjs.org" xmlns:my="http://mydomain.com"&gt;
  * </pre>
- * 
- * # Global Object
- * The <angular/> script creates a single global variable `angular`
- * in the global namespace. All APIs are bound to fields of this 
- * global object.
+ *
+ *
+ * ## Global Object
+ * The <angular/> script creates a single global variable `angular` in the global namespace. All
+ * APIs are bound to fields of this global object.
  * 
  */
 function angularInit(config){
