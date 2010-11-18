@@ -313,7 +313,7 @@ var REMOVE_ATTRIBUTES = {
  * `ng:bind-attr` in the HTML since embedding 
  * <tt ng:non-bindable>{{expression}}</tt> into the 
  * attribute directly is the preferred way. The attributes get
- * translated into <span ng:bind-attr="{attr:expression}"/> at
+ * translated into `<span ng:bind-attr="{attr:expression}"/>` at
  * bootstrap time.
  * 
  * This HTML snippet is preferred way of working with `ng:bind-attr`
