@@ -13,11 +13,11 @@ describe('collect', function(){
     });
     
     it('should not replace anything in <pre>', function(){
-      expect(collect.markdown('angular.x\n<pre>\nangular.k\n</pre>\nangular.x')).
+      expect(collect.markdown('bah x\n<pre>\nangular.k\n</pre>\n asdf x')).
         toEqual(
-            '<p><a href="#!angular.x">angular.x</a></p>' + 
+            '<p>bah x</p>' +
             '<pre>\nangular.k\n</pre>' + 
-            '<p><a href="#!angular.x">angular.x</a></p>');
+            '<p>asdf x</p>');
     });
   });
   
@@ -195,6 +195,18 @@ describe('collect', function(){
                '<p>foo </p>' +
                '<div ng:non-bindable><pre class="brush: js; html-script: true;">cba</pre></div>');
 
+      });
+
+      it('should support nested @link annotations with or without description', function() {
+        TAG.description(doc, 'description',
+            'foo {@link angular.foo}\n\n da {@link angular.foo bar foo bar } \n\n' +
+            'dad{@link angular.foo}\n\n' +
+            '{@link angular.directive.ng:foo ng:foo}');
+        expect(doc.description).
+          toBe('<p>foo <a href="#!angular.foo"><code>angular.foo</code></a></p>\n\n' +
+               '<p>da <a href="#!angular.foo"><code>bar foo bar</code></a> </p>\n\n' +
+               '<p>dad<a href="#!angular.foo"><code>angular.foo</code></a></p>\n\n' +
+               '<p><a href="#!angular.directive.ng:foo"><code>ng:foo</code></a></p>');
       });
     });
 

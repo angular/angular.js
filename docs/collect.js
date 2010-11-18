@@ -163,14 +163,24 @@ function markdownTag(doc, name, value) {
     replace(/\<\/pre\>/gmi, '</pre></div>');
 }
 
+R_LINK = /{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/m
+        //       1       123     3 4     42
+
 function markdown(text) {
-  var parts = text.split(/(<pre>[\s\S]*?<\/pre>)/);
+  var parts = text.split(/(<pre>[\s\S]*?<\/pre>)/),
+      match;
+
   parts.forEach(function(text, i){
     if (!text.match(/^<pre>/)) {
       text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
       text = new Showdown.converter().makeHtml(text);
-      text = text.replace(/[^#][^!](angular\.[\$\w\._\-:]+)/gm, '<a href="#!$1">$1</a>');
-      text = text.replace(/(`(ng:[\w\._\-]+)`)/gm, '<a href="#!angular.directive.$2">$1</a>');
+
+      while (match = text.match(R_LINK)) {
+        text = text.replace(match[0], '<a href="#!' + match[1] + '"><code>' +
+                                        (match[4] || match[1]) +
+                                      '</code></a>');
+      }
+
       parts[i] = text;
     }
   });
