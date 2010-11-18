@@ -208,6 +208,12 @@ describe('collect', function(){
                '<p>dad<a href="#!angular.foo"><code>angular.foo</code></a></p>\n\n' +
                '<p><a href="#!angular.directive.ng:foo"><code>ng:foo</code></a></p>');
       });
+
+      it('should increment all headings by one', function() {
+        TAG.description(doc, 'description', '# foo\nabc');
+        expect(doc.description).
+          toBe('<h2>foo</h2>\n\n<p>abc</p>');
+      });
     });
 
     describe('@example', function(){
