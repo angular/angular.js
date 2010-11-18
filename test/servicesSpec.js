@@ -255,6 +255,12 @@ describe("service", function(){
       $browser.poll();
       expect($browser.setUrl).not.toHaveBeenCalled();
     });
+    
+    it('should not escape hash path', function() {
+      scope.$location.updateHash('!:%', {});
+      expect(scope.$location.hashPath).toEqual('!:%');
+      expect(scope.$location.hash).toEqual('!:%');
+    });
   });
 
   describe("$invalidWidgets", function(){

@@ -242,7 +242,7 @@ angularServiceInject("$location", function(browser) {
    */
   function composeHash(loc) {
     var hashSearch = toKeyValue(loc.hashSearch);
-    return escape(loc.hashPath) + (hashSearch ? '?' + hashSearch : '');
+    return loc.hashPath + (hashSearch ? '?' + hashSearch : '');
   }
 
   /**
@@ -281,7 +281,7 @@ angularServiceInject("$location", function(browser) {
 
     if (match) {
       h.hash = hash;
-      h.hashPath = unescape(match[1] || '');
+      h.hashPath = match[1] || '';
       h.hashSearch = parseKeyValue(match[3]);
     }
 
