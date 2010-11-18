@@ -166,49 +166,59 @@ function compileValidator(expr) {
 }
 
 /**
- * @ngdoc directive
- * @name angular.directive.ng:validate
+ * @ngdoc widget
+ * @name angular.widget.@ng:validate
  *
  * @description
- * This directive validates the user input. If the input does not
- * pass validation, this sets an `ng-validation-error` CSS class and 
- * an `ng:error` attribute on the input element. Visit validators to 
- * find out more.
- * 
+ * The `ng:validate` attribute widget validates the user input. If the input does not pass
+ * validation, the `ng-validation-error` CSS class and the `ng:error` attribute are set on the input
+ * element. Check out {@link angular.validator validators} to find out more.
+ *
+ * @param {string} validator The name of a built-in or custom {@link angular.validator validator} to
+ *     to be used.
+ *
  * @element INPUT
  * @css ng-validation-error
- * @param {function} validation call this function to validate input
- *   falsy return means validation passed, To return error, simply 
- *   return the error string.
  *
  * @exampleDescription
+ * This example shows how the input element becomes red when it contains invalid input. Correct
+ * the input to make the error disappear.
+ *
  * @example
-    I don't validate: <input type="text" name="value"><br/>
-    I cannot be blank: <input type="text" name="value" ng:required><br/>
-    I need an integer or nothing: <input type="text" name="value" ng:validate="integer"><br/>
-    I must have an integer: <input type="text" name="value" ng:required ng:validate="integer"><br/>
+    I don't validate:
+    <input type="text" name="value" value="NotANumber"><br/>
+
+    I need an integer or nothing:
+    <input type="text" name="value" ng:validate="integer"><br/>
  * 
  * @scenario
    it('should check ng:validate', function(){
-     expect(element('.doc-example-live :input:last').attr('className')).toMatch(/ng-validation-error/);
+     expect(element('.doc-example-live :input:last').attr('className')).
+       toMatch(/ng-validation-error/);
+
      input('value').enter('123');
-     expect(element('.doc-example-live :input:last').attr('className')).not().toMatch(/ng-validation-error/);
+     expect(element('.doc-example-live :input:last').attr('className')).
+       not().toMatch(/ng-validation-error/);
    });
  */
 /**
- * @ngdoc directive
- * @name angular.directive.ng:required
+ * @ngdoc widget
+ * @name angular.widget.@ng:required
  *
  * @description
- * This directive requires the user input to be present.
+ * The `ng:required` attribute widget validates that the user input is present. It is a special case
+ * of the {@link angular.widget.@ng:validate ng:validate} attribute widget.
  * 
  * @element INPUT
  * @css ng-validation-error
  *
  * @exampleDescription
+ * This example shows how the input element becomes red when it contains invalid input. Correct
+ * the input to make the error disappear.
+ *
  * @example
     I cannot be blank: <input type="text" name="value" ng:required><br/>
- * 
+ *
  * @scenario
    it('should check ng:required', function(){
      expect(element('.doc-example-live :input').attr('className')).toMatch(/ng-validation-error/);
@@ -217,18 +227,24 @@ function compileValidator(expr) {
    });
  */
 /**
- * @ngdoc directive
- * @name angular.directive.ng:format
+ * @ngdoc widget
+ * @name angular.widget.@ng:format
  *
  * @description
- * The `ng:format` directive formats stored data to user-readable 
- * text and parses the text back to the stored form. You might 
- * find this useful for example if you collect user input in a 
- * text field but need to store the data in the model as a list.
- * 
+ * The `ng:format` attribute widget formats stored data to user-readable text and parses the text
+ * back to the stored form. You might find this useful for example if you collect user input in a
+ * text field but need to store the data in the model as a list. Check out
+ * {@link angular.formatter formatters} to learn more.
+ *
+ * @param {string} formatter The name of the built-in or custom {@link angular.formatter formatter}
+ *     to be used.
+ *
  * @element INPUT
  *
  * @exampleDescription
+ * This example shows how the user input is converted from a string and internally represented as an
+ * array.
+ *
  * @example
     Enter a comma separated list of items: 
     <input type="text" name="list" ng:format="list" value="table, chairs, plate">
