@@ -104,6 +104,130 @@ function errorHandlerFor(element, error) {
   elementError(element, NG_EXCEPTION, isDefined(error) ? formatError(error) : error);
 }
 
+/**
+ * @ngdoc overview
+ * @name angular.scope
+ *
+ * @description
+ * Scope is a JavaScript object and the execution context for expressions. You can think about
+ * scopes as JavaScript objects that have extra APIs for registering watchers. A scope is the model
+ * in the model-view-controller design pattern.
+ *
+ * A few other characteristics of scopes:
+ *
+ * - Scopes can be nested. A scope (prototypically) inherits properties from its parent scope.
+ * - Scopes can be attached (bound) to the HTML DOM tree (the view).
+ * - A scope {@link angular.scope.$become becomes} `this` for a controller.
+ * - Scope's {@link angular.scope.$eval $eval} is used to update its view.
+ * - Scopes can {@link angular.scope.$watch watch} properties and fire events.
+ *
+ * # Basic Operations
+ * Scopes can be created by calling {@link angular.scope() angular.scope()} or by compiling HTML.
+ *
+ * {@link angular.widget Widgets} and data bindings register listeners on the current scope to get
+ * notified of changes to the scope state. When notified, these listeners push the updated state
+ * through to the DOM.
+ *
+ * Here is a simple scope snippet to show how you can interact with the scope.
+ * <pre>
+       var scope = angular.scope();
+       scope.salutation = 'Hello';
+       scope.name = 'World';
+
+       expect(scope.greeting).toEqual(undefined);
+
+       scope.$watch('name', function(){
+         this.greeting = this.salutation + ' ' + this.name + '!';
+       });
+
+       expect(scope.greeting).toEqual('Hello World!');
+       scope.name = 'Misko';
+       // scope.$eval() will propagate the change to listeners
+       expect(scope.greeting).toEqual('Hello World!');
+
+       scope.$eval();
+       expect(scope.greeting).toEqual('Hello Misko!');
+ * </pre>
+ *
+ * # Inheritance
+ * A scope can inherit from a parent scope, as in this example:
+ * <pre>
+     var parent = angular.scope();
+     var child = angular.scope(parent);
+
+     parent.salutation = "Hello";
+     child.name = "World";
+     expect(child.salutation).toEqual('Hello');
+
+     child.salutation = "Welcome";
+     expect(child.salutation).toEqual('Welcome');
+     expect(parent.salutation).toEqual('Hello');
+ * </pre>
+ *
+ * # Dependency Injection
+ * Scope also acts as a simple dependency injection framework.
+ *
+ * **TODO**: more info needed
+ *
+ * # When scopes are evaluated
+ * Anyone can update a scope by calling its {@link angular.scope.$eval $eval()} method. By default
+ * angular widgets listen to user change events (e.g. the user enters text into text field), copy
+ * the data from the widget to the scope (the MVC model), and then call the `$eval()` method on the
+ * root scope to update dependents. This creates a spreadsheet-like behavior: the bound views update
+ * immediately as the user types into the text field.
+ *
+ * Similarly, when a request to fetch data from a server is made and the response comes back, the
+ * data is written into the model and then $eval() is called to push updates through to the view and
+ * any other dependents.
+ *
+ * Because a change in the model that's triggered either by user input or by server response calls
+ * `$eval()`, it is unnecessary to call `$eval()` from within your controller. The only time when
+ * calling `$eval()` is needed, is when implementing a custom widget or service.
+ *
+ * Because scopes are inherited, the child scope `$eval()` overrides the parent `$eval()` method.
+ * So to update the whole page you need to call `$eval()` on the root scope as `$root.$eval()`.
+ *
+ * Note: A widget that creates scopes (i.e. {@link angular.widget.@ng:repeat ng:repeat}) is
+ * responsible for forwarding `$eval()` calls from the parent to those child scopes. That way,
+ * calling $eval() on the root scope will update the whole page.
+
+ *
+ * @exampleDescription
+ * This example demonstrates scope inheritance and property overriding.
+ *
+ * In this example, the root scope encompasses the whole HTML DOM tree. This scope has `salutation`,
+ * `name`, and `names` properties. The {@link angular.widget@ng:repeat ng:repeat} creates a child
+ * scope, one for each element in the names array. The repeater also assigns $index and name into
+ * the child scope.
+ *
+ * Notice that:
+ *
+ * - While the name is set in the child scope it does not change the name defined in the root scope.
+ * - The child scope inherits the salutation property from the root scope.
+ * - The $index property does not leak from the child scope to the root scope.
+ *
+ * @example
+   <ul ng:init="salutation='Hello'; name='Misko'; names=['World', 'Earth']">
+     <li ng:repeat="name in names">
+       {{$index}}: {{salutation}} {{name}}!
+     </li>
+   </ul>
+   <pre>
+   $index={{$index}}
+   salutation={{salutation}}
+   name={{name}}</pre>
+
+   @scenario
+   it('should inherit the salutation property and override the name property', function() {
+     expect(using('.doc-example-live').repeater('li').row(0)).
+       toEqual(['0', 'Hello', 'World']);
+     expect(using('.doc-example-live').repeater('li').row(1)).
+       toEqual(['1', 'Hello', 'Earth']);
+     expect(using('.doc-example-live').element('pre').text()).
+       toBe('$index=\nsalutation=Hello\nname=Misko');
+   });
+
+ */
 function createScope(parent, providers, instanceCache) {
   function Parent(){}
   parent = Parent.prototype = (parent || {});
@@ -115,11 +239,62 @@ function createScope(parent, providers, instanceCache) {
     'this': instance,
     $id: (scopeId++),
     $parent: parent,
+
+    /**
+     * @ngdoc function
+     * @name angular.scope.$bind
+     * @function
+     *
+     * @description
+     * Binds a function `fn` to the current scope. See: {@link angular.bind}.
+
+       <pre>
+         var scope = angular.scope();
+         var fn = scope.$bind(function(){
+           return this;
+         });
+         expect(fn()).toEqual(scope);
+       </pre>
+     *
+     * @param {function} fn Function to be bound.
+     */
     $bind: bind(instance, bind, instance),
     $get: bind(instance, getter, instance),
     $set: bind(instance, setter, instance),
 
-    $eval: function $eval(exp) {
+
+    /**
+     * @ngdoc function
+     * @name angular.scope.$eval
+     * @function
+     *
+     * @description
+     * Without the `exp` parameter triggers an eval cycle, for this scope and it's child scopes.
+     *
+     * With the `exp` parameter, compiles the expression to a function and calls it with `this` set
+     * to the current scope and returns the result.
+     *
+     * # Example
+       <pre>
+         var scope = angular.scope();
+         scope.a = 1;
+         scope.b = 2;
+
+         expect(scope.$eval('a+b')).toEqual(3);
+         expect(scope.$eval(function(){ return this.a + this.b; })).toEqual(3);
+
+         scope.$onEval('sum = a+b');
+         expect(scope.sum).toEqual(undefined);
+         scope.$eval();
+         expect(scope.sum).toEqual(3);
+       </pre>
+     *
+     * @param {(string|function)=} exp An angular expression to be compiled to a function or a js
+     *     function.
+     *
+     * @returns {*} The result of calling compiled `exp` with `this` set to the current scope.
+     */
+    $eval: function(exp) {
       var type = typeof exp;
       var i, iSize;
       var j, jSize;
@@ -145,6 +320,43 @@ function createScope(parent, providers, instanceCache) {
       }
     },
 
+
+    /**
+     * @ngdoc function
+     * @name angular.scope.$tryEval
+     * @function
+     *
+     * @description
+     * Evaluates the expression in the context of the current scope just like
+     * {@link angular.scope.$eval()} with expression parameter, but also wraps it in a try/catch
+     * block.
+     *
+     * If exception is thrown then `exceptionHandler` is used to handle the exception.
+     *
+     * # Example
+       <pre>
+         var scope = angular.scope();
+         scope.error = function(){ throw 'myerror'; };
+         scope.$exceptionHandler = function(e) {this.lastException = e; };
+
+         expect(scope.$eval('error()'));
+         expect(scope.lastException).toEqual('myerror');
+         this.lastException = null;
+
+         expect(scope.$eval('error()'),  function(e) {this.lastException = e; });
+         expect(scope.lastException).toEqual('myerror');
+
+         var body = angular.element(window.document.body);
+         expect(scope.$eval('error()'), body);
+         expect(body.attr('ng-exception')).toEqual('"myerror"');
+         expect(body.hasClass('ng-exception')).toEqual(true);
+       </pre>
+     *
+     * @param {string|function} expression Angular expression to evaluate.
+     * @param {function|DOMElement} exceptionHandler Function to be called or DOMElement to be
+     *     decorated.
+     * @returns {*} The result of `expression` evaluation.
+     */
     $tryEval: function (expression, exceptionHandler) {
       var type = typeof expression;
       try {
@@ -167,8 +379,8 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
-     * @ngdoc
-     * @name angular.scope#$watch
+     * @ngdoc function
+     * @name angular.scope.$watch
      * @function
      *
      * @description
@@ -176,35 +388,36 @@ function createScope(parent, providers, instanceCache) {
      * that callback gets, by default, called upon registration, this can be prevented via the
      * `initRun` parameter.
      *
-     * @param {Function|string} watchExp Expression that should be evaluated and checked for change
+     * # Example
+       <pre>
+         var scope = angular.scope();
+         scope.name = 'misko';
+         scope.counter = 0;
+
+         expect(scope.counter).toEqual(0);
+         scope.$watch('name', 'counter = counter + 1');
+         expect(scope.counter).toEqual(1);
+
+         scope.$eval();
+         expect(scope.counter).toEqual(1);
+
+         scope.name = 'adam';
+         scope.$eval();
+         expect(scope.counter).toEqual(2);
+       </pre>
+     *
+     * @param {function|string} watchExp Expression that should be evaluated and checked for change
      *    during each eval cycle. Can be an angular string expression or a function.
-     * @param {Function|string} listener Function (or angular string expression) that gets called
+     * @param {function|string} listener Function (or angular string expression) that gets called
      *    every time the value of the `watchExp` changes. The function will be called with two
      *    parameters, `newValue` and `oldValue`.
-     * @param {(Function|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
+     * @param {(function|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
      *    that gets called when `watchExp` or `listener` throws an exception. If a DOMElement is
      *    specified as handler, the element gets decorated by angular with the information about the
      *    exception.
      * @param {boolean=} [initRun=true] Flag that prevents the first execution of the listener upon
      *    registration.
      *
-     * @example
-        <script type="text/javascript">
-          var scope = angular.scope();
-          scope.name = 'misko';
-          scope.counter = 0;
-
-          expect(scope.counter).toEqual(0);
-          scope.$watch('name', 'counter = counter + 1');
-          expect(scope.counter).toEqual(1);
-
-          scope.$eval();
-          expect(scope.counter).toEqual(1);
-
-          scope.name = 'adam';
-          scope.$eval();
-          expect(scope.counter).toEqual(2);
-        </script>
      */
     $watch: function(watchExp, listener, exceptionHandler, initRun) {
       var watch = expressionCompile(watchExp),
@@ -226,6 +439,31 @@ function createScope(parent, providers, instanceCache) {
       if (initRun) watcher(true);
     },
 
+    /**
+     * @ngdoc function
+     * @name angular.scope.$onEval
+     * @function
+     *
+     * @description
+     * Evaluates the `expr` expression in the context of the current scope during each
+     * {@link angular.scope.$eval eval cycle}.
+     *
+     * # Example
+       <pre>
+         var scope = angular.scope();
+         scope.counter = 0;
+         scope.$onEval('counter = counter + 1');
+         expect(scope.counter).toEqual(0);
+         scope.$eval();
+         expect(scope.counter).toEqual(1);
+       </pre>
+     *
+     * @param {number} [priority=0] Execution priority. Lower priority numbers get executed first.
+     * @param {string|function} expr Angular expression or function to be executed.
+     * @param {(function|DOMElement)=} [exceptionHandler=angular.service.$exceptionHandler] Handler
+     *     function to call or DOM element to decorate when an exception occurs.
+     *
+     */
     $onEval: function(priority, expr, exceptionHandler){
       if (!isNumber(priority)) {
         exceptionHandler = expr;
@@ -245,6 +483,11 @@ function createScope(parent, providers, instanceCache) {
       });
     },
 
+    /**
+     * @ngdoc function
+     * @name angular.scope.$postEval
+     * @function
+     */
     $postEval: function(expr) {
       if (expr) {
         var fn = expressionCompile(expr);
@@ -261,33 +504,32 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
-       @ngdoc
-       @name angular.scope#$become
-       @function
-       @deprecated This method will be removed before 1.0
-
-       @description
-       Modifies the scope to act like an instance of the given class by:
-
-       - copying the class's prototype methods
-       - applying the class's initialization function to the scope instance (without using the new
-         operator)
-       -
-
-       That makes the scope be a `this` for the given class's methods — effectively an instance of
-       the given class with additional (scope) stuff. A scope can later `$become` another class.
-
-       `$become` gets used to make the current scope act like an instance of a controller class.
-       This allows for use of a controller class in two ways.
-
-       - as an ordinary JavaScript class for standalone testing, instantiated using the new
-         operator, with no attached view.
-       - as a controller for an angular model stored in a scope, "instantiated" by
-         `scope.$become(ControllerClass)`.
-
-       Either way, the controller's methods refer to the model  variables like `this.name`. When
-       stored in a scope, the model supports data binding. When bound to a view, {{name}} in the
-       HTML template refers to the same variable.
+     * @ngdoc function
+     * @name angular.scope.$become
+     * @function
+     * @deprecated This method will be removed before 1.0
+     *
+     * @description
+     * Modifies the scope to act like an instance of the given class by:
+     *
+     * - copying the class's prototype methods
+     * - applying the class's initialization function to the scope instance (without using the new
+     *   operator)
+     *
+     * That makes the scope be a `this` for the given class's methods — effectively an instance of
+     * the given class with additional (scope) stuff. A scope can later `$become` another class.
+     *
+     * `$become` gets used to make the current scope act like an instance of a controller class.
+     * This allows for use of a controller class in two ways.
+     *
+     * - as an ordinary JavaScript class for standalone testing, instantiated using the new
+     *   operator, with no attached view.
+     * - as a controller for an angular model stored in a scope, "instantiated" by
+     *   `scope.$become(ControllerClass)`.
+     *
+     * Either way, the controller's methods refer to the model  variables like `this.name`. When
+     * stored in a scope, the model supports data binding. When bound to a view, {{name}} in the
+     * HTML template refers to the same variable.
      */
     $become: function(Class) {
       if (isFunction(Class)) {
@@ -304,9 +546,24 @@ function createScope(parent, providers, instanceCache) {
       }
     },
 
-    $new: function(Class) {
+    /**
+     * @ngdoc function
+     * @name angular.scope.$new
+     * @function
+     *
+     * @description
+     * Creates a new {@link angular.scope scope}, that:
+     *
+     * - is a child of the current scope
+     * - will {@link angular.scope.$become $become} of type specified via `constructor`
+     *
+     * @param {function} constructor Constructor function of the type the new scope should assume.
+     * @returns {Object} The newly created child scope.
+     *
+     */
+    $new: function(constructor) {
       var child = createScope(instance);
-      child.$become.apply(instance, concat([Class], arguments, 1));
+      child.$become.apply(instance, concat([constructor], arguments, 1));
       instance.$onEval(child.$eval);
       return child;
     }
