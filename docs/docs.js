@@ -6,7 +6,7 @@ function DocsController($location, $browser, $window) {
   window.$root = this.$root;
   
   this.getUrl = function(page){
-    return '#!' + encodeURIComponent(page.name);
+    return '#!' + page.name;
   };
 
   this.getCurrentPartial = function(){
