@@ -691,7 +691,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
  * changing the location or causing page reloads, e.g.:
  * <a href="" ng:click="model.$save()">Save</a>
  */
-angular.widget('a', function() {
+angularWidget('a', function() {
   this.descend(true);
   this.directives(true);
 
@@ -703,3 +703,159 @@ angular.widget('a', function() {
     }
   };
 });
+
+
+/**
+ * @ngdoc widget
+ * @name angular.widget.@ng:repeat
+ *
+ * @description
+ * `ng:repeat` instantiates a template once per item from a collection. The collection is enumerated
+ * with `ng:repeat-index` attribute starting from 0. Each template instance gets its own scope where
+ * the given loop variable is set to the current collection item and `$index` is set to the item
+ * index or key.
+ *
+ * There are special properties exposed on the local scope of each template instance:
+ *
+ *   * `$index` – `{number}` – iterator offset of the repeated element (0..length-1)
+ *   * `$position` – {string} – position of the repeated element in the iterator. One of: `'first'`,
+ *     `'middle'` or `'last'`.
+ *
+ * NOTE: `ng:repeat` looks like a directive, but is actually an attribute widget.
+ *
+ * @element ANY
+ * @param {string} repeat_expression The expression indicating how to enumerate a collection. Two
+ *   formats are currently supported:
+ *
+ *   * `variable in expression` – where variable is the user defined loop variable and `expression`
+ *     is a scope expression giving the collection to enumerate.
+ *
+ *     For example: `track in cd.tracks`.
+ *   * `(key, value) in expression` – where `key` and `value` can be any user defined identifiers,
+ *     and `expression` is the scope expression giving the collection to enumerate.
+ *
+ *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
+ *
+ * @exampleDescription
+ * This example initializes the scope to a list of names and
+ * than uses `ng:repeat` to display every person.
+ * @example
+    <div ng:init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">
+      I have {{friends.length}} friends. They are:
+      <ul>
+        <li ng:repeat="friend in friends">
+          [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+        </li>
+      </ul>
+    </div>
+ * @scenario
+   it('should check ng:repeat', function(){
+     var r = using('.doc-example-live').repeater('ul li');
+     expect(r.count()).toBe(2);
+     expect(r.row(0)).toEqual(["1","John","25"]);
+     expect(r.row(1)).toEqual(["2","Mary","28"]);
+   });
+ */
+angularWidget("@ng:repeat", function(expression, element){
+  element.removeAttr('ng:repeat');
+  element.replaceWith(this.comment("ng:repeat: " + expression));
+  var template = this.compile(element);
+  return function(reference){
+    var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+        lhs, rhs, valueIdent, keyIdent;
+    if (! match) {
+      throw Error("Expected ng:repeat in form of 'item in collection' but got '" +
+      expression + "'.");
+    }
+    lhs = match[1];
+    rhs = match[2];
+    match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
+    if (!match) {
+      throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+      keyValue + "'.");
+    }
+    valueIdent = match[3] || match[1];
+    keyIdent = match[2];
+
+    var children = [], currentScope = this;
+    this.$onEval(function(){
+      var index = 0,
+          childCount = children.length,
+          lastElement = reference,
+          collection = this.$tryEval(rhs, reference),
+          is_array = isArray(collection),
+          collectionLength = 0,
+          childScope,
+          key;
+
+      if (is_array) {
+        collectionLength = collection.length;
+      } else {
+        for (key in collection)
+          if (collection.hasOwnProperty(key))
+            collectionLength++;
+      }
+
+      for (key in collection) {
+        if (!is_array || collection.hasOwnProperty(key)) {
+          if (index < childCount) {
+            // reuse existing child
+            childScope = children[index];
+            childScope[valueIdent] = collection[key];
+            if (keyIdent) childScope[keyIdent] = key;
+          } else {
+            // grow children
+            childScope = template(quickClone(element), createScope(currentScope));
+            childScope[valueIdent] = collection[key];
+            if (keyIdent) childScope[keyIdent] = key;
+            lastElement.after(childScope.$element);
+            childScope.$index = index;
+            childScope.$position = index == 0 ?
+                                      'first' :
+                                      (index == collectionLength - 1 ? 'last' : 'middle');
+            childScope.$element.attr('ng:repeat-index', index);
+            childScope.$init();
+            children.push(childScope);
+          }
+          childScope.$eval();
+          lastElement = childScope.$element;
+          index ++;
+        }
+      }
+      // shrink children
+      while(children.length > index) {
+        children.pop().$element.remove();
+      }
+    }, reference);
+  };
+});
+
+
+/**
+ * @ngdoc widget
+ * @name angular.widget.@ng:non-bindable
+ *
+ * @description
+ * Sometimes it is necessary to write code which looks like bindings but which should be left alone
+ * by angular. Use `ng:non-bindable` to make angular ignore a chunk of HTML.
+ *
+ * NOTE: `ng:non-bindable` looks like a directive, but is actually an attribute widget.
+ *
+ * @element ANY
+ *
+ * @exampleDescription
+ * In this example there are two location where a siple binding (`{{}}`) is present, but the one
+ * wrapped in `ng:non-bindable` is left alone.
+ *
+ * @example
+    <div>Normal: {{1 + 2}}</div>
+    <div ng:non-bindable>Ignored: {{1 + 2}}</div>
+ *
+ * @scenario
+   it('should check ng:non-bindable', function(){
+     expect(using('.doc-example-live').binding('1 + 2')).toBe('3');
+     expect(using('.doc-example-live').element('div:last').text()).
+       toMatch(/1 \+ 2/);
+   });
+ */
+angularWidget("@ng:non-bindable", noop);

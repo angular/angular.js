@@ -13,12 +13,21 @@
 <h2>Usage</h2>
 <h3>In HTML Template Binding</h3>
 <tt>
+{{^element}}
   <pre>
 &lt;{{shortName}}{{#param}} {{#default}}<i>[</i>{{/default}}{{name}}="..."{{#default}}<i>]</i>{{/default}}{{/param}}&gt;{{#usageContent}} 
 
   {{usageContent}}
 {{/usageContent}}&lt;/{{shortName}}&gt;
   </pre>
+{{/element}}
+{{#element}}
+  <pre>
+&lt;{{element}} {{shortName}}{{#paramFirst}}="{{paramFirst.name}}{{/paramFirst}}"&gt;
+  ...
+&lt;/{{element}}&gt;
+  </pre>
+{{/element}}
 </tt>
 
 <h3>Parameters</h3>
