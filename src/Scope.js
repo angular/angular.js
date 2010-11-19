@@ -258,7 +258,7 @@ function createScope(parent, providers, instanceCache) {
          expect(fn()).toEqual(scope);
        </pre>
      *
-     * @param {function} fn Function to be bound.
+     * @param {function()} fn Function to be bound.
      */
     $bind: bind(instance, bind, instance),
     $get: bind(instance, getter, instance),
@@ -292,7 +292,7 @@ function createScope(parent, providers, instanceCache) {
          expect(scope.sum).toEqual(3);
        </pre>
      *
-     * @param {(string|function)=} exp An angular expression to be compiled to a function or a js
+     * @param {(string|function())=} exp An angular expression to be compiled to a function or a js
      *     function.
      *
      * @returns {*} The result of calling compiled `exp` with `this` set to the current scope.
@@ -356,8 +356,8 @@ function createScope(parent, providers, instanceCache) {
          expect(body.hasClass('ng-exception')).toEqual(true);
        </pre>
      *
-     * @param {string|function} expression Angular expression to evaluate.
-     * @param {function|DOMElement} exceptionHandler Function to be called or DOMElement to be
+     * @param {string|function()} expression Angular expression to evaluate.
+     * @param {function()|DOMElement} exceptionHandler Function to be called or DOMElement to be
      *     decorated.
      * @returns {*} The result of `expression` evaluation.
      */
@@ -411,12 +411,12 @@ function createScope(parent, providers, instanceCache) {
          expect(scope.counter).toEqual(2);
        </pre>
      *
-     * @param {function|string} watchExp Expression that should be evaluated and checked for change
-     *    during each eval cycle. Can be an angular string expression or a function.
-     * @param {function|string} listener Function (or angular string expression) that gets called
+     * @param {function()|string} watchExp Expression that should be evaluated and checked for
+     *    change during each eval cycle. Can be an angular string expression or a function.
+     * @param {function()|string} listener Function (or angular string expression) that gets called
      *    every time the value of the `watchExp` changes. The function will be called with two
      *    parameters, `newValue` and `oldValue`.
-     * @param {(function|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
+     * @param {(function()|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
      *    that gets called when `watchExp` or `listener` throws an exception. If a DOMElement is
      *    specified as handler, the element gets decorated by angular with the information about the
      *    exception.
@@ -465,8 +465,8 @@ function createScope(parent, providers, instanceCache) {
        </pre>
      *
      * @param {number} [priority=0] Execution priority. Lower priority numbers get executed first.
-     * @param {string|function} expr Angular expression or function to be executed.
-     * @param {(function|DOMElement)=} [exceptionHandler=angular.service.$exceptionHandler] Handler
+     * @param {string|function()} expr Angular expression or function to be executed.
+     * @param {(function()|DOMElement)=} [exceptionHandler=angular.service.$exceptionHandler] Handler
      *     function to call or DOM element to decorate when an exception occurs.
      *
      */
@@ -566,7 +566,7 @@ function createScope(parent, providers, instanceCache) {
      * - is a child of the current scope
      * - will {@link angular.scope.$become $become} of type specified via `constructor`
      *
-     * @param {function} constructor Constructor function of the type the new scope should assume.
+     * @param {function()} constructor Constructor function of the type the new scope should assume.
      * @returns {Object} The newly created child scope.
      *
      */
