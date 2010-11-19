@@ -159,3 +159,12 @@ a {
   font-weight: bold;
   color: red;
 }
+
+.workInProgress {
+  border: 2px solid orange;
+}
+
+.workInProgress legend {
+  font-weight: bold;
+  color: orange;
+}

@@ -4,6 +4,7 @@ if (typeof document.getAttribute == $undefined)
   document.getAttribute = function() {};
 
 /**
+ * @workInProgress
  * @ngdoc function
  * @name angular.lowercase
  * @function
@@ -16,6 +17,7 @@ var lowercase = function (string){ return isString(string) ? string.toLowerCase(
 
 
 /**
+ * @workInProgress
  * @ngdoc function
  * @name angular.uppercase
  * @function
@@ -86,6 +88,7 @@ var _undefined        = undefined,
     error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
 
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular
      * @namespace The exported angular namespace.
@@ -94,6 +97,7 @@ var _undefined        = undefined,
     angularTextMarkup = extensionMap(angular, 'markup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular.directive
      * @namespace Namespace for all directives.
@@ -150,6 +154,7 @@ var _undefined        = undefined,
     angularDirective  = extensionMap(angular, 'directive'),
 
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular.widget
      * @namespace Namespace for all widgets.
@@ -225,6 +230,7 @@ var _undefined        = undefined,
     angularWidget     = extensionMap(angular, 'widget', lowercase),
     
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular.validator
      * @namespace Namespace for all filters.
@@ -302,6 +308,7 @@ var _undefined        = undefined,
     angularValidator  = extensionMap(angular, 'validator'),
 
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular.filter
      * @namespace Namespace for all filters.
@@ -380,6 +387,7 @@ var _undefined        = undefined,
      */
     angularFilter     = extensionMap(angular, 'filter'),
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular.formatter
      * @namespace Namespace for all formats.
@@ -461,6 +469,7 @@ var _undefined        = undefined,
     angularFormatter  = extensionMap(angular, 'formatter'),
     
     /**
+     * @workInProgress
      * @ngdoc overview
      * @name angular.service
      * 
@@ -883,6 +892,7 @@ function toKeyValue(obj) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:autobind
  * @element script

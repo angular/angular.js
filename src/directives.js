@@ -1,4 +1,5 @@
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:init
  *
@@ -27,6 +28,7 @@ angularDirective("ng:init", function(expression){
 });
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:controller
  *
@@ -105,6 +107,7 @@ angularDirective("ng:controller", function(expression){
 });
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:eval
  *
@@ -147,6 +150,7 @@ angularDirective("ng:eval", function(expression){
 });
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind
  *
@@ -250,6 +254,7 @@ function compileBindTemplate(template){
 }
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind-template
  *
@@ -302,6 +307,7 @@ var REMOVE_ATTRIBUTES = {
   'checked':'checked'
 };
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind-attr
  *
@@ -380,6 +386,7 @@ angularDirective("ng:bind-attr", function(expression){
 
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:click
  *
@@ -423,6 +430,7 @@ angularDirective("ng:click", function(expression, element){
 
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:submit
  *
@@ -470,6 +478,7 @@ angularDirective("ng:submit", function(expression, element) {
 
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:watch
  *
@@ -525,6 +534,7 @@ function ngClass(selector) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class
  *
@@ -561,6 +571,7 @@ function ngClass(selector) {
 angularDirective("ng:class", ngClass(function(){return true;}));
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class-odd
  *
@@ -596,6 +607,7 @@ angularDirective("ng:class", ngClass(function(){return true;}));
 angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class-even
  *
@@ -631,6 +643,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
 angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:show
  *
@@ -668,6 +681,7 @@ angularDirective("ng:show", function(expression, element){
 });
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:hide
  *
@@ -705,6 +719,7 @@ angularDirective("ng:hide", function(expression, element){
 });
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:style
  *

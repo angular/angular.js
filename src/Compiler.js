@@ -111,6 +111,7 @@ Compiler.prototype = {
 
   
   /**
+   * @workInProgress
    * @ngdoc directive
    * @name angular.directive.ng:eval-order
    *

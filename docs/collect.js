@@ -240,6 +240,9 @@ var TAG = {
   css: valueTag,
   see: valueTag,
   deprecated: valueTag,
+  workInProgress: function(doc, name, value) {
+    doc[name] = {description: markdown(value)};
+  },
   usageContent: valueTag,
   'function': valueTag,
   description: markdownTag,

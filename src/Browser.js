@@ -20,6 +20,7 @@ function Browser(location, document, head, XHR, $log) {
   var outstandingRequestCallbacks = [];
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#xhr
    * @methodOf angular.service.$browser
@@ -77,6 +78,7 @@ function Browser(location, document, head, XHR, $log) {
   };
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#notifyWhenNoOutstandingRequests
    * @methodOf angular.service.$browser
@@ -97,6 +99,7 @@ function Browser(location, document, head, XHR, $log) {
   var pollFns = [];
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#poll
    * @methodOf angular.service.$browser
@@ -106,6 +109,7 @@ function Browser(location, document, head, XHR, $log) {
   };
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addPollFn
    * @methodOf angular.service.$browser
@@ -123,6 +127,7 @@ function Browser(location, document, head, XHR, $log) {
   };
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#startPoller
    * @methodOf angular.service.$browser
@@ -146,6 +151,7 @@ function Browser(location, document, head, XHR, $log) {
   //////////////////////////////////////////////////////////////
   
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#setUrl
    * @methodOf angular.service.$browser
@@ -163,6 +169,7 @@ function Browser(location, document, head, XHR, $log) {
    };
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#getUrl
    * @methodOf angular.service.$browser
@@ -184,6 +191,7 @@ function Browser(location, document, head, XHR, $log) {
   var lastCookieString = '';
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#cookies
    * @methodOf angular.service.$browser
@@ -248,6 +256,7 @@ function Browser(location, document, head, XHR, $log) {
   var hoverListener = noop;
   
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#hover
    * @methodOf angular.service.$browser
@@ -261,6 +270,7 @@ function Browser(location, document, head, XHR, $log) {
   self.hover = function(listener) { hoverListener = listener; };
   
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#bind
    * @methodOf angular.service.$browser
@@ -281,6 +291,7 @@ function Browser(location, document, head, XHR, $log) {
 
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addCss
    * @methodOf angular.service.$browser
@@ -299,6 +310,7 @@ function Browser(location, document, head, XHR, $log) {
 
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addJs
    * @methodOf angular.service.$browser

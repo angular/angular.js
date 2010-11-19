@@ -8,6 +8,7 @@ var NUMBER = /^\s*[-+]?\d*(\.\d*)?\s*$/;
 angularFormatter.noop = formatter(identity, identity);
 
 /**
+ * @workInProgress
  * @ngdoc formatter
  * @name angular.formatter.json
  *
@@ -32,6 +33,7 @@ angularFormatter.noop = formatter(identity, identity);
 angularFormatter.json = formatter(toJson, fromJson);
 
 /**
+ * @workInProgress
  * @ngdoc formatter
  * @name angular.formatter.boolean
  *
@@ -56,6 +58,7 @@ angularFormatter.json = formatter(toJson, fromJson);
 angularFormatter['boolean'] = formatter(toString, toBoolean);
 
 /**
+ * @workInProgress
  * @ngdoc formatter
  * @name angular.formatter.number
  *
@@ -85,6 +88,7 @@ angularFormatter.number = formatter(toString, function(obj){
 });
 
 /**
+ * @workInProgress
  * @ngdoc formatter
  * @name angular.formatter.list
  *
@@ -122,6 +126,7 @@ angularFormatter.list = formatter(
 );
 
 /**
+ * @workInProgress
  * @ngdoc formatter
  * @name angular.formatter.trim
  *
