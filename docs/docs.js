@@ -34,6 +34,12 @@ function DocsController($location, $browser, $window) {
     $window.scroll(0,0);
     SyntaxHighlighter.highlight();
   };
+
+  this.getFeedbackUrl = function() {
+    return "mailto:angular@googlegroups.com?" +
+           "subject=" + escape("Feedback on " + $location.href) + "&" +
+           "body=" + escape("Hi there,\n\nI read " + $location.href + " and wanted to ask ....");
+  }
   
 }
 
