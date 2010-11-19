@@ -9,6 +9,7 @@ function angularServiceInject(name, fn, inject, eager) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$window
  * 
@@ -28,6 +29,7 @@ function angularServiceInject(name, fn, inject, eager) {
 angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLISHED);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$document
  * @requires $window
@@ -40,6 +42,7 @@ angularServiceInject("$document", function(window){
 }, ['$window'], EAGER_PUBLISHED);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$location
  * @requires $browser
@@ -92,6 +95,7 @@ angularServiceInject("$location", function(browser) {
   // PUBLIC METHODS
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$location#update
    * @methodOf angular.service.$location
@@ -127,6 +131,7 @@ angularServiceInject("$location", function(browser) {
   }
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$location#updateHash
    * @methodOf angular.service.$location
@@ -162,6 +167,7 @@ angularServiceInject("$location", function(browser) {
   }
 
   /**
+   * @workInProgress
    * @ngdoc method
    * @name angular.service.$location#toString
    * @methodOf angular.service.$location
@@ -291,6 +297,7 @@ angularServiceInject("$location", function(browser) {
 
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$log
  * @requires $window
@@ -313,6 +320,7 @@ angularServiceInject("$location", function(browser) {
 angularServiceInject("$log", function($window){
   return {
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#log
      * @methodOf angular.service.$log
@@ -323,6 +331,7 @@ angularServiceInject("$log", function($window){
     log: consoleLog('log'),
     
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#warn
      * @methodOf angular.service.$log
@@ -333,6 +342,7 @@ angularServiceInject("$log", function($window){
     warn: consoleLog('warn'),
     
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#info
      * @methodOf angular.service.$log
@@ -343,6 +353,7 @@ angularServiceInject("$log", function($window){
     info: consoleLog('info'),
     
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#error
      * @methodOf angular.service.$log
@@ -372,6 +383,7 @@ angularServiceInject("$log", function($window){
 }, ['$window'], EAGER_PUBLISHED);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$exceptionHandler
  * @requires $log
@@ -395,6 +407,7 @@ angularServiceInject('$exceptionHandler', function($log){
 }, ['$log'], EAGER_PUBLISHED);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$hover
  * @requires $browser
@@ -451,6 +464,7 @@ angularServiceInject("$hover", function(browser, document) {
 }, ['$browser', '$document'], EAGER);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$invalidWidgets
  * 
@@ -543,6 +557,7 @@ function switchRouteMatcher(on, when, dstName) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$route
  * @requires $location
@@ -604,6 +619,7 @@ angularServiceInject('$route', function(location) {
         routes: routes,
         
         /**
+         * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#onChange
          * @methodOf angular.service.$route
@@ -616,6 +632,7 @@ angularServiceInject('$route', function(location) {
         onChange: bind(onChange, onChange.push),
         
         /**
+         * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#when
          * @methodOf angular.service.$route
@@ -662,6 +679,7 @@ angularServiceInject('$route', function(location) {
 }, ['$location'], EAGER_PUBLISHED);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr
  * @requires $browser
@@ -704,6 +722,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
 }, ['$browser', '$xhr.error', '$log']);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr.error
  * @requires $log
@@ -719,6 +738,7 @@ angularServiceInject('$xhr.error', function($log){
 }, ['$log']);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr.bulk
  * @requires $xhr
@@ -780,6 +800,7 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
 }, ['$xhr', '$xhr.error', '$log']);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr.cache
  * @requires $xhr
@@ -833,6 +854,7 @@ angularServiceInject('$xhr.cache', function($xhr){
 }, ['$xhr.bulk']);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$resource
  * @requires $xhr
@@ -889,6 +911,7 @@ angularServiceInject('$resource', function($xhr){
 }, ['$xhr.cache']);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$cookies
  * @requires $browser
@@ -973,6 +996,7 @@ angularServiceInject('$cookies', function($browser) {
 }, ['$browser'], EAGER_PUBLISHED);
 
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$cookieStore
  * @requires $cookies
@@ -987,6 +1011,7 @@ angularServiceInject('$cookieStore', function($store) {
 
   return {
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$cookieStore#get
      * @methodOf angular.service.$cookieStore
@@ -1002,6 +1027,7 @@ angularServiceInject('$cookieStore', function($store) {
     },
 
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$cookieStore#put
      * @methodOf angular.service.$cookieStore
@@ -1017,6 +1043,7 @@ angularServiceInject('$cookieStore', function($store) {
     },
 
     /**
+     * @workInProgress
      * @ngdoc method
      * @name angular.service.$cookieStore#remove
      * @methodOf angular.service.$cookieStore

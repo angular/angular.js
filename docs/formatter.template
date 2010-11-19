@@ -1,5 +1,13 @@
 <h1>{{name}}</h1>
 
+{{#workInProgress}}
+<fieldset class="workInProgress">
+  <legend>Work In Progress</legend>
+  This page is currently being revised. It might be incomplete or contain inaccuracies.
+  {{{workInProgress.description}}}
+</fieldset>
+{{/workInProgress}}
+
 {{#deprecated}}
 <fieldset class="deprecated">
   <legend>Deprecated API</legend>

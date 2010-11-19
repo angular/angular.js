@@ -230,6 +230,18 @@ describe('collect', function(){
       })
     });
 
+    describe('@workInProgress', function() {
+      it('should parse @workInProgress without a description and default to true', function() {
+        TAG.workInProgress(doc, 'workInProgress', '');
+        expect(doc.workInProgress).toEqual({description: ''});
+      });
+
+      it('should parse @workInProgress with a description', function() {
+        TAG.workInProgress(doc, 'workInProgress', 'my description');
+        expect(doc.workInProgress).toEqual({description: '<p>my description</p>'});
+      });
+    });
+
   });
   
   describe('trim', function(){

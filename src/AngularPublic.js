@@ -1,5 +1,6 @@
 var browserSingleton;
 /**
+ * @workInProgress
  * @ngdoc service
  * @name angular.service.$browser
  * @requires $log

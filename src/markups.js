@@ -69,6 +69,7 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
 });
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:href
  *
@@ -95,6 +96,7 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
  */
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:src
  *

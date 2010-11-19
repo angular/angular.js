@@ -105,6 +105,7 @@ function errorHandlerFor(element, error) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc overview
  * @name angular.scope
  *
@@ -241,6 +242,7 @@ function createScope(parent, providers, instanceCache) {
     $parent: parent,
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$bind
      * @function
@@ -264,6 +266,7 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$eval
      * @function
@@ -322,6 +325,7 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$tryEval
      * @function
@@ -379,6 +383,7 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$watch
      * @function
@@ -440,6 +445,7 @@ function createScope(parent, providers, instanceCache) {
     },
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$onEval
      * @function
@@ -484,6 +490,7 @@ function createScope(parent, providers, instanceCache) {
     },
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$postEval
      * @function
@@ -504,6 +511,7 @@ function createScope(parent, providers, instanceCache) {
 
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$become
      * @function
@@ -547,6 +555,7 @@ function createScope(parent, providers, instanceCache) {
     },
 
     /**
+     * @workInProgress
      * @ngdoc function
      * @name angular.scope.$new
      * @function

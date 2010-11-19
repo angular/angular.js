@@ -1,4 +1,5 @@
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.HTML
  *
@@ -166,6 +167,7 @@ function compileValidator(expr) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:validate
  *
@@ -202,6 +204,7 @@ function compileValidator(expr) {
    });
  */
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:required
  *
@@ -227,6 +230,7 @@ function compileValidator(expr) {
    });
  */
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:format
  *
@@ -413,6 +417,7 @@ function radioInit(model, view, element) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:change
  *
@@ -499,6 +504,7 @@ angularWidget('option', function(){
 
 
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.ng:include
  *
@@ -584,6 +590,7 @@ angularWidget('ng:include', function(element){
 });
 
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.ng:switch
  *
@@ -722,6 +729,7 @@ angularWidget('a', function() {
 
 
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:repeat
  *
@@ -848,6 +856,7 @@ angularWidget("@ng:repeat", function(expression, element){
 
 
 /**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:non-bindable
  *

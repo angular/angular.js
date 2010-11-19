@@ -2,6 +2,7 @@ extend(angularValidator, {
   'noop': function() { return _null; },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.regexp
    * @description
@@ -36,6 +37,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.number
    * @description
@@ -88,6 +90,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.integer
    * @description
@@ -133,6 +136,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.date
    * @description
@@ -166,6 +170,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.email
    * @description
@@ -195,6 +200,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.phone
    * @description
@@ -227,6 +233,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.url
    * @description
@@ -256,6 +263,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.json
    * @description
@@ -288,6 +296,7 @@ extend(angularValidator, {
   },
 
   /**
+   * @workInProgress
    * @ngdoc validator
    * @name angular.validator.asynchronous
    * @description

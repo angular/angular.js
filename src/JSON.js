@@ -1,6 +1,7 @@
 var array = [].constructor;
 
 /**
+ * @workInProgress
  * @ngdoc function
  * @name angular.toJson
  * @function
@@ -19,6 +20,7 @@ function toJson(obj, pretty) {
 }
 
 /**
+ * @workInProgress
  * @ngdoc function
  * @name angular.fromJson
  * @function
