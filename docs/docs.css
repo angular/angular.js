@@ -56,7 +56,8 @@ a {
 }
 
 #section {
-	padding: 1em;
+  padding: 1em;
+  width: 100%;
 }
 
 #section h1 {
@@ -167,4 +168,10 @@ a {
 .workInProgress legend {
   font-weight: bold;
   color: orange;
+}
+
+#feedback {
+  float: right;
+  width: 10em;
+  text-align: right;
 }
