@@ -1,4 +1,17 @@
-# <angular/> 0.9.4 total-recall (in-progress) #
+# <angular/> 0.9.4 total-recall (2010-11-18) #
+
+### Docs
+- searchable docs
+- UI improvements
+- we now have ~85% of the wiki docs migrated to ng docs
+- some but not all docs were updated along the way
+
+
+### Api
+- ng:include now supports `onload` attribute (commit cc749760)
+
+### Misc
+- Better error handling - compilation exception now contain stack trace (commit b2d63ac4)
 
 
 # <angular/> 0.9.3 cold-resistance (2010-11-10) #
