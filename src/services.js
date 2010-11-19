@@ -624,7 +624,7 @@ angularServiceInject('$route', function(location) {
          * @name angular.service.$route#onChange
          * @methodOf angular.service.$route
          * 
-         * @param {function} fn Function that will be called on route change
+         * @param {function()} fn Function that will be called on route change
          * 
          * @description
          * Register a handler function that will be called when route changes

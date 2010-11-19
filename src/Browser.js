@@ -83,7 +83,7 @@ function Browser(location, document, head, XHR, $log) {
    * @name angular.service.$browser#notifyWhenNoOutstandingRequests
    * @methodOf angular.service.$browser
    * 
-   * @param {function} callback Function that will be called when no outstanding request
+   * @param {function()} callback Function that will be called when no outstanding request
    */
   self.notifyWhenNoOutstandingRequests = function(callback) {
     if (outstandingRequestCount === 0) {
@@ -114,12 +114,12 @@ function Browser(location, document, head, XHR, $log) {
    * @name angular.service.$browser#addPollFn
    * @methodOf angular.service.$browser
    * 
-   * @param {function} fn Poll function to add
+   * @param {function()} fn Poll function to add
    * 
    * @description
    * Adds a function to the list of functions that poller periodically executes
    * 
-   * @returns {function} the added function
+   * @returns {function()} the added function
    */
   self.addPollFn = function(fn) {
     pollFns.push(fn);
@@ -133,7 +133,7 @@ function Browser(location, document, head, XHR, $log) {
    * @methodOf angular.service.$browser
    * 
    * @param {number} interval How often should browser call poll functions (ms)
-   * @param {function} setTimeout Reference to a real or fake `setTimeout` function.
+   * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
    * 
    * @description
    * Configures the poller to run in the specified intervals, using the specified
