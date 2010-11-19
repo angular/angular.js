@@ -249,7 +249,7 @@ angularServiceInject("$location", function(browser) {
   function composeHash(loc) {
     var hashSearch = toKeyValue(loc.hashSearch);
     //TODO: temporary fix for issue #158
-    return escape(loc.hashPath).replace(/%21/gi, '!').replace(/%3A/gi, ':') +
+    return escape(loc.hashPath).replace(/%21/gi, '!').replace(/%3A/gi, ':').replace(/%24/gi, '$') +
           (hashSearch ? '?' + hashSearch : '');
   }
 
