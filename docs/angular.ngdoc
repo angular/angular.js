@@ -1,0 +1,4 @@
+@workInProgress
+@ngdoc overview
+@name angular
+@namespace The exported angular namespace.
