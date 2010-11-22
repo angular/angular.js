@@ -115,6 +115,36 @@ describe('api', function(){
   });
 
 
+  describe('limit', function() {
+    var items;
+
+    beforeEach(function() {
+      items = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+    });
+
+
+    it('should return the first X items when X is positive', function() {
+      expect(angular.Array.limitTo(items, 3)).toEqual(['a', 'b', 'c']);
+      expect(angular.Array.limitTo(items, '3')).toEqual(['a', 'b', 'c']);
+    });
+
+
+    it('should return the last X items when X is negative', function() {
+      expect(angular.Array.limitTo(items, -3)).toEqual(['f', 'g', 'h']);
+      expect(angular.Array.limitTo(items, '-3')).toEqual(['f', 'g', 'h']);
+    });
+
+
+    it('should return an empty array when X cannot be parsed', function() {
+      expect(angular.Array.limitTo(items, 'bogus')).toEqual([]);
+      expect(angular.Array.limitTo(items, 'null')).toEqual([]);
+      expect(angular.Array.limitTo(items, 'undefined')).toEqual([]);
+      expect(angular.Array.limitTo(items, null)).toEqual([]);
+      expect(angular.Array.limitTo(items, undefined)).toEqual([]);
+    })
+  });
+
+
   it('Add', function(){
     var add = angular.Array.add;
     assertJsonEquals([{}, "a"], add(add([]),"a"));

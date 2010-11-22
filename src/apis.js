@@ -19,6 +19,25 @@ var angularCollection = {
 var angularObject = {
   'extend': extend
 };
+
+/**
+ * @workInProgress
+ * @ngdoc overview
+ * @name angular.Array
+ *
+ * @description
+ * Utility functions for manipulation with JavaScript Array objects.
+ *
+ * These functions are exposed in two ways:
+ *
+ * - **in angular expressions**: the functions are bound to the Array objects and augment the Array
+ *   type as array methods. The names of these methods are prefixed with `$` character to minimize
+ *   naming collisions. To call a method, invoke `myArrayObject.$foo(params)`.
+ *
+ * - **in JavaScript code**: the functions don't augment the Array type and must be invoked as
+ *   functions of `angular.Array` as `angular.Array.foo(myArrayObject, params)`.
+ *
+ */
 var angularArray = {
   'indexOf': indexOf,
   'sum':function(array, expression) {
@@ -173,7 +192,44 @@ var angularArray = {
         return t1 < t2 ? -1 : 1;
       }
     }
+  },
 
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.limitTo
+   * @function
+   *
+   * @description
+   * Creates a new array containing only the first, or last `limit` number of elements of the
+   * source `array`.
+   *
+   * @param {Array} array Source array to be limited.
+   * @param {string|Number} limit The length of the returned array. If the number is positive, the
+   *     first `limit` items from the source array will be copied, if the number is negative, the
+   *     last `limit` items will be copied.
+   * @returns {Array} New array of length `limit`.
+   *
+   */
+  limitTo: function(array, limit) {
+    limit = parseInt(limit, 10);
+    var out = [],
+        i, n;
+
+    if (limit > 0) {
+      i = 0;
+      n = limit;
+    } else {
+      i = array.length + limit;
+      n = array.length;
+    }
+
+    for (; i<n; i++) {
+      out.push(array[i]);
+    }
+
+    return out;
   }
 };
 
