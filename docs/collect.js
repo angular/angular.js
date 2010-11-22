@@ -16,39 +16,29 @@ var keywordPages = [];
 var SRC_DIR = "docs/";
 var OUTPUT_DIR = "build/docs/";
 var NEW_LINE = /\n\r?/;
+var TEMPLATES = {};
+var start = now();
 
+function now(){ return new Date().getTime(); }
 var work = callback.chain(function () {
   console.log('Parsing Angular Reference Documentation');
-  mkdirPath(OUTPUT_DIR, work.waitFor(function(){
-    findJsFiles('src', work.waitMany(function(file) {
-      //console.log('reading', file, '...');
-      findNgDoc(file, work.waitMany(function(doc) {
-        parseNgDoc(doc);
-        processNgDoc(documentation, doc);
-      }));
+  findJsFiles('src', work.waitMany(function(file) {
+    //console.log('reading', file, '...');
+    findNgDocInJsFile(file, work.waitMany(function(doc) {
+      parseNgDoc(doc);
+      processNgDoc(documentation, doc);
     }));
   }));
+  findNgDocInDir(SRC_DIR, work.waitMany(function(doc){
+    parseNgDoc(doc);
+    processNgDoc(documentation, doc);
+  }));
+  loadTemplates(TEMPLATES, work.waitFor());
+  mkdirPath(OUTPUT_DIR, work.waitFor());
 }).onError(function(err){
   console.log('ERROR:', err.stack || err);
 }).onDone(function(){
-  keywordPages.sort(function(a,b){
-    // supper ugly comparator that orders all utility methods and objects before all the other stuff
-    // like widgets, directives, services, etc.
-    // Mother of all beatiful code please forgive me for the sin that this code certainly is.
-
-    if (a.name === b.name) return 0;
-    if (a.name === 'angular') return -1;
-    if (b.name === 'angular') return 1;
-
-    function namespacedName(page) {
-      return (page.name.match(/\./g).length === 1 && page.type !== 'overview' ? '0' : '1') + page.name;
-    }
-
-    var namespacedA = namespacedName(a),
-        namespacedB = namespacedName(b);
-
-    return namespacedA < namespacedB ? -1 : 1;
-  });
+  keywordPages.sort(keywordSort);
   writeDoc(documentation.pages);
   mergeTemplate('docs-data.js', 'docs-data.js', {JSON:JSON.stringify(keywordPages)}, callback.chain());
   mergeTemplate('docs-scenario.js', 'docs-scenario.js', documentation, callback.chain());
@@ -58,7 +48,7 @@ var work = callback.chain(function () {
   mergeTemplate('docs.js', 'docs.js', documentation, callback.chain());
   mergeTemplate('doc_widgets.css', 'doc_widgets.css', documentation, callback.chain());
   mergeTemplate('doc_widgets.js', 'doc_widgets.js', documentation, callback.chain());
-  console.log('DONE');
+  console.log('DONE', now() - start, 'ms.');
 });
 if (!this.testmode) work();
 ////////////////////
@@ -163,7 +153,7 @@ function markdownTag(doc, name, value) {
     replace(/\<\/pre\>/gmi, '</pre></div>');
 }
 
-R_LINK = /{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/m
+var R_LINK = /{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/m;
         //       1       123     3 4     42
 
 function markdown(text) {
@@ -313,7 +303,7 @@ function parseNgDoc(doc){
   }
 }
 
-function findNgDoc(file, callback) {
+function findNgDocInJsFile(file, callback) {
   fs.readFile(file, callback.waitFor(function(err, content){
     var lines = content.toString().split(NEW_LINE);
     var doc;
@@ -346,6 +336,22 @@ function findNgDoc(file, callback) {
   }));
 }
 
+function loadTemplates(cache, callback){
+  fs.readdir('docs', callback.waitFor(function(err, files){
+    if (err) return this.error(err);
+    files.forEach(function(file){
+      var match = file.match(/^(.*)\.template$/);
+      if (match) {
+        fs.readFile(SRC_DIR + file, callback.waitFor(function(err, content){
+          if (err) return this.error(err);
+          cache[match[1]] = content.toString();
+        }));
+      }
+    });
+    callback();
+  }));
+};
+
 function findJsFiles(dir, callback){
   fs.readdir(dir, callback.waitFor(function(err, files){
     if (err) return this.error(err);
@@ -365,7 +371,7 @@ function findJsFiles(dir, callback){
 
 function processNgDoc(documentation, doc) {
   if (!doc.ngdoc) return;
-  console.log('Found:', doc.ngdoc + ':' + doc.name);
+  //console.log('Found:', doc.ngdoc + ':' + doc.name);
   
   documentation.byName[doc.name] = doc;
   
@@ -385,10 +391,50 @@ function processNgDoc(documentation, doc) {
   }
 }
 
-function writeDoc(pages) {
+function writeDoc(pages, callback) {
   pages.forEach(function(doc) {
-    mergeTemplate(
-        doc.ngdoc + '.template',
-        doc.name + '.html', doc, callback.chain());
+    var template = TEMPLATES[doc.ngdoc];
+    if (!template) throw new Error("No template for:" + doc.ngdoc);
+    var content = mustache.to_html(template, doc);
+    fs.writeFile(OUTPUT_DIR + doc.name + '.html', content, callback);
   });
+}
+
+function findNgDocInDir(directory, docNotify) {
+  fs.readdir(directory, docNotify.waitFor(function(err, files){
+    if (err) return this.error(err);
+    files.forEach(function(file){
+      console.log(file);
+      if (!file.match(/\.ngdoc$/)) return;
+      fs.readFile(directory + file, docNotify.waitFor(function(err, content){
+        if (err) return this.error(err);
+        docNotify({
+          raw:{
+            text:content.toString(),
+            file: directory + file,
+            line: 1}
+          });
+      }));
+    });
+    docNotify.done();
+  }));
+}
+
+function keywordSort(a,b){
+  // supper ugly comparator that orders all utility methods and objects before all the other stuff
+  // like widgets, directives, services, etc.
+  // Mother of all beautiful code please forgive me for the sin that this code certainly is.
+
+  if (a.name === b.name) return 0;
+  if (a.name === 'angular') return -1;
+  if (b.name === 'angular') return 1;
+
+  function namespacedName(page) {
+    return (page.name.match(/\./g).length === 1 && page.type !== 'overview' ? '0' : '1') + page.name;
+  }
+
+  var namespacedA = namespacedName(a),
+      namespacedB = namespacedName(b);
+
+  return namespacedA < namespacedB ? -1 : 1;
 }

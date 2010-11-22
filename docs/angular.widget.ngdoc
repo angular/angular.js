@@ -1,0 +1,73 @@
+@workInProgress
+@ngdoc overview
+@name angular.widget
+@namespace Namespace for all widgets.
+@description
+# Overview
+Widgets allow you to create DOM elements that the browser doesn't 
+already understand. You create the widget in your namespace and 
+assign it behavior. You can only bind one widget per DOM element 
+(unlike directives, in which you can use any number per DOM 
+element). Widgets are expected to manipulate the DOM tree by 
+adding new elements whereas directives are expected to only modify
+element properties.
+
+Widgets come in two flavors: element and attribute.
+
+# Element Widget
+Let's say we would like to create a new element type in the 
+namespace `my` that can watch an expression and alert() the user 
+with each new value.
+
+<pre>
+&lt;my:watch exp="name"/&gt;
+</pre>
+
+You can implement `my:watch` like this:
+<pre>
+angular.widget('my:watch', function(compileElement) {
+  var compiler = this;
+  var exp = compileElement.attr('exp');
+  return function(linkElement) {
+    var currentScope = this;
+    currentScope.$watch(exp, function(value){
+      alert(value);
+    }};
+  };
+});
+</pre>
+
+# Attribute Widget
+Let's implement the same widget, but this time as an attribute 
+that can be added to any existing DOM element.
+<pre>
+&lt;div my-watch="name"&gt;text&lt;/div&gt;
+</pre>
+You can implement `my:watch` attribute like this:
+<pre>
+angular.widget('@my:watch', function(expression, compileElement) {
+  var compiler = this;
+  return function(linkElement) {
+    var currentScope = this;
+    currentScope.$watch(expression, function(value){
+      alert(value);
+    });
+  };
+});
+</pre>
+
+@example
+<script>
+  angular.widget('my:time', function(compileElement){
+    compileElement.css('display', 'block');
+    return function(linkElement){
+      function update(){
+        linkElement.text('Current time is: ' + new Date());
+        setTimeout(update, 1000);
+      }
+      update();
+    };
+  });
+</script>
+<my:time></my:time>
+     
