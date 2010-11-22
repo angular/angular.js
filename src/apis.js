@@ -39,6 +39,14 @@ var angularObject = {
  *
  */
 var angularArray = {
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.indexOf
+   * @function
+   */
   'indexOf': indexOf,
   'sum':function(array, expression) {
     var fn = angular['Function']['compile'](expression);
@@ -51,12 +59,28 @@ var angularArray = {
     }
     return sum;
   },
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.remove
+   * @function
+   */
   'remove':function(array, value) {
     var index = indexOf(array, value);
     if (index >=0)
       array.splice(index, 1);
     return value;
   },
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.filter
+   * @function
+   */
   'filter':function(array, expression) {
     var predicates = [];
     predicates.check = function(value) {
@@ -136,10 +160,26 @@ var angularArray = {
     }
     return filtered;
   },
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.add
+   * @function
+   */
   'add':function(array, value) {
     array.push(isUndefined(value)? {} : value);
     return array;
   },
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.count
+   * @function
+   */
   'count':function(array, condition) {
     if (!condition) return array.length;
     var fn = angular['Function']['compile'](condition), count = 0;
@@ -150,6 +190,14 @@ var angularArray = {
     });
     return count;
   },
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.orderBy
+   * @function
+   */
   'orderBy':function(array, expression, descend) {
     expression = isArray(expression) ? expression: [expression];
     expression = map(expression, function($){
