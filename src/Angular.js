@@ -488,7 +488,8 @@ var _undefined        = undefined,
      * The Angular framework provides a standard set of services for common operations.
      * You can write your own services and rewrite these standard services as well.
      * Like other core angular variables, standard services always start with $.
-     * 
+     *
+     *   * `angular.service.$browser`
      *   * `angular.service.$window`
      *   * `angular.service.$document`
      *   * `angular.service.$location`
@@ -506,21 +507,27 @@ var _undefined        = undefined,
      *   * `angular.service.$cookieStore`
      * 
      * # Writing your own services
-     * Angular provides only set of basic services, so you will probably need to write your custom service very soon.
-     * To do so, you need to write a factory function and register this function to angular's dependency injector.
-     * This factory function must return an object - your service (it is not called with new operator).
-     * <b>angular.service</b> has three parameters:
-     * <ul>
-     *   <li>{string} name Name of the service</li>
-     *   <li>{function} factory Factory function (called just once by DI)</li>
-     *   <li>{Object} config Hash of configuration ($inject, $creation)</li>
-     * </ul>
-     * If your service requires - depends on other services, you need to specify them in config hash - property $inject.
-     * This property is an array of strings (service names). These dependencies will be passed as parameters to the factory function by DI.
+     * Angular provides only set of basic services, so you will probably need to write your custom
+     * service very soon. To do so, you need to write a factory function and register this function
+     * to angular's dependency injector. This factory function must return an object - your service
+     * (it is not called with new operator).
+     * 
+     * **angular.service** has three parameters:
+     * 
+     *   - `{string} name` - Name of the service
+     *   - `{function} factory` - Factory function (called just once by DI)
+     *   - `{Object} config` -  Hash of configuration (`$inject`, `$creation`)
+     * 
+     * If your service requires - depends on other services, you need to specify them 
+     * in config hash - property $inject. This property is an array of strings (service names).
+     * These dependencies will be passed as parameters to the factory function by DI.
      * This approach is very useful when testing, as you can inject mocks/stubs/dummies.
      * 
-     * Here is an example of very simple service. This service requires $window service (it's passed as a parameter to factory function) and it's just a function.
-     * This service simple stores all notifications and after third one, it displays all of them by window alert.
+     * Here is an example of very simple service. This service requires $window service (it's
+     * passed as a parameter to factory function) and it's just a function.
+     * 
+     * This service simple stores all notifications and after third one, it displays all of them by
+     * window alert.
      * <pre>
      * angular.service('notify', function(win) {
 		 *   var msgs = [];
@@ -531,7 +538,7 @@ var _undefined        = undefined,
 		 *       msgs = [];
 		 *     }
 		 *   };
-		 * }, {inject: ['window']});
+		 * }, {$inject: ['$window']});
      * </pre>
      *  
      * And here is a unit test for this service. We use Jasmine spy (mock) instead of real browser's alert.
@@ -569,12 +576,16 @@ var _undefined        = undefined,
      * </pre>
      *
      * # Injecting services into controllers
-     * Using services in a controllers is very similar to using service in other
-     * service. Again, we will use dependency injection.
+     * Using services in a controllers is very similar to using service in other service.
+     * Again, we will use dependency injection.
      * 
-     * JavaScript is dynamic language, so DI is not able to figure out which
-     * services to inject by static types (like in static typed languages).
-     * Therefore you must specify the service name by the $inject property.
+     * JavaScript is dynamic language, so DI is not able to figure out which services to inject by
+     * static types (like in static typed languages). Therefore you must specify the service name
+     * by the `$inject` property - it's an array that contains strings with names of services to be
+     * injected. The name must match the id that service has been registered as with angular.
+     * The order of the services in the array matters, because this order will be used when calling
+     * the factory function with injected parameters. The names of parameters in factory function
+     * don't matter, but by convention they match the service ids.
      * <pre>
      * function myController($loc, $log) {
      *   this.firstMethod = function() {
