@@ -19,6 +19,11 @@ describe('collect', function(){
             '<pre>\nangular.k\n</pre>' + 
             '<p>asdf x</p>');
     });
+    
+    it('should replace text between two <pre></pre> tags', function() {
+      expect(collect.markdown('<pre>x</pre># One<pre>b</pre>')).
+        toEqual('<pre>x</pre><h1>One</h1><pre>b</pre>');
+    });
   });
   
   describe('processNgDoc', function() {
