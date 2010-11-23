@@ -295,7 +295,79 @@ var angularArray = {
    * @ngdoc function
    * @name angular.Array.orderBy
    * @function
+   *
+   * @description
+   * Orders `array` by the `expression` predicate.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
+   *
+   * @param {Array} array The array to sort.
+   * @param {function()|string|Array.<(function()|string)>} expression A predicate to be used by the
+   *    comparator to determine the order of elements.
+   *
+   *    Can be one of:
+   *
+   *    - `function`: JavaScript's Array#sort comparator function
+   *    - `string`: angular expression which evaluates to an object to order by, such as 'name' to
+   *      sort by a property called 'name'. Optionally prefixed with `+` or `-` to control ascending
+   *      or descending sort order (e.g. +name or -name).
+   *    - `Array`: array of function or string predicates, such that a first predicate in the array
+   *      is used for sorting, but when the items are equivalent next predicate is used.
+   *
+   * @param {boolean=} descend TODO
+   * @returns {Array} Sorted copy of the source array.
+   *
+   * @example
+     <div ng:init="friends = [{name:'John', phone:'555-1212', age:10},
+                              {name:'Mary', phone:'555-9876', age:19},
+                              {name:'Mike', phone:'555-4321', age:21},
+                              {name:'Adam', phone:'555-5678', age:35},
+                              {name:'Julie', phone:'555-8765', age:29}]"></div>
+
+     <pre>Sorting predicate = {{predicate}}</pre>
+     <hr/>
+     <table ng:init="predicate='-age'">
+       <tr>
+         <th><a href="" ng:click="predicate = 'name'">Name</a>
+             (<a href ng:click="predicate = '-name'">^</a>)</th>
+         <th><a href="" ng:click="predicate = 'phone'">Phone</a>
+             (<a href ng:click="predicate = '-phone'">^</a>)</th>
+         <th><a href="" ng:click="predicate = 'age'">Age</a>
+             (<a href ng:click="predicate = '-age'">^</a>)</th>
+       <tr>
+       <tr ng:repeat="friend in friends.$orderBy(predicate, true)">
+         <td>{{friend.name}}</td>
+         <td>{{friend.phone}}</td>
+         <td>{{friend.age}}</td>
+       <tr>
+     </table>
+
+     @scenario
+     it('should be reverse ordered by aged', function() {
+       expect(binding('predicate')).toBe('Sorting predicate = -age');
+       expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
+         toEqual(['35', '29', '21', '19', '10']);
+       expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+         toEqual(['Adam', 'Julie', 'Mike', 'Mary', 'John']);
+     });
+
+     it('should reorder the table when user selects different predicate', function() {
+       element('.doc-example a:contains("Name")').click();
+       expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+         toEqual(['Adam', 'John', 'Julie', 'Mary', 'Mike']);
+       expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
+         toEqual(['35', '10', '29', '19', '21']);
+
+       element('.doc-example a:contains("Phone")+a:contains("^")').click();
+       expect(repeater('.doc-example table', 'friend in friends').column('friend.phone')).
+         toEqual(['555-9876', '555-8765', '555-5678', '555-4321', '555-1212']);
+       expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+         toEqual(['Mary', 'Julie', 'Adam', 'Mike', 'John']);
+     });
    */
+  //TODO: WTH is descend param for and how/when it should be used, how is it affected by +/- in
+  //      predicate? the code below is impossible to read and specs are not very good.
   'orderBy':function(array, expression, descend) {
     expression = isArray(expression) ? expression: [expression];
     expression = map(expression, function($){
