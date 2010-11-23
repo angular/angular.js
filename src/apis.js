@@ -167,6 +167,66 @@ var angularArray = {
    * @ngdoc function
    * @name angular.Array.add
    * @function
+   *
+   * @description
+   * `add` is a function similar to JavaScript's `Array#push` method, in that it appends a new
+   * element to an array, but it differs in that the value being added is optional and defaults to
+   * an emty object.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
+   *
+   * @param {Array} array The array expand.
+   * @param {*=} [value={}] The value to be added.
+   * @returns {Array} The expanded array.
+   *
+   * @exampleDescription
+   * This example shows how an initially empty array can be filled with objects created from user
+   * input via the `$add` method.
+   *
+   * @example
+     [<a href="" ng:click="people.$add()">add empty</a>]
+     [<a href="" ng:click="people.$add({name:'John', sex:'male'})">add 'John'</a>]
+     [<a href="" ng:click="people.$add({name:'Mary', sex:'female'})">add 'Mary'</a>]
+
+     <ul ng:init="people=[]">
+       <li ng:repeat="person in people">
+         <input name="person.name">
+         <select name="person.sex">
+           <option value="">--chose one--</option>
+           <option>male</option>
+           <option>female</option>
+         </select>
+         [<a href="" ng:click="people.$remove(person)">X</a>]
+       </li>
+     </ul>
+     <pre>people = {{people}}</pre>
+
+     @scenario
+     beforeEach(function() {
+        expect(binding('people')).toBe('people = []');
+     });
+
+     it('should create an empty record when "add empty" is clicked', function() {
+       element('.doc-example a:contains("add empty")').click();
+       expect(binding('people')).toBe('people = [{\n  "name":"",\n  "sex":null}]');
+     });
+
+     it('should create a "John" record when "add \'John\'" is clicked', function() {
+       element('.doc-example a:contains("add \'John\'")').click();
+       expect(binding('people')).toBe('people = [{\n  "name":"John",\n  "sex":"male"}]');
+     });
+
+     it('should create a "Mary" record when "add \'Mary\'" is clicked', function() {
+       element('.doc-example a:contains("add \'Mary\'")').click();
+       expect(binding('people')).toBe('people = [{\n  "name":"Mary",\n  "sex":"female"}]');
+     });
+
+     it('should delete a record when "X" is clicked', function() {
+        element('.doc-example a:contains("add empty")').click();
+        element('.doc-example li a:contains("X"):first').click();
+        expect(binding('people')).toBe('people = []');
+     });
    */
   'add':function(array, value) {
     array.push(isUndefined(value)? {} : value);
