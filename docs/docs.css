@@ -175,3 +175,7 @@ a {
   width: 10em;
   text-align: right;
 }
+
+.doc-example table td {
+  padding: 0 1.5em;
+}
