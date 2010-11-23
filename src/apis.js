@@ -239,6 +239,44 @@ var angularArray = {
    * @ngdoc function
    * @name angular.Array.count
    * @function
+   *
+   * @description
+   * Determines the number of elements in an array. Optionally it will count only those elements
+   * for which the `condition` evaluets to `true`.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
+   *
+   * @param {Array} array The array to count elements in.
+   * @param {(Function()|string)=} condition A function to be evaluated or angular expression to be
+   *     compiled and evaluated. The element that is currently being iterated over, is exposed to
+   *     the `condition` as `this`.
+   * @returns {number} Number of elements in the array (for which the condition evaluates to true).
+   *
+   * @example
+     <pre ng:init="items = [{name:'knife', points:1},
+                            {name:'fork', points:3},
+                            {name:'spoon', points:1}]"></pre>
+     <ul>
+       <li ng:repeat="item in items">
+          {{item.name}}: points=
+          <input type="text" name="item.points"/> <!-- id="item{{$index}} -->
+       </li>
+     </ul>
+     <p>Number of items which have one point: <em>{{ items.$count('points==1') }}</em></p>
+     <p>Number of items which have more than one point: <em>{{items.$count('points&gt;1')}}</em></p>
+
+     @scenario
+     it('should calculate counts', function() {
+       expect(binding('items.$count(\'points==1\')')).toEqual(2);
+       expect(binding('items.$count(\'points>1\')')).toEqual(1);
+     });
+
+     it('should recalculate when updated', function() {
+       using('.doc-example li:first-child').input('item.points').enter('23');
+       expect(binding('items.$count(\'points==1\')')).toEqual(1);
+       expect(binding('items.$count(\'points>1\')')).toEqual(2);
+     });
    */
   'count':function(array, condition) {
     if (!condition) return array.length;
