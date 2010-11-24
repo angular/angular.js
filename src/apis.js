@@ -46,6 +46,34 @@ var angularArray = {
    * @ngdoc function
    * @name angular.Array.indexOf
    * @function
+   *
+   * @description
+   * Determines the index of `value` in `array`.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
+   *
+   * @param {Array} array Array to search.
+   * @param {*} value Value to search for.
+   * @returns {number} The position of the element in `array`. The position is 0-based. `-1` is returned if the value can't be found.
+   *
+   * @example
+     <div ng:init="books = ['Moby Dick', 'Great Gatsby', 'Romeo and Juliet']"></div>
+     <input name='bookName' value='Romeo and Juliet'> <br>
+     Index of '{{bookName}}' in the list {{books}} is <em>{{books.$indexOf(bookName)}}</em>.
+
+     @scenario
+     it('should correctly calculate the initial index', function() {
+       expect(binding('books.$indexOf(bookName)')).toBe('2');
+     });
+
+     it('should recalculate', function() {
+       input('bookName').enter('foo');
+       expect(binding('books.$indexOf(bookName)')).toBe('-1');
+
+       input('bookName').enter('Moby Dick');
+       expect(binding('books.$indexOf(bookName)')).toBe('0');
+     });
    */
   'indexOf': indexOf,
   'sum':function(array, expression) {
@@ -71,6 +99,9 @@ var angularArray = {
    * Modifies `array` by removing an element from it. The element will be looked up using the
    * {@link angular.Array.indexOf indexOf} function on the `array` and only the first instance of
    * the element will be removed.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
    *
    * @param {Array} array Array from which an element should be removed.
    * @param {*} value Element to be removed.
