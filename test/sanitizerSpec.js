@@ -50,8 +50,8 @@ describe('HTML', function(){
   });
 
   it('should handle improper html', function(){
-    expectHTML('< div id="</div>" alt=abc href=\'"\' >text< /div>').
-      toEqual('<div id="&lt;/div&gt;" alt="abc" href="&quot;">text</div>');
+    expectHTML('< div id="</div>" alt=abc dir=\'"\' >text< /div>').
+      toEqual('<div id="&lt;/div&gt;" alt="abc" dir="&quot;">text</div>');
   });
 
   it('should handle improper html2', function(){
@@ -104,6 +104,21 @@ describe('HTML', function(){
     it('should ignore unknown attributes', function(){
       writer.start('div', {unknown:""});
       expect(html).toEqual('<div>');
+    });
+    
+    describe('isUri', function(){
+      it('should be URI', function(){
+        expect(isUri('http://abc')).toBeTruthy();
+        expect(isUri('https://abc')).toBeTruthy();
+        expect(isUri('ftp://abc')).toBeTruthy();
+        expect(isUri('mailto:me@example.com')).toBeTruthy();
+        expect(isUri('#anchor')).toBeTruthy();
+      });
+      
+      it('should not be UIR', function(){
+        expect(isUri('')).toBeFalsy();
+        expect(isUri('javascript:alert')).toBeFalsy();
+      });
     });
 
     describe('javascript URL attribute', function(){

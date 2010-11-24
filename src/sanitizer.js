@@ -21,7 +21,8 @@ var START_TAG_REGEXP = /^<\s*([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']
   BEGIN_TAG_REGEXP = /^</,
   BEGING_END_TAGE_REGEXP = /^<\s*\//,
   COMMENT_REGEXP = /<!--(.*?)-->/g,
-  CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g;
+  CDATA_REGEXP = /<!\[CDATA\[(.*?)]]>/g,
+  URI_REGEXP = /^((ftp|https?):\/\/|mailto:|#)/;
 
 // Empty Elements - HTML 4.01
 var emptyElements = makeMap("area,base,basefont,br,col,hr,img,input,isindex,link,param");
@@ -33,24 +34,24 @@ var blockElements = makeMap("address,blockquote,button,center,dd,del,dir,div,dl,
 // Inline Elements - HTML 4.01
 var inlineElements = makeMap("a,abbr,acronym,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,img,"+
     "input,ins,kbd,label,map,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var");
-
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
 var closeSelfElements = makeMap("colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr");
-
-// Attributes that have their values filled in disabled="disabled"
-var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected");
-
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
-
 var validElements = extend({}, emptyElements, blockElements, inlineElements, closeSelfElements);
-var validAttrs = extend({}, fillAttrs, makeMap(
-    'abbr,align,alink,alt,archive,axis,background,bgcolor,border,cellpadding,cellspacing,cite,class,classid,clear,code,codebase,'+
-    'codetype,color,cols,colspan,content,coords,data,dir,face,for,headers,height,href,hreflang,hspace,id,label,lang,language,'+
-    'link,longdesc,marginheight,marginwidth,maxlength,media,method,name,nowrap,profile,prompt,rel,rev,rows,rowspan,rules,scheme,'+
-    'scope,scrolling,shape,size,span,src,standby,start,summary,tabindex,target,text,title,type,usemap,valign,value,valuetype,'+
-    'vlink,vspace,width'));
+
+//see: http://www.w3.org/TR/html4/index/attributes.html
+//Attributes that have their values filled in disabled="disabled"
+var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected");
+//Attributes that have href and hence need to be sanitized
+var uriAttrs = makeMap("background,href,longdesc,src,usemap");
+var validAttrs = extend({}, fillAttrs, uriAttrs, makeMap(
+    'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
+    'color,cols,colspan,coords,dir,face,for,headers,height,hreflang,hspace,id,'+
+    'label,lang,language,maxlength,method,name,prompt,rel,rev,rows,rowspan,rules,'+
+    'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,'+
+    'valign,value,vspace,width'));
 
 /**
  * @example
@@ -206,28 +207,14 @@ function makeMap(str){
   return obj;
 }
 
-/*
- * For attack vectors see: http://ha.ckers.org/xss.html
- */
-var JAVASCRIPT_URL = /^javascript:/i,
-    NBSP_REGEXP = /&nbsp;/gim,
-    HEX_ENTITY_REGEXP = /&#x([\da-f]*);?/igm,
-    DEC_ENTITY_REGEXP = /&#(\d+);?/igm,
-    CHAR_REGEXP = /[\w:]/gm,
-    HEX_DECODE = function(match, code){return fromCharCode(parseInt(code,16));},
-    DEC_DECODE = function(match, code){return fromCharCode(code);};
 /**
- * @param {string} url
- * @returns true if url decodes to something which starts with 'javascript:' hence unsafe
+ * verifies that the input is a valid URI. 
+ * starts with: http|ftp|mailto://
+ * starts with: #
+ * @param {string} uri
  */
-function isJavaScriptUrl(url) {
-  var chars = [];
-  url.replace(NBSP_REGEXP, '').
-      replace(HEX_ENTITY_REGEXP, HEX_DECODE).
-      replace(DEC_ENTITY_REGEXP, DEC_DECODE).
-      // Remove all non \w: characters, unfurtunetly value.replace(/[\w:]/,'') can be defeated using \u0000
-      replace(CHAR_REGEXP, function(ch){chars.push(ch);});
-  return JAVASCRIPT_URL.test(lowercase(chars.join('')));
+function isUri(uri) {
+  return uri.match(URI_REGEXP);
 }
 
 /**
@@ -253,7 +240,8 @@ function htmlSanitizeWriter(buf){
         out('<');
         out(tag);
         foreach(attrs, function(value, key){
-          if (validAttrs[lowercase(key)] && !isJavaScriptUrl(value)) {
+          var lkey=lowercase(key);
+          if (validAttrs[lkey] && (!uriAttrs[lkey] || isUri(value))) {
             out(' ');
             out(key);
             out('="');
