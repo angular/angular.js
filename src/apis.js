@@ -66,6 +66,44 @@ var angularArray = {
    * @ngdoc function
    * @name angular.Array.remove
    * @function
+   *
+   * @description
+   * Modifies `array` by removing an element from it. The element will be looked up using the
+   * {@link angular.Array.indexOf indexOf} function on the `array` and only the first instance of
+   * the element will be removed.
+   *
+   * @param {Array} array Array from which an element should be removed.
+   * @param {*} value Element to be removed.
+   * @returns {*} The removed element.
+   *
+   * @example
+     <ul ng:init="tasks=['Learn Angular', 'Read Documentation',
+                         'Check out demos', 'Build cool applications']">
+       <li ng:repeat="task in tasks">
+         {{task}} [<a href="" ng:click="tasks.$remove(task)">X</a>]
+       </li>
+     </ul>
+     <hr/>
+     tasks = {{tasks}}
+
+     @scenario
+     it('should initialize the task list with for tasks', function() {
+       expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(4);
+       expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
+         toEqual(['Learn Angular', 'Read Documentation', 'Check out demos',
+                  'Build cool applications']);
+     });
+
+     it('should initialize the task list with for tasks', function() {
+       element('.doc-example ul li a:contains("X"):first').click();
+       expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(3);
+
+       element('.doc-example ul li a:contains("X"):last').click();
+       expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(2);
+
+       expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
+         toEqual(['Read Documentation', 'Check out demos']);
+     });
    */
   'remove':function(array, value) {
     var index = indexOf(array, value);
