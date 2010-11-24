@@ -6,7 +6,7 @@ describe('HTML', function(){
 
   it('should echo html', function(){
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
-       toEqual('hello<b class="1\'23" align="&quot;&quot;">world</b>.');
+       toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');
   });
 
   it('should remove script', function(){
@@ -49,9 +49,15 @@ describe('HTML', function(){
     expectHTML('a<my:hr/><my:div>b</my:div>c').toEqual('abc');
   });
 
+  it('should handle entities', function(){
+    var everything = '<div id="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;">' + 
+    '!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;</div>';
+    expectHTML(everything).toEqual(everything);
+  });
+  
   it('should handle improper html', function(){
-    expectHTML('< div id="</div>" alt=abc href=\'"\' >text< /div>').
-      toEqual('<div id="&lt;/div&gt;" alt="abc" href="&quot;">text</div>');
+    expectHTML('< div id="</div>" alt=abc dir=\'"\' >text< /div>').
+      toEqual('<div id="&lt;/div&gt;" alt="abc" dir="&#34;">text</div>');
   });
 
   it('should handle improper html2', function(){
@@ -81,19 +87,14 @@ describe('HTML', function(){
       expect(html).toEqual('a&lt;div&gt;&amp;&lt;/div&gt;c');
     });
 
-    it('should not double escape entities', function(){
-      writer.chars('&nbsp;&gt;&lt;');
-      expect(html).toEqual('&nbsp;&gt;&lt;');
-    });
-
     it('should escape IE script', function(){
-      writer.chars('&{}');
-      expect(html).toEqual('&amp;{}');
+      writer.chars('&<>{}');
+      expect(html).toEqual('&amp;&lt;&gt;{}');
     });
 
     it('should escape attributes', function(){
-      writer.start('div', {id:'\"\'<>'});
-      expect(html).toEqual('<div id="&quot;\'&lt;&gt;">');
+      writer.start('div', {id:'!@#$%^&*()_+-={}[]:";\'<>?,./`~ \n\0\r\u0127'});
+      expect(html).toEqual('<div id="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#10;&#0;&#13;&#295;">');
     });
 
     it('should ignore missformed elements', function(){
@@ -105,12 +106,32 @@ describe('HTML', function(){
       writer.start('div', {unknown:""});
       expect(html).toEqual('<div>');
     });
+    
+    describe('isUri', function(){
+      
+      function isUri(value) {
+        return value.match(URI_REGEXP);
+      }
+      
+      it('should be URI', function(){
+        expect(isUri('http://abc')).toBeTruthy();
+        expect(isUri('https://abc')).toBeTruthy();
+        expect(isUri('ftp://abc')).toBeTruthy();
+        expect(isUri('mailto:me@example.com')).toBeTruthy();
+        expect(isUri('#anchor')).toBeTruthy();
+      });
+      
+      it('should not be UIR', function(){
+        expect(isUri('')).toBeFalsy();
+        expect(isUri('javascript:alert')).toBeFalsy();
+      });
+    });
 
     describe('javascript URL attribute', function(){
       beforeEach(function(){
         this.addMatchers({
           toBeValidUrl: function(){
-            return !isJavaScriptUrl(this.actual);
+            return URI_REGEXP.exec(this.actual);
           }
         });
       });
@@ -118,7 +139,7 @@ describe('HTML', function(){
       it('should ignore javascript:', function(){
         expect('JavaScript:abc').not.toBeValidUrl();
         expect(' \n Java\n Script:abc').not.toBeValidUrl();
-        expect('JavaScript/my.js').toBeValidUrl();
+        expect('http://JavaScript/my.js').toBeValidUrl();
       });
 
       it('should ignore dec encoded javascript:', function(){
