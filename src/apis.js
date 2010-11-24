@@ -149,6 +149,74 @@ var angularArray = {
    * @ngdoc function
    * @name angular.Array.filter
    * @function
+   *
+   * @description
+   * Selects a subset of items from `array` and returns it as a new array.
+   *
+   * @param {Array} array The source array.
+   * @param {string|Object|function()} expression The predicate to be used for selecting items from
+   *   `array`.
+   *
+   *   Can be one of:
+   *
+   *   - `string`: Predicate that results in a substring match using the value of `expression`
+   *     string. All strings or objects with string properties in `array` that contain this string
+   *     will be returned. The predicate can be negated by prefixing the string with `!`.
+   *
+   *   - `Object`: A pattern object can be used to filter specific properties on objects contained
+   *     by `array`. For example `{name:"M", phone:"1"}` predicate will return an array of items
+   *     which have property `name` containing "M" and property `phone` containing "1". A special
+   *     property name `$` can be used (as in `{$:"text"}`) to accept a match against any
+   *     property of the object. That's equivalent to the simple substring match with a `string`
+   *     as described above.
+   *
+   *   - `function`: A predicate function can be used to write arbitrary filters. The function is
+   *     called for each element of `array`. The final result is an array of those elements that
+   *     the predicate returned true for.
+   *
+   * @example
+     <div ng:init="friends = [{name:'John', phone:'555-1276'},
+                              {name:'Mary', phone:'800-BIG-MARY'},
+                              {name:'Mike', phone:'555-4321'},
+                              {name:'Adam', phone:'555-5678'},
+                              {name:'Julie', phone:'555-8765'}]"></div>
+
+     Search: <input name="searchText"/>
+     <table id="searchTextResults">
+       <tr><th>Name</th><th>Phone</th><tr>
+       <tr ng:repeat="friend in friends.$filter(searchText)">
+         <td>{{friend.name}}</td>
+         <td>{{friend.phone}}</td>
+       <tr>
+     </table>
+     <hr>
+     Any: <input name="search.$"/> <br>
+     Name only <input name="search.name"/><br>
+     Phone only <input name="search.phone"/><br>
+     <table id="searchObjResults">
+       <tr><th>Name</th><th>Phone</th><tr>
+       <tr ng:repeat="friend in friends.$filter(search)">
+         <td>{{friend.name}}</td>
+         <td>{{friend.phone}}</td>
+       <tr>
+     </table>
+
+     @scenario
+     it('should search across all fields when filtering with a string', function() {
+       input('searchText').enter('m');
+       expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
+         toEqual(['Mary', 'Mike', 'Adam']);
+
+       input('searchText').enter('76');
+       expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
+         toEqual(['John', 'Julie']);
+     });
+
+     it('should search in specific fields when filtering with a predicate object', function() {
+       input('search.$').enter('i');
+       expect(repeater('#searchObjResults tr', 'friend in friends').column('name')).
+         toEqual(['Mary', 'Mike', 'Julie']);
+     });
    */
   'filter':function(array, expression) {
     var predicates = [];
