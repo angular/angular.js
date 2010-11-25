@@ -566,6 +566,32 @@ var _undefined        = undefined,
     nodeName,
     rngScript         = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
 
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.foreach
+ * @function
+ *
+ * @description
+ * Invokes the `iterator` function once for each item in `obj` collection. The collection can either
+ * be an object or an array. The `iterator` function is invoked with `iterator(value, key)`, where
+ * `value` is the value of an object property or an array element and `key` is the object property
+ * key or array element index. Optionally, `context` can be specified for the iterator function.
+ *
+   <pre>
+     var values = {name: 'misko', gender: 'male'};
+     var log = [];
+     angular.foreach(values, function(value, key){
+       this.push(key + ': ' + value);
+     }, log);
+     expect(log).toEqual(['name: misko', 'gender:male']);
+   </pre>
+ *
+ * @param {Object|Array} obj Object to iterate over.
+ * @param {function()} iterator Iterator function.
+ * @param {Object} context Object to become context (`this`) for the iterator function.
+ * @returns {Objet|Array} Reference to `obj`.
+ */
 function foreach(obj, iterator, context) {
   var key;
   if (obj) {
