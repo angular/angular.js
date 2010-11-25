@@ -1022,10 +1022,31 @@ function merge(src, dst) {
   }
 }
 
-function compile(element, existingScope) {
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.compile
+ * @function
+ *
+ * @description
+ * Compiles a piece of HTML or DOM into a {@link angular.scope scope} object.
+   <pre>
+    var scope1 = angular.compile(window.document);
+    scope1.$init();
+
+    var scope2 = angular.compile('<div ng:click="clicked = true">click me</div>');
+    scope2.$init();
+   </pre>
+ *
+ * @param {string|DOMElement} element Element to compile.
+ * @param {Object} parentScope Scope to become the parent scope of the newly compiled scope.
+ * @returns {Object} Compiled scope object.
+ */
+function compile(element, parentScope) {
   var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget),
       $element = jqLite(element);
-  return compiler.compile($element)($element, existingScope);
+  return compiler.compile($element)($element, parentScope);
 }
 /////////////////////////////////////////////////
 
