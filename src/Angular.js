@@ -735,19 +735,40 @@ function isLeafNode (node) {
 }
 
 /**
- * Copies stuff.
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.Object.copy
+ * @function
  *
- * If destination is not provided and source is an object or an array, a copy is created & returned,
- * otherwise the source is returned.
+ * @description
+ * Creates a deep copy of `source`.
  *
- * If destination is provided, all of its properties will be deleted and if source is an object or
- * an array, all of its members will be copied into the destination object. Finally the destination
- * is returned just for kicks.
+ * If `destination` is not provided and `source` is an object or an array, a copy is created &
+ * returned, otherwise the `source` is returned.
  *
- * @param {*} source The source to be used during copy.
- *                   Can be any type including primitives, null and undefined.
- * @param {(Object|Array)=} destination Optional destination into which the source is copied
- * @returns {*}
+ * If `destination` is provided, all of its properties will be deleted.
+ *
+ * If `source` is an object or an array, all of its members will be copied into the `destination`
+ * object.
+ *
+ * Note: this function is used to augment the Object type in angular expressions. See
+ * {@link angular.Object} for more info.
+ *
+ * @param {*} source The source to be used to make a copy.
+ *                   Can be any type including primitives, `null` and `undefined`.
+ * @param {(Object|Array)=} destination Optional destination into which the source is copied.
+ * @returns {*} The copy or updated `destination` if `destination` was specified.
+ *
+ * @example
+   Salutation: <input type="text" name="master.salutation" value="Hello" /><br/>
+   Name: <input type="text" name="master.name" value="world"/><br/>
+   <button ng:click="form = master.$copy()">copy</button>
+   <hr/>
+
+   Master is <span ng:hide="master.$equals(form)">NOT</span> same as form.
+
+   <pre>master={{master}}</pre>
+   <pre>form={{form}}</pre>
  */
 function copy(source, destination){
   if (!destination) {
