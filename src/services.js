@@ -855,19 +855,100 @@ angularServiceInject('$xhr.cache', function($xhr){
   return cache;
 }, ['$xhr.bulk']);
 
+
 /**
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$resource
  * @requires $xhr
- * 
+ *
  * @description
  * Is a factory which creates a resource object which lets you interact with 
  * <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer" target="_blank">RESTful</a>
  * server-side data sources.
  * Resource object has action methods which provide high-level behaviors without
- * the need to interact with the low level $xhr or XMLHttpRequest(). 
- * 
+ * the need to interact with the low level $xhr or XMLHttpRequest().
+ *
+ * <pre>
+     // Define CreditCard class
+     var CreditCard = $resource('/user/:userId/card/:cardId',
+      {userId:123, cardId:'@id'}, {
+       charge: {method:'POST', params:{charge:true}}
+      });
+
+     // We can retrieve a collection from the server
+     var cards = CreditCard.query();
+     // GET: /user/123/card
+     // server returns: [ {id:456, number:'1234', name:'Smith'} ];
+
+     var card = cards[0];
+     // each item is an instance of CreditCard
+     expect(card instanceof CreditCard).toEqual(true);
+     card.name = "J. Smith";
+     // non GET methods are mapped onto the instances
+     card.$save();
+     // POST: /user/123/card/456 {id:456, number:'1234', name:'J. Smith'}
+     // server returns: {id:456, number:'1234', name: 'J. Smith'};
+
+     // our custom method is mapped as well.
+     card.$charge({amount:9.99});
+     // POST: /user/123/card/456?amount=9.99&charge=true {id:456, number:'1234', name:'J. Smith'}
+     // server returns: {id:456, number:'1234', name: 'J. Smith'};
+
+     // we can create an instance as well
+     var newCard = new CreditCard({number:'0123'});
+     newCard.name = "Mike Smith";
+     newCard.$save();
+     // POST: /user/123/card {number:'0123', name:'Mike Smith'}
+     // server returns: {id:789, number:'01234', name: 'Mike Smith'};
+     expect(newCard.id).toEqual(789);
+ * </pre>
+ *
+ *
+ * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
+ *     `/user/:username`.
+ * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
+ *     `actions` methods.
+ * @param {Object.<Object>=} actions Map of actions available for the resource.
+ *
+ *     Each resource comes preconfigured with `get`, `save`, `query`, `remove`, and `delete` to
+ *     mimic the RESTful philosophy.
+ *
+ *     To create your own actions, pass in a map keyed on action names (e.g. `'charge'`) with
+ *     elements consisting of these properties:
+ *
+ *     - `{string} method`:  Request method type. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
+ *        and [`JSON`](http://en.wikipedia.org/wiki/JSON#JSONP) (also known as JSONP).
+ *     - `{Object=} params`: Set of pre-bound parameters for the action.
+ *     - `{boolean=} isArray`: If true then the returned object for this action is an array, see the
+ *       pre-binding section.
+ *     - `{boolean=} verifyCache`: If true then items returned from cache, are double checked by
+ *       running the query again and updating the resource asynchroniously.
+ *
+ *     Each service comes preconfigured with the following overridable actions:
+ *     <pre>
+ *       { 'get':    {method:'GET'},
+           'save':   {method:'POST'},
+           'query':  {method:'GET', isArray:true},
+           'remove': {method:'DELETE'},
+           'delete': {method:'DELETE'} };
+ *     </pre>
+ *
+ * @returns {Object} A resource "class" which has "static" method for each action in the definition.
+ *     Calling these methods invoke `$xhr` on the `url` template with the given `method` and
+ *     `params`. When the data is returned from the server then the object is an instance of the
+ *     resource type and all of the non-GET methods are available with `$` prefix. This allows you
+ *     to easily support CRUD operations (create, read, update, delete) on server-side data.
+
+       <pre>
+         var User = $resource('/user/:userId', {userId:'@id'});
+         var user = User.get({userId:123}, function(){
+           user.abc = true;
+           user.$save();
+         });
+       </pre>
+ *
+ *
  * @example
    <script>
      function BuzzController($resource) {
