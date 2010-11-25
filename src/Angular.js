@@ -760,6 +760,39 @@ function copy(source, destination){
   return destination;
 }
 
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.Object.equals
+ * @function
+ *
+ * @description
+ * Determines if two objects or value are equivalent.
+ *
+ * To be equivalent, they must pass `==` comparison or be of the same type and have all their
+ * properties pass `==` comparison.
+ *
+ * Supports values types, arrays and objects.
+ *
+ * For objects `function` properties and properties that start with `$` are not considered during
+ * comparisons.
+ *
+ * @param {*} o1 Object or value to compare.
+ * @param {*} o2 Object or value to compare.
+ * @returns {boolean} True if arguments are equal.
+ *
+ * @example
+   Salutation: <input type="text" name="master.salutation" value="Hello" /><br/>
+   Name: <input type="text" name="master.name" value="world"/><br/>
+   <button ng:click="form = master.$copy()">copy</button>
+   <hr/>
+
+   Master is <span ng:hide="master.$equals(form)">NOT</span> same as form.
+
+   <pre>master={{master}}</pre>
+   <pre>form={{form}}</pre>
+ */
 function equals(o1, o2) {
   if (o1 == o2) return true;
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
