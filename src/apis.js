@@ -88,6 +88,9 @@ var angularArray = {
    * This function calculates the sum of all numbers in `array`. If the `expressions` is supplied,
    * it is evaluated once for each element in `array` and then the sum of these values is returned.
    *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
+   *
    * @param {Array} array The source array.
    * @param {(string|function())=} expression Angular expression or a function to be evaluated for each
    *     element in `array`. The array element becomes the `this` during the evaluation.
@@ -207,6 +210,9 @@ var angularArray = {
    *
    * @description
    * Selects a subset of items from `array` and returns it as a new array.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
    *
    * @param {Array} array The source array.
    * @param {string|Object|function()} expression The predicate to be used for selecting items from
@@ -614,6 +620,9 @@ var angularArray = {
    * @description
    * Creates a new array containing only the first, or last `limit` number of elements of the
    * source `array`.
+   *
+   * Note: this function is used to augment the Array type in angular expressions. See
+   * {@link angular.Array} for more info.
    *
    * @param {Array} array Source array to be limited.
    * @param {string|Number} limit The length of the returned array. If the number is positive, the
