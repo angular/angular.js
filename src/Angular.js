@@ -580,7 +580,41 @@ function inherit(parent, extra) {
   return extend(new (extend(function(){}, {prototype:parent}))(), extra);
 }
 
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.noop
+ * @function
+ *
+ * @description
+ * Empty function that performs no operation whatsoever. This function is useful when writing code
+ * in the functional style.
+   <pre>
+     function foo(callback) {
+       var result = calculateResult();
+       (callback || angular.noop)(result);
+     }
+   </pre>
+ */
 function noop() {}
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.identity
+ * @function
+ *
+ * @description
+ * A function that does nothing except for returning its first argument. This function is useful
+ * when writing code in the functional style.
+ *
+   <pre>
+     function transformer(transformationFn, value) {
+       return (transformationFn || identity)(value);
+     };
+   </pre>
+ */
 function identity($) {return $;}
 function valueFn(value) {return function(){ return value; };}
 
