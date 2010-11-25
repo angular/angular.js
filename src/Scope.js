@@ -191,7 +191,16 @@ function errorHandlerFor(element, error) {
  * Note: A widget that creates scopes (i.e. {@link angular.widget.@ng:repeat ng:repeat}) is
  * responsible for forwarding `$eval()` calls from the parent to those child scopes. That way,
  * calling $eval() on the root scope will update the whole page.
-
+ *
+ *
+ * @TODO THESE PARAMS AND RETURNS ARE NOT RENDERED IN THE TEMPLATE!! FIX THAT!
+ * @param {Object} parent The scope that should become the parent for the newly created scope.
+ * @param {Object.<string, function()>=} providers Map of service factory which need to be provided
+ *     for the current scope. Usually {@link angular.service}.
+ * @param {Object.<string, *>=} instanceCache Provides pre-instantiated services which should
+ *     append/override services provided by `providers`.
+ * @returns {Object} Newly created scope.
+ *
  *
  * @exampleDescription
  * This example demonstrates scope inheritance and property overriding.
