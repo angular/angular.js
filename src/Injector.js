@@ -1,9 +1,20 @@
 /**
- * Create an inject method
- * @param providerScope provider's "this"
- * @param providers a function(name) which returns provider function
- * @param cache place where instances are saved for reuse
- * @returns {Function}
+ * @ngdoc function
+ * @name angular.injector
+ * @function
+ *
+ * @description
+ * Creates an inject function that can be used for dependency injection.
+ *
+ * @param {Object=} [providerScope={}] provider's `this`
+ * @param {Object.<string, function()>=} [providers=angular.service] Map of provider (factory)
+ *     function.
+ * @param {Object.<string, function()>=} [cache={}] Place where instances are saved for reuse. Can
+ *     also be used to override services speciafied by `providers` (useful in tests).
+ * @returns {function()} Injector function.
+ *
+ * @TODO These docs need a lot of work. Specifically the returned function should be described in
+ *     great detail + we need to provide some examples.
  */
 function createInjector(providerScope, providers, cache) {
   providers = providers || angularService;
