@@ -1,4 +1,10 @@
-# <angular/> 0.9.5 turkey-blast (in-progress) #
+# <angular/> 0.9.5 turkey-blast (2010-11-25) #
+
+### Docs
+- 99% of the content from the angular wiki is now in the docs
+
+### Api
+- added `angular.Array.limitTo` to make it easy to select first or last few items of an array
 
 
 # <angular/> 0.9.4 total-recall (2010-11-18) #
