@@ -675,6 +675,27 @@ function map(obj, iterator, context) {
   });
   return results;
 }
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.Object.size
+ * @function
+ *
+ * @description
+ * Determines the number of elements in an array or number of properties of an object.
+ *
+ * Note: this function is used to augment the Object type in angular expressions. See
+ * {@link angular.Object} for more info.
+ *
+ * @param {Object|Array} obj Object or array to inspect.
+ * @returns {number} The size of `obj` or `0` if `obj` is not an object or array.
+ *
+ * @example
+ * Number of items in array: {{ [1,2].$size() }}<br/>
+ * Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
+ */
 function size(obj) {
   var size = 0;
   if (obj) {
@@ -777,6 +798,9 @@ function copy(source, destination){
  *
  * For objects `function` properties and properties that start with `$` are not considered during
  * comparisons.
+ *
+ * Note: this function is used to augment the Object type in angular expressions. See
+ * {@link angular.Object} for more info.
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
