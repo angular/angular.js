@@ -11,6 +11,26 @@ var angularGlobal = {
   }
 };
 
+
+/**
+ * @workInProgress
+ * @ngdoc overview
+ * @name angular.Object
+ * @function
+ *
+ * @description
+ * Utility functions for manipulation with JavaScript objects.
+ *
+ * These functions are exposed in two ways:
+ *
+ * - **in angular expressions**: the functions are bound to all objects and augment the Object
+ *   type. The names of these methods are prefixed with `$` character to minimize naming collisions.
+ *   To call a method, invoke the function without the first argument, e.g, `myObject.$foo(param2)`.
+ *
+ * - **in JavaScript code**: the functions don't augment the Object type and must be invoked as
+ *   functions of `angular.Object` as `angular.Object.foo(myObject, param2)`.
+ *
+ */
 var angularCollection = {
   'copy': copy,
   'size': size,
