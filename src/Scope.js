@@ -261,7 +261,58 @@ function createScope(parent, providers, instanceCache) {
      * @param {function()} fn Function to be bound.
      */
     $bind: bind(instance, bind, instance),
+
+
+    /**
+     * @workInProgress
+     * @ngdoc function
+     * @name angular.scope.$get
+     * @function
+     *
+     * @description
+     * Returns the value for `property_chain` on the current scope. Unlike in JavaScript, if there
+     * are any `undefined` intermediary properties, `undefined` is returned instead of throwing an
+     * exception.
+     *
+       <pre>
+         var scope = angular.scope();
+         expect(scope.$get('person.name')).toEqual(undefined);
+         scope.person = {};
+         expect(scope.$get('person.name')).toEqual(undefined);
+         scope.person.name = 'misko';
+         expect(scope.$get('person.name')).toEqual('misko');
+       </pre>
+     *
+     * @param {string} property_chain String representing name of a scope property. Optionally
+     *     properties can be chained with `.` (dot), e.g. `'person.name.first'`
+     * @returns {*} Value for the (nested) property.
+     */
     $get: bind(instance, getter, instance),
+
+
+    /**
+     * @workInProgress
+     * @ngdoc function
+     * @name angular.scope.$set
+     * @function
+     *
+     * @description
+     * Assigns a value to a property of the current scope specified via `property_chain`. Unlike in
+     * JavaScript, if there are any `undefined` intermediary properties, empty objects are created
+     * and assigned in to them instead of throwing an exception.
+     *
+       <pre>
+         var scope = angular.scope();
+         expect(scope.person).toEqual(undefined);
+         scope.$set('person.name', 'misko');
+         expect(scope.person).toEqual({name:'misko'});
+         expect(scope.person.name).toEqual('misko');
+       </pre>
+     *
+     * @param {string} property_chain String representing name of a scope property. Optionally
+     *     properties can be chained with `.` (dot), e.g. `'person.name.first'`
+     * @param {*} value Value to assign to the scope property.
+     */
     $set: bind(instance, setter, instance),
 
 
