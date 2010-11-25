@@ -1025,6 +1025,23 @@ function concat(array1, array2, index) {
   return array1.concat(slice.call(array2, index, array2.length));
 }
 
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.bind
+ * @function
+ *
+ * @description
+ * Returns function which calls function `fn` bound to `self` (`self` becomes the `this` for `fn`).
+ * Optional `args` can be supplied which are prebound to the function, also known as
+ * [function currying](http://en.wikipedia.org/wiki/Currying).
+ *
+ * @param {Object} self Context in which `fn` should be evaluated in.
+ * @param {function()} fn Function to be bound.
+ * @param {(...*)=} args Optional arguments to be prebound to the `fn` function call.
+ * @returns {function()} Function that wraps the `fn` with all the specified bindings.
+ */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? slice.call(arguments, 2, arguments.length) : [];
   if (typeof fn == $function) {
@@ -1034,7 +1051,7 @@ function bind(self, fn) {
       return arguments.length ? fn.apply(self, arguments) : fn.call(self);
     };
   } else {
-    // in IE, native methods ore not functions and so they can not be bound (but they don't need to be)
+    // in IE, native methods are not functions and so they can not be bound (but they don't need to be)
     return fn;
   }
 }
