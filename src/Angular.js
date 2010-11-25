@@ -738,14 +738,129 @@ function jqLiteWrap(element) {
   }
   return element;
 }
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isUndefined
+ * @function
+ *
+ * @description
+ * Checks if a reference is undefined.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is undefined.
+ */
 function isUndefined(value){ return typeof value == $undefined; }
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isDefined
+ * @function
+ *
+ * @description
+ * Checks if a reference is defined.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is defined.
+ */
 function isDefined(value){ return typeof value != $undefined; }
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isObject
+ * @function
+ *
+ * @description
+ * Checks if a reference is an `Object`. Unlike in JavaScript `null`s are not considered to be
+ * objects.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is an `Object` but not `null`.
+ */
 function isObject(value){ return value!=_null && typeof value == $object;}
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isString
+ * @function
+ *
+ * @description
+ * Checks if a reference is a `String`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `String`.
+ */
 function isString(value){ return typeof value == $string;}
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isNumber
+ * @function
+ *
+ * @description
+ * Checks if a reference is a `Number`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Number`.
+ */
 function isNumber(value){ return typeof value == $number;}
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isDate
+ * @function
+ *
+ * @description
+ * Checks if a reference is defined.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Date`.
+ */
 function isDate(value){ return value instanceof Date; }
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isArray
+ * @function
+ *
+ * @description
+ * Checks if a reference is an `Array`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is an `Array`.
+ */
 function isArray(value) { return value instanceof Array; }
+
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.isFunction
+ * @function
+ *
+ * @description
+ * Checks if a reference is a `Function`.
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a `Function`.
+ */
 function isFunction(value){ return typeof value == $function;}
+
+
 function isBoolean(value) { return typeof value == $boolean;}
 function isTextNode(node) { return nodeName(node) == '#text'; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
