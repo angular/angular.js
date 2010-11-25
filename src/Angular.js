@@ -1040,7 +1040,7 @@ function merge(src, dst) {
    </pre>
  *
  * @param {string|DOMElement} element Element to compile.
- * @param {Object} parentScope Scope to become the parent scope of the newly compiled scope.
+ * @param {Object=} parentScope Scope to become the parent scope of the newly compiled scope.
  * @returns {Object} Compiled scope object.
  */
 function compile(element, parentScope) {
