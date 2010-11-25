@@ -76,6 +76,61 @@ var angularArray = {
      });
    */
   'indexOf': indexOf,
+
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.Array.sum
+   * @function
+   *
+   * @description
+   * This function calculates the sum of all numbers in `array`. If the `expressions` is supplied,
+   * it is evaluated once for each element in `array` and then the sum of these values is returned.
+   *
+   * @param {Array} array The source array.
+   * @param {(string|function())=} expression Angular expression or a function to be evaluated for each
+   *     element in `array`. The array element becomes the `this` during the evaluation.
+   * @returns {number} Sum of items in the array.
+   *
+   * @example
+     <table ng:init="invoice= {items:[{qty:10, description:'gadget', cost:9.95}]}">
+       <tr><th>Qty</th><th>Description</th><th>Cost</th><th>Total</th><th></th></tr>
+       <tr ng:repeat="item in invoice.items">
+         <td><input name="item.qty" value="1" size="4" ng:required ng:validate="integer"></td>
+        <td><input name="item.description"></td>
+          <td><input name="item.cost" value="0.00" ng:required ng:validate="number" size="6"></td>
+         <td>{{item.qty * item.cost | currency}}</td>
+         <td>[<a href ng:click="invoice.items.$remove(item)">X</a>]</td>
+       </tr>
+       <tr>
+         <td><a href ng:click="invoice.items.$add()">add item</a></td>
+         <td></td>
+         <td>Total:</td>
+         <td>{{invoice.items.$sum('qty*cost') | currency}}</td>
+       </tr>
+     </table>
+
+     @scenario
+     //TODO: these specs are lame because I had to work around issues #164 and #167
+     it('should initialize and calculate the totals', function() {
+       expect(repeater('.doc-example-live table tr', 'item in invoice.items').count()).toBe(3);
+       expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(1)).
+         toEqual(['$99.50']);
+       expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
+       expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
+     });
+
+     it('should add an entry and recalculate', function() {
+       element('.doc-example a:contains("add item")').click();
+       using('.doc-example-live tr:nth-child(3)').input('item.qty').enter('20');
+       using('.doc-example-live tr:nth-child(3)').input('item.cost').enter('100');
+
+       expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(2)).
+         toEqual(['$2,000.00']);
+       expect(binding("invoice.items.$sum('qty*cost')")).toBe('$2,099.50');
+     });
+   */
   'sum':function(array, expression) {
     var fn = angular['Function']['compile'](expression);
     var sum = 0;
