@@ -25,7 +25,7 @@
 <body>
   <div id="header">
     <h1>
-      <span class="section-title">{{getTitle()}}</span>
+      <span class="main-title">{{getTitle()}}</span>
       <a href="index.html"><span class="angular">&lt;angular/&gt;</span> Docs</a>
     </h1>
   </div>
@@ -37,7 +37,7 @@
       </li>
     </ul>
   </div>
-  <div id="section">
+  <div id="main">
     <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
     <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
   </div>

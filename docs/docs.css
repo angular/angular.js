@@ -19,7 +19,7 @@ a {
 }
 
 #sidebar,
-#section {
+#main {
   position: absolute;
   top: 3.5em;
   bottom: 0;
@@ -33,7 +33,7 @@ a {
   padding: 0.8em 0.8em 1.5em 0.8em;
 }
 
-#section {
+#main {
   left: 14.6em;
   right: 0;
   padding: 1em 0.5em 1em 1em;
@@ -71,28 +71,28 @@ a {
 }
 
 
-/* Main Section Style */
+/* Main main Style */
 
-#section h1 {
+#main h1 {
   font-family: monospace;
   margin-top: 0;
   padding-bottom: 5px;
   border-bottom: 1px solid #CCC;
 }
 
-#section h2 {
+#main h2 {
   margin-top: 1.8em;
 }
 
-#section h1 + h2 {
+#main h1 + h2 {
   margin-top: 1.3em;
 }
 
-#section h3 {
+#main h3 {
   margin-top: 1.5em;
 }
 
-.section-title {
+.main-title {
   float: right;
 }
 
@@ -240,6 +240,6 @@ a {
   background-color:#eee;
 }
 
-#section::-webkit-scrollbar {
+#main::-webkit-scrollbar {
   background-color:#fff;
 }
