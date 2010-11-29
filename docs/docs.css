@@ -14,17 +14,32 @@ a {
 
 /* Main Layout */
 
+#header {
+  height: 3.5em;
+}
+
 #page {
-  display: table-row;
 }
 
 #sidebar,
 #section {
-  display: table-cell;
+  position: absolute;
+  top: 3.5em;
+  bottom: 0;
+  margin-top: 1px;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#sidebar {
+  width: 13em;
+  padding: 0.8em 0.8em 1.5em 0.8em;
 }
 
 #section {
-  width: 100%;
+  left: 14.6em;
+  right: 0;
+  padding: 1em 0.5em 1em 1em;
 }
 
 
@@ -45,7 +60,7 @@ a {
 }
 
 #header .angular {
-  font-family: Courier New, monospace;
+  font-family: "Courier New", monospace;
   font-weight: bold;
 }
 
@@ -60,10 +75,6 @@ a {
 
 
 /* Main Section Style */
-
-#section {
-  padding: 1em;
-}
 
 #section h1 {
   font-family: monospace;
@@ -92,7 +103,6 @@ a {
 /* Sidebar Style */
 
 #sidebar {
-  padding: 10px 10px 20px 10px;
   background-color: #EEE;
   border-right: 1px solid #DDD;
 }
@@ -106,7 +116,7 @@ a {
 }
 
 #sidebar input {
-  width: 175px;
+  width: 15em;
   margin-bottom: 1em;
 }
 
@@ -199,4 +209,40 @@ a {
 
 .doc-example-live table td {
   padding: 0 1.5em;
+}
+
+
+/* Scrollbars */
+
+::-webkit-scrollbar{
+  width:0.8em;
+  height:0.8em;
+  border-left: 1px solid #ccc;
+}
+::-webkit-scrollbar:hover{
+  background-color:#eee;
+}
+::-webkit-resizer{
+  -webkit-border-radius:0.3em;
+  background-color:#666;
+}
+::-webkit-scrollbar-thumb{
+  min-height:0.8em;
+  min-width:0.8em;
+  -webkit-border-radius:0.3em;
+  background-color: #ddd;
+}
+::-webkit-scrollbar-thumb:hover{
+  background-color: #bbb;
+}
+::-webkit-scrollbar-thumb:active{
+  background-color:#888;
+}
+
+#sidebar::-webkit-scrollbar {
+  background-color:#eee;
+}
+
+#section::-webkit-scrollbar {
+  background-color:#fff;
 }
