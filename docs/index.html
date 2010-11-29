@@ -29,19 +29,17 @@
       <a href="index.html"><span class="angular">&lt;angular/&gt;</span> Docs</a>
     </h1>
   </div>
-  <div id="page">
-    <div id="sidebar">
-      <input type="text" name="filterText" placeholder="search documentaiton"/>
-      <ul>
-        <li ng:repeat="page in pages.$filter(filterText)" ng:class="getClass(page)">
-          <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
-        </li>
-      </ul>
-	</div>
-	<div id="section">
-      <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
-	  <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
-    </div>
+  <div id="sidebar">
+    <input type="text" name="filterText" placeholder="search documentaiton"/>
+    <ul>
+      <li ng:repeat="page in pages.$filter(filterText)" ng:class="getClass(page)">
+        <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
+      </li>
+    </ul>
+  </div>
+  <div id="section">
+    <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
+    <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
   </div>
 </body>
 </html>
