@@ -31,7 +31,6 @@ function DocsController($location, $browser, $window) {
   };
 
   this.afterPartialLoaded = function() {
-    $window.scroll(0,0);
     SyntaxHighlighter.highlight();
   };
 
