@@ -1,9 +1,18 @@
+/* Common Style */
+
 body {
   font-family: Arial, sans-serif;
   font-size: 14px;
   margin: 0;
   padding: 0;
 }
+
+a {
+  color: blue;
+}
+
+
+/* Main Layout */
 
 #page {
   display: table-row;
@@ -14,18 +23,12 @@ body {
   display: table-cell;
 }
 
-a {
-  color: blue;
+#section {
+  width: 100%;
 }
 
-.nav-section {
-  margin-left: 1em;
-  margin-top: 0.5em;
-}
 
-.section-title {
-  float: right;
-}
+/* App Header */
 
 #header {
   background-color: #F2C200;
@@ -55,9 +58,11 @@ a {
   text-decoration: underline;
 }
 
+
+/* Main Section Style */
+
 #section {
   padding: 1em;
-  width: 100%;
 }
 
 #section h1 {
@@ -78,6 +83,13 @@ a {
 #section h3 {
   margin-top: 1.5em;
 }
+
+.section-title {
+  float: right;
+}
+
+
+/* Sidebar Style */
 
 #sidebar {
   padding: 10px 10px 20px 10px;
@@ -152,6 +164,9 @@ a {
   font-family: monospace;
 }
 
+
+/* Warning and Info Banners */
+
 .deprecated {
   border: 2px solid red;
 }
@@ -170,12 +185,18 @@ a {
   color: orange;
 }
 
+
+/* Feedback Link */
+
 #feedback {
   float: right;
   width: 10em;
   text-align: right;
 }
 
-.doc-example table td {
+
+/* Live Example Style */
+
+.doc-example-live table td {
   padding: 0 1.5em;
 }

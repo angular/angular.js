@@ -1,5 +1,7 @@
-<!DOCTYPE HTML>
-<html xmlns:ng="http://angularjs.org/" xmlns:doc="http://docs.angularjs.org/" ng:controller="DocsController">
+<!doctype html>
+<html xmlns:ng="http://angularjs.org/"
+      xmlns:doc="http://docs.angularjs.org/"
+      ng:controller="DocsController">
 <head>
   <title ng:bind-template="&lt;angular/&gt;: {{getTitle()}}">&lt;angular/&gt;</title>
 
@@ -10,15 +12,15 @@
   <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shCore.css" type="text/css"/>
   <link rel="stylesheet" href="http://alexgorbatchev.com/pub/sh/current/styles/shThemeDefault.css" type="text/css"/>
 
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
-  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
-  <script type="text/javascript" src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushXml.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+  <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shCore.js"></script>
+  <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushJScript.js"></script>
+  <script src="http://alexgorbatchev.com/pub/sh/current/scripts/shBrushXml.js"></script>
 
-  <script type="text/javascript" src="../angular.min.js" ng:autobind></script>
-  <script type="text/javascript" src="docs.js"></script>
-  <script type="text/javascript" src="doc_widgets.js"></script>
-  <script type="text/javascript" src="docs-data.js"></script>
+  <script src="../angular.min.js" ng:autobind></script>
+  <script src="docs.js"></script>
+  <script src="doc_widgets.js"></script>
+  <script src="docs-data.js"></script>
 </head>
 <body>
   <div id="header">
@@ -28,20 +30,18 @@
     </h1>
   </div>
   <div id="page">
-	  <div id="sidebar" class="nav">
-	   <div class="doc-list">
-	     <input type="text" name="filterText" placeholder="search documentaiton"/>
-		   <ul>
-		     <li ng:repeat="page in pages.$filter(filterText)" ng:class="getClass(page)">
-		       <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
-		     </li>
-		   </ul>
-	   </div>
-	  </div>
-	  <div id="section">
-        <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
-	    <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
-	  </div>
+    <div id="sidebar">
+      <input type="text" name="filterText" placeholder="search documentaiton"/>
+      <ul>
+        <li ng:repeat="page in pages.$filter(filterText)" ng:class="getClass(page)">
+          <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
+        </li>
+      </ul>
+	</div>
+	<div id="section">
+      <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
+	  <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
+    </div>
   </div>
 </body>
 </html>
