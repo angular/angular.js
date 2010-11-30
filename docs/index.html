@@ -30,7 +30,7 @@
     </h1>
   </div>
   <div id="sidebar">
-    <input type="text" name="search" id="search-box" placeholder="search documentaiton"/>
+    <input type="text" name="search" id="search-box" placeholder="search the docs"/>
     <ul id="api-list">
       <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
         <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
