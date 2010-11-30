@@ -30,9 +30,9 @@
     </h1>
   </div>
   <div id="sidebar">
-    <input type="text" name="filterText" placeholder="search documentaiton"/>
-    <ul>
-      <li ng:repeat="page in pages.$filter(filterText)" ng:class="getClass(page)">
+    <input type="text" name="search" id="search-box" placeholder="search documentaiton"/>
+    <ul id="api-list">
+      <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
         <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
       </li>
     </ul>

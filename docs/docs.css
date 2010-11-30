@@ -25,18 +25,26 @@ a {
   bottom: 0;
   margin-top: 1px;
   overflow-x: hidden;
-  overflow-y: scroll;
 }
 
 #sidebar {
-  width: 13em;
-  padding: 0.8em 0.8em 1.5em 0.8em;
+  width: 13.8em;
+  padding: 0.8em 0em 1.5em 0.8em;
 }
 
 #main {
   left: 14.6em;
   right: 0;
-  padding: 1em 0.5em 1em 1em;
+  padding: 1em;
+  overflow-y: scroll;
+}
+
+#api-list {
+  position: absolute;
+  top: 3em;
+  bottom: 0;
+  overflow-y: scroll;
+  padding-right: 0.8em;
 }
 
 
@@ -97,11 +105,19 @@ a {
 }
 
 
-/* Sidebar Style */
+/* Searchbox & Sidebar Style */
+
+#search-box, #sidebar {
+  border-right: 1px solid #DDD;
+}
 
 #sidebar {
   background-color: #EEE;
-  border-right: 1px solid #DDD;
+}
+
+#search-box {
+  width: 16em;
+  margin-bottom: 1em;
 }
 
 #sidebar a {
@@ -112,16 +128,12 @@ a {
   text-decoration: underline;
 }
 
-#sidebar input {
-  width: 15em;
-  margin-bottom: 1em;
-}
-
 #sidebar ul {
   list-style-type: none;
   /*TODO(esprehn): Can we just reset globally and not break examples?*/
   margin: 0;
-  padding: 0;
+  padding: 0 0.8em 0 0;
+  width: 13em;
 }
 
 #sidebar ul li {
