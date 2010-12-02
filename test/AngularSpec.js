@@ -10,6 +10,7 @@ describe('Angular', function(){
     scope.$init();
     scope.$eval();
     expect(onUpdateView).wasCalled();
+    dealoc(scope);
   });
 });
 

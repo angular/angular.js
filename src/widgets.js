@@ -282,7 +282,7 @@ function valueAccessor(scope, element) {
     required = requiredExpr === '';
   }
 
-  element.data('$validate', validate);
+  element.data($$validate, validate);
   return {
     get: function(){
       if (lastError)
@@ -391,6 +391,7 @@ var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initW
 //      'file':            fileWidget???
     };
 
+
 function initWidgetValue(initValue) {
   return function (model, view) {
     var value = view.get();
@@ -461,18 +462,13 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
     this.$eval(element.attr('ng:init')||'');
     // Don't register a handler if we are a button (noopAccessor) and there is no action
     if (action || modelAccessor !== noopAccessor) {
-      element.bind(events, function(event){
+      element.bind(events, function (){
         model.set(view.get());
         lastValue = model.get();
         scope.$tryEval(action, element);
         scope.$root.$eval();
       });
     }
-    function updateView(){
-      view.set(lastValue = model.get());
-    }
-    updateView();
-    element.data('$update', updateView);
     scope.$watch(model.get, function(value){
       if (lastValue !== value) {
         view.set(lastValue = value);
@@ -494,14 +490,49 @@ angularWidget('select', function(element){
   return inputWidgetSelector.call(this, element);
 });
 
+
+/*
+ * Consider this:
+ * <select name="selection">
+ *   <option ng:repeat="x in [1,2]">{{x}}</option>
+ * </select>
+ * 
+ * The issue is that the select gets evaluated before option is unrolled.
+ * This means that the selection is undefined, but the browser
+ * default behavior is to show the top selection in the list. 
+ * To fix that we register a $update function on the select element
+ * and the option creation then calls the $update function when it is 
+ * unrolled. The $update function then calls this update function, which 
+ * then tries to determine if the model is unassigned, and if so it tries to
+ * chose one of the options from the list.
+ */
 angularWidget('option', function(){
   this.descend(true);
   this.directives(true);
   return function(element) {
-    this.$postEval(element.parent().data('$update'));
+    var select = element.parent();
+    var scope = retrieveScope(select);
+    var model = modelFormattedAccessor(scope, select);
+    var view = valueAccessor(scope, select);
+    var option = element;
+    var lastValue = option.attr($value);
+    var lastSelected = option.attr('ng-' + $selected);
+    element.data($$update, function(){
+      var value = option.attr($value);
+      var selected = option.attr('ng-' + $selected);
+      var modelValue = model.get();
+      if (lastSelected != selected || lastValue != value) {
+        lastSelected = selected;
+        lastValue = value;
+        if (selected || modelValue == _null || modelValue == _undefined) 
+          model.set(value);
+        if (value == modelValue) {
+          view.set(lastValue);
+        }
+      }
+    });
   };
 });
-
 
 /**
  * @workInProgress

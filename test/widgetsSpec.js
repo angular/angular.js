@@ -16,8 +16,7 @@ describe("widget", function(){
   });
 
   afterEach(function(){
-    if (element && element.dealoc) element.dealoc();
-    expect(size(jqCache)).toEqual(0);
+    dealoc(element);
   });
 
   describe("input", function(){
@@ -362,7 +361,7 @@ describe("widget", function(){
               '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\', \'C\']">{{name}}</option>' +
             '</select>');
         // childNodes[0] is repeater comment
-        expect(scope.selection).toEqual(undefined);
+        expect(scope.selection).toEqual(0);
 
         browserTrigger(element[0].childNodes[2], 'change');
         expect(scope.selection).toEqual(1);
@@ -398,6 +397,32 @@ describe("widget", function(){
         scope.$eval();
         expect(element[0].childNodes[1].selected).toEqual(true);
       });
+      
+      it('should select default option on repeater', function(){
+        compile(
+            '<select name="selection">' +
+              '<option ng:repeat="no in [1,2]">{{no}}</option>' +
+            '</select>');
+        expect(scope.selection).toEqual('1');
+      });
+      
+      it('should select selected option on repeater', function(){
+        compile(
+            '<select name="selection">' +
+              '<option ng:repeat="no in [1,2]">{{no}}</option>' +
+              '<option selected>ABC</option>' +
+            '</select>');
+        expect(scope.selection).toEqual('ABC');
+      });
+      
+      it('should select dynamically selected option on repeater', function(){
+        compile(
+            '<select name="selection">' +
+              '<option ng:repeat="no in [1,2]" ng:bind-attr="{selected:\'{{no==2}}\'}">{{no}}</option>' +
+            '</select>');
+        expect(scope.selection).toEqual('2');
+      });
+      
     });
 
     it('should support type="select-multiple"', function(){
@@ -476,6 +501,7 @@ describe("widget", function(){
       scope.url = '/Book/Moby';
       scope.$init();
       expect(scope.$element.text()).toEqual('Moby');
+      dealoc(scope);
     });
 
     it("should match sandwich ids", function(){
@@ -491,6 +517,7 @@ describe("widget", function(){
       scope.$init();
       expect(scope.name).toEqual(undefined);
       expect(scope.$element.text()).toEqual('works');
+      dealoc(scope);
     });
   });
 
@@ -504,6 +531,7 @@ describe("widget", function(){
       scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
       expect(element.text()).toEqual('misko');
+      dealoc(scope);
     });
 
     it('should remove previously included text if a falsy value is bound to src', function() {
@@ -521,6 +549,7 @@ describe("widget", function(){
       scope.$eval();
 
       expect(element.text()).toEqual('');
+      dealoc(scope);
     });
 
     it('should allow this for scope', function(){
@@ -532,6 +561,7 @@ describe("widget", function(){
       // This should not be 4, but to fix this properly
       // we need to have real events on the scopes.
       expect(element.text()).toEqual('4');
+      dealoc(scope);
     });
 
     it('should evaluate onload expression when a partial is loaded', function() {
@@ -545,6 +575,7 @@ describe("widget", function(){
       scope.$init();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
+      dealoc(scope);
     });
   });
 

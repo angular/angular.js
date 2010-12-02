@@ -169,6 +169,7 @@ describe("resource", function() {
     var person = Person.get({id:123});
     $browser.xhr.flush();
     expect(person.name).toEqual('misko');
+    dealoc(scope);
   });
 
   it('should return the same object when verifying the cache', function(){
@@ -188,6 +189,7 @@ describe("resource", function() {
     $browser.xhr.flush();
     expect(person2Cache).toEqual(person2);
     expect(person2[0].name).toEqual('rob');
+    dealoc(scope);
   });
 
   describe('failure mode', function(){

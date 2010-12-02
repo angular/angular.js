@@ -1,0 +1,28 @@
+<!DOCTYPE HTML>
+<html xmlns:ng="http://angularjs.org">
+<head>
+  <script type="text/javascript" src="../lib/jquery/jquery-1.4.2.js"></script>
+  <script type="text/javascript" src="../src/angular-bootstrap.js" ng:autobind></script>
+<head>
+<body>
+  <select name='selection0' style="display:block;">
+      <option ng:repeat='value in ["FOO","BAR"]'">{{value}}</option>
+  </select>
+  {{selection0}} &lt;-- FOO should be shown here
+  
+  <hr/>
+  
+  <select ng:init="selection1='ignore'" name='selection1' style="display:block;">
+      <option ng:repeat='value in ["FOO","BAR"]' ng:bind-attr="{selected:'{{value==\'BAR\'}}'}">{{value}}</option>
+  </select>
+  {{selection1}} &lt;-- BAR should be shown here
+  
+  <hr/>
+
+  <select ng:init="selection2=1" name="selection2" style="display:block;">
+    <option value="{{$index}}" ng:repeat="opt in ['zero', 'one']">{{opt}}</option>
+  </select>
+  {{selection2}} &lt;-- 1 should be shown here
+  
+</body>
+</html>

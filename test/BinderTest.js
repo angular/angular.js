@@ -5,6 +5,7 @@ BinderTest.prototype.setUp = function(){
 
   this.compile = function(html, initialScope, parent) {
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
+    if (self.element) dealoc(self.element);
     var element = self.element = jqLite(html);
     var scope = compiler.compile(element)(element);
 
