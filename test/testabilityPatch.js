@@ -50,12 +50,36 @@ beforeEach(function(){
   });
 });
 
+afterEach(clearJqCache);
+
+function clearJqCache(){
+  var count = 0;
+  foreachSorted(jqCache, function(value, key){
+    count ++;
+    delete jqCache[key];
+    foreach(value, function(value, key){
+      if (value.$element) 
+        dump(key, sortedHtml(value.$element));
+      else 
+        dump(key, toJson(value));
+    });
+  });
+  if (count) {
+    fail('Found jqCache references that were not deallocated!');
+  }
+}
+
 function nakedExpect(obj) {
   return expect(angular.fromJson(angular.toJson(obj)));
 }
 
 function childNode(element, index) {
   return jqLite(element[0].childNodes[index]);
+}
+
+function dealoc(obj) {
+  var element = (obj||{}).$element || obj;
+  if (element && element.dealoc) element.dealoc();
 }
 
 extend(angular, {

@@ -1,5 +1,5 @@
 describe('compiler', function(){
-  var compiler, markup, directives, widgets, compile, log;
+  var compiler, markup, directives, widgets, compile, log, scope;
 
   beforeEach(function(){
     log = "";
@@ -32,6 +32,10 @@ describe('compiler', function(){
       return scope;
     };
   });
+  
+  afterEach(function(){
+    dealoc(scope);
+  });
 
   it('should recognize a directive', function(){
     var e = jqLite('<div directive="expr" ignore="me"></div>');
@@ -44,7 +48,8 @@ describe('compiler', function(){
       };
     };
     var template = compiler.compile(e);
-    var init = template(e).$init;
+    scope = template(e);
+    var init = scope.$init;
     expect(log).toEqual("found");
     init();
     expect(e.hasClass('ng-directive')).toEqual(true);
@@ -52,12 +57,12 @@ describe('compiler', function(){
   });
 
   it('should recurse to children', function(){
-    var scope = compile('<div><span hello="misko"/></div>');
+    scope = compile('<div><span hello="misko"/></div>');
     expect(log).toEqual("hello misko");
   });
 
   it('should watch scope', function(){
-    var scope = compile('<span watch="name"/>');
+    scope = compile('<span watch="name"/>');
     expect(log).toEqual("");
     scope.$eval();
     scope.$set('name', 'misko');
@@ -71,7 +76,7 @@ describe('compiler', function(){
 
   it('should prevent descend', function(){
     directives.stop = function(){ this.descend(false); };
-    var scope = compile('<span hello="misko" stop="true"><span hello="adam"/></span>');
+    scope = compile('<span hello="misko" stop="true"><span hello="adam"/></span>');
     expect(log).toEqual("hello misko");
   });
 
@@ -87,7 +92,7 @@ describe('compiler', function(){
         });
       };
     };
-    var scope = compile('before<span duplicate="expr">x</span>after');
+    scope = compile('before<span duplicate="expr">x</span>after');
     expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span>after</div>');
     scope.$eval();
     expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span>after</div>');
@@ -103,7 +108,7 @@ describe('compiler', function(){
         textNode[0].nodeValue = 'replaced';
       }
     });
-    var scope = compile('before<span>middle</span>after');
+    scope = compile('before<span>middle</span>after');
     expect(sortedHtml(scope.$element[0], true)).toEqual('<div>before<span class="ng-directive" hello="middle">replaced</span>after</div>');
     expect(log).toEqual("hello middle");
   });
@@ -116,7 +121,7 @@ describe('compiler', function(){
         log += 'init';
       };
     };
-    var scope = compile('<ng:button>push me</ng:button>');
+    scope = compile('<ng:button>push me</ng:button>');
     expect(lowercase(scope.$element[0].innerHTML)).toEqual('<div>button</div>');
     expect(log).toEqual('init');
   });
@@ -135,7 +140,7 @@ describe('compiler', function(){
       if (text == '{{1+2}}')
         parent.text('3');
     });
-    var scope = compile('<div><h1>ignore me</h1></div>');
+    scope = compile('<div><h1>ignore me</h1></div>');
     expect(scope.$element.text()).toEqual('3');
   });
 
@@ -158,7 +163,7 @@ describe('compiler', function(){
         textNode.remove();
       }
     });
-    var scope = compile('A---B---C===D');
+    scope = compile('A---B---C===D');
     expect(sortedHtml(scope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
   });
 

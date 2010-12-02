@@ -304,7 +304,8 @@ angularDirective("ng:bind-template", function(expression, element){
 var REMOVE_ATTRIBUTES = {
   'disabled':'disabled',
   'readonly':'readOnly',
-  'checked':'checked'
+  'checked':'checked',
+  'selected':'selected'
 };
 /**
  * @workInProgress
@@ -359,27 +360,31 @@ var REMOVE_ATTRIBUTES = {
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
     var lastValue = {};
-    var updateFn = element.parent().data('$update');
+    var updateFn = element.data($$update) || noop;
     this.$onEval(function(){
-      var values = this.$eval(expression);
+      var values = this.$eval(expression),
+          dirty = noop;
       for(var key in values) {
         var value = compileBindTemplate(values[key]).call(this, element),
             specialName = REMOVE_ATTRIBUTES[lowercase(key)];
         if (lastValue[key] !== value) {
           lastValue[key] = value;
           if (specialName) {
-            if (element[specialName] = toBoolean(value)) {
-              element.attr(specialName, value);
+            if (toBoolean(value)) {
+              element.attr(specialName, specialName);
+              element.attr('ng-' + specialName, value);
             } else {
-              element.removeAttr(key);
+              element.removeAttr(specialName);
+              element.removeAttr('ng-' + specialName);
             }
-            (element.data('$validate')||noop)();
+            (element.data($$validate)||noop)();
           } else {
             element.attr(key, value);
           }
-          this.$postEval(updateFn);
+          dirty = updateFn;
         }
       }
+      dirty();
     }, element);
   };
 });

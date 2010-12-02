@@ -243,7 +243,6 @@ function createScope(parent, providers, instanceCache) {
   parent = Parent.prototype = (parent || {});
   var instance = new Parent();
   var evalLists = {sorted:[]};
-  var postList = [], postHash = {}, postId = 0;
 
   extend(instance, {
     'this': instance,
@@ -370,11 +369,6 @@ function createScope(parent, providers, instanceCache) {
               j= 0; j < jSize; j++) {
             instance.$tryEval(queue[j].fn, queue[j].handler);
           }
-        }
-        while(postList.length) {
-          fn = postList.shift();
-          delete postHash[fn.$postEvalId];
-          instance.$tryEval(fn);
         }
       } else if (type === $function) {
         return exp.call(instance);
@@ -548,27 +542,6 @@ function createScope(parent, providers, instanceCache) {
         handler: exceptionHandler
       });
     },
-
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$postEval
-     * @function
-     */
-    $postEval: function(expr) {
-      if (expr) {
-        var fn = expressionCompile(expr);
-        var id = fn.$postEvalId;
-        if (!id) {
-          id = '$' + instance.$id + "_" + (postId++);
-          fn.$postEvalId = id;
-        }
-        if (!postHash[id]) {
-          postList.push(postHash[id] = fn);
-        }
-      }
-    },
-
 
     /**
      * @workInProgress

@@ -394,7 +394,7 @@ extend(angularValidator, {
           element.removeClass('ng-input-indicator-wait');
           scope.$invalidWidgets.markValid(element);
         }
-        element.data('$validate')();
+        element.data($$validate)();
         scope.$root.$eval();
       });
     } else if (inputState.inFlight) {

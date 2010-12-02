@@ -104,12 +104,6 @@ describe('Validator:asynchronous', function(){
 
   afterEach(function(){
     if (self.$element) self.$element.remove();
-    var oldCache = jqCache;
-    jqCache = {};
-    if (size(oldCache)) {
-      dump(oldCache);
-    }
-    expect(size(oldCache)).toEqual(0);
   });
 
   it('should make a request and show spinner', function(){

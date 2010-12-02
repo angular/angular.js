@@ -17,8 +17,7 @@ describe("service", function(){
   });
 
   afterEach(function(){
-    if (scope && scope.$element)
-      scope.$element.remove();
+    dealoc(scope);
   });
 
 
@@ -202,7 +201,7 @@ describe("service", function(){
     });
 
     it('should update hash before any processing', function(){
-      var scope = compile('<div>');
+      scope = compile('<div>');
       var log = '';
       scope.$watch('$location.hash', function(){
         log += this.$location.hashPath + ';';
@@ -259,7 +258,7 @@ describe("service", function(){
 
   describe("$invalidWidgets", function(){
     it("should count number of invalid widgets", function(){
-      var scope = compile('<input name="price" ng:required ng:validate="number"></input>');
+      scope = compile('<input name="price" ng:required ng:validate="number"></input>');
       jqLite(document.body).append(scope.$element);
       scope.$init();
       expect(scope.$invalidWidgets.length).toEqual(1);
@@ -291,8 +290,8 @@ describe("service", function(){
       function BookChapter() {
         this.log = '<init>';
       }
-      var scope = compile('<div></div>').$init();
-      var $route = scope.$inject('$route');
+      scope = compile('<div></div>').$init();
+      $route = scope.$inject('$route');
       $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
       $route.when('/Blank');
       $route.onChange(function(){
