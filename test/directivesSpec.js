@@ -13,8 +13,7 @@ describe("directive", function(){
   });
 
   afterEach(function() {
-    if (model && model.$element) model.$element.remove();
-    expect(size(jqCache)).toEqual(0);
+    dealoc(model);
   });
 
   it("should ng:init", function() {

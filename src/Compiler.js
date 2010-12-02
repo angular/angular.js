@@ -30,6 +30,7 @@ Template.prototype = {
     if (this.newScope) {
       childScope = createScope(scope);
       scope.$onEval(childScope.$eval);
+      element.data($$scope, childScope);
     }
     foreach(this.inits, function(fn) {
       queue.push(function() {
@@ -68,6 +69,17 @@ Template.prototype = {
   }
 };
 
+/*
+ * Function walks up the element chain looking for the scope associated with the give element.
+ */
+function retrieveScope(element) {
+  var scope;
+  while (element && !(scope = element.data($$scope))) {
+    element = element.parent();
+  }
+  return scope;
+}
+
 ///////////////////////////////////
 //Compiler
 //////////////////////////////////
@@ -97,6 +109,7 @@ Compiler.prototype = {
       element = jqLite(element);
       var scope = parentScope && parentScope.$eval ?
           parentScope : createScope(parentScope);
+      element.data($$scope, scope);
       return extend(scope, {
         $element:element,
         $init: function() {

@@ -5,16 +5,19 @@ describe("ScenarioSpec: Compilation", function(){
     scope.$init();
     expect(scope.a).toEqual(1);
     expect(scope.b).toEqual(2);
+    dealoc(scope);
   });
 
   it("should compile jQuery node and return scope", function(){
     var scope = compile(jqLite('<div>{{a=123}}</div>')).$init();
     expect(jqLite(scope.$element).text()).toEqual('123');
+    dealoc(scope);
   });
 
   it("should compile text node and return scope", function(){
     var scope = compile('<div>{{a=123}}</div>').$init();
     expect(jqLite(scope.$element).text()).toEqual('123');
+    dealoc(scope);
   });
 });
 
@@ -27,6 +30,7 @@ describe("ScenarioSpec: Scope", function(){
     expect(scope.$eval("a=3")).toEqual(3);
     scope.$eval();
     expect(jqLite(scope.$element).text()).toEqual('3');
+    dealoc(scope);
   });
 
   it("should have $ objects", function(){
@@ -35,6 +39,7 @@ describe("ScenarioSpec: Scope", function(){
     expect(scope.$get('$eval')).toBeDefined();
     expect(scope.$get('$config')).toBeDefined();
     expect(scope.$get('$config.a')).toEqual("b");
+    dealoc(scope);
   });
 });
 
@@ -48,5 +53,6 @@ describe("ScenarioSpec: configuration", function(){
     $browser.setUrl(url);
     $browser.poll();
     expect($location.hashSearch.book).toEqual('moby');
+    dealoc(scope);
   });
 });
