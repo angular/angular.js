@@ -33,7 +33,7 @@ describe('HTML', function(){
     expectHTML('a<SCRIPT>ev<script>evil</sCript>il</scrIpt>c.').toEqual('ac.');
   });
 
-  it('should remove unknown tag names', function(){
+  it('should remove unknown  names', function(){
     expectHTML('a<xxx><B>b</B></xxx>c').toEqual('a<b>b</b>c');
   });
 
@@ -50,21 +50,33 @@ describe('HTML', function(){
   });
 
   it('should handle entities', function(){
-    var everything = '<div id="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;">' + 
+    var everything = '<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;">' + 
     '!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;</div>';
     expectHTML(everything).toEqual(everything);
   });
   
   it('should handle improper html', function(){
-    expectHTML('< div id="</div>" alt=abc dir=\'"\' >text< /div>').
-      toEqual('<div id="&lt;/div&gt;" alt="abc" dir="&#34;">text</div>');
+    expectHTML('< div rel="</div>" alt=abc dir=\'"\' >text< /div>').
+      toEqual('<div rel="&lt;/div&gt;" alt="abc" dir="&#34;">text</div>');
   });
 
   it('should handle improper html2', function(){
-    expectHTML('< div id="</div>" / >').
-      toEqual('<div id="&lt;/div&gt;"/>');
+    expectHTML('< div rel="</div>" / >').
+      toEqual('<div rel="&lt;/div&gt;"/>');
   });
-
+  
+  it('should ignore back slash as escape', function(){
+    expectHTML('<img alt="xxx\\" title="><script>....">').
+      toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;...."/>');
+  });
+  
+  it('should ignore object attributes', function(){
+    expectHTML('<a constructor="hola">:)</a>').
+      toEqual('<a>:)</a>');
+    expectHTML('<constructor constructor="hola">:)</constructor>').
+      toEqual('');
+  });
+  
   describe('htmlSanitizerWriter', function(){
     var writer, html;
     beforeEach(function(){
@@ -74,12 +86,12 @@ describe('HTML', function(){
 
     it('should write basic HTML', function(){
       writer.chars('before');
-      writer.start('div', {id:'123'}, false);
+      writer.start('div', {rel:'123'}, false);
       writer.chars('in');
       writer.end('div');
       writer.chars('after');
 
-      expect(html).toEqual('before<div id="123">in</div>after');
+      expect(html).toEqual('before<div rel="123">in</div>after');
     });
 
     it('should escape text nodes', function(){
@@ -93,8 +105,8 @@ describe('HTML', function(){
     });
 
     it('should escape attributes', function(){
-      writer.start('div', {id:'!@#$%^&*()_+-={}[]:";\'<>?,./`~ \n\0\r\u0127'});
-      expect(html).toEqual('<div id="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#10;&#0;&#13;&#295;">');
+      writer.start('div', {rel:'!@#$%^&*()_+-={}[]:";\'<>?,./`~ \n\0\r\u0127'});
+      expect(html).toEqual('<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#10;&#0;&#13;&#295;">');
     });
 
     it('should ignore missformed elements', function(){
@@ -105,6 +117,37 @@ describe('HTML', function(){
     it('should ignore unknown attributes', function(){
       writer.start('div', {unknown:""});
       expect(html).toEqual('<div>');
+    });
+    
+    describe('explicitly dissallow', function(){
+      it('should not allow attributes', function(){
+        writer.start('div', {id:'a', name:'a', style:'a'});
+        expect(html).toEqual('<div>');
+      });
+      
+      it('should not allow tags', function(){
+        function tag(name) {
+          writer.start(name, {});
+          writer.end(name);
+        };
+        tag('frameset');
+        tag('frame');
+        tag('form');
+        tag('param');
+        tag('object');
+        tag('embed');
+        tag('textarea');
+        tag('input');
+        tag('button');
+        tag('option');
+        tag('select');
+        tag('script');
+        tag('style');
+        tag('link');
+        tag('base');
+        tag('basefont');
+        expect(html).toEqual('');
+      });
     });
     
     describe('isUri', function(){

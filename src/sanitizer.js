@@ -17,7 +17,7 @@
 // Regular Expressions for parsing tags and attributes
 var START_TAG_REGEXP = /^<\s*([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,
   END_TAG_REGEXP = /^<\s*\/\s*([\w:]+)[^>]*>/,
-  ATTR_REGEXP = /(\w+)(?:\s*=\s*(?:(?:"((?:\\.|[^"])*)")|(?:'((?:\\.|[^'])*)')|([^>\s]+)))?/g,
+  ATTR_REGEXP = /(\w+)(?:\s*=\s*(?:(?:"((?:[^"])*)")|(?:'((?:[^'])*)')|([^>\s]+)))?/g,
   BEGIN_TAG_REGEXP = /^</,
   BEGING_END_TAGE_REGEXP = /^<\s*\//,
   COMMENT_REGEXP = /<!--(.*?)-->/g,
@@ -26,32 +26,32 @@ var START_TAG_REGEXP = /^<\s*([\w:]+)((?:\s+\w+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
 
 // Empty Elements - HTML 4.01
-var emptyElements = makeMap("area,base,basefont,br,col,hr,img,input,isindex,link,param");
+var emptyElements = makeMap("area,br,col,hr,img");
 
 // Block Elements - HTML 4.01
-var blockElements = makeMap("address,blockquote,button,center,dd,del,dir,div,dl,dt,fieldset,"+
-    "form,hr,ins,isindex,li,map,menu,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul");
+var blockElements = makeMap("address,blockquote,center,dd,del,dir,div,dl,dt,"+
+    "hr,ins,li,map,menu,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul");
 
 // Inline Elements - HTML 4.01
-var inlineElements = makeMap("a,abbr,acronym,b,basefont,bdo,big,br,button,cite,code,del,dfn,em,font,i,img,"+
-    "input,ins,kbd,label,map,q,s,samp,select,small,span,strike,strong,sub,sup,textarea,tt,u,var");
+var inlineElements = makeMap("a,abbr,acronym,b,bdo,big,br,cite,code,del,dfn,em,font,i,img,"+
+    "ins,kbd,label,map,q,s,samp,small,span,strike,strong,sub,sup,tt,u,var");
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
-var closeSelfElements = makeMap("colgroup,dd,dt,li,options,p,td,tfoot,th,thead,tr");
+var closeSelfElements = makeMap("colgroup,dd,dt,li,p,td,tfoot,th,thead,tr");
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
 var validElements = extend({}, emptyElements, blockElements, inlineElements, closeSelfElements);
 
 //see: http://www.w3.org/TR/html4/index/attributes.html
 //Attributes that have their values filled in disabled="disabled"
-var fillAttrs = makeMap("checked,compact,declare,defer,disabled,ismap,multiple,nohref,noresize,noshade,nowrap,readonly,selected");
+var fillAttrs = makeMap("compact,ismap,nohref,nowrap");
 //Attributes that have href and hence need to be sanitized
 var uriAttrs = makeMap("background,href,longdesc,src,usemap");
 var validAttrs = extend({}, fillAttrs, uriAttrs, makeMap(
     'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
-    'color,cols,colspan,coords,dir,face,for,headers,height,hreflang,hspace,id,'+
-    'label,lang,language,maxlength,method,name,prompt,rel,rev,rows,rowspan,rules,'+
-    'scope,scrolling,shape,size,span,start,summary,tabindex,target,title,type,'+
+    'color,cols,colspan,coords,dir,face,headers,height,hreflang,hspace,'+
+    'lang,language,rel,rev,rows,rowspan,rules,'+
+    'scope,scrolling,shape,span,start,summary,target,title,type,'+
     'valign,value,vspace,width'));
 
 /**
@@ -249,12 +249,12 @@ function htmlSanitizeWriter(buf){
       if (!ignore && specialElements[tag]) {
         ignore = tag;
       }
-      if (!ignore && validElements[tag]) {
+      if (!ignore && validElements[tag] == true) {
         out('<');
         out(tag);
         foreach(attrs, function(value, key){
           var lkey=lowercase(key);
-          if (validAttrs[lkey] && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
+          if (validAttrs[lkey]==true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
             out(' ');
             out(key);
             out('="');
@@ -267,7 +267,7 @@ function htmlSanitizeWriter(buf){
     },
     end: function(tag){
         tag = lowercase(tag);
-        if (!ignore && validElements[tag]) {
+        if (!ignore && validElements[tag] == true) {
           out('</');
           out(tag);
           out('>');
