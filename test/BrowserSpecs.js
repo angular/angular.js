@@ -1,8 +1,21 @@
 describe('browser', function(){
 
-  var browser, location, head, xhr;
+  var browser, location, head, xhr, setTimeoutQueue;
+
+  function fakeSetTimeout(fn) {
+    setTimeoutQueue.push(fn);
+  }
+
+  fakeSetTimeout.flush = function() {
+    foreach(setTimeoutQueue, function(fn) {
+      fn();
+    });
+  };
+
 
   beforeEach(function(){
+    setTimeoutQueue = [];
+
     location = {href:"http://server", hash:""};
     head = {
         scripts: [],
@@ -14,7 +27,7 @@ describe('browser', function(){
       this.open = noop;
       this.setRequestHeader = noop;
       this.send = noop;
-    });
+    }, undefined, fakeSetTimeout);
   });
 
   it('should contain cookie cruncher', function() {
@@ -55,6 +68,28 @@ describe('browser', function(){
         expect(log).toEqual('200:data;');
         expect(typeof window[url[1]]).toEqual('undefined');
       });
+    });
+  });
+
+
+  describe('defer', function() {
+    it('should execute fn asynchroniously via setTimeout', function() {
+      var counter = 0;
+      browser.defer(function() {counter++;});
+      expect(counter).toBe(0);
+
+      fakeSetTimeout.flush();
+      expect(counter).toBe(1);
+    });
+
+
+    it('should update outstandingRequests counter', function() {
+      var callback = jasmine.createSpy('callback');
+      browser.defer(callback);
+      expect(callback).not.wasCalled();
+
+      fakeSetTimeout.flush();
+      expect(callback).wasCalled();
     });
   });
 

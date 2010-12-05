@@ -530,6 +530,7 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
+      scope.$inject('$browser').defer.flush();
       expect(element.text()).toEqual('misko');
       dealoc(scope);
     });
@@ -542,6 +543,7 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
+      scope.$inject('$browser').defer.flush();
 
       expect(element.text()).toEqual('igor');
 
@@ -558,9 +560,11 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$inject('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
       scope.$init();
-      // This should not be 4, but to fix this properly
-      // we need to have real events on the scopes.
-      expect(element.text()).toEqual('4');
+      scope.$inject('$browser').defer.flush();
+
+      // this one should really be just '1', but due to lack of real events things are not working
+      // properly. see discussion at: http://is.gd/ighKk
+      expect(element.text()).toEqual('2');
       dealoc(scope);
     });
 
@@ -573,6 +577,7 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$inject('$xhr.cache').data.myUrl = {value:'my partial'};
       scope.$init();
+      scope.$inject('$browser').defer.flush();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
       dealoc(scope);

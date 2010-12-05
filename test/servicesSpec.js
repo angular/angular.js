@@ -329,6 +329,47 @@ describe("service", function(){
     });
   });
 
+
+  describe('$defer', function() {
+    var $defer, $exceptionHandler;
+
+    beforeEach(function(){
+      scope = createScope({}, angularService, {
+        '$exceptionHandler': jasmine.createSpy('$exceptionHandler')
+      });
+
+      $browser = scope.$inject('$browser');
+      $defer = scope.$inject('$defer');
+      $exceptionHandler = scope.$inject('$exceptionHandler');
+    });
+
+
+    it('should delegate functions to $browser.defer', function() {
+      var counter = 0;
+      $defer(function() { counter++; });
+
+      expect(counter).toBe(0);
+
+      $browser.defer.flush();
+      expect(counter).toBe(1);
+
+      $browser.defer.flush(); //does nothing
+      expect(counter).toBe(1);
+
+      expect($exceptionHandler).not.toHaveBeenCalled();
+    });
+
+
+    it('should delegate exception to the $exceptionHandler service', function() {
+      $defer(function() { throw "Test Error"; });
+      expect($exceptionHandler).not.toHaveBeenCalled();
+
+      $browser.defer.flush();
+      expect($exceptionHandler).toHaveBeenCalledWith("Test Error");
+    });
+  });
+
+
   describe('$xhr', function(){
     var log;
     function callback(code, response) {
@@ -426,12 +467,15 @@ describe("service", function(){
         $browserXhr.expectGET('/url').respond('first');
         cache('GET', '/url', null, callback);
         $browserXhr.flush();
+
         $browserXhr.expectGET('/url').respond('ERROR');
         cache('GET', '/url', null, callback);
+        $browser.defer.flush();
         $browserXhr.flush();
         expect(log).toEqual('"first";"first";');
+
         cache('GET', '/url', null, callback, false);
-        $browserXhr.flush();
+        $browser.defer.flush();
         expect(log).toEqual('"first";"first";"first";');
       });
 
@@ -439,9 +483,12 @@ describe("service", function(){
         $browserXhr.expectGET('/url').respond('first');
         cache('GET', '/url', null, callback, true);
         $browserXhr.flush();
+
         $browserXhr.expectGET('/url').respond('ERROR');
         cache('GET', '/url', null, callback, true);
+        $browser.defer.flush();
         expect(log).toEqual('"first";"first";');
+
         $browserXhr.flush();
         expect(log).toEqual('"first";"first";"ERROR";');
       });
@@ -449,8 +496,11 @@ describe("service", function(){
       it('should serve requests from cache', function(){
         cache.data.url = {value:'123'};
         cache('GET', 'url', null, callback);
+        $browser.defer.flush();
         expect(log).toEqual('"123";');
+
         cache('GET', 'url', null, callback, false);
+        $browser.defer.flush();
         expect(log).toEqual('"123";"123";');
       });
 
@@ -477,6 +527,21 @@ describe("service", function(){
         cache.data.url = {value:123};
         cache('POST', 'abc', {});
         expect(cache.data.url).toBeUndefined();
+      });
+
+      it('should call callback asynchronously for both cache hit and cache miss', function() {
+        $browserXhr.expectGET('/url').respond('+');
+        cache('GET', '/url', null, callback);
+        expect(log).toEqual(''); //callback hasn't executed
+
+        $browserXhr.flush();
+        expect(log).toEqual('"+";'); //callback has executed
+
+        cache('GET', '/url', null, callback);
+        expect(log).toEqual('"+";'); //callback hasn't executed
+
+        $browser.defer.flush();
+        expect(log).toEqual('"+";"+";'); //callback has executed
       });
     });
 
