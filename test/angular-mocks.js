@@ -113,6 +113,15 @@ function MockBrowser() {
 
   self.cookieHash = {};
   self.lastCookieHash = {};
+  self.deferredFns = [];
+
+  self.defer = function(fn) {
+    self.deferredFns.push(fn);
+  };
+
+  self.defer.flush = function() {
+    while (self.deferredFns.length) self.deferredFns.shift()();
+  };
 }
 MockBrowser.prototype = {
 
@@ -156,7 +165,6 @@ MockBrowser.prototype = {
       return this.cookieHash;
     }
   }
-
 };
 
 angular.service('$browser', function(){

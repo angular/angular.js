@@ -685,7 +685,7 @@ angularServiceInject('$route', function(location) {
  * @ngdoc service
  * @name angular.service.$xhr
  * @requires $browser
- * @requires $error
+ * @requires $xhr.error
  * @requires $log
  * 
  * @description
@@ -801,6 +801,36 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   return bulkXHR;
 }, ['$xhr', '$xhr.error', '$log']);
 
+
+/**
+ * @workInProgress
+ * @ngdoc service
+ * @name angular.service.$defer
+ * @requires $browser
+ * @requires $log
+ *
+ * @description
+ * Delegates to {@link angular.service.$browser.defer $browser.defer}, but wraps the `fn` function
+ * into a try/catch block and delegates any exceptions to
+ * {@link angular.services.$exceptionHandler $exceptionHandler} service.
+ *
+ * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
+ *
+ * @param {function()} fn A function, who's execution should be deferred.
+ */
+angularServiceInject('$defer', function($browser, $exceptionHandler) {
+  return function(fn) {
+    $browser.defer(function() {
+      try {
+        fn();
+      } catch(e) {
+        $exceptionHandler(e);
+      }
+    });
+  };
+}, ['$browser', '$exceptionHandler']);
+
+
 /**
  * @workInProgress
  * @ngdoc service
@@ -811,7 +841,7 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
  * 
  * @example
  */
-angularServiceInject('$xhr.cache', function($xhr){
+angularServiceInject('$xhr.cache', function($xhr, $defer){
   var inflight = {}, self = this;
   function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
@@ -819,9 +849,9 @@ angularServiceInject('$xhr.cache', function($xhr){
       post = _null;
     }
     if (method == 'GET') {
-      var data;
-      if (data = cache.data[url]) {
-        callback(200, copy(data.value));
+      var data, dataCached;
+      if (dataCached = cache.data[url]) {
+        $defer(function() { callback(200, copy(dataCached.value)); });
         if (!verifyCache)
           return;
       }
@@ -853,7 +883,7 @@ angularServiceInject('$xhr.cache', function($xhr){
   cache.data = {};
   cache.delegate = $xhr;
   return cache;
-}, ['$xhr.bulk']);
+}, ['$xhr.bulk', '$defer']);
 
 
 /**

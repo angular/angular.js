@@ -8,7 +8,7 @@ var XHR = window.XMLHttpRequest || function () {
   throw new Error("This browser does not support XMLHttpRequest.");
 };
 
-function Browser(location, document, head, XHR, $log) {
+function Browser(location, document, head, XHR, $log, setTimeout) {
   var self = this;
   self.isMock = false;
 
@@ -18,6 +18,28 @@ function Browser(location, document, head, XHR, $log) {
   var idCounter = 0;
   var outstandingRequestCount = 0;
   var outstandingRequestCallbacks = [];
+
+
+  /**
+   * Executes the `fn` function (supports currying) and decrements the `outstandingRequestCallbacks`
+   * counter. If the counter reaches 0, all the `outstandingRequestCallbacks` are executed.
+   */
+  function completeOutstandingRequest(fn) {
+    try {
+      fn.apply(null, slice.call(arguments, 1));
+    } finally {
+      outstandingRequestCount--;
+      if (outstandingRequestCount === 0) {
+        while(outstandingRequestCallbacks.length) {
+          try {
+            outstandingRequestCallbacks.pop()();
+          } catch (e) {
+            $log.error(e);
+          }
+        }
+      }
+    }
+  }
 
   /**
    * @workInProgress
@@ -58,19 +80,7 @@ function Browser(location, document, head, XHR, $log) {
       outstandingRequestCount ++;
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
-          try {
-            callback(xhr.status || 200, xhr.responseText);
-          } finally {
-            outstandingRequestCount--;
-            if (outstandingRequestCount === 0) {
-              while(outstandingRequestCallbacks.length) {
-                try {
-                  outstandingRequestCallbacks.pop()();
-                } catch (e) {
-                }
-              }
-            }
-          }
+          completeOutstandingRequest(callback, xhr.status || 200, xhr.responseText);
         }
       };
       xhr.send(post || '');
@@ -248,6 +258,27 @@ function Browser(location, document, head, XHR, $log) {
       }
       return lastCookies;
     }
+  };
+
+
+  /**
+   * @workInProgress
+   * @ngdoc
+   * @name angular.service.$browser#defer
+   * @methodOf angular.service.$browser
+   *
+   * @description
+   * Executes a fn asynchroniously via `setTimeout(fn, 0)`.
+   *
+   * Unlike when calling `setTimeout` directly, in test this function is mocked and instead of using
+   * `setTimeout` in tests, the fns are queued in an array, which can be programaticaly flushed via
+   * `$browser.defer.flush()`.
+   *
+   * @param {function()} fn A function, who's execution should be defered.
+   */
+  self.defer = function(fn) {
+    outstandingRequestCount++;
+    setTimeout(function() { completeOutstandingRequest(fn); }, 0);
   };
 
   //////////////////////////////////////////////////////////////
