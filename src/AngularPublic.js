@@ -15,7 +15,8 @@ angularService('$browser', function($log){
         jqLite(window.document),
         jqLite(window.document.getElementsByTagName('head')[0]),
         XHR,
-        $log);
+        $log,
+        window.setTimeout);
     browserSingleton.startPoller(50, function(delay, fn){setTimeout(delay,fn);});
     browserSingleton.bind();
   }

@@ -184,6 +184,8 @@ describe("resource", function() {
 
     $browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"rob"\n}\n]');
     var person2 = Person.query({id:123});
+    $browser.defer.flush();
+
     expect(person2[0].name).toEqual('misko');
     var person2Cache = person2;
     $browser.xhr.flush();
