@@ -141,7 +141,7 @@ describe('api', function(){
       expect(angular.Array.limitTo(items, 'undefined')).toEqual([]);
       expect(angular.Array.limitTo(items, null)).toEqual([]);
       expect(angular.Array.limitTo(items, undefined)).toEqual([]);
-    })
+    });
   });
 
 
