@@ -189,7 +189,7 @@ function htmlParser( html, handler ) {
       stack.length = pos;
     }
   }
-};
+}
 
 /**
  * @param str 'key1,key2,...'
