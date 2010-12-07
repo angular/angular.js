@@ -390,8 +390,7 @@ function parser(text, json){
         throwError("implies assignment but [" +
           text.substring(0, token.index) + "] can not be assigned to", token);
       }
-      var ident = function(){return left.isAssignable;};
-      return binaryFn(ident, token.fn, logicalOR());
+      return binaryFn(valueFn(left.isAssignable), token.fn, logicalOR());
     } else {
       return left;
     }
