@@ -66,7 +66,7 @@ function getterFn(path){
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
             's=s' + key + ';\n' +
-            'if(typeof s=="function") s = function(){ return l'+key+'.apply(l, arguments); };\n';
+            'if(typeof s=="function" && !(s instanceof RegExp)) s = function(){ return l'+key+'.apply(l, arguments); };\n';
     if (key.charAt(1) == '$') {
       // special code for super-imposed functions
       var name = key.substr(2);

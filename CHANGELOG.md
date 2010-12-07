@@ -3,6 +3,11 @@
 ### Bug Fixes
 - Fixed failed assignments of form obj[0].name=value (issue #169)
 
+### Breaking changes
+- Angular expressions in the view used to support regular expressions. This feature was rarely 
+  used and added unnecessary complexity. It not a good idea to have regexps in the view anyway, 
+  so we removed this support. If you had any regexp in your views, you will have to move them to 
+  your controllers.
 
 # <angular/> 0.9.6 night-vision (2010-12-06) #
 

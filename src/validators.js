@@ -13,8 +13,9 @@ extend(angularValidator, {
    * @css ng-validation-error
    * 
    * @example
+   * <script> var ssn = /^\d\d\d-\d\d-\d\d\d\d$/; </script>
    * Enter valid SSN:
-   * <input name="ssn" value="123-45-6789" ng:validate="regexp:/^\d\d\d-\d\d-\d\d\d\d$/" >
+   * <input name="ssn" value="123-45-6789" ng:validate="regexp:$window.ssn" >
    * 
    * @scenario
    * it('should invalidate non ssn', function(){
