@@ -205,7 +205,7 @@ function makeMap(str){
 /**
  * decodes all entities into regular string
  * @param value
- * @returns
+ * @returns {string} A string with decoded entities.
  */
 var hiddenPre=document.createElement("pre");
 function decodeEntities(value) {

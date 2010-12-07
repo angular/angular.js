@@ -466,7 +466,7 @@ var angularArray = {
    * {@link angular.Array} for more info.
    *
    * @param {Array} array The array to count elements in.
-   * @param {(Function()|string)=} condition A function to be evaluated or angular expression to be
+   * @param {(function()|string)=} condition A function to be evaluated or angular expression to be
    *     compiled and evaluated. The element that is currently being iterated over, is exposed to
    *     the `condition` as `this`.
    * @returns {number} Number of elements in the array (for which the condition evaluates to true).
