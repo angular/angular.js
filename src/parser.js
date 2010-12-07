@@ -40,8 +40,6 @@ function lex(text, parseStringsForObjects){
       readString(ch);
     } else if (isNumber(ch) || is('.') && isNumber(peek())) {
       readNumber();
-    } else if ( was('({[:,;') && is('/') ) {
-      readRegexp();
     } else if (isIdent(ch)) {
       readIdent();
       if (was('{,') && json[0]=='{' &&
@@ -206,37 +204,6 @@ function lex(text, parseStringsForObjects){
       index++;
     }
     throwError("Unterminated quote", start);
-  }
-  function readRegexp(quote) {
-    var start = index;
-    index++;
-    var regexp = "";
-    var escape = false;
-    while (index < text.length) {
-      var ch = text.charAt(index);
-      if (escape) {
-        regexp += ch;
-        escape = false;
-      } else if (ch === '\\') {
-        regexp += ch;
-        escape = true;
-      } else if (ch === '/') {
-        index++;
-        var flags = "";
-        if (isIdent(text.charAt(index))) {
-          readIdent();
-          flags = tokens.pop().text;
-        }
-        var compiledRegexp = new RegExp(regexp, flags);
-        tokens.push({index:start, text:regexp, flags:flags,
-          fn:function(){return compiledRegexp;}});
-        return;
-      } else {
-        regexp += ch;
-      }
-      index++;
-    }
-    throwError("Unterminated RegExp", start);
   }
 }
 
