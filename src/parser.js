@@ -140,18 +140,17 @@ function lex(text, parseStringsForObjects){
       fn:function(){return number;}});
   }
   function readIdent() {
-    var ident = "";
+    var ident, fn, ch;
     var start = index;
     while (index < text.length) {
-      var ch = text.charAt(index);
-      if (ch == '.' || isIdent(ch) || isNumber(ch)) {
-        ident += ch;
-      } else {
+      ch = text.charAt(index);
+      if (ch != '.' && !isIdent(ch) && !isNumber(ch)) {
         break;
       }
       index++;
     }
-    var fn = OPERATORS[ident];
+    ident = text.substring(start, index);
+    fn = OPERATORS[ident];
     if (!fn) {
       fn = getterFn(ident);
       fn.isAssignable = ident;
@@ -161,13 +160,12 @@ function lex(text, parseStringsForObjects){
   
   function readString(quote) {
     var start = index;
-    index++;
     var string = "";
-    var rawString = quote;
     var escape = false;
+    var ch;
+    index++;
     while (index < text.length) {
-      var ch = text.charAt(index);
-      rawString += ch;
+      ch = text.charAt(index);
       if (escape) {
         if (ch == 'u') {
           var hex = text.substring(index + 1, index + 5);
@@ -188,7 +186,11 @@ function lex(text, parseStringsForObjects){
         escape = true;
       } else if (ch == quote) {
         index++;
-        tokens.push({index:start, text:rawString, string:string, json:true,
+        // This statement is a noop, but it is here so that we read
+        // the string, so that Chrome will consolidate the concatenated
+        // string into a new string, releasing memory in the process.
+        string = string == text ? text : string;
+        tokens.push({index:start, text:text.substring(start, index), string:string, json:true,
           fn:function(){
             return (string.length == dateParseLength) ?
               angular['String']['toDate'](string) : string;
