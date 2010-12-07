@@ -41,6 +41,13 @@ describe("widget", function(){
         expect(scope.$get('name')).toEqual('Kai');
         expect(scope.$get('count')).toEqual(2);
       });
+      
+      it('should allow complex refernce binding', function(){
+        compile('<div ng:init="obj={abc:{}}">'+
+                  '<input type="Text" name="obj[\'abc\'].name" value="Misko""/>'+
+                '</div>');
+        expect(scope.obj['abc'].name).toEqual('Misko');
+      });
 
       describe("ng:format", function(){
 

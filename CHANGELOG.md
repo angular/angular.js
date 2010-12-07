@@ -1,5 +1,7 @@
 # <angular/> 0.9.7 sonic-cream (in-progress) #
 
+### Bug Fixes
+- Fixed failed assignments of form obj[0].name=value (issue #169)
 
 
 # <angular/> 0.9.6 night-vision (2010-12-06) #
