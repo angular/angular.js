@@ -59,14 +59,6 @@ describe('parser', function() {
       expect(undefined).toEqual(tokens[i].fn());
     });
     
-    it('should tokenize RegExp', function() {
-      var tokens = lex("/r 1/");
-      var i = 0;
-      expect(tokens[i].index).toEqual(0);
-      expect(tokens[i].text).toEqual('r 1');
-      expect("r 1".match(tokens[i].fn())[0]).toEqual('r 1');
-    });
-
     it('should tokenize quoted string', function() {
       var str = "['\\'', \"\\\"\"]";
       var tokens = lex(str);
@@ -89,23 +81,6 @@ describe('parser', function() {
       var tokens = lex('"\\u00A0"');
       expect(tokens.length).toEqual(1);
       expect(tokens[0].string).toEqual('\u00a0');
-    });
-
-    it('should tokenize RegExp with options', function() {
-      var tokens = lex("/r/g");
-      var i = 0;
-      expect(tokens[i].index).toEqual(0);
-      expect(tokens[i].text).toEqual('r');
-      expect(tokens[i].flags).toEqual('g');
-      expect("rr".match(tokens[i].fn()).length).toEqual(2);
-    });
-
-    it('should tokenize RegExp with escaping', function() {
-      var tokens = lex("/\\/\\d/");
-      var i = 0;
-      expect(tokens[i].index).toEqual(0);
-      expect(tokens[i].text).toEqual('\\/\\d');
-      expect("/1".match(tokens[i].fn())[0]).toEqual('/1');
     });
 
     it('should ignore whitespace', function() {

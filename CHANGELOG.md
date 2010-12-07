@@ -1,6 +1,8 @@
 # <angular/> 0.9.7 sonic-cream (in-progress) #
 
-
+### Breaking changes
+- RegExp parser is rarely used, feature, and one should not have RegExps in views anyways, 
+  so we are removing it.
 
 # <angular/> 0.9.6 night-vision (2010-12-06) #
 

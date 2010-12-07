@@ -52,6 +52,11 @@ describe('scope/model', function(){
       model.$eval('name="works"');
       expect(model.name).toEqual('works');
     });
+    
+    it('should not bind regexps', function(){
+      model.exp = /abc/;
+      expect(model.$eval('exp')).toEqual(model.exp);
+    });
 
     it('should do nothing on empty string and not update view', function(){
       var onEval = jasmine.createSpy('onEval');
