@@ -1,4 +1,30 @@
-# <angular/> 0.9.6 night-vision (in-progress) #
+# <angular/> 0.9.6 night-vision (2010-12-06) #
+
+### Security
+- several improvements in the HTML sanitizer code to prevent code execution via `href`s and other
+  attributes.
+  Commits:
+  - 41d5938883a3d06ffe8a88a51efd8d1896f7d747
+  - 2bbced212e2ee93948c45360fee00b2e3f960392
+
+### Docs
+- set up http://docs.angularjs.org domain, the docs for the latest release will from now on be
+  deployed here.
+- docs app UI polishing with dual scrolling and other improvements
+
+### Bug Fixes
+- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat` (issue
+  #170)
+- fix for async xhr cache issue #152 by adding `$browser.defer` and `$defer` service
+
+### Breaking Changes
+- Fix for issue #152 might break some tests that were relying on the incorrect behavior. The
+  breakage will usually affect code that tests resources, xhr or services/widgets build on top of
+  these. All that is typically needed to resolve the issue is adding a call to
+  `$browser.defer.flush()` in your test just before the point where you expect all cached
+  resource/xhr requests to return any results. Please see 011fa39c2a0b5da843395b538fc4e52e5ade8287
+  for more info.
+- The HTML sanitizer is slightly more strinct now. Please see info in the "Security" section above.
 
 
 # <angular/> 0.9.5 turkey-blast (2010-11-25) #
