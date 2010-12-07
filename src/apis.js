@@ -533,7 +533,7 @@ var angularArray = {
    *    - `Array`: array of function or string predicates, such that a first predicate in the array
    *      is used for sorting, but when the items are equivalent next predicate is used.
    *
-   * @param {boolean=} descend TODO
+   * @param {boolean=} reverse Reverse the order the array.
    * @returns {Array} Sorted copy of the source array.
    *
    * @example
@@ -554,7 +554,7 @@ var angularArray = {
          <th><a href="" ng:click="predicate = 'age'">Age</a>
              (<a href ng:click="predicate = '-age'">^</a>)</th>
        <tr>
-       <tr ng:repeat="friend in friends.$orderBy(predicate, true)">
+       <tr ng:repeat="friend in friends.$orderBy(predicate)">
          <td>{{friend.name}}</td>
          <td>{{friend.phone}}</td>
          <td>{{friend.age}}</td>
