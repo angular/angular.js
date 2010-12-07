@@ -9,7 +9,7 @@ var OPERATORS = {
     '/':function(self, a,b){return a/b;},
     '%':function(self, a,b){return a%b;},
     '^':function(self, a,b){return a^b;},
-    '=':function(self, a,b){return setter(self, a, b);},
+    '=':noop,
     '==':function(self, a,b){return a==b;},
     '!=':function(self, a,b){return a!=b;},
     '<':function(self, a,b){return a<b;},
@@ -142,6 +142,7 @@ function lex(text, parseStringsForObjects){
   function readIdent() {
     var ident = "";
     var start = index;
+    var fn;
     while (index < text.length) {
       var ch = text.charAt(index);
       if (ch == '.' || isIdent(ch) || isNumber(ch)) {
@@ -151,12 +152,17 @@ function lex(text, parseStringsForObjects){
       }
       index++;
     }
-    var fn = OPERATORS[ident];
-    if (!fn) {
-      fn = getterFn(ident);
-      fn.isAssignable = ident;
-    }
-    tokens.push({index:start, text:ident, fn:fn, json: OPERATORS[ident]});
+    fn = OPERATORS[ident];
+    tokens.push({
+      index:start, 
+      text:ident, 
+      json: fn,
+      fn:fn||extend(getterFn(ident), {
+        assign:function(self, value){
+          return setter(self, ident, value);
+        }
+      })
+    });
   }
   
   function readString(quote) {
@@ -384,14 +390,17 @@ function parser(text, json){
 
   function assignment(){
     var left = logicalOR();
+    var right;
     var token;
     if (token = expect('=')) {
-      if (!left.isAssignable) {
+      if (!left.assign) {
         throwError("implies assignment but [" +
           text.substring(0, token.index) + "] can not be assigned to", token);
       }
-      var ident = function(){return left.isAssignable;};
-      return binaryFn(ident, token.fn, logicalOR());
+      right = logicalOR();
+      return function(self){
+        return left.assign(self, right(self));
+      };
     } else {
       return left;
     }
@@ -518,28 +527,28 @@ function parser(text, json){
   function fieldAccess(object) {
     var field = expect().text;
     var getter = getterFn(field);
-    var fn = function (self){
+    return extend(function (self){
       return getter(object(self));
-    };
-    fn.isAssignable = field;
-    return fn;
+    }, {
+      assign:function(self, value){
+        return setter(object(self), field, value);
+      }
+    });
   }
 
   function objectIndex(obj) {
     var indexFn = expression();
     consume(']');
-    if (expect('=')) {
-      var rhs = expression();
-      return function (self){
-        return obj(self)[indexFn(self)] = rhs(self);
-      };
-    } else {
-      return function (self){
+    return extend(
+      function (self){
         var o = obj(self);
         var i = indexFn(self);
         return (o) ? o[i] : _undefined;
-      };
-    }
+      }, {
+        assign:function(self, value){
+          return obj(self)[indexFn(self)] = value;
+        }
+      });
   }
 
   function functionCall(fn) {

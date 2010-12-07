@@ -413,4 +413,12 @@ describe('parser', function() {
     expect(scope.$eval("a=undefined")).not.toBeDefined();
     expect(scope.$get("a")).not.toBeDefined();
   });
+  
+  it('should allow assignment after array dereference', function(){
+    scope = angular.scope();
+    scope.obj = [{}];
+    scope.$eval('obj[0].name=1');
+    expect(scope.obj.name).toBeUndefined();
+    expect(scope.obj[0].name).toEqual(1);
+  });
 });
