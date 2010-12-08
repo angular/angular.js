@@ -208,7 +208,7 @@ function propertyTag(doc, name, value) {
 }
 
 function returnsTag(doc, name, value) {
-  var match = value.match(/^{(\S+)}\s+(.*)?/);
+  var match = value.match(/^{(\S+)}\s+([\s\S]*)?/);
   
   if (match) {
     var tag = {
