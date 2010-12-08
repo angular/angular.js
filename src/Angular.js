@@ -699,7 +699,7 @@ function concat(array1, array2, index) {
  *
  * @param {Object} self Context in which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
- * @param {(...*)=} args Optional arguments to be prebound to the `fn` function call.
+ * @param {...*} args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
 function bind(self, fn) {
