@@ -888,7 +888,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer){
 
 /**
  * @workInProgress
- * @ngdoc service
+ * @ngdoc function
  * @name angular.service.$resource
  * @requires $xhr
  *
@@ -934,6 +934,33 @@ angularServiceInject('$xhr.cache', function($xhr, $defer){
      expect(newCard.id).toEqual(789);
  * </pre>
  *
+ * The object returned from this function execution is a resource "class" which has "static" method
+ * for each action in the definition.
+ *
+ * Calling these methods invoke `$xhr` on the `url` template with the given `method` and `params`.
+ * When the data is returned from the server then the object is an instance of the resource type and
+ * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
+ * operations (create, read, update, delete) on server-side data.
+
+   <pre>
+     var User = $resource('/user/:userId', {userId:'@id'});
+     var user = User.get({userId:123}, function(){
+       user.abc = true;
+       user.$save();
+     });
+   </pre>
+ *
+ *     It's worth noting that the callback for `get`, `query` and other method gets passed in the
+ *     response that came from the server, so one could rewrite the above example as:
+ *
+   <pre>
+     var User = $resource('/user/:userId', {userId:'@id'});
+     User.get({userId:123}, function(u){
+       u.abc = true;
+       u.$save();
+     });
+   </pre>
+ *
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *     `/user/:username`.
@@ -964,20 +991,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer){
            'delete': {method:'DELETE'} };
  *     </pre>
  *
- * @returns {Object} A resource "class" which has "static" method for each action in the definition.
- *     Calling these methods invoke `$xhr` on the `url` template with the given `method` and
- *     `params`. When the data is returned from the server then the object is an instance of the
- *     resource type and all of the non-GET methods are available with `$` prefix. This allows you
- *     to easily support CRUD operations (create, read, update, delete) on server-side data.
-
-       <pre>
-         var User = $resource('/user/:userId', {userId:'@id'});
-         var user = User.get({userId:123}, function(){
-           user.abc = true;
-           user.$save();
-         });
-       </pre>
- *
+ * @returns {Object} A resource "class".
  *
  * @example
    <script>
