@@ -13,6 +13,7 @@ if (window.jstestdriver) {
 }
 
 beforeEach(function(){
+  compileCache = {};
   this.addMatchers({
     toBeInvalid: function(){
       var element = jqLite(this.actual);
