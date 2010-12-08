@@ -182,6 +182,12 @@ describe('collect', function(){
         TAG.returns(doc, 'returns', '{string} descrip *tion*');
         expect(doc.returns).toEqual({type: 'string', description: 'descrip <em>tion</em>'});
       });
+
+      it('should support multiline content', function() {
+        TAG.returns(doc, 'returns', '{string} description\n new line\n another line');
+        expect(doc.returns).
+          toEqual({type: 'string', description: 'description\n new line\n another line'});
+      });
     });
     
     describe('@description', function(){
