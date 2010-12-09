@@ -42,6 +42,15 @@ describe("widget", function(){
         expect(scope.$get('count')).toEqual(2);
       });
       
+      it('should not trigger eval if value does not change', function(){
+        compile('<input type="Text" name="name" value="Misko" ng:change="count = count + 1" ng:init="count=0"/>');
+        expect(scope.name).toEqual("Misko");
+        expect(scope.count).toEqual(0);
+        browserTrigger(element, 'keyup');
+        expect(scope.name).toEqual("Misko");
+        expect(scope.count).toEqual(0);
+      });
+      
       it('should allow complex refernce binding', function(){
         compile('<div ng:init="obj={abc:{}}">'+
                   '<input type="Text" name="obj[\'abc\'].name" value="Misko""/>'+
