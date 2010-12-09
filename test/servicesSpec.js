@@ -14,6 +14,7 @@ describe("service", function(){
     $xhrBulk = scope.$inject('$xhr.bulk');
     $xhr = scope.$inject('$xhr');
     $route = scope.$inject('$route');
+    scope.$location = inject('$location');
   });
 
   afterEach(function(){
@@ -202,6 +203,7 @@ describe("service", function(){
 
     it('should update hash before any processing', function(){
       scope = compile('<div>');
+      scope.$location = scope.$inject('$location');
       var log = '';
       scope.$watch('$location.hash', function(){
         log += this.$location.hashPath + ';';
@@ -291,6 +293,7 @@ describe("service", function(){
         this.log = '<init>';
       }
       scope = compile('<div></div>').$init();
+      scope.$location = scope.$inject('$location');
       $route = scope.$inject('$route');
       $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
       $route.when('/Blank');
@@ -604,6 +607,7 @@ describe("service", function(){
       $browser = new MockBrowser();
       $browser.cookieHash['preexisting'] = 'oldCookie';
       scope = createScope(null, angularService, {$browser: $browser});
+      scope.$cookies = scope.$inject('$cookies');
     });
 
 

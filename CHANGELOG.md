@@ -3,6 +3,15 @@
 ### Bug Fixes
 - Ignore input widgets which have no name (issue #153)
 
+### Breaking changes
+ - Many of the services are now lazy created instead of 'eager-publish'. You can get these 
+   services back into the root scope by adding ng:init="$location = $inject('$location')"
+   in your view. The services effected are: 
+   - $location
+   - $route
+   - $cookies
+   
+
 # <angular/> 0.9.7 sonic-scream (2010-12-10) #
 
 ### Bug Fixes
