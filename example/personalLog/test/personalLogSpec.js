@@ -3,6 +3,8 @@ describe('example.personalLog.LogCtrl', function() {
 
   function createNotesCtrl() {
     var scope = angular.scope();
+    var inject = scope.$inject;
+    scope.$cookies = inject('$cookies');
     return scope.$new(example.personalLog.LogCtrl);
   }
 

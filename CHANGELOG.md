@@ -1,5 +1,12 @@
 # <angular/> 0.9.9 time-shift (in-progress) #
 
+### Breaking changes
+ - Many of the services are now lazy created instead of 'eager-publish'. You can get these
+   services back into the root scope by adding ng:init="$location = $inject('$location')"
+   in your view. The services effected are:
+   - $location
+   - $route
+   - $cookies
 
 
 # <angular/> 0.9.8 astral-projection (2010-12-23) #
