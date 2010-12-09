@@ -373,7 +373,7 @@ function optionsAccessor(scope, element) {
 
 function noopAccessor() { return { get: noop, set: noop }; }
 
-var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initWidgetValue()),
+var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initWidgetValue(), true),
     buttonWidget = inputWidget('click', noopAccessor, noopAccessor, noop),
     INPUT_TYPE = {
       'text':            textWidget,
@@ -451,7 +451,7 @@ function radioInit(model, view, element) {
      expect(binding('checkboxCount')).toBe('1');
    });
  */
-function inputWidget(events, modelAccessor, viewAccessor, initFn) {
+function inputWidget(events, modelAccessor, viewAccessor, initFn, dirtyChecking) {
   return function(element) {
     var scope = this,
         model = modelAccessor(scope, element),
@@ -463,10 +463,13 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn) {
     // Don't register a handler if we are a button (noopAccessor) and there is no action
     if (action || modelAccessor !== noopAccessor) {
       element.bind(events, function (){
-        model.set(view.get());
-        lastValue = model.get();
-        scope.$tryEval(action, element);
-        scope.$root.$eval();
+        var value = view.get();
+        if (!dirtyChecking || value != lastValue) {
+          model.set(value);
+          lastValue = model.get();
+          scope.$tryEval(action, element);
+          scope.$root.$eval();
+        }
       });
     }
     scope.$watch(model.get, function(value){
