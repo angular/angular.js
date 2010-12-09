@@ -295,7 +295,7 @@ angularServiceInject("$location", function(browser) {
 
     return h;
   }
-}, ['$browser'], EAGER_PUBLISHED);
+}, ['$browser']);
 
 
 /**
@@ -678,7 +678,7 @@ angularServiceInject('$route', function(location) {
   }
   this.$watch(function(){return dirty + location.hash;}, updateRoute);
   return $route;
-}, ['$location'], EAGER_PUBLISHED);
+}, ['$location']);
 
 /**
  * @workInProgress
@@ -1124,7 +1124,7 @@ angularServiceInject('$cookies', function($browser) {
       }
     }
   }
-}, ['$browser'], EAGER_PUBLISHED);
+}, ['$browser']);
 
 /**
  * @workInProgress

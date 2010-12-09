@@ -17,11 +17,16 @@ angularService('$browser', function($log){
         XHR,
         $log,
         window.setTimeout);
-    browserSingleton.startPoller(50, function(delay, fn){setTimeout(delay,fn);});
+    var addPollFn = browserSingleton.addPollFn;
+    browserSingleton.addPollFn = function(){
+      browserSingleton.addPollFn = addPollFn;
+      browserSingleton.startPoller(100, function(delay, fn){setTimeout(delay,fn);});
+      return addPollFn.apply(browserSingleton, arguments);
+    };
     browserSingleton.bind();
   }
   return browserSingleton;
-}, {inject:['$log']});
+}, {$inject:['$log']});
 
 extend(angular, {
   'element': jqLite,
