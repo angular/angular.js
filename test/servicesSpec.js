@@ -361,11 +361,40 @@ describe("service", function(){
 
 
     it('should delegate exception to the $exceptionHandler service', function() {
-      $defer(function() { throw "Test Error"; });
+      $defer(function() {throw "Test Error";});
       expect($exceptionHandler).not.toHaveBeenCalled();
 
       $browser.defer.flush();
       expect($exceptionHandler).toHaveBeenCalledWith("Test Error");
+    });
+
+
+    it('should call eval after each callback is executed', function() {
+      var eval = this.spyOn(scope, '$eval').andCallThrough();
+
+      $defer(function() {});
+      expect(eval).wasNotCalled();
+
+      $browser.defer.flush();
+      expect(eval).wasCalled();
+
+      eval.reset(); //reset the spy;
+
+      $defer(function() {});
+      $defer(function() {});
+      $browser.defer.flush();
+      expect(eval.callCount).toBe(2);
+    });
+
+
+    it('should call eval even if an exception is thrown in callback', function() {
+      var eval = this.spyOn(scope, '$eval').andCallThrough();
+
+      $defer(function() {throw "Test Error"});
+      expect(eval).wasNotCalled();
+
+      $browser.defer.flush();
+      expect(eval).wasCalled();
     });
   });
 
@@ -543,6 +572,25 @@ describe("service", function(){
         $browser.defer.flush();
         expect(log).toEqual('"+";"+";'); //callback has executed
       });
+
+      it('should call eval after callbacks for both cache hit and cache miss execute', function() {
+        var eval = this.spyOn(scope, '$eval').andCallThrough();
+
+        $browserXhr.expectGET('/url').respond('+');
+        cache('GET', '/url', null, callback);
+        expect(eval).wasNotCalled();
+
+        $browserXhr.flush();
+        expect(eval).wasCalled();
+
+        eval.reset(); //reset the spy
+
+        cache('GET', '/url', null, callback);
+        expect(eval).wasNotCalled();
+
+        $browser.defer.flush();
+        expect(eval).wasCalled();
+      })
     });
 
   });
