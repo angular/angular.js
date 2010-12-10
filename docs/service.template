@@ -25,19 +25,23 @@
   {{/requires}}
 </ul>
 
+{{#method.length}}
 <h2>Methods</h2>
 <ul>
   {{#method}}
-  <li><tt>{{shortName}}</tt>: {{{description}}}</li>
+  <li><tt>{{shortName}}()</tt>: {{{description}}}</li>
   {{/method}}
 </ul>
+{{/method.length}}
 
+{{#property.length}}
 <h2>Properties</h2>
 <ul>
   {{#property}}
   <li><tt>{{name}}:{{#type}}{{type}}{{/type}}</tt>{{#description}}: {{{description}}}{{/description}}</li>
   {{/property}}
 </ul>
+{{/property.length}}
 
 {{#example}}
 <h2>Example</h2>

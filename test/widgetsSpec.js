@@ -22,7 +22,7 @@ describe("widget", function(){
   describe("input", function(){
 
     describe("text", function(){
-      it('should input-text auto init and handle keyup/change events', function(){
+      it('should input-text auto init and handle keydown/change events', function(){
         compile('<input type="Text" name="name" value="Misko" ng:change="count = count + 1" ng:init="count=0"/>');
         expect(scope.$get('name')).toEqual("Misko");
         expect(scope.$get('count')).toEqual(0);
@@ -32,7 +32,10 @@ describe("widget", function(){
         expect(element.val()).toEqual("Adam");
 
         element.val('Shyam');
-        browserTrigger(element, 'keyup');
+        browserTrigger(element, 'keydown');
+        // keydown event must be deferred
+        expect(scope.$get('name')).toEqual('Adam');
+        scope.$service('$browser').defer.flush();
         expect(scope.$get('name')).toEqual('Shyam');
         expect(scope.$get('count')).toEqual(1);
 
@@ -46,7 +49,7 @@ describe("widget", function(){
         compile('<input type="Text" name="name" value="Misko" ng:change="count = count + 1" ng:init="count=0"/>');
         expect(scope.name).toEqual("Misko");
         expect(scope.count).toEqual(0);
-        browserTrigger(element, 'keyup');
+        browserTrigger(element, 'keydown');
         expect(scope.name).toEqual("Misko");
         expect(scope.count).toEqual(0);
       });
@@ -69,7 +72,7 @@ describe("widget", function(){
           expect(element.val()).toEqual("x, y, z");
 
           element.val('1, 2, 3');
-          browserTrigger(element, 'keyup');
+          browserTrigger(element);
           expect(scope.$get('list')).toEqual(['1', '2', '3']);
         });
 
@@ -191,7 +194,7 @@ describe("widget", function(){
           expect(element.attr('ng-validation-error')).toBeFalsy();
 
           element.val('x');
-          browserTrigger(element, 'keyup');
+          browserTrigger(element);
           expect(element.hasClass('ng-validation-error')).toBeTruthy();
           expect(element.attr('ng-validation-error')).toEqual('Not a number');
         });
@@ -245,7 +248,7 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toBeFalsy();
 
       element.val('');
-      browserTrigger(element, 'keyup');
+      browserTrigger(element);
       expect(element.hasClass('ng-validation-error')).toBeTruthy();
       expect(element.attr('ng-validation-error')).toEqual('Required');
     });
@@ -270,7 +273,7 @@ describe("widget", function(){
       expect(element.attr('ng-validation-error')).toEqual('Required');
 
       element.val('abc');
-      browserTrigger(element, 'keyup');
+      browserTrigger(element);
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
       expect(element.attr('ng-validation-error')).toBeFalsy();
     });
@@ -284,11 +287,11 @@ describe("widget", function(){
       expect(element.val()).toEqual("Adam");
 
       element.val('Shyam');
-      browserTrigger(element, 'keyup');
+      browserTrigger(element);
       expect(scope.$get('name')).toEqual('Shyam');
 
       element.val('Kai');
-      browserTrigger(element, 'change');
+      browserTrigger(element);
       expect(scope.$get('name')).toEqual('Kai');
     });
 

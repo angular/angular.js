@@ -423,14 +423,14 @@ angularDirective("ng:bind-attr", function(expression){
  * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 angularDirective("ng:click", function(expression, element){
-  return function(element){
+  return injectUpdateView(function($updateView, element){
     var self = this;
     element.bind('click', function(event){
       self.$tryEval(expression, element);
-      self.$root.$eval();
+      $updateView();
       event.stopPropagation();
     });
-  };
+  });
 });
 
 
@@ -471,14 +471,14 @@ angularDirective("ng:click", function(expression, element){
  * server and reloading the current page).
  */
 angularDirective("ng:submit", function(expression, element) {
-  return function(element) {
+  return injectUpdateView(function($updateView, element) {
     var self = this;
     element.bind('submit', function(event) {
       self.$tryEval(expression, element);
-      self.$root.$eval();
+      $updateView();
       event.preventDefault();
     });
-  };
+  });
 });
 
 

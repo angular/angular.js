@@ -244,7 +244,7 @@ var TAG = {
   name: function(doc, name, value) {
     var parts = value.split(/\./);
     doc.name = value;
-    doc.shortName  = parts.pop();
+    doc.shortName  = parts.pop().replace('#', '.');
     doc.depth = parts.length;
   },
   param: function(doc, name, value){
@@ -378,6 +378,7 @@ function processNgDoc(documentation, doc) {
   if (doc.methodOf) {
     if (parent = documentation.byName[doc.methodOf]) {
       (parent.method = parent.method || []).push(doc);
+      parent.method.sort(keywordSort);
     } else {
       throw 'Owner "' + doc.methodOf + '" is not defined.';
     }

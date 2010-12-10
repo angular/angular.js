@@ -136,9 +136,7 @@ function Browser(window, document, body, XHR, $log) {
    * @methodOf angular.service.$browser
    */
   self.poll = function() {
-    foreach(pollFns, function(pollFn){ 
-      pollFn();
-    });
+    foreach(pollFns, function(pollFn){ pollFn(); });
   };
 
   /**
@@ -319,22 +317,23 @@ function Browser(window, document, body, XHR, $log) {
 
   /**
    * @workInProgress
-   * @ngdoc
+   * @ngdoc method
    * @name angular.service.$browser#defer
    * @methodOf angular.service.$browser
+   * @param {function()} fn A function, who's execution should be defered.
+   * @param {int=} [delay=0] of milliseconds to defer the function execution.
    *
    * @description
-   * Executes a fn asynchroniously via `setTimeout(fn, 0)`.
+   * Executes a fn asynchroniously via `setTimeout(fn, delay)`.
    *
    * Unlike when calling `setTimeout` directly, in test this function is mocked and instead of using
    * `setTimeout` in tests, the fns are queued in an array, which can be programaticaly flushed via
    * `$browser.defer.flush()`.
    *
-   * @param {function()} fn A function, who's execution should be defered.
    */
-  self.defer = function(fn) {
+  self.defer = function(fn, delay) {
     outstandingRequestCount++;
-    setTimeout(function() { completeOutstandingRequest(fn); }, 0);
+    setTimeout(function() { completeOutstandingRequest(fn); }, delay || 0);
   };
 
   //////////////////////////////////////////////////////////////
