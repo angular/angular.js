@@ -134,17 +134,18 @@
 
 function modelAccessor(scope, element) {
   var expr = element.attr('name');
-  if (!expr) throw "Required field 'name' not found.";
-  return {
-    get: function() {
-      return scope.$eval(expr);
-    },
-    set: function(value) {
-      if (value !== _undefined) {
-        return scope.$tryEval(expr + '=' + toJson(value), element);
+  if (expr) {
+    return {
+      get: function() {
+        return scope.$eval(expr);
+      },
+      set: function(value) {
+        if (value !== _undefined) {
+          return scope.$tryEval(expr + '=' + toJson(value), element);
+        }
       }
-    }
-  };
+    };
+  }
 }
 
 function modelFormattedAccessor(scope, element) {
@@ -152,14 +153,16 @@ function modelFormattedAccessor(scope, element) {
       formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName);
   if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
-  return {
-    get: function() {
-      return formatter.format(accessor.get());
-    },
-    set: function(value) {
-      return accessor.set(formatter.parse(value));
-    }
-  };
+  if (accessor) {
+    return {
+      get: function() {
+        return formatter.format(accessor.get());
+      },
+      set: function(value) {
+        return accessor.set(formatter.parse(value));
+      }
+    };
+  }
 }
 
 function compileValidator(expr) {
@@ -458,25 +461,27 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, dirtyChecking)
         view = viewAccessor(scope, element),
         action = element.attr('ng:change') || '',
         lastValue;
-    initFn.call(scope, model, view, element);
-    this.$eval(element.attr('ng:init')||'');
-    // Don't register a handler if we are a button (noopAccessor) and there is no action
-    if (action || modelAccessor !== noopAccessor) {
-      element.bind(events, function (){
-        var value = view.get();
-        if (!dirtyChecking || value != lastValue) {
-          model.set(value);
-          lastValue = model.get();
-          scope.$tryEval(action, element);
-          scope.$root.$eval();
+    if (model) {
+      initFn.call(scope, model, view, element);
+      this.$eval(element.attr('ng:init')||'');
+      // Don't register a handler if we are a button (noopAccessor) and there is no action
+      if (action || modelAccessor !== noopAccessor) {
+        element.bind(events, function (){
+          var value = view.get();
+          if (!dirtyChecking || value != lastValue) {
+            model.set(value);
+            lastValue = model.get();
+            scope.$tryEval(action, element);
+            scope.$root.$eval();
+          }
+        });
+      }
+      scope.$watch(model.get, function(value){
+        if (lastValue !== value) {
+          view.set(lastValue = value);
         }
       });
     }
-    scope.$watch(model.get, function(value){
-      if (lastValue !== value) {
-        view.set(lastValue = value);
-      }
-    });
   };
 }
 
