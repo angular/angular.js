@@ -2,6 +2,7 @@
 
 ### Bug Fixes
 - Fixed failed assignments of form obj[0].name=value (issue #169)
+- Ignore input widgets which have no name (issue #153)
 
 ### Breaking changes
 - Angular expressions in the view used to support regular expressions. This feature was rarely 

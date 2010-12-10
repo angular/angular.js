@@ -452,10 +452,17 @@ describe("widget", function(){
       scope.$eval();
       expect(element[0].childNodes[0].selected).toEqual(true);
     });
-
-    it('should report error on missing field', function(){
+    
+    it('should ignore text widget which have no name', function(){
       compile('<input type="text"/>');
-      expect(element.hasClass('ng-exception')).toBeTruthy();
+      expect(scope.$element.attr('ng-exception')).toBeFalsy();
+      expect(scope.$element.hasClass('ng-exception')).toBeFalsy();
+    });
+
+    it('should ignore checkbox widget which have no name', function(){
+      compile('<input type="checkbox"/>');
+      expect(scope.$element.attr('ng-exception')).toBeFalsy();
+      expect(scope.$element.hasClass('ng-exception')).toBeFalsy();
     });
 
     it('should report error on assignment error', function(){
