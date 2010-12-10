@@ -1,5 +1,7 @@
 # <angular/> 0.9.8 astral-projection (in-progress) #
 
+### Bug Fixes
+- Ignore input widgets which have no name (issue #153)
 
 # <angular/> 0.9.7 sonic-scream (2010-12-10) #
 
