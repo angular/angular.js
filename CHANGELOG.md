@@ -1,13 +1,20 @@
-# <angular/> 0.9.7 sonic-cream (in-progress) #
+# <angular/> 0.9.7 sonic-cream (2010-12-10) #
 
 ### Bug Fixes
-- Fixed failed assignments of form obj[0].name=value (issue #169)
+- $defer service should always call $eval on the root scope after a callback runs (issue #189)
+- fix for failed assignments of form obj[0].name=value (issue #169)
+- significant parser improvements that resulted in lower memory usage
+  (commit 23fc73081feb640164615930b36ef185c23a3526)
+
+### Docs
+- small docs improvements (mainly docs for the $resource service)
 
 ### Breaking changes
 - Angular expressions in the view used to support regular expressions. This feature was rarely 
   used and added unnecessary complexity. It not a good idea to have regexps in the view anyway, 
   so we removed this support. If you had any regexp in your views, you will have to move them to 
-  your controllers.
+  your controllers. (commit e5e69d9b90850eb653883f52c76e28dd870ee067)
+
 
 # <angular/> 0.9.6 night-vision (2010-12-06) #
 
