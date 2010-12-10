@@ -2,5 +2,6 @@ build/
 angularjs.netrc
 jstd.log
 .DS_Store
-regression/temp.html
+regression/temp*.html
+performance/temp*.html
 .idea/workspace.xml

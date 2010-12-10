@@ -248,7 +248,8 @@ describe('Binder', function(){
     assertEquals('b', second.val());
   
     first.val('ABC');
-    browserTrigger(first, 'keyup');
+    browserTrigger(first, 'keydown');
+    c.scope.$service('$browser').defer.flush();
     assertEquals(c.scope.items[0].x, 'ABC');
   });
   

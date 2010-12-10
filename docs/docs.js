@@ -1,5 +1,3 @@
-SyntaxHighlighter['defaults'].toolbar = false;
-
 DocsController.$inject = ['$location', '$browser', '$window'];
 function DocsController($location, $browser, $window) {
   this.pages = NG_PAGES;
@@ -38,10 +36,12 @@ function DocsController($location, $browser, $window) {
     return "mailto:angular@googlegroups.com?" +
            "subject=" + escape("Feedback on " + $location.href) + "&" +
            "body=" + escape("Hi there,\n\nI read " + $location.href + " and wanted to ask ....");
-  }
+  };
   
 }
 
 angular.filter('short', function(name){
   return (name||'').split(/\./).pop();
 });
+
+SyntaxHighlighter['defaults'].toolbar = false;

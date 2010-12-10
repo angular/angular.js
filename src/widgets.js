@@ -376,7 +376,7 @@ function optionsAccessor(scope, element) {
 
 function noopAccessor() { return { get: noop, set: noop }; }
 
-var textWidget = inputWidget('keyup change', modelAccessor, valueAccessor, initWidgetValue(), true),
+var textWidget = inputWidget('keydown change', modelAccessor, valueAccessor, initWidgetValue(), true),
     buttonWidget = inputWidget('click', noopAccessor, noopAccessor, noop),
     INPUT_TYPE = {
       'text':            textWidget,
@@ -454,8 +454,8 @@ function radioInit(model, view, element) {
      expect(binding('checkboxCount')).toBe('1');
    });
  */
-function inputWidget(events, modelAccessor, viewAccessor, initFn, dirtyChecking) {
-  return function(element) {
+function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
+  return injectService(['$updateView', '$defer'], function($updateView, $defer, element) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
@@ -464,25 +464,25 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, dirtyChecking)
     if (model) {
       initFn.call(scope, model, view, element);
       this.$eval(element.attr('ng:init')||'');
-      // Don't register a handler if we are a button (noopAccessor) and there is no action
-      if (action || modelAccessor !== noopAccessor) {
-        element.bind(events, function (){
+      element.bind(events, function(event){
+        function handler(){
           var value = view.get();
-          if (!dirtyChecking || value != lastValue) {
+          if (!textBox || value != lastValue) {
             model.set(value);
             lastValue = model.get();
             scope.$tryEval(action, element);
-            scope.$root.$eval();
+            $updateView();
           }
-        });
-      }
+        }
+        event.type == 'keydown' ? $defer(handler) : handler();
+      });
       scope.$watch(model.get, function(value){
         if (lastValue !== value) {
           view.set(lastValue = value);
         }
       });
     }
-  };
+  });
 }
 
 function inputWidgetSelector(element){

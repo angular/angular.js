@@ -5,6 +5,13 @@
   not needed.
 - $location service now listens for `onhashchange` events (if supported by browser) instead of
   constant polling.
+- input widgets known listens on keydown events instead of keyup which improves perceived
+  performance
+
+### API
+
+- new service $updateView which should be used in favor of $root.$eval() to run a complete eval on
+  the entire document. This service bulks and throttles DOM updates to improve performance.
 
 ### Breaking changes
  - API for accessing registered services — `scope.$inject` — was renamed to

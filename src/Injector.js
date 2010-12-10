@@ -68,3 +68,11 @@ function createInjector(providerScope, providers, cache) {
     return returnValue;
   };
 }
+
+function injectService(services, fn) {
+  return extend(fn, {$inject:services});;
+}
+
+function injectUpdateView(fn) {
+  return injectService(['$updateView'], fn);
+}
