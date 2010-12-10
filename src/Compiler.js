@@ -74,6 +74,7 @@ Template.prototype = {
  */
 function retrieveScope(element) {
   var scope;
+  element = jqLite(element);
   while (element && !(scope = element.data($$scope))) {
     element = element.parent();
   }

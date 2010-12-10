@@ -427,7 +427,7 @@ angularDirective("ng:click", function(expression, element){
     var self = this;
     element.bind('click', function(event){
       self.$tryEval(expression, element);
-      self.$root.$eval();
+      self.$updateView();
       event.stopPropagation();
     });
   };
@@ -475,7 +475,7 @@ angularDirective("ng:submit", function(expression, element) {
     var self = this;
     element.bind('submit', function(event) {
       self.$tryEval(expression, element);
-      self.$root.$eval();
+      self.$updateView();
       event.preventDefault();
     });
   };

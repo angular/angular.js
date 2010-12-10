@@ -3,6 +3,7 @@
 ### Performance
 - $location and $cookies services are now lazily initialized to avoid the polling overhead when
   not needed.
+- change to keydown from keyup; add delayed $updateView
 
 ### Breaking changes
  - API for accessing registered services — `scope.$inject` — was renamed to

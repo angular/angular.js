@@ -285,7 +285,7 @@ function browserTrigger(element, type) {
 (function(fn){
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
-    if (/(click|change|keyup)/.test(type)) {
+    if (/(click|change|keydown)/.test(type)) {
       return this.each(function(index, node) {
         browserTrigger(node, type);
       });
