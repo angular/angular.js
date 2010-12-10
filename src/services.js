@@ -819,12 +819,16 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
  * @param {function()} fn A function, who's execution should be deferred.
  */
 angularServiceInject('$defer', function($browser, $exceptionHandler) {
+  var scope = this;
+
   return function(fn) {
     $browser.defer(function() {
       try {
         fn();
       } catch(e) {
         $exceptionHandler(e);
+      } finally {
+        scope.$eval();
       }
     });
   };

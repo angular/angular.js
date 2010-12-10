@@ -571,8 +571,8 @@ describe("widget", function(){
 
       // this one should really be just '1', but due to lack of real events things are not working
       // properly. see discussion at: http://is.gd/ighKk
-      expect(element.text()).toEqual('2');
-      dealoc(scope);
+      expect(element.text()).toEqual('4');
+      dealoc(element);
     });
 
     it('should evaluate onload expression when a partial is loaded', function() {
@@ -587,7 +587,7 @@ describe("widget", function(){
       scope.$inject('$browser').defer.flush();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
-      dealoc(scope);
+      dealoc(element);
     });
   });
 
