@@ -42,12 +42,17 @@ function lex(text, parseStringsForObjects){
       readNumber();
     } else if (isIdent(ch)) {
       readIdent();
+      // identifiers can only be if the preceding char was a { or ,
       if (was('{,') && json[0]=='{' &&
          (token=tokens[tokens.length-1])) {
         token.json = token.text.indexOf('.') == -1;
       }
     } else if (is('(){}[].,;:')) {
-      tokens.push({index:index, text:ch, json:is('{}[]:,')});
+      tokens.push({
+        index:index, 
+        text:ch, 
+        json:(was(':[,') && is('{[')) || is('}]:,')
+      });
       if (is('{[')) json.unshift(ch);
       if (is('}]')) json.shift();
       index++;

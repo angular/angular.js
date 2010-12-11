@@ -151,6 +151,18 @@ describe('json', function(){
       expect(function(){fromJson('[].constructor');}).
         toThrow(new Error("Parse Error: Token '.' is not valid json at column 3 of expression [[].constructor] starting at [.constructor]."));
     });
+    
+    it('should not allow object dereference', function(){
+      expect(function(){fromJson('{a:1, b: $location, c:1}');}).toThrow();
+      expect(function(){fromJson("{a:1, b:[1]['__parent__']['location'], c:1}");}).toThrow();
+    });
+    
+    it('should not allow assignments', function(){
+      expect(function(){fromJson("{a:1, b:[1]=1, c:1}");}).toThrow();
+      expect(function(){fromJson("{a:1, b:=1, c:1}");}).toThrow();
+      expect(function(){fromJson("{a:1, b:x=1, c:1}");}).toThrow();
+    });
+    
   });
 
 });
