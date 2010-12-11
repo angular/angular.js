@@ -42,7 +42,7 @@ a {
 #api-list {
   position: absolute;
   top: 3em;
-  bottom: 0;
+  bottom: 1em;
   overflow-y: scroll;
   padding-right: 0.8em;
 }
@@ -225,25 +225,24 @@ a {
 
 ::-webkit-scrollbar{
   width:0.8em;
-  height:0.8em;
-  border-left: 1px solid #ccc;
+  margin: 0.2em 0em;
 }
+
 ::-webkit-scrollbar:hover{
   background-color:#eee;
 }
-::-webkit-resizer{
-  -webkit-border-radius:0.3em;
-  background-color:#666;
-}
+
 ::-webkit-scrollbar-thumb{
   min-height:0.8em;
   min-width:0.8em;
-  -webkit-border-radius:0.3em;
+  -webkit-border-radius:0.5em;
   background-color: #ddd;
 }
+
 ::-webkit-scrollbar-thumb:hover{
   background-color: #bbb;
 }
+
 ::-webkit-scrollbar-thumb:active{
   background-color:#888;
 }
