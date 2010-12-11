@@ -1,4 +1,4 @@
 # <angular/> build config file
 ---
-version: 0.9.7
-codename: sonic-scream
+version: 0.9.8-snapshot
+codename: astral-projection
