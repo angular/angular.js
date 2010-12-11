@@ -1,4 +1,4 @@
-# <angular/> 0.9.7 sonic-cream (2010-12-10) #
+# <angular/> 0.9.7 sonic-scream (2010-12-10) #
 
 ### Bug Fixes
 - $defer service should always call $eval on the root scope after a callback runs (issue #189)
