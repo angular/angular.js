@@ -282,7 +282,7 @@ function browserTrigger(element, type) {
  *
  * To work around this we instead use our own handler that fires a real event.
  */
-(function(fn){
+(function(fn) {
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
     if (/(click|change|keyup)/.test(type)) {
@@ -294,31 +294,51 @@ function browserTrigger(element, type) {
   };
 })(_jQuery.fn);
 
-/**
- * Finds all bindings with the substring match of name and returns an
- * array of their values.
- *
- * @param {string} name The name to match
- * @return {Array.<string>} String of binding values
- */
-_jQuery.fn.bindings = function(name) {
-  function contains(text, value) {
-    return value instanceof RegExp ?
-      value.test(text) :
-      text && text.indexOf(value) >= 0;
-  }
-  var result = [];
-  this.find('.ng-binding:visible').each(function() {
-    var element = new _jQuery(this);
-    if (!angular.isDefined(name) ||
-      contains(element.attr('ng:bind'), name) ||
-      contains(element.attr('ng:bind-template'), name)) {
-      if (element.is('input, textarea')) {
-        result.push(element.val());
-      } else {
-        result.push(element.html());
-      }
+(function() {
+  var IGNORED_INPUTS = ['button', 'submit', 'reset', 'image', 'file'];
+
+  /**
+   * Finds all bindings with the substring match of name and returns an
+   * array of their values.
+   *
+   * @param {string|RegExp} expr A string or regex to match against binding names
+   * @return {Array.<string>} String of binding values
+   */
+  _jQuery.fn.bindings = function(expr) {
+    var result = [];
+    var match;
+    if (!angular.isDefined(expr)) {
+      match = function() { return true; };
+    } else {
+      match = function(text) {
+        return expr instanceof RegExp ?
+          expr.test(text) :
+          text && text.indexOf(expr) >= 0;
+      };
     }
-  });
-  return result;
-};
+    this.find('.ng-binding:visible').each(function() {
+      var element = new _jQuery(this);
+      var name = element.attr('name');
+      if (name && match(name)) {
+        if (element.is('textarea, select')) {
+          result.push(element.val());
+        } else if (element.is('input') && 
+            angular.Array.indexOf(IGNORED_INPUTS, element.attr('type')) === -1) {
+          result.push(element.val());
+        }
+      }
+      if (match(element.attr('ng:bind')) || match(element.attr('ng:bind-template'))) {
+        if (!element.is('input, textarea, select')) {
+          result.push(element.html());
+        }
+      }
+      // this function comes from Angular.
+      foreachSorted(element.attr('ng:bing-attr'), function(value, key) {
+        if (value) {
+          result.push(element.attr(key));
+        }
+      });
+    });
+    return result;
+  };
+})();

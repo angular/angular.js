@@ -357,7 +357,8 @@ var REMOVE_ATTRIBUTES = {
        toBe('http://www.google.com/search?q=google');
    });
  */
-angularDirective("ng:bind-attr", function(expression){
+angularDirective("ng:bind-attr", function(expression, element){
+  element.addClass('ng-binding');
   return function(element){
     var lastValue = {};
     var updateFn = element.data($$update) || noop;

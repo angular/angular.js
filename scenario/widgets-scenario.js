@@ -9,7 +9,6 @@ describe('widgets', function() {
 
     input('text.password').enter('secret');
     expect(binding('text.password')).toEqual('secret');
-
     expect(binding('text.hidden')).toEqual('hiddenValue');
 
     expect(binding('gender')).toEqual('male');

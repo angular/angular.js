@@ -152,14 +152,14 @@ angular.scenario.dsl('using', function() {
 
 /**
  * Usage:
- *    binding(name) returns the value of the first matching binding
+ *    binding(expr) returns the value of the first matching binding. expr is a string or RegExp.
  */
 angular.scenario.dsl('binding', function() {
-  return function(name) {
-    return this.addFutureAction("select binding '" + name + "'", function($window, $document, done) {
-      var values = $document.elements().bindings(name);
+  return function(expr) {
+    return this.addFutureAction("select binding '" + expr + "'", function($window, $document, done) {
+      var values = $document.elements().bindings(expr);
       if (!values.length) {
-        return done("Binding selector '" + name + "' did not match.");
+        return done("Binding selector '" + expr + "' did not match.");
       }
       done(null, values[0]);
     });
@@ -170,7 +170,7 @@ angular.scenario.dsl('binding', function() {
  * Usage:
  *    input(name).enter(value) enters value in input with specified name
  *    input(name).check() checks checkbox
- *    input(name).select(value) selects the readio button with specified name/value
+ *    input(name).select(value) selects the radio button with specified name/value
  */
 angular.scenario.dsl('input', function() {
   var chain = {};

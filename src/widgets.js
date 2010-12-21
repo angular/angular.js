@@ -456,6 +456,7 @@ function radioInit(model, view, element) {
  */
 function inputWidget(events, modelAccessor, viewAccessor, initFn, dirtyChecking) {
   return function(element) {
+    element.addClass('ng-binding');
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
