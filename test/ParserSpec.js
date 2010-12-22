@@ -82,15 +82,9 @@ describe('parser', function() {
       expect(tokens.length).toEqual(1);
       expect(tokens[0].string).toEqual('\u00a0');
     });
-    
-    it('should error when non terminated string', function(){
-      expect(function(){
-        lex('ignore "text');
-      }).toThrow(new Error('Lexer Error: Unterminated string at column 7 in expression [ignore "text].'));
-    });
 
     it('should ignore whitespace', function() {
-      var tokens = lex("a \t \n \r \u00A0 b");
+      var tokens = lex("a \t \n \r b");
       expect(tokens[0].text).toEqual('a');
       expect(tokens[1].text).toEqual('b');
     });
@@ -136,6 +130,16 @@ describe('parser', function() {
       expect(tokens[0].text).toEqual(0.5E+10);
     });
 
+    it('should throws exception for invalid exponent', function() {
+      expect(function() {
+        lex("0.5E-");
+      }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-].'));
+      
+      expect(function() {
+        lex("0.5E-A");
+      }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].'));
+    });
+
     it('should tokenize number starting with a dot', function() {
       var tokens = lex(".5");
       expect(tokens[0].text).toEqual(0.5);
@@ -143,8 +147,8 @@ describe('parser', function() {
 
     it('should throw error on invalid unicode', function() {
       expect(function() {
-        lex("'\\u1xbla'");
-      }).toThrow(new Error("Lexer Error: Invalid unicode escape [\\u1xbl] at columns 0-9 ['\\u1xbla'] in expression ['\\u1xbla']."));
+        lex("'\\u1''bla'");
+      }).toThrow(new Error("Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
     });
   });
   

@@ -32,7 +32,7 @@ function lex(text, parseStringsForObjects){
       index = 0,
       json = [],
       ch,
-      lastCh = ':';
+      lastCh = ':'; // can start regexp
 
   while (index < text.length) {
     ch = text.charAt(index);
@@ -76,9 +76,6 @@ function lex(text, parseStringsForObjects){
     lastCh = ch;
   }
   return tokens;
-  
-  
-  //////////////////////////////////////////////
 
   function is(chars) {
     return chars.indexOf(ch) != -1;
@@ -103,6 +100,10 @@ function lex(text, parseStringsForObjects){
            'A' <= ch && ch <= 'Z' ||
            '_' == ch || ch == '$';
   }
+  function isExpOperator(ch) {
+    return ch == '-' || ch == '+' || isNumber(ch);
+  }
+
   function throwError(error, start, end) {
     end = end || index;
     throw Error("Lexer Error: " + error + " at column" +
@@ -111,61 +112,103 @@ function lex(text, parseStringsForObjects){
             " " + end) + 
         " in expression [" + text + "].");
   }
-  
-  function consume(regexp, processToken, errorMsg) {
-    var match = text.substr(index).match(regexp);
-    var token = {index: index};
-    var start = index;
-    if (!match) throwError(errorMsg);
-    index += match[0].length;
-    processToken(token, token.text = match[0], start);
-    tokens.push(token);
-  }
 
   function readNumber() {
-    consume(/^(\d+)?(\.\d+)?([eE][+-]?\d+)?/, function(token, number){
-      token.text = number = 1 * number;
-      token.json = true;
-      token.fn = valueFn(number);
-    }, "Not a valid number");
-  }
-  
-  function readIdent() {
-    consume(/^[\w_\$][\w_\$\d]*(\.[\w_\$][\w_\$\d]*)*/, function(token, ident){
-      fn = OPERATORS[ident];
-      if (!fn) {
-        fn = getterFn(ident);
-        fn.isAssignable = ident;
+    var number = "";
+    var start = index;
+    while (index < text.length) {
+      var ch = lowercase(text.charAt(index));
+      if (ch == '.' || isNumber(ch)) {
+        number += ch;
+      } else {
+        var peekCh = peek();
+        if (ch == 'e' && isExpOperator(peekCh)) {
+          number += ch;
+        } else if (isExpOperator(ch) &&
+            peekCh && isNumber(peekCh) &&
+            number.charAt(number.length - 1) == 'e') {
+          number += ch;
+        } else if (isExpOperator(ch) &&
+            (!peekCh || !isNumber(peekCh)) &&
+            number.charAt(number.length - 1) == 'e') {
+          throwError('Invalid exponent');
+        } else {
+          break;
+        }
       }
-      token.fn = OPERATORS[ident]||extend(getterFn(ident), {
+      index++;
+    }
+    number = 1 * number;
+    tokens.push({index:start, text:number, json:true,
+      fn:function(){return number;}});
+  }
+  function readIdent() {
+    var ident = "";
+    var start = index;
+    var fn;
+    while (index < text.length) {
+      var ch = text.charAt(index);
+      if (ch == '.' || isIdent(ch) || isNumber(ch)) {
+        ident += ch;
+      } else {
+        break;
+      }
+      index++;
+    }
+    fn = OPERATORS[ident];
+    tokens.push({
+      index:start, 
+      text:ident, 
+      json: fn,
+      fn:fn||extend(getterFn(ident), {
         assign:function(self, value){
           return setter(self, ident, value);
         }
-      });
-      token.json = OPERATORS[ident];
+      })
     });
   }
   
   function readString(quote) {
-    consume(/^(('(\\'|[^'])*')|("(\\"|[^"])*"))/, function(token, rawString, start){
-      var hasError;
-      var string = token.string = rawString.substr(1, rawString.length - 2).
-        replace(/(\\u(.?.?.?.?))|(\\(.))/g, 
-          function(match, wholeUnicode, unicode, wholeEscape, escape){
-            if (unicode && !unicode.match(/[\da-fA-F]{4}/))
-              hasError = hasError || bind(null, throwError, "Invalid unicode escape [\\u" + unicode + "]", start);
-            return unicode ? 
-                String.fromCharCode(parseInt(unicode, 16)) : 
-                ESCAPE[escape] || escape;
-          });
-      (hasError||noop)();
-      token.json = true;
-      token.fn = function(){
-        return (string.length == dateParseLength) ?
-            angular['String']['toDate'](string) : 
-            string;
-      };
-    }, "Unterminated string");
+    var start = index;
+    index++;
+    var string = "";
+    var rawString = quote;
+    var escape = false;
+    while (index < text.length) {
+      var ch = text.charAt(index);
+      rawString += ch;
+      if (escape) {
+        if (ch == 'u') {
+          var hex = text.substring(index + 1, index + 5);
+          if (!hex.match(/[\da-f]{4}/i))
+            throwError( "Invalid unicode escape [\\u" + hex + "]");
+          index += 4;
+          string += String.fromCharCode(parseInt(hex, 16));
+        } else {
+          var rep = ESCAPE[ch];
+          if (rep) {
+            string += rep;
+          } else {
+            string += ch;
+          }
+        }
+        escape = false;
+      } else if (ch == '\\') {
+        escape = true;
+      } else if (ch == quote) {
+        index++;
+        tokens.push({index:start, text:rawString, string:string, json:true,
+          fn:function(){
+            return (string.length == dateParseLength) ?
+              angular['String']['toDate'](string) : string;
+          }});
+        return;
+      } else {
+        string += ch;
+      }
+      index++;
+    }
+    throwError("Unterminated quote", start);
   }
 }
 
