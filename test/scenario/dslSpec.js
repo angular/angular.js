@@ -345,10 +345,16 @@ describe("angular.scenario.dsl", function() {
       beforeEach(function() {
         doc.append(
           '<ul>' +
-          '  <li ng:repeat-index="0"><span ng:bind="name" class="ng-binding">misko</span>' +
-          '    <span ng:bind="test && gender" class="ng-binding">male</span></li>' +
-          '  <li ng:repeat-index="1"><span ng:bind="name" class="ng-binding">felisa</span>' +
-          '    <span ng:bind="gender | uppercase" class="ng-binding">female</span></li>' +
+          '  <li ng:repeat-index="0">' +
+          '    <span ng:bind="before" class="ng-binding">more</span>' +
+          '    <span ng:bind="name" class="ng-binding">misko</span>' +
+          '    <span ng:bind="test && gender" class="ng-binding">male</span>' +
+          '  </li>' +
+          '  <li ng:repeat-index="1">' +
+          '    <span ng:bind="before" class="ng-binding">even more</span>' +
+          '    <span ng:bind="name" class="ng-binding">felisa</span>' +
+          '    <span ng:bind="test && gender" class="ng-binding">female</span>' +
+          '  </li>' +
           '</ul>'
         );
         chain = $root.dsl.repeater('ul li');
@@ -367,7 +373,12 @@ describe("angular.scenario.dsl", function() {
 
       it('should get a row of bindings', function() {
         chain.row(1);
-        expect($root.futureResult).toEqual(['felisa', 'female']);
+        expect($root.futureResult).toEqual(['even more', 'felisa', 'female']);
+      });
+
+      it('should get a row of specific bindings in order', function() {
+        chain.row(1, [/gender/, 'name']);
+        expect($root.futureResult).toEqual(['female', 'felisa']);
       });
 
       it('should get a column of bindings', function() {
@@ -455,12 +466,6 @@ describe("angular.scenario.dsl", function() {
         doc.find('pre').attr('ng:bind-attr', '{"title":"value {{foo || bar | baz}}","id":"{{int}}","rel":"test {{more}}"}');
         $root.dsl.binding(/more/);
         expect($root.futureResult).toEqual('example');
-      });
-
-      it('should match bindings by substring match', function() {
-        doc.append('<pre class="ng-binding" ng:bind="foo.bar() && test.baz() | filter">binding value</pre>');
-        $root.dsl.binding(/test\.baz/);
-        expect($root.futureResult).toEqual('binding value');
       });
 
       it('should return error if no bindings in document', function() {

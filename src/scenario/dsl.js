@@ -230,18 +230,30 @@ angular.scenario.dsl('repeater', function() {
   };
 
   chain.column = function(binding) {
-    return this.addFutureAction("repeater '" + this.label + "' column '" + binding + "'", function($window, $document, done) {
+    return this.addFutureAction("repeater '" + this.label + "' column '" + angular.toJson(binding) + "'", function($window, $document, done) {
       done(null, $document.elements().bindings(binding));
     });
   };
 
-  chain.row = function(index) {
+  chain.row = function(index, bindings) {
     return this.addFutureAction("repeater '" + this.label + "' row '" + index + "'", function($window, $document, done) {
-      var values = [];
+      var result = [];
       var matches = $document.elements().slice(index, index + 1);
       if (!matches.length)
-        return done('row ' + index + ' out of bounds');
-      done(null, matches.bindings());
+        return done('Row ' + index + ' out of bounds');
+      if (!angular.isArray(bindings))
+        return done(null, matches.bindings(bindings));
+      for (var i=0; i < bindings.length; ++i) {
+        var values = matches.bindings(bindings[i]);
+        if (!values.length) {
+          return done('Binding selector "' + angular.toJson(bindings[i]) + '" did not match.');
+        } else if (values.length > 1) {
+          return done("Binding selector '" + expr +
+              "' matched more than one element with values: " + angular.toJson(values));
+        }
+        result.push(values[0]);
+      }
+      done(null, result);
     });
   };
 
