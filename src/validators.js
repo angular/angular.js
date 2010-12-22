@@ -9,13 +9,19 @@ extend(angularValidator, {
    * Use regexp validator to restrict the input to any Regular Expression.
    * 
    * @param {string} value value to validate
-   * @param {regexp} expression regular expression.
+   * @param {string|regexp} expression regular expression.
+   * @param {string=} msg error message to display.
    * @css ng-validation-error
    * 
    * @example
-   * <script> var ssn = /^\d\d\d-\d\d-\d\d\d\d$/; </script>
+   * <script> function Cntl(){
+   *   this.ssnRegExp = /^\d\d\d-\d\d-\d\d\d\d$/; 
+   * }
+   * </script>
    * Enter valid SSN:
-   * <input name="ssn" value="123-45-6789" ng:validate="regexp:$window.ssn" >
+   * <div ng:controller="Cntl">
+   * <input name="ssn" value="123-45-6789" ng:validate="regexp:ssnRegExp" >
+   * </div>
    * 
    * @scenario
    * it('should invalidate non ssn', function(){

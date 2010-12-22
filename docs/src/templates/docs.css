@@ -100,6 +100,12 @@ a {
   margin-top: 1.5em;
 }
 
+#main ul.methods h3,
+#main ul.properties h3 {
+  margin-top: 1.5em;
+  font-family: "Courier New", monospace;
+}
+
 .main-title {
   float: right;
 }
