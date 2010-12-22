@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Repeater/Input Bindings</title>
+    <script type="text/javascript" src="../../lib/jquery/jquery-1.4.2.js" ng:autobind></script>
+    <script type="text/javascript" charset="utf-8">
+      _jQuery = jQuery.noConflict(true);
+    </script>
+    <script type="text/javascript" src="../../src/angular-bootstrap.js" ng:autobind></script>
+    <script type="text/javascript">
+      var rows = [
+        {i: 1, type: 'text', value: 'text value'},
+        {i: 2, type: 'radio', value: 'radio value'},
+        {i: 3, type: 'checkbox', value: 'checkbox value'}
+      ];
+    </script>
+  </head>
+  <body ng:init="$window.$root = this">
+    <input name="inputBinding">
+    <select name="select-box">
+      <option value="A Value">A Name</option>
+      <option value="B Value" selected>B Name</option>
+    </select>
+    <div id="repeater">
+      <div ng:repeat="row in $window.rows">
+        <!-- Bindings in this row are [row.i, value of input test, value of value input, value of type attr] -->
+        {{row.i}} <input name="test" value="value {{row.value}}" type="{{row.type}}">
+      </div>
+    </div>
+  </body>
+</html>

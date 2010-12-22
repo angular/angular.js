@@ -3,6 +3,25 @@
 ### Bug Fixes
 - Ignore input widgets which have no name (issue #153)
 
+### Testability
+#### Scenario Runner
+- repeater().row() now takes a second argument which is an array of binding names (or regexps) to
+  match and represent the 'row'. This gives you predictable results from row() even if you reorder
+  columns in the HTML, or add new bindings.
+- binding() (and by extension repeater repeater().row() and repeater().column()) now support
+  matching bindings inside attributes. For example <div id="section-{{generator()}}"></div> can be
+  selected with the DSL statement binding(/generator\(\)/) which returns "section-12" where 12 is
+  the result of generator().
+- binding() will now match input, select and textarea elements with a name attribute since they're
+  technically bindings too. This is useful if you want to do something like
+  repeater('table tr').column('username') where the column is <input type="text" name="username">
+
+### Breaking changes
+#### Scenario Runner
+- binding() no longer supports substring matching. You must match based on a regular expression
+  if you want that behavior.
+- binding() no longer returns the first match if there are multiple. Instead your test will fail.
+
 # <angular/> 0.9.7 sonic-scream (2010-12-10) #
 
 ### Bug Fixes
@@ -15,9 +34,9 @@
 - small docs improvements (mainly docs for the $resource service)
 
 ### Breaking changes
-- Angular expressions in the view used to support regular expressions. This feature was rarely 
-  used and added unnecessary complexity. It not a good idea to have regexps in the view anyway, 
-  so we removed this support. If you had any regexp in your views, you will have to move them to 
+- Angular expressions in the view used to support regular expressions. This feature was rarely
+  used and added unnecessary complexity. It not a good idea to have regexps in the view anyway,
+  so we removed this support. If you had any regexp in your views, you will have to move them to
   your controllers. (commit e5e69d9b90850eb653883f52c76e28dd870ee067)
 
 
@@ -36,7 +55,7 @@
 - docs app UI polishing with dual scrolling and other improvements
 
 ### Bug Fixes
-- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat` 
+- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat`
   (issue #170)
 - fix for async xhr cache issue #152 by adding `$browser.defer` and `$defer` service
 
