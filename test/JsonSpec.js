@@ -116,6 +116,42 @@ describe('json', function(){
     expect(fromJson("{exp:1.2e-10}")).toEqual({exp:1.2E-10});
   });
 
+
+  //run these tests only in browsers that have native JSON parser
+  if (JSON && JSON.parse) {
+
+    describe('native parser', function() {
+
+      var nativeParser = JSON.parse;
+
+      afterEach(function() {
+        JSON.parse = nativeParser;
+      });
+
+
+      it('should delegate to native parser if available and boolean flag is passed', function() {
+        var spy = this.spyOn(JSON, 'parse').andCallThrough();
+
+        expect(fromJson('{}')).toEqual({});
+        expect(spy).wasNotCalled();
+
+        expect(fromJson('{}', true)).toEqual({});
+        expect(spy).wasCalled();
+      });
+
+
+      it('should convert timestamp strings to Date objects', function() {
+        expect(fromJson('"2010-12-22T17:23:17.974Z"', true) instanceof Date).toBe(true);
+        expect(fromJson('["2010-12-22T17:23:17.974Z"]', true)[0] instanceof Date).toBe(true);
+        expect(fromJson('{"t":"2010-12-22T17:23:17.974Z"}', true).t instanceof Date).toBe(true);
+        expect(fromJson('{"t":["2010-12-22T17:23:17.974Z"]}', true).t[0] instanceof Date).toBe(true);
+        expect(fromJson('{"t":{"t":"2010-12-22T17:23:17.974Z"}}', true).t.t instanceof Date).toBe(true);
+      });
+    });
+
+  }
+
+
   describe('security', function(){
     it('should not allow naked expressions', function(){
       expect(function(){fromJson('1+2');}).
