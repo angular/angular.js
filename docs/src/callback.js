@@ -2,7 +2,10 @@ function noop(){}
 
 function chain(delegateFn, explicitDone){
   var onDoneFn = noop;
-  var onErrorFn = noop;
+  var onErrorFn = function(e){
+    console.error(e.stack || e);
+    process.exit(-1);
+  };
   var waitForCount = 1;
   delegateFn = delegateFn || noop;
   var stackError = new Error('capture stack');

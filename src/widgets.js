@@ -554,7 +554,8 @@ angularWidget('option', function(){
  * (e.g. ng:include won't work for file:// access).
  *
  * @param {string} src expression evaluating to URL.
- * @param {Scope=} [scope=new_child_scope] expression evaluating to angular.scope
+ * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an 
+ *                 instance of angular.scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @example

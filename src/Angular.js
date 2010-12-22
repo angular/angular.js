@@ -711,7 +711,7 @@ function concat(array1, array2, index) {
  */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? slice.call(arguments, 2, arguments.length) : [];
-  if (typeof fn == $function) {
+  if (typeof fn == $function && !(fn instanceof RegExp)) {
     return curryArgs.length ? function() {
       return arguments.length ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0, arguments.length))) : fn.apply(self, curryArgs);
     }: function() {
