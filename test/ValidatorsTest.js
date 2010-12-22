@@ -18,7 +18,12 @@ ValidatorTest.prototype.testItShouldHaveThisSet = function() {
 };
 
 ValidatorTest.prototype.testRegexp = function() {
-  assertEquals(angular.validator.regexp("abc", /x/, "E1"), "E1");
+  var scope = angular.scope();
+  scope.regexp = /x/;
+  expect(scope.regexp === scope.$get('regexp')).toBeTruthy();
+  var re = bind(scope, scope.$get('regexp'));
+  expect(scope.regexp === re).toBeTruthy();
+  assertEquals(angular.validator.regexp("abc", re, "E1"), "E1");
   assertEquals(angular.validator.regexp("abc", '/x/'),
       "Value does not match expected format /x/.");
   assertEquals(angular.validator.regexp("ab", '^ab$'), null);

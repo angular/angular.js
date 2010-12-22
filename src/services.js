@@ -99,6 +99,7 @@ angularServiceInject("$location", function(browser) {
    * @ngdoc method
    * @name angular.service.$location#update
    * @methodOf angular.service.$location
+   * @param {(string|Object)} href Full href as a string or hash object with properties
    * 
    * @description
    * Update location object
@@ -110,7 +111,6 @@ angularServiceInject("$location", function(browser) {
    * scope.$location.update({host: 'www.google.com', protocol: 'https'});
    * scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
    *
-   * @param {(string|Object)} href Full href as a string or hash object with properties
    */
   function update(href) {
     if (isString(href)) {

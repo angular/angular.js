@@ -1,3 +1,3 @@
-#!/bin/sh
-
-node docs/specs.js --noColor && node docs/collect.js
+#!/bin/bash 
+. ~/.bashrc
+node docs/spec/specs.js --noColor && node docs/src/gen-docs.js
