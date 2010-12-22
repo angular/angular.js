@@ -298,10 +298,17 @@ function browserTrigger(element, type) {
   var IGNORED_INPUTS = ['button', 'submit', 'reset', 'image', 'file'];
 
   /**
-   * Finds all bindings with the substring match of name and returns an
-   * array of their values.
+   * Finds all bindings that are a child of the current element (or are on the current element).
    *
-   * @param {string|RegExp} expr A string or regex to match against binding names
+   * If you specify a string for expr an exact match is made. You can specify a RegExp if you want
+   * more control over what gets matched (or to match a binding with filters etc.).
+   *
+   * You may also specify an array of expressions to match several named bindings exactly.
+   *
+   * ex. Match {{username}} and {{email.recpient | uppercase}}
+   *   node.bindings(['username', /^email.recpient/])
+   *
+   * @param {string|RegExp|Array.<string|RegExp>} expr Expressions, or an array of them to match.
    * @return {Array.<string>} String of binding values
    */
   _jQuery.fn.bindings = function(expr) {
@@ -311,12 +318,10 @@ function browserTrigger(element, type) {
       match = function() { return true; };
     } else {
       match = function(text) {
-        return expr instanceof RegExp ?
-          expr.test(text) :
-          text && text.indexOf(expr) >= 0;
+        return expr instanceof RegExp ? expr.test(text) : text === expr;
       };
     }
-    this.find('.ng-binding:visible').each(function() {
+    function processNode() {
       var element = new _jQuery(this);
       var name = element.attr('name');
       if (name && match(name)) {
@@ -333,12 +338,15 @@ function browserTrigger(element, type) {
         }
       }
       // this function comes from Angular.
-      foreachSorted(element.attr('ng:bing-attr'), function(value, key) {
-        if (value) {
+      foreachSorted(angular.fromJson(element.attr('ng:bind-attr')) || {}, function(value, key) {
+        if (match(value)) {
           result.push(element.attr(key));
         }
       });
-    });
+    }
+    // Process the nodes themselves and then all their children.
+    // this.filter('.ng-binding:visible').each(processNode);
+    this.find('.ng-binding:visible').each(processNode);
     return result;
   };
 })();

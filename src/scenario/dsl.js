@@ -160,6 +160,9 @@ angular.scenario.dsl('binding', function() {
       var values = $document.elements().bindings(expr);
       if (!values.length) {
         return done("Binding selector '" + expr + "' did not match.");
+      } else if (values.length > 1) {
+        return done("Binding selector '" + expr +
+            "' matched more than one element with values: " + angular.toJson(values));
       }
       done(null, values[0]);
     });
@@ -206,7 +209,6 @@ angular.scenario.dsl('input', function() {
     return chain;
   };
 });
-
 
 /**
  * Usage:

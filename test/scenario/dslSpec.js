@@ -371,7 +371,7 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should get a column of bindings', function() {
-        chain.column('gender');
+        chain.column(/gender/);
         expect($root.futureResult).toEqual(['male', 'female']);
       });
 
@@ -398,16 +398,44 @@ describe("angular.scenario.dsl", function() {
         expect($root.futureResult).toEqual('some value');
       });
 
-      it('should return value for input elements', function() {
-        doc.append('<input type="text" class="ng-binding" ng:bind="foo.bar" value="some value"/>');
+      it('should fail if multiple matches', function() {
+        doc.append(
+          '<span class="ng-binding" ng:bind="foo.bar">value A</span>' +
+          '<span class="ng-binding" ng:bind="foo.bar">value B</span>');
         $root.dsl.binding('foo.bar');
+        expect($root.futureError).toMatch(/more than one/);
+      });
+
+      it('should return value for input elements', function() {
+        doc.append('<input type="text" name="foo" class="ng-binding" value="some value">');
+        $root.dsl.binding('foo');
         expect($root.futureResult).toEqual('some value');
       });
 
       it('should return value for textarea elements', function() {
-        doc.append('<textarea class="ng-binding" ng:bind="foo.bar">some value</textarea>');
-        $root.dsl.binding('foo.bar');
+        doc.append('<textarea class="ng-binding" name="foo">some value</textarea>');
+        $root.dsl.binding('foo');
         expect($root.futureResult).toEqual('some value');
+      });
+
+      it('should return selected option for select elements', function() {
+        doc.append(
+          '<select name="foo" class="ng-binding">' +
+          ' <option value="A Value">A Name</option>' +
+          ' <option value="B Value" selected>B Name</option>' +
+          '</select>');
+        $root.dsl.binding('foo');
+        expect($root.futureResult).toEqual('B Value');
+      });
+
+      it('should return selected options for select elements', function() {
+        doc.append(
+          '<select name="foo" class="ng-binding">' +
+          ' <option value="A Value">A Name</option>' +
+          ' <option value="B Value" selected>B Name</option>' +
+          '</select>');
+        $root.dsl.binding('foo');
+        expect($root.futureResult).toEqual('B Value');
       });
 
       it('should return innerHTML for all the other elements', function() {
@@ -418,13 +446,20 @@ describe("angular.scenario.dsl", function() {
 
       it('should select binding in template by name', function() {
         doc.append('<pre class="ng-binding" ng:bind-template="foo {{bar}} baz">foo some baz</pre>');
-        $root.dsl.binding('bar');
+        $root.dsl.binding(/bar/);
         expect($root.futureResult).toEqual('foo some baz');
+      });
+
+      it('should select bindings in attributes by names', function() {
+        doc.append('<pre class="ng-binding" id="pre-id" rel="example" title="pre title">foo some baz</pre>');
+        doc.find('pre').attr('ng:bind-attr', '{"title":"value {{foo || bar | baz}}","id":"{{int}}","rel":"test {{more}}"}');
+        $root.dsl.binding(/more/);
+        expect($root.futureResult).toEqual('example');
       });
 
       it('should match bindings by substring match', function() {
         doc.append('<pre class="ng-binding" ng:bind="foo.bar() && test.baz() | filter">binding value</pre>');
-        $root.dsl.binding('test.baz');
+        $root.dsl.binding(/test\.baz/);
         expect($root.futureResult).toEqual('binding value');
       });
 
