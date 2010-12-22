@@ -328,7 +328,7 @@ function browserTrigger(element, type) {
         }
       }
       // this function comes from Angular.
-      foreachSorted(angular.fromJson(element.attr('ng:bind-attr')) || {}, function(value, key) {
+      foreachSorted(angular.fromJson(element.attr('ng:bind-attr')), function(value, key) {
         if (match(value)) {
           result.push(element.attr(key));
         }

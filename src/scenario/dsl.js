@@ -246,9 +246,9 @@ angular.scenario.dsl('repeater', function() {
       for (var i=0; i < bindings.length; ++i) {
         var values = matches.bindings(bindings[i]);
         if (!values.length) {
-          return done('Binding selector "' + angular.toJson(bindings[i]) + '" did not match.');
+          return done("Binding selector '" + bindings[i] + "' did not match.");
         } else if (values.length > 1) {
-          return done("Binding selector '" + expr +
+          return done("Binding selector '" + bindings[i] +
               "' matched more than one element with values: " + angular.toJson(values));
         }
         result.push(values[0]);

@@ -3,13 +3,13 @@ describe('widgets', function() {
     browser().navigateTo('widgets.html');
 
     using('#text-basic-box').input('text.basic').enter('Carlos');
-    expect(binding('text.basic')).toEqual('Carlos');
+    expect(using('td:nth-child(3)').binding('text.basic')).toEqual('Carlos');
     input('text.basic').enter('Carlos Santana');
-    expect(binding('text.basic')).not().toEqual('Carlos Boozer');
+    expect(using('td:nth-child(3)').binding('text.basic')).not().toEqual('Carlos Boozer');
 
     input('text.password').enter('secret');
-    expect(binding('text.password')).toEqual('secret');
-    expect(binding('text.hidden')).toEqual('hiddenValue');
+    expect(using('td:nth-child(3)').binding('text.password')).toEqual('secret');
+    expect(using('td:nth-child(3)').binding('text.hidden')).toEqual('hiddenValue');
 
     expect(binding('gender')).toEqual('male');
     input('gender').select('female');
@@ -20,10 +20,10 @@ describe('widgets', function() {
     expect(repeater('#repeater-row ul li').column('name')).toEqual(['misko', 'adam']);
 
     select('select').option('B');
-    expect(binding('select')).toEqual('B');
+    expect(using('td:nth-child(3)').binding('select')).toEqual('B');
 
     select('multiselect').options('A', 'C');
-    expect(binding('multiselect').fromJson()).toEqual(['A', 'C']);
+    expect(using('td:nth-child(3)').binding('multiselect').fromJson()).toEqual(['A', 'C']);
 
     expect(binding('button').fromJson()).toEqual({'count': 0});
     expect(binding('form').fromJson()).toEqual({'count': 0});
@@ -57,12 +57,12 @@ describe('widgets', function() {
     }
 
     input('checkbox.tea').check();
-    expect(binding('checkbox').parsedWith(checkboxParser)).toEqual({coffee: false, tea: false});
+    expect(using('td:nth-child(3)').binding(/checkbox/).parsedWith(checkboxParser)).toEqual({coffee: false, tea: false});
     input('checkbox.coffee').check();
-    expect(binding('checkbox').parsedWith(checkboxParser)).toEqual({coffee: true, tea: false});
+    expect(using('td:nth-child(3)').binding(/checkbox/).parsedWith(checkboxParser)).toEqual({coffee: true, tea: false});
     input('checkbox.tea').check();
     input('checkbox.tea').check();
     input('checkbox.tea').check();
-    expect(binding('checkbox').parsedWith(checkboxParser)).toEqual({coffee: true, tea: true});
+    expect(using('td:nth-child(3)').binding(/checkbox/).parsedWith(checkboxParser)).toEqual({coffee: true, tea: true});
   });
 });
