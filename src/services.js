@@ -705,7 +705,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
     $browser.xhr(method, url, post, function(code, response){
       try {
         if (isString(response) && /^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
-          response = fromJson(response);
+          response = fromJson(response, true);
         }
         if (code == 200) {
           callback(code, response);
