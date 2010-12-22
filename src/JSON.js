@@ -29,18 +29,40 @@ function toJson(obj, pretty) {
  * Deserializes a string in the JSON format.
  *
  * @param {string} json JSON string to deserialize.
+ * @param {boolean} [useNative=false] Use native JSON parser if available
  * @returns {Object|Array|Date|string|number} Deserialized thingy.
  */
-function fromJson(json) {
+function fromJson(json, useNative) {
   if (!json) return json;
+
+  var obj, p, expression;
+
   try {
-    var p = parser(json, true);
-    var expression =  p.primary();
+    if (useNative && JSON && JSON.parse) {
+      obj = JSON.parse(json);
+      return transformDates(obj);
+    }
+
+    p = parser(json, true);
+    expression =  p.primary();
     p.assertAllConsumed();
     return expression();
+
   } catch (e) {
     error("fromJson error: ", json, e);
     throw e;
+  }
+
+  // TODO make foreach optionally recursive and remove this function
+  function transformDates(obj) {
+    if (isString(obj) && obj.length === DATE_ISOSTRING_LN) {
+      return angularString.toDate(obj);
+    } else if (isArray(obj) || isObject(obj)) {
+      foreach(obj, function(val, name) {
+        obj[name] = transformDates(val);
+      });
+    }
+    return obj;
   }
 }
 

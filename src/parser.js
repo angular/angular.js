@@ -26,7 +26,7 @@ var OPERATORS = {
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
 function lex(text, parseStringsForObjects){
-  var dateParseLength = parseStringsForObjects ? 24 : -1,
+  var dateParseLength = parseStringsForObjects ? DATE_ISOSTRING_LN : -1,
       tokens = [],
       token,
       index = 0,
