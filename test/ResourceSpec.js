@@ -165,7 +165,7 @@ describe("resource", function() {
     var $browser = scope.$inject('$browser');
     var $resource = scope.$inject('$resource');
     var Person = $resource('/Person/:id');
-    $browser.xhr.expectGET('/Person/123').respond('\n{\nname:\n"misko"\n}\n');
+    $browser.xhr.expectGET('/Person/123').respond('\n{\n"name":\n"misko"\n}\n');
     var person = Person.get({id:123});
     $browser.xhr.flush();
     expect(person.name).toEqual('misko');
@@ -177,12 +177,12 @@ describe("resource", function() {
     var $browser = scope.$inject('$browser');
     var $resource = scope.$inject('$resource');
     var Person = $resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});
-    $browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"misko"\n}\n]');
+    $browser.xhr.expectGET('/Person/123').respond('[\n{\n"name":\n"misko"\n}\n]');
     var person = Person.query({id:123});
     $browser.xhr.flush();
     expect(person[0].name).toEqual('misko');
 
-    $browser.xhr.expectGET('/Person/123').respond('[\n{\nname:\n"rob"\n}\n]');
+    $browser.xhr.expectGET('/Person/123').respond('[\n{\n"name":\n"rob"\n}\n]');
     var person2 = Person.query({id:123});
     $browser.defer.flush();
 
