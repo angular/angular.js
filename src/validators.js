@@ -382,10 +382,12 @@ extend(angularValidator, {
 
     cache.current = input;
 
-    var inputState = cache.inputs[input];
+    var inputState = cache.inputs[input],
+        $invalidWidgets = scope.$inject('$invalidWidgets');
+
     if (!inputState) {
       cache.inputs[input] = inputState = { inFlight: true };
-      scope.$invalidWidgets.markInvalid(scope.$element);
+      $invalidWidgets.markInvalid(scope.$element);
       element.addClass('ng-input-indicator-wait');
       asynchronousFn(input, function(error, data) {
         inputState.response = data;
@@ -393,14 +395,14 @@ extend(angularValidator, {
         inputState.inFlight = false;
         if (cache.current == input) {
           element.removeClass('ng-input-indicator-wait');
-          scope.$invalidWidgets.markValid(element);
+          $invalidWidgets.markValid(element);
         }
         element.data($$validate)();
         scope.$root.$eval();
       });
     } else if (inputState.inFlight) {
       // request in flight, mark widget invalid, but don't show it to user
-      scope.$invalidWidgets.markInvalid(scope.$element);
+      $invalidWidgets.markInvalid(scope.$element);
     } else {
       (updateFn||noop)(inputState.response);
     }

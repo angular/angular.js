@@ -53,19 +53,9 @@ describe('injector', function(){
 
   it('should autostart eager services', function(){
     var log = '';
-    providers('eager', function(){log += 'eager;';}, {$creation: 'eager'});
+    providers('eager', function(){log += 'eager;'; return 'foo'}, {$creation: 'eager'});
     inject();
     expect(log).toEqual('eager;');
-    expect(scope.eager).not.toBeDefined();
-  });
-
-
-  it('should return a list of published objects', function(){
-    var log = '';
-    providers('eager', function(){log += 'eager;'; return 'pub'; }, {$creation: 'eager-published'});
-    inject();
-    expect(log).toEqual('eager;');
-    expect(scope.eager).toEqual('pub');
-
+    expect(inject('eager')).toBe('foo');
   });
 });
