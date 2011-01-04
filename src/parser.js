@@ -216,7 +216,26 @@ function lex(text, parseStringsForObjects){
 
 function parser(text, json){
   var ZERO = valueFn(0),
-      tokens = lex(text, json);
+      tokens = lex(text, json),
+      assignment = _assignment, 
+      functionCall = _functionCall, 
+      fieldAccess = _fieldAccess, 
+      objectIndex = _objectIndex, 
+      filterChain = _filterChain, 
+      functionIdent = _functionIdent, 
+      pipeFunction = _pipeFunction;
+  if(json){
+    // The extra level of aliasing is here, just in case the lexer misses something, so that 
+    // we prevent any accidental execution in JSON.
+    assignment = logicalOR;
+    functionCall = 
+      fieldAccess = 
+      objectIndex = 
+      filterChain = 
+      functionIdent = 
+      pipeFunction = 
+        function (){ throwError("is not valid json", {text:text, index:0}); };
+  }
   return {
       assertAllConsumed: assertAllConsumed,
       primary: primary,
@@ -314,7 +333,7 @@ function parser(text, json){
     }
   }
 
-  function filterChain(){
+  function _filterChain(){
     var left = expression();
     var token;
     while(true) {
@@ -334,7 +353,7 @@ function parser(text, json){
     return pipeFunction(angularValidator);
   }
 
-  function pipeFunction(fnScope){
+  function _pipeFunction(fnScope){
     var fn = functionIdent(fnScope);
     var argsFn = [];
     var token;
@@ -360,7 +379,7 @@ function parser(text, json){
     return assignment();
   }
 
-  function assignment(){
+  function _assignment(){
     var left = logicalOR();
     var right;
     var token;
@@ -448,7 +467,7 @@ function parser(text, json){
     }
   }
 
-  function functionIdent(fnScope) {
+  function _functionIdent(fnScope) {
     var token = expect();
     var element = token.text.split('.');
     var instance = fnScope;
@@ -496,7 +515,7 @@ function parser(text, json){
     return primary;
   }
 
-  function fieldAccess(object) {
+  function _fieldAccess(object) {
     var field = expect().text;
     var getter = getterFn(field);
     return extend(function (self){
@@ -508,7 +527,7 @@ function parser(text, json){
     });
   }
 
-  function objectIndex(obj) {
+  function _objectIndex(obj) {
     var indexFn = expression();
     consume(']');
     return extend(
@@ -523,7 +542,7 @@ function parser(text, json){
       });
   }
 
-  function functionCall(fn) {
+  function _functionCall(fn) {
     var argsFn = [];
     if (peekToken().text != ')') {
       do {
