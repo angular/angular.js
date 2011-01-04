@@ -383,7 +383,7 @@ extend(angularValidator, {
     cache.current = input;
 
     var inputState = cache.inputs[input],
-        $invalidWidgets = scope.$inject('$invalidWidgets');
+        $invalidWidgets = scope.$service('$invalidWidgets');
 
     if (!inputState) {
       cache.inputs[input] = inputState = { inFlight: true };

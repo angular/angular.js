@@ -42,7 +42,7 @@ describe("ScenarioSpec: Compilation", function(){
     
     it("should have $ objects", function(){
       scope = compile('<div></div>', {$config: {a:"b"}});
-      expect(scope.$inject('$location')).toBeDefined();
+      expect(scope.$service('$location')).toBeDefined();
       expect(scope.$get('$eval')).toBeDefined();
       expect(scope.$get('$config')).toBeDefined();
       expect(scope.$get('$config.a')).toEqual("b");
@@ -53,8 +53,8 @@ describe("ScenarioSpec: Compilation", function(){
     it("should take location object", function(){
       var url = "http://server/#?book=moby";
       scope = compile("<div>{{$location}}</div>");
-      var $location = scope.$inject('$location');
-      var $browser = scope.$inject('$browser');
+      var $location = scope.$service('$location');
+      var $browser = scope.$service('$browser');
       expect($location.hashSearch.book).toBeUndefined();
       $browser.setUrl(url);
       $browser.poll();

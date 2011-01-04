@@ -322,7 +322,7 @@ describe('angular service', function() {
     angular.service('fake', function() { return 'old'; });
     angular.service('fake', function() { return 'new'; });
     
-    expect(scope.$inject('fake')).toEqual('new');
+    expect(scope.$service('fake')).toEqual('new');
   });
   
   it('should preserve $ properties on override', function() {

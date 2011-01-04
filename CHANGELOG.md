@@ -5,6 +5,9 @@
   not needed.
 
 ### Breaking changes
+ - API for accessing registered services — `scope.$inject` — was renamed to
+   [`scope.$service`](http://docs.angularjs.org/#!angular.scope.$service).
+
  - Support for `eager-published` services was removed. This change was done to make explicit
    dependency declaration always required in order to allow making relatively expensive services
    lazily initialized (e.g. $cookie, $location), as well as remove 'magic' and reduce unnecessary
@@ -21,17 +24,17 @@
    - $invalidWidgets
 
    To temporarily preserve the 'eager-published' status for these services, you may use `ng:init`
-   (e.g. `ng:init="$location = $inject('$location'), ...`) in the view or more correctly create
+   (e.g. `ng:init="$location = $service('$location'), ...`) in the view or more correctly create
    a service like this:
 
        angular.service('published-svc-shim', function() {
-         this.$location = this.$inject('$location');
-         this.$route = this.$inject('$route');
-         this.$cookies = this.$inject('$cookies');
-         this.$window = this.$inject('$window');
-         this.$document = this.$inject('$document');
-         this.$exceptionHandler = this.$inject('$exceptionHandler');
-         this.$invalidWidgets = this.$inject('$invalidWidgets');
+         this.$location = this.$service('$location');
+         this.$route = this.$service('$route');
+         this.$cookies = this.$service('$cookies');
+         this.$window = this.$service('$window');
+         this.$document = this.$service('$document');
+         this.$exceptionHandler = this.$service('$exceptionHandler');
+         this.$invalidWidgets = this.$service('$invalidWidgets');
        }, {$creation: 'eager'});
 
 - In the light of the `eager-published` change, to complete the cleanup we renamed `$creation`

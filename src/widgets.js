@@ -271,7 +271,7 @@ function valueAccessor(scope, element) {
       formatterName = element.attr('ng:format') || NOOP,
       formatter = angularFormatter(formatterName),
       format, parse, lastError, required,
-      invalidWidgets = scope.$inject('$invalidWidgets') || {markValid:noop, markInvalid:noop};
+      invalidWidgets = scope.$service('$invalidWidgets') || {markValid:noop, markInvalid:noop};
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
   if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
   format = formatter.format;

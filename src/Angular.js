@@ -947,7 +947,7 @@ function angularInit(config){
   if (config.autobind) {
     // TODO default to the source of angular.js
     var scope = compile(window.document, _null, {'$config':config}),
-        $browser = scope.$inject('$browser');
+        $browser = scope.$service('$browser');
 
     if (config.css)
       $browser.addCss(config.base_url + config.css);

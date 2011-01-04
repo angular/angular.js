@@ -35,7 +35,7 @@ Template.prototype = {
     foreach(this.inits, function(fn) {
       queue.push(function() {
         childScope.$tryEval(function(){
-          return childScope.$inject(fn, childScope, element);
+          return childScope.$service(fn, childScope, element);
         }, element);
       });
     });
