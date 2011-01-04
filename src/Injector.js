@@ -37,7 +37,7 @@ function createInjector(providerScope, providers, cache) {
    *   none:   same as object but use providerScope as place to publish.
    */
   return function inject(value, scope, args){
-    var returnValue, provider, creation;
+    var returnValue, provider;
     if (isString(value)) {
       if (!cache.hasOwnProperty(value)) {
         provider = providers[value];
@@ -55,13 +55,12 @@ function createInjector(providerScope, providers, cache) {
       returnValue = value.apply(scope, concat(returnValue, arguments, 2));
     } else if (isObject(value)) {
       foreach(providers, function(provider, name){
-        creation = provider.$creation;
-        if (creation == 'eager') {
+        if (provider.$eager)
           inject(name);
-        } else {
-          if (isDefined(creation))
-            throw "Unknown $creation value '" + creation + "' for service " + name;
-        }
+
+        if (provider.$creation)
+          throw new Error("Failed to register service '" + name +
+              "': $creation property is unsupported. Use $eager:true or see release notes.");
       });
     } else {
       returnValue = inject(providerScope);
