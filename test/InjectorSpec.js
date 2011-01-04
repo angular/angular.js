@@ -53,7 +53,7 @@ describe('injector', function(){
 
   it('should autostart eager services', function(){
     var log = '';
-    providers('eager', function(){log += 'eager;'; return 'foo'}, {$creation: 'eager'});
+    providers('eager', function(){log += 'eager;'; return 'foo'}, {$eager: true});
     inject();
     expect(log).toEqual('eager;');
     expect(inject('eager')).toBe('foo');

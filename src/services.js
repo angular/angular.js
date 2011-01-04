@@ -1,10 +1,10 @@
 var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
     HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21},
-    EAGER = 'eager';
+    EAGER = true;
 
 function angularServiceInject(name, fn, inject, eager) {
-  angularService(name, fn, {$inject:inject, $creation:eager});
+  angularService(name, fn, {$inject:inject, $eager:eager});
 }
 
 /**

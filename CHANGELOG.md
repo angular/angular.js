@@ -5,7 +5,7 @@
   not needed.
 
 ### Breaking changes
- - Support for 'eager-published' services was removed. This change was done to make explicit
+ - Support for `eager-published` services was removed. This change was done to make explicit
    dependency declaration always required in order to allow making relatively expensive services
    lazily initialized (e.g. $cookie, $location), as well as remove 'magic' and reduce unnecessary
    scope namespace pollution.
@@ -34,6 +34,9 @@
          this.$invalidWidgets = this.$inject('$invalidWidgets');
        }, {$creation: 'eager'});
 
+- In the light of the `eager-published` change, to complete the cleanup we renamed `$creation`
+  property of services to `eager` with its value being a boolean.
+  To transition, please rename all `$creation: 'eager'` declarations to `$eager: true`
 
 
 # <angular/> 0.9.8 astral-projection (2010-12-23) #
