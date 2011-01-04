@@ -128,7 +128,7 @@ describe('Validator:asynchronous', function(){
   it("should not make second request to same value", function(){
     asynchronous.call(self, "kai", function(v,f){value=v; fn=f;});
     expect(value).toEqual('kai');
-    expect(self.$inject('$invalidWidgets')[0]).toEqual(self.$element);
+    expect(self.$service('$invalidWidgets')[0]).toEqual(self.$element);
 
     var spy = jasmine.createSpy();
     asynchronous.call(self, "kai", spy);

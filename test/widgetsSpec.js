@@ -551,9 +551,9 @@ describe("widget", function(){
       scope.childScope = createScope();
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
-      scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
+      scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
-      scope.$inject('$browser').defer.flush();
+      scope.$service('$browser').defer.flush();
       expect(element.text()).toEqual('misko');
       dealoc(scope);
     });
@@ -564,9 +564,9 @@ describe("widget", function(){
       scope.childScope = createScope();
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
-      scope.$inject('$xhr.cache').data.myUrl = {value:'{{name}}'};
+      scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$init();
-      scope.$inject('$browser').defer.flush();
+      scope.$service('$browser').defer.flush();
 
       expect(element.text()).toEqual('igor');
 
@@ -581,9 +581,9 @@ describe("widget", function(){
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
       var scope = angular.compile(element);
       scope.url = 'myUrl';
-      scope.$inject('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
+      scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
       scope.$init();
-      scope.$inject('$browser').defer.flush();
+      scope.$service('$browser').defer.flush();
 
       // this one should really be just '1', but due to lack of real events things are not working
       // properly. see discussion at: http://is.gd/ighKk
@@ -598,9 +598,9 @@ describe("widget", function(){
       expect(scope.loaded).not.toBeDefined();
 
       scope.url = 'myUrl';
-      scope.$inject('$xhr.cache').data.myUrl = {value:'my partial'};
+      scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
       scope.$init();
-      scope.$inject('$browser').defer.flush();
+      scope.$service('$browser').defer.flush();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
       dealoc(element);

@@ -1,5 +1,5 @@
 describe("service", function(){
-  var scope, $xhrError, $log, mockServices, inject, $browser, $browserXhr, $xhrBulk, $xhr, $route;
+  var scope, $xhrError, $log, mockServices, $browser, $browserXhr, $xhrBulk, $xhr;
 
   beforeEach(function(){
     $xhrError = jasmine.createSpy('$xhr.error');
@@ -8,13 +8,10 @@ describe("service", function(){
       '$xhr.error': $xhrError,
       '$log': $log
     });
-    inject = scope.$inject;
-    $browser = inject('$browser');
+    $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;
-    $xhrBulk = scope.$inject('$xhr.bulk');
-    $xhr = scope.$inject('$xhr');
-    $route = scope.$inject('$route');
-    scope.$location = inject('$location');
+    $xhrBulk = scope.$service('$xhr.bulk');
+    $xhr = scope.$service('$xhr');
   });
 
   afterEach(function(){
@@ -24,7 +21,7 @@ describe("service", function(){
 
 
   it("should inject $window", function(){
-    expect(scope.$inject('$window')).toEqual(window);
+    expect(scope.$service('$window')).toEqual(window);
   });
 
   xit('should add stylesheets', function(){
@@ -45,7 +42,7 @@ describe("service", function(){
       function info(){ logger+= 'info;'; }
       function error(){ logger+= 'error;'; }
       var scope = createScope({}, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]}),
-          $log = scope.$inject('$log');
+          $log = scope.$service('$log');
       $log.log();
       $log.warn();
       $log.info();
@@ -57,7 +54,7 @@ describe("service", function(){
       var logger = "";
       function log(){ logger+= 'log;'; }
       var scope = createScope({}, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
-      var $log = scope.$inject('$log');
+      var $log = scope.$service('$log');
       $log.log();
       $log.warn();
       $log.info();
@@ -67,7 +64,7 @@ describe("service", function(){
 
     it('should use noop if no console', function(){
       var scope = createScope({}, angularService, {$window: {}, $document:[{cookie:''}]}),
-          $log = scope.$inject('$log');
+          $log = scope.$service('$log');
       $log.log();
       $log.warn();
       $log.info();
@@ -115,98 +112,100 @@ describe("service", function(){
     it('should log errors', function(){
       var error = '';
       $log.error = function(m) { error += m; };
-      scope.$inject('$exceptionHandler')('myError');
+      scope.$service('$exceptionHandler')('myError');
       expect(error).toEqual('myError');
     });
   });
 
   describe("$location", function(){
-    it("should inject $location", function() {
-      expect(scope.$location).toBeDefined();
+    var $location;
+
+    beforeEach(function() {
+      $location = scope.$service('$location');
     });
 
     it("update should update location object immediately", function() {
       var href = 'http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=';
-      scope.$location.update(href);
-      expect(scope.$location.href).toEqual(href);
-      expect(scope.$location.protocol).toEqual("http");
-      expect(scope.$location.host).toEqual("host");
-      expect(scope.$location.port).toEqual("123");
-      expect(scope.$location.path).toEqual("/p/a/t/h.html");
-      expect(scope.$location.search).toEqual({query:'value'});
-      expect(scope.$location.hash).toEqual('path?key=value&flag&key2=');
-      expect(scope.$location.hashPath).toEqual('path');
-      expect(scope.$location.hashSearch).toEqual({key: 'value', flag: true, key2: ''});
+      $location.update(href);
+      expect($location.href).toEqual(href);
+      expect($location.protocol).toEqual("http");
+      expect($location.host).toEqual("host");
+      expect($location.port).toEqual("123");
+      expect($location.path).toEqual("/p/a/t/h.html");
+      expect($location.search).toEqual({query:'value'});
+      expect($location.hash).toEqual('path?key=value&flag&key2=');
+      expect($location.hashPath).toEqual('path');
+      expect($location.hashSearch).toEqual({key: 'value', flag: true, key2: ''});
     });
 
     it('toString() should return actual representation', function() {
       var href = 'http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=';
-      scope.$location.update(href);
-      expect(scope.$location.toString()).toEqual(href);
+      $location.update(href);
+      expect($location.toString()).toEqual(href);
       scope.$eval();
 
-      scope.$location.host = 'new';
-      scope.$location.path = '';
-      expect(scope.$location.toString()).toEqual('http://new:123?query=value#path?key=value&flag&key2=');
+      $location.host = 'new';
+      $location.path = '';
+      expect($location.toString()).toEqual('http://new:123?query=value#path?key=value&flag&key2=');
     });
 
     it('toString() should not update browser', function() {
       var url = $browser.getUrl();
-      scope.$location.update('http://www.angularjs.org');
-      expect(scope.$location.toString()).toEqual('http://www.angularjs.org');
+      $location.update('http://www.angularjs.org');
+      expect($location.toString()).toEqual('http://www.angularjs.org');
       expect($browser.getUrl()).toEqual(url);
     });
 
     it('should update browser at the end of $eval', function() {
       var url = $browser.getUrl();
-      scope.$location.update('http://www.angularjs.org/');
-      scope.$location.update({path: '/a/b'});
-      expect(scope.$location.toString()).toEqual('http://www.angularjs.org/a/b');
+      $location.update('http://www.angularjs.org/');
+      $location.update({path: '/a/b'});
+      expect($location.toString()).toEqual('http://www.angularjs.org/a/b');
       expect($browser.getUrl()).toEqual(url);
       scope.$eval();
       expect($browser.getUrl()).toEqual('http://www.angularjs.org/a/b');
     });
 
     it('should update hashPath and hashSearch on hash update', function(){
-      scope.$location.update('http://server/#path?a=b');
+      $location.update('http://server/#path?a=b');
       scope.$eval();
-      scope.$location.update({hash: ''});
+      $location.update({hash: ''});
 
-      expect(scope.$location.hashPath).toEqual('');
-      expect(scope.$location.hashSearch).toEqual({});
+      expect($location.hashPath).toEqual('');
+      expect($location.hashSearch).toEqual({});
     });
 
     it('should update hash on hashPath or hashSearch update', function() {
-      scope.$location.update('http://server/#path?a=b');
+      $location.update('http://server/#path?a=b');
       scope.$eval();
-      scope.$location.update({hashPath: '', hashSearch: {}});
+      $location.update({hashPath: '', hashSearch: {}});
 
-      expect(scope.$location.hash).toEqual('');
+      expect($location.hash).toEqual('');
     });
 
     it('should update hashPath and hashSearch on hash property change', function(){
-      scope.$location.update('http://server/#path?a=b');
+      $location.update('http://server/#path?a=b');
       scope.$eval();
-      scope.$location.hash = '';
+      $location.hash = '';
 
-      expect(scope.$location.toString()).toEqual('http://server/');
-      expect(scope.$location.hashPath).toEqual('');
-      expect(scope.$location.hashSearch).toEqual({});
+      expect($location.toString()).toEqual('http://server/');
+      expect($location.hashPath).toEqual('');
+      expect($location.hashSearch).toEqual({});
     });
 
     it('should update hash on hashPath or hashSearch property change', function() {
-      scope.$location.update('http://server/#path?a=b');
+      $location.update('http://server/#path?a=b');
       scope.$eval();
-      scope.$location.hashPath = '';
-      scope.$location.hashSearch = {};
+      $location.hashPath = '';
+      $location.hashSearch = {};
 
-      expect(scope.$location.toString()).toEqual('http://server/');
-      expect(scope.$location.hash).toEqual('');
+      expect($location.toString()).toEqual('http://server/');
+      expect($location.hash).toEqual('');
     });
 
     it('should update hash before any processing', function(){
       scope = compile('<div>');
-      scope.$location = scope.$inject('$location');
+      scope.$location = scope.$service('$location');
       var log = '';
       scope.$watch('$location.hash', function(){
         log += this.$location.hashPath + ';';
@@ -220,37 +219,37 @@ describe("service", function(){
     });
 
     it('udpate() should accept hash object and update only given properties', function() {
-      scope.$location.update("http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=");
-      scope.$location.update({host: 'new', port: 24});
+      $location.update("http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=");
+      $location.update({host: 'new', port: 24});
 
-      expect(scope.$location.host).toEqual('new');
-      expect(scope.$location.port).toEqual(24);
-      expect(scope.$location.protocol).toEqual('http');
-      expect(scope.$location.href).toEqual("http://new:24/p/a/t/h.html?query=value#path?key=value&flag&key2=");
+      expect($location.host).toEqual('new');
+      expect($location.port).toEqual(24);
+      expect($location.protocol).toEqual('http');
+      expect($location.href).toEqual("http://new:24/p/a/t/h.html?query=value#path?key=value&flag&key2=");
     });
 
     it('updateHash() should accept one string argument to update path', function() {
-      scope.$location.updateHash('path');
-      expect(scope.$location.hash).toEqual('path');
-      expect(scope.$location.hashPath).toEqual('path');
+      $location.updateHash('path');
+      expect($location.hash).toEqual('path');
+      expect($location.hashPath).toEqual('path');
     });
 
     it('updateHash() should accept one hash argument to update search', function() {
-      scope.$location.updateHash({a: 'b'});
-      expect(scope.$location.hash).toEqual('?a=b');
-      expect(scope.$location.hashSearch).toEqual({a: 'b'});
+      $location.updateHash({a: 'b'});
+      expect($location.hash).toEqual('?a=b');
+      expect($location.hashSearch).toEqual({a: 'b'});
     });
 
     it('updateHash() should accept path and search both', function() {
-      scope.$location.updateHash('path', {a: 'b'});
-      expect(scope.$location.hash).toEqual('path?a=b');
-      expect(scope.$location.hashSearch).toEqual({a: 'b'});
-      expect(scope.$location.hashPath).toEqual('path');
+      $location.updateHash('path', {a: 'b'});
+      expect($location.hash).toEqual('path?a=b');
+      expect($location.hashSearch).toEqual({a: 'b'});
+      expect($location.hashPath).toEqual('path');
     });
     
     it('should remove # if hash is empty', function() {
-      scope.$location.update('http://www.angularjs.org/index.php#');
-      expect(scope.$location.href).toEqual('http://www.angularjs.org/index.php');
+      $location.update('http://www.angularjs.org/index.php#');
+      expect($location.href).toEqual('http://www.angularjs.org/index.php');
     });
     
     it('should not change browser\'s url with empty hash', function() {
@@ -266,7 +265,7 @@ describe("service", function(){
       scope = compile('<input name="price" ng:required ng:validate="number"></input>');
       jqLite(document.body).append(scope.$element);
       scope.$init();
-      var $invalidWidgets = scope.$inject('$invalidWidgets');
+      var $invalidWidgets = scope.$service('$invalidWidgets');
       expect($invalidWidgets.length).toEqual(1);
 
       scope.price = 123;
@@ -292,19 +291,21 @@ describe("service", function(){
 
   describe("$route", function(){
     it('should route and fire change event', function(){
-      var log = '';
+      var log = '',
+          $location, $route;
+
       function BookChapter() {
         this.log = '<init>';
       }
       scope = compile('<div></div>').$init();
-      scope.$location = scope.$inject('$location');
-      $route = scope.$inject('$route');
+      $location = scope.$service('$location');
+      $route = scope.$service('$route');
       $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
       $route.when('/Blank');
       $route.onChange(function(){
         log += 'onChange();';
       });
-      scope.$location.update('http://server#/Book/Moby/Chapter/Intro?p=123');
+      $location.update('http://server#/Book/Moby/Chapter/Intro?p=123');
       scope.$eval();
       expect(log).toEqual('onChange();');
       expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
@@ -312,14 +313,14 @@ describe("service", function(){
       var lastId = $route.current.scope.$id;
 
       log = '';
-      scope.$location.update('http://server#/Blank?ignore');
+      $location.update('http://server#/Blank?ignore');
       scope.$eval();
       expect(log).toEqual('onChange();');
       expect($route.current.params).toEqual({ignore:true});
       expect($route.current.scope.$id).not.toEqual(lastId);
 
       log = '';
-      scope.$location.update('http://server#/NONE');
+      $location.update('http://server#/NONE');
       scope.$eval();
       expect(log).toEqual('onChange();');
       expect($route.current).toEqual(null);
@@ -327,12 +328,6 @@ describe("service", function(){
       $route.when('/NONE', {template:'instant update'});
       scope.$eval();
       expect($route.current.template).toEqual('instant update');
-    });
-  });
-
-  describe('$resource', function(){
-    it('should publish to root scope', function(){
-      expect(scope.$inject('$resource')).toBeTruthy();
     });
   });
 
@@ -345,9 +340,9 @@ describe("service", function(){
         '$exceptionHandler': jasmine.createSpy('$exceptionHandler')
       });
 
-      $browser = scope.$inject('$browser');
-      $defer = scope.$inject('$defer');
-      $exceptionHandler = scope.$inject('$exceptionHandler');
+      $browser = scope.$service('$browser');
+      $defer = scope.$service('$defer');
+      $exceptionHandler = scope.$service('$exceptionHandler');
     });
 
 
@@ -497,7 +492,7 @@ describe("service", function(){
 
     describe('cache', function(){
       var cache;
-      beforeEach(function(){ cache = scope.$inject('$xhr.cache'); });
+      beforeEach(function(){ cache = scope.$service('$xhr.cache'); });
 
       it('should cache requests', function(){
         $browserXhr.expectGET('/url').respond('first');
@@ -541,7 +536,7 @@ describe("service", function(){
       });
 
       it('should keep track of in flight requests and request only once', function(){
-        scope.$inject('$xhr.bulk').urls['/bulk'] = {
+        scope.$service('$xhr.bulk').urls['/bulk'] = {
           match:function(url){
             return url == '/url';
           }
@@ -611,7 +606,7 @@ describe("service", function(){
       $browser = new MockBrowser();
       $browser.cookieHash['preexisting'] = 'oldCookie';
       scope = createScope(null, angularService, {$browser: $browser});
-      scope.$cookies = scope.$inject('$cookies');
+      scope.$cookies = scope.$service('$cookies');
     });
 
 
@@ -709,7 +704,7 @@ describe("service", function(){
   describe('$cookieStore', function() {
 
     it('should serialize objects to json', function() {
-      scope.$inject('$cookieStore').put('objectCookie', {id: 123, name: 'blah'});
+      scope.$service('$cookieStore').put('objectCookie', {id: 123, name: 'blah'});
       scope.$eval(); //force eval in test
       expect($browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
     });
@@ -718,12 +713,12 @@ describe("service", function(){
     it('should deserialize json to object', function() {
       $browser.cookies('objectCookie', '{"id":123,"name":"blah"}');
       $browser.poll();
-      expect(scope.$inject('$cookieStore').get('objectCookie')).toEqual({id: 123, name: 'blah'});
+      expect(scope.$service('$cookieStore').get('objectCookie')).toEqual({id: 123, name: 'blah'});
     });
 
 
     it('should delete objects from the store when remove is called', function() {
-      scope.$inject('$cookieStore').put('gonner', { "I'll":"Be Back"});
+      scope.$service('$cookieStore').put('gonner', { "I'll":"Be Back"});
       scope.$eval(); //force eval in test
       expect($browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
     });

@@ -578,7 +578,7 @@ function createScope(parent, providers, instanceCache) {
         foreach(Class.prototype, function(fn, name){
           instance[name] = bind(instance, fn);
         });
-        instance.$inject.apply(instance, concat([Class, instance], arguments, 1));
+        instance.$service.apply(instance, concat([Class, instance], arguments, 1));
 
         //TODO: backwards compatibility hack, remove when we don't depend on init methods
         if (isFunction(Class.prototype.init)) {
@@ -615,7 +615,23 @@ function createScope(parent, providers, instanceCache) {
   if (!parent.$root) {
     instance.$root = instance;
     instance.$parent = instance;
-    (instance.$inject = createInjector(instance, providers, instanceCache))();
+
+    /**
+     * @workInProgress
+     * @ngdoc function
+     * @name angular.scope.$service
+     * @function
+     *
+     * @description
+     * Provides access to angular's dependency injector and
+     * {@link angular.service registered services}. In general the use of this api is discouraged,
+     * except for tests and components that currently don't support dependency injection (widgets,
+     * filters, etc).
+     *
+     * @param {string} serviceId String ID of the service to return.
+     * @returns {*} Value, object or function returned by the service factory function if any.
+     */
+    (instance.$service = createInjector(instance, providers, instanceCache))();
   }
 
   return instance;
