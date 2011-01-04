@@ -1,8 +1,7 @@
 var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
     HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/,
     DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21},
-    EAGER = 'eager',
-    EAGER_PUBLISHED = EAGER + '-published';
+    EAGER = 'eager';
 
 function angularServiceInject(name, fn, inject, eager) {
   angularService(name, fn, {$inject:inject, $creation:eager});
@@ -26,7 +25,7 @@ function angularServiceInject(name, fn, inject, eager) {
    <input ng:init="greeting='Hello World!'" type="text" name="greeting" />
    <button ng:click="$window.alert(greeting)">ALERT</button>
  */
-angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLISHED);
+angularServiceInject("$window", bind(window, identity, window), [], EAGER);
 
 /**
  * @workInProgress
@@ -39,7 +38,7 @@ angularServiceInject("$window", bind(window, identity, window), [], EAGER_PUBLIS
  */
 angularServiceInject("$document", function(window){
   return jqLite(window.document);
-}, ['$window'], EAGER_PUBLISHED);
+}, ['$window'], EAGER);
 
 /**
  * @workInProgress
@@ -382,7 +381,7 @@ angularServiceInject("$log", function($window){
       return logFn;
     }
   }
-}, ['$window'], EAGER_PUBLISHED);
+}, ['$window'], EAGER);
 
 /**
  * @workInProgress
@@ -406,7 +405,7 @@ angularServiceInject('$exceptionHandler', function($log){
   return function(e) {
     $log.error(e);
   };
-}, ['$log'], EAGER_PUBLISHED);
+}, ['$log'], EAGER);
 
 /**
  * @workInProgress
@@ -531,7 +530,7 @@ angularServiceInject("$invalidWidgets", function(){
   }
 
   return invalidWidgets;
-}, [], EAGER_PUBLISHED);
+}, [], EAGER);
 
 
 

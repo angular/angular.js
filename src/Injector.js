@@ -58,9 +58,9 @@ function createInjector(providerScope, providers, cache) {
         creation = provider.$creation;
         if (creation == 'eager') {
           inject(name);
-        }
-        if (creation == 'eager-published') {
-          setter(value, name, inject(name));
+        } else {
+          if (isDefined(creation))
+            throw "Unknown $creation value '" + creation + "' for service " + name;
         }
       });
     } else {

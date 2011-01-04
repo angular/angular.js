@@ -1,12 +1,39 @@
 # <angular/> 0.9.9 time-shift (in-progress) #
 
+### Performance
+- $location and $cookies services are now lazily initialized to avoid the polling overhead when
+  not needed.
+
 ### Breaking changes
- - Many of the services are now lazy created instead of 'eager-publish'. You can get these
-   services back into the root scope by adding ng:init="$location = $inject('$location')"
-   in your view. The services effected are:
+ - Support for 'eager-published' services was removed. This change was done to make explicit
+   dependency declaration always required in order to allow making relatively expensive services
+   lazily initialized (e.g. $cookie, $location), as well as remove 'magic' and reduce unnecessary
+   scope namespace pollution.
+
+   Complete list of affected services:
+
    - $location
    - $route
    - $cookies
+   - $window
+   - $document
+   - $exceptionHandler
+   - $invalidWidgets
+
+   To temporarily preserve the 'eager-published' status for these services, you may use `ng:init`
+   (e.g. `ng:init="$location = $inject('$location'), ...`) in the view or more correctly create
+   a service like this:
+
+       angular.service('published-svc-shim', function() {
+         this.$location = this.$inject('$location');
+         this.$route = this.$inject('$route');
+         this.$cookies = this.$inject('$cookies');
+         this.$window = this.$inject('$window');
+         this.$document = this.$inject('$document');
+         this.$exceptionHandler = this.$inject('$exceptionHandler');
+         this.$invalidWidgets = this.$inject('$invalidWidgets');
+       }, {$creation: 'eager'});
+
 
 
 # <angular/> 0.9.8 astral-projection (2010-12-23) #

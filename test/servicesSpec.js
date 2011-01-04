@@ -24,7 +24,7 @@ describe("service", function(){
 
 
   it("should inject $window", function(){
-    expect(scope.$window).toEqual(window);
+    expect(scope.$inject('$window')).toEqual(window);
   });
 
   xit('should add stylesheets', function(){
@@ -44,11 +44,12 @@ describe("service", function(){
       function warn(){ logger+= 'warn;'; }
       function info(){ logger+= 'info;'; }
       function error(){ logger+= 'error;'; }
-      var scope = createScope({}, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]});
-      scope.$log.log();
-      scope.$log.warn();
-      scope.$log.info();
-      scope.$log.error();
+      var scope = createScope({}, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]}),
+          $log = scope.$inject('$log');
+      $log.log();
+      $log.warn();
+      $log.info();
+      $log.error();
       expect(logger).toEqual('log;warn;info;error;');
     });
 
@@ -56,19 +57,21 @@ describe("service", function(){
       var logger = "";
       function log(){ logger+= 'log;'; }
       var scope = createScope({}, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
-      scope.$log.log();
-      scope.$log.warn();
-      scope.$log.info();
-      scope.$log.error();
+      var $log = scope.$inject('$log');
+      $log.log();
+      $log.warn();
+      $log.info();
+      $log.error();
       expect(logger).toEqual('log;log;log;log;');
     });
 
     it('should use noop if no console', function(){
-      var scope = createScope({}, angularService, {$window: {}, $document:[{cookie:''}]});
-      scope.$log.log();
-      scope.$log.warn();
-      scope.$log.info();
-      scope.$log.error();
+      var scope = createScope({}, angularService, {$window: {}, $document:[{cookie:''}]}),
+          $log = scope.$inject('$log');
+      $log.log();
+      $log.warn();
+      $log.info();
+      $log.error();
     });
     
     describe('Error', function(){
@@ -112,7 +115,7 @@ describe("service", function(){
     it('should log errors', function(){
       var error = '';
       $log.error = function(m) { error += m; };
-      scope.$exceptionHandler('myError');
+      scope.$inject('$exceptionHandler')('myError');
       expect(error).toEqual('myError');
     });
   });
@@ -263,25 +266,26 @@ describe("service", function(){
       scope = compile('<input name="price" ng:required ng:validate="number"></input>');
       jqLite(document.body).append(scope.$element);
       scope.$init();
-      expect(scope.$invalidWidgets.length).toEqual(1);
+      var $invalidWidgets = scope.$inject('$invalidWidgets');
+      expect($invalidWidgets.length).toEqual(1);
 
       scope.price = 123;
       scope.$eval();
-      expect(scope.$invalidWidgets.length).toEqual(0);
+      expect($invalidWidgets.length).toEqual(0);
 
       scope.$element.remove();
       scope.price = 'abc';
       scope.$eval();
-      expect(scope.$invalidWidgets.length).toEqual(0);
+      expect($invalidWidgets.length).toEqual(0);
 
       jqLite(document.body).append(scope.$element);
       scope.price = 'abcd'; //force revalidation, maybe this should be done automatically?
       scope.$eval();
-      expect(scope.$invalidWidgets.length).toEqual(1);
+      expect($invalidWidgets.length).toEqual(1);
 
       jqLite(document.body).html('');
       scope.$eval();
-      expect(scope.$invalidWidgets.length).toEqual(0);
+      expect($invalidWidgets.length).toEqual(0);
     });
   });
 

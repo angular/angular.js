@@ -515,38 +515,38 @@ BinderTest.prototype.testValidateForm = function() {
   var items = [{}, {}];
   c.scope.$set("items", items);
   c.scope.$eval();
-  assertEquals(3, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(3, c.scope.$inject('$invalidWidgets').length);
 
   c.scope.$set('name', '');
   c.scope.$eval();
-  assertEquals(3, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(3, c.scope.$inject('$invalidWidgets').length);
 
   c.scope.$set('name', ' ');
   c.scope.$eval();
-  assertEquals(3, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(3, c.scope.$inject('$invalidWidgets').length);
 
   c.scope.$set('name', 'abc');
   c.scope.$eval();
-  assertEquals(2, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(2, c.scope.$inject('$invalidWidgets').length);
 
   items[0].name = 'abc';
   c.scope.$eval();
-  assertEquals(1, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(1, c.scope.$inject('$invalidWidgets').length);
 
   items[1].name = 'abc';
   c.scope.$eval();
-  assertEquals(0, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(0, c.scope.$inject('$invalidWidgets').length);
 };
 
 BinderTest.prototype.testValidateOnlyVisibleItems = function(){
   var c = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>', undefined, jqLite(document.body));
   c.scope.$set("show", true);
   c.scope.$eval();
-  assertEquals(2, c.scope.$get("$invalidWidgets.length"));
+  assertEquals(2, c.scope.$inject('$invalidWidgets').length);
 
   c.scope.$set("show", false);
   c.scope.$eval();
-  assertEquals(1, c.scope.$invalidWidgets.visible());
+  assertEquals(1, c.scope.$inject('$invalidWidgets').visible());
 };
 
 BinderTest.prototype.testDeleteAttributeIfEvaluatesFalse = function() {
