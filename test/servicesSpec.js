@@ -128,6 +128,18 @@ describe("service", function(){
       expect($location.hashSearch).toEqual({key: 'value', flag: true, key2: ''});
     });
 
+
+    it('should update location when browser url changed', function() {
+      var origUrl = $location.href;
+      expect(origUrl).toEqual($browser.getUrl());
+
+      var newUrl = 'http://somenew/url#foo';
+      $browser.setUrl(newUrl);
+      $browser.poll();
+      expect($location.href).toEqual(newUrl);
+    });
+
+
     it('toString() should return actual representation', function() {
       var href = 'http://host:123/p/a/t/h.html?query=value#path?key=value&flag&key2=';
       $location.update(href);

@@ -1,6 +1,6 @@
 describe('browser', function(){
 
-  var browser, location, head, xhr, setTimeoutQueue;
+  var browser, fakeWindow, xhr, logs, scripts, setTimeoutQueue;
 
   function fakeSetTimeout(fn) {
     setTimeoutQueue.push(fn);
@@ -15,19 +15,31 @@ describe('browser', function(){
 
   beforeEach(function(){
     setTimeoutQueue = [];
-
-    location = {href:"http://server", hash:""};
-    head = {
-        scripts: [],
-        append: function(node){head.scripts.push(node);}
-    };
+    scripts = [];
     xhr = null;
-    browser = new Browser(location, jqLite(window.document), head, function(){
+    fakeWindow = {
+      location: {href:"http://server"},
+      setTimeout: fakeSetTimeout
+    }
+
+    var fakeBody = {append: function(node){scripts.push(node)}};
+
+    var fakeXhr = function(){
       xhr = this;
       this.open = noop;
       this.setRequestHeader = noop;
       this.send = noop;
-    }, undefined, fakeSetTimeout);
+    }
+
+    logs = {log:[], warn:[], info:[], error:[]};
+
+    var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
+                   warn: function() { logs.warn.push(slice.call(arguments)); },
+                   info: function() { logs.info.push(slice.call(arguments)); },
+                   error: function() { logs.error.push(slice.call(arguments)); }};
+
+    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, fakeXhr,
+                          fakeLog);
   });
 
   it('should contain cookie cruncher', function() {
@@ -60,13 +72,13 @@ describe('browser', function(){
         browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', function(code, data){
           log += code + ':' + data + ';';
         });
-        expect(head.scripts.length).toEqual(1);
-        var url = head.scripts[0].src.split('?cb=');
+        expect(scripts.length).toEqual(1);
+        var url = scripts[0].src.split('?cb=');
         expect(url[0]).toEqual('http://example.org/path');
-        expect(typeof window[url[1]]).toEqual($function);
-        window[url[1]]('data');
+        expect(typeof fakeWindow[url[1]]).toEqual($function);
+        fakeWindow[url[1]]('data');
         expect(log).toEqual('200:data;');
-        expect(typeof window[url[1]]).toEqual('undefined');
+        expect(typeof fakeWindow[url[1]]).toEqual('undefined');
       });
     });
   });
@@ -107,16 +119,8 @@ describe('browser', function(){
       }
     }
 
-    var browser, log, logs;
-
     beforeEach(function() {
       deleteAllCookies();
-      logs = {log:[], warn:[], info:[], error:[]};
-      log = {log: function() { logs.log.push(slice.call(arguments)); },
-             warn: function() { logs.warn.push(slice.call(arguments)); },
-             info: function() { logs.info.push(slice.call(arguments)); },
-             error: function() { logs.error.push(slice.call(arguments)); }};
-      browser = new Browser({}, jqLite(document), undefined, XHR, log);
       expect(document.cookie).toEqual('');
     });
 
@@ -332,6 +336,64 @@ describe('browser', function(){
       var fn = function() { return 1; };
       var returnedFn = browser.addPollFn(fn);
       expect(returnedFn).toBe(fn);
+    });
+  });
+
+
+  describe('url api', function() {
+    it('should use $browser poller to detect url changes when onhashchange event is unsupported',
+        function() {
+
+      fakeWindow = {location: {href:"http://server"}};
+
+      browser = new Browser(fakeWindow, {}, {});
+
+      var events = [];
+
+      browser.onHashChange(function() {
+        events.push('x');
+      });
+
+      fakeWindow.location.href = "http://server/#newHash";
+      expect(events).toEqual([]);
+      browser.poll();
+      expect(events).toEqual(['x']);
+    });
+
+
+    it('should use onhashchange events to detect url changes when supported by browser',
+        function() {
+
+      var onHashChngListener;
+
+      fakeWindow = {location: {href:"http://server"},
+                    addEventListener: function(type, listener) {
+                      expect(type).toEqual('hashchange');
+                      onHashChngListener = listener;
+                    },
+                    removeEventListener: angular.noop
+                   };
+      fakeWindow.onhashchange = true;
+
+      browser = new Browser(fakeWindow, {}, {});
+
+      var events = [],
+          event = {type: "hashchange"}
+
+      browser.onHashChange(function(e) {
+        events.push(e);
+      });
+
+      expect(events).toEqual([]);
+      onHashChngListener(event);
+
+      expect(events.length).toBe(1);
+      expect(events[0].originalEvent || events[0]).toBe(event); // please jQuery and jqLite
+
+      // clean up the jqLite cache so that the global afterEach doesn't complain
+      if (!jQuery) {
+        jqLite(fakeWindow).dealoc();
+      }
     });
   });
 });

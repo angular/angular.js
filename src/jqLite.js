@@ -47,14 +47,14 @@ function getStyle(element) {
 }
 
 function JQLite(element) {
-  if (isElement(element)) {
-    this[0] = element;
-    this.length = 1;
-  } else if (isDefined(element.length) && element.item) {
+  if (!isElement(element) && isDefined(element.length) && element.item) {
     for(var i=0; i < element.length; i++) {
       this[i] = element[i];
     }
     this.length = element.length;
+  } else {
+    this[0] = element;
+    this.length = 1;
   }
 }
 
@@ -81,7 +81,7 @@ JQLite.prototype = {
   dealoc: function(){
     (function dealoc(element){
       jqClearData(element);
-      for ( var i = 0, children = element.childNodes; i < children.length; i++) {
+      for ( var i = 0, children = element.childNodes || []; i < children.length; i++) {
         dealoc(children[i]);
       }
     })(this[0]);
