@@ -68,20 +68,28 @@ angularServiceInject("$document", function(window){
    <input type='text' name="$location.hash"/>
    <pre>$location = {{$location}}</pre>
  */
-angularServiceInject("$location", function(browser) {
+angularServiceInject("$location", function($browser, $window) {
   var scope = this,
       location = {toString:toString, update:update, updateHash: updateHash},
-      lastBrowserUrl = browser.getUrl(),
+      lastBrowserUrl = $browser.getUrl(),
       lastLocationHref,
       lastLocationHash;
 
-  browser.addPollFn(function() {
-    if (lastBrowserUrl != browser.getUrl()) {
-      update(lastBrowserUrl = browser.getUrl());
+  if ('onhashchange' in $window) {
+    jqLite($window).bind('hashchange', function(e) {
+      update(lastBrowserUrl = e.newURL);
       updateLastLocation();
       scope.$eval();
-    }
-  });
+    });
+  } else {
+    $browser.addPollFn(function() {
+      if (lastBrowserUrl != $browser.getUrl()) {
+        update(lastBrowserUrl = $browser.getUrl());
+        updateLastLocation();
+        scope.$eval();
+      }
+    });
+  }
 
   this.$onEval(PRIORITY_FIRST, updateBrowser);
   this.$onEval(PRIORITY_LAST, updateBrowser);
@@ -219,7 +227,7 @@ angularServiceInject("$location", function(browser) {
     updateLocation();
 
     if (location.href != lastLocationHref) {    	
-      browser.setUrl(lastBrowserUrl = location.href);
+      $browser.setUrl(lastBrowserUrl = location.href);
       updateLastLocation();
     }
   }
@@ -294,7 +302,7 @@ angularServiceInject("$location", function(browser) {
 
     return h;
   }
-}, ['$browser']);
+}, ['$browser', '$window']);
 
 
 /**

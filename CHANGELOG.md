@@ -3,6 +3,8 @@
 ### Performance
 - $location and $cookies services are now lazily initialized to avoid the polling overhead when
   not needed.
+- $location service now listens for `onhashchange` events (if supported by browser) instead of
+  constant polling.
 
 ### Breaking changes
  - API for accessing registered services — `scope.$inject` — was renamed to
