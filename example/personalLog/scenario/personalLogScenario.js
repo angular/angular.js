@@ -81,15 +81,14 @@ angular.scenario.dsl('clearCookies', function() {
    */
   return function() {
     this.addFutureAction('clear all cookies', function($window, $document, done) {
-      //TODO: accessing angular services is pretty nasty, we need a better way to reach them
-      var $cookies = $window.$root.$cookies,
+      var rootScope = $window.angular.element($document[0]).data('$scope'),
+          $cookies = rootScope.$service('$cookies'),
           cookieName;
 
       for (cookieName in $cookies) {
-        console.log('deleting cookie: ' + cookieName);
         delete $cookies[cookieName];
       }
-      $window.$root.$eval();
+      rootScope.$eval();
 
       done();
     });

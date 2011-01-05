@@ -9,7 +9,7 @@
 
   <!-- TODO: we need to expose $root so that we can delete cookies in the scenario runner, there
              must be a better way to do this -->
-  <body ng:controller="example.personalLog.LogCtrl" ng:init="$window.$root = $root">
+  <body ng:controller="example.personalLog.LogCtrl">
 
     <form action="" ng:submit="addLog(newMsg)">
       <input type="text" name="newMsg" />
