@@ -5,10 +5,10 @@
 var jqCache = {},
     jqName = 'ng-' + new Date().getTime(),
     jqId = 1,
-    addEventListener = (window.document.attachEvent ?
+    addEventListenerFn = (window.document.attachEvent ?
       function(element, type, fn) {element.attachEvent('on' + type, fn);} :
       function(element, type, fn) {element.addEventListener(type, fn, false);}),
-    removeEventListener = (window.document.detachEvent ?
+    removeEventListenerFn = (window.document.detachEvent ?
       function(element, type, fn) {element.detachEvent('on' + type, fn); } :
       function(element, type, fn) { element.removeEventListener(type, fn, false); });
 
@@ -19,7 +19,7 @@ function jqClearData(element) {
       cache = jqCache[cacheId];
   if (cache) {
     foreach(cache.bind || {}, function(fn, type){
-      removeEventListener(element, type, fn);
+      removeEventListenerFn(element, type, fn);
     });
     delete jqCache[cacheId];
     if (msie)
@@ -112,7 +112,7 @@ JQLite.prototype = {
           });
         };
         eventHandler.fns = [];
-        addEventListener(element, type, eventHandler);
+        addEventListenerFn(element, type, eventHandler);
       }
       eventHandler.fns.push(fn);
     });
