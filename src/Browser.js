@@ -8,8 +8,29 @@ var XHR = window.XMLHttpRequest || function () {
   throw new Error("This browser does not support XMLHttpRequest.");
 };
 
-function Browser(location, document, head, XHR, $log, setTimeout) {
-  var self = this;
+/**
+ * @private
+ * @name Browser
+ *
+ * @description
+ * Constructor for the object exposed as $browser service.
+ *
+ * This object has two goals:
+ *
+ * - hide all the global state in the browser caused by the window object
+ * - abstract away all the browser specific features and inconsistencies
+ *
+ * @param {object} window The global window object.
+ * @param {object} document jQuery wrapped document.
+ * @param {object} body jQuery wrapped document.body.
+ * @param {function()} XHR XMLHttpRequest constructor.
+ * @param {object} $log console.log or an object with the same interface.
+ */
+function Browser(window, document, body, XHR, $log) {
+  var self = this,
+      location = window.location,
+      setTimeout = window.setTimeout;
+
   self.isMock = false;
 
   //////////////////////////////////////////////////////////////
@@ -70,7 +91,7 @@ function Browser(location, document, head, XHR, $log, setTimeout) {
         window[callbackId] = _undefined;
         callback(200, data);
       };
-      head.append(script);
+      body.append(script);
     } else {
       var xhr = new XHR();
       xhr.open(method, url, true);
@@ -194,6 +215,39 @@ function Browser(location, document, head, XHR, $log, setTimeout) {
   self.getUrl = function() {
     return location.href;
   };
+
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$browser#onHashChange
+   * @methodOf angular.service.$browser
+   *
+   * @description
+   * Detects if browser support onhashchange events and register a listener otherwise registers
+   * $browser poller. The `listener` will then get called when the hash changes.
+   *
+   * The listener gets called with either HashChangeEvent object or simple object that also contains
+   * `oldURL` and `newURL` properties.
+   *
+   * NOTE: this is a api is intended for sole use by $location service. Please use
+   * {@link angular.service.$location $location service} to monitor hash changes in angular apps.
+   *
+   * @param {function(event)} listener Listener function to be called when url hash changes.
+   */
+  self.onHashChange = function(listener) {
+    if ('onhashchange' in window) {
+      jqLite(window).bind('hashchange', listener);
+    } else {
+      var lastBrowserUrl = self.getUrl();
+
+      self.addPollFn(function() {
+        if (lastBrowserUrl != self.getUrl()) {
+          listener();
+        }
+      });
+    }
+  }
 
   //////////////////////////////////////////////////////////////
   // Cookies API
@@ -338,7 +392,7 @@ function Browser(location, document, head, XHR, $log, setTimeout) {
     link.attr('rel', 'stylesheet');
     link.attr('type', 'text/css');
     link.attr('href', url);
-    head.append(link);
+    body.append(link);
   };
 
 
@@ -359,6 +413,6 @@ function Browser(location, document, head, XHR, $log, setTimeout) {
     script.attr('type', 'text/javascript');
     script.attr('src', url);
     if (dom_id) script.attr('id', dom_id);
-    head.append(script);
+    body.append(script);
   };
 }

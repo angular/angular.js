@@ -271,7 +271,7 @@ function jqLiteWrap(element) {
       var div = document.createElement('div');
       div.innerHTML = element;
       element = new JQLite(div.childNodes);
-    } else if (!(element instanceof JQLite) && isElement(element)) {
+    } else if (!(element instanceof JQLite)) {
       element =  new JQLite(element);
     }
   }

@@ -68,19 +68,17 @@ angularServiceInject("$document", function(window){
    <input type='text' name="$location.hash"/>
    <pre>$location = {{$location}}</pre>
  */
-angularServiceInject("$location", function(browser) {
+angularServiceInject("$location", function($browser) {
   var scope = this,
       location = {toString:toString, update:update, updateHash: updateHash},
-      lastBrowserUrl = browser.getUrl(),
+      lastBrowserUrl = $browser.getUrl(),
       lastLocationHref,
       lastLocationHash;
 
-  browser.addPollFn(function() {
-    if (lastBrowserUrl != browser.getUrl()) {
-      update(lastBrowserUrl = browser.getUrl());
-      updateLastLocation();
-      scope.$eval();
-    }
+  $browser.onHashChange(function() {
+    update(lastBrowserUrl = $browser.getUrl());
+    updateLastLocation();
+    scope.$eval();
   });
 
   this.$onEval(PRIORITY_FIRST, updateBrowser);
@@ -219,7 +217,7 @@ angularServiceInject("$location", function(browser) {
     updateLocation();
 
     if (location.href != lastLocationHref) {    	
-      browser.setUrl(lastBrowserUrl = location.href);
+      $browser.setUrl(lastBrowserUrl = location.href);
       updateLastLocation();
     }
   }

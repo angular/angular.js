@@ -63,7 +63,22 @@ function MockBrowser() {
 
   this.isMock = true;
   self.url = "http://server";
+  self.lastUrl = self.url; // used by url polling fn
   self.pollFns = [];
+
+
+  // register url polling fn
+
+  self.onHashChange = function(listener) {
+    self.pollFns.push(
+      function() {
+        if (self.lastUrl != self.url) {
+          listener();
+        }
+      }
+    );
+  };
+
 
   self.xhr = function(method, url, data, callback) {
     if (angular.isFunction(data)) {
