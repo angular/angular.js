@@ -21,11 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-(function(previousOnLoad){
-  var filename = /^(.*)\/angular-bootstrap.js(#.*)?$/,
+(function(window) {
+
+  var filename = /^(.*\/)angular-bootstrap.js(#.*)?$/,
       scripts = document.getElementsByTagName("SCRIPT"),
       serverPath,
-      match;
+      match,
+      globalVars = {};
+
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
     if (match) {
@@ -33,50 +36,109 @@
     }
   }
 
-  function addScript(file){
-    document.write('<script type="text/javascript" src="' + serverPath + file +'"></script>');
+  function key(prop) {
+    return "ng-clobber_" + prop;
+  }
+
+  window.angularClobberTest = function(file) {
+    var varKey, prop,
+        clobbered = [];
+
+    for (prop in window) {
+      varKey = key(prop);
+
+      if (prop === 'event') { //skip special variables which keep on changing
+        continue;
+      }
+      else if (!globalVars.hasOwnProperty(varKey)) {
+        //console.log('new global variable found: ', prop);
+        globalVars[varKey] = window[prop];
+      } else if (globalVars[varKey] !== window[prop] && !isActuallyNaN(window[prop])) {
+        clobbered.push(prop);
+        console.error("Global variable clobbered by script " + file + "! Variable name: " + prop);
+        globalVars[varKey] = window[prop];
+      }
+    }
+
+    for (varKey in globalVars) {
+      prop = varKey.substr(11);
+      if (clobbered.indexOf(prop) == -1 &&
+          prop != 'event' &&
+          !isActuallyNaN(globalVars[varKey]) &&
+          globalVars[varKey] !== window[prop]) {
+
+        delete globalVars[varKey];
+        console.warn("Global variable unexpectedly deleted in script " + file + "! " +
+                     "Variable name: " + prop);
+      }
+    }
+
+    function isActuallyNaN(val) {
+      return isNaN(val) && (typeof val === 'number');
+    }
+  }
+
+  function addScripts(){
+    var prop, i;
+
+    // initialize the window property cache
+    for (prop in window) {
+      globalVars[key(prop)] = window[prop];
+    }
+
+    // load the js scripts
+    for (i in arguments) {
+      file = arguments[i];
+      document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
+                             'onload="angularClobberTest(\'' + file + '\')"></script>');
+    }
   }
 
   function addCss(file) {
     document.write('<link rel="stylesheet" type="text/css" href="' +
-                      serverPath + '/../css' + file  + '"/>');
+                      serverPath + '../css/' + file  + '"/>');
   }
 
-  addCss("/angular.css");
+  addCss('angular.css');
 
-  addScript("/Angular.js");
-  addScript("/JSON.js");
-  addScript("/Compiler.js");
-  addScript("/Scope.js");
-  addScript("/Injector.js");
-  addScript("/jqLite.js");
-  addScript("/parser.js");
-  addScript("/Resource.js");
-  addScript("/Browser.js");
-  addScript("/sanitizer.js");
-  addScript("/AngularPublic.js");
+  addScripts('Angular.js',
+             'JSON.js',
+             'Compiler.js',
+             'Scope.js',
+             'Injector.js',
+             'jqLite.js',
+             'parser.js',
+             'Resource.js',
+             'Browser.js',
+             'sanitizer.js',
+             'AngularPublic.js',
 
-  // Extension points
-  addScript("/services.js");
-  addScript("/apis.js");
-  addScript("/filters.js");
-  addScript("/formatters.js");
-  addScript("/validators.js");
-  addScript("/directives.js");
-  addScript("/markups.js");
-  addScript("/widgets.js");
+             // Extension points
+             'services.js',
+             'apis.js',
+             'filters.js',
+             'formatters.js',
+             'validators.js',
+             'directives.js',
+             'markups.js',
+             'widgets.js');
 
 
-  window.onload = function(){
-    try {
-      if (previousOnLoad) previousOnLoad();
-    } catch(e) {}
+  function onLoadListener(){
+    // empty the cache to prevent mem leaks
+    globalVars = {};
 
     //angular-ie-compat.js needs to be pregenerated for development with IE<8
     if (msie<8) addScript('../angular-ie-compat.js');
 
     angularInit(angularJsConfig(document));
-  };
+  }
 
-})(window.onload);
+  if (window.addEventListener){
+    window.addEventListener('load', onLoadListener, false);
+  } else if (window.attachEvent){
+    window.attachEvent('onload', onLoadListener);
+  }
+
+})(window);
 
