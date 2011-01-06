@@ -108,7 +108,7 @@ var _undefined        = undefined,
     /** @name angular.service */
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
-    nodeName,
+    nodeName_,
     rngScript         = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/,
     DATE_ISOSTRING_LN = 24;
 
@@ -408,7 +408,7 @@ function isFunction(value){ return typeof value == $function;}
 
 
 function isBoolean(value) { return typeof value == $boolean;}
-function isTextNode(node) { return nodeName(node) == '#text'; }
+function isTextNode(node) { return nodeName_(node) == '#text'; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function isElement(node) {
   return node && (node.nodeName || node instanceof JQLite || (jQuery && node instanceof jQuery));
@@ -432,12 +432,12 @@ function HTML(html, option) {
 }
 
 if (msie) {
-  nodeName = function(element) {
+  nodeName_ = function(element) {
     element = element.nodeName ? element : element[0];
     return (element.scopeName && element.scopeName != 'HTML' ) ? uppercase(element.scopeName + ':' + element.nodeName) : element.nodeName;
   };
 } else {
-  nodeName = function(element) {
+  nodeName_ = function(element) {
     return element.nodeName ? element.nodeName : element[0].nodeName;
   };
 }

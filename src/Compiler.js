@@ -181,7 +181,7 @@ Compiler.prototype = {
         directiveFns = self.directives,
         descend = true,
         directives = true,
-        elementName = nodeName(element),
+        elementName = nodeName_(element),
         template,
         selfApi = {
           compile: bind(self, self.compile),

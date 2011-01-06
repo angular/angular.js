@@ -244,7 +244,7 @@ function browserTrigger(element, type) {
         'select-multiple': 'change'
     }[element.type] || 'click';
   }
-  if (lowercase(nodeName(element)) == 'option') {
+  if (lowercase(nodeName_(element)) == 'option') {
     element.parentNode.value = element.value;
     element = element.parentNode;
     type = 'change';
