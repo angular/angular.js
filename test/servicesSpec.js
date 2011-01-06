@@ -24,16 +24,6 @@ describe("service", function(){
     expect(scope.$service('$window')).toEqual(window);
   });
 
-  xit('should add stylesheets', function(){
-    scope.$document = {
-      getElementsByTagName: function(name){
-        expect(name).toEqual('LINK');
-        return [];
-      }
-    };
-    scope.$document.addStyleSheet('css/angular.css');
-  });
-
   describe("$log", function(){
     it('should use console if present', function(){
       var logger = "";
