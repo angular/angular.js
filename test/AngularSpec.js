@@ -2,18 +2,6 @@ beforeEach(function(){
   compileCache = {};
 });
 
-describe('Angular', function(){
-  xit('should fire on updateEvents', function(){
-    var onUpdateView = jasmine.createSpy();
-    var scope = angular.compile("<div></div>", { onUpdateView: onUpdateView });
-    expect(onUpdateView).wasNotCalled();
-    scope.$init();
-    scope.$eval();
-    expect(onUpdateView).wasCalled();
-    dealoc(scope);
-  });
-});
-
 describe('case', function(){
   it('should change case', function(){
     expect(lowercase('ABC90')).toEqual('abc90');
