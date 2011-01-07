@@ -675,7 +675,7 @@ describe("widget", function(){
       var log = "";
       log += element.attr('ng-exception') + ';';
       log += element.hasClass('ng-exception') + ';';
-      expect(log.match(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'./)).toBeTruthy();
+      expect(log).toMatch(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'./);
     });
 
     it('should expose iterator offset as $index when iterating over arrays', function() {
