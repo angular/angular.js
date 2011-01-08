@@ -53,12 +53,12 @@ function fromJson(json, useNative) {
     throw e;
   }
 
-  // TODO make foreach optionally recursive and remove this function
+  // TODO make forEach optionally recursive and remove this function
   function transformDates(obj) {
     if (isString(obj) && obj.length === DATE_ISOSTRING_LN) {
       return angularString.toDate(obj);
     } else if (isArray(obj) || isObject(obj)) {
-      foreach(obj, function(val, name) {
+      forEach(obj, function(val, name) {
         obj[name] = transformDates(val);
       });
     }

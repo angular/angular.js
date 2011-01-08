@@ -115,7 +115,7 @@ var _undefined        = undefined,
 /**
  * @workInProgress
  * @ngdoc function
- * @name angular.foreach
+ * @name angular.forEach
  * @function
  *
  * @description
@@ -124,10 +124,12 @@ var _undefined        = undefined,
  * `value` is the value of an object property or an array element and `key` is the object property
  * key or array element index. Optionally, `context` can be specified for the iterator function.
  *
+ * Note: this function was previously known as `angular.foreach`.
+ *
    <pre>
      var values = {name: 'misko', gender: 'male'};
      var log = [];
-     angular.foreach(values, function(value, key){
+     angular.forEach(values, function(value, key){
        this.push(key + ': ' + value);
      }, log);
      expect(log).toEqual(['name: misko', 'gender:male']);
@@ -138,7 +140,7 @@ var _undefined        = undefined,
  * @param {Object} context Object to become context (`this`) for the iterator function.
  * @returns {Objet|Array} Reference to `obj`.
  */
-function foreach(obj, iterator, context) {
+function forEach(obj, iterator, context) {
   var key;
   if (obj) {
     if (isFunction(obj)){
@@ -147,7 +149,7 @@ function foreach(obj, iterator, context) {
           iterator.call(context, obj[key], key);
         }
       }
-    } else if (obj.forEach) {
+    } else if (obj.forEach && obj.forEach !== forEach) {
       obj.forEach(iterator, context);
     } else if (isObject(obj) && isNumber(obj.length)) {
       for (key = 0; key < obj.length; key++)
@@ -160,7 +162,7 @@ function foreach(obj, iterator, context) {
   return obj;
 }
 
-function foreachSorted(obj, iterator, context) {
+function forEachSorted(obj, iterator, context) {
   var keys = [];
   for (var key in obj) keys.push(key);
   keys.sort();
@@ -197,9 +199,9 @@ function formatError(arg) {
  * @param {...Object} src The source object(s).
  */
 function extend(dst) {
-  foreach(arguments, function(obj){
+  forEach(arguments, function(obj){
     if (obj !== dst) {
-      foreach(obj, function(value, key){
+      forEach(obj, function(value, key){
         dst[key] = value;
       });
     }
@@ -459,7 +461,7 @@ function isVisible(element) {
 
 function map(obj, iterator, context) {
   var results = [];
-  foreach(obj, function(value, index, list) {
+  forEach(obj, function(value, index, list) {
     results.push(iterator.call(context, value, index, list));
   });
   return results;
@@ -580,7 +582,7 @@ function copy(source, destination){
         destination.push(copy(source[i]));
       }
     } else {
-      foreach(destination, function(value, key){
+      forEach(destination, function(value, key){
         delete destination[key];
       });
       for ( var key in source) {
@@ -778,7 +780,7 @@ function compile(element, parentScope) {
  */
 function parseKeyValue(/**string*/keyValue) {
   var obj = {}, key_value, key;
-  foreach((keyValue || "").split('&'), function(keyValue){
+  forEach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
       key = unescape(key_value[0]);
@@ -790,7 +792,7 @@ function parseKeyValue(/**string*/keyValue) {
 
 function toKeyValue(obj) {
   var parts = [];
-  foreach(obj, function(value, key) {
+  forEach(obj, function(value, key) {
     parts.push(escape(key) + (value === true ? '' : '=' + escape(value)));
   });
   return parts.length ? parts.join('&') : '';

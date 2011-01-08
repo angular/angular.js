@@ -499,7 +499,7 @@ var angularArray = {
   'count':function(array, condition) {
     if (!condition) return array.length;
     var fn = angular['Function']['compile'](condition), count = 0;
-    foreach(array, function(value){
+    forEach(array, function(value){
       if (fn(value)) {
         count ++;
       }
@@ -747,7 +747,7 @@ var angularFunction = {
 
 function defineApi(dst, chain){
   angular[dst] = angular[dst] || {};
-  foreach(chain, function(parent){
+  forEach(chain, function(parent){
     extend(angular[dst], parent);
   });
 }

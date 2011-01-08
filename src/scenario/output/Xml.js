@@ -17,7 +17,7 @@ angular.scenario.output('xml', function(context, runner) {
    * @param {Object} tree node to serialize
    */
   function serializeXml(context, tree) {
-     angular.foreach(tree.children, function(child) {
+     angular.forEach(tree.children, function(child) {
        var describeContext = $('<describe></describe>');
        describeContext.attr('id', child.id);
        describeContext.attr('name', child.name);
@@ -26,14 +26,14 @@ angular.scenario.output('xml', function(context, runner) {
      });
      var its = $('<its></its>');
      context.append(its);
-     angular.foreach(tree.specs, function(spec) {
+     angular.forEach(tree.specs, function(spec) {
        var it = $('<it></it>');
        it.attr('id', spec.id);
        it.attr('name', spec.name);
        it.attr('duration', spec.duration);
        it.attr('status', spec.status);
        its.append(it);
-       angular.foreach(spec.steps, function(step) {
+       angular.forEach(spec.steps, function(step) {
          var stepContext = $('<step></step>');
          stepContext.attr('name', step.name);
          stepContext.attr('duration', step.duration);

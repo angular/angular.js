@@ -252,7 +252,7 @@ function htmlSanitizeWriter(buf){
       if (!ignore && validElements[tag] == true) {
         out('<');
         out(tag);
-        foreach(attrs, function(value, key){
+        forEach(attrs, function(value, key){
           var lkey=lowercase(key);
           if (validAttrs[lkey]==true && (uriAttrs[lkey]!==true || value.match(URI_REGEXP))) {
             out(' ');

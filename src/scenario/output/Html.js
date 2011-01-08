@@ -121,7 +121,7 @@ angular.scenario.output('html', function(context, runner) {
    */
   function findContext(spec) {
     var currentContext = context.find('#specs');
-    angular.foreach(model.getDefinitionPath(spec), function(defn) {
+    angular.forEach(model.getDefinitionPath(spec), function(defn) {
       var id = 'describe-' + defn.id;
       if (!context.find('#' + id).length) {
         currentContext.find('> .test-children').append(

@@ -331,7 +331,7 @@ angular.scenario.dsl('element', function() {
     });
   };
 
-  angular.foreach(KEY_VALUE_METHODS, function(methodName) {
+  angular.forEach(KEY_VALUE_METHODS, function(methodName) {
     chain[methodName] = function(name, value) {
       var futureName = "element '" + this.label + "' get " + methodName + " '" + name + "'";
       if (angular.isDefined(value)) {
@@ -344,7 +344,7 @@ angular.scenario.dsl('element', function() {
     };
   });
 
-  angular.foreach(VALUE_METHODS, function(methodName) {
+  angular.forEach(VALUE_METHODS, function(methodName) {
     chain[methodName] = function(value) {
       var futureName = "element '" + this.label + "' " + methodName;
       if (angular.isDefined(value)) {

@@ -369,7 +369,7 @@ angularServiceInject("$log", function($window){
     if (logFn.apply) {
       return function(){
         var args = [];
-        foreach(arguments, function(arg){
+        forEach(arguments, function(arg){
           args.push(formatError(arg));
         });
         return logFn.apply(console, args);
@@ -556,7 +556,7 @@ angularServiceInject("$invalidWidgets", function(){
   /** Return count of all invalid widgets that are currently visible */
   invalidWidgets.visible = function() {
     var count = 0;
-    foreach(invalidWidgets, function(widget){
+    forEach(invalidWidgets, function(widget){
       count = count + (isVisible(widget) ? 1 : 0);
     });
     return count;
@@ -596,7 +596,7 @@ function switchRouteMatcher(on, when, dstName) {
   var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
       params = [],
       dst = {};
-  foreach(when.split(/\W/), function(param){
+  forEach(when.split(/\W/), function(param){
     if (param) {
       var paramRegExp = new RegExp(":" + param + "([\\W])");
       if (regex.match(paramRegExp)) {
@@ -607,7 +607,7 @@ function switchRouteMatcher(on, when, dstName) {
   });
   var match = on.match(new RegExp(regex));
   if (match) {
-    foreach(params, function(name, index){
+    forEach(params, function(name, index){
       dst[name] = match[index + 1];
     });
     if (dstName) this.$set(dstName, dst);
@@ -716,7 +716,7 @@ angularServiceInject('$route', function(location) {
   function updateRoute(){
     var childScope;
     $route.current = _null;
-    angular.foreach(routes, function(routeParams, route) {
+    angular.forEach(routes, function(routeParams, route) {
       if (!childScope) {
         var pathParams = matcher(location.hashPath, route);
         if (pathParams) {
@@ -728,7 +728,7 @@ angularServiceInject('$route', function(location) {
         }
       }
     });
-    angular.foreach(onChange, parentScope.$tryEval);
+    angular.forEach(onChange, parentScope.$tryEval);
     if (childScope) {
       childScope.$become($route.current.controller);
     }
@@ -817,7 +817,7 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
       post = _null;
     }
     var currentQueue;
-    foreach(bulkXHR.urls, function(queue){
+    forEach(bulkXHR.urls, function(queue){
       if (isFunction(queue.match) ? queue.match(url) : queue.match.exec(url)) {
         currentQueue = queue;
       }
@@ -831,13 +831,13 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   }
   bulkXHR.urls = {};
   bulkXHR.flush = function(callback){
-    foreach(bulkXHR.urls, function(queue, url){
+    forEach(bulkXHR.urls, function(queue, url){
       var currentRequests = queue.requests;
       if (currentRequests && currentRequests.length) {
         queue.requests = [];
         queue.callbacks = [];
         $xhr('POST', url, {requests:currentRequests}, function(code, response){
-          foreach(response, function(response, i){
+          forEach(response, function(response, i){
             try {
               if (response.status == 200) {
                 (currentRequests[i].callback || noop)(response.status, response.response);
@@ -926,7 +926,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer){
             cache.data[url] = { value: response };
           var callbacks = inflight[url].callbacks;
           delete inflight[url];
-          foreach(callbacks, function(callback){
+          forEach(callbacks, function(callback){
             try {
               (callback||noop)(status, copy(response));
             } catch(e) {

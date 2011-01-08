@@ -222,7 +222,7 @@ angularFilter.date = function(date, format) {
       parts = concat(parts, DATE_FORMATS_SPLIT.exec(format), 1);
       format = parts.pop();
     }
-    foreach(parts, function(value){
+    forEach(parts, function(value){
       fn = DATE_FORMATS[value];
       text += fn ? fn(date) : value;
     });
