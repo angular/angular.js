@@ -222,7 +222,7 @@ function compileBindTemplate(template){
   var fn = bindTemplateCache[template];
   if (!fn) {
     var bindings = [];
-    foreach(parseBindings(template), function(text){
+    forEach(parseBindings(template), function(text){
       var exp = binding(text);
       bindings.push(exp ? function(element){
         var error, value = this.$tryEval(exp, function(e){

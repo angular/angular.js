@@ -136,7 +136,7 @@ function Browser(window, document, body, XHR, $log) {
    * @methodOf angular.service.$browser
    */
   self.poll = function() {
-    foreach(pollFns, function(pollFn){ pollFn(); });
+    forEach(pollFns, function(pollFn){ pollFn(); });
   };
 
   /**

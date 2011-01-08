@@ -48,7 +48,9 @@
 
 - In the light of the `eager-published` change, to complete the cleanup we renamed `$creation`
   property of services to `eager` with its value being a boolean.
-  To transition, please rename all `$creation: 'eager'` declarations to `$eager: true`
+  To transition, please rename all `$creation: 'eager'` declarations to `$eager: true`.
+
+- `angular.foreach` was renamed to `angular.forEach` to make the api consistent.
 
 
 # <angular/> 0.9.8 astral-projection (2010-12-23) #

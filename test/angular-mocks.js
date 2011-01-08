@@ -141,7 +141,7 @@ function MockBrowser() {
 MockBrowser.prototype = {
 
   poll: function poll(){
-    angular.foreach(this.pollFns, function(pollFn){
+    angular.forEach(this.pollFns, function(pollFn){
       pollFn();
     });
   },
@@ -304,7 +304,7 @@ function TzDate(offset, timestamp) {
       'setYear', 'toDateString', 'toJSON', 'toGMTString', 'toLocaleFormat', 'toLocaleString',
       'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString', 'valueOf'];
 
-  angular.foreach(unimplementedMethods, function(methodName) {
+  angular.forEach(unimplementedMethods, function(methodName) {
     this[methodName] = function() {
       throw {
         name: "MethodNotImplemented",

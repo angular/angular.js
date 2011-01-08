@@ -48,7 +48,7 @@ var scopeId = 0,
     getterFnCache = {},
     compileCache = {},
     JS_KEYWORDS = {};
-foreach(
+forEach(
     ("abstract,boolean,break,byte,case,catch,char,class,const,continue,debugger,default," +
     "delete,do,double,else,enum,export,extends,false,final,finally,float,for,function,goto," +
     "if,implements,import,ininstanceof,intinterface,long,native,new,null,package,private," +
@@ -61,7 +61,7 @@ function getterFn(path){
   if (fn) return fn;
 
   var code = 'var l, fn, t;\n';
-  foreach(path.split('.'), function(key) {
+  forEach(path.split('.'), function(key) {
     key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
@@ -575,7 +575,7 @@ function createScope(parent, providers, instanceCache) {
     $become: function(Class) {
       if (isFunction(Class)) {
         instance.constructor = Class;
-        foreach(Class.prototype, function(fn, name){
+        forEach(Class.prototype, function(fn, name){
           instance[name] = bind(instance, fn);
         });
         instance.$service.apply(instance, concat([Class, instance], arguments, 1));

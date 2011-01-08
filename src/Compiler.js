@@ -16,8 +16,8 @@ Template.prototype = {
   init: function(element, scope) {
     var inits = {};
     this.collectInits(element, inits, scope);
-    foreachSorted(inits, function(queue){
-      foreach(queue, function(fn) {fn();});
+    forEachSorted(inits, function(queue){
+      forEach(queue, function(fn) {fn();});
     });
   },
 
@@ -32,7 +32,7 @@ Template.prototype = {
       scope.$onEval(childScope.$eval);
       element.data($$scope, childScope);
     }
-    foreach(this.inits, function(fn) {
+    forEach(this.inits, function(fn) {
       queue.push(function() {
         childScope.$tryEval(function(){
           return childScope.$service(fn, childScope, element);
@@ -232,7 +232,7 @@ Compiler.prototype = {
       for(var i=0, child=element[0].childNodes;
           i<child.length; i++) {
         if (isTextNode(child[i])) {
-          foreach(self.markup, function(markup){
+          forEach(self.markup, function(markup){
             if (i<child.length) {
               var textNode = jqLite(child[i]);
               markup.call(selfApi, textNode.text(), textNode, element);
@@ -245,7 +245,7 @@ Compiler.prototype = {
     if (directives) {
       // Process attributes/directives
       eachAttribute(element, function(value, name){
-        foreach(self.attrMarkup, function(markup){
+        forEach(self.attrMarkup, function(markup){
           markup.call(selfApi, value, name, element);
         });
       });
@@ -287,6 +287,6 @@ function eachAttribute(element, fn){
     }
     attrValue[name] = value;
   }
-  foreachSorted(attrValue, fn);
+  forEachSorted(attrValue, fn);
 }
 
