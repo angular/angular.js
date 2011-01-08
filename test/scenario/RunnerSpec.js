@@ -54,7 +54,7 @@ describe('angular.scenario.Runner', function() {
   });
 
   it('should publish the functions in the public API', function() {
-    angular.foreach(runner.api, function(fn, name) {
+    angular.forEach(runner.api, function(fn, name) {
       var func;
       if (name in $window) {
         func = $window[name];

@@ -28,7 +28,7 @@ describe("angular.scenario.dsl", function() {
       });
     };
     $root.dsl = {};
-    angular.foreach(angular.scenario.dsl, function(fn, name) {
+    angular.forEach(angular.scenario.dsl, function(fn, name) {
       $root.dsl[name] = function() {
         return fn.call($root).apply($root, arguments);
       };
@@ -281,7 +281,7 @@ describe("angular.scenario.dsl", function() {
       it('should add all jQuery key/value methods', function() {
         var METHODS = ['css', 'attr'];
         var chain = $root.dsl.element('input');
-        angular.foreach(METHODS, function(name) {
+        angular.forEach(METHODS, function(name) {
           expect(angular.isFunction(chain[name])).toBeTruthy();
         });
       });
@@ -316,7 +316,7 @@ describe("angular.scenario.dsl", function() {
           'innerWidth', 'outerWidth', 'position', 'scrollLeft', 'scrollTop', 'offset'
         ];
         var chain = $root.dsl.element('input');
-        angular.foreach(METHODS, function(name) {
+        angular.forEach(METHODS, function(name) {
           expect(angular.isFunction(chain[name])).toBeTruthy();
         });
       });

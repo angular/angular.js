@@ -7,7 +7,7 @@ describe('browser', function(){
   }
 
   fakeSetTimeout.flush = function() {
-    foreach(setTimeoutQueue, function(fn) {
+    forEach(setTimeoutQueue, function(fn) {
       fn();
     });
   };

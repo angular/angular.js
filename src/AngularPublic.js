@@ -30,7 +30,7 @@ extend(angular, {
   'copy': copy,
   'extend': extend,
   'equals': equals,
-  'foreach': foreach,
+  'forEach': forEach,
   'injector': createInjector,
   'noop':noop,
   'bind':bind,

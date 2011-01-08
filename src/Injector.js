@@ -47,14 +47,14 @@ function createInjector(providerScope, providers, cache) {
       returnValue = cache[value];
     } else if (isArray(value)) {
       returnValue = [];
-      foreach(value, function(name) {
+      forEach(value, function(name) {
         returnValue.push(inject(name));
       });
     } else if (isFunction(value)) {
       returnValue = inject(value.$inject || []);
       returnValue = value.apply(scope, concat(returnValue, arguments, 2));
     } else if (isObject(value)) {
-      foreach(providers, function(provider, name){
+      forEach(providers, function(provider, name){
         if (provider.$eager)
           inject(name);
 

@@ -16,7 +16,7 @@ angular.scenario.Runner = function($window) {
     beforeEach: this.beforeEach,
     afterEach: this.afterEach
   };
-  angular.foreach(this.api, angular.bind(this, function(fn, key) {
+  angular.forEach(this.api, angular.bind(this, function(fn, key) {
     this.$window[key] = angular.bind(this, fn);
   }));
 };
@@ -33,7 +33,7 @@ angular.scenario.Runner.prototype.emit = function(eventName) {
   eventName = eventName.toLowerCase();
   if (!this.listeners[eventName])
     return;
-  angular.foreach(this.listeners[eventName], function(listener) {
+  angular.forEach(this.listeners[eventName], function(listener) {
     listener.apply(self, args);
   });
 };
@@ -164,17 +164,17 @@ angular.scenario.Runner.prototype.run = function(application) {
   asyncForEach(this.rootDescribe.getSpecs(), function(spec, specDone) {
     var dslCache = {};
     var runner = self.createSpecRunner_($root);
-    angular.foreach(angular.scenario.dsl, function(fn, key) {
+    angular.forEach(angular.scenario.dsl, function(fn, key) {
       dslCache[key] = fn.call($root);
     });
-    angular.foreach(angular.scenario.dsl, function(fn, key) {
+    angular.forEach(angular.scenario.dsl, function(fn, key) {
       self.$window[key] = function() {
         var line = callerFile(3);
         var scope = angular.scope(runner);
 
         // Make the dsl accessible on the current chain
         scope.dsl = {};
-        angular.foreach(dslCache, function(fn, key) {
+        angular.forEach(dslCache, function(fn, key) {
           scope.dsl[key] = function() {
             return dslCache[key].apply(scope, arguments);
           };

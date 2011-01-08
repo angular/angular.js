@@ -18,7 +18,7 @@ function jqClearData(element) {
   var cacheId = element[jqName],
       cache = jqCache[cacheId];
   if (cache) {
-    foreach(cache.bind || {}, function(fn, type){
+    forEach(cache.bind || {}, function(fn, type){
       removeEventListenerFn(element, type, fn);
     });
     delete jqCache[cacheId];
@@ -93,7 +93,7 @@ JQLite.prototype = {
         bind = self.data('bind'),
         eventHandler;
     if (!bind) this.data('bind', bind = {});
-    foreach(type.split(' '), function(type){
+    forEach(type.split(' '), function(type){
       eventHandler = bind[type];
       if (!eventHandler) {
         bind[type] = eventHandler = function(event) {
@@ -107,7 +107,7 @@ JQLite.prototype = {
               event.cancelBubble = true; //ie
             };
           }
-          foreach(eventHandler.fns, function(fn){
+          forEach(eventHandler.fns, function(fn){
             fn.call(self, event);
           });
         };
@@ -129,7 +129,7 @@ JQLite.prototype = {
   append: function(node) {
     var self = this[0];
     node = jqLite(node);
-    foreach(node, function(child){
+    forEach(node, function(child){
       self.appendChild(child);
     });
   },
@@ -187,7 +187,7 @@ JQLite.prototype = {
   attr: function(name, value){
     var e = this[0];
     if (isObject(name)) {
-      foreach(name, function(value, name){
+      forEach(name, function(value, name){
         e.setAttribute(name, value);
       });
     } else if (isDefined(value)) {

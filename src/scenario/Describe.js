@@ -21,7 +21,7 @@ angular.scenario.Describe = function(descName, parent) {
   var beforeEachFns = this.beforeEachFns;
   this.setupBefore = function() {
     if (parent) parent.setupBefore.call(this);
-    angular.foreach(beforeEachFns, function(fn) { fn.call(this); }, this);
+    angular.forEach(beforeEachFns, function(fn) { fn.call(this); }, this);
   };
 
   /**
@@ -29,7 +29,7 @@ angular.scenario.Describe = function(descName, parent) {
    */
   var afterEachFns = this.afterEachFns;
   this.setupAfter  = function() {
-    angular.foreach(afterEachFns, function(fn) { fn.call(this); }, this);
+    angular.forEach(afterEachFns, function(fn) { fn.call(this); }, this);
     if (parent) parent.setupAfter.call(this);
   };
 };
@@ -133,14 +133,14 @@ angular.scenario.Describe.prototype.xit = angular.noop;
  */
 angular.scenario.Describe.prototype.getSpecs = function() {
   var specs = arguments[0] || [];
-  angular.foreach(this.children, function(child) {
+  angular.forEach(this.children, function(child) {
     child.getSpecs(specs);
   });
-  angular.foreach(this.its, function(it) {
+  angular.forEach(this.its, function(it) {
     specs.push(it);
   });
   var only = [];
-  angular.foreach(specs, function(it) {
+  angular.forEach(specs, function(it) {
     if (it.only) {
       only.push(it);
     }

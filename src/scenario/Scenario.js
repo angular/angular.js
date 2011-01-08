@@ -38,7 +38,7 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
         return result;
       var self = this;
       var chain = angular.extend({}, result);
-      angular.foreach(chain, function(value, name) {
+      angular.forEach(chain, function(value, name) {
         if (angular.isFunction(value)) {
           chain[name] = function() {
             return executeStatement.call(self, value, arguments);
@@ -101,7 +101,7 @@ function angularScenarioInit($scenario, config) {
     output = config.scenario_output.split(',');
   }
 
-  angular.foreach(angular.scenario.output, function(fn, name) {
+  angular.forEach(angular.scenario.output, function(fn, name) {
     if (!output.length || indexOf(output,name) != -1) {
       var context = body.append('<div></div>').find('div:last');
       context.attr('id', name);
