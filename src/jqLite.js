@@ -87,6 +87,19 @@ JQLite.prototype = {
     })(this[0]);
   },
 
+  ready: function(fn) {
+    var fired = false;
+
+    function trigger() {
+      if (fired) return;
+      fired = true;
+      fn();
+    }
+
+    this.bind('DOMContentLoaded', trigger); // works for modern browsers and IE9
+    jqLite(window).bind('load', trigger); // fallback to window.onload for others
+  },
+
   bind: function(type, fn){
     var self = this,
         element = self[0],

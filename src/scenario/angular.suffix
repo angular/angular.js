@@ -1,10 +1,7 @@
   var $scenario = new angular.scenario.Runner(window);
 
-  window.onload = function() {
-    try {
-      if (previousOnLoad) previousOnLoad();
-    } catch(e) {}
+  jqLite(document).ready(function() {
     angularScenarioInit($scenario, angularJsConfig(document));
-  };
+  });
 
-})(window, document, window.onload);
+})(window, document);

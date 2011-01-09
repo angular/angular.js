@@ -1,9 +1,6 @@
 
-  window.onload = function(){
-    try {
-      if (previousOnLoad) previousOnLoad();
-    } catch(e) {}
+  jqLite(document).ready(function(){
     angularInit(angularJsConfig(document));
-  };
+  });
 
-})(window, document, window.onload);
+})(window, document);
