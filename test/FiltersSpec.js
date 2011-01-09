@@ -142,5 +142,9 @@ describe('filter', function() {
       expect(filter.date(isoString)).
           toEqual(angular.String.toDate(isoString).toLocaleDateString());
     });
+
+    it('should parse format ending with non-replaced string', function() {
+      expect(filter.date(morning, 'yy/xxx')).toEqual('10/xxx');
+    });
   });
 });
