@@ -217,10 +217,16 @@ angularFilter.date = function(date, format) {
   var text = date.toLocaleDateString(), fn;
   if (format && isString(format)) {
     text = '';
-    var parts = [];
+    var parts = [], match;
     while(format) {
-      parts = concat(parts, DATE_FORMATS_SPLIT.exec(format), 1);
-      format = parts.pop();
+      match = DATE_FORMATS_SPLIT.exec(format);
+      if (match) {
+        parts = concat(parts, match, 1);
+        format = parts.pop();
+      } else {
+        parts.push(format);
+        format = null;
+      }
     }
     forEach(parts, function(value){
       fn = DATE_FORMATS[value];
