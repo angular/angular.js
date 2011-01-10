@@ -47,7 +47,7 @@ function getStyle(element) {
 }
 
 function JQLite(element) {
-  if (!isElement(element) && isDefined(element.length) && element.item) {
+  if (!isElement(element) && isDefined(element.length) && element.item && !isWindow(element)) {
     for(var i=0; i < element.length; i++) {
       this[i] = element[i];
     }
