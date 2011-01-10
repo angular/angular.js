@@ -47,7 +47,8 @@ function getStyle(element) {
 }
 
 function JQLite(element) {
-  if (!isElement(element) && isDefined(element.length) && element.item) {
+  if (!isElement(element) && isDefined(element.length) && element.item &&
+        !(element === window || element instanceof Window)) { //IE6 doesn't have Window type
     for(var i=0; i < element.length; i++) {
       this[i] = element[i];
     }
