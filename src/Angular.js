@@ -400,6 +400,17 @@ function isArray(value) { return value instanceof Array; }
 function isFunction(value){ return typeof value == $function;}
 
 
+/**
+ * Checks if `obj` is a window object.
+ *
+ * @private
+ * @param {*} obj Object to check
+ * @returns {boolean} True if `obj` is a window obj.
+ */
+function isWindow(obj) {
+  return obj && obj.document && obj.location && obj.alert && obj.setInterval;
+}
+
 function isBoolean(value) { return typeof value == $boolean;}
 function isTextNode(node) { return nodeName_(node) == '#text'; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
