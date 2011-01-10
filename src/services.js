@@ -446,7 +446,8 @@ angularServiceInject('$exceptionHandler', function($log){
  * In unit-test mode the update is instantaneous and synchronous to simplify writing tests.
  *
  */
-angularServiceInject('$updateView', extend(function factory($browser){
+
+function serviceUpdateViewFactory($browser){
   var rootScope = this;
   var scheduled;
   function update(){
@@ -456,10 +457,13 @@ angularServiceInject('$updateView', extend(function factory($browser){
   return $browser.isMock ? update : function(){
     if (!scheduled) {
       scheduled = true;
-      $browser.defer(update, factory.delay);
+      $browser.defer(update, serviceUpdateViewFactory.delay);
     }
   };
-}, {delay:25}), ['$browser']);
+}
+serviceUpdateViewFactory.delay = 25;
+
+angularServiceInject('$updateView', serviceUpdateViewFactory, ['$browser']);
 
 /**
  * @workInProgress
