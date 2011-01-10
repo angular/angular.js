@@ -371,7 +371,12 @@ describe('browser', function(){
                       expect(type).toEqual('hashchange');
                       onHashChngListener = listener;
                     },
-                    removeEventListener: angular.noop
+                    attachEvent: function(type, listener) {
+                      expect(type).toEqual('onhashchange');
+                      onHashChngListener = listener;
+                    },
+                    removeEventListener: angular.noop,
+                    detachEvent: angular.noop
                    };
       fakeWindow.onhashchange = true;
 
