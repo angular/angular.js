@@ -339,14 +339,18 @@ extend(angularValidator, {
    * 
    * @example
    * <script>
-   *   function myValidator(inputToValidate, validationDone) {
-   *    setTimeout(function(){
-   *      validationDone(inputToValidate.length % 2);
-   *    }, 500);
+   * function MyCntl(){
+   *   this.myValidator = function (inputToValidate, validationDone) {
+   *     setTimeout(function(){
+   *       validationDone(inputToValidate.length % 2);
+   *     }, 500);
+   *   }
    *  }
    * </script>
    *  This input is validated asynchronously:
-   *  <input name="text" ng:validate="asynchronous:$window.myValidator">
+   *  <div ng:controller="MyCntl">
+   *    <input name="text" ng:validate="asynchronous:myValidator">
+   *  </div>
    * 
    * @scenario
    * it('should change color in delayed way', function(){
