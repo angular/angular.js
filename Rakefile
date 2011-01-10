@@ -158,7 +158,7 @@ end
 
 desc 'Generate docs'
 task :docs do
-  `node docs/collect.js`
+  `node docs/src/gen-docs.js`
 end
 
 
