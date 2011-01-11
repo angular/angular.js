@@ -26,14 +26,15 @@
   <div id="header">
     <h1>
       <span class="main-title">{{getTitle()}}</span>
-      <a href="#"><span class="angular">&lt;angular/&gt;</span> Docs</a>
+      <a href="#" tabindex="0"><span class="angular">&lt;angular/&gt;</span> Docs</a>
     </h1>
   </div>
   <div id="sidebar">
-    <input type="text" name="search" id="search-box" placeholder="search the docs"/>
+    <input type="text" name="search" id="search-box" placeholder="search the docs"
+           tabindex="1" accesskey="s"/>
     <ul id="api-list">
       <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
-        <a href="{{getUrl(page)}}" ng:click="">{{page.name | short}}</a>
+        <a href="{{getUrl(page)}}" ng:click="" tabindex="2">{{page.name | short}}</a>
       </li>
     </ul>
   </div>
