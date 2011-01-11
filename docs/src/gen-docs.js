@@ -30,13 +30,19 @@ var writes = callback.chain(function(){
   writer.copy('doc_widgets.css', writes.waitFor());
   writer.copy('docs-scenario.html', writes.waitFor());
   writer.output('docs-scenario.js', ngdoc.scenarios(docs), writes.waitFor());
+  writer.copy('syntaxhighlighter/shBrushJScript.js', writes.waitFor());
+  writer.copy('syntaxhighlighter/shBrushXml.js', writes.waitFor());
+  writer.copy('syntaxhighlighter/shCore.css', writes.waitFor());
+  writer.copy('syntaxhighlighter/shCore.js', writes.waitFor());
+  writer.copy('syntaxhighlighter/shThemeDefault.css', writes.waitFor());
+  writer.copy('jquery.min.js', writes.waitFor());
 });
 writes.onDone(function(){
   console.log('DONE. Generated ' + docs.length + ' pages in ' + 
       (now()-start) + 'ms.' );
 });
 work.onDone(writes);
-writer.makeDir('build/docs', work);
+writer.makeDir('build/docs/syntaxhighlighter', work);
 
 ///////////////////////////////////
 function now(){ return new Date().getTime(); }
