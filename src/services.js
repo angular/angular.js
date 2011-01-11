@@ -902,7 +902,7 @@ angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView
  * 
  * @example
  */
-angularServiceInject('$xhr.cache', function($xhr, $defer){
+angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
   var inflight = {}, self = this;
   function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
@@ -930,7 +930,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer){
             try {
               (callback||noop)(status, copy(response));
             } catch(e) {
-              self.$log.error(e);
+              $log.error(e);
             }
           });
         });
@@ -944,7 +944,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer){
   cache.data = {};
   cache.delegate = $xhr;
   return cache;
-}, ['$xhr.bulk', '$defer']);
+}, ['$xhr.bulk', '$defer', '$log']);
 
 
 /**
