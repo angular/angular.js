@@ -73,6 +73,7 @@ ResourceFactory.prototype = {
         case 2:
           if (isFunction(a2)) {
             callback = a2;
+            //fallthrough
           } else {
             params = a1;
             data = a2;
