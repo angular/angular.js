@@ -1,5 +1,7 @@
 # <angular/> 0.9.10 flea-whisperer  (in-progress) #
 
+### Bug Fixes
+- html select (one/multiple) could not chose from a list of objects, since DOM requires string ids.
 
 
 # <angular/> 0.9.9 time-shift (2011-01-13) #
@@ -99,9 +101,9 @@
 - small docs improvements (mainly docs for the $resource service)
 
 ### Breaking changes
-- Angular expressions in the view used to support regular expressions. This feature was rarely 
-  used and added unnecessary complexity. It not a good idea to have regexps in the view anyway, 
-  so we removed this support. If you had any regexp in your views, you will have to move them to 
+- Angular expressions in the view used to support regular expressions. This feature was rarely
+  used and added unnecessary complexity. It not a good idea to have regexps in the view anyway,
+  so we removed this support. If you had any regexp in your views, you will have to move them to
   your controllers. (commit e5e69d9b90850eb653883f52c76e28dd870ee067)
 
 
@@ -120,7 +122,7 @@
 - docs app UI polishing with dual scrolling and other improvements
 
 ### Bug Fixes
-- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat` 
+- `select` widget now behaves correctly when it's `option` items are created via `ng:repeat`
   (issue #170)
 - fix for async xhr cache issue #152 by adding `$browser.defer` and `$defer` service
 

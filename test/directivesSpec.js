@@ -104,10 +104,17 @@ describe("directive", function(){
 
   });
 
-  it('should ng:bind-attr', function(){
-    var scope = compile('<img ng:bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>');
-    expect(element.attr('src')).toEqual('http://localhost/mysrc');
-    expect(element.attr('alt')).toEqual('myalt');
+  describe('ng:bind-attr', function(){
+    it('should bind attributes', function(){
+      var scope = compile('<img ng:bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>');
+      expect(element.attr('src')).toEqual('http://localhost/mysrc');
+      expect(element.attr('alt')).toEqual('myalt');
+    });
+    
+    it('should not pretty print JSON in attributes', function(){
+      var scope = compile('<img alt="{{ {a:1} }}"/>');
+      expect(element.attr('alt')).toEqual('{"a":1}');
+    });
   });
 
   it('should remove special attributes on false', function(){

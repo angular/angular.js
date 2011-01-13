@@ -231,15 +231,7 @@ Doc.prototype = {
       dom.code(function(){
         dom.text(self.name);
         dom.text('(');
-        var first = true;
-        (self.param || []).forEach(function(param){
-          if (first) {
-            first = false;
-          } else {
-            dom.text(', ');
-          }
-          dom.text(param.name);
-        });
+        self.parameters(dom, ', ');
         dom.text(');');
       });
       
@@ -273,44 +265,17 @@ Doc.prototype = {
           dom.text(self.shortName);
           dom.text('_expression | ');
           dom.text(self.shortName);
-          var first = true;
-          (self.param||[]).forEach(function(param){
-            if (first) {
-              first = false;
-            } else {
-              if (param.optional) {
-                dom.tag('i', function(){
-                  dom.text('[:' + param.name + ']');
-                });
-              } else {
-                dom.text(':' + param.name);
-              }
-            }
-          });
+          self.parameters(dom, ':', true);
           dom.text(' }}');
         });
       });
       
-      dom.h3('In JavaScript', function(){
+      dom.h('In JavaScript', function(){
         dom.tag('code', function(){
           dom.text('angular.filter.');
           dom.text(self.shortName);
           dom.text('(');
-          var first = true;
-          (self.param||[]).forEach(function(param){
-            if (first) {
-              first = false;
-              dom.text(param.name);
-            } else {
-              if (param.optional) {
-                dom.tag('i', function(){
-                  dom.text('[, ' + param.name + ']');
-                });
-              } else {
-                dom.text(', ' + param.name);
-              }
-            }
-          });
+          self.parameters(dom, ', ');
           dom.text(')');
         });
       });
@@ -319,32 +284,40 @@ Doc.prototype = {
       self.html_usage_returns(dom);
     });
   },
-    
+  
   html_usage_formatter: function(dom){
     var self = this;
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
-          dom.text('<input type="text" ng:format="');
+          if (self.inputType=='select')
+            dom.text('<select name="bindExpression"');
+          else
+            dom.text('<input type="text" name="bindExpression"');
+          dom.text(' ng:format="');
           dom.text(self.shortName);
+          self.parameters(dom, ':', false, true);
           dom.text('">');
         });
       });
       
-      dom.h3('In JavaScript', function(){
+      dom.h('In JavaScript', function(){
         dom.code(function(){
           dom.text('var userInputString = angular.formatter.');
           dom.text(self.shortName);
-          dom.text('.format(modelValue);');
-        });
-        dom.html('<br/>');
-        dom.code(function(){
+          dom.text('.format(modelValue');
+          self.parameters(dom, ', ', false, true);
+          dom.text(');');
+          dom.text('\n');
           dom.text('var modelValue = angular.formatter.');
           dom.text(self.shortName);
-          dom.text('.parse(userInputString);');
+          dom.text('.parse(userInputString');
+          self.parameters(dom, ', ', false, true);
+          dom.text(');');
         });
       });
       
+      self.html_usage_parameters(dom);
       self.html_usage_returns(dom);  
     });
   },
@@ -356,18 +329,7 @@ Doc.prototype = {
         dom.code(function(){
           dom.text('<input type="text" ng:validate="');
           dom.text(self.shortName);
-          var first = true;
-          (self.param||[]).forEach(function(param){
-            if (first) {
-              first = false;
-            } else {
-              if (param.optional) {
-                dom.text('[:' + param.name + ']');
-              } else {
-                dom.text(':' + param.name);
-              }
-            }
-          });
+          self.parameters(dom, ':', true);
           dom.text('"/>');
         });
       });
@@ -377,19 +339,7 @@ Doc.prototype = {
           dom.text('angular.validator.');
           dom.text(self.shortName);
           dom.text('(');
-          var first = true;
-          (self.param||[]).forEach(function(param){
-            if (first) {
-              first = false;
-              dom.text(param.name);
-            } else {
-              if (param.optional) {
-                dom.text('[, ' + param.name + ']');
-              } else {
-                dom.text(', ' + param.name);
-              }
-            }
-          });
+          self.parameters(dom, ', ');
           dom.text(')');
         });
       });
@@ -443,8 +393,22 @@ Doc.prototype = {
   },
     
   html_usage_service: function(dom){
-  }
+  },
 
+  parameters: function(dom, separator, skipFirst, prefix) {
+    var sep = prefix ? separator : '';
+    (this.param||[]).forEach(function(param, i){
+      if (!(skipFirst && i==0)) {
+        if (param.optional) {
+          dom.text('[' + sep + param.name + ']');
+        } else {
+          dom.text(sep + param.name);
+        }
+      }
+      sep = separator;
+    });
+  }
+    
 };
 //////////////////////////////////////////////////////////
 

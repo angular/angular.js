@@ -15,7 +15,7 @@ angularFormatter.noop = formatter(identity, identity);
  * @description
  *   Formats the user input as JSON text.
  *
- * @returns {string} A JSON string representation of the model.
+ * @returns {?string} A JSON string representation of the model.
  *
  * @example
  * <div ng:init="data={name:'misko', project:'angular'}">
@@ -30,7 +30,9 @@ angularFormatter.noop = formatter(identity, identity);
  *   expect(binding('data')).toEqual('data={\n  }');
  * });
  */
-angularFormatter.json = formatter(toJson, fromJson);
+angularFormatter.json = formatter(toJson, function(value){
+  return fromJson(value || 'null');
+});
 
 /**
  * @workInProgress
@@ -153,4 +155,60 @@ angularFormatter.list = formatter(
  */
 angularFormatter.trim = formatter(
   function(obj) { return obj ? trim("" + obj) : ""; }
+);
+
+/**
+ * @workInProgress
+ * @ngdoc formatter
+ * @name angular.formatter.index
+ * @description
+ * Index formatter is meant to be used with `select` input widget. It is useful when one needs
+ * to select from a set of objects. To create pull-down one can iterate over the array of object
+ * to build the UI. However  the value of the pull-down must be a string. This means that when on
+ * object is selected form the pull-down, the pull-down value is a string which needs to be
+ * converted back to an object. This conversion from string to on object is not possible, at best
+ * the converted object is a copy of the original object. To solve this issue we create a pull-down
+ * where the value strings are an index of the object in the array. When pull-down is selected the
+ * index can be used to look up the original user object.
+ *
+ * @inputType select
+ * @param {array} array to be used for selecting an object.
+ * @returns {object} object which is located at the selected position.
+ *
+ * @example
+ * <script>
+ * function DemoCntl(){
+ *   this.users = [
+ *     {name:'guest', password:'guest'},
+ *     {name:'user', password:'123'},
+ *     {name:'admin', password:'abc'}
+ *   ];
+ * }
+ * </script>
+ * <div ng:controller="DemoCntl">
+ *   User:
+ *   <select name="currentUser" ng:format="index:users">
+ *     <option ng:repeat="user in users" value="{{$index}}">{{user.name}}</option>
+ *   </select>
+ *   <select name="currentUser" ng:format="index:users">
+ *     <option ng:repeat="user in users" value="{{$index}}">{{user.name}}</option>
+ *   </select>
+ *   user={{currentUser.name}}<br/>
+ *   password={{currentUser.password}}<br/>
+ * </div>
+ *
+ * @scenario
+ * it('should format trim', function(){
+ *   expect(binding('currentUser.password')).toEqual('guest');
+ *   select('currentUser').option('2');
+ *   expect(binding('currentUser.password')).toEqual('abc');
+ * });
+ */
+angularFormatter.index = formatter(
+  function(object, array){
+    return '' + indexOf(array || [], object);
+  },
+  function(index, array){
+    return (array||[])[index];
+  }
 );

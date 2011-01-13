@@ -92,11 +92,11 @@ describe('json', function(){
   it('should not serialize undefined values', function() {
     expect(angular.toJson({A:undefined})).toEqual('{}');
   });
-  
+
   it('should not serialize $window object', function() {
     expect(toJson(window)).toEqual('WINDOW');
   });
-  
+
   it('should not serialize $document object', function() {
     expect(toJson(document)).toEqual('DOCUMENT');
   });
@@ -114,6 +114,13 @@ describe('json', function(){
     expect(fromJson("{exp:1.2E-10}")).toEqual({exp:1.2E-10});
     expect(fromJson("{exp:1.2e+10}")).toEqual({exp:1.2E10});
     expect(fromJson("{exp:1.2e-10}")).toEqual({exp:1.2E-10});
+  });
+
+  it('should ignore non-strings', function(){
+    expect(fromJson([])).toEqual([]);
+    expect(fromJson({})).toEqual({});
+    expect(fromJson(null)).toEqual(null);
+    expect(fromJson(undefined)).toEqual(undefined);
   });
 
 
@@ -187,18 +194,18 @@ describe('json', function(){
       expect(function(){fromJson('[].constructor');}).
         toThrow(new Error("Parse Error: Token '.' is not valid json at column 3 of expression [[].constructor] starting at [.constructor]."));
     });
-    
+
     it('should not allow object dereference', function(){
       expect(function(){fromJson('{a:1, b: $location, c:1}');}).toThrow();
       expect(function(){fromJson("{a:1, b:[1]['__parent__']['location'], c:1}");}).toThrow();
     });
-    
+
     it('should not allow assignments', function(){
       expect(function(){fromJson("{a:1, b:[1]=1, c:1}");}).toThrow();
       expect(function(){fromJson("{a:1, b:=1, c:1}");}).toThrow();
       expect(function(){fromJson("{a:1, b:x=1, c:1}");}).toThrow();
     });
-    
+
   });
 
 });

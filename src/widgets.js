@@ -8,16 +8,16 @@
  * standard HTML set. These widgets are bound using the name attribute
  * to an expression. In addition they can have `ng:validate`, `ng:required`,
  * `ng:format`, `ng:change` attribute to further control their behavior.
- * 
+ *
  * @usageContent
  *   see example below for usage
- * 
+ *
  *   <input type="text|checkbox|..." ... />
  *   <textarea ... />
  *   <select ...>
  *     <option>...</option>
  *   </select>
- * 
+ *
  * @example
 <table style="font-size:.9em;">
   <tr>
@@ -96,7 +96,7 @@
     <td><tt>{{input6|json}}</tt></td>
   </tr>
 </table>
- 
+
  * @scenario
  * it('should exercise text', function(){
  *   input('input1').enter('Carlos');
@@ -134,14 +134,19 @@
 
 function modelAccessor(scope, element) {
   var expr = element.attr('name');
+  var assign;
   if (expr) {
+    assign = parser(expr).assignable().assign;
+    if (!assign) throw new Error("Expression '" + expr + "' is not assignable.");
     return {
       get: function() {
         return scope.$eval(expr);
       },
       set: function(value) {
         if (value !== _undefined) {
-          return scope.$tryEval(expr + '=' + toJson(value), element);
+          return scope.$tryEval(function(){
+            assign(scope, value);
+          }, element);
         }
       }
     };
@@ -151,15 +156,14 @@ function modelAccessor(scope, element) {
 function modelFormattedAccessor(scope, element) {
   var accessor = modelAccessor(scope, element),
       formatterName = element.attr('ng:format') || NOOP,
-      formatter = angularFormatter(formatterName);
-  if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
+      formatter = compileFormatter(formatterName);
   if (accessor) {
     return {
       get: function() {
-        return formatter.format(accessor.get());
+        return formatter.format(scope, accessor.get());
       },
       set: function(value) {
-        return accessor.set(formatter.parse(value));
+        return accessor.set(formatter.parse(scope, value));
       }
     };
   }
@@ -167,6 +171,10 @@ function modelFormattedAccessor(scope, element) {
 
 function compileValidator(expr) {
   return parser(expr).validator()();
+}
+
+function compileFormatter(expr) {
+  return parser(expr).formatter()();
 }
 
 /**
@@ -195,7 +203,7 @@ function compileValidator(expr) {
 
     I need an integer or nothing:
     <input type="text" name="value" ng:validate="integer"><br/>
- * 
+ *
  * @scenario
    it('should check ng:validate', function(){
      expect(element('.doc-example-live :input:last').attr('className')).
@@ -214,7 +222,7 @@ function compileValidator(expr) {
  * @description
  * The `ng:required` attribute widget validates that the user input is present. It is a special case
  * of the {@link angular.widget.@ng:validate ng:validate} attribute widget.
- * 
+ *
  * @element INPUT
  * @css ng-validation-error
  *
@@ -253,10 +261,10 @@ function compileValidator(expr) {
  * array.
  *
  * @example
-    Enter a comma separated list of items: 
+    Enter a comma separated list of items:
     <input type="text" name="list" ng:format="list" value="table, chairs, plate">
     <pre>list={{list}}</pre>
- * 
+ *
  * @scenario
    it('should check ng:format', function(){
      expect(binding('list')).toBe('list=["table","chairs","plate"]');
@@ -269,11 +277,10 @@ function valueAccessor(scope, element) {
       validator = compileValidator(validatorName),
       requiredExpr = element.attr('ng:required'),
       formatterName = element.attr('ng:format') || NOOP,
-      formatter = angularFormatter(formatterName),
+      formatter = compileFormatter(formatterName),
       format, parse, lastError, required,
       invalidWidgets = scope.$service('$invalidWidgets') || {markValid:noop, markInvalid:noop};
   if (!validator) throw "Validator named '" + validatorName + "' not found.";
-  if (!formatter) throw "Formatter named '" + formatterName + "' not found.";
   format = formatter.format;
   parse = formatter.parse;
   if (requiredExpr) {
@@ -291,7 +298,7 @@ function valueAccessor(scope, element) {
       if (lastError)
         elementError(element, NG_VALIDATION_ERROR, _null);
       try {
-        var value = parse(element.val());
+        var value = parse(scope, element.val());
         validate();
         return value;
       } catch (e) {
@@ -301,7 +308,7 @@ function valueAccessor(scope, element) {
     },
     set: function(value) {
       var oldValue = element.val(),
-          newValue = format(value);
+          newValue = format(scope, value);
       if (oldValue != newValue) {
         element.val(newValue || ''); // needed for ie
       }
@@ -355,19 +362,22 @@ function radioAccessor(scope, element) {
 }
 
 function optionsAccessor(scope, element) {
-  var options = element[0].options;
+  var formatterName = element.attr('ng:format') || NOOP,
+      formatter = compileFormatter(formatterName);
   return {
     get: function(){
       var values = [];
-      forEach(options, function(option){
-        if (option.selected) values.push(option.value);
+      forEach(element[0].options, function(option){
+        if (option.selected) values.push(formatter.parse(scope, option.value));
       });
       return values;
     },
     set: function(values){
       var keys = {};
-      forEach(values, function(value){ keys[value] = true; });
-      forEach(options, function(option){
+      forEach(values, function(value){
+        keys[formatter.format(scope, value)] = true;
+      });
+      forEach(element[0].options, function(option){
         option.selected = keys[option.value];
       });
     }
@@ -376,6 +386,18 @@ function optionsAccessor(scope, element) {
 
 function noopAccessor() { return { get: noop, set: noop }; }
 
+/*
+ * TODO: refactor
+ *
+ * The table bellow is not quite right. In some cases the formatter is on the model side
+ * and in some cases it is on the view side. This is a historical artifact
+ *
+ * The concept of model/view accessor is useful for anyone who is trying to develop UI, and
+ * so it should be exposed to others. There should be a form object which keeps track of the
+ * accessors and also acts as their factory. It should expose it as an object and allow
+ * the validator to publish errors to it, so that the the error messages can be bound to it.
+ *
+ */
 var textWidget = inputWidget('keydown change', modelAccessor, valueAccessor, initWidgetValue(), true),
     buttonWidget = inputWidget('click', noopAccessor, noopAccessor, noop),
     INPUT_TYPE = {
@@ -389,8 +411,8 @@ var textWidget = inputWidget('keydown change', modelAccessor, valueAccessor, ini
       'image':           buttonWidget,
       'checkbox':        inputWidget('click', modelFormattedAccessor, checkedAccessor, initWidgetValue(false)),
       'radio':           inputWidget('click', modelFormattedAccessor, radioAccessor, radioInit),
-      'select-one':      inputWidget('change', modelFormattedAccessor, valueAccessor, initWidgetValue(_null)),
-      'select-multiple': inputWidget('change', modelFormattedAccessor, optionsAccessor, initWidgetValue([]))
+      'select-one':      inputWidget('change', modelAccessor, valueAccessor, initWidgetValue(_null)),
+      'select-multiple': inputWidget('change', modelAccessor, optionsAccessor, initWidgetValue([]))
 //      'file':            fileWidget???
     };
 
@@ -427,7 +449,7 @@ function radioInit(model, view, element) {
  *
  * @description
  * The directive executes an expression whenever the input widget changes.
- * 
+ *
  * @element INPUT
  * @param {expression} expression to execute.
  *
@@ -438,17 +460,17 @@ function radioInit(model, view, element) {
        changeCount {{textCount}}<br/>
     <input type="checkbox" name="checkbox" ng:change="checkboxCount = 1 + checkboxCount">
        changeCount {{checkboxCount}}<br/>
- * 
+ *
  * @scenario
    it('should check ng:change', function(){
      expect(binding('textCount')).toBe('0');
      expect(binding('checkboxCount')).toBe('0');
-     
+
      using('.doc-example-live').input('text').enter('abc');
      expect(binding('textCount')).toBe('1');
      expect(binding('checkboxCount')).toBe('0');
-     
-     
+
+
      using('.doc-example-live').input('checkbox').check();
      expect(binding('textCount')).toBe('1');
      expect(binding('checkboxCount')).toBe('1');
@@ -504,41 +526,49 @@ angularWidget('select', function(element){
  * <select name="selection">
  *   <option ng:repeat="x in [1,2]">{{x}}</option>
  * </select>
- * 
+ *
  * The issue is that the select gets evaluated before option is unrolled.
  * This means that the selection is undefined, but the browser
- * default behavior is to show the top selection in the list. 
+ * default behavior is to show the top selection in the list.
  * To fix that we register a $update function on the select element
- * and the option creation then calls the $update function when it is 
- * unrolled. The $update function then calls this update function, which 
+ * and the option creation then calls the $update function when it is
+ * unrolled. The $update function then calls this update function, which
  * then tries to determine if the model is unassigned, and if so it tries to
  * chose one of the options from the list.
  */
 angularWidget('option', function(){
   this.descend(true);
   this.directives(true);
-  return function(element) {
-    var select = element.parent();
+  return function(option) {
+    var select = option.parent();
+    var isMultiple = select.attr('multiple') == '';
     var scope = retrieveScope(select);
-    var model = modelFormattedAccessor(scope, select);
-    var view = valueAccessor(scope, select);
-    var option = element;
+    var model = modelAccessor(scope, select);
+    var formattedModel = modelFormattedAccessor(scope, select);
+    var view = isMultiple
+      ? optionsAccessor(scope, select)
+      : valueAccessor(scope, select);
     var lastValue = option.attr($value);
-    var lastSelected = option.attr('ng-' + $selected);
-    element.data($$update, function(){
-      var value = option.attr($value);
-      var selected = option.attr('ng-' + $selected);
-      var modelValue = model.get();
-      if (lastSelected != selected || lastValue != value) {
-        lastSelected = selected;
-        lastValue = value;
-        if (selected || modelValue == _null || modelValue == _undefined) 
-          model.set(value);
-        if (value == modelValue) {
-          view.set(lastValue);
+    var wasSelected = option.attr('ng-' + $selected);
+    option.data($$update, isMultiple
+      ? function(){
+          view.set(model.get());
         }
-      }
-    });
+      : function(){
+          var currentValue = option.attr($value);
+          var isSelected = option.attr('ng-' + $selected);
+          var modelValue = model.get();
+          if (wasSelected != isSelected || lastValue != currentValue) {
+            wasSelected = isSelected;
+            lastValue = currentValue;
+            if (isSelected || !modelValue == null || modelValue == undefined )
+              formattedModel.set(currentValue);
+            if (currentValue == modelValue) {
+              view.set(lastValue);
+            }
+          }
+        }
+    );
   };
 });
 
@@ -549,12 +579,12 @@ angularWidget('option', function(){
  *
  * @description
  * Include external HTML fragment.
- * 
- * Keep in mind that Same Origin Policy applies to included resources 
+ *
+ * Keep in mind that Same Origin Policy applies to included resources
  * (e.g. ng:include won't work for file:// access).
  *
  * @param {string} src expression evaluating to URL.
- * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an 
+ * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an
  *                 instance of angular.scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
@@ -636,17 +666,17 @@ angularWidget('ng:include', function(element){
  *
  * @description
  * Conditionally change the DOM structure.
- * 
+ *
  * @usageContent
  * <any ng:switch-when="matchValue1">...</any>
  *   <any ng:switch-when="matchValue2">...</any>
  *   ...
  *   <any ng:switch-default>...</any>
- * 
+ *
  * @param {*} on expression to match against <tt>ng:switch-when</tt>.
- * @paramDescription 
+ * @paramDescription
  * On child elments add:
- * 
+ *
  * * `ng:switch-when`: the case statement to match against. If match then this
  *   case will be displayed.
  * * `ng:switch-default`: the default case when no other casses match.

@@ -197,7 +197,7 @@ angularDirective("ng:bind", function(expression, element){
       if (lastValue === value && lastError == error) return;
       isDomElement = isElement(value);
       if (!isHtml && !isDomElement && isObject(value)) {
-        value = toJson(value);
+        value = toJson(value, true);
       }
       if (value != lastValue || error != lastError) {
         lastValue = value;
@@ -234,7 +234,7 @@ function compileBindTemplate(template){
         return text;
       });
     });
-    bindTemplateCache[template] = fn = function(element){
+    bindTemplateCache[template] = fn = function(element, prettyPrintJson){
       var parts = [], self = this,
          oldElement = this.hasOwnProperty($$element) ? self.$element : _undefined;
       self.$element = element;
@@ -243,7 +243,7 @@ function compileBindTemplate(template){
         if (isElement(value))
           value = '';
         else if (isObject(value))
-          value = toJson(value, true);
+          value = toJson(value, prettyPrintJson);
         parts.push(value);
       }
       self.$element = oldElement;
@@ -292,7 +292,7 @@ angularDirective("ng:bind-template", function(expression, element){
   return function(element) {
     var lastValue;
     this.$onEval(function() {
-      var value = templateFn.call(this, element);
+      var value = templateFn.call(this, element, true);
       if (value != lastValue) {
         element.text(value);
         lastValue = value;

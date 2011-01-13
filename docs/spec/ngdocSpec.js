@@ -1,4 +1,5 @@
 var ngdoc = require('ngdoc.js');
+var DOM = require('dom.js').DOM;
 
 describe('ngdoc', function(){
   var Doc = ngdoc.Doc;
@@ -250,6 +251,68 @@ describe('ngdoc', function(){
         var doc = new Doc('@deprecated Replaced with foo.');
         doc.parse();
         expect(doc.deprecated).toBe('Replaced with foo.');
+      });
+    });
+  });
+  
+  describe('usage', function(){
+    var dom;
+    
+    beforeEach(function(){
+      dom = new DOM();
+      this.addMatchers({
+        toContain: function(text) { 
+          this.actual = this.actual.toString();
+          return this.actual.indexOf(text) > -1; 
+        }
+      });
+    });
+    
+    describe('filter', function(){
+      it('should format', function(){
+        var doc = new Doc({
+          ngdoc:'formatter',
+          shortName:'myFilter',
+          param: [
+            {name:'a'},
+            {name:'b'}
+          ]
+        });
+        doc.html_usage_filter(dom);
+        expect(dom).toContain('myFilter_expression | myFilter:b');
+        expect(dom).toContain('angular.filter.myFilter(a, b)');
+      });
+    });
+    
+    describe('validator', function(){
+      it('should format', function(){
+        var doc = new Doc({
+          ngdoc:'validator',
+          shortName:'myValidator',
+          param: [
+            {name:'a'},
+            {name:'b'}
+          ]
+        });
+        doc.html_usage_validator(dom);
+        expect(dom).toContain('ng:validate="myValidator:b"');
+        expect(dom).toContain('angular.validator.myValidator(a, b)');
+      });
+    });
+    
+    describe('formatter', function(){
+      it('should format', function(){
+        var doc = new Doc({
+          ngdoc:'formatter',
+          shortName:'myFormatter',
+          param: [
+            {name:'a'},
+          ]
+        });
+        doc.html_usage_formatter(dom);
+        expect(dom).toContain('ng:format="myFormatter:a"');
+        expect(dom).toContain('var userInputString = angular.formatter.myFormatter.format(modelValue, a);');
+        expect(dom).toContain('var modelValue = angular.formatter.myFormatter.parse(userInputString, a);');
       });
     });
   });

@@ -218,6 +218,7 @@ function parser(text, json){
   var ZERO = valueFn(0),
       tokens = lex(text, json),
       assignment = _assignment, 
+      assignable = logicalOR,
       functionCall = _functionCall, 
       fieldAccess = _fieldAccess, 
       objectIndex = _objectIndex, 
@@ -231,6 +232,7 @@ function parser(text, json){
     functionCall = 
       fieldAccess = 
       objectIndex = 
+      assignable =
       filterChain = 
       functionIdent = 
       pipeFunction = 
@@ -238,9 +240,11 @@ function parser(text, json){
   }
   return {
       assertAllConsumed: assertAllConsumed,
+      assignable: assignable,
       primary: primary,
       statements: statements,
       validator: validator,
+      formatter: formatter,
       filter: filter,
       //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
       watch: watch
@@ -351,6 +355,33 @@ function parser(text, json){
 
   function validator(){
     return pipeFunction(angularValidator);
+  }
+
+  function formatter(){
+    var token = expect();
+    var formatter = angularFormatter[token.text];
+    var argFns = [];
+    var token;
+    if (!formatter) throwError('is not a valid formatter.', token);
+    while(true) {
+      if ((token = expect(':'))) {
+        argFns.push(expression());
+      } else {
+        return valueFn({
+          format:invokeFn(formatter.format), 
+          parse:invokeFn(formatter.parse)
+        });
+      }
+    }
+    function invokeFn(fn){
+      return function(self, input){
+        var args = [input];
+        for ( var i = 0; i < argFns.length; i++) {
+          args.push(argFns[i](self));
+        }
+        return fn.apply(self, args);
+      };
+    }
   }
 
   function _pipeFunction(fnScope){

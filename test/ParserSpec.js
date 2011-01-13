@@ -396,4 +396,29 @@ describe('parser', function() {
     expect(scope.obj.name).toBeUndefined();
     expect(scope.obj[0].name).toEqual(1);
   });
+  
+  describe('formatter', function(){
+    it('should return no argument function', function() {
+      var noop = parser('noop').formatter()();
+      expect(noop.format(null, 'abc')).toEqual('abc');
+      expect(noop.parse(null, '123')).toEqual('123');
+    });
+    
+    it('should delegate arguments', function(){
+      var index = parser('index:objs').formatter()();
+      expect(index.format({objs:['A','B']}, 'B')).toEqual('1');
+      expect(index.parse({objs:['A','B']}, '1')).toEqual('B');
+    });
+  });
+  
+  describe('assignable', function(){
+    it('should expose assignment function', function(){
+      var fn = parser('a').assignable();
+      expect(fn.assign).toBeTruthy();
+      var scope = {};
+      fn.assign(scope, 123);
+      expect(scope).toEqual({a:123});
+    });
+  });
+  
 });
