@@ -509,6 +509,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
 
 function inputWidgetSelector(element){
   this.directives(true);
+  this.descend(true);
   return INPUT_TYPE[lowercase(element[0].type)] || noop;
 }
 
