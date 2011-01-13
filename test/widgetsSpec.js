@@ -44,7 +44,7 @@ describe("widget", function(){
         expect(scope.$get('name')).toEqual('Kai');
         expect(scope.$get('count')).toEqual(2);
       });
-      
+
       it('should not trigger eval if value does not change', function(){
         compile('<input type="Text" name="name" value="Misko" ng:change="count = count + 1" ng:init="count=0"/>');
         expect(scope.name).toEqual("Misko");
@@ -53,7 +53,7 @@ describe("widget", function(){
         expect(scope.name).toEqual("Misko");
         expect(scope.count).toEqual(0);
       });
-      
+
       it('should allow complex refernce binding', function(){
         compile('<div ng:init="obj={abc:{}}">'+
                   '<input type="Text" name="obj[\'abc\'].name" value="Misko""/>'+
@@ -416,7 +416,7 @@ describe("widget", function(){
         scope.$eval();
         expect(element[0].childNodes[1].selected).toEqual(true);
       });
-      
+
       it('should select default option on repeater', function(){
         compile(
             '<select name="selection">' +
@@ -424,7 +424,7 @@ describe("widget", function(){
             '</select>');
         expect(scope.selection).toEqual('1');
       });
-      
+
       it('should select selected option on repeater', function(){
         compile(
             '<select name="selection">' +
@@ -433,7 +433,7 @@ describe("widget", function(){
             '</select>');
         expect(scope.selection).toEqual('ABC');
       });
-      
+
       it('should select dynamically selected option on repeater', function(){
         compile(
             '<select name="selection">' +
@@ -441,21 +441,81 @@ describe("widget", function(){
             '</select>');
         expect(scope.selection).toEqual('2');
       });
-      
+
+      it('should allow binding to objects through JSON', function(){
+        compile(
+            '<select name="selection" ng:format="json">' +
+              '<option ng:repeat="obj in objs" value="{{obj}}">{{obj.name}}</option>' +
+            '</select>');
+        scope.objs = [{name:'A'}, {name:'B'}];
+        scope.$eval();
+        expect(scope.selection).toEqual({name:'A'});
+      });
+
+      it('should allow binding to objects through index', function(){
+        compile(
+            '<select name="selection" ng:format="index:objs">' +
+              '<option ng:repeat="obj in objs" value="{{$index}}">{{obj.name}}</option>' +
+            '</select>');
+        scope.objs = [{name:'A'}, {name:'B'}];
+        scope.$eval();
+        expect(scope.selection).toBe(scope.objs[0]);
+      });
+
     });
 
-    it('should support type="select-multiple"', function(){
-      compile(
-        '<select name="selection" multiple>' +
-          '<option>A</option>' +
-          '<option selected>B</option>' +
-        '</select>');
-      expect(scope.selection).toEqual(['B']);
-      scope.selection = ['A'];
-      scope.$eval();
-      expect(element[0].childNodes[0].selected).toEqual(true);
+    describe('select-multiple', function(){
+      it('should support type="select-multiple"', function(){
+        compile('<select name="selection" multiple>' +
+                  '<option>A</option>' +
+                  '<option selected>B</option>' +
+                '</select>');
+        expect(scope.selection).toEqual(['B']);
+        scope.selection = ['A'];
+        scope.$eval();
+        expect(element[0].childNodes[0].selected).toEqual(true);
+      });
+
+      it('should allow binding to objects through index', function(){
+        compile('<select name="selection" multiple ng:format="index:list">' +
+                  '<option selected value="0">A</option>' +
+                  '<option selected value="1">B</option>' +
+                  '<option value="2">C</option>' +
+                '</select>',
+                function(){
+                  scope.list = [{name:'A'}, {name:'B'}, {name:'C'}];
+                });
+        scope.$eval();
+        expect(scope.selection).toEqual([{name:'A'}, {name:'B'}]);
+      });
+
+      it('should be empty array when no items are selected', function(){
+        compile(
+          '<select name="selection" multiple ng:format="index:list">' +
+            '<option value="0">A</option>' +
+            '<option value="1">B</option>' +
+            '<option value="2">C</option>' +
+          '</select>');
+        scope.list = [{name:'A'}, {name:'B'}, {name:'C'}];
+        scope.$eval();
+        expect(scope.selection).toEqual([]);
+      });
+
+      it('should be contain the selected object', function(){
+        compile('<select name="selection" multiple ng:format="index:list">' +
+                  '<option value="0">A</option>' +
+                  '<option value="1" selected>B</option>' +
+                  '<option value="2">C</option>' +
+                '</select>',
+                function(){
+                  scope.list = [{name:'A'}, {name:'B'}, {name:'C'}];
+                });
+        scope.$eval();
+        expect(scope.selection).toEqual([{name:'B'}]);
+      });
+
     });
-    
+
     it('should ignore text widget which have no name', function(){
       compile('<input type="text"/>');
       expect(scope.$element.attr('ng-exception')).toBeFalsy();
@@ -504,7 +564,7 @@ describe("widget", function(){
       scope.$eval();
       expect(element.text()).toEqual('true:misko');
     });
-    
+
     it("should compare stringified versions", function(){
       var switchWidget = angular.widget('ng:switch');
       expect(switchWidget.equals(true, 'true')).toEqual(true);
@@ -521,7 +581,7 @@ describe("widget", function(){
       scope.$eval();
       expect(element.text()).toEqual('one');
     });
-    
+
     it("should match urls", function(){
       var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng:switch-when="/Book/:name">{{params.name}}</div></ng:switch>');
       scope.url = '/Book/Moby';

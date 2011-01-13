@@ -33,7 +33,7 @@ function toJson(obj, pretty) {
  * @returns {Object|Array|Date|string|number} Deserialized thingy.
  */
 function fromJson(json, useNative) {
-  if (!json) return json;
+  if (!isString(json)) return json;
 
   var obj, p, expression;
 
