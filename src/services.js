@@ -70,22 +70,17 @@ angularServiceInject("$document", function(window){
  */
 angularServiceInject("$location", function($browser) {
   var scope = this,
-      location = {toString:toString, update:update, updateHash: updateHash},
-      lastBrowserUrl = $browser.getUrl(),
-      lastLocationHref,
-      lastLocationHash;
+      location = {update:update, updateHash: updateHash},
+      lastLocation = {};
 
-  $browser.onHashChange(function() {
-    update(lastBrowserUrl = $browser.getUrl());
-    updateLastLocation();
+  $browser.onHashChange(function() { //register
+    update($browser.getUrl());
+    copy(location, lastLocation);
     scope.$eval();
-  });
+  })(); //initialize
 
-  this.$onEval(PRIORITY_FIRST, updateBrowser);
+  this.$onEval(PRIORITY_FIRST, sync);
   this.$onEval(PRIORITY_LAST, updateBrowser);
-
-  update(lastBrowserUrl);
-  updateLastLocation();
 
   return location;
 
@@ -107,7 +102,7 @@ angularServiceInject("$location", function($browser) {
    * scope.$location.update({host: 'www.google.com', protocol: 'https'});
    * scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
    *
-   * @param {(string|Object)} href Full href as a string or hash object with properties
+   * @param {(string|Object)} href Full href as a string or object with properties
    */
   function update(href) {
     if (isString(href)) {
@@ -163,27 +158,20 @@ angularServiceInject("$location", function($browser) {
     update(hash);
   }
 
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$location#toString
-   * @methodOf angular.service.$location
-   * 
-   * @description
-   * Returns string representation - href
-   */
-  function toString() {
-    updateLocation();
-    return location.href;
-  }
 
   // INNER METHODS
 
   /**
-   * Update location object
+   * Synchronizes all location object properties.
    *
    * User is allowed to change properties, so after property change,
    * location object is not in consistent state.
+   *
+   * Properties are synced with the following precedence order:
+   *
+   * - `$location.href`
+   * - `$location.hash`
+   * - everything else
    *
    * @example
    * scope.$location.href = 'http://www.angularjs.org/path#a/b'
@@ -191,34 +179,34 @@ angularServiceInject("$location", function($browser) {
    *
    * This method checks the changes and update location to the consistent state
    */
-  function updateLocation() {
-    if (location.href == lastLocationHref) {
-      if (location.hash == lastLocationHash) {
-        location.hash = composeHash(location);
+  function sync() {
+    if (!equals(location, lastLocation)) {
+      if (location.href != lastLocation.href) {
+        update(location.href);
+        return;
       }
-      location.href = composeHref(location);
+      if (location.hash != lastLocation.hash) {
+        var hash = parseHash(location.hash);
+        updateHash(hash.path, hash.search);
+      } else {
+        location.hash = composeHash(location);
+        location.href = composeHref(location);
+      }
+      update(location.href);
     }
-    update(location.href);
   }
 
-  /**
-   * Update information about last location
-   */
-  function updateLastLocation() {
-    lastLocationHref = location.href;
-    lastLocationHash = location.hash;
-  }
 
   /**
    * If location has changed, update the browser
    * This method is called at the end of $eval() phase
    */
   function updateBrowser() {
-    updateLocation();
+    sync();
 
-    if (location.href != lastLocationHref) {    	
-      $browser.setUrl(lastBrowserUrl = location.href);
-      updateLastLocation();
+    if ($browser.getUrl() != location.href) {
+      $browser.setUrl(location.href);
+      copy(location, lastLocation);
     }
   }
 
