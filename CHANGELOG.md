@@ -52,6 +52,8 @@
 
 - `angular.foreach` was renamed to `angular.forEach` to make the api consistent.
 
+- The `toString` method of the `angular.service.$location` service was removed.
+
 
 # <angular/> 0.9.8 astral-projection (2010-12-23) #
 
