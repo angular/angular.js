@@ -302,9 +302,10 @@ describe("widget", function(){
     });
 
     it('should support button alias', function(){
-      compile('<button ng:change="clicked = true">Click Me</button>');
+      compile('<button ng:change="clicked = true">Click {{"Me"}}.</button>');
       browserTrigger(element);
       expect(scope.$get('clicked')).toEqual(true);
+      expect(scope.$element.text()).toEqual("Click Me.");
     });
 
     describe('radio', function(){
