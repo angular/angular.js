@@ -77,6 +77,8 @@ function MockBrowser() {
         }
       }
     );
+
+    return listener;
   };
 
 

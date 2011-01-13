@@ -232,6 +232,7 @@ function Browser(window, document, body, XHR, $log) {
    * {@link angular.service.$location $location service} to monitor hash changes in angular apps.
    *
    * @param {function(event)} listener Listener function to be called when url hash changes.
+   * @return {function()} Returns the registered listener fn - handy if the fn is anonymous.
    */
   self.onHashChange = function(listener) {
     if ('onhashchange' in window) {
@@ -245,6 +246,7 @@ function Browser(window, document, body, XHR, $log) {
         }
       });
     }
+    return listener;
   }
 
   //////////////////////////////////////////////////////////////
