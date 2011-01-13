@@ -89,6 +89,28 @@ describe('equals', function(){
   it('should ignore functions', function(){
     expect(equals({func: function() {}}, {bar: function() {}})).toEqual(true);
   });
+
+  it('should work well with nulls', function() {
+    expect(equals(null, '123')).toBe(false);
+    expect(equals('123', null)).toBe(false);
+
+    var obj = {foo:'bar'};
+    expect(equals(null, obj)).toBe(false);
+    expect(equals(obj, null)).toBe(false);
+
+    expect(equals(null, null)).toBe(true);
+  });
+
+  it('should work well with undefined', function() {
+    expect(equals(undefined, '123')).toBe(false);
+    expect(equals('123', undefined)).toBe(false);
+
+    var obj = {foo:'bar'};
+    expect(equals(undefined, obj)).toBe(false);
+    expect(equals(obj, undefined)).toBe(false);
+
+    expect(equals(undefined, undefined)).toBe(true);
+  });
 });
 
 describe('parseKeyValue', function() {
