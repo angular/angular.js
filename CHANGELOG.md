@@ -1,58 +1,73 @@
-# <angular/> 0.9.9 time-shift (in-progress) #
+# <angular/> 0.9.9 time-shift (2011-01-13) #
+
+### Security
+- Added a just in case security check for JSON parsing. (commit 5f080193)
+- Completed security review with the Google Security Team.
 
 ### Performance
 - $location and $cookies services are now lazily initialized to avoid the polling overhead when
   not needed.
 - $location service now listens for `onhashchange` events (if supported by browser) instead of
-  constant polling.
+  constant polling. (commit 16086aa3)
 - input widgets known listens on keydown events instead of keyup which improves perceived
-  performance
-
-### API
-
-- new service $updateView which should be used in favor of $root.$eval() to run a complete eval on
+  performance (commit 47c454a3)
+- angular boots significantly sooner by listening for DOMContentLoaded event instead of
+  window.load when supported by browser (commit c79aba92)
+- new service $updateView which may be used in favor of $root.$eval() to run a complete eval on
   the entire document. This service bulks and throttles DOM updates to improve performance.
+  (commit 47c454a3)
+
+### Docs
+- Major improvements to the doc parser (commit 4f22d686)
+- Docs now offline enabled (all dependencies are bundled in the tarball) (commit 4f5d5029)
+- Added support for navigating the docs app with keyboard shortcuts (tab and ctrl+alt+s)
+
+### Bugfixes
+- `angular.Object.equals` now properly handless comparing an object with a null (commit b0be87f6)
+- Several issues were addressed in the `$location` service (commit 23875cb3)
+- angular.filter.date now properly handles some corner-cases (issue #159 - fix contributed by Vojta)
 
 ### Breaking changes
- - API for accessing registered services — `scope.$inject` — was renamed to
-   [`scope.$service`](http://docs.angularjs.org/#!angular.scope.$service).
+- API for accessing registered services — `scope.$inject` — was renamed to
+  [`scope.$service`](http://docs.angularjs.org/#!angular.scope.$service). (commit b2631f61)
 
- - Support for `eager-published` services was removed. This change was done to make explicit
-   dependency declaration always required in order to allow making relatively expensive services
-   lazily initialized (e.g. $cookie, $location), as well as remove 'magic' and reduce unnecessary
-   scope namespace pollution.
+- Support for `eager-published` services was removed. This change was done to make explicit
+  dependency declaration always required in order to allow making relatively expensive services
+  lazily initialized (e.g. $cookie, $location), as well as remove 'magic' and reduce unnecessary
+  scope namespace pollution. (commit 3ea5941f)
 
-   Complete list of affected services:
+  Complete list of affected services:
 
-   - $location
-   - $route
-   - $cookies
-   - $window
-   - $document
-   - $exceptionHandler
-   - $invalidWidgets
+  - $location
+  - $route
+  - $cookies
+  - $window
+  - $document
+  - $exceptionHandler
+  - $invalidWidgets
 
-   To temporarily preserve the 'eager-published' status for these services, you may use `ng:init`
-   (e.g. `ng:init="$location = $service('$location'), ...`) in the view or more correctly create
-   a service like this:
+  To temporarily preserve the 'eager-published' status for these services, you may use `ng:init`
+  (e.g. `ng:init="$location = $service('$location'), ...`) in the view or more correctly create
+  a service like this:
 
-       angular.service('published-svc-shim', function() {
-         this.$location = this.$service('$location');
-         this.$route = this.$service('$route');
-         this.$cookies = this.$service('$cookies');
-         this.$window = this.$service('$window');
-         this.$document = this.$service('$document');
-         this.$exceptionHandler = this.$service('$exceptionHandler');
-         this.$invalidWidgets = this.$service('$invalidWidgets');
-       }, {$creation: 'eager'});
+      angular.service('published-svc-shim', function() {
+        this.$location = this.$service('$location');
+        this.$route = this.$service('$route');
+        this.$cookies = this.$service('$cookies');
+        this.$window = this.$service('$window');
+        this.$document = this.$service('$document');
+        this.$exceptionHandler = this.$service('$exceptionHandler');
+        this.$invalidWidgets = this.$service('$invalidWidgets');
+      }, {$eager: true});
 
 - In the light of the `eager-published` change, to complete the cleanup we renamed `$creation`
   property of services to `eager` with its value being a boolean.
   To transition, please rename all `$creation: 'eager'` declarations to `$eager: true`.
+  (commit 1430c6d6)
 
-- `angular.foreach` was renamed to `angular.forEach` to make the api consistent.
+- `angular.foreach` was renamed to `angular.forEach` to make the api consistent. (commit 0a6cf70d)
 
-- The `toString` method of the `angular.service.$location` service was removed.
+- The `toString` method of the `angular.service.$location` service was removed. (commit 23875cb3)
 
 
 # <angular/> 0.9.8 astral-projection (2010-12-23) #
