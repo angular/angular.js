@@ -5,13 +5,13 @@ describe('ngdoc', function(){
   var Doc = ngdoc.Doc;
   describe('Doc', function(){
     describe('metadata', function(){
-      
+
       it('should find keywords', function(){
         expect(new Doc('\nHello: World! @ignore.').keywords()).toEqual('hello world');
         expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
       });
     });
-    
+
     describe('parse', function(){
       it('should convert @names into properties', function(){
         var doc = new Doc('\n@name name\n@desc\ndesc\ndesc2\n@dep\n');
@@ -20,7 +20,7 @@ describe('ngdoc', function(){
         expect(doc.desc).toEqual('desc\ndesc2');
         expect(doc.dep).toEqual('');
       });
-      
+
       it('should parse parameters', function(){
         var doc = new Doc(
             '@param {*} a short\n' +
@@ -33,7 +33,7 @@ describe('ngdoc', function(){
            {name:'c', description:'long\nline', type:'Class', optional:true, 'default':'2'}
          ]);
       });
-      
+
       it('should parse return', function(){
         var doc = new Doc('@returns {Type} text *bold*.');
         doc.parse();
@@ -42,29 +42,36 @@ describe('ngdoc', function(){
           description: 'text <em>bold</em>.'
         });
       });
+
+      it('should not remove extra line breaks', function(){
+        var doc = new Doc('@example\nA\n\nB');
+        doc.parse();
+        expect(doc.example).toEqual('A\n\nB');
+      });
+
     });
-    
-    
+
+
   });
-  
+
   describe('markdown', function(){
     var markdown = ngdoc.markdown;
-    
+
     it('should replace angular in markdown', function(){
       expect(markdown('<angular/>')).
         toEqual('<p><tt>&lt;angular/&gt;</tt></p>');
     });
-    
+
     it('should not replace anything in <pre>', function(){
       expect(markdown('bah x\n<pre>\nangular.k\n</pre>\n asdf x')).
         toEqual(
             '<p>bah x</p>' +
-            '<div ng:non-bindable><pre class="brush: js; html-script: true;">\n' + 
-            'angular.k\n' + 
-            '</pre></div>' + 
+            '<div ng:non-bindable><pre class="brush: js; html-script: true;">\n' +
+            'angular.k\n' +
+            '</pre></div>' +
             '<p>asdf x</p>');
     });
-    
+
     it('should replace text between two <pre></pre> tags', function() {
       expect(markdown('<pre>x</pre># One<pre>b</pre>')).
         toMatch('</div><h3>One</h3><div');
@@ -76,12 +83,12 @@ describe('ngdoc', function(){
     it('should remove leading/trailing space', function(){
       expect(trim('  \nabc\n  ')).toEqual('abc');
     });
-    
+
     it('should remove leading space on every line', function(){
       expect(trim('\n 1\n  2\n   3\n')).toEqual('1\n 2\n  3');
     });
   });
-  
+
   describe('merge', function(){
     it('should merge child with parent', function(){
       var parent = new Doc({name:'angular.service.abc'});
@@ -96,36 +103,36 @@ describe('ngdoc', function(){
       expect(docs[0].methods).toEqual([methodA, methodB]);
       expect(docs[0].properties).toEqual([propA, propB]);
     });
-    
+
   });
-  
+
   ////////////////////////////////////////
-  
+
   describe('TAG', function(){
     describe('@param', function(){
       it('should parse with no default', function(){
         var doc = new Doc('@param {(number|string)} number Number \n to format.');
         doc.parse();
-        expect(doc.param).toEqual([{ 
-          type : '(number|string)', 
+        expect(doc.param).toEqual([{
+          type : '(number|string)',
           name : 'number',
           optional: false,
-          'default' : undefined, 
+          'default' : undefined,
           description : 'Number \n to format.' }]);
       });
-      
+
       it('should parse with default and optional', function(){
         var doc = new Doc('@param {(number|string)=} [fractionSize=2] desc');
         doc.parse();
-        expect(doc.param).toEqual([{ 
-          type : '(number|string)', 
+        expect(doc.param).toEqual([{
+          type : '(number|string)',
           name : 'fractionSize',
           optional: true,
-          'default' : '2', 
+          'default' : '2',
           description : 'desc' }]);
       });
     });
-    
+
     describe('@requires', function() {
       it('should parse more @requires tag into array', function() {
         var doc = new Doc('@requires $service\n@requires $another');
@@ -140,27 +147,27 @@ describe('ngdoc', function(){
         doc.parse();
         expect(doc.properties.length).toEqual(2);
       });
-      
+
       it('should parse @property with only name', function() {
         var doc = new Doc("@property fake");
         doc.parse();
         expect(doc.properties[0].name).toEqual('fake');
       });
-      
+
       it('should parse @property with optional type', function() {
         var doc = new Doc("@property {string} name");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
         expect(doc.properties[0].type).toEqual('string');
       });
-      
+
       it('should parse @property with optional description', function() {
         var doc = new Doc("@property name desc rip tion");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
         expect(doc.properties[0].description).toEqual('desc rip tion');
       });
-      
+
       it('should parse @property with type and description both', function() {
         var doc = new Doc("@property {bool} name desc rip tion");
         doc.parse();
@@ -168,15 +175,15 @@ describe('ngdoc', function(){
         expect(doc.properties[0].type).toEqual('bool');
         expect(doc.properties[0].description).toEqual('desc rip tion');
       });
-      
+
     });
-    
+
     describe('@returns', function() {
       it('should not parse @returns without type', function() {
         var doc = new Doc("@returns lala");
         expect(doc.parse).toThrow();
       });
-      
+
       it('should parse @returns with type and description', function() {
         var doc = new Doc("@returns {string} descrip tion");
         doc.parse();
@@ -196,7 +203,7 @@ describe('ngdoc', function(){
           toEqual({type: 'string', description: 'description\n new line\n another line'});
       });
     });
-    
+
     describe('@description', function(){
       it('should support pre blocks', function(){
         var doc = new Doc("@description <pre>abc</pre>");
@@ -254,20 +261,20 @@ describe('ngdoc', function(){
       });
     });
   });
-  
+
   describe('usage', function(){
     var dom;
-    
+
     beforeEach(function(){
       dom = new DOM();
       this.addMatchers({
-        toContain: function(text) { 
+        toContain: function(text) {
           this.actual = this.actual.toString();
-          return this.actual.indexOf(text) > -1; 
+          return this.actual.indexOf(text) > -1;
         }
       });
     });
-    
+
     describe('filter', function(){
       it('should format', function(){
         var doc = new Doc({
@@ -283,7 +290,7 @@ describe('ngdoc', function(){
         expect(dom).toContain('angular.filter.myFilter(a, b)');
       });
     });
-    
+
     describe('validator', function(){
       it('should format', function(){
         var doc = new Doc({
@@ -299,7 +306,7 @@ describe('ngdoc', function(){
         expect(dom).toContain('angular.validator.myValidator(a, b)');
       });
     });
-    
+
     describe('formatter', function(){
       it('should format', function(){
         var doc = new Doc({
