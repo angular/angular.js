@@ -469,7 +469,6 @@ function map(obj, iterator, context) {
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.Object.size
  * @function
@@ -481,14 +480,20 @@ function map(obj, iterator, context) {
  * {@link angular.Object} for more info.
  *
  * @param {Object|Array} obj Object or array to inspect.
- * @returns {number} The size of `obj` or `0` if `obj` is not an object or array.
+ * @returns {number} The size of `obj` or `0` if `obj` is neither an object or an array.
  *
  * @example
  * Number of items in array: {{ [1,2].$size() }}<br/>
  * Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
+ *
+ * @scenario
+   it('should print correct sizes for an array and an object', function() {
+     expect(binding('[1,2].$size()')).toBe('2');
+     expect(binding('{a:1, b:2, c:3}.$size()')).toBe('3');
+   });
  */
 function size(obj) {
-  var size = 0;
+  var size = 0, key;
   if (obj) {
     if (isNumber(obj.length)) {
       return obj.length;
@@ -526,7 +531,6 @@ function isLeafNode (node) {
 }
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.Object.copy
  * @function
@@ -534,13 +538,13 @@ function isLeafNode (node) {
  * @description
  * Creates a deep copy of `source`.
  *
+ * If `source` is an object or an array, all of its members will be copied into the `destination`
+ * object.
+ *
  * If `destination` is not provided and `source` is an object or an array, a copy is created &
  * returned, otherwise the `source` is returned.
  *
  * If `destination` is provided, all of its properties will be deleted.
- *
- * If `source` is an object or an array, all of its members will be copied into the `destination`
- * object.
  *
  * Note: this function is used to augment the Object type in angular expressions. See
  * {@link angular.Object} for more info.
@@ -556,10 +560,22 @@ function isLeafNode (node) {
    <button ng:click="form = master.$copy()">copy</button>
    <hr/>
 
-   Master is <span ng:hide="master.$equals(form)">NOT</span> same as form.
+   The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
 
    <pre>master={{master}}</pre>
    <pre>form={{form}}</pre>
+
+ * @scenario
+   it('should print that initialy the form object is NOT equal to master', function() {
+     expect(element('.doc-example input[name=master.salutation]').val()).toBe('Hello');
+     expect(element('.doc-example input[name=master.name]').val()).toBe('world');
+     expect(element('.doc-example span').css('display')).toBe('inline');
+   });
+
+   it('should make form and master equal when the copy button is clicked', function() {
+     element('.doc-example button').click();
+     expect(element('.doc-example span').css('display')).toBe('none');
+   });
  */
 function copy(source, destination){
   if (!destination) {
@@ -595,7 +611,6 @@ function copy(source, destination){
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.Object.equals
  * @function
@@ -604,12 +619,10 @@ function copy(source, destination){
  * Determines if two objects or value are equivalent.
  *
  * To be equivalent, they must pass `==` comparison or be of the same type and have all their
- * properties pass `==` comparison.
+ * properties pass `==` comparison. During property comparision properties of `function` type and
+ * properties with name starting with `$` are ignored.
  *
  * Supports values types, arrays and objects.
- *
- * For objects `function` properties and properties that start with `$` are not considered during
- * comparisons.
  *
  * Note: this function is used to augment the Object type in angular expressions. See
  * {@link angular.Object} for more info.
@@ -619,15 +632,27 @@ function copy(source, destination){
  * @returns {boolean} True if arguments are equal.
  *
  * @example
-   Salutation: <input type="text" name="master.salutation" value="Hello" /><br/>
-   Name: <input type="text" name="master.name" value="world"/><br/>
-   <button ng:click="form = master.$copy()">copy</button>
+   Salutation: <input type="text" name="greeting.salutation" value="Hello" /><br/>
+   Name: <input type="text" name="greeting.name" value="world"/><br/>
    <hr/>
 
-   Master is <span ng:hide="master.$equals(form)">NOT</span> same as form.
+   The <code>greeting</code> object is
+   <span ng:hide="greeting.$equals({salutation:'Hello', name:'world'})">NOT</span> equal to
+   <code>{salutation:'Hello', name:'world'}</code>.
 
-   <pre>master={{master}}</pre>
-   <pre>form={{form}}</pre>
+   <pre>greeting={{greeting}}</pre>
+
+   @scenario
+   it('should print that initialy greeting is equal to the hardcoded value object', function() {
+     expect(element('.doc-example input[name=greeting.salutation]').val()).toBe('Hello');
+     expect(element('.doc-example input[name=greeting.name]').val()).toBe('world');
+     expect(element('.doc-example span').css('display')).toBe('none');
+   });
+
+   it('should say that the objects are not equal when the form is modified', function() {
+     input('greeting.name').enter('kitty');
+     expect(element('.doc-example span').css('display')).toBe('inline');
+   });
  */
 function equals(o1, o2) {
   if (o1 == o2) return true;
