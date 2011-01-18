@@ -4,53 +4,60 @@
 
 @description
 # Overview
-Services are substituable objects, which are wired together using dependency injection.
+Services are substituable objects, which are wired together using dependency injection (DI).
 Each service could have dependencies (other services), which are passed in constructor.
 Because JS is dynamicaly typed language, dependency injection can not use static types
-to satisfy these dependencies, so each service must explicitely define its dependencies.
+to identify these dependencies, so each service must explicitely define its dependencies.
 This is done by `$inject` property.
-
-For now, life time of all services is the same as the life time of page.
 
 
 # Built-in services
-The Angular framework provides a standard set of services for common operations.
-You can write your own services and rewrite these standard services as well.
-Like other core angular variables, the built-in services always start with $.
+angular provides a set of services for common operations. These services can be overriden by custom
+services if needed.
 
-  * `angular.service.$browser`
-  * `angular.service.$window`
-  * `angular.service.$document`
-  * `angular.service.$location`
-  * `angular.service.$log`
-  * `angular.service.$exceptionHandler`
-  * `angular.service.$hover`
-  * `angular.service.$invalidWidgets`
-  * `angular.service.$route`
-  * `angular.service.$xhr`
-  * `angular.service.$xhr.error`
-  * `angular.service.$xhr.bulk`
-  * `angular.service.$xhr.cache`
-  * `angular.service.$resource`
-  * `angular.service.$cookies`
-  * `angular.service.$cookieStore`
+Like other core angular variables and identifiers, the built-in services always start with `$`.
+
+  * `{@link angular.service.$browser $browser}`
+  * `{@link angular.service.$window $window}`
+  * `{@link angular.service.$document $document}`
+  * `{@link angular.service.$location $location}`
+  * `{@link angular.service.$log $log}`
+  * `{@link angular.service.$exceptionHandler $exceptionHandler}`
+  * `{@link angular.service.$hover $hover}`
+  * `{@link angular.service.$invalidWidgets $invalidWidgets}`
+  * `{@link angular.service.$route $route}`
+  * `{@link angular.service.$xhr $xhr}`
+  * `{@link angular.service.$xhr.error $xhr.error}`
+  * `{@link angular.service.$xhr.bulk $xhr.bulk}`
+  * `{@link angular.service.$xhr.cache $xhr.cache}`
+  * `{@link angular.service.$resource $resource}`
+  * `{@link angular.service.$cookies $cookies}`
+  * `{@link angular.service.$cookieStore $cookieStore}`
 
 # Writing your own custom services
-Angular provides only set of basic services, so you will probably need to write your custom
-service very soon. To do so, you need to write a factory function and register this function
-to angular's dependency injector. This factory function must return an object - your service
-(it is not called with new operator).
+angular provides only set of basic services, so for any nontrivial application it will be necessary
+to write one or more custom services. To do so, a factory function that creates a services needs to
+be registered with angular's dependency injector. This factory function must return an object - the
+service (it is not called with the `new` operator).
 
-**angular.service** has three parameters:
+**angular.service** accepts three parameters:
 
-  - `{string} name` - Name of the service
-  - `{function()} factory` - Factory function (called just once by DI)
-  - `{Object} config` -  Hash of configuration (`$inject`, `$creation`)
+  - `{string} name` - Name of the service.
+  - `{function()} factory` - Factory function (called just once by DI).
+  - `{Object} config` -  Configuration object with following properties:
+    - `$inject` - {Array.<string>} - Array of service ids that this service depends on. These
+      services will be passed as arguments into the factory function in the same order as specified
+      in the `$inject` array. Defaults to `[]`.
+    - `$eager` - {boolean} - If true, the service factory will be called and thus, the service will
+      be instantiated when angular boots. If false, service will be lazily instantiated when it is
+      first requested during instantiation of a dependant. Defaults to `false`.
 
-If your service requires - depends on other services, you need to specify them 
-in config hash - property $inject. This property is an array of strings (service names).
-These dependencies will be passed as parameters to the factory function by DI.
-This approach is very useful when testing, as you can inject mocks/stubs/dummies.
+The `this` of the factory function is bound to the root scope of the angular application.
+
+angular enables services to participate in dependency injection (DI) by registering themselves with
+angular's DI system (injector) under a `name` (id) as well as by declaring dependencies which need
+to be provided for the factory function of the registered service. The ability to swap dependencies
+for mocks/stubs/dummies in tests allows for services to be highly testable.
 
 Here is an example of very simple service. This service requires $window service (it's
 passed as a parameter to factory function) and it's just a function.
@@ -105,8 +112,8 @@ it('should clear messages after alert', function() {
 </pre>
 
 # Injecting services into controllers
-Using services in a controllers is very similar to using service in other service.
-Again, we will use dependency injection.
+Using services as dependencies for controllers is very similar to using them as dependencies for
+another service.
 
 JavaScript is dynamic language, so DI is not able to figure out which services to inject by
 static types (like in static typed languages). Therefore you must specify the service name
