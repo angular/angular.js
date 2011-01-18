@@ -198,7 +198,7 @@ angularFormatter.trim = formatter(
  * </div>
  *
  * @scenario
- * it('should format trim', function(){
+ * it('should retrieve object by index', function(){
  *   expect(binding('currentUser.password')).toEqual('guest');
  *   select('currentUser').option('2');
  *   expect(binding('currentUser.password')).toEqual('abc');
