@@ -9,7 +9,18 @@ _jQuery.event.special.change = undefined;
 
 if (window.jstestdriver) {
   jstd = jstestdriver;
-  dump = bind(jstd.console, jstd.console.log);
+  window.dump = function(){
+    var args = [];
+    forEach(arguments, function(arg){
+      if (isElement(arg)) {
+        arg = sortedHtml(arg);
+      } else if (isObject(arg)) {
+        org = toJson(arg, true);
+      }
+      args.push(arg);
+    });
+    jstd.console.log.apply(jstd.console, args);
+  };
 }
 
 beforeEach(function(){
@@ -60,9 +71,9 @@ function clearJqCache(){
     count ++;
     delete jqCache[key];
     forEach(value, function(value, key){
-      if (value.$element) 
+      if (value.$element)
         dump(key, sortedHtml(value.$element));
-      else 
+      else
         dump(key, toJson(value));
     });
   });
