@@ -6,7 +6,7 @@
   for(var j = 0; j < scripts.length; j++) {
     var src = scripts[j].src;
     if (src && src.match(filename)) {
-      angularJsUrl = src;
+      angularJsUrl = src.replace('docs.angularjs.org', 'code.angularjs.org');
     }
   }
 
