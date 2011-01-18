@@ -13,13 +13,12 @@ var angularGlobal = {
 
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.Object
  * @function
  *
  * @description
- * angular.Object is a namespace for utility functions for manipulation with JavaScript objects.
+ * `angular.Object` is a namespace for utility functions for manipulation with JavaScript objects.
  *
  * These functions are exposed in two ways:
  *
@@ -45,7 +44,7 @@ var angularObject = {
  * @name angular.Array
  *
  * @description
- * angular.Array is a namespace for utility functions for manipulation of JavaScript `Array`
+ * `angular.Array` is a namespace for utility functions for manipulation of JavaScript `Array`
  * objects.
  *
  * These functions are exposed in two ways:
