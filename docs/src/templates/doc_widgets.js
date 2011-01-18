@@ -14,8 +14,7 @@
   var HTML_TEMPLATE =
   '<!doctype html>\n' +
   '<html xmlns:ng="http://angularjs.org">\n' +
-  ' <script type="text/javascript" ng:autobind\n' + 
-  '         src="' + angularJsUrl + '"></script>\n' +
+  ' <script src="' + angularJsUrl + '" ng:autobind></script>\n' +
   ' <body>\n' +
   '_HTML_SOURCE_\n' +
   ' </body>\n' +
