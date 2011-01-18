@@ -542,7 +542,7 @@ angularWidget('option', function(){
   this.directives(true);
   return function(option) {
     var select = option.parent();
-    var isMultiple = select.attr('multiple') == '';
+    var isMultiple = select[0].type == 'select-multiple';
     var scope = retrieveScope(select);
     var model = modelAccessor(scope, select);
     var formattedModel = modelFormattedAccessor(scope, select);
