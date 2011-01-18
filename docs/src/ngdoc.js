@@ -218,7 +218,7 @@ Doc.prototype = {
     var self = this;
     if (self.returns) {
       dom.h('Returns', function(){
-        dom.tag('code', self.returns.type);
+        dom.tag('code', '{' + self.returns.type + '}');
         dom.text('– ');
         dom.html(self.returns.description);
       });
