@@ -123,7 +123,8 @@ a {
   border-bottom: 1px solid #888;
 }
 
-#main li > p {
+#main li > p,
+#main div.returns > p {
   display: inline; /* the top most paragraph should not cause new lines inside lists. */
 }
 
