@@ -693,10 +693,10 @@ angularServiceInject('$route', function(location) {
          * Add new route
          */
         when:function (path, params) {
-          if (angular.isUndefined(path)) return routes;
+          if (isUndefined(path)) return routes;
           var route = routes[path];
           if (!route) route = routes[path] = {};
-          if (params) angular.extend(route, params);
+          if (params) extend(route, params);
           dirty++;
           return route;
         }
@@ -704,19 +704,19 @@ angularServiceInject('$route', function(location) {
   function updateRoute(){
     var childScope;
     $route.current = _null;
-    angular.forEach(routes, function(routeParams, route) {
+    forEach(routes, function(routeParams, route) {
       if (!childScope) {
         var pathParams = matcher(location.hashPath, route);
         if (pathParams) {
-          childScope = angular.scope(parentScope);
-          $route.current = angular.extend({}, routeParams, {
+          childScope = createScope(parentScope);
+          $route.current = extend({}, routeParams, {
             scope: childScope,
-            params: angular.extend({}, location.hashSearch, pathParams)
+            params: extend({}, location.hashSearch, pathParams)
           });
         }
       }
     });
-    angular.forEach(onChange, parentScope.$tryEval);
+    forEach(onChange, parentScope.$tryEval);
     if (childScope) {
       childScope.$become($route.current.controller);
     }
