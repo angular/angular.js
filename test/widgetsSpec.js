@@ -785,5 +785,64 @@ describe("widget", function(){
       expect(element.text()).toEqual('');
     });
   });
+
+
+  describe('ng:view', function() {
+    var rootScope, partialScope, $route, $location, $browser;
+
+    beforeEach(function() {
+      rootScope = angular.scope();
+      partialScope = angular.compile('<ng:view></ng:view>', rootScope);
+      partialScope.$init();
+      $route = rootScope.$service('$route');
+      $location = rootScope.$service('$location');
+      $browser = rootScope.$service('$browser');
+    });
+
+    afterEach(function() {
+      dealoc(partialScope);
+    });
+
+
+    it('should do nothing when not routes are defined', function() {
+      $location.updateHash('/unknown');
+      rootScope.$eval();
+      expect(partialScope.$element.text()).toEqual('');
+    });
+
+
+    it('should load content via xhr when route changes', function() {
+      $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
+      $route.when('/bar', {controller: angular.noop, template: 'myUrl2'});
+
+      expect(partialScope.$element.text()).toEqual('');
+
+      $location.updateHash('/foo');
+      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      rootScope.$eval();
+      $browser.xhr.flush();
+      expect(partialScope.$element.text()).toEqual('4');
+
+      $location.updateHash('/bar');
+      $browser.xhr.expectGET('myUrl2').respond('angular is da best');
+      rootScope.$eval();
+      $browser.xhr.flush();
+      expect(partialScope.$element.text()).toEqual('angular is da best');
+    });
+
+    it('should remove all content when location changes to an unknown route', function() {
+      $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
+
+      $location.updateHash('/foo');
+      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      rootScope.$eval();
+      $browser.xhr.flush();
+      expect(partialScope.$element.text()).toEqual('4');
+
+      $location.updateHash('/unknown');
+      rootScope.$eval();
+      expect(partialScope.$element.text()).toEqual('');
+    });
+  });
 });
 

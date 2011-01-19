@@ -616,7 +616,7 @@ function switchRouteMatcher(on, when, dstName) {
  * Watches $location.hashPath and tries to map the hash to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  * 
- * $route is typically used in conjunction with ng:include widget. 
+ * $route is typically used in conjunction with {@link angular.widget.ng:view ng:view} widget.
  * 
  * @example
 <p>
