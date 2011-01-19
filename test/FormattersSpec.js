@@ -33,13 +33,13 @@ describe("formatter", function(){
     assertEquals('a', angular.formatter.trim.format(" a "));
     assertEquals('a', angular.formatter.trim.parse(' a '));
   });
-  
+
   describe('json', function(){
     it('should treat empty string as null', function(){
       expect(angular.formatter.json.parse('')).toEqual(null);
     });
   });
-  
+
   describe('index', function(){
     it('should parse an object from array', function(){
       expect(angular.formatter.index.parse('1', ['A', 'B', 'C'])).toEqual('B');

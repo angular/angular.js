@@ -76,6 +76,7 @@ Doc.prototype = {
     this.description = markdown(this.description);
     this['this'] = markdown(this['this']);
     this.exampleDescription = markdown(this.exampleDescription || this.exampleDesc);
+    return this;
 
     function flush(){
       if (atName) {
@@ -144,13 +145,13 @@ Doc.prototype = {
         dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
           dom.html(method.description);
           method.html_usage_parameters(dom);
-          dom.example(method.example, false);
+          dom.example(method.exampleDescription, method.example, false);
         });
       });
       dom.h('Properties', self.properties, function(property){
         dom.h(property.name, function(){
          dom.text(property.description);
-         dom.example(property.example, false);
+         dom.example(property.exampleDescription, property.example, false);
         });
       });
 

@@ -74,18 +74,18 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
  * @name angular.directive.ng:href
  *
  * @description
- * Using <angular/> markup like {{hash}} in an href attribute makes 
- * the page open to a wrong URL, ff the user clicks that link before 
- * angular has a chance to replace the {{hash}} with actual URL, the 
- * link will be broken and will most likely return a 404 error. 
- * The `ng:href` solves this problem by placing the `href` in the 
+ * Using <angular/> markup like {{hash}} in an href attribute makes
+ * the page open to a wrong URL, ff the user clicks that link before
+ * angular has a chance to replace the {{hash}} with actual URL, the
+ * link will be broken and will most likely return a 404 error.
+ * The `ng:href` solves this problem by placing the `href` in the
  * `ng:` namespace.
  *
  * The buggy way to write it:
  * <pre>
  * <a href="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
- * 
+ *
  * The correct way to write it:
  * <pre>
  * <a ng:href="http://www.gravatar.com/avatar/{{hash}}"/>
@@ -101,8 +101,8 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
  * @name angular.directive.ng:src
  *
  * @description
- * Using <angular/> markup like `{{hash}}` in a `src` attribute doesn't 
- * work right: The browser will fetch from the URL with the literal 
+ * Using <angular/> markup like `{{hash}}` in a `src` attribute doesn't
+ * work right: The browser will fetch from the URL with the literal
  * text `{{hash}}` until <angular/> replaces the expression inside
  * `{{hash}}`. The `ng:src` attribute solves this problem by placing
  *  the `src` attribute in the `ng:` namespace.
@@ -111,7 +111,7 @@ angularTextMarkup('OPTION', function(text, textNode, parentElement){
  * <pre>
  * <img src="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
- * 
+ *
  * The correct way to write it:
  * <pre>
  * <img ng:src="http://www.gravatar.com/avatar/{{hash}}"/>

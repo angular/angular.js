@@ -50,11 +50,11 @@ describe('HTML', function(){
   });
 
   it('should handle entities', function(){
-    var everything = '<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;">' + 
+    var everything = '<div rel="!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;">' +
     '!@#$%^&amp;*()_+-={}[]:&#34;;\'&lt;&gt;?,./`~ &#295;</div>';
     expectHTML(everything).toEqual(everything);
   });
-  
+
   it('should handle improper html', function(){
     expectHTML('< div rel="</div>" alt=abc dir=\'"\' >text< /div>').
       toEqual('<div rel="&lt;/div&gt;" alt="abc" dir="&#34;">text</div>');
@@ -64,19 +64,19 @@ describe('HTML', function(){
     expectHTML('< div rel="</div>" / >').
       toEqual('<div rel="&lt;/div&gt;"/>');
   });
-  
+
   it('should ignore back slash as escape', function(){
     expectHTML('<img alt="xxx\\" title="><script>....">').
       toEqual('<img alt="xxx\\" title="&gt;&lt;script&gt;...."/>');
   });
-  
+
   it('should ignore object attributes', function(){
     expectHTML('<a constructor="hola">:)</a>').
       toEqual('<a>:)</a>');
     expectHTML('<constructor constructor="hola">:)</constructor>').
       toEqual('');
   });
-  
+
   describe('htmlSanitizerWriter', function(){
     var writer, html;
     beforeEach(function(){
@@ -118,13 +118,13 @@ describe('HTML', function(){
       writer.start('div', {unknown:""});
       expect(html).toEqual('<div>');
     });
-    
+
     describe('explicitly dissallow', function(){
       it('should not allow attributes', function(){
         writer.start('div', {id:'a', name:'a', style:'a'});
         expect(html).toEqual('<div>');
       });
-      
+
       it('should not allow tags', function(){
         function tag(name) {
           writer.start(name, {});
@@ -149,13 +149,13 @@ describe('HTML', function(){
         expect(html).toEqual('');
       });
     });
-    
+
     describe('isUri', function(){
-      
+
       function isUri(value) {
         return value.match(URI_REGEXP);
       }
-      
+
       it('should be URI', function(){
         expect(isUri('http://abc')).toBeTruthy();
         expect(isUri('https://abc')).toBeTruthy();
@@ -163,7 +163,7 @@ describe('HTML', function(){
         expect(isUri('mailto:me@example.com')).toBeTruthy();
         expect(isUri('#anchor')).toBeTruthy();
       });
-      
+
       it('should not be UIR', function(){
         expect(isUri('')).toBeFalsy();
         expect(isUri('javascript:alert')).toBeFalsy();

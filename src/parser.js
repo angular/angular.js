@@ -49,8 +49,8 @@ function lex(text, parseStringsForObjects){
       }
     } else if (is('(){}[].,;:')) {
       tokens.push({
-        index:index, 
-        text:ch, 
+        index:index,
+        text:ch,
         json:(was(':[,') && is('{[')) || is('}]:,')
       });
       if (is('{[')) json.unshift(ch);
@@ -108,8 +108,8 @@ function lex(text, parseStringsForObjects){
     end = end || index;
     throw Error("Lexer Error: " + error + " at column" +
         (isDefined(start) ?
-            "s " + start +  "-" + index + " [" + text.substring(start, end) + "]" : 
-            " " + end) + 
+            "s " + start +  "-" + index + " [" + text.substring(start, end) + "]" :
+            " " + end) +
         " in expression [" + text + "].");
   }
 
@@ -157,8 +157,8 @@ function lex(text, parseStringsForObjects){
     }
     fn = OPERATORS[ident];
     tokens.push({
-      index:start, 
-      text:ident, 
+      index:start,
+      text:ident,
       json: fn,
       fn:fn||extend(getterFn(ident), {
         assign:function(self, value){
@@ -167,7 +167,7 @@ function lex(text, parseStringsForObjects){
       })
     });
   }
-  
+
   function readString(quote) {
     var start = index;
     index++;
@@ -217,25 +217,25 @@ function lex(text, parseStringsForObjects){
 function parser(text, json){
   var ZERO = valueFn(0),
       tokens = lex(text, json),
-      assignment = _assignment, 
+      assignment = _assignment,
       assignable = logicalOR,
-      functionCall = _functionCall, 
-      fieldAccess = _fieldAccess, 
-      objectIndex = _objectIndex, 
-      filterChain = _filterChain, 
-      functionIdent = _functionIdent, 
+      functionCall = _functionCall,
+      fieldAccess = _fieldAccess,
+      objectIndex = _objectIndex,
+      filterChain = _filterChain,
+      functionIdent = _functionIdent,
       pipeFunction = _pipeFunction;
   if(json){
-    // The extra level of aliasing is here, just in case the lexer misses something, so that 
+    // The extra level of aliasing is here, just in case the lexer misses something, so that
     // we prevent any accidental execution in JSON.
     assignment = logicalOR;
-    functionCall = 
-      fieldAccess = 
-      objectIndex = 
+    functionCall =
+      fieldAccess =
+      objectIndex =
       assignable =
-      filterChain = 
-      functionIdent = 
-      pipeFunction = 
+      filterChain =
+      functionIdent =
+      pipeFunction =
         function (){ throwError("is not valid json", {text:text, index:0}); };
   }
   return {
@@ -368,7 +368,7 @@ function parser(text, json){
         argFns.push(expression());
       } else {
         return valueFn({
-          format:invokeFn(formatter.format), 
+          format:invokeFn(formatter.format),
           parse:invokeFn(formatter.parse)
         });
       }

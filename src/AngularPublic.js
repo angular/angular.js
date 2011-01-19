@@ -4,7 +4,7 @@ var browserSingleton;
  * @ngdoc service
  * @name angular.service.$browser
  * @requires $log
- * 
+ *
  * @description
  * Represents the browser.
  */

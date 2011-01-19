@@ -1,17 +1,17 @@
 describe('filter', function() {
 
   var filter = angular.filter;
-  
+
   it('should called the filter when evaluating expression', function() {
     var scope = createScope();
     filter.fakeFilter = function(){};
     spyOn(filter, 'fakeFilter');
-    
+
     scope.$eval('10|fakeFilter');
     expect(filter.fakeFilter).toHaveBeenCalledWith(10);
     delete filter['fakeFilter'];
   });
-  
+
   it('should call filter on scope context', function() {
     var scope = createScope();
     scope.name = 'misko';
@@ -19,7 +19,7 @@ describe('filter', function() {
       expect(this.name).toEqual('misko');
     };
     spyOn(filter, 'fakeFilter').andCallThrough();
-    
+
     scope.$eval('10|fakeFilter');
     expect(filter.fakeFilter).toHaveBeenCalled();
     delete filter['fakeFilter'];
@@ -39,7 +39,7 @@ describe('filter', function() {
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
   });
-  
+
   describe('number', function() {
     it('should do basic filter', function() {
       var context = {jqElement:jqLite('<span/>')};

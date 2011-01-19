@@ -11,16 +11,16 @@ function angularServiceInject(name, fn, inject, eager) {
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$window
- * 
+ *
  * @description
  * Is reference to the browser's <b>window</b> object. While <b>window</b>
  * is globally available in JavaScript, it causes testability problems, because
  * it is a global variable. In <b><angular/></b> we always refer to it through the
  * $window service, so it may be overriden, removed or mocked for testing.
- * 
+ *
  * All expressions are evaluated with respect to current scope so they don't
  * suffer from window globality.
- * 
+ *
  * @example
    <input ng:init="greeting='Hello World!'" type="text" name="greeting" />
    <button ng:click="$window.alert(greeting)">ALERT</button>
@@ -32,7 +32,7 @@ angularServiceInject("$window", bind(window, identity, window), [], EAGER);
  * @ngdoc service
  * @name angular.service.$document
  * @requires $window
- * 
+ *
  * @description
  * Reference to the browser window.document, but wrapped into angular.element().
  */
@@ -45,7 +45,7 @@ angularServiceInject("$document", function(window){
  * @ngdoc service
  * @name angular.service.$location
  * @requires $browser
- * 
+ *
  * @property {string} href
  * @property {string} protocol
  * @property {string} host
@@ -55,15 +55,15 @@ angularServiceInject("$document", function(window){
  * @property {string} hash
  * @property {string} hashPath
  * @property {Object.<string|boolean>} hashSearch
- * 
+ *
  * @description
  * Parses the browser location url and makes it available to your application.
  * Any changes to the url are reflected into $location service and changes to
  * $location are reflected to url.
  * Notice that using browser's forward/back buttons changes the $location.
- * 
+ *
  * @example
-   <a href="#">clear hash</a> | 
+   <a href="#">clear hash</a> |
    <a href="#myPath?name=misko">test hash</a><br/>
    <input type='text' name="$location.hash"/>
    <pre>$location = {{$location}}</pre>
@@ -91,7 +91,7 @@ angularServiceInject("$location", function($browser) {
    * @ngdoc method
    * @name angular.service.$location#update
    * @methodOf angular.service.$location
-   * 
+   *
    * @description
    * Update location object
    * Does not immediately update the browser
@@ -127,7 +127,7 @@ angularServiceInject("$location", function($browser) {
    * @ngdoc method
    * @name angular.service.$location#updateHash
    * @methodOf angular.service.$location
-   * 
+   *
    * @description
    * Update location hash part
    * @see update()
@@ -288,13 +288,13 @@ angularServiceInject("$location", function($browser) {
  * @ngdoc service
  * @name angular.service.$log
  * @requires $window
- * 
+ *
  * @description
  * Is simple service for logging. Default implementation writes the message
  * into the browser's console (if present).
- * 
+ *
  * This is useful for debugging.
- * 
+ *
  * @example
    <p>Reload this page with open console, enter text and hit the log button...</p>
    Message:
@@ -311,46 +311,46 @@ angularServiceInject("$log", function($window){
      * @ngdoc method
      * @name angular.service.$log#log
      * @methodOf angular.service.$log
-     * 
+     *
      * @description
      * Write a log message
      */
     log: consoleLog('log'),
-    
+
     /**
      * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#warn
      * @methodOf angular.service.$log
-     * 
+     *
      * @description
      * Write a warning message
      */
     warn: consoleLog('warn'),
-    
+
     /**
      * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#info
      * @methodOf angular.service.$log
-     * 
+     *
      * @description
      * Write an information message
      */
     info: consoleLog('info'),
-    
+
     /**
      * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#error
      * @methodOf angular.service.$log
-     * 
+     *
      * @description
      * Write an error message
      */
     error: consoleLog('error')
   };
-  
+
   function consoleLog(type) {
     var console = $window.console || {};
     var logFn = console[type] || console.log || noop;
@@ -374,17 +374,17 @@ angularServiceInject("$log", function($window){
  * @ngdoc service
  * @name angular.service.$exceptionHandler
  * @requires $log
- * 
+ *
  * @description
  * Any uncaught exception in <angular/> is delegated to this service.
  * The default implementation simply delegates to $log.error which logs it into
  * the browser console.
- * 
+ *
  * When unit testing it is useful to have uncaught exceptions propagate
  * to the test so the test will fail rather than silently log the exception
  * to the browser console. For this purpose you can override this service with
- * a simple rethrow. 
- * 
+ * a simple rethrow.
+ *
  * @example
  */
 angularServiceInject('$exceptionHandler', function($log){
@@ -459,9 +459,9 @@ angularServiceInject('$updateView', serviceUpdateViewFactory, ['$browser']);
  * @name angular.service.$hover
  * @requires $browser
  * @requires $document
- * 
+ *
  * @description
- * 
+ *
  * @example
  */
 angularServiceInject("$hover", function(browser, document) {
@@ -514,11 +514,11 @@ angularServiceInject("$hover", function(browser, document) {
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$invalidWidgets
- * 
+ *
  * @description
  * Keeps references to all invalid widgets found during validation.
  * Can be queried to find whether there are any invalid widgets currently displayed.
- * 
+ *
  * @example
  */
 angularServiceInject("$invalidWidgets", function(){
@@ -608,45 +608,45 @@ function switchRouteMatcher(on, when, dstName) {
  * @ngdoc service
  * @name angular.service.$route
  * @requires $location
- * 
+ *
  * @property {Object} current Name of the current route
  * @property {Array.<Object>} routes List of configured routes
- * 
+ *
  * @description
  * Watches $location.hashPath and tries to map the hash to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
- * 
+ *
  * $route is typically used in conjunction with {@link angular.widget.ng:view ng:view} widget.
- * 
+ *
  * @example
 <p>
-	This example shows how changing the URL hash causes the <tt>$route</tt>
-	to match a route against the URL, and the <tt>[[ng:include]]</tt> pulls in the partial.
-	Try changing the URL in the input box to see changes.
+  This example shows how changing the URL hash causes the <tt>$route</tt>
+  to match a route against the URL, and the <tt>[[ng:include]]</tt> pulls in the partial.
+  Try changing the URL in the input box to see changes.
 </p>
-   
+
 <script>
-	angular.service('myApp', function($route) {
-	  $route.when('/Book/:bookId', {template:'rsrc/book.html', controller:BookCntl});
-	  $route.when('/Book/:bookId/ch/:chapterId', {template:'rsrc/chapter.html', controller:ChapterCntl});
-	  $route.onChange(function() {
-	    $route.current.scope.params = $route.current.params;
-	  });
-	}, {$inject: ['$route']});
-	
-	function BookCntl() {
-	  this.name = "BookCntl";
-	}
-	
-	function ChapterCntl() {
-	  this.name = "ChapterCntl";
-	}
+  angular.service('myApp', function($route) {
+    $route.when('/Book/:bookId', {template:'rsrc/book.html', controller:BookCntl});
+    $route.when('/Book/:bookId/ch/:chapterId', {template:'rsrc/chapter.html', controller:ChapterCntl});
+    $route.onChange(function() {
+      $route.current.scope.params = $route.current.params;
+    });
+  }, {$inject: ['$route']});
+
+  function BookCntl() {
+    this.name = "BookCntl";
+  }
+
+  function ChapterCntl() {
+    this.name = "ChapterCntl";
+  }
 </script>
 
-Chose: 
-<a href="#/Book/Moby">Moby</a> | 
-<a href="#/Book/Moby/ch/1">Moby: Ch1</a> | 
-<a href="#/Book/Gatsby">Gatsby</a> | 
+Chose:
+<a href="#/Book/Moby">Moby</a> |
+<a href="#/Book/Moby/ch/1">Moby: Ch1</a> |
+<a href="#/Book/Gatsby">Gatsby</a> |
 <a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
 <input type="text" name="$location.hashPath" size="80" />
 <pre>$location={{$location}}</pre>
@@ -664,31 +664,31 @@ angularServiceInject('$route', function(location) {
       dirty = 0,
       $route = {
         routes: routes,
-        
+
         /**
          * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#onChange
          * @methodOf angular.service.$route
-         * 
+         *
          * @param {function()} fn Function that will be called on route change
-         * 
+         *
          * @description
          * Register a handler function that will be called when route changes
          */
         onChange: bind(onChange, onChange.push),
-        
+
         /**
          * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#when
          * @methodOf angular.service.$route
-         * 
+         *
          * @param {string} path Route path (matched against $location.hash)
          * @param {Object} params Mapping information to be assigned to `$route.current` on route
          *    match.
          * @returns {Object} route object
-         * 
+         *
          * @description
          * Add new route
          */
@@ -732,9 +732,9 @@ angularServiceInject('$route', function(location) {
  * @requires $browser
  * @requires $xhr.error
  * @requires $log
- * 
+ *
  * @description
- * 
+ *
  * @example
  */
 angularServiceInject('$xhr', function($browser, $error, $log){
@@ -773,9 +773,9 @@ angularServiceInject('$xhr', function($browser, $error, $log){
  * @ngdoc service
  * @name angular.service.$xhr.error
  * @requires $log
- * 
+ *
  * @description
- * 
+ *
  * @example
  */
 angularServiceInject('$xhr.error', function($log){
@@ -791,9 +791,9 @@ angularServiceInject('$xhr.error', function($log){
  * @requires $xhr
  * @requires $xhr.error
  * @requires $log
- * 
+ *
  * @description
- * 
+ *
  * @example
  */
 angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
@@ -885,9 +885,9 @@ angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView
  * @ngdoc service
  * @name angular.service.$xhr.cache
  * @requires $xhr
- * 
+ *
  * @description
- * 
+ *
  * @example
  */
 angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
@@ -942,7 +942,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
  * @requires $xhr
  *
  * @description
- * Is a factory which creates a resource object which lets you interact with 
+ * Is a factory which creates a resource object which lets you interact with
  * <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer" target="_blank">RESTful</a>
  * server-side data sources.
  * Resource object has action methods which provide high-level behaviors without
@@ -1051,7 +1051,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
          {get:{method:'JSON', params:{visibility:'@self'}}, replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}}
        );
      }
-     
+
      BuzzController.prototype = {
        fetch: function() {
          this.activities = this.Activity.get({userId:this.userId});
@@ -1069,9 +1069,9 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
      <hr/>
      <div ng:repeat="item in activities.data.items">
        <h1 style="font-size: 15px;">
-	       <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-	       <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-	       <a href ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
+         <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+         <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+         <a href ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
        </h1>
        {{item.object.content | html}}
        <div ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
@@ -1091,13 +1091,13 @@ angularServiceInject('$resource', function($xhr){
  * @ngdoc service
  * @name angular.service.$cookies
  * @requires $browser
- * 
+ *
  * @description
  * Provides read/write access to browser's cookies.
- * 
+ *
  * Only a simple Object is exposed and by adding or removing properties to/from
  * this object, new cookies are created/deleted at the end of current $eval.
- * 
+ *
  * @example
  */
 angularServiceInject('$cookies', function($browser) {
@@ -1181,7 +1181,7 @@ angularServiceInject('$cookies', function($browser) {
  * @ngdoc service
  * @name angular.service.$cookieStore
  * @requires $cookies
- * 
+ *
  * @description
  * Provides a key-value (string-object) storage, that is backed by session cookies.
  * Objects put or retrieved from this storage are automatically serialized or
@@ -1196,10 +1196,10 @@ angularServiceInject('$cookieStore', function($store) {
      * @ngdoc method
      * @name angular.service.$cookieStore#get
      * @methodOf angular.service.$cookieStore
-     * 
+     *
      * @description
      * Returns the value of given cookie key
-     * 
+     *
      * @param {string} key Id to use for lookup.
      * @returns {Object} Deserialized cookie value.
      */
@@ -1212,10 +1212,10 @@ angularServiceInject('$cookieStore', function($store) {
      * @ngdoc method
      * @name angular.service.$cookieStore#put
      * @methodOf angular.service.$cookieStore
-     * 
+     *
      * @description
      * Sets a value for given cookie key
-     * 
+     *
      * @param {string} key Id for the `value`.
      * @param {Object} value Value to be stored.
      */
@@ -1228,10 +1228,10 @@ angularServiceInject('$cookieStore', function($store) {
      * @ngdoc method
      * @name angular.service.$cookieStore#remove
      * @methodOf angular.service.$cookieStore
-     * 
+     *
      * @description
      * Remove given cookie
-     * 
+     *
      * @param {string} key Id of the key-value pair to delete.
      */
     remove: function(key) {

@@ -1,5 +1,5 @@
 (function(){
-  
+
   var angularJsUrl;
   var scripts = document.getElementsByTagName("script");
   var filename = /(.*\/)angular([^\/]*)/;
@@ -10,7 +10,7 @@
     }
   }
 
-  
+
   var HTML_TEMPLATE =
   '<!doctype html>\n' +
   '<html xmlns:ng="http://angularjs.org">\n' +
@@ -32,15 +32,15 @@
     var tabs = angular.element(
         '<ul class="doc-example">' +
           '<li class="doc-example-heading"><h3>Source</h3></li>' +
-          '<li class="doc-example-source" ng:non-bindable>' + 
-            '<pre class="brush: js; html-script: true; highlight: [' + 
+          '<li class="doc-example-source" ng:non-bindable>' +
+            '<pre class="brush: js; html-script: true; highlight: [' +
             code.hilite + ']; toolbar: false;"></pre></li>' +
           '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
           '<li class="doc-example-live">' + exampleSrc +'</li>' +
           '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
           '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>' +
         '</ul>');
-    
+
     tabs.find('li.doc-example-source > pre').text(HTML_TEMPLATE.replace('_HTML_SOURCE_', code.html));
 
     element.html('');
@@ -54,7 +54,7 @@
       alert(e);
     }
   });
-  
+
   function indent(text) {
     var lines = text.split(/\n/);
     var lineNo = [];
@@ -66,5 +66,5 @@
     }
     return {html: lines.join('\n'), hilite: lineNo.join(',') };
   };
-  
+
 })();

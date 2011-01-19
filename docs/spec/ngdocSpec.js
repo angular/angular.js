@@ -279,6 +279,16 @@ describe('ngdoc', function(){
         doc.parse();
         expect(doc.html()).toContain('<p>some\n text');
       });
+
+      it('should render description in related method', function(){
+        var doc = new Doc();
+        doc.ngdoc = 'service';
+        doc.methods = [new Doc('@ngdoc method\n@exampleDescription MDesc\n@example MExmp').parse()];
+        doc.properties = [new Doc('@ngdoc property\n@exampleDescription PDesc\n@example PExmp').parse()];
+        expect(doc.html()).toContain('<p>MDesc</p><div ng:non-bindable=""><pre class="brush: js; html-script: true;">MExmp</pre>');
+        expect(doc.html()).toContain('<p>PDesc</p><div ng:non-bindable=""><pre class="brush: js; html-script: true;">PExmp</pre>');
+      });
+
     });
 
     describe('@deprecated', function() {
