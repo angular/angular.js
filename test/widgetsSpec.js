@@ -651,7 +651,7 @@ describe("widget", function(){
 
       // this one should really be just '1', but due to lack of real events things are not working
       // properly. see discussion at: http://is.gd/ighKk
-      expect(element.text()).toEqual('4');
+      expect(element.text()).toEqual('2');
       dealoc(element);
     });
 
