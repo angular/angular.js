@@ -3,6 +3,18 @@ var DOM = require('dom.js').DOM;
 
 describe('ngdoc', function(){
   var Doc = ngdoc.Doc;
+  var dom;
+
+  beforeEach(function(){
+    dom = new DOM();
+    this.addMatchers({
+      toContain: function(text) {
+        this.actual = this.actual.toString();
+        return this.actual.indexOf(text) > -1;
+      }
+    });
+  });
+
   describe('Doc', function(){
     describe('metadata', function(){
 
@@ -28,9 +40,9 @@ describe('ngdoc', function(){
             '@param {Class=} [c=2] long\nline');
         doc.parse();
         expect(doc.param).toEqual([
-           {name:'a', description:'short', type:'*', optional:false, 'default':undefined},
-           {name:'b', description:'med', type:'Type', optional:false, 'default':undefined},
-           {name:'c', description:'long\nline', type:'Class', optional:true, 'default':'2'}
+           {name:'a', description:'<p>short</p>', type:'*', optional:false, 'default':undefined},
+           {name:'b', description:'<p>med</p>', type:'Type', optional:false, 'default':undefined},
+           {name:'c', description:'<p>long\nline</p>', type:'Class', optional:true, 'default':'2'}
          ]);
       });
 
@@ -39,7 +51,7 @@ describe('ngdoc', function(){
         doc.parse();
         expect(doc.returns).toEqual({
           type: 'Type',
-          description: 'text <em>bold</em>.'
+          description: '<p>text <em>bold</em>.</p>'
         });
       });
 
@@ -118,7 +130,7 @@ describe('ngdoc', function(){
           name : 'number',
           optional: false,
           'default' : undefined,
-          description : 'Number \n to format.' }]);
+          description : '<p>Number \n to format.</p>' }]);
       });
 
       it('should parse with default and optional', function(){
@@ -129,7 +141,7 @@ describe('ngdoc', function(){
           name : 'fractionSize',
           optional: true,
           'default' : '2',
-          description : 'desc' }]);
+          description : '<p>desc</p>' }]);
       });
     });
 
@@ -187,20 +199,20 @@ describe('ngdoc', function(){
       it('should parse @returns with type and description', function() {
         var doc = new Doc("@returns {string} descrip tion");
         doc.parse();
-        expect(doc.returns).toEqual({type: 'string', description: 'descrip tion'});
+        expect(doc.returns).toEqual({type: 'string', description: '<p>descrip tion</p>'});
       });
 
       it('should transform description of @returns with markdown', function() {
         var doc = new Doc("@returns {string} descrip *tion*");
         doc.parse();
-        expect(doc.returns).toEqual({type: 'string', description: 'descrip <em>tion</em>'});
+        expect(doc.returns).toEqual({type: 'string', description: '<p>descrip <em>tion</em></p>'});
       });
 
       it('should support multiline content', function() {
         var doc = new Doc("@returns {string} description\n new line\n another line");
         doc.parse();
         expect(doc.returns).
-          toEqual({type: 'string', description: 'description\n new line\n another line'});
+          toEqual({type: 'string', description: '<p>description\n new line\n another line</p>'});
       });
     });
 
@@ -253,6 +265,22 @@ describe('ngdoc', function(){
       });
     });
 
+    describe('@exampleDescription', function(){
+      it('should render example description', function(){
+        var doc = new Doc('@exampleDescription some\n text');
+        doc.ngdoc = "filter";
+        doc.parse();
+        expect(doc.html()).toContain('<p>some\n text');
+      });
+
+      it('should alias @exampleDescription to @exampleDesc', function(){
+        var doc = new Doc('@exampleDesc some\n text');
+        doc.ngdoc = "filter";
+        doc.parse();
+        expect(doc.html()).toContain('<p>some\n text');
+      });
+    });
+
     describe('@deprecated', function() {
       it('should parse @deprecated', function() {
         var doc = new Doc('@deprecated Replaced with foo.');
@@ -260,21 +288,18 @@ describe('ngdoc', function(){
         expect(doc.deprecated).toBe('Replaced with foo.');
       });
     });
+
+    describe('@this', function(){
+      it('should render @this', function() {
+        var doc = new Doc('@this I am self.');
+        doc.ngdoc = 'filter';
+        doc.parse();
+        expect(doc.html()).toContain('<h3>Method\'s <code>this</code></h3>\n<p>I am self.</p>');
+      });
+    });
   });
 
   describe('usage', function(){
-    var dom;
-
-    beforeEach(function(){
-      dom = new DOM();
-      this.addMatchers({
-        toContain: function(text) {
-          this.actual = this.actual.toString();
-          return this.actual.indexOf(text) > -1;
-        }
-      });
-    });
-
     describe('filter', function(){
       it('should format', function(){
         var doc = new Doc({

@@ -7,7 +7,6 @@ var DOM = require('dom.js').DOM;
 var NEW_LINE = /\n\r?/;
 
 exports.markdown = markdown;
-exports.markdownNoP = markdownNoP;
 exports.trim = trim;
 exports.metadata = metadata;
 exports.scenarios = scenarios;
@@ -52,7 +51,7 @@ Doc.prototype = {
     words.sort();
     return words.join(' ');
   },
-  
+
   parse: function(){
     var atName;
     var atText;
@@ -75,7 +74,9 @@ Doc.prototype = {
     flush();
     this.shortName = (this.name || '').split(/[\.#]/).pop();
     this.description = markdown(this.description);
-    
+    this['this'] = markdown(this['this']);
+    this.exampleDescription = markdown(this.exampleDescription || this.exampleDesc);
+
     function flush(){
       if (atName) {
         var text = trim(atText.join('\n'));
@@ -87,7 +88,7 @@ Doc.prototype = {
           }
           var param = {
             name: match[5] || match[4],
-            description:markdownNoP(text.replace(match[0], match[7])),
+            description:markdown(text.replace(match[0], match[7])),
             type: match[1],
             optional: !!match[2],
             'default':match[6]
@@ -101,7 +102,7 @@ Doc.prototype = {
           }
           self.returns = {
             type: match[1],
-            description: markdownNoP(text.replace(match[0], match[2]))
+            description: markdown(text.replace(match[0], match[2]))
           };
         } else if(atName == 'requires') {
           self.requires = self.requires || [];
@@ -124,20 +125,20 @@ Doc.prototype = {
       }
     }
   },
-  
+
   html: function(){
     var dom = new DOM(),
         self = this;
-    
+
     dom.h(this.name, function(){
-      notice('workInProgress', 'Work in Progress', 
+      notice('workInProgress', 'Work in Progress',
           'This page is currently being revised. It might be incomplete or contain inaccuracies.');
       notice('depricated', 'Depricated API');
       dom.h('Description', self.description, html);
       dom.h('Dependencies', self.requires);
-      
+
       usage();
-      
+
       dom.h('Methods', self.methods, function(method){
         var signature = (method.param || []).map(property('name'));
         dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
@@ -148,28 +149,28 @@ Doc.prototype = {
       });
       dom.h('Properties', self.properties, function(property){
         dom.h(property.name, function(){
-         dom.text(property.description); 
+         dom.text(property.description);
          dom.example(property.example, false);
         });
       });
-      
-      dom.example(self.example, self.scenario);
+
+      dom.example(self.exampleDescription, self.example, self.scenario);
     });
-    
+
     return dom.toString();
-    
+
     //////////////////////////
-    
+
     function html(text){
       this.html(text);
     }
-    
+
     function usage(){
       (self['html_usage_' + self.ngdoc] || function(){
         throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
       }).call(self, dom);
     }
-    
+
     function section(name, property, fn) {
       var value = self[property];
       if (value) {
@@ -182,7 +183,7 @@ Doc.prototype = {
         }
       }
     }
-    
+
     function notice(name, legend, msg){
       if (self[name] == undefined) return;
       dom.tag('fieldset', {'class':name}, function(dom){
@@ -190,9 +191,9 @@ Doc.prototype = {
         dom.text(msg);
       });
     }
-    
+
   },
-  
+
   html_usage_parameters: function(dom) {
     dom.h('Parameters', this.param, function(param){
       dom.tag('code', function(){
@@ -213,7 +214,7 @@ Doc.prototype = {
       dom.html(param.description);
     });
   },
-  
+
   html_usage_returns: function(dom) {
     var self = this;
     if (self.returns) {
@@ -224,7 +225,18 @@ Doc.prototype = {
       });
     }
   },
-  
+
+  html_usage_this: function(dom) {
+    var self = this;
+    if (self['this']) {
+      dom.h(function(dom){
+        dom.html("Method's <code>this</code>");
+      }, function(dom){
+        dom.html(self['this']);
+      });
+    }
+  },
+
   html_usage_function: function(dom){
     var self = this;
     dom.h('Usage', function(){
@@ -234,12 +246,13 @@ Doc.prototype = {
         self.parameters(dom, ', ');
         dom.text(');');
       });
-      
+
       self.html_usage_parameters(dom);
+      self.html_usage_this(dom);
       self.html_usage_returns(dom);
     });
   },
-    
+
   html_usage_directive: function(dom){
     var self = this;
     dom.h('Usage', function(){
@@ -255,7 +268,7 @@ Doc.prototype = {
       self.html_usage_parameters(dom);
     });
   },
-    
+
   html_usage_filter: function(dom){
     var self = this;
     dom.h('Usage', function(){
@@ -269,7 +282,7 @@ Doc.prototype = {
           dom.text(' }}');
         });
       });
-      
+
       dom.h('In JavaScript', function(){
         dom.tag('code', function(){
           dom.text('angular.filter.');
@@ -279,12 +292,13 @@ Doc.prototype = {
           dom.text(')');
         });
       });
-      
+
       self.html_usage_parameters(dom);
+      self.html_usage_this(dom);
       self.html_usage_returns(dom);
     });
   },
-  
+
   html_usage_formatter: function(dom){
     var self = this;
     dom.h('Usage', function(){
@@ -300,7 +314,7 @@ Doc.prototype = {
           dom.text('">');
         });
       });
-      
+
       dom.h('In JavaScript', function(){
         dom.code(function(){
           dom.text('var userInputString = angular.formatter.');
@@ -316,9 +330,10 @@ Doc.prototype = {
           dom.text(');');
         });
       });
-      
+
       self.html_usage_parameters(dom);
-      self.html_usage_returns(dom);  
+      self.html_usage_this(dom);
+      self.html_usage_returns(dom);
     });
   },
 
@@ -333,7 +348,7 @@ Doc.prototype = {
           dom.text('"/>');
         });
       });
-      
+
       dom.h('In JavaScript', function(){
         dom.code(function(){
           dom.text('angular.validator.');
@@ -343,12 +358,13 @@ Doc.prototype = {
           dom.text(')');
         });
       });
-      
+
       self.html_usage_parameters(dom);
+      self.html_usage_this(dom);
       self.html_usage_returns(dom);
     });
   },
-  
+
   html_usage_widget: function(dom){
     var self = this;
     dom.h('Usage', function(){
@@ -383,15 +399,15 @@ Doc.prototype = {
           }
         });
       });
-      
+
       self.html_usage_parameters(dom);
       self.html_usage_returns(dom);
     });
   },
-    
+
   html_usage_overview: function(dom){
   },
-    
+
   html_usage_service: function(dom){
   },
 
@@ -408,7 +424,7 @@ Doc.prototype = {
       sep = separator;
     });
   }
-    
+
 };
 //////////////////////////////////////////////////////////
 
@@ -442,14 +458,6 @@ function markdown (text) {
 };
 var R_LINK = /{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/m;
             //       1       123     3 4     42
-function markdownNoP(text) {
-  var lines = markdown(text).split(NEW_LINE);
-  var last = lines.length - 1;
-  lines[0] = lines[0].replace(/^<p>/, '');
-  lines[last] = lines[last].replace(/<\/p>$/, '');
-  return lines.join('\n');
-}
-
 
 //////////////////////////////////////////////////////////
 function scenarios(docs){
@@ -525,7 +533,7 @@ function trim(text) {
     lines.pop();
   }
   return lines.join('\n');
-  
+
   function indent(line) {
     for(var i = 0; i < line.length; i++) {
       if (line.charAt(i) != ' ')  {
@@ -550,23 +558,23 @@ function merge(docs){
       i++;
     }
   }
-  
+
   function findParent(doc, name){
     var parentName = doc[name+'Of'];
     if (!parentName) return false;
-    
+
     var parent = byName[parentName];
-    if (!parent) 
-      throw new Error("No parent named '" + parentName + "' for '" + 
+    if (!parent)
+      throw new Error("No parent named '" + parentName + "' for '" +
           doc.name + "' in @" + name + "Of.");
-    
+
     var listName = (name + 's').replace(/ys$/, 'ies');
     var list = parent[listName] = (parent[listName] || []);
     list.push(doc);
     list.sort(orderByName);
     return true;
   }
-  
+
   function orderByName(a, b){
     return a.name < b.name ? -1 : (a.name > b.name ? 1 : 0);
   }
@@ -574,7 +582,7 @@ function merge(docs){
 //////////////////////////////////////////////////////////
 
 function property(name) {
-  return function(value){ 
+  return function(value){
     return value[name];
   };
-} 
+}
