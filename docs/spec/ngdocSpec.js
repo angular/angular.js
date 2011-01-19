@@ -304,7 +304,12 @@ describe('ngdoc', function(){
         var doc = new Doc('@this I am self.');
         doc.ngdoc = 'filter';
         doc.parse();
-        expect(doc.html()).toContain('<h3>Method\'s <code>this</code></h3>\n<p>I am self.</p>');
+        expect(doc.html()).toContain('<h3>Method\'s <code>this</code></h3>\n' +
+            '<div>' +
+            '<p>I am self.</p>' +
+            '</div>\n');
+        expect(doc.html()).toContain('<h3>Method\'s <code>this</code></h3>\n' +
+            '<div><p>I am self.</p></div>');
       });
     });
   });

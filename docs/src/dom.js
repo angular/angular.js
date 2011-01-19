@@ -82,7 +82,9 @@ DOM.prototype = {
     if (content==undefined || content && content.legth == 0) return;
     this.tag('h' + this.headingDepth, heading);
     this.headingDepth++;
-    var className = {'class': heading.toLowerCase()};
+    var className = typeof heading == 'string'
+      ? {'class': heading.toLowerCase().replace(/[^\d\w_]/, '-')}
+      : null;
     if (content instanceof Array) {
       this.ul(content, className, fn);
     } else if (fn) {
