@@ -100,10 +100,31 @@ a {
   margin-top: 1.5em;
 }
 
-#main ul.methods h3,
-#main ul.properties h3 {
+#main ul.methods,
+#main ul.properties {
+  margin: 0;
+  padding-left: 1em;
+}
+
+#main ul.methods > li,
+#main ul.properties > li {
+  list-style: none;
+  padding: 0 10px 10px 10px;
   margin-top: 1.5em;
+  border: 1px solid #000;
+}
+
+#main ul.methods > li > h3,
+#main ul.properties > li > h3 {
   font-family: "Courier New", monospace;
+  background-color: #E0E0E0;
+  margin: 0 -10px 5px -10px;
+  padding: .5em .5em .25em .5em;
+  border-bottom: 1px solid #888;
+}
+
+#main li > p {
+  display: inline; /* the top most paragraph should not cause new lines inside lists. */
 }
 
 .main-title {
@@ -148,7 +169,7 @@ a {
 #sidebar ul li a {
   display: block;
   padding: 2px 2px 2px 4px;
-} 
+}
 
 #sidebar ul li.selected a {
   background-color: #DDD;
