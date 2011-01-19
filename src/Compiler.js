@@ -92,20 +92,20 @@ function Compiler(markup, attrMarkup, directives, widgets){
 }
 
 Compiler.prototype = {
-  compile: function(rawElement) {
-    rawElement = jqLite(rawElement);
+  compile: function(element) {
+    element = jqLite(element);
     var index = 0,
         template,
-        parent = rawElement.parent();
+        parent = element.parent();
     if (parent && parent[0]) {
       parent = parent[0];
       for(var i = 0; i < parent.childNodes.length; i++) {
-        if (parent.childNodes[i] == rawElement[0]) {
+        if (parent.childNodes[i] == element[0]) {
           index = i;
         }
       }
     }
-    template = this.templatize(rawElement, index, 0) || new Template();
+    template = this.templatize(element, index, 0) || new Template();
     return function(element, parentScope){
       element = jqLite(element);
       var scope = parentScope && parentScope.$eval ?
