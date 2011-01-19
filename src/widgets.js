@@ -944,3 +944,81 @@ angularWidget("@ng:repeat", function(expression, element){
    });
  */
 angularWidget("@ng:non-bindable", noop);
+
+
+/**
+ * @ngdoc widget
+ * @name angular.widget.ng:view
+ *
+ * @description
+ * # Overview
+ * `ng:view` is a widget that complements the {@link angular.service.$route $route} service by
+ * including the rendered template of the current route into the main layout (`index.html`) file.
+ * Every time the current route changes, the included view changes with it according to the
+ * configuration of the `$route` service.
+ *
+ * This widget provides functionality similar to {@link angular.service.ng:include ng:include} when
+ * used like this:
+ *
+ *     <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
+ *
+ *
+ * # Advantages
+ * Compared to `ng:include`, `ng:view` offers these advantages:
+ *
+ * - shorter syntax
+ * - more efficient execution
+ * - doesn't require `$route` service to be available on the root scope
+ *
+ *
+ * # Example
+ * Because of the nature of this widget, we can't include the usual live example for it. Instead
+ * following is a code snippet showing the typical usage:
+ *
+   <pre>
+     <script>
+       angular.service('routeConfig', function($route) {
+         $route.when('/foo', {controller: MyCtrl, template: 'foo.html'});
+         $route.when('/bar', {controller: MyCtrl, template: 'bar.html'});
+       }, {$inject: ['$route'],  $eager: true});
+
+       function MyCtrl() {};
+     </script>
+     <div>
+       <a href="#/foo">foo</a> | <a href="#/bar">bar</a> | <a href="#/undefined">undefined</a><br/>
+       The view is included below:
+       <hr/>
+       <ng:view></ng:view>
+     </div>
+   </pre>
+ */
+angularWidget('ng:view', function(element) {
+  var compiler = this;
+
+  if (!element[0]['ng:compiled']) {
+    element[0]['ng:compiled'] = true;
+    return injectService(['$xhr.cache', '$route'], function($xhr, $route, element){
+      $route.onChange(function(){
+        var src, scope;
+
+        if ($route.current) {
+          src = $route.current.template;
+          scope = $route.current.scope;
+        }
+
+        if (src) {
+          $xhr('GET', src, function(code, response){
+            element.html(response);
+            compiler.compile(element)(element, scope);
+            scope.$init();
+          });
+        } else {
+          element.html('');
+        }
+      });
+    });
+  } else {
+    this.descend(true);
+    this.directives(true);
+  }
+});
