@@ -421,9 +421,11 @@ function markdown (text) {
 
   parts.forEach(function(text, i){
     if (text.match(/^<pre>/)) {
-      text = text.
-        replace(/^<pre>/, '<div ng:non-bindable><pre class="brush: js; html-script: true;">').
-        replace(/<\/pre>/, '</pre></div>');
+      text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
+        return '<div ng:non-bindable><pre class="brush: js; html-script: true;">' +
+                content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+               '</pre></div>';
+      });
     } else {
       text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
       text = new Showdown.converter().makeHtml(text.replace(/^#/gm, '###'));
