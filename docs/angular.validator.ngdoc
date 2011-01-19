@@ -4,7 +4,7 @@
 @namespace Namespace for all filters.
 @description
 # Overview
-Validators are a standard way to check the user input against a specific criteria. For 
+Validators are a standard way to check the user input against a specific criteria. For
 example, you might need to check that an input field contains a well-formed phone number.
 
 # Syntax
@@ -29,10 +29,10 @@ Attach a validator on user input widgets using the `ng:validate` attribute.
 
 
 # Writing your own Validators
-Writing your own validator is easy. To make a function available as a 
-validator, just define the JavaScript function on the `angular.validator` 
-object. <angular/> passes in the input to validate as the first argument 
-to your function. Any additional validator arguments are passed in as 
+Writing your own validator is easy. To make a function available as a
+validator, just define the JavaScript function on the `angular.validator`
+object. <angular/> passes in the input to validate as the first argument
+to your function. Any additional validator arguments are passed in as
 additional arguments to your function.
 
 You can use these variables in the function:
@@ -40,9 +40,9 @@ You can use these variables in the function:
 * `this` — The current scope.
 * `this.$element` — The DOM element containing the binding. This allows the filter to manipulate
   the DOM in addition to transforming the input.
-  
-In this example we have written a upsTrackingNo validator. 
-It marks the input text "valid" only when the user enters a well-formed 
+
+In this example we have written a upsTrackingNo validator.
+It marks the input text "valid" only when the user enters a well-formed
 UPS tracking number.
 
 @css ng-validation-error
@@ -57,7 +57,7 @@ UPS tracking number.
  });
 </script>
 <input type="text" name="trackNo" size="40"
-      ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'" 
+      ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'"
       value="1Z 123 456 78 9012 345 6"/>
 
 @scenario

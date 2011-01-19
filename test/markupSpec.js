@@ -147,6 +147,6 @@ describe("markups", function(){
     assertTrue(!hasBindings(parseBindings("a")));
     assertTrue(hasBindings(parseBindings("{{b}}x{{c}}")));
   });
-  
+
 });
 

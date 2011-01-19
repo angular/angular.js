@@ -123,19 +123,19 @@ Compiler.prototype = {
     };
   },
 
-  
+
   /**
    * @workInProgress
    * @ngdoc directive
    * @name angular.directive.ng:eval-order
    *
    * @description
-   * Normally the view is updated from top to bottom. This usually is 
-   * not a problem, but under some circumstances the values for data 
-   * is not available until after the full view is computed. If such 
-   * values are needed before they are computed the order of 
+   * Normally the view is updated from top to bottom. This usually is
+   * not a problem, but under some circumstances the values for data
+   * is not available until after the full view is computed. If such
+   * values are needed before they are computed the order of
    * evaluation can be change using ng:eval-order
-   * 
+   *
    * @element ANY
    * @param {integer|string=} [priority=0] priority integer, or FIRST, LAST constant
    *
@@ -164,7 +164,7 @@ Compiler.prototype = {
           <td>{{ items.$sum('total') | currency }}</td>
         </tr>
       </table>
-   * 
+   *
    * @scenario
      it('should check ng:format', function(){
        expect(using('.doc-example-live div:first').binding("items.$sum('total')")).toBe('$9.99');

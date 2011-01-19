@@ -76,7 +76,7 @@ window alert.
          };
        }, {$inject: ['$window']});
 </pre>
- 
+
 And here is a unit test for this service. We use Jasmine spy (mock) instead of real browser's alert.
 <pre>
 var mock, notify;
@@ -85,7 +85,7 @@ beforeEach(function() {
   mock = {alert: jasmine.createSpy()};
   notify = angular.service('notify')(mock);
 });
- 
+
 it('should not alert first two notifications', function() {
   notify('one');
   notify('two');
@@ -134,7 +134,7 @@ function myController($loc, $log) {
   };
 }
 // which services to inject ?
-myController.$inject = ['$location', '$log']; 
+myController.$inject = ['$location', '$log'];
 </pre>
 
 @example
@@ -149,13 +149,13 @@ myController.$inject = ['$location', '$log'];
      }
    };
  }, {$inject: ['$window']});
- 
+
  function myController(notifyService) {
    this.callNotify = function(msg) {
      notifyService(msg);
    };
  }
- 
+
  myController.$inject = ['notify'];
 </script>
 

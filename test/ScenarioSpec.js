@@ -1,14 +1,14 @@
 describe("ScenarioSpec: Compilation", function(){
   var scope;
-  
+
   beforeEach(function(){
     scope = null;
   });
-  
+
   afterEach(function(){
     dealoc(scope);
   });
-  
+
   describe('compilation', function(){
     it("should compile dom node and return scope", function(){
       var node = jqLite('<div ng:init="a=1">{{b=a+1}}</div>')[0];
@@ -17,18 +17,18 @@ describe("ScenarioSpec: Compilation", function(){
       expect(scope.a).toEqual(1);
       expect(scope.b).toEqual(2);
     });
-    
+
     it("should compile jQuery node and return scope", function(){
       scope = compile(jqLite('<div>{{a=123}}</div>')).$init();
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
-    
+
     it("should compile text node and return scope", function(){
       scope = compile('<div>{{a=123}}</div>').$init();
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
   });
-  
+
   describe('scope', function(){
     it("should have set, get, eval, $init, updateView methods", function(){
       scope = compile('<div>{{a}}</div>').$init();
@@ -39,7 +39,7 @@ describe("ScenarioSpec: Compilation", function(){
       scope.$eval();
       expect(jqLite(scope.$element).text()).toEqual('3');
     });
-    
+
     it("should have $ objects", function(){
       scope = compile('<div></div>', {$config: {a:"b"}});
       expect(scope.$service('$location')).toBeDefined();
@@ -48,7 +48,7 @@ describe("ScenarioSpec: Compilation", function(){
       expect(scope.$get('$config.a')).toEqual("b");
     });
   });
-  
+
   describe("configuration", function(){
     it("should take location object", function(){
       var url = "http://server/#?book=moby";

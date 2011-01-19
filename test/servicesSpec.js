@@ -60,7 +60,7 @@ describe("service", function(){
       $log.info();
       $log.error();
     });
-    
+
     describe('Error', function(){
       var e, $log, $console, errorArgs;
       beforeEach(function(){
@@ -69,12 +69,12 @@ describe("service", function(){
         e.sourceURL = undefined;
         e.line = undefined;
         e.stack = undefined;
-        
+
         $console = angular.service('$log')({console:{error:function(){
           errorArgs = arguments;
         }}});
       });
-      
+
       it('should pass error if does not have trace', function(){
         $console.error('abc', e);
         expect(errorArgs).toEqual(['abc', e]);
@@ -93,9 +93,9 @@ describe("service", function(){
         $console.error('abc', e);
         expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
       });
-      
+
     });
-    
+
   });
 
   describe("$exceptionHandler", function(){

@@ -32,7 +32,7 @@ describe('compiler', function(){
       return scope;
     };
   });
-  
+
   afterEach(function(){
     dealoc(scope);
   });

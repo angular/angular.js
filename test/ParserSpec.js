@@ -58,7 +58,7 @@ describe('parser', function() {
       expect(tokens[i].text).toEqual('undefined');
       expect(undefined).toEqual(tokens[i].fn());
     });
-    
+
     it('should tokenize quoted string', function() {
       var str = "['\\'', \"\\\"\"]";
       var tokens = lex(str);
@@ -134,7 +134,7 @@ describe('parser', function() {
       expect(function() {
         lex("0.5E-");
       }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-].'));
-      
+
       expect(function() {
         lex("0.5E-A");
       }).toThrow(new Error('Lexer Error: Invalid exponent at column 4 in expression [0.5E-A].'));
@@ -151,7 +151,7 @@ describe('parser', function() {
       }).toThrow(new Error("Lexer Error: Invalid unicode escape [\\u1''b] at column 2 in expression ['\\u1''bla']."));
     });
   });
-  
+
   var scope;
   beforeEach(function () {
     scope = createScope();
@@ -201,7 +201,7 @@ describe('parser', function() {
     expect(function() {
       scope.$eval("1|nonExistant");
     }).toThrow(new Error("Parse Error: Token 'nonExistant' should be a function at column 3 of expression [1|nonExistant] starting at [nonExistant]."));
-    
+
     scope.$set('offset', 3);
     expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
     expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
@@ -298,7 +298,7 @@ describe('parser', function() {
     scope.$set("obj", new C());
     expect(scope.$eval("obj.getA()")).toEqual(123);
   });
-  
+
   it('should evaluate methods in correct context (this) in argument', function() {
     var C = function () {
       this.a = 123;
@@ -388,7 +388,7 @@ describe('parser', function() {
     expect(scope.$eval("a=undefined")).not.toBeDefined();
     expect(scope.$get("a")).not.toBeDefined();
   });
-  
+
   it('should allow assignment after array dereference', function(){
     scope = angular.scope();
     scope.obj = [{}];
@@ -396,21 +396,21 @@ describe('parser', function() {
     expect(scope.obj.name).toBeUndefined();
     expect(scope.obj[0].name).toEqual(1);
   });
-  
+
   describe('formatter', function(){
     it('should return no argument function', function() {
       var noop = parser('noop').formatter()();
       expect(noop.format(null, 'abc')).toEqual('abc');
       expect(noop.parse(null, '123')).toEqual('123');
     });
-    
+
     it('should delegate arguments', function(){
       var index = parser('index:objs').formatter()();
       expect(index.format({objs:['A','B']}, 'B')).toEqual('1');
       expect(index.parse({objs:['A','B']}, '1')).toEqual('B');
     });
   });
-  
+
   describe('assignable', function(){
     it('should expose assignment function', function(){
       var fn = parser('a').assignable();
@@ -420,5 +420,5 @@ describe('parser', function() {
       expect(scope).toEqual({a:123});
     });
   });
-  
+
 });

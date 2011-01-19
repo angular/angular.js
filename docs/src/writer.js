@@ -13,17 +13,17 @@ function output(docs, content, callback){
 exports.output = function(file, content, callback){
   //console.log('writing', OUTPUT_DIR + file, '...');
   fs.writeFile(
-      OUTPUT_DIR + file, 
-      exports.toString(content), 
+      OUTPUT_DIR + file,
+      exports.toString(content),
       callback);
 };
 
 
 exports.toString = function toString(obj){
   switch (typeof obj) {
-  case 'string': 
+  case 'string':
     return obj;
-  case 'object': 
+  case 'object':
     if (obj instanceof Array) {
       obj.forEach(function (value, key){
         obj[key] = toString(value);
@@ -54,8 +54,8 @@ exports.copy = function(filename, callback){
   fs.readFile('docs/src/templates/' + filename, function(err, content){
     if (err) return callback.error(err);
     fs.writeFile(
-        OUTPUT_DIR + filename, 
-        content, 
+        OUTPUT_DIR + filename,
+        content,
         callback);
   });
 };
