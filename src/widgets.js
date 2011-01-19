@@ -625,20 +625,9 @@ angularWidget('ng:include', function(element){
     return extend(function(xhr, element){
       var scope = this, childScope;
       var changeCounter = 0;
-      var preventRecursion = false;
       function incrementChange(){ changeCounter++;}
       this.$watch(srcExp, incrementChange);
       this.$watch(scopeExp, incrementChange);
-      scope.$onEval(function(){
-        if (childScope && !preventRecursion) {
-          preventRecursion = true;
-          try {
-            childScope.$eval();
-          } finally {
-            preventRecursion = false;
-          }
-        }
-      });
       this.$watch(function(){return changeCounter;}, function(){
         var src = this.$eval(srcExp),
             useScope = this.$eval(scopeExp);

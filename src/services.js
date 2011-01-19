@@ -708,7 +708,7 @@ angularServiceInject('$route', function(location) {
       if (!childScope) {
         var pathParams = matcher(location.hashPath, route);
         if (pathParams) {
-          childScope = createScope(parentScope);
+          childScope = parentScope.$new();
           $route.current = extend({}, routeParams, {
             scope: childScope,
             params: extend({}, location.hashSearch, pathParams)
