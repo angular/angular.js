@@ -52,7 +52,7 @@ describe('scope/model', function(){
       model.$eval('name="works"');
       expect(model.name).toEqual('works');
     });
-    
+
     it('should not bind regexps', function(){
       model.exp = /abc/;
       expect(model.$eval('exp')).toEqual(model.exp);
@@ -158,7 +158,7 @@ describe('scope/model', function(){
       var element = jqLite('<div></div>');
       var scope = createScope();
       scope.$tryEval(function(){throw "myError";}, element);
-      expect(element.attr('ng-exception')).toEqual('myError'); 
+      expect(element.attr('ng-exception')).toEqual('myError');
       expect(element.hasClass('ng-exception')).toBeTruthy();
     });
 

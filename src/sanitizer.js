@@ -214,7 +214,7 @@ function decodeEntities(value) {
 }
 
 /**
- * Escapes all potentially dangerous characters, so that the 
+ * Escapes all potentially dangerous characters, so that the
  * resulting string can be safely inserted into attribute or
  * element text.
  * @param value

@@ -1,5 +1,5 @@
 describe('ValidatorTest', function(){
-  
+
   it('ShouldHaveThisSet', function() {
     var validator = {};
     angular.validator.myValidator = function(first, last){
@@ -16,7 +16,7 @@ describe('ValidatorTest', function(){
     delete angular.validator.myValidator;
     scope.$element.remove();
   });
-  
+
   it('Regexp', function() {
     assertEquals(angular.validator.regexp("abc", /x/, "E1"), "E1");
     assertEquals(angular.validator.regexp("abc", '/x/'),
@@ -24,7 +24,7 @@ describe('ValidatorTest', function(){
     assertEquals(angular.validator.regexp("ab", '^ab$'), null);
     assertEquals(angular.validator.regexp("ab", '^axb$', "E3"), "E3");
   });
-  
+
   it('Number', function() {
     assertEquals(angular.validator.number("ab"), "Not a number");
     assertEquals(angular.validator.number("-0.1",0), "Value can not be less than 0.");
@@ -32,7 +32,7 @@ describe('ValidatorTest', function(){
     assertEquals(angular.validator.number("1.2"), null);
     assertEquals(angular.validator.number(" 1 ", 1, 1), null);
   });
-  
+
   it('Integer', function() {
     assertEquals(angular.validator.integer("ab"), "Not a number");
     assertEquals(angular.validator.integer("1.1"), "Not a whole number");
@@ -43,7 +43,7 @@ describe('ValidatorTest', function(){
     assertEquals(angular.validator.integer("1"), null);
     assertEquals(angular.validator.integer(" 1 ", 1, 1), null);
   });
-  
+
   it('Date', function() {
     var error = "Value is not a date. (Expecting format: 12/31/2009).";
     expect(angular.validator.date("ab")).toEqual(error);
@@ -60,7 +60,7 @@ describe('ValidatorTest', function(){
     expect(angular.validator.date("1/32/2010")).toEqual(error);
     expect(angular.validator.date("001/031/2009")).toEqual(error);
   });
-  
+
   it('Phone', function() {
     var error = "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
     assertEquals(angular.validator.phone("ab"), error);
@@ -68,30 +68,30 @@ describe('ValidatorTest', function(){
     assertEquals(null, angular.validator.phone("+421 (0905) 933 297"));
     assertEquals(null, angular.validator.phone("+421 0905 933 297"));
   });
-  
+
   it('URL', function() {
     var error = "URL needs to be in http://server[:port]/path format.";
     assertEquals(angular.validator.url("ab"), error);
     assertEquals(angular.validator.url("http://server:123/path"), null);
   });
-  
+
   it('Email', function() {
     var error = "Email needs to be in username@host.com format.";
     assertEquals(error, angular.validator.email("ab"));
     assertEquals(null, angular.validator.email("misko@hevery.com"));
   });
-  
+
   it('Json', function() {
     assertNotNull(angular.validator.json("'"));
     assertNotNull(angular.validator.json("''X"));
     assertNull(angular.validator.json("{}"));
   });
-  
+
   describe('asynchronous', function(){
     var asynchronous = angular.validator.asynchronous;
     var self;
     var value, fn;
-  
+
     beforeEach(function(){
       value = null;
       fn = null;
@@ -101,11 +101,11 @@ describe('ValidatorTest', function(){
       self.$root = self;
       self.$init();
     });
-  
+
     afterEach(function(){
       if (self.$element) self.$element.remove();
     });
-  
+
     it('should make a request and show spinner', function(){
       var value, fn;
       var scope = compile('<input type="text" name="name" ng:validate="asynchronous:asyncFn"/>');
@@ -124,32 +124,32 @@ describe('ValidatorTest', function(){
       expect(input.attr(NG_VALIDATION_ERROR)).toEqual("myError");
       scope.$element.remove();
     });
-  
+
     it("should not make second request to same value", function(){
       asynchronous.call(self, "kai", function(v,f){value=v; fn=f;});
       expect(value).toEqual('kai');
       expect(self.$service('$invalidWidgets')[0]).toEqual(self.$element);
-  
+
       var spy = jasmine.createSpy();
       asynchronous.call(self, "kai", spy);
       expect(spy).wasNotCalled();
-  
+
       asynchronous.call(self, "misko", spy);
       expect(spy).wasCalled();
     });
-  
+
     it("should ignore old callbacks, and not remove spinner", function(){
       var firstCb, secondCb;
       asynchronous.call(self, "first", function(v,f){value=v; firstCb=f;});
       asynchronous.call(self, "second", function(v,f){value=v; secondCb=f;});
-  
+
       firstCb();
       expect(self.$element.hasClass('ng-input-indicator-wait')).toBeTruthy();
-  
+
       secondCb();
       expect(self.$element.hasClass('ng-input-indicator-wait')).toBeFalsy();
     });
-  
+
     it("should handle update function", function(){
       var scope = angular.compile('<input name="name" ng:validate="asynchronous:asyncFn:updateFn"/>');
       scope.asyncFn = jasmine.createSpy();
@@ -165,6 +165,6 @@ describe('ValidatorTest', function(){
       expect(scope.updateFn.mostRecentCall.args[0]).toEqual({id: 1234, data:'data'});
       scope.$element.remove();
     });
-  
+
   });
 });

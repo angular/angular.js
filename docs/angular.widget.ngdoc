@@ -4,19 +4,19 @@
 @namespace Namespace for all widgets.
 @description
 # Overview
-Widgets allow you to create DOM elements that the browser doesn't 
-already understand. You create the widget in your namespace and 
-assign it behavior. You can only bind one widget per DOM element 
-(unlike directives, in which you can use any number per DOM 
-element). Widgets are expected to manipulate the DOM tree by 
+Widgets allow you to create DOM elements that the browser doesn't
+already understand. You create the widget in your namespace and
+assign it behavior. You can only bind one widget per DOM element
+(unlike directives, in which you can use any number per DOM
+element). Widgets are expected to manipulate the DOM tree by
 adding new elements whereas directives are expected to only modify
 element properties.
 
 Widgets come in two flavors: element and attribute.
 
 # Element Widget
-Let's say we would like to create a new element type in the 
-namespace `my` that can watch an expression and alert() the user 
+Let's say we would like to create a new element type in the
+namespace `my` that can watch an expression and alert() the user
 with each new value.
 
 <pre>
@@ -38,7 +38,7 @@ angular.widget('my:watch', function(compileElement) {
 </pre>
 
 # Attribute Widget
-Let's implement the same widget, but this time as an attribute 
+Let's implement the same widget, but this time as an attribute
 that can be added to any existing DOM element.
 <pre>
 &lt;div my-watch="name"&gt;text&lt;/div&gt;
@@ -70,4 +70,4 @@ angular.widget('@my:watch', function(expression, compileElement) {
   });
 </script>
 <my:time></my:time>
-     
+

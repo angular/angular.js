@@ -67,12 +67,12 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#xhr
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {string} method Requested method (get|post|put|delete|head|json)
    * @param {string} url Requested url
-   * @param {string=} post Post data to send 
+   * @param {string=} post Post data to send
    * @param {function(number, string)} callback Function that will be called on response
-   * 
+   *
    * @description
    * Send ajax request
    */
@@ -113,7 +113,7 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#notifyWhenNoOutstandingRequests
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {function()} callback Function that will be called when no outstanding request
    */
   self.notifyWhenNoOutstandingRequests = function(callback) {
@@ -144,12 +144,12 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#addPollFn
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {function()} fn Poll function to add
-   * 
+   *
    * @description
    * Adds a function to the list of functions that poller periodically executes
-   * 
+   *
    * @returns {function()} the added function
    */
   self.addPollFn = function(fn) {
@@ -162,10 +162,10 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#startPoller
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {number} interval How often should browser call poll functions (ms)
    * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
-   * 
+   *
    * @description
    * Configures the poller to run in the specified intervals, using the specified
    * setTimeout fn and kicks it off.
@@ -180,15 +180,15 @@ function Browser(window, document, body, XHR, $log) {
   //////////////////////////////////////////////////////////////
   // URL API
   //////////////////////////////////////////////////////////////
-  
+
   /**
    * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#setUrl
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {string} url New url
-   * 
+   *
    * @description
    * Sets browser's url
    */
@@ -204,10 +204,10 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#getUrl
    * @methodOf angular.service.$browser
-   * 
+   *
    * @description
    * Get current browser's url
-   * 
+   *
    * @returns {string} Browser's url
    */
   self.getUrl = function() {
@@ -261,10 +261,10 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#cookies
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {string=} name Cookie name
    * @param {string=} value Cokkie value
-   * 
+   *
    * @description
    * The cookies method provides a 'private' low level access to browser cookies.
    * It is not meant to be used directly, use the $cookie service instead.
@@ -275,7 +275,7 @@ function Browser(window, document, body, XHR, $log) {
    *   <li>cookies(name, value) -> set name to value, if value is undefined delete the cookie</li>
    *   <li>cookies(name) -> the same as (name, undefined) == DELETES (no one calls it right now that way)</li>
    * </ul>
-   * 
+   *
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
   self.cookies = function (name, value) {
@@ -342,7 +342,7 @@ function Browser(window, document, body, XHR, $log) {
   // Misc API
   //////////////////////////////////////////////////////////////
   var hoverListener = noop;
-  
+
   /**
    * @workInProgress
    * @ngdoc method
@@ -356,13 +356,13 @@ function Browser(window, document, body, XHR, $log) {
    *    occurs.
    */
   self.hover = function(listener) { hoverListener = listener; };
-  
+
   /**
    * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#bind
    * @methodOf angular.service.$browser
-   * 
+   *
    * @description
    * Register hover function to real browser
    */
@@ -383,7 +383,7 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#addCss
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {string} url Url to css file
    * @description
    * Adds a stylesheet tag to the head.
@@ -402,10 +402,10 @@ function Browser(window, document, body, XHR, $log) {
    * @ngdoc method
    * @name angular.service.$browser#addJs
    * @methodOf angular.service.$browser
-   * 
+   *
    * @param {string} url Url to js file
-   * @param {string=} dom_id Optional id for the script tag 
-   * 
+   * @param {string=} dom_id Optional id for the script tag
+   *
    * @description
    * Adds a script tag to the head.
    */

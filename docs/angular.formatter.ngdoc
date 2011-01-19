@@ -8,13 +8,13 @@ The formatters are responsible for translating user readable text in an input wi
 data model stored in an application.
 
 # Writting your own Formatter
-Writing your own formatter is easy. Just register a pair of JavaScript functions with 
-`angular.formatter`. One function for parsing user input text to the stored form, 
+Writing your own formatter is easy. Just register a pair of JavaScript functions with
+`angular.formatter`. One function for parsing user input text to the stored form,
 and one for formatting the stored data to user-visible text.
 
-Here is an example of a "reverse" formatter: The data is stored in uppercase and in 
-reverse, while it is displayed in lower case and non-reversed. User edits are 
-automatically parsed into the internal form and data changes are automatically 
+Here is an example of a "reverse" formatter: The data is stored in uppercase and in
+reverse, while it is displayed in lower case and non-reversed. User edits are
+automatically parsed into the internal form and data changes are automatically
 formatted to the viewed form.
 
 <pre>
@@ -56,11 +56,11 @@ angular.formatter('reverse', {
 });
 </script>
 
-Formatted: 
+Formatted:
 <input type="text" name="data" value="angular" ng:format="reverse"/>
 <br/>
 
-Stored: 
+Stored:
 <input type="text" name="data"/><br/>
 <pre>{{data}}</pre>
 
@@ -69,7 +69,7 @@ Stored:
 it('should store reverse', function(){
  expect(element('.doc-example input:first').val()).toEqual('angular');
  expect(element('.doc-example input:last').val()).toEqual('RALUGNA');
- 
+
  this.addFutureAction('change to XYZ', function($window, $document, done){
    $document.elements('.doc-example input:last').val('XYZ').trigger('change');
    done();

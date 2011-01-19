@@ -38,7 +38,7 @@ var writes = callback.chain(function(){
   writer.copy('jquery.min.js', writes.waitFor());
 });
 writes.onDone(function(){
-  console.log('DONE. Generated ' + docs.length + ' pages in ' + 
+  console.log('DONE. Generated ' + docs.length + ' pages in ' +
       (now()-start) + 'ms.' );
 });
 work.onDone(writes);
