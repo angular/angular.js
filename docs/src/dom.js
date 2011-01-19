@@ -16,11 +16,11 @@ var INLINE_TAGS = {
     b: true
 };
 
-DOM.prototype = { 
+DOM.prototype = {
   toString: function() {
     return this.out.join('');
   },
-  
+
   text: function(content) {
     if (typeof content == "string") {
       this.out.push(content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
@@ -51,19 +51,21 @@ DOM.prototype = {
     this.out.push('>');
     this.text(text);
     this.out.push('</' + name + '>');
-    if (!INLINE_TAGS[name]) 
+    if (!INLINE_TAGS[name])
       this.out.push('\n');
   },
-  
+
   code: function(text) {
     this.tag('div', {'ng:non-bindable':''}, function(){
       this.tag('pre', {'class':"brush: js; html-script: true;"}, text);
     });
   },
-  
-  example: function(source, scenario) {
-    if (source || scenario) {
+
+  example: function(description, source, scenario) {
+    if (description || source || scenario) {
       this.h('Example', function(){
+        if (description)
+          this.html(description);
         if (scenario === false) {
           this.code(source);
         } else {
@@ -75,37 +77,38 @@ DOM.prototype = {
       });
     }
   },
-  
+
   h: function(heading, content, fn){
     if (content==undefined || content && content.legth == 0) return;
     this.tag('h' + this.headingDepth, heading);
     this.headingDepth++;
+    var className = {'class': heading.toLowerCase()};
     if (content instanceof Array) {
-      this.ul(content, {'class': heading.toLowerCase()}, fn);
+      this.ul(content, className, fn);
     } else if (fn) {
-      fn.call(this, content);
+      this.tag('div', className, fn);
     } else {
-      this.text(content);
-    } 
+      this.tag('div', className, content);
+    }
     this.headingDepth--;
   },
-  
+
   h1: function(attr, text) {
     this.tag('h1', attr, text);
   },
-  
+
   h2: function(attr, text) {
     this.tag('h2', attr, text);
   },
-  
+
   h3: function(attr, text) {
     this.tag('h3', attr, text);
   },
-  
+
   p: function(attr, text) {
     this.tag('p', attr, text);
   },
-  
+
   ul: function(list, attr, fn) {
     if (typeof attr == 'function') {
       fn = attr;
@@ -119,5 +122,5 @@ DOM.prototype = {
       });
     });
   }
-  
+
 };
