@@ -62,12 +62,12 @@ describe('ngdoc', function(){
         toEqual('<p><tt>&lt;angular/&gt;</tt></p>');
     });
 
-    it('should not replace anything in <pre>', function(){
-      expect(markdown('bah x\n<pre>\nangular.k\n</pre>\n asdf x')).
+    it('should not replace anything in <pre>, but escape the html escape the content', function(){
+      expect(markdown('bah x\n<pre>\n<b>angular</b>.k\n</pre>\n asdf x')).
         toEqual(
             '<p>bah x</p>' +
             '<div ng:non-bindable><pre class="brush: js; html-script: true;">\n' +
-            'angular.k\n' +
+            '&lt;b&gt;angular&lt;/b&gt;.k\n' +
             '</pre></div>' +
             '<p>asdf x</p>');
     });
