@@ -841,20 +841,20 @@ function toKeyValue(obj) {
  *
  * ## The angular distribution
  * Note that there are two versions of the angular javascript file that you can use:
- * 
+ *
  * * `angular.js` - the development version - this file is unobfuscated, uncompressed, and thus
  *    human-readable and useful when developing your angular applications.
  * * `angular.min.js` - the production version - this is a minified and obfuscated version of
  *    `angular.js`. You want to use this version when you want to load a smaller but functionally
  *    equivalent version of the code in your application. We use the Closure compiler to create this
  *    file.
- *     
- * 
+ *
+ *
  * ## Auto-bootstrap with `ng:autobind`
  * The simplest way to get an <angular/> application up and running is by inserting a script tag in
  * your HTML file that bootstraps the `http://code.angularjs.org/angular-x.x.x.min.js` code and uses
  * the special `ng:autobind` attribute, like in this snippet of HTML:
- * 
+ *
  * <pre>
     &lt;!doctype html&gt;
     &lt;html xmlns:ng="http://angularjs.org"&gt;
@@ -916,11 +916,11 @@ function toKeyValue(obj) {
  * ## Manual Bootstrap
  * Using auto-bootstrap is a handy way to start using <angular/>, but advanced users who want more
  * control over the initialization process might prefer to use manual bootstrap instead.
- * 
+ *
  * The best way to get started with manual bootstraping is to look at the magic behind `ng:autobind`
  * by writing out each step of the autobind process explicitly. Note that the following code is
  * equivalent to the code in the previous section.
- * 
+ *
  * <pre>
     &lt;!doctype html&gt;
     &lt;html xmlns:ng="http://angularjs.org"&gt;
@@ -941,9 +941,9 @@ function toKeyValue(obj) {
      &lt;/body&gt;
     &lt;/html&gt;
  * </pre>
- * 
+ *
  * This is the sequence that your code should follow if you're bootstrapping angular on your own:
- * 
+ *
  * * After the page is loaded, find the root of the HTML template, which is typically the root of
  *   the document.
  * * Run the HTML compiler, which converts the templates into an executable, bi-directionally bound
@@ -953,7 +953,7 @@ function toKeyValue(obj) {
  * ##XML Namespace
  * *IMPORTANT:* When using <angular/> you must declare the ng namespace using the xmlns tag. If you
  * don't declare the namespace, Internet Explorer does not render widgets properly.
- *    
+ *
  * <pre>
  * &lt;html xmlns:ng="http://angularjs.org"&gt;
  * </pre>
@@ -964,7 +964,7 @@ function toKeyValue(obj) {
  * to form the fully qualified widget name. For example, you could map the alias `my` to your domain
  * and create a widget called my:widget. To create your own namespace, simply add another xmlsn tag
  * to your page, create an alias, and set it to your unique domain:
- * 
+ *
  * <pre>
  * &lt;html xmlns:ng="http://angularjs.org" xmlns:my="http://mydomain.com"&gt;
  * </pre>
@@ -973,7 +973,7 @@ function toKeyValue(obj) {
  * ## Global Object
  * The <angular/> script creates a single global variable `angular` in the global namespace. All
  * APIs are bound to fields of this global object.
- * 
+ *
  */
 function angularInit(config){
   if (config.autobind) {
