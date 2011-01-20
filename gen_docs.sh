@@ -1,3 +1,3 @@
-#!/bin/bash 
+#!/bin/bash
 . ~/.bashrc
-node docs/spec/specs.js --noColor && node docs/src/gen-docs.js
+node docs/spec/specs.js --noColor | grep -v '/lib/jasmine' && node docs/src/gen-docs.js
