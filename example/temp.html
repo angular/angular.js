@@ -1,36 +1,22 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!doctype html>
 <html xmlns:ng="http://angularjs.org">
   <head>
-    <script type="text/javascript"
-         src="../angular-debug.js" ng:autobind ng:css="css/angular.css"></script>
+    <title>angular dev sandbox</title>
+    <script src="../src/angular-bootstrap.js" ng:autobind></script>
+    <script>
+    angular.service('routeConfig', function($route) {
+          $route.when('/view1', {controller: MyCtrl, template: 'view1.html'});
+          $route.when('/view2', {controller: MyCtrl, template: 'view2.html'});
+
+          function MyCtrl() {};
+        }, {$inject: ['$route'], $eager: true});
+    </script>
   </head>
-  <body ng:init="$window.$root = this">
+  <body ng:init="$service('$window').$root = this">
+    <p>
+      <a href="#/view1">view1</a> | <a href="#/view2">view2</a> | <a href="#">blank</a>
+    </p>
 
-<script>
-angular.widget('my:greeter', function(compileElement){
-  var compiler = this;
-  compileElement.css('style', 'block');
-  var salutaitonExp = compileElement.attr('salutation');
-  var nameExp = compileElement.attr('name');
-  return function(linkElement){
-    var salutaitonSpan = angular.element('<span class="salutation"></span');
-    var nameSpan = angular.element('<span class="name"></span>');
-    linkElement.append(salutaitonSpan);
-    linkElement.append(compiler.text(' '));
-    linkElement.append(nameSpan);
-    linkElement.append(compiler.text('!'));
-    this.$watch(salutaitonExp, function(value){
-      salutaitonSpan.text(value);
-    });
-    this.$watch(nameExp, function(value){
-      nameSpan.text(value);
-    });
-  };
-});
-</script>
-<div ng:init="salutation='Hello'; name='World'">
-  <my:greeter salutation="salutation" name="name"/>
-</div>
-
+    view: <ng:view></ng:view>
   </body>
 </html>
