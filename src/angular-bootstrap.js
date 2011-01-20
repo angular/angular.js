@@ -52,7 +52,9 @@
       }
       else if (!globalVars.hasOwnProperty(varKey)) {
         //console.log('new global variable found: ', prop);
-        globalVars[varKey] = window[prop];
+        try {
+          globalVars[varKey] = window[prop];
+        } catch(e) {} //ignore properties that throw exception when accessed (common in FF)
       } else if (globalVars[varKey] !== window[prop] && !isActuallyNaN(window[prop])) {
         clobbered.push(prop);
         console.error("Global variable clobbered by script " + file + "! Variable name: " + prop);
@@ -83,11 +85,13 @@
 
     // initialize the window property cache
     for (prop in window) {
-      globalVars[key(prop)] = window[prop];
+      try {
+        globalVars[key(prop)] = window[prop];
+      } catch(e) {} //ignore properties that throw exception when accessed (common in FF)
     }
 
     // load the js scripts
-    for (i in arguments) {
+    for (i in Array.prototype.slice.call(arguments, 0)) {
       file = arguments[i];
       document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
                              'onload="angularClobberTest(\'' + file + '\')"></script>');
