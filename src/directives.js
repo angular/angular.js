@@ -4,7 +4,7 @@
  * @name angular.directive.ng:init
  *
  * @description
- * `ng:init` attribute allows the for initialization tasks to be executed 
+ * `ng:init` attribute allows the for initialization tasks to be executed
  *  before the template enters execution mode during bootstrap.
  *
  * @element ANY
@@ -33,9 +33,9 @@ angularDirective("ng:init", function(expression){
  * @name angular.directive.ng:controller
  *
  * @description
- * To support the Model-View-Controller design pattern, it is possible 
- * to assign behavior to a scope through `ng:controller`. The scope is 
- * the MVC model. The HTML (with data bindings) is the MVC view. 
+ * To support the Model-View-Controller design pattern, it is possible
+ * to assign behavior to a scope through `ng:controller`. The scope is
+ * the MVC model. The HTML (with data bindings) is the MVC view.
  * The `ng:controller` directive specifies the MVC controller class
  *
  * @element ANY
@@ -66,7 +66,7 @@ angularDirective("ng:init", function(expression){
       };
     </script>
     <div ng:controller="SettingsController">
-      Name: <input type="text" name="name"/> 
+      Name: <input type="text" name="name"/>
       [ <a href="" ng:click="greet()">greet</a> ]<br/>
       Contact:
       <ul>
@@ -76,7 +76,7 @@ angularDirective("ng:init", function(expression){
              <option>email</option>
           </select>
           <input type="text" name="contact.value"/>
-          [ <a href="" ng:click="clearContact(contact)">clear</a> 
+          [ <a href="" ng:click="clearContact(contact)">clear</a>
           | <a href="" ng:click="removeContact(contact)">X</a> ]
         </li>
         <li>[ <a href="" ng:click="addContact()">add</a> ]</li>
@@ -112,22 +112,22 @@ angularDirective("ng:controller", function(expression){
  * @name angular.directive.ng:eval
  *
  * @description
- * The `ng:eval` allows you to execute a binding which has side effects 
+ * The `ng:eval` allows you to execute a binding which has side effects
  * without displaying the result to the user.
  *
  * @element ANY
  * @param {expression} expression to eval.
  *
  * @exampleDescription
- * Notice that `{{` `obj.multiplied = obj.a * obj.b` `}}` has a side effect of assigning 
- * a value to `obj.multiplied` and displaying the result to the user. Sometimes, 
- * however, it is desirable to execute a side effect without showing the value to 
- * the user. In such a case `ng:eval` allows you to execute code without updating 
+ * Notice that `{{` `obj.multiplied = obj.a * obj.b` `}}` has a side effect of assigning
+ * a value to `obj.multiplied` and displaying the result to the user. Sometimes,
+ * however, it is desirable to execute a side effect without showing the value to
+ * the user. In such a case `ng:eval` allows you to execute code without updating
  * the display.
- * 
+ *
  * @example
- *   <input name="obj.a" value="6" > 
- *     * <input name="obj.b" value="2"> 
+ *   <input name="obj.a" value="6" >
+ *     * <input name="obj.b" value="2">
  *     = {{obj.multiplied = obj.a * obj.b}} <br>
  *   <span ng:eval="obj.divide = obj.a / obj.b"></span>
  *   <span ng:eval="obj.updateCount = 1 + (obj.updateCount||0)"></span>
@@ -155,12 +155,12 @@ angularDirective("ng:eval", function(expression){
  * @name angular.directive.ng:bind
  *
  * @description
- * The `ng:bind` attribute asks <angular/> to replace the text content of this 
- * HTML element with the value of the given expression and kept it up to 
- * date when the expression's value changes. Usually you just write 
- * {{expression}} and let <angular/> compile it into 
+ * The `ng:bind` attribute asks <angular/> to replace the text content of this
+ * HTML element with the value of the given expression and kept it up to
+ * date when the expression's value changes. Usually you just write
+ * {{expression}} and let <angular/> compile it into
  * `<span ng:bind="expression"></span>` at bootstrap time.
- * 
+ *
  * @element ANY
  * @param {expression} expression to eval.
  *
@@ -169,7 +169,7 @@ angularDirective("ng:eval", function(expression){
  * @example
  * Enter name: <input type="text" name="name" value="Whirled">. <br>
  * Hello <span ng:bind="name" />!
- * 
+ *
  * @scenario
    it('should check ng:bind', function(){
      expect(using('.doc-example-live').binding('name')).toBe('Whirled');
@@ -210,7 +210,7 @@ angularDirective("ng:bind", function(expression, element){
           element.html('');
           element.append(value);
         } else {
-          element.text(value === _undefined ? '' : value);
+          element.text(value == _undefined ? '' : value);
         }
       }
     }, element);
@@ -259,12 +259,12 @@ function compileBindTemplate(template){
  * @name angular.directive.ng:bind-template
  *
  * @description
- * The `ng:bind-template` attribute specifies that the element 
- * text should be replaced with the template in ng:bind-template. 
- * Unlike ng:bind the ng:bind-template can contain multiple `{{` `}}` 
- * expressions. (This is required since some HTML elements 
+ * The `ng:bind-template` attribute specifies that the element
+ * text should be replaced with the template in ng:bind-template.
+ * Unlike ng:bind the ng:bind-template can contain multiple `{{` `}}`
+ * expressions. (This is required since some HTML elements
  * can not have SPAN elements such as TITLE, or OPTION to name a few.
- * 
+ *
  * @element ANY
  * @param {string} template of form
  *   <tt>{{</tt> <tt>expression</tt> <tt>}}</tt> to eval.
@@ -275,7 +275,7 @@ function compileBindTemplate(template){
     Salutation: <input type="text" name="salutation" value="Hello"><br/>
     Name: <input type="text" name="name" value="World"><br/>
     <pre ng:bind-template="{{salutation}} {{name}}!"></pre>
- * 
+ *
  * @scenario
    it('should check ng:bind', function(){
      expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
@@ -313,41 +313,41 @@ var REMOVE_ATTRIBUTES = {
  * @name angular.directive.ng:bind-attr
  *
  * @description
- * The `ng:bind-attr` attribute specifies that the element attributes 
- * which should be replaced by the expression in it. Unlike `ng:bind` 
- * the `ng:bind-attr` contains a JSON key value pairs representing 
- * which attributes need to be changed. You don’t usually write the 
- * `ng:bind-attr` in the HTML since embedding 
- * <tt ng:non-bindable>{{expression}}</tt> into the 
+ * The `ng:bind-attr` attribute specifies that the element attributes
+ * which should be replaced by the expression in it. Unlike `ng:bind`
+ * the `ng:bind-attr` contains a JSON key value pairs representing
+ * which attributes need to be changed. You don’t usually write the
+ * `ng:bind-attr` in the HTML since embedding
+ * <tt ng:non-bindable>{{expression}}</tt> into the
  * attribute directly is the preferred way. The attributes get
  * translated into `<span ng:bind-attr="{attr:expression}"/>` at
  * bootstrap time.
- * 
+ *
  * This HTML snippet is preferred way of working with `ng:bind-attr`
  * <pre>
  *   <a href="http://www.google.com/search?q={{query}}">Google</a>
  * </pre>
- * 
+ *
  * The above gets translated to bellow during bootstrap time.
  * <pre>
  *   <a ng:bind-attr='{"href":"http://www.google.com/search?q={{query}}"}'>Google</a>
  * </pre>
- * 
+ *
  * @element ANY
- * @param {string} attribute_json a JSON key-value pairs representing 
- *    the attributes to replace. Each key matches the attribute 
- *    which needs to be replaced. Each value is a text template of 
- *    the attribute with embedded 
- *    <tt ng:non-bindable>{{expression}}</tt>s. Any number of 
+ * @param {string} attribute_json a JSON key-value pairs representing
+ *    the attributes to replace. Each key matches the attribute
+ *    which needs to be replaced. Each value is a text template of
+ *    the attribute with embedded
+ *    <tt ng:non-bindable>{{expression}}</tt>s. Any number of
  *    key-value pairs can be specified.
  *
  * @exampleDescription
  * Try it here: enter text in text box and click Google.
  * @example
-    Google for: 
-    <input type="text" name="query" value="AngularJS"/> 
+    Google for:
+    <input type="text" name="query" value="AngularJS"/>
     <a href="http://www.google.com/search?q={{query}}">Google</a>
- * 
+ *
  * @scenario
    it('should check ng:bind-attr', function(){
      expect(using('.doc-example-live').element('a').attr('href')).
@@ -396,9 +396,9 @@ angularDirective("ng:bind-attr", function(expression){
  * @name angular.directive.ng:click
  *
  * @description
- * The ng:click allows you to specify custom behavior when 
+ * The ng:click allows you to specify custom behavior when
  * element is clicked.
- * 
+ *
  * @element ANY
  * @param {expression} expression to eval upon click.
  *
@@ -440,14 +440,14 @@ angularDirective("ng:click", function(expression, element){
  * @name angular.directive.ng:submit
  *
  * @description
- * 
+ *
  * @element form
  * @param {expression} expression to eval.
  *
  * @exampleDescription
  * @example
  * <form ng:submit="list.push(text);text='';" ng:init="list=[]">
- *   Enter text and hit enter: 
+ *   Enter text and hit enter:
  *   <input type="text" name="text" value="hello"/>
  * </form>
  * <pre>list={{list}}</pre>
@@ -488,14 +488,14 @@ angularDirective("ng:submit", function(expression, element) {
  * @name angular.directive.ng:watch
  *
  * @description
- * The `ng:watch` allows you watch a variable and then execute 
+ * The `ng:watch` allows you watch a variable and then execute
  * an evaluation on variable change.
- * 
+ *
  * @element ANY
  * @param {expression} expression to eval.
  *
  * @exampleDescription
- * Notice that the counter is incremented 
+ * Notice that the counter is incremented
  * every time you change the text.
  * @example
     <div ng:init="counter=0" ng:watch="name: counter = counter+1">
@@ -544,9 +544,9 @@ function ngClass(selector) {
  * @name angular.directive.ng:class
  *
  * @description
- * The `ng:class` allows you to set CSS class on HTML element 
+ * The `ng:class` allows you to set CSS class on HTML element
  * conditionally.
- * 
+ *
  * @element ANY
  * @param {expression} expression to eval.
  *
@@ -556,7 +556,7 @@ function ngClass(selector) {
     <input type="button" value="clear" ng:click="myVar=''">
     <br>
     <span ng:class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
- * 
+ *
  * @scenario
    it('should check ng:class', function(){
      expect(element('.doc-example-live span').attr('className')).not().
@@ -568,7 +568,7 @@ function ngClass(selector) {
        toMatch(/ng-input-indicator-wait/);
 
      using('.doc-example-live').element(':button:last').click();
-     
+
      expect(element('.doc-example-live span').attr('className')).not().
        toMatch(/ng-input-indicator-wait/);
    });
@@ -581,12 +581,12 @@ angularDirective("ng:class", ngClass(function(){return true;}));
  * @name angular.directive.ng:class-odd
  *
  * @description
- * The `ng:class-odd` and `ng:class-even` works exactly as 
- * `ng:class`, except it works in conjunction with `ng:repeat` 
+ * The `ng:class-odd` and `ng:class-even` works exactly as
+ * `ng:class`, except it works in conjunction with `ng:repeat`
  * and takes affect only on odd (even) rows.
  *
  * @element ANY
- * @param {expression} expression to eval. Must be inside 
+ * @param {expression} expression to eval. Must be inside
  * `ng:repeat`.
 
  *
@@ -596,11 +596,11 @@ angularDirective("ng:class", ngClass(function(){return true;}));
       <li ng:repeat="name in names">
        <span ng:class-odd="'ng-format-negative'"
              ng:class-even="'ng-input-indicator-wait'">
-         {{name}} &nbsp; &nbsp; &nbsp; 
+         {{name}} &nbsp; &nbsp; &nbsp;
        </span>
       </li>
     </ol>
- * 
+ *
  * @scenario
    it('should check ng:class-odd and ng:class-even', function(){
      expect(element('.doc-example-live li:first span').attr('className')).
@@ -617,12 +617,12 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
  * @name angular.directive.ng:class-even
  *
  * @description
- * The `ng:class-odd` and `ng:class-even` works exactly as 
- * `ng:class`, except it works in conjunction with `ng:repeat` 
+ * The `ng:class-odd` and `ng:class-even` works exactly as
+ * `ng:class`, except it works in conjunction with `ng:repeat`
  * and takes affect only on odd (even) rows.
  *
  * @element ANY
- * @param {expression} expression to eval. Must be inside 
+ * @param {expression} expression to eval. Must be inside
  * `ng:repeat`.
 
  *
@@ -632,11 +632,11 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
       <li ng:repeat="name in names">
        <span ng:class-odd="'ng-format-negative'"
              ng:class-even="'ng-input-indicator-wait'">
-         {{name}} &nbsp; &nbsp; &nbsp; 
+         {{name}} &nbsp; &nbsp; &nbsp;
        </span>
       </li>
     </ol>
- * 
+ *
  * @scenario
    it('should check ng:class-odd and ng:class-even', function(){
      expect(element('.doc-example-live li:first span').attr('className')).
@@ -655,9 +655,9 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * @description
  * The `ng:show` and `ng:hide` allows you to show or hide a portion
  * of the HTML conditionally.
- * 
+ *
  * @element ANY
- * @param {expression} expression if truthy then the element is 
+ * @param {expression} expression if truthy then the element is
  * shown or hidden respectively.
  *
  * @exampleDescription
@@ -665,14 +665,14 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
     Click me: <input type="checkbox" name="checked"><br/>
     Show: <span ng:show="checked">I show up when you checkbox is checked?</span> <br/>
     Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
- * 
+ *
  * @scenario
    it('should check ng:show / ng:hide', function(){
      expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
      expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
-     
+
      input('checked').check();
-     
+
      expect(element('.doc-example-live span:first:visible').count()).toEqual(1);
      expect(element('.doc-example-live span:last:hidden').count()).toEqual(1);
    });
@@ -693,9 +693,9 @@ angularDirective("ng:show", function(expression, element){
  * @description
  * The `ng:show` and `ng:hide` allows you to show or hide a portion
  * of the HTML conditionally.
- * 
+ *
  * @element ANY
- * @param {expression} expression if truthy then the element is 
+ * @param {expression} expression if truthy then the element is
  * shown or hidden respectively.
  *
  * @exampleDescription
@@ -703,14 +703,14 @@ angularDirective("ng:show", function(expression, element){
     Click me: <input type="checkbox" name="checked"><br/>
     Show: <span ng:show="checked">I show up when you checkbox is checked?</span> <br/>
     Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
- * 
+ *
  * @scenario
    it('should check ng:show / ng:hide', function(){
      expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
      expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
-     
+
      input('checked').check();
-     
+
      expect(element('.doc-example-live span:first:visible').count()).toEqual(1);
      expect(element('.doc-example-live span:last:hidden').count()).toEqual(1);
    });
@@ -730,10 +730,10 @@ angularDirective("ng:hide", function(expression, element){
  *
  * @description
  * The ng:style allows you to set CSS style on an HTML element conditionally.
- * 
+ *
  * @element ANY
- * @param {expression} expression which evals to an object whes key's are 
- *        CSS style names and values are coresponding values for those 
+ * @param {expression} expression which evals to an object whes key's are
+ *        CSS style names and values are coresponding values for those
  *        CSS keys.
  *
  * @exampleDescription
@@ -743,7 +743,7 @@ angularDirective("ng:hide", function(expression, element){
     <br/>
     <span ng:style="myStyle">Sample Text</span>
     <pre>myStyle={{myStyle}}</pre>
- * 
+ *
  * @scenario
    it('should check ng:style', function(){
      expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
