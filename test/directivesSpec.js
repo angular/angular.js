@@ -80,6 +80,10 @@ describe("directive", function(){
       expect(sortedHtml(scope.$element)).toEqual('<div>before<div class="filter" ng:bind="0|myFilter">HELLO</div>after</div>');
     });
 
+    iit('should suppress rendering of falsy values', function(){
+      var scope = compile('<div>{{ null }}{{ undefined }}{{ "" }}-{{ 0 }}{{ false }}</div>');
+      expect(scope.$element.text()).toEqual('-0false');
+    });
   });
 
   describe('ng:bind-template', function(){
@@ -110,7 +114,7 @@ describe("directive", function(){
       expect(element.attr('src')).toEqual('http://localhost/mysrc');
       expect(element.attr('alt')).toEqual('myalt');
     });
-    
+
     it('should not pretty print JSON in attributes', function(){
       var scope = compile('<img alt="{{ {a:1} }}"/>');
       expect(element.attr('alt')).toEqual('{"a":1}');
