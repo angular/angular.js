@@ -41,6 +41,8 @@
   }
 
   window.angularClobberTest = function(file) {
+    return; //disabled, works only on chrome
+
     var varKey, prop,
         clobbered = [];
 
@@ -81,13 +83,14 @@
   function addScripts(){
     var prop, i;
 
+    // disabled for now due to FF
     // initialize the window property cache
-    for (prop in window) {
-      globalVars[key(prop)] = window[prop];
-    }
+//    for (prop in window) {
+//      globalVars[key(prop)] = window[prop];
+//    }
 
     // load the js scripts
-    for (i in arguments) {
+    for (i in Array.prototype.slice.call(arguments, 0)) {
       file = arguments[i];
       document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
                              'onload="angularClobberTest(\'' + file + '\')"></script>');
