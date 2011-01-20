@@ -210,7 +210,7 @@ angularDirective("ng:bind", function(expression, element){
           element.html('');
           element.append(value);
         } else {
-          element.text(value === _undefined ? '' : value);
+          element.text(value == _undefined ? '' : value);
         }
       }
     }, element);
