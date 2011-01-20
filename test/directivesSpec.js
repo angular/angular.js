@@ -80,6 +80,12 @@ describe("directive", function(){
       expect(sortedHtml(scope.$element)).toEqual('<div>before<div class="filter" ng:bind="0|myFilter">HELLO</div>after</div>');
     });
 
+
+    it('should suppress rendering of falsy values', function(){
+      var scope = compile('<div>{{ null }}{{ undefined }}{{ "" }}-{{ 0 }}{{ false }}</div>');
+      expect(scope.$element.text()).toEqual('-0false');
+    });
+
   });
 
   describe('ng:bind-template', function(){
