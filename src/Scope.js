@@ -331,10 +331,11 @@ function createScope(parent, providers, instanceCache) {
      * @function
      *
      * @description
-     * Without the `exp` parameter triggers an eval cycle, for this scope and it's child scopes.
+     * Without the `exp` parameter triggers an eval cycle for this scope and its child scopes.
      *
      * With the `exp` parameter, compiles the expression to a function and calls it with `this` set
-     * to the current scope and returns the result.
+     * to the current scope and returns the result. In other words, evaluates `exp` as angular
+     * expression in the context of the current scope.
      *
      * # Example
        <pre>
