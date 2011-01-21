@@ -696,20 +696,14 @@ describe("service", function(){
     });
 
 
-    it('should ignore non-string values when asked to create a cookie', function() {
+    it('should drop or reset any cookie that was set to a non-string value', function() {
       scope.$cookies.nonString = [1, 2, 3];
+      scope.$cookies.nullVal = null;
+      scope.$cookies.undefVal = undefined;
+      scope.$cookies.preexisting = function(){};
       scope.$eval();
       expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
       expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
-    });
-
-
-    it('should drop any null or undefined properties', function() {
-      scope.$cookies.nullVal = null;
-      scope.$cookies.undefVal = undefined;
-      scope.$eval();
-
-      expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     });
 
 
