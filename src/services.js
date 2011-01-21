@@ -1118,6 +1118,8 @@ angularServiceInject('$cookies', function($browser) {
   })();
 
   //at the end of each eval, push cookies
+  //TODO: this should happen before the "delayed" watches fire, because if some cookies are not
+  //      strings or browser refuses to store some cookies, we update the model in the push fn.
   this.$onEval(PRIORITY_LAST, push);
 
   return cookies;
@@ -1128,6 +1130,7 @@ angularServiceInject('$cookies', function($browser) {
    */
   function push(){
     var name,
+        value,
         browserCookies,
         updated;
 
@@ -1140,15 +1143,22 @@ angularServiceInject('$cookies', function($browser) {
 
     //update all cookies updated in $cookies
     for(name in cookies) {
-      if (cookies[name] !== lastCookies[name]) {
-        $browser.cookies(name, cookies[name]);
+      value = cookies[name];
+      if (!isString(value)) {
+        if (isDefined(lastCookies[name])) {
+          cookies[name] = lastCookies[name];
+        } else {
+          delete cookies[name];
+        }
+      } else if (value !== lastCookies[name]) {
+        $browser.cookies(name, value);
         updated = true;
       }
     }
 
     //verify what was actually stored
     if (updated){
-      updated = !updated;
+      updated = false;
       browserCookies = $browser.cookies();
 
       for (name in cookies) {
@@ -1161,11 +1171,6 @@ angularServiceInject('$cookies', function($browser) {
           }
           updated = true;
         }
-
-      }
-
-      if (updated) {
-        rootScope.$eval();
       }
     }
   }
