@@ -609,24 +609,7 @@ describe("widget", function(){
   });
 
   describe('ng:include', function(){
-    it('should include on external file and create a new child scope', function() {
-      var element = jqLite('<ng:include src="url"></ng:include>');
-      var scope = angular.compile(element);
-      scope.counter = 0;
-      scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'{{counter = counter + 1}}'};
-      scope.$init();
-      scope.$service('$browser').defer.flush();
-      expect(element.text()).toEqual('2');
-
-      //should also propagate evals to the child scope
-      scope.$eval();
-      expect(element.text()).toEqual('3');
-
-      dealoc(scope);
-    });
-
-    it('should include on external file and use an existing child scope', function() {
+    it('should include on external file', function() {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
       var scope = angular.compile(element);
       scope.childScope = createScope();
