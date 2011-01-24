@@ -788,26 +788,25 @@ describe("widget", function(){
 
 
   describe('ng:view', function() {
-    var rootScope, partialScope, $route, $location, $browser;
+    var rootScope, rootScope, $route, $location, $browser;
 
     beforeEach(function() {
-      rootScope = angular.scope();
-      partialScope = angular.compile('<ng:view></ng:view>', rootScope);
-      partialScope.$init();
+      rootScope = angular.compile('<ng:view></ng:view>');
+      rootScope.$init();
       $route = rootScope.$service('$route');
       $location = rootScope.$service('$location');
       $browser = rootScope.$service('$browser');
     });
 
     afterEach(function() {
-      dealoc(partialScope);
+      dealoc(rootScope);
     });
 
 
-    it('should do nothing when not routes are defined', function() {
+    it('should do nothing when no routes are defined', function() {
       $location.updateHash('/unknown');
       rootScope.$eval();
-      expect(partialScope.$element.text()).toEqual('');
+      expect(rootScope.$element.text()).toEqual('');
     });
 
 
@@ -815,19 +814,19 @@ describe("widget", function(){
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
       $route.when('/bar', {controller: angular.noop, template: 'myUrl2'});
 
-      expect(partialScope.$element.text()).toEqual('');
+      expect(rootScope.$element.text()).toEqual('');
 
       $location.updateHash('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$eval();
       $browser.xhr.flush();
-      expect(partialScope.$element.text()).toEqual('4');
+      expect(rootScope.$element.text()).toEqual('4');
 
       $location.updateHash('/bar');
       $browser.xhr.expectGET('myUrl2').respond('angular is da best');
       rootScope.$eval();
       $browser.xhr.flush();
-      expect(partialScope.$element.text()).toEqual('angular is da best');
+      expect(rootScope.$element.text()).toEqual('angular is da best');
     });
 
     it('should remove all content when location changes to an unknown route', function() {
@@ -837,11 +836,26 @@ describe("widget", function(){
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$eval();
       $browser.xhr.flush();
-      expect(partialScope.$element.text()).toEqual('4');
+      expect(rootScope.$element.text()).toEqual('4');
 
       $location.updateHash('/unknown');
       rootScope.$eval();
-      expect(partialScope.$element.text()).toEqual('');
+      expect(rootScope.$element.text()).toEqual('');
+    });
+
+    it('should chain scopes and propagate evals to the child scope', function() {
+      $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
+      rootScope.parentVar = 'parent';
+
+      $location.updateHash('/foo');
+      $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
+      rootScope.$eval();
+      $browser.xhr.flush();
+      expect(rootScope.$element.text()).toEqual('parent');
+
+      rootScope.parentVar = 'new parent';
+      rootScope.$eval();
+      expect(rootScope.$element.text()).toEqual('new parent');
     });
   });
 });
