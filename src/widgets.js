@@ -629,6 +629,9 @@ angularWidget('ng:include', function(element){
       function incrementChange(){ changeCounter++;}
       this.$watch(srcExp, incrementChange);
       this.$watch(scopeExp, incrementChange);
+
+      // note that this propagates eval to the current childScope, where childScope is dynamically
+      // bound (via $route.onChange callback) to the current scope created by $route
       scope.$onEval(function(){
         if (childScope && !preventRecursion) {
           preventRecursion = true;
@@ -1009,22 +1012,33 @@ angularWidget('ng:view', function(element) {
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
     return injectService(['$xhr.cache', '$route'], function($xhr, $route, element){
+      var parentScope = this,
+          childScope;
+
       $route.onChange(function(){
-        var src, scope;
+        var src;
 
         if ($route.current) {
           src = $route.current.template;
-          scope = $route.current.scope;
+          childScope = $route.current.scope;
         }
 
         if (src) {
           $xhr('GET', src, function(code, response){
             element.html(response);
-            compiler.compile(element)(element, scope);
-            scope.$init();
+            compiler.compile(element)(element, childScope);
+            childScope.$init();
           });
         } else {
           element.html('');
+        }
+      });
+
+      // note that this propagates eval to the current childScope, where childScope is dynamically
+      // bound (via $route.onChange callback) to the current scope created by $route
+      parentScope.$onEval(function() {
+        if (childScope) {
+          childScope.$eval();
         }
       });
     });
