@@ -243,6 +243,7 @@ function createScope(parent, providers, instanceCache) {
   parent = Parent.prototype = (parent || {});
   var instance = new Parent();
   var evalLists = {sorted:[]};
+  var $log, $exceptionHandler;
 
   extend(instance, {
     'this': instance,
@@ -425,13 +426,13 @@ function createScope(parent, providers, instanceCache) {
           return expressionCompile(expression).call(instance);
         }
       } catch (e) {
-        (instance.$log || {error:error}).error(e);
+        if ($log) $log.error(e);
         if (isFunction(exceptionHandler)) {
           exceptionHandler(e);
         } else if (exceptionHandler) {
           errorHandlerFor(exceptionHandler, e);
-        } else if (isFunction(instance.$exceptionHandler)) {
-          instance.$exceptionHandler(e);
+        } else if (isFunction($exceptionHandler)) {
+          $exceptionHandler(e);
         }
       }
     },
@@ -634,6 +635,9 @@ function createScope(parent, providers, instanceCache) {
      */
     (instance.$service = createInjector(instance, providers, instanceCache))();
   }
+
+  $log = instance.$service('$log');
+  $exceptionHandler = instance.$service('$exceptionHandler');
 
   return instance;
 }

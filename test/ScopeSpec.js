@@ -163,13 +163,13 @@ describe('scope/model', function(){
     });
 
     it('should report error on $excetionHandler', function(){
-      var element = jqLite('<div></div>');
-      var scope = createScope();
-      scope.$exceptionHandler = function(e){
-        this.error = e;
-      };
+      var errors = [],
+          errorLogs = [],
+          scope = createScope(null, {}, {$exceptionHandler: function(e) {errors.push(e)},
+                                         $log: {error: function(e) {errorLogs.push(e)}}});
       scope.$tryEval(function(){throw "myError";});
-      expect(scope.error).toEqual("myError");
+      expect(errors).toEqual(["myError"]);
+      expect(errorLogs).toEqual(["myError"]);
     });
   });
 
@@ -215,8 +215,8 @@ describe('scope/model', function(){
   });
 
   describe('$new', function(){
-    it('should $new should create new child scope and $become controller', function(){
-      var parent = createScope(null, {exampleService: function(){return 'Example Service';}});
+    it('should create new child scope and $become controller', function(){
+      var parent = createScope(null, angularService, {exampleService: 'Example Service'});
       var child = parent.$new(temp.InjectController, 10);
       expect(child.localService).toEqual('Example Service');
       expect(child.extra).toEqual(10);
@@ -229,7 +229,7 @@ describe('scope/model', function(){
 
   describe('$become', function(){
     it('should inject properties on controller defined in $inject', function(){
-      var parent = createScope(null, {exampleService: function(){return 'Example Service';}});
+      var parent = createScope(null, angularService, {exampleService: 'Example Service'});
       var child = createScope(parent);
       child.$become(temp.InjectController, 10);
       expect(child.localService).toEqual('Example Service');
