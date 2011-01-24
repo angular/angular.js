@@ -3,7 +3,8 @@ require.paths.push('lib');
 var reader = require('reader.js'),
     ngdoc = require('ngdoc.js'),
     writer = require('writer.js'),
-    callback = require('callback.js');
+    callback = require('callback.js'),
+    SiteMap = require('SiteMap.js').SiteMap;
 
 var docs = [];
 var start;
@@ -30,6 +31,8 @@ var writes = callback.chain(function(){
   writer.copy('doc_widgets.css', writes.waitFor());
   writer.copy('docs-scenario.html', writes.waitFor());
   writer.output('docs-scenario.js', ngdoc.scenarios(docs), writes.waitFor());
+  writer.output('sitemap.xml', new SiteMap(docs).render(), writes.waitFor());
+  writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n', writes.waitFor());
   writer.copy('syntaxhighlighter/shBrushJScript.js', writes.waitFor());
   writer.copy('syntaxhighlighter/shBrushXml.js', writes.waitFor());
   writer.copy('syntaxhighlighter/shCore.css', writes.waitFor());
