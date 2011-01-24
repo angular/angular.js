@@ -635,12 +635,7 @@ angularWidget('ng:include', function(element){
         if (src) {
           xhr('GET', src, function(code, response){
             element.html(response);
-            if (useScope) {
-              childScope = useScope;
-            } else {
-              childScope = createScope(scope);
-              scope.$onEval(childScope.$eval);
-            }
+            childScope = useScope || createScope(scope);
             compiler.compile(element)(element, childScope);
             childScope.$init();
             scope.$eval(onloadExp);
