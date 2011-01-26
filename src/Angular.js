@@ -92,6 +92,7 @@ var _undefined        = undefined,
     push              = Array.prototype.push,
     error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
 
+    /** @name angular */
     angular           = window[$angular]    || (window[$angular] = {}),
     angularTextMarkup = extensionMap(angular, 'markup'),
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
