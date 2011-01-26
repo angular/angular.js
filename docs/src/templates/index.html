@@ -34,7 +34,7 @@
            tabindex="1" accesskey="s"/>
     <ul id="api-list">
       <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
-        <a href="{{getUrl(page)}}" ng:click="" tabindex="2">{{page.name | short}}</a>
+        <a href="{{getUrl(page)}}" ng:click="" tabindex="2">{{page.shortName}}</a>
       </li>
     </ul>
   </div>

@@ -1,0 +1,97 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Bootstrap
+@description
+
+# Bootstrap
+This section explains how to bootstrap your application to the angular environment using either
+the `angular.js` or `angular.min.js` script.
+
+## The bootstrap code
+
+Note that there are two versions of the bootstrap code that you can use:
+
+* `angular-0.0.0.js` - this file is unobfuscated, uncompressed, and thus human-readable.
+* `angular-0.0.0.min.js` - this is a compressed and obfuscated version of angular-debug.js.
+
+In this section and throughout the Developer Guide, feel free to use `angular.min.js` instead of
+`angular.js` when working through code examples.
+
+## ng:autobind
+
+The simplest way to get an angular application up and running is by inserting a script tag in your
+HTML file that bootstraps the `angular.js` code and uses the special `ng:autobind` attribute,
+like in this snippet of HTML:
+
+<doc:example>
+ <doc:source>
+  Hello {{'World'}}!
+ </doc:source>
+</doc:example>
+
+The `ng:autobind` attribute tells angular to compile and manage the whole HTML document. The
+compilation occurs in the page's onLoad handler. Note that you don't need to explicitly add an
+onLoad event; auto bind mode takes care of all the magic for you.
+
+## Manual bind
+
+Using autobind mode is a handy way to start using angular, but advanced users who want more
+control over the initialization process might prefer to use manual bind mode instead.
+
+The best way to get started with manual bind mode is to look at the magic behind `ng:autobind`
+by writing out each step of the autobind process explicitly. Note that the following code is
+equivalent to the code in the previous section.
+
+<pre>
+<!DOCTYPE HTML>
+<html xmlns:ng="http://angularjs.org">
+ <script type="text/javascript" src="http://code.angularjs.org/angular-0.0.0.min.js"></script>
+ <script type="text/javascript">
+  (function(window, previousOnLoad){
+   window.onload = function(){
+   try { (previousOnLoad||angular.noop)(); } catch(e) {}
+   angular.compile(window.document).$init();
+   };
+  })(window, window.onload);
+ </script>
+ <body>
+  Hello {{'World'}}!
+ </body>
+</html>
+</pre>
+
+This is the sequence that your code should follow if you're writing your own manual binding code:
+
+ * After the page is loaded, find the root of the HTML template, which is typically the root of
+   the document.
+ * Run the HTML compiler, which converts the templates into an executable, bi-directionally
+   bound application.
+
+
+# XML Namespace
+
+**IMPORTANT:** When using angular you must declare the `ng` namespace using the `xmlns` tag.
+  If you don't declare the namespace, Internet Explorer does not render widgets properly.
+
+<pre>
+<html  xmlns:ng="http://angularjs.org">
+</pre>
+
+
+# Create your own namespace
+
+If you want to define your own widgets, you must create your own namespace and use that namespace
+to form the fully qualified widget name. For example, you could map the alias my to your domain
+and create a widget called my:widget. To create your own namespace, simply add another xmlsn tag
+to your page, create an alias, and set it to your unique domain:
+
+<pre>
+<html  xmlns:my="http://mydomain.com">
+</pre>
+
+
+# Global Object
+
+The angular script creates a single global variable `angular` in the global namespace. All APIs are
+bound to fields of this global object.
+

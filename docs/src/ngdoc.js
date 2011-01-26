@@ -4,6 +4,7 @@
 
 var Showdown = require('showdown').Showdown;
 var DOM = require('dom.js').DOM;
+var htmlEscape = require('dom.js').htmlEscape;
 var NEW_LINE = /\n\r?/;
 
 exports.markdown = markdown;
@@ -39,7 +40,7 @@ Doc.prototype = {
     var words = [];
     var tokens = this.text.toLowerCase().split(/[,\.\`\'\"\s]+/mg);
     tokens.forEach(function(key){
-      var match = key.match(/^(([a-z]|ng\:)[\w\_\-]{2,})/);
+      var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]{2,})/);
       if (match){
         key = match[1];
         if (!keywords[key]) {
@@ -57,6 +58,11 @@ Doc.prototype = {
     var atText;
     var match;
     var self = this;
+    this.scenarios = [];
+    this.requires = [];
+    this.param = [];
+    this.properties = [];
+    this.methods = [];
     self.text.split(NEW_LINE).forEach(function(line){
       if (match = line.match(/^\s*@(\w+)(\s+(.*))?/)) {
         // we found @name ...
@@ -73,6 +79,9 @@ Doc.prototype = {
     });
     flush();
     this.shortName = (this.name || '').split(/[\.#]/).pop();
+    this.id = this.id // if we have an id just use it
+      || (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) // try to extract it from file name
+      || this.name; // default to name
     this.description = markdown(this.description);
     this['this'] = markdown(this['this']);
     this.exampleDescription = markdown(this.exampleDescription || this.exampleDesc);
@@ -94,7 +103,6 @@ Doc.prototype = {
             optional: !!match[2],
             'default':match[6]
           };
-          self.param = self.param || [];
           self.param.push(param);
         } else if (atName == 'returns') {
           var match = text.match(/^{([^}=]+)}\s+(.*)/);
@@ -105,9 +113,16 @@ Doc.prototype = {
             type: match[1],
             description: markdown(text.replace(match[0], match[2]))
           };
+        } else if(atName == 'description') {
+          text.replace(/<doc:scenario>([\s\S]*)<\/doc:scenario>/mi,
+              function(_, scenario){
+                self.scenarios.push(scenario);
+              });
+          self.description = text;
         } else if(atName == 'requires') {
-          self.requires = self.requires || [];
           self.requires.push(text);
+        } else if(atName == 'scenario') {
+          self.scenarios.push(text);
         } else if(atName == 'property') {
           var match = text.match(/^({(\S+)}\s*)?(\S+)(\s+(.*))?/);
           if (!match) {
@@ -118,7 +133,6 @@ Doc.prototype = {
               name: match[3],
               description: match[5] || ''
             };
-          self.properties = self.properties || [];
           self.properties.push(property);
         } else {
           self[atName] = text;
@@ -135,25 +149,10 @@ Doc.prototype = {
       notice('workInProgress', 'Work in Progress',
           'This page is currently being revised. It might be incomplete or contain inaccuracies.');
       notice('deprecated', 'Deprecated API', self.deprecated);
-      dom.h('Description', self.description, html);
-      dom.h('Dependencies', self.requires);
 
-      usage();
-
-      dom.h('Methods', self.methods, function(method){
-        var signature = (method.param || []).map(property('name'));
-        dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
-          dom.html(method.description);
-          method.html_usage_parameters(dom);
-          dom.example(method.exampleDescription, method.example, false);
-        });
-      });
-      dom.h('Properties', self.properties, function(property){
-        dom.h(property.name, function(){
-         dom.text(property.description);
-         dom.example(property.exampleDescription, property.example, false);
-        });
-      });
+      (self['html_usage_' + self.ngdoc] || function(){
+        throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
+      }).call(self, dom);
 
       dom.example(self.exampleDescription, self.example, self.scenario);
     });
@@ -161,29 +160,6 @@ Doc.prototype = {
     return dom.toString();
 
     //////////////////////////
-
-    function html(text){
-      this.html(text);
-    }
-
-    function usage(){
-      (self['html_usage_' + self.ngdoc] || function(){
-        throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
-      }).call(self, dom);
-    }
-
-    function section(name, property, fn) {
-      var value = self[property];
-      if (value) {
-        dom.h2(name);
-        if (typeof value == 'string') {
-          value = markdown(value) + '\n';
-          fn ? fn(value) : dom.html(value);
-        } else if (value instanceof Array) {
-          dom.ul(value, fn);
-        }
-      }
-    }
 
     function notice(name, legend, msg){
       if (self[name] == undefined) return;
@@ -240,6 +216,8 @@ Doc.prototype = {
 
   html_usage_function: function(dom){
     var self = this;
+    dom.h('Description', self.description, dom.html);
+    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.code(function(){
         dom.text(self.name);
@@ -256,11 +234,13 @@ Doc.prototype = {
 
   html_usage_directive: function(dom){
     var self = this;
+    dom.h('Description', self.description, dom.html);
+    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.tag('pre', {'class':"brush: js; html-script: true;"}, function(){
         dom.text('<' + self.element + ' ');
         dom.text(self.shortName);
-        if (self.param) {
+        if (self.param.length) {
           dom.text('="' + self.param[0].name + '"');
         }
         dom.text('>\n   ...\n');
@@ -272,6 +252,8 @@ Doc.prototype = {
 
   html_usage_filter: function(dom){
     var self = this;
+    dom.h('Description', self.description, dom.html);
+    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.tag('code', function(){
@@ -302,6 +284,8 @@ Doc.prototype = {
 
   html_usage_formatter: function(dom){
     var self = this;
+    dom.h('Description', self.description, dom.html);
+    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
@@ -340,6 +324,8 @@ Doc.prototype = {
 
   html_usage_validator: function(dom){
     var self = this;
+    dom.h('Description', self.description, dom.html);
+    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
@@ -368,6 +354,8 @@ Doc.prototype = {
 
   html_usage_widget: function(dom){
     var self = this;
+    dom.h('Description', self.description, dom.html);
+    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
@@ -376,7 +364,7 @@ Doc.prototype = {
             dom.text(self.element);
             dom.text(' ');
             dom.text(self.shortName.substring(1));
-            if (self.param) {
+            if (self.param.length) {
               dom.text('="');
               dom.text(self.param[0].name);
               dom.text('"');
@@ -407,9 +395,27 @@ Doc.prototype = {
   },
 
   html_usage_overview: function(dom){
+    dom.html(this.description);
   },
 
   html_usage_service: function(dom){
+    dom.h('Description', this.description, dom.html);
+    dom.h('Dependencies', this.requires);
+
+    dom.h('Methods', this.methods, function(method){
+      var signature = (method.param || []).map(property('name'));
+      dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
+        dom.html(method.description);
+        method.html_usage_parameters(dom);
+        dom.example(method.exampleDescription, method.example, false);
+      });
+    });
+    dom.h('Properties', this.properties, function(property){
+      dom.h(property.name, function(){
+       dom.text(property.description);
+       dom.example(property.exampleDescription, property.example, false);
+      });
+    });
   },
 
   parameters: function(dom, separator, skipFirst, prefix) {
@@ -433,7 +439,7 @@ Doc.prototype = {
 //////////////////////////////////////////////////////////
 function markdown (text) {
   if (!text) return text;
-  var parts = text.split(/(<pre>[\s\S]*?<\/pre>)/),
+  var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/),
       match;
 
   parts.forEach(function(text, i){
@@ -443,39 +449,51 @@ function markdown (text) {
                 content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
                '</pre></div>';
       });
+    } else if (text.match(/^<doc:example>/)) {
+      text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
+        function(_, before, content, after){
+          return before + htmlEscape(content) + after;
+        });
+      text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
+        function(_, before, content, after){
+          return before + htmlEscape(content) + after;
+        });
     } else {
       text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
-      text = new Showdown.converter().makeHtml(text.replace(/^#/gm, '###'));
-
-      while (match = text.match(R_LINK)) {
-        text = text.replace(match[0], '<a href="#!' + match[1] + '"><code>' +
-                                        (match[4] || match[1]) +
-                                      '</code></a>');
-      }
+      text = text.replace(/{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/gm,
+        function(_all, url, _2, _3, title){
+          return '<a href="#!' + url + '">'
+            + (url.match(/^angular\./) ? '<code>' : '')
+            + (title || url)
+            + (url.match(/^angular\./) ? '</code>' : '')
+            + '</a>';
+        });
+      text = new Showdown.converter().makeHtml(text);
     }
     parts[i] = text;
   });
   return parts.join('');
 };
-var R_LINK = /{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/m;
-            //       1       123     3 4     42
 
 //////////////////////////////////////////////////////////
 function scenarios(docs){
   var specs = [];
   docs.forEach(function(doc){
+    specs.push('describe("' + doc.id + '", function(){');
+    specs.push('  beforeEach(function(){');
+    specs.push('    browser().navigateTo("index.html#!' + doc.id + '");');
+    specs.push('  });');
+    specs.push('');
+    doc.scenarios.forEach(function(scenario){
+      specs.push(trim(scenario, '  '));
+      specs.push('');
+    });
+    specs.push('});');
+    specs.push('');
     if (doc.scenario) {
-      specs.push('describe("');
-      specs.push(doc.name);
-      specs.push('", function(){\n');
-      specs.push('  beforeEach(function(){\n');
-      specs.push('    browser().navigateTo("index.html#!' + doc.name + '");');
-      specs.push('  });\n\n');
-      specs.push(doc.scenario);
-      specs.push('\n});\n\n');
     }
   });
-  return specs;
+  return specs.join('\n');
 }
 
 
@@ -483,8 +501,17 @@ function scenarios(docs){
 function metadata(docs){
   var words = [];
   docs.forEach(function(doc){
+    var path = (doc.name || '').split(/(\.|\:\s+)/);
+    for ( var i = 1; i < path.length; i++) {
+      path.splice(i, 1);
+    }
+    var depth = path.length - 1;
+    var shortName = path.pop();
     words.push({
-      name:doc.name,
+      id: doc.id,
+      name: doc.name,
+      depth: depth,
+      shortName: shortName,
       type: doc.ngdoc,
       keywords:doc.keywords()
     });
@@ -493,37 +520,50 @@ function metadata(docs){
   return words;
 }
 
-function keywordSort(a,b){
-  // supper ugly comparator that orders all utility methods and objects before all the other stuff
-  // like widgets, directives, services, etc.
-  // Mother of all beautiful code please forgive me for the sin that this code certainly is.
-
-  if (a.name === b.name) return 0;
-  if (a.name === 'angular') return -1;
-  if (b.name === 'angular') return 1;
-
-  function namespacedName(page) {
-    return (page.name.match(/\./g).length === 1 && page.type !== 'overview' ? '0' : '1') + page.name;
+var KEYWORD_PRIORITY = {
+  '.guide': 1,
+  '.guide.overview': 1,
+  '.angular': 7,
+  '.angular.Array': 7,
+  '.angular.Object': 7,
+  '.angular.directive': 7,
+  '.angular.filter': 7,
+  '.angular.formatter': 7,
+  '.angular.scope': 7,
+  '.angular.service': 7,
+  '.angular.validator': 7,
+  '.angular.widget': 7
+};
+function keywordSort(a, b){
+  function mangleName(doc) {
+    var path = doc.id.split(/\./);
+    var mangled = [];
+    var partialName = '';
+    path.forEach(function(name){
+      partialName += '.' + name;
+      mangled.push(KEYWORD_PRIORITY[partialName] || 5);
+      mangled.push(name);
+    });
+    return mangled.join('.');
   }
-
-  var namespacedA = namespacedName(a),
-      namespacedB = namespacedName(b);
-
-  return namespacedA < namespacedB ? -1 : 1;
+  var nameA = mangleName(a);
+  var nameB = mangleName(b);
+  return nameA < nameB ? -1 : (nameA > nameB ? 1 : 0);
 }
 
 
 //////////////////////////////////////////////////////////
-function trim(text) {
+function trim(text, prefix) {
   var MAX = 9999;
   var empty = RegExp.prototype.test.bind(/^\s*$/);
   var lines = text.split('\n');
   var minIndent = MAX;
+  prefix = prefix || '';
   lines.forEach(function(line){
     minIndent = Math.min(minIndent, indent(line));
   });
   for ( var i = 0; i < lines.length; i++) {
-    lines[i] = lines[i].substring(minIndent);
+    lines[i] = prefix + lines[i].substring(minIndent);
   }
   // remove leading lines
   while (empty(lines[0])) {

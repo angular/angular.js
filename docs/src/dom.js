@@ -3,12 +3,18 @@
  */
 
 exports.DOM = DOM;
+exports.htmlEscape = htmlEscape;
 
 //////////////////////////////////////////////////////////
 
+function htmlEscape(text){
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+
 function DOM(){
   this.out = [];
-  this.headingDepth = 1;
+  this.headingDepth = 0;
 }
 
 var INLINE_TAGS = {
@@ -23,7 +29,7 @@ DOM.prototype = {
 
   text: function(content) {
     if (typeof content == "string") {
-      this.out.push(content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'));
+      this.out.push(htmlEscape(content));
     } else if (typeof content == 'function') {
       content.call(this, this);
     } else if (content instanceof Array) {
@@ -33,6 +39,13 @@ DOM.prototype = {
 
   html: function(html) {
     if (html) {
+      var headingDepth = this.headingDepth;
+      for ( var i = 10; i > 0; --i) {
+        html = html
+          .replace(new RegExp('(<\/?h)' + i + '(>)', 'gm'), function(all, start, end){
+            return start + (i + headingDepth) + end;
+          });
+      }
       this.out.push(html);
     }
   },
@@ -80,15 +93,17 @@ DOM.prototype = {
 
   h: function(heading, content, fn){
     if (content==undefined || content && content.legth == 0) return;
-    this.tag('h' + this.headingDepth, heading);
     this.headingDepth++;
+    this.tag('h' + this.headingDepth, heading);
     var className = typeof heading == 'string'
-      ? {'class': heading.toLowerCase().replace(/[^\d\w_]/, '-')}
+      ? {'class': heading.toLowerCase().replace(/[^\d\w_]/mg, '-').replace(/-+/gm, '-')}
       : null;
     if (content instanceof Array) {
       this.ul(content, className, fn);
     } else if (fn) {
-      this.tag('div', className, fn);
+      this.tag('div', className, function(){
+        fn.call(this, content);
+      });
     } else {
       this.tag('div', className, content);
     }

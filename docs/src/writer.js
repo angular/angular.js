@@ -50,12 +50,27 @@ exports.makeDir = function (path, callback) {
 };
 
 exports.copy = function(filename, callback){
-  //console.log('writing', OUTPUT_DIR + filename, '...');
-  fs.readFile('docs/src/templates/' + filename, function(err, content){
+  copy('docs/src/templates/' + filename, OUTPUT_DIR + filename, callback);
+};
+
+function copy(from, to, callback) {
+  //console.log('writing', to, '...');
+  fs.readFile(from, function(err, content){
     if (err) return callback.error(err);
-    fs.writeFile(
-        OUTPUT_DIR + filename,
-        content,
-        callback);
+    fs.writeFile(to, content, callback);
   });
+}
+
+exports.copyImages = function(callback) {
+  exports.makeDir(OUTPUT_DIR + '/img', callback.waitFor(function(){
+    fs.readdir('docs/img', callback.waitFor(function(err, files){
+      if (err) return this.error(err);
+      files.forEach(function(file){
+        if (file.match(/\.(png|gif|jpg|jpeg)$/)) {
+          copy('docs/img/' + file, OUTPUT_DIR  + '/img/' + file, callback.waitFor());
+        }
+      });
+      callback();
+    }));
+  }));
 };

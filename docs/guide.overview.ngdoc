@@ -1,0 +1,166 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Overview
+@description
+
+# What is angular?
+Angular teaches your old browser new tricks. It is what HTML would have been if it had been
+designed for building web applications.
+
+Take a simple example of user input as shown below. If you were using just HTML and JavaScript to
+implement this form, you would need to define listeners, DOM updates, and complex input validators
+in order to update and format the result. In angular you can achieve the effect with zero lines
+of JavaScript code using a declarative approach. Click on the source tab of the example below to
+view the angular implementation of this form.
+
+<doc:example>
+ <doc:source>
+  QTY: <input name="qty" value="1" ng:validate="integer:0" ng:required/>
+  *
+  Cost: <input name="cost" value="19.95" ng:validate="number" ng:required/>
+  =
+  {{qty * cost | currency}}
+ </doc:source>
+ <doc:scenario>
+  it('should show of angular binding', function(){
+    expect(binding('qty * cost')).toEqual('$19.95');
+    input('qty').enter('2');
+    input('cost').enter('5.00');
+    expect(binding('qty * cost')).toEqual('$10.00');
+  });
+ </doc:scenario>
+</doc:example>
+
+Angular is to AJAX apps as Ruby on Rails is to round trip apps.
+
+# Angular frees you from:
+ * **Registering callbacks:** Registering callbacks clutters your code, and it makes it hard to see
+   the forest from the trees. Removing common boilerplate code such as callbacks is advantageous
+   because it leaves the JavaScript with a more succinct version of your code, better describing
+   what your application does.
+ * **Manipulating HTML DOM programatically:** Manipulating HTML DOM is a cornerstone of AJAX
+   applications, but it is very cumbersome and error-prone. By declaratively describing how the UI
+   should change as your application state changes, you are freed from low level DOM manipulation
+   activities. Most applications written with angular never have to programatically manipulate
+   the DOM.
+ * **Marshaling data to and from the UI:** CRUD operations make up the majority of most AJAX
+   applications. The flow of marshaling data from the server to an internal object to a HTML form,
+   validating the form, displaying validation errors, returning to an internal model and then back
+   to the server creates a lot of boilerplate code. angular eliminates almost all of this
+   boilerplate. leaving code that is richer and describes the overall flow of the application
+   rather than implementation details.
+ * **Writing tons of initialization code just to get started:** Typically you need to write a lot
+   of plumbing and initialization code just to get a basic "Hello World" AJAX app working. With
+   angular you can bootstrap your app easily using services, which are auto-injected into your
+   application in a GUICE-like dependency-injection style. This allows you to get started
+   developing features quickly. As a bonus, you get full control over the initialization process
+   in automated tests.
+
+
+# angular is/has:
+ * **An HTML Compiler:** angular is an HTML compiler in the browser. It allows you to give meaning
+   to any HTML element, attribute, or text and create new primitives as building blocks for your
+   application.
+ * **Declarative:** Declarative means that you describe what the page looks like rather than
+   instructing how to draw the page. HTML is great at declaring static documents. Angular extends
+   the declarative nature of HTML beyond static documents to define dynamic applications.
+ * **Declarative Templates:** In angular, you write HTML to declare the view and UI templates for
+   your application. You can express many common application constructs without using any
+   JavaScript at all.
+ * **Bidirectional Data Binding:** Allows your application to have a single source of truth
+   (your model), where the HTML is a projection of the internal state of your application, which
+   you can provide to the user in a declarative way.
+ * **Built-in Services:** angular provides many standard AJAX operations to get you going quickly,
+   and dependency-injection allows you to swap them out as needed. Common services include:
+   Dependency Inject, History Management, URL Router, AJAX/XHR requests, and data caching,
+   to name a few.
+ * **Very testable:** Testing difficulty is dramatically affected by the way you structure your
+   code. With angular, testability is baked in.
+
+# angular is NOT a:
+ * **Library:** You don't call its functions.
+ * **Framework:** It does not call your functions.
+ * **DOM Manipulation Library:** It does not provide a way to manipulate DOM, but does provide
+   primitives to create UI projections of your data.
+ * **Widget Library:** There are lots of existing widget libraries that you can integrate with
+   angular.
+
+
+
+# Not just another templating system
+
+At the highest level, angular looks like a just another templating system, but there are few
+important reasons why angular is different and makes it a very good fit for application
+development.
+
+Angular:
+ * **Uses HTML/CSS syntax:** This makes it easy to read and can be edited with existing HTML/CSS
+   authoring tools.
+ * **Extends HTML vocabulary:** Angular allows you to create new HTML tags, which expand into
+   dynamic UI components.
+ * **Executes in the browser:** Removes the round trip to the server for many operations and
+   creates instant feedback for users.
+ * **Bidirectional data binding:** The model is the single source of truth. Programmatic changes
+   to the model are automatically reflected in the view. Any changes by the user to the view are
+   automatically reflected in the model.
+ * **Services:** These allow for a reusable way of injecting dependencies into an application.
+ * **MVC:** Clean separation between model-view-controller, which aids in understanding,
+   maintenance, and testing of large systems.
+
+
+# The angular philosophy
+
+Angular is built around the belief that declarative code is preferred over imperative when it
+comes to building UIs and connecting the pieces together.
+
+As an example, if you wanted to add a new label to your application, you could do so by simply
+adding text to the HTML template, saving the code, and refreshing your browser:
+
+<pre>
+<span class="label">Hello</span>
+</pre>
+
+In programmatic systems you would have to write and run code like this:
+
+<pre>
+var label = new Label();
+label.setText('Hello');
+label.setClass('label');
+parent.addChild(label);
+</pre>
+
+## Benefits:
+
+ * Compile-free: Change your template and logic code and reload the browser to see it run
+   immediately. In contrast, programmatic serverside views often need to be compiled and executed
+   to be viewed, which takes time. This dramatically increases the speed of your development cycle.
+ * Declarative templates are easier to understand and change than programmatic instructions.
+ * Declarative templates can be edited in existing HTML editors such as DreamWeaver, Eclipse,
+   TextMate, Vim, etc.
+ * Declarative templates can be edited by web designers without the need to work with web
+   developers.
+
+HTML is missing certain features, which angular adds via its compiler, thereby "teaching" the
+browser these new tricks:
+
+ * Dynamic behavior
+ * Componentizing HTML snippets into reusable components
+ * Dynamically include other HTML templates
+ * Two-way data binding
+ * Rich validation in forms
+ * Model-View-Controller modularization
+
+# Watch a presentation about angular
+
+<object width="480" height="385">
+  <param name="movie" value="http://www.youtube.com/v/elvcgVSynRg&amp;hl=en_US&amp;fs=1"></param>
+  <param name="allowFullScreen" value="true"></param>
+  <param name="allowscriptaccess" value="always"></param>
+  <embed src="http://www.youtube.com/v/elvcgVSynRg&amp;hl=en_US&amp;fs=1"
+         type="application/x-shockwave-flash" allowscriptaccess="always"
+         allowfullscreen="true" width="480" height="385"></embed>
+</object>
+
+{@link https://docs.google.com/present/edit?id=0Abz6S2TvsDWSZDQ0OWdjaF8yNTRnODczazdmZg&hl=en&authkey=CO-b7oID Presentation}
+|
+{@link https://docs.google.com/document/edit?id=1ZHVhqC0apbzPRQcgnb1Ye-bAUbNJ-IlFMyPBPCZ2cYU&hl=en&authkey=CInnwLYO Source}

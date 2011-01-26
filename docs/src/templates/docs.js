@@ -4,7 +4,7 @@ function DocsController($location, $browser, $window) {
   window.$root = this.$root;
 
   this.getUrl = function(page){
-    return '#!' + page.name;
+    return '#!' + page.id;
   };
 
   this.getCurrentPartial = function(){
@@ -13,14 +13,14 @@ function DocsController($location, $browser, $window) {
 
   this.getTitle = function(){
     var hashPath = $location.hashPath || '!angular';
-    if (hashPath.match(/^!angular/)) {
+    if (hashPath.match(/^!/)) {
       this.partialTitle = hashPath.substring(1);
     }
     return this.partialTitle;
   };
 
   this.getClass = function(page) {
-    var depth = page.name.split(/\./).length - 1,
+    var depth = page.depth,
         cssClass = 'level-' + depth + (page.name == this.getTitle() ? ' selected' : '');
 
     if (depth == 1 && page.type !== 'overview') cssClass += ' level-angular';
@@ -39,9 +39,5 @@ function DocsController($location, $browser, $window) {
   };
 
 }
-
-angular.filter('short', function(name){
-  return (name||'').split(/\./).pop();
-});
 
 SyntaxHighlighter['defaults'].toolbar = false;
