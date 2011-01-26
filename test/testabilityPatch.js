@@ -59,11 +59,59 @@ beforeEach(function(){
       return this.actual.hasClass ?
               this.actual.hasClass(clazz) :
               jqLite(this.actual).hasClass(clazz);
+    },
+
+    toEqualError: function(message) {
+      this.message = function() {
+        var expected;
+        if (this.actual.message && this.actual.name == 'Error') {
+          expected = toJson(this.actual.message);
+        } else {
+          expected = toJson(this.actual);
+        }
+        return "Expected " + expected + " to be an Error with message " + toJson(message);
+      }
+      return this.actual.name == 'Error' && this.actual.message == message;
+    },
+
+    toMatchError: function(messageRegexp) {
+      this.message = function() {
+        var expected;
+        if (this.actual.message && this.actual.name == 'Error') {
+          expected = toJson(this.actual.message);
+        } else {
+          expected = toJson(this.actual);
+        }
+        return "Expected " + expected + " to match an Error with message " + toJson(messageRegexp);
+      }
+      return this.actual.name == 'Error' && messageRegexp.test(this.actual.message);
     }
   });
+
+  $logMock.log.logs = [];
+  $logMock.warn.logs = [];
+  $logMock.info.logs = [];
+  $logMock.error.logs = [];
 });
 
-afterEach(clearJqCache);
+afterEach(function() {
+  // check $log mock
+  forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
+    if ($logMock[logLevel].logs.length) {
+      forEach($logMock[logLevel].logs, function(log) {
+        forEach(log, function deleteStack(logItem) {
+          if (logItem instanceof Error) delete logItem.stack;
+        });
+      });
+
+      throw new Error("Exprected $log." + logLevel + ".logs array to be empty. " +
+        "Either a message was logged unexpectedly, or an expected log message was not checked " +
+        "and removed. Array contents: " + toJson($logMock[logLevel].logs));
+    }
+  });
+
+  clearJqCache();
+});
 
 function clearJqCache(){
   var count = 0;

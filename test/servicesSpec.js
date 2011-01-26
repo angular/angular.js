@@ -31,8 +31,14 @@ describe("service", function(){
       function warn(){ logger+= 'warn;'; }
       function info(){ logger+= 'info;'; }
       function error(){ logger+= 'error;'; }
-      var scope = createScope({}, angularService, {$window: {console:{log:log, warn:warn, info:info, error:error}}, $document:[{cookie:''}]}),
+      var scope = createScope({}, {$log: $logFactory},
+                                  {$exceptionHandler: rethrow,
+                                   $window: {console: {log: log,
+                                                       warn: warn,
+                                                       info: info,
+                                                       error: error}}}),
           $log = scope.$service('$log');
+
       $log.log();
       $log.warn();
       $log.info();
@@ -40,10 +46,12 @@ describe("service", function(){
       expect(logger).toEqual('log;warn;info;error;');
     });
 
-    it('should use console.log if other not present', function(){
+    it('should use console.log() if other not present', function(){
       var logger = "";
       function log(){ logger+= 'log;'; }
-      var scope = createScope({}, angularService, {$window: {console:{log:log}}, $document:[{cookie:''}]});
+      var scope = createScope({}, {$log: $logFactory},
+                                  {$window: {console:{log:log}},
+                                   $exceptionHandler: rethrow});
       var $log = scope.$service('$log');
       $log.log();
       $log.warn();
@@ -53,7 +61,9 @@ describe("service", function(){
     });
 
     it('should use noop if no console', function(){
-      var scope = createScope({}, angularService, {$window: {}, $document:[{cookie:''}]}),
+      var scope = createScope({}, {$log: $logFactory},
+                                  {$window: {},
+                                   $exceptionHandler: rethrow}),
           $log = scope.$service('$log');
       $log.log();
       $log.warn();
@@ -61,8 +71,8 @@ describe("service", function(){
       $log.error();
     });
 
-    describe('Error', function(){
-      var e, $log, $console, errorArgs;
+    describe('error', function(){
+      var e, $log, errorArgs;
       beforeEach(function(){
         e = new Error('');
         e.message = undefined;
@@ -70,19 +80,19 @@ describe("service", function(){
         e.line = undefined;
         e.stack = undefined;
 
-        $console = angular.service('$log')({console:{error:function(){
+        $log = $logFactory({console:{error:function(){
           errorArgs = arguments;
         }}});
       });
 
       it('should pass error if does not have trace', function(){
-        $console.error('abc', e);
+        $log.error('abc', e);
         expect(errorArgs).toEqual(['abc', e]);
       });
 
       it('should print stack', function(){
         e.stack = 'stack';
-        $console.error('abc', e);
+        $log.error('abc', e);
         expect(errorArgs).toEqual(['abc', 'stack']);
       });
 
@@ -90,7 +100,7 @@ describe("service", function(){
         e.message = 'message';
         e.sourceURL = 'sourceURL';
         e.line = '123';
-        $console.error('abc', e);
+        $log.error('abc', e);
         expect(errorArgs).toEqual(['abc', 'message\nsourceURL:123']);
       });
 
@@ -100,10 +110,13 @@ describe("service", function(){
 
   describe("$exceptionHandler", function(){
     it('should log errors', function(){
-      var error = '';
-      $log.error = function(m) { error += m; };
-      scope.$service('$exceptionHandler')('myError');
-      expect(error).toEqual('myError');
+      var scope = createScope({}, {$exceptionHandler: $exceptionHandlerFactory},
+                                  {$log: $logMock}),
+          $log = scope.$service('$log'),
+          $exceptionHandler = scope.$service('$exceptionHandler');
+
+      $exceptionHandler('myError');
+      expect($log.error.logs.shift()).toEqual(['myError']);
     });
   });
 

@@ -290,10 +290,10 @@ angularServiceInject("$location", function($browser) {
  * @requires $window
  *
  * @description
- * Is simple service for logging. Default implementation writes the message
+ * Simple service for logging. Default implementation writes the message
  * into the browser's console (if present).
  *
- * This is useful for debugging.
+ * The main purpose of this service is to simplify debugging and troubleshooting.
  *
  * @example
    <p>Reload this page with open console, enter text and hit the log button...</p>
@@ -304,7 +304,8 @@ angularServiceInject("$location", function($browser) {
    <button ng:click="$log.info(message)">info</button>
    <button ng:click="$log.error(message)">error</button>
  */
-angularServiceInject("$log", function($window){
+var $logFactory; //reference to be used only in tests
+angularServiceInject("$log", $logFactory = function($window){
   return {
     /**
      * @workInProgress
@@ -387,7 +388,8 @@ angularServiceInject("$log", function($window){
  *
  * @example
  */
-angularServiceInject('$exceptionHandler', function($log){
+var $exceptionHandlerFactory; //reference to be used only in tests
+angularServiceInject('$exceptionHandler', $exceptionHandlerFactory = function($log){
   return function(e) {
     $log.error(e);
   };

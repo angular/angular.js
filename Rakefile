@@ -174,7 +174,7 @@ task :package => [:clean, :compile, :docs] do
   FileUtils.rm_r(path_to('pkg'), :force => true)
   FileUtils.mkdir_p(pkg_dir)
 
-  ['test/angular-mocks.js',
+  ['src/angular-mocks.js',
     path_to('angular.js'),
     path_to('angular.min.js'),
     path_to('angular-ie-compat.js'),

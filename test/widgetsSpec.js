@@ -546,12 +546,16 @@ describe("widget", function(){
     it('should report error on assignment error', function(){
       compile('<input type="text" name="throw \'\'" value="x"/>');
       expect(element.hasClass('ng-exception')).toBeTruthy();
+      expect(scope.$service('$log').error.logs.shift()[0]).
+        toMatchError(/Parse Error: Token '''' is extra token not part of expression/);
     });
 
     it('should report error on ng:change exception', function(){
       compile('<button ng:change="a-2=x">click</button>');
       browserTrigger(element);
       expect(element.hasClass('ng-exception')).toBeTruthy();
+      expect(scope.$service('$log').error.logs.shift()[0]).
+        toMatchError(/Parse Error: Token '=' implies assignment but \[a-2\] can not be assigned to/);
     });
   });
 
@@ -750,10 +754,15 @@ describe("widget", function(){
 
     it('should error on wrong parsing of ng:repeat', function(){
       var scope = compile('<ul><li ng:repeat="i dont parse"></li></ul>');
-      var log = "";
-      log += element.attr('ng-exception') + ';';
-      log += element.hasClass('ng-exception') + ';';
-      expect(log).toMatch(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'./);
+
+      expect(scope.$service('$log').error.logs.shift()[0]).
+        toEqualError("Expected ng:repeat in form of 'item in collection' but got 'i dont parse'.");
+
+      expect(scope.$element.attr('ng-exception')).
+        toMatch(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'/);
+      expect(scope.$element).toHaveClass('ng-exception');
+
+      dealoc(scope);
     });
 
     it('should expose iterator offset as $index when iterating over arrays', function() {
