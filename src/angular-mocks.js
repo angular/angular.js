@@ -56,6 +56,24 @@
  */
 
 
+/**
+ * @ngdoc overview
+ * @name angular.mock
+ * @namespace Namespace for all built-in angular mocks.
+ *
+ * @description
+ * `angular.mock` is a namespace for all built-in mocks that ship with angular and automatically
+ * replace real services if `angular-mocks.js` file is loaded after `angular.js` and before any
+ * tests.
+ */
+angular.mock = {};
+
+
+/**
+ * @workInProgress
+ * @ngdoc service
+ * @name angular.mock.service.$browser
+ */
 function MockBrowser() {
   var self = this,
       expectations = {},
@@ -186,6 +204,52 @@ MockBrowser.prototype = {
 
 angular.service('$browser', function(){
   return new MockBrowser();
+});
+
+
+/**
+ * @workInProgress
+ * @ngdoc service
+ * @name angular.mock.service.$exceptionHandler
+ *
+ * @description
+ * Mock implementation of {@link angular.service.$exceptionHandler} that rethrows any error passed
+ * into `$exceptionHandler`. If any errors are are passed into the handler in tests, it typically
+ * means that there is a bug in the application or test, so this mock will make these tests fail.
+ *
+ * See {@link angular.mock} for more info on angular mocks.
+ */
+angular.service('$exceptionHandler', function(e) {
+  return function(e) {throw e;};
+});
+
+
+/**
+ * @workInProgress
+ * @ngdoc service
+ * @name angular.mock.service.$log
+ *
+ * @description
+ * Mock implementation of {@link angular.service.$log} that gathers all logged messages in arrays
+ * (one array per logging level). These arrays are exposed as `logs` property of each of the
+ * level-specific log function, e.g. for level `error` the array is exposed as `$log.error.logs`.
+ *
+ * See {@link angular.mock} for more info on angular mocks.
+ */
+angular.service('$log', function() {
+  var $log = {
+    log: function log(){ log.logs.push(arguments) },
+    warn: function warn(){ warn.logs.push(arguments) },
+    info: function info(){ info.logs.push(arguments) },
+    error: function error(){ error.logs.push(arguments) }
+  };
+
+  $log.log.logs = [];
+  $log.warn.logs = [];
+  $log.info.logs = [];
+  $log.error.logs = [];
+
+  return $log;
 });
 
 

@@ -146,30 +146,34 @@ describe('scope/model', function(){
   });
 
   describe('$tryEval', function(){
-    it('should report error on element', function(){
-      var scope = createScope();
+    it('should report error using the provided error handler and $log.error', function(){
+      var scope = createScope(),
+          errorLogs = scope.$service('$log').error.logs;
+
       scope.$tryEval(function(){throw "myError";}, function(error){
         scope.error = error;
       });
       expect(scope.error).toEqual('myError');
+      expect(errorLogs.shift()[0]).toBe("myError");
     });
 
     it('should report error on visible element', function(){
-      var element = jqLite('<div></div>');
-      var scope = createScope();
+      var element = jqLite('<div></div>'),
+          scope = createScope(),
+          errorLogs = scope.$service('$log').error.logs;
+
       scope.$tryEval(function(){throw "myError";}, element);
       expect(element.attr('ng-exception')).toEqual('myError');
       expect(element.hasClass('ng-exception')).toBeTruthy();
+      expect(errorLogs.shift()[0]).toBe("myError");
     });
 
     it('should report error on $excetionHandler', function(){
-      var errors = [],
-          errorLogs = [],
-          scope = createScope(null, {}, {$exceptionHandler: function(e) {errors.push(e)},
-                                         $log: {error: function(e) {errorLogs.push(e)}}});
+      var scope = createScope(null, {$exceptionHandler: $exceptionHandlerMockFactory},
+                                    {$log: $logMock});
       scope.$tryEval(function(){throw "myError";});
-      expect(errors).toEqual(["myError"]);
-      expect(errorLogs).toEqual(["myError"]);
+      expect(scope.$service('$exceptionHandler').errors.shift()).toEqual("myError");
+      expect(scope.$service('$log').error.logs.shift()).toEqual(["myError"]);
     });
   });
 

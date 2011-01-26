@@ -273,6 +273,7 @@ describe('Binder', function(){
   it('IfTextBindingThrowsErrorDecorateTheSpan', function(){
     var a = this.compile('<div>{{error.throw()}}</div>');
     var doc = a.node;
+    var errorLogs = a.scope.$service('$log').error.logs;
 
     a.scope.$set('error.throw', function(){throw "ErrorMsg1";});
     a.scope.$eval();
@@ -280,6 +281,7 @@ describe('Binder', function(){
     assertTrue(span.hasClass('ng-exception'));
     assertTrue(!!span.text().match(/ErrorMsg1/));
     assertTrue(!!span.attr('ng-exception').match(/ErrorMsg1/));
+    assertEquals(['ErrorMsg1'], errorLogs.shift());
 
     a.scope.$set('error.throw', function(){throw "MyError";});
     a.scope.$eval();
@@ -287,30 +289,34 @@ describe('Binder', function(){
     assertTrue(span.hasClass('ng-exception'));
     assertTrue(span.text(), span.text().match('MyError') !== null);
     assertEquals('MyError', span.attr('ng-exception'));
+    assertEquals(['MyError'], errorLogs.shift());
 
     a.scope.$set('error.throw', function(){return "ok";});
     a.scope.$eval();
     assertFalse(span.hasClass('ng-exception'));
     assertEquals('ok', span.text());
     assertEquals(null, span.attr('ng-exception'));
+    assertEquals(0, errorLogs.length);
   });
 
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function(){
     var a = this.compile('<div attr="before {{error.throw()}} after"></div>');
     var doc = a.node;
+    var errorLogs = a.scope.$service('$log').error.logs;
 
     a.scope.$set('error.throw', function(){throw "ErrorMsg";});
     a.scope.$eval();
     assertTrue('ng-exception', doc.hasClass('ng-exception'));
     assertEquals('"ErrorMsg"', doc.attr('ng-exception'));
     assertEquals('before "ErrorMsg" after', doc.attr('attr'));
+    assertEquals(['ErrorMsg'], errorLogs.shift());
 
     a.scope.$set('error.throw', function(){ return 'X';});
     a.scope.$eval();
     assertFalse('!ng-exception', doc.hasClass('ng-exception'));
     assertEquals('before X after', doc.attr('attr'));
     assertEquals(null, doc.attr('ng-exception'));
-
+    assertEquals(0, errorLogs.length);
   });
 
   it('NestedRepeater', function(){
@@ -447,6 +453,7 @@ describe('Binder', function(){
     var error = input.attr('ng-exception');
     assertTrue(!!error.match(/MyError/));
     assertTrue("should have an error class", input.hasClass('ng-exception'));
+    assertTrue(!!c.scope.$service('$log').error.logs.shift()[0].message.match(/MyError/));
 
     // TODO: I think that exception should never get cleared so this portion of test makes no sense
     //c.scope.action = noop;
@@ -491,7 +498,7 @@ describe('Binder', function(){
 
   it('FillInOptionValueWhenMissing', function(){
     var c = this.compile(
-        '<select><option selected="true">{{a}}</option><option value="">{{b}}</option><option>C</option></select>');
+        '<select name="foo"><option selected="true">{{a}}</option><option value="">{{b}}</option><option>C</option></select>');
     c.scope.$set('a', 'A');
     c.scope.$set('b', 'B');
     c.scope.$eval();
@@ -569,18 +576,21 @@ describe('Binder', function(){
     assertChild(5, false);
   });
 
-  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorect', function(){
+  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', function(){
     var c = this.compile('<div>' +
         '<input type="button" ng:click="greeting=\'ABC\'"/>' +
         '<input type="button" ng:click=":garbage:"/></div>');
     var first = jqLite(c.node[0].childNodes[0]);
     var second = jqLite(c.node[0].childNodes[1]);
+    var errorLogs = c.scope.$service('$log').error.logs;
 
     browserTrigger(first, 'click');
     assertEquals("ABC", c.scope.greeting);
+    expect(errorLogs).toEqual([]);
 
     browserTrigger(second, 'click');
     assertTrue(second.hasClass("ng-exception"));
+    expect(errorLogs.shift()[0]).toMatchError(/Parse Error: Token ':' not a primary expression/);
   });
 
   it('ItShouldSelectTheCorrectRadioBox', function(){
