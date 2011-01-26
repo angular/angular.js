@@ -58,11 +58,22 @@
   function indent(text) {
     var lines = text.split(/\n/);
     var lineNo = [];
+    // remove any leading blank lines
     while (lines[0].match(/^\s*$/)) lines.shift();
+    // remove any trailing blank lines
     while (lines[lines.length - 1].match(/^\s*$/)) lines.pop();
+    var minIndent = 999;
     for ( var i = 0; i < lines.length; i++) {
-      lines[i] = '  ' + lines[i];
-      lineNo.push(6 + i);
+      var line = lines[0];
+      var indent = line.match(/^\s*/)[0];
+      if (indent !== line && indent.length < minIndent) {
+        minIndent = indent.length;
+      }
+    }
+
+    for ( var i = 0; i < lines.length; i++) {
+      lines[i] = '  ' + lines[i].substring(minIndent);
+      lineNo.push(5 + i);
     }
     return {html: lines.join('\n'), hilite: lineNo.join(',') };
   };

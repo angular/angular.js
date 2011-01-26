@@ -181,9 +181,14 @@ a {
 }
 
 #sidebar ul li.level-0 {
+  margin-top: 0.5em;
   margin-left: 0em;
   font-weight: bold;
   font-size: 1.2em;
+}
+
+#sidebar ul li.level-0:first-child {
+  margin-top: 0;
 }
 
 #sidebar ul li.level-1.level-angular {
@@ -208,6 +213,11 @@ a {
 
 #sidebar ul li.level-3 {
   margin-left: 3em;
+  font-family: monospace;
+}
+
+#sidebar ul li.level-4 {
+  margin-left: 4em;
   font-family: monospace;
 }
 
@@ -281,4 +291,12 @@ a {
 
 #main::-webkit-scrollbar {
   background-color:#fff;
+}
+
+/* Content */
+img.right {
+  float: right;
+}
+h1, h2, h3, h4, h5 {
+  clear: both;
 }

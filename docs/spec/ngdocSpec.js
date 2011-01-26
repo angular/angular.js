@@ -19,9 +19,28 @@ describe('ngdoc', function(){
     describe('metadata', function(){
 
       it('should find keywords', function(){
-        expect(new Doc('\nHello: World! @ignore.').keywords()).toEqual('hello world');
+        expect(new Doc('\nHello: World! @ignore. $abc').keywords()).toEqual('$abc hello world');
         expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
       });
+
+      it('should have shortName', function(){
+        var d1 = new Doc('@name a.b.c').parse();
+        var d2 = new Doc('@name a.b.ng:c').parse();
+        var d3 = new Doc('@name some text: more text').parse();
+        expect(ngdoc.metadata([d1])[0].shortName).toEqual('c');
+        expect(ngdoc.metadata([d2])[0].shortName).toEqual('ng:c');
+        expect(ngdoc.metadata([d3])[0].shortName).toEqual('more text');
+      });
+
+      it('should have depth information', function(){
+        var d1 = new Doc('@name a.b.c').parse();
+        var d2 = new Doc('@name a.b.ng:c').parse();
+        var d3 = new Doc('@name some text: more text').parse();
+        expect(ngdoc.metadata([d1])[0].depth).toEqual(2);
+        expect(ngdoc.metadata([d2])[0].depth).toEqual(2);
+        expect(ngdoc.metadata([d3])[0].depth).toEqual(1);
+      });
+
     });
 
     describe('parse', function(){
@@ -61,9 +80,68 @@ describe('ngdoc', function(){
         expect(doc.example).toEqual('A\n\nB');
       });
 
+      it('should parse filename', function(){
+        var doc = new Doc('@name friendly name', 'docs/a.b.ngdoc', 1);
+        doc.parse(0);
+        expect(doc.id).toEqual('a.b');
+        expect(doc.name).toEqual('friendly name');
+      });
+
+      it('should escape <doc:source> element', function(){
+        var doc = new Doc('@description before <doc:example>' +
+            '<doc:source>\n<>\n</doc:source></doc:example> after');
+        doc.parse();
+        expect(doc.description).toContain('<p>before </p><doc:example>' +
+            '<doc:source>\n&lt;&gt;\n</doc:source></doc:example><p>after</p>');
+      });
+
+      it('should escape <doc:scenario> element', function(){
+        var doc = new Doc('@description before <doc:example>' +
+            '<doc:scenario>\n<>\n</doc:scenario></doc:example> after');
+        doc.parse();
+        expect(doc.description).toContain('<p>before </p><doc:example>' +
+            '<doc:scenario>\n&lt;&gt;\n</doc:scenario></doc:example><p>after</p>');
+      });
+
+      describe('sorting', function(){
+        function property(name) {
+          return function(obj) {return obj[name];};
+        }
+        function noop(){}
+        function doc(type, name){
+          return {
+              id: name,
+              ngdoc: type,
+              keywords: noop
+          };
+        }
+
+        var angular_widget = doc('overview', 'angular.widget');
+        var angular_x = doc('function', 'angular.x');
+        var angular_y = doc('property', 'angular.y');
+
+        it('should put angular.fn() in front of angular.widget, etc', function(){
+          expect(ngdoc.metadata([angular_widget, angular_y, angular_x]).map(property('id')))
+            .toEqual(['angular.x', 'angular.y', 'angular.widget' ]);
+        });
+      });
     });
+  });
 
-
+  describe('scenario', function(){
+    it('should render from @example/@scenario and <doc:example>', function(){
+      var doc = new Doc(
+          '@id id\n' +
+          '@description <doc:example><doc:scenario>scenario0</doc:scenario></doc:example>' +
+          '@example exempleText\n' +
+          '@scenario scenario1\n' +
+          '@scenario scenario2').parse();
+      expect(ngdoc.scenarios([doc])).toContain('describe("id"');
+      expect(ngdoc.scenarios([doc])).toContain('navigateTo("index.html#!id")');
+      expect(ngdoc.scenarios([doc])).toContain('\n  scenario0\n');
+      expect(ngdoc.scenarios([doc])).toContain('\n  scenario1\n');
+      expect(ngdoc.scenarios([doc])).toContain('\n  scenario2\n');
+    });
   });
 
   describe('markdown', function(){
@@ -86,8 +164,9 @@ describe('ngdoc', function(){
 
     it('should replace text between two <pre></pre> tags', function() {
       expect(markdown('<pre>x</pre># One<pre>b</pre>')).
-        toMatch('</div><h3>One</h3><div');
+        toMatch('</div><h1>One</h1><div');
     });
+
   });
 
   describe('trim', function(){
@@ -230,7 +309,7 @@ describe('ngdoc', function(){
         expect(doc.description).
           toBe('<p>foo </p>' +
                '<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>' +
-               '<h3>bah</h3>\n\n' +
+               '<h1>bah</h1>\n\n' +
                '<p>foo </p>' +
                '<div ng:non-bindable><pre class="brush: js; html-script: true;">cba</pre></div>');
 
@@ -243,18 +322,15 @@ describe('ngdoc', function(){
             '{@link angular.directive.ng:foo ng:foo}');
         doc.parse();
         expect(doc.description).
-          toBe('<p>foo <a href="#!angular.foo"><code>angular.foo</code></a></p>\n\n' +
-               '<p>da <a href="#!angular.foo"><code>bar foo bar</code></a> </p>\n\n' +
-               '<p>dad<a href="#!angular.foo"><code>angular.foo</code></a></p>\n\n' +
-               '<p><a href="#!angular.directive.ng:foo"><code>ng:foo</code></a></p>');
+          toContain('foo <a href="#!angular.foo"><code>angular.foo</code></a>');
+        expect(doc.description).
+          toContain('da <a href="#!angular.foo"><code>bar foo bar</code></a>');
+        expect(doc.description).
+          toContain('dad<a href="#!angular.foo"><code>angular.foo</code></a>');
+        expect(doc.description).
+          toContain('<a href="#!angular.directive.ng:foo"><code>ng:foo</code></a>');
       });
 
-      it('should increment all headings by two', function() {
-        var doc = new Doc('@description # foo\nabc\n## bar \n xyz');
-        doc.parse();
-        expect(doc.description).
-          toBe('<h3>foo</h3>\n\n<p>abc</p>\n\n<h4>bar</h4>\n\n<p>xyz</p>');
-      });
     });
 
     describe('@example', function(){
@@ -291,8 +367,8 @@ describe('ngdoc', function(){
 
     });
 
-    describe('@deprecated', function() {
-      it('should parse @deprecated', function() {
+    describe('@depricated', function() {
+      it('should parse @depricated', function() {
         var doc = new Doc('@deprecated Replaced with foo.');
         doc.parse();
         expect(doc.deprecated).toBe('Replaced with foo.');
@@ -315,6 +391,17 @@ describe('ngdoc', function(){
   });
 
   describe('usage', function(){
+    describe('overview', function(){
+      it('should supress description heading', function(){
+        var doc = new Doc('@ngdoc overview\n@name angular\n@description\n#heading\ntext');
+        doc.parse();
+        expect(doc.html()).toContain('text');
+        expect(doc.html()).toContain('<h2>heading</h2>');
+        expect(doc.html()).not.toContain('Description');
+      });
+    });
+
+
     describe('filter', function(){
       it('should format', function(){
         var doc = new Doc({
