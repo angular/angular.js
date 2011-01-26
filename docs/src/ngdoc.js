@@ -134,7 +134,7 @@ Doc.prototype = {
     dom.h(this.name, function(){
       notice('workInProgress', 'Work in Progress',
           'This page is currently being revised. It might be incomplete or contain inaccuracies.');
-      notice('depricated', 'Depricated API');
+      notice('deprecated', 'Deprecated API', self.deprecated);
       dom.h('Description', self.description, html);
       dom.h('Dependencies', self.requires);
 
