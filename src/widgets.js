@@ -545,6 +545,10 @@ angularWidget('option', function(){
     var isMultiple = select[0].type == 'select-multiple';
     var scope = retrieveScope(select);
     var model = modelAccessor(scope, select);
+
+    //if parent select doesn't have a name, don't bother doing anything any more
+    if (!model) return;
+
     var formattedModel = modelFormattedAccessor(scope, select);
     var view = isMultiple
       ? optionsAccessor(scope, select)

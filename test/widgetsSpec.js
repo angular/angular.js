@@ -463,6 +463,20 @@ describe("widget", function(){
         expect(scope.selection).toBe(scope.objs[0]);
       });
 
+      it('should compile children of a select without a name, but not create a model for it',
+          function() {
+        compile('<select>' +
+                  '<option selected="true">{{a}}</option>' +
+                  '<option value="">{{b}}</option>' +
+                  '<option>C</option>' +
+                '</select>');
+        scope.a = 'foo';
+        scope.b = 'bar';
+        scope.$eval();
+
+        expect(scope.$element.text()).toBe('foobarC');
+      })
+
     });
 
     describe('select-multiple', function(){
