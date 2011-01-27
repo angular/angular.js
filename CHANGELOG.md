@@ -1,7 +1,24 @@
-# <angular/> 0.9.10 flea-whisperer  (in-progress) #
+# <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
+
+### Features
+- new [`ng:view`](http://docs.angularjs.org/#!angular.widget.ng:view) widget to simplify integration
+with the `$route` service
+- the content of all standard HTML widgets is now being processed
+  (e.g. `<button>{{foo}}</button>` works now) (commit 1d7b9d56)
+- new [`$log`](http://docs.angularjs.org/#!angular.mock.service.$log) and
+  [`$exceptionHandler`](http://docs.angularjs.org/#!angular.mock.service.$exceptionHandler) service
+  mocks now part of `angular-mocks.js` (commit f5d08963)
 
 ### Bug Fixes
-- html select (one/multiple) could not chose from a list of objects, since DOM requires string ids.
+- <select> (one/multiple) could not chose from a list of objects (commit 347be5ae)
+- null and other falsy values should not be rendered in the view (issue #242)
+
+### Docs
+- rewrite of several major portions of angular.service.*, angular.Array.*, angular.Object.* docs
+- added support for [sitemap]((http://docs.angularjs.org/sitemap.xml) to make the docs indexable by
+  search crawlers
+- transition of Developer Guide docs from the wiki into docs.angularjs.org
+- lots of improvements related to formatting of the content of docs.anguarjs.org
 
 
 # <angular/> 0.9.9 time-shift (2011-01-13) #
