@@ -238,10 +238,10 @@ angular.service('$exceptionHandler', function(e) {
  */
 angular.service('$log', function() {
   var $log = {
-    log: function log(){ log.logs.push(arguments) },
-    warn: function warn(){ warn.logs.push(arguments) },
-    info: function info(){ info.logs.push(arguments) },
-    error: function error(){ error.logs.push(arguments) }
+    log: function(){ $log.logs.push(arguments) },
+    warn: function(){ $log.logs.push(arguments) },
+    info: function(){ $log.logs.push(arguments) },
+    error: function(){ $log.logs.push(arguments) }
   };
 
   $log.log.logs = [];
