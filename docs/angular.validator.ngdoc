@@ -12,7 +12,7 @@ Attach a validator on user input widgets using the `ng:validate` attribute.
 
 <doc:example>
   <doc:source>
-    Change me: &lt;input type="text" name="number" ng:validate="integer" value="123"&gt;
+    Change me: <input type="text" name="number" ng:validate="integer" value="123">
   </doc:source>
   <doc:scenario>
     it('should validate the default number string', function() {
