@@ -28,10 +28,10 @@
  * See {@link angular.mock} for more info on angular mocks.
  */
 var $logMock = {
-  log: function log(){ log.logs.push(arguments) },
-  warn: function warn(){ warn.logs.push(arguments) },
-  info: function info(){ info.logs.push(arguments) },
-  error: function error(){ error.logs.push(arguments) }
+  log: function(){ $logMock.log.logs.push(arguments) },
+  warn: function(){ $logMock.warn.logs.push(arguments) },
+  info: function(){ $logMock.info.logs.push(arguments) },
+  error: function(){ $logMock.error.logs.push(arguments) }
 };
 $logMock.log.logs = [];
 $logMock.warn.logs = [];
@@ -58,7 +58,7 @@ angular.service('$log', function() {
  *
  */
 function $exceptionHandlerMockFactory() {
-  function mockHandler(e) {
+  var mockHandler = function(e) {
     mockHandler.errors.push(e);
   }
   mockHandler.errors = [];
