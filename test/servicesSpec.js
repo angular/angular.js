@@ -392,6 +392,25 @@ describe("service", function(){
       scope.$eval();
       expect($route.current.template).toEqual('instant update');
     });
+
+    it('should allow routes to be defined with just templates without controllers', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          onChangeSpy = jasmine.createSpy('onChange');
+
+      $route.when('/foo', {template: 'foo.html'});
+      $route.onChange(onChangeSpy);
+      expect($route.current).toBeNull();
+      expect(onChangeSpy).not.toHaveBeenCalled();
+
+      $location.updateHash('/foo');
+      scope.$eval();
+
+      expect($route.current.template).toEqual('foo.html');
+      expect($route.current.controller).toBeUndefined();
+      expect(onChangeSpy).toHaveBeenCalled();
+    });
   });
 
 
