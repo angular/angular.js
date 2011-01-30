@@ -206,8 +206,9 @@ JQLite.prototype = {
     } else if (isDefined(value)) {
       e.setAttribute(name, value);
     } else {
-      // the extra argument is to get the right thing for a.href in IE, see jQuery code
-      return e.getAttribute(name, 2);
+      // the extra argument "2" is to get the right thing for a.href in IE, see jQuery code
+      // some elements (e.g. Document) don't have get attribute, so return undefined
+      if (e.getAttribute) return e.getAttribute(name, 2);
     }
   },
 
