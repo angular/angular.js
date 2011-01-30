@@ -77,18 +77,21 @@ with the `$route` service
   (e.g. `ng:init="$location = $service('$location'), ...`) in the view or more correctly create
   a service like this:
 
-      angular.service('published-svc-shim', function() {
-        this.$location = this.$service('$location');
-        this.$route = this.$service('$route');
-        this.$cookies = this.$service('$cookies');
-        this.$window = this.$service('$window');
-        this.$document = this.$service('$document');
-        this.$exceptionHandler = this.$service('$exceptionHandler');
-        this.$invalidWidgets = this.$service('$invalidWidgets');
-      }, {$eager: true});
+      angular.service('published-svc-shim', function($location, $route, $cookies, $window,
+          $document, $exceptionHandler, $invalidWidgets) {
+        this.$location = $location;
+        this.$route = $route;
+        this.$cookies = $cookies;
+        this.$window = $window;
+        this.$document = $document;
+        this.$exceptionHandler = $exceptionHandler;
+        this.$invalidWidgets = $invalidWidgets;
+      }, {$inject: ['$location', '$route', '$cookies', '$window', '$document', '$exceptionHandler',
+                    '$invalidWidgets'],
+          $eager: true});
 
 - In the light of the `eager-published` change, to complete the cleanup we renamed `$creation`
-  property of services to `eager` with its value being a boolean.
+  property of services to `$eager` with its value being a boolean.
   To transition, please rename all `$creation: 'eager'` declarations to `$eager: true`.
   (commit 1430c6d6)
 
