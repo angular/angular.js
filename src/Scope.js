@@ -413,7 +413,7 @@ function createScope(parent, providers, instanceCache) {
        </pre>
      *
      * @param {string|function()} expression Angular expression to evaluate.
-     * @param {function()|DOMElement} exceptionHandler Function to be called or DOMElement to be
+     * @param {(function()|DOMElement)=} exceptionHandler Function to be called or DOMElement to be
      *     decorated.
      * @returns {*} The result of `expression` evaluation.
      */
