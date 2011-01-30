@@ -611,14 +611,15 @@ function switchRouteMatcher(on, when, dstName) {
  * @name angular.service.$route
  * @requires $location
  *
- * @property {Object} current Name of the current route
- * @property {Array.<Object>} routes List of configured routes
+ * @property {Object} current Reference to the current route definition.
+ * @property {Array.<Object>} routes Array of all configured routes.
  *
  * @description
- * Watches $location.hashPath and tries to map the hash to an existing route
+ * Watches `$location.hashPath` and tries to map the hash to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  *
- * $route is typically used in conjunction with {@link angular.widget.ng:view ng:view} widget.
+ * The `$route` service is typically used in conjunction with {@link angular.widget.ng:view ng:view}
+ * widget.
  *
  * @example
 <p>
@@ -673,7 +674,7 @@ angularServiceInject('$route', function(location) {
          * @name angular.service.$route#onChange
          * @methodOf angular.service.$route
          *
-         * @param {function()} fn Function that will be called on route change
+         * @param {function()} fn Function that will be called when `$route.current` changes.
          *
          * @description
          * Register a handler function that will be called when route changes
@@ -686,16 +687,16 @@ angularServiceInject('$route', function(location) {
          * @name angular.service.$route#when
          * @methodOf angular.service.$route
          *
-         * @param {string} path Route path (matched against $location.hash)
+         * @param {string} path Route path (matched against `$location.hash`)
          * @param {Object} params Mapping information to be assigned to `$route.current` on route
          *    match.
          * @returns {Object} route object
          *
          * @description
-         * Add new route
+         * Adds a new route definition to the `$route` service.
          */
         when:function (path, params) {
-          if (isUndefined(path)) return routes;
+          if (isUndefined(path)) return routes; //TODO(im): remove - not needed!
           var route = routes[path];
           if (!route) route = routes[path] = {};
           if (params) extend(route, params);
