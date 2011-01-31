@@ -411,6 +411,38 @@ describe("service", function(){
       expect($route.current.controller).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
     });
+
+    it('should handle unknown routes with "otherwise" route definition', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          onChangeSpy = jasmine.createSpy('onChange');
+
+      function NotFoundCtrl() {this.notFoundProp = 'not found!'}
+
+      $route.when('/foo', {template: 'foo.html'});
+      $route.otherwise({template: '404.html', controller: NotFoundCtrl});
+      $route.onChange(onChangeSpy);
+      expect($route.current).toBeNull();
+      expect(onChangeSpy).not.toHaveBeenCalled();
+
+      $location.updateHash('/unknownRoute');
+      scope.$eval();
+
+      expect($route.current.template).toBe('404.html');
+      expect($route.current.controller).toBe(NotFoundCtrl);
+      expect($route.current.scope.notFoundProp).toBe('not found!');
+      expect(onChangeSpy).toHaveBeenCalled();
+
+      onChangeSpy.reset();
+      $location.updateHash('/foo');
+      scope.$eval();
+
+      expect($route.current.template).toEqual('foo.html');
+      expect($route.current.controller).toBeUndefined();
+      expect($route.current.scope.notFoundProp).toBeUndefined();
+      expect(onChangeSpy).toHaveBeenCalled();
+    });
   });
 
 
