@@ -702,6 +702,22 @@ angularServiceInject('$route', function(location) {
           if (params) extend(route, params);
           dirty++;
           return route;
+        },
+
+        /**
+         * @workInProgress
+         * @ngdoc method
+         * @name angular.service.$route#otherwise
+         * @methodOf angular.service.$route
+         *
+         * @description
+         * Sets route definition that will be used on route change when no other route definition
+         * is matched.
+         *
+         * @param {Object} params Mapping information to be assigned to `$route.current`.
+         */
+        otherwise: function(params) {
+          $route.when(null, params);
         }
       };
   function updateRoute(){
@@ -719,12 +735,26 @@ angularServiceInject('$route', function(location) {
         }
       }
     });
+
+    //fallback
+    if (!childScope && routes[_null]) {
+      childScope = createScope(parentScope);
+      $route.current = extend({}, routes[_null], {
+        scope: childScope,
+        params: extend({}, location.hashSearch)
+      });
+    }
+
+    //fire onChange callbacks
     forEach(onChange, parentScope.$tryEval);
+
     if (childScope) {
       childScope.$become($route.current.controller);
     }
   }
+
   this.$watch(function(){return dirty + location.hash;}, updateRoute);
+
   return $route;
 }, ['$location']);
 
