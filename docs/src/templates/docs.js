@@ -40,4 +40,9 @@ function DocsController($location, $browser, $window) {
 
 }
 
+// prevent compilation of code
+angular.widget('code', function(element){
+  element.attr('ng:non-bindable', 'true');
+});
+
 SyntaxHighlighter['defaults'].toolbar = false;

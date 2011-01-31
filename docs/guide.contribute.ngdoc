@@ -1,0 +1,27 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Contributing
+@description
+
+# Open Source
+Angular is an open source project licensed under the
+{@link http://github.com/angular/angular.js/blob/master/LICENSE MIT license}. We welcome any
+contributions from the community, but in order to make the contribution process manageable, we ask
+you to follow the following guidelines:
+
+# Source Code
+* Discuss any major changes on our {@link http://groups.google.com/group/angular mailing list}.
+  For small changes and bugfixes, just go ahead and craft your patch and submit it.
+* Use coding style described
+  {@link http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml here}.
+* To submit any changes, we ask you to use {@link http://github.com}
+  * Create a github {@link https://github.com/signup/free account}
+  * Clone the {@link http://github.com/angular/angular.js main angular repository}
+  * Create a new branch off of the master (`git branch my-fix-branch`)
+  * Switch to the branch (`git checkout my-fix-branch`), make your changes and commit (`git commit -a`)
+  * For any new features or regressions we require a test(s) to be submitted with the change
+  * Run js lint (`rake lint`) and fix any warnings or errors
+  * Push your branch to github (`git push origin my-fix-branch`)
+  * Send a pull request via github into `angular:master`
+  * Once the patch is reviewed and merged, you can delete your branch (`git push origin :my-fix-branch; git checkout master; git branch -D my-fix-branch`)
+  * TADA!

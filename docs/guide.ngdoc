@@ -34,3 +34,4 @@
   * service:$browser(mock)
 * {@link guide.downloading Downloading} - How to download, compile, and host the angular
   environment on your own server.
+* {@link guide.contribute Contributing} - How to contribute to angular project.

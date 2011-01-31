@@ -319,6 +319,7 @@ describe('ngdoc', function(){
         var doc = new Doc("@description " +
             'foo {@link angular.foo}\n\n da {@link angular.foo bar foo bar } \n\n' +
             'dad{@link angular.foo}\n\n' +
+            'external{@link http://angularjs.org}\n\n' +
             '{@link angular.directive.ng:foo ng:foo}');
         doc.parse();
         expect(doc.description).
@@ -329,6 +330,8 @@ describe('ngdoc', function(){
           toContain('dad<a href="#!angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
           toContain('<a href="#!angular.directive.ng:foo"><code>ng:foo</code></a>');
+        expect(doc.description).
+          toContain('<a href="http://angularjs.org">http://angularjs.org</a>');
       });
 
     });
@@ -357,12 +360,16 @@ describe('ngdoc', function(){
       });
 
       it('should render description in related method', function(){
-        var doc = new Doc();
+        var doc = new Doc('').parse();
         doc.ngdoc = 'service';
-        doc.methods = [new Doc('@ngdoc method\n@exampleDescription MDesc\n@example MExmp').parse()];
-        doc.properties = [new Doc('@ngdoc property\n@exampleDescription PDesc\n@example PExmp').parse()];
-        expect(doc.html()).toContain('<p>MDesc</p><div ng:non-bindable=""><pre class="brush: js; html-script: true;">MExmp</pre>');
-        expect(doc.html()).toContain('<p>PDesc</p><div ng:non-bindable=""><pre class="brush: js; html-script: true;">PExmp</pre>');
+        doc.methods = [
+           new Doc('@ngdoc method\n@exampleDescription MDesc\n@example MExmp').parse()];
+        doc.properties = [
+          new Doc('@ngdoc property\n@exampleDescription PDesc\n@example PExmp').parse()];
+        expect(doc.html()).toContain('<p>MDesc</p><div ng:non-bindable="">' +
+            '<pre class="brush: js; html-script: true;">MExmp</pre>');
+        expect(doc.html()).toContain('<p>PDesc</p><div ng:non-bindable="">' +
+            '<pre class="brush: js; html-script: true;">PExmp</pre>');
       });
 
     });

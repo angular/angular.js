@@ -1,0 +1,35 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Downloading
+@description
+
+# Downloading
+Follow these steps to download, compile, and host angular.js on your own server:
+
+## Step 0
+
+If you don't already have Rake (Ruby Make) installed, download and install it from
+http://rake.rubyforge.org/.
+
+## Step 1
+
+Download the angular source code from GitHub: http://github.com/angular/angular.js.
+
+## Step 2
+
+The source code should include a Rakefile. Compile the source by typing rake compile.
+
+## Step 3
+
+Host the files on your server. Look through your source tree and make sure that the css and js
+directories are parallel (i.e. share a common root node).
+
+In the js directory you should see these different versions of the angular bootstrap code:
+
+* **angular-?.?.?.js** - this file is unobfuscated, uncompressed, and human-readable. Note that
+  despite the name of the file, there is no additional functionality built in to help you debug
+  your application; it has the prefix debug because you can read the source code.
+* **angular-?.?.?.min.js** - this is a compressed and obfuscated version of `angular-?.?.?.js`.
+  You might want to use this version if you want to load a smaller but functionally equivalent
+  version of the code in your application. Note: this minified version was created using the
+  Closure Compiler.

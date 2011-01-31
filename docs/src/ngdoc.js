@@ -114,7 +114,7 @@ Doc.prototype = {
             description: markdown(text.replace(match[0], match[2]))
           };
         } else if(atName == 'description') {
-          text.replace(/<doc:scenario>([\s\S]*)<\/doc:scenario>/mi,
+          text.replace(/<doc:scenario>([\s\S]*?)<\/doc:scenario>/gmi,
               function(_, scenario){
                 self.scenarios.push(scenario);
               });
@@ -154,7 +154,7 @@ Doc.prototype = {
         throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
       }).call(self, dom);
 
-      dom.example(self.exampleDescription, self.example, self.scenario);
+      dom.example(self.exampleDescription, self.example, self.scenarios[0]);
     });
 
     return dom.toString();
@@ -438,6 +438,8 @@ Doc.prototype = {
 
 //////////////////////////////////////////////////////////
 function markdown (text) {
+  var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:)/;
+  var IS_ANGULAR = /^angular\./;
   if (!text) return text;
   var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/),
       match;
@@ -462,10 +464,10 @@ function markdown (text) {
       text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
       text = text.replace(/{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/gm,
         function(_all, url, _2, _3, title){
-          return '<a href="#!' + url + '">'
-            + (url.match(/^angular\./) ? '<code>' : '')
+          return '<a href="' + (url.match(IS_URL) ? '' : '#!') + url + '">'
+            + (url.match(IS_ANGULAR) ? '<code>' : '')
             + (title || url)
-            + (url.match(/^angular\./) ? '</code>' : '')
+            + (url.match(IS_ANGULAR) ? '</code>' : '')
             + '</a>';
         });
       text = new Showdown.converter().makeHtml(text);
