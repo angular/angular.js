@@ -56,6 +56,7 @@
   });
 
   function indent(text) {
+    if (!text) return text;
     var lines = text.split(/\n/);
     var lineNo = [];
     // remove any leading blank lines
