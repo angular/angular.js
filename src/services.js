@@ -377,14 +377,12 @@ angularServiceInject("$log", $logFactory = function($window){
  * @requires $log
  *
  * @description
- * Any uncaught exception in <angular/> is delegated to this service.
- * The default implementation simply delegates to $log.error which logs it into
+ * Any uncaught exception in angular expressions is delegated to this service.
+ * The default implementation simply delegates to `$log.error` which logs it into
  * the browser console.
  *
- * When unit testing it is useful to have uncaught exceptions propagate
- * to the test so the test will fail rather than silently log the exception
- * to the browser console. For this purpose you can override this service with
- * a simple rethrow.
+ * In unit tests, if `angular-mocks.js` is loaded, this service is overriden by
+ * {@link angular.mock.service.$exceptionHandler mock $exceptionHandler}
  *
  * @example
  */
