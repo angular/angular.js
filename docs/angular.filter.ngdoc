@@ -46,12 +46,13 @@ You can use these variables in the function:
   the DOM in addition to transforming the input.
 
 
-@exampleDescription
+@example
  The following example filter reverses a text string. In addition, it conditionally makes the
  text upper-case (to demonstrate optional arguments) and assigns color (to demonstrate DOM
  modification).
 
-@example
+<doc:example>
+ <doc:source>
    <script type="text/javascript">
      angular.filter('reverse', function(input, uppercase, color) {
        var out = "";
@@ -73,4 +74,14 @@ You can use these variables in the function:
    Reverse: {{text|reverse}}<br>
    Reverse + uppercase: {{text|reverse:true}}<br>
    Reverse + uppercase + blue:  {{text|reverse:true:"blue"}}
+ </doc:source>
+ <doc:scenario>
+  it('should reverse text', function(){
+    expect(binding('text|reverse')).toEqual('olleh');
+    input('text').enter('ABC');
+    expect(binding('text|reverse')).toEqual('CBA');
+  });
+ </doc:scenario>
+</doc:example>
+
 

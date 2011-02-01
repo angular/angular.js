@@ -50,24 +50,28 @@ UPS tracking number.
   default.
 
 @example
-<script>
- angular.validator('upsTrackingNo', function(input, format) {
-   var regexp = new RegExp("^" + format.replace(/9/g, '\\d') + "$");
-   return input.match(regexp)?"":"The format must match " + format;
- });
-</script>
-<input type="text" name="trackNo" size="40"
-      ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'"
-      value="1Z 123 456 78 9012 345 6"/>
+<doc:example>
+ <doc:source>
+  <script>
+   angular.validator('upsTrackingNo', function(input, format) {
+     var regexp = new RegExp("^" + format.replace(/9/g, '\\d') + "$");
+     return input.match(regexp)?"":"The format must match " + format;
+   });
+  </script>
+  <input type="text" name="trackNo" size="40"
+        ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'"
+        value="1Z 123 456 78 9012 345 6"/>
+ </doc:source>
+ <doc:scenario>
+  it('should validate correct UPS tracking number', function() {
+    expect(element('input[name=trackNo]').attr('class')).
+       not().toMatch(/ng-validation-error/);
+  });
 
-@scenario
-it('should validate correct UPS tracking number', function() {
-  expect(element('input[name=trackNo]').attr('class')).
-     not().toMatch(/ng-validation-error/);
-});
-
-it('should not validate in correct UPS tracking number', function() {
-  input('trackNo').enter('foo');
-  expect(element('input[name=trackNo]').attr('class')).
-     toMatch(/ng-validation-error/);
-});
+  it('should not validate in correct UPS tracking number', function() {
+    input('trackNo').enter('foo');
+    expect(element('input[name=trackNo]').attr('class')).
+       toMatch(/ng-validation-error/);
+  });
+ </doc:scenario>
+</doc:example>

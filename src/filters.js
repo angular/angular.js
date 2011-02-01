@@ -14,19 +14,23 @@
  *   When the value is negative, this css class is applied to the binding making it by default red.
  *
  * @example
-     <input type="text" name="amount" value="1234.56"/> <br/>
-     {{amount | currency}}
- *
- * @scenario
-     it('should init with 1234.56', function(){
-       expect(binding('amount | currency')).toBe('$1,234.56');
-     });
-     it('should update', function(){
-       input('amount').enter('-1234');
-       expect(binding('amount | currency')).toBe('$-1,234.00');
-       expect(element('.doc-example-live .ng-binding').attr('className')).
-         toMatch(/ng-format-negative/);
-     });
+   <doc:example>
+     <doc:source>
+       <input type="text" name="amount" value="1234.56"/> <br/>
+       {{amount | currency}}
+     </doc:source>
+     <doc:scenario>
+       it('should init with 1234.56', function(){
+         expect(binding('amount | currency')).toBe('$1,234.56');
+       });
+       it('should update', function(){
+         input('amount').enter('-1234');
+         expect(binding('amount | currency')).toBe('$-1,234.00');
+         expect(element('.doc-example-live .ng-binding').attr('className')).
+           toMatch(/ng-format-negative/);
+       });
+     </doc:scenario>
+   </doc:example>
  */
 angularFilter.currency = function(amount){
   this.$element.toggleClass('ng-format-negative', amount < 0);
@@ -49,24 +53,28 @@ angularFilter.currency = function(amount){
  * @returns {string} Number rounded to decimalPlaces and places a “,” after each third digit.
  *
  * @example
-     Enter number: <input name='val' value='1234.56789' /><br/>
-     Default formatting: {{val | number}}<br/>
-     No fractions: {{val | number:0}}<br/>
-     Negative number: {{-val | number:4}}
+   <doc:example>
+     <doc:source>
+       Enter number: <input name='val' value='1234.56789' /><br/>
+       Default formatting: {{val | number}}<br/>
+       No fractions: {{val | number:0}}<br/>
+       Negative number: {{-val | number:4}}
+     </doc:source>
+     <doc:scenario>
+       it('should format numbers', function(){
+         expect(binding('val | number')).toBe('1,234.57');
+         expect(binding('val | number:0')).toBe('1,235');
+         expect(binding('-val | number:4')).toBe('-1,234.5679');
+       });
 
- * @scenario
-     it('should format numbers', function(){
-       expect(binding('val | number')).toBe('1,234.57');
-       expect(binding('val | number:0')).toBe('1,235');
-       expect(binding('-val | number:4')).toBe('-1,234.5679');
-     });
-
-     it('should update', function(){
-       input('val').enter('3374.333');
-       expect(binding('val | number')).toBe('3,374.33');
-       expect(binding('val | number:0')).toBe('3,374');
-       expect(binding('-val | number:4')).toBe('-3,374.3330');
-     });
+       it('should update', function(){
+         input('val').enter('3374.333');
+         expect(binding('val | number')).toBe('3,374.33');
+         expect(binding('val | number:0')).toBe('3,374');
+         expect(binding('-val | number:4')).toBe('-3,374.3330');
+       });
+     </doc:scenario>
+   </doc:example>
  */
 angularFilter.number = function(number, fractionSize){
   if (isNaN(number) || !isFinite(number)) {
@@ -183,19 +191,22 @@ var NUMBER_STRING = /^\d+$/;
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
  * @example
-     <span ng:non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
-        {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br/>
-     <span ng:non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
-        {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
- *
- * @scenario
-     it('should format date', function(){
-       expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
-          toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
-       expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
-          toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(am|pm)/);
-     });
- *
+   <doc:example>
+     <doc:source>
+       <span ng:non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
+          {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br/>
+       <span ng:non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
+          {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
+     </doc:source>
+     <doc:scenario>
+       it('should format date', function(){
+         expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
+            toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
+         expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
+            toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(am|pm)/);
+       });
+     </doc:scenario>
+   </doc:example>
  */
 angularFilter.date = function(date, format) {
   if (isString(date)) {
@@ -255,19 +266,23 @@ angularFilter.date = function(date, format) {
  * @css ng-monospace Always applied to the encapsulating element.
  *
  * @example:
-     <input type="text" name="objTxt" value="{a:1, b:[]}"
-            ng:eval="obj = $eval(objTxt)"/>
-     <pre>{{ obj | json }}</pre>
- *
- * @scenario
-     it('should jsonify filtered objects', function() {
-       expect(binding('obj | json')).toBe('{\n  "a":1,\n  "b":[]}');
-     });
+   <doc:example>
+     <doc:source>
+       <input type="text" name="objTxt" value="{a:1, b:[]}"
+              ng:eval="obj = $eval(objTxt)"/>
+       <pre>{{ obj | json }}</pre>
+     </doc:source>
+     <doc:scenario>
+       it('should jsonify filtered objects', function() {
+         expect(binding('obj | json')).toBe('{\n  "a":1,\n  "b":[]}');
+       });
 
-     it('should update', function() {
-       input('objTxt').enter('[1, 2, 3]');
-       expect(binding('obj | json')).toBe('[1,2,3]');
-     });
+       it('should update', function() {
+         input('objTxt').enter('[1, 2, 3]');
+         expect(binding('obj | json')).toBe('[1,2,3]');
+       });
+     </doc:scenario>
+   </doc:example>
  *
  */
 angularFilter.json = function(object) {
@@ -324,63 +339,67 @@ angularFilter.uppercase = uppercase;
  * @returns {string} Sanitized or raw html.
  *
  * @example
-     Snippet: <textarea name="snippet" cols="60" rows="3">
+   <doc:example>
+     <doc:source>
+       Snippet: <textarea name="snippet" cols="60" rows="3">
 &lt;p style="color:blue"&gt;an html
 &lt;em onmouseover="this.textContent='PWN3D!'"&gt;click here&lt;/em&gt;
 snippet&lt;/p&gt;</textarea>
-     <table>
-       <tr>
-         <td>Filter</td>
-         <td>Source</td>
-         <td>Rendered</td>
-       </tr>
-       <tr id="html-filter">
-         <td>html filter</td>
-         <td>
-           <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
-         </td>
-         <td>
-           <div ng:bind="snippet | html"></div>
-         </td>
-       </tr>
-       <tr id="escaped-html">
-         <td>no filter</td>
-         <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-         <td><div ng:bind="snippet"></div></td>
-       </tr>
-       <tr id="html-unsafe-filter">
-         <td>unsafe html filter</td>
-         <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
-         <td><div ng:bind="snippet | html:'unsafe'"></div></td>
-       </tr>
-     </table>
- *
- * @scenario
-     it('should sanitize the html snippet ', function(){
-       expect(using('#html-filter').binding('snippet | html')).
-         toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
-     });
+       <table>
+         <tr>
+           <td>Filter</td>
+           <td>Source</td>
+           <td>Rendered</td>
+         </tr>
+         <tr id="html-filter">
+           <td>html filter</td>
+           <td>
+             <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
+           </td>
+           <td>
+             <div ng:bind="snippet | html"></div>
+           </td>
+         </tr>
+         <tr id="escaped-html">
+           <td>no filter</td>
+           <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><div ng:bind="snippet"></div></td>
+         </tr>
+         <tr id="html-unsafe-filter">
+           <td>unsafe html filter</td>
+           <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><div ng:bind="snippet | html:'unsafe'"></div></td>
+         </tr>
+       </table>
+     </doc:source>
+     <doc:scenario>
+       it('should sanitize the html snippet ', function(){
+         expect(using('#html-filter').binding('snippet | html')).
+           toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
+       });
 
-     it ('should escape snippet without any filter', function() {
-       expect(using('#escaped-html').binding('snippet')).
-         toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
-              "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
-              "snippet&lt;/p&gt;");
-     });
+       it('should escape snippet without any filter', function() {
+         expect(using('#escaped-html').binding('snippet')).
+           toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
+                "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
+                "snippet&lt;/p&gt;");
+       });
 
-     it ('should inline raw snippet if filtered as unsafe', function() {
-       expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).
-         toBe("<p style=\"color:blue\">an html\n" +
-              "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
-              "snippet</p>");
-     });
+       it('should inline raw snippet if filtered as unsafe', function() {
+         expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).
+           toBe("<p style=\"color:blue\">an html\n" +
+                "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
+                "snippet</p>");
+       });
 
-     it('should update', function(){
-       input('snippet').enter('new <b>text</b>');
-       expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
-       expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
-       expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).toBe('new <b>text</b>');
-     });
+       it('should update', function(){
+         input('snippet').enter('new <b>text</b>');
+         expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
+         expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
+         expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).toBe('new <b>text</b>');
+       });
+     </doc:scenario>
+   </doc:example>
  */
 angularFilter.html =  function(html, option){
   return new HTML(html, option);
@@ -401,59 +420,63 @@ angularFilter.html =  function(html, option){
  * @returns {string} Html-linkified text.
  *
  * @example
-     Snippet: <textarea name="snippet" cols="60" rows="3">
-Pretty text with some links:
-http://angularjs.org/,
-mailto:us@somewhere.org,
-another@somewhere.org,
-and one more: ftp://127.0.0.1/.</textarea>
-     <table>
-       <tr>
-         <td>Filter</td>
-         <td>Source</td>
-         <td>Rendered</td>
-       </tr>
-       <tr id="linky-filter">
-         <td>linky filter</td>
-         <td>
-           <pre>&lt;div ng:bind="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
-         </td>
-         <td>
-           <div ng:bind="snippet | linky"></div>
-         </td>
-       </tr>
-       <tr id="escaped-html">
-         <td>no filter</td>
-         <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-         <td><div ng:bind="snippet"></div></td>
-       </tr>
-     </table>
+   <doc:example>
+     <doc:source>
+       Snippet: <textarea name="snippet" cols="60" rows="3">
+  Pretty text with some links:
+  http://angularjs.org/,
+  mailto:us@somewhere.org,
+  another@somewhere.org,
+  and one more: ftp://127.0.0.1/.</textarea>
+       <table>
+         <tr>
+           <td>Filter</td>
+           <td>Source</td>
+           <td>Rendered</td>
+         </tr>
+         <tr id="linky-filter">
+           <td>linky filter</td>
+           <td>
+             <pre>&lt;div ng:bind="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
+           </td>
+           <td>
+             <div ng:bind="snippet | linky"></div>
+           </td>
+         </tr>
+         <tr id="escaped-html">
+           <td>no filter</td>
+           <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><div ng:bind="snippet"></div></td>
+         </tr>
+       </table>
+     </doc:source>
+     <doc:scenario>
+       it('should linkify the snippet with urls', function(){
+         expect(using('#linky-filter').binding('snippet | linky')).
+           toBe('Pretty text with some links:\n' +
+                '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
+                '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,\n' +
+                '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,\n' +
+                'and one more: <a href="ftp://127.0.0.1/">ftp://127.0.0.1/</a>.');
+       });
 
-   @scenario
-     it('should linkify the snippet with urls', function(){
-       expect(using('#linky-filter').binding('snippet | linky')).
-         toBe('Pretty text with some links:\n' +
-              '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
-              '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,\n' +
-              '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,\n' +
-              'and one more: <a href="ftp://127.0.0.1/">ftp://127.0.0.1/</a>.');
-     });
+       it ('should not linkify snippet without the linky filter', function() {
+         expect(using('#escaped-html').binding('snippet')).
+           toBe("Pretty text with some links:\n" +
+                "http://angularjs.org/,\n" +
+                "mailto:us@somewhere.org,\n" +
+                "another@somewhere.org,\n" +
+                "and one more: ftp://127.0.0.1/.");
+       });
 
-     it ('should not linkify snippet without the linky filter', function() {
-       expect(using('#escaped-html').binding('snippet')).
-         toBe("Pretty text with some links:\n" +
-              "http://angularjs.org/,\n" +
-              "mailto:us@somewhere.org,\n" +
-              "another@somewhere.org,\n" +
-              "and one more: ftp://127.0.0.1/.");
-     });
-
-     it('should update', function(){
-       input('snippet').enter('new http://link.');
-       expect(using('#linky-filter').binding('snippet | linky')).
-         toBe('new <a href="http://link">http://link</a>.');
-       expect(using('#escaped-html').binding('snippet')).toBe('new http://link.');
-     });
+       it('should update', function(){
+         input('snippet').enter('new http://link.');
+         expect(using('#linky-filter').binding('snippet | linky')).
+           toBe('new <a href="http://link">http://link</a>.');
+         expect(using('#escaped-html').binding('snippet')).toBe('new http://link.');
+       });
+     </doc:scenario>
+   </doc:example>
  */
 //TODO: externalize all regexps
 angularFilter.linky = function(text){

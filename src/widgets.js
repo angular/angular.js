@@ -19,117 +19,122 @@
  *   </select>
  *
  * @example
-<table style="font-size:.9em;">
-  <tr>
-    <th>Name</th>
-    <th>Format</th>
-    <th>HTML</th>
-    <th>UI</th>
-    <th ng:non-bindable>{{input#}}</th>
-  </tr>
-  <tr>
-    <th>text</th>
-    <td>String</td>
-    <td><tt>&lt;input type="text" name="input1"&gt;</tt></td>
-    <td><input type="text" name="input1" size="4"></td>
-    <td><tt>{{input1|json}}</tt></td>
-  </tr>
-  <tr>
-    <th>textarea</th>
-    <td>String</td>
-    <td><tt>&lt;textarea name="input2"&gt;&lt;/textarea&gt;</tt></td>
-    <td><textarea name="input2" cols='6'></textarea></td>
-    <td><tt>{{input2|json}}</tt></td>
-  </tr>
-  <tr>
-    <th>radio</th>
-    <td>String</td>
-    <td><tt>
-      &lt;input type="radio" name="input3" value="A"&gt;<br>
-      &lt;input type="radio" name="input3" value="B"&gt;
-    </tt></td>
-    <td>
-      <input type="radio" name="input3" value="A">
-      <input type="radio" name="input3" value="B">
-    </td>
-    <td><tt>{{input3|json}}</tt></td>
-  </tr>
-  <tr>
-    <th>checkbox</th>
-    <td>Boolean</td>
-    <td><tt>&lt;input type="checkbox" name="input4" value="checked"&gt;</tt></td>
-    <td><input type="checkbox" name="input4" value="checked"></td>
-    <td><tt>{{input4|json}}</tt></td>
-  </tr>
-  <tr>
-    <th>pulldown</th>
-    <td>String</td>
-    <td><tt>
-      &lt;select name="input5"&gt;<br>
-      &nbsp;&nbsp;&lt;option value="c"&gt;C&lt;/option&gt;<br>
-      &nbsp;&nbsp;&lt;option value="d"&gt;D&lt;/option&gt;<br>
-      &lt;/select&gt;<br>
-    </tt></td>
-    <td>
-      <select name="input5">
-        <option value="c">C</option>
-        <option value="d">D</option>
-      </select>
-    </td>
-    <td><tt>{{input5|json}}</tt></td>
-  </tr>
-  <tr>
-    <th>multiselect</th>
-    <td>Array</td>
-    <td><tt>
-      &lt;select name="input6" multiple size="4"&gt;<br>
-      &nbsp;&nbsp;&lt;option value="e"&gt;E&lt;/option&gt;<br>
-      &nbsp;&nbsp;&lt;option value="f"&gt;F&lt;/option&gt;<br>
-      &lt;/select&gt;<br>
-    </tt></td>
-    <td>
-      <select name="input6" multiple size="4">
-        <option value="e">E</option>
-        <option value="f">F</option>
-      </select>
-    </td>
-    <td><tt>{{input6|json}}</tt></td>
-  </tr>
-</table>
+    <doc:example>
+      <doc:source>
+        <table style="font-size:.9em;">
+          <tr>
+            <th>Name</th>
+            <th>Format</th>
+            <th>HTML</th>
+            <th>UI</th>
+            <th ng:non-bindable>{{input#}}</th>
+          </tr>
+          <tr>
+            <th>text</th>
+            <td>String</td>
+            <td><tt>&lt;input type="text" name="input1"&gt;</tt></td>
+            <td><input type="text" name="input1" size="4"></td>
+            <td><tt>{{input1|json}}</tt></td>
+          </tr>
+          <tr>
+            <th>textarea</th>
+            <td>String</td>
+            <td><tt>&lt;textarea name="input2"&gt;&lt;/textarea&gt;</tt></td>
+            <td><textarea name="input2" cols='6'></textarea></td>
+            <td><tt>{{input2|json}}</tt></td>
+          </tr>
+          <tr>
+            <th>radio</th>
+            <td>String</td>
+            <td><tt>
+              &lt;input type="radio" name="input3" value="A"&gt;<br>
+              &lt;input type="radio" name="input3" value="B"&gt;
+            </tt></td>
+            <td>
+              <input type="radio" name="input3" value="A">
+              <input type="radio" name="input3" value="B">
+            </td>
+            <td><tt>{{input3|json}}</tt></td>
+          </tr>
+          <tr>
+            <th>checkbox</th>
+            <td>Boolean</td>
+            <td><tt>&lt;input type="checkbox" name="input4" value="checked"&gt;</tt></td>
+            <td><input type="checkbox" name="input4" value="checked"></td>
+            <td><tt>{{input4|json}}</tt></td>
+          </tr>
+          <tr>
+            <th>pulldown</th>
+            <td>String</td>
+            <td><tt>
+              &lt;select name="input5"&gt;<br>
+              &nbsp;&nbsp;&lt;option value="c"&gt;C&lt;/option&gt;<br>
+              &nbsp;&nbsp;&lt;option value="d"&gt;D&lt;/option&gt;<br>
+              &lt;/select&gt;<br>
+            </tt></td>
+            <td>
+              <select name="input5">
+                <option value="c">C</option>
+                <option value="d">D</option>
+              </select>
+            </td>
+            <td><tt>{{input5|json}}</tt></td>
+          </tr>
+          <tr>
+            <th>multiselect</th>
+            <td>Array</td>
+            <td><tt>
+              &lt;select name="input6" multiple size="4"&gt;<br>
+              &nbsp;&nbsp;&lt;option value="e"&gt;E&lt;/option&gt;<br>
+              &nbsp;&nbsp;&lt;option value="f"&gt;F&lt;/option&gt;<br>
+              &lt;/select&gt;<br>
+            </tt></td>
+            <td>
+              <select name="input6" multiple size="4">
+                <option value="e">E</option>
+                <option value="f">F</option>
+              </select>
+            </td>
+            <td><tt>{{input6|json}}</tt></td>
+          </tr>
+        </table>
+      </doc:source>
+      <doc:scenario>
 
- * @scenario
- * it('should exercise text', function(){
- *   input('input1').enter('Carlos');
- *   expect(binding('input1')).toEqual('"Carlos"');
- * });
- * it('should exercise textarea', function(){
- *   input('input2').enter('Carlos');
- *   expect(binding('input2')).toEqual('"Carlos"');
- * });
- * it('should exercise radio', function(){
- *   expect(binding('input3')).toEqual('null');
- *   input('input3').select('A');
- *   expect(binding('input3')).toEqual('"A"');
- *   input('input3').select('B');
- *   expect(binding('input3')).toEqual('"B"');
- * });
- * it('should exercise checkbox', function(){
- *   expect(binding('input4')).toEqual('false');
- *   input('input4').check();
- *   expect(binding('input4')).toEqual('true');
- * });
- * it('should exercise pulldown', function(){
- *   expect(binding('input5')).toEqual('"c"');
- *   select('input5').option('d');
- *   expect(binding('input5')).toEqual('"d"');
- * });
- * it('should exercise multiselect', function(){
- *   expect(binding('input6')).toEqual('[]');
- *   select('input6').options('e');
- *   expect(binding('input6')).toEqual('["e"]');
- *   select('input6').options('e', 'f');
- *   expect(binding('input6')).toEqual('["e","f"]');
- * });
+        it('should exercise text', function(){
+         input('input1').enter('Carlos');
+         expect(binding('input1')).toEqual('"Carlos"');
+        });
+        it('should exercise textarea', function(){
+         input('input2').enter('Carlos');
+         expect(binding('input2')).toEqual('"Carlos"');
+        });
+        it('should exercise radio', function(){
+         expect(binding('input3')).toEqual('null');
+         input('input3').select('A');
+         expect(binding('input3')).toEqual('"A"');
+         input('input3').select('B');
+         expect(binding('input3')).toEqual('"B"');
+        });
+        it('should exercise checkbox', function(){
+         expect(binding('input4')).toEqual('false');
+         input('input4').check();
+         expect(binding('input4')).toEqual('true');
+        });
+        it('should exercise pulldown', function(){
+         expect(binding('input5')).toEqual('"c"');
+         select('input5').option('d');
+         expect(binding('input5')).toEqual('"d"');
+        });
+        it('should exercise multiselect', function(){
+         expect(binding('input6')).toEqual('[]');
+         select('input6').options('e');
+         expect(binding('input6')).toEqual('["e"]');
+         select('input6').options('e', 'f');
+         expect(binding('input6')).toEqual('["e","f"]');
+        });
+      </doc:scenario>
+    </doc:example>
  */
 
 function modelAccessor(scope, element) {
@@ -193,26 +198,29 @@ function compileFormatter(expr) {
  * @element INPUT
  * @css ng-validation-error
  *
- * @exampleDescription
+ * @example
  * This example shows how the input element becomes red when it contains invalid input. Correct
  * the input to make the error disappear.
  *
- * @example
-    I don't validate:
-    <input type="text" name="value" value="NotANumber"><br/>
+    <doc:example>
+      <doc:source>
+        I don't validate:
+        <input type="text" name="value" value="NotANumber"><br/>
 
-    I need an integer or nothing:
-    <input type="text" name="value" ng:validate="integer"><br/>
- *
- * @scenario
-   it('should check ng:validate', function(){
-     expect(element('.doc-example-live :input:last').attr('className')).
-       toMatch(/ng-validation-error/);
+        I need an integer or nothing:
+        <input type="text" name="value" ng:validate="integer"><br/>
+      </doc:source>
+      <doc:scenario>
+         it('should check ng:validate', function(){
+           expect(element('.doc-example-live :input:last').attr('className')).
+             toMatch(/ng-validation-error/);
 
-     input('value').enter('123');
-     expect(element('.doc-example-live :input:last').attr('className')).
-       not().toMatch(/ng-validation-error/);
-   });
+           input('value').enter('123');
+           expect(element('.doc-example-live :input:last').attr('className')).
+             not().toMatch(/ng-validation-error/);
+         });
+      </doc:scenario>
+    </doc:example>
  */
 /**
  * @workInProgress
@@ -226,19 +234,22 @@ function compileFormatter(expr) {
  * @element INPUT
  * @css ng-validation-error
  *
- * @exampleDescription
+ * @example
  * This example shows how the input element becomes red when it contains invalid input. Correct
  * the input to make the error disappear.
  *
- * @example
-    I cannot be blank: <input type="text" name="value" ng:required><br/>
- *
- * @scenario
-   it('should check ng:required', function(){
-     expect(element('.doc-example-live :input').attr('className')).toMatch(/ng-validation-error/);
-     input('value').enter('123');
-     expect(element('.doc-example-live :input').attr('className')).not().toMatch(/ng-validation-error/);
-   });
+    <doc:example>
+      <doc:source>
+        I cannot be blank: <input type="text" name="value" ng:required><br/>
+      </doc:source>
+      <doc:scenario>
+       it('should check ng:required', function(){
+         expect(element('.doc-example-live :input').attr('className')).toMatch(/ng-validation-error/);
+         input('value').enter('123');
+         expect(element('.doc-example-live :input').attr('className')).not().toMatch(/ng-validation-error/);
+       });
+      </doc:scenario>
+    </doc:example>
  */
 /**
  * @workInProgress
@@ -256,21 +267,24 @@ function compileFormatter(expr) {
  *
  * @element INPUT
  *
- * @exampleDescription
+ * @example
  * This example shows how the user input is converted from a string and internally represented as an
  * array.
  *
- * @example
-    Enter a comma separated list of items:
-    <input type="text" name="list" ng:format="list" value="table, chairs, plate">
-    <pre>list={{list}}</pre>
- *
- * @scenario
-   it('should check ng:format', function(){
-     expect(binding('list')).toBe('list=["table","chairs","plate"]');
-     input('list').enter(',,, a ,,,');
-     expect(binding('list')).toBe('list=["a"]');
-   });
+    <doc:example>
+      <doc:source>
+        Enter a comma separated list of items:
+        <input type="text" name="list" ng:format="list" value="table, chairs, plate">
+        <pre>list={{list}}</pre>
+      </doc:source>
+      <doc:scenario>
+       it('should check ng:format', function(){
+         expect(binding('list')).toBe('list=["table","chairs","plate"]');
+         input('list').enter(',,, a ,,,');
+         expect(binding('list')).toBe('list=["a"]');
+       });
+      </doc:scenario>
+    </doc:example>
  */
 function valueAccessor(scope, element) {
   var validatorName = element.attr('ng:validate') || NOOP,
@@ -453,28 +467,32 @@ function radioInit(model, view, element) {
  * @element INPUT
  * @param {expression} expression to execute.
  *
- * @exampleDescription
  * @example
-    <div ng:init="checkboxCount=0; textCount=0"></div>
-    <input type="text" name="text" ng:change="textCount = 1 + textCount">
-       changeCount {{textCount}}<br/>
-    <input type="checkbox" name="checkbox" ng:change="checkboxCount = 1 + checkboxCount">
-       changeCount {{checkboxCount}}<br/>
- *
- * @scenario
-   it('should check ng:change', function(){
-     expect(binding('textCount')).toBe('0');
-     expect(binding('checkboxCount')).toBe('0');
+ * @example
+    <doc:example>
+      <doc:source>
+        <div ng:init="checkboxCount=0; textCount=0"></div>
+        <input type="text" name="text" ng:change="textCount = 1 + textCount">
+           changeCount {{textCount}}<br/>
+        <input type="checkbox" name="checkbox" ng:change="checkboxCount = 1 + checkboxCount">
+           changeCount {{checkboxCount}}<br/>
+      </doc:source>
+      <doc:scenario>
+         it('should check ng:change', function(){
+           expect(binding('textCount')).toBe('0');
+           expect(binding('checkboxCount')).toBe('0');
 
-     using('.doc-example-live').input('text').enter('abc');
-     expect(binding('textCount')).toBe('1');
-     expect(binding('checkboxCount')).toBe('0');
+           using('.doc-example-live').input('text').enter('abc');
+           expect(binding('textCount')).toBe('1');
+           expect(binding('checkboxCount')).toBe('0');
 
 
-     using('.doc-example-live').input('checkbox').check();
-     expect(binding('textCount')).toBe('1');
-     expect(binding('checkboxCount')).toBe('1');
-   });
+           using('.doc-example-live').input('checkbox').check();
+           expect(binding('textCount')).toBe('1');
+           expect(binding('checkboxCount')).toBe('1');
+         });
+      </doc:scenario>
+    </doc:example>
  */
 function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
   return injectService(['$updateView', '$defer'], function($updateView, $defer, element) {
@@ -594,27 +612,31 @@ angularWidget('option', function(){
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @example
- *   <select name="url">
- *    <option value="angular.filter.date.html">date filter</option>
- *    <option value="angular.filter.html.html">html filter</option>
- *    <option value="">(blank)</option>
- *   </select>
- *   <tt>url = <a href="{{url}}">{{url}}</a></tt>
- *   <hr/>
- *   <ng:include src="url"></ng:include>
- *
- * @scenario
- * it('should load date filter', function(){
- *   expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.date/);
- * });
- * it('should change to hmtl filter', function(){
- *   select('url').option('angular.filter.html.html');
- *   expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.html/);
- * });
- * it('should change to blank', function(){
- *   select('url').option('(blank)');
- *   expect(element('.doc-example ng\\:include').text()).toEqual('');
- * });
+    <doc:example>
+      <doc:source>
+       <select name="url">
+        <option value="angular.filter.date.html">date filter</option>
+        <option value="angular.filter.html.html">html filter</option>
+        <option value="">(blank)</option>
+       </select>
+       <tt>url = <a href="{{url}}">{{url}}</a></tt>
+       <hr/>
+       <ng:include src="url"></ng:include>
+      </doc:source>
+      <doc:scenario>
+        it('should load date filter', function(){
+         expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.date/);
+        });
+        it('should change to hmtl filter', function(){
+         select('url').option('angular.filter.html.html');
+         expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.html/);
+        });
+        it('should change to blank', function(){
+         select('url').option('(blank)');
+         expect(element('.doc-example ng\\:include').text()).toEqual('');
+        });
+      </doc:scenario>
+    </doc:example>
  */
 angularWidget('ng:include', function(element){
   var compiler = this,
@@ -690,32 +712,36 @@ angularWidget('ng:include', function(element){
  * * `ng:switch-default`: the default case when no other casses match.
  *
  * @example
-    <select name="switch">
-      <option>settings</option>
-      <option>home</option>
-      <option>other</option>
-    </select>
-    <tt>switch={{switch}}</tt>
-    </hr>
-    <ng:switch on="switch" >
-      <div ng:switch-when="settings">Settings Div</div>
-      <span ng:switch-when="home">Home Span</span>
-      <span ng:switch-default>default</span>
-    </ng:switch>
-    </code>
- *
- * @scenario
- * it('should start in settings', function(){
- *   expect(element('.doc-example ng\\:switch').text()).toEqual('Settings Div');
- * });
- * it('should change to home', function(){
- *   select('switch').option('home');
- *   expect(element('.doc-example ng\\:switch').text()).toEqual('Home Span');
- * });
- * it('should select deafault', function(){
- *   select('switch').option('other');
- *   expect(element('.doc-example ng\\:switch').text()).toEqual('default');
- * });
+    <doc:example>
+      <doc:source>
+        <select name="switch">
+          <option>settings</option>
+          <option>home</option>
+          <option>other</option>
+        </select>
+        <tt>switch={{switch}}</tt>
+        </hr>
+        <ng:switch on="switch" >
+          <div ng:switch-when="settings">Settings Div</div>
+          <span ng:switch-when="home">Home Span</span>
+          <span ng:switch-default>default</span>
+        </ng:switch>
+        </code>
+      </doc:source>
+      <doc:scenario>
+        it('should start in settings', function(){
+         expect(element('.doc-example ng\\:switch').text()).toEqual('Settings Div');
+        });
+        it('should change to home', function(){
+         select('switch').option('home');
+         expect(element('.doc-example ng\\:switch').text()).toEqual('Home Span');
+        });
+        it('should select deafault', function(){
+         select('switch').option('other');
+         expect(element('.doc-example ng\\:switch').text()).toEqual('default');
+        });
+      </doc:scenario>
+    </doc:example>
  */
 var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,
@@ -838,25 +864,29 @@ angularWidget('a', function() {
  *
  *     For example: `(name, age) in {'adam':10, 'amalie':12}`.
  *
- * @exampleDescription
+ * @example
  * This example initializes the scope to a list of names and
  * than uses `ng:repeat` to display every person.
- * @example
-    <div ng:init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">
-      I have {{friends.length}} friends. They are:
-      <ul>
-        <li ng:repeat="friend in friends">
-          [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
-        </li>
-      </ul>
-    </div>
- * @scenario
-   it('should check ng:repeat', function(){
-     var r = using('.doc-example-live').repeater('ul li');
-     expect(r.count()).toBe(2);
-     expect(r.row(0)).toEqual(["1","John","25"]);
-     expect(r.row(1)).toEqual(["2","Mary","28"]);
-   });
+    <doc:example>
+      <doc:source>
+        <div ng:init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">
+          I have {{friends.length}} friends. They are:
+          <ul>
+            <li ng:repeat="friend in friends">
+              [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
+            </li>
+          </ul>
+        </div>
+      </doc:source>
+      <doc:scenario>
+         it('should check ng:repeat', function(){
+           var r = using('.doc-example-live').repeater('ul li');
+           expect(r.count()).toBe(2);
+           expect(r.row(0)).toEqual(["1","John","25"]);
+           expect(r.row(1)).toEqual(["2","Mary","28"]);
+         });
+      </doc:scenario>
+    </doc:example>
  */
 angularWidget("@ng:repeat", function(expression, element){
   element.removeAttr('ng:repeat');
@@ -946,20 +976,24 @@ angularWidget("@ng:repeat", function(expression, element){
  *
  * @element ANY
  *
- * @exampleDescription
+ * @example
  * In this example there are two location where a siple binding (`{{}}`) is present, but the one
  * wrapped in `ng:non-bindable` is left alone.
  *
  * @example
-    <div>Normal: {{1 + 2}}</div>
-    <div ng:non-bindable>Ignored: {{1 + 2}}</div>
- *
- * @scenario
-   it('should check ng:non-bindable', function(){
-     expect(using('.doc-example-live').binding('1 + 2')).toBe('3');
-     expect(using('.doc-example-live').element('div:last').text()).
-       toMatch(/1 \+ 2/);
-   });
+    <doc:example>
+      <doc:source>
+        <div>Normal: {{1 + 2}}</div>
+        <div ng:non-bindable>Ignored: {{1 + 2}}</div>
+      </doc:source>
+      <doc:scenario>
+       it('should check ng:non-bindable', function(){
+         expect(using('.doc-example-live').binding('1 + 2')).toBe('3');
+         expect(using('.doc-example-live').element('div:last').text()).
+           toMatch(/1 \+ 2/);
+       });
+      </doc:scenario>
+    </doc:example>
  */
 angularWidget("@ng:non-bindable", noop);
 
@@ -989,26 +1023,30 @@ angularWidget("@ng:non-bindable", noop);
  * - doesn't require `$route` service to be available on the root scope
  *
  *
- * # Example
- * Because of the nature of this widget, we can't include the usual live example for it. Instead
- * following is a code snippet showing the typical usage:
- *
-   <pre>
-     <script>
-       angular.service('routeConfig', function($route) {
-         $route.when('/foo', {controller: MyCtrl, template: 'foo.html'});
-         $route.when('/bar', {controller: MyCtrl, template: 'bar.html'});
-       }, {$inject: ['$route'],  $eager: true});
+ * @example
+    <doc:example>
+      <doc:source>
+         <script>
+           function MyCtrl($route) {
+             $route.when('/overview', {controller: OverviewCtrl, template: 'guide.overview.html'});
+             $route.when('/bootstrap', {controller: BootstrapCtrl, template: 'guide.bootstrap.html'});
+             console.log(window.$route = $route);
+           };
+           MyCtrl.$inject = ['$route'];
 
-       function MyCtrl() {};
-     </script>
-     <div>
-       <a href="#/foo">foo</a> | <a href="#/bar">bar</a> | <a href="#/undefined">undefined</a><br/>
-       The view is included below:
-       <hr/>
-       <ng:view></ng:view>
-     </div>
-   </pre>
+           function BootstrapCtrl(){}
+           function OverviewCtrl(){}
+         </script>
+         <div ng:controller="MyCtrl">
+           <a href="#/overview">overview</a> | <a href="#/bootstrap">bootstrap</a> | <a href="#/undefined">undefined</a><br/>
+           The view is included below:
+           <hr/>
+           <ng:view></ng:view>
+         </div>
+      </doc:source>
+      <doc:scenario>
+      </doc:scenario>
+    </doc:example>
  */
 angularWidget('ng:view', function(element) {
   var compiler = this;

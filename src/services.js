@@ -22,8 +22,19 @@ function angularServiceInject(name, fn, inject, eager) {
  * suffer from window globality.
  *
  * @example
+<<<<<<< HEAD
    <input ng:init="$window = $service('$window'); greeting='Hello World!'" type="text" name="greeting" />
    <button ng:click="$window.alert(greeting)">ALERT</button>
+=======
+   <doc:example>
+     <doc:source>
+       <input ng:init="greeting='Hello World!'" type="text" name="greeting" />
+       <button ng:click="$window.alert(greeting)">ALERT</button>
+     </doc:source>
+     <doc:scenario>
+     </doc:scenario>
+   </doc:example>
+>>>>>>> changed the documentation @example to use <doc:example>
  */
 angularServiceInject("$window", bind(window, identity, window), [], EAGER);
 
@@ -63,10 +74,16 @@ angularServiceInject("$document", function(window){
  * Notice that using browser's forward/back buttons changes the $location.
  *
  * @example
-   <a href="#">clear hash</a> |
-   <a href="#myPath?name=misko">test hash</a><br/>
-   <input type='text' name="$location.hash"/>
-   <pre>$location = {{$location}}</pre>
+   <doc:example>
+     <doc:source>
+       <a href="#">clear hash</a> |
+       <a href="#myPath?name=misko">test hash</a><br/>
+       <input type='text' name="$location.hash"/>
+       <pre>$location = {{$location}}</pre>
+     </doc:source>
+     <doc:scenario>
+     </doc:scenario>
+    </doc:example>
  */
 angularServiceInject("$location", function($browser) {
   var scope = this,
@@ -98,9 +115,15 @@ angularServiceInject("$location", function($browser) {
    * Browser is updated at the end of $eval()
    *
    * @example
-   * scope.$location.update('http://www.angularjs.org/path#hash?search=x');
-   * scope.$location.update({host: 'www.google.com', protocol: 'https'});
-   * scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
+    <doc:example>
+      <doc:source>
+        scope.$location.update('http://www.angularjs.org/path#hash?search=x');
+        scope.$location.update({host: 'www.google.com', protocol: 'https'});
+        scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
+      </doc:source>
+      <doc:scenario>
+      </doc:scenario>
+    </doc:example>
    *
    * @param {(string|Object)} href Full href as a string or object with properties
    */
@@ -133,14 +156,18 @@ angularServiceInject("$location", function($browser) {
    * @see update()
    *
    * @example
-   * scope.$location.updateHash('/hp')
-   *   ==> update({hashPath: '/hp'})
-   *
-   * scope.$location.updateHash({a: true, b: 'val'})
-   *   ==> update({hashSearch: {a: true, b: 'val'}})
-   *
-   * scope.$location.updateHash('/hp', {a: true})
-   *   ==> update({hashPath: '/hp', hashSearch: {a: true}})
+    <doc:example>
+      <doc:source>
+        scope.$location.updateHash('/hp')
+         ==> update({hashPath: '/hp'})
+        scope.$location.updateHash({a: true, b: 'val'})
+         ==> update({hashSearch: {a: true, b: 'val'}})
+        scope.$location.updateHash('/hp', {a: true})
+         ==> update({hashPath: '/hp', hashSearch: {a: true}})
+      </doc:source>
+      <doc:scenario>
+      </doc:scenario>
+    </doc:example>
    *
    * @param {(string|Object)} path A hashPath or hashSearch object
    * @param {Object=} search A hashSearch object
@@ -176,7 +203,9 @@ angularServiceInject("$location", function($browser) {
    * - everything else
    *
    * @example
-   * scope.$location.href = 'http://www.angularjs.org/path#a/b'
+   * <pre>
+   *   scope.$location.href = 'http://www.angularjs.org/path#a/b'
+   * </pre>
    * immediately after this call, other properties are still the old ones...
    *
    * This method checks the changes and update location to the consistent state
@@ -298,13 +327,19 @@ angularServiceInject("$location", function($browser) {
  * The main purpose of this service is to simplify debugging and troubleshooting.
  *
  * @example
-   <p>Reload this page with open console, enter text and hit the log button...</p>
-   Message:
-   <input type="text" name="message" value="Hello World!"/>
-   <button ng:click="$log.log(message)">log</button>
-   <button ng:click="$log.warn(message)">warn</button>
-   <button ng:click="$log.info(message)">info</button>
-   <button ng:click="$log.error(message)">error</button>
+    <doc:example>
+      <doc:source>
+         <p>Reload this page with open console, enter text and hit the log button...</p>
+         Message:
+         <input type="text" name="message" value="Hello World!"/>
+         <button ng:click="$log.log(message)">log</button>
+         <button ng:click="$log.warn(message)">warn</button>
+         <button ng:click="$log.info(message)">info</button>
+         <button ng:click="$log.error(message)">error</button>
+      </doc:source>
+      <doc:scenario>
+      </doc:scenario>
+    </doc:example>
  */
 var $logFactory; //reference to be used only in tests
 angularServiceInject("$log", $logFactory = function($window){
@@ -622,42 +657,46 @@ function switchRouteMatcher(on, when, dstName) {
  * widget.
  *
  * @example
-<p>
-  This example shows how changing the URL hash causes the <tt>$route</tt>
-  to match a route against the URL, and the <tt>[[ng:include]]</tt> pulls in the partial.
-  Try changing the URL in the input box to see changes.
-</p>
+   This example shows how changing the URL hash causes the <tt>$route</tt>
+   to match a route against the URL, and the <tt>[[ng:include]]</tt> pulls in the partial.
+   Try changing the URL in the input box to see changes.
 
-<script>
-  angular.service('myApp', function($route) {
-    $route.when('/Book/:bookId', {template:'rsrc/book.html', controller:BookCntl});
-    $route.when('/Book/:bookId/ch/:chapterId', {template:'rsrc/chapter.html', controller:ChapterCntl});
-    $route.onChange(function() {
-      $route.current.scope.params = $route.current.params;
-    });
-  }, {$inject: ['$route']});
+    <doc:example>
+      <doc:source>
+        <script>
+          angular.service('myApp', function($route) {
+            $route.when('/Book/:bookId', {template:'rsrc/book.html', controller:BookCntl});
+            $route.when('/Book/:bookId/ch/:chapterId', {template:'rsrc/chapter.html', controller:ChapterCntl});
+            $route.onChange(function() {
+              $route.current.scope.params = $route.current.params;
+            });
+          }, {$inject: ['$route']});
 
-  function BookCntl() {
-    this.name = "BookCntl";
-  }
+          function BookCntl() {
+            this.name = "BookCntl";
+          }
 
-  function ChapterCntl() {
-    this.name = "ChapterCntl";
-  }
-</script>
+          function ChapterCntl() {
+            this.name = "ChapterCntl";
+          }
+        </script>
 
-Chose:
-<a href="#/Book/Moby">Moby</a> |
-<a href="#/Book/Moby/ch/1">Moby: Ch1</a> |
-<a href="#/Book/Gatsby">Gatsby</a> |
-<a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
-<input type="text" name="$location.hashPath" size="80" />
-<pre>$location={{$location}}</pre>
-<pre>$route.current.template={{$route.current.template}}</pre>
-<pre>$route.current.params={{$route.current.params}}</pre>
-<pre>$route.current.scope.name={{$route.current.scope.name}}</pre>
-<hr/>
-<ng:include src="$route.current.template" scope="$route.current.scope"/>
+        Chose:
+        <a href="#/Book/Moby">Moby</a> |
+        <a href="#/Book/Moby/ch/1">Moby: Ch1</a> |
+        <a href="#/Book/Gatsby">Gatsby</a> |
+        <a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
+        <input type="text" name="$location.hashPath" size="80" />
+        <pre>$location={{$location}}</pre>
+        <pre>$route.current.template={{$route.current.template}}</pre>
+        <pre>$route.current.params={{$route.current.params}}</pre>
+        <pre>$route.current.scope.name={{$route.current.scope.name}}</pre>
+        <hr/>
+        <ng:include src="$route.current.template" scope="$route.current.scope"/>
+      </doc:source>
+      <doc:scenario>
+      </doc:scenario>
+    </doc:example>
  */
 angularServiceInject('$route', function(location) {
   var routes = {},
@@ -1122,43 +1161,49 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
  * @returns {Object} A resource "class".
  *
  * @example
-   <script>
-     function BuzzController($resource) {
-       this.Activity = $resource(
-         'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
-         {alt:'json', callback:'JSON_CALLBACK'},
-         {get:{method:'JSON', params:{visibility:'@self'}}, replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}}
-       );
-     }
+    <doc:example>
+      <doc:source>
+       <script>
+         function BuzzController($resource) {
+           this.Activity = $resource(
+             'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
+             {alt:'json', callback:'JSON_CALLBACK'},
+             {get:{method:'JSON', params:{visibility:'@self'}}, replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}}
+           );
+         }
 
-     BuzzController.prototype = {
-       fetch: function() {
-         this.activities = this.Activity.get({userId:this.userId});
-       },
-       expandReplies: function(activity) {
-         activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
-       }
-     };
-     BuzzController.$inject = ['$resource'];
-   </script>
+         BuzzController.prototype = {
+           fetch: function() {
+             this.activities = this.Activity.get({userId:this.userId});
+           },
+           expandReplies: function(activity) {
+             activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id});
+           }
+         };
+         BuzzController.$inject = ['$resource'];
+       </script>
 
-   <div ng:controller="BuzzController">
-     <input name="userId" value="googlebuzz"/>
-     <button ng:click="fetch()">fetch</button>
-     <hr/>
-     <div ng:repeat="item in activities.data.items">
-       <h1 style="font-size: 15px;">
-         <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-         <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-         <a href ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
-       </h1>
-       {{item.object.content | html}}
-       <div ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
-         <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-         <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
+       <div ng:controller="BuzzController">
+         <input name="userId" value="googlebuzz"/>
+         <button ng:click="fetch()">fetch</button>
+         <hr/>
+         <div ng:repeat="item in activities.data.items">
+           <h1 style="font-size: 15px;">
+             <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+             <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+             <a href ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
+           </h1>
+           {{item.object.content | html}}
+           <div ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+             <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+             <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
+           </div>
+         </div>
        </div>
-     </div>
-   </div>
+      </doc:source>
+      <doc:scenario>
+      </doc:scenario>
+    </doc:example>
  */
 angularServiceInject('$resource', function($xhr){
   var resource = new ResourceFactory($xhr);

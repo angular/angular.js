@@ -79,22 +79,26 @@ var angularArray = {
    * @returns {number} The position of the element in `array`. The position is 0-based. `-1` is returned if the value can't be found.
    *
    * @example
-     <div ng:init="books = ['Moby Dick', 'Great Gatsby', 'Romeo and Juliet']"></div>
-     <input name='bookName' value='Romeo and Juliet'> <br>
-     Index of '{{bookName}}' in the list {{books}} is <em>{{books.$indexOf(bookName)}}</em>.
+      <doc:example>
+        <doc:source>
+         <div ng:init="books = ['Moby Dick', 'Great Gatsby', 'Romeo and Juliet']"></div>
+         <input name='bookName' value='Romeo and Juliet'> <br>
+         Index of '{{bookName}}' in the list {{books}} is <em>{{books.$indexOf(bookName)}}</em>.
+        </doc:source>
+        <doc:scenario>
+         it('should correctly calculate the initial index', function() {
+           expect(binding('books.$indexOf(bookName)')).toBe('2');
+         });
 
-     @scenario
-     it('should correctly calculate the initial index', function() {
-       expect(binding('books.$indexOf(bookName)')).toBe('2');
-     });
+         it('should recalculate', function() {
+           input('bookName').enter('foo');
+           expect(binding('books.$indexOf(bookName)')).toBe('-1');
 
-     it('should recalculate', function() {
-       input('bookName').enter('foo');
-       expect(binding('books.$indexOf(bookName)')).toBe('-1');
-
-       input('bookName').enter('Moby Dick');
-       expect(binding('books.$indexOf(bookName)')).toBe('0');
-     });
+           input('bookName').enter('Moby Dick');
+           expect(binding('books.$indexOf(bookName)')).toBe('0');
+         });
+        </doc:scenario>
+      </doc:example>
    */
   'indexOf': indexOf,
 
@@ -117,42 +121,46 @@ var angularArray = {
    * @returns {number} Sum of items in the array.
    *
    * @example
-     <table ng:init="invoice= {items:[{qty:10, description:'gadget', cost:9.95}]}">
-       <tr><th>Qty</th><th>Description</th><th>Cost</th><th>Total</th><th></th></tr>
-       <tr ng:repeat="item in invoice.items">
-         <td><input name="item.qty" value="1" size="4" ng:required ng:validate="integer"></td>
-        <td><input name="item.description"></td>
-          <td><input name="item.cost" value="0.00" ng:required ng:validate="number" size="6"></td>
-         <td>{{item.qty * item.cost | currency}}</td>
-         <td>[<a href ng:click="invoice.items.$remove(item)">X</a>]</td>
-       </tr>
-       <tr>
-         <td><a href ng:click="invoice.items.$add()">add item</a></td>
-         <td></td>
-         <td>Total:</td>
-         <td>{{invoice.items.$sum('qty*cost') | currency}}</td>
-       </tr>
-     </table>
+      <doc:example>
+        <doc:source>
+         <table ng:init="invoice= {items:[{qty:10, description:'gadget', cost:9.95}]}">
+           <tr><th>Qty</th><th>Description</th><th>Cost</th><th>Total</th><th></th></tr>
+           <tr ng:repeat="item in invoice.items">
+             <td><input name="item.qty" value="1" size="4" ng:required ng:validate="integer"></td>
+            <td><input name="item.description"></td>
+              <td><input name="item.cost" value="0.00" ng:required ng:validate="number" size="6"></td>
+             <td>{{item.qty * item.cost | currency}}</td>
+             <td>[<a href ng:click="invoice.items.$remove(item)">X</a>]</td>
+           </tr>
+           <tr>
+             <td><a href ng:click="invoice.items.$add()">add item</a></td>
+             <td></td>
+             <td>Total:</td>
+             <td>{{invoice.items.$sum('qty*cost') | currency}}</td>
+           </tr>
+         </table>
+        </doc:source>
+        <doc:scenario>
+         //TODO: these specs are lame because I had to work around issues #164 and #167
+         it('should initialize and calculate the totals', function() {
+           expect(repeater('.doc-example-live table tr', 'item in invoice.items').count()).toBe(3);
+           expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(1)).
+             toEqual(['$99.50']);
+           expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
+           expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
+         });
 
-     @scenario
-     //TODO: these specs are lame because I had to work around issues #164 and #167
-     it('should initialize and calculate the totals', function() {
-       expect(repeater('.doc-example-live table tr', 'item in invoice.items').count()).toBe(3);
-       expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(1)).
-         toEqual(['$99.50']);
-       expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
-       expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
-     });
+         it('should add an entry and recalculate', function() {
+           element('.doc-example a:contains("add item")').click();
+           using('.doc-example-live tr:nth-child(3)').input('item.qty').enter('20');
+           using('.doc-example-live tr:nth-child(3)').input('item.cost').enter('100');
 
-     it('should add an entry and recalculate', function() {
-       element('.doc-example a:contains("add item")').click();
-       using('.doc-example-live tr:nth-child(3)').input('item.qty').enter('20');
-       using('.doc-example-live tr:nth-child(3)').input('item.cost').enter('100');
-
-       expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(2)).
-         toEqual(['$2,000.00']);
-       expect(binding("invoice.items.$sum('qty*cost')")).toBe('$2,099.50');
-     });
+           expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(2)).
+             toEqual(['$2,000.00']);
+           expect(binding("invoice.items.$sum('qty*cost')")).toBe('$2,099.50');
+         });
+        </doc:scenario>
+      </doc:example>
    */
   'sum':function(array, expression) {
     var fn = angular['Function']['compile'](expression);
@@ -185,33 +193,37 @@ var angularArray = {
    * @returns {*} The removed element.
    *
    * @example
-     <ul ng:init="tasks=['Learn Angular', 'Read Documentation',
-                         'Check out demos', 'Build cool applications']">
-       <li ng:repeat="task in tasks">
-         {{task}} [<a href="" ng:click="tasks.$remove(task)">X</a>]
-       </li>
-     </ul>
-     <hr/>
-     tasks = {{tasks}}
+     <doc:example>
+       <doc:source>
+         <ul ng:init="tasks=['Learn Angular', 'Read Documentation',
+                             'Check out demos', 'Build cool applications']">
+           <li ng:repeat="task in tasks">
+             {{task}} [<a href="" ng:click="tasks.$remove(task)">X</a>]
+           </li>
+         </ul>
+         <hr/>
+         tasks = {{tasks}}
+       </doc:source>
+       <doc:scenario>
+         it('should initialize the task list with for tasks', function() {
+           expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(4);
+           expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
+             toEqual(['Learn Angular', 'Read Documentation', 'Check out demos',
+                      'Build cool applications']);
+         });
 
-     @scenario
-     it('should initialize the task list with for tasks', function() {
-       expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(4);
-       expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
-         toEqual(['Learn Angular', 'Read Documentation', 'Check out demos',
-                  'Build cool applications']);
-     });
+         it('should initialize the task list with for tasks', function() {
+           element('.doc-example ul li a:contains("X"):first').click();
+           expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(3);
 
-     it('should initialize the task list with for tasks', function() {
-       element('.doc-example ul li a:contains("X"):first').click();
-       expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(3);
+           element('.doc-example ul li a:contains("X"):last').click();
+           expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(2);
 
-       element('.doc-example ul li a:contains("X"):last').click();
-       expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(2);
-
-       expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
-         toEqual(['Read Documentation', 'Check out demos']);
-     });
+           expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
+             toEqual(['Read Documentation', 'Check out demos']);
+         });
+       </doc:scenario>
+     </doc:example>
    */
   'remove':function(array, value) {
     var index = indexOf(array, value);
@@ -254,48 +266,52 @@ var angularArray = {
    *     the predicate returned true for.
    *
    * @example
-     <div ng:init="friends = [{name:'John', phone:'555-1276'},
-                              {name:'Mary', phone:'800-BIG-MARY'},
-                              {name:'Mike', phone:'555-4321'},
-                              {name:'Adam', phone:'555-5678'},
-                              {name:'Julie', phone:'555-8765'}]"></div>
+     <doc:example>
+       <doc:source>
+         <div ng:init="friends = [{name:'John', phone:'555-1276'},
+                                  {name:'Mary', phone:'800-BIG-MARY'},
+                                  {name:'Mike', phone:'555-4321'},
+                                  {name:'Adam', phone:'555-5678'},
+                                  {name:'Julie', phone:'555-8765'}]"></div>
 
-     Search: <input name="searchText"/>
-     <table id="searchTextResults">
-       <tr><th>Name</th><th>Phone</th><tr>
-       <tr ng:repeat="friend in friends.$filter(searchText)">
-         <td>{{friend.name}}</td>
-         <td>{{friend.phone}}</td>
-       <tr>
-     </table>
-     <hr>
-     Any: <input name="search.$"/> <br>
-     Name only <input name="search.name"/><br>
-     Phone only <input name="search.phone"/><br>
-     <table id="searchObjResults">
-       <tr><th>Name</th><th>Phone</th><tr>
-       <tr ng:repeat="friend in friends.$filter(search)">
-         <td>{{friend.name}}</td>
-         <td>{{friend.phone}}</td>
-       <tr>
-     </table>
+         Search: <input name="searchText"/>
+         <table id="searchTextResults">
+           <tr><th>Name</th><th>Phone</th><tr>
+           <tr ng:repeat="friend in friends.$filter(searchText)">
+             <td>{{friend.name}}</td>
+             <td>{{friend.phone}}</td>
+           <tr>
+         </table>
+         <hr>
+         Any: <input name="search.$"/> <br>
+         Name only <input name="search.name"/><br>
+         Phone only <input name="search.phone"/><br>
+         <table id="searchObjResults">
+           <tr><th>Name</th><th>Phone</th><tr>
+           <tr ng:repeat="friend in friends.$filter(search)">
+             <td>{{friend.name}}</td>
+             <td>{{friend.phone}}</td>
+           <tr>
+         </table>
+       </doc:source>
+       <doc:scenario>
+         it('should search across all fields when filtering with a string', function() {
+           input('searchText').enter('m');
+           expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
+             toEqual(['Mary', 'Mike', 'Adam']);
 
-     @scenario
-     it('should search across all fields when filtering with a string', function() {
-       input('searchText').enter('m');
-       expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
-         toEqual(['Mary', 'Mike', 'Adam']);
+           input('searchText').enter('76');
+           expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
+             toEqual(['John', 'Julie']);
+         });
 
-       input('searchText').enter('76');
-       expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
-         toEqual(['John', 'Julie']);
-     });
-
-     it('should search in specific fields when filtering with a predicate object', function() {
-       input('search.$').enter('i');
-       expect(repeater('#searchObjResults tr', 'friend in friends').column('name')).
-         toEqual(['Mary', 'Mike', 'Julie']);
-     });
+         it('should search in specific fields when filtering with a predicate object', function() {
+           input('search.$').enter('i');
+           expect(repeater('#searchObjResults tr', 'friend in friends').column('name')).
+             toEqual(['Mary', 'Mike', 'Julie']);
+         });
+       </doc:scenario>
+     </doc:example>
    */
   'filter':function(array, expression) {
     var predicates = [];
@@ -398,53 +414,55 @@ var angularArray = {
    *
    * @TODO simplify the example.
    *
-   * @exampleDescription
+   * @example
    * This example shows how an initially empty array can be filled with objects created from user
    * input via the `$add` method.
-   *
-   * @example
-     [<a href="" ng:click="people.$add()">add empty</a>]
-     [<a href="" ng:click="people.$add({name:'John', sex:'male'})">add 'John'</a>]
-     [<a href="" ng:click="people.$add({name:'Mary', sex:'female'})">add 'Mary'</a>]
+     <doc:example>
+       <doc:source>
+         [<a href="" ng:click="people.$add()">add empty</a>]
+         [<a href="" ng:click="people.$add({name:'John', sex:'male'})">add 'John'</a>]
+         [<a href="" ng:click="people.$add({name:'Mary', sex:'female'})">add 'Mary'</a>]
 
-     <ul ng:init="people=[]">
-       <li ng:repeat="person in people">
-         <input name="person.name">
-         <select name="person.sex">
-           <option value="">--chose one--</option>
-           <option>male</option>
-           <option>female</option>
-         </select>
-         [<a href="" ng:click="people.$remove(person)">X</a>]
-       </li>
-     </ul>
-     <pre>people = {{people}}</pre>
+         <ul ng:init="people=[]">
+           <li ng:repeat="person in people">
+             <input name="person.name">
+             <select name="person.sex">
+               <option value="">--chose one--</option>
+               <option>male</option>
+               <option>female</option>
+             </select>
+             [<a href="" ng:click="people.$remove(person)">X</a>]
+           </li>
+         </ul>
+         <pre>people = {{people}}</pre>
+       </doc:source>
+       <doc:scenario>
+         beforeEach(function() {
+            expect(binding('people')).toBe('people = []');
+         });
 
-     @scenario
-     beforeEach(function() {
-        expect(binding('people')).toBe('people = []');
-     });
+         it('should create an empty record when "add empty" is clicked', function() {
+           element('.doc-example a:contains("add empty")').click();
+           expect(binding('people')).toBe('people = [{\n  "name":"",\n  "sex":null}]');
+         });
 
-     it('should create an empty record when "add empty" is clicked', function() {
-       element('.doc-example a:contains("add empty")').click();
-       expect(binding('people')).toBe('people = [{\n  "name":"",\n  "sex":null}]');
-     });
+         it('should create a "John" record when "add \'John\'" is clicked', function() {
+           element('.doc-example a:contains("add \'John\'")').click();
+           expect(binding('people')).toBe('people = [{\n  "name":"John",\n  "sex":"male"}]');
+         });
 
-     it('should create a "John" record when "add \'John\'" is clicked', function() {
-       element('.doc-example a:contains("add \'John\'")').click();
-       expect(binding('people')).toBe('people = [{\n  "name":"John",\n  "sex":"male"}]');
-     });
+         it('should create a "Mary" record when "add \'Mary\'" is clicked', function() {
+           element('.doc-example a:contains("add \'Mary\'")').click();
+           expect(binding('people')).toBe('people = [{\n  "name":"Mary",\n  "sex":"female"}]');
+         });
 
-     it('should create a "Mary" record when "add \'Mary\'" is clicked', function() {
-       element('.doc-example a:contains("add \'Mary\'")').click();
-       expect(binding('people')).toBe('people = [{\n  "name":"Mary",\n  "sex":"female"}]');
-     });
-
-     it('should delete a record when "X" is clicked', function() {
-        element('.doc-example a:contains("add empty")').click();
-        element('.doc-example li a:contains("X"):first').click();
-        expect(binding('people')).toBe('people = []');
-     });
+         it('should delete a record when "X" is clicked', function() {
+            element('.doc-example a:contains("add empty")').click();
+            element('.doc-example li a:contains("X"):first').click();
+            expect(binding('people')).toBe('people = []');
+         });
+       </doc:scenario>
+     </doc:example>
    */
   'add':function(array, value) {
     array.push(isUndefined(value)? {} : value);
@@ -471,29 +489,33 @@ var angularArray = {
    * @returns {number} Number of elements in the array (for which the condition evaluates to true).
    *
    * @example
-     <pre ng:init="items = [{name:'knife', points:1},
-                            {name:'fork', points:3},
-                            {name:'spoon', points:1}]"></pre>
-     <ul>
-       <li ng:repeat="item in items">
-          {{item.name}}: points=
-          <input type="text" name="item.points"/> <!-- id="item{{$index}} -->
-       </li>
-     </ul>
-     <p>Number of items which have one point: <em>{{ items.$count('points==1') }}</em></p>
-     <p>Number of items which have more than one point: <em>{{items.$count('points&gt;1')}}</em></p>
+     <doc:example>
+       <doc:source>
+         <pre ng:init="items = [{name:'knife', points:1},
+                                {name:'fork', points:3},
+                                {name:'spoon', points:1}]"></pre>
+         <ul>
+           <li ng:repeat="item in items">
+              {{item.name}}: points=
+              <input type="text" name="item.points"/> <!-- id="item{{$index}} -->
+           </li>
+         </ul>
+         <p>Number of items which have one point: <em>{{ items.$count('points==1') }}</em></p>
+         <p>Number of items which have more than one point: <em>{{items.$count('points&gt;1')}}</em></p>
+       </doc:source>
+       <doc:scenario>
+         it('should calculate counts', function() {
+           expect(binding('items.$count(\'points==1\')')).toEqual(2);
+           expect(binding('items.$count(\'points>1\')')).toEqual(1);
+         });
 
-     @scenario
-     it('should calculate counts', function() {
-       expect(binding('items.$count(\'points==1\')')).toEqual(2);
-       expect(binding('items.$count(\'points>1\')')).toEqual(1);
-     });
-
-     it('should recalculate when updated', function() {
-       using('.doc-example li:first-child').input('item.points').enter('23');
-       expect(binding('items.$count(\'points==1\')')).toEqual(1);
-       expect(binding('items.$count(\'points>1\')')).toEqual(2);
-     });
+         it('should recalculate when updated', function() {
+           using('.doc-example li:first-child').input('item.points').enter('23');
+           expect(binding('items.$count(\'points==1\')')).toEqual(1);
+           expect(binding('items.$count(\'points>1\')')).toEqual(2);
+         });
+       </doc:scenario>
+     </doc:example>
    */
   'count':function(array, condition) {
     if (!condition) return array.length;
@@ -535,52 +557,56 @@ var angularArray = {
    * @returns {Array} Sorted copy of the source array.
    *
    * @example
-     <div ng:init="friends = [{name:'John', phone:'555-1212', age:10},
-                              {name:'Mary', phone:'555-9876', age:19},
-                              {name:'Mike', phone:'555-4321', age:21},
-                              {name:'Adam', phone:'555-5678', age:35},
-                              {name:'Julie', phone:'555-8765', age:29}]"></div>
+     <doc:example>
+       <doc:source>
+         <div ng:init="friends = [{name:'John', phone:'555-1212', age:10},
+                                  {name:'Mary', phone:'555-9876', age:19},
+                                  {name:'Mike', phone:'555-4321', age:21},
+                                  {name:'Adam', phone:'555-5678', age:35},
+                                  {name:'Julie', phone:'555-8765', age:29}]"></div>
 
-     <pre>Sorting predicate = {{predicate}}</pre>
-     <hr/>
-     <table ng:init="predicate='-age'">
-       <tr>
-         <th><a href="" ng:click="predicate = 'name'">Name</a>
-             (<a href ng:click="predicate = '-name'">^</a>)</th>
-         <th><a href="" ng:click="predicate = 'phone'">Phone</a>
-             (<a href ng:click="predicate = '-phone'">^</a>)</th>
-         <th><a href="" ng:click="predicate = 'age'">Age</a>
-             (<a href ng:click="predicate = '-age'">^</a>)</th>
-       <tr>
-       <tr ng:repeat="friend in friends.$orderBy(predicate)">
-         <td>{{friend.name}}</td>
-         <td>{{friend.phone}}</td>
-         <td>{{friend.age}}</td>
-       <tr>
-     </table>
+         <pre>Sorting predicate = {{predicate}}</pre>
+         <hr/>
+         <table ng:init="predicate='-age'">
+           <tr>
+             <th><a href="" ng:click="predicate = 'name'">Name</a>
+                 (<a href ng:click="predicate = '-name'">^</a>)</th>
+             <th><a href="" ng:click="predicate = 'phone'">Phone</a>
+                 (<a href ng:click="predicate = '-phone'">^</a>)</th>
+             <th><a href="" ng:click="predicate = 'age'">Age</a>
+                 (<a href ng:click="predicate = '-age'">^</a>)</th>
+           <tr>
+           <tr ng:repeat="friend in friends.$orderBy(predicate)">
+             <td>{{friend.name}}</td>
+             <td>{{friend.phone}}</td>
+             <td>{{friend.age}}</td>
+           <tr>
+         </table>
+       </doc:source>
+       <doc:scenario>
+         it('should be reverse ordered by aged', function() {
+           expect(binding('predicate')).toBe('Sorting predicate = -age');
+           expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
+             toEqual(['35', '29', '21', '19', '10']);
+           expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+             toEqual(['Adam', 'Julie', 'Mike', 'Mary', 'John']);
+         });
 
-     @scenario
-     it('should be reverse ordered by aged', function() {
-       expect(binding('predicate')).toBe('Sorting predicate = -age');
-       expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
-         toEqual(['35', '29', '21', '19', '10']);
-       expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
-         toEqual(['Adam', 'Julie', 'Mike', 'Mary', 'John']);
-     });
+         it('should reorder the table when user selects different predicate', function() {
+           element('.doc-example a:contains("Name")').click();
+           expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+             toEqual(['Adam', 'John', 'Julie', 'Mary', 'Mike']);
+           expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
+             toEqual(['35', '10', '29', '19', '21']);
 
-     it('should reorder the table when user selects different predicate', function() {
-       element('.doc-example a:contains("Name")').click();
-       expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
-         toEqual(['Adam', 'John', 'Julie', 'Mary', 'Mike']);
-       expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
-         toEqual(['35', '10', '29', '19', '21']);
-
-       element('.doc-example a:contains("Phone")+a:contains("^")').click();
-       expect(repeater('.doc-example table', 'friend in friends').column('friend.phone')).
-         toEqual(['555-9876', '555-8765', '555-5678', '555-4321', '555-1212']);
-       expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
-         toEqual(['Mary', 'Julie', 'Adam', 'Mike', 'John']);
-     });
+           element('.doc-example a:contains("Phone")+a:contains("^")').click();
+           expect(repeater('.doc-example table', 'friend in friends').column('friend.phone')).
+             toEqual(['555-9876', '555-8765', '555-5678', '555-4321', '555-1212']);
+           expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+             toEqual(['Mary', 'Julie', 'Adam', 'Mike', 'John']);
+         });
+       </doc:scenario>
+     </doc:example>
    */
   //TODO: WTH is descend param for and how/when it should be used, how is it affected by +/- in
   //      predicate? the code below is impossible to read and specs are not very good.
@@ -648,21 +674,25 @@ var angularArray = {
    * @returns {Array} A new sub-array of length `limit`.
    *
    * @example
-     <div ng:init="numbers = [1,2,3,4,5,6,7,8,9]">
-       Limit [1,2,3,4,5,6,7,8,9] to: <input name="limit" value="3"/>
-       <p>Output: {{ numbers.$limitTo(limit) | json }}</p>
-     </div>
+     <doc:example>
+       <doc:source>
+         <div ng:init="numbers = [1,2,3,4,5,6,7,8,9]">
+           Limit [1,2,3,4,5,6,7,8,9] to: <input name="limit" value="3"/>
+           <p>Output: {{ numbers.$limitTo(limit) | json }}</p>
+         </div>
+       </doc:source>
+       <doc:scenario>
+         it('should limit the numer array to first three items', function() {
+           expect(element('.doc-example input[name=limit]').val()).toBe('3');
+           expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3]');
+         });
 
-   * @scenario
-     it('should limit the numer array to first three items', function() {
-       expect(element('.doc-example input[name=limit]').val()).toBe('3');
-       expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3]');
-     });
-
-     it('should update the output when -3 is entered', function() {
-       input('limit').enter(-3);
-       expect(binding('numbers.$limitTo(limit) | json')).toEqual('[7,8,9]');
-     });
+         it('should update the output when -3 is entered', function() {
+           input('limit').enter(-3);
+           expect(binding('numbers.$limitTo(limit) | json')).toEqual('[7,8,9]');
+         });
+       </doc:scenario>
+     </doc:example>
    */
   limitTo: function(array, limit) {
     limit = parseInt(limit, 10);

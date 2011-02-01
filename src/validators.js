@@ -14,24 +14,27 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * <script> function Cntl(){
-   *   this.ssnRegExp = /^\d\d\d-\d\d-\d\d\d\d$/;
-   * }
-   * </script>
-   * Enter valid SSN:
-   * <div ng:controller="Cntl">
-   * <input name="ssn" value="123-45-6789" ng:validate="regexp:ssnRegExp" >
-   * </div>
-   *
-   * @scenario
-   * it('should invalidate non ssn', function(){
-   *   var textBox = element('.doc-example :input');
-   *   expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
-   *   expect(textBox.val()).toEqual('123-45-6789');
-   *
-   *   input('ssn').enter('123-45-67890');
-   *   expect(textBox.attr('className')).toMatch(/ng-validation-error/);
-   * });
+    <doc:example>
+      <doc:source>
+        <script> function Cntl(){
+         this.ssnRegExp = /^\d\d\d-\d\d-\d\d\d\d$/;
+        }
+        </script>
+        Enter valid SSN:
+        <div ng:controller="Cntl">
+        <input name="ssn" value="123-45-6789" ng:validate="regexp:ssnRegExp" >
+        </div>
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate non ssn', function(){
+         var textBox = element('.doc-example :input');
+         expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
+         expect(textBox.val()).toEqual('123-45-6789');
+         input('ssn').enter('123-45-67890');
+         expect(textBox.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'regexp': function(value, regexp, msg) {
@@ -57,28 +60,29 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * Enter number: <input name="n1" ng:validate="number" > <br>
-   * Enter number greater than 10: <input name="n2" ng:validate="number:10" > <br>
-   * Enter number between 100 and 200: <input name="n3" ng:validate="number:100:200" > <br>
-   *
-   * @scenario
-   * it('should invalidate number', function(){
-   *   var n1 = element('.doc-example :input[name=n1]');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('n1').enter('1.x');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   *
-   *   var n2 = element('.doc-example :input[name=n2]');
-   *   expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('n2').enter('9');
-   *   expect(n2.attr('className')).toMatch(/ng-validation-error/);
-   *
-   *   var n3 = element('.doc-example :input[name=n3]');
-   *   expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('n3').enter('201');
-   *   expect(n3.attr('className')).toMatch(/ng-validation-error/);
-   *
-   * });
+    <doc:example>
+      <doc:source>
+        Enter number: <input name="n1" ng:validate="number" > <br>
+        Enter number greater than 10: <input name="n2" ng:validate="number:10" > <br>
+        Enter number between 100 and 200: <input name="n3" ng:validate="number:100:200" > <br>
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate number', function(){
+         var n1 = element('.doc-example :input[name=n1]');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('n1').enter('1.x');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+         var n2 = element('.doc-example :input[name=n2]');
+         expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
+         input('n2').enter('9');
+         expect(n2.attr('className')).toMatch(/ng-validation-error/);
+         var n3 = element('.doc-example :input[name=n3]');
+         expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
+         input('n3').enter('201');
+         expect(n3.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'number': function(value, min, max) {
@@ -110,28 +114,29 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * Enter integer: <input name="n1" ng:validate="integer" > <br>
-   * Enter integer equal or greater than 10: <input name="n2" ng:validate="integer:10" > <br>
-   * Enter integer between 100 and 200 (inclusive): <input name="n3" ng:validate="integer:100:200" > <br>
-   *
-   * @scenario
-   * it('should invalidate integer', function(){
-   *   var n1 = element('.doc-example :input[name=n1]');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('n1').enter('1.1');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   *
-   *   var n2 = element('.doc-example :input[name=n2]');
-   *   expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('n2').enter('10.1');
-   *   expect(n2.attr('className')).toMatch(/ng-validation-error/);
-   *
-   *   var n3 = element('.doc-example :input[name=n3]');
-   *   expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('n3').enter('100.1');
-   *   expect(n3.attr('className')).toMatch(/ng-validation-error/);
-   *
-   * });
+    <doc:example>
+      <doc:source>
+        Enter integer: <input name="n1" ng:validate="integer" > <br>
+        Enter integer equal or greater than 10: <input name="n2" ng:validate="integer:10" > <br>
+        Enter integer between 100 and 200 (inclusive): <input name="n3" ng:validate="integer:100:200" > <br>
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate integer', function(){
+         var n1 = element('.doc-example :input[name=n1]');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('n1').enter('1.1');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+         var n2 = element('.doc-example :input[name=n2]');
+         expect(n2.attr('className')).not().toMatch(/ng-validation-error/);
+         input('n2').enter('10.1');
+         expect(n2.attr('className')).toMatch(/ng-validation-error/);
+         var n3 = element('.doc-example :input[name=n3]');
+         expect(n3.attr('className')).not().toMatch(/ng-validation-error/);
+         input('n3').enter('100.1');
+         expect(n3.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    */
   'integer': function(value, min, max) {
     var numberError = angularValidator['number'](value, min, max);
@@ -154,16 +159,20 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * Enter valid date:
-   * <input name="text" value="1/1/2009" ng:validate="date" >
-   *
-   * @scenario
-   * it('should invalidate date', function(){
-   *   var n1 = element('.doc-example :input');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('text').enter('123/123/123');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   * });
+    <doc:example>
+      <doc:source>
+        Enter valid date:
+        <input name="text" value="1/1/2009" ng:validate="date" >
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate date', function(){
+         var n1 = element('.doc-example :input');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('text').enter('123/123/123');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'date': function(value) {
@@ -187,16 +196,20 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * Enter valid email:
-   * <input name="text" ng:validate="email" value="me@example.com">
-   *
-   * @scenario
-   * it('should invalidate email', function(){
-   *   var n1 = element('.doc-example :input');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('text').enter('a@b.c');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   * });
+    <doc:example>
+      <doc:source>
+        Enter valid email:
+        <input name="text" ng:validate="email" value="me@example.com">
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate email', function(){
+         var n1 = element('.doc-example :input');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('text').enter('a@b.c');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'email': function(value) {
@@ -217,16 +230,20 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * Enter valid phone number:
-   * <input name="text" value="1(234)567-8901" ng:validate="phone" >
-   *
-   * @scenario
-   * it('should invalidate phone', function(){
-   *   var n1 = element('.doc-example :input');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('text').enter('+12345678');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   * });
+    <doc:example>
+      <doc:source>
+        Enter valid phone number:
+        <input name="text" value="1(234)567-8901" ng:validate="phone" >
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate phone', function(){
+         var n1 = element('.doc-example :input');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('text').enter('+12345678');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'phone': function(value) {
@@ -250,16 +267,20 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * Enter valid phone number:
-   * <input name="text" value="http://example.com/abc.html" size="40" ng:validate="url" >
-   *
-   * @scenario
-   * it('should invalidate url', function(){
-   *   var n1 = element('.doc-example :input');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('text').enter('abc://server/path');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   * });
+    <doc:example>
+      <doc:source>
+        Enter valid phone number:
+        <input name="text" value="http://example.com/abc.html" size="40" ng:validate="url" >
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate url', function(){
+         var n1 = element('.doc-example :input');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('text').enter('abc://server/path');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'url': function(value) {
@@ -280,17 +301,21 @@ extend(angularValidator, {
    * @css ng-validation-error
    *
    * @example
-   * <textarea name="json" cols="60" rows="5" ng:validate="json">
-   * {name:'abc'}
-   * </textarea>
-   *
-   * @scenario
-   * it('should invalidate json', function(){
-   *   var n1 = element('.doc-example :input');
-   *   expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
-   *   input('json').enter('{name}');
-   *   expect(n1.attr('className')).toMatch(/ng-validation-error/);
-   * });
+    <doc:example>
+      <doc:source>
+        <textarea name="json" cols="60" rows="5" ng:validate="json">
+        {name:'abc'}
+        </textarea>
+      </doc:source>
+      <doc:scenario>
+        it('should invalidate json', function(){
+         var n1 = element('.doc-example :input');
+         expect(n1.attr('className')).not().toMatch(/ng-validation-error/);
+         input('json').enter('{name}');
+         expect(n1.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   'json': function(value) {
@@ -338,35 +363,35 @@ extend(angularValidator, {
    * @css ng-input-indicator-wait, ng-validation-error
    *
    * @example
-   * <script>
-   * function MyCntl(){
-   *   this.myValidator = function (inputToValidate, validationDone) {
-   *     setTimeout(function(){
-   *       validationDone(inputToValidate.length % 2);
-   *     }, 500);
-   *   }
-   *  }
-   * </script>
-   *  This input is validated asynchronously:
-   *  <div ng:controller="MyCntl">
-   *    <input name="text" ng:validate="asynchronous:myValidator">
-   *  </div>
-   *
-   * @scenario
-   * it('should change color in delayed way', function(){
-   *   var textBox = element('.doc-example :input');
-   *   expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
-   *   expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
-   *
-   *   input('text').enter('X');
-   *   expect(textBox.attr('className')).toMatch(/ng-input-indicator-wait/);
-   *
-   *   pause(.6);
-   *
-   *   expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
-   *   expect(textBox.attr('className')).toMatch(/ng-validation-error/);
-   *
-   * });
+    <doc:example>
+      <doc:source>
+        <script>
+        function MyCntl(){
+         this.myValidator = function (inputToValidate, validationDone) {
+           setTimeout(function(){
+             validationDone(inputToValidate.length % 2);
+           }, 500);
+         }
+        }
+        </script>
+        This input is validated asynchronously:
+        <div ng:controller="MyCntl">
+          <input name="text" ng:validate="asynchronous:myValidator">
+        </div>
+      </doc:source>
+      <doc:scenario>
+        it('should change color in delayed way', function(){
+         var textBox = element('.doc-example :input');
+         expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
+         expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
+         input('text').enter('X');
+         expect(textBox.attr('className')).toMatch(/ng-input-indicator-wait/);
+         pause(.6);
+         expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
+         expect(textBox.attr('className')).toMatch(/ng-validation-error/);
+        });
+      </doc:scenario>
+    </doc:example>
    *
    */
   /*

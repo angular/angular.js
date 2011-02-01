@@ -202,7 +202,7 @@ function errorHandlerFor(element, error) {
  * @returns {Object} Newly created scope.
  *
  *
- * @exampleDescription
+ * @example
  * This example demonstrates scope inheritance and property overriding.
  *
  * In this example, the root scope encompasses the whole HTML DOM tree. This scope has `salutation`,
@@ -216,27 +216,29 @@ function errorHandlerFor(element, error) {
  * - The child scope inherits the salutation property from the root scope.
  * - The $index property does not leak from the child scope to the root scope.
  *
- * @example
-   <ul ng:init="salutation='Hello'; name='Misko'; names=['World', 'Earth']">
-     <li ng:repeat="name in names">
-       {{$index}}: {{salutation}} {{name}}!
-     </li>
-   </ul>
-   <pre>
-   $index={{$index}}
-   salutation={{salutation}}
-   name={{name}}</pre>
-
-   @scenario
-   it('should inherit the salutation property and override the name property', function() {
-     expect(using('.doc-example-live').repeater('li').row(0)).
-       toEqual(['0', 'Hello', 'World']);
-     expect(using('.doc-example-live').repeater('li').row(1)).
-       toEqual(['1', 'Hello', 'Earth']);
-     expect(using('.doc-example-live').element('pre').text()).
-       toBe('$index=\nsalutation=Hello\nname=Misko');
-   });
-
+   <doc:example>
+     <doc:source>
+       <ul ng:init="salutation='Hello'; name='Misko'; names=['World', 'Earth']">
+         <li ng:repeat="name in names">
+           {{$index}}: {{salutation}} {{name}}!
+         </li>
+       </ul>
+       <pre>
+       $index={{$index}}
+       salutation={{salutation}}
+       name={{name}}</pre>
+     </doc:source>
+     <doc:scenario>
+       it('should inherit the salutation property and override the name property', function() {
+         expect(using('.doc-example-live').repeater('li').row(0)).
+           toEqual(['0', 'Hello', 'World']);
+         expect(using('.doc-example-live').repeater('li').row(1)).
+           toEqual(['1', 'Hello', 'Earth']);
+         expect(using('.doc-example-live').element('pre').text()).
+           toBe('$index=\nsalutation=Hello\nname=Misko');
+       });
+     </doc:scenario>
+   </doc:example>
  */
 function createScope(parent, providers, instanceCache) {
   function Parent(){}

@@ -239,10 +239,10 @@ angular.service('$exceptionHandler', function(e) {
  */
 angular.service('$log', function() {
   var $log = {
-    log: function(){ $log.logs.push(arguments) },
-    warn: function(){ $log.logs.push(arguments) },
-    info: function(){ $log.logs.push(arguments) },
-    error: function(){ $log.logs.push(arguments) }
+    log: function(){ $log.logs.push(arguments); },
+    warn: function(){ $log.logs.push(arguments); },
+    info: function(){ $log.logs.push(arguments); },
+    error: function(){ $log.logs.push(arguments); }
   };
 
   $log.log.logs = [];
@@ -265,15 +265,6 @@ angular.service('$log', function() {
  * @param {(number|string)} timestamp Timestamp representing the desired time in *UTC*
  *
  * @example
- * var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00Z');
- * newYearInBratislava.getTimezoneOffset() => -60;
- * newYearInBratislava.getFullYear() => 2010;
- * newYearInBratislava.getMonth() => 0;
- * newYearInBratislava.getDate() => 1;
- * newYearInBratislava.getHours() => 0;
- * newYearInBratislava.getMinutes() => 0;
- *
- *
  * !!!! WARNING !!!!!
  * This is not a complete Date object so only methods that were implemented can be called safely.
  * To make matters worse, TzDate instances inherit stuff from Date via a prototype.
@@ -281,6 +272,17 @@ angular.service('$log', function() {
  * We do our best to intercept calls to "unimplemented" methods, but since the list of methods is
  * incomplete we might be missing some non-standard methods. This can result in errors like:
  * "Date.prototype.foo called on incompatible Object".
+ *
+ * <pre>
+ * var newYearInBratislava = new TzDate(-1, '2009-12-31T23:00:00Z');
+ * newYearInBratislava.getTimezoneOffset() => -60;
+ * newYearInBratislava.getFullYear() => 2010;
+ * newYearInBratislava.getMonth() => 0;
+ * newYearInBratislava.getDate() => 1;
+ * newYearInBratislava.getHours() => 0;
+ * newYearInBratislava.getMinutes() => 0;
+ * </pre>
+ *
  */
 function TzDate(offset, timestamp) {
   if (angular.isString(timestamp)) {

@@ -37,42 +37,46 @@ angular.formatter('reverse', {
 </pre>
 
 @example
-<script type="text/javascript">
-function reverse(text) {
-  var reversed = [];
-  for (var i = 0; i < text.length; i++) {
-    reversed.unshift(text.charAt(i));
+<doc:example>
+ <doc:source>
+  <script type="text/javascript">
+  function reverse(text) {
+    var reversed = [];
+    for (var i = 0; i < text.length; i++) {
+      reversed.unshift(text.charAt(i));
+    }
+    return reversed.join('');
   }
-  return reversed.join('');
-}
 
-angular.formatter('reverse', {
-  parse: function(value){
-    return reverse(value||'').toUpperCase();
-  },
-  format: function(value){
-    return reverse(value||'').toLowerCase();
-  }
-});
-</script>
+  angular.formatter('reverse', {
+    parse: function(value){
+      return reverse(value||'').toUpperCase();
+    },
+    format: function(value){
+      return reverse(value||'').toLowerCase();
+    }
+  });
+  </script>
 
-Formatted:
-<input type="text" name="data" value="angular" ng:format="reverse"/>
-<br/>
+  Formatted:
+  <input type="text" name="data" value="angular" ng:format="reverse"/>
+  <br/>
 
-Stored:
-<input type="text" name="data"/><br/>
-<pre>{{data}}</pre>
+  Stored:
+  <input type="text" name="data"/><br/>
+  <pre>{{data}}</pre>
+ </doc:source>
+ <doc:scenario>
+  it('should store reverse', function(){
+   expect(element('.doc-example input:first').val()).toEqual('angular');
+   expect(element('.doc-example input:last').val()).toEqual('RALUGNA');
 
+   this.addFutureAction('change to XYZ', function($window, $document, done){
+     $document.elements('.doc-example input:last').val('XYZ').trigger('change');
+     done();
+   });
+   expect(element('.doc-example input:first').val()).toEqual('zyx');
+  });
+ </doc:scenario>
+</doc:example>
 
-@scenario
-it('should store reverse', function(){
- expect(element('.doc-example input:first').val()).toEqual('angular');
- expect(element('.doc-example input:last').val()).toEqual('RALUGNA');
-
- this.addFutureAction('change to XYZ', function($window, $document, done){
-   $document.elements('.doc-example input:last').val('XYZ').trigger('change');
-   done();
- });
- expect(element('.doc-example input:first').val()).toEqual('zyx');
-});
