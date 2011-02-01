@@ -460,6 +460,49 @@ describe("service", function(){
       expect($route.current.scope.notFoundProp).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
     });
+
+    it('should support redirection via redirectTo property by updating $location', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $browser = scope.$service('$browser'),
+          $route = scope.$service('$route'),
+          onChangeSpy = jasmine.createSpy('onChange');
+
+      $route.when('', {redirectTo: '/foo'});
+      $route.when('/foo', {template: 'foo.html'});
+      $route.when('/bar', {template: 'bar.html'});
+      $route.when('/baz', {redirectTo: '/bar'});
+      $route.otherwise({template: '404.html'});
+      $route.onChange(onChangeSpy);
+      expect($route.current).toBeNull();
+      expect(onChangeSpy).not.toHaveBeenCalled();
+
+      scope.$eval(); //triggers initial route change - match the redirect route
+      $browser.poll(); //triger route change - match the route we redirected to
+
+      expect($location.hash).toBe('/foo');
+      expect($route.current.template).toBe('foo.html');
+      expect(onChangeSpy.callCount).toBe(1);
+
+      onChangeSpy.reset();
+      $location.updateHash('');
+      scope.$eval(); //match the redirect route + update $browser
+      $browser.poll(); //match the route we redirected to
+
+
+      expect($location.hash).toBe('/foo');
+      expect($route.current.template).toBe('foo.html');
+      expect(onChangeSpy.callCount).toBe(1);
+
+      onChangeSpy.reset();
+      $location.updateHash('/baz');
+      scope.$eval(); //match the redirect route + update $browser
+      $browser.poll(); //match the route we redirected to
+
+      expect($location.hash).toBe('/bar');
+      expect($route.current.template).toBe('bar.html');
+      expect(onChangeSpy.callCount).toBe(1);
+    });
   });
 
 
