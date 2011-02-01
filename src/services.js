@@ -690,6 +690,18 @@ angularServiceInject('$route', function(location) {
          * @param {string} path Route path (matched against `$location.hash`)
          * @param {Object} params Mapping information to be assigned to `$route.current` on route
          *    match.
+         *
+         *    Object properties:
+         *
+         *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
+         *        created scope.
+         *    - `template` – `{string=}` – path to an html template that should be used by
+         *        {@link angular.widget.ng:view ng:view} or
+         *        {@link angular.widget.ng:include ng:include} widgets.
+         *    - `redirectTo` – {string=} – value to update
+         *        {@link angular.service.$location $location} hash with and trigger route
+         *        redirection.
+         *
          * @returns {Object} route object
          *
          * @description
@@ -721,28 +733,31 @@ angularServiceInject('$route', function(location) {
         }
       };
   function updateRoute(){
-    var childScope;
+    var childScope, routeParams, pathParams;
+
     $route.current = _null;
-    forEach(routes, function(routeParams, route) {
-      if (!childScope) {
-        var pathParams = matcher(location.hashPath, route);
-        if (pathParams) {
-          childScope = createScope(parentScope);
-          $route.current = extend({}, routeParams, {
-            scope: childScope,
-            params: extend({}, location.hashSearch, pathParams)
-          });
+    forEach(routes, function(rParams, rPath) {
+      if (!pathParams) {
+        if (pathParams = matcher(location.hashPath, rPath)) {
+          routeParams = rParams;
         }
       }
     });
 
-    //fallback
-    if (!childScope && routes[_null]) {
-      childScope = createScope(parentScope);
-      $route.current = extend({}, routes[_null], {
-        scope: childScope,
-        params: extend({}, location.hashSearch)
-      });
+    // "otherwise" fallback
+    routeParams = routeParams || routes[_null];
+
+    if(routeParams) {
+      if (routeParams.redirectTo) {
+        location.updateHash(routeParams.redirectTo); //let $browser trigger next route change
+        return;
+      } else {
+        childScope = createScope(parentScope);
+        $route.current = extend({}, routeParams, {
+          scope: childScope,
+          params: extend({}, location.hashSearch, pathParams)
+        });
+      }
     }
 
     //fire onChange callbacks
