@@ -684,6 +684,23 @@ angularServiceInject('$route', function(location) {
         /**
          * @workInProgress
          * @ngdoc method
+         * @name angular.service.$route#parent
+         * @methodOf angular.service.$route
+         *
+         * @param {Scope} [scope=rootScope] Scope to be used as parent for newly created
+         *    `$route.current.scope` scopes.
+         *
+         * @description
+         * Sets a scope to be used as the parent scope for scopes created on route change. If not
+         * set, defaults to the root scope.
+         */
+        parent: function(scope) {
+          if (scope) parentScope = scope;
+        },
+
+        /**
+         * @workInProgress
+         * @ngdoc method
          * @name angular.service.$route#when
          * @methodOf angular.service.$route
          *

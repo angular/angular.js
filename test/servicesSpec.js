@@ -503,6 +503,28 @@ describe("service", function(){
       expect($route.current.template).toBe('bar.html');
       expect(onChangeSpy.callCount).toBe(1);
     });
+
+    it('should make parentScope configurable via parent()', function() {
+      var scope = angular.scope(),
+          parentScope = scope.$new(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route');
+
+      $route.parent(parentScope);
+      $route.when('/foo', {template: 'foo.html'});
+      $route.otherwise({template: '404.html'});
+
+      scope.$eval();
+
+      expect($route.current.template).toBe('404.html');
+      expect($route.current.scope.$parent).toBe(parentScope);
+
+      $location.updateHash('/foo');
+      scope.$eval();
+
+      expect($route.current.template).toBe('foo.html');
+      expect($route.current.scope.$parent).toBe(parentScope);
+    });
   });
 
 
