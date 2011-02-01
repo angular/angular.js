@@ -525,6 +525,31 @@ describe("service", function(){
       expect($route.current.template).toBe('foo.html');
       expect($route.current.scope.$parent).toBe(parentScope);
     });
+
+    it('should reload routes when reload() is called', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          onChangeSpy = jasmine.createSpy('onChange');
+
+      $route.when('', {template: 'foo.html'});
+      $route.onChange(onChangeSpy);
+      expect($route.current).toBeNull();
+      expect(onChangeSpy).not.toHaveBeenCalled();
+
+      scope.$eval();
+
+      expect($location.hash).toBe('');
+      expect($route.current.template).toBe('foo.html');
+      expect(onChangeSpy.callCount).toBe(1);
+
+      $route.reload();
+      scope.$eval();
+
+      expect($location.hash).toBe('');
+      expect($route.current.template).toBe('foo.html');
+      expect(onChangeSpy.callCount).toBe(2);
+    });
   });
 
 
