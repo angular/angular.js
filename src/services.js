@@ -747,6 +747,20 @@ angularServiceInject('$route', function(location) {
          */
         otherwise: function(params) {
           $route.when(null, params);
+        },
+
+        /**
+         * @workInProgress
+         * @ngdoc method
+         * @name angular.service.$route#reload
+         * @methodOf angular.service.$route
+         *
+         * @description
+         * Causes `$route` service to reload (and recreate the `$route.current` scope) upon the next
+         * eval even if {@link angular.service.$location $location} hasn't changed.
+         */
+        reload: function() {
+          dirty++;
         }
       };
   function updateRoute(){
