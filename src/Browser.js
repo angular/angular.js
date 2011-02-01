@@ -243,6 +243,7 @@ function Browser(window, document, body, XHR, $log) {
       self.addPollFn(function() {
         if (lastBrowserUrl != self.getUrl()) {
           listener();
+          lastBrowserUrl = self.getUrl();
         }
       });
     }
