@@ -358,6 +358,11 @@ describe('browser', function(){
       expect(events).toEqual([]);
       browser.poll();
       expect(events).toEqual(['x']);
+
+      //don't do anything if url hasn't changed
+      events = [];
+      browser.poll();
+      expect(events).toEqual([]);
     });
 
 
