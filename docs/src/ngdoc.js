@@ -7,7 +7,6 @@ var DOM = require('dom.js').DOM;
 var htmlEscape = require('dom.js').htmlEscape;
 var NEW_LINE = /\n\r?/;
 
-exports.markdown = markdown;
 exports.trim = trim;
 exports.metadata = metadata;
 exports.scenarios = scenarios;
@@ -25,6 +24,11 @@ function Doc(text, file, line) {
     this.file = file;
     this.line = line;
   }
+  this.scenarios = this.scenarios || [];
+  this.requires = this.requires || [];
+  this.param = this.param || [];
+  this.properties = this.properties || [];
+  this.methods = this.methods || [];
 }
 Doc.METADATA_IGNORE = (function(){
   var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
@@ -53,16 +57,53 @@ Doc.prototype = {
     return words.join(' ');
   },
 
+  markdown: function (text) {
+    var self = this;
+    var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:)/;
+    var IS_ANGULAR = /^angular\./;
+    if (!text) return text;
+    var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/),
+        match;
+
+    parts.forEach(function(text, i){
+      if (text.match(/^<pre>/)) {
+        text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
+          return '<div ng:non-bindable><pre class="brush: js; html-script: true;">' +
+                  content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
+                 '</pre></div>';
+        });
+      } else if (text.match(/^<doc:example>/)) {
+        text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
+          function(_, before, content, after){
+            return before + htmlEscape(content) + after;
+          });
+        text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
+          function(_, before, content, after){
+            self.scenarios.push(content);
+            return before + htmlEscape(content) + after;
+          });
+      } else {
+        text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
+        text = text.replace(/{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/gm,
+          function(_all, url, _2, _3, title){
+            return '<a href="' + (url.match(IS_URL) ? '' : '#!') + url + '">'
+              + (url.match(IS_ANGULAR) ? '<code>' : '')
+              + (title || url)
+              + (url.match(IS_ANGULAR) ? '</code>' : '')
+              + '</a>';
+          });
+        text = new Showdown.converter().makeHtml(text);
+      }
+      parts[i] = text;
+    });
+    return parts.join('');
+  },
+
   parse: function(){
     var atName;
     var atText;
     var match;
     var self = this;
-    this.scenarios = [];
-    this.requires = [];
-    this.param = [];
-    this.properties = [];
-    this.methods = [];
     self.text.split(NEW_LINE).forEach(function(line){
       if (match = line.match(/^\s*@(\w+)(\s+(.*))?/)) {
         // we found @name ...
@@ -82,9 +123,9 @@ Doc.prototype = {
     this.id = this.id // if we have an id just use it
       || (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) // try to extract it from file name
       || this.name; // default to name
-    this.description = markdown(this.description);
-    this['this'] = markdown(this['this']);
-    this.exampleDescription = markdown(this.exampleDescription || this.exampleDesc);
+    this.description = this.markdown(this.description);
+    this.example = this.markdown(this.example);
+    this['this'] = this.markdown(this['this']);
     return this;
 
     function flush(){
@@ -98,7 +139,7 @@ Doc.prototype = {
           }
           var param = {
             name: match[5] || match[4],
-            description:markdown(text.replace(match[0], match[7])),
+            description:self.markdown(text.replace(match[0], match[7])),
             type: match[1],
             optional: !!match[2],
             'default':match[6]
@@ -111,18 +152,10 @@ Doc.prototype = {
           }
           self.returns = {
             type: match[1],
-            description: markdown(text.replace(match[0], match[2]))
+            description: self.markdown(text.replace(match[0], match[2]))
           };
-        } else if(atName == 'description') {
-          text.replace(/<doc:scenario>([\s\S]*?)<\/doc:scenario>/gmi,
-              function(_, scenario){
-                self.scenarios.push(scenario);
-              });
-          self.description = text;
         } else if(atName == 'requires') {
           self.requires.push(text);
-        } else if(atName == 'scenario') {
-          self.scenarios.push(text);
         } else if(atName == 'property') {
           var match = text.match(/^({(\S+)}\s*)?(\S+)(\s+(.*))?/);
           if (!match) {
@@ -154,7 +187,7 @@ Doc.prototype = {
         throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
       }).call(self, dom);
 
-      dom.example(self.exampleDescription, self.example, self.scenarios[0]);
+      dom.h('Example', self.example, dom.html);
     });
 
     return dom.toString();
@@ -407,13 +440,13 @@ Doc.prototype = {
       dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
         dom.html(method.description);
         method.html_usage_parameters(dom);
-        dom.example(method.exampleDescription, method.example, false);
+        dom.h('Example', method.example, dom.html);
       });
     });
     dom.h('Properties', this.properties, function(property){
       dom.h(property.name, function(){
        dom.text(property.description);
-       dom.example(property.exampleDescription, property.example, false);
+       dom.h('Example', property.example, dom.html);
       });
     });
   },
@@ -435,47 +468,6 @@ Doc.prototype = {
 };
 //////////////////////////////////////////////////////////
 
-
-//////////////////////////////////////////////////////////
-function markdown (text) {
-  var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:)/;
-  var IS_ANGULAR = /^angular\./;
-  if (!text) return text;
-  var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/),
-      match;
-
-  parts.forEach(function(text, i){
-    if (text.match(/^<pre>/)) {
-      text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
-        return '<div ng:non-bindable><pre class="brush: js; html-script: true;">' +
-                content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
-               '</pre></div>';
-      });
-    } else if (text.match(/^<doc:example>/)) {
-      text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
-        function(_, before, content, after){
-          return before + htmlEscape(content) + after;
-        });
-      text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
-        function(_, before, content, after){
-          return before + htmlEscape(content) + after;
-        });
-    } else {
-      text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
-      text = text.replace(/{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/gm,
-        function(_all, url, _2, _3, title){
-          return '<a href="' + (url.match(IS_URL) ? '' : '#!') + url + '">'
-            + (url.match(IS_ANGULAR) ? '<code>' : '')
-            + (title || url)
-            + (url.match(IS_ANGULAR) ? '</code>' : '')
-            + '</a>';
-        });
-      text = new Showdown.converter().makeHtml(text);
-    }
-    parts[i] = text;
-  });
-  return parts.join('');
-};
 
 //////////////////////////////////////////////////////////
 function scenarios(docs){

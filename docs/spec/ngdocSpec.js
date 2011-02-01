@@ -74,12 +74,6 @@ describe('ngdoc', function(){
         });
       });
 
-      it('should not remove extra line breaks', function(){
-        var doc = new Doc('@example\nA\n\nB');
-        doc.parse();
-        expect(doc.example).toEqual('A\n\nB');
-      });
-
       it('should parse filename', function(){
         var doc = new Doc('@name friendly name', 'docs/a.b.ngdoc', 1);
         doc.parse(0);
@@ -128,32 +122,14 @@ describe('ngdoc', function(){
     });
   });
 
-  describe('scenario', function(){
-    it('should render from @example/@scenario and <doc:example>', function(){
-      var doc = new Doc(
-          '@id id\n' +
-          '@description <doc:example><doc:scenario>scenario0</doc:scenario></doc:example>' +
-          '@example exempleText\n' +
-          '@scenario scenario1\n' +
-          '@scenario scenario2').parse();
-      expect(ngdoc.scenarios([doc])).toContain('describe("id"');
-      expect(ngdoc.scenarios([doc])).toContain('navigateTo("index.html#!id")');
-      expect(ngdoc.scenarios([doc])).toContain('\n  scenario0\n');
-      expect(ngdoc.scenarios([doc])).toContain('\n  scenario1\n');
-      expect(ngdoc.scenarios([doc])).toContain('\n  scenario2\n');
-    });
-  });
-
   describe('markdown', function(){
-    var markdown = ngdoc.markdown;
-
     it('should replace angular in markdown', function(){
-      expect(markdown('<angular/>')).
+      expect(new Doc().markdown('<angular/>')).
         toEqual('<p><tt>&lt;angular/&gt;</tt></p>');
     });
 
     it('should not replace anything in <pre>, but escape the html escape the content', function(){
-      expect(markdown('bah x\n<pre>\n<b>angular</b>.k\n</pre>\n asdf x')).
+      expect(new Doc().markdown('bah x\n<pre>\n<b>angular</b>.k\n</pre>\n asdf x')).
         toEqual(
             '<p>bah x</p>' +
             '<div ng:non-bindable><pre class="brush: js; html-script: true;">\n' +
@@ -163,7 +139,7 @@ describe('ngdoc', function(){
     });
 
     it('should replace text between two <pre></pre> tags', function() {
-      expect(markdown('<pre>x</pre># One<pre>b</pre>')).
+      expect(new Doc().markdown('<pre>x</pre># One<pre>b</pre>')).
         toMatch('</div><h1>One</h1><div');
     });
 
@@ -340,38 +316,20 @@ describe('ngdoc', function(){
       it('should not remove {{}}', function(){
         var doc = new Doc('@example text {{ abc }}');
         doc.parse();
-        expect(doc.example).toEqual('text {{ abc }}');
-      });
-    });
-
-    describe('@exampleDescription', function(){
-      it('should render example description', function(){
-        var doc = new Doc('@exampleDescription some\n text');
-        doc.ngdoc = "filter";
-        doc.parse();
-        expect(doc.html()).toContain('<p>some\n text');
+        expect(doc.example).toEqual('<p>text {{ abc }}</p>');
       });
 
-      it('should alias @exampleDescription to @exampleDesc', function(){
-        var doc = new Doc('@exampleDesc some\n text');
-        doc.ngdoc = "filter";
-        doc.parse();
-        expect(doc.html()).toContain('<p>some\n text');
+      it('should support doc:example', function(){
+        var doc = new Doc('@ngdoc overview\n@example \n' +
+            '<doc:example>\n' +
+            ' <doc:source><escapeme></doc:source>\n' +
+            ' <doc:scenario><scenario></doc:scenario>\n' +
+            '</doc:example>').parse();
+        var html = doc.html();
+        expect(html).toContain('<doc:source>&lt;escapeme&gt;</doc:source>');
+        expect(html).toContain('<doc:scenario>&lt;scenario&gt;</doc:scenario>');
+        expect(doc.scenarios).toEqual(['<scenario>']);
       });
-
-      it('should render description in related method', function(){
-        var doc = new Doc('').parse();
-        doc.ngdoc = 'service';
-        doc.methods = [
-           new Doc('@ngdoc method\n@exampleDescription MDesc\n@example MExmp').parse()];
-        doc.properties = [
-          new Doc('@ngdoc property\n@exampleDescription PDesc\n@example PExmp').parse()];
-        expect(doc.html()).toContain('<p>MDesc</p><div ng:non-bindable="">' +
-            '<pre class="brush: js; html-script: true;">MExmp</pre>');
-        expect(doc.html()).toContain('<p>PDesc</p><div ng:non-bindable="">' +
-            '<pre class="brush: js; html-script: true;">PExmp</pre>');
-      });
-
     });
 
     describe('@depricated', function() {

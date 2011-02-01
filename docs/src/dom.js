@@ -74,25 +74,8 @@ DOM.prototype = {
     });
   },
 
-  example: function(description, source, scenario) {
-    if (description || source || scenario) {
-      this.h('Example', function(){
-        if (description)
-          this.html(description);
-        if (scenario === false) {
-          this.code(source);
-        } else {
-          this.tag('doc:example', function(){
-            if (source) this.tag('doc:source', source);
-            if (scenario) this.tag('doc:scenario', scenario);
-          });
-        }
-      });
-    }
-  },
-
   h: function(heading, content, fn){
-    if (content==undefined || content && content.legth == 0) return;
+    if (content==undefined || (content instanceof Array && content.length == 0)) return;
     this.headingDepth++;
     this.tag('h' + this.headingDepth, heading);
     var className = typeof heading == 'string'

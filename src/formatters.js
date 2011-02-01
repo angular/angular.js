@@ -18,17 +18,21 @@ angularFormatter.noop = formatter(identity, identity);
  * @returns {?string} A JSON string representation of the model.
  *
  * @example
- * <div ng:init="data={name:'misko', project:'angular'}">
- *   <input type="text" size='50' name="data" ng:format="json"/>
- *   <pre>data={{data}}</pre>
- * </div>
- *
- * @scenario
- * it('should format json', function(){
- *   expect(binding('data')).toEqual('data={\n  \"name\":\"misko\",\n  \"project\":\"angular\"}');
- *   input('data').enter('{}');
- *   expect(binding('data')).toEqual('data={\n  }');
- * });
+   <doc:example>
+     <doc:source>
+      <div ng:init="data={name:'misko', project:'angular'}">
+        <input type="text" size='50' name="data" ng:format="json"/>
+        <pre>data={{data}}</pre>
+      </div>
+     </doc:source>
+     <doc:scenario>
+      it('should format json', function(){
+        expect(binding('data')).toEqual('data={\n  \"name\":\"misko\",\n  \"project\":\"angular\"}');
+        input('data').enter('{}');
+        expect(binding('data')).toEqual('data={\n  }');
+      });
+     </doc:scenario>
+   </doc:example>
  */
 angularFormatter.json = formatter(toJson, function(value){
   return fromJson(value || 'null');
@@ -45,17 +49,21 @@ angularFormatter.json = formatter(toJson, function(value){
  * @returns {boolean} Converts to `true` unless user enters (blank), `f`, `false`, `0`, `no`, `[]`.
  *
  * @example
- * Enter truthy text:
- * <input type="text" name="value" ng:format="boolean" value="no"/>
- * <input type="checkbox" name="value"/>
- * <pre>value={{value}}</pre>
- *
- * @scenario
- * it('should format boolean', function(){
- *   expect(binding('value')).toEqual('value=false');
- *   input('value').enter('truthy');
- *   expect(binding('value')).toEqual('value=true');
- * });
+   <doc:example>
+     <doc:source>
+        Enter truthy text:
+        <input type="text" name="value" ng:format="boolean" value="no"/>
+        <input type="checkbox" name="value"/>
+        <pre>value={{value}}</pre>
+     </doc:source>
+     <doc:scenario>
+        it('should format boolean', function(){
+          expect(binding('value')).toEqual('value=false');
+          input('value').enter('truthy');
+          expect(binding('value')).toEqual('value=true');
+        });
+     </doc:scenario>
+   </doc:example>
  */
 angularFormatter['boolean'] = formatter(toString, toBoolean);
 
@@ -70,16 +78,20 @@ angularFormatter['boolean'] = formatter(toString, toBoolean);
  * @returns {number} Number from the parsed string.
  *
  * @example
- * Enter valid number:
- * <input type="text" name="value" ng:format="number" value="1234"/>
- * <pre>value={{value}}</pre>
- *
- * @scenario
- * it('should format numbers', function(){
- *   expect(binding('value')).toEqual('value=1234');
- *   input('value').enter('5678');
- *   expect(binding('value')).toEqual('value=5678');
- * });
+   <doc:example>
+     <doc:source>
+      Enter valid number:
+      <input type="text" name="value" ng:format="number" value="1234"/>
+      <pre>value={{value}}</pre>
+     </doc:source>
+     <doc:scenario>
+      it('should format numbers', function(){
+        expect(binding('value')).toEqual('value=1234');
+        input('value').enter('5678');
+        expect(binding('value')).toEqual('value=5678');
+      });
+     </doc:scenario>
+   </doc:example>
  */
 angularFormatter.number = formatter(toString, function(obj){
   if (obj == _null || NUMBER.exec(obj)) {
@@ -100,20 +112,24 @@ angularFormatter.number = formatter(toString, function(obj){
  * @returns {Array} Array parsed from the entered string.
  *
  * @example
- * Enter a list of items:
- * <input type="text" name="value" ng:format="list" value=" chair ,, table"/>
- * <input type="text" name="value" ng:format="list"/>
- * <pre>value={{value}}</pre>
- *
- * @scenario
- * it('should format lists', function(){
- *   expect(binding('value')).toEqual('value=["chair","table"]');
- *   this.addFutureAction('change to XYZ', function($window, $document, done){
- *     $document.elements('.doc-example :input:last').val(',,a,b,').trigger('change');
- *     done();
- *   });
- *   expect(binding('value')).toEqual('value=["a","b"]');
- * });
+   <doc:example>
+     <doc:source>
+        Enter a list of items:
+        <input type="text" name="value" ng:format="list" value=" chair ,, table"/>
+        <input type="text" name="value" ng:format="list"/>
+        <pre>value={{value}}</pre>
+     </doc:source>
+     <doc:scenario>
+      it('should format lists', function(){
+        expect(binding('value')).toEqual('value=["chair","table"]');
+        this.addFutureAction('change to XYZ', function($window, $document, done){
+          $document.elements('.doc-example :input:last').val(',,a,b,').trigger('change');
+          done();
+        });
+        expect(binding('value')).toEqual('value=["a","b"]');
+      });
+     </doc:scenario>
+   </doc:example>
  */
 angularFormatter.list = formatter(
   function(obj) { return obj ? obj.join(", ") : obj; },
@@ -138,20 +154,24 @@ angularFormatter.list = formatter(
  * @returns {String} Trim excess leading and trailing space.
  *
  * @example
- * Enter text with leading/trailing spaces:
- * <input type="text" name="value" ng:format="trim" value="  book  "/>
- * <input type="text" name="value" ng:format="trim"/>
- * <pre>value={{value|json}}</pre>
- *
- * @scenario
- * it('should format trim', function(){
- *   expect(binding('value')).toEqual('value="book"');
- *   this.addFutureAction('change to XYZ', function($window, $document, done){
- *     $document.elements('.doc-example :input:last').val('  text  ').trigger('change');
- *     done();
- *   });
- *   expect(binding('value')).toEqual('value="text"');
- * });
+   <doc:example>
+     <doc:source>
+        Enter text with leading/trailing spaces:
+        <input type="text" name="value" ng:format="trim" value="  book  "/>
+        <input type="text" name="value" ng:format="trim"/>
+        <pre>value={{value|json}}</pre>
+     </doc:source>
+     <doc:scenario>
+        it('should format trim', function(){
+          expect(binding('value')).toEqual('value="book"');
+          this.addFutureAction('change to XYZ', function($window, $document, done){
+            $document.elements('.doc-example :input:last').val('  text  ').trigger('change');
+            done();
+          });
+          expect(binding('value')).toEqual('value="text"');
+        });
+     </doc:scenario>
+   </doc:example>
  */
 angularFormatter.trim = formatter(
   function(obj) { return obj ? trim("" + obj) : ""; }
@@ -176,33 +196,36 @@ angularFormatter.trim = formatter(
  * @returns {object} object which is located at the selected position.
  *
  * @example
- * <script>
- * function DemoCntl(){
- *   this.users = [
- *     {name:'guest', password:'guest'},
- *     {name:'user', password:'123'},
- *     {name:'admin', password:'abc'}
- *   ];
- * }
- * </script>
- * <div ng:controller="DemoCntl">
- *   User:
- *   <select name="currentUser" ng:format="index:users">
- *     <option ng:repeat="user in users" value="{{$index}}">{{user.name}}</option>
- *   </select>
- *   <select name="currentUser" ng:format="index:users">
- *     <option ng:repeat="user in users" value="{{$index}}">{{user.name}}</option>
- *   </select>
- *   user={{currentUser.name}}<br/>
- *   password={{currentUser.password}}<br/>
- * </div>
- *
- * @scenario
- * it('should retrieve object by index', function(){
- *   expect(binding('currentUser.password')).toEqual('guest');
- *   select('currentUser').option('2');
- *   expect(binding('currentUser.password')).toEqual('abc');
- * });
+   <doc:example>
+     <doc:source>
+        <script>
+        function DemoCntl(){
+          this.users = [
+            {name:'guest', password:'guest'},
+            {name:'user', password:'123'},
+            {name:'admin', password:'abc'}
+          ];
+        }
+        </script>
+        <div ng:controller="DemoCntl">
+          User:
+          <select name="currentUser" ng:format="index:users">
+            <option ng:repeat="user in users" value="{{$index}}">{{user.name}}</option>
+          </select>
+          <select name="currentUser" ng:format="index:users">
+            <option ng:repeat="user in users" value="{{$index}}">{{user.name}}</option>
+          </select>
+          user={{currentUser.name}}<br/>
+          password={{currentUser.password}}<br/>
+     </doc:source>
+     <doc:scenario>
+        it('should retrieve object by index', function(){
+          expect(binding('currentUser.password')).toEqual('guest');
+          select('currentUser').option('2');
+          expect(binding('currentUser.password')).toEqual('abc');
+        });
+     </doc:scenario>
+   </doc:example>
  */
 angularFormatter.index = formatter(
   function(object, array){

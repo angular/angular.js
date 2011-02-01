@@ -57,17 +57,22 @@ angular.widget('@my:watch', function(expression, compileElement) {
 </pre>
 
 @example
-<script>
-  angular.widget('my:time', function(compileElement){
-    compileElement.css('display', 'block');
-    return function(linkElement){
-      function update(){
-        linkElement.text('Current time is: ' + new Date());
-        setTimeout(update, 1000);
-      }
-      update();
-    };
-  });
-</script>
-<my:time></my:time>
-
+<doc:example>
+ <doc:source>
+  <script>
+    angular.widget('my:time', function(compileElement){
+      compileElement.css('display', 'block');
+      return function(linkElement){
+        function update(){
+          linkElement.text('Current time is: ' + new Date());
+          setTimeout(update, 1000);
+        }
+        update();
+      };
+    });
+  </script>
+  <my:time></my:time>
+ </doc:source>
+ <doc:scenario>
+ </doc:scenario>
+</doc:example>

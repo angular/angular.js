@@ -17,22 +17,22 @@ services if needed.
 
 Like other core angular variables and identifiers, the built-in services always start with `$`.
 
-  * `{@link angular.service.$browser $browser}`
-  * `{@link angular.service.$window $window}`
-  * `{@link angular.service.$document $document}`
-  * `{@link angular.service.$location $location}`
-  * `{@link angular.service.$log $log}`
-  * `{@link angular.service.$exceptionHandler $exceptionHandler}`
-  * `{@link angular.service.$hover $hover}`
-  * `{@link angular.service.$invalidWidgets $invalidWidgets}`
-  * `{@link angular.service.$route $route}`
-  * `{@link angular.service.$xhr $xhr}`
-  * `{@link angular.service.$xhr.error $xhr.error}`
-  * `{@link angular.service.$xhr.bulk $xhr.bulk}`
-  * `{@link angular.service.$xhr.cache $xhr.cache}`
-  * `{@link angular.service.$resource $resource}`
-  * `{@link angular.service.$cookies $cookies}`
-  * `{@link angular.service.$cookieStore $cookieStore}`
+  * {@link angular.service.$browser $browser}
+  * {@link angular.service.$window $window}
+  * {@link angular.service.$document $document}
+  * {@link angular.service.$location $location}
+  * {@link angular.service.$log $log}
+  * {@link angular.service.$exceptionHandler $exceptionHandler}
+  * {@link angular.service.$hover $hover}
+  * {@link angular.service.$invalidWidgets $invalidWidgets}
+  * {@link angular.service.$route $route}
+  * {@link angular.service.$xhr $xhr}
+  * {@link angular.service.$xhr.error $xhr.error}
+  * {@link angular.service.$xhr.bulk $xhr.bulk}
+  * {@link angular.service.$xhr.cache $xhr.cache}
+  * {@link angular.service.$resource $resource}
+  * {@link angular.service.$cookies $cookies}
+  * {@link angular.service.$cookieStore $cookieStore}
 
 # Writing your own custom services
 angular provides only set of basic services, so for any nontrivial application it will be necessary
@@ -138,29 +138,38 @@ myController.$inject = ['$location', '$log'];
 </pre>
 
 @example
-<script type="text/javascript">
- angular.service('notify', function(win) {
-   var msgs = [];
-   return function(msg) {
-     msgs.push(msg);
-     if (msgs.length == 3) {
-       win.alert(msgs.join("\n"));
-       msgs = [];
-     }
-   };
- }, {$inject: ['$window']});
+<doc:example>
+ <doc:source>
+  <script type="text/javascript">
+   angular.service('notify', function(win) {
+     var msgs = [];
+     return function(msg) {
+       msgs.push(msg);
+       if (msgs.length == 3) {
+         win.alert(msgs.join("\n"));
+         msgs = [];
+       }
+     };
+   }, {$inject: ['$window']});
 
- function myController(notifyService) {
-   this.callNotify = function(msg) {
-     notifyService(msg);
-   };
- }
+   function myController(notifyService) {
+     this.callNotify = function(msg) {
+       notifyService(msg);
+     };
+   }
 
- myController.$inject = ['notify'];
-</script>
+   myController.$inject = ['notify'];
+  </script>
 
-<div ng:controller="myController">
-<p>Let's try this simple notify service, injected into the controller...</p>
-<input ng:init="message='test'" type="text" name="message" />
-<button ng:click="callNotify(message);">NOTIFY</button>
-</div>
+  <div ng:controller="myController">
+  <p>Let's try this simple notify service, injected into the controller...</p>
+  <input ng:init="message='test'" type="text" name="message" />
+  <button ng:click="callNotify(message);">NOTIFY</button>
+  </div>
+ </doc:source>
+ <doc:scenario>
+   it('should test service', function(){
+     expect(element(':input[name=message]').val()).toEqual('test');
+   });
+ </doc:scenario>
+</doc:example>

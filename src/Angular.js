@@ -484,14 +484,18 @@ function map(obj, iterator, context) {
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object or an array.
  *
  * @example
- * Number of items in array: {{ [1,2].$size() }}<br/>
- * Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
- *
- * @scenario
-   it('should print correct sizes for an array and an object', function() {
-     expect(binding('[1,2].$size()')).toBe('2');
-     expect(binding('{a:1, b:2, c:3}.$size()')).toBe('3');
-   });
+ * <doc:example>
+ *  <doc:source>
+ *   Number of items in array: {{ [1,2].$size() }}<br/>
+ *   Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
+ *  </doc:source>
+ *  <doc:scenario>
+ *   it('should print correct sizes for an array and an object', function() {
+ *     expect(binding('[1,2].$size()')).toBe('2');
+ *     expect(binding('{a:1, b:2, c:3}.$size()')).toBe('3');
+ *   });
+ *  </doc:scenario>
+ * </doc:example>
  */
 function size(obj) {
   var size = 0, key;
@@ -556,17 +560,19 @@ function isLeafNode (node) {
  * @returns {*} The copy or updated `destination` if `destination` was specified.
  *
  * @example
-   Salutation: <input type="text" name="master.salutation" value="Hello" /><br/>
-   Name: <input type="text" name="master.name" value="world"/><br/>
-   <button ng:click="form = master.$copy()">copy</button>
-   <hr/>
+ * <doc:example>
+ *  <doc:source>
+     Salutation: <input type="text" name="master.salutation" value="Hello" /><br/>
+     Name: <input type="text" name="master.name" value="world"/><br/>
+     <button ng:click="form = master.$copy()">copy</button>
+     <hr/>
 
-   The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
+     The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
 
-   <pre>master={{master}}</pre>
-   <pre>form={{form}}</pre>
-
- * @scenario
+     <pre>master={{master}}</pre>
+     <pre>form={{form}}</pre>
+ *  </doc:source>
+ *  <doc:scenario>
    it('should print that initialy the form object is NOT equal to master', function() {
      expect(element('.doc-example input[name=master.salutation]').val()).toBe('Hello');
      expect(element('.doc-example input[name=master.name]').val()).toBe('world');
@@ -577,6 +583,8 @@ function isLeafNode (node) {
      element('.doc-example button').click();
      expect(element('.doc-example span').css('display')).toBe('none');
    });
+ *  </doc:scenario>
+ * </doc:example>
  */
 function copy(source, destination){
   if (!destination) {
@@ -633,27 +641,31 @@ function copy(source, destination){
  * @returns {boolean} True if arguments are equal.
  *
  * @example
-   Salutation: <input type="text" name="greeting.salutation" value="Hello" /><br/>
-   Name: <input type="text" name="greeting.name" value="world"/><br/>
-   <hr/>
+ * <doc:example>
+ *  <doc:source>
+     Salutation: <input type="text" name="greeting.salutation" value="Hello" /><br/>
+     Name: <input type="text" name="greeting.name" value="world"/><br/>
+     <hr/>
 
-   The <code>greeting</code> object is
-   <span ng:hide="greeting.$equals({salutation:'Hello', name:'world'})">NOT</span> equal to
-   <code>{salutation:'Hello', name:'world'}</code>.
+     The <code>greeting</code> object is
+     <span ng:hide="greeting.$equals({salutation:'Hello', name:'world'})">NOT</span> equal to
+     <code>{salutation:'Hello', name:'world'}</code>.
 
-   <pre>greeting={{greeting}}</pre>
+     <pre>greeting={{greeting}}</pre>
+ *  </doc:source>
+ *  <doc:scenario>
+     it('should print that initialy greeting is equal to the hardcoded value object', function() {
+       expect(element('.doc-example input[name=greeting.salutation]').val()).toBe('Hello');
+       expect(element('.doc-example input[name=greeting.name]').val()).toBe('world');
+       expect(element('.doc-example span').css('display')).toBe('none');
+     });
 
-   @scenario
-   it('should print that initialy greeting is equal to the hardcoded value object', function() {
-     expect(element('.doc-example input[name=greeting.salutation]').val()).toBe('Hello');
-     expect(element('.doc-example input[name=greeting.name]').val()).toBe('world');
-     expect(element('.doc-example span').css('display')).toBe('none');
-   });
-
-   it('should say that the objects are not equal when the form is modified', function() {
-     input('greeting.name').enter('kitty');
-     expect(element('.doc-example span').css('display')).toBe('inline');
-   });
+     it('should say that the objects are not equal when the form is modified', function() {
+       input('greeting.name').enter('kitty');
+       expect(element('.doc-example span').css('display')).toBe('inline');
+     });
+ *  </doc:scenario>
+ * </doc:example>
  */
 function equals(o1, o2) {
   if (o1 == o2) return true;
