@@ -298,6 +298,12 @@ describe("service", function(){
         $location.update('http://www.angularjs.org/index.php#');
         expect($location.href).toEqual('http://www.angularjs.org/index.php');
       });
+
+      it('should clear hash when updating to hash-less URL', function() {
+        $location.update('http://server');
+        expect($location.href).toBe('http://server');
+        expect($location.hash).toBe('');
+      });
     });
 
 
@@ -319,6 +325,17 @@ describe("service", function(){
         expect($location.hash).toEqual('path?a=b');
         expect($location.hashSearch).toEqual({a: 'b'});
         expect($location.hashPath).toEqual('path');
+      });
+
+      it('should update href and hash when updating to empty string', function() {
+        $location.updateHash('');
+        expect($location.href).toBe('http://server');
+        expect($location.hash).toBe('');
+
+        scope.$eval();
+
+        expect($location.href).toBe('http://server');
+        expect($location.hash).toBe('');
       });
     });
   });

@@ -109,7 +109,7 @@ angularServiceInject("$location", function($browser) {
       extend(location, parseHref(href));
     } else {
       if (isDefined(href.hash)) {
-        extend(href, parseHash(href.hash));
+        extend(href, isString(href.hash) ? parseHash(href.hash) : href.hash);
       }
 
       extend(location, href);
@@ -155,7 +155,9 @@ angularServiceInject("$location", function($browser) {
     } else
       hash.hashSearch = path;
 
-    update(hash);
+    hash.hash = composeHash(hash);
+
+    update({hash: hash});
   }
 
 
@@ -187,7 +189,7 @@ angularServiceInject("$location", function($browser) {
       }
       if (location.hash != lastLocation.hash) {
         var hash = parseHash(location.hash);
-        updateHash(hash.path, hash.search);
+        updateHash(hash.hashPath, hash.hashSearch);
       } else {
         location.hash = composeHash(location);
         location.href = composeHref(location);
