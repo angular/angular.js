@@ -1,0 +1,85 @@
+@workInProgress
+@ngdoc overview
+@name Cookbook: Form
+@description
+
+A web application's main purpose is to present and gather data. For this reason <angular/> strives to make both of these operations trivial. This example shows off how you can build a simple form to allow a user to enter data.
+
+
+<doc:example>
+ <doc:source>
+  <script>
+    function FormController(){
+      this.user = {
+        name: 'John Smith',
+        address:{line1: '123 Main St.', city:'Anytown', state:'AA', zip:'12345'},
+        contacts:[{type:'phone', value:'1(234) 555-1212'}]
+      };
+      this.state = /^\w\w$/;
+      this.zip = /^\d\d\d\d\d$/;
+    }
+  </script>
+  <div ng:controller="FormController" class="example">
+
+    <label>Name:</label><br/>
+    <input type="text" name="user.name" ng:required/> <br/><br/>
+
+    <label>Address:</label><br/>
+    <input type="text" name="user.address.line1" size="33" ng:required/> <br/>
+    <input type="text" name="user.address.city" size="12" ng:required/>,
+    <input type="text" name="user.address.state" size="2" ng:required ng:validate="regexp:state"/>
+    <input type="text" name="user.address.zip" size="5" ng:required ng:validate="regexp:zip"/><br/><br/>
+
+    <label>Phone:</label>
+    [ <a href="" ng:click="user.contacts.$add()">add</a> ]
+    <div ng:repeat="contact in user.contacts">
+      <select name="contact.type">
+        <option>email</option>
+        <option>phone</option>
+        <option>pager</option>
+        <option>IM</option>
+      </select>
+      <input type="text" name="contact.value" ng:required/>
+       [ <a href="" ng:click="user.contacts.$remove(contact)">X</a> ]
+    </div>
+    <hr/>
+    Debug View:
+    <pre>user={{user}}</pre>
+  </div>
+
+ </doc:source>
+ <doc:scenario>
+  it('should show debug', function(){
+    expect(binding('user')).toMatch(/John Smith/);
+  });
+  iit('should add contact', function(){
+    using('.example').element('a:contains(add)').click();
+    using('.example div:last').input('contact.value').enter('you@example.org');
+    expect(binding('user')).toMatch(/\(234\) 555\-1212/);
+    expect(binding('user')).toMatch(/you@example.org/);
+  });
+
+  iit('should remove contact', function(){
+  });
+
+  iit('should validate zip', function(){
+  });
+
+  iit('should validate state', function(){
+  });
+ </doc:scenario>
+</doc:example>
+
+
+# Things to notice
+
+* The user data model is initialized {@link angular.ng:controller controller} and is available in
+  the {@link angular.scope scope} with the initial data.
+* For debugging purposes we have included a debug view of the model to better understand what
+  is going on.
+* The {@link angular.widget.HTML input widgets} simply refer to the model and are auto bound.
+* The inputs {@link angular.validator validate}. (Try leaving them blank or entering non digits
+  in the zip field)
+* In your application you can simply read from or write to the model and the form will be updated.
+* By clicking the 'add' link you are adding new items into the `user.contacts` array which are then
+  reflected in the view.

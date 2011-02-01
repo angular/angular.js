@@ -3,7 +3,7 @@
       xmlns:doc="http://docs.angularjs.org/"
       ng:controller="DocsController">
 <head>
-  <title ng:bind-template="&lt;angular/&gt;: {{getTitle()}}">&lt;angular/&gt;</title>
+  <title ng:bind-template="&lt;angular/&gt;: {{partialTitle}}">&lt;angular/&gt;</title>
 
   <meta name="fragment" content="!">
 
@@ -25,7 +25,7 @@
 <body style="display:none;" ng:show="true">
   <div id="header">
     <h1>
-      <span class="main-title">{{getTitle()}}</span>
+      <span class="main-title">{{partialTitle}}</span>
       <a href="#" tabindex="0"><span class="angular">&lt;angular/&gt;</span> Docs</a>
     </h1>
   </div>

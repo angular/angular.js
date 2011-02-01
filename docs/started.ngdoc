@@ -1,0 +1,122 @@
+@workInProgress
+@ngdoc overview
+@name Getting Started
+@description
+
+# Hello World
+The easiest way to get started with angular is to create a basic Hello World app.
+
+# Step 1
+
+In your favorite text editor, create a file called helloworld.html. Copy and paste the following
+contents into the file:
+
+<doc:example>
+ <doc:source>
+  Hello {{'World'}}!
+ </doc:source>
+</doc:example>
+
+
+# Step 2
+
+<img class="right" src="img/helloworld.png"/>
+Navigate to the file helloworld.html in your browser. The page should look like the screenshot
+below:
+
+
+That's it! Now take another look at helloworld.html. Here's what's going on behind the scenes:
+
+<pre>
+<html xmlns:ng="http://angularjs.org">
+</pre>
+
+Defines the namespace `ng`, which represents the URL `http://angularjs.org`. You must define the
+`ng` namespace in your application so the browser understands angular directives like
+`ng:autobind`.
+
+<pre>
+<script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js" ng:autobind></script>
+</pre>
+
+Sets the `src` attribute of the script tag to `http://code.angularjs.org/angular-?.?.?.min.js` to
+bootstrap to the angular environment. Uses the `ng:autobind` attribute to compile and manage the
+whole HTML document. The compilation happens in the page's onLoad handler.
+
+<pre>
+Hello {{'World'}}!
+</pre>
+
+This is the template that describes how this element is displayed in the UI.
+Uses the double curly brace markup (`{{}}`) to bind an expression to the greeting text. In this
+case the expression is the string literal 'World'.
+
+# Step 3
+
+For a more advanced Hello World example that demonstrates angular's two-way data binding, edit
+helloworld.html and replace the contents of the `<body/>` with:
+
+<doc:example>
+ <doc:source>
+  Your name: <input type="text" name="yourname" value="World"/>
+  <hr/>
+  Hello {{yourname}}!
+ </doc:source>
+</doc:example>
+
+
+<img class="right" src="img/helloworld_2way.png"/>
+These are the changes to note:
+
+* The text input widget is bound to the text stored by the name variable.
+* The name variable is implicit in the root scope.
+* You did not need to explicitly register an event listener or define an event handler for events.
+
+Now refresh the `helloworld.html` page in your browser. Your screen should now look like this:
+
+
+Type your name into the input box and notice the immediate change to the displayed greeting. This
+example demonstrates the concept of angular's two-way data binding; any changes to the input field
+are immediately reflected in the greeting text.
+
+# Anatomy of an angular app
+These are the 3 parts of an angular app and how they map to the Model-View-Controller design pattern:
+
+# Template
+
+Templates, which you write in HTML and CSS, are the View. You add elements, attributes, and markup
+to HTML, which are instructions to the angular compiler. These instructions are fully extensible,
+meaning that you can build your own declarative language with angular.
+
+# Application Logic and Behavior
+
+Application Logic and Behavior, which you define in JavaScript, are the Controllers. Unlike
+normal AJAX applications, you don't need to write additional listeners or DOM manipulators in
+angular because they are built-in. This makes your application logic very easy to write, test,
+maintain, and understand.
+
+# Scope
+
+<img class="right" src="img/angular_parts.png"/>
+Scope, which is a JavaScript object that has the ability to watch for changes and get notified of
+them, is the Model. You typically don't need to write much, if any, additional JavaScript to
+define your model.
+
+Additionally, angular comes with a set of Services, which have the following properties:
+
+* Useful for building web applications.
+* You can extend the services and add application-specific behavior to them.
+* Examples include Dependency-Injection, XHR, caching, URL routing, and browser abstraction.
+
+The following illustrates each part of an angular application and how they work together:
+
+
+# Where to go next
+For more hands-on examples of using angular, including more source code that you can copy and
+paste into your own page, take a look through {@link cookbook}.
+For explanations of the concepts described in this example, see {@link guide.bootstrap bootstrap},
+{@link guide.template template}, {@link angular.widget.HTML input}, {@link angula.scope scope},
+{@link angular.markup markup}, and {@link guide.data-binding data binding}.
+
+To read about the HTML compiler and the compilation process, see {@link guide.compiler compiler}.
+For more angular concepts, see the {@link guide Developer Guide}.

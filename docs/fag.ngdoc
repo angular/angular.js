@@ -1,0 +1,81 @@
+@workInProgress
+@ngdoc overview
+@name FAQ
+@description
+
+#FAQ
+
+### Why is this project called "angular"? Why is the namespace called "ng"?
+
+Because HTML has angular brackets and "ng" sounds like "angular".
+
+### Is <angular/> an HTML5 tag?
+
+No, <angular/> is not an HTML5 tag. angular is an orthogonal project to HTML5; you can use the two
+together.
+
+### Is angular a {library, framework, DOM manipulation library, widget library, native plugin}?
+
+No, angular is none of these. You don't call its functions, it does not call your functions,
+it does not provide a way to manipulate DOM, but does provide primitives to create UI projections
+of your data. There are lots of existing widget libraries which you can integrate with angular.
+It is 100% JavaScript, 100% client side and compatible with both desktop and mobile browsers.
+
+### Do I need to worry about security holes in angular?
+
+Like with any technology, angular is not impervious to attack. angular does, however, provide
+built-in protection from basic security holes including cross-site scripting and HTML injection
+attacks. angular does round-trip escaping on all strings for you.
+
+### Can I download the source, build, and host the angular environment locally?
+
+Yes. See instructions in {@link guide.downloading downloading}.
+
+### Is angular a templating system?
+
+At the highest level, angular does look like a just another templating system. But there is one
+important reason why angular templating system is different and makes it very good fit for
+application development: bidirectional data binding. The template is compiled on the browser and
+the compilation step produces a live view. This means you, the developer, don't need to write
+code to constantly sync the view with the model and the model with the view as in other
+templating systems.
+
+### What browsers does angular work with?
+
+Webkit-based browsers (Safari, Chrome, iPhone, Android, WebOS, BlackBerry 6), Firefox, IE6 and
+above. Note that CSS only works on IE7 and above.
+
+### What's angular's performance like?
+
+angular takes ~300ms to load, render, and compile. In Chrome it uses about 2-5MB of memory. Your
+app's performance will vary depending on how many bindings you use.
+
+### How big is the angular bootstrap JS file that I need to include?
+
+The size of the library itself is < 50KB compressed and obfuscated.
+
+### Can I use the open-source Closure Library with angular?
+
+Yes, you can use widgets from the {@link http://code.google.com/closure/library Closure Library}
+in angular.
+
+### Does angular use the jQuery library?
+
+Yes, angular uses {@link http://jquery.com/ jQuery}, the open source DOM manipulation library.
+If jQuery is not present in your script path, angular falls back on its own implementation of
+{@link angular.element jQuery lite}. If jQuery is present in the path, angular uses it to
+manipulate the DOM.
+
+### What is testability like in angular?
+
+Very testable. It has an integrated dependency injection framework. See
+{@link angular.service service} for details.
+
+### How can I learn more about angular?
+
+Watch the July 28, 2010 talk
+"{@link http://www.youtube.com/watch?v=elvcgVSynRg| Angular: A Radically Different Way of Building AJAX Apps}".
+
+### How is angular licensed?
+
+The MIT License.
