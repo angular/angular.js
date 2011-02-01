@@ -13,16 +13,16 @@ function angularServiceInject(name, fn, inject, eager) {
  * @name angular.service.$window
  *
  * @description
- * Is reference to the browser's <b>window</b> object. While <b>window</b>
+ * Is reference to the browser's `window` object. While `window`
  * is globally available in JavaScript, it causes testability problems, because
- * it is a global variable. In <b><angular/></b> we always refer to it through the
- * $window service, so it may be overriden, removed or mocked for testing.
+ * it is a global variable. In angular we always refer to it through the
+ * `$window` service, so it may be overriden, removed or mocked for testing.
  *
  * All expressions are evaluated with respect to current scope so they don't
  * suffer from window globality.
  *
  * @example
-   <input ng:init="greeting='Hello World!'" type="text" name="greeting" />
+   <input ng:init="$window = $service('$window'); greeting='Hello World!'" type="text" name="greeting" />
    <button ng:click="$window.alert(greeting)">ALERT</button>
  */
 angularServiceInject("$window", bind(window, identity, window), [], EAGER);
