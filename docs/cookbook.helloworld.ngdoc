@@ -1,0 +1,31 @@
+@workInProgress
+@ngdoc overview
+@name Cookbook: Hello World
+@description
+
+<doc:example>
+ <doc:source>
+  Your name: <input type="text" name="name" value="World"/>
+  <hr/>
+  Hello {{name}}!
+ </doc:source>
+ <doc:scenario>
+   iit('should change the binding when user enters text', function(){
+     expect(binding('name')).toEqual('World');
+     input('name').enter('angular');
+     expect(binding('name')).toEqual('angular');
+   });
+ </doc:scenario>
+</doc:example>
+
+# Things to notice
+
+Take a look through the source and note:
+
+* The script tag that {@link guide.bootstrap bootstraps} the angular environment.
+* The text {@link angular.widget.HTML input widget} which is bound to the greeting name text.
+* No need for listener registration and event firing on change events.
+* The implicit presence of the `name` variable which is in the root {@link angular.scope scope}.
+* The double curly brace `{{markup}}`, which binds the name variable to the greeting text.
+* The concept of {@link guide.data-binding data binding}, which reflects any changes to the
+  input field in the greeting text.

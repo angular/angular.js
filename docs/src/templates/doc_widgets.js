@@ -29,17 +29,22 @@
         scenario = element.find('doc\\:scenario').eq(0);
 
     var code = indent(exampleSrc);
-    var tabs = angular.element(
-        '<ul class="doc-example">' +
-          '<li class="doc-example-heading"><h3>Source</h3></li>' +
-          '<li class="doc-example-source" ng:non-bindable>' +
-            '<pre class="brush: js; html-script: true; highlight: [' +
-            code.hilite + ']; toolbar: false;"></pre></li>' +
-          '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
-          '<li class="doc-example-live">' + exampleSrc +'</li>' +
-          '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
-          '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>' +
-        '</ul>');
+    var tabHtml =
+      '<ul class="doc-example">' +
+        '<li class="doc-example-heading"><h3>Source</h3></li>' +
+        '<li class="doc-example-source" ng:non-bindable>' +
+          '<pre class="brush: js; html-script: true; highlight: [' +
+          code.hilite + ']; toolbar: false;"></pre></li>' +
+        '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
+        '<li class="doc-example-live">' + exampleSrc +'</li>';
+    if (scenario.text()) {
+      tabHtml +=
+        '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
+        '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>';
+    }
+    tabHtml +=
+      '</ul>';
+    var tabs = angular.element(tabHtml);
 
     tabs.find('li.doc-example-source > pre').text(HTML_TEMPLATE.replace('_HTML_SOURCE_', code.html));
 

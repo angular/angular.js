@@ -515,7 +515,8 @@ function metadata(docs){
 }
 
 var KEYWORD_PRIORITY = {
-  '.guide': 1,
+  '.started': 1,
+  '.guide': 2,
   '.guide.overview': 1,
   '.angular': 7,
   '.angular.Array': 7,
