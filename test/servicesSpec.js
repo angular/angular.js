@@ -476,6 +476,10 @@ describe("service", function(){
       expect($route.current.scope.notFoundProp).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
     });
+  });
+
+
+  describe('redirection', function() {
 
     it('should support redirection via redirectTo property by updating $location', function() {
       var scope = angular.scope(),
@@ -519,51 +523,41 @@ describe("service", function(){
       expect(onChangeSpy.callCount).toBe(1);
     });
 
-    it('should make parentScope configurable via parent()', function() {
+
+    it('should interpolate route variables in the redirected path from hashPath', function() {
       var scope = angular.scope(),
-          parentScope = scope.$new(),
           $location = scope.$service('$location'),
+          $browser = scope.$service('$browser'),
           $route = scope.$service('$route');
 
-      $route.parent(parentScope);
-      $route.when('/foo', {template: 'foo.html'});
-      $route.otherwise({template: '404.html'});
-
+      $route.when('/foo/:id/foo/:subid/:ignoredId', {redirectTo: '/bar/:id/:subid/23'});
+      $route.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
       scope.$eval();
 
-      expect($route.current.template).toBe('404.html');
-      expect($route.current.scope.$parent).toBe(parentScope);
+      $location.updateHash('/foo/id1/foo/subid3/gah');
+      scope.$eval(); //triggers initial route change - match the redirect route
+      $browser.defer.flush(); //triger route change - match the route we redirected to
 
-      $location.updateHash('/foo');
-      scope.$eval();
-
-      expect($route.current.template).toBe('foo.html');
-      expect($route.current.scope.$parent).toBe(parentScope);
+      expect($location.hash).toBe('/bar/id1/subid3/23');
+      expect($route.current.template).toBe('bar.html');
     });
 
-    it('should reload routes when reload() is called', function() {
+    it('should interpolate route variables in the redirected path from hashSearch', function() {
       var scope = angular.scope(),
           $location = scope.$service('$location'),
-          $route = scope.$service('$route'),
-          onChangeSpy = jasmine.createSpy('onChange');
+          $browser = scope.$service('$browser'),
+          $route = scope.$service('$route');
 
-      $route.when('', {template: 'foo.html'});
-      $route.onChange(onChangeSpy);
-      expect($route.current).toBeNull();
-      expect(onChangeSpy).not.toHaveBeenCalled();
-
+      $route.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
+      $route.when('/foo/:id', {redirectTo: '/bar/:id/:subid/99'});
       scope.$eval();
 
-      expect($location.hash).toBe('');
-      expect($route.current.template).toBe('foo.html');
-      expect(onChangeSpy.callCount).toBe(1);
+      $location.hash = '/foo/id3?subid=sid1&ignored=true';
+      scope.$eval(); //triggers initial route change - match the redirect route
+      $browser.defer.flush(); //triger route change - match the route we redirected to
 
-      $route.reload();
-      scope.$eval();
-
-      expect($location.hash).toBe('');
-      expect($route.current.template).toBe('foo.html');
-      expect(onChangeSpy.callCount).toBe(2);
+      expect($location.hash).toBe('/bar/id3/sid1/99');
+      expect($route.current.template).toBe('bar.html');
     });
   });
 
