@@ -801,7 +801,7 @@ angularServiceInject('$route', function(location, $updateView) {
         }
       };
   function updateRoute(){
-    var childScope, routeParams, pathParams;
+    var childScope, routeParams, pathParams, redirectPath, segmentMatch, key;
 
     $route.current = _null;
     forEach(routes, function(rParams, rPath) {
@@ -817,7 +817,18 @@ angularServiceInject('$route', function(location, $updateView) {
 
     if(routeParams) {
       if (routeParams.redirectTo) {
-        location.updateHash(routeParams.redirectTo);
+        redirectPath = '';
+        forEach(routeParams.redirectTo.split(':'), function(segment, i) {
+          if (i==0) {
+            redirectPath += segment;
+          } else {
+            segmentMatch = segment.match(/(\w+)(.*)/);
+            key = segmentMatch[1];
+            redirectPath += pathParams[key] || location.hashSearch[key];
+            redirectPath += segmentMatch[2] || '';
+          }
+        });
+        location.updateHash(redirectPath);
         $updateView(); //TODO this is to work around the $location<=>$browser issues
         return;
       }
