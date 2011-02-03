@@ -10,7 +10,7 @@
   Hello {{name}}!
  </doc:source>
  <doc:scenario>
-   iit('should change the binding when user enters text', function(){
+   it('should change the binding when user enters text', function(){
      expect(binding('name')).toEqual('World');
      input('name').enter('angular');
      expect(binding('name')).toEqual('angular');

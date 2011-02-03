@@ -3,43 +3,59 @@
 @name Cookbook: Deep Linking
 @description
 
-Deep linking allows you to encode the state of the application in the URL so that it can be bookmarked and the application can be restored from the URL to the same state.
+Deep linking allows you to encode the state of the application in the URL so that it can be
+bookmarked and the application can be restored from the URL to the same state.
 
-While <angular/> does not force you to deal with bookmarks in any particular way, it has services which make the common case described here very easy to implement.
+While <angular/> does not force you to deal with bookmarks in any particular way, it has services
+which make the common case described here very easy to implement.
 
-[edit] Assumptions
+# Assumptions
 
-Your application consists of a single HTML page which bootstraps the application. We will refer to this page as the chrome.
-Your application is divided into several screens (or views) which the user can visit. For example, the home screen, settings screen, details screen, etc. For each of these screens, we would like to assign a URL so that it can be bookmarked and later restored. Each of these screens will be associated with a controller which define the screen's behavior. The most common case is that the screen will be constructed from an HTML snippet, which we will refer to as the partial. Screens can have multiple partials, but a single partial is the most common construct. This example makes the partial boundary visible using a blue line.
-You can make a routing table which shows which URL maps to which partial view template and which controller.
-[edit] Example
+Your application consists of a single HTML page which bootstraps the application. We will refer
+to this page as the chrome.
+Your application is divided into several screens (or views) which the user can visit. For example,
+the home screen, settings screen, details screen, etc. For each of these screens, we would like to
+assign a URL so that it can be bookmarked and later restored. Each of these screens will be
+associated with a controller which define the screen's behavior. The most common case is that the
+screen will be constructed from an HTML snippet, which we will refer to as the partial. Screens can
+have multiple partials, but a single partial is the most common construct. This example makes the
+partial boundary visible using a blue line.
+
+You can make a routing table which shows which URL maps to which partial view template and which
+controller.
+
+# Example
 
 In this example we have a simple app which consist of two screens:
 
-Welcome: url # Show the user contact information.
-Settings: url #/settings Show an edit screen for user contact information.
+* Welcome: url `#` Show the user contact information.
+* Settings: url `#/settings` Show an edit screen for user contact information.
+
+
 The two partials are defined in the following URLs:
 
-http://angularjs.org/cb/settings.html
-http://angularjs.org/cb/welcome.html
+* {@link ./static/settings.html}
+* {@link ./static/welcome.html}
 
 
 <doc:example>
  <doc:source>
     <script>
-    angular.service('myApplication', function($route){
+     AppCntl.$inject = ['$route']
+     function AppCntl($route) {
       // define routes
-      $route.when("",          {template:'/cb/welcome.html',  controller:WelcomeCntl});
-      $route.when("/settings", {template:'/cb/settings.html', controller:SettingsCntl});
+      $route.when("",          {template:'./static/welcome.html',  controller:WelcomeCntl});
+      $route.when("/settings", {template:'./static/settings.html', controller:SettingsCntl});
+      $route.parent(this);
 
       // initialize the model to something useful
       this.person = {
        name:'anonymous',
        contacts:[{type:'email', url:'anonymous@example.com'}]
       };
-     }, {inject:['$route']});
+     }
 
-     function WelcomeCntl(){}
+     function WelcomeCntl($route){}
      WelcomeCntl.prototype = {
       greet: function(){
        alert("Hello " + this.person.name);
@@ -60,25 +76,39 @@ http://angularjs.org/cb/welcome.html
       }
      };
     </script>
-    <h1>Your App Chrome</h1>
-    [ <a href="#">Welcome</a> | <a href="#/settings">Settings</a> ]
-    <hr/>
-    <span style="background-color: blue; color: white; padding: 3px;">
-      Partial: {{$route.current.template}}
-    </span>
-    <div style="border: 1px solid blue; margin: 0;">
-      <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
+    <div ng:controller="AppCntl">
+      <h1>Your App Chrome</h1>
+      [ <a href="#">Welcome</a> | <a href="#/settings">Settings</a> ]
+      <hr/>
+      <span style="background-color: blue; color: white; padding: 3px;">
+        Partial: {{$route.current.template}}
+      </span>
+      <ng:view style="border: 1px solid blue; margin: 0; display:block; padding:1em;"></ng:view>
+      <small>Your app footer </small>
     </div>
-    <small>Your app footer </small>
  </doc:source>
  <doc:scenario>
+   it('should navigate to URL', function(){
+    element('a:contains(Welcome)').click();
+    expect(element('ng\\:view').text()).toMatch(/Hello anonymous/);
+    element('a:contains(Settings)').click();
+    input('form.name').enter('yourname');
+    element(':button:contains(Save)').click();
+    element('a:contains(Welcome)').click();
+    expect(element('ng\\:view').text()).toMatch(/Hello yourname/);
+   });
  </doc:scenario>
 </doc:example>
 
 
 
-Things to notice
+# Things to notice
 
-Routes are defined in the myApplication service. The service is initialized on application startup. Initialization of the services causes the initialization of the $route service with the proper URL routes. The $route service then watches the URL and instantiates the appropriate controller when the URL changes.
-The ng:include widget loads the partial when the URL changes. It also sets the partial scope to the newly instantiated controller.
-Changing the URL is sufficient to change the controller and screen/view/partial. It makes no difference whether the URL is changed programatically or by the user.
+* Routes are defined in the `AppCntl` class. The initialization of the controller causes the
+  initialization of the {@link angular.service.$rouet $route} service with the proper URL routes.
+* The  {@link angular.service.$route $route} service then watches the URL and instantiates the
+  appropriate controller when the URL changes.
+* The  {@link angular.widget.ng:view ng:view} widget loads the view when the URL changes. It also
+  sets the view scope to the newly instantiated controller.
+* Changing the URL is sufficient to change the controller and view. It makes no difference whether
+  the URL is changed programatically or by the user.

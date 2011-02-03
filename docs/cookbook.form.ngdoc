@@ -66,18 +66,24 @@ allow a user to enter data.
     expect(binding('user')).not().toMatch(/\(234\) 555\-1212/);
   });
 
-  iit('should validate zip', function(){
-    var form = using('.example');
-    expect(form.element(':input[name=user.address.zip]').attr('className'))
+  it('should validate zip', function(){
+    expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
       .not().toMatch(/ng-validation-error/)
 
-    form.input('user.address.zip').enter('abc');
+    using('.example').input('user.address.zip').enter('abc');
 
-    expect(form.element(':input[name=user.address.zip]').attr('className'))
+    expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
       .toMatch(/ng-validation-error/)
   });
 
-  iit('should validate state', function(){
+  it('should validate state', function(){
+    expect(using('.example').element(':input[name=user.address.state]').attr('className'))
+      .not().toMatch(/ng-validation-error/)
+
+    using('.example').input('user.address.state').enter('XXX');
+
+    expect(using('.example').element(':input[name=user.address.state]').attr('className'))
+      .toMatch(/ng-validation-error/)
   });
  </doc:scenario>
 </doc:example>

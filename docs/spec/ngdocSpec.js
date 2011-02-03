@@ -296,6 +296,7 @@ describe('ngdoc', function(){
             'foo {@link angular.foo}\n\n da {@link angular.foo bar foo bar } \n\n' +
             'dad{@link angular.foo}\n\n' +
             'external{@link http://angularjs.org}\n\n' +
+            'external{@link ./static.html}\n\n' +
             '{@link angular.directive.ng:foo ng:foo}');
         doc.parse();
         expect(doc.description).
@@ -308,6 +309,8 @@ describe('ngdoc', function(){
           toContain('<a href="#!angular.directive.ng:foo"><code>ng:foo</code></a>');
         expect(doc.description).
           toContain('<a href="http://angularjs.org">http://angularjs.org</a>');
+        expect(doc.description).
+          toContain('<a href="./static.html">./static.html</a>');
       });
 
     });

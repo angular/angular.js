@@ -24,7 +24,8 @@ var writes = callback.chain(function(){
   });
   var metadata = ngdoc.metadata(docs);
   writer.output('docs-keywords.js', ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';'], writes.waitFor());
-  writer.copyImages(writes.waitFor());
+  writer.copyDir('img', writes.waitFor());
+  writer.copyDir('static', writes.waitFor());
   writer.copy('index.html', writes.waitFor());
   writer.copy('docs.js', writes.waitFor());
   writer.copy('docs.css', writes.waitFor());
