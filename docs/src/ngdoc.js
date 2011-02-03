@@ -59,7 +59,7 @@ Doc.prototype = {
 
   markdown: function (text) {
     var self = this;
-    var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:)/;
+    var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/;
     var IS_ANGULAR = /^angular\./;
     if (!text) return text;
     var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/),

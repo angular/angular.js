@@ -61,14 +61,12 @@ function copy(from, to, callback) {
   });
 }
 
-exports.copyImages = function(callback) {
-  exports.makeDir(OUTPUT_DIR + '/img', callback.waitFor(function(){
-    fs.readdir('docs/img', callback.waitFor(function(err, files){
+exports.copyDir = function(dir, callback) {
+  exports.makeDir(OUTPUT_DIR + '/' + dir, callback.waitFor(function(){
+    fs.readdir('docs/' + dir, callback.waitFor(function(err, files){
       if (err) return this.error(err);
       files.forEach(function(file){
-        if (file.match(/\.(png|gif|jpg|jpeg)$/)) {
-          copy('docs/img/' + file, OUTPUT_DIR  + '/img/' + file, callback.waitFor());
-        }
+        copy('docs/' + dir + '/' + file, OUTPUT_DIR  + '/' + dir + '/' + file, callback.waitFor());
       });
       callback();
     }));
