@@ -16,7 +16,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/JSTD_Tests.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/docs.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
@@ -26,7 +26,7 @@
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/docs.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/JSTD_Tests.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>
