@@ -4,6 +4,52 @@ describe('HTML', function(){
     return expect(new HTML(html).get());
   }
 
+  describe('htmlParser', function(){
+    var handler, start, text;
+    beforeEach(function(){
+      handler = {
+          start: function(tag, attrs, unary){
+            start = {
+                tag: tag,
+                attrs: attrs,
+                unary: unary
+            };
+          },
+          chars: function(text_){
+            text = text_;
+          },
+          end:function(tag) {
+            expect(tag).toEqual(start.tag);
+          }
+      };
+    });
+
+    it('should parse basic format', function(){
+      htmlParser('<tag attr="value">text</tag>', handler);
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(text).toEqual('text');
+    });
+
+    it('should parse newlines in tags', function(){
+      htmlParser('<\ntag\n attr="value"\n>text<\n/\ntag\n>', handler);
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
+      expect(text).toEqual('text');
+    });
+
+    it('should parse newlines in attributes', function(){
+      htmlParser('<tag attr="\nvalue\n">text</tag>', handler);
+      expect(start).toEqual({tag:'tag', attrs:{attr:'\nvalue\n'}, unary:false});
+      expect(text).toEqual('text');
+    });
+
+    it('should parse namespace', function(){
+      htmlParser('<ns:t-a-g ns:a-t-t-r="\nvalue\n">text</ns:t-a-g>', handler);
+      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'\nvalue\n'}, unary:false});
+      expect(text).toEqual('text');
+    });
+
+  });
+
   it('should echo html', function(){
     expectHTML('hello<b class="1\'23" align=\'""\'>world</b>.').
        toEqual('hello<b class="1\'23" align="&#34;&#34;">world</b>.');

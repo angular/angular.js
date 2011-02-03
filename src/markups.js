@@ -60,11 +60,18 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
 // TODO: this should be widget not a markup
 angularTextMarkup('OPTION', function(text, textNode, parentElement){
   if (nodeName_(parentElement) == "OPTION") {
-    var select = document.createElement('select');
-    select.insertBefore(parentElement[0].cloneNode(true), _null);
-    if (!select.innerHTML.match(/<option(\s.*\s|\s)value\s*=\s*.*>.*<\/\s*option\s*>/gi)) {
-      parentElement.attr('value', text);
-    }
+    var select = jqLite('<select>');
+    select.append(parentElement.clone());
+    htmlParser(select.html(), {
+      start: function(tag, attrs) {
+        if (isUndefined(attrs.value)) {
+          parentElement.attr('value', text);
+        }
+      },
+      chars: noop,
+      end: noop,
+      comment: noop
+    });
   }
 });
 

@@ -1,5 +1,7 @@
 # <angular/> 0.9.11 snow-maker  (in-progress) #
 
+### Bug Fixes
+- <option> value attribute gets clobbered when the element contains new-lines.
 
 
 # <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
