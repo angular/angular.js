@@ -20,16 +20,16 @@ describe('browser', function(){
     fakeWindow = {
       location: {href:"http://server"},
       setTimeout: fakeSetTimeout
-    }
+    };
 
-    var fakeBody = {append: function(node){scripts.push(node)}};
+    var fakeBody = {append: function(node){scripts.push(node);}};
 
     var fakeXhr = function(){
       xhr = this;
       this.open = noop;
       this.setRequestHeader = noop;
       this.send = noop;
-    }
+    };
 
     logs = {log:[], warn:[], info:[], error:[]};
 
@@ -68,15 +68,19 @@ describe('browser', function(){
   describe('xhr', function(){
     describe('JSON', function(){
       it('should add script tag for request', function() {
+        var callback = jasmine.createSpy('callback');
         var log = "";
         browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', function(code, data){
           log += code + ':' + data + ';';
         });
+        browser.notifyWhenNoOutstandingRequests(callback);
+        expect(callback).not.wasCalled();
         expect(scripts.length).toEqual(1);
         var url = scripts[0].src.split('?cb=');
         expect(url[0]).toEqual('http://example.org/path');
         expect(typeof fakeWindow[url[1]]).toEqual($function);
         fakeWindow[url[1]]('data');
+        expect(callback).wasCalled();
         expect(log).toEqual('200:data;');
         expect(typeof fakeWindow[url[1]]).toEqual('undefined');
       });
@@ -388,7 +392,7 @@ describe('browser', function(){
       browser = new Browser(fakeWindow, {}, {});
 
       var events = [],
-          event = {type: "hashchange"}
+          event = {type: "hashchange"};
 
       browser.onHashChange(function(e) {
         events.push(e);

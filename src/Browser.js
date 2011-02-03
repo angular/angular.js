@@ -81,6 +81,7 @@ function Browser(window, document, body, XHR, $log) {
       callback = post;
       post = _null;
     }
+    outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = "angular_" + Math.random() + '_' + (idCounter++);
       callbackId = callbackId.replace(/\d\./, '');
@@ -89,7 +90,7 @@ function Browser(window, document, body, XHR, $log) {
       script.src = url.replace('JSON_CALLBACK', callbackId);
       window[callbackId] = function(data){
         window[callbackId] = _undefined;
-        callback(200, data);
+        completeOutstandingRequest(callback, 200, data);
       };
       body.append(script);
     } else {
@@ -98,7 +99,6 @@ function Browser(window, document, body, XHR, $log) {
       xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
       xhr.setRequestHeader("Accept", "application/json, text/plain, */*");
       xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-      outstandingRequestCount ++;
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           completeOutstandingRequest(callback, xhr.status || 200, xhr.responseText);
@@ -248,7 +248,7 @@ function Browser(window, document, body, XHR, $log) {
       });
     }
     return listener;
-  }
+  };
 
   //////////////////////////////////////////////////////////////
   // Cookies API

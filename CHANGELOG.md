@@ -2,6 +2,7 @@
 
 ### Bug Fixes
 - <option> value attribute gets clobbered when the element contains new line character(s).
+- Fixed notifyWhenNoOutstandingRequests() when using JSONP
 
 
 # <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
