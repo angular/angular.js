@@ -22,19 +22,14 @@ function angularServiceInject(name, fn, inject, eager) {
  * suffer from window globality.
  *
  * @example
-<<<<<<< HEAD
-   <input ng:init="$window = $service('$window'); greeting='Hello World!'" type="text" name="greeting" />
-   <button ng:click="$window.alert(greeting)">ALERT</button>
-=======
    <doc:example>
      <doc:source>
-       <input ng:init="greeting='Hello World!'" type="text" name="greeting" />
+       <input ng:init="$window = $service('$window'); greeting='Hello World!'" type="text" name="greeting" />
        <button ng:click="$window.alert(greeting)">ALERT</button>
      </doc:source>
      <doc:scenario>
      </doc:scenario>
    </doc:example>
->>>>>>> changed the documentation @example to use <doc:example>
  */
 angularServiceInject("$window", bind(window, identity, window), [], EAGER);
 
