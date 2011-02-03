@@ -41,9 +41,39 @@ describe("markups", function(){
     expect(element.attr('src')).toEqual("http://server/a/b.png");
   });
 
-  it('should populate value attribute on OPTION', function(){
-    compile('<select name="x"><option>a</option></select>');
-    expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option value="a">a</option></select>');
+  describe('OPTION value', function(){
+    beforeEach(function(){
+      this.addMatchers({
+        toHaveValue: function(expected){
+          this.message = function(){
+            return 'Expected "' + sortedHtml(this.actual) + '" to have value="' + expected + '".';
+          };
+
+          return this.actual.html().indexOf('value="' + expected + '"') != -1;
+        }
+      });
+    });
+
+    it('should populate value attribute on OPTION', function(){
+      compile('<select name="x"><option>abc</option></select>');
+      expect(element).toHaveValue('abc');
+    });
+
+    it('should ignore value if already exists', function(){
+      compile('<select name="x"><option value="abc">xyz</option></select>');
+      expect(element).toHaveValue('abc');
+    });
+
+    it('should set value even if newlines present', function(){
+      compile('<select name="x"><option attr="\ntext\n" \n>\nabc\n</option></select>');
+      expect(element).toHaveValue('\nabc\n');
+    });
+
+    it('should set value even if self closing HTML', function(){
+      compile('<select name="x"><option>\n</option></select>');
+      expect(element).toHaveValue('\n');
+    });
+
   });
 
   it('should bind href', function() {
