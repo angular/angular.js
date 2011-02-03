@@ -1,11 +1,15 @@
+var HAS_HASH = /#/;
 DocsController.$inject = ['$location', '$browser', '$window'];
 function DocsController($location, $browser, $window) {
   this.pages = NG_PAGES;
   window.$root = this.$root;
   this.$location = $location;
 
-  this.$watch('$location.hashPath', function(hashPath){
-    hashPath = hashPath || '!angular';
+  if (!HAS_HASH.test($location.href)) {
+    $location.hashPath = '!angular';
+  }
+
+  this.$watch('$location.hashPath', function(hashPath) {
     if (hashPath.match(/^!/)) {
       this.partialId = hashPath.substring(1);
       this.partialTitle = (angular.Array.filter(NG_PAGES, {id:this.partialId})[0]||{}).name;

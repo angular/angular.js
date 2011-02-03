@@ -235,7 +235,7 @@ function errorHandlerFor(element, error) {
          expect(using('.doc-example-live').repeater('li').row(1)).
            toEqual(['1', 'Hello', 'Earth']);
          expect(using('.doc-example-live').element('pre').text()).
-           toBe('$index=\nsalutation=Hello\nname=Misko');
+           toBe('       $index=\n       salutation=Hello\n       name=Misko');
        });
      </doc:scenario>
    </doc:example>
