@@ -2,3 +2,102 @@
 @ngdoc overview
 @name Cookbook: MVC
 @description
+
+MVC allows for a clean an testable separation between the behavior (controller) and the view (HTML template). A Controller is just a JavaScript class which is grafted onto the scope of the view. This makes it very easy for the controller and the view to share the model.
+
+The model is simply the controller's this. This makes it very easy to test the controller in isolation since one can simply instantiate the controller and test without a view, because there is no connection between the controller and the view.
+
+
+<doc:example>
+ <doc:source>
+    <script>
+    function TicTacToeCntl(){
+      this.cellStyle= {
+        'height': '20px',
+        'width': '20px',
+        'border': '1px solid black',
+        'text-align': 'center',
+        'vertical-align': 'middle',
+        'cursor': 'pointer'
+      };
+      this.reset();
+      this.$watch('$location.hashPath', this.readUrl);
+    }
+    TicTacToeCntl.prototype = {
+      dropPiece: function(row, col) {
+        if (!this.winner && !this.board[row][col]) {
+          this.board[row][col] = this.nextMove;
+          this.nextMove = this.nextMove == 'X' ? 'O' : 'X';
+          this.setUrl();
+        }
+      },
+      reset: function(){
+        this.board = [
+          ['', '', ''],
+          ['', '', ''],
+          ['', '', '']
+        ];
+        this.nextMove = 'X';
+        this.winner = '';
+        this.setUrl();
+      },
+      grade: function(){
+       var b = this.board;
+       this.winner =
+        row(0) || row(1) || row(2) ||
+        col(0) || col(1) || col(2) ||
+        diagonal(-1) || diagonal(1);
+       function row(r) { return same(b[r][0], b[r][1], b[r][2]);}
+       function col(c) { return same(b[0][c], b[1][c], b[2][c]);}
+       function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
+       function same(a, b, c) { return (a==b && b==c) ? a : '';};
+      },
+      setUrl: function(){
+        var rows = [];
+        angular.foreach(this.board, function(row){
+          rows.push(row.join(','));
+        });
+        this.$location.hashPath = rows.join(';') + '/' + this.nextMove;
+      },
+      readUrl: function(value) {
+        if (value) {
+          value = value.split('/');
+          this.nextMove = value[1];
+          angular.foreach(value[0].split(';'), function(row, i){
+            this.board[i] = row.split(',');
+          }, this);
+          this.grade();
+        } else {
+          this.reset();
+        }
+      }
+    };
+    </script>
+    <h3>Tic-Tac-Toe</h3>
+    <div ng:controller="TicTacToeCntl">
+    Next Player: {{nextMove}}
+    <div ng:show="winner">Player {{winner}} has won!</div>
+    <table>
+      <tr ng:repeat="row in board" style="height:15px;">
+        <td ng:repeat="cell in row" ng:style="cellStyle"
+                ng:click="dropPiece($parent.$index, $index)">{{cell}}</td>
+      </tr>
+    </table>
+    <button ng:click="reset()">reset board</button>
+    </div>
+ </doc:source>
+ <doc:scenario>
+ </doc:scenario>
+</doc:example>
+
+
+Things to notice
+
+The controller is defined in JavaScript and has no reference to the rendering logic.
+The controller is instantiated by <angular/> and injected into the view.
+The controller can be instantiated in isolation (without a view) and the code will still execute. This makes it very testable.
+The HTML view is a projection of the model. In the above example, the model is stored in the board variable.
+All of the controller's properties (such as board and nextMove) are available to the view.
+Changing the model changes the view.
+The view can call any controller function.
+In this example, the setUrl() and readUrl() functions copy the game state to/from the URL's hash so the browser's back button will undo game steps. See deep-linking. This example calls $watch() to set up a listener that invokes readUrl() when needed.
