@@ -3,7 +3,9 @@
 @name Cookbook: Form
 @description
 
-A web application's main purpose is to present and gather data. For this reason <angular/> strives to make both of these operations trivial. This example shows off how you can build a simple form to allow a user to enter data.
+A web application's main purpose is to present and gather data. For this reason angular strives
+to make both of these operations trivial. This example shows off how you can build a simple form to
+allow a user to enter data.
 
 
 <doc:example>
@@ -52,17 +54,27 @@ A web application's main purpose is to present and gather data. For this reason 
   it('should show debug', function(){
     expect(binding('user')).toMatch(/John Smith/);
   });
-  iit('should add contact', function(){
+  it('should add contact', function(){
     using('.example').element('a:contains(add)').click();
     using('.example div:last').input('contact.value').enter('you@example.org');
     expect(binding('user')).toMatch(/\(234\) 555\-1212/);
     expect(binding('user')).toMatch(/you@example.org/);
   });
 
-  iit('should remove contact', function(){
+  it('should remove contact', function(){
+    using('.example').element('a:contains(X)').click();
+    expect(binding('user')).not().toMatch(/\(234\) 555\-1212/);
   });
 
   iit('should validate zip', function(){
+    var form = using('.example');
+    expect(form.element(':input[name=user.address.zip]').attr('className'))
+      .not().toMatch(/ng-validation-error/)
+
+    form.input('user.address.zip').enter('abc');
+
+    expect(form.element(':input[name=user.address.zip]').attr('className'))
+      .toMatch(/ng-validation-error/)
   });
 
   iit('should validate state', function(){
