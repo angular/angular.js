@@ -880,6 +880,25 @@ describe("widget", function(){
       rootScope.$eval();
       expect(rootScope.$element.text()).toEqual('new parent');
     });
+
+    it('should be possible to nest ng:view in ng:include', function() {
+      dealoc(rootScope);
+      rootScope = angular.compile('<div>include: <ng:include src="\'includePartial.html\'"></ng:include></div>');
+      $browser = rootScope.$service('$browser');
+      $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
+      $browser.setUrl('http://server/#/foo');
+
+      $route = rootScope.$service('$route');
+      $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
+      rootScope.$init();
+
+      $browser.xhr.expectGET('viewPartial.html').respond('content');
+      $browser.xhr.flush();
+
+      expect(rootScope.$element.text()).toEqual('include: view: content');
+      expect($route.current.template).toEqual('viewPartial.html');
+      dealoc($route.current.scope);
+    });
   });
 });
 
