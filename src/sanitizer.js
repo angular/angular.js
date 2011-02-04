@@ -42,15 +42,12 @@ var closeSelfElements = makeMap("colgroup,dd,dt,li,p,td,tfoot,th,thead,tr");
 var specialElements = makeMap("script,style");
 var validElements = extend({}, emptyElements, blockElements, inlineElements, closeSelfElements);
 
-//see: http://www.w3.org/TR/html4/index/attributes.html
-//Attributes that have their values filled in disabled="disabled"
-var fillAttrs = makeMap("compact,ismap,nohref,nowrap");
 //Attributes that have href and hence need to be sanitized
 var uriAttrs = makeMap("background,href,longdesc,src,usemap");
-var validAttrs = extend({}, fillAttrs, uriAttrs, makeMap(
+var validAttrs = extend({}, uriAttrs, makeMap(
     'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
-    'color,cols,colspan,coords,dir,face,headers,height,hreflang,hspace,'+
-    'lang,language,rel,rev,rows,rowspan,rules,'+
+    'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,'+
+    'ismap,lang,language,nohref,nowrap,rel,rev,rows,rowspan,rules,'+
     'scope,scrolling,shape,span,start,summary,target,title,type,'+
     'valign,value,vspace,width'));
 
@@ -81,8 +78,7 @@ function htmlParser( html, handler ) {
         index = html.indexOf("-->");
 
         if ( index >= 0 ) {
-          if ( handler.comment )
-            handler.comment( html.substring( 4, index ) );
+          if (handler.comment) handler.comment( html.substring( 4, index ) );
           html = html.substring( index + 3 );
           chars = false;
         }
@@ -114,7 +110,7 @@ function htmlParser( html, handler ) {
         var text = index < 0 ? html : html.substring( 0, index );
         html = index < 0 ? "" : html.substring( index );
 
-        handler.chars( decodeEntities(text) );
+        if (handler.chars) handler.chars( decodeEntities(text) );
       }
 
     } else {
@@ -123,7 +119,7 @@ function htmlParser( html, handler ) {
           replace(COMMENT_REGEXP, "$1").
           replace(CDATA_REGEXP, "$1");
 
-        handler.chars( decodeEntities(text) );
+        if (handler.chars) handler.chars( decodeEntities(text) );
 
         return "";
       });
@@ -159,16 +155,15 @@ function htmlParser( html, handler ) {
 
     var attrs = {};
 
-    rest.replace(ATTR_REGEXP, function(match, name) {
-      var value = arguments[2] ? arguments[2] :
-        arguments[3] ? arguments[3] :
-        arguments[4] ? arguments[4] :
-        fillAttrs[name] ? name : "";
+    rest.replace(ATTR_REGEXP, function(match, name, doubleQuotedValue, singleQoutedValue, unqoutedValue) {
+      var value = doubleQuotedValue
+        || singleQoutedValue
+        || unqoutedValue
+        || '';
 
-      attrs[name] = decodeEntities(value); //value.replace(/(^|[^\\])"/g, '$1\\\"') //"
+      attrs[name] = decodeEntities(value);
     });
-
-    handler.start( tagName, attrs, unary );
+    if (handler.start) handler.start( tagName, attrs, unary );
   }
 
   function parseEndTag( tag, tagName ) {
@@ -183,7 +178,7 @@ function htmlParser( html, handler ) {
     if ( pos >= 0 ) {
       // Close all the open elements, up the stack
       for ( i = stack.length - 1; i >= pos; i-- )
-        handler.end( stack[ i ] );
+        if (handler.end) handler.end( stack[ i ] );
 
       // Remove the open elements from the stack
       stack.length = pos;
@@ -210,7 +205,7 @@ function makeMap(str){
 var hiddenPre=document.createElement("pre");
 function decodeEntities(value) {
   hiddenPre.innerHTML=value.replace(/</g,"&lt;");
-  return hiddenPre.innerText || hiddenPre.textContent;
+  return hiddenPre.innerText || hiddenPre.textContent || '';
 }
 
 /**

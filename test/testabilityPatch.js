@@ -70,7 +70,7 @@ beforeEach(function(){
           expected = toJson(this.actual);
         }
         return "Expected " + expected + " to be an Error with message " + toJson(message);
-      }
+      };
       return this.actual.name == 'Error' && this.actual.message == message;
     },
 
@@ -83,7 +83,7 @@ beforeEach(function(){
           expected = toJson(this.actual);
         }
         return "Expected " + expected + " to match an Error with message " + toJson(messageRegexp);
-      }
+      };
       return this.actual.name == 'Error' && messageRegexp.test(this.actual.message);
     }
   });

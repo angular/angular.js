@@ -719,7 +719,7 @@ function elementError(element, type, error) {
     element[0]['$NG_ERROR'] = error;
     if (error) {
       element.addClass(type);
-      element.attr(type, error);
+      element.attr(type, error.message || error);
     } else {
       element.removeClass(type);
       element.removeAttr(type);
