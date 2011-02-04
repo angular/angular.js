@@ -314,6 +314,14 @@ describe("service", function(){
         expect($location.hashPath).toEqual('path');
       });
 
+      it('should reset hashSearch when updating with a single string', function() {
+        $location.updateHash({foo:'bar'}); //set some initial state for hashSearch
+
+        $location.updateHash('path');
+        expect($location.hashPath).toEqual('path');
+        expect($location.hashSearch).toEqual({});
+      });
+
       it('should accept single object argument to update search', function() {
         $location.updateHash({a: 'b'});
         expect($location.hash).toEqual('?a=b');
