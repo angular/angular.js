@@ -410,6 +410,14 @@ describe("service", function(){
       expect($route.current.template).toEqual('instant update');
     });
 
+    it('should return fn registered with onChange()', function() {
+      var scope = angular.scope(),
+          $route = scope.$service('$route'),
+          fn = function() {};
+
+      expect($route.onChange(fn)).toBe(fn);
+    });
+
     it('should allow routes to be defined with just templates without controllers', function() {
       var scope = angular.scope(),
           $location = scope.$service('$location'),

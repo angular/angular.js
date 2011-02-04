@@ -709,11 +709,15 @@ angularServiceInject('$route', function(location) {
          * @methodOf angular.service.$route
          *
          * @param {function()} fn Function that will be called when `$route.current` changes.
+         * @returns {function()} The registered function.
          *
          * @description
          * Register a handler function that will be called when route changes
          */
-        onChange: bind(onChange, onChange.push),
+        onChange: function(fn) {
+          onChange.push(fn);
+          return fn;
+        },
 
         /**
          * @workInProgress
