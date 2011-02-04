@@ -6,24 +6,18 @@
 # Hello World
 The easiest way to get started with angular is to create a basic Hello World app.
 
-# Step 1
+1. In your favorite text editor, create a file called `helloworld.html`. 
+2. Copy and paste the following code from Source into `helloworld.html` and open it in your browser:
+        
+    <doc:example>
+        <doc:source>
+            Hello {{'World'}}!
+        </doc:source>
+    </doc:example>
 
-In your favorite text editor, create a file called helloworld.html. Copy and paste the following
-contents into the file:
+The page should look something like the following:
 
-<doc:example>
- <doc:source>
-  Hello {{'World'}}!
- </doc:source>
-</doc:example>
-
-
-# Step 2
-
-<img class="right" src="img/helloworld.png"/>
-Navigate to the file helloworld.html in your browser. The page should look like the screenshot
-below:
-
+<img class="left" src="img/helloworld.png"/>
 
 That's it! Now take another look at helloworld.html. Here's what's going on behind the scenes:
 
@@ -51,7 +45,7 @@ This is the template that describes how this element is displayed in the UI.
 Uses the double curly brace markup (`{{}}`) to bind an expression to the greeting text. In this
 case the expression is the string literal 'World'.
 
-# Step 3
+# Hello <angular/> World
 
 For a more advanced Hello World example that demonstrates angular's two-way data binding, edit
 helloworld.html and replace the contents of the `<body/>` with:
@@ -65,7 +59,7 @@ helloworld.html and replace the contents of the `<body/>` with:
 </doc:example>
 
 
-<img class="right" src="img/helloworld_2way.png"/>
+<img class="left" src="img/helloworld_2way.png"/>
 These are the changes to note:
 
 * The text input widget is bound to the text stored by the name variable.
@@ -97,7 +91,6 @@ maintain, and understand.
 
 # Scope
 
-<img class="right" src="img/angular_parts.png"/>
 Scope, which is a JavaScript object that has the ability to watch for changes and get notified of
 them, is the Model. You typically don't need to write much, if any, additional JavaScript to
 define your model.
@@ -109,6 +102,9 @@ Additionally, angular comes with a set of Services, which have the following pro
 * Examples include Dependency-Injection, XHR, caching, URL routing, and browser abstraction.
 
 The following illustrates each part of an angular application and how they work together:
+
+
+<img class="left" src="img/angular_parts.png"/>
 
 
 # Where to go next
