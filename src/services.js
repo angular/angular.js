@@ -172,8 +172,7 @@ angularServiceInject("$location", function($browser) {
 
     if (isString(path)) {
       hash.hashPath = path;
-      if (isDefined(search))
-        hash.hashSearch = search;
+      hash.hashSearch = search || {};
     } else
       hash.hashSearch = path;
 
