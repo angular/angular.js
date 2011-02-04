@@ -92,7 +92,7 @@ function MockBrowser() {
       function() {
         if (self.lastUrl != self.url) {
           listener();
-          self.lastUrl == self.url
+          self.lastUrl = self.url;
         }
       }
     );
