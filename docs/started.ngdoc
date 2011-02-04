@@ -3,58 +3,67 @@
 @name Getting Started
 @description
 
-# Hello World
-The easiest way to get started with angular is to create a basic Hello World app.
+# Hello World!
 
-# Step 1
+A great way for you to get started with `angular` is to create the tradtional 
+"Hello World!" app:
 
-In your favorite text editor, create a file called helloworld.html. Copy and paste the following
-contents into the file:
+1. In your favorite text editor, create an HTML file 
+   (for example, `helloworld.html`). 
+2. From the __Source__ box below, copy and paste the code into your HTML file.
+   (Double-click on the source to easily select all.)
+3. Open the file in your web browser.
 
 <doc:example>
- <doc:source>
-  Hello {{'World'}}!
- </doc:source>
+    <doc:source>
+        Hello {{'World'}}!
+    </doc:source>
 </doc:example>
 
+The resulting web page should look something like the following:
 
-# Step 2
+<img class="center" src="img/helloworld.png" border="1" />
 
-<img class="right" src="img/helloworld.png"/>
-Navigate to the file helloworld.html in your browser. The page should look like the screenshot
-below:
+Now let's take a closer look at that code, and see what is going on behind 
+the scenes.  
 
-
-That's it! Now take another look at helloworld.html. Here's what's going on behind the scenes:
-
-<pre>
-<html xmlns:ng="http://angularjs.org">
-</pre>
-
-Defines the namespace `ng`, which represents the URL `http://angularjs.org`. You must define the
-`ng` namespace in your application so the browser understands angular directives like
-`ng:autobind`.
+The first line of interest defines the `ng` namespace, which makes 
+`angular` work across all browsers (especially important for IE):
 
 <pre>
-<script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js" ng:autobind></script>
+    <html xmlns:ng="http://angularjs.org">
 </pre>
 
-Sets the `src` attribute of the script tag to `http://code.angularjs.org/angular-?.?.?.min.js` to
-bootstrap to the angular environment. Uses the `ng:autobind` attribute to compile and manage the
-whole HTML document. The compilation happens in the page's onLoad handler.
+The next line downloads the `angular` script, and instructs `angular` to process 
+the entire HTML page when it is loaded:
 
 <pre>
-Hello {{'World'}}!
+    <script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js" ng:autobind></script>
 </pre>
 
-This is the template that describes how this element is displayed in the UI.
-Uses the double curly brace markup (`{{}}`) to bind an expression to the greeting text. In this
-case the expression is the string literal 'World'.
+(For details on what happens when `angular` processes an HTML page, 
+see {@link guide.bootstrap Bootstrap}.)
 
-# Step 3
+Finally, this line in the `<body>` of the page is the template that describes 
+how to display our greeting in the UI:
 
-For a more advanced Hello World example that demonstrates angular's two-way data binding, edit
-helloworld.html and replace the contents of the `<body/>` with:
+<pre>
+    Hello {{'World'}}!
+</pre>
+
+Note the use of the double curly brace markup (`{{ }}`) to bind the expression to 
+the greeting text. Here the expression is the string literal 'World'.
+
+Next let's look at a more interesting example, that uses `angular` to 
+bind a dynamic expression to our greeting text.
+
+# Hello <angular/> World!
+
+This example demonstrates `angular`'s two-way data binding: 
+
+1. Edit the HTML file you created in the "Hello World!" example above.
+2. Replace the contents of `<body>` with the code from the __Source__ box below.
+3. Refresh your browswer window.
 
 <doc:example>
  <doc:source>
@@ -64,59 +73,74 @@ helloworld.html and replace the contents of the `<body/>` with:
  </doc:source>
 </doc:example>
 
+After the refresh, the page should look something like this:
 
-<img class="right" src="img/helloworld_2way.png"/>
-These are the changes to note:
+<img class="left" src="img/helloworld_2way.png" border="1" />
 
-* The text input widget is bound to the text stored by the name variable.
-* The name variable is implicit in the root scope.
-* You did not need to explicitly register an event listener or define an event handler for events.
+These are some of the important points to note from this example:
 
-Now refresh the `helloworld.html` page in your browser. Your screen should now look like this:
+* The text input {@link angular.widget widget} called `yourname` is bound to a model variable called 
+  `yourname`.
+* The double curly braces notation binds the variable `yourname` to the 
+  greeting text.
+<!--
+* The variable `yourname` is implicitly created in the root scope.
+-->
+* You did not need to explicitly register an event listener or define an event 
+  handler for events!
 
-
-Type your name into the input box and notice the immediate change to the displayed greeting. This
-example demonstrates the concept of angular's two-way data binding; any changes to the input field
-are immediately reflected in the greeting text.
-
-# Anatomy of an angular app
-These are the 3 parts of an angular app and how they map to the Model-View-Controller design pattern:
-
-# Template
-
-Templates, which you write in HTML and CSS, are the View. You add elements, attributes, and markup
-to HTML, which are instructions to the angular compiler. These instructions are fully extensible,
-meaning that you can build your own declarative language with angular.
-
-# Application Logic and Behavior
-
-Application Logic and Behavior, which you define in JavaScript, are the Controllers. Unlike
-normal AJAX applications, you don't need to write additional listeners or DOM manipulators in
-angular because they are built-in. This makes your application logic very easy to write, test,
-maintain, and understand.
-
-# Scope
-
-<img class="right" src="img/angular_parts.png"/>
-Scope, which is a JavaScript object that has the ability to watch for changes and get notified of
-them, is the Model. You typically don't need to write much, if any, additional JavaScript to
-define your model.
-
-Additionally, angular comes with a set of Services, which have the following properties:
-
-* Useful for building web applications.
-* You can extend the services and add application-specific behavior to them.
-* Examples include Dependency-Injection, XHR, caching, URL routing, and browser abstraction.
-
-The following illustrates each part of an angular application and how they work together:
+Now try typing your name into the input box, and notice the immediate change to 
+the displayed greeting. This demonstrates the concept of `angular`'s 
+{@link guide.data-binding bi-directional data binding}. Any changes to the input field are immediately 
+reflected in the model (one direction), and any changes to the model are 
+reflected in the greeting text (the other direction).
 
 
-# Where to go next
-For more hands-on examples of using angular, including more source code that you can copy and
-paste into your own page, take a look through {@link cookbook}.
-For explanations of the concepts described in this example, see {@link guide.bootstrap bootstrap},
-{@link guide.template template}, {@link angular.widget.HTML input}, {@link angula.scope scope},
-{@link angular.markup markup}, and {@link guide.data-binding data binding}.
+# Anatomy of an `angular` App
 
-To read about the HTML compiler and the compilation process, see {@link guide.compiler compiler}.
-For more angular concepts, see the {@link guide Developer Guide}.
+This section describes the 3 parts of an `angular` app, and explains how they 
+map to the Model-View-Controller design pattern:
+
+## Templates
+
+Templates, which you write in HTML and CSS, serve as the View. You add elements, 
+attributes, and markup to HTML, which serve as instructions to the `angular` 
+compiler. The `angular` compiler is fully extensible, meaning that with angular 
+you can build your own declarative language on top of HTML!
+
+## Application Logic and Behavior
+
+Application Logic and Behavior, which you define in JavaScript, serve as the 
+Controller. With `angular` (unlike with standard AJAX applications) you don't 
+need to write additional listeners or DOM manipulators, because they are built-in. 
+This feature makes your application logic very easy to write, test, maintain, and 
+understand.
+
+## Scope
+
+The Model consists of one or more JavaScript objects, arrays, or primitive types.
+These are referenced from the scope.  There are no restrictions on what the Model 
+can be or what structure it should have. The only requirement is that it is 
+referenced by the scope.
+
+The following illustration shows the parts of an `angular` application and how they 
+work together:
+
+<img class="left" src="img/angular_parts.png" border="0" />
+
+In addition, `angular` comes with a set of Services, which have the following 
+properties:
+
+* The services provided are very useful for building web applications.
+* You can extend and add application-specific behavior to services.
+* Services include Dependency-Injection, XHR, caching, URL routing, 
+  and browser abstraction.
+
+# Where To Go Next
+
+* For additional hands-on examples of using `angular`, including more source 
+  code that you can copy and paste into your own pages, take a look through 
+  the `angular` {@link Cookbook}.
+
+* For explanations of the `angular` concepts presented in the examples on this 
+  page, see the {@link guide Developer Guide}.
