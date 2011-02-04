@@ -2,11 +2,12 @@
 
   var angularJsUrl;
   var scripts = document.getElementsByTagName("script");
-  var filename = /(.*\/)angular([^\/]*)/;
+  var angularJsRegex = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/
   for(var j = 0; j < scripts.length; j++) {
     var src = scripts[j].src;
-    if (src && src.match(filename)) {
+    if (src && src.match(angularJsRegex)) {
       angularJsUrl = src.replace('docs.angularjs.org', 'code.angularjs.org');
+      continue;
     }
   }
 
