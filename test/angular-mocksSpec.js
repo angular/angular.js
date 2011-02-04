@@ -119,3 +119,46 @@ describe('TzDate', function() {
     expect(date2.getUTCSeconds()).toBe(0);
   });
 });
+
+describe('$log', function() {
+  var $log;
+  beforeEach(function() {
+    $log = MockLogFactory();
+  });
+
+  it('should provide log method', function() {
+    expect(function() { $log.log(''); }).not.toThrow();
+  });
+
+  it('should provide info method', function() {
+    expect(function() { $log.info(''); }).not.toThrow();
+  });
+
+  it('should provide warn method', function() {
+    expect(function() { $log.warn(''); }).not.toThrow();
+  });
+
+  it('should provide error method', function() {
+    expect(function() { $log.error(''); }).not.toThrow();
+  });
+
+  it('should store log messages', function() {
+    $log.log('fake log');
+    expect($log.log.logs).toContain(['fake log']);
+  });
+
+  it('should store info messages', function() {
+    $log.info('fake log');
+    expect($log.info.logs).toContain(['fake log']);
+  });
+
+  it('should store warn messages', function() {
+    $log.warn('fake log');
+    expect($log.warn.logs).toContain(['fake log']);
+  });
+
+  it('should store error messages', function() {
+    $log.error('fake log');
+    expect($log.error.logs).toContain(['fake log']);
+  });
+});
