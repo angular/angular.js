@@ -475,7 +475,7 @@ describe("widget", function(){
         scope.$eval();
 
         expect(scope.$element.text()).toBe('foobarC');
-      })
+      });
 
     });
 

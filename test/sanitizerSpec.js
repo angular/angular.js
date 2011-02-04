@@ -14,6 +14,11 @@ describe('HTML', function(){
                 attrs: attrs,
                 unary: unary
             };
+            // Since different browsers handle newlines differenttly we trim
+            // so that it is easier to write tests.
+            forEach(attrs, function(value, key){
+              attrs[key] = trim(value);
+            });
           },
           chars: function(text_){
             text = text_;
@@ -38,14 +43,20 @@ describe('HTML', function(){
 
     it('should parse newlines in attributes', function(){
       htmlParser('<tag attr="\nvalue\n">text</tag>', handler);
-      expect(start).toEqual({tag:'tag', attrs:{attr:'\nvalue\n'}, unary:false});
+      expect(start).toEqual({tag:'tag', attrs:{attr:'value'}, unary:false});
       expect(text).toEqual('text');
     });
 
     it('should parse namespace', function(){
       htmlParser('<ns:t-a-g ns:a-t-t-r="\nvalue\n">text</ns:t-a-g>', handler);
-      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'\nvalue\n'}, unary:false});
+      expect(start).toEqual({tag:'ns:t-a-g', attrs:{'ns:a-t-t-r':'value'}, unary:false});
       expect(text).toEqual('text');
+    });
+
+    it('should parse empty value attribute of node', function(){
+      htmlParser('<OPTION selected value="">abc</OPTION>', handler);
+      expect(start).toEqual({tag:'option', attrs:{selected:'', value:''}, unary:false});
+      expect(text).toEqual('abc');
     });
 
   });

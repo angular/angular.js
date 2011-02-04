@@ -46,10 +46,18 @@ describe("markups", function(){
       this.addMatchers({
         toHaveValue: function(expected){
           this.message = function(){
-            return 'Expected "' + sortedHtml(this.actual) + '" to have value="' + expected + '".';
+            return 'Expected "' + this.actual.html() + '" to have value="' + expected + '".';
           };
 
-          return this.actual.html().indexOf('value="' + expected + '"') != -1;
+          var value;
+          htmlParser(this.actual.html(), {
+            start:function(tag, attrs){
+              value = attrs.value;
+            },
+            end:noop,
+            chars:noop
+          });
+          return trim(value) == trim(expected);
         }
       });
     });
@@ -70,6 +78,8 @@ describe("markups", function(){
     });
 
     it('should set value even if self closing HTML', function(){
+      // IE removes the \n from option, which makes this test pointless
+      if (msie) return;
       compile('<select name="x"><option>\n</option></select>');
       expect(element).toHaveValue('\n');
     });

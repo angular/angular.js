@@ -57,21 +57,26 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
   }
 });
 
-// TODO: this should be widget not a markup
-angularTextMarkup('OPTION', function(text, textNode, parentElement){
-  if (nodeName_(parentElement) == "OPTION") {
-    var select = jqLite('<select>');
-    select.append(parentElement.clone());
-    htmlParser(select.html(), {
-      start: function(tag, attrs) {
-        if (isUndefined(attrs.value)) {
-          parentElement.attr('value', text);
+/**
+ * This tries to normalize the behavior of value attribute across browsers. If value attribute is
+ * not specified, then specify it to be that of the text.
+ */
+angularTextMarkup('option', function(text, textNode, parentElement){
+  if (lowercase(nodeName_(parentElement)) == 'option') {
+    if (msie <= 7) {
+      // In IE7 The issue is that there is no way to see if the value was specified hence
+      // we have to resort to parsing HTML;
+      htmlParser(parentElement[0].outerHTML, {
+        start: function(tag, attrs) {
+          if (isUndefined(attrs.value)) {
+            parentElement.attr('value', text);
+          }
         }
-      },
-      chars: noop,
-      end: noop,
-      comment: noop
-    });
+      });
+    } else if (parentElement[0].getAttribute('value') == null) {
+      // jQuery does normalization on 'value' so we have to bypass it.
+      parentElement.attr('value', text);
+    }
   }
 });
 
