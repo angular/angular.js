@@ -1074,7 +1074,8 @@ angularWidget('ng:view', function(element) {
         } else {
           element.html('');
         }
-      });
+      })(); //initialize the state forcefully, it's possible that we missed the initial
+            //$route#onChange already
 
       // note that this propagates eval to the current childScope, where childScope is dynamically
       // bound (via $route.onChange callback) to the current scope created by $route
