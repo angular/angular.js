@@ -723,7 +723,6 @@ describe("service", function(){
         $browserXhr.expectGET('/url').respond('ERROR');
         cache('GET', '/url', null, callback);
         $browser.defer.flush();
-        $browserXhr.flush();
         expect(log).toEqual('"first";"first";');
 
         cache('GET', '/url', null, callback, false);

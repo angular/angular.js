@@ -142,6 +142,10 @@ function MockBrowser() {
   self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
   self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
   self.xhr.flush = function() {
+    if (requests.length == 0) {
+      throw new Error("No xhr requests to be flushed!");
+    }
+
     while(requests.length) {
       requests.pop()();
     }
