@@ -237,12 +237,14 @@ angular.service('$exceptionHandler', function(e) {
  *
  * See {@link angular.mock} for more info on angular mocks.
  */
-angular.service('$log', function() {
+angular.service('$log', MockLogFactory);
+
+function MockLogFactory() {
   var $log = {
-    log: function(){ $log.logs.push(arguments); },
-    warn: function(){ $log.logs.push(arguments); },
-    info: function(){ $log.logs.push(arguments); },
-    error: function(){ $log.logs.push(arguments); }
+    log: function(){ $log.log.logs.push(arguments); },
+    warn: function(){ $log.warn.logs.push(arguments); },
+    info: function(){ $log.info.logs.push(arguments); },
+    error: function(){ $log.error.logs.push(arguments); }
   };
 
   $log.log.logs = [];
@@ -251,7 +253,7 @@ angular.service('$log', function() {
   $log.error.logs = [];
 
   return $log;
-});
+}
 
 
 /**
