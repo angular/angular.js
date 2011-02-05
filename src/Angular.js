@@ -83,17 +83,16 @@ var _undefined        = undefined,
     PRIORITY_LAST     =  99999,
     PRIORITY          = {'FIRST': PRIORITY_FIRST, 'LAST': PRIORITY_LAST, 'WATCH':PRIORITY_WATCH},
     Error             = window.Error,
-    jQuery            = window['jQuery'] || window['$'], // weirdness to make IE happy
-    _                 = window['_'],
     /** holds major version number for IE or NaN for real browsers */
     msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
-    jqLite            = jQuery || jqLiteWrap,
+    jqLite,           // delay binding since jQuery could be loaded after us.
+    jQuery,           // delay binding
     slice             = Array.prototype.slice,
     push              = Array.prototype.push,
     error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
 
     /** @name angular */
-    angular           = window[$angular]    || (window[$angular] = {}),
+    angular           = window[$angular] || (window[$angular] = {}),
     /** @name angular.markup */
     angularTextMarkup = extensionMap(angular, 'markup'),
     /** @name angular.attrMarkup */
@@ -1006,6 +1005,7 @@ function angularInit(config){
 }
 
 function angularJsConfig(document, config) {
+  bindJQuery();
   var scripts = document.getElementsByTagName("script"),
       match;
   config = extend({
@@ -1027,4 +1027,10 @@ function angularJsConfig(document, config) {
     }
   }
   return config;
+}
+
+function bindJQuery(){
+  // bind to jQuery if present;
+  jQuery = window.jQuery;
+  angular.element = jqLite = jQuery || jqLiteWrap;
 }
