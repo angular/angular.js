@@ -97,7 +97,8 @@ JQLite.prototype = {
     }
 
     this.bind('DOMContentLoaded', trigger); // works for modern browsers and IE9
-    jqLite(window).bind('load', trigger); // fallback to window.onload for others
+    // we can not use jqLite since we are not done loading and jQuery could be loaded later.
+    new JQLite(window).bind('load', trigger); // fallback to window.onload for others
   },
 
   bind: function(type, fn){

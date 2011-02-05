@@ -1,6 +1,6 @@
   var $scenario = new angular.scenario.Runner(window);
 
-  jqLite(document).ready(function() {
+  jqLiteWrap(document).ready(function() {
     angularScenarioInit($scenario, angularJsConfig(document));
   });
 
