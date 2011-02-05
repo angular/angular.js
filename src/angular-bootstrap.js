@@ -78,7 +78,7 @@
     function isActuallyNaN(val) {
       return isNaN(val) && (typeof val === 'number');
     }
-  }
+  };
 
   function addScripts(){
     var prop, i;
