@@ -451,7 +451,7 @@ describe("service", function(){
           $route = scope.$service('$route'),
           onChangeSpy = jasmine.createSpy('onChange');
 
-      function NotFoundCtrl() {this.notFoundProp = 'not found!'}
+      function NotFoundCtrl() {this.notFoundProp = 'not found!';}
 
       $route.when('/foo', {template: 'foo.html'});
       $route.otherwise({template: '404.html', controller: NotFoundCtrl});
