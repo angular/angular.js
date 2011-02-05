@@ -26,6 +26,8 @@ if (window.jstestdriver) {
 beforeEach(function(){
   // This is to reset parsers global cache of expressions.
   compileCache = {};
+  // reset to jQuery or default to us.
+  bindJQuery();
   this.addMatchers({
     toBeInvalid: function(){
       var element = jqLite(this.actual);
