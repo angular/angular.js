@@ -486,7 +486,7 @@ describe("service", function(){
       expect(onChangeSpy).not.toHaveBeenCalled();
 
       scope.$eval(); //triggers initial route change - match the redirect route
-      $browser.poll(); //triger route change - match the route we redirected to
+      $browser.defer.flush(); //triger route change - match the route we redirected to
 
       expect($location.hash).toBe('/foo');
       expect($route.current.template).toBe('foo.html');
@@ -495,8 +495,7 @@ describe("service", function(){
       onChangeSpy.reset();
       $location.updateHash('');
       scope.$eval(); //match the redirect route + update $browser
-      $browser.poll(); //match the route we redirected to
-
+      $browser.defer.flush(); //match the route we redirected to
 
       expect($location.hash).toBe('/foo');
       expect($route.current.template).toBe('foo.html');
@@ -505,7 +504,7 @@ describe("service", function(){
       onChangeSpy.reset();
       $location.updateHash('/baz');
       scope.$eval(); //match the redirect route + update $browser
-      $browser.poll(); //match the route we redirected to
+      $browser.defer.flush(); //match the route we redirected to
 
       expect($location.hash).toBe('/bar');
       expect($route.current.template).toBe('bar.html');

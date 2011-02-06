@@ -91,8 +91,8 @@ function MockBrowser() {
     self.pollFns.push(
       function() {
         if (self.lastUrl != self.url) {
-          listener();
           self.lastUrl = self.url;
+          listener();
         }
       }
     );
