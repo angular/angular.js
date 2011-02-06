@@ -693,7 +693,7 @@ function switchRouteMatcher(on, when, dstName) {
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$route', function(location) {
+angularServiceInject('$route', function(location, $updateView) {
   var routes = {},
       onChange = [],
       matcher = switchRouteMatcher,
@@ -818,15 +818,16 @@ angularServiceInject('$route', function(location) {
 
     if(routeParams) {
       if (routeParams.redirectTo) {
-        location.updateHash(routeParams.redirectTo); //let $browser trigger next route change
+        location.updateHash(routeParams.redirectTo);
+        $updateView(); //TODO this is to work around the $location<=>$browser issues
         return;
-      } else {
-        childScope = createScope(parentScope);
-        $route.current = extend({}, routeParams, {
-          scope: childScope,
-          params: extend({}, location.hashSearch, pathParams)
-        });
       }
+
+      childScope = createScope(parentScope);
+      $route.current = extend({}, routeParams, {
+        scope: childScope,
+        params: extend({}, location.hashSearch, pathParams)
+      });
     }
 
     //fire onChange callbacks
@@ -840,7 +841,7 @@ angularServiceInject('$route', function(location) {
   this.$watch(function(){return dirty + location.hash;}, updateRoute);
 
   return $route;
-}, ['$location']);
+}, ['$location', '$updateView']);
 
 /**
  * @workInProgress
