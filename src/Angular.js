@@ -1032,5 +1032,12 @@ function angularJsConfig(document, config) {
 function bindJQuery(){
   // bind to jQuery if present;
   jQuery = window.jQuery;
-  angular.element = jqLite = jQuery || jqLiteWrap;
+  // reset to jQuery or default to us.
+  if (window.jQuery) {
+    jqLite = window.jQuery;
+    jqLite.fn.scope = JQLite.prototype.scope;
+  } else {
+    jqLite = jqLiteWrap;
+  }
+  angular.element = jqLite;
 }
