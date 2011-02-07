@@ -5,12 +5,14 @@ describe("widget", function(){
     scope = null;
     element = null;
     var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
-    compile = function(html, before, parent) {
-      element = jqLite(html);
+    compile = function(html, parent) {
+      if (parent) {
+        parent.html(html);
+        element = parent.children();
+      } else {
+        element = jqLite(html);
+      }
       scope = compiler.compile(element)(element);
-      (before||noop).apply(scope);
-      if (parent) parent.append(element);
-      scope.$init();
       return scope;
     };
   });
@@ -77,9 +79,7 @@ describe("widget", function(){
         });
 
         it("should come up blank if null", function(){
-          compile('<input type="text" name="age" ng:format="number"/>', function(){
-            scope.age = null;
-          });
+          compile('<input type="text" name="age" ng:format="number" ng:init="age=null"/>');
           expect(scope.age).toBeNull();
           expect(scope.$element[0].value).toEqual('');
         });
@@ -137,9 +137,7 @@ describe("widget", function(){
 
       describe("checkbox", function(){
         it("should format booleans", function(){
-          compile('<input type="checkbox" name="name"/>', function(){
-            scope.name = false;
-          });
+          compile('<input type="checkbox" name="name" ng:init="name=false"/>');
           expect(scope.name).toEqual(false);
           expect(scope.$element[0].checked).toEqual(false);
         });
@@ -184,7 +182,7 @@ describe("widget", function(){
       describe("ng:validate", function(){
         it("should process ng:validate", function(){
           compile('<input type="text" name="price" value="abc" ng:validate="number"/>',
-                  undefined, jqLite(document.body));
+                  jqLite(document.body));
           expect(element.hasClass('ng-validation-error')).toBeTruthy();
           expect(element.attr('ng-validation-error')).toEqual('Not a number');
 
@@ -238,7 +236,7 @@ describe("widget", function(){
     });
 
     it("should process ng:required", function(){
-      compile('<input type="text" name="price" ng:required/>', undefined, jqLite(document.body));
+      compile('<input type="text" name="price" ng:required/>', jqLite(document.body));
       expect(element.hasClass('ng-validation-error')).toBeTruthy();
       expect(element.attr('ng-validation-error')).toEqual('Required');
 
@@ -255,7 +253,7 @@ describe("widget", function(){
 
     it('should allow conditions on ng:required', function() {
       compile('<input type="text" name="price" ng:required="ineedz"/>',
-              undefined, jqLite(document.body));
+              jqLite(document.body));
       scope.$set('ineedz', false);
       scope.$eval();
       expect(element.hasClass('ng-validation-error')).toBeFalsy();
@@ -336,25 +334,21 @@ describe("widget", function(){
       });
 
       it('should honor model over html checked keyword after', function(){
-        compile('<div>' +
+        compile('<div ng:init="choose=\'C\'">' +
             '<input type="radio" name="choose" value="A""/>' +
             '<input type="radio" name="choose" value="B" checked/>' +
             '<input type="radio" name="choose" value="C"/>' +
-        '</div>', function(){
-          this.choose = 'C';
-        });
+        '</div>');
 
         expect(scope.choose).toEqual('C');
       });
 
       it('should honor model over html checked keyword before', function(){
-        compile('<div>' +
+        compile('<div ng:init="choose=\'A\'">' +
             '<input type="radio" name="choose" value="A""/>' +
             '<input type="radio" name="choose" value="B" checked/>' +
             '<input type="radio" name="choose" value="C"/>' +
-        '</div>', function(){
-          this.choose = 'A';
-        });
+        '</div>');
 
         expect(scope.choose).toEqual('A');
       });
@@ -396,7 +390,7 @@ describe("widget", function(){
             '<select name="selection" ng:required>' +
               '<option value="{{$index}}" ng:repeat="opt in options">{{opt}}</option>' +
             '</select>',
-            undefined, jqLite(document.body));
+            jqLite(document.body));
         scope.selection = 1;
         scope.options = ['one', 'two'];
         scope.$eval();
@@ -492,14 +486,13 @@ describe("widget", function(){
       });
 
       it('should allow binding to objects through index', function(){
-        compile('<select name="selection" multiple ng:format="index:list">' +
-                  '<option selected value="0">A</option>' +
-                  '<option selected value="1">B</option>' +
-                  '<option value="2">C</option>' +
-                '</select>',
-                function(){
-                  scope.list = [{name:'A'}, {name:'B'}, {name:'C'}];
-                });
+        compile('<div ng:init="list = [{name:\'A\'}, {name:\'B\'}, {name:\'C\'}]">' +
+                  '<select name="selection" multiple ng:format="index:list">' +
+                    '<option selected value="0">A</option>' +
+                    '<option selected value="1">B</option>' +
+                    '<option value="2">C</option>' +
+                  '</select>' +
+                 '</div>');
         scope.$eval();
         expect(scope.selection).toEqual([{name:'A'}, {name:'B'}]);
       });
@@ -517,14 +510,13 @@ describe("widget", function(){
       });
 
       it('should be contain the selected object', function(){
-        compile('<select name="selection" multiple ng:format="index:list">' +
-                  '<option value="0">A</option>' +
-                  '<option value="1" selected>B</option>' +
-                  '<option value="2">C</option>' +
-                '</select>',
-                function(){
-                  scope.list = [{name:'A'}, {name:'B'}, {name:'C'}];
-                });
+        compile('<div ng:init="list = [{name:\'A\'}, {name:\'B\'}, {name:\'C\'}]">' +
+                  '<select name="selection" multiple ng:format="index:list">' +
+                    '<option value="0">A</option>' +
+                    '<option value="1" selected>B</option>' +
+                    '<option value="2">C</option>' +
+                  '</select>' +
+                '</div>');
         scope.$eval();
         expect(scope.selection).toEqual([{name:'B'}]);
       });
@@ -604,7 +596,7 @@ describe("widget", function(){
     it('should call change on switch', function(){
       var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>');
       scope.url = 'a';
-      scope.$init();
+      scope.$eval();
       expect(scope.name).toEqual(undefined);
       expect(scope.$element.text()).toEqual('works');
       dealoc(scope);
@@ -619,7 +611,7 @@ describe("widget", function(){
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
-      scope.$init();
+      scope.$eval();
       scope.$service('$browser').defer.flush();
       expect(element.text()).toEqual('misko');
       dealoc(scope);
@@ -632,7 +624,7 @@ describe("widget", function(){
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
-      scope.$init();
+      scope.$eval();
       scope.$service('$browser').defer.flush();
 
       expect(element.text()).toEqual('igor');
@@ -649,7 +641,7 @@ describe("widget", function(){
       var scope = angular.compile(element);
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
-      scope.$init();
+      scope.$eval();
       scope.$service('$browser').defer.flush();
 
       // this one should really be just '1', but due to lack of real events things are not working
@@ -666,7 +658,7 @@ describe("widget", function(){
 
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
-      scope.$init();
+      scope.$eval();
       scope.$service('$browser').defer.flush();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
@@ -800,7 +792,6 @@ describe("widget", function(){
 
     beforeEach(function() {
       rootScope = angular.compile('<ng:view></ng:view>');
-      rootScope.$init();
       $route = rootScope.$service('$route');
       $location = rootScope.$service('$location');
       $browser = rootScope.$service('$browser');
@@ -867,15 +858,19 @@ describe("widget", function(){
     });
 
     it('should be possible to nest ng:view in ng:include', function() {
-      dealoc(rootScope);
-      rootScope = angular.compile('<div>include: <ng:include src="\'includePartial.html\'"></ng:include></div>');
-      $browser = rootScope.$service('$browser');
+      var myApp = angular.scope();
+      var $browser = myApp.$service('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
       $browser.setUrl('http://server/#/foo');
 
-      $route = rootScope.$service('$route');
+      var $route = myApp.$service('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
-      rootScope.$init();
+
+      dealoc(rootScope); // we are about to override it.
+      rootScope = angular.compile(
+          '<div>' +
+            'include: <ng:include src="\'includePartial.html\'">' +
+          '</ng:include></div>', myApp);
 
       $browser.xhr.expectGET('viewPartial.html').respond('content');
       $browser.xhr.flush();

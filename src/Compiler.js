@@ -13,7 +13,7 @@ function Template(priority) {
 }
 
 Template.prototype = {
-  init: function(element, scope) {
+  attach: function(element, scope) {
     var inits = {};
     this.collectInits(element, inits, scope);
     forEachSorted(inits, function(queue){
@@ -96,18 +96,14 @@ Compiler.prototype = {
     template = this.templatize(element, index, 0) || new Template();
     return function(element, parentScope){
       element = jqLite(element);
-      var scope = parentScope && parentScope.$eval ?
-          parentScope : createScope(parentScope);
+      var scope = parentScope && parentScope.$eval
+          ? parentScope
+          : createScope(parentScope);
       element.data($$scope, scope);
-      return extend(scope, {
-        $element:element,
-        $init: function() {
-          template.init(element, scope);
-          scope.$eval();
-          delete scope.$init;
-          return scope;
-        }
-      });
+      template.attach(element, scope);
+      scope.$element = element;
+      scope.$eval();
+      return scope;
     };
   },
 

@@ -28,7 +28,6 @@ describe('compiler', function(){
     compile = function(html){
       var e = jqLite("<div>" + html + "</div>");
       var scope = compiler.compile(e)(e);
-      scope.$init();
       return scope;
     };
   });
@@ -48,10 +47,8 @@ describe('compiler', function(){
       };
     };
     var template = compiler.compile(e);
-    scope = template(e);
-    var init = scope.$init;
     expect(log).toEqual("found");
-    init();
+    scope = template(e);
     expect(e.hasClass('ng-directive')).toEqual(true);
     expect(log).toEqual("found:init");
   });

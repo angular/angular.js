@@ -3,16 +3,18 @@ describe('Binder', function(){
   beforeEach(function(){
     var self = this;
 
-    this.compile = function(html, initialScope, parent) {
+    this.compile = function(html, parent) {
       var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
       if (self.element) dealoc(self.element);
-      var element = self.element = jqLite(html);
+      var element;
+      if (parent) {
+        parent.html(html);
+        element = parent.children();
+      } else {
+        element = jqLite(html);
+      }
+      self.element = element;
       var scope = compiler.compile(element)(element);
-
-      if (parent) parent.append(element);
-
-      extend(scope, initialScope);
-      scope.$init();
       return {node:element, scope:scope};
     };
     this.compileToHtml = function (content) {
@@ -27,8 +29,8 @@ describe('Binder', function(){
   });
 
 
-  it('ChangingTextfieldUpdatesModel', function(){
-    var state = this.compile('<input type="text" name="model.price" value="abc">', {model:{}});
+  it('text-field should default to value attribute', function(){
+    var state = this.compile('<input type="text" name="model.price" value="abc">');
     state.scope.$eval();
     assertEquals('abc', state.scope.model.price);
   });
@@ -443,8 +445,7 @@ describe('Binder', function(){
   });
 
   it('ActionOnAHrefThrowsError', function(){
-    var model = {books:[]};
-    var c = this.compile('<a ng:click="action()">Add Phone</a>', model);
+    var c = this.compile('<a ng:click="action()">Add Phone</a>');
     c.scope.action = function(){
       throw new Error('MyError');
     };
@@ -517,9 +518,9 @@ describe('Binder', function(){
   });
 
   it('ValidateForm', function(){
-    var c = this.compile('<div><input name="name" ng:required>' +
-            '<div ng:repeat="item in items"><input name="item.name" ng:required/></div></div>',
-            undefined, jqLite(document.body));
+    var c = this.compile('<div id="test"><input name="name" ng:required>' +
+            '<input ng:repeat="item in items" name="item.name" ng:required/></div>',
+            jqLite(document.body));
     var items = [{}, {}];
     c.scope.$set("items", items);
     c.scope.$eval();
@@ -547,7 +548,7 @@ describe('Binder', function(){
   });
 
   it('ValidateOnlyVisibleItems', function(){
-    var c = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>', undefined, jqLite(document.body));
+    var c = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>', jqLite(document.body));
     c.scope.$set("show", true);
     c.scope.$eval();
     assertEquals(2, c.scope.$service('$invalidWidgets').length);

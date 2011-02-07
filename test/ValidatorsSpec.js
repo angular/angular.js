@@ -9,7 +9,7 @@ describe('ValidatorTest', function(){
     };
     var scope = compile('<input name="name" ng:validate="myValidator:\'hevery\'"/>');
     scope.name = 'misko';
-    scope.$init();
+    scope.$eval();
     assertEquals('misko', validator.first);
     assertEquals('hevery', validator.last);
     expect(validator._this.$id).toEqual(scope.$id);
@@ -99,7 +99,6 @@ describe('ValidatorTest', function(){
       jqLite(document.body).append(self.$element);
       self.$element.data('$validate', noop);
       self.$root = self;
-      self.$init();
     });
 
     afterEach(function(){
@@ -110,7 +109,6 @@ describe('ValidatorTest', function(){
       var value, fn;
       var scope = compile('<input type="text" name="name" ng:validate="asynchronous:asyncFn"/>');
       jqLite(document.body).append(scope.$element);
-      scope.$init();
       var input = scope.$element;
       scope.asyncFn = function(v,f){
         value=v; fn=f;
@@ -155,7 +153,6 @@ describe('ValidatorTest', function(){
       scope.asyncFn = jasmine.createSpy();
       scope.updateFn = jasmine.createSpy();
       scope.name = 'misko';
-      scope.$init();
       scope.$eval();
       expect(scope.asyncFn).wasCalledWith('misko', scope.asyncFn.mostRecentCall.args[1]);
       assertTrue(scope.$element.hasClass('ng-input-indicator-wait'));
