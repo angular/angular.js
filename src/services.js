@@ -847,13 +847,70 @@ angularServiceInject('$route', function(location, $updateView) {
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr
+ * @function
  * @requires $browser
  * @requires $xhr.error
  * @requires $log
  *
  * @description
+ * Generates an XHR request. The $xhr service adds error handling then delegates all requests to
+ * {@link angular.service.$browser $browser.xhr()}.
+ *
+ * @param {string} method HTTP method to use. Valid values are: `GET`, `POST`, `PUT`, `DELETE`, and
+ *   `JSON`. `JSON` is a special case which causes a
+ *   [JSONP](http://en.wikipedia.org/wiki/JSON#JSONP) cross domain request using script tag
+ *   insertion.
+ * @param {string} url Relative or absolute URL specifying the destination of the request.  For
+ *   `JSON` requests, `url` should include `JSON_CALLBACK` string to be replaced with a name of an
+ *   angular generated callback function.
+ * @param {(string|Object)=} post Request content as either a string or an object to be stringified
+ *   as JSON before sent to the server.
+ * @param {function(number, (string|Object))} callback A function to be called when the response is
+ *   received. The callback will be called with:
+ *
+ *   - {number} code [HTTP status code](http://en.wikipedia.org/wiki/List_of_HTTP_status_codes) of
+ *     the response. This will currently always be 200, since all non-200 responses are routed to
+ *     {@link angular.service.$xhr.error} service.
+ *   - {string|Object} response Response object as string or an Object if the response was in JSON
+ *     format.
  *
  * @example
+   <doc:example>
+     <doc:source>
+       <script>
+         function FetchCntl($xhr) {
+           var self = this;
+
+           this.fetch = function() {
+             self.clear();
+             $xhr(self.method, self.url, function(code, response) {
+               self.code = code;
+               self.response = response;
+             });
+           };
+
+           this.clear = function() {
+             self.code = null;
+             self.response = null;
+           };
+         }
+         FetchCntl.$inject = ['$xhr'];
+       </script>
+       <div ng:controller="FetchCntl">
+         <select name="method">
+           <option>GET</option>
+           <option>JSON</option>
+         </select>
+         <input type="text" name="url" value="index.html" size="80"/><br/>
+         <button ng:click="fetch()">fetch</button>
+         <button ng:click="clear()">clear</button>
+         <a href="" ng:click="method='GET'; url='index.html'">sample</a>
+         <a href="" ng:click="method='JSON'; url='https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK'">buzz</a>
+         <pre>code={{code}}</pre>
+         <pre>response={{response}}</pre>
+       </div>
+     </doc:source>
+   </doc:example>
  */
 angularServiceInject('$xhr', function($browser, $error, $log){
   var self = this;
@@ -890,11 +947,37 @@ angularServiceInject('$xhr', function($browser, $error, $log){
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr.error
+ * @function
  * @requires $log
  *
  * @description
+ * Error handler for {@link angular.service.$xhr $xhr service}. An application can replaces this
+ * service with one specific for the application. The default implementation logs the error to
+ * {@link angular.service.$log $log.error}.
+ *
+ * @param {Object} request Request object.
+ *
+ *   The object has the following properties
+ *
+ *   - `method` – `{string}` – The http request method.
+ *   - `url` – `{string}` – The request destination.
+ *   - `data` – `{(string|Object)=} – An optional request body.
+ *   - `callback` – `{function()}` – The callback function
+ *
+ * @param {Object} response Response object.
+ *
+ *   The response object has the following properties:
+ *
+ *   - status – {number} – Http status code.
+ *   - body – {string|Object} – Body of the response.
  *
  * @example
+    <doc:example>
+      <doc:source>
+        fetch a non-existent file and log an error in the console:
+        <button ng:click="$service('$xhr')('GET', '/DOESNT_EXIST')">fetch</button>
+      </doc:source>
+    </doc:example>
  */
 angularServiceInject('$xhr.error', function($log){
   return function(request, response){
@@ -1002,11 +1085,24 @@ angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr.cache
+ * @function
  * @requires $xhr
  *
  * @description
+ * Acts just like the {@link angular.service.$xhr $xhr} service but caches responses for `GET`
+ * requests. All cache misses are delegated to the $xhr service.
  *
- * @example
+ * @property {function()} delegate Function to delegate all the cache misses to. Defaults to
+ *   the {@link angular.service.$xhr $xhr} service.
+ * @property {object} data The hashmap where all cached entries are stored.
+ *
+ * @param {string} method HTTP method.
+ * @param {string} url Destination URL.
+ * @param {(string|Object)=} post Request body.
+ * @param {function(number, (string|Object))} callback Response callback.
+ * @param {boolean=} [verifyCache=false] If `true` then a result is immediately returned from cache
+ *   (if present) while a request is sent to the server for a fresh response that will update the
+ *   cached entry. The `callback` function will be called when the response is received.
  */
 angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
   var inflight = {}, self = this;
