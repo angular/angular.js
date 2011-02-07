@@ -800,10 +800,8 @@ function merge(src, dst) {
  * Compiles a piece of HTML or DOM into a {@link angular.scope scope} object.
    <pre>
     var scope1 = angular.compile(window.document);
-    scope1.$init();
 
     var scope2 = angular.compile('<div ng:click="clicked = true">click me</div>');
-    scope2.$init();
    </pre>
  *
  * @param {string|DOMElement} element Element to compile.
@@ -948,7 +946,7 @@ function toKeyValue(obj) {
        (function(window, previousOnLoad){
          window.onload = function(){
           try { (previousOnLoad||angular.noop)(); } catch(e) {}
-          angular.compile(window.document).$init();
+          angular.compile(window.document);
          };
        })(window, window.onload);
       &lt;/script&gt;
@@ -1002,8 +1000,6 @@ function angularInit(config){
       $browser.addCss(config.base_url + config.css);
     else if(msie<8)
       $browser.addJs(config.base_url + config.ie_compat, config.ie_compat_id);
-
-    scope.$init();
   }
 }
 

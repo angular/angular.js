@@ -13,25 +13,24 @@ describe("ScenarioSpec: Compilation", function(){
     it("should compile dom node and return scope", function(){
       var node = jqLite('<div ng:init="a=1">{{b=a+1}}</div>')[0];
       scope = compile(node);
-      scope.$init();
       expect(scope.a).toEqual(1);
       expect(scope.b).toEqual(2);
     });
 
     it("should compile jQuery node and return scope", function(){
-      scope = compile(jqLite('<div>{{a=123}}</div>')).$init();
+      scope = compile(jqLite('<div>{{a=123}}</div>'));
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
 
     it("should compile text node and return scope", function(){
-      scope = compile('<div>{{a=123}}</div>').$init();
+      scope = compile('<div>{{a=123}}</div>');
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
   });
 
   describe('scope', function(){
-    it("should have set, get, eval, $init, updateView methods", function(){
-      scope = compile('<div>{{a}}</div>').$init();
+    it("should have $set, $get, $eval, $updateView methods", function(){
+      scope = compile('<div>{{a}}</div>');
       scope.$eval("$invalidWidgets.push({})");
       expect(scope.$set("a", 2)).toEqual(2);
       expect(scope.$get("a")).toEqual(2);

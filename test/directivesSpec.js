@@ -7,7 +7,6 @@ describe("directive", function(){
     compile = function(html) {
       element = jqLite(html);
       model = compiler.compile(element)(element);
-      model.$init();
       return model;
     };
   });
@@ -116,7 +115,7 @@ describe("directive", function(){
       expect(element.attr('src')).toEqual('http://localhost/mysrc');
       expect(element.attr('alt')).toEqual('myalt');
     });
-    
+
     it('should not pretty print JSON in attributes', function(){
       var scope = compile('<img alt="{{ {a:1} }}"/>');
       expect(element.attr('alt')).toEqual('{"a":1}');

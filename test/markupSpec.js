@@ -9,7 +9,6 @@ describe("markups", function(){
     compile = function(html) {
       element = jqLite(html);
       scope = compiler.compile(element)(element);
-      scope.$init();
     };
   });
 

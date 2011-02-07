@@ -1,6 +1,14 @@
 <a name="0.9.12"><a/>
 # <angular/> 0.9.12 thought-implanter (in-progress) #
 
+### Breaking changes
+- Removed the $init() method after the compilation. The old way of compiling the DOM element was
+  angular.compile(element).$init(); The $init was there to allow the users to do any work to the
+  scope before the view would be bound. This is a left over from not having proper MVC. The new
+  recommended way to deal with initializing scope is to put it in the root constructor controller.
+  To migrate simply remove the call to $init() and move any code you had before $init() to the
+  root controller.
+
 
 <a name="0.9.11"><a/>
 # <angular/> 0.9.11 snow-maker  (2011-02-08) #

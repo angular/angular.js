@@ -677,7 +677,6 @@ angularWidget('ng:include', function(element){
             element.html(response);
             childScope = useScope || createScope(scope);
             compiler.compile(element)(element, childScope);
-            childScope.$init();
             scope.$eval(onloadExp);
           });
         } else {
@@ -795,7 +794,6 @@ var ngSwitch = angularWidget('ng:switch', function (element){
           element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(caseElement, childScope);
-          childScope.$init();
         }
       });
     });
@@ -891,7 +889,7 @@ angularWidget('a', function() {
 angularWidget("@ng:repeat", function(expression, element){
   element.removeAttr('ng:repeat');
   element.replaceWith(jqLite("<!-- ng:repeat: " + expression + " --!>"));
-  var template = this.compile(element);
+  var linker = this.compile(element);
   return function(reference){
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
@@ -912,6 +910,7 @@ angularWidget("@ng:repeat", function(expression, element){
     var children = [], currentScope = this;
     this.$onEval(function(){
       var index = 0,
+          cloneElement,
           childCount = children.length,
           lastElement = reference,
           collection = this.$tryEval(rhs, reference),
@@ -937,16 +936,17 @@ angularWidget("@ng:repeat", function(expression, element){
             if (keyIdent) childScope[keyIdent] = key;
           } else {
             // grow children
-            childScope = template(quickClone(element), createScope(currentScope));
+            childScope = createScope(currentScope);
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
-            lastElement.after(childScope.$element);
             childScope.$index = index;
             childScope.$position = index == 0 ?
-                                      'first' :
-                                      (index == collectionLength - 1 ? 'last' : 'middle');
-            childScope.$element.attr('ng:repeat-index', index);
-            childScope.$init();
+                'first' :
+                  (index == collectionLength - 1 ? 'last' : 'middle');
+            cloneElement = quickClone(element);
+            lastElement.after(cloneElement);
+            cloneElement.attr('ng:repeat-index', index);
+            linker(cloneElement, childScope);
             children.push(childScope);
           }
           childScope.$eval();
@@ -1069,7 +1069,6 @@ angularWidget('ng:view', function(element) {
           $xhr('GET', src, function(code, response){
             element.html(response);
             compiler.compile(element)(element, childScope);
-            childScope.$init();
           });
         } else {
           element.html('');
