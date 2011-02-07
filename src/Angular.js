@@ -273,7 +273,10 @@ function jqLiteWrap(element) {
   if (element) {
     if (isString(element)) {
       var div = document.createElement('div');
-      div.innerHTML = element;
+      // Read about the NoScope elements here:
+      // http://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
+      div.innerHTML = '<div>&nbsp;</div>' + element; // IE insanity to make NoScope elements work!
+      div.removeChild(div.firstChild); // remove the superfluous div
       element = new JQLite(div.childNodes);
     } else if (!(element instanceof JQLite)) {
       element =  new JQLite(element);
