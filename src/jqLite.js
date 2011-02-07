@@ -87,6 +87,15 @@ JQLite.prototype = {
     })(this[0]);
   },
 
+  scope: function() {
+    var scope, element = this;
+    while (element && element.length && !(scope = element.data($$scope))) {
+      element = element.parent();
+    }
+    return scope;
+  },
+
+
   ready: function(fn) {
     var fired = false;
 

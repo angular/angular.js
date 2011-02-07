@@ -166,24 +166,4 @@ describe('compiler', function(){
     scope = compile('A---B---C===D');
     expect(sortedHtml(scope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
   });
-
-
-  describe('retrieveScope', function() {
-    it('should retrieve scope attached to the current element', function() {
-      scope = compile('<i>foo</i>');
-      expect(retrieveScope(scope.$element)).toBe(scope);
-    });
-
-    it('should walk up the dom to find scope', function() {
-      scope = compile('<ul><li><p><b>deep deep</b><p></li></ul>');
-      var deepChild = scope.$element[0].getElementsByTagName('b')[0];
-      expect(retrieveScope(deepChild)).toBe(scope);
-    });
-
-    it('should return undefined when no scope was found', function() {
-      var html = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>'),
-          deepChild = html[0].getElementsByTagName('b')[0];
-      expect(retrieveScope(deepChild)).toBeNull();
-    });
-  });
 });
