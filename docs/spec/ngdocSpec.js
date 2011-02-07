@@ -215,13 +215,13 @@ describe('ngdoc', function(){
         expect(doc.properties.length).toEqual(2);
       });
 
-      it('should parse @property with only name', function() {
+      it('should not parse @property without a type', function() {
         var doc = new Doc("@property fake");
-        doc.parse();
-        expect(doc.properties[0].name).toEqual('fake');
+        expect(function() { doc.parse(); }).
+          toThrow(new Error("Not a valid 'property' format: fake"));
       });
 
-      it('should parse @property with optional type', function() {
+      it('should parse @property with type', function() {
         var doc = new Doc("@property {string} name");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
@@ -229,10 +229,10 @@ describe('ngdoc', function(){
       });
 
       it('should parse @property with optional description', function() {
-        var doc = new Doc("@property name desc rip tion");
+        var doc = new Doc("@property {string} name desc rip tion");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
-        expect(doc.properties[0].description).toEqual('desc rip tion');
+        expect(doc.properties[0].description).toEqual('<p>desc rip tion</p>');
       });
 
       it('should parse @property with type and description both', function() {
@@ -240,7 +240,7 @@ describe('ngdoc', function(){
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
         expect(doc.properties[0].type).toEqual('bool');
-        expect(doc.properties[0].description).toEqual('desc rip tion');
+        expect(doc.properties[0].description).toEqual('<p>desc rip tion</p>');
       });
 
     });
