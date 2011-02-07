@@ -69,18 +69,6 @@ Template.prototype = {
   }
 };
 
-/*
- * Function walks up the element chain looking for the scope associated with the give element.
- */
-function retrieveScope(element) {
-  var scope;
-  element = jqLite(element);
-  while (element && element.length && !(scope = element.data($$scope))) {
-    element = element.parent();
-  }
-  return scope;
-}
-
 ///////////////////////////////////
 //Compiler
 //////////////////////////////////

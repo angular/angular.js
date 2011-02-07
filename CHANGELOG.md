@@ -18,6 +18,9 @@
   - setting the parent scope for scopes created by the service via `#parent()`
   - reloading the current route via `#reload()`
 
+### API
+- added `angular.element(...).scope()` method to retrieve scope for a given element.
+
 ### Bug Fixes
 - <option> value attribute gets clobbered when the element contains new line character(s).
 - <ng:view> widget now works when nested inside an <ng:include> widget
