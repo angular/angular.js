@@ -157,14 +157,14 @@ Doc.prototype = {
         } else if(atName == 'requires') {
           self.requires.push(text);
         } else if(atName == 'property') {
-          var match = text.match(/^({(\S+)}\s*)?(\S+)(\s+(.*))?/);
+          var match = text.match(/^{(\S+)}\s+(\S+)(\s+(.*))?/);
           if (!match) {
             throw new Error("Not a valid 'property' format: " + text);
           }
           var property = {
-              type: match[2],
-              name: match[3],
-              description: match[5] || ''
+              type: match[1],
+              name: match[2],
+              description: self.markdown(text.replace(match[0], match[4]))
             };
           self.properties.push(property);
         } else {
@@ -445,7 +445,7 @@ Doc.prototype = {
     });
     dom.h('Properties', this.properties, function(property){
       dom.h(property.name, function(){
-       dom.text(property.description);
+       dom.html(property.description);
        dom.h('Example', property.example, dom.html);
       });
     });
