@@ -748,13 +748,23 @@ angularServiceInject('$route', function(location, $updateView) {
          *    Object properties:
          *
          *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
-         *        created scope.
+         *      created scope.
          *    - `template` – `{string=}` – path to an html template that should be used by
-         *        {@link angular.widget.ng:view ng:view} or
-         *        {@link angular.widget.ng:include ng:include} widgets.
-         *    - `redirectTo` – {string=} – value to update
-         *        {@link angular.service.$location $location} hash with and trigger route
-         *        redirection.
+         *      {@link angular.widget.ng:view ng:view} or
+         *      {@link angular.widget.ng:include ng:include} widgets.
+         *    - `redirectTo` – {(string|function())=} – value to update
+         *      {@link angular.service.$location $location} hash with and trigger route redirection.
+         *
+         *      If `redirectTo` is a function, it will be called with the following parameters:
+         *
+         *      - `{Object.<string>}` - route parameters extracted from the current
+         *        `$location.hashPath` by applying the current route template.
+         *      - `{string}` - current `$location.hash`
+         *      - `{string}` - current `$location.hashPath`
+         *      - `{string}` - current `$location.hashSearch`
+         *
+         *      The custom `redirectTo` function is expected to return a string which will be used
+         *      to update `$location.hash`.
          *
          * @returns {Object} route object
          *
@@ -801,7 +811,7 @@ angularServiceInject('$route', function(location, $updateView) {
         }
       };
   function updateRoute(){
-    var childScope, routeParams, pathParams, redirectPath, segmentMatch, key;
+    var childScope, routeParams, pathParams, segmentMatch, key, redir;
 
     $route.current = _null;
     forEach(routes, function(rParams, rPath) {
@@ -817,18 +827,29 @@ angularServiceInject('$route', function(location, $updateView) {
 
     if(routeParams) {
       if (routeParams.redirectTo) {
-        redirectPath = '';
-        forEach(routeParams.redirectTo.split(':'), function(segment, i) {
-          if (i==0) {
-            redirectPath += segment;
-          } else {
-            segmentMatch = segment.match(/(\w+)(.*)/);
-            key = segmentMatch[1];
-            redirectPath += pathParams[key] || location.hashSearch[key];
-            redirectPath += segmentMatch[2] || '';
-          }
-        });
-        location.updateHash(redirectPath);
+        if (isString(routeParams.redirectTo)) {
+          // interpolate the redirectTo string
+          redir = {hashPath: '',
+                   hashSearch: extend({}, location.hashSearch, pathParams)};
+
+          forEach(routeParams.redirectTo.split(':'), function(segment, i) {
+            if (i==0) {
+              redir.hashPath += segment;
+            } else {
+              segmentMatch = segment.match(/(\w+)(.*)/);
+              key = segmentMatch[1];
+              redir.hashPath += pathParams[key] || location.hashSearch[key];
+              redir.hashPath += segmentMatch[2] || '';
+              delete redir.hashSearch[key];
+            }
+          });
+        } else {
+          // call custom redirectTo function
+          redir = {hash: routeParams.redirectTo(pathParams, location.hash, location.hashPath,
+                                                location.hashSearch)};
+        }
+
+        location.update(redir);
         $updateView(); //TODO this is to work around the $location<=>$browser issues
         return;
       }

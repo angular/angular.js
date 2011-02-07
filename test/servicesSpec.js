@@ -523,14 +523,14 @@ describe("service", function(){
       expect(onChangeSpy.callCount).toBe(1);
     });
 
-
-    it('should interpolate route variables in the redirected path from hashPath', function() {
+    it('should interpolate route variables in the redirected hashPath from the original hashPath',
+        function() {
       var scope = angular.scope(),
           $location = scope.$service('$location'),
           $browser = scope.$service('$browser'),
           $route = scope.$service('$route');
 
-      $route.when('/foo/:id/foo/:subid/:ignoredId', {redirectTo: '/bar/:id/:subid/23'});
+      $route.when('/foo/:id/foo/:subid/:extraId', {redirectTo: '/bar/:id/:subid/23'});
       $route.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
       scope.$eval();
 
@@ -538,26 +538,53 @@ describe("service", function(){
       scope.$eval(); //triggers initial route change - match the redirect route
       $browser.defer.flush(); //triger route change - match the route we redirected to
 
-      expect($location.hash).toBe('/bar/id1/subid3/23');
+      expect($location.hash).toBe('/bar/id1/subid3/23?extraId=gah');
       expect($route.current.template).toBe('bar.html');
     });
 
-    it('should interpolate route variables in the redirected path from hashSearch', function() {
+    it('should interpolate route variables in the redirected hashPath from the original hashSearch',
+        function() {
       var scope = angular.scope(),
           $location = scope.$service('$location'),
           $browser = scope.$service('$browser'),
           $route = scope.$service('$route');
 
       $route.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
-      $route.when('/foo/:id', {redirectTo: '/bar/:id/:subid/99'});
+      $route.when('/foo/:id/:extra', {redirectTo: '/bar/:id/:subid/99'});
       scope.$eval();
 
-      $location.hash = '/foo/id3?subid=sid1&ignored=true';
+      $location.hash = '/foo/id3/eId?subid=sid1&appended=true';
       scope.$eval(); //triggers initial route change - match the redirect route
       $browser.defer.flush(); //triger route change - match the route we redirected to
 
-      expect($location.hash).toBe('/bar/id3/sid1/99');
+      expect($location.hash).toBe('/bar/id3/sid1/99?appended=true&extra=eId');
       expect($route.current.template).toBe('bar.html');
+    });
+
+    it('should allow custom redirectTo function to be used', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $browser = scope.$service('$browser'),
+          $route = scope.$service('$route');
+
+      $route.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
+      $route.when('/foo/:id',
+                  {redirectTo: customRedirectFn});
+      scope.$eval();
+
+      $location.hash = '/foo/id3?subid=sid1&appended=true';
+      scope.$eval(); //triggers initial route change - match the redirect route
+      $browser.defer.flush(); //triger route change - match the route we redirected to
+
+      expect($location.hash).toBe('custom');
+
+      function customRedirectFn(routePathParams, hash, hashPath, hashSearch) {
+        expect(routePathParams).toEqual({id: 'id3'});
+        expect(hash).toEqual($location.hash);
+        expect(hashPath).toEqual($location.hashPath);
+        expect(hashSearch).toEqual($location.hashSearch);
+        return 'custom';
+      }
     });
   });
 
