@@ -28,6 +28,7 @@ beforeEach(function(){
   compileCache = {};
   // reset to jQuery or default to us.
   bindJQuery();
+  jqLite(document.body).html('');
   this.addMatchers({
     toBeInvalid: function(){
       var element = jqLite(this.actual);

@@ -350,9 +350,11 @@ describe("service", function(){
 
   describe("$invalidWidgets", function(){
     it("should count number of invalid widgets", function(){
-      scope = compile('<input name="price" ng:required ng:validate="number"></input>');
-      jqLite(document.body).append(scope.$element);
-      scope.$init();
+      var body = jqLite(document.body);
+      var div = jqLite('<div>');
+      body.append(div);
+      div.html('<input name="price" ng:required ng:validate="number"></input>');
+      scope = compile(div);
       var $invalidWidgets = scope.$service('$invalidWidgets');
       expect($invalidWidgets.length).toEqual(1);
 
@@ -365,7 +367,7 @@ describe("service", function(){
       scope.$eval();
       expect($invalidWidgets.length).toEqual(0);
 
-      jqLite(document.body).append(scope.$element);
+      body.append(scope.$element);
       scope.price = 'abcd'; //force revalidation, maybe this should be done automatically?
       scope.$eval();
       expect($invalidWidgets.length).toEqual(1);
@@ -385,7 +387,7 @@ describe("service", function(){
       function BookChapter() {
         this.log = '<init>';
       }
-      scope = compile('<div></div>').$init();
+      scope = compile('<div></div>');
       $location = scope.$service('$location');
       $route = scope.$service('$route');
       $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
