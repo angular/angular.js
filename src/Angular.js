@@ -94,7 +94,9 @@ var _undefined        = undefined,
 
     /** @name angular */
     angular           = window[$angular]    || (window[$angular] = {}),
+    /** @name angular.markup */
     angularTextMarkup = extensionMap(angular, 'markup'),
+    /** @name angular.attrMarkup */
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     /** @name angular.directive */
     angularDirective  = extensionMap(angular, 'directive'),
