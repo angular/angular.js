@@ -890,7 +890,7 @@ angularWidget('a', function() {
  */
 angularWidget("@ng:repeat", function(expression, element){
   element.removeAttr('ng:repeat');
-  element.replaceWith(this.comment("ng:repeat: " + expression));
+  element.replaceWith(jqLite("<!-- ng:repeat: " + expression + " --!>"));
   var template = this.compile(element);
   return function(reference){
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
