@@ -1151,16 +1151,94 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
 
 /**
  * @workInProgress
- * @ngdoc function
+ * @ngdoc service
  * @name angular.service.$resource
- * @requires $xhr
+ * @requires $xhr.cache
  *
  * @description
- * Is a factory which creates a resource object which lets you interact with
- * <a href="http://en.wikipedia.org/wiki/Representational_State_Transfer" target="_blank">RESTful</a>
- * server-side data sources.
- * Resource object has action methods which provide high-level behaviors without
- * the need to interact with the low level $xhr or XMLHttpRequest().
+ * Is a factory which creates a resource object that lets you interact with
+ * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
+ *
+ * The returned resource object has action methods which provide high-level behaviors without
+ * the need to interact with the low level {@link angular.service.$xhr $xhr} service or
+ * raw XMLHttpRequest.
+ *
+ * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
+ *   `/user/:username`.
+ *
+ * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
+ *   `actions` methods.
+ *
+ *   Each key value in the parameter object is first bound to url template if present and then any
+ *   excess keys are appended to the url search query after the `?`.
+ *
+ *   Given a template `/path/:verb` and parameter `{verb:'greet', salutation:'Hello'}` results in
+ *   URL `/path/greet?salutation=Hello`.
+ *
+ *   If the parameter value is prefixed with `@` then the value of that parameter is extracted from
+ *   the data object (useful for non-GET operations).
+ *
+ * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
+ *   default set of resource actions. The declaration should be created in the following format:
+ *
+ *       {action1: {method:?, params:?, isArray:?, verifyCache:?},
+ *        action2: {method:?, params:?, isArray:?, verifyCache:?},
+ *        ...}
+ *
+ *   Where:
+ *
+ *   - `action` – {string} – The name of action. This name becomes the name of the method on your
+ *     resource object.
+ *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
+ *     and `JSON` (also known as JSONP).
+ *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
+ *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
+ *     `returns` section.
+ *   - verifyCache – {boolean=} – If true then whenever cache hit occurs, the object is returned and
+ *     an async request will be made to the server and the resources as well as the cache will be
+ *     updated when the response is received.
+ *
+ * @returns {Object} A resource "class" object with methods for the default set of resource actions
+ *   optionally extended with custom `actions`. The default set contains these actions:
+ *
+ *       { 'get':    {method:'GET'},
+ *         'save':   {method:'POST'},
+ *         'query':  {method:'GET', isArray:true},
+ *         'remove': {method:'DELETE'},
+ *         'delete': {method:'DELETE'} };
+ *
+ *   Calling these methods invoke an {@link angular.service.$xhr} with the specified http method,
+ *   destination and parameters. When the data is returned from the server then the object is an
+ *   instance of the resource class `save`, `remove` and `delete` actions are available on it as
+ *   methods with the `$` prefix. This allows you to easily perform CRUD operations (create, read,
+ *   update, delete) on server-side data like this:
+ *   <pre>
+        var User = $resource('/user/:userId', {userId:'@id'});
+        var user = User.get({userId:123}, function(){
+          user.abc = true;
+          user.$save();
+        });
+     </pre>
+ *
+ *   It is important to realize that invoking a $resource object method immediately returns an
+ *   empty reference (object or array depending on `isArray`). Once the data is returned from the
+ *   server the existing reference is populated with the actual data. This is a useful trick since
+ *   usually the resource is assigned to a model which is then rendered by the view. Having an empty
+ *   object results in no rendering, once the data arrives from the server then the object is
+ *   populated with the data and the view automatically re-renders itself showing the new data. This
+ *   means that in most case one never has to write a callback function for the action methods.
+ *
+ *   The action methods on the class object or instance object can be invoked with the following
+ *   parameters:
+ *
+ *   - HTTP GET "class" actions: `Resource.action([parameters], [callback])`
+ *   - non-GET "class" actions: `Resource.action(postData, [parameters], [callback])`
+ *   - non-GET instance actions:  `instance.$action([parameters], [callback])`
+ *
+ *
+ * @example
+ *
+ * # Credit card resource
  *
  * <pre>
      // Define CreditCard class
@@ -1223,40 +1301,10 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
        u.$save();
      });
    </pre>
- *
- *
- * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
- *     `/user/:username`.
- * @param {Object=} paramDefaults Default values for `url` parameters. These can be overridden in
- *     `actions` methods.
- * @param {Object.<Object>=} actions Map of actions available for the resource.
- *
- *     Each resource comes preconfigured with `get`, `save`, `query`, `remove`, and `delete` to
- *     mimic the RESTful philosophy.
- *
- *     To create your own actions, pass in a map keyed on action names (e.g. `'charge'`) with
- *     elements consisting of these properties:
- *
- *     - `{string} method`:  Request method type. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
- *        and [`JSON`](http://en.wikipedia.org/wiki/JSON#JSONP) (also known as JSONP).
- *     - `{Object=} params`: Set of pre-bound parameters for the action.
- *     - `{boolean=} isArray`: If true then the returned object for this action is an array, see the
- *       pre-binding section.
- *     - `{boolean=} verifyCache`: If true then items returned from cache, are double checked by
- *       running the query again and updating the resource asynchroniously.
- *
- *     Each service comes preconfigured with the following overridable actions:
- *     <pre>
- *       { 'get':    {method:'GET'},
-           'save':   {method:'POST'},
-           'query':  {method:'GET', isArray:true},
-           'remove': {method:'DELETE'},
-           'delete': {method:'DELETE'} };
- *     </pre>
- *
- * @returns {Object} A resource "class".
- *
- * @example
+
+ * # Buzz client
+
+   Let's look at what a buzz client created with the `$resource` service looks like:
     <doc:example>
       <doc:source>
        <script>
