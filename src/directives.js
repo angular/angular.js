@@ -46,6 +46,12 @@ angularDirective("ng:init", function(expression){
  * @param {expression} expression to eval.
  *
  * @example
+ * Here is a simple form for editing the user contact information. Adding, removing clearing and
+ * greeting are methods which are declared on the controller (see source tab). These methods can
+ * easily be called from the angular markup. Notice that the scope becomes the controller's class
+ * this. This allows for easy access to the view data from the controller. Also notice that any
+ * changes to the data are automatically reflected in the view without the need to update it
+ * manually.
    <doc:example>
      <doc:source>
       <script type="text/javascript">
