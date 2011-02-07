@@ -62,8 +62,10 @@ Doc.prototype = {
     var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/;
     var IS_ANGULAR = /^angular\./;
     if (!text) return text;
-    var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/),
-        match;
+
+    text = trim(text);
+
+    var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/);
 
     parts.forEach(function(text, i){
       if (text.match(/^<pre>/)) {
@@ -495,7 +497,7 @@ function scenarios(docs){
     specs.push('  });');
     specs.push('');
     doc.scenarios.forEach(function(scenario){
-      specs.push(trim(scenario, '  '));
+      specs.push(indent(trim(scenario), 2));
       specs.push('');
     });
     specs.push('});');
@@ -564,36 +566,57 @@ function keywordSort(a, b){
 
 
 //////////////////////////////////////////////////////////
-function trim(text, prefix) {
-  var MAX = 9999;
+function trim(text) {
+  var MAX_INDENT = 9999;
   var empty = RegExp.prototype.test.bind(/^\s*$/);
   var lines = text.split('\n');
-  var minIndent = MAX;
-  prefix = prefix || '';
+  var minIndent = MAX_INDENT;
+  var indentRegExp;
+  var ignoreLine = (lines[0][0] != ' '  && lines.length > 1);
+                  // ignore first line if it has no indentation and there is more than one line
+
   lines.forEach(function(line){
-    minIndent = Math.min(minIndent, indent(line));
+    if (ignoreLine) {
+      ignoreLine = false;
+      return;
+    }
+
+    var indent = line.match(/^\s*/)[0].length;
+    if (indent > 0 || minIndent == MAX_INDENT) {
+      minIndent = Math.min(minIndent, indent);
+    }
   });
+
+  indentRegExp = new RegExp('^\\s{0,' + minIndent + '}');
+
   for ( var i = 0; i < lines.length; i++) {
-    lines[i] = prefix + lines[i].substring(minIndent);
+    lines[i] = lines[i].replace(indentRegExp, '');
   }
+
   // remove leading lines
   while (empty(lines[0])) {
     lines.shift();
   }
+
   // remove trailing
   while (empty(lines[lines.length - 1])) {
     lines.pop();
   }
   return lines.join('\n');
+}
 
-  function indent(line) {
-    for(var i = 0; i < line.length; i++) {
-      if (line.charAt(i) != ' ')  {
-        return i;
-      }
-    }
-    return MAX;
-  }
+function indent(text, spaceCount) {
+  var lines = text.split('\n'),
+      indent = '',
+      fixedLines = [];
+
+  while(spaceCount--) indent += ' ';
+
+  lines.forEach(function(line) {
+    fixedLines.push(indent + line);
+  });
+
+  return fixedLines.join('\n');
 }
 
 //////////////////////////////////////////////////////////

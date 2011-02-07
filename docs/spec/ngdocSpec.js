@@ -143,6 +143,33 @@ describe('ngdoc', function(){
         toMatch('</div><h1>One</h1><div');
     });
 
+    it('should unindent text before processing based on the second line', function() {
+      expect(new Doc().markdown('first line\n' +
+                                '   second line\n\n' +
+                                '       third line\n' +
+                                '        fourth line\n\n' +
+                                '   fifth line')).
+        toMatch('<p>first line\n' +
+                'second line</p>\n\n' +
+                '<pre><code>third line\n' +
+                ' fourth line\n</code></pre>\n\n' +
+                '<p>fifth line</p>');
+    });
+
+    it('should unindent text before processing based on the first line', function() {
+      expect(new Doc().markdown('   first line\n\n' +
+                                '       second line\n' +
+                                '       third line\n' +
+                                '        fourth line\n\n' +
+                                '   fifth line')).
+        toMatch('<p>first line</p>\n\n' +
+                '<pre><code>second line\n' +
+                'third line\n' +
+                ' fourth line\n</code></pre>\n\n' +
+                '<p>fifth line</p>');
+    });
+
+
   });
 
   describe('trim', function(){
@@ -163,7 +190,7 @@ describe('ngdoc', function(){
       var methodB = new Doc({name:'methodB', methodOf:'angular.service.abc'});
       var propA = new Doc({name:'propA', propertyOf:'angular.service.abc'});
       var propB = new Doc({name:'propB', propertyOf:'angular.service.abc'});
-      ;var docs = [methodB, methodA, propB, propA, parent]; // keep wrong order;
+      var docs = [methodB, methodA, propB, propA, parent]; // keep wrong order;
       ngdoc.merge(docs);
       expect(docs.length).toEqual(1);
       expect(docs[0].name).toEqual('angular.service.abc');
@@ -185,7 +212,7 @@ describe('ngdoc', function(){
           name : 'number',
           optional: false,
           'default' : undefined,
-          description : '<p>Number \n to format.</p>' }]);
+          description : '<p>Number \nto format.</p>' }]);
       });
 
       it('should parse with default and optional', function(){
@@ -267,7 +294,7 @@ describe('ngdoc', function(){
         var doc = new Doc("@returns {string} description\n new line\n another line");
         doc.parse();
         expect(doc.returns).
-          toEqual({type: 'string', description: '<p>description\n new line\n another line</p>'});
+          toEqual({type: 'string', description: '<p>description\nnew line\nanother line</p>'});
       });
     });
 
