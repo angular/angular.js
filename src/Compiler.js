@@ -178,9 +178,6 @@ Compiler.prototype = {
         template,
         selfApi = {
           compile: bind(self, self.compile),
-          comment:function(text) {return jqLite(document.createComment(text));},
-          element:function(type) {return jqLite(document.createElement(type));},
-          text:function(text) {return jqLite(document.createTextNode(text));},
           descend: function(value){ if(isDefined(value)) descend = value; return descend;},
           directives: function(value){ if(isDefined(value)) directives = value; return directives;},
           scope: function(value){ if(isDefined(value)) template.newScope = template.newScope || value; return template.newScope;}

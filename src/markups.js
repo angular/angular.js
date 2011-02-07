@@ -38,10 +38,10 @@ angularTextMarkup('{{}}', function(text, textNode, parentElement) {
       forEach(parseBindings(text), function(text){
         var exp = binding(text);
         if (exp) {
-          newElement = self.element('span');
+          newElement = jqLite('<span>');
           newElement.attr('ng:bind', exp);
         } else {
-          newElement = self.text(text);
+          newElement = jqLite(document.createTextNode(text));
         }
         if (msie && text.charAt(0) == ' ') {
           newElement = jqLite('<span>&nbsp;</span>');
