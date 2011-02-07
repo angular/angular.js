@@ -432,8 +432,24 @@ Doc.prototype = {
   },
 
   html_usage_service: function(dom){
+    var self = this;
     dom.h('Description', this.description, dom.html);
     dom.h('Dependencies', this.requires);
+
+    if (this.param.length) {
+      dom.h('Usage', function(){
+        dom.code(function(){
+          dom.text(self.name.split('.').pop());
+          dom.text('(');
+          self.parameters(dom, ', ');
+          dom.text(');');
+        });
+
+        self.html_usage_parameters(dom);
+        self.html_usage_this(dom);
+        self.html_usage_returns(dom);
+      });
+    }
 
     dom.h('Methods', this.methods, function(method){
       var signature = (method.param || []).map(property('name'));
