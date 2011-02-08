@@ -3,33 +3,25 @@
 @name Developer Guide: Downloading
 @description
 
-# Downloading
-Follow these steps to download, compile, and host angular.js on your own server:
+# Downloading 
+To host `angular` on your server, you need RAKE and you need the
+`angular` source code. The steps below explain how to download and compile these
+required software products:
 
-## Step 0
+1. To install RAKE (Ruby Make), download the installation file from
+{@link http://rake.rubyforge.org/}.
 
-If you don't already have Rake (Ruby Make) installed, download and install it from
-http://rake.rubyforge.org/.
+2. To install the `angular` source code, download the source code from
+{@link http://github.com/angular/angular.js}.
 
-## Step 1
+3. To compile the source, run the command `rake compile` (the `angular` source
+code includes a Rakefile).
 
-Download the angular source code from GitHub: http://github.com/angular/angular.js.
+The `js` directory contains the following versions of the `angular` bootstrap
+code:
 
-## Step 2
+* `angular-?.?.?.js` - This file is unobfuscated, uncompressed, and
+can be read. 
 
-The source code should include a Rakefile. Compile the source by typing rake compile.
-
-## Step 3
-
-Host the files on your server. Look through your source tree and make sure that the css and js
-directories are parallel (i.e. share a common root node).
-
-In the js directory you should see these different versions of the angular bootstrap code:
-
-* **angular-?.?.?.js** - this file is unobfuscated, uncompressed, and human-readable. Note that
-  despite the name of the file, there is no additional functionality built in to help you debug
-  your application; it has the prefix debug because you can read the source code.
-* **angular-?.?.?.min.js** - this is a compressed and obfuscated version of `angular-?.?.?.js`.
-  You might want to use this version if you want to load a smaller but functionally equivalent
-  version of the code in your application. Note: this minified version was created using the
-  Closure Compiler.
+* `angular-?.?.?.min.js` - This is a compressed and obfuscated version of
+`angular-?.?.?.js` created with Closure Compiler. Use this version for production and to minimize the size of the application that is downloaded by the user. 
