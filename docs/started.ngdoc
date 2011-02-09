@@ -3,12 +3,6 @@
 @name Getting Started
 @description
 
-# Prerequisite
-
-Before you get started, you must have the `angular` source set up on your 
-machine.  If you haven't done this yet, see 
-{@link guide.downloading Downloading Angular}.
-
 # Hello World!
 
 A great way for you to get started with `angular` is to create the tradtional 
@@ -34,7 +28,7 @@ Now let's take a closer look at that code, and see what is going on behind
 the scenes.  
 
 The first line of interest defines the `ng` namespace, which makes 
-`angular` work across all browsers (including IE):
+`angular` work across all browsers (especially important for IE):
 
 <pre>
     <html xmlns:ng="http://angularjs.org">
@@ -85,7 +79,7 @@ After the refresh, the page should look something like this:
 
 These are some of the important points to note from this example:
 
-* The text input widget called `yourname` is bound to a model variable called 
+* The text input {@link angular.widget widget} called `yourname` is bound to a model variable called 
   `yourname`.
 * The double curly braces notation binds the variable `yourname` to the 
   greeting text.
@@ -97,7 +91,7 @@ These are some of the important points to note from this example:
 
 Now try typing your name into the input box, and notice the immediate change to 
 the displayed greeting. This demonstrates the concept of `angular`'s 
-_bi-directional data binding_. Any changes to the input field are immediately 
+{@link guide.data-binding bi-directional data binding}. Any changes to the input field are immediately 
 reflected in the model (one direction), and any changes to the model are 
 reflected in the greeting text (the other direction).
 
