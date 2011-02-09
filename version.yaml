@@ -1,4 +1,4 @@
 # <angular/> build config file
 ---
-version: 0.9.11
-codename: snow-maker
+version: 0.9.12-snapshot
+codename: thought-implanter
