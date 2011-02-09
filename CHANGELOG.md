@@ -1,5 +1,5 @@
 <a name="0.9.11"><a/>
-# <angular/> 0.9.11 snow-maker  (in-progress) #
+# <angular/> 0.9.11 snow-maker  (2011-02-08) #
 
 ### Documentation
 - completed migration of docs from the wiki site to
