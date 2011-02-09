@@ -1,9 +1,33 @@
+<a name="0.9.11"><a/>
 # <angular/> 0.9.11 snow-maker  (in-progress) #
+
+### Documentation
+- completed migration of docs from the wiki site to
+  [http://docs.angularjs.org/](http://docs.angularjs.org/)
+- many, but by far not all, docs were updated, improved and cleaned up
+
+### Features
+- [`$route`](http://docs.angularjs.org/#!angular.service.$route) service now supports these
+  features:
+  - route not found handling via `#otherwise()`
+  - redirection support via `#when('/foo', {redirectTo: '/bar'})` (including param interpolation)
+  - setting the parent scope for scopes created by the service via `#parent()`
+  - reloading the current route via `#reload()`
 
 ### Bug Fixes
 - <option> value attribute gets clobbered when the element contains new line character(s).
+- <ng:view> widget now works when nested inside an <ng:include> widget
+- other various small fixes
+
+### Breaking changes
+- mock [`$browser`](http://docs.angularjs.org/#!angular.mock.service.$browser) now throws an
+  exception if the `flush()` method is called when there are no requests to be flushed. If you
+  experience `No xhr requests to be flushed!` errors in your tests, it's because you called
+  `$browser.xhr.flush()` unexpectedly. To make the error go away, either make sure your code makes a
+  request via the `$xhr` service or remove all unneeded `flush()` calls.
 
 
+<a name="0.9.10"><a/>
 # <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
 
 ### Features
@@ -27,6 +51,7 @@ with the `$route` service
 - lots of improvements related to formatting of the content of docs.anguarjs.org
 
 
+<a name="0.9.9"><a/>
 # <angular/> 0.9.9 time-shift (2011-01-13) #
 
 ### Security
@@ -102,6 +127,7 @@ with the `$route` service
 - The `toString` method of the `angular.service.$location` service was removed. (commit 23875cb3)
 
 
+<a name="0.9.8"><a/>
 # <angular/> 0.9.8 astral-projection (2010-12-23) #
 
 ### Docs/Getting started
@@ -115,6 +141,7 @@ with the `$route` service
 - Ignore input widgets which have no name (issue #153)
 
 
+<a name="0.9.7"><a/>
 # <angular/> 0.9.7 sonic-scream (2010-12-10) #
 
 ### Bug Fixes
@@ -133,6 +160,7 @@ with the `$route` service
   your controllers. (commit e5e69d9b90850eb653883f52c76e28dd870ee067)
 
 
+<a name="0.9.6"><a/>
 # <angular/> 0.9.6 night-vision (2010-12-06) #
 
 ### Security
@@ -162,6 +190,7 @@ with the `$route` service
 - The HTML sanitizer is slightly more strinct now. Please see info in the "Security" section above.
 
 
+<a name="0.9.5"><a/>
 # <angular/> 0.9.5 turkey-blast (2010-11-25) #
 
 ### Docs
@@ -171,6 +200,7 @@ with the `$route` service
 - added `angular.Array.limitTo` to make it easy to select first or last few items of an array
 
 
+<a name="0.9.4"><a/>
 # <angular/> 0.9.4 total-recall (2010-11-18) #
 
 ### Docs
@@ -187,6 +217,7 @@ with the `$route` service
 - Better error handling - compilation exception now contain stack trace (commit b2d63ac4)
 
 
+<a name="0.9.3"><a/>
 # <angular/> 0.9.3 cold-resistance (2010-11-10) #
 
 ### Docs
@@ -214,6 +245,7 @@ with the `$route` service
   simple RegExp validator.
 
 
+<a name="0.9.2"><a/>
 # <angular/> 0.9.2 faunal-mimicry (2010-11-03) #
 
 ### Docs
@@ -251,6 +283,7 @@ with the `$route` service
   implements HEAD
 
 
+<a name="0.9.1"><a/>
 # <angular/> 0.9.1 repulsion-field (2010-10-26) #
 
 ### Security
@@ -277,6 +310,7 @@ with the `$route` service
 - html filter now sanitizes html content for XSS attacks which may result in different behavior
 
 
+<a name="0.9.0"><a/>
 # <angular/> 0.9.0 dragon-breath (2010-10-20) #
 
 ### Security
