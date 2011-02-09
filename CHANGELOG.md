@@ -1,3 +1,7 @@
+<a name="0.9.12"><a/>
+# <angular/> 0.9.12 thought-implanter (in-progress) #
+
+
 <a name="0.9.11"><a/>
 # <angular/> 0.9.11 snow-maker  (2011-02-08) #
 
