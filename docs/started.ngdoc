@@ -104,8 +104,9 @@ map to the Model-View-Controller design pattern:
 ## Templates
 
 Templates, which you write in HTML and CSS, serve as the View. You add elements, 
-attributes, and markup to HTML, which serve as instructions to the `angular` 
-compiler. The `angular` compiler is fully extensible, meaning that with angular 
+attributes, and {@link angular.markup markup} to HTML, which serve as instructions 
+to the `angular` {@link guide.compiler compiler}. The `angular` 
+{@link guide.compiler compiler} is fully extensible, meaning that with angular 
 you can build your own declarative language on top of HTML!
 
 ## Application Logic and Behavior
