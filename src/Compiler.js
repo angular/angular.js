@@ -26,7 +26,6 @@ Template.prototype = {
     if (!queue) {
       inits[this.priority] = queue = [];
     }
-    element = jqLite(element);
     if (this.newScope) {
       childScope = createScope(scope);
       scope.$onEval(childScope.$eval);
@@ -45,7 +44,7 @@ Template.prototype = {
         paths = this.paths,
         length = paths.length;
     for (i = 0; i < length; i++) {
-      children[i].collectInits(childNodes[paths[i]], inits, childScope);
+      children[i].collectInits(jqLite(childNodes[paths[i]]), inits, childScope);
     }
   },
 
@@ -98,7 +97,7 @@ Compiler.prototype = {
       scope = scope || createScope();
       element = element === true
         ? templateElement.cloneNode()
-        : (jqLite(element) || templateElement);
+        : (element ? jqLite(element) : templateElement);
       element.data($$scope, scope);
       template.attach(element, scope);
       scope.$element = element;

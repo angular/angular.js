@@ -268,20 +268,6 @@ function extensionMap(angular, name, transform) {
   });
 }
 
-function jqLiteWrap(element) {
-  // for some reasons the parentNode of an orphan looks like _null but its typeof is object.
-  if (element) {
-    if (isString(element)) {
-      var div = document.createElement('div');
-      div.innerHTML = element;
-      element = new JQLite(div.childNodes);
-    } else if (!(element instanceof JQLite)) {
-      element =  new JQLite(element);
-    }
-  }
-  return element;
-}
-
 
 /**
  * @workInProgress
@@ -1054,11 +1040,11 @@ function bindJQuery(){
   // bind to jQuery if present;
   jQuery = window.jQuery;
   // reset to jQuery or default to us.
-  if (window.jQuery) {
-    jqLite = window.jQuery;
-    extend(jqLite.fn, {
-      scope: JQLite.prototype.scope,
-      cloneNode: cloneNode
+  if (jQuery) {
+    jqLite = jQuery;
+    extend(jQuery.fn, {
+      scope: JQLitePrototype.scope,
+      cloneNode: JQLitePrototype.cloneNode
     });
   } else {
     jqLite = jqLiteWrap;
