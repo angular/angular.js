@@ -9,7 +9,9 @@ detection, and preventing invalid form submission.
 <doc:example>
  <doc:source>
     <script>
-    function UserForm(){
+    UserForm.$inject = ['$invalidWidgets'];
+    function UserForm($invalidWidgets){
+      this.$invalidWidgets = $invalidWidgets;
       this.state = /^\w\w$/;
       this.zip = /^\d\d\d\d\d$/;
       this.master = {
@@ -72,6 +74,8 @@ detection, and preventing invalid form submission.
  </doc:source>
  <doc:scenario>
   it('should enable save button', function(){
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+    input('form.name').enter('');
     expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
     input('form.name').enter('change');
     expect(element(':button:contains(Save)').attr('disabled')).toBeFalsy();
