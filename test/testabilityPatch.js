@@ -142,8 +142,11 @@ function childNode(element, index) {
 }
 
 function dealoc(obj) {
-  var element = (obj||{}).$element || obj;
-  if (element && element.dealoc) element.dealoc();
+  if (obj) {
+    var element = obj.$element || obj || {};
+    if (element.nodeName) element = jqLite(element);
+    if (element.dealoc) element.dealoc();
+  }
 }
 
 extend(angular, {
@@ -179,7 +182,7 @@ function sortedHtml(element, showNgClass) {
         replace(/</g, '&lt;').
         replace(/>/g, '&gt;');
     } else {
-      html += '<' + node.nodeName.toLowerCase();
+      html += '<' + (node.nodeName || '?NOT_A_NODE?').toLowerCase();
       var attributes = node.attributes || [];
       var attrs = [];
       var className = node.className || '';

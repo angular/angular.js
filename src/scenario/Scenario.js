@@ -256,6 +256,12 @@ function browserTrigger(element, type) {
         element.checked = !element.checked;
         break;
     }
+    // WTF!!! Error: Unspecified error.
+    // Don't know why, but some elements when detached seem to be in inconsistent state and
+    // calling .fireEvent() on them will result in very unhelpful error (Error: Unspecified error)
+    // forcing the browser to compute the element position (by reading its CSS)
+    // puts the element in consistent state.
+    element.style.posLeft;
     element.fireEvent('on' + type);
     if (lowercase(element.type) == 'submit') {
       while(element) {

@@ -268,24 +268,6 @@ function extensionMap(angular, name, transform) {
   });
 }
 
-function jqLiteWrap(element) {
-  // for some reasons the parentNode of an orphan looks like _null but its typeof is object.
-  if (element) {
-    if (isString(element)) {
-      var div = document.createElement('div');
-      // Read about the NoScope elements here:
-      // http://msdn.microsoft.com/en-us/library/ms533897(VS.85).aspx
-      div.innerHTML = '<div>&nbsp;</div>' + element; // IE insanity to make NoScope elements work!
-      div.removeChild(div.firstChild); // remove the superfluous div
-      element = new JQLite(div.childNodes);
-    } else if (!(element instanceof JQLite)) {
-      element =  new JQLite(element);
-    }
-  }
-  return element;
-}
-
-
 /**
  * @workInProgress
  * @ngdoc function
@@ -422,7 +404,9 @@ function isBoolean(value) { return typeof value == $boolean;}
 function isTextNode(node) { return nodeName_(node) == '#text'; }
 function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
 function isElement(node) {
-  return node && (node.nodeName || node instanceof JQLite || (jQuery && node instanceof jQuery));
+  return node &&
+    (node.nodeName  // we are a direct element
+    || (node.bind && node.find));  // we have a bind and find method part of jQuery API
 }
 
 /**
@@ -1057,11 +1041,11 @@ function bindJQuery(){
   // bind to jQuery if present;
   jQuery = window.jQuery;
   // reset to jQuery or default to us.
-  if (window.jQuery) {
-    jqLite = window.jQuery;
-    extend(jqLite.fn, {
-      scope: JQLite.prototype.scope,
-      cloneNode: cloneNode
+  if (jQuery) {
+    jqLite = jQuery;
+    extend(jQuery.fn, {
+      scope: JQLitePrototype.scope,
+      cloneNode: JQLitePrototype.cloneNode
     });
   } else {
     jqLite = jqLiteWrap;
