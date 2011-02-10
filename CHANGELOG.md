@@ -1,6 +1,10 @@
 <a name="0.9.12"><a/>
 # <angular/> 0.9.12 thought-implanter (in-progress) #
 
+### API
+- rewrite of JQuery lite implementation for better supports operations on multiple nodes when
+  matched by a selector.
+
 ### Breaking changes
 - Removed the $init() method after the compilation. The old way of compiling the DOM element was
   angular.compile(element).$init(); The $init was there to allow the users to do any work to the
