@@ -19,13 +19,13 @@ Route.prototype = {
     params = params || {};
     forEach(this.urlParams, function(_, urlParam){
       var value = params[urlParam] || self.defaults[urlParam] || "";
-      url = url.replace(new RegExp(":" + urlParam + "(\\W)"), value + "$1");
+      url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodeURIComponent(value) + "$1");
     });
     url = url.replace(/\/?#$/, '');
     var query = [];
     forEachSorted(params, function(value, key){
       if (!self.urlParams[key]) {
-        query.push(encodeURI(key) + '=' + encodeURI(value));
+        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
       }
     });
     url = url.replace(/\/*$/, '');
