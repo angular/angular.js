@@ -40,6 +40,14 @@ describe("resource", function() {
     R.get({a:4, b:5, c:6});
   });
 
+  it('should correctly encode url params', function(){
+    var R = resource.route('/Path/:a');
+    xhr.expectGET('/Path/foo%231').respond({});
+    xhr.expectGET('/Path/doh!%40foo?bar=baz%231').respond({});
+    R.get({a: 'foo#1'});
+    R.get({a: 'doh!@foo', bar: 'baz#1'});
+  });
+
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
     var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
