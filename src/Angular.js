@@ -453,10 +453,6 @@ if (msie) {
   };
 }
 
-function quickClone(element) {
-  return jqLite(element[0].cloneNode(true));
-}
-
 function isVisible(element) {
   var rect = element[0].getBoundingClientRect(),
       width = (rect.width || (rect.right||0 - rect.left||0)),
@@ -1034,9 +1030,23 @@ function bindJQuery(){
   // reset to jQuery or default to us.
   if (window.jQuery) {
     jqLite = window.jQuery;
-    jqLite.fn.scope = JQLite.prototype.scope;
+    extend(jqLite.fn, {
+      scope: JQLite.prototype.scope,
+      cloneNode: cloneNode
+    });
   } else {
     jqLite = jqLiteWrap;
   }
   angular.element = jqLite;
 }
+
+/**
+ * throw error of the argument is falsy.
+ */
+function assertArg(arg, name) {
+  if (!arg) {
+    var error = new Error("Argument '" + name + "' is required");
+    if (window.console) window.console.log(error.stack);
+    throw error;
+  }
+};

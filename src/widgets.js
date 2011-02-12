@@ -790,7 +790,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
       forEach(cases, function(switchCase){
         if (!found && switchCase.when(childScope, value)) {
           found = true;
-          var caseElement = quickClone(switchCase.element);
+          var caseElement = switchCase.element.cloneNode();
           element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
           switchCase.template(caseElement, childScope);
@@ -943,8 +943,7 @@ angularWidget("@ng:repeat", function(expression, element){
             childScope.$position = index == 0 ?
                 'first' :
                   (index == collectionLength - 1 ? 'last' : 'middle');
-            cloneElement = quickClone(element);
-            lastElement.after(cloneElement);
+            lastElement.after(cloneElement = element.cloneNode());
             cloneElement.attr('ng:repeat-index', index);
             linker(cloneElement, childScope);
             children.push(childScope);

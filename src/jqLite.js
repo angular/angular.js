@@ -251,8 +251,10 @@ JQLite.prototype = {
     return jqLite(this[0].parentNode);
   },
 
-  clone: function() { return jqLite(this[0].cloneNode(true)); }
+  clone: cloneNode,
+  cloneNode: cloneNode
 };
+function cloneNode() { return jqLite(this[0].cloneNode(true)); }
 
 if (msie) {
   extend(JQLite.prototype, {
