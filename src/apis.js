@@ -637,8 +637,9 @@ var angularArray = {
       return 0;
     }
     function reverse(comp, descending) {
-      return toBoolean(descending) ?
-          function(a,b){return comp(b,a);} : comp;
+      return toBoolean(descending)
+          ? function(a,b){return comp(b,a);}
+          : comp;
     }
     function compare(v1, v2){
       var t1 = typeof v1;

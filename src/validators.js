@@ -181,8 +181,9 @@ extend(angularValidator, {
     return (date &&
             date.getFullYear() == fields[3] &&
             date.getMonth() == fields[1]-1 &&
-            date.getDate() == fields[2]) ?
-              _null : "Value is not a date. (Expecting format: 12/31/2009).";
+            date.getDate() == fields[2])
+              ? _null 
+              : "Value is not a date. (Expecting format: 12/31/2009).";
   },
 
   /**

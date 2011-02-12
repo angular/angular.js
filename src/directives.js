@@ -243,15 +243,17 @@ function compileBindTemplate(template){
     var bindings = [];
     forEach(parseBindings(template), function(text){
       var exp = binding(text);
-      bindings.push(exp ? function(element){
-        var error, value = this.$tryEval(exp, function(e){
-          error = toJson(e);
-        });
-        elementError(element, NG_EXCEPTION, error);
-        return error ? error : value;
-      } : function() {
-        return text;
-      });
+      bindings.push(exp
+        ? function(element){
+            var error, value = this.$tryEval(exp, function(e){
+              error = toJson(e);
+            });
+            elementError(element, NG_EXCEPTION, error);
+            return error ? error : value;
+          }
+        : function() {
+            return text;
+          });
     });
     bindTemplateCache[template] = fn = function(element, prettyPrintJson){
       var parts = [], self = this,
