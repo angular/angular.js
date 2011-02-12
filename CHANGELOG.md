@@ -8,6 +8,7 @@
   recommended way to deal with initializing scope is to put it in the root constructor controller.
   To migrate simply remove the call to $init() and move any code you had before $init() to the
   root controller.
+- Change API angular.compile(..) to angular.compile(element)([scope], [element/true])
 
 
 <a name="0.9.11"><a/>

@@ -18,7 +18,7 @@ describe('$route', function() {
     function BookChapter() {
       this.log = '<init>';
     }
-    scope = compile('<div></div>').$init();
+    scope = compile('<div></div>')().scope;
     $location = scope.$service('$location');
     $route = scope.$service('$route');
     $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
@@ -87,7 +87,7 @@ describe('$route', function() {
         $route = scope.$service('$route'),
         onChangeSpy = jasmine.createSpy('onChange');
 
-    function NotFoundCtrl() {this.notFoundProp = 'not found!'}
+    function NotFoundCtrl() {this.notFoundProp = 'not found!';}
 
     $route.when('/foo', {template: 'foo.html'});
     $route.otherwise({template: '404.html', controller: NotFoundCtrl});

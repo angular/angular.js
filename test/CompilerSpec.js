@@ -27,8 +27,7 @@ describe('compiler', function(){
     compiler = new Compiler(markup, attrMarkup, directives, widgets);
     compile = function(html){
       var e = jqLite("<div>" + html + "</div>");
-      var scope = compiler.compile(e)(e);
-      return scope;
+      return scope = compiler.compile(e)().scope;
     };
   });
 
@@ -48,7 +47,7 @@ describe('compiler', function(){
     };
     var template = compiler.compile(e);
     expect(log).toEqual("found");
-    scope = template(e);
+    scope = template(angular.scope(), e).scope;
     expect(e.hasClass('ng-directive')).toEqual(true);
     expect(log).toEqual("found:init");
   });
@@ -85,7 +84,7 @@ describe('compiler', function(){
       var template = this.compile(element);
       return function(marker) {
         this.$onEval(function() {
-          marker.after(template(element.clone()).$element);
+          marker.after(template(angular.scope(), true).view);
         });
       };
     };
