@@ -40,9 +40,14 @@ raw DOM references.
 - [text()](http://api.jquery.com/text/)
 - [trigger()](http://api.jquery.com/trigger/)
 
-## Additionally these methods are available in both jQuery and jQuery lite version.
+## Additionally these methods extend the jQuery and  are available in both jQuery and jQuery lite
+version:
 
 - `scope()` - retrieves the current angular scope of the element.
+- `cloneNode()` - Clones the current node, ensuring identical structure. This is important since
+       the `clone()` method implemented by jQuery under some circumstances changes the DOM
+       structure, which then prevents proper application of compiled template to the cloned node.
+       __Always use `cloneNode()` when cloning previously compiled templates.__
 
 @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
 @returns {Object} jQuery object.
