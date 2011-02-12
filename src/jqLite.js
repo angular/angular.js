@@ -5,12 +5,12 @@
 var jqCache = {},
     jqName = 'ng-' + new Date().getTime(),
     jqId = 1,
-    addEventListenerFn = (window.document.addEventListener ?
-      function(element, type, fn) {element.addEventListener(type, fn, false);} :
-      function(element, type, fn) {element.attachEvent('on' + type, fn);}),
-    removeEventListenerFn = (window.document.removeEventListener ?
-      function(element, type, fn) {element.removeEventListener(type, fn, false); } :
-      function(element, type, fn) {element.detachEvent('on' + type, fn); });
+    addEventListenerFn = (window.document.addEventListener
+      ? function(element, type, fn) {element.addEventListener(type, fn, false);}
+      : function(element, type, fn) {element.attachEvent('on' + type, fn);}),
+    removeEventListenerFn = (window.document.removeEventListener
+      ? function(element, type, fn) {element.removeEventListener(type, fn, false); }
+      : function(element, type, fn) {element.detachEvent('on' + type, fn); });
 
 function jqNextId() { return (jqId++); }
 
