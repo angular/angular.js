@@ -309,9 +309,9 @@ function browserTrigger(element, type) {
  */
 _jQuery.fn.bindings = function(name) {
   function contains(text, value) {
-    return value instanceof RegExp ?
-      value.test(text) :
-      text && text.indexOf(value) >= 0;
+    return value instanceof RegExp
+      ? value.test(text)
+      : text && text.indexOf(value) >= 0;
   }
   var result = [];
   this.find('.ng-binding:visible').each(function() {

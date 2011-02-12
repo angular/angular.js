@@ -30,12 +30,14 @@ var uppercase = function (string){ return isString(string) ? string.toUpperCase(
 
 
 var manualLowercase = function (s) {
-  return isString(s) ? s.replace(/[A-Z]/g,
-      function (ch) {return fromCharCode(ch.charCodeAt(0) | 32); }) : s;
+  return isString(s)
+      ? s.replace(/[A-Z]/g, function (ch) {return fromCharCode(ch.charCodeAt(0) | 32); })
+      : s;
 };
 var manualUppercase = function (s) {
-  return isString(s) ? s.replace(/[a-z]/g,
-      function (ch) {return fromCharCode(ch.charCodeAt(0) & ~32); }) : s;
+  return isString(s)
+      ? s.replace(/[a-z]/g, function (ch) {return fromCharCode(ch.charCodeAt(0) & ~32); })
+      : s;
 };
 
 
@@ -89,7 +91,9 @@ var _undefined        = undefined,
     jQuery,           // delay binding
     slice             = Array.prototype.slice,
     push              = Array.prototype.push,
-    error             = window[$console] ? bind(window[$console], window[$console]['error'] || noop) : noop,
+    error             = window[$console]
+                           ? bind(window[$console], window[$console]['error'] || noop)
+                           : noop,
 
     /** @name angular */
     angular           = window[$angular] || (window[$angular] = {}),
@@ -417,13 +421,13 @@ function isElement(node) {
  */
 function HTML(html, option) {
   this.html = html;
-  this.get = lowercase(option) == 'unsafe' ?
-    valueFn(html) :
-    function htmlSanitize() {
-      var buf = [];
-      htmlParser(html, htmlSanitizeWriter(buf));
-      return buf.join('');
-    };
+  this.get = lowercase(option) == 'unsafe'
+    ? valueFn(html)
+    : function htmlSanitize() {
+        var buf = [];
+        htmlParser(html, htmlSanitizeWriter(buf));
+        return buf.join('');
+      };
 }
 
 if (msie) {

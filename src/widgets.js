@@ -337,9 +337,9 @@ function valueAccessor(scope, element) {
       invalidWidgets.markValid(element);
     } else {
       var error, validateScope = inherit(scope, {$element:element});
-      error = required && !value ?
-              'Required' :
-              (value ? validator(validateScope, value) : _null);
+      error = required && !value
+              ? 'Required'
+              : (value ? validator(validateScope, value) : _null);
       elementError(element, NG_VALIDATION_ERROR, error);
       lastError = error;
       if (error) {
@@ -940,9 +940,9 @@ angularWidget("@ng:repeat", function(expression, element){
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
             childScope.$index = index;
-            childScope.$position = index == 0 ?
-                'first' :
-                  (index == collectionLength - 1 ? 'last' : 'middle');
+            childScope.$position = index == 0
+                ? 'first'
+                : (index == collectionLength - 1 ? 'last' : 'middle');
             lastElement.after(cloneElement = element.cloneNode());
             cloneElement.attr('ng:repeat-index', index);
             linker(childScope, cloneElement);

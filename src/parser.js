@@ -107,9 +107,9 @@ function lex(text, parseStringsForObjects){
   function throwError(error, start, end) {
     end = end || index;
     throw Error("Lexer Error: " + error + " at column" +
-        (isDefined(start) ?
-            "s " + start +  "-" + index + " [" + text.substring(start, end) + "]" :
-            " " + end) +
+        (isDefined(start)
+            ? "s " + start +  "-" + index + " [" + text.substring(start, end) + "]"
+            : " " + end) +
         " in expression [" + text + "].");
   }
 
@@ -199,8 +199,9 @@ function lex(text, parseStringsForObjects){
         index++;
         tokens.push({index:start, text:rawString, string:string, json:true,
           fn:function(){
-            return (string.length == dateParseLength) ?
-              angular['String']['toDate'](string) : string;
+            return (string.length == dateParseLength)
+              ? angular['String']['toDate'](string)
+              : string;
           }});
         return;
       } else {
@@ -588,9 +589,9 @@ function parser(text, json){
       }
       var fnPtr = fn(self) || noop;
       // IE stupidity!
-      return fnPtr.apply ?
-          fnPtr.apply(self, args) :
-            fnPtr(args[0], args[1], args[2], args[3], args[4]);
+      return fnPtr.apply
+          ? fnPtr.apply(self, args)
+          : fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
   }
 
