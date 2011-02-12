@@ -4,7 +4,6 @@ describe('Binder', function(){
     var self = this;
 
     this.compile = function(html, parent) {
-      var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
       if (self.element) dealoc(self.element);
       var element;
       if (parent) {
@@ -14,11 +13,10 @@ describe('Binder', function(){
         element = jqLite(html);
       }
       self.element = element;
-      var scope = compiler.compile(element)(element);
-      return {node:element, scope:scope};
+      return angular.compile(element)();
     };
     this.compileToHtml = function (content) {
-      return sortedHtml(this.compile(content).node);
+      return sortedHtml(this.compile(content).view);
     };
   });
 
@@ -92,7 +90,7 @@ describe('Binder', function(){
     var form = this.compile('<div ng:bind="model.a">x</div>');
     form.scope.$set('model', {a:123});
     form.scope.$eval();
-    assertEquals('123', form.node.text());
+    assertEquals('123', form.view.text());
   });
 
   it('ReplaceBindingInTextWithSpan', function(){
@@ -115,7 +113,7 @@ describe('Binder', function(){
 
   it('BindingOfAttributes', function(){
     var c = this.compile("<a href='http://s/a{{b}}c' foo='x'></a>");
-    var attrbinding = c.node.attr("ng:bind-attr");
+    var attrbinding = c.view.attr("ng:bind-attr");
     var bindings = fromJson(attrbinding);
     assertEquals("http://s/a{{b}}c", decodeURI(bindings.href));
     assertTrue(!bindings.foo);
@@ -123,7 +121,7 @@ describe('Binder', function(){
 
   it('MarkMultipleAttributes', function(){
     var c = this.compile('<a href="http://s/a{{b}}c" foo="{{d}}"></a>');
-    var attrbinding = c.node.attr("ng:bind-attr");
+    var attrbinding = c.view.attr("ng:bind-attr");
     var bindings = fromJson(attrbinding);
     assertEquals(bindings.foo, "{{d}}");
     assertEquals(decodeURI(bindings.href), "http://s/a{{b}}c");
@@ -131,23 +129,23 @@ describe('Binder', function(){
 
   it('AttributesNoneBound', function(){
     var c = this.compile("<a href='abc' foo='def'></a>");
-    var a = c.node;
+    var a = c.view;
     assertEquals(a[0].nodeName, "A");
     assertTrue(!a.attr("ng:bind-attr"));
   });
 
   it('ExistingAttrbindingIsAppended', function(){
     var c = this.compile("<a href='http://s/{{abc}}' ng:bind-attr='{\"b\":\"{{def}}\"}'></a>");
-    var a = c.node;
+    var a = c.view;
     assertEquals('{"b":"{{def}}","href":"http://s/{{abc}}"}', a.attr('ng:bind-attr'));
   });
 
   it('AttributesAreEvaluated', function(){
     var c = this.compile('<a ng:bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>');
-    var binder = c.binder, form = c.node;
+    var binder = c.binder, form = c.view;
     c.scope.$eval('a=1;b=2');
     c.scope.$eval();
-    var a = c.node;
+    var a = c.view;
     assertEquals(a.attr('a'), 'a');
     assertEquals(a.attr('b'), 'a+b=3');
   });
@@ -158,7 +156,7 @@ describe('Binder', function(){
     c.scope.$set("person.save", function(){
       savedCalled = true;
     });
-    browserTrigger(c.node, 'click');
+    browserTrigger(c.view, 'click');
     assertTrue(savedCalled);
   });
 
@@ -169,7 +167,7 @@ describe('Binder', function(){
       log += 'click;';
     });
     expect(log).toEqual('');
-    browserTrigger(c.node, 'click');
+    browserTrigger(c.view, 'click');
     expect(log).toEqual('click;');
   });
 
@@ -179,13 +177,13 @@ describe('Binder', function(){
     c.scope.$set("person.save", function(){
       savedCalled = true;
     });
-    browserTrigger(c.node, 'click');
+    browserTrigger(c.view, 'click');
     assertTrue(savedCalled);
   });
 
   it('RepeaterUpdateBindings', function(){
     var a = this.compile('<ul><LI ng:repeat="item in model.items" ng:bind="item.a"/></ul>');
-    var form = a.node;
+    var form = a.view;
     var items = [{a:"A"}, {a:"B"}];
     a.scope.$set('model', {items:items});
 
@@ -225,7 +223,7 @@ describe('Binder', function(){
     assertEquals('<ul>' +
           '<#comment></#comment>' +
           '<li ng:repeat-index="0"><span ng:bind="item.a">A</span></li>' +
-          '</ul>', sortedHtml(a.node));
+          '</ul>', sortedHtml(a.view));
   });
 
   it('ExpandEntityTag', function(){
@@ -241,11 +239,11 @@ describe('Binder', function(){
 
   it('RepeaterAdd', function(){
     var c = this.compile('<div><input type="text" name="item.x" ng:repeat="item in items"></div>');
-    var doc = c.node;
+    var doc = c.view;
     c.scope.$set('items', [{x:'a'}, {x:'b'}]);
     c.scope.$eval();
-    var first = childNode(c.node, 1);
-    var second = childNode(c.node, 2);
+    var first = childNode(c.view, 1);
+    var second = childNode(c.view, 2);
     assertEquals('a', first.val());
     assertEquals('b', second.val());
 
@@ -261,20 +259,20 @@ describe('Binder', function(){
     c.scope.$set("items", items);
 
     c.scope.$eval();
-    expect(c.node[0].childNodes.length - 1).toEqual(0);
+    expect(c.view[0].childNodes.length - 1).toEqual(0);
 
     items.name = "misko";
     c.scope.$eval();
-    expect(c.node[0].childNodes.length - 1).toEqual(1);
+    expect(c.view[0].childNodes.length - 1).toEqual(1);
 
     delete items.name;
     c.scope.$eval();
-    expect(c.node[0].childNodes.length - 1).toEqual(0);
+    expect(c.view[0].childNodes.length - 1).toEqual(0);
   });
 
   it('IfTextBindingThrowsErrorDecorateTheSpan', function(){
     var a = this.compile('<div>{{error.throw()}}</div>');
-    var doc = a.node;
+    var doc = a.view;
     var errorLogs = a.scope.$service('$log').error.logs;
 
     a.scope.$set('error.throw', function(){throw "ErrorMsg1";});
@@ -303,7 +301,7 @@ describe('Binder', function(){
 
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function(){
     var a = this.compile('<div attr="before {{error.throw()}} after"></div>');
-    var doc = a.node;
+    var doc = a.view;
     var errorLogs = a.scope.$service('$log').error.logs;
 
     a.scope.$set('error.throw', function(){throw "ErrorMsg";});
@@ -340,7 +338,7 @@ describe('Binder', function(){
           '<#comment></#comment>'+
           '<ul name="b1" ng:bind-attr="{"name":"{{i}}"}" ng:repeat-index="0"></ul>'+
           '<ul name="b2" ng:bind-attr="{"name":"{{i}}"}" ng:repeat-index="1"></ul>'+
-        '</div></div>', sortedHtml(a.node));
+        '</div></div>', sortedHtml(a.view));
   });
 
   it('HideBindingExpression', function(){
@@ -349,12 +347,12 @@ describe('Binder', function(){
     a.scope.$set('hidden', 3);
     a.scope.$eval();
 
-    assertHidden(a.node);
+    assertHidden(a.view);
 
     a.scope.$set('hidden', 2);
     a.scope.$eval();
 
-    assertVisible(a.node);
+    assertVisible(a.view);
   });
 
   it('HideBinding', function(){
@@ -363,17 +361,17 @@ describe('Binder', function(){
     c.scope.$set('hidden', 'true');
     c.scope.$eval();
 
-    assertHidden(c.node);
+    assertHidden(c.view);
 
     c.scope.$set('hidden', 'false');
     c.scope.$eval();
 
-    assertVisible(c.node);
+    assertVisible(c.view);
 
     c.scope.$set('hidden', '');
     c.scope.$eval();
 
-    assertVisible(c.node);
+    assertVisible(c.view);
   });
 
   it('ShowBinding', function(){
@@ -382,17 +380,17 @@ describe('Binder', function(){
     c.scope.$set('show', 'true');
     c.scope.$eval();
 
-    assertVisible(c.node);
+    assertVisible(c.view);
 
     c.scope.$set('show', 'false');
     c.scope.$eval();
 
-    assertHidden(c.node);
+    assertHidden(c.view);
 
     c.scope.$set('show', '');
     c.scope.$eval();
 
-    assertHidden(c.node);
+    assertHidden(c.view);
   });
 
   it('BindClassUndefined', function(){
@@ -401,7 +399,7 @@ describe('Binder', function(){
 
     assertEquals(
         '<div class="undefined" ng:class="undefined"></div>',
-        sortedHtml(doc.node));
+        sortedHtml(doc.view));
   });
 
   it('BindClass', function(){
@@ -410,26 +408,26 @@ describe('Binder', function(){
     c.scope.$set('class', 'testClass');
     c.scope.$eval();
 
-    assertEquals('<div class="testClass" ng:class="class"></div>', sortedHtml(c.node));
+    assertEquals('<div class="testClass" ng:class="class"></div>', sortedHtml(c.view));
 
     c.scope.$set('class', ['a', 'b']);
     c.scope.$eval();
 
-    assertEquals('<div class="a b" ng:class="class"></div>', sortedHtml(c.node));
+    assertEquals('<div class="a b" ng:class="class"></div>', sortedHtml(c.view));
   });
 
   it('BindClassEvenOdd', function(){
     var x = this.compile('<div><div ng:repeat="i in [0,1]" ng:class-even="\'e\'" ng:class-odd="\'o\'"/></div>');
     x.scope.$eval();
-    var d1 = jqLite(x.node[0].childNodes[1]);
-    var d2 = jqLite(x.node[0].childNodes[2]);
+    var d1 = jqLite(x.view[0].childNodes[1]);
+    var d2 = jqLite(x.view[0].childNodes[2]);
     expect(d1.hasClass('o')).toBeTruthy();
     expect(d2.hasClass('e')).toBeTruthy();
     assertEquals(
         '<div><#comment></#comment>' +
         '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat-index="0"></div>' +
         '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat-index="1"></div></div>',
-        sortedHtml(x.node));
+        sortedHtml(x.view));
   });
 
   it('BindStyle', function(){
@@ -438,7 +436,7 @@ describe('Binder', function(){
     c.scope.$eval('style={color:"red"}');
     c.scope.$eval();
 
-    assertEquals("red", c.node.css('color'));
+    assertEquals("red", c.view.css('color'));
 
     c.scope.$eval('style={}');
     c.scope.$eval();
@@ -449,7 +447,7 @@ describe('Binder', function(){
     c.scope.action = function(){
       throw new Error('MyError');
     };
-    var input = c.node;
+    var input = c.view;
     browserTrigger(input, 'click');
     var error = input.attr('ng-exception');
     assertTrue(!!error.match(/MyError/));
@@ -470,14 +468,14 @@ describe('Binder', function(){
         "<div ng:non-bindable='true'>{{c}}</div></div>");
     c.scope.$set('a', 123);
     c.scope.$eval();
-    assertEquals('123{{a}}{{b}}{{c}}', c.node.text());
+    assertEquals('123{{a}}{{b}}{{c}}', c.view.text());
   });
 
   it('OptionShouldUpdateParentToGetProperBinding', function(){
     var c = this.compile('<select name="s"><option ng:repeat="i in [0,1]" value="{{i}}" ng:bind="i"></option></select>');
     c.scope.$set('s', 1);
     c.scope.$eval();
-    assertEquals(1, c.node[0].selectedIndex);
+    assertEquals(1, c.view[0].selectedIndex);
   });
 
   it('RepeaterShouldBindInputsDefaults', function () {
@@ -494,7 +492,7 @@ describe('Binder', function(){
     c.scope.$set("name", "World");
     c.scope.$eval();
 
-    assertEquals('<pre ng:bind-template="Hello {{name}}!">Hello World!</pre>', sortedHtml(c.node));
+    assertEquals('<pre ng:bind-template="Hello {{name}}!">Hello World!</pre>', sortedHtml(c.view));
   });
 
   it('FillInOptionValueWhenMissing', function(){
@@ -503,9 +501,9 @@ describe('Binder', function(){
     c.scope.$set('a', 'A');
     c.scope.$set('b', 'B');
     c.scope.$eval();
-    var optionA = childNode(c.node, 0);
-    var optionB = childNode(c.node, 1);
-    var optionC = childNode(c.node, 2);
+    var optionA = childNode(c.view, 0);
+    var optionB = childNode(c.view, 1);
+    var optionC = childNode(c.view, 2);
 
     expect(optionA.attr('value')).toEqual('A');
     expect(optionA.text()).toEqual('A');
@@ -565,7 +563,7 @@ describe('Binder', function(){
         '<input name="c0" ng:bind-attr="{disabled:\'{{[0]}}\'}"><input name="c1" ng:bind-attr="{disabled:\'{{[]}}\'}"></div>');
     c.scope.$eval();
     function assertChild(index, disabled) {
-      var child = childNode(c.node, index);
+      var child = childNode(c.view, index);
       assertEquals(sortedHtml(child), disabled, !!child.attr('disabled'));
     }
 
@@ -581,8 +579,8 @@ describe('Binder', function(){
     var c = this.compile('<div>' +
         '<input type="button" ng:click="greeting=\'ABC\'"/>' +
         '<input type="button" ng:click=":garbage:"/></div>');
-    var first = jqLite(c.node[0].childNodes[0]);
-    var second = jqLite(c.node[0].childNodes[1]);
+    var first = jqLite(c.view[0].childNodes[0]);
+    var second = jqLite(c.view[0].childNodes[1]);
     var errorLogs = c.scope.$service('$log').error.logs;
 
     browserTrigger(first, 'click');
@@ -598,8 +596,8 @@ describe('Binder', function(){
     var c = this.compile('<div>' +
         '<input type="radio" name="sex" value="female"/>' +
         '<input type="radio" name="sex" value="male"/></div>');
-    var female = jqLite(c.node[0].childNodes[0]);
-    var male = jqLite(c.node[0].childNodes[1]);
+    var female = jqLite(c.view[0].childNodes[0]);
+    var male = jqLite(c.view[0].childNodes[1]);
 
     browserTrigger(female);
     assertEquals("female", c.scope.sex);
@@ -636,7 +634,7 @@ describe('Binder', function(){
         '<li ng:bind=\"k + v\" ng:repeat-index="0">a0</li>' +
         '<li ng:bind=\"k + v\" ng:repeat-index="1">b1</li>' +
         '</ul>',
-        sortedHtml(x.node));
+        sortedHtml(x.view));
   });
 
   it('ItShouldFireChangeListenersBeforeUpdate', function(){
@@ -648,13 +646,13 @@ describe('Binder', function(){
     assertEquals(123, x.scope.$get("name"));
     assertEquals(
         '<div ng:bind="name">123</div>',
-        sortedHtml(x.node));
+        sortedHtml(x.view));
   });
 
   it('ItShouldHandleMultilineBindings', function(){
     var x = this.compile('<div>{{\n 1 \n + \n 2 \n}}</div>');
     x.scope.$eval();
-    assertEquals("3", x.node.text());
+    assertEquals("3", x.view.text());
   });
 
   it('ItBindHiddenInputFields', function(){
@@ -667,7 +665,7 @@ describe('Binder', function(){
     var x = this.compile('<input name="a" ng:format="list" value="a,b">');
     x.scope.$eval();
     assertEquals(['a','b'], x.scope.$get('a'));
-    var input = x.node;
+    var input = x.view;
     input[0].value = ' x,,yz';
     browserTrigger(input, 'change');
     assertEquals(['x','yz'], x.scope.$get('a'));

@@ -7,7 +7,7 @@ describe('ValidatorTest', function(){
       validator.last = last;
       validator._this = this;
     };
-    var scope = compile('<input name="name" ng:validate="myValidator:\'hevery\'"/>');
+    var scope = compile('<input name="name" ng:validate="myValidator:\'hevery\'"/>')().scope;
     scope.name = 'misko';
     scope.$eval();
     assertEquals('misko', validator.first);
@@ -95,7 +95,7 @@ describe('ValidatorTest', function(){
     beforeEach(function(){
       value = null;
       fn = null;
-      self = compile('<input />');
+      self = angular.compile('<input />')().scope;
       jqLite(document.body).append(self.$element);
       self.$element.data('$validate', noop);
       self.$root = self;
@@ -107,7 +107,8 @@ describe('ValidatorTest', function(){
 
     it('should make a request and show spinner', function(){
       var value, fn;
-      var scope = compile('<input type="text" name="name" ng:validate="asynchronous:asyncFn"/>');
+      var scope = angular.compile(
+          '<input type="text" name="name" ng:validate="asynchronous:asyncFn"/>')().scope;
       jqLite(document.body).append(scope.$element);
       var input = scope.$element;
       scope.asyncFn = function(v,f){
@@ -149,7 +150,8 @@ describe('ValidatorTest', function(){
     });
 
     it("should handle update function", function(){
-      var scope = angular.compile('<input name="name" ng:validate="asynchronous:asyncFn:updateFn"/>');
+      var scope = angular.compile(
+          '<input name="name" ng:validate="asynchronous:asyncFn:updateFn"/>')().scope;
       scope.asyncFn = jasmine.createSpy();
       scope.updateFn = jasmine.createSpy();
       scope.name = 'misko';

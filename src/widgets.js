@@ -676,7 +676,7 @@ angularWidget('ng:include', function(element){
           xhr('GET', src, function(code, response){
             element.html(response);
             childScope = useScope || createScope(scope);
-            compiler.compile(element)(element, childScope);
+            compiler.compile(element)(childScope);
             scope.$eval(onloadExp);
           });
         } else {
@@ -1067,7 +1067,7 @@ angularWidget('ng:view', function(element) {
         if (src) {
           $xhr('GET', src, function(code, response){
             element.html(response);
-            compiler.compile(element)(element, childScope);
+            compiler.compile(element)(childScope);
           });
         } else {
           element.html('');

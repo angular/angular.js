@@ -4,7 +4,6 @@ describe("widget", function(){
   beforeEach(function() {
     scope = null;
     element = null;
-    var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
     compile = function(html, parent) {
       if (parent) {
         parent.html(html);
@@ -12,8 +11,7 @@ describe("widget", function(){
       } else {
         element = jqLite(html);
       }
-      scope = compiler.compile(element)(element);
-      return scope;
+      return scope = angular.compile(element)().scope;
     };
   });
 
@@ -599,7 +597,7 @@ describe("widget", function(){
             '<ng:switch on="url" using="route:params">' +
               '<div ng:switch-when="/Book/:name">{{params.name}}</div>' +
             '</ng:switch>' +
-          '</div>');
+          '</div>')().scope;
       expect(scope.$element.text()).toEqual('Moby');
       dealoc(scope);
     });
@@ -611,7 +609,10 @@ describe("widget", function(){
     });
 
     it('should call change on switch', function(){
-      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>');
+      var scope = angular.compile(
+          '<ng:switch on="url" change="name=\'works\'">' +
+            '<div ng:switch-when="a">{{name}}</div>' +
+          '</ng:switch>')().scope;
       var cleared = false;
       scope.url = 'a';
       scope.$eval();
@@ -624,7 +625,7 @@ describe("widget", function(){
   describe('ng:include', function(){
     it('should include on external file', function() {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
-      var scope = angular.compile(element);
+      var scope = angular.compile(element)().scope;
       scope.childScope = createScope();
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
@@ -637,7 +638,7 @@ describe("widget", function(){
 
     it('should remove previously included text if a falsy value is bound to src', function() {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
-      var scope = angular.compile(element);
+      var scope = angular.compile(element)().scope;
       scope.childScope = createScope();
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
@@ -656,7 +657,7 @@ describe("widget", function(){
 
     it('should allow this for scope', function(){
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
-      var scope = angular.compile(element);
+      var scope = angular.compile(element)().scope;
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
       scope.$eval();
@@ -670,7 +671,7 @@ describe("widget", function(){
 
     it('should evaluate onload expression when a partial is loaded', function() {
       var element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
-      var scope = angular.compile(element);
+      var scope = angular.compile(element)().scope;
 
       expect(scope.loaded).not.toBeDefined();
 
@@ -809,7 +810,7 @@ describe("widget", function(){
     var rootScope, rootScope, $route, $location, $browser;
 
     beforeEach(function() {
-      rootScope = angular.compile('<ng:view></ng:view>');
+      rootScope = angular.compile('<ng:view></ng:view>')().scope;
       $route = rootScope.$service('$route');
       $location = rootScope.$service('$location');
       $browser = rootScope.$service('$browser');
@@ -888,7 +889,7 @@ describe("widget", function(){
       rootScope = angular.compile(
           '<div>' +
             'include: <ng:include src="\'includePartial.html\'">' +
-          '</ng:include></div>', myApp);
+          '</ng:include></div>')(myApp).scope;
 
       $browser.xhr.expectGET('viewPartial.html').respond('content');
       $browser.xhr.flush();

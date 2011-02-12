@@ -80,30 +80,30 @@ function Compiler(markup, attrMarkup, directives, widgets){
 }
 
 Compiler.prototype = {
-  compile: function(element) {
-    element = jqLite(element);
+  compile: function(templateElement) {
+    templateElement = jqLite(templateElement);
     var index = 0,
         template,
-        parent = element.parent();
+        parent = templateElement.parent();
     if (parent && parent[0]) {
       parent = parent[0];
       for(var i = 0; i < parent.childNodes.length; i++) {
-        if (parent.childNodes[i] == element[0]) {
+        if (parent.childNodes[i] == templateElement[0]) {
           index = i;
         }
       }
     }
-    template = this.templatize(element, index, 0) || new Template();
-    return function(element, parentScope){
-      element = jqLite(element);
-      var scope = parentScope && parentScope.$eval
-          ? parentScope
-          : createScope(parentScope);
+    template = this.templatize(templateElement, index, 0) || new Template();
+    return function(scope, element){
+      scope = scope || createScope();
+      element = element === true
+        ? templateElement.cloneNode()
+        : (jqLite(element) || templateElement);
       element.data($$scope, scope);
       template.attach(element, scope);
       scope.$element = element;
       scope.$eval();
-      return scope;
+      return {scope:scope, view:element};
     };
   },
 

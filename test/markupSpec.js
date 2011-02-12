@@ -5,10 +5,9 @@ describe("markups", function(){
   beforeEach(function() {
     scope = null;
     element = null;
-    var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
     compile = function(html) {
       element = jqLite(html);
-      scope = compiler.compile(element)(element);
+      scope = angular.compile(element)().scope;
     };
   });
 

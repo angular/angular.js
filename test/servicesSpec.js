@@ -354,7 +354,7 @@ describe("service", function(){
       var div = jqLite('<div>');
       body.append(div);
       div.html('<input name="price" ng:required ng:validate="number"></input>');
-      scope = compile(div);
+      scope = angular.compile(div)().scope;
       var $invalidWidgets = scope.$service('$invalidWidgets');
       expect($invalidWidgets.length).toEqual(1);
 
@@ -387,7 +387,7 @@ describe("service", function(){
       function BookChapter() {
         this.log = '<init>';
       }
-      scope = compile('<div></div>');
+      scope = angular.compile('<div></div>')().scope;
       $location = scope.$service('$location');
       $route = scope.$service('$route');
       $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
