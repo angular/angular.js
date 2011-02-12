@@ -12,25 +12,25 @@ describe("ScenarioSpec: Compilation", function(){
   describe('compilation', function(){
     it("should compile dom node and return scope", function(){
       var node = jqLite('<div ng:init="a=1">{{b=a+1}}</div>')[0];
-      scope = compile(node);
+      scope = angular.compile(node)().scope;
       expect(scope.a).toEqual(1);
       expect(scope.b).toEqual(2);
     });
 
     it("should compile jQuery node and return scope", function(){
-      scope = compile(jqLite('<div>{{a=123}}</div>'));
+      scope = compile(jqLite('<div>{{a=123}}</div>'))().scope;
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
 
     it("should compile text node and return scope", function(){
-      scope = compile('<div>{{a=123}}</div>');
+      scope = angular.compile('<div>{{a=123}}</div>')().scope;
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
   });
 
   describe('scope', function(){
     it("should have $set, $get, $eval, $updateView methods", function(){
-      scope = compile('<div>{{a}}</div>');
+      scope = angular.compile('<div>{{a}}</div>')().scope;
       scope.$eval("$invalidWidgets.push({})");
       expect(scope.$set("a", 2)).toEqual(2);
       expect(scope.$get("a")).toEqual(2);
@@ -40,7 +40,7 @@ describe("ScenarioSpec: Compilation", function(){
     });
 
     it("should have $ objects", function(){
-      scope = compile('<div></div>', {$config: {a:"b"}});
+      scope = angular.compile('<div></div>')(angular.scope({$config: {a:"b"}})).scope;
       expect(scope.$service('$location')).toBeDefined();
       expect(scope.$get('$eval')).toBeDefined();
       expect(scope.$get('$config')).toBeDefined();
@@ -51,7 +51,7 @@ describe("ScenarioSpec: Compilation", function(){
   describe("configuration", function(){
     it("should take location object", function(){
       var url = "http://server/#?book=moby";
-      scope = compile("<div>{{$location}}</div>");
+      scope = angular.compile("<div>{{$location}}</div>")().scope;
       var $location = scope.$service('$location');
       var $browser = scope.$service('$browser');
       expect($location.hashSearch.book).toBeUndefined();

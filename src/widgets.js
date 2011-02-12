@@ -676,7 +676,7 @@ angularWidget('ng:include', function(element){
           xhr('GET', src, function(code, response){
             element.html(response);
             childScope = useScope || createScope(scope);
-            compiler.compile(element)(element, childScope);
+            compiler.compile(element)(childScope);
             scope.$eval(onloadExp);
           });
         } else {
@@ -793,7 +793,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
           var caseElement = switchCase.element.cloneNode();
           element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
-          switchCase.template(caseElement, childScope);
+          switchCase.template(childScope, caseElement);
         }
       });
     });
@@ -945,7 +945,7 @@ angularWidget("@ng:repeat", function(expression, element){
                   (index == collectionLength - 1 ? 'last' : 'middle');
             lastElement.after(cloneElement = element.cloneNode());
             cloneElement.attr('ng:repeat-index', index);
-            linker(cloneElement, childScope);
+            linker(childScope, cloneElement);
             children.push(childScope);
           }
           childScope.$eval();
@@ -1067,7 +1067,7 @@ angularWidget('ng:view', function(element) {
         if (src) {
           $xhr('GET', src, function(code, response){
             element.html(response);
-            compiler.compile(element)(element, childScope);
+            compiler.compile(element)(childScope);
           });
         } else {
           element.html('');

@@ -169,7 +169,7 @@ describe("resource", function() {
   });
 
   it('should excersize full stack', function(){
-    var scope = angular.compile('<div></div>');
+    var scope = angular.compile('<div></div>')().scope;
     var $browser = scope.$service('$browser');
     var $resource = scope.$service('$resource');
     var Person = $resource('/Person/:id');
@@ -181,7 +181,7 @@ describe("resource", function() {
   });
 
   it('should return the same object when verifying the cache', function(){
-    var scope = angular.compile('<div></div>');
+    var scope = angular.compile('<div></div>')().scope;
     var $browser = scope.$service('$browser');
     var $resource = scope.$service('$resource');
     var Person = $resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});

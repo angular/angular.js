@@ -3,11 +3,9 @@ describe("directive", function(){
   var compile, model, element;
 
   beforeEach(function() {
-    var compiler = new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget);
     compile = function(html) {
       element = jqLite(html);
-      model = compiler.compile(element)(element);
-      return model;
+      return model = angular.compile(element)().scope;
     };
   });
 
