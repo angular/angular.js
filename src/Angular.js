@@ -803,17 +803,18 @@ function merge(src, dst) {
    </pre>
  *
  * @param {string|DOMElement} element Element or HTML to compile into a template function.
- * @returns {function([scope][, element])} a template function which is used to bind element
+ * @returns {function([scope][, cloneAttachFn])} a template function which is used to bind element
  * and scope. Where:
  *
  *   * `scope` - {@link angular.scope scope} A scope to bind to. If none specified, then a new
  *               root scope is created.
- *   * `element` - {@link angular.element element} Element to use as the template. If none
- *               specified then reuse the element from `angular.compile(element)`. If `true`
- *               then clone the `angular.compile(element)`. The element must be either the same
- *               element as `angular.compile(element)` or an identical clone to
- *               `angular.compile(element)`. Using an element with differnt structure will cause
- *               unpredictable behavior.
+ *   * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
+ *               `template` and call the `cloneAttachFn` allowing the caller to attach the
+ *               clonned elements to the DOM at the approriate place. The `cloneAttachFn` is
+ *               called as: <br/> `cloneAttachFn(clonedElement, scope)`:
+ *
+ *     * `clonedElement` - is a clone of the originale `element` passed into the compiler.
+ *     * `scope` - is the current scope with which the linking function is working with.
  *
  * Calling the template function returns object: `{scope:?, view:?}`, where:
  *
@@ -1006,7 +1007,7 @@ function toKeyValue(obj) {
 function angularInit(config){
   if (config.autobind) {
     // TODO default to the source of angular.js
-    var scope = compile(window.document)(null, createScope({'$config':config})),
+    var scope = compile(window.document)(createScope({'$config':config})).scope,
         $browser = scope.$service('$browser');
 
     if (config.css)
@@ -1048,8 +1049,7 @@ function bindJQuery(){
   if (jQuery) {
     jqLite = jQuery;
     extend(jQuery.fn, {
-      scope: JQLitePrototype.scope,
-      cloneNode: JQLitePrototype.cloneNode
+      scope: JQLitePrototype.scope
     });
   } else {
     jqLite = jqLiteWrap;
