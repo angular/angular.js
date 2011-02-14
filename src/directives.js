@@ -700,7 +700,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * of the HTML conditionally.
  *
  * @element ANY
- * @param {expression} expression If the {@link guide.expression expression} truthy then the element
+ * @param {expression} expression If the {@link guide.expression expression} is truthy then the element
  *     is shown or hidden respectively.
  *
  * @example
@@ -781,8 +781,8 @@ angularDirective("ng:hide", function(expression, element){
  * The ng:style allows you to set CSS style on an HTML element conditionally.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} which evals to an object who's
- *      keys are CSS style names and values are coresponding values for those CSS keys.
+ * @param {expression} expression {@link guide.expression Expression} which evals to an object whose
+ *      keys are CSS style names and values are corresponding values for those CSS keys.
  *
  * @example
    <doc:example>
