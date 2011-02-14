@@ -93,14 +93,17 @@ Compiler.prototype = {
       }
     }
     template = this.templatize(templateElement, index, 0) || new Template();
-    return function(scope, element){
-      scope = scope || createScope();
-      element = element === true
-        ? templateElement.cloneNode()
-        : (element ? jqLite(element) : templateElement);
+    return function(scope, cloneConnectFn){
+      // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
+      // and sometimes changes the structure of the DOM.
+      var element = cloneConnectFn
+        ? JQLitePrototype.clone.call(templateElement) // IMPORTAN!!!
+        : templateElement;
+        scope = scope || createScope();
       element.data($$scope, scope);
-      template.attach(element, scope);
       scope.$element = element;
+      (cloneConnectFn||noop)(element, scope);
+      template.attach(element, scope);
       scope.$eval();
       return {scope:scope, view:element};
     };

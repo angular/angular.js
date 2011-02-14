@@ -790,10 +790,10 @@ var ngSwitch = angularWidget('ng:switch', function (element){
       forEach(cases, function(switchCase){
         if (!found && switchCase.when(childScope, value)) {
           found = true;
-          var caseElement = switchCase.element.cloneNode();
-          element.append(caseElement);
           childScope.$tryEval(switchCase.change, element);
-          switchCase.template(childScope, caseElement);
+          switchCase.template(childScope, function(caseElement){
+            element.append(caseElement);
+          });
         }
       });
     });
@@ -886,11 +886,11 @@ angularWidget('a', function() {
       </doc:scenario>
     </doc:example>
  */
-angularWidget("@ng:repeat", function(expression, element){
+angularWidget('@ng:repeat', function(expression, element){
   element.removeAttr('ng:repeat');
-  element.replaceWith(jqLite("<!-- ng:repeat: " + expression + " --!>"));
+  element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' --!>'));
   var linker = this.compile(element);
-  return function(reference){
+  return function(iterStartElement){
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
     if (! match) {
@@ -910,10 +910,9 @@ angularWidget("@ng:repeat", function(expression, element){
     var children = [], currentScope = this;
     this.$onEval(function(){
       var index = 0,
-          cloneElement,
           childCount = children.length,
-          lastElement = reference,
-          collection = this.$tryEval(rhs, reference),
+          lastIterElement = iterStartElement,
+          collection = this.$tryEval(rhs, iterStartElement),
           is_array = isArray(collection),
           collectionLength = 0,
           childScope,
@@ -934,6 +933,7 @@ angularWidget("@ng:repeat", function(expression, element){
             childScope = children[index];
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
+            lastIterElement = childScope.$element;
           } else {
             // grow children
             childScope = createScope(currentScope);
@@ -943,13 +943,14 @@ angularWidget("@ng:repeat", function(expression, element){
             childScope.$position = index == 0
                 ? 'first'
                 : (index == collectionLength - 1 ? 'last' : 'middle');
-            lastElement.after(cloneElement = element.cloneNode());
-            cloneElement.attr('ng:repeat-index', index);
-            linker(childScope, cloneElement);
             children.push(childScope);
+            linker(childScope, function(clone){
+              clone.attr('ng:repeat-index', index);
+              lastIterElement.after(clone);
+              lastIterElement = clone;
+            });
           }
           childScope.$eval();
-          lastElement = childScope.$element;
           index ++;
         }
       }
@@ -957,7 +958,7 @@ angularWidget("@ng:repeat", function(expression, element){
       while(children.length > index) {
         children.pop().$element.remove();
       }
-    }, reference);
+    }, iterStartElement);
   };
 });
 
