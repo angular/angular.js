@@ -228,7 +228,7 @@ function Browser(window, document, body, XHR, $log) {
    * The listener gets called with either HashChangeEvent object or simple object that also contains
    * `oldURL` and `newURL` properties.
    *
-   * NOTE: this is a api is intended for sole use by $location service. Please use
+   * NOTE: this api is intended for use only by the $location service. Please use the
    * {@link angular.service.$location $location service} to monitor hash changes in angular apps.
    *
    * @param {function(event)} listener Listener function to be called when url hash changes.
@@ -330,7 +330,7 @@ function Browser(window, document, body, XHR, $log) {
    * Executes a fn asynchroniously via `setTimeout(fn, delay)`.
    *
    * Unlike when calling `setTimeout` directly, in test this function is mocked and instead of using
-   * `setTimeout` in tests, the fns are queued in an array, which can be programaticaly flushed via
+   * `setTimeout` in tests, the fns are queued in an array, which can be programmatically flushed via
    * `$browser.defer.flush()`.
    *
    */
@@ -353,7 +353,7 @@ function Browser(window, document, body, XHR, $log) {
    * @description
    * Set hover listener.
    *
-   * @param {function(Object, boolean)} listener Function that will be called when hover event
+   * @param {function(Object, boolean)} listener Function that will be called when a hover event
    *    occurs.
    */
   self.hover = function(listener) { hoverListener = listener; };

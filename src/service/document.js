@@ -5,7 +5,7 @@
  * @requires $window
  *
  * @description
- * Reference to the browser window.document, but wrapped into angular.element().
+ * A reference to the browser window.document, but wrapped into angular.element().
  */
 angularServiceInject("$document", function(window){
   return jqLite(window.document);

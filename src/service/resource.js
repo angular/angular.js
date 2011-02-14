@@ -5,7 +5,7 @@
  * @requires $xhr.cache
  *
  * @description
- * Is a factory which creates a resource object that lets you interact with
+ * A factory which creates a resource object that lets you interact with
  * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
  *
  * The returned resource object has action methods which provide high-level behaviors without

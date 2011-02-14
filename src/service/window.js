@@ -4,7 +4,7 @@
  * @name angular.service.$window
  *
  * @description
- * Is reference to the browser's `window` object. While `window`
+ * A reference to the browser's `window` object. While `window`
  * is globally available in JavaScript, it causes testability problems, because
  * it is a global variable. In angular we always refer to it through the
  * `$window` service, so it may be overriden, removed or mocked for testing.
