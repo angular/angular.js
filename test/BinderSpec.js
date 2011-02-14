@@ -417,7 +417,7 @@ describe('Binder', function(){
   });
 
   it('BindClassEvenOdd', function(){
-    var x = this.compile('<div><div ng:repeat="i in [0,1]" ng:class-even="\'e\'" ng:class-odd="\'o\'"/></div>');
+    var x = this.compile('<div><div ng:repeat="i in [0,1]" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div></div>');
     x.scope.$eval();
     var d1 = jqLite(x.view[0].childNodes[1]);
     var d2 = jqLite(x.view[0].childNodes[2]);

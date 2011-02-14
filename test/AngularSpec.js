@@ -369,8 +369,10 @@ describe('angular', function(){
       var scope = angular.scope();
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
       var templateFn = angular.compile(template);
-      var templateClone = template.cloneNode();
-      mvc = templateFn(scope, templateClone);
+      var templateClone = template.clone();
+      mvc = templateFn(scope, function(clone){
+        templateClone = clone;
+      });
       expect(template.text()).toEqual('');
       expect(mvc.view.text()).toEqual('hello world');
       expect(mvc.view).toEqual(templateClone);
@@ -380,7 +382,7 @@ describe('angular', function(){
     it('should link to cloned node and create scope', function(){
       var scope = angular.scope();
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      mvc = angular.compile(template)(scope, true);
+      mvc = angular.compile(template)(scope, noop);
       expect(template.text()).toEqual('');
       expect(mvc.view.text()).toEqual('hello world');
       expect(mvc.scope.greeting).toEqual('hello world');

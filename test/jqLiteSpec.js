@@ -300,6 +300,14 @@ describe('jqLite', function(){
       expect(element.parent().length).toEqual(0);
     });
   });
+  describe('next', function(){
+    it('should return next sibling', function(){
+      var element = jqLite('<div><b>b</b><i>i</i></div>');
+      var b = element.find('b');
+      var i = element.find('i');
+      expect(b.next()).toJqEqual([i]);
+    });
+  });
   describe('find', function(){
     it('should find child by name', function(){
       var root = jqLite('<div><div>text</div></div>');

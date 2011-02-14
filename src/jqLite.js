@@ -69,7 +69,7 @@ function JQLite(element) {
   }
 }
 
-function JQLiteCloneNode(element) {
+function JQLiteClone(element) {
   return element.cloneNode(true);
 }
 
@@ -352,12 +352,15 @@ forEach({
     return element.parentNode;
   },
 
+  next: function(element) {
+    return element.nextSibling;
+  },
+
   find: function(element, selector) {
     return element.getElementsByTagName(selector);
   },
 
-  clone: JQLiteCloneNode,
-  cloneNode: JQLiteCloneNode
+  clone: JQLiteClone
 }, function(fn, name){
   /**
    * chaining functions
