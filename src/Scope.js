@@ -119,13 +119,13 @@ function errorHandlerFor(element, error) {
  * - Scopes can be nested. A scope (prototypically) inherits properties from its parent scope.
  * - Scopes can be attached (bound) to the HTML DOM tree (the view).
  * - A scope {@link angular.scope.$become becomes} `this` for a controller.
- * - Scope's {@link angular.scope.$eval $eval} is used to update its view.
+ * - A scope's {@link angular.scope.$eval $eval} is used to update its view.
  * - Scopes can {@link angular.scope.$watch watch} properties and fire events.
  *
  * # Basic Operations
  * Scopes can be created by calling {@link angular.scope() angular.scope()} or by compiling HTML.
  *
- * {@link angular.widget Widgets} and data bindings register listeners on the current scope to get
+ * {@link angular.widget Widgets} and data bindings register listeners on the current scope to be
  * notified of changes to the scope state. When notified, these listeners push the updated state
  * through to the DOM.
  *
@@ -172,7 +172,7 @@ function errorHandlerFor(element, error) {
  *
  * # When scopes are evaluated
  * Anyone can update a scope by calling its {@link angular.scope.$eval $eval()} method. By default
- * angular widgets listen to user change events (e.g. the user enters text into text field), copy
+ * angular widgets listen to user change events (e.g. the user enters text into a text field), copy
  * the data from the widget to the scope (the MVC model), and then call the `$eval()` method on the
  * root scope to update dependents. This creates a spreadsheet-like behavior: the bound views update
  * immediately as the user types into the text field.
@@ -183,7 +183,7 @@ function errorHandlerFor(element, error) {
  *
  * Because a change in the model that's triggered either by user input or by server response calls
  * `$eval()`, it is unnecessary to call `$eval()` from within your controller. The only time when
- * calling `$eval()` is needed, is when implementing a custom widget or service.
+ * calling `$eval()` is needed is when implementing a custom widget or service.
  *
  * Because scopes are inherited, the child scope `$eval()` overrides the parent `$eval()` method.
  * So to update the whole page you need to call `$eval()` on the root scope as `$root.$eval()`.
@@ -393,7 +393,7 @@ function createScope(parent, providers, instanceCache) {
      * {@link angular.scope.$eval()} with expression parameter, but also wraps it in a try/catch
      * block.
      *
-     * If exception is thrown then `exceptionHandler` is used to handle the exception.
+     * If an exception is thrown then `exceptionHandler` is used to handle the exception.
      *
      * # Example
        <pre>
@@ -448,7 +448,7 @@ function createScope(parent, providers, instanceCache) {
      *
      * @description
      * Registers `listener` as a callback to be executed every time the `watchExp` changes. Be aware
-     * that callback gets, by default, called upon registration, this can be prevented via the
+     * that the callback gets, by default, called upon registration, this can be prevented via the
      * `initRun` parameter.
      *
      * # Example

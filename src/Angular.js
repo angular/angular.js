@@ -195,7 +195,7 @@ function formatError(arg) {
  * @function
  *
  * @description
- * Extends the destination object `dst` by copying all of the properties from the `src` objects to
+ * Extends the destination object `dst` by copying all of the properties from the `src` object(s) to
  * `dst`. You can specify multiple `src` objects.
  *
  * @param {Object} dst The destination object.
@@ -741,11 +741,11 @@ function concat(array1, array2, index) {
  * @function
  *
  * @description
- * Returns function which calls function `fn` bound to `self` (`self` becomes the `this` for `fn`).
+ * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for `fn`).
  * Optional `args` can be supplied which are prebound to the function, also known as
  * [function currying](http://en.wikipedia.org/wiki/Currying).
  *
- * @param {Object} self Context in which `fn` should be evaluated in.
+ * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
  * @param {...*} args Optional arguments to be prebound to the `fn` function call.
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
@@ -850,8 +850,8 @@ function toKeyValue(obj) {
  * @TODO rename to ng:autobind to ng:autoboot
  *
  * @description
- * This section explains how to bootstrap your application with angular using either the angular
- * javascript file.
+ * This section explains how to bootstrap your application with angular, using either the angular
+ * javascript file, or manually.
  *
  *
  * ## The angular distribution

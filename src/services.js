@@ -13,7 +13,7 @@ function angularServiceInject(name, fn, inject, eager) {
  * @name angular.service.$window
  *
  * @description
- * Is reference to the browser's `window` object. While `window`
+ * A reference to the browser's `window` object. While `window`
  * is globally available in JavaScript, it causes testability problems, because
  * it is a global variable. In angular we always refer to it through the
  * `$window` service, so it may be overriden, removed or mocked for testing.
@@ -40,7 +40,7 @@ angularServiceInject("$window", bind(window, identity, window), [], EAGER);
  * @requires $window
  *
  * @description
- * Reference to the browser window.document, but wrapped into angular.element().
+ * A reference to the browser window.document, but wrapped into angular.element().
  */
 angularServiceInject("$document", function(window){
   return jqLite(window.document);
@@ -1187,7 +1187,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
  * @requires $xhr.cache
  *
  * @description
- * Is a factory which creates a resource object that lets you interact with
+ * A factory which creates a resource object that lets you interact with
  * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
  *
  * The returned resource object has action methods which provide high-level behaviors without
