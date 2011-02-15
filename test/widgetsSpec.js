@@ -601,23 +601,8 @@ describe("widget", function(){
       expect(element.text()).toEqual('one');
     });
 
-    it("should match urls", function(){
-      var scope = angular.compile('<ng:switch on="url" using="route:params"><div ng:switch-when="/Book/:name">{{params.name}}</div></ng:switch>');
-      scope.url = '/Book/Moby';
-      scope.$init();
-      expect(scope.$element.text()).toEqual('Moby');
-      dealoc(scope);
-    });
-
-    it("should match sandwich ids", function(){
-      var scope = {};
-      var match = angular.widget('NG:SWITCH').route.call(scope, '/a/123/b', '/a/:id');
-      expect(match).toBeFalsy();
-    });
-
     it('should call change on switch', function(){
       var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>');
-      var cleared = false;
       scope.url = 'a';
       scope.$init();
       expect(scope.name).toEqual(undefined);
