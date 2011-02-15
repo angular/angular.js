@@ -120,7 +120,7 @@ describe('TzDate', function() {
   });
 });
 
-describe('$log', function() {
+describe('$log mock', function() {
   var $log;
   beforeEach(function() {
     $log = MockLogFactory();

@@ -743,6 +743,7 @@ angularWidget('ng:include', function(element){
       </doc:scenario>
     </doc:example>
  */
+//TODO(im): remove all the code related to using and inline equals
 var ngSwitch = angularWidget('ng:switch', function (element){
   var compiler = this,
       watchExpr = element.attr("on"),
@@ -805,8 +806,7 @@ var ngSwitch = angularWidget('ng:switch', function (element){
 }, {
   equals: function(on, when) {
     return ''+on == when;
-  },
-  route: switchRouteMatcher
+  }
 });
 
 

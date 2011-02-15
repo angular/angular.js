@@ -76,3 +76,7 @@ function injectService(services, fn) {
 function injectUpdateView(fn) {
   return injectService(['$updateView'], fn);
 }
+
+function angularServiceInject(name, fn, inject, eager) {
+  angularService(name, fn, {$inject:inject, $eager:eager});
+}

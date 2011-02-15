@@ -118,7 +118,25 @@
              'AngularPublic.js',
 
              // Extension points
-             'services.js',
+
+             'service/cookieStore.js',
+             'service/cookies.js',
+             'service/defer.js',
+             'service/document.js',
+             'service/exceptionHandler.js',
+             'service/hover.js',
+             'service/invalidWidgets.js',
+             'service/location.js',
+             'service/log.js',
+             'service/resource.js',
+             'service/route.js',
+             'service/updateView.js',
+             'service/window.js',
+             'service/xhr.bulk.js',
+             'service/xhr.cache.js',
+             'service/xhr.error.js',
+             'service/xhr.js',
+
              'apis.js',
              'filters.js',
              'formatters.js',
