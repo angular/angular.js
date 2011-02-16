@@ -927,7 +927,7 @@ angularWidget('@ng:repeat', function(expression, element){
       }
 
       for (key in collection) {
-        if (!is_array || collection.hasOwnProperty(key)) {
+        if (collection.hasOwnProperty(key)) {
           if (index < childCount) {
             // reuse existing child
             childScope = children[index];
