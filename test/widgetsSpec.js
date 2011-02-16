@@ -727,6 +727,18 @@ describe("widget", function(){
       expect(element.text()).toEqual('misko:swe;shyam:set;');
     });
 
+    it('should not ng:repeat over parent properties', function(){
+      var Class = function(){};
+      Class.prototype.abc = function(){};
+      Class.prototype.value = 'abc';
+
+      var scope = compile('<ul><li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li></ul>');
+      scope.items = new Class();
+      scope.items.name = 'value';
+      scope.$eval();
+      expect(element.text()).toEqual('name:value;');
+    });
+
     it('should error on wrong parsing of ng:repeat', function(){
       var scope = compile('<ul><li ng:repeat="i dont parse"></li></ul>');
 
