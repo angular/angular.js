@@ -14,7 +14,7 @@
   To migrate simply remove the call to $init() and move any code you had before $init() to the
   root controller.
 - Change API angular.compile(..) to angular.compile(element)([scope], [cloneAttachFn])
-
+- remove ng:watch directives since it encourages logic in the UI.
 
 <a name="0.9.11"><a/>
 # <angular/> 0.9.11 snow-maker  (2011-02-08) #
