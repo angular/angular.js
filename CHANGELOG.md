@@ -16,6 +16,9 @@
 - Change API angular.compile(..) to angular.compile(element)([scope], [cloneAttachFn])
 - remove ng:watch directives since it encourages logic in the UI.
 
+### Bug Fixes
+- Corrected an issue where properties inherited from __proto__ show up in ng:repeat.
+
 <a name="0.9.11"><a/>
 # <angular/> 0.9.11 snow-maker  (2011-02-08) #
 
