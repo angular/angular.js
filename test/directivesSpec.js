@@ -137,18 +137,6 @@ describe("directive", function(){
     expect(input.checked).toEqual(true);
   });
 
-  it('should ng:watch', function(){
-    var scope = compile('<div ng:watch="i: count = count + 1" ng:init="count = 0">');
-    scope.$eval();
-    scope.$eval();
-    expect(scope.$get('count')).toEqual(1);
-
-    scope.$set('i', 0);
-    scope.$eval();
-    scope.$eval();
-    expect(scope.$get('count')).toEqual(2);
-  });
-
   describe('ng:click', function(){
     it('should get called on a click', function(){
       var scope = compile('<div ng:click="clicked = true"></div>');

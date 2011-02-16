@@ -516,51 +516,6 @@ angularDirective("ng:submit", function(expression, element) {
 });
 
 
-/**
- * @workInProgress
- * @ngdoc directive
- * @name angular.directive.ng:watch
- *
- * @description
- * The `ng:watch` allows you watch a variable and then execute
- * an evaluation on variable change.
- *
- * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval.
- *
- * @example
- * Notice that the counter is incremented
- * every time you change the text.
-   <doc:example>
-     <doc:source>
-      <div ng:init="counter=0" ng:watch="name: counter = counter+1">
-        <input type="text" name="name" value="hello"><br/>
-        Change counter: {{counter}} Name: {{name}}
-      </div>
-     </doc:source>
-     <doc:scenario>
-       it('should check ng:watch', function(){
-         expect(using('.doc-example-live').binding('counter')).toBe('2');
-         using('.doc-example-live').input('name').enter('abc');
-         expect(using('.doc-example-live').binding('counter')).toBe('3');
-       });
-     </doc:scenario>
-   </doc:example>
- */
-//TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
-angularDirective("ng:watch", function(expression, element){
-  return function(element){
-    var self = this;
-    parser(expression).watch()({
-      addListener:function(watch, exp){
-        self.$watch(watch, function(){
-          return exp(self);
-        }, element);
-      }
-    });
-  };
-});
-
 function ngClass(selector) {
   return function(expression, element){
     var existing = element[0].className + ' ';
