@@ -226,12 +226,6 @@ describe('Binder', function(){
           '</ul>', sortedHtml(a.view));
   });
 
-  it('ExpandEntityTag', function(){
-    assertEquals(
-        '<div ng-entity="Person" ng:watch="$anchor.a:1"></div>',
-        this.compileToHtml('<div ng-entity="Person" ng:watch="$anchor.a:1"/>'));
-  });
-
   it('DoNotOverwriteCustomAction', function(){
     var html = this.compileToHtml('<input type="submit" value="Save" action="foo();">');
     assertTrue(html.indexOf('action="foo();"') > 0 );
@@ -610,20 +604,6 @@ describe('Binder', function(){
     assertEquals(false, female[0].checked);
     assertEquals(true, male[0].checked);
     assertEquals("male", male.val());
-  });
-
-  it('ItShouldListenOnRightScope', function(){
-    var c = this.compile(
-        '<ul ng:init="counter=0; gCounter=0" ng:watch="w:counter=counter+1">' +
-        '<li ng:repeat="n in [1,2,4]" ng:watch="w:counter=counter+1;w:$root.gCounter=$root.gCounter+n"/></ul>');
-    c.scope.$eval();
-    assertEquals(1, c.scope.$get("counter"));
-    assertEquals(7, c.scope.$get("gCounter"));
-
-    c.scope.$set("w", "something");
-    c.scope.$eval();
-    assertEquals(2, c.scope.$get("counter"));
-    assertEquals(14, c.scope.$get("gCounter"));
   });
 
   it('ItShouldRepeatOnHashes', function(){
