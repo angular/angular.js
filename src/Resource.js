@@ -13,19 +13,20 @@ function Route(template, defaults) {
 
 Route.prototype = {
   url: function(params) {
-    var path = [];
-    var self = this;
-    var url = this.template;
+    var self = this,
+        url = this.template,
+        encodedVal;
+
     params = params || {};
     forEach(this.urlParams, function(_, urlParam){
-      var value = params[urlParam] || self.defaults[urlParam] || "";
-      url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodeURIComponent(value) + "$1");
+      encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "")
+      url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
     });
     url = url.replace(/\/?#$/, '');
     var query = [];
     forEachSorted(params, function(value, key){
       if (!self.urlParams[key]) {
-        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        query.push(encodeUriSegment(key) + '=' + encodeUriSegment(value));
       }
     });
     url = url.replace(/\/*$/, '');
