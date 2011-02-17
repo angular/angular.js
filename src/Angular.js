@@ -853,6 +853,23 @@ function toKeyValue(obj) {
   return parts.length ? parts.join('&') : '';
 }
 
+
+/**
+ * we need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+ * http://www.ietf.org/rfc/rfc2396.txt with regards to the character set (pchar) allowed in path
+ * segments
+ */
+function encodeUriSegment(val) {
+  return encodeURIComponent(val).
+             replace(/%40/gi, '@').
+             replace(/%3A/gi, ':').
+             replace(/%26/gi, '&').
+             replace(/%3D/gi, '=').
+             replace(/%2B/gi, '+').
+             replace(/%24/g, '$').
+             replace(/%2C/gi, ',');
+}
+
 /**
  * @workInProgress
  * @ngdoc directive
