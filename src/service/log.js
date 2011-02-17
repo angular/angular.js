@@ -89,4 +89,4 @@ angularServiceInject("$log", $logFactory = function($window){
       return logFn;
     }
   }
-}, ['$window'], true);
+}, ['$window']);

@@ -64,4 +64,4 @@ angularServiceInject("$invalidWidgets", function(){
   }
 
   return invalidWidgets;
-}, [], true);
+});
