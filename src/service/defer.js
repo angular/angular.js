@@ -16,8 +16,6 @@
  * @param {function()} fn A function, who's execution should be deferred.
  */
 angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView) {
-  var scope = this;
-
   return function(fn) {
     $browser.defer(function() {
       try {

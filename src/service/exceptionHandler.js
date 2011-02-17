@@ -19,4 +19,4 @@ angularServiceInject('$exceptionHandler', $exceptionHandlerFactory = function($l
   return function(e) {
     $log.error(e);
   };
-}, ['$log'], true);
+}, ['$log']);

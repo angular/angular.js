@@ -22,4 +22,4 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject("$window", bind(window, identity, window), [], true);
+angularServiceInject("$window", bind(window, identity, window));
