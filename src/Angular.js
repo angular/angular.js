@@ -1077,10 +1077,15 @@ function bindJQuery(){
 /**
  * throw error of the argument is falsy.
  */
-function assertArg(arg, name) {
+function assertArg(arg, name, reason) {
   if (!arg) {
-    var error = new Error("Argument '" + name + "' is required");
+    var error = new Error("Argument '" + (name||'?') + "' is " +
+        (reason || "required"));
     if (window.console) window.console.log(error.stack);
     throw error;
   }
+};
+
+function assertArgFn(arg, name) {
+  assertArg(isFunction(arg, name, 'not a function'));
 };
