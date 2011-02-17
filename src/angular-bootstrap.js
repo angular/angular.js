@@ -103,6 +103,7 @@
 
              // Extension points
 
+             'service/cacheFactory.js',
              'service/cookieStore.js',
              'service/cookies.js',
              'service/defer.js',
