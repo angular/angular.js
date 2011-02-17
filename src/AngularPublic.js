@@ -68,6 +68,7 @@ function ngModule($provide, $injector) {
 
   $provide.service('$autoScroll', $AutoScrollProvider);
   $provide.service('$browser', $BrowserProvider);
+  $provide.service('$cacheFactory', $CacheFactoryProvider);
   $provide.service('$compile', $CompileProvider);
   $provide.service('$cookies', $CookiesProvider);
   $provide.service('$cookieStore', $CookieStoreProvider);
