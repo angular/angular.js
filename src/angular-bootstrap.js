@@ -119,6 +119,7 @@
 
              // Extension points
 
+             'service/cacheFactory.js',
              'service/cookieStore.js',
              'service/cookies.js',
              'service/defer.js',
@@ -128,6 +129,7 @@
              'service/invalidWidgets.js',
              'service/location.js',
              'service/log.js',
+             'service/lruCacheFactory.js',
              'service/resource.js',
              'service/route.js',
              'service/updateView.js',
