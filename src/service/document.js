@@ -10,4 +10,4 @@
  */
 angularServiceInject("$document", function(window){
   return jqLite(window.document);
-}, ['$window'], true);
+}, ['$window']);

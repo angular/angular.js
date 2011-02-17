@@ -53,4 +53,4 @@ angularServiceInject("$hover", function(browser, document) {
       tooltip = _null;
     }
   });
-}, ['$browser', '$document'], true);
+}, ['$browser', '$document']);
