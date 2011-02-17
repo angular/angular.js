@@ -16,6 +16,7 @@ ANGULAR = [
   'src/filters.js',
   'src/formatters.js',
   'src/validators.js',
+  'src/service/cacheFactory.js',
   'src/service/cookieStore.js',
   'src/service/cookies.js',
   'src/service/defer.js',
