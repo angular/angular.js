@@ -12,6 +12,7 @@ angularFiles = {
     'src/jqLite.js',
     'src/apis.js',
     'src/filters.js',
+    'src/service/cacheFactory.js',
     'src/service/cookieStore.js',
     'src/service/cookies.js',
     'src/service/defer.js',
