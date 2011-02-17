@@ -43,10 +43,21 @@ describe("resource", function() {
   it('should correctly encode url params', function(){
     var R = resource.route('/Path/:a');
     xhr.expectGET('/Path/foo%231').respond({});
-    xhr.expectGET('/Path/doh!%40foo?bar=baz%231').respond({});
+    xhr.expectGET('/Path/doh!@foo?bar=baz%231').respond({});
     R.get({a: 'foo#1'});
     R.get({a: 'doh!@foo', bar: 'baz#1'});
   });
+
+  it('should not encode @ in url params', function() {
+    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc2396.txt
+    //with regards to the character set (pchar) allowed in path segments
+    //so we need this test to make sure that we don't over-encode the params and break stuff like
+    //buzz api which uses @self
+
+    var R = resource.route('/Path/:a');
+    xhr.expectGET('/Path/doh@foo?bar=baz@1').respond({});
+    R.get({a: 'doh@foo', bar: 'baz@1'});
+  })
 
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});

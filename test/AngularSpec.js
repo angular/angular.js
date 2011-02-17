@@ -139,6 +139,28 @@ describe('angular', function(){
   });
 
 
+  describe('encodeUriSegment', function() {
+    it('should correctly encode uri segment and not encode chars defined as pchar set in rfc2396',
+        function() {
+      //don't encode alphanum
+      expect(encodeUriSegment('asdf1234asdf')).
+        toEqual('asdf1234asdf');
+
+      //don't encode unreserved'
+      expect(encodeUriSegment("-_.!~*'() -_.!~*'()")).
+        toEqual("-_.!~*'()%20-_.!~*'()");
+
+      //don't encode the rest of pchar'
+      expect(encodeUriSegment(':@&=+$, :@&=+$,')).
+        toEqual(':@&=+$,%20:@&=+$,');
+
+      //encode '/', ';' and ' ''
+      expect(encodeUriSegment('/; /;')).
+        toEqual('%2F%3B%20%2F%3B');
+    });
+  });
+
+
   describe ('rngScript', function() {
     it('should match angular.js', function() {
       expect('angular.js'.match(rngScript)).not.toBeNull();
