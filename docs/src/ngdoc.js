@@ -86,11 +86,11 @@ Doc.prototype = {
           });
       } else {
         text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
-        text = text.replace(/{@link ([^\s}]+)((\s|\n)+(.+?))?\s*}/gm,
-          function(_all, url, _2, _3, title){
+        text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
+          function(_all, url, title){
             return '<a href="' + (url.match(IS_URL) ? '' : '#!') + url + '">'
               + (url.match(IS_ANGULAR) ? '<code>' : '')
-              + (title || url)
+              + (title || url).replace(/\n/g, ' ')
               + (url.match(IS_ANGULAR) ? '</code>' : '')
               + '</a>';
           });
