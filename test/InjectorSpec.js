@@ -65,11 +65,15 @@ describe('injector', function(){
       fn.$inject = ['a'];
       expect(injectionArgs(fn)).toBe(fn.$inject);
       expect(injectionArgs(function(){})).toEqual([]);
+      expect(injectionArgs(function (){})).toEqual([]);
+      expect(injectionArgs(function  (){})).toEqual([]);
+      expect(injectionArgs(function /* */ (){})).toEqual([]);
     });
 
     it('should create $inject', function(){
       // keep the multi-line to make sure we can handle it
-      function $f_n0(
+      function $f_n0 /*
+          */(
           $a, // x, <-- looks like an arg but it is a comment
           b_, /* z, <-- looks like an arg but it is a
                  multi-line comment

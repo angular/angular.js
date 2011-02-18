@@ -64,6 +64,11 @@ function download(name, url) {
         // strip out all text annotations
         data = data.replace(/\[\w{1,3}\]/mg, '');
 
+        // fix smart-quotes
+        data = data.replace(/[“”]/g, '"');
+        data = data.replace(/[‘’]/g, "'");
+
+
         data = data + '\n';
         fs.writeFileSync('docs/' + name, reflow(data, 100));
       }
