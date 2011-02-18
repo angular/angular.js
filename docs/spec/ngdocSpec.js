@@ -340,6 +340,14 @@ describe('ngdoc', function(){
           toContain('<a href="./static.html">./static.html</a>');
       });
 
+      it('shoul support line breaks in @link', function(){
+        var doc = new Doc("@description " +
+            '{@link\nurl\na\nb}');
+        doc.parse();
+        expect(doc.description).
+          toContain('<a href="#!url">a b</a>');
+      });
+
     });
 
     describe('@example', function(){
