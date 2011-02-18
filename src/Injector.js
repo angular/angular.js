@@ -92,7 +92,7 @@ function angularServiceInject(name, fn, inject, eager) {
  * extracting all arguments which start with $ or end with _ as the
  * injection names.
  */
-var FN_ARGS = /^function [^\(]*\(([^\)]*)\)/;
+var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(((\$?).+?)(_?))\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
