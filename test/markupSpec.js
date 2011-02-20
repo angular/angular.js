@@ -93,7 +93,7 @@ describe("markups", function(){
     compile('<img ng:src="{{url}}" />');
     scope.url = 'http://localhost/';
     scope.$eval();
-    expect(sortedHtml(element)).toEqual('<img ng:bind-attr="{"src":"{{url}}"}" src="http://localhost/"></img>');
+    expect(element.attr('src')).toEqual('http://localhost/');
   });
 
   it('should bind href and merge with other attrs', function() {
