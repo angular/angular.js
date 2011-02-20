@@ -224,6 +224,35 @@ describe('jqLite', function(){
   });
 
   describe('bind', function(){
+    it('should bind to window on hashchange', function(){
+      if (jqLite.fn) return; // don't run in jQuery
+      var eventFn;
+      var window = {
+          document: {},
+          location: {},
+          alert: noop,
+          setInterval: noop,
+          length:10, // pretend you are an array
+          addEventListener: function(type, fn){
+            expect(type).toEqual('hashchange');
+            eventFn = fn;
+          },
+          removeEventListener: noop,
+          attachEvent: function(type, fn){
+            expect(type).toEqual('onhashchange');
+            eventFn = fn;
+          },
+          detachEvent: noop
+      };
+      var log;
+      var jWindow = jqLite(window).bind('hashchange', function(){
+        log = 'works!';
+      });
+      eventFn({});
+      expect(log).toEqual('works!');
+      dealoc(jWindow);
+    });
+
     it('should bind to all elements and return functions', function(){
       var selected = jqLite([a, b]);
       var log = '';
