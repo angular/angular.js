@@ -173,6 +173,7 @@ Compiler.prototype = {
         descend = true,
         directives = true,
         elementName = nodeName_(element),
+        elementNamespace = elementName.indexOf(':') > 0 ? lowercase(elementName).replace(':', '-') : '',
         template,
         selfApi = {
           compile: bind(self, self.compile),
@@ -186,6 +187,7 @@ Compiler.prototype = {
       // for some reason IE throws error under some weird circumstances. so just assume nothing
       priority = priority || 0;
     }
+    element.addClass(elementNamespace);
     if (isString(priority)) {
       priority = PRIORITY[uppercase(priority)] || parseInt(priority, 10);
     }
@@ -200,7 +202,7 @@ Compiler.prototype = {
     });
     if (!widget) {
       if (widget = self.widgets(elementName)) {
-        if (elementName.indexOf(':') > 0)
+        if (elementNamespace)
           element.addClass('ng-widget');
         widget = bind(selfApi, widget, element);
       }

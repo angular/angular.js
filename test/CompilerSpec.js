@@ -162,4 +162,10 @@ describe('compiler', function(){
     scope = compile('A---B---C===D');
     expect(sortedHtml(scope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
   });
+
+  it('should add class for namespace elements', function(){
+    scope = compile('<ng:space>abc</ng:space>');
+    var space = jqLite(scope.$element[0].firstChild);
+    expect(space.hasClass('ng-space')).toEqual(true);
+  });
 });
