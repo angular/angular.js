@@ -189,6 +189,7 @@ function reflow(text, margin) {
     var col = 0;
     var reflowLine = '';
     function flush(){
+      reflowLine = reflowLine.replace(/\s*$/, '');
       lines.push(reflowLine);
       reflowLine = '';
       col = 0;
