@@ -86,7 +86,7 @@ Go ahead, try out the Live Preview above.  "Well I _declare_! It's a fully funct
 an instantly updating display, and input validation." Speaking of being declarative, let's walk
 through the example and look at the angular-related lines to see what's going on around here.
 
-In line __2__ of the example, we let the browswer know about the angular namespace:
+In line __2__ of the example, we let the browser know about the angular namespace:
 
        2 <html xmlns:ng="http://angularjs.org">
 
