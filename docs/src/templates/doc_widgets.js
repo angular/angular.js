@@ -2,7 +2,7 @@
 
   var angularJsUrl;
   var scripts = document.getElementsByTagName("script");
-  var angularJsRegex = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/
+  var angularJsRegex = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/;
   for(var j = 0; j < scripts.length; j++) {
     var src = scripts[j].src;
     if (src && src.match(angularJsRegex)) {
@@ -25,9 +25,9 @@
     this.descend(true); //compile the example code
     element.hide();
 
-    var example = element.find('doc\\:source').eq(0),
+    var example = element.find('pre.doc-source').eq(0),
         exampleSrc = example.text(),
-        scenario = element.find('doc\\:scenario').eq(0);
+        scenario = element.find('pre.doc-scenario').eq(0);
 
     var code = indent(exampleSrc);
     var tabHtml =
@@ -63,7 +63,7 @@
 
   function indent(text) {
     if (!text) return text;
-    var lines = text.split(/\n/);
+    var lines = text.split(/[\n|\r]/);
     var lineNo = [];
     // remove any leading blank lines
     while (lines[0].match(/^\s*$/)) lines.shift();

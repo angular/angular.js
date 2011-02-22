@@ -86,7 +86,7 @@ describe('ngdoc', function(){
             '<doc:source>\n<>\n</doc:source></doc:example> after');
         doc.parse();
         expect(doc.description).toContain('<p>before </p><doc:example>' +
-            '<doc:source>\n&lt;&gt;\n</doc:source></doc:example><p>after</p>');
+            '<pre class="doc-source">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
 
       it('should escape <doc:scenario> element', function(){
@@ -94,7 +94,7 @@ describe('ngdoc', function(){
             '<doc:scenario>\n<>\n</doc:scenario></doc:example> after');
         doc.parse();
         expect(doc.description).toContain('<p>before </p><doc:example>' +
-            '<doc:scenario>\n&lt;&gt;\n</doc:scenario></doc:example><p>after</p>');
+            '<pre class="doc-scenario">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
 
       describe('sorting', function(){
@@ -364,8 +364,8 @@ describe('ngdoc', function(){
             ' <doc:scenario><scenario></doc:scenario>\n' +
             '</doc:example>').parse();
         var html = doc.html();
-        expect(html).toContain('<doc:source>&lt;escapeme&gt;</doc:source>');
-        expect(html).toContain('<doc:scenario>&lt;scenario&gt;</doc:scenario>');
+        expect(html).toContain('<pre class="doc-source">&lt;escapeme&gt;</pre>');
+        expect(html).toContain('<pre class="doc-scenario">&lt;scenario&gt;</pre>');
         expect(doc.scenarios).toEqual(['<scenario>']);
       });
     });
