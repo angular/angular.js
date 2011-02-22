@@ -77,12 +77,12 @@ Doc.prototype = {
       } else if (text.match(/^<doc:example>/)) {
         text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
           function(_, before, content, after){
-            return before + htmlEscape(content) + after;
+            return '<pre class="doc-source">' + htmlEscape(content) + '</pre>';
           });
         text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
           function(_, before, content, after){
             self.scenarios.push(content);
-            return before + htmlEscape(content) + after;
+            return '<pre class="doc-scenario">' + htmlEscape(content) + '</pre>';
           });
       } else {
         text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
