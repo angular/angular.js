@@ -1,5 +1,5 @@
 describe('compiler', function(){
-  var compiler, markup, directives, widgets, compile, log, scope;
+  var compiler, markup, attrMarkup, directives, widgets, compile, log, scope;
 
   beforeEach(function(){
     log = "";
@@ -27,7 +27,7 @@ describe('compiler', function(){
     compiler = new Compiler(markup, attrMarkup, directives, widgets);
     compile = function(html){
       var e = jqLite("<div>" + html + "</div>");
-      return scope = compiler.compile(e)().scope;
+      return scope = compiler.compile(e)();
     };
   });
 
@@ -47,7 +47,7 @@ describe('compiler', function(){
     };
     var template = compiler.compile(e);
     expect(log).toEqual("found");
-    scope = template(angular.scope()).scope;
+    scope = template(angular.scope());
     expect(e.hasClass('ng-directive')).toEqual(true);
     expect(log).toEqual("found:init");
   });
@@ -78,13 +78,13 @@ describe('compiler', function(){
 
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
-      var parent = element.parent();
       element.replaceWith(document.createComment("marker"));
       element.removeAttr("duplicate");
-      var template = this.compile(element);
+      var linker = this.compile(element);
       return function(marker) {
         this.$onEval(function() {
-          marker.after(template(angular.scope(), noop).view);
+          var scope = linker(angular.scope(), noop);
+          marker.after(scope.$element);
         });
       };
     };

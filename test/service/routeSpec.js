@@ -18,7 +18,7 @@ describe('$route', function() {
     function BookChapter() {
       this.log = '<init>';
     }
-    scope = compile('<div></div>')().scope;
+    scope = compile('<div></div>')();
     $location = scope.$service('$location');
     $route = scope.$service('$route');
     $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});

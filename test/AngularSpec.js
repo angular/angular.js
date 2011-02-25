@@ -369,45 +369,51 @@ describe('angular', function(){
   });
 
   describe('compile', function(){
-    var mvc;
+    var scope, template;
+
     afterEach(function(){
-      dealoc(mvc.view);
+      dealoc(scope);
     });
 
     it('should link to existing node and create scope', function(){
-      mvc = angular.compile('<div>{{greeting = "hello world"}}</div>')();
-      expect(mvc.view.text()).toEqual('hello world');
-      expect(mvc.scope.greeting).toEqual('hello world');
+      template = angular.element('<div>{{greeting = "hello world"}}</div>');
+      scope = angular.compile(template)();
+      expect(template.text()).toEqual('hello world');
+      expect(scope.greeting).toEqual('hello world');
     });
 
     it('should link to existing node and given scope', function(){
-      var scope = angular.scope();
-      mvc = angular.compile('<div>{{greeting = "hello world"}}</div>')(scope);
-      expect(mvc.view.text()).toEqual('hello world');
-      expect(mvc.scope).toEqual(scope);
+      scope = angular.scope();
+      template = angular.element('<div>{{greeting = "hello world"}}</div>');
+      angular.compile(template)(scope);
+      expect(template.text()).toEqual('hello world');
+      expect(scope).toEqual(scope);
     });
 
     it('should link to new node and given scope', function(){
-      var scope = angular.scope();
-      var template = jqLite('<div>{{greeting = "hello world"}}</div>');
+      scope = angular.scope();
+      template = jqLite('<div>{{greeting = "hello world"}}</div>');
+
       var templateFn = angular.compile(template);
       var templateClone = template.clone();
-      mvc = templateFn(scope, function(clone){
+
+      templateFn(scope, function(clone){
         templateClone = clone;
       });
+
       expect(template.text()).toEqual('');
-      expect(mvc.view.text()).toEqual('hello world');
-      expect(mvc.view).toEqual(templateClone);
-      expect(mvc.scope.greeting).toEqual('hello world');
+      expect(scope.$element.text()).toEqual('hello world');
+      expect(scope.$element).toEqual(templateClone);
+      expect(scope.greeting).toEqual('hello world');
     });
 
     it('should link to cloned node and create scope', function(){
-      var scope = angular.scope();
-      var template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      mvc = angular.compile(template)(scope, noop);
+      scope = angular.scope();
+      template = jqLite('<div>{{greeting = "hello world"}}</div>');
+      angular.compile(template)(scope, noop);
       expect(template.text()).toEqual('');
-      expect(mvc.view.text()).toEqual('hello world');
-      expect(mvc.scope.greeting).toEqual('hello world');
+      expect(scope.$element.text()).toEqual('hello world');
+      expect(scope.greeting).toEqual('hello world');
     });
   });
 });

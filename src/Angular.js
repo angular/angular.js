@@ -774,55 +774,7 @@ function merge(src, dst) {
 }
 
 
-/**
- * @workInProgress
- * @ngdoc function
- * @name angular.compile
- * @function
- *
- * @description
- * Compiles a piece of HTML string or DOM into a view and produces a linking function, which can
- * then be used to link {@link angular.scope scope} and the template together. The compilation
- * process walks the DOM tree and tries to match DOM elements to {@link angular.markup markup},
- * {@link angular.attrMarkup attrMarkup}, {@link angular.widget widgets}, and
- * {@link angular.directive directives}. For each match it executes coresponding markup, \
- * attrMarkup, widget or directive template function and collects the instance functions into a
- * single linking function which is then returned. The linking function can then be used
- * many-times-over on clones of compiled DOM structure, (For example when compiling
- * {@link angular.widget.@ng:repeat repeater} the resulting linking function is called once for
- * each item in the collection. The `ng:repeat` does this by cloning the template DOM once for
- * each item in collection and then calling the linking function to link the cloned template
- * with the a new scope for each item in the collection.)
- *
-   <pre>
-    var mvc1 = angular.compile(window.document)();
-    mvc1.view; // compiled view elment
-    mvc1.scope; // scope bound to the element
-
-    var mvc2 = angular.compile('<div ng:click="clicked = true">click me</div>')();
-   </pre>
- *
- * @param {string|DOMElement} element Element or HTML to compile into a template function.
- * @returns {function([scope][, cloneAttachFn])} a template function which is used to bind element
- * and scope. Where:
- *
- *   * `scope` - {@link angular.scope scope} A scope to bind to. If none specified, then a new
- *               root scope is created.
- *   * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
- *               `template` and call the `cloneAttachFn` allowing the caller to attach the
- *               clonned elements to the DOM at the approriate place. The `cloneAttachFn` is
- *               called as: <br/> `cloneAttachFn(clonedElement, scope)`:
- *
- *     * `clonedElement` - is a clone of the originale `element` passed into the compiler.
- *     * `scope` - is the current scope with which the linking function is working with.
- *
- * Calling the template function returns object: `{scope:?, view:?}`, where:
- *
- *   * `view` - the DOM element which represents the compiled template. Either same or clone of
- *           `element` specifed in compile or template function.
- *   * `scope` - scope to which the element is bound to. Either a root scope or scope specified
- *           in the template function.
- */
+/** @name angular.compile */
 function compile(element) {
   return new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget)
     .compile(element);

@@ -50,7 +50,7 @@ equivalent to the code in the previous section.
   (function(window, previousOnLoad){
    window.onload = function(){
    try { (previousOnLoad||angular.noop)(); } catch(e) {}
-   angular.compile(window.document).$init();
+   angular.compile(window.document)();
    };
   })(window, window.onload);
  </script>
