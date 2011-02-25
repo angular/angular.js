@@ -5,6 +5,8 @@
 - rewrite of JQuery lite implementation for better supports operations on multiple nodes when
   matched by a selector.
 - Infer DI dependencies from function signature. http://docs.angularjs.org/#!guide.di
+- Added delay parameter to the $defer service
+
 
 ### Breaking changes
 - Removed the $init() method after the compilation. The old way of compiling the DOM element was
