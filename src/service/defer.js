@@ -14,9 +14,10 @@
  * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
  *
  * @param {function()} fn A function, who's execution should be deferred.
+ * @param {number=} [delay=0] of milliseconds to defer the function execution.
  */
 angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView) {
-  return function(fn) {
+  return function(fn, delay) {
     $browser.defer(function() {
       try {
         fn();
@@ -25,6 +26,6 @@ angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView
       } finally {
         $updateView();
       }
-    });
+    }, delay);
   };
 }, ['$browser', '$exceptionHandler', '$updateView']);

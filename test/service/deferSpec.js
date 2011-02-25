@@ -66,4 +66,11 @@ describe('$defer', function() {
     $browser.defer.flush();
     expect(eval).wasCalled();
   });
+
+  it('should allow you to specify the delay time', function(){
+    var defer = this.spyOn($browser, 'defer');
+    $defer(noop, 123);
+    expect(defer.callCount).toEqual(1);
+    expect(defer.mostRecentCall.args[1]).toEqual(123);
+  });
 });

@@ -324,7 +324,7 @@ function Browser(window, document, body, XHR, $log) {
    * @name angular.service.$browser#defer
    * @methodOf angular.service.$browser
    * @param {function()} fn A function, who's execution should be defered.
-   * @param {int=} [delay=0] of milliseconds to defer the function execution.
+   * @param {number=} [delay=0] of milliseconds to defer the function execution.
    *
    * @description
    * Executes a fn asynchroniously via `setTimeout(fn, delay)`.
