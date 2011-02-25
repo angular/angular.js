@@ -7,7 +7,7 @@ describe("markups", function(){
     element = null;
     compile = function(html) {
       element = jqLite(html);
-      scope = angular.compile(element)().scope;
+      scope = angular.compile(element)();
     };
   });
 

@@ -5,7 +5,7 @@ describe("directive", function(){
   beforeEach(function() {
     compile = function(html) {
       element = jqLite(html);
-      return model = angular.compile(element)().scope;
+      return model = angular.compile(element)();
     };
   });
 

@@ -11,7 +11,7 @@ describe("widget", function(){
       } else {
         element = jqLite(html);
       }
-      return scope = angular.compile(element)().scope;
+      return scope = angular.compile(element)();
     };
   });
 
@@ -592,7 +592,7 @@ describe("widget", function(){
     });
 
     it('should call change on switch', function(){
-      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>')().scope;
+      var scope = angular.compile('<ng:switch on="url" change="name=\'works\'"><div ng:switch-when="a">{{name}}</div></ng:switch>')();
       scope.url = 'a';
       scope.$eval();
       expect(scope.name).toEqual(undefined);
@@ -604,7 +604,7 @@ describe("widget", function(){
   describe('ng:include', function(){
     it('should include on external file', function() {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
-      var scope = angular.compile(element)().scope;
+      var scope = angular.compile(element)();
       scope.childScope = createScope();
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
@@ -617,7 +617,7 @@ describe("widget", function(){
 
     it('should remove previously included text if a falsy value is bound to src', function() {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
-      var scope = angular.compile(element)().scope;
+      var scope = angular.compile(element)();
       scope.childScope = createScope();
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
@@ -636,7 +636,7 @@ describe("widget", function(){
 
     it('should allow this for scope', function(){
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
-      var scope = angular.compile(element)().scope;
+      var scope = angular.compile(element)();
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
       scope.$eval();
@@ -650,7 +650,7 @@ describe("widget", function(){
 
     it('should evaluate onload expression when a partial is loaded', function() {
       var element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
-      var scope = angular.compile(element)().scope;
+      var scope = angular.compile(element)();
 
       expect(scope.loaded).not.toBeDefined();
 
@@ -801,7 +801,7 @@ describe("widget", function(){
     var rootScope, rootScope, $route, $location, $browser;
 
     beforeEach(function() {
-      rootScope = angular.compile('<ng:view></ng:view>')().scope;
+      rootScope = angular.compile('<ng:view></ng:view>')();
       $route = rootScope.$service('$route');
       $location = rootScope.$service('$location');
       $browser = rootScope.$service('$browser');
@@ -880,7 +880,7 @@ describe("widget", function(){
       rootScope = angular.compile(
           '<div>' +
             'include: <ng:include src="\'includePartial.html\'">' +
-          '</ng:include></div>')(myApp).scope;
+          '</ng:include></div>')(myApp);
 
       $browser.xhr.expectGET('viewPartial.html').respond('content');
       $browser.xhr.flush();

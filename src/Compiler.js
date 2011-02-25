@@ -71,6 +71,76 @@ Template.prototype = {
 ///////////////////////////////////
 //Compiler
 //////////////////////////////////
+
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.compile
+ * @function
+ *
+ * @description
+ * Compiles a piece of HTML string or DOM into a view and produces a linking function, which can
+ * then be used to link {@link angular.scope scope} and the template together. The compilation
+ * process walks the DOM tree and tries to match DOM elements to {@link angular.markup markup},
+ * {@link angular.attrMarkup attrMarkup}, {@link angular.widget widgets}, and
+ * {@link angular.directive directives}. For each match it executes coresponding markup, \
+ * attrMarkup, widget or directive template function and collects the instance functions into a
+ * single linking function which is then returned. The linking function can then be used
+ * many-times-over on clones of compiled DOM structure, (For example when compiling
+ * {@link angular.widget.@ng:repeat repeater} the resulting linking function is called once for
+ * each item in the collection. The `ng:repeat` does this by cloning the template DOM once for
+ * each item in collection and then calling the linking function to link the cloned template
+ * with the a new scope for each item in the collection.)
+ *
+   <pre>
+    var mvc1 = angular.compile(window.document)();
+    mvc1.view; // compiled view elment
+    mvc1.scope; // scope bound to the element
+
+    var mvc2 = angular.compile('<div ng:click="clicked = true">click me</div>')();
+   </pre>
+ *
+ * @param {string|DOMElement} element Element or HTML to compile into a template function.
+ * @returns {function([scope][, cloneAttachFn])} a template function which is used to bind element
+ * and scope. Where:
+ *
+ *   * `scope` - {@link angular.scope scope} A scope to bind to. If none specified, then a new
+ *               root scope is created.
+ *   * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
+ *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
+ *               cloned elements to the DOM document at the approriate place. The `cloneAttachFn` is
+ *               called as: <br/> `cloneAttachFn(clonedElement, scope)`:
+ *
+ *     * `clonedElement` - is a clone of the original `element` passed into the compiler.
+ *     * `scope` - is the current scope with which the linking function is working with.
+ *
+ * Calling the template function returns the scope to which the element is bound to. It is either
+ * a new root scope or scope passed into the template function.
+ *
+ * If you need access to the compiled view, there are two ways to do it:
+ *
+ * - either create the DOM element(s) before you send them to the compiler and keep this reference
+ *   around. This works if you don't need the element to be cloned by the link function.
+ *   <pre>
+ *     var view = angular.element('<p>{{total}}</p>'),
+ *         scope = angular.compile(view)();
+ *   </pre>
+ * - if on the other hand, you need the element to be cloned, the view reference from the original
+ *   example would not point to the clone, but rather to the dom that is cloned. In this case,
+ *   you can access the clone via the cloneAttachFn:
+ *   <pre>
+ *     var original = angular.element('<p>{{total}}</p>'),
+ *         scope = someParentScope.$new(),
+ *         clone;
+ *
+ *     angular.compile(original)(scope, function(clonedElement, scope) {
+ *       clone = clonedElement;
+ *       //attach the clone to DOM document at the right place
+ *     });
+ *
+ *     //now we have reference to the cloned DOM via `clone`
+ *   </pre>
+ */
 function Compiler(markup, attrMarkup, directives, widgets){
   this.markup = markup;
   this.attrMarkup = attrMarkup;
@@ -97,7 +167,7 @@ Compiler.prototype = {
       // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
       // and sometimes changes the structure of the DOM.
       var element = cloneConnectFn
-        ? JQLitePrototype.clone.call(templateElement) // IMPORTAN!!!
+        ? JQLitePrototype.clone.call(templateElement) // IMPORTANT!!!
         : templateElement;
         scope = scope || createScope();
       element.data($$scope, scope);
@@ -105,7 +175,7 @@ Compiler.prototype = {
       (cloneConnectFn||noop)(element, scope);
       template.attach(element, scope);
       scope.$eval();
-      return {scope:scope, view:element};
+      return scope;
     };
   },
 

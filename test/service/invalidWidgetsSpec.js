@@ -14,7 +14,7 @@ describe('$invalidWidgets', function() {
   it("should count number of invalid widgets", function(){
     var element = jqLite('<input name="price" ng:required ng:validate="number"></input>')
     jqLite(document.body).append(element);
-    scope = compile(element)().scope;
+    scope = compile(element)();
     var $invalidWidgets = scope.$service('$invalidWidgets');
     expect($invalidWidgets.length).toEqual(1);
 
