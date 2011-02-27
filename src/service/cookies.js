@@ -16,7 +16,8 @@ angularServiceInject('$cookies', function($browser) {
   var rootScope = this,
       cookies = {},
       lastCookies = {},
-      lastBrowserCookies;
+      lastBrowserCookies,
+      runEval = false;
 
   //creates a poller fn that copies all cookies from the $browser to service & inits the service
   $browser.addPollFn(function() {
@@ -25,9 +26,11 @@ angularServiceInject('$cookies', function($browser) {
       lastBrowserCookies = currentCookies;
       copy(currentCookies, lastCookies);
       copy(currentCookies, cookies);
-      rootScope.$eval();
+      if (runEval) rootScope.$eval();
     }
   })();
+
+  runEval = true;
 
   //at the end of each eval, push cookies
   //TODO: this should happen before the "delayed" watches fire, because if some cookies are not
