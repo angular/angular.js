@@ -1059,9 +1059,12 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return injectService(['$xhr.cache', '$route'], function($xhr, $route, element){
-      var parentScope = this,
-          childScope;
+    return injectService(['$xhr', '$route', '$cacheFactory', '$defer'],
+        function($xhr, $route, $cacheFactory, $defer, element){
+      var templateCache = $cacheFactory('ng:view'),
+          parentScope = this,
+          childScope,
+          template;
 
       $route.onChange(function(){
         var src;
@@ -1072,11 +1075,19 @@ angularWidget('ng:view', function(element) {
         }
 
         if (src) {
-          //xhr's callback must be async, see commit history for more info
-          $xhr('GET', src, function(code, response){
-            element.html(response);
-            compiler.compile(element)(childScope);
-          });
+          if (template = templateCache.get(src)) {
+            //this must be async see 9bd2c396 for more info
+            $defer(function() {
+              element.html(template);
+              compiler.compile(element)(childScope);
+            });
+          } else {
+            $xhr('GET', src, function(code, response){
+              templateCache.put(src, response);
+              element.html(response);
+              compiler.compile(element)(childScope);
+            });
+          }
         } else {
           element.html('');
         }
