@@ -43,7 +43,7 @@ function createInjector(providerScope, providers, cache) {
   return function inject(value, scope, args){
     var returnValue, provider;
     if (isString(value)) {
-      if (!cache.hasOwnProperty(value)) {
+      if (!(value in cache)) {
         provider = providers[value];
         if (!provider) throw "Unknown provider for '"+value+"'.";
         cache[value] = inject(provider, providerScope);

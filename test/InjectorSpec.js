@@ -45,6 +45,32 @@ describe('injector', function(){
     expect(scope).toEqual({mi:'Mi', name:'Misko'});
   });
 
+
+  it('should resolve dependency graph and instantiate all services just once', function(){
+    var log = [];
+
+//            s1
+//        /   |\
+//       /    s2\
+//      /  /  | \\
+//     /s3 < s4 > s5
+//    //
+//   s6
+
+
+    providers('s1', function(){ log.push('s1'); }, {$inject: ['s2', 's5', 's6']});
+    providers('s2', function(){ log.push('s2'); }, {$inject: ['s3', 's4', 's5']});
+    providers('s3', function(){ log.push('s3'); }, {$inject: ['s6']});
+    providers('s4', function(){ log.push('s4'); }, {$inject: ['s3', 's5']});
+    providers('s5', function(){ log.push('s5'); });
+    providers('s6', function(){ log.push('s6'); });
+
+    inject('s1');
+
+    expect(log).toEqual(['s6', 's3', 's5', 's4', 's2', 's1']);
+  });
+
+
   it('should provide usefull message if no provider', function(){
     assertThrows("Unknown provider for 'idontexist'.", function(){
       inject('idontexist');
