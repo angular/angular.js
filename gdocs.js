@@ -1,7 +1,15 @@
 #!/usr/bin/env node
+
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
+
+var collections = {
+  'devguide': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmANGUwMGVhZmYtMTk1ZC00NTdmLWIxMDAtZGI5YWNlZjQ2YjZl/contents',
+  'api': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDYjMwYTc2YWUtZTgzYy00YjIxLThlZDYtYWJlOTFlNzE2NzEw/contents',
+  'cookbook': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDNzkxZWM5ZTItN2M5NC00NWIxLTg2ZDMtMmYwNDY1NWM1MGU4/contents',
+  'misc': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZjVlNmZkYzQtMjZlOC00NmZhLWI5MjAtMGRjZjlkOGJkMDBi/contents'
+}
 
 console.log('Google Docs...');
 
@@ -10,22 +18,29 @@ if (flag == '--login')
   askPassword(function(password){
     login(process.argv[3], password);
   });
-else if (flag == '--fetch')
-  fetch();
-else
+else if (flag == '--fetch') {
+  var collection = process.argv[3];
+  if (collection) {
+    fetch(collection, collections[collection]);
+  } else {
+    for (collection in collections)
+      fetch(collection, collections[collection]);
+  }
+} else
   help();
 
 function help(){
   console.log('Synopsys');
-  console.log('gdocs.js [--login|--fetch]');
+  console.log('gdocs.js --login <username>');
+  console.log('gdocs.js --fetch [<docs collection>]');
   process.exit(-1);
 };
 
 
-function fetch(){
+function fetch(name, url){
   //https://docs.google.com/feeds/default/private/full/folder%3Afolder_id/contents
-  console.log('fetching a list of docs...');
-  request('GET', 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZDJmNzI3NjItODY1NS00YTg3LWE2MDItNmMyODE4MDdhNDFk/contents', {
+  console.log('fetching a list of docs in collection ' + name + '...');
+  request('GET', url, {
         headers: {
           'Gdata-Version': '3.0',
           'Authorization': 'GoogleLogin auth=' + getAuthToken()
