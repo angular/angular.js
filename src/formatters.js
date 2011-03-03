@@ -123,7 +123,7 @@ angularFormatter.number = formatter(toString, function(obj){
       it('should format lists', function(){
         expect(binding('value')).toEqual('value=["chair","table"]');
         this.addFutureAction('change to XYZ', function($window, $document, done){
-          $document.elements('.doc-example :input:last').val(',,a,b,').trigger('change');
+          $document.elements('.doc-example-live :input:last').val(',,a,b,').trigger('change');
           done();
         });
         expect(binding('value')).toEqual('value=["a","b"]');
@@ -165,7 +165,7 @@ angularFormatter.list = formatter(
         it('should format trim', function(){
           expect(binding('value')).toEqual('value="book"');
           this.addFutureAction('change to XYZ', function($window, $document, done){
-            $document.elements('.doc-example :input:last').val('  text  ').trigger('change');
+            $document.elements('.doc-example-live :input:last').val('  text  ').trigger('change');
             done();
           });
           expect(binding('value')).toEqual('value="text"');

@@ -68,14 +68,14 @@ angular.formatter('reverse', {
  </doc:source>
  <doc:scenario>
   it('should store reverse', function(){
-   expect(element('.doc-example input:first').val()).toEqual('angular');
-   expect(element('.doc-example input:last').val()).toEqual('RALUGNA');
+   expect(element('.doc-example-live input:first').val()).toEqual('angular');
+   expect(element('.doc-example-live input:last').val()).toEqual('RALUGNA');
 
    this.addFutureAction('change to XYZ', function($window, $document, done){
-     $document.elements('.doc-example input:last').val('XYZ').trigger('change');
+     $document.elements('.doc-example-live input:last').val('XYZ').trigger('change');
      done();
    });
-   expect(element('.doc-example input:first').val()).toEqual('zyx');
+   expect(element('.doc-example-live input:first').val()).toEqual('zyx');
   });
  </doc:scenario>
 </doc:example>

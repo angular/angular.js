@@ -562,14 +562,14 @@ function isLeafNode (node) {
  *  </doc:source>
  *  <doc:scenario>
    it('should print that initialy the form object is NOT equal to master', function() {
-     expect(element('.doc-example input[name=master.salutation]').val()).toBe('Hello');
-     expect(element('.doc-example input[name=master.name]').val()).toBe('world');
-     expect(element('.doc-example span').css('display')).toBe('inline');
+     expect(element('.doc-example-live input[name=master.salutation]').val()).toBe('Hello');
+     expect(element('.doc-example-live input[name=master.name]').val()).toBe('world');
+     expect(element('.doc-example-live span').css('display')).toBe('inline');
    });
 
    it('should make form and master equal when the copy button is clicked', function() {
-     element('.doc-example button').click();
-     expect(element('.doc-example span').css('display')).toBe('none');
+     element('.doc-example-live button').click();
+     expect(element('.doc-example-live span').css('display')).toBe('none');
    });
  *  </doc:scenario>
  * </doc:example>
@@ -643,14 +643,14 @@ function copy(source, destination){
  *  </doc:source>
  *  <doc:scenario>
      it('should print that initialy greeting is equal to the hardcoded value object', function() {
-       expect(element('.doc-example input[name=greeting.salutation]').val()).toBe('Hello');
-       expect(element('.doc-example input[name=greeting.name]').val()).toBe('world');
-       expect(element('.doc-example span').css('display')).toBe('none');
+       expect(element('.doc-example-live input[name=greeting.salutation]').val()).toBe('Hello');
+       expect(element('.doc-example-live input[name=greeting.name]').val()).toBe('world');
+       expect(element('.doc-example-live span').css('display')).toBe('none');
      });
 
      it('should say that the objects are not equal when the form is modified', function() {
        input('greeting.name').enter('kitty');
-       expect(element('.doc-example span').css('display')).toBe('inline');
+       expect(element('.doc-example-live span').css('display')).toBe('inline');
      });
  *  </doc:scenario>
  * </doc:example>
