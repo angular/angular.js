@@ -44,4 +44,43 @@ describe('$xhr', function() {
 
     expect($log.error).wasCalledWith("MyException");
   });
+
+
+  it('should automatically deserialize json objects', function() {
+    var response;
+
+    $browserXhr.expectGET('/foo').respond('{"foo":"bar","baz":23}');
+    $xhr('GET', '/foo', function(code, resp) {
+      response = resp;
+    });
+    $browserXhr.flush();
+
+    expect(response).toEqual({foo:'bar', baz:23});
+  });
+
+
+  it('should automatically deserialize json arrays', function() {
+    var response;
+
+    $browserXhr.expectGET('/foo').respond('[1, "abc", {"foo":"bar"}]');
+    $xhr('GET', '/foo', function(code, resp) {
+      response = resp;
+    });
+    $browserXhr.flush();
+
+    expect(response).toEqual([1, 'abc', {foo:'bar'}]);
+  });
+
+
+  it('should automatically deserialize json with security prefix', function() {
+    var response;
+
+    $browserXhr.expectGET('/foo').respond(')]}\',\n[1, "abc", {"foo":"bar"}]');
+    $xhr('GET', '/foo', function(code, resp) {
+      response = resp;
+    });
+    $browserXhr.flush();
+
+    expect(response).toEqual([1, 'abc', {foo:'bar'}]);
+  });
 });
