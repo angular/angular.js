@@ -5,7 +5,7 @@ var https = require('https');
 var fs = require('fs');
 
 var collections = {
-  'devguide': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmANGUwMGVhZmYtMTk1ZC00NTdmLWIxMDAtZGI5YWNlZjQ2YjZl/contents',
+  'guide': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmANGUwMGVhZmYtMTk1ZC00NTdmLWIxMDAtZGI5YWNlZjQ2YjZl/contents',
   'api': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDYjMwYTc2YWUtZTgzYy00YjIxLThlZDYtYWJlOTFlNzE2NzEw/contents',
   'cookbook': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDNzkxZWM5ZTItN2M5NC00NWIxLTg2ZDMtMmYwNDY1NWM1MGU4/contents',
   'misc': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZjVlNmZkYzQtMjZlOC00NmZhLWI5MjAtMGRjZjlkOGJkMDBi/contents'
