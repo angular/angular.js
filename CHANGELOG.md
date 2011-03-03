@@ -414,3 +414,5 @@ with the `$route` service
 [$resource]: http://docs.angularjs.org/#!angular.service.$resource
 [directive]: http://docs.angularjs.org/#!angular.directive
 [guide.di]: http://docs.angularjs.org/#!guide.di
+[downloading]: http://docs.angularjs.org/#!downloading
+[contribute]: http://docs.angularjs.org/#!contribute
