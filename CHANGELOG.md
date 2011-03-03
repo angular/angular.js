@@ -1,25 +1,59 @@
 <a name="0.9.12"><a/>
-# <angular/> 0.9.12 thought-implanter (in-progress) #
+# <angular/> 0.9.12 thought-implanter (2011-03-03) #
 
 ### API
-- rewrite of JQuery lite implementation for better supports operations on multiple nodes when
-  matched by a selector.
-- Infer DI dependencies from function signature. http://docs.angularjs.org/#!guide.di
-- Added delay parameter to the $defer service
+- Added a delay parameter to the [$defer] service. (commit edbe9d8c)
+- Added `scope()` method to [angular.element][element] (jQuery) instances to retrieve a [scope]
+  associated with a given DOM element. (commit 0a5c00ab)
+- Added inference of DI dependencies from function signature. This feature is experimental, check
+  out [dependency injection][guide.di] docs. (commit 7d4aee31)
+
+
+### New Features
+- Angular now correctly recognizes and uses jQuery even if it was loaded after angular's script.
+  More info at [angular.element][element]. (commit a004d487)
+- All built-in angular services are now lazy-loaded. (commit a070ff5a)
+- To make styling of custom html tags created via [widgets][widget] and [directives][directive]
+  easier, all of these elements now contain a css class with name in form of
+  `<namespace>-<directive/widget name>`, e.g. `<ng:include class="ng-include">`. (commit c7998f5f)
+- [$xhr] service now automatically detects and strips google-style JSON security prefix from http
+  responses. (commit cd139f57)
+
+
+### Bug Fixes
+- Rewrite of JQuery lite implementation for better supports operations on multiple nodes when
+  matched by a selector and remove other bugs. (commit 00cc9eb3)
+- Corrected an issue where properties inherited from \_\_proto\_\_ show up in ng:repeat.
+  (commit 9e67da42)
+- Fixed url encoding issue affecting [$resource] service. (commits e9ce2259 + 9e30baad)
+- Removed `$eval()` call from the [$cookies] factory function, which was causing duplicate
+  instances of singleton services to be created. (commit 65585a2d)
+
+
+### Docs
+- New docs [contribution guidelines][contribute].
+- New [description of release artifacts][downloading].
+- Lots of improvements and other new content.
 
 
 ### Breaking changes
-- Removed the $init() method after the compilation. The old way of compiling the DOM element was
-  angular.compile(element).$init(); The $init was there to allow the users to do any work to the
-  scope before the view would be bound. This is a left over from not having proper MVC. The new
-  recommended way to deal with initializing scope is to put it in the root constructor controller.
-  To migrate simply remove the call to $init() and move any code you had before $init() to the
-  root controller.
-- Change API angular.compile(..) to angular.compile(element)([scope], [cloneAttachFn])
-- remove ng:watch directives since it encourages logic in the UI.
+- Removed the `$init()` method that used to be called after compilation of a template. This should
+  affect only fraction of angular apps because the api was primarily being used by low level widgets
+  tests.
 
-### Bug Fixes
-- Corrected an issue where properties inherited from __proto__ show up in ng:repeat.
+  The old way of compiling the DOM element was angular.compile(element).$init(); The $init was there
+  to allow the users to do any work to the scope before the view would be bound. This is a left over
+  from not having proper MVC. The new recommended way to deal with initializing scope is to put it
+  in the root constructor controller. To migrate simply remove the call to $init() and move any code
+  you had before $init() to the root controller.
+
+  (commit 23b255a8)
+- Changed [angular.compile][compile] API from `angular.compile(element[, scope])` to
+  `angular.compile(element)([scope], [cloneAttachFn])` (commits ef4bb28b + 945056b1)
+- Removed ng:watch directives since it encourages logic in the UI. (commit 87cbf9f5)
+
+
+
 
 <a name="0.9.11"><a/>
 # <angular/> 0.9.11 snow-maker  (2011-02-08) #
@@ -366,3 +400,17 @@ with the `$route` service
 
 ### Big Thanks to Our Community Contributors
 - Vojta Jina
+
+
+
+
+[scope]: http://docs.angularjs.org/#!angular.scope
+[compile]: http://docs.angularjs.org/#!angular.compile
+[element]: http://docs.angularjs.org/#!angular.element
+[widget]: http://docs.angularjs.org/#!angular.widget
+[$defer]: http://docs.angularjs.org/#!angular.service.$defer
+[$cookies]: http://docs.angularjs.org/#!angular.service.$cookies
+[$xhr]: http://docs.angularjs.org/#!angular.service.$xhr
+[$resource]: http://docs.angularjs.org/#!angular.service.$resource
+[directive]: http://docs.angularjs.org/#!angular.directive
+[guide.di]: http://docs.angularjs.org/#!guide.di
