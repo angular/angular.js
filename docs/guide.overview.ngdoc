@@ -63,7 +63,7 @@ easier life can be with angular:
   <tr><td>Quantity</td><td>Cost</td></tr>
   <tr>
     <td><input name="qty" value="1" ng:validate="integer:0" ng:required/></td>
-    <td><input name="cost" value="199.95" ng:validate="number" ng:required/></td>
+    <td><input name="cost" value="19.95" ng:validate="number" ng:required/></td>
   </tr>
  </table>
  <hr>

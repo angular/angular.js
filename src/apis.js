@@ -151,7 +151,7 @@ var angularArray = {
          });
 
          it('should add an entry and recalculate', function() {
-           element('.doc-example a:contains("add item")').click();
+           element('.doc-example-live a:contains("add item")').click();
            using('.doc-example-live tr:nth-child(3)').input('item.qty').enter('20');
            using('.doc-example-live tr:nth-child(3)').input('item.cost').enter('100');
 
@@ -206,20 +206,20 @@ var angularArray = {
        </doc:source>
        <doc:scenario>
          it('should initialize the task list with for tasks', function() {
-           expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(4);
-           expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
+           expect(repeater('.doc-example-live ul li', 'task in tasks').count()).toBe(4);
+           expect(repeater('.doc-example-live ul li', 'task in tasks').column('task')).
              toEqual(['Learn Angular', 'Read Documentation', 'Check out demos',
                       'Build cool applications']);
          });
 
          it('should initialize the task list with for tasks', function() {
-           element('.doc-example ul li a:contains("X"):first').click();
-           expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(3);
+           element('.doc-example-live ul li a:contains("X"):first').click();
+           expect(repeater('.doc-example-live ul li', 'task in tasks').count()).toBe(3);
 
-           element('.doc-example ul li a:contains("X"):last').click();
-           expect(repeater('.doc-example ul li', 'task in tasks').count()).toBe(2);
+           element('.doc-example-live ul li a:contains("X"):last').click();
+           expect(repeater('.doc-example-live ul li', 'task in tasks').count()).toBe(2);
 
-           expect(repeater('.doc-example ul li', 'task in tasks').column('task')).
+           expect(repeater('.doc-example-live ul li', 'task in tasks').column('task')).
              toEqual(['Read Documentation', 'Check out demos']);
          });
        </doc:scenario>
@@ -442,23 +442,23 @@ var angularArray = {
          });
 
          it('should create an empty record when "add empty" is clicked', function() {
-           element('.doc-example a:contains("add empty")').click();
+           element('.doc-example-live a:contains("add empty")').click();
            expect(binding('people')).toBe('people = [{\n  "name":"",\n  "sex":null}]');
          });
 
          it('should create a "John" record when "add \'John\'" is clicked', function() {
-           element('.doc-example a:contains("add \'John\'")').click();
+           element('.doc-example-live a:contains("add \'John\'")').click();
            expect(binding('people')).toBe('people = [{\n  "name":"John",\n  "sex":"male"}]');
          });
 
          it('should create a "Mary" record when "add \'Mary\'" is clicked', function() {
-           element('.doc-example a:contains("add \'Mary\'")').click();
+           element('.doc-example-live a:contains("add \'Mary\'")').click();
            expect(binding('people')).toBe('people = [{\n  "name":"Mary",\n  "sex":"female"}]');
          });
 
          it('should delete a record when "X" is clicked', function() {
-            element('.doc-example a:contains("add empty")').click();
-            element('.doc-example li a:contains("X"):first').click();
+            element('.doc-example-live a:contains("add empty")').click();
+            element('.doc-example-live li a:contains("X"):first').click();
             expect(binding('people')).toBe('people = []');
          });
        </doc:scenario>
@@ -510,7 +510,7 @@ var angularArray = {
          });
 
          it('should recalculate when updated', function() {
-           using('.doc-example li:first-child').input('item.points').enter('23');
+           using('.doc-example-live li:first-child').input('item.points').enter('23');
            expect(binding('items.$count(\'points==1\')')).toEqual(1);
            expect(binding('items.$count(\'points>1\')')).toEqual(2);
          });
@@ -586,23 +586,23 @@ var angularArray = {
        <doc:scenario>
          it('should be reverse ordered by aged', function() {
            expect(binding('predicate')).toBe('Sorting predicate = -age');
-           expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
+           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.age')).
              toEqual(['35', '29', '21', '19', '10']);
-           expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
              toEqual(['Adam', 'Julie', 'Mike', 'Mary', 'John']);
          });
 
          it('should reorder the table when user selects different predicate', function() {
-           element('.doc-example a:contains("Name")').click();
-           expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+           element('.doc-example-live a:contains("Name")').click();
+           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
              toEqual(['Adam', 'John', 'Julie', 'Mary', 'Mike']);
-           expect(repeater('.doc-example table', 'friend in friends').column('friend.age')).
+           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.age')).
              toEqual(['35', '10', '29', '19', '21']);
 
-           element('.doc-example a:contains("Phone")+a:contains("^")').click();
-           expect(repeater('.doc-example table', 'friend in friends').column('friend.phone')).
+           element('.doc-example-live a:contains("Phone")+a:contains("^")').click();
+           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.phone')).
              toEqual(['555-9876', '555-8765', '555-5678', '555-4321', '555-1212']);
-           expect(repeater('.doc-example table', 'friend in friends').column('friend.name')).
+           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
              toEqual(['Mary', 'Julie', 'Adam', 'Mike', 'John']);
          });
        </doc:scenario>
@@ -684,7 +684,7 @@ var angularArray = {
        </doc:source>
        <doc:scenario>
          it('should limit the numer array to first three items', function() {
-           expect(element('.doc-example input[name=limit]').val()).toBe('3');
+           expect(element('.doc-example-live input[name=limit]').val()).toBe('3');
            expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3]');
          });
 

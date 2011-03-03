@@ -625,15 +625,15 @@ angularWidget('option', function(){
       </doc:source>
       <doc:scenario>
         it('should load date filter', function(){
-         expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.date/);
+         expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.date/);
         });
         it('should change to hmtl filter', function(){
          select('url').option('angular.filter.html.html');
-         expect(element('.doc-example ng\\:include').text()).toMatch(/angular\.filter\.html/);
+         expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.html/);
         });
         it('should change to blank', function(){
-         select('url').option('(blank)');
-         expect(element('.doc-example ng\\:include').text()).toEqual('');
+         select('url').option('');
+         expect(element('.doc-example-live ng\\:include').text()).toEqual('');
         });
       </doc:scenario>
     </doc:example>
@@ -729,15 +729,15 @@ angularWidget('ng:include', function(element){
       </doc:source>
       <doc:scenario>
         it('should start in settings', function(){
-         expect(element('.doc-example ng\\:switch').text()).toEqual('Settings Div');
+         expect(element('.doc-example-live ng\\:switch').text()).toEqual('Settings Div');
         });
         it('should change to home', function(){
          select('switch').option('home');
-         expect(element('.doc-example ng\\:switch').text()).toEqual('Home Span');
+         expect(element('.doc-example-live ng\\:switch').text()).toEqual('Home Span');
         });
         it('should select deafault', function(){
          select('switch').option('other');
-         expect(element('.doc-example ng\\:switch').text()).toEqual('default');
+         expect(element('.doc-example-live ng\\:switch').text()).toEqual('default');
         });
       </doc:scenario>
     </doc:example>
