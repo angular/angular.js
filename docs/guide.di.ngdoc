@@ -1,0 +1,304 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Dependency Injection
+@description
+Dependency injection (DI) is one of the core design patterns in angular and angular applications. DI
+allows you to replace almost any part of angular framework or angular application with a custom
+implementation, allowing for a highly flexible, maintainable and testable code-base.
+
+Dependency injection is a very common pattern in Java and other statically typed languages. While
+undervalued among JavaScript developers, we feel strongly that DI in JavaScript allows us to achieve
+the same benefits as in other languages.
+
+This document will focus on using dependency injection in angular. It is outside of the scope of
+this document to explain details of dependency injection. For more information on this topic, please
+refer to these links:
+
+  * {@link http://en.wikipedia.org/wiki/Dependency_injection DI - Wikipedia}
+  * {@link http://martinfowler.com/articles/injection.html Inversion of Control by Martin Fowler}
+  * Java
+    * {@link http://code.google.com/p/google-guice/ Guice}
+    * {@link http://www.devshed.com/c/a/Java/The-Spring-Framework-Understanding-IoC/ Spring}
+    * {@link http://picocontainer.org/injection.html picoContainer}
+  * .NET
+    * {@link http://msdn.microsoft.com/en-us/magazine/cc163739.aspx MSDN Design Patterns - Dependency Inject}
+    * {@link http://www.springframework.net/ Spring.NET}
+
+
+
+# Dependency Injection in angular
+
+Angular's dependency injection story begins with a `service`. Service in angular lingo is a
+JavaScript object, function, or value that is created by angular's injector via a provided factory
+function. The factory function is registered with angular via {@link angular.service}.
+
+<pre>
+// register a factory for a uniqueId service.
+angular.service('uniqueId', function(){
+  // calling the factory function creates the instance function
+  var id = 0;
+  return function(){
+   // calling the counter instance function will return and increment the count
+   return ++id;
+  }
+});
+</pre>
+
+At run-time we can access the `uniqueId` service by looking it up with the service locator like
+this:
+
+<pre>
+// create new root scope which has the injector function `$service()`
+var scope = angular.scope();
+
+// use the `$service` function to look up the service instance function
+var idGenerator = scope.$service('uniqueId');
+expect(idGenerator()).toBe(1);
+
+// subsequent lookups using the same root scope return the service instance
+var idGenerator2 = scope.$service('uniqueId');
+expect(idGenerator).toBe(idGenerator2);
+
+// since it is same instance calling idGenerator2 returns 2;
+expect(idGenerator2()).toBe(2);
+</pre>
+
+The {@link angular.service service} registry seems like a lot of work, so what are the benefits? To
+answer this question, it’s important to realize that in large scale applications there are a lot of
+services which are often dependent on each other, as in this example:
+
+<pre>
+angular.service('gadgetFactory', function(uniqueId){
+  return function(){
+    return {gadgetId: uniqueId()};
+  };
+}, {$inject: ['uniqueId']});
+</pre>
+
+Specifically, notice that the `gadgetFactory` takes `uniqueId` service in its arguments. It also
+declares this dependency with the `$inject` property. There are several benefits to this approach:
+
+* There is no need for a `main` method for an application responsible for instantiating and wiring
+these services. The order of service instantiation and wiring can be inferred by examining the
+`$inject` annotations.
+* It is easy to replace any one service with a different implementation without having to track down
+all of the dependencies. This is useful in:
+  * Tests: when mocks of services are needed (for example using mock {@link angular.service.$xhr}.)
+  * Customization: when the service bundled with angular does not do exactly what the application
+requires.
+
+More importantly, as we'll soon learn, controllers and other components of angular applications can
+also declare their dependencies on services and these will be provided without explicitly looking
+them up, but let's not get ahead of ourselves.
+
+Lastly, it is important to realize that all angular services are singletons – application singletons
+to be more precise. This means that there is only one instance of a given service per injector. And
+since angular is lethally allergic to the global state, it's absolutely possible to create multiple
+injectors each with its own instance of a given service (but that is not typically needed, except in
+tests where this property is crucially important).
+
+
+## Service Locator and Scope
+
+The {@link angular.injector injector} is responsible for resolving the service dependencies in the
+application. It gets created and configured with the creation of a root scope in your application.
+The injector is responsible for caching the instances of services, but this cache is bound to the
+scope. This means that different root scopes will have different instances of the injector. While
+typical angular applications will only have one root scope (and hence the services will act like
+application singletons), in tests it is important to not share singletons across test invocations
+for isolation reasons. We get this isolation by having each test create its own separate root scope.
+
+<pre>
+// crate a root scope
+var rootScope = angular.scope();
+// accesss the service loctor
+var myService = rootScope.$service('myService');
+</pre>
+
+
+
+# Dependency Injection in Controllers
+
+So far we have been talking about injector as a service locator. This is because we have been
+explicitly calling the `$service` method to gain access to the service. Service locator is not
+dependency injection since the caller is still responsible for retrieving the dependencies. *True
+dependency injection is like Chuck Norris. Chuck does not ask for dependencies; he declares them.*
+
+The most common place to use dependency injection in angular applications is in
+{@link angular.ng:controller controllers}. Here’s a simple example:
+
+<pre>
+function MyController($route){
+  // configure the route service
+  $route.when(...);
+}
+MyController.$inject = ['$route'];
+</pre>
+
+In this example, the `MyController` constructor function takes one argument, the
+(@link angular.service.$route $route) service. Angular is then responsible for supplying the
+instance of `$route` to the controller when the constructor is instantiated. There are two ways to
+cause controller instantiation – by configuring routes with the $route service or by referencing the
+controller from the HTML template, such as:
+
+<pre>
+<!doctype html>
+<html xmlns:ng="http://angularjs.org" ng:controller="MyController">
+ <script src="http://code.angularjs.org/angular.min.js" ng:autobind></script>
+ <body>
+  ...
+ </body>
+</html>
+</pre>
+
+When angular is instantiating your controller, it needs to know what services, if any, should be
+injected (passed in as arguments) into the controller. Since there is no reflection in JavaScript,
+we have to supply this information to angular in the form of an additional property on the
+controller constructor function called `$inject`. Think of it as annotations for JavaScript.
+
+<pre>
+MyController.$inject = ['$route'];
+</pre>
+
+The information in `$inject` is then used by the {@link angular.injector injector} to call the
+function with the correct arguments.
+
+
+
+# Using Dependency Injection pragmatically
+
+At times you’ll need to use dependency injection pragmatically, usually when instantiating
+controllers manually or writing unit tests. This section explains how to go about it.
+
+## Retrieving Services
+
+The simplest form of dependency injection is manual retrieval of scopes, known as service locator.
+We say manual because we are asking the injector for an instance of the service (rather then having
+the injector provide them to the function). This should be rare since most of the time the dependent
+services should be injected into the controller using the `$inject` property array.
+
+<pre>
+// create a root scope. The root scope will automatically have
+// `$service` method defined which is configured with all services.
+// Each instance of root scope will have separate instances of services.
+var rootScope = angular.scope();
+
+// ask for a service explicitly
+var $window = rootScope.$service('$window');
+</pre>
+
+
+## Creating Controllers using Dependency Injection
+
+In a typical angular application the dependency injection is most commonly used when creating
+controllers.
+<pre>
+// declare our own service by registering a factory function.
+angular.service('counter', function(){
+  var count = 0;
+  return function(){ return count++; };
+});
+
+// example of a controller which depends on '$window' and 'counter' service
+// notice that there is an extra unbound parameter 'name' which will not
+// be injected and must be supplied by the caller.
+function MyController($window, counter, name) {
+}
+
+// we must declare the dependencies explicitly and in the same order as in
+// the constructor function. This information is used by the dependency
+// injection to supply the arguments.
+// Notice the lack of 'name' argument which makes it an unbound argument.
+MyController.$inject = ['$window', 'counter'];
+
+
+// Create a root scope which creates the the injector
+var rootScope = angular.scope();
+
+// use the '$new()' method instead of standard 'new' keyword operator to
+// create an instance of MyController and have the dependency injection
+// supply the arguments to the controller. The dependency injection only
+// supplies the bound arguments in `$inject` all addition arguments are
+// curried from the '$new', in our case 'Alexandria' is the argument which
+// will be curried to the 'name' argument, while '$window' and 'counter'
+// are supplied by the dependency injection.
+var myController = rootScope.$new(MyController, 'Alexandria');
+// NOTE: the returning controller will be a child scope of parent scope,
+// in this case the root scope.
+</pre>
+
+
+## Calling functions and Curring of arguments
+
+NOTE: this section is quite lame. The concept it is trying to describe is more closely related to
+scope#new than scope#$service. We need a better example to discuss here. Ideally a parent controller
+creating a child controller imperatively via $new where the child controller's constructor function
+declares a portion of its dependencies via $inject property, but another portion is supplied by the
+caller of $new (e.g. parentCtrl.$new(ChildCtrl, configParam1, configParam2);
+
+Finally, you may need to call functions but have the `$inject` properties of the function be
+supplied by the injector.
+
+<pre>
+// create a root scope with the `$service` injector.
+var rootScope = angular.scope();
+
+// given a function such as
+function greet ($window, name) {
+  $window.alert(this.salutation + ' ' + name);
+}
+greet.$inject = ['$window'];
+
+// you can call function 'greet' such that the injector supplies the
+// '$window' and the caller supplies the function 'this' and the 'name'
+// argument.
+var fnThis = {salutation: 'Hello'}
+rootScope.$service(greet, fnThis, 'world');
+</pre>
+
+
+
+# Inferring `$inject`
+
+** EXPERIMENTAL: this is an experimental feature, see the important note at the end of this section
+for drawbacks. **
+
+We resort to `$inject` and our own annotation because there is no way in JavaScript to get a list of
+arguments. Or is there? It turns out that calling `.toString()` on a function returns the function
+declaration along with the argument names as shown below:
+
+<pre>
+function myFn(a,b){}
+expect(myFn.toString()).toEqual('function myFn(a,b){}');
+</pre>
+
+This means that angular can infer the function names after all and use that information to generate
+the `$inject` annotation automatically. Therefore the following two function definitions are
+equivalent:
+
+<pre>
+// given a user defined service
+angular.service('serviceA', ...);
+
+// inject '$window', 'serviceA', curry 'name';
+function fnA($window, serviceA, name){};
+fnA.$inject = ['$window', 'serviceA'];
+
+// inject '$window', 'serviceA', curry 'name';
+function fnB($window, serviceA_, name){};
+// implies: fnA.$inject = ['$window', 'serviceA'];
+</pre>
+
+If angular does not find an `$inject` annotation on the function, then it calls the `.toString()`
+and tries to infer what should be injected using the following rules:
+
+* any argument starting with `$` is angular service and will be added to `$inject` property array.
+* any argument ending with `_` will be added to the `$inject` property array but we strip the `_`
+* all arguments following an argument which has neither `$` nor `_` , must not have `$` nor `_`
+  (these are free arguments for {@link http://en.wikipedia.org/wiki/Currying curring})
+
+**IMPORTANT**
+Minifiers/obfuscators change the names of function arguments and will therefore break the `$inject`
+inference. For this reason, either explicitly declare the `$inject` or do not use
+minifiers/obfuscators. In the future, we may provide a pre-processor which will scan the source code
+and insert the `$inject` into the source code so that it can be minified/obfuscated.
