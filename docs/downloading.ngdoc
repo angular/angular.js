@@ -1,0 +1,70 @@
+@workInProgress
+@ngdoc overview
+@name Downloading
+@description
+
+# Including angular scripts from code.angularjs.org
+
+To get started quickly you without worrying about downloading anything and maintaining a local copy,
+you can point your html `script` tag directly to <http://code.angularjs.org/> urls.
+
+There are two kinds of urls you care about:
+
+* http://code.angularjs.org/angular-<version>.js
+* http://code.angularjs.org/angular-<version>.min.js
+
+The first one is non-minified version, suitable for web development. The latter one is minified
+version, which we strongly suggest you use in production.
+
+To point your code to let's say angular version 0.9.12, use the following template:
+
+<pre>
+  <!doctype html>
+  <html>
+    <head>
+      <title>My Angular App</title>
+      <script src="http://code.angularjs.org/angular-0.9.12.js" ng:autobind></script>
+    </head>
+    <body>
+    </body>
+  </html>
+</pre>
+
+
+# Downloading and hosting the files on your own
+
+This options is for those who want to work with angular offline, or want to host the angular files
+on their own servers.
+
+If you navigate to <http://code.angularjs.org/>, you'll see a directory listing with all angular
+versions since we started releasing versioned build artifacts (quite late in the project lifetime).
+
+Each directory contains all artifacts that we released for a particular version. Once you navigate
+to one of these directories you'll see the following list of files:
+
+* `angular-<version>.js` - This file is non-obfuscated, non-minified, and human-readable by opening
+it it any editor or browser. In order to get better error messages during development, you should
+always use this non-minified angular script.
+
+* `angular-<version>.min.js` - This is a minified and obfuscated version of
+`angular-<version>.js` created with Closure compiler. Use this version for production in order to
+minimize the size of the application that is downloaded by your user's browser.
+
+* `angular-<version>.tgz` - This is a tarball archive which contains all the other files released
+for this angular version. Use this file to get everything in a single download.
+
+* `angular-ie-compat-<version>.js` - This is a special file that contains code and data specifically
+tailored for getting Internet Explorer to work with angular. If you host your own copy of angular
+files, make sure that this file is available for download and resides under the same parent path as
+`angular-<version>.js` or `angular-<version>.min.js`.
+
+* `angular-mocks-<version>.js` - This file contains implementation of mocks that we provide to you
+to make testing angular apps even easier. Your unit/integration test harness should load this file
+after `angular-<version>.js` is loaded.
+
+* `angular-scenario-<version>.js` - This file is a very nifty JavaScript file, which allows you to
+write and execute end to end tests for angular applications.
+
+* `docs-<version>` - this directory contains all the files that compose the
+<http://docs.angularjs.org/> documentation app. These files are handy to see the older version of
+our docs, or even more importantly, view the docs offline!
