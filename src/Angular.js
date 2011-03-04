@@ -976,7 +976,7 @@ function encodeUriSegment(val) {
 function angularInit(config){
   if (config.autobind) {
     // TODO default to the source of angular.js
-    var scope = compile(window.document)(createScope({'$config':config})).scope,
+    var scope = compile(window.document)(createScope({'$config':config})),
         $browser = scope.$service('$browser');
 
     if (config.css)
