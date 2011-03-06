@@ -541,12 +541,13 @@ var angularArray = {
    * {@link angular.Array} for more info.
    *
    * @param {Array} array The array to sort.
-   * @param {function(*, *)|string|Array.<(function(*, *)|string)>} expression A predicate to be
+   * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be
    *    used by the comparator to determine the order of elements.
    *
    *    Can be one of:
    *
-   *    - `function`: JavaScript's Array#sort comparator function
+   *    - `function`: getter function. The result of this function will be sorted using the
+   *      `<`, `=`, `>` operator
    *    - `string`: angular expression which evaluates to an object to order by, such as 'name' to
    *      sort by a property called 'name'. Optionally prefixed with `+` or `-` to control ascending
    *      or descending sort order (e.g. +name or -name).
