@@ -1002,7 +1002,7 @@ function angularJsConfig(document, config) {
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {
           name = name.substring(3).replace(/-/g, '_');
-          if (name == 'autobind') value = true;
+          value = value || true;
           config[name] = value;
         }
       });

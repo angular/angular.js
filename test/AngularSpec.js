@@ -266,22 +266,38 @@ describe('angular', function(){
     });
 
 
-    it('should extract angular config from the ng: attributes', function() {
+    it('should extract angular config from the ng: attributes',
+        function() {
       var doc = { getElementsByTagName: function(tagName) {
         expect(lowercase(tagName)).toEqual('script');
         return [{nodeName: 'SCRIPT',
           src: 'angularjs/angular.js',
-          attributes: [{name: 'ng:autobind', value:undefined},
+          attributes: [{name: 'ng:autobind', value:'elementIdToCompile'},
                        {name: 'ng:css', value: 'css/my_custom_angular.css'},
                        {name: 'ng:ie-compat', value: 'myjs/angular-ie-compat.js'},
                        {name: 'ng:ie-compat-id', value: 'ngcompat'}] }];
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: true,
+        autobind: 'elementIdToCompile',
         css: 'css/my_custom_angular.css',
         ie_compat: 'myjs/angular-ie-compat.js',
         ie_compat_id: 'ngcompat'});
+    });
+
+
+    it('should extract angular config and default autobind value to true if present', function() {
+      var doc = { getElementsByTagName: function(tagName) {
+        expect(lowercase(tagName)).toEqual('script');
+        return [{nodeName: 'SCRIPT',
+          src: 'angularjs/angular.js',
+          attributes: [{name: 'ng:autobind', value:undefined}]}];
+      }};
+
+      expect(angularJsConfig(doc)).toEqual({autobind: true,
+                                            base_url: 'angularjs/',
+                                            ie_compat_id: 'ng-ie-compat',
+                                            ie_compat: 'angularjs/angular-ie-compat.js'});
     });
 
 
@@ -294,6 +310,20 @@ describe('angular', function(){
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
         autobind: true,
+        ie_compat: 'angularjs/angular-ie-compat.js',
+        ie_compat_id: 'ng-ie-compat'});
+    });
+
+
+    it('should extract autobind config with element id from the script hashpath', function() {
+      var doc = { getElementsByTagName: function(tagName) {
+        expect(lowercase(tagName)).toEqual('script');
+        return [{nodeName: 'SCRIPT',
+          src: 'angularjs/angular.js#autobind=foo'}];
+      }};
+
+      expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
+        autobind: 'foo',
         ie_compat: 'angularjs/angular-ie-compat.js',
         ie_compat_id: 'ng-ie-compat'});
     });
