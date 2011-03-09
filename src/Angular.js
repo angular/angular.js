@@ -89,8 +89,8 @@ var _undefined        = undefined,
     msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
     jqLite,           // delay binding since jQuery could be loaded after us.
     jQuery,           // delay binding
-    slice             = Array.prototype.slice,
-    push              = Array.prototype.push,
+    slice             = [].slice,
+    push              = [].push,
     error             = window[$console]
                            ? bind(window[$console], window[$console]['error'] || noop)
                            : noop,
