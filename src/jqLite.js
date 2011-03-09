@@ -145,7 +145,7 @@ function JQLiteAddNodes(root, elements) {
 //////////////////////////////////////////
 // Functions which are declared directly.
 //////////////////////////////////////////
-var JQLitePrototype = JQLite.prototype = extend([], {
+var JQLitePrototype = JQLite.prototype = {
   ready: function(fn) {
     var fired = false;
 
@@ -163,8 +163,12 @@ var JQLitePrototype = JQLite.prototype = extend([], {
     var value = [];
     forEach(this, function(e){ value.push('' + e);});
     return '[' + value.join(', ') + ']';
-  }
-});
+  },
+  length: 0,
+  push: push,
+  sort: [].sort,
+  splice: [].splice
+};
 
 //////////////////////////////////////////
 // Functions iterating getter/setters.
