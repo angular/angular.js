@@ -38,7 +38,7 @@ function fromJson(json, useNative) {
   var obj, p, expression;
 
   try {
-    if (useNative && JSON && JSON.parse) {
+    if (useNative && window.JSON && window.JSON.parse) {
       obj = JSON.parse(json);
       return transformDates(obj);
     }
