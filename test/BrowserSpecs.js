@@ -24,11 +24,20 @@ describe('browser', function(){
 
     var fakeBody = {append: function(node){scripts.push(node);}};
 
-    var fakeXhr = function(){
+    var FakeXhr = function(){
       xhr = this;
-      this.open = noop;
-      this.setRequestHeader = noop;
-      this.send = noop;
+      this.open = function(method, url, async){
+        xhr.method = method;
+        xhr.url = url;
+        xhr.async = async;
+        xhr.headers = {};
+      };
+      this.setRequestHeader = function(key, value){
+        xhr.headers[key] = value;
+      };
+      this.send = function(post){
+        xhr.post = post;
+      };
     };
 
     logs = {log:[], warn:[], info:[], error:[]};
@@ -38,7 +47,7 @@ describe('browser', function(){
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
-    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, fakeXhr,
+    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, FakeXhr,
                           fakeLog);
   });
 
@@ -85,6 +94,33 @@ describe('browser', function(){
         expect(typeof fakeWindow[url[1]]).toEqual('undefined');
       });
     });
+
+    it('should set headers for all requests', function(){
+      var code, response, headers = {};
+      browser.xhr('METHOD', 'URL', 'POST', function(c,r){
+        code = c;
+        response = r;
+      }, {'X-header': 'value'});
+
+      expect(xhr.method).toEqual('METHOD');
+      expect(xhr.url).toEqual('URL');
+      expect(xhr.post).toEqual('POST');
+      expect(xhr.headers).toEqual({
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json, text/plain, */*",
+        "X-Requested-With": "XMLHttpRequest",
+        "X-header":"value"
+      });
+
+      xhr.status = 202;
+      xhr.responseText = 'RESPONSE';
+      xhr.readyState = 4;
+      xhr.onreadystatechange();
+
+      expect(code).toEqual(202);
+      expect(response).toEqual('RESPONSE');
+    });
+
   });
 
 

@@ -7,6 +7,11 @@ var XHR = window.XMLHttpRequest || function () {
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
   throw new Error("This browser does not support XMLHttpRequest.");
 };
+var XHR_HEADERS = {
+  "Content-Type": "application/x-www-form-urlencoded",
+  "Accept": "application/json, text/plain, */*",
+  "X-Requested-With": "XMLHttpRequest"
+};
 
 /**
  * @private
@@ -72,11 +77,18 @@ function Browser(window, document, body, XHR, $log) {
    * @param {string} url Requested url
    * @param {?string} post Post data to send (null if nothing to post)
    * @param {function(number, string)} callback Function that will be called on response
+   * @param {object=} header additional HTTP headers to send with XHR.
+   *   Standard headers are:
+   *   <ul>
+   *     <li><tt>Content-Type</tt>: <tt>application/x-www-form-urlencoded</tt></li>
+   *     <li><tt>Accept</tt>: <tt>application/json, text/plain, &#42;/&#42;</tt></li>
+   *     <li><tt>X-Requested-With</tt>: <tt>XMLHttpRequest</tt></li>
+   *   </ul>
    *
    * @description
    * Send ajax request
    */
-  self.xhr = function(method, url, post, callback) {
+  self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = "angular_" + Math.random() + '_' + (idCounter++);
@@ -92,9 +104,9 @@ function Browser(window, document, body, XHR, $log) {
     } else {
       var xhr = new XHR();
       xhr.open(method, url, true);
-      xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-      xhr.setRequestHeader("Accept", "application/json, text/plain, */*");
-      xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+      forEach(extend(XHR_HEADERS, headers || {}), function(value, key){
+        if (value) xhr.setRequestHeader(key, value);
+      });
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           completeOutstandingRequest(callback, xhr.status || 200, xhr.responseText);

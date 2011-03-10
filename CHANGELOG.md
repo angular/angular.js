@@ -1,6 +1,10 @@
 <a name="0.9.13"><a/>
 # <angular/> 0.9.13 curdling-stare (in-progress) #
 
+### New Features
+- Added XSRF prevention logic to $xhr service
+
+
 ### Bug Fixes
 - Fixed cookies which contained unescaped '=' would not show up in cookie service.
 - Consider all 2xx responses as OK, not just 200
