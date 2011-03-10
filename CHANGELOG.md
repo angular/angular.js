@@ -3,6 +3,7 @@
 
 ### Bug Fixes
 - Fixed cookies which contained unescaped '=' would not show up in cookie service.
+- Consider all 2xx responses as OK, not just 200
 
 
 
