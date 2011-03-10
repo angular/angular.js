@@ -973,10 +973,12 @@ function encodeUriSegment(val) {
  * APIs are bound to fields of this global object.
  *
  */
-function angularInit(config){
-  if (config.autobind) {
-    // TODO default to the source of angular.js
-    var scope = compile(window.document)(createScope({'$config':config})),
+function angularInit(config, document){
+  var autobind = config.autobind;
+
+  if (autobind) {
+    var element = isString(autobind) ? document.getElementById(autobind) : document,
+        scope = compile(element)(createScope({'$config':config})),
         $browser = scope.$service('$browser');
 
     if (config.css)
