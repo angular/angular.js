@@ -85,7 +85,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
             response = fromJson(response, true);
           }
         }
-        if (code == 200) {
+        if (200 <= code && code < 300) {
           callback(code, response);
         } else {
           $error(
