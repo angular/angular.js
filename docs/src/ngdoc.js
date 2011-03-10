@@ -157,7 +157,11 @@ Doc.prototype = {
             description: self.markdown(text.replace(match[0], match[2]))
           };
         } else if(atName == 'requires') {
-          self.requires.push(text);
+          var match = text.match(/^([^\s]*)\s*([\S\s]*)/);
+          self.requires.push({
+            name: match[1],
+            text: self.markdown(match[2])
+          });
         } else if(atName == 'property') {
           var match = text.match(/^{(\S+)}\s+(\S+)(\s+(.*))?/);
           if (!match) {
@@ -184,6 +188,15 @@ Doc.prototype = {
       notice('workInProgress', 'Work in Progress',
           'This page is currently being revised. It might be incomplete or contain inaccuracies.');
       notice('deprecated', 'Deprecated API', self.deprecated);
+
+      if (self.ngdoc != 'overview')
+        dom.h('Description', self.description, dom.html);
+      dom.h('Dependencies', self.requires, function(require){
+        dom.tag('code', function(){
+          dom.tag('a', {href:"#!angular.service." + require.name}, require.name);
+        });
+        dom.html(require.text);
+      });
 
       (self['html_usage_' + self.ngdoc] || function(){
         throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
@@ -251,8 +264,6 @@ Doc.prototype = {
 
   html_usage_function: function(dom){
     var self = this;
-    dom.h('Description', self.description, dom.html);
-    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.code(function(){
         dom.text(self.name);
@@ -269,8 +280,6 @@ Doc.prototype = {
 
   html_usage_directive: function(dom){
     var self = this;
-    dom.h('Description', self.description, dom.html);
-    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.tag('pre', {'class':"brush: js; html-script: true;"}, function(){
         dom.text('<' + self.element + ' ');
@@ -287,8 +296,6 @@ Doc.prototype = {
 
   html_usage_filter: function(dom){
     var self = this;
-    dom.h('Description', self.description, dom.html);
-    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.tag('code', function(){
@@ -319,8 +326,6 @@ Doc.prototype = {
 
   html_usage_formatter: function(dom){
     var self = this;
-    dom.h('Description', self.description, dom.html);
-    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
@@ -359,8 +364,6 @@ Doc.prototype = {
 
   html_usage_validator: function(dom){
     var self = this;
-    dom.h('Description', self.description, dom.html);
-    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
@@ -389,8 +392,6 @@ Doc.prototype = {
 
   html_usage_widget: function(dom){
     var self = this;
-    dom.h('Description', self.description, dom.html);
-    dom.h('Dependencies', self.requires);
     dom.h('Usage', function(){
       dom.h('In HTML Template Binding', function(){
         dom.code(function(){
@@ -435,8 +436,6 @@ Doc.prototype = {
 
   html_usage_service: function(dom){
     var self = this;
-    dom.h('Description', this.description, dom.html);
-    dom.h('Dependencies', this.requires);
 
     if (this.param.length) {
       dom.h('Usage', function(){
