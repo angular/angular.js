@@ -3,13 +3,71 @@
  * @ngdoc service
  * @name angular.service.$xhr
  * @function
- * @requires $browser
- * @requires $xhr.error
- * @requires $log
+ * @requires $browser $xhr delegates all XHR requests to the `$browser.xhr()`. A mock version
+ *                    of the $browser exists which allows setting expectaitions on XHR requests
+ *                    in your tests
+ * @requires $xhr.error $xhr delegates all non `2xx` response code to this service.
+ * @requires $log $xhr delegates all exceptions to `$log.error()`.
+ * @requires $updateView After a server response the view needs to be updated for data-binding to
+ *           take effect.
  *
  * @description
- * Generates an XHR request. The $xhr service adds error handling then delegates all requests to
- * {@link angular.service.$browser $browser.xhr()}.
+ * Generates an XHR request. The $xhr service delegates all requests to
+ * {@link angular.service.$browser $browser.xhr()} and adds error handling and security features.
+ * While $xhr service provides nicer api than raw XmlHttpRequest, it is still considered a lower
+ * level api in angular. For a higher level abstraction that utilizes `$xhr`, please check out the
+ * {@link angular.service$resource $resource} service.
+ *
+ * # Error handling
+ * All XHR responses with response codes other then `2xx` are delegated to
+ * {@link angular.service.$xhr.error $xhr.error}. The `$xhr.error` can intercept the request
+ * and process it in application specific way, or resume normal execution by calling the
+ * request callback method.
+ *
+ * # Security Considerations
+ * When designing web applications your design needs to consider security threats from
+ * {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
+ * JSON Vulnerability} and {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF}.
+ * Both server and the client must cooperate in order to eliminate these threats. Angular comes
+ * pre-configured with strategies that address these issues, but for this to work backend server
+ * cooperation is required.
+ *
+ * ## JSON Vulnerability Protection
+ * A {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
+ * JSON Vulnerability} allows third party web-site to turn your JSON resource URL into
+ * {@link http://en.wikipedia.org/wiki/JSON#JSONP JSONP} request under some conditions. To
+ * counter this your server can prefix all JSON requests with following string `")]}',\n"`.
+ * Angular will automatically strip the prefix before processing it as JSON.
+ *
+ * For example if your server needs to return:
+ * <pre>
+ * ['one','two']
+ * </pre>
+ *
+ * which is vulnerable to attack, your server can return:
+ * <pre>
+ * )]}',
+ * ['one','two']
+ * </pre>
+ *
+ * angular will strip the prefix, before processing the JSON.
+ *
+ *
+ * ## Cross Site Request Forgery (XSRF) Protection
+ * {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF} is a technique by which an
+ * unauthorized site can gain your user's private data. Angular provides following mechanism to
+ * counter XSRF. When performing XHR requests, the $xhr service reads a token from a cookie
+ * called `XSRF-TOKEN` and sets it as the HTTP header `X-XSRF-TOKEN`. Since only JavaScript that
+ * runs on your domain could read the cookie, your server can be assured that the XHR came from
+ * JavaScript running on your domain.
+ *
+ * To take advantage of this, your server needs to set a token in a JavaScript readable session
+ * cookie called `XSRF-TOKEN` on first HTTP GET request. On subsequent non-GET requests the server
+ * can verify that the cookie matches `X-XSRF-TOKEN` HTTP header, and therefore be sure that only
+ * JavaScript running on your domain could have read the token. The token must be unique for each
+ * user and must be verifiable by  the server (to prevent the JavaScript making up its own tokens).
+ * We recommend that the token is a digest of your site's authentication cookie with
+ * {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
  *
  * @param {string} method HTTP method to use. Valid values are: `GET`, `POST`, `PUT`, `DELETE`, and
  *   `JSON`. `JSON` is a special case which causes a
@@ -67,8 +125,7 @@
      </doc:source>
    </doc:example>
  */
-angularServiceInject('$xhr', function($browser, $error, $log){
-  var self = this;
+angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
   return function(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
@@ -77,6 +134,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
     if (post && isObject(post)) {
       post = toJson(post);
     }
+
     $browser.xhr(method, url, post, function(code, response){
       try {
         if (isString(response)) {
@@ -95,8 +153,10 @@ angularServiceInject('$xhr', function($browser, $error, $log){
       } catch (e) {
         $log.error(e);
       } finally {
-        self.$eval();
+        $updateView();
       }
+    }, {
+        'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']
     });
   };
-}, ['$browser', '$xhr.error', '$log']);
+}, ['$browser', '$xhr.error', '$log', '$updateView']);

@@ -101,4 +101,21 @@ describe('$xhr', function() {
 
     expect(response).toEqual([1, 'abc', {foo:'bar'}]);
   });
+
+  describe('xsrf', function(){
+    it('should copy the XSRF cookie into a XSRF Header', function(){
+      var code, response;
+      $browserXhr
+        .expectPOST('URL', 'DATA', {'X-XSRF-TOKEN': 'secret'})
+        .respond(234, 'OK');
+      $browser.cookies('XSRF-TOKEN', 'secret');
+      $xhr('POST', 'URL', 'DATA', function(c, r){
+        code = c;
+        response = r;
+      });
+      $browserXhr.flush();
+      expect(code).toEqual(234);
+      expect(response).toEqual('OK');
+    });
+  });
 });
