@@ -55,7 +55,7 @@ describe('browser', function(){
 
     it('should queue callbacks with outstanding requests', function(){
       var callback = jasmine.createSpy('callback');
-      browser.xhr('GET', '/url', noop);
+      browser.xhr('GET', '/url', null, noop);
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).not.wasCalled();
 
@@ -70,7 +70,7 @@ describe('browser', function(){
       it('should add script tag for request', function() {
         var callback = jasmine.createSpy('callback');
         var log = "";
-        browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', function(code, data){
+        browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, function(code, data){
           log += code + ':' + data + ';';
         });
         browser.notifyWhenNoOutstandingRequests(callback);
