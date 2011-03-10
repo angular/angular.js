@@ -9,6 +9,7 @@
 - Changed the $browser.xhr parameter post from optional to required. Since everyone should be
   using the $xhr instead of $browser.xhr, this should not break anyone. If you do use $browser.xhr
   then just add null for the post value argument.
+- Added XSRF prevention logic to $xhr service
 
 
 <a name="0.9.12"><a/>
