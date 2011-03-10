@@ -229,9 +229,16 @@ describe('ngdoc', function(){
 
     describe('@requires', function() {
       it('should parse more @requires tag into array', function() {
-        var doc = new Doc('@requires $service\n@requires $another');
+        var doc = new Doc('@requires $service for \n`A`\n@requires $another for `B`');
+        doc.ngdoc = 'service';
         doc.parse();
-        expect(doc.requires).toEqual(['$service', '$another']);
+        expect(doc.requires).toEqual([
+          {name:'$service', text:'<p>for \n<code>A</code></p>'},
+          {name:'$another', text:'<p>for <code>B</code></p>'}]);
+        expect(doc.html()).toContain('<a href="#!angular.service.$service">$service</a>');
+        expect(doc.html()).toContain('<a href="#!angular.service.$another">$another</a>');
+        expect(doc.html()).toContain('<p>for \n<code>A</code></p>');
+        expect(doc.html()).toContain('<p>for <code>B</code></p>');
       });
     });
 
