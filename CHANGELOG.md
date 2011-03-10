@@ -5,7 +5,10 @@
 - Fixed cookies which contained unescaped '=' would not show up in cookie service.
 - Consider all 2xx responses as OK, not just 200
 
-
+### Breaking changes
+- Changed the $browser.xhr parameter post from optional to required. Since everyone should be
+  using the $xhr instead of $browser.xhr, this should not break anyone. If you do use $browser.xhr
+  then just add null for the post value argument.
 
 
 <a name="0.9.12"><a/>

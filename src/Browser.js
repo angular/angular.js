@@ -70,17 +70,13 @@ function Browser(window, document, body, XHR, $log) {
    *
    * @param {string} method Requested method (get|post|put|delete|head|json)
    * @param {string} url Requested url
-   * @param {string=} post Post data to send
+   * @param {?string} post Post data to send (null if nothing to post)
    * @param {function(number, string)} callback Function that will be called on response
    *
    * @description
    * Send ajax request
    */
   self.xhr = function(method, url, post, callback) {
-    if (isFunction(post)) {
-      callback = post;
-      post = _null;
-    }
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = "angular_" + Math.random() + '_' + (idCounter++);
