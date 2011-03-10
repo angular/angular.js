@@ -91,13 +91,12 @@ function Browser(window, document, body, XHR, $log) {
   self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
-      var callbackId = "angular_" + Math.random() + '_' + (idCounter++);
-      callbackId = callbackId.replace(/\d\./, '');
-      var script = document[0].createElement('script');
-      script.type = 'text/javascript';
-      script.src = url.replace('JSON_CALLBACK', callbackId);
+      var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
+      var script = jqLite('<script>')
+          .attr({type: 'text/javascript', src: url.replace('JSON_CALLBACK', callbackId)});
       window[callbackId] = function(data){
         window[callbackId] = _undefined;
+        script.remove();
         completeOutstandingRequest(callback, 200, data);
       };
       body.append(script);

@@ -85,12 +85,16 @@ describe('browser', function(){
         browser.notifyWhenNoOutstandingRequests(callback);
         expect(callback).not.wasCalled();
         expect(scripts.length).toEqual(1);
-        var url = scripts[0].src.split('?cb=');
+        var script = scripts[0];
+        script.remove = function(){
+          log += 'remove();';
+        };
+        var url = script.attr('src').split('?cb=');
         expect(url[0]).toEqual('http://example.org/path');
         expect(typeof fakeWindow[url[1]]).toEqual($function);
         fakeWindow[url[1]]('data');
         expect(callback).wasCalled();
-        expect(log).toEqual('200:data;');
+        expect(log).toEqual('remove();200:data;');
         expect(typeof fakeWindow[url[1]]).toEqual('undefined');
       });
     });
