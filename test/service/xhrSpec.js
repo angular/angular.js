@@ -2,7 +2,9 @@ describe('$xhr', function() {
   var scope, $browser, $browserXhr, $log, $xhr, log;
 
   beforeEach(function(){
-    scope = angular.scope({}, angular.service, { '$log': $log = {} });
+    scope = angular.scope({}, angular.service, { '$log': $log = {
+        error: dump
+    } });
     $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;
     $xhr = scope.$service('$xhr');
@@ -16,8 +18,7 @@ describe('$xhr', function() {
 
 
   function callback(code, response) {
-    expect(code).toEqual(200);
-    log = log + toJson(response) + ';';
+    log = log + '{code=' + code + '; response=' + toJson(response) + '}';
   }
 
 
@@ -32,7 +33,24 @@ describe('$xhr', function() {
 
     $browserXhr.flush();
 
-    expect(log).toEqual('"third";["second"];"first";');
+    expect(log).toEqual(
+        '{code=200; response="third"}' +
+        '{code=200; response=["second"]}' +
+        '{code=200; response="first"}');
+  });
+
+  it('should allow all 2xx requests', function(){
+    $browserXhr.expectGET('/req1').respond(200, '1');
+    $xhr('GET', '/req1', null, callback);
+    $browserXhr.flush();
+
+    $browserXhr.expectGET('/req2').respond(299, '2');
+    $xhr('GET', '/req2', null, callback);
+    $browserXhr.flush();
+
+    expect(log).toEqual(
+        '{code=200; response="1"}' +
+        '{code=299; response="2"}');
   });
 
 
