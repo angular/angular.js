@@ -356,6 +356,60 @@ describe('angular', function(){
   });
 
 
+  describe('angularInit', function() {
+    var dom;
+
+    beforeEach(function() {
+      dom = jqLite('<div foo="{{1+2}}">{{2+3}}' +
+                     '<div id="child" bar="{{3+4}}">{{4+5}}</div>' +
+                   '</div>')[0];
+    });
+
+
+    afterEach(function() {
+      dealoc(dom);
+    });
+
+
+    it('should not compile anything if autobind is missing or false', function() {
+      angularInit({}, dom);
+      expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
+                                        '<div bar="{{3+4}}" id="child">{{4+5}}</div>' +
+                                      '</div>');
+    });
+
+
+    it('should compile the document if autobind is true', function() {
+      angularInit({autobind: true}, dom);
+      expect(sortedHtml(dom)).toEqual('<div foo="3" ng:bind-attr="{"foo":"{{1+2}}"}">' +
+                                        '<span ng:bind="2+3">5</span>' +
+                                        '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
+                                          '<span ng:bind="4+5">9</span>' +
+                                        '</div>' +
+                                      '</div>');
+    });
+
+
+    it('should compile only the element specified via autobind', function() {
+      dom.getElementById = function() {
+        return this.childNodes[1];
+      }
+
+      angularInit({autobind: 'child'}, dom);
+      expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
+                                        '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
+                                          '<span ng:bind="4+5">9</span>' +
+                                        '</div>' +
+                                      '</div>');
+    });
+
+
+    xit('should add custom css when specified via css', function() {
+      //TODO
+    });
+  });
+
+
   describe('angular service', function() {
     it('should override services', function() {
       var scope = createScope();
