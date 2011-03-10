@@ -8,6 +8,7 @@
 ### Bug Fixes
 - Fixed cookies which contained unescaped '=' would not show up in cookie service.
 - Consider all 2xx responses as OK, not just 200
+- Remove the script tag after successful JSONP request
 
 ### Breaking changes
 - Changed the $browser.xhr parameter post from optional to required. Since everyone should be
