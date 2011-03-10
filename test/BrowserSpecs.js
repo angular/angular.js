@@ -168,9 +168,9 @@ describe('browser', function(){
     describe('put via cookies(cookieName, string)', function() {
 
       it('should create and store a cookie', function() {
-        browser.cookies('cookieName', 'cookieValue');
-        expect(document.cookie).toMatch(/cookieName=cookieValue;? ?/);
-        expect(browser.cookies()).toEqual({'cookieName':'cookieValue'});
+        browser.cookies('cookieName', 'cookie=Value');
+        expect(document.cookie).toMatch(/cookieName=cookie%3DValue;? ?/);
+        expect(browser.cookies()).toEqual({'cookieName':'cookie=Value'});
       });
 
 
@@ -263,8 +263,8 @@ describe('browser', function(){
 
 
       it ('should return a value for an existing cookie', function() {
-        document.cookie = "foo=bar";
-        expect(browser.cookies().foo).toEqual('bar');
+        document.cookie = "foo=bar=baz";
+        expect(browser.cookies().foo).toEqual('bar=baz');
       });
 
 
