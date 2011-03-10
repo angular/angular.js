@@ -280,7 +280,7 @@ function Browser(window, document, body, XHR, $log) {
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
   self.cookies = function (name, value) {
-    var cookieLength, cookieArray, i, keyValue;
+    var cookieLength, cookieArray, cookie, i, keyValue, index;
 
     if (name) {
       if (value === _undefined) {
@@ -307,9 +307,10 @@ function Browser(window, document, body, XHR, $log) {
         lastCookies = {};
 
         for (i = 0; i < cookieArray.length; i++) {
-          keyValue = cookieArray[i].split("=");
-          if (keyValue.length === 2) { //ignore nameless cookies
-            lastCookies[unescape(keyValue[0])] = unescape(keyValue[1]);
+          cookie = cookieArray[i];
+          index = cookie.indexOf('=');
+          if (index > 0) { //ignore nameless cookies
+            lastCookies[unescape(cookie.substring(0, index))] = unescape(cookie.substring(index + 1));
           }
         }
       }

@@ -1,7 +1,8 @@
 <a name="0.9.13"><a/>
 # <angular/> 0.9.13 curdling-stare (in-progress) #
 
-
+### Bug Fixes
+- Fixed cookies which contained unescaped '=' would not show up in cookie service.
 
 
 
