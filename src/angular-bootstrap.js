@@ -153,7 +153,7 @@
     //angular-ie-compat.js needs to be pregenerated for development with IE<8
     if (msie<8) addScript('../angular-ie-compat.js');
 
-    angularInit(angularJsConfig(document));
+    angularInit(angularJsConfig(document), document);
   }
 
   if (window.addEventListener){

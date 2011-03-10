@@ -836,19 +836,7 @@ function encodeUriSegment(val) {
  * This section explains how to bootstrap your application with angular, using either the angular
  * javascript file, or manually.
  *
- *
- * ## The angular distribution
- * Note that there are two versions of the angular javascript file that you can use:
- *
- * * `angular.js` - the development version - this file is unobfuscated, uncompressed, and thus
- *    human-readable and useful when developing your angular applications.
- * * `angular.min.js` - the production version - this is a minified and obfuscated version of
- *    `angular.js`. You want to use this version when you want to load a smaller but functionally
- *    equivalent version of the code in your application. We use the Closure compiler to create this
- *    file.
- *
- *
- * ## Auto-bootstrap with `ng:autobind`
+ * # Auto-bootstrap with `ng:autobind`
  * The simplest way to get an <angular/> application up and running is by inserting a script tag in
  * your HTML file that bootstraps the `http://code.angularjs.org/angular-x.x.x.min.js` code and uses
  * the special `ng:autobind` attribute, like in this snippet of HTML:
@@ -866,9 +854,13 @@ function encodeUriSegment(val) {
     &lt;/html&gt;
  * </pre>
  *
- * The `ng:autobind` attribute tells <angular/> to compile and manage the whole HTML document. The
- * compilation occurs in the page's `onLoad` handler. Note that you don't need to explicitly add an
- * `onLoad` event; auto bind mode takes care of all the magic for you.
+ * The `ng:autobind` attribute without any value tells angular to compile and manage the whole HTML
+ * document. The compilation occurs as soon as the document is ready for DOM manipulation. Note that
+ * you don't need to explicitly add an `onLoad` event handler; auto bind mode takes care of all the
+ * work for you.
+ *
+ * In order to compile only a part of the document, specify the id of the element that should be
+ * compiled as the value of the `ng:autobind` attribute, e.g. `ng:autobind="angularContent"`.
  *
  *
  * ## Auto-bootstrap with `#autobind`
@@ -893,6 +885,8 @@ function encodeUriSegment(val) {
  *
  * In this case it's the `#autobind` URL fragment that tells angular to auto-bootstrap.
  *
+ * Similarly to `ng:autobind`, you can specify an element id that should be exclusively targeted for
+ * compilation as the value of the `#autobind`, e.g. `#autobind=angularContent`.
  *
  * ## Filename Restrictions for Auto-bootstrap
  * In order for us to find the auto-bootstrap script attribute or URL fragment, the value of the
@@ -926,12 +920,9 @@ function encodeUriSegment(val) {
       &lt;script type="text/javascript" src="http://code.angularjs.org/angular-0.9.3.min.js"
               ng:autobind&gt;&lt;/script&gt;
       &lt;script type="text/javascript"&gt;
-       (function(window, previousOnLoad){
-         window.onload = function(){
-          try { (previousOnLoad||angular.noop)(); } catch(e) {}
-          angular.compile(window.document);
-         };
-       })(window, window.onload);
+       (angular.element(document).ready(function() {
+         angular.compile(document)();
+       })(document);
       &lt;/script&gt;
      &lt;/head&gt;
      &lt;body&gt;
@@ -973,10 +964,12 @@ function encodeUriSegment(val) {
  * APIs are bound to fields of this global object.
  *
  */
-function angularInit(config){
-  if (config.autobind) {
-    // TODO default to the source of angular.js
-    var scope = compile(window.document)(createScope({'$config':config})),
+function angularInit(config, document){
+  var autobind = config.autobind;
+
+  if (autobind) {
+    var element = isString(autobind) ? document.getElementById(autobind) : document,
+        scope = compile(element)(createScope({'$config':config})),
         $browser = scope.$service('$browser');
 
     if (config.css)
