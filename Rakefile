@@ -284,7 +284,7 @@ def gen_css(cssFile, minify = false)
   css.gsub! /'/, "\\\\'"
   css.gsub! /\n/, "\\n"
 
-  return %Q{document.write('<style type="text/css">#{css}</style>');}
+  return %Q{angular.element(document).find('head').append('<style type="text/css">#{css}</style>');}
 end
 
 
