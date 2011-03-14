@@ -1,19 +1,28 @@
 <a name="0.9.13"><a/>
-# <angular/> 0.9.13 curdling-stare (in-progress) #
+# <angular/> 0.9.13 curdling-stare (2011-03-13) #
 
 ### New Features
-- Added XSRF prevention logic to $xhr service
+- Added XSRF protection for the [$xhr] service. (commit c578f8c3)
+- Targeted auto-bootstrap — [ng:autobind] now takes an optional value which specifies an element id
+  to be compiled instead of compiling the entire html document. (commit 9d5c5337)
 
 
 ### Bug Fixes
-- Fixed cookies which contained unescaped '=' would not show up in cookie service.
-- Consider all 2xx responses as OK, not just 200
-- Remove the script tag after successful JSONP request
+- Fixed IE7 regression which prevented angular from bootstrapping in this browser.
+- Cookies which contain unescaped '=' are now visible via the [$cookies] service. (commit 26bad2bf)
+- [$xhr] service now executes "success" callback for all 2xx responses, not just 200.
+  (commit 5343deb3)
+- Always remove the script tag after successful JSONP request. (commit 0084cb5c)
+- Removal of all `document.write` statements to make angular compabile with async script loaders.
+  (commit 3224862a)
+
 
 ### Breaking changes
-- Changed the $browser.xhr parameter post from optional to required. Since everyone should be
-  using the $xhr instead of $browser.xhr, this should not break anyone. If you do use $browser.xhr
-  then just add null for the post value argument.
+- The `post` parameter of [$browser.xhr][$browser] is now non-optional. Since everyone should be
+  using the [$xhr] service instead of $browser.xhr, this should not break anyone. If you do use
+  $browser.xhr then just add null for the post value argument where post was not passed in.
+
+
 
 
 <a name="0.9.12"><a/>
@@ -431,6 +440,7 @@ with the `$route` service
 [$xhr]: http://docs.angularjs.org/#!angular.service.$xhr
 [$resource]: http://docs.angularjs.org/#!angular.service.$resource
 [directive]: http://docs.angularjs.org/#!angular.directive
+[ng:autobind]: http://docs.angularjs.org/#!angular.directive.ng:autobind
 [guide.di]: http://docs.angularjs.org/#!guide.di
 [downloading]: http://docs.angularjs.org/#!downloading
 [contribute]: http://docs.angularjs.org/#!contribute
