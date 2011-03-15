@@ -111,7 +111,7 @@ function MockBrowser() {
       throw new Error("Unexpected request for method '" + method + "' and url '" + url + "'.");
     }
     requests.push(function(){
-      forEach(expectation.headers, function(value, key){
+      angular.forEach(expectation.headers, function(value, key){
         if (headers[key] !== value) {
           throw new Error("Missing HTTP request header: " + key + ": " + value);
         }
