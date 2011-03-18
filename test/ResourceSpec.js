@@ -55,8 +55,14 @@ describe("resource", function() {
     //buzz api which uses @self
 
     var R = resource.route('/Path/:a');
-    xhr.expectGET('/Path/doh@foo?bar=baz@1').respond({});
+    xhr.expectGET('/Path/doh@foo?bar=baz%401').respond({});
     R.get({a: 'doh@foo', bar: 'baz@1'});
+  });
+
+  it('should encode & in url params', function() {
+    var R = resource.route('/Path/:a');
+    xhr.expectGET('/Path/doh&foo?bar=baz%261').respond({});
+    R.get({a: 'doh&foo', bar: 'baz&1'});
   });
 
   it("should build resource with default param", function(){
