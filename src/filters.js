@@ -62,7 +62,7 @@
  */
 angularFilter.currency = function(amount){
   this.$element.toggleClass('ng-format-negative', amount < 0);
-  return '$' + angularFilter['number'].apply(this, [amount, 2]);
+  return '$' + angularFilter.number.apply(this, [amount, 2]);
 };
 
 /**
@@ -108,28 +108,39 @@ angularFilter.number = function(number, fractionSize){
   if (isNaN(number) || !isFinite(number)) {
     return '';
   }
-  fractionSize = typeof fractionSize == $undefined ? 2 : fractionSize;
-  var isNegative = number < 0;
-  number = Math.abs(number);
-  var pow = Math.pow(10, fractionSize);
-  var text = "" + Math.round(number * pow);
-  var whole = text.substring(0, text.length - fractionSize);
-  whole = whole || '0';
-  var frc = text.substring(text.length - fractionSize);
-  text = isNegative ? '-' : '';
-  for (var i = 0; i < whole.length; i++) {
+  fractionSize = isUndefined(fractionSize)? 2 : fractionSize;
+
+  var isNegative = number < 0,
+      pow = Math.pow(10, fractionSize),
+      whole = '' + number,
+      formatedText = '',
+      i;
+
+  if (whole.indexOf('e') > -1) return whole;
+
+  number = Math.round(number * pow) / pow;
+  fraction = ('' + number).split('.');
+  whole = fraction[0];
+  fraction = fraction[1] || '';
+  if (isNegative) {
+    formatedText = '-';
+    whole = whole.substring(1);
+  }
+
+
+  for (i = 0; i < whole.length; i++) {
     if ((whole.length - i)%3 === 0 && i !== 0) {
-      text += ',';
+      formatedText += ',';
     }
-    text += whole.charAt(i);
+    formatedText += whole.charAt(i);
   }
-  if (fractionSize > 0) {
-    for (var j = frc.length; j < fractionSize; j++) {
-      frc += '0';
+  if (fractionSize) {
+    while(fraction.length < fractionSize) {
+      fraction += '0';
     }
-    text += '.' + frc.substring(0, fractionSize);
+    formatedText += '.' + fraction.substring(0, fractionSize);
   }
-  return text;
+  return formatedText;
 };
 
 
