@@ -6,7 +6,7 @@
 # Open Source
 
 `Angular` is an open source project licensed under the {@link
-http://github.com/angular/angular.js/blob/master/license MIT license}. Your contributions are
+http://github.com/angular/angular.js/blob/master/LICENSE MIT license}. Your contributions are
 always welcome. When working with `angular` source base, please follow the guidelines provided on
 this page.
 
@@ -72,9 +72,11 @@ machine:
 * {@link http://rake.rubyforge.org Rake}: We use Rake as our build system, which is pre-installed
 on most Macintosh and Linux machines. If that is not true in your case, you can grab it from the
 Rake website.
-* {@link nodejs.org Node.js}: We use Node to generate the documentation and to run a development
-web server. Depending on your system, you can install Node either from source or as a pre-packaged
-bundle.
+
+* {@link http://nodejs.org Node.js}: We use Node to generate the documentation and to run a
+development web server. Depending on your system, you can install Node either from source or as a
+pre-packaged bundle.
+
 * Java: The Java runtime is used to run {@link http://code.google.com/p/js-test-driver
 JsTestDriver} (JSTD), which we use to run our unit test suite. JSTD binaries are part of the
 `angular` source base, which means there is no need to install or configure it separately.
