@@ -82,7 +82,7 @@ This is the sequence that your code should follow if you're writing your own man
 
 If you want to define your own widgets, you must create your own namespace and use that namespace
 to form the fully qualified widget name. For example, you could map the alias my to your domain
-and create a widget called my:widget. To create your own namespace, simply add another xmlsn tag
+and create a widget called my:widget. To create your own namespace, simply add another xmlns tag
 to your page, create an alias, and set it to your unique domain:
 
 <pre>
