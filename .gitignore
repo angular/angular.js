@@ -5,3 +5,4 @@ jstd.log
 regression/temp*.html
 performance/temp*.html
 .idea/workspace.xml
+*~
