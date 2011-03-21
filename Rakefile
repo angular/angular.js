@@ -1,3 +1,4 @@
+require 'yaml'
 include FileUtils
 
 ANGULAR = [
