@@ -111,7 +111,7 @@ for isolation reasons. We get this isolation by having each test create its own 
 <pre>
 // crate a root scope
 var rootScope = angular.scope();
-// accesss the service loctor
+// accesss the service locator
 var myService = rootScope.$service('myService');
 </pre>
 
@@ -136,7 +136,7 @@ MyController.$inject = ['$route'];
 </pre>
 
 In this example, the `MyController` constructor function takes one argument, the
-(@link angular.service.$route $route) service. Angular is then responsible for supplying the
+{@link angular.service.$route $route} service. Angular is then responsible for supplying the
 instance of `$route` to the controller when the constructor is instantiated. There are two ways to
 cause controller instantiation – by configuring routes with the $route service or by referencing the
 controller from the HTML template, such as:
@@ -260,8 +260,8 @@ rootScope.$service(greet, fnThis, 'world');
 
 # Inferring `$inject`
 
-** EXPERIMENTAL: this is an experimental feature, see the important note at the end of this section
-for drawbacks. **
+**EXPERIMENTAL: this is an experimental feature, see the important note at the end of this section
+for drawbacks.**
 
 We resort to `$inject` and our own annotation because there is no way in JavaScript to get a list of
 arguments. Or is there? It turns out that calling `.toString()` on a function returns the function
@@ -286,7 +286,7 @@ fnA.$inject = ['$window', 'serviceA'];
 
 // inject '$window', 'serviceA', curry 'name';
 function fnB($window, serviceA_, name){};
-// implies: fnA.$inject = ['$window', 'serviceA'];
+// implies: fnB.$inject = ['$window', 'serviceA'];
 </pre>
 
 If angular does not find an `$inject` annotation on the function, then it calls the `.toString()`
