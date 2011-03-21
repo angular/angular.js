@@ -180,6 +180,7 @@ end
 
 desc 'Create angular distribution'
 task :package => [:clean, :compile, :docs] do
+  require 'yaml'
   v = YAML::load( File.open( 'version.yaml' ) )['version']
   match = v.match(/^([^-]*)(-snapshot)?$/)
   version = match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : '')
