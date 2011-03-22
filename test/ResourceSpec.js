@@ -177,6 +177,20 @@ describe("resource", function() {
     expect(callback).wasCalledWith(cc);
   });
 
+  it('should not mutate the resource object if response contains no body', function(){
+    var data = {id:{key:123}, number:'9876'};
+    xhr.expectGET("/CreditCard/123").respond(data);
+    var cc = CreditCard.get({id:123});
+    xhr.flush();
+    expect(cc instanceof CreditCard).toBeTruthy();
+    var idBefore = cc.id;
+
+    xhr.expectPOST("/CreditCard/123", data).respond('');
+    cc.$save();
+    xhr.flush();
+    expect(idBefore).toEqual(cc.id);
+  });
+
   it('should bind default parameters', function(){
     xhr.expectGET('/CreditCard/123.visa?minimum=0.05').respond({id:123});
     var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});

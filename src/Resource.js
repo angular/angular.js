@@ -97,13 +97,15 @@ ResourceFactory.prototype = {
           data,
           function(status, response, clear) {
             if (status == 200) {
-              if (action.isArray) {
-                value.length = 0;
-                forEach(response, function(item){
-                  value.push(new Resource(item));
-                });
-              } else {
-                copy(response, value);
+              if (response) {
+                if (action.isArray) {
+                  value.length = 0;
+                  forEach(response, function(item){
+                    value.push(new Resource(item));
+                  });
+                } else {
+                  copy(response, value);
+                }
               }
               (callback||noop)(value);
             } else {
