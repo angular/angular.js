@@ -13,9 +13,9 @@ describe('compiler', function(){
         };
       },
 
-      watch: function(expression, element){
+      observe: function(expression, element){
         return function() {
-          this.$watch(expression, function(val){
+          this.$observe(expression, function(scope, val){
             if (val)
               log += ":" + val;
           });
@@ -33,9 +33,11 @@ describe('compiler', function(){
     };
   });
 
+
   afterEach(function(){
     dealoc(scope);
   });
+
 
   it('should not allow compilation of multiple roots', function(){
     expect(function(){
@@ -45,6 +47,7 @@ describe('compiler', function(){
       return msie < 9 ? uppercase(text) : text;
     }
   });
+
 
   it('should recognize a directive', function(){
     var e = jqLite('<div directive="expr" ignore="me"></div>');
@@ -63,23 +66,26 @@ describe('compiler', function(){
     expect(log).toEqual("found:init");
   });
 
+
   it('should recurse to children', function(){
     scope = compile('<div><span hello="misko"/></div>');
     expect(log).toEqual("hello misko");
   });
 
-  it('should watch scope', function(){
-    scope = compile('<span watch="name"/>');
+
+  it('should observe scope', function(){
+    scope = compile('<span observe="name">');
     expect(log).toEqual("");
-    scope.$eval();
-    scope.$set('name', 'misko');
-    scope.$eval();
-    scope.$eval();
-    scope.$set('name', 'adam');
-    scope.$eval();
-    scope.$eval();
+    scope.$flush();
+    scope.name = 'misko';
+    scope.$flush();
+    scope.$flush();
+    scope.name = 'adam';
+    scope.$flush();
+    scope.$flush();
     expect(log).toEqual(":misko:adam");
   });
+
 
   it('should prevent descend', function(){
     directives.stop = function(){ this.descend(false); };
@@ -87,25 +93,28 @@ describe('compiler', function(){
     expect(log).toEqual("hello misko");
   });
 
+
   it('should allow creation of templates', function(){
     directives.duplicate = function(expr, element){
       element.replaceWith(document.createComment("marker"));
       element.removeAttr("duplicate");
       var linker = this.compile(element);
       return function(marker) {
-        this.$onEval(function() {
+        this.$observe(function() {
           var scope = linker(angular.scope(), noop);
           marker.after(scope.$element);
         });
       };
     };
     scope = compile('before<span duplicate="expr">x</span>after');
+    scope.$flush();
     expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span>after</div>');
-    scope.$eval();
+    scope.$flush();
     expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span>after</div>');
-    scope.$eval();
+    scope.$flush();
     expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span><span>x</span>after</div>');
   });
+
 
   it('should process markup before directives', function(){
     markup.push(function(text, textNode, parentNode) {
@@ -120,6 +129,7 @@ describe('compiler', function(){
     expect(log).toEqual("hello middle");
   });
 
+
   it('should replace widgets', function(){
     widgets['NG:BUTTON'] = function(element) {
       expect(element.hasClass('ng-widget')).toEqual(true);
@@ -132,6 +142,7 @@ describe('compiler', function(){
     expect(lowercase(scope.$element[0].innerHTML)).toEqual('<div>button</div>');
     expect(log).toEqual('init');
   });
+
 
   it('should use the replaced element after calling widget', function(){
     widgets['H1'] = function(element) {
@@ -150,6 +161,7 @@ describe('compiler', function(){
     scope = compile('<div><h1>ignore me</h1></div>');
     expect(scope.$element.text()).toEqual('3');
   });
+
 
   it('should allow multiple markups per text element', function(){
     markup.push(function(text, textNode, parent){
@@ -173,6 +185,7 @@ describe('compiler', function(){
     scope = compile('A---B---C===D');
     expect(sortedHtml(scope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
   });
+
 
   it('should add class for namespace elements', function(){
     scope = compile('<ng:space>abc</ng:space>');

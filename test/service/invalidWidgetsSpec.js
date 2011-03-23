@@ -21,21 +21,21 @@ describe('$invalidWidgets', function() {
     expect($invalidWidgets.length).toEqual(1);
 
     scope.price = 123;
-    scope.$eval();
+    scope.$digest();
     expect($invalidWidgets.length).toEqual(0);
 
     scope.$element.remove();
     scope.price = 'abc';
-    scope.$eval();
+    scope.$digest();
     expect($invalidWidgets.length).toEqual(0);
 
     jqLite(document.body).append(scope.$element);
     scope.price = 'abcd'; //force revalidation, maybe this should be done automatically?
-    scope.$eval();
+    scope.$digest();
     expect($invalidWidgets.length).toEqual(1);
 
     jqLite(document.body).html('');
-    scope.$eval();
+    scope.$digest();
     expect($invalidWidgets.length).toEqual(0);
   });
 });

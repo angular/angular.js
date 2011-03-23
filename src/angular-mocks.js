@@ -374,7 +374,7 @@ angular.service('$browser', function(){
  * See {@link angular.mock} for more info on angular mocks.
  */
 angular.service('$exceptionHandler', function() {
-  return function(e) { throw e;};
+  return function(e) { throw e; };
 });
 
 

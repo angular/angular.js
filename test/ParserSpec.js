@@ -204,15 +204,15 @@ describe('parser', function() {
       scope.$eval("1|nonExistant");
     }).toThrow(new Error("Syntax Error: Token 'nonExistant' should be a function at column 3 of the expression [1|nonExistant] starting at [nonExistant]."));
 
-    scope.$set('offset', 3);
+    scope.offset =  3;
     expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
     expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
     expect(scope.$eval("'abcd'|substring:1:3|upper._case")).toEqual("BC");
   });
 
   it('should access scope', function() {
-    scope.$set('a', 123);
-    scope.$set('b.c', 456);
+    scope.a =  123;
+    scope.b = {c: 456};
     expect(scope.$eval("a", scope)).toEqual(123);
     expect(scope.$eval("b.c", scope)).toEqual(456);
     expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
@@ -224,32 +224,32 @@ describe('parser', function() {
 
   it('should evaluate assignments', function() {
     expect(scope.$eval("a=12")).toEqual(12);
-    expect(scope.$get("a")).toEqual(12);
+    expect(scope.a).toEqual(12);
 
     scope = createScope();
     expect(scope.$eval("x.y.z=123;")).toEqual(123);
-    expect(scope.$get("x.y.z")).toEqual(123);
+    expect(scope.x.y.z).toEqual(123);
 
     expect(scope.$eval("a=123; b=234")).toEqual(234);
-    expect(scope.$get("a")).toEqual(123);
-    expect(scope.$get("b")).toEqual(234);
+    expect(scope.a).toEqual(123);
+    expect(scope.b).toEqual(234);
   });
 
   it('should evaluate function call without arguments', function() {
-    scope.$set('const', function(a,b){return 123;});
+    scope['const'] =  function(a,b){return 123;};
     expect(scope.$eval("const()")).toEqual(123);
   });
 
   it('should evaluate function call with arguments', function() {
-    scope.$set('add', function(a,b) {
+    scope.add =  function(a,b) {
       return a+b;
-    });
+    };
     expect(scope.$eval("add(1,2)")).toEqual(3);
   });
 
   it('should evaluate multiplication and division', function() {
-    scope.$set('taxRate', 8);
-    scope.$set('subTotal', 100);
+    scope.taxRate =  8;
+    scope.subTotal =  100;
     expect(scope.$eval("taxRate / 100 * subTotal")).toEqual(8);
     expect(scope.$eval("subTotal * taxRate / 100")).toEqual(8);
   });
@@ -297,7 +297,7 @@ describe('parser', function() {
       return this.a;
     };
 
-    scope.$set("obj", new C());
+    scope.obj = new C();
     expect(scope.$eval("obj.getA()")).toEqual(123);
   });
 
@@ -312,29 +312,29 @@ describe('parser', function() {
       return this.a;
     };
 
-    scope.$set("obj", new C());
+    scope.obj = new C();
     expect(scope.$eval("obj.sum(obj.getA())")).toEqual(246);
   });
 
   it('should evaluate objects on scope context', function() {
-    scope.$set('a', "abc");
+    scope.a =  "abc";
     expect(scope.$eval("{a:a}").a).toEqual("abc");
   });
 
   it('should evaluate field access on function call result', function() {
-    scope.$set('a', function() {
+    scope.a =  function() {
       return {name:'misko'};
-    });
+    };
     expect(scope.$eval("a().name")).toEqual("misko");
   });
 
   it('should evaluate field access after array access', function () {
-    scope.$set('items', [{}, {name:'misko'}]);
+    scope.items =  [{}, {name:'misko'}];
     expect(scope.$eval('items[1].name')).toEqual("misko");
   });
 
   it('should evaluate array assignment', function() {
-    scope.$set('items', []);
+    scope.items =  [];
 
     expect(scope.$eval('items[1] = "abc"')).toEqual("abc");
     expect(scope.$eval('items[1]')).toEqual("abc");
@@ -388,7 +388,7 @@ describe('parser', function() {
   it('should evaluate undefined', function() {
     expect(scope.$eval("undefined")).not.toBeDefined();
     expect(scope.$eval("a=undefined")).not.toBeDefined();
-    expect(scope.$get("a")).not.toBeDefined();
+    expect(scope.a).not.toBeDefined();
   });
 
   it('should allow assignment after array dereference', function(){

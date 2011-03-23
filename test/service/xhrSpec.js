@@ -4,7 +4,8 @@ describe('$xhr', function() {
   var scope, $browser, $browserXhr, $log, $xhr, $xhrErr, log;
 
   beforeEach(function(){
-    var scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
+    var scope = angular.scope(angular.service, {
+        '$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
     $log = scope.$service('$log');
     $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;

@@ -4,7 +4,7 @@ describe('$xhr.cache', function() {
   var scope, $browser, $browserXhr, $xhrErr, cache, log;
 
   beforeEach(function() {
-    scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('$xhr.error')});
+    scope = angular.scope(angularService, {'$xhr.error': $xhrErr = jasmine.createSpy('$xhr.error')});
     $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;
     cache = scope.$service('$xhr.cache');
@@ -126,22 +126,22 @@ describe('$xhr.cache', function() {
 
 
   it('should call eval after callbacks for both cache hit and cache miss execute', function() {
-    var evalSpy = this.spyOn(scope, '$eval').andCallThrough();
+    var flushSpy = this.spyOn(scope, '$flush').andCallThrough();
 
     $browserXhr.expectGET('/url').respond('+');
     cache('GET', '/url', null, callback);
-    expect(evalSpy).not.toHaveBeenCalled();
+    expect(flushSpy).not.toHaveBeenCalled();
 
     $browserXhr.flush();
-    expect(evalSpy).toHaveBeenCalled();
+    expect(flushSpy).toHaveBeenCalled();
 
-    evalSpy.reset(); //reset the spy
+    flushSpy.reset(); //reset the spy
 
     cache('GET', '/url', null, callback);
-    expect(evalSpy).not.toHaveBeenCalled();
+    expect(flushSpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(evalSpy).toHaveBeenCalled();
+    expect(flushSpy).toHaveBeenCalled();
   });
 
   it('should call the error callback on error if provided', function() {

@@ -645,17 +645,17 @@ angularFilter.html =  function(html, option){
      </doc:scenario>
    </doc:example>
  */
-//TODO: externalize all regexps
+var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/;
+var MAILTO_REGEXP = /^mailto:/;
 angularFilter.linky = function(text){
   if (!text) return text;
-  var URL = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/;
   var match;
   var raw = text;
   var html = [];
   var writer = htmlSanitizeWriter(html);
   var url;
   var i;
-  while (match=raw.match(URL)) {
+  while (match=raw.match(LINKY_URL_REGEXP)) {
     // We can not end in these as they are sometimes found at the end of the sentence
     url = match[0];
     // if we did not match ftp/http/mailto then assume mailto
@@ -663,7 +663,7 @@ angularFilter.linky = function(text){
     i = match.index;
     writer.chars(raw.substr(0, i));
     writer.start('a', {href:url});
-    writer.chars(match[0].replace(/^mailto:/, ''));
+    writer.chars(match[0].replace(MAILTO_REGEXP, ''));
     writer.end('a');
     raw = raw.substring(i + match[0].length);
   }

@@ -55,7 +55,7 @@ angular.service('$log', function() {
  * this:
  *
  * <pre>
- *   var scope = angular.scope(null, {'$exceptionHandler': $exceptionHandlerMockFactory});
+ *   var scope = angular.scope(null, {'$exceptionHandler': $exceptionHandlerMockFactory()});
  * </pre>
  *
  */

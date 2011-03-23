@@ -17,7 +17,7 @@ function DocsController($location, $browser, $window, $cookies) {
     $location.hashPath = '!/api';
   }
 
-  this.$watch('$location.hashPath', function(hashPath) {
+  this.$watch('$location.hashPath', function(scope, hashPath) {
     if (hashPath.match(/^!/)) {
       var parts = hashPath.substring(1).split('/');
       self.sectionId = parts[1];
@@ -36,7 +36,7 @@ function DocsController($location, $browser, $window, $cookies) {
         delete self.partialId;
       }
     }
-  });
+  })();
 
   this.getUrl = function(page){
     return '#!/' + page.section + '/' + page.id;

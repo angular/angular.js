@@ -4,7 +4,7 @@ describe('$defer', function() {
   var scope, $browser, $defer, $exceptionHandler;
 
   beforeEach(function(){
-    scope = angular.scope({}, angular.service,
+    scope = angular.scope(angular.service,
                           {'$exceptionHandler': jasmine.createSpy('$exceptionHandler')});
     $browser = scope.$service('$browser');
     $defer = scope.$service('$defer');
@@ -41,32 +41,32 @@ describe('$defer', function() {
   });
 
 
-  it('should call eval after each callback is executed', function() {
-    var evalSpy = this.spyOn(scope, '$eval').andCallThrough();
+  it('should call $apply after each callback is executed', function() {
+    var applySpy = this.spyOn(scope, '$apply').andCallThrough();
 
     $defer(function() {});
-    expect(evalSpy).not.toHaveBeenCalled();
+    expect(applySpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(evalSpy).toHaveBeenCalled();
+    expect(applySpy).toHaveBeenCalled();
 
-    evalSpy.reset(); //reset the spy;
+    applySpy.reset(); //reset the spy;
 
     $defer(function() {});
     $defer(function() {});
     $browser.defer.flush();
-    expect(evalSpy.callCount).toBe(2);
+    expect(applySpy.callCount).toBe(2);
   });
 
 
-  it('should call eval even if an exception is thrown in callback', function() {
-    var evalSpy = this.spyOn(scope, '$eval').andCallThrough();
+  it('should call $apply even if an exception is thrown in callback', function() {
+    var applySpy = this.spyOn(scope, '$apply').andCallThrough();
 
     $defer(function() {throw "Test Error";});
-    expect(evalSpy).not.toHaveBeenCalled();
+    expect(applySpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(evalSpy).toHaveBeenCalled();
+    expect(applySpy).toHaveBeenCalled();
   });
 
   it('should allow you to specify the delay time', function(){

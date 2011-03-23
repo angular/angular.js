@@ -28,7 +28,7 @@ angularServiceInject('$cookies', function($browser) {
       lastBrowserCookies = currentCookies;
       copy(currentCookies, lastCookies);
       copy(currentCookies, cookies);
-      if (runEval) rootScope.$eval();
+      if (runEval) rootScope.$apply();
     }
   })();
 
@@ -37,7 +37,7 @@ angularServiceInject('$cookies', function($browser) {
   //at the end of each eval, push cookies
   //TODO: this should happen before the "delayed" watches fire, because if some cookies are not
   //      strings or browser refuses to store some cookies, we update the model in the push fn.
-  this.$onEval(PRIORITY_LAST, push);
+  this.$observe(push);
 
   return cookies;
 
