@@ -325,15 +325,19 @@ function parser(text, json){
       if (tokens.length > 0 && !peek('}', ')', ';', ']'))
         statements.push(filterChain());
       if (!expect(';')) {
-        return function (self){
-          var value;
-          for ( var i = 0; i < statements.length; i++) {
-            var statement = statements[i];
-            if (statement)
-              value = statement(self);
-          }
-          return value;
-        };
+        // optimize for the common case where there is only one statement.
+        // TODO(size): maybe we should not support multiple statements?
+        return statements.length == 1
+          ? statements[0]
+          : function (self){
+            var value;
+            for ( var i = 0; i < statements.length; i++) {
+              var statement = statements[i];
+              if (statement)
+                value = statement(self);
+            }
+            return value;
+          };
       }
     }
   }
