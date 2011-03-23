@@ -14,11 +14,12 @@ describe('$exceptionHandler', function() {
 
 
   it('should log errors', function(){
-    var scope = createScope({}, {$exceptionHandler: $exceptionHandlerFactory},
-                                {$log: $logMock}),
+    var scope = createScope({$exceptionHandler: $exceptionHandlerFactory},
+                            {$log: $logMock}),
         $log = scope.$service('$log'),
         $exceptionHandler = scope.$service('$exceptionHandler');
 
+    $log.error.rethrow = false;
     $exceptionHandler('myError');
     expect($log.error.logs.shift()).toEqual(['myError']);
   });

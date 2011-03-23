@@ -69,18 +69,14 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
     </doc:example>
  */
 angularServiceInject("$location", function($browser) {
-  var scope = this,
-      location = {update:update, updateHash: updateHash},
-      lastLocation = {};
+  var location = {update: update, updateHash: updateHash};
+  var lastLocation = {}; // last state since last update().
 
-  $browser.onHashChange(function() { //register
+  $browser.onHashChange(bind(this, this.$apply, function() { //register
     update($browser.getUrl());
-    copy(location, lastLocation);
-    scope.$eval();
-  })(); //initialize
+  }))(); //initialize
 
-  this.$onEval(PRIORITY_FIRST, sync);
-  this.$onEval(PRIORITY_LAST, updateBrowser);
+  this.$watch(sync);
 
   return location;
 
@@ -94,6 +90,8 @@ angularServiceInject("$location", function($browser) {
    *
    * @description
    * Updates the location object.
+   * Does not immediately update the browser
+   * Browser is updated at the end of $flush()
    *
    * Does not immediately update the browser. Instead the browser is updated at the end of $eval()
    * cycle.
@@ -122,6 +120,8 @@ angularServiceInject("$location", function($browser) {
 
       location.href = composeHref(location);
     }
+    $browser.setUrl(location.href);
+    copy(location, lastLocation);
   }
 
   /**
@@ -188,32 +188,19 @@ angularServiceInject("$location", function($browser) {
     if (!equals(location, lastLocation)) {
       if (location.href != lastLocation.href) {
         update(location.href);
-        return;
-      }
-      if (location.hash != lastLocation.hash) {
-        var hash = parseHash(location.hash);
-        updateHash(hash.hashPath, hash.hashSearch);
       } else {
-        location.hash = composeHash(location);
-        location.href = composeHref(location);
+        if (location.hash != lastLocation.hash) {
+          var hash = parseHash(location.hash);
+          updateHash(hash.hashPath, hash.hashSearch);
+        } else {
+          location.hash = composeHash(location);
+          location.href = composeHref(location);
+        }
+        update(location.href);
       }
-      update(location.href);
     }
   }
 
-
-  /**
-   * If location has changed, update the browser
-   * This method is called at the end of $eval() phase
-   */
-  function updateBrowser() {
-    sync();
-
-    if ($browser.getUrl() != location.href) {
-      $browser.setUrl(location.href);
-      copy(location, lastLocation);
-    }
-  }
 
   /**
    * Compose href string from a location object

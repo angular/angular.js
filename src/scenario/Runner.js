@@ -163,9 +163,13 @@ angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
  */
 angular.scenario.Runner.prototype.run = function(application) {
   var self = this;
-  var $root = angular.scope(this);
+  var $root = angular.scope();
+  angular.extend($root, this);
+  angular.forEach(angular.scenario.Runner.prototype, function(fn, name) {
+    $root[name] = angular.bind(self, fn);
+  });
   $root.application = application;
-  this.emit('RunnerBegin');
+  $root.emit('RunnerBegin');
   asyncForEach(this.rootDescribe.getSpecs(), function(spec, specDone) {
     var dslCache = {};
     var runner = self.createSpecRunner_($root);
@@ -175,7 +179,7 @@ angular.scenario.Runner.prototype.run = function(application) {
     angular.forEach(angular.scenario.dsl, function(fn, key) {
       self.$window[key] = function() {
         var line = callerFile(3);
-        var scope = angular.scope(runner);
+        var scope = runner.$new();
 
         // Make the dsl accessible on the current chain
         scope.dsl = {};
@@ -200,7 +204,10 @@ angular.scenario.Runner.prototype.run = function(application) {
         return scope.dsl[key].apply(scope, arguments);
       };
     });
-    runner.run(spec, specDone);
+    runner.run(spec, function() {
+      runner.$destroy();
+      specDone.apply(this, arguments);
+    });
   },
   function(error) {
     if (error) {

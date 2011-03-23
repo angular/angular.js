@@ -16,7 +16,7 @@ describe('$cookieStore', function() {
 
   it('should serialize objects to json', function() {
     $cookieStore.put('objectCookie', {id: 123, name: 'blah'});
-    scope.$eval(); //force eval in test
+    scope.$flush();
     expect($browser.cookies()).toEqual({'objectCookie': '{"id":123,"name":"blah"}'});
   });
 
@@ -30,12 +30,12 @@ describe('$cookieStore', function() {
 
   it('should delete objects from the store when remove is called', function() {
     $cookieStore.put('gonner', { "I'll":"Be Back"});
-    scope.$eval(); //force eval in test
+    scope.$flush(); //force eval in test
     $browser.poll();
     expect($browser.cookies()).toEqual({'gonner': '{"I\'ll":"Be Back"}'});
 
     $cookieStore.remove('gonner');
-    scope.$eval();
+    scope.$flush();
     expect($browser.cookies()).toEqual({});
   });
 });

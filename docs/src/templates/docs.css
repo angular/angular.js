@@ -398,3 +398,25 @@ li {
   margin: 0em 2em 1em 0em;
   float:right;
 }
+
+.table {
+  border-collapse: collapse;
+}
+
+.table th:first-child {
+  text-align: right;
+}
+
+.table th,
+.table td {
+  border: 1px solid black;
+  padding: .5em 1em;
+}
+.table th {
+  white-space: nowrap;
+}
+
+.table th.section {
+  text-align: left;
+  background-color: lightgray;
+}

@@ -1,537 +1,788 @@
 'use strict';
 
-function getter(instance, path, unboundFn) {
-  if (!path) return instance;
-  var element = path.split('.');
-  var key;
-  var lastInstance = instance;
-  var len = element.length;
-  for ( var i = 0; i < len; i++) {
-    key = element[i];
-    if (!key.match(/^[\$\w][\$\w\d]*$/))
-        throw "Expression '" + path + "' is not a valid expression for accessing variables.";
-    if (instance) {
-      lastInstance = instance;
-      instance = instance[key];
-    }
-    if (isUndefined(instance)  && key.charAt(0) == '$') {
-      var type = angular['Global']['typeOf'](lastInstance);
-      type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
-      var fn = type ? type[[key.substring(1)]] : undefined;
-      if (fn) {
-        instance = bind(lastInstance, fn, lastInstance);
-        return instance;
-      }
-    }
-  }
-  if (!unboundFn && isFunction(instance)) {
-    return bind(lastInstance, instance);
-  }
-  return instance;
-}
+/**
+ * DESIGN NOTES
+ *
+ * The design decisions behind the scope ware heavily favored for speed and memory consumption.
+ *
+ * The typical use of scope is to watch the expressions, which most of the time return the same
+ * value as last time so we optimize the operation.
+ *
+ * Closures construction is expensive from speed as well as memory:
+ *   - no closures, instead ups prototypical inheritance for API
+ *   - Internal state needs to be stored on scope directly, which means that private state is
+ *     exposed as $$____ properties
+ *
+ * Loop operations are optimized by using while(count--) { ... }
+ *   - this means that in order to keep the same order of execution as addition we have to add
+ *     items to the array at the begging (shift) instead of at the end (push)
+ *
+ * Child scopes are created and removed often
+ *   - Using array would be slow since inserts in meddle are expensive so we use linked list
+ *
+ * There are few watches then a lot of observers. This is why you don't want the observer to be
+ * implemented in the same way as watch. Watch requires return of initialization function which
+ * are expensive to construct.
+ */
 
-function setter(instance, path, value){
-  var element = path.split('.');
-  for ( var i = 0; element.length > 1; i++) {
-    var key = element.shift();
-    var newInstance = instance[key];
-    if (!newInstance) {
-      newInstance = {};
-      instance[key] = newInstance;
-    }
-    instance = newInstance;
-  }
-  instance[element.shift()] = value;
-  return value;
-}
 
-///////////////////////////////////
-var scopeId = 0,
-    getterFnCache = {},
-    compileCache = {},
-    JS_KEYWORDS = {};
-forEach(
-    ("abstract,boolean,break,byte,case,catch,char,class,const,continue,debugger,default," +
-    "delete,do,double,else,enum,export,extends,false,final,finally,float,for,function,goto," +
-    "if,implements,import,ininstanceof,intinterface,long,native,new,null,package,private," +
-    "protected,public,return,short,static,super,switch,synchronized,this,throw,throws," +
-    "transient,true,try,typeof,var,volatile,void,undefined,while,with").split(/,/),
-  function(key){ JS_KEYWORDS[key] = true;}
-);
-function getterFn(path){
-  var fn = getterFnCache[path];
-  if (fn) return fn;
-
-  var code = 'var l, fn, t;\n';
-  forEach(path.split('.'), function(key) {
-    key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
-    code += 'if(!s) return s;\n' +
-            'l=s;\n' +
-            's=s' + key + ';\n' +
-            'if(typeof s=="function" && !(s instanceof RegExp)) s = function(){ return l'+key+'.apply(l, arguments); };\n';
-    if (key.charAt(1) == '$') {
-      // special code for super-imposed functions
-      var name = key.substr(2);
-      code += 'if(!s) {\n' +
-              '  t = angular.Global.typeOf(l);\n' +
-              '  fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n' +
-              '  if (fn) s = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n' +
-              '}\n';
-    }
-  });
-  code += 'return s;';
-  fn = Function('s', code);
-  fn["toString"] = function(){ return code; };
-
-  return getterFnCache[path] = fn;
-}
-
-///////////////////////////////////
-
-function expressionCompile(exp){
-  if (typeof exp === $function) return exp;
-  var fn = compileCache[exp];
-  if (!fn) {
-    var p = parser(exp);
-    var fnSelf = p.statements();
-    fn = compileCache[exp] = extend(
-      function(){ return fnSelf(this);},
-      {fnSelf: fnSelf});
-  }
-  return fn;
-}
-
-function errorHandlerFor(element, error) {
-  elementError(element, NG_EXCEPTION, isDefined(error) ? formatError(error) : error);
-}
+function createScope(providers, instanceCache) {
+  var scope = new Scope();
+  (scope.$service = createInjector(scope, providers, instanceCache)).eager();
+  return scope;
+};
 
 
 /**
  * @workInProgress
- * @ngdoc overview
+ * @ngdoc function
  * @name angular.scope
  *
  * @description
- * Scope is a JavaScript object and the execution context for expressions. You can think about
- * scopes as JavaScript objects that have extra APIs for registering watchers. A scope is the
- * context in which model (from the model-view-controller design pattern) exists.
+ * A root scope can be created by calling {@link angular.scope angular.scope()}. Child scopes
+ * are created using the {@link angular.scope.$new $new()} method.
+ * (Most scopes are created automatically when compiled HTML template is executed.)
  *
- * Angular scope objects provide the following methods:
+ * Here is a simple scope snippet to show how you can interact with the scope.
+ * <pre>
+       var scope = angular.scope();
+       scope.salutation = 'Hello';
+       scope.name = 'World';
+
+       expect(scope.greeting).toEqual(undefined);
+
+       scope.$watch('name', function(){
+         this.greeting = this.salutation + ' ' + this.name + '!';
+       }); // initialize the watch
+
+       expect(scope.greeting).toEqual(undefined);
+       scope.name = 'Misko';
+       // still old value, since watches have not been called yet
+       expect(scope.greeting).toEqual(undefined);
+
+       scope.$digest(); // fire all  the watches
+       expect(scope.greeting).toEqual('Hello Misko!');
+ * </pre>
  *
- * * {@link angular.scope.$become $become()} -
- * * {@link angular.scope.$bind $bind()} -
- * * {@link angular.scope.$eval $eval()} -
- * * {@link angular.scope.$get $get()} -
- * * {@link angular.scope.$new $new()} -
- * * {@link angular.scope.$onEval $onEval()} -
- * * {@link angular.scope.$service $service()} -
- * * {@link angular.scope.$set $set()} -
- * * {@link angular.scope.$tryEval $tryEval()} -
- * * {@link angular.scope.$watch $watch()} -
+ * # Inheritance
+ * A scope can inherit from a parent scope, as in this example:
+ * <pre>
+     var parent = angular.scope();
+     var child = parent.$new();
+
+     parent.salutation = "Hello";
+     child.name = "World";
+     expect(child.salutation).toEqual('Hello');
+
+     child.salutation = "Welcome";
+     expect(child.salutation).toEqual('Welcome');
+     expect(parent.salutation).toEqual('Hello');
+ * </pre>
  *
- * For more information about how angular scope objects work, see {@link guide/dev_guide.scopes
- * Angular Scope Objects} in the angular Developer Guide.
+ * # Dependency Injection
+ * See {@link guide/dev_guide.di dependency injection}.
+ *
+ *
+ * @param {Object.<string, function()>=} providers Map of service factory which need to be provided
+ *     for the current scope. Defaults to {@link angular.service}.
+ * @param {Object.<string, *>=} instanceCache Provides pre-instantiated services which should
+ *     append/override services provided by `providers`. This is handy when unit-testing and having
+ *     the need to override a default service.
+ * @returns {Object} Newly created scope.
+ *
  */
-function createScope(parent, providers, instanceCache) {
-  function Parent(){}
-  parent = Parent.prototype = (parent || {});
-  var instance = new Parent();
-  var evalLists = {sorted:[]};
-  var $log, $exceptionHandler;
+function Scope() {
+  this.$id = nextUid();
+  this.$$phase = this.$parent = this.$$watchers = this.$$observers =
+    this.$$nextSibling = this.$$childHead = this.$$childTail = null;
+  this['this'] = this.$root =  this;
+}
 
-  extend(instance, {
-    'this': instance,
-    $id: (scopeId++),
-    $parent: parent,
+/**
+ * @workInProgress
+ * @ngdoc property
+ * @name angular.scope.$id
+ * @returns {number} Unique scope ID (monotonically increasing alphanumeric sequence) useful for
+ *   debugging.
+ */
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$bind
-     * @function
-     *
-     * @description
-     * Binds a function `fn` to the current scope. See: {@link angular.bind}.
+/**
+ * @workInProgress
+ * @ngdoc property
+ * @name angular.scope.$service
+ * @function
+ *
+ * @description
+ * Provides reference to an instance of {@link angular.injector injector} which can be used to
+ * retrieve {@link angular.service services}. In general the use of this api is discouraged,
+ * in favor of proper {@link guide/dev_guide.di dependency injection}.
+ *
+ * @returns {function} {@link angular.injector injector}
+ */
 
-       <pre>
-         var scope = angular.scope();
-         var fn = scope.$bind(function(){
-           return this;
-         });
-         expect(fn()).toEqual(scope);
-       </pre>
-     *
-     * @param {function()} fn Function to be bound.
-     */
-    $bind: bind(instance, bind, instance),
+/**
+ * @workInProgress
+ * @ngdoc property
+ * @name angular.scope.$root
+ * @returns {Scope} The root scope of the current scope hierarchy.
+ */
 
-
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$get
-     * @function
-     *
-     * @description
-     * Returns the value for `property_chain` on the current scope. Unlike in JavaScript, if there
-     * are any `undefined` intermediary properties, `undefined` is returned instead of throwing an
-     * exception.
-     *
-       <pre>
-         var scope = angular.scope();
-         expect(scope.$get('person.name')).toEqual(undefined);
-         scope.person = {};
-         expect(scope.$get('person.name')).toEqual(undefined);
-         scope.person.name = 'misko';
-         expect(scope.$get('person.name')).toEqual('misko');
-       </pre>
-     *
-     * @param {string} property_chain String representing name of a scope property. Optionally
-     *     properties can be chained with `.` (dot), e.g. `'person.name.first'`
-     * @returns {*} Value for the (nested) property.
-     */
-    $get: bind(instance, getter, instance),
+/**
+ * @workInProgress
+ * @ngdoc property
+ * @name angular.scope.$parent
+ * @returns {Scope} The parent scope of the current scope.
+ */
 
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$set
-     * @function
-     *
-     * @description
-     * Assigns a value to a property of the current scope specified via `property_chain`. Unlike in
-     * JavaScript, if there are any `undefined` intermediary properties, empty objects are created
-     * and assigned to them instead of throwing an exception.
-     *
-       <pre>
-         var scope = angular.scope();
-         expect(scope.person).toEqual(undefined);
-         scope.$set('person.name', 'misko');
-         expect(scope.person).toEqual({name:'misko'});
-         expect(scope.person.name).toEqual('misko');
-       </pre>
-     *
-     * @param {string} property_chain String representing name of a scope property. Optionally
-     *     properties can be chained with `.` (dot), e.g. `'person.name.first'`
-     * @param {*} value Value to assign to the scope property.
-     */
-    $set: bind(instance, setter, instance),
+Scope.prototype = {
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$new
+   * @function
+   *
+   * @description
+   * Creates a new child {@link angular.scope scope}. The new scope can optionally behave as a
+   * controller. The parent scope will propagate the {@link angular.scope.$digest $digest()} and
+   * {@link angular.scope.$flush $flush()} events. The scope can be removed from the scope
+   * hierarchy using {@link angular.scope.$destroy $destroy()}.
+   *
+   * {@link angular.scope.$destroy $destroy()} must be called on a scope when it is desired for
+   * the scope and its child scopes to be permanently detached from the parent and thus stop
+   * participating in model change detection and listener notification by invoking.
+   *
+   * @param {function()=} constructor Constructor function which the scope should behave as.
+   * @param {curryArguments=} ... Any additional arguments which are curried into the constructor.
+   *        See {@link guide/dev_guide.di dependency injection}.
+   * @returns {Object} The newly created child scope.
+   *
+   */
+  $new: function(Class, curryArguments) {
+    var Child = function() {}; // should be anonymous; This is so that when the minifier munges
+      // the name it does not become random set of chars. These will then show up as class
+      // name in the debugger.
+    var child;
+    Child.prototype = this;
+    child = new Child();
+    child['this'] = child;
+    child.$parent = this;
+    child.$id = nextUid();
+    child.$$phase = child.$$watchers = child.$$observers =
+      child.$$nextSibling = child.$$childHead = child.$$childTail = null;
+    if (this.$$childHead) {
+      this.$$childTail.$$nextSibling = child;
+      this.$$childTail = child;
+    } else {
+      this.$$childHead = this.$$childTail = child;
+    }
+    // short circuit if we have no class
+    if (Class) {
+      // can't use forEach, we need speed!
+      var ClassPrototype = Class.prototype;
+      for(var key in ClassPrototype) {
+        child[key] = bind(child, ClassPrototype[key]);
+      }
+      this.$service.invoke(child, Class, curryArguments);
+    }
+    return child;
+  },
 
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$watch
+   * @function
+   *
+   * @description
+   * Registers a `listener` callback to be executed whenever the `watchExpression` changes.
+   *
+   * - The `watchExpression` is called on every call to {@link angular.scope.$digest $digest()} and
+   *   should return the value which will be watched. (Since {@link angular.scope.$digest $digest()}
+   *   reruns when it detects changes the `watchExpression` can execute multiple times per
+   *   {@link angular.scope.$digest $digest()} and should be idempotent.)
+   * - The `listener` is called only when the value from the current `watchExpression` and the
+   *   previous call to `watchExpression' are not equal. The inequality is determined according to
+   *   {@link angular.equals} function. To save the value of the object for later comparison
+   *   {@link angular.copy} function is used. It also means that watching complex options will
+   *   have adverse memory and performance implications.
+   * - The watch `listener` may change the model, which may trigger other `listener`s to fire. This
+   *   is achieving my rerunning the watchers until no changes are detected. The rerun iteration
+   *   limit is 100 to prevent infinity loop deadlock.
+   *
+   * # When to use `$watch`?
+   *
+   * The `$watch` should be used from within controllers to listen on properties *immediately* after
+   * a stimulus is applied to the system (see {@link angular.scope.$apply $apply()}). This is in
+   * contrast to {@link angular.scope.$observe $observe()} which is used from within the directives
+   * and which gets applied at some later point in time. In addition
+   * {@link angular.scope.$observe $observe()} must not modify the model.
+   *
+   * If you want to be notified whenever {@link angular.scope.$digest $digest} is called,
+   * you can register an `watchExpression` function with no `listener`. (Since `watchExpression`,
+   * can execute multiple times per {@link angular.scope.$digest $digest} cycle when a change is
+   * detected, be prepared for multiple calls to your listener.)
+   *
+   * # `$watch` vs `$observe`
+   *
+   * <table class="table">
+   *   <tr>
+   *     <th></td>
+   *     <th>{@link angular.scope.$watch $watch()}</th>
+   *     <th>{@link angular.scope.$observe $observe()}</th>
+   *   </tr>
+   *   <tr><th colspan="3" class="section">When to use it?</th></tr>
+   *   <tr>
+   *     <th>Purpose</th>
+   *     <td>Application behavior (including further model mutation) in response to a model
+   *         mutation.</td>
+   *     <td>Update the DOM in response to a model mutation.</td>
+   *   </tr>
+   *   <tr>
+   *     <th>Used from</th>
+   *     <td>{@link angular.directive.ng:controller controller}</td>
+   *     <td>{@link angular.directive directives}</td>
+   *   </tr>
+   *   <tr><th colspan="3" class="section">What fires listeners?</th></tr>
+   *   <tr>
+   *     <th>Directly</th>
+   *     <td>{@link angular.scope.$digest $digest()}</td>
+   *     <td>{@link angular.scope.$flush $flush()}</td>
+   *   </tr>
+   *   <tr>
+   *     <th>Indirectly via {@link angular.scope.$apply $apply()}</th>
+   *     <td>{@link angular.scope.$apply $apply} calls
+   *         {@link angular.scope.$digest $digest()} after apply argument executes.</td>
+   *     <td>{@link angular.scope.$apply $apply} schedules
+   *         {@link angular.scope.$flush $flush()} at some future time via
+   *         {@link angular.service.$updateView $updateView}</td>
+   *   </tr>
+   *   <tr><th colspan="3" class="section">API contract</th></tr>
+   *   <tr>
+   *     <th>Model mutation</th>
+   *     <td>allowed: detecting mutations requires one or mare calls to `watchExpression' per
+   *         {@link angular.scope.$digest $digest()} cycle</td>
+   *     <td>not allowed: called once per {@link angular.scope.$flush $flush()} must be
+   *         {@link http://en.wikipedia.org/wiki/Idempotence idempotent}
+   *         (function without side-effects which can be called multiple times.)</td>
+   *   </tr>
+   *   <tr>
+   *     <th>Initial Value</th>
+   *     <td>uses the current value of `watchExpression` as the initial value. Does not fire on
+   *         initial call to {@link angular.scope.$digest $digest()}, unless `watchExpression` has
+   *         changed form the initial value.</td>
+   *     <td>fires on first run of {@link angular.scope.$flush $flush()} regardless of value of
+   *         `observeExpression`</td>
+   *   </tr>
+   * </table>
+   *
+   *
+   *
+   * # Example
+     <pre>
+       var scope = angular.scope();
+       scope.name = 'misko';
+       scope.counter = 0;
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$eval
-     * @function
-     *
-     * @description
-     * Without the `exp` parameter triggers an eval cycle for this scope and its child scopes.
-     *
-     * With the `exp` parameter, compiles the expression to a function and calls it with `this` set
-     * to the current scope and returns the result. In other words, evaluates `exp` as angular
-     * expression in the context of the current scope.
-     *
-     * # Example
-       <pre>
-         var scope = angular.scope();
-         scope.a = 1;
-         scope.b = 2;
+       expect(scope.counter).toEqual(0);
+       scope.$watch('name', function(scope, newValue, oldValue) { counter = counter + 1; });
+       expect(scope.counter).toEqual(0);
 
-         expect(scope.$eval('a+b')).toEqual(3);
-         expect(scope.$eval(function(){ return this.a + this.b; })).toEqual(3);
+       scope.$digest();
+       // no variable change
+       expect(scope.counter).toEqual(0);
 
-         scope.$onEval('sum = a+b');
-         expect(scope.sum).toEqual(undefined);
-         scope.$eval();
-         expect(scope.sum).toEqual(3);
-       </pre>
-     *
-     * @param {(string|function())=} exp An angular expression to be compiled to a function or a js
-     *     function.
-     *
-     * @returns {*} The result of calling compiled `exp` with `this` set to the current scope.
-     */
-    $eval: function(exp) {
-      var type = typeof exp;
-      var i, iSize;
-      var j, jSize;
-      var queue;
-      var fn;
-      if (type == $undefined) {
-        for ( i = 0, iSize = evalLists.sorted.length; i < iSize; i++) {
-          for ( queue = evalLists.sorted[i],
-              jSize = queue.length,
-              j= 0; j < jSize; j++) {
-            instance.$tryEval(queue[j].fn, queue[j].handler);
+       scope.name = 'adam';
+       scope.$digest();
+       expect(scope.counter).toEqual(1);
+     </pre>
+   *
+   *
+   *
+   * @param {(function()|string)} watchExpression Expression that is evaluated on each
+   *    {@link angular.scope.$digest $digest} cycle. A change in the return value triggers a
+   *    call to the `listener`.
+   *
+   *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
+   *    - `function(scope)`: called with current `scope` as a parameter.
+   * @param {(function()|string)=} listener Callback called whenever the return value of
+   *   the `watchExpression` changes.
+   *
+   *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
+   *    - `function(scope, newValue, oldValue)`: called with current `scope` an previous and
+   *       current values as parameters.
+   * @returns {function()} a function which will call the `listener` with apprariate arguments.
+   *    Useful for forcing initialization of listener.
+   */
+  $watch: function(watchExp, listener) {
+    var scope = this;
+    var get = compileToFn(watchExp, 'watch');
+    var listenFn = compileToFn(listener || noop, 'listener');
+    var array = scope.$$watchers;
+    if (!array) {
+      array = scope.$$watchers = [];
+    }
+    // we use unshift since we use a while loop in $digest for speed.
+    // the while loop reads in reverse order.
+    array.unshift({
+      fn: listenFn,
+      last: copy(get(scope)),
+      get: get
+    });
+    // we only return the initialization function for $watch (not for $observe), since creating
+    // function cost time and memory, and $observe functions do not need it.
+    return function() {
+      var value = get(scope);
+      listenFn(scope, value, value);
+    };
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$digest
+   * @function
+   *
+   * @description
+   * Process all of the {@link angular.scope.$watch watchers} of the current scope and its children.
+   * Because a {@link angular.scope.$watch watcher}'s listener can change the model, the
+   * `$digest()` keeps calling the {@link angular.scope.$watch watchers} until no more listeners are
+   * firing. This means that it is possible to get into an infinite loop. This function will throw
+   * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 100.
+   *
+   * Usually you don't call `$digest()` directly in
+   * {@link angular.directive.ng:controller controllers} or in {@link angular.directive directives}.
+   * Instead a call to {@link angular.scope.$apply $apply()} (typically from within a
+   * {@link angular.directive directive}) will force a `$digest()`.
+   *
+   * If you want to be notified whenever `$digest()` is called,
+   * you can register a `watchExpression` function  with {@link angular.scope.$watch $watch()}
+   * with no `listener`.
+   *
+   * You may have a need to call `$digest()` from within unit-tests, to simulate the scope
+   * life-cycle.
+   *
+   * # Example
+     <pre>
+       var scope = angular.scope();
+       scope.name = 'misko';
+       scope.counter = 0;
+
+       expect(scope.counter).toEqual(0);
+       scope.$flush('name', function(scope, newValue, oldValue) { counter = counter + 1; });
+       expect(scope.counter).toEqual(0);
+
+       scope.$flush();
+       // no variable change
+       expect(scope.counter).toEqual(0);
+
+       scope.name = 'adam';
+       scope.$flush();
+       expect(scope.counter).toEqual(1);
+     </pre>
+   *
+   * @returns {number} number of {@link angular.scope.$watch listeners} which fired.
+   *
+   */
+  $digest: function() {
+    var child,
+        watch, value, last,
+        watchers = this.$$watchers,
+        length, count = 0,
+        iterationCount, ttl = 100;
+
+    if (this.$$phase) {
+      throw Error(this.$$phase + ' already in progress');
+    }
+    this.$$phase = '$digest';
+    do {
+      iterationCount = 0;
+      if (watchers) {
+        // process our watches
+        length = watchers.length;
+        while (length--) {
+          try {
+            watch = watchers[length];
+            // Most common watches are on primitives, in which case we can short
+            // circuit it with === operator, only when === fails do we use .equals
+            if ((value = watch.get(this)) !== (last = watch.last) && !equals(value, last)) {
+              iterationCount++;
+              watch.fn(this, watch.last = copy(value), last);
+            }
+          } catch (e) {
+            this.$service('$exceptionHandler')(e);
           }
         }
-      } else if (type === $function) {
-        return exp.call(instance);
-      } else  if (type === 'string') {
-        return expressionCompile(exp).call(instance);
       }
-    },
-
-
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$tryEval
-     * @function
-     *
-     * @description
-     * Evaluates the expression in the context of the current scope just like
-     * {@link angular.scope.$eval} with expression parameter, but also wraps it in a try/catch
-     * block.
-     *
-     * If an exception is thrown then `exceptionHandler` is used to handle the exception.
-     *
-     * # Example
-       <pre>
-         var scope = angular.scope();
-         scope.error = function(){ throw 'myerror'; };
-         scope.$exceptionHandler = function(e) {this.lastException = e; };
-
-         expect(scope.$eval('error()'));
-         expect(scope.lastException).toEqual('myerror');
-         this.lastException = null;
-
-         expect(scope.$eval('error()'),  function(e) {this.lastException = e; });
-         expect(scope.lastException).toEqual('myerror');
-
-         var body = angular.element(window.document.body);
-         expect(scope.$eval('error()'), body);
-         expect(body.attr('ng-exception')).toEqual('"myerror"');
-         expect(body.hasClass('ng-exception')).toEqual(true);
-       </pre>
-     *
-     * @param {string|function()} expression Angular expression to evaluate.
-     * @param {(function()|DOMElement)=} exceptionHandler Function to be called or DOMElement to be
-     *     decorated.
-     * @returns {*} The result of `expression` evaluation.
-     */
-    $tryEval: function (expression, exceptionHandler) {
-      var type = typeof expression;
-      try {
-        if (type == $function) {
-          return expression.call(instance);
-        } else if (type == 'string'){
-          return expressionCompile(expression).call(instance);
-        }
-      } catch (e) {
-        if ($log) $log.error(e);
-        if (isFunction(exceptionHandler)) {
-          exceptionHandler(e);
-        } else if (exceptionHandler) {
-          errorHandlerFor(exceptionHandler, e);
-        } else if (isFunction($exceptionHandler)) {
-          $exceptionHandler(e);
-        }
+      child = this.$$childHead;
+      while(child) {
+        iterationCount += child.$digest();
+        child = child.$$nextSibling;
       }
-    },
-
-
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$watch
-     * @function
-     *
-     * @description
-     * Registers `listener` as a callback to be executed every time the `watchExp` changes. Be aware
-     * that the callback gets, by default, called upon registration, this can be prevented via the
-     * `initRun` parameter.
-     *
-     * # Example
-       <pre>
-         var scope = angular.scope();
-         scope.name = 'misko';
-         scope.counter = 0;
-
-         expect(scope.counter).toEqual(0);
-         scope.$watch('name', 'counter = counter + 1');
-         expect(scope.counter).toEqual(1);
-
-         scope.$eval();
-         expect(scope.counter).toEqual(1);
-
-         scope.name = 'adam';
-         scope.$eval();
-         expect(scope.counter).toEqual(2);
-       </pre>
-     *
-     * @param {function()|string} watchExp Expression that should be evaluated and checked for
-     *    change during each eval cycle. Can be an angular string expression or a function.
-     * @param {function()|string} listener Function (or angular string expression) that gets called
-     *    every time the value of the `watchExp` changes. The function will be called with two
-     *    parameters, `newValue` and `oldValue`.
-     * @param {(function()|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
-     *    that gets called when `watchExp` or `listener` throws an exception. If a DOMElement is
-     *    specified as a handler, the element gets decorated by angular with the information about the
-     *    exception.
-     * @param {boolean=} [initRun=true] Flag that prevents the first execution of the listener upon
-     *    registration.
-     *
-     */
-    $watch: function(watchExp, listener, exceptionHandler, initRun) {
-      var watch = expressionCompile(watchExp),
-          last = watch.call(instance);
-      listener = expressionCompile(listener);
-      function watcher(firstRun){
-        var value = watch.call(instance),
-            // we have to save the value because listener can call ourselves => inf loop
-            lastValue = last;
-        if (firstRun || lastValue !== value) {
-          last = value;
-          instance.$tryEval(function(){
-            return listener.call(instance, value, lastValue);
-          }, exceptionHandler);
-        }
+      count += iterationCount;
+      if(!(ttl--)) {
+        throw Error('100 $digest() iterations reached. Aborting!');
       }
-      instance.$onEval(PRIORITY_WATCH, watcher);
-      if (isUndefined(initRun)) initRun = true;
-      if (initRun) watcher(true);
-    },
+    } while (iterationCount);
+    this.$$phase = null;
+    return count;
+  },
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$onEval
-     * @function
-     *
-     * @description
-     * Evaluates the `expr` expression in the context of the current scope during each
-     * {@link angular.scope.$eval eval cycle}.
-     *
-     * # Example
-       <pre>
-         var scope = angular.scope();
-         scope.counter = 0;
-         scope.$onEval('counter = counter + 1');
-         expect(scope.counter).toEqual(0);
-         scope.$eval();
-         expect(scope.counter).toEqual(1);
-       </pre>
-     *
-     * @param {number} [priority=0] Execution priority. Lower priority numbers get executed first.
-     * @param {string|function()} expr Angular expression or function to be executed.
-     * @param {(function()|DOMElement)=} [exceptionHandler=angular.service.$exceptionHandler] Handler
-     *     function to call or DOM element to decorate when an exception occurs.
-     *
-     */
-    $onEval: function(priority, expr, exceptionHandler){
-      if (!isNumber(priority)) {
-        exceptionHandler = expr;
-        expr = priority;
-        priority = 0;
-      }
-      var evalList = evalLists[priority];
-      if (!evalList) {
-        evalList = evalLists[priority] = [];
-        evalList.priority = priority;
-        evalLists.sorted.push(evalList);
-        evalLists.sorted.sort(function(a,b){return a.priority-b.priority;});
-      }
-      evalList.push({
-        fn: expressionCompile(expr),
-        handler: exceptionHandler
-      });
-    },
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$observe
+   * @function
+   *
+   * @description
+   * Registers a `listener` callback to be executed during the {@link angular.scope.$flush $flush()}
+   * phase when the `observeExpression` changes..
+   *
+   * - The `observeExpression` is called on every call to {@link angular.scope.$flush $flush()} and
+   *   should return the value which will be observed.
+   * - The `listener` is called only when the value from the current `observeExpression` and the
+   *   previous call to `observeExpression' are not equal. The inequality is determined according to
+   *   {@link angular.equals} function. To save the value of the object for later comparison
+   *   {@link angular.copy} function is used. It also means that watching complex options will
+   *   have adverse memory and performance implications.
+   *
+   * # When to use `$observe`?
+   *
+   * {@link angular.scope.$observe $observe()} is used from within directives and gets applied at
+   * some later point in time. Addition {@link angular.scope.$observe $observe()} must not
+   * modify the model. This is in contrast to {@link angular.scope.$watch $watch()} which should be
+   * used from within controllers to trigger a callback *immediately* after a stimulus is applied
+   * to the system (see {@link angular.scope.$apply $apply()}).
+   *
+   * If you want to be notified whenever {@link angular.scope.$flush $flush} is called,
+   * you can register an `observeExpression` function with no `listener`.
+   *
+   *
+   * # `$watch` vs `$observe`
+   *
+   * <table class="table">
+   *   <tr>
+   *     <th></td>
+   *     <th>{@link angular.scope.$watch $watch()}</th>
+   *     <th>{@link angular.scope.$observe $observe()}</th>
+   *   </tr>
+   *   <tr><th colspan="3" class="section">When to use it?</th></tr>
+   *   <tr>
+   *     <th>Purpose</th>
+   *     <td>Application behavior (including further model mutation) in response to a model
+   *         mutation.</td>
+   *     <td>Update the DOM in response to a model mutation.</td>
+   *   </tr>
+   *   <tr>
+   *     <th>Used from</th>
+   *     <td>{@link angular.directive.ng:controller controller}</td>
+   *     <td>{@link angular.directive directives}</td>
+   *   </tr>
+   *   <tr><th colspan="3" class="section">What fires listeners?</th></tr>
+   *   <tr>
+   *     <th>Directly</th>
+   *     <td>{@link angular.scope.$digest $digest()}</td>
+   *     <td>{@link angular.scope.$flush $flush()}</td>
+   *   </tr>
+   *   <tr>
+   *     <th>Indirectly via {@link angular.scope.$apply $apply()}</th>
+   *     <td>{@link angular.scope.$apply $apply} calls
+   *         {@link angular.scope.$digest $digest()} after apply argument executes.</td>
+   *     <td>{@link angular.scope.$apply $apply} schedules
+   *         {@link angular.scope.$flush $flush()} at some future time via
+   *         {@link angular.service.$updateView $updateView}</td>
+   *   </tr>
+   *   <tr><th colspan="3" class="section">API contract</th></tr>
+   *   <tr>
+   *     <th>Model mutation</th>
+   *     <td>allowed: detecting mutations requires one or mare calls to `watchExpression' per
+   *         {@link angular.scope.$digest $digest()} cycle</td>
+   *     <td>not allowed: called once per {@link angular.scope.$flush $flush()} must be
+   *         {@link http://en.wikipedia.org/wiki/Idempotence idempotent}
+   *         (function without side-effects which can be called multiple times.)</td>
+   *   </tr>
+   *   <tr>
+   *     <th>Initial Value</th>
+   *     <td>uses the current value of `watchExpression` as the initial value. Does not fire on
+   *         initial call to {@link angular.scope.$digest $digest()}, unless `watchExpression` has
+   *         changed form the initial value.</td>
+   *     <td>fires on first run of {@link angular.scope.$flush $flush()} regardless of value of
+   *         `observeExpression`</td>
+   *   </tr>
+   * </table>
+   *
+   * # Example
+     <pre>
+       var scope = angular.scope();
+       scope.name = 'misko';
+       scope.counter = 0;
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$become
-     * @function
-     * @deprecated This method will be removed before 1.0
-     *
-     * @description
-     * Modifies the scope to act like an instance of the given class by:
-     *
-     * - copying the class's prototype methods
-     * - applying the class's initialization function to the scope instance (without using the new
-     *   operator)
-     *
-     * That makes the scope be a `this` for the given class's methods — effectively an instance of
-     * the given class with additional (scope) stuff. A scope can later `$become` another class.
-     *
-     * `$become` gets used to make the current scope act like an instance of a controller class.
-     * This allows for use of a controller class in two ways.
-     *
-     * - as an ordinary JavaScript class for standalone testing, instantiated using the new
-     *   operator, with no attached view.
-     * - as a controller for an angular model stored in a scope, "instantiated" by
-     *   `scope.$become(ControllerClass)`.
-     *
-     * Either way, the controller's methods refer to the model  variables like `this.name`. When
-     * stored in a scope, the model supports data binding. When bound to a view, {{name}} in the
-     * HTML template refers to the same variable.
-     */
-    $become: function(Class) {
-      if (isFunction(Class)) {
-        instance.constructor = Class;
-        forEach(Class.prototype, function(fn, name){
-          instance[name] = bind(instance, fn);
-        });
-        instance.$service.invoke(instance, Class, slice.call(arguments, 1, arguments.length));
+       expect(scope.counter).toEqual(0);
+       scope.$flush('name', function(scope, newValue, oldValue) { counter = counter + 1; });
+       expect(scope.counter).toEqual(0);
 
-        //TODO: backwards compatibility hack, remove when we don't depend on init methods
-        if (isFunction(Class.prototype.init)) {
-          instance.init();
-        }
-      }
-    },
+       scope.$flush();
+       // no variable change
+       expect(scope.counter).toEqual(0);
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$new
-     * @function
-     *
-     * @description
-     * Creates a new {@link angular.scope scope}, that:
-     *
-     * - is a child of the current scope
-     * - will {@link angular.scope.$become $become} of type specified via `constructor`
-     *
-     * @param {function()} constructor Constructor function of the type the new scope should assume.
-     * @returns {Object} The newly created child scope.
-     *
-     */
-    $new: function(constructor) {
-      var child = createScope(instance);
-      child.$become.apply(instance, concat([constructor], arguments, 1));
-      instance.$onEval(child.$eval);
-      return child;
+       scope.name = 'adam';
+       scope.$flush();
+       expect(scope.counter).toEqual(1);
+     </pre>
+   *
+   * @param {(function()|string)} observeExpression Expression that is evaluated on each
+   *    {@link angular.scope.$flush $flush} cycle. A change in the return value triggers a
+   *    call to the `listener`.
+   *
+   *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
+   *    - `function(scope)`: called with current `scope` as a parameter.
+   * @param {(function()|string)=} listener Callback called whenever the return value of
+   *   the `observeExpression` changes.
+   *
+   *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
+   *    - `function(scope, newValue, oldValue)`: called with current `scope` an previous and
+   *       current values as parameters.
+   */
+  $observe: function(watchExp, listener) {
+    var array = this.$$observers;
+
+    if (!array) {
+      array = this.$$observers = [];
     }
+    // we use unshift since we use a while loop in $flush for speed.
+    // the while loop reads in reverse order.
+    array.unshift({
+      fn: compileToFn(listener || noop, 'listener'),
+      last: NaN,
+      get:  compileToFn(watchExp, 'watch')
+    });
+  },
 
-  });
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$flush
+   * @function
+   *
+   * @description
+   * Process all of the {@link angular.scope.$observe observers} of the current scope
+   * and its children.
+   *
+   * Usually you don't call `$flush()` directly in
+   * {@link angular.directive.ng:controller controllers} or in {@link angular.directive directives}.
+   * Instead a call to {@link angular.scope.$apply $apply()} (typically from within a
+   * {@link angular.directive directive}) will scheduled a call to `$flush()` (with the
+   * help of the {@link angular.service.$updateView $updateView} service).
+   *
+   * If you want to be notified whenever `$flush()` is called,
+   * you can register a `observeExpression` function  with {@link angular.scope.$observe $observe()}
+   * with no `listener`.
+   *
+   * You may have a need to call `$flush()` from within unit-tests, to simulate the scope
+   * life-cycle.
+   *
+   * # Example
+     <pre>
+       var scope = angular.scope();
+       scope.name = 'misko';
+       scope.counter = 0;
 
-  if (!parent.$root) {
-    instance.$root = instance;
-    instance.$parent = instance;
+       expect(scope.counter).toEqual(0);
+       scope.$flush('name', function(scope, newValue, oldValue) { counter = counter + 1; });
+       expect(scope.counter).toEqual(0);
 
-    /**
-     * @workInProgress
-     * @ngdoc function
-     * @name angular.scope.$service
-     * @function
-     *
-     * @description
-     * Provides access to angular's dependency injector and
-     * {@link angular.service registered services}. In general the use of this api is discouraged,
-     * except for tests and components that currently don't support dependency injection (widgets,
-     * filters, etc).
-     *
-     * @param {string} serviceId String ID of the service to return.
-     * @returns {*} Value, object or function returned by the service factory function if any.
-     */
-    (instance.$service = createInjector(instance, providers, instanceCache)).eager();
+       scope.$flush();
+       // no variable change
+       expect(scope.counter).toEqual(0);
+
+       scope.name = 'adam';
+       scope.$flush();
+       expect(scope.counter).toEqual(1);
+     </pre>
+   *
+   */
+  $flush: function() {
+    var observers = this.$$observers,
+        child,
+        length,
+        observer, value, last;
+
+    if (this.$$phase) {
+      throw Error(this.$$phase + ' already in progress');
+    }
+    this.$$phase = '$flush';
+    if (observers) {
+      // process our watches
+      length = observers.length;
+      while (length--) {
+        try {
+          observer = observers[length];
+          // Most common watches are on primitives, in which case we can short
+          // circuit it with === operator, only when === fails do we use .equals
+          if ((value = observer.get(this)) !== (last = observer.last) && !equals(value, last)) {
+            observer.fn(this, observer.last = copy(value), last);
+          }
+        } catch (e){
+          this.$service('$exceptionHandler')(e);
+        }
+      }
+    }
+    // observers can create new children
+    child = this.$$childHead;
+    while(child) {
+      child.$flush();
+      child = child.$$nextSibling;
+    }
+    this.$$phase = null;
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$destroy
+   * @function
+   *
+   * @description
+   * Remove the current scope (and all of its children) from the parent scope. Removal implies
+   * that calls to {@link angular.scope.$digest $digest()} and
+   * {@link angular.scope.$flush $flush()} will no longer propagate to the current scope and its
+   * children. Removal also implies that the current scope is eligible for garbage collection.
+   *
+   * The `$destroy()` is usually used by directives such as
+   * {@link angular.widget.@ng:repeat ng:repeat} for managing the unrolling of the loop.
+   *
+   */
+  $destroy: function() {
+    if (this.$root == this) return; // we can't remove the root node;
+    var parent = this.$parent;
+    var child = parent.$$childHead;
+    var lastChild = null;
+    var nextChild = null;
+    // We have to do a linear search, since we don't have doubly link list.
+    // But this is intentional since removals are rare, and doubly link list is not free.
+    while(child) {
+      if (child == this) {
+        nextChild = child.$$nextSibling;
+        if (parent.$$childHead == child) {
+          parent.$$childHead = nextChild;
+        }
+        if (lastChild) {
+          lastChild.$$nextSibling = nextChild;
+        }
+        if (parent.$$childTail == child) {
+          parent.$$childTail = lastChild;
+        }
+        return; // stop iterating we found it
+      } else {
+        lastChild = child;
+        child = child.$$nextSibling;
+      }
+    }
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$eval
+   * @function
+   *
+   * @description
+   * Executes the expression on the current scope returning the result. Any exceptions in the
+   * expression are propagated (uncaught). This is useful when evaluating engular expressions.
+   *
+   * # Example
+     <pre>
+       var scope = angular.scope();
+       scope.a = 1;
+       scope.b = 2;
+
+       expect(scope.$eval('a+b')).toEqual(3);
+       expect(scope.$eval(function(scope){ return scope.a + scope.b; })).toEqual(3);
+     </pre>
+   *
+   * @param {(string|function())=} expression An angular expression to be executed.
+   *
+   *    - `string`: execute using the rules as defined in  {@link guide/dev_guide.expressions expression}.
+   *    - `function(scope)`: execute the function with the current `scope` parameter.
+   *
+   * @returns {*} The result of evaluating the expression.
+   */
+  $eval: function(expr) {
+    var fn = isString(expr)
+      ? parser(expr).statements()
+      : expr || noop;
+    return fn(this);
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$apply
+   * @function
+   *
+   * @description
+   * `$apply()` is used to execute an expression in angular from outside of the angular framework.
+   * (For example from browser DOM events, setTimeout, XHR or third party libraries).
+   * Because we are calling into the angular framework we need to perform proper scope life-cycle
+   * of {@link angular.service.$exceptionHandler exception handling},
+   * {@link angular.scope.$digest executing watches} and scheduling
+   * {@link angular.service.$updateView updating of the view} which in turn
+   * {@link angular.scope.$digest executes observers} to update the DOM.
+   *
+   * ## Life cycle
+   *
+   * # Pseudo-Code of `$apply()`
+      function $apply(expr) {
+        try {
+          return $eval(expr);
+        } catch (e) {
+          $exceptionHandler(e);
+        } finally {
+          $root.$digest();
+          $updateView();
+        }
+      }
+   *
+   *
+   * Scope's `$apply()` method transitions through the following stages:
+   *
+   * 1. The {@link guide/dev_guide.expressions expression} is executed using the
+   *    {@link angular.scope.$eval $eval()} method.
+   * 2. Any exceptions from the execution of the expression are forwarded to the
+   *    {@link angular.service.$exceptionHandler $exceptionHandler} service.
+   * 3. The {@link angular.scope.$watch watch} listeners are fired immediately after the expression
+   *    was executed using the {@link angular.scope.$digest $digest()} method.
+   * 4. A DOM update is scheduled using the {@link angular.service.$updateView $updateView} service.
+   *    The `$updateView` may merge multiple update requests into a single update, if the requests
+   *    are issued in close time proximity.
+   * 6. The {@link angular.service.$updateView $updateView} service then fires DOM
+   *    {@link angular.scope.$observe observers} using the {@link angular.scope.$flush $flush()}
+   *    method.
+   *
+   *
+   * @param {(string|function())=} exp An angular expression to be executed.
+   *
+   *    - `string`: execute using the rules as defined in {@link guide/dev_guide.expressions expression}.
+   *    - `function(scope)`: execute the function with current `scope` parameter.
+   *
+   * @returns {*} The result of evaluating the expression.
+   */
+  $apply: function(expr) {
+    try {
+      return this.$eval(expr);
+    } catch (e) {
+      this.$service('$exceptionHandler')(e);
+    } finally {
+      this.$root.$digest();
+      this.$service('$updateView')();
+    }
   }
+};
 
-  $log = instance.$service('$log');
-  $exceptionHandler = instance.$service('$exceptionHandler');
-
-  return instance;
+function compileToFn(exp, name) {
+  var fn = isString(exp)
+    ? parser(exp).statements()
+    : exp;
+  assertArgFn(fn, name);
+  return fn;
 }

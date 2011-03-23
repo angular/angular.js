@@ -73,7 +73,7 @@
  */
 angularDirective("ng:init", function(expression){
   return function(element){
-    this.$tryEval(expression, element);
+    this.$eval(expression);
   };
 });
 
@@ -165,19 +165,19 @@ angularDirective("ng:init", function(expression){
    </doc:example>
  */
 angularDirective("ng:controller", function(expression){
-  this.scope(true);
-  return function(element){
-    var controller = getter(window, expression, true) || getter(this, expression, true);
-    if (!controller)
-      throw "Can not find '"+expression+"' controller.";
-    if (!isFunction(controller))
-      throw "Reference '"+expression+"' is not a class.";
-    this.$become(controller);
-  };
+  this.scope(function(scope){
+    var Controller =
+      getter(scope, expression, true) ||
+      getter(window, expression, true);
+    assertArgFn(Controller, expression);
+    return Controller;
+  });
+  return noop;
 });
 
 /**
  * @workInProgress
+ * @deprecated
  * @ngdoc directive
  * @name angular.directive.ng:eval
  *
@@ -208,17 +208,18 @@ angularDirective("ng:controller", function(expression){
      <doc:scenario>
        it('should check eval', function(){
          expect(binding('obj.divide')).toBe('3');
-         expect(binding('obj.updateCount')).toBe('2');
+         expect(binding('obj.updateCount')).toBe('1');
          input('obj.a').enter('12');
          expect(binding('obj.divide')).toBe('6');
-         expect(binding('obj.updateCount')).toBe('3');
+         expect(binding('obj.updateCount')).toBe('2');
        });
      </doc:scenario>
    </doc:example>
  */
+// TODO(misko): remove me
 angularDirective("ng:eval", function(expression){
   return function(element){
-    this.$onEval(expression, element);
+    this.$observe(expression);
   };
 });
 
@@ -257,15 +258,26 @@ angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   return function(element) {
     var lastValue = noop, lastError = noop;
-    this.$onEval(function() {
+    this.$observe(function(scope) {
+      // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
       var error, value, html, isHtml, isDomElement,
-          oldElement = this.hasOwnProperty($$element) ? this.$element : undefined;
-      this.$element = element;
-      value = this.$tryEval(expression, function(e){
+          hadOwnElement = scope.hasOwnProperty('$element'),
+          oldElement = scope.$element;
+      // TODO(misko): get rid of $element https://github.com/angular/angular.js/issues/348
+      scope.$element = element;
+      try {
+        value = scope.$eval(expression);
+      } catch (e) {
+        scope.$service('$exceptionHandler')(e);
         error = formatError(e);
-      });
-      this.$element = oldElement;
-      // If we are HTML then save the raw HTML data so that we don't
+      } finally {
+        if (hadOwnElement) {
+          scope.$element = oldElement;
+        } else {
+          delete scope.$element;
+        }
+      }
+      // If we are HTML than save the raw HTML data so that we don't
       // recompute sanitization since it is expensive.
       // TODO: turn this into a more generic way to compute this
       if (isHtml = (value instanceof HTML))
@@ -289,7 +301,7 @@ angularDirective("ng:bind", function(expression, element){
           element.text(value == undefined ? '' : value);
         }
       }
-    }, element);
+    });
   };
 });
 
@@ -301,10 +313,14 @@ function compileBindTemplate(template){
     forEach(parseBindings(template), function(text){
       var exp = binding(text);
       bindings.push(exp
-        ? function(element){
-            var error, value = this.$tryEval(exp, function(e){
+        ? function(scope, element) {
+            var error, value;
+            try {
+              value = scope.$eval(exp);
+            } catch(e) {
+              scope.$service('$exceptionHandler')(e);
               error = toJson(e);
-            });
+            }
             elementError(element, NG_EXCEPTION, error);
             return error ? error : value;
           }
@@ -312,20 +328,30 @@ function compileBindTemplate(template){
             return text;
           });
     });
-    bindTemplateCache[template] = fn = function(element, prettyPrintJson){
-      var parts = [], self = this,
-         oldElement = this.hasOwnProperty($$element) ? self.$element : undefined;
-      self.$element = element;
-      for ( var i = 0; i < bindings.length; i++) {
-        var value = bindings[i].call(self, element);
-        if (isElement(value))
-          value = '';
-        else if (isObject(value))
-          value = toJson(value, prettyPrintJson);
-        parts.push(value);
+    bindTemplateCache[template] = fn = function(scope, element, prettyPrintJson) {
+      var parts = [],
+          hadOwnElement = scope.hasOwnProperty('$element'),
+          oldElement = scope.$element;
+
+      // TODO(misko): get rid of $element
+      scope.$element = element;
+      try {
+        for (var i = 0; i < bindings.length; i++) {
+          var value = bindings[i](scope, element);
+          if (isElement(value))
+            value = '';
+          else if (isObject(value))
+            value = toJson(value, prettyPrintJson);
+          parts.push(value);
+        }
+        return parts.join('');
+      } finally {
+        if (hadOwnElement) {
+          scope.$element = oldElement;
+        } else {
+          delete scope.$element;
+        }
       }
-      self.$element = oldElement;
-      return parts.join('');
     };
   }
   return fn;
@@ -372,13 +398,13 @@ angularDirective("ng:bind-template", function(expression, element){
   var templateFn = compileBindTemplate(expression);
   return function(element) {
     var lastValue;
-    this.$onEval(function() {
-      var value = templateFn.call(this, element, true);
+    this.$observe(function(scope) {
+      var value = templateFn(scope, element, true);
       if (value != lastValue) {
         element.text(value);
         lastValue = value;
       }
-    }, element);
+    });
   };
 });
 
@@ -446,10 +472,10 @@ var REMOVE_ATTRIBUTES = {
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
     var lastValue = {};
-    this.$onEval(function(){
-      var values = this.$eval(expression);
+    this.$observe(function(scope){
+      var values = scope.$eval(expression);
       for(var key in values) {
-        var value = compileBindTemplate(values[key]).call(this, element),
+        var value = compileBindTemplate(values[key])(scope, element),
             specialName = REMOVE_ATTRIBUTES[lowercase(key)];
         if (lastValue[key] !== value) {
           lastValue[key] = value;
@@ -467,7 +493,7 @@ angularDirective("ng:bind-attr", function(expression){
           }
         }
       }
-    }, element);
+    });
   };
 });
 
@@ -510,14 +536,13 @@ angularDirective("ng:bind-attr", function(expression){
  * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 angularDirective("ng:click", function(expression, element){
-  return annotate('$updateView', function($updateView, element){
+  return function(element){
     var self = this;
     element.bind('click', function(event){
-      self.$tryEval(expression, element);
-      $updateView();
+      self.$apply(expression);
       event.stopPropagation();
     });
-  });
+  };
 });
 
 
@@ -555,28 +580,27 @@ angularDirective("ng:click", function(expression, element){
    </doc:example>
  */
 angularDirective("ng:submit", function(expression, element) {
-  return annotate('$updateView', function($updateView, element) {
+  return function(element) {
     var self = this;
     element.bind('submit', function(event) {
-      self.$tryEval(expression, element);
-      $updateView();
+      self.$apply(expression);
       event.preventDefault();
     });
-  });
+  };
 });
 
 
 function ngClass(selector) {
-  return function(expression, element){
+  return function(expression, element) {
     var existing = element[0].className + ' ';
-    return function(element){
-      this.$onEval(function(){
-        if (selector(this.$index)) {
-          var value = this.$eval(expression);
+    return function(element) {
+      this.$observe(function(scope) {
+        if (selector(scope.$index)) {
+          var value = scope.$eval(expression);
           if (isArray(value)) value = value.join(' ');
           element[0].className = trim(existing + value);
         }
-      }, element);
+      });
     };
   };
 }
@@ -732,9 +756,9 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  */
 angularDirective("ng:show", function(expression, element){
   return function(element){
-    this.$onEval(function(){
-      toBoolean(this.$eval(expression)) ? element.show() : element.hide();
-    }, element);
+    this.$observe(expression, function(scope, value){
+      toBoolean(value) ? element.show() : element.hide();
+    });
   };
 });
 
@@ -773,9 +797,9 @@ angularDirective("ng:show", function(expression, element){
  */
 angularDirective("ng:hide", function(expression, element){
   return function(element){
-    this.$onEval(function(){
-      toBoolean(this.$eval(expression)) ? element.hide() : element.show();
-    }, element);
+    this.$observe(expression, function(scope, value){
+      toBoolean(value) ? element.hide() : element.show();
+    });
   };
 });
 
@@ -815,8 +839,8 @@ angularDirective("ng:hide", function(expression, element){
 angularDirective("ng:style", function(expression, element){
   return function(element){
     var resetStyle = getStyle(element);
-    this.$onEval(function(){
-      var style = this.$eval(expression) || {}, key, mergedStyle = {};
+    this.$observe(function(scope){
+      var style = scope.$eval(expression) || {}, key, mergedStyle = {};
       for(key in style) {
         if (resetStyle[key] === undefined) resetStyle[key] = '';
         mergedStyle[key] = style[key];
@@ -825,7 +849,7 @@ angularDirective("ng:style", function(expression, element){
         mergedStyle[key] = mergedStyle[key] || resetStyle[key];
       }
       element.css(mergedStyle);
-    }, element);
+    });
   };
 });
 

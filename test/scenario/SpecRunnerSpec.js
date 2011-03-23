@@ -31,14 +31,13 @@ describe('angular.scenario.SpecRunner', function() {
     $window.setTimeout = function(fn, timeout) {
       fn();
     };
-    $root = angular.scope({
-      emit: function(eventName) {
-        log.push(eventName);
-      },
-      on: function(eventName) {
-        log.push('Listener Added for ' + eventName);
-      }
-    });
+    $root = angular.scope();
+    $root.emit = function(eventName) {
+      log.push(eventName);
+    };
+    $root.on = function(eventName) {
+      log.push('Listener Added for ' + eventName);
+    };
     $root.application = new ApplicationMock($window);
     $root.$window = $window;
     runner = $root.$new(angular.scenario.SpecRunner);

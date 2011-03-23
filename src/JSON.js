@@ -116,6 +116,9 @@ function toJsonArray(buf, obj, pretty, stack) {
         sep = true;
       }
       buf.push("]");
+    } else if (isElement(obj)) {
+      // TODO(misko): maybe in dev mode have a better error reporting?
+      buf.push('DOM_ELEMENT');
     } else if (isDate(obj)) {
       buf.push(angular.String.quoteUnicode(angular.Date.toString(obj)));
     } else {

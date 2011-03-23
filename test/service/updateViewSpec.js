@@ -9,9 +9,9 @@ describe('$updateView', function() {
     browser.isMock = false;
     browser.defer = jasmine.createSpy('defer');
 
-    scope = angular.scope(null, null, {$browser:browser});
+    scope = angular.scope(null, {$browser:browser});
     $updateView = scope.$service('$updateView');
-    scope.$onEval(function(){ evalCount++; });
+    scope.$observe(function(){ evalCount++; });
     evalCount = 0;
   });
 
@@ -55,7 +55,7 @@ describe('$updateView', function() {
 
   it('should update immediatelly in test/mock mode', function(){
     scope = angular.scope();
-    scope.$onEval(function(){ evalCount++; });
+    scope.$observe(function(){ evalCount++; });
     expect(evalCount).toEqual(0);
     scope.$service('$updateView')();
     expect(evalCount).toEqual(1);
