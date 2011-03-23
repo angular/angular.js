@@ -32,6 +32,6 @@
   injected into the root scope.
 * {@link guide.testing Testing}
   * service:$browser(mock)
-* {@link guide.downloading Downloading} - How to download, compile, and host the angular
+* {@link downloading Downloading} - How to download, compile, and host the angular
   environment on your own server.
 * {@link guide.contribute Contributing} - How to contribute to angular project.
