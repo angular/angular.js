@@ -1,246 +1,497 @@
 'use strict';
 
-describe('scope/model', function(){
+describe('Scope', function(){
+  var root, mockHandler;
 
-  var temp;
-
-  beforeEach(function() {
-    temp = window.temp = {};
-    temp.InjectController = function(exampleService, extra) {
-      this.localService = exampleService;
-      this.extra = extra;
-      this.$root.injectController = this;
-    };
-    temp.InjectController.$inject = ["exampleService"];
+  beforeEach(function(){
+    root = createScope(angular.service, {
+      $updateView: function(){
+        root.$flush();
+      },
+      '$exceptionHandler': $exceptionHandlerMockFactory()
+    });
+    mockHandler = root.$service('$exceptionHandler');
   });
 
-  afterEach(function() {
-    window.temp = undefined;
+
+  describe('$root', function(){
+    it('should point to itself', function(){
+      expect(root.$root).toEqual(root);
+      expect(root.hasOwnProperty('$root')).toBeTruthy();
+    });
+
+
+    it('should not have $root on children, but should inherit', function(){
+      var child = root.$new();
+      expect(child.$root).toEqual(root);
+      expect(child.hasOwnProperty('$root')).toBeFalsy();
+    });
+
   });
 
-  it('should create a scope with parent', function(){
-    var model = createScope({name:'Misko'});
-    expect(model.name).toEqual('Misko');
+
+  describe('$parent', function(){
+    it('should point to itself in root', function(){
+      expect(root.$root).toEqual(root);
+    });
+
+
+    it('should point to parent', function(){
+      var child = root.$new();
+      expect(root.$parent).toEqual(null);
+      expect(child.$parent).toEqual(root);
+      expect(child.$new().$parent).toEqual(child);
+    });
   });
 
-  it('should have $get/$set/$parent', function(){
-    var parent = {};
-    var model = createScope(parent);
-    model.$set('name', 'adam');
-    expect(model.name).toEqual('adam');
-    expect(model.$get('name')).toEqual('adam');
-    expect(model.$parent).toEqual(model);
-    expect(model.$root).toEqual(model);
+
+  describe('$id', function(){
+    it('should have a unique id', function(){
+      expect(root.$id < root.$new().$id).toBeTruthy();
+    });
   });
 
-  it('should return noop function when LHS is undefined', function(){
-    var model = createScope();
-    expect(model.$eval('x.$filter()')).toEqual(undefined);
+
+  describe('this', function(){
+    it('should have a \'this\'', function(){
+      expect(root['this']).toEqual(root);
+    });
   });
+
+
+  describe('$new()', function(){
+    it('should create a child scope', function(){
+      var child = root.$new();
+      root.a = 123;
+      expect(child.a).toEqual(123);
+    });
+
+
+    it('should instantiate controller and bind functions', function(){
+      function Cntl($browser, name){
+        this.$browser = $browser;
+        this.callCount = 0;
+        this.name = name;
+      }
+      Cntl.$inject = ['$browser'];
+
+      Cntl.prototype = {
+        myFn: function(){
+          expect(this).toEqual(cntl);
+          this.callCount++;
+        }
+      };
+
+      var cntl = root.$new(Cntl, ['misko']);
+
+      expect(root.$browser).toBeUndefined();
+      expect(root.myFn).toBeUndefined();
+
+      expect(cntl.$browser).toBeDefined();
+      expect(cntl.name).toEqual('misko');
+
+      cntl.myFn();
+      cntl.$new().myFn();
+      expect(cntl.callCount).toEqual(2);
+    });
+  });
+
+
+  describe('$service', function(){
+    it('should have it on root', function(){
+      expect(root.hasOwnProperty('$service')).toBeTruthy();
+    });
+  });
+
+
+  describe('$watch/$digest', function(){
+    it('should watch and fire on simple property change', function(){
+      var spy = jasmine.createSpy();
+      root.$watch('name', spy);
+      expect(spy).not.wasCalled();
+      root.$digest();
+      expect(spy).not.wasCalled();
+      root.name = 'misko';
+      root.$digest();
+      expect(spy).wasCalledWith(root, 'misko', undefined);
+    });
+
+
+    it('should watch and fire on expression change', function(){
+      var spy = jasmine.createSpy();
+      root.$watch('name.first', spy);
+      root.name = {};
+      expect(spy).not.wasCalled();
+      root.$digest();
+      expect(spy).not.wasCalled();
+      root.name.first = 'misko';
+      root.$digest();
+      expect(spy).wasCalled();
+    });
+
+    it('should delegate exceptions', function(){
+      root.$watch('a', function(){throw new Error('abc');});
+      root.a = 1;
+      root.$digest();
+      expect(mockHandler.errors[0].message).toEqual('abc');
+      $logMock.error.logs.length = 0;
+    });
+
+
+    it('should fire watches in order of addition', function(){
+      // this is not an external guarantee, just our own sanity
+      var log = '';
+      root.$watch('a', function(){ log += 'a'; });
+      root.$watch('b', function(){ log += 'b'; });
+      root.$watch('c', function(){ log += 'c'; });
+      root.a = root.b = root.c = 1;
+      root.$digest();
+      expect(log).toEqual('abc');
+    });
+
+
+    it('should delegate $digest to children in addition order', function(){
+      // this is not an external guarantee, just our own sanity
+      var log = '';
+      var childA = root.$new();
+      var childB = root.$new();
+      var childC = root.$new();
+      childA.$watch('a', function(){ log += 'a'; });
+      childB.$watch('b', function(){ log += 'b'; });
+      childC.$watch('c', function(){ log += 'c'; });
+      childA.a = childB.b = childC.c = 1;
+      root.$digest();
+      expect(log).toEqual('abc');
+    });
+
+
+    it('should repeat watch cycle while model changes are identified', function(){
+      var log = '';
+      root.$watch('c', function(self, v){self.d = v; log+='c'; });
+      root.$watch('b', function(self, v){self.c = v; log+='b'; });
+      root.$watch('a', function(self, v){self.b = v; log+='a'; });
+      root.a = 1;
+      expect(root.$digest()).toEqual(3);
+      expect(root.b).toEqual(1);
+      expect(root.c).toEqual(1);
+      expect(root.d).toEqual(1);
+      expect(log).toEqual('abc');
+    });
+
+
+    it('should prevent infinite recursion', function(){
+      root.$watch('a', function(self, v){self.b++;});
+      root.$watch('b', function(self, v){self.a++;});
+      root.a = root.b = 0;
+
+      expect(function(){
+        root.$digest();
+      }).toThrow('100 $digest() iterations reached. Aborting!');
+    });
+
+
+    it('should not fire upon $watch registration on initial $digest', function(){
+      var log = '';
+      root.a = 1;
+      root.$watch('a', function(){ log += 'a'; });
+      root.$watch('b', function(){ log += 'b'; });
+      expect(log).toEqual('');
+      expect(root.$digest()).toEqual(0);
+      expect(log).toEqual('');
+    });
+
+
+    it('should return the listener to force a initial watch', function(){
+      var log = '';
+      root.a = 1;
+      root.$watch('a', function(scope, o1, o2){ log += scope.a + ':' + (o1 == o2 == 1) ; })();
+      expect(log).toEqual('1:true');
+      expect(root.$digest()).toEqual(0);
+      expect(log).toEqual('1:true');
+    });
+
+
+    it('should watch objects', function(){
+      var log = '';
+      root.a = [];
+      root.b = {};
+      root.$watch('a', function(){ log +='.';});
+      root.$watch('b', function(){ log +='!';});
+      root.$digest();
+      expect(log).toEqual('');
+
+      root.a.push({});
+      root.b.name = '';
+
+      root.$digest();
+      expect(log).toEqual('.!');
+    });
+
+
+    it('should prevent recursion', function(){
+      var callCount = 0;
+      root.$watch('name', function(){
+        expect(function(){
+          root.$digest();
+        }).toThrow('$digest already in progress');
+        expect(function(){
+          root.$flush();
+        }).toThrow('$digest already in progress');
+        callCount++;
+      });
+      root.name = 'a';
+      root.$digest();
+      expect(callCount).toEqual(1);
+    });
+  });
+
+
+  describe('$observe/$flush', function(){
+    it('should register simple property observer and fire on change', function(){
+      var spy = jasmine.createSpy();
+      root.$observe('name', spy);
+      expect(spy).not.wasCalled();
+      root.$flush();
+      expect(spy).wasCalled();
+      expect(spy.mostRecentCall.args[0]).toEqual(root);
+      expect(spy.mostRecentCall.args[1]).toEqual(undefined);
+      expect(spy.mostRecentCall.args[2].toString()).toEqual(NaN.toString());
+      root.name = 'misko';
+      root.$flush();
+      expect(spy).wasCalledWith(root, 'misko', undefined);
+    });
+
+
+    it('should register expression observers and fire them on change', function(){
+      var spy = jasmine.createSpy();
+      root.$observe('name.first', spy);
+      root.name = {};
+      expect(spy).not.wasCalled();
+      root.$flush();
+      expect(spy).wasCalled();
+      root.name.first = 'misko';
+      root.$flush();
+      expect(spy).wasCalled();
+    });
+
+
+    it('should delegate exceptions', function(){
+      root.$observe('a', function(){throw new Error('abc');});
+      root.a = 1;
+      root.$flush();
+      expect(mockHandler.errors[0].message).toEqual('abc');
+      $logMock.error.logs.shift();
+    });
+
+
+    it('should fire observers in order of addition', function(){
+      // this is not an external guarantee, just our own sanity
+      var log = '';
+      root.$observe('a', function(){ log += 'a'; });
+      root.$observe('b', function(){ log += 'b'; });
+      root.$observe('c', function(){ log += 'c'; });
+      root.a = root.b = root.c = 1;
+      root.$flush();
+      expect(log).toEqual('abc');
+    });
+
+
+    it('should delegate $flush to children in addition order', function(){
+      // this is not an external guarantee, just our own sanity
+      var log = '';
+      var childA = root.$new();
+      var childB = root.$new();
+      var childC = root.$new();
+      childA.$observe('a', function(){ log += 'a'; });
+      childB.$observe('b', function(){ log += 'b'; });
+      childC.$observe('c', function(){ log += 'c'; });
+      childA.a = childB.b = childC.c = 1;
+      root.$flush();
+      expect(log).toEqual('abc');
+    });
+
+
+    it('should fire observers once at beggining and on change', function(){
+      var log = '';
+      root.$observe('c', function(self, v){self.d = v; log += 'c';});
+      root.$observe('b', function(self, v){self.c = v; log += 'b';});
+      root.$observe('a', function(self, v){self.b = v; log += 'a';});
+      root.a = 1;
+      root.$flush();
+      expect(root.b).toEqual(1);
+      expect(log).toEqual('cba');
+      root.$flush();
+      expect(root.c).toEqual(1);
+      expect(log).toEqual('cbab');
+      root.$flush();
+      expect(root.d).toEqual(1);
+      expect(log).toEqual('cbabc');
+    });
+
+
+    it('should fire on initial observe', function(){
+      var log = '';
+      root.a = 1;
+      root.$observe('a', function(){ log += 'a'; });
+      root.$observe('b', function(){ log += 'b'; });
+      expect(log).toEqual('');
+      root.$flush();
+      expect(log).toEqual('ab');
+    });
+
+
+    it('should observe objects', function(){
+      var log = '';
+      root.a = [];
+      root.b = {};
+      root.$observe('a', function(){ log +='.';});
+      root.$observe('a', function(){ log +='!';});
+      root.$flush();
+      expect(log).toEqual('.!');
+
+      root.$flush();
+      expect(log).toEqual('.!');
+
+      root.a.push({});
+      root.b.name = '';
+
+      root.$digest();
+      expect(log).toEqual('.!');
+    });
+
+
+    it('should prevent recursion', function(){
+      var callCount = 0;
+      root.$observe('name', function(){
+        expect(function(){
+          root.$digest();
+        }).toThrow('$flush already in progress');
+        expect(function(){
+          root.$flush();
+        }).toThrow('$flush already in progress');
+        callCount++;
+      });
+      root.name = 'a';
+      root.$flush();
+      expect(callCount).toEqual(1);
+    });
+  });
+
+
+  describe('$destroy', function(){
+    var first, middle, last, log;
+
+    beforeEach(function(){
+      log = '';
+
+      first = root.$new();
+      middle = root.$new();
+      last = root.$new();
+
+      first.$watch(function(){ log += '1';});
+      middle.$watch(function(){ log += '2';});
+      last.$watch(function(){ log += '3';});
+
+      log = '';
+    });
+
+
+    it('should ignore remove on root', function(){
+      root.$destroy();
+      root.$digest();
+      expect(log).toEqual('123');
+    });
+
+
+    it('should remove first', function(){
+      first.$destroy();
+      root.$digest();
+      expect(log).toEqual('23');
+    });
+
+
+    it('should remove middle', function(){
+      middle.$destroy();
+      root.$digest();
+      expect(log).toEqual('13');
+    });
+
+
+    it('should remove last', function(){
+      last.$destroy();
+      root.$digest();
+      expect(log).toEqual('12');
+    });
+  });
+
 
   describe('$eval', function(){
-    var model;
+    it('should eval an expression', function(){
+      expect(root.$eval('a=1')).toEqual(1);
+      expect(root.a).toEqual(1);
 
-    beforeEach(function(){model = createScope();});
-
-    it('should eval function with correct this', function(){
-      model.$eval(function(){
-        this.name = 'works';
-      });
-      expect(model.name).toEqual('works');
+      root.$eval(function(self){self.b=2;});
+      expect(root.b).toEqual(2);
     });
-
-    it('should eval expression with correct this', function(){
-      model.$eval('name="works"');
-      expect(model.name).toEqual('works');
-    });
-
-    it('should not bind regexps', function(){
-      model.exp = /abc/;
-      expect(model.$eval('exp')).toEqual(model.exp);
-    });
-
-    it('should do nothing on empty string and not update view', function(){
-      var onEval = jasmine.createSpy('onEval');
-      model.$onEval(onEval);
-      model.$eval('');
-      expect(onEval).not.toHaveBeenCalled();
-    });
-
-    it('should ignore none string/function', function(){
-      model.$eval(null);
-      model.$eval({});
-      model.$tryEval(null);
-      model.$tryEval({});
-    });
-
   });
 
-  describe('$watch', function(){
-    it('should watch an expression for change', function(){
-      var model = createScope();
-      model.oldValue = "";
-      var nameCount = 0, evalCount = 0;
-      model.name = 'adam';
-      model.$watch('name', function(){ nameCount ++; });
-      model.$watch(function(){return model.name;}, function(newValue, oldValue){
-        this.newValue = newValue;
-        this.oldValue = oldValue;
-      });
-      model.$onEval(function(){evalCount ++;});
-      model.name = 'misko';
-      model.$eval();
-      expect(nameCount).toEqual(2);
-      expect(evalCount).toEqual(1);
-      expect(model.newValue).toEqual('misko');
-      expect(model.oldValue).toEqual('adam');
+
+  describe('$apply', function(){
+    it('should apply expression with full lifecycle', function(){
+      var log = '';
+      var child = root.$new();
+      root.$watch('a', function(scope, a){ log += '1'; });
+      root.$observe('a', function(scope, a){ log += '2'; });
+      child.$apply('$parent.a=0');
+      expect(log).toEqual('12');
     });
 
-    it('should eval with no arguments', function(){
-      var model = createScope();
-      var count = 0;
-      model.$onEval(function(){count++;});
-      model.$eval();
-      expect(count).toEqual(1);
+
+    it('should catch exceptions', function(){
+      var log = '';
+      var child = root.$new();
+      root.$watch('a', function(scope, a){ log += '1'; });
+      root.$observe('a', function(scope, a){ log += '2'; });
+      root.a = 0;
+      child.$apply(function(){ throw new Error('MyError'); });
+      expect(log).toEqual('12');
+      expect(mockHandler.errors[0].message).toEqual('MyError');
+      $logMock.error.logs.shift();
     });
 
-    it('should run listener upon registration by default', function() {
-      var model = createScope();
-      var count = 0,
-          nameNewVal = 'crazy val 1',
-          nameOldVal = 'crazy val 2';
 
-      model.$watch('name', function(newVal, oldVal){
-        count ++;
-        nameNewVal = newVal;
-        nameOldVal = oldVal;
+    describe('exceptions', function(){
+      var $exceptionHandler, $updateView, log;
+      beforeEach(function(){
+        log = '';
+        $exceptionHandler = jasmine.createSpy('$exceptionHandler');
+        $updateView = jasmine.createSpy('$updateView');
+        root.$service = function(name) {
+          return {$updateView:$updateView, $exceptionHandler:$exceptionHandler}[name];
+        };
+        root.$watch(function(){ log += '$digest;'; });
+        log = '';
       });
 
-      expect(count).toBe(1);
-      expect(nameNewVal).not.toBeDefined();
-      expect(nameOldVal).not.toBeDefined();
-    });
 
-    it('should not run listener upon registration if flag is passed in', function() {
-      var model = createScope();
-      var count = 0,
-          nameNewVal = 'crazy val 1',
-          nameOldVal = 'crazy val 2';
-
-      model.$watch('name', function(newVal, oldVal){
-        count ++;
-        nameNewVal = newVal;
-        nameOldVal = oldVal;
-      }, undefined, false);
-
-      expect(count).toBe(0);
-      expect(nameNewVal).toBe('crazy val 1');
-      expect(nameOldVal).toBe('crazy val 2');
-    });
-  });
-
-  describe('$bind', function(){
-    it('should curry a function with respect to scope', function(){
-      var model = createScope();
-      model.name = 'misko';
-      expect(model.$bind(function(){return this.name;})()).toEqual('misko');
-    });
-  });
-
-  describe('$tryEval', function(){
-    it('should report error using the provided error handler and $log.error', function(){
-      var scope = createScope(),
-          errorLogs = scope.$service('$log').error.logs;
-
-      scope.$tryEval(function(){throw "myError";}, function(error){
-        scope.error = error;
+      it('should execute and return value and update', function(){
+        root.name = 'abc';
+        expect(root.$apply(function(scope){
+          return scope.name;
+        })).toEqual('abc');
+        expect(log).toEqual('$digest;');
+        expect($exceptionHandler).not.wasCalled();
+        expect($updateView).wasCalled();
       });
-      expect(scope.error).toEqual('myError');
-      expect(errorLogs.shift()[0]).toBe("myError");
-    });
 
-    it('should report error on visible element', function(){
-      var element = jqLite('<div></div>'),
-          scope = createScope(),
-          errorLogs = scope.$service('$log').error.logs;
 
-      scope.$tryEval(function(){throw "myError";}, element);
-      expect(element.attr('ng-exception')).toEqual('myError');
-      expect(element.hasClass('ng-exception')).toBeTruthy();
-      expect(errorLogs.shift()[0]).toBe("myError");
-    });
-
-    it('should report error on $excetionHandler', function(){
-      var scope = createScope(null, {$exceptionHandler: $exceptionHandlerMockFactory},
-                                    {$log: $logMock});
-      scope.$tryEval(function(){throw "myError";});
-      expect(scope.$service('$exceptionHandler').errors.shift()).toEqual("myError");
-      expect(scope.$service('$log').error.logs.shift()).toEqual(["myError"]);
+      it('should catch exception and update', function(){
+        var error = new Error('MyError');
+        root.$apply(function(){ throw error; });
+        expect(log).toEqual('$digest;');
+        expect($exceptionHandler).wasCalledWith(error);
+        expect($updateView).wasCalled();
+      });
     });
   });
-
-  // $onEval
-  describe('$onEval', function(){
-    it("should eval using priority", function(){
-      var scope = createScope();
-      scope.log = "";
-      scope.$onEval('log = log + "middle;"');
-      scope.$onEval(-1, 'log = log + "first;"');
-      scope.$onEval(1, 'log = log + "last;"');
-      scope.$eval();
-      expect(scope.log).toEqual('first;middle;last;');
-    });
-
-    it("should have $root and $parent", function(){
-      var parent = createScope();
-      var scope = createScope(parent);
-      expect(scope.$root).toEqual(parent);
-      expect(scope.$parent).toEqual(parent);
-    });
-  });
-
-  describe('getterFn', function(){
-    it('should get chain', function(){
-      expect(getterFn('a.b')(undefined)).toEqual(undefined);
-      expect(getterFn('a.b')({})).toEqual(undefined);
-      expect(getterFn('a.b')({a:null})).toEqual(undefined);
-      expect(getterFn('a.b')({a:{}})).toEqual(undefined);
-      expect(getterFn('a.b')({a:{b:null}})).toEqual(null);
-      expect(getterFn('a.b')({a:{b:0}})).toEqual(0);
-      expect(getterFn('a.b')({a:{b:'abc'}})).toEqual('abc');
-    });
-
-    it('should map type method on top of expression', function(){
-      expect(getterFn('a.$filter')({a:[]})('')).toEqual([]);
-    });
-
-    it('should bind function this', function(){
-      expect(getterFn('a')({a:function($){return this.b + $;}, b:1})(2)).toEqual(3);
-
-    });
-  });
-
-  describe('$new', function(){
-    it('should create new child scope and $become controller', function(){
-      var parent = createScope(null, angularService, {exampleService: 'Example Service'});
-      var child = parent.$new(temp.InjectController, 10);
-      expect(child.localService).toEqual('Example Service');
-      expect(child.extra).toEqual(10);
-
-      child.$onEval(function(){ this.run = true; });
-      parent.$eval();
-      expect(child.run).toEqual(true);
-    });
-  });
-
-  describe('$become', function(){
-    it('should inject properties on controller defined in $inject', function(){
-      var parent = createScope(null, angularService, {exampleService: 'Example Service'});
-      var child = createScope(parent);
-      child.$become(temp.InjectController, 10);
-      expect(child.localService).toEqual('Example Service');
-      expect(child.extra).toEqual(10);
-    });
-  });
-
 });

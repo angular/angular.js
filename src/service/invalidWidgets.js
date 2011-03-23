@@ -42,7 +42,7 @@ angularServiceInject("$invalidWidgets", function(){
 
 
   /* At the end of each eval removes all invalid widgets that are not part of the current DOM. */
-  this.$onEval(PRIORITY_LAST, function() {
+  this.$watch(function() {
     for(var i = 0; i < invalidWidgets.length;) {
       var widget = invalidWidgets[i];
       if (isOrphan(widget[0])) {
@@ -56,7 +56,7 @@ angularServiceInject("$invalidWidgets", function(){
 
 
   /**
-   * Traverses DOM element's (widget's) parents and considers the element to be an orphant if one of
+   * Traverses DOM element's (widget's) parents and considers the element to be an orphan if one of
    * it's parents isn't the current window.document.
    */
   function isOrphan(widget) {

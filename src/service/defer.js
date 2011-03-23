@@ -18,16 +18,11 @@
  * @param {function()} fn A function, who's execution should be deferred.
  * @param {number=} [delay=0] of milliseconds to defer the function execution.
  */
-angularServiceInject('$defer', function($browser, $exceptionHandler, $updateView) {
+angularServiceInject('$defer', function($browser) {
+  var scope = this;
   return function(fn, delay) {
     $browser.defer(function() {
-      try {
-        fn();
-      } catch(e) {
-        $exceptionHandler(e);
-      } finally {
-        $updateView();
-      }
+      scope.$apply(fn);
     }, delay);
   };
 }, ['$browser', '$exceptionHandler', '$updateView']);

@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ValidatorTest', function(){
+describe('Validator', function(){
 
   it('ShouldHaveThisSet', function() {
     var validator = {};
@@ -11,7 +11,7 @@ describe('ValidatorTest', function(){
     };
     var scope = compile('<input name="name" ng:validate="myValidator:\'hevery\'"/>')();
     scope.name = 'misko';
-    scope.$eval();
+    scope.$digest();
     assertEquals('misko', validator.first);
     assertEquals('hevery', validator.last);
     expect(validator._this.$id).toEqual(scope.$id);
@@ -118,7 +118,7 @@ describe('ValidatorTest', function(){
         value=v; fn=f;
       };
       scope.name = "misko";
-      scope.$eval();
+      scope.$digest();
       expect(value).toEqual('misko');
       expect(input.hasClass('ng-input-indicator-wait')).toBeTruthy();
       fn("myError");
@@ -158,7 +158,7 @@ describe('ValidatorTest', function(){
       scope.asyncFn = jasmine.createSpy();
       scope.updateFn = jasmine.createSpy();
       scope.name = 'misko';
-      scope.$eval();
+      scope.$digest();
       expect(scope.asyncFn).toHaveBeenCalledWith('misko', scope.asyncFn.mostRecentCall.args[1]);
       assertTrue(scope.$element.hasClass('ng-input-indicator-wait'));
       scope.asyncFn.mostRecentCall.args[1]('myError', {id: 1234, data:'data'});

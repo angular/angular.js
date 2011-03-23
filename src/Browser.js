@@ -60,7 +60,7 @@ function Browser(window, document, body, XHR, $log) {
    */
   function completeOutstandingRequest(fn) {
     try {
-      fn.apply(null, slice.call(arguments, 1));
+      fn.apply(null, sliceArgs(arguments, 1));
     } finally {
       outstandingRequestCount--;
       if (outstandingRequestCount === 0) {

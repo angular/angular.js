@@ -4,7 +4,7 @@ describe("resource", function() {
   var xhr, resource, CreditCard, callback, $xhrErr;
 
   beforeEach(function() {
-    var scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
+    var scope = angular.scope(angularService, {'$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
     xhr = scope.$service('$browser').xhr;
     resource = new ResourceFactory(scope.$service('$xhr'));
     CreditCard = resource.route('/CreditCard/:id:verb', {id:'@id.key'}, {

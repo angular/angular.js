@@ -1,36 +1,34 @@
 @workInProgress
 @ngdoc overview
-@name Developer Guide: Angular Scopes
+@name Developer Guide: Scopes
 @description
 
 
-An angular scope is a JavaScript type defined by angular. Instances of this type are objects that
-serve as the context within which all model and controller methods live and get evaluated.
+An Angular scope is a JavaScript object with additional APIs useful for watching property changes,
+Angular scope is the model in Model-View-Controller paradigm. Instances of scope serve as the
+context within which all {@link dev_guide.expressions expressions} get evaluated.
 
-Angular links scope objects to specific points in a compiled (processed) template. This linkage
-provides the contexts in which angular creates data-bindings between the model and the view. You
-can think of angular scope objects as the medium through which the model, view, and controller
-communicate.
+You can think of Angular scope objects as the medium through which the model, view, and controller
+communicate. Scopes are linked during the compilation process with the view. This linkage provides
+the contexts in which Angular creates data-bindings between the model and the view.
 
-In addition to providing the context in which data is evaluated, angular scope objects watch for
+In addition to providing the context in which data is evaluated, Angular scope objects watch for
 model changes. The scope objects also notify all components interested in any model changes (for
 example, functions registered through {@link api/angular.scope.$watch $watch}, bindings created by
 {@link api/angular.directive.ng:bind ng:bind}, or HTML input elements).
 
-Angular scope objects are responsible for:
+Angular scope objects:
 
-* Gluing the model, controller and view template together.
-* Providing the mechanism to watch for model changes ({@link api/angular.scope.$watch}).
-* Notifying interested components when the model changes ({@link api/angular.scope.$eval}).
-* Providing the context in which all controller functions and angular expressions are evaluated.
+* Link the model, controller and view template together.
+* Provide the mechanism to watch for model changes ({@link api/angular.scope.$watch}).
+* Notify interested components when the model changes ({@link api/angular.scope.$eval}).
+* Provide the context in which expressions are evaluated.
 
 
 ## Related Topics
 
 * {@link dev_guide.scopes.understanding_scopes Understanding Scopes}
-* {@link dev_guide.scopes.working_scopes Working With Scopes}
-* {@link dev_guide.scopes.controlling_scopes Applying Controllers to Scopes}
-* {@link dev_guide.scopes.updating_scopes Updating Scopes}
+* {@link dev_guide.scopes.internals Scopes Internals}
 
 ## Related API
 

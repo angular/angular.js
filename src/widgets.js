@@ -183,9 +183,7 @@ function modelAccessor(scope, element) {
       },
       set: function(value) {
         if (value !== undefined) {
-          return scope.$tryEval(function(){
-            assignFn(scope, value);
-          }, element);
+          assignFn(scope, value);
         }
       }
     };
@@ -332,7 +330,7 @@ function valueAccessor(scope, element) {
   format = formatter.format;
   parse = formatter.parse;
   if (requiredExpr) {
-    scope.$watch(requiredExpr, function(newValue) {
+    scope.$watch(requiredExpr, function(scope, newValue) {
       required = newValue;
       validate();
     });
@@ -529,32 +527,33 @@ function radioInit(model, view, element) {
     </doc:example>
  */
 function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
-  return annotate('$updateView', '$defer', function($updateView, $defer, element) {
+  return annotate('$defer', function($defer, element) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng:change') || '',
+        action = element.attr('ng:change') || noop,
         lastValue;
     if (model) {
       initFn.call(scope, model, view, element);
-      this.$eval(element.attr('ng:init')||'');
+      scope.$eval(element.attr('ng:init') || noop);
       element.bind(events, function(event){
         function handler(){
-          var value = view.get();
-          if (!textBox || value != lastValue) {
-            model.set(value);
-            lastValue = model.get();
-            scope.$tryEval(action, element);
-            $updateView();
-          }
+          scope.$apply(function() {
+            var value = view.get();
+            if (!textBox || value != lastValue) {
+              model.set(value);
+              lastValue = model.get();
+              scope.$eval(action);
+            }
+          });
         }
         event.type == 'keydown' ? $defer(handler) : handler();
       });
-      scope.$watch(model.get, function(value){
-        if (lastValue !== value) {
+      scope.$watch(model.get, function(scope, value) {
+        if (!equals(lastValue, value)) {
           view.set(lastValue = value);
         }
-      });
+      })();
     }
   });
 }
@@ -693,7 +692,7 @@ angularWidget('select', function(element){
 
   var isMultiselect = element.attr('multiple'),
       expression = element.attr('ng:options'),
-      onChange = expressionCompile(element.attr('ng:change') || "").fnSelf,
+      onChange = expressionCompile(element.attr('ng:change') || ""),
       match;
 
   if (!expression) {
@@ -705,12 +704,12 @@ angularWidget('select', function(element){
       " but got '" + expression + "'.");
   }
 
-  var displayFn = expressionCompile(match[2] || match[1]).fnSelf,
+  var displayFn = expressionCompile(match[2] || match[1]),
       valueName = match[4] || match[6],
       keyName = match[5],
-      groupByFn = expressionCompile(match[3] || '').fnSelf,
-      valueFn = expressionCompile(match[2] ? match[1] : valueName).fnSelf,
-      valuesFn = expressionCompile(match[7]).fnSelf,
+      groupByFn = expressionCompile(match[3] || ''),
+      valueFn = expressionCompile(match[2] ? match[1] : valueName),
+      valuesFn = expressionCompile(match[7]),
       // we can't just jqLite('<option>') since jqLite is not smart enough
       // to create it in <select> and IE barfs otherwise.
       optionTemplate = jqLite(document.createElement('option')),
@@ -773,17 +772,14 @@ angularWidget('select', function(element){
           onChange(scope);
           model.set(value);
         }
-        scope.$tryEval(function(){
-          scope.$root.$eval();
-        });
+        scope.$root.$apply();
       } finally {
         tempScope = null; // TODO(misko): needs to be $destroy
       }
     });
 
-    scope.$onEval(function(){
-      var scope = this,
-          optionGroups = {'':[]}, // Temporary location for the option groups before we render them
+    scope.$observe(function(scope) {
+      var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
           optionGroupNames = [''],
           optionGroupName,
           optionGroup,
@@ -934,7 +930,7 @@ angularWidget('select', function(element){
           optionGroupsCache.pop()[0].element.remove();
         }
       } finally {
-        optionScope = null; // TODO(misko): needs to be $destroy()
+        optionScope.$destroy();
       }
     });
   };
@@ -998,33 +994,36 @@ angularWidget('ng:include', function(element){
   } else {
     element[0]['ng:compiled'] = true;
     return extend(function(xhr, element){
-      var scope = this, childScope;
-      var changeCounter = 0;
-      var preventRecursion = false;
-      function incrementChange(){ changeCounter++;}
-      this.$watch(srcExp, incrementChange);
-      this.$watch(scopeExp, incrementChange);
+      var scope = this,
+          changeCounter = 0,
+          releaseScopes = [],
+          childScope,
+          oldScope;
 
-      // note that this propagates eval to the current childScope, where childScope is dynamically
-      // bound (via $route.onChange callback) to the current scope created by $route
-      scope.$onEval(function(){
-        if (childScope && !preventRecursion) {
-          preventRecursion = true;
-          try {
-            childScope.$eval();
-          } finally {
-            preventRecursion = false;
-          }
+      function incrementChange(){ changeCounter++;}
+      this.$observe(srcExp, incrementChange);
+      this.$observe(function(scope){
+        var newScope = scope.$eval(scopeExp);
+        if (newScope !== oldScope) {
+          oldScope = newScope;
+          incrementChange();
         }
       });
-      this.$watch(function(){return changeCounter;}, function(){
-        var src = this.$eval(srcExp),
-            useScope = this.$eval(scopeExp);
+      this.$observe(function(){return changeCounter;}, function(scope) {
+        var src = scope.$eval(srcExp),
+            useScope = scope.$eval(scopeExp);
 
+        while(releaseScopes.length) {
+          releaseScopes.pop().$destroy();
+        }
         if (src) {
           xhr('GET', src, null, function(code, response){
             element.html(response);
-            childScope = useScope || createScope(scope);
+            if (useScope) {
+              childScope = useScope;
+            } else {
+              releaseScopes.push(childScope = scope.$new());
+            }
             compiler.compile(element)(childScope);
             scope.$eval(onloadExp);
           }, false, true);
@@ -1091,69 +1090,56 @@ angularWidget('ng:include', function(element){
       </doc:scenario>
     </doc:example>
  */
-//TODO(im): remove all the code related to using and inline equals
-var ngSwitch = angularWidget('ng:switch', function (element){
+angularWidget('ng:switch', function (element) {
   var compiler = this,
       watchExpr = element.attr("on"),
-      usingExpr = (element.attr("using") || 'equals'),
-      usingExprParams = usingExpr.split(":"),
-      usingFn = ngSwitch[usingExprParams.shift()],
-      changeExpr = element.attr('change') || '',
-      cases = [];
-  if (!usingFn) throw "Using expression '" + usingExpr + "' unknown.";
-  if (!watchExpr) throw "Missing 'on' attribute.";
-  eachNode(element, function(caseElement){
-    var when = caseElement.attr('ng:switch-when');
-    var switchCase = {
-        change: changeExpr,
-        element: caseElement,
-        template: compiler.compile(caseElement)
-      };
+      changeExpr = element.attr('change'),
+      casesTemplate = {},
+      defaultCaseTemplate,
+      children = element.children(),
+      length = children.length,
+      child,
+      when;
+
+  if (!watchExpr) throw new Error("Missing 'on' attribute.");
+  while(length--) {
+    child = jqLite(children[length]);
+    // this needs to be here for IE
+    child.remove();
+    when = child.attr('ng:switch-when');
     if (isString(when)) {
-      switchCase.when = function(scope, value){
-        var args = [value, when];
-        forEach(usingExprParams, function(arg){
-          args.push(arg);
-        });
-        return usingFn.apply(scope, args);
-      };
-      cases.unshift(switchCase);
-    } else if (isString(caseElement.attr('ng:switch-default'))) {
-      switchCase.when = valueFn(true);
-      cases.push(switchCase);
+      casesTemplate[when] = compiler.compile(child);
+    } else if (isString(child.attr('ng:switch-default'))) {
+      defaultCaseTemplate = compiler.compile(child);
     }
-  });
-
-  // this needs to be here for IE
-  forEach(cases, function(_case){
-    _case.element.remove();
-  });
-
+  }
+  children = null; // release memory;
   element.html('');
+
   return function(element){
-    var scope = this, childScope;
-    this.$watch(watchExpr, function(value){
-      var found = false;
+    var changeCounter = 0;
+    var childScope;
+    var selectedTemplate;
+
+    this.$watch(watchExpr, function(scope, value) {
       element.html('');
-      childScope = createScope(scope);
-      forEach(cases, function(switchCase){
-        if (!found && switchCase.when(childScope, value)) {
-          found = true;
-          childScope.$tryEval(switchCase.change, element);
-          switchCase.template(childScope, function(caseElement){
-            element.append(caseElement);
-          });
-        }
-      });
-    });
-    scope.$onEval(function(){
-      if (childScope) childScope.$eval();
+      if (selectedTemplate = casesTemplate[value] || defaultCaseTemplate) {
+        changeCounter++;
+        if (childScope) childScope.$destroy();
+        childScope = scope.$new();
+        childScope.$eval(changeExpr);
+      }
+    })();
+
+    this.$observe(function(){return changeCounter;}, function() {
+      element.html('');
+      if (selectedTemplate) {
+        selectedTemplate(childScope, function(caseElement) {
+          element.append(caseElement);
+        });
+      }
     });
   };
-}, {
-  equals: function(on, when) {
-    return ''+on == when;
-  }
 });
 
 
@@ -1267,15 +1253,16 @@ angularWidget('@ng:repeat', function(expression, element){
     valueIdent = match[3] || match[1];
     keyIdent = match[2];
 
-    var children = [], currentScope = this;
-    this.$onEval(function(){
+    var childScopes = [];
+    var childElements = [iterStartElement];
+    var parentScope = this;
+    this.$observe(function(scope){
       var index = 0,
-          childCount = children.length,
-          lastIterElement = iterStartElement,
-          collection = this.$tryEval(rhs, iterStartElement),
+          childCount = childScopes.length,
+          collection = scope.$eval(rhs),
           collectionLength = size(collection, true),
-          fragment = (element[0].nodeName != 'OPTION') ? document.createDocumentFragment() : null,
-          addFragment,
+          fragment = document.createDocumentFragment(),
+          addFragmentTo = (childCount < collectionLength) ? childElements[childCount] : null,
           childScope,
           key;
 
@@ -1283,35 +1270,32 @@ angularWidget('@ng:repeat', function(expression, element){
         if (collection.hasOwnProperty(key)) {
           if (index < childCount) {
             // reuse existing child
-            childScope = children[index];
+            childScope = childScopes[index];
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
-            lastIterElement = childScope.$element;
             childScope.$position = index == 0
                 ? 'first'
                 : (index == collectionLength - 1 ? 'last' : 'middle');
             childScope.$eval();
           } else {
             // grow children
-            childScope = createScope(currentScope);
+            childScope = parentScope.$new();
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
             childScope.$index = index;
             childScope.$position = index == 0
                 ? 'first'
                 : (index == collectionLength - 1 ? 'last' : 'middle');
-            children.push(childScope);
+            childScopes.push(childScope);
             linker(childScope, function(clone){
               clone.attr('ng:repeat-index', index);
-
-              if (fragment) {
-                fragment.appendChild(clone[0]);
-                addFragment = true;
-              } else {
-                //temporarily preserve old way for option element
-                lastIterElement.after(clone);
-                lastIterElement = clone;
-              }
+              fragment.appendChild(clone[0]);
+              // TODO(misko): Temporary hack - maybe think about it - removed after we add fragment after $flush()
+              // This causes double $flush for children
+              // The first flush will couse a lot of DOM access (initial)
+              // Second flush shuld be noop since nothing has change hence no DOM access.
+              childScope.$flush();
+              childElements[index + 1] = clone;
             });
           }
           index ++;
@@ -1319,15 +1303,19 @@ angularWidget('@ng:repeat', function(expression, element){
       }
 
       //attach new nodes buffered in doc fragment
-      if (addFragment) {
-        lastIterElement.after(jqLite(fragment));
+      if (addFragmentTo) {
+        // TODO(misko): For performance reasons, we should do the addition after all other widgets
+        // have run. For this should happend after $flush() is done!
+        addFragmentTo.after(jqLite(fragment));
       }
 
       // shrink children
-      while(children.length > index) {
-        children.pop().$element.remove();
+      while(childScopes.length > index) {
+        // can not use $destroy(true) since  there may be multiple iterators on same parent.
+        childScopes.pop().$destroy();
+        childElements.pop().remove();
       }
-    }, iterStartElement);
+    });
   };
 });
 
@@ -1438,39 +1426,29 @@ angularWidget('ng:view', function(element) {
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
     return annotate('$xhr.cache', '$route', function($xhr, $route, element){
-      var parentScope = this,
-          childScope;
+      var template;
+      var changeCounter = 0;
 
       $route.onChange(function(){
-        var src;
+        changeCounter++;
+      })(); //initialize the state forcefully, it's possible that we missed the initial
+            //$route#onChange already
 
-        if ($route.current) {
-          src = $route.current.template;
-          childScope = $route.current.scope;
-        }
-
-        if (src) {
+      this.$observe(function(){return changeCounter;}, function() {
+        var template = $route.current && $route.current.template;
+        if (template) {
           //xhr's callback must be async, see commit history for more info
-          $xhr('GET', src, function(code, response){
+          $xhr('GET', template, function(code, response) {
             element.html(response);
-            compiler.compile(element)(childScope);
+            compiler.compile(element)($route.current.scope);
           });
         } else {
           element.html('');
         }
-      })(); //initialize the state forcefully, it's possible that we missed the initial
-            //$route#onChange already
-
-      // note that this propagates eval to the current childScope, where childScope is dynamically
-      // bound (via $route.onChange callback) to the current scope created by $route
-      parentScope.$onEval(function() {
-        if (childScope) {
-          childScope.$eval();
-        }
       });
     });
   } else {
-    this.descend(true);
-    this.directives(true);
+    compiler.descend(true);
+    compiler.directives(true);
   }
 });

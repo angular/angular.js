@@ -30,9 +30,7 @@ of the following documents before returning here to the Developer Guide:
 ## {@link dev_guide.scopes Angular Scope Objects}
 
 * {@link dev_guide.scopes.understanding_scopes Understanding Angular Scope Objects}
-* {@link dev_guide.scopes.working_scopes Working With Angular Scopes}
-* {@link dev_guide.scopes.controlling_scopes Applying Controllers to Scopes}
-* {@link dev_guide.scopes.updating_scopes Updating Scope Properties}
+* {@link dev_guide.scopes.internals Angular Scope Internals}
 
 ## {@link dev_guide.compiler Angular HTML Compiler}
 

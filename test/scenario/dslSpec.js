@@ -10,14 +10,13 @@ describe("angular.scenario.dsl", function() {
       document: _jQuery("<div></div>"),
       angular: new angular.scenario.testing.MockAngular()
     };
-    $root = angular.scope({
-      emit: function(eventName) {
-        eventLog.push(eventName);
-      },
-      on: function(eventName) {
-        eventLog.push('Listener Added for ' + eventName);
-      }
-    });
+    $root = angular.scope();
+    $root.emit = function(eventName) {
+      eventLog.push(eventName);
+    };
+    $root.on = function(eventName) {
+      eventLog.push('Listener Added for ' + eventName);
+    };
     $root.futures = [];
     $root.futureLog = [];
     $root.$window = $window;

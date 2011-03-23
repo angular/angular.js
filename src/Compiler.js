@@ -29,15 +29,20 @@ Template.prototype = {
       inits[this.priority] = queue = [];
     }
     if (this.newScope) {
-      childScope = createScope(scope);
-      scope.$onEval(childScope.$eval);
+      childScope = isFunction(this.newScope) ? scope.$new(this.newScope(scope)) : scope.$new();
       element.data($$scope, childScope);
     }
+    // TODO(misko): refactor this!!!
+    // Why are inits even here?
     forEach(this.inits, function(fn) {
       queue.push(function() {
-        childScope.$tryEval(function(){
-          return childScope.$service.invoke(childScope, fn, [element]);
-        }, element);
+        childScope.$eval(function(){
+          try {
+            return childScope.$service.invoke(childScope, fn, [element]);
+          } catch (e) {
+            childScope.$service('$exceptionHandler')(e);
+          }
+        });
       });
     });
     var i,
@@ -218,7 +223,6 @@ Compiler.prototype = {
       scope.$element = element;
       (cloneConnectFn||noop)(element, scope);
       template.attach(element, scope);
-      scope.$eval();
       return scope;
     };
   },
@@ -228,6 +232,7 @@ Compiler.prototype = {
    * @workInProgress
    * @ngdoc directive
    * @name angular.directive.ng:eval-order
+   * @deprecated
    *
    * @description
    * Normally the view is updated from top to bottom. This usually is
@@ -244,9 +249,9 @@ Compiler.prototype = {
    * @example
      <doc:example>
        <doc:source>
-        <div>TOTAL: without ng:eval-order {{ items.$sum('total') | currency }}</div>
-        <div ng:eval-order='LAST'>TOTAL: with ng:eval-order {{ items.$sum('total') | currency }}</div>
-        <table ng:init="items=[{qty:1, cost:9.99, desc:'gadget'}]">
+        <div>TOTAL: without ng:eval-order {{ total | currency }}</div>
+        <div ng:eval-order='LAST'>TOTAL: with ng:eval-order {{ total | currency }}</div>
+        <table ng:init="items=[{qty:1, cost:9.99, desc:'gadget'}];total=0;">
           <tr>
             <td>QTY</td>
             <td>Description</td>
@@ -258,22 +263,22 @@ Compiler.prototype = {
             <td><input name="item.qty"/></td>
             <td><input name="item.desc"/></td>
             <td><input name="item.cost"/></td>
-            <td>{{item.total = item.qty * item.cost | currency}}</td>
+            <td>{{item.qty * item.cost | currency}}</td>
             <td><a href="" ng:click="items.$remove(item)">X</a></td>
           </tr>
           <tr>
             <td colspan="3"><a href="" ng:click="items.$add()">add</a></td>
-            <td>{{ items.$sum('total') | currency }}</td>
+            <td>{{ total = items.$sum('qty*cost') | currency }}</td>
           </tr>
         </table>
        </doc:source>
        <doc:scenario>
          it('should check ng:format', function(){
-           expect(using('.doc-example-live div:first').binding("items.$sum('total')")).toBe('$9.99');
-           expect(using('.doc-example-live div:last').binding("items.$sum('total')")).toBe('$9.99');
+           expect(using('.doc-example-live div:first').binding("total")).toBe('$0.00');
+           expect(using('.doc-example-live div:last').binding("total")).toBe('$9.99');
            input('item.qty').enter('2');
-           expect(using('.doc-example-live div:first').binding("items.$sum('total')")).toBe('$9.99');
-           expect(using('.doc-example-live div:last').binding("items.$sum('total')")).toBe('$19.98');
+           expect(using('.doc-example-live div:first').binding("total")).toBe('$9.99');
+           expect(using('.doc-example-live div:last').binding("total")).toBe('$19.98');
          });
        </doc:scenario>
      </doc:example>
