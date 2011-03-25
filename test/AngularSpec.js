@@ -393,7 +393,7 @@ describe('angular', function(){
     it('should compile only the element specified via autobind', function() {
       dom.getElementById = function() {
         return this.childNodes[1];
-      }
+      };
 
       angularInit({autobind: 'child'}, dom);
 
