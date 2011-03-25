@@ -57,7 +57,7 @@ describe("resource", function() {
     var R = resource.route('/Path/:a');
     xhr.expectGET('/Path/doh@foo?bar=baz@1').respond({});
     R.get({a: 'doh@foo', bar: 'baz@1'});
-  })
+  });
 
   it("should build resource with default param", function(){
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});

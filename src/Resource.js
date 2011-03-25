@@ -19,7 +19,7 @@ Route.prototype = {
 
     params = params || {};
     forEach(this.urlParams, function(_, urlParam){
-      encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "")
+      encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
       url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
     });
     url = url.replace(/\/?#$/, '');
