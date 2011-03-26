@@ -934,6 +934,7 @@ angularWidget('@ng:repeat', function(expression, element){
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
             lastIterElement = childScope.$element;
+            childScope.$eval();
           } else {
             // grow children
             childScope = createScope(currentScope);
@@ -950,7 +951,6 @@ angularWidget('@ng:repeat', function(expression, element){
               lastIterElement = clone;
             });
           }
-          childScope.$eval();
           index ++;
         }
       }
