@@ -26,7 +26,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
   function cache(method, url, post, callback, verifyCache){
     if (isFunction(post)) {
       callback = post;
-      post = _null;
+      post = null;
     }
     if (method == 'GET') {
       var data, dataCached;

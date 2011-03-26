@@ -330,7 +330,7 @@ Compiler.prototype = {
         template.addChild(i, self.templatize(child, i, priority));
       });
     }
-    return template.empty() ? _null : template;
+    return template.empty() ? null : template;
   }
 };
 

@@ -105,7 +105,7 @@ function JQLiteData(element, key, value) {
     }
     cache[key] = value;
   } else {
-    return cache ? cache[key] : _null;
+    return cache ? cache[key] : null;
   }
 }
 

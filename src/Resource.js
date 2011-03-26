@@ -128,7 +128,7 @@ ResourceFactory.prototype = {
         default:
           throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
         }
-        var data = isPostOrPut ? this : _undefined;
+        var data = isPostOrPut ? this : undefined;
         Resource[name].call(this, params, data, callback);
       };
     });

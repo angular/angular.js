@@ -1,5 +1,5 @@
 extend(angularValidator, {
-  'noop': function() { return _null; },
+  'noop': function() { return null; },
 
   /**
    * @workInProgress
@@ -42,7 +42,7 @@ extend(angularValidator, {
       return msg ||
         "Value does not match expected format " + regexp + ".";
     } else {
-      return _null;
+      return null;
     }
   },
 
@@ -94,7 +94,7 @@ extend(angularValidator, {
       if (typeof min != $undefined && num > max) {
         return "Value can not be greater than " + max + ".";
       }
-      return _null;
+      return null;
     } else {
       return "Not a number";
     }
@@ -144,7 +144,7 @@ extend(angularValidator, {
     if (!("" + value).match(/^\s*[\d+]*\s*$/) || value != Math.round(value)) {
       return "Not a whole number";
     }
-    return _null;
+    return null;
   },
 
   /**
@@ -182,7 +182,7 @@ extend(angularValidator, {
             date.getFullYear() == fields[3] &&
             date.getMonth() == fields[1]-1 &&
             date.getDate() == fields[2])
-              ? _null 
+              ? null
               : "Value is not a date. (Expecting format: 12/31/2009).";
   },
 
@@ -215,7 +215,7 @@ extend(angularValidator, {
    */
   'email': function(value) {
     if (value.match(/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/)) {
-      return _null;
+      return null;
     }
     return "Email needs to be in username@host.com format.";
   },
@@ -249,10 +249,10 @@ extend(angularValidator, {
    */
   'phone': function(value) {
     if (value.match(/^1\(\d\d\d\)\d\d\d-\d\d\d\d$/)) {
-      return _null;
+      return null;
     }
     if (value.match(/^\+\d{2,3} (\(\d{1,5}\))?[\d ]+\d$/)) {
-      return _null;
+      return null;
     }
     return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
   },
@@ -286,7 +286,7 @@ extend(angularValidator, {
    */
   'url': function(value) {
     if (value.match(/^(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?$/)) {
-      return _null;
+      return null;
     }
     return "URL needs to be in http://server[:port]/path format.";
   },
@@ -322,7 +322,7 @@ extend(angularValidator, {
   'json': function(value) {
     try {
       fromJson(value);
-      return _null;
+      return null;
     } catch (e) {
       return e.toString();
     }

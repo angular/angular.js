@@ -682,7 +682,7 @@ describe("widget", function(){
       } else {
 
         event = document.createEvent('MouseEvent');
-        event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, _null);
+        event.initMouseEvent('click', true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
 
         event.preventDefaultOrg = event.preventDefault;
         event.preventDefault = function() {

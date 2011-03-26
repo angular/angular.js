@@ -15,7 +15,7 @@ function getter(instance, path, unboundFn) {
     if (isUndefined(instance)  && key.charAt(0) == '$') {
       var type = angular['Global']['typeOf'](lastInstance);
       type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
-      var fn = type ? type[[key.substring(1)]] : _undefined;
+      var fn = type ? type[[key.substring(1)]] : undefined;
       if (fn) {
         instance = bind(lastInstance, fn, lastInstance);
         return instance;

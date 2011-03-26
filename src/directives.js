@@ -202,7 +202,7 @@ angularDirective("ng:bind", function(expression, element){
     var lastValue = noop, lastError = noop;
     this.$onEval(function() {
       var error, value, html, isHtml, isDomElement,
-          oldElement = this.hasOwnProperty($$element) ? this.$element : _undefined;
+          oldElement = this.hasOwnProperty($$element) ? this.$element : undefined;
       this.$element = element;
       value = this.$tryEval(expression, function(e){
         error = formatError(e);
@@ -229,7 +229,7 @@ angularDirective("ng:bind", function(expression, element){
           element.html('');
           element.append(value);
         } else {
-          element.text(value == _undefined ? '' : value);
+          element.text(value == undefined ? '' : value);
         }
       }
     }, element);
@@ -257,7 +257,7 @@ function compileBindTemplate(template){
     });
     bindTemplateCache[template] = fn = function(element, prettyPrintJson){
       var parts = [], self = this,
-         oldElement = this.hasOwnProperty($$element) ? self.$element : _undefined;
+         oldElement = this.hasOwnProperty($$element) ? self.$element : undefined;
       self.$element = element;
       for ( var i = 0; i < bindings.length; i++) {
         var value = bindings[i].call(self, element);
@@ -767,7 +767,7 @@ angularDirective("ng:style", function(expression, element){
     this.$onEval(function(){
       var style = this.$eval(expression) || {}, key, mergedStyle = {};
       for(key in style) {
-        if (resetStyle[key] === _undefined) resetStyle[key] = '';
+        if (resetStyle[key] === undefined) resetStyle[key] = '';
         mergedStyle[key] = style[key];
       }
       for(key in resetStyle) {

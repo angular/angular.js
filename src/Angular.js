@@ -52,9 +52,7 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) { return String.fromCharCode(code); }
 
 
-var _undefined        = undefined,
-    _null             = null,
-    $$element         = '$element',
+var $$element         = '$element',
     $$update          = '$update',
     $$scope           = '$scope',
     $$validate        = '$validate',
@@ -315,7 +313,7 @@ function isDefined(value){ return typeof value != $undefined; }
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){ return value!=_null && typeof value == $object;}
+function isObject(value){ return value!=null && typeof value == $object;}
 
 
 /**

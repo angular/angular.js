@@ -50,7 +50,7 @@ angularServiceInject("$hover", function(browser, document) {
       }
     } else if (tooltip) {
       tooltip.callout.remove();
-      tooltip = _null;
+      tooltip = null;
     }
   });
 }, ['$browser', '$document'], true);

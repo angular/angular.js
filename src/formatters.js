@@ -1,6 +1,6 @@
 function formatter(format, parse) {return {'format':format, 'parse':parse || format};}
 function toString(obj) {
-  return (isDefined(obj) && obj !== _null) ? "" + obj : obj;
+  return (isDefined(obj) && obj !== null) ? "" + obj : obj;
 }
 
 var NUMBER = /^\s*[-+]?\d*(\.\d*)?\s*$/;
@@ -94,8 +94,8 @@ angularFormatter['boolean'] = formatter(toString, toBoolean);
    </doc:example>
  */
 angularFormatter.number = formatter(toString, function(obj){
-  if (obj == _null || NUMBER.exec(obj)) {
-    return obj===_null || obj === '' ? _null : 1*obj;
+  if (obj == null || NUMBER.exec(obj)) {
+    return obj===null || obj === '' ? null : 1*obj;
   } else {
     throw "Not a number";
   }

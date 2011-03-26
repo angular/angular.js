@@ -95,7 +95,7 @@ function Browser(window, document, body, XHR, $log) {
       var script = jqLite('<script>')
           .attr({type: 'text/javascript', src: url.replace('JSON_CALLBACK', callbackId)});
       window[callbackId] = function(data){
-        window[callbackId] = _undefined;
+        window[callbackId] = undefined;
         script.remove();
         completeOutstandingRequest(callback, 200, data);
       };
@@ -290,7 +290,7 @@ function Browser(window, document, body, XHR, $log) {
     var cookieLength, cookieArray, cookie, i, keyValue, index;
 
     if (name) {
-      if (value === _undefined) {
+      if (value === undefined) {
         rawDocument.cookie = escape(name) + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
       } else {
         if (isString(value)) {
