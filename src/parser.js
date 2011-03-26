@@ -1,5 +1,5 @@
 var OPERATORS = {
-    'null':function(self){return _null;},
+    'null':function(self){return null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
     $undefined:noop,
@@ -566,7 +566,7 @@ function parser(text, json){
       function (self){
         var o = obj(self);
         var i = indexFn(self);
-        return (o) ? o[i] : _undefined;
+        return (o) ? o[i] : undefined;
       }, {
         assign:function(self, value){
           return obj(self)[indexFn(self)] = value;

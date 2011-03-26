@@ -15,7 +15,7 @@ var array = [].constructor;
  */
 function toJson(obj, pretty) {
   var buf = [];
-  toJsonArray(buf, obj, pretty ? "\n  " : _null, []);
+  toJsonArray(buf, obj, pretty ? "\n  " : null, []);
   return buf.join('');
 }
 
@@ -87,7 +87,7 @@ function toJsonArray(buf, obj, pretty, stack) {
     }
     stack.push(obj);
   }
-  if (obj === _null) {
+  if (obj === null) {
     buf.push($null);
   } else if (obj instanceof RegExp) {
     buf.push(angular['String']['quoteUnicode'](obj.toString()));
@@ -128,7 +128,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       var childPretty = pretty ? pretty + "  " : false;
       var keys = [];
       for(var k in obj) {
-        if (obj[k] === _undefined)
+        if (obj[k] === undefined)
           continue;
         keys.push(k);
       }

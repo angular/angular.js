@@ -52,7 +52,7 @@ angularServiceInject('$cookies', function($browser) {
     //delete any cookies deleted in $cookies
     for (name in lastCookies) {
       if (isUndefined(cookies[name])) {
-        $browser.cookies(name, _undefined);
+        $browser.cookies(name, undefined);
       }
     }
 

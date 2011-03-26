@@ -199,7 +199,7 @@ angularServiceInject("$location", function($browser) {
    */
   function composeHref(loc) {
     var url = toKeyValue(loc.search);
-    var port = (loc.port == DEFAULT_PORTS[loc.protocol] ? _null : loc.port);
+    var port = (loc.port == DEFAULT_PORTS[loc.protocol] ? null : loc.port);
 
     return loc.protocol  + '://' + loc.host +
           (port ? ':' + port : '') + loc.path +
@@ -233,7 +233,7 @@ angularServiceInject("$location", function($browser) {
       loc.href = href.replace(/#$/, '');
       loc.protocol = match[1];
       loc.host = match[3] || '';
-      loc.port = match[5] || DEFAULT_PORTS[loc.protocol] || _null;
+      loc.port = match[5] || DEFAULT_PORTS[loc.protocol] || null;
       loc.path = match[6] || '';
       loc.search = parseKeyValue(match[8]);
       loc.hash = match[10] || '';

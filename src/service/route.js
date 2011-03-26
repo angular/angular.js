@@ -196,14 +196,14 @@ angularServiceInject('$route', function(location, $updateView) {
       });
       if (dstName) this.$set(dstName, dst);
     }
-    return match ? dst : _null;
+    return match ? dst : null;
   }
 
 
   function updateRoute(){
     var childScope, routeParams, pathParams, segmentMatch, key, redir;
 
-    $route.current = _null;
+    $route.current = null;
     forEach(routes, function(rParams, rPath) {
       if (!pathParams) {
         if (pathParams = matcher(location.hashPath, rPath)) {
@@ -213,7 +213,7 @@ angularServiceInject('$route', function(location, $updateView) {
     });
 
     // "otherwise" fallback
-    routeParams = routeParams || routes[_null];
+    routeParams = routeParams || routes[null];
 
     if(routeParams) {
       if (routeParams.redirectTo) {

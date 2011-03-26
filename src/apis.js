@@ -1,6 +1,6 @@
 var angularGlobal = {
   'typeOf':function(obj){
-    if (obj === _null) return $null;
+    if (obj === null) return $null;
     var type = typeof obj;
     if (type == $object) {
       if (obj instanceof Array) return $array;

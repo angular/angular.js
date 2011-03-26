@@ -129,7 +129,7 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
   return function(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
-      post = _null;
+      post = null;
     }
     if (post && isObject(post)) {
       post = toJson(post);

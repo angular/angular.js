@@ -16,7 +16,7 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   function bulkXHR(method, url, post, callback) {
     if (isFunction(post)) {
       callback = post;
-      post = _null;
+      post = null;
     }
     var currentQueue;
     forEach(bulkXHR.urls, function(queue){

@@ -20,11 +20,11 @@ function parseBindings(string) {
 
 function binding(string) {
   var binding = string.replace(/\n/gm, ' ').match(/^\{\{(.*)\}\}$/);
-  return binding ? binding[1] : _null;
+  return binding ? binding[1] : null;
 }
 
 function hasBindings(bindings) {
-  return bindings.length > 1 || binding(bindings[0]) !== _null;
+  return bindings.length > 1 || binding(bindings[0]) !== null;
 }
 
 angularTextMarkup('{{}}', function(text, textNode, parentElement) {
