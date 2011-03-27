@@ -461,12 +461,14 @@ function map(obj, iterator, context) {
  * @function
  *
  * @description
- * Determines the number of elements in an array or number of properties of an object.
+ * Determines the number of elements in an array, number of properties of an object or string
+ * length.
  *
  * Note: this function is used to augment the Object type in angular expressions. See
  * {@link angular.Object} for more info.
  *
- * @param {Object|Array} obj Object or array to inspect.
+ * @param {Object|Array|string} obj Object, array or string to inspect.
+ * @param {boolean} [ownPropsOnly=false] Count only "own" properties in an object
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object or an array.
  *
  * @example
@@ -483,14 +485,15 @@ function map(obj, iterator, context) {
  *  </doc:scenario>
  * </doc:example>
  */
-function size(obj) {
+function size(obj, ownPropsOnly) {
   var size = 0, key;
   if (obj) {
     if (isNumber(obj.length)) {
       return obj.length;
     } else if (isObject(obj)){
       for (key in obj)
-        size++;
+        if (!ownPropsOnly || obj.hasOwnProperty(key))
+          size++;
     }
   }
   return size;
