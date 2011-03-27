@@ -166,7 +166,7 @@ task :compile => [:init, :compile_scenario, :generate_ie_compat] do
     f.write(gen_css('css/angular.css', true))
   end
 
-  %x(java -jar lib/compiler-closure/compiler.jar \
+  %x(java -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
         --js #{path_to('angular.js')} \
         --js_output_file #{path_to('angular.min.js')})
