@@ -487,17 +487,19 @@ function map(obj, iterator, context) {
  */
 function size(obj, ownPropsOnly) {
   var size = 0, key;
-  if (obj) {
-    if (isNumber(obj.length)) {
-      return obj.length;
-    } else if (isObject(obj)){
-      for (key in obj)
-        if (!ownPropsOnly || obj.hasOwnProperty(key))
-          size++;
-    }
+
+  if (isArray(obj) || isString(obj)) {
+    return obj.length;
+  } else if (isObject(obj)){
+    for (key in obj)
+      if (!ownPropsOnly || obj.hasOwnProperty(key))
+        size++;
   }
+
   return size;
 }
+
+
 function includes(array, obj) {
   for ( var i = 0; i < array.length; i++) {
     if (obj === array[i]) return true;
