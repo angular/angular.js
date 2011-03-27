@@ -133,6 +133,10 @@ describe('angular', function(){
       expect(size('')).toBe(0);
       expect(size('abc')).toBe(3);
     });
+
+    it('should not rely on length property of an object to determine its size', function() {
+      expect(size({length:99})).toBe(1);
+    });
   });
 
 
