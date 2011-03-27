@@ -913,18 +913,9 @@ angularWidget('@ng:repeat', function(expression, element){
           childCount = children.length,
           lastIterElement = iterStartElement,
           collection = this.$tryEval(rhs, iterStartElement),
-          is_array = isArray(collection),
-          collectionLength = 0,
+          collectionLength = size(collection, true),
           childScope,
           key;
-
-      if (is_array) {
-        collectionLength = collection.length;
-      } else {
-        for (key in collection)
-          if (collection.hasOwnProperty(key))
-            collectionLength++;
-      }
 
       for (key in collection) {
         if (collection.hasOwnProperty(key)) {

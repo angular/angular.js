@@ -110,6 +110,32 @@ describe('angular', function(){
     });
   });
 
+
+  describe('size', function() {
+    it('should return the number of items in an array', function() {
+      expect(size([])).toBe(0);
+      expect(size(['a', 'b', 'c'])).toBe(3);
+    });
+
+    it('should return the number of properties of an object', function() {
+      expect(size({})).toBe(0);
+      expect(size({a:1, b:'a', c:noop})).toBe(3);
+    });
+
+    it('should return the number of own properties of an object', function() {
+      var obj = inherit({protoProp: 'c', protoFn: noop}, {a:1, b:'a', c:noop});
+
+      expect(size(obj)).toBe(5);
+      expect(size(obj, true)).toBe(3);
+    });
+
+    it('should return the string length', function() {
+      expect(size('')).toBe(0);
+      expect(size('abc')).toBe(3);
+    });
+  });
+
+
   describe('parseKeyValue', function() {
     it('should parse a string into key-value pairs', function() {
       expect(parseKeyValue('')).toEqual({});
