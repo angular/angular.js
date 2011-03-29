@@ -66,7 +66,7 @@ function JQLite(element) {
     div.innerHTML = '<div>&nbsp;</div>' + element; // IE insanity to make NoScope elements work!
     div.removeChild(div.firstChild); // remove the superfluous div
     JQLiteAddNodes(this, div.childNodes);
-    this.remove(); // detach the elements form the temporary DOM div.
+    this.remove(); // detach the elements from the temporary DOM div.
   } else {
     JQLiteAddNodes(this, element);
   }
@@ -136,8 +136,7 @@ function JQLiteAddNodes(root, elements) {
       ? elements
       : [ elements ];
     for(var i=0; i < elements.length; i++) {
-      if (elements[i].nodeType != 11)
-        root.push(elements[i]);
+      root.push(elements[i]);
     }
   }
 }
