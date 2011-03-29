@@ -186,7 +186,7 @@ describe('HTML', function(){
         function tag(name) {
           writer.start(name, {});
           writer.end(name);
-        };
+        }
         tag('frameset');
         tag('frame');
         tag('form');

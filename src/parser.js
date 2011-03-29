@@ -362,7 +362,6 @@ function parser(text, json){
     var token = expect();
     var formatter = angularFormatter[token.text];
     var argFns = [];
-    var token;
     if (!formatter) throwError('is not a valid formatter.', token);
     while(true) {
       if ((token = expect(':'))) {
