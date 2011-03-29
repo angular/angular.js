@@ -1027,8 +1027,8 @@ function assertArg(arg, name, reason) {
     if (window.console) window.console.log(error.stack);
     throw error;
   }
-};
+}
 
 function assertArgFn(arg, name) {
   assertArg(isFunction(arg, name, 'not a function'));
-};
+}

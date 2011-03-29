@@ -798,7 +798,7 @@ describe("widget", function(){
 
 
   describe('ng:view', function() {
-    var rootScope, rootScope, $route, $location, $browser;
+    var rootScope, $route, $location, $browser;
 
     beforeEach(function() {
       rootScope = angular.compile('<ng:view></ng:view>')();

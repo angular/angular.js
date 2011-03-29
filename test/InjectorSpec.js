@@ -87,7 +87,7 @@ describe('injector', function(){
 
   describe('annotation', function(){
     it('should return $inject', function(){
-      function fn(){};
+      function fn(){}
       fn.$inject = ['a'];
       expect(injectionArgs(fn)).toBe(fn.$inject);
       expect(injectionArgs(function(){})).toEqual([]);
@@ -105,19 +105,19 @@ describe('injector', function(){
                  multi-line comment
                  function (a, b){}
                  */
-          /* {some type} */ c){ extraParans();};
+          /* {some type} */ c){ extraParans();}
       expect(injectionArgs($f_n0)).toEqual(['$a', 'b']);
       expect($f_n0.$inject).toEqual(['$a', 'b']);
     });
 
     it('should handle no arg functions', function(){
-      function $f_n0(){};
+      function $f_n0(){}
       expect(injectionArgs($f_n0)).toEqual([]);
       expect($f_n0.$inject).toEqual([]);
     });
 
     it('should handle args with both $ and _', function(){
-      function $f_n0($a_){};
+      function $f_n0($a_){}
       expect(injectionArgs($f_n0)).toEqual(['$a']);
       expect($f_n0.$inject).toEqual(['$a']);
     });

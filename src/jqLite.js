@@ -251,11 +251,13 @@ forEach({
    * Properties: writes return selection, reads return first value
    */
   JQLite.prototype[name] = function(arg1, arg2) {
+    var i, key;
+
     if ((fn.length == 2 ? arg1 : arg2) === undefined) {
       if (isObject(arg1)) {
         // we are a write, but the object properties are the key/values
-        for(var i=0; i < this.length; i++) {
-          for ( var key in arg1) {
+        for(i=0; i < this.length; i++) {
+          for (key in arg1) {
             fn(this[i], key, arg1[key]);
           }
         }
@@ -268,7 +270,7 @@ forEach({
       }
     } else {
       // we are a write, so apply to all children
-      for(var i=0; i < this.length; i++) {
+      for(i=0; i < this.length; i++) {
         fn(this[i], arg1, arg2);
       }
       // return self for chaining

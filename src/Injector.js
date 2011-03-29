@@ -74,7 +74,7 @@ function createInjector(providerScope, providers, cache) {
 }
 
 function injectService(services, fn) {
-  return extend(fn, {$inject:services});;
+  return extend(fn, {$inject:services});
 }
 
 function injectUpdateView(fn) {
@@ -113,4 +113,4 @@ function injectionArgs(fn) {
     });
   }
   return fn.$inject;
-};
+}
