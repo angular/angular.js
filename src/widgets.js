@@ -914,6 +914,8 @@ angularWidget('@ng:repeat', function(expression, element){
           lastIterElement = iterStartElement,
           collection = this.$tryEval(rhs, iterStartElement),
           collectionLength = size(collection, true),
+          fragment = (element[0].nodeName != 'OPTION') ? document.createDocumentFragment() : null,
+          addFragment,
           childScope,
           key;
 
@@ -938,13 +940,26 @@ angularWidget('@ng:repeat', function(expression, element){
             children.push(childScope);
             linker(childScope, function(clone){
               clone.attr('ng:repeat-index', index);
-              lastIterElement.after(clone);
-              lastIterElement = clone;
+
+              if (fragment) {
+                fragment.appendChild(clone[0]);
+                addFragment = true;
+              } else {
+                //temporarily preserve old way for option element
+                lastIterElement.after(clone);
+                lastIterElement = clone;
+              }
             });
           }
           index ++;
         }
       }
+
+      //attach new nodes buffered in doc fragment
+      if (addFragment) {
+        lastIterElement.after(jqLite(fragment));
+      }
+
       // shrink children
       while(children.length > index) {
         children.pop().$element.remove();
