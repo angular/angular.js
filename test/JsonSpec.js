@@ -78,10 +78,11 @@ describe('json', function(){
     expect(angular.toJson(obj)).toEqual('{"$a":"a"}');
   });
 
-  it('should serialize inherited properties', function() {
+  it('should NOT serialize inherited properties', function() {
+    // This is what native Browser does
     var obj = inherit({p:'p'});
     obj.a = 'a';
-    expect(angular.toJson(obj)).toEqual('{"a":"a","p":"p"}');
+    expect(angular.toJson(obj)).toEqual('{"a":"a"}');
   });
 
   it('should serialize same objects multiple times', function() {
