@@ -673,12 +673,12 @@ angularWidget('ng:include', function(element){
             useScope = this.$eval(scopeExp);
 
         if (src) {
-          xhr('GET', src, function(code, response){
+          xhr('GET', src, null, function(code, response){
             element.html(response);
             childScope = useScope || createScope(scope);
             compiler.compile(element)(childScope);
             scope.$eval(onloadExp);
-          });
+          }, false, true);
         } else {
           childScope = null;
           element.html('');
@@ -1066,10 +1066,10 @@ angularWidget('ng:view', function(element) {
         }
 
         if (src) {
-          $xhr('GET', src, function(code, response){
+          $xhr('GET', src, null, function(code, response){
             element.html(response);
             compiler.compile(element)(childScope);
-          });
+          }, false, true);
         } else {
           element.html('');
         }
