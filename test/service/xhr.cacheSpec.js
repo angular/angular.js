@@ -107,6 +107,22 @@ describe('$xhr.cache', function() {
   });
 
 
+  it('should call callback synchronously when sync flag is on', function() {
+    $browserXhr.expectGET('/url').respond('+');
+    cache('GET', '/url', null, callback, false, true);
+    expect(log).toEqual(''); //callback hasn't executed
+
+    $browserXhr.flush();
+    expect(log).toEqual('"+";'); //callback has executed
+
+    cache('GET', '/url', null, callback, false, true);
+    expect(log).toEqual('"+";"+";'); //callback has executed
+
+    $browser.defer.flush();
+    expect(log).toEqual('"+";"+";'); //callback was not called again any more
+  });
+
+
   it('should call eval after callbacks for both cache hit and cache miss execute', function() {
     var eval = this.spyOn(scope, '$eval').andCallThrough();
 

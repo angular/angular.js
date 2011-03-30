@@ -610,7 +610,6 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$eval();
-      scope.$service('$browser').defer.flush();
       expect(element.text()).toEqual('misko');
       dealoc(scope);
     });
@@ -623,7 +622,6 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
       scope.$eval();
-      scope.$service('$browser').defer.flush();
 
       expect(element.text()).toEqual('igor');
 
@@ -640,7 +638,6 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
       scope.$eval();
-      scope.$service('$browser').defer.flush();
 
       // this one should really be just '1', but due to lack of real events things are not working
       // properly. see discussion at: http://is.gd/ighKk
@@ -657,7 +654,6 @@ describe("widget", function(){
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
       scope.$eval();
-      scope.$service('$browser').defer.flush();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
       dealoc(element);

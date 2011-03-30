@@ -20,10 +20,11 @@
  * @param {boolean=} [verifyCache=false] If `true` then a result is immediately returned from cache
  *   (if present) while a request is sent to the server for a fresh response that will update the
  *   cached entry. The `callback` function will be called when the response is received.
+ * @param {boolean=} [sync=false] in case of cache hit execute `callback` synchronously.
  */
 angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
   var inflight = {}, self = this;
-  function cache(method, url, post, callback, verifyCache){
+  function cache(method, url, post, callback, verifyCache, sync){
     if (isFunction(post)) {
       callback = post;
       post = null;
@@ -31,7 +32,13 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
     if (method == 'GET') {
       var data, dataCached;
       if (dataCached = cache.data[url]) {
-        $defer(function() { callback(200, copy(dataCached.value)); });
+
+        if (sync) {
+          callback(200, copy(dataCached.value));
+        } else {
+          $defer(function() { callback(200, copy(dataCached.value)); });
+        }
+
         if (!verifyCache)
           return;
       }
