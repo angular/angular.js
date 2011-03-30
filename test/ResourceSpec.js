@@ -177,7 +177,7 @@ describe("resource", function() {
     expect(callback).wasCalledWith(cc);
   });
 
-  it('should not mutate the resource object if response contains no body', function(){
+  it('should not mutate the resource object if response contains no body', function(){
     var data = {id:{key:123}, number:'9876'};
     xhr.expectGET("/CreditCard/123").respond(data);
     var cc = CreditCard.get({id:123});
