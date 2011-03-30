@@ -128,9 +128,9 @@ function toJsonArray(buf, obj, pretty, stack) {
       var childPretty = pretty ? pretty + "  " : false;
       var keys = [];
       for(var k in obj) {
-        if (obj[k] === undefined)
-          continue;
-        keys.push(k);
+        if (obj.hasOwnProperty(k) && obj[k] !== undefined) {
+          keys.push(k);
+        }
       }
       keys.sort();
       for ( var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
