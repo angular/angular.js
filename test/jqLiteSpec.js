@@ -299,6 +299,11 @@ describe('jqLite', function(){
       expect(root.append('text')).toEqual(root);
       expect(root.html()).toEqual('text');
     });
+    it('should not append anything if parent node is not of type element', function() {
+      var root = jqLite(document.createDocumentFragment());
+      expect(root.append('<p>foo</p>')).toBe(root);
+      expect(root.children().length).toBe(0);
+    });
   });
   describe('remove', function(){
     it('should remove', function(){
