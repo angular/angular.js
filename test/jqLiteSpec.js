@@ -1,11 +1,12 @@
 describe('jqLite', function(){
-  var scope;
-  var a, b, c;
+  var scope, a, b, c;
+
   beforeEach(function(){
     a = jqLite('<div>A</div>')[0];
     b = jqLite('<div>B</div>')[0];
     c = jqLite('<div>C</div>')[0];
   });
+
 
   beforeEach(function(){
     scope = angular.scope();
@@ -28,11 +29,13 @@ describe('jqLite', function(){
     });
   });
 
+
   afterEach(function(){
     dealoc(a);
     dealoc(b);
     dealoc(c);
   });
+
 
   describe('construction', function(){
     it('should allow construction with text node', function(){
@@ -42,6 +45,7 @@ describe('jqLite', function(){
       expect(selected[0]).toEqual(text);
     });
 
+
     it('should allow construction with html', function(){
       var nodes = jqLite('<div>1</div><span>2</span>');
       expect(nodes.length).toEqual(2);
@@ -49,11 +53,13 @@ describe('jqLite', function(){
       expect(nodes[1].innerHTML).toEqual('2');
     });
 
+
     it('should allow creation of comment tags', function() {
       var nodes = jqLite('<!-- foo -->');
       expect(nodes.length).toBe(1);
       expect(nodes[0].nodeType).toBe(8);
     });
+
 
     it('should allow creation of script tags', function() {
       var nodes = jqLite('<script></script>');
@@ -61,12 +67,14 @@ describe('jqLite', function(){
       expect(nodes[0].tagName.toUpperCase()).toBe('SCRIPT');
     });
 
+
     it('should wrap document fragment', function() {
       var fragment = jqLite(document.createDocumentFragment());
       expect(fragment.length).toBe(1);
       expect(fragment[0].nodeType).toBe(11);
     });
   });
+
 
   describe('scope', function() {
     it('should retrieve scope attached to the current element', function() {
@@ -76,6 +84,7 @@ describe('jqLite', function(){
       dealoc(element);
     });
 
+
     it('should walk up the dom to find scope', function() {
       var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
       var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
@@ -84,6 +93,7 @@ describe('jqLite', function(){
       dealoc(element);
     });
 
+
     it('should return undefined when no scope was found', function() {
       var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
       var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
@@ -91,6 +101,7 @@ describe('jqLite', function(){
       dealoc(element);
     });
   });
+
 
   describe('data', function(){
     it('should set and get ande remove data', function(){
@@ -115,6 +126,7 @@ describe('jqLite', function(){
     });
   });
 
+
   describe('attr', function(){
     it('shoul read wirite and remove attr', function(){
       var selector = jqLite([a, b]);
@@ -136,13 +148,18 @@ describe('jqLite', function(){
       expect(jqLite(b).attr('prop')).toBeFalsy();
     });
   });
+
+
   describe('class', function(){
+
     describe('hasClass', function(){
       it('should check class', function(){
         var selector = jqLite([a, b]);
         expect(selector.hasClass('abc')).toEqual(false);
       });
     });
+
+
     describe('addClass', function(){
       it('should allow adding of class', function(){
         var selector = jqLite([a, b]);
@@ -151,6 +168,8 @@ describe('jqLite', function(){
         expect(jqLite(b).hasClass('abc')).toEqual(true);
       });
     });
+
+
     describe('toggleClass', function(){
       it('should allow toggling of class', function(){
         var selector = jqLite([a, b]);
@@ -172,6 +191,8 @@ describe('jqLite', function(){
 
       });
     });
+
+
     describe('removeClass', function(){
       it('should allow removal of class', function(){
         var selector = jqLite([a, b]);
@@ -182,6 +203,8 @@ describe('jqLite', function(){
       });
     });
   });
+
+
   describe('css', function(){
     it('should set and read css', function(){
       var selector = jqLite([a, b]);
@@ -203,11 +226,14 @@ describe('jqLite', function(){
       expect(jqLite(b).css('prop')).toBeFalsy();
     });
   });
+
+
   describe('text', function(){
     it('should return null on empty', function(){
       expect(jqLite().length).toEqual(0);
       expect(jqLite().text()).toEqual('');
     });
+
 
     it('should read/write value', function(){
       var element = jqLite('<div>abc</div>');
@@ -218,6 +244,8 @@ describe('jqLite', function(){
       expect(element.text()).toEqual('xyz');
     });
   });
+
+
   describe('val', function(){
     it('should read, write value', function(){
       var input = jqLite('<input type="text"/>');
@@ -226,11 +254,14 @@ describe('jqLite', function(){
       expect(input.val()).toEqual('abc');
     });
   });
+
+
   describe('html', function(){
     it('should return null on empty', function(){
       expect(jqLite().length).toEqual(0);
       expect(jqLite().html()).toEqual(null);
     });
+
 
     it('should read/write value', function(){
       var element = jqLite('<div>abc</div>');
@@ -241,6 +272,7 @@ describe('jqLite', function(){
       expect(element.html()).toEqual('xyz');
     });
   });
+
 
   describe('bind', function(){
     it('should bind to window on hashchange', function(){
@@ -272,6 +304,7 @@ describe('jqLite', function(){
       dealoc(jWindow);
     });
 
+
     it('should bind to all elements and return functions', function(){
       var selected = jqLite([a, b]);
       var log = '';
@@ -285,6 +318,7 @@ describe('jqLite', function(){
     });
   });
 
+
   describe('replaceWith', function(){
     it('should replaceWith', function(){
       var root = jqLite('<div>').html('before-<div></div>after');
@@ -292,6 +326,8 @@ describe('jqLite', function(){
       expect(div.replaceWith('<span>span-</span><b>bold-</b>')).toEqual(div);
       expect(root.text()).toEqual('before-span-bold-after');
     });
+
+
     it('should replaceWith text', function(){
       var root = jqLite('<div>').html('before-<div></div>after');
       var div = root.find('div');
@@ -299,6 +335,8 @@ describe('jqLite', function(){
       expect(root.text()).toEqual('before-text-after');
     });
   });
+
+
   describe('children', function(){
     it('should select non-text children', function(){
       var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
@@ -307,6 +345,8 @@ describe('jqLite', function(){
       expect(root.children()).toJqEqual([div, span]);
     });
   });
+
+
   describe('append', function(){
     it('should append', function(){
       var root = jqLite('<div>');
@@ -324,6 +364,8 @@ describe('jqLite', function(){
       expect(root.children().length).toBe(0);
     });
   });
+
+
   describe('remove', function(){
     it('should remove', function(){
       var root = jqLite('<div><span>abc</span></div>');
@@ -332,6 +374,8 @@ describe('jqLite', function(){
       expect(root.html()).toEqual('');
     });
   });
+
+
   describe('after', function(){
     it('should after', function(){
       var root = jqLite('<div><span></span></div>');
@@ -339,6 +383,8 @@ describe('jqLite', function(){
       expect(span.after('<i></i><b></b>')).toEqual(span);
       expect(root.html().toLowerCase()).toEqual('<span></span><i></i><b></b>');
     });
+
+
     it('should allow taking text', function(){
       var root = jqLite('<div><span></span></div>');
       var span = root.find('span');
@@ -346,6 +392,8 @@ describe('jqLite', function(){
       expect(root.html().toLowerCase()).toEqual('<span></span>abc');
     });
   });
+
+
   describe('parent', function(){
     it('should return parent or an empty set when no parent', function(){
       var parent = jqLite('<div><p>abc</p></div>'),
@@ -357,11 +405,15 @@ describe('jqLite', function(){
       expect(child.parent().length).toBe(1);
       expect(child.parent()[0]).toBe(parent[0]);
     });
+
+
     it('should return empty set when no parent', function(){
       var element = jqLite('<div>abc</div>');
       expect(element.parent()).toBeTruthy();
       expect(element.parent().length).toEqual(0);
     });
+
+
     it('should return empty jqLite object when parent is a document fragment', function() {
       //this is quite unfortunate but jQuery 1.5.1 behaves this way
       var fragment = document.createDocumentFragment(),
@@ -372,6 +424,8 @@ describe('jqLite', function(){
       expect(child.parent().length).toBe(0);
     });
   });
+
+
   describe('next', function(){
     it('should return next sibling', function(){
       var element = jqLite('<div><b>b</b><i>i</i></div>');
@@ -380,6 +434,8 @@ describe('jqLite', function(){
       expect(b.next()).toJqEqual([i]);
     });
   });
+
+
   describe('find', function(){
     it('should find child by name', function(){
       var root = jqLite('<div><div>text</div></div>');
@@ -388,5 +444,4 @@ describe('jqLite', function(){
       expect(innerDiv.html()).toEqual('text');
     });
   });
-
 });
