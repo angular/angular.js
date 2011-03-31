@@ -371,8 +371,8 @@ forEach({
   },
 
   parent: function(element) {
-    // in IE it returns undefined, but we need differentiate it from functions which have no return
-    return element.parentNode || null;
+    var parent = element.parentNode;
+    return parent && parent.nodeType !== 11 ? parent : null;
   },
 
   next: function(element) {

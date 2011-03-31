@@ -323,10 +323,29 @@ describe('jqLite', function(){
     });
   });
   describe('parent', function(){
+    it('should return parent or an empty set when no parent', function(){
+      var parent = jqLite('<div><p>abc</p></div>'),
+          child = parent.find('p');
+
+      expect(parent.parent()).toBeTruthy();
+      expect(parent.parent().length).toEqual(0);
+
+      expect(child.parent().length).toBe(1);
+      expect(child.parent()[0]).toBe(parent[0]);
+    });
     it('should return empty set when no parent', function(){
       var element = jqLite('<div>abc</div>');
       expect(element.parent()).toBeTruthy();
       expect(element.parent().length).toEqual(0);
+    });
+    it('should return empty jqLite object when parent is a document fragment', function() {
+      //this is quite unfortunate but jQuery 1.5.1 behaves this way
+      var fragment = document.createDocumentFragment(),
+          child = jqLite('<p>foo</p>');
+
+      fragment.appendChild(child[0]);
+      expect(child[0].parentNode).toBe(fragment);
+      expect(child.parent().length).toBe(0);
     });
   });
   describe('next', function(){
