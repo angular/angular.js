@@ -41,11 +41,30 @@ describe('jqLite', function(){
       expect(selected.length).toEqual(1);
       expect(selected[0]).toEqual(text);
     });
+
     it('should allow construction with html', function(){
       var nodes = jqLite('<div>1</div><span>2</span>');
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
       expect(nodes[1].innerHTML).toEqual('2');
+    });
+
+    it('should allow creation of comment tags', function() {
+      var nodes = jqLite('<!-- foo -->');
+      expect(nodes.length).toBe(1);
+      expect(nodes[0].nodeType).toBe(8);
+    });
+
+    it('should allow creation of script tags', function() {
+      var nodes = jqLite('<script></script>');
+      expect(nodes.length).toBe(1);
+      expect(nodes[0].tagName.toUpperCase()).toBe('SCRIPT');
+    });
+
+    it('should wrap document fragment', function() {
+      var fragment = jqLite(document.createDocumentFragment());
+      expect(fragment.length).toBe(1);
+      expect(fragment[0].nodeType).toBe(11);
     });
   });
 
