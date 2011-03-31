@@ -342,7 +342,8 @@ forEach({
 
   append: function(element, node) {
     forEach(new JQLite(node), function(child){
-      element.appendChild(child);
+      if (element.nodeType === 1)
+        element.appendChild(child);
     });
   },
 
