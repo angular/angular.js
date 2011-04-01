@@ -49,14 +49,14 @@ describe("resource", function() {
   });
 
   it('should not encode @ in url params', function() {
-    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc2396.txt
+    //encodeURIComponent is too agressive and doesn't follow http://www.ietf.org/rfc/rfc3986.txt
     //with regards to the character set (pchar) allowed in path segments
     //so we need this test to make sure that we don't over-encode the params and break stuff like
     //buzz api which uses @self
 
     var R = resource.route('/Path/:a');
-    xhr.expectGET('/Path/doh@foo?bar=baz%401').respond({});
-    R.get({a: 'doh@foo', bar: 'baz@1'});
+    xhr.expectGET('/Path/doh@fo%20o?!do%26h=g%3Da+h&:bar=$baz@1').respond({});
+    R.get({a: 'doh@fo o', ':bar': '$baz@1', '!do&h': 'g=a h'});
   });
 
   it('should encode & in url params', function() {

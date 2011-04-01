@@ -55,7 +55,6 @@ describe('angular', function(){
       expect(copy(123)).toEqual(123);
       expect(copy([{key:null}])).toEqual([{key:null}]);
     });
-
   });
 
   describe('equals', function(){
@@ -170,7 +169,7 @@ describe('angular', function(){
 
 
   describe('encodeUriSegment', function() {
-    it('should correctly encode uri segment and not encode chars defined as pchar set in rfc2396',
+    it('should correctly encode uri segment and not encode chars defined as pchar set in rfc3986',
         function() {
       //don't encode alphanum
       expect(encodeUriSegment('asdf1234asdf')).
@@ -187,6 +186,36 @@ describe('angular', function(){
       //encode '/', ';' and ' ''
       expect(encodeUriSegment('/; /;')).
         toEqual('%2F%3B%20%2F%3B');
+    });
+  });
+
+
+  describe('encodeUriQuery', function() {
+    it('should correctly encode uri query and not encode chars defined as pchar set in rfc3986',
+        function() {
+      //don't encode alphanum
+      expect(encodeUriQuery('asdf1234asdf')).
+        toEqual('asdf1234asdf');
+
+      //don't encode unreserved
+      expect(encodeUriQuery("-_.!~*'() -_.!~*'()")).
+        toEqual("-_.!~*'()+-_.!~*'()");
+
+      //don't encode the rest of pchar
+      expect(encodeUriQuery(':@$, :@$,')).
+        toEqual(':@$,+:@$,');
+
+      //encode '&', ';', '=', '+', and '#'
+      expect(encodeUriQuery('&;=+# &;=+#')).
+        toEqual('%26%3B%3D%2B%23+%26%3B%3D%2B%23');
+
+      //encode ' ' as '+'
+      expect(encodeUriQuery('  ')).
+        toEqual('++');
+
+      //encode ' ' as '%20' when a flag is used
+      expect(encodeUriQuery('  ', true)).
+        toEqual('%20%20');
     });
   });
 

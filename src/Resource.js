@@ -26,7 +26,7 @@ Route.prototype = {
     var query = [];
     forEachSorted(params, function(value, key){
       if (!self.urlParams[key]) {
-        query.push(encodeURIComponent(key) + '=' + encodeURIComponent(value));
+        query.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
       }
     });
     url = url.replace(/\/*$/, '');
