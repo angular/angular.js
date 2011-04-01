@@ -702,10 +702,19 @@ function isRenderableElement(element) {
   return name && name.charAt(0) != '#' &&
     !includes(['TR', 'COL', 'COLGROUP', 'TBODY', 'THEAD', 'TFOOT'], name);
 }
+
 function elementError(element, type, error) {
+  var parent;
+
   while (!isRenderableElement(element)) {
-    element = element.parent() || jqLite(document.body);
+    parent = element.parent();
+    if (parent.length) {
+      element = element.parent();
+    } else {
+      return;
+    }
   }
+
   if (element[0]['$NG_ERROR'] !== error) {
     element[0]['$NG_ERROR'] = error;
     if (error) {
