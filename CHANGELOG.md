@@ -1,7 +1,21 @@
 <a name="0.9.14"><a/>
-# <angular/> 0.9.14 key-maker (in-progress) #
+# <angular/> 0.9.14 key-maker (2011-04-01) #
+
+### Performance
+- [ng:repeat] grows (adds children) significantly faster. (commit 15ec78f5)
+- [$xhr.cache] optionally executes callbacks synchronously. (commit c06c5a36)
+- [ng:view] and [ng:include] use sync [$xhr.cache]
 
 
+### Bug Fixes
+- Fixed [$resource] encoding of query params. (commits e1d122a4, 78a0f410)
+
+
+### House cleaning
+- code cleanup
+- better minification (min is now 2.5% or almost 1kb smaller)
+- minor documentation fixes
+- JsTestDriver 1.3.2 upgrade with fixed coverage support
 
 
 
@@ -442,9 +456,13 @@ with the `$route` service
 [compile]: http://docs.angularjs.org/#!angular.compile
 [element]: http://docs.angularjs.org/#!angular.element
 [widget]: http://docs.angularjs.org/#!angular.widget
+[ng:repeat]: http://docs.angularjs.org/#!angular.widget.@ng:repeat
+[ng:view]: http://docs.angularjs.org/#!angular.widget.ng:view
+[ng:include]: http://docs.angularjs.org/#!angular.widget.ng:include
 [$defer]: http://docs.angularjs.org/#!angular.service.$defer
 [$cookies]: http://docs.angularjs.org/#!angular.service.$cookies
 [$xhr]: http://docs.angularjs.org/#!angular.service.$xhr
+[$xhr.cache]: http://docs.angularjs.org/#!angular.service.$xhr.cache
 [$resource]: http://docs.angularjs.org/#!angular.service.$resource
 [directive]: http://docs.angularjs.org/#!angular.directive
 [ng:autobind]: http://docs.angularjs.org/#!angular.directive.ng:autobind
