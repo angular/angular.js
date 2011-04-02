@@ -35,11 +35,11 @@ angularServiceInject('$cacheFactory', function() {
         data = {},
         capacity = (options && options.capacity) || Number.MAX_VALUE,
         lruHash = {},
-        freshEnd = _null,
-        staleEnd = _null;
+        freshEnd = null,
+        staleEnd = null;
 
     return {
-      id: function() { return cacheId; },
+      id: valueFn(cacheId),
 
 
       size: function() { return stats.size; },
@@ -88,11 +88,14 @@ angularServiceInject('$cacheFactory', function() {
         data = {};
         stats.size = 0;
         lruHash = {};
-        freshEnd = staleEnd = _null;
+        freshEnd = staleEnd = null;
       }
     }
 
 
+    /**
+     * makes the `entry` the freshEnd of the LRU linked list
+     */
     function refresh(entry) {
       if (entry != freshEnd) {
         if (!staleEnd) {
@@ -104,11 +107,14 @@ angularServiceInject('$cacheFactory', function() {
         link(entry.next, entry.prev);
         link(entry, freshEnd);
         freshEnd = entry;
-        freshEnd.next = _null;
+        freshEnd.next = null;
       }
     }
 
 
+    /**
+     * bydirectionally links two entries of the LRU linked list
+     */
     function link(nextEntry, prevEntry) {
       if (nextEntry != prevEntry) {
         if (nextEntry) nextEntry.prev = prevEntry;

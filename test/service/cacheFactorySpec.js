@@ -23,7 +23,7 @@ describe('$cacheFactory', function() {
   it('should complain if the cache id is being reused', function() {
     $cacheFactory('cache1');
     expect(function() {$cacheFactory('cache1')}).
-      toThrow("cacheId cache1 taken");
+      toThrow('cacheId cache1 taken');
   });
 
 
