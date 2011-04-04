@@ -139,10 +139,17 @@ describe("resource", function() {
     expect(log).toEqual('cb;');
   });
 
-  it('should delete resource', function(){
-    xhr.expectDELETE("/CreditCard/123").respond({});
+  it('should delete resource and call callback', function(){
+    xhr.expectDELETE("/CreditCard/123").respond(200, {});
 
     CreditCard.remove({id:123}, callback);
+    expect(callback).wasNotCalled();
+    xhr.flush();
+    nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
+
+    callback.reset();
+    xhr.expectDELETE("/CreditCard/333").respond(204, null);
+    CreditCard.remove({id:333}, callback);
     expect(callback).wasNotCalled();
     xhr.flush();
     nakedExpect(callback.mostRecentCall.args).toEqual([{}]);

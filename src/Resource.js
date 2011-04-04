@@ -96,7 +96,7 @@ ResourceFactory.prototype = {
           route.url(extend({}, action.params || {}, extractParams(data), params)),
           data,
           function(status, response, clear) {
-            if (status == 200) {
+            if (200 <= status && status < 300) {
               if (response) {
                 if (action.isArray) {
                   value.length = 0;
