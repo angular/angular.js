@@ -1,6 +1,6 @@
 describe('$cacheFactory', function() {
 
-  var scope, $cacheFactory, cache;
+  var scope, $cacheFactory;
 
   beforeEach(function() {
     scope = angular.scope();
@@ -27,16 +27,31 @@ describe('$cacheFactory', function() {
   });
 
 
-  it('should provide stats about all created caches', function() {
-    expect($cacheFactory.stats()).toEqual({});
+  describe('info', function() {
 
-    var cache1 = $cacheFactory('cache1');
-    expect($cacheFactory.stats()).toEqual({cache1: {size: 0}});
+    it('should provide info about all created caches', function() {
+      expect($cacheFactory.info()).toEqual({});
 
-    cache1.put('foo', 'bar');
-    expect($cacheFactory.stats()).toEqual({cache1: {size: 1}});
+      var cache1 = $cacheFactory('cache1');
+      expect($cacheFactory.info()).toEqual({cache1: {size: 0}});
+
+      cache1.put('foo', 'bar');
+      expect($cacheFactory.info()).toEqual({cache1: {size: 1}});
+    });
   });
 
+
+  describe('get', function() {
+
+    it('should return a cache if looked up by id', function() {
+      var cache1 = $cacheFactory('cache1'),
+          cache2 = $cacheFactory('cache2');
+
+      expect(cache1).not.toBe(cache2);
+      expect(cache1).toBe($cacheFactory.get('cache1'));
+      expect(cache2).toBe($cacheFactory.get('cache2'));
+    });
+  });
 
   describe('cache', function() {
     var cache;
@@ -137,6 +152,22 @@ describe('$cacheFactory', function() {
         expect(cache.get('id1')).toBeUndefined();
         expect(cache.get('id2')).toBeUndefined();
         expect(cache.get('id3')).toBeUndefined();
+      });
+    });
+
+
+    describe('destroy', function() {
+
+      it('should make the cache unusable and remove references to it from $cacheFactory', function() {
+        cache.put('foo', 'bar');
+        cache.destroy();
+
+        expect(function() { cache.get('foo') } ).toThrow();
+        expect(function() { cache.get('neverexisted') }).toThrow();
+        expect(function() { cache.put('foo', 'bar') }).toThrow();
+
+        expect($cacheFactory.get('test')).toBeUndefined();
+        expect($cacheFactory.info()).toEqual({});
       });
     });
   });

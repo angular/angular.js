@@ -24,21 +24,22 @@
  */
 angularServiceInject('$cacheFactory', function() {
 
-  var caches = {};
+  var caches = {},
+      cacheStats = {};
 
   function cacheFactory(cacheId, options) {
     if (cacheId in caches) {
       throw Error('cacheId ' + cacheId + ' taken');
     }
 
-    var stats = caches[cacheId] = {size:0},
+    var stats = cacheStats[cacheId] = extend({}, options, {size:0}),
         data = {},
         capacity = (options && options.capacity) || Number.MAX_VALUE,
         lruHash = {},
         freshEnd = null,
         staleEnd = null;
 
-    return {
+    return caches[cacheId] = {
       id: valueFn(cacheId),
 
 
@@ -89,6 +90,15 @@ angularServiceInject('$cacheFactory', function() {
         stats.size = 0;
         lruHash = {};
         freshEnd = staleEnd = null;
+      },
+
+
+      destroy: function() {
+        data = null;
+        stats = null;
+        lruHash = null;
+        delete caches[cacheId];
+        delete cacheStats[cacheId];
       }
     }
 
@@ -124,9 +134,15 @@ angularServiceInject('$cacheFactory', function() {
   }
 
 
-  cacheFactory.stats = function() {
-    return copy(caches);
+  cacheFactory.info = function() {
+    return copy(cacheStats);
   }
+
+
+  cacheFactory.get = function(cacheId) {
+    return caches[cacheId];
+  }
+
 
   return cacheFactory;
 });
