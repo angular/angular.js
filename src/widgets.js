@@ -1072,10 +1072,11 @@ angularWidget('ng:view', function(element) {
         }
 
         if (src) {
-          $xhr('GET', src, null, function(code, response){
+          //xhr's callback must be async, see commit history for more info
+          $xhr('GET', src, function(code, response){
             element.html(response);
             compiler.compile(element)(childScope);
-          }, false, true);
+          });
         } else {
           element.html('');
         }
