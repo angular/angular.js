@@ -33,10 +33,10 @@ describe('$cacheFactory', function() {
       expect($cacheFactory.info()).toEqual({});
 
       var cache1 = $cacheFactory('cache1');
-      expect($cacheFactory.info()).toEqual({cache1: {size: 0}});
+      expect($cacheFactory.info()).toEqual({cache1: {id: 'cache1', size: 0}});
 
       cache1.put('foo', 'bar');
-      expect($cacheFactory.info()).toEqual({cache1: {size: 1}});
+      expect($cacheFactory.info()).toEqual({cache1: {id: 'cache1', size: 1}});
     });
   });
 
@@ -77,7 +77,7 @@ describe('$cacheFactory', function() {
         cache.put('key1');
         cache.put('key2', undefined);
 
-        expect(cache.size()).toBe(0);
+        expect(cache.info().size).toBe(0);
       });
 
 
@@ -102,38 +102,35 @@ describe('$cacheFactory', function() {
         cache.put(123, 'bar');
 
         expect(cache.get('123')).toBe('bar');
-        expect(cache.size()).toBe(1);
+        expect(cache.info().size).toBe(1);
 
         cache.remove(123);
-        expect(cache.size()).toBe(0);
+        expect(cache.info().size).toBe(0);
       })
     });
 
 
-    describe('size', function() {
+    describe('info', function() {
 
-      it('should increment with put and decrement with remove', function() {
-        expect(cache.size()).toBe(0);
+      it('should size increment with put and decrement with remove', function() {
+        expect(cache.info().size).toBe(0);
 
         cache.put('foo', 'bar');
-        expect(cache.size()).toBe(1);
+        expect(cache.info().size).toBe(1);
 
         cache.put('baz', 'boo');
-        expect(cache.size()).toBe(2);
+        expect(cache.info().size).toBe(2);
 
         cache.remove('baz');
-        expect(cache.size()).toBe(1);
+        expect(cache.info().size).toBe(1);
 
         cache.remove('foo');
-        expect(cache.size()).toBe(0);
+        expect(cache.info().size).toBe(0);
       });
-    });
 
-
-    describe('id', function() {
 
       it('should return cache id', function() {
-        expect(cache.id()).toBe('test');
+        expect(cache.info().id).toBe('test');
       })
     });
 
@@ -144,11 +141,11 @@ describe('$cacheFactory', function() {
         cache.put('id1', 1);
         cache.put('id2', 2);
         cache.put('id3', 3);
-        expect(cache.size()).toBe(3);
+        expect(cache.info().size).toBe(3);
 
         cache.removeAll();
 
-        expect(cache.size()).toBe(0);
+        expect(cache.info().size).toBe(0);
         expect(cache.get('id1')).toBeUndefined();
         expect(cache.get('id2')).toBeUndefined();
         expect(cache.get('id3')).toBeUndefined();
@@ -177,18 +174,18 @@ describe('$cacheFactory', function() {
 
     it('should create cache with defined capacity', function() {
       cache = $cacheFactory('cache1', {capacity: 5});
-      expect(cache.size()).toBe(0);
+      expect(cache.info().size).toBe(0);
 
       for (var i=0; i<5; i++) {
         cache.put('id' + i, i);
       }
 
-      expect(cache.size()).toBe(5);
+      expect(cache.info().size).toBe(5);
 
       cache.put('id5', 5);
-      expect(cache.size()).toBe(5);
+      expect(cache.info().size).toBe(5);
       cache.put('id6', 6);
-      expect(cache.size()).toBe(5);
+      expect(cache.info().size).toBe(5);
     });
 
 
@@ -271,7 +268,7 @@ describe('$cacheFactory', function() {
         cache.put('id3', 3);
         cache.put('id4', 4);
 
-        expect(cache.size()).toBe(2);
+        expect(cache.info().size).toBe(2);
         expect(cache.get('id0')).toBeUndefined();
         expect(cache.get('id1')).toBeUndefined();
         expect(cache.get('id2')).toBeUndefined();
@@ -317,7 +314,7 @@ describe('$cacheFactory', function() {
         cache.put('id2', 2); //2,1,0
         cache.put('id3', 3); //3,2,1
 
-        expect(cache.size()).toBe(3);
+        expect(cache.info().size).toBe(3);
         expect(cache.get('id0')).toBeUndefined();
         expect(cache.get('id1')).toBe(1);
         expect(cache.get('id2')).toBe(2);

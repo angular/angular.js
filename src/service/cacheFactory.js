@@ -24,15 +24,15 @@
  */
 angularServiceInject('$cacheFactory', function() {
 
-  var caches = {},
-      cacheStats = {};
+  var caches = {};
 
   function cacheFactory(cacheId, options) {
     if (cacheId in caches) {
       throw Error('cacheId ' + cacheId + ' taken');
     }
 
-    var stats = cacheStats[cacheId] = extend({}, options, {size:0}),
+    var size = 0,
+        stats = extend({}, options, {id: cacheId}),
         data = {},
         capacity = (options && options.capacity) || Number.MAX_VALUE,
         lruHash = {},
@@ -40,11 +40,6 @@ angularServiceInject('$cacheFactory', function() {
         staleEnd = null;
 
     return caches[cacheId] = {
-      id: valueFn(cacheId),
-
-
-      size: function() { return stats.size; },
-
 
       put: function(key, value) {
         var lruEntry = lruHash[key] || (lruHash[key] = {key: key});
@@ -52,10 +47,10 @@ angularServiceInject('$cacheFactory', function() {
         refresh(lruEntry);
 
         if (isUndefined(value)) return;
-        if (!(key in data)) stats.size++;
+        if (!(key in data)) size++;
         data[key] = value;
 
-        if (stats.size > capacity) {
+        if (size > capacity) {
           this.remove(staleEnd.key);
         }
       },
@@ -81,13 +76,13 @@ angularServiceInject('$cacheFactory', function() {
 
         delete lruHash[key];
         delete data[key];
-        stats.size--;
+        size--;
       },
 
 
       removeAll: function() {
         data = {};
-        stats.size = 0;
+        size = 0;
         lruHash = {};
         freshEnd = staleEnd = null;
       },
@@ -98,7 +93,11 @@ angularServiceInject('$cacheFactory', function() {
         stats = null;
         lruHash = null;
         delete caches[cacheId];
-        delete cacheStats[cacheId];
+      },
+
+
+      info: function() {
+        return extend({}, stats, {size: size});
       }
     }
 
@@ -135,7 +134,11 @@ angularServiceInject('$cacheFactory', function() {
 
 
   cacheFactory.info = function() {
-    return copy(cacheStats);
+    var info = {};
+    forEach(caches, function(cache, cacheId) {
+      info[cacheId] = cache.info();
+    });
+    return info;
   }
 
 
