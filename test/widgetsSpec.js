@@ -537,7 +537,7 @@ describe("widget", function(){
       compile('<input type="text" name="throw \'\'" value="x"/>');
       expect(element.hasClass('ng-exception')).toBeTruthy();
       expect(scope.$service('$log').error.logs.shift()[0]).
-        toMatchError(/Parse Error: Token '''' is extra token not part of expression/);
+        toMatchError(/Syntax Error: Token '''' is an unexpected token/);
     });
 
     it('should report error on ng:change exception', function(){
@@ -545,7 +545,7 @@ describe("widget", function(){
       browserTrigger(element);
       expect(element.hasClass('ng-exception')).toBeTruthy();
       expect(scope.$service('$log').error.logs.shift()[0]).
-        toMatchError(/Parse Error: Token '=' implies assignment but \[a-2\] can not be assigned to/);
+        toMatchError(/Syntax Error: Token '=' implies assignment but \[a-2\] can not be assigned to/);
     });
   });
 

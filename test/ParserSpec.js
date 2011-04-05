@@ -200,7 +200,7 @@ describe('parser', function() {
 
     expect(function() {
       scope.$eval("1|nonExistant");
-    }).toThrow(new Error("Parse Error: Token 'nonExistant' should be a function at column 3 of expression [1|nonExistant] starting at [nonExistant]."));
+    }).toThrow(new Error("Syntax Error: Token 'nonExistant' should be a function at column 3 of the expression [1|nonExistant] starting at [nonExistant]."));
 
     scope.$set('offset', 3);
     expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");

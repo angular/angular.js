@@ -240,22 +240,29 @@ function parser(text, json){
         function (){ throwError("is not valid json", {text:text, index:0}); };
   }
   return {
-      assertAllConsumed: assertAllConsumed,
-      assignable: assignable,
-      primary: primary,
-      statements: statements,
-      validator: validator,
-      formatter: formatter,
-      filter: filter,
-      //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
-      watch: watch
+      assignable: assertConsumed(assignable),
+      primary: assertConsumed(primary),
+      statements: assertConsumed(statements),
+      validator: assertConsumed(validator),
+      formatter: assertConsumed(formatter),
+      filter: assertConsumed(filter)
   };
+
+  function assertConsumed(fn) {
+    return function(){
+      var value = fn();
+      if (tokens.length !== 0) {
+        throwError("is an unexpected token", tokens[0]);
+      }
+      return value;
+    };
+  }
 
   ///////////////////////////////////
   function throwError(msg, token) {
-    throw Error("Parse Error: Token '" + token.text +
+    throw Error("Syntax Error: Token '" + token.text +
       "' " + msg + " at column " +
-      (token.index + 1) + " of expression [" +
+      (token.index + 1) + " of the expression [" +
       text + "] starting at [" + text.substring(token.index) + "].");
   }
 
@@ -311,12 +318,6 @@ function parser(text, json){
 
   function hasTokens () {
     return tokens.length > 0;
-  }
-
-  function assertAllConsumed(){
-    if (tokens.length !== 0) {
-      throwError("is extra token not part of expression", tokens[0]);
-    }
   }
 
   function statements(){
@@ -636,24 +637,6 @@ function parser(text, json){
         object[keyValue.key] = value;
       }
       return object;
-    };
-  }
-
-  //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
-  function watch () {
-    var decl = [];
-    while(hasTokens()) {
-      decl.push(watchDecl());
-      if (!expect(';')) {
-        assertAllConsumed();
-      }
-    }
-    assertAllConsumed();
-    return function (self){
-      for ( var i = 0; i < decl.length; i++) {
-        var d = decl[i](self);
-        self.addListener(d.name, d.fn);
-      }
     };
   }
 
