@@ -70,9 +70,9 @@ angularServiceInject('$cacheFactory', function() {
       remove: function(key) {
         var lruEntry = lruHash[key];
 
-        if (lruEntry == freshEnd) freshEnd = lruEntry.prev;
-        if (lruEntry == staleEnd) staleEnd = lruEntry.next;
-        link(lruEntry.next,lruEntry.prev);
+        if (lruEntry == freshEnd) freshEnd = lruEntry.p;
+        if (lruEntry == staleEnd) staleEnd = lruEntry.n;
+        link(lruEntry.n,lruEntry.p);
 
         delete lruHash[key];
         delete data[key];
@@ -110,13 +110,13 @@ angularServiceInject('$cacheFactory', function() {
         if (!staleEnd) {
           staleEnd = entry;
         } else if (staleEnd == entry) {
-          staleEnd = entry.next;
+          staleEnd = entry.n;
         }
 
-        link(entry.next, entry.prev);
+        link(entry.n, entry.p);
         link(entry, freshEnd);
         freshEnd = entry;
-        freshEnd.next = null;
+        freshEnd.n = null;
       }
     }
 
@@ -126,8 +126,8 @@ angularServiceInject('$cacheFactory', function() {
      */
     function link(nextEntry, prevEntry) {
       if (nextEntry != prevEntry) {
-        if (nextEntry) nextEntry.prev = prevEntry;
-        if (prevEntry) prevEntry.next = nextEntry;
+        if (nextEntry) nextEntry.p = prevEntry; //p stands for previous, 'prev' didn't minify
+        if (prevEntry) prevEntry.n = nextEntry; //n stands for next, 'next' didn't minify
       }
     }
   }
