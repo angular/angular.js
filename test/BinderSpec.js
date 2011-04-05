@@ -581,7 +581,7 @@ describe('Binder', function(){
 
     browserTrigger(second, 'click');
     assertTrue(second.hasClass("ng-exception"));
-    expect(errorLogs.shift()[0]).toMatchError(/Parse Error: Token ':' not a primary expression/);
+    expect(errorLogs.shift()[0]).toMatchError(/Syntax Error: Token ':' not a primary expression/);
   });
 
   it('ItShouldSelectTheCorrectRadioBox', function(){

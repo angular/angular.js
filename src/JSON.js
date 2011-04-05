@@ -35,19 +35,14 @@ function toJson(obj, pretty) {
 function fromJson(json, useNative) {
   if (!isString(json)) return json;
 
-  var obj, p, expression;
+  var obj;
 
   try {
     if (useNative && window.JSON && window.JSON.parse) {
       obj = JSON.parse(json);
       return transformDates(obj);
     }
-
-    p = parser(json, true);
-    expression =  p.primary();
-    p.assertAllConsumed();
-    return expression();
-
+    return parser(json, true).primary()();
   } catch (e) {
     error("fromJson error: ", json, e);
     throw e;

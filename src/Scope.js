@@ -92,7 +92,6 @@ function expressionCompile(exp){
   if (!fn) {
     var p = parser(exp);
     var fnSelf = p.statements();
-    p.assertAllConsumed();
     fn = compileCache[exp] = extend(
       function(){ return fnSelf(this);},
       {fnSelf: fnSelf});
