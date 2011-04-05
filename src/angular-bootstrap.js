@@ -129,7 +129,6 @@
              'service/invalidWidgets.js',
              'service/location.js',
              'service/log.js',
-             'service/lruCacheFactory.js',
              'service/resource.js',
              'service/route.js',
              'service/updateView.js',
