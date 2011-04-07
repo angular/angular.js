@@ -63,7 +63,7 @@
 
   function indent(text) {
     if (!text) return text;
-    var lines = text.split(/[\n|\r]/);
+    var lines = text.split(/\r?\n/);
     var lineNo = [];
     // remove any leading blank lines
     while (lines[0].match(/^\s*$/)) lines.shift();
