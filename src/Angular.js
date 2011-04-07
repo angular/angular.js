@@ -428,7 +428,7 @@ function HTML(html, option) {
       };
 }
 
-if (msie) {
+if (msie < 9) {
   nodeName_ = function(element) {
     element = element.nodeName ? element : element[0];
     return (element.scopeName && element.scopeName != 'HTML' ) ? uppercase(element.scopeName + ':' + element.nodeName) : element.nodeName;
