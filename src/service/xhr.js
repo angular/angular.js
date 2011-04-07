@@ -126,7 +126,7 @@
    </doc:example>
  */
 angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
-  return function(method, url, post, callback){
+  function xhr(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
       post = null;
@@ -137,12 +137,6 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
 
     $browser.xhr(method, url, post, function(code, response){
       try {
-        if (isString(response)) {
-          if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
-          if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
-            response = fromJson(response, true);
-          }
-        }
         if (200 <= code && code < 300) {
           callback(code, response);
         } else {
@@ -155,8 +149,39 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
       } finally {
         $updateView();
       }
-    }, {
+    }, extend({}, xhr.defaults.request.headers, {
         'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']
-    });
+    }));
   };
+  
+  
+  xhr.defaults = {
+    request:{
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Accept": "application/json, text/plain, */*",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      filters: [] //xsrf
+    },
+    
+    response: {
+      filters: [jsonSec, jsonDeser]
+    }
+  }
+
+
+  function jsonSec(response) {
+    if (response.match(/^\)\]\}',\n/)) return response.substr(6);
+  }
+
+  function jsonDeser(response) {
+    if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
+      return fromJson(response, true);
+    }
+  }
+  
+  
+  return xhr;
+  
 }, ['$browser', '$xhr.error', '$log', '$updateView']);

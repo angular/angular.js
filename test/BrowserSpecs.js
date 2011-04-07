@@ -109,12 +109,7 @@ describe('browser', function(){
       expect(xhr.method).toEqual('METHOD');
       expect(xhr.url).toEqual('URL');
       expect(xhr.post).toEqual('POST');
-      expect(xhr.headers).toEqual({
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Accept": "application/json, text/plain, */*",
-        "X-Requested-With": "XMLHttpRequest",
-        "X-header":"value"
-      });
+      expect(xhr.headers).toEqual({"X-header":"value"});
 
       xhr.status = 202;
       xhr.responseText = 'RESPONSE';
