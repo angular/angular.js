@@ -547,7 +547,8 @@ function isLeafNode (node) {
  *
  * @param {*} source The source to be used to make a copy.
  *                   Can be any type including primitives, `null` and `undefined`.
- * @param {(Object|Array)=} destination Optional destination into which the source is copied.
+ * @param {(Object|Array)=} destination Optional destination into which the source is copied. If
+ *     provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination` if `destination` was specified.
  *
  * @example
