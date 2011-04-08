@@ -8,31 +8,61 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
  * @name angular.service.$location
  * @requires $browser
  *
- * @property {string} href
- * @property {string} protocol
- * @property {string} host
- * @property {number} port
- * @property {string} path
- * @property {Object.<string|boolean>} search
- * @property {string} hash
- * @property {string} hashPath
- * @property {Object.<string|boolean>} hashSearch
+ * @property {string} href The full URL of the current location.
+ * @property {string} protocol The protocol part of the URL (e.g. http or https).
+ * @property {string} host The host name, ip address or FQDN of the current location.
+ * @property {number} port The port number of the current location (e.g. 80, 443, 8080).
+ * @property {string} path The path of the current location (e.g. /myapp/inbox).
+ * @property {Object.<string|boolean>} search Map of query parameters (e.g. {user:"foo", page:23}).
+ * @property {string} hash The fragment part of the URL of the current location (e.g. #foo).
+ * @property {string} hashPath Similar to `path`, but located in the `hash` fragment
+ *     (e.g. ../foo#/some/path  => /some/path).
+ * @property {Object.<string|boolean>} hashSearch Similar to `search` but located in `hash`
+ *     fragment (e.g. .../foo#/some/path?hashQuery=param  =>  {hashQuery: "param"}).
  *
  * @description
  * Parses the browser location url and makes it available to your application.
- * Any changes to the url are reflected into $location service and changes to
- * $location are reflected to url.
+ * Any changes to the url are reflected into `$location` service and changes to
+ * `$location` are reflected in the browser location url.
+ *
  * Notice that using browser's forward/back buttons changes the $location.
  *
  * @example
    <doc:example>
      <doc:source>
-       <a href="#">clear hash</a> |
-       <a href="#myPath?name=misko">test hash</a><br/>
-       <input type='text' name="$location.hash"/>
-       <pre>$location = {{$location}}</pre>
+       <div ng:init="$location = $service('$location')">
+         <a id="ex-test" href="#myPath?name=misko">test hash</a>|
+         <a id="ex-reset" href="#!angular.service.$location">reset hash</a><br/>
+         <input type='text' name="$location.hash" size="30">
+         <pre>$location = {{$location}}</pre>
+       </div>
      </doc:source>
      <doc:scenario>
+       it('should initialize the input field', function() {
+         expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
+           toBe('!angular.service.$location');
+       });
+
+
+       it('should bind $location.hash to the input field', function() {
+         using('.doc-example-live').input('$location.hash').enter('foo');
+         expect(browser().location().hash()).toBe('foo');
+       });
+
+
+       it('should set the hash to a test string with test link is presed', function() {
+         using('.doc-example-live').element('#ex-test').click();
+         expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
+           toBe('myPath?name=misko');
+       });
+
+       it('should reset $location when reset link is pressed', function() {
+         using('.doc-example-live').input('$location.hash').enter('foo');
+         using('.doc-example-live').element('#ex-reset').click();
+         expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
+           toBe('!angular.service.$location');
+       });
+
      </doc:scenario>
     </doc:example>
  */
@@ -61,22 +91,18 @@ angularServiceInject("$location", function($browser) {
    * @methodOf angular.service.$location
    *
    * @description
-   * Update location object
-   * Does not immediately update the browser
-   * Browser is updated at the end of $eval()
+   * Updates the location object.
    *
-   * @example
-    <doc:example>
-      <doc:source>
-        scope.$location.update('http://www.angularjs.org/path#hash?search=x');
-        scope.$location.update({host: 'www.google.com', protocol: 'https'});
-        scope.$location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
-      </doc:source>
-      <doc:scenario>
-      </doc:scenario>
-    </doc:example>
+   * Does not immediately update the browser. Instead the browser is updated at the end of $eval()
+   * cycle.
    *
-   * @param {(string|Object)} href Full href as a string or object with properties
+   * <pre>
+       $location.update('http://www.angularjs.org/path#hash?search=x');
+       $location.update({host: 'www.google.com', protocol: 'https'});
+       $location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
+     </pre>
+   *
+   * @param {string|Object} href Full href as a string or object with properties
    */
   function update(href) {
     if (isString(href)) {
@@ -103,24 +129,20 @@ angularServiceInject("$location", function($browser) {
    * @methodOf angular.service.$location
    *
    * @description
-   * Update location hash part
+   * Updates the hash fragment part of the url.
+   *
    * @see update()
    *
-   * @example
-    <doc:example>
-      <doc:source>
-        scope.$location.updateHash('/hp')
+   * <pre>
+       scope.$location.updateHash('/hp')
          ==> update({hashPath: '/hp'})
-        scope.$location.updateHash({a: true, b: 'val'})
+       scope.$location.updateHash({a: true, b: 'val'})
          ==> update({hashSearch: {a: true, b: 'val'}})
-        scope.$location.updateHash('/hp', {a: true})
+       scope.$location.updateHash('/hp', {a: true})
          ==> update({hashPath: '/hp', hashSearch: {a: true}})
-      </doc:source>
-      <doc:scenario>
-      </doc:scenario>
-    </doc:example>
+     </pre>
    *
-   * @param {(string|Object)} path A hashPath or hashSearch object
+   * @param {string|Object} path A hashPath or hashSearch object
    * @param {Object=} search A hashSearch object
    */
   function updateHash(path, search) {
@@ -152,11 +174,11 @@ angularServiceInject("$location", function($browser) {
    * - `$location.hash`
    * - everything else
    *
-   * @example
-   * <pre>
-   *   scope.$location.href = 'http://www.angularjs.org/path#a/b'
-   * </pre>
-   * immediately after this call, other properties are still the old ones...
+   * Keep in mind that if the following code is executed:
+   *
+   * scope.$location.href = 'http://www.angularjs.org/path#a/b'
+   *
+   * immediately afterwards all other properties are still the old ones...
    *
    * This method checks the changes and update location to the consistent state
    */
