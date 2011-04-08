@@ -4,7 +4,7 @@
  * @name angular.directive.ng:init
  *
  * @description
- * `ng:init` attribute allows the for initialization tasks to be executed
+ * The `ng:init` attribute specifies initialization tasks to be executed
  *  before the template enters execution mode during bootstrap.
  *
  * @element ANY
@@ -37,21 +37,31 @@ angularDirective("ng:init", function(expression){
  * @name angular.directive.ng:controller
  *
  * @description
- * To support the Model-View-Controller design pattern, it is possible
- * to assign behavior to a scope through `ng:controller`. The scope is
- * the MVC model. The HTML (with data bindings) is the MVC view.
- * The `ng:controller` directive specifies the MVC controller class
+ * The `ng:controller` directive assigns behavior to a scope. This is a key aspect of how angular
+ * supports the principles behind the Model-View-Controller design pattern.
+ *
+ * MVC components in angular:
+ *
+ * * Model — The Model is data in scope properties; scopes are attached to the DOM.
+ * * View — The template (HTML with data bindings) is rendered into the View.
+ * * Controller — The `ng:controller` directive specifies a Controller class; the class has
+ *   methods that typically express the business logic behind the application.
+ *
+ * Note that an alternative way to define controllers is via the `{@link angular.service.$route}`
+ * service.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval.
+ * @param {expression} expression Name of a globally accessible constructor function or an
+ *     {@link guide.expression expression} that on the current scope evaluates to a constructor
+ *     function.
  *
  * @example
- * Here is a simple form for editing the user contact information. Adding, removing clearing and
- * greeting are methods which are declared on the controller (see source tab). These methods can
- * easily be called from the angular markup. Notice that the scope becomes the controller's class
- * this. This allows for easy access to the view data from the controller. Also notice that any
- * changes to the data are automatically reflected in the view without the need to update it
- * manually.
+ * Here is a simple form for editing user contact information. Adding, removing, clearing, and
+ * greeting are methods declared on the controller (see source tab). These methods can
+ * easily be called from the angular markup. Notice that the scope becomes the `this` for the
+ * controller's instance. This allows for easy access to the view data from the controller. Also
+ * notice that any changes to the data are automatically reflected in the View without the need
+ * for a manual update.
    <doc:example>
      <doc:source>
       <script type="text/javascript">
@@ -144,8 +154,9 @@ angularDirective("ng:controller", function(expression){
          * <input name="obj.b" value="2">
          = {{obj.multiplied = obj.a * obj.b}} <br>
        <span ng:eval="obj.divide = obj.a / obj.b"></span>
-       <span ng:eval="obj.updateCount = 1 + (obj.updateCount||0)"></span>
-       <tt>obj.divide = {{obj.divide}}</tt><br/>
+       <span ng:eval="obj.updateCount = 1 + (obj.updateCount||0)">
+       </span>
+       <tt>obj.divide = {{obj.divide}}</tt><br>
        <tt>obj.updateCount = {{obj.updateCount}}</tt>
      </doc:source>
      <doc:scenario>
@@ -171,20 +182,20 @@ angularDirective("ng:eval", function(expression){
  * @name angular.directive.ng:bind
  *
  * @description
- * The `ng:bind` attribute asks <angular/> to replace the text content of this
- * HTML element with the value of the given expression and kept it up to
- * date when the expression's value changes. Usually you just write
- * {{expression}} and let <angular/> compile it into
+ * The `ng:bind` attribute asks angular to replace the text content of this
+ * HTML element with the value of the given expression, and to keep the text
+ * content up to date when the expression's value changes. Usually you would
+ * just write `{{ expression }}` and let angular compile it into
  * `<span ng:bind="expression"></span>` at bootstrap time.
  *
  * @element ANY
  * @param {expression} expression {@link guide.expression Expression} to eval.
  *
  * @example
- * Try it here: enter text in text box and watch the greeting change.
+ * You can try it right here: enter text in the text box and watch the greeting change.
    <doc:example>
      <doc:source>
-       Enter name: <input type="text" name="name" value="Whirled">. <br>
+       Enter name: <input type="text" name="name" value="Whirled"> <br>
        Hello <span ng:bind="name" />!
      </doc:source>
      <doc:scenario>
@@ -342,7 +353,7 @@ var REMOVE_ATTRIBUTES = {
  * contains a JSON key value pairs representing which attributes need to be mapped to which
  * {@link guide.expression expressions}.
  *
- * You don’t usually write the `ng:bind-attr` in the HTML since embedding
+ * You don't usually write the `ng:bind-attr` in the HTML since embedding
  * <tt ng:non-bindable>{{expression}}</tt> into the attribute directly as the attribute value is
  * preferred. The attributes get translated into `<span ng:bind-attr="{attr:expression}"/>` at
  * compile time.
@@ -653,8 +664,8 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * @name angular.directive.ng:show
  *
  * @description
- * The `ng:show` and `ng:hide` allows you to show or hide a portion
- * of the HTML conditionally.
+ * The `ng:show` and `ng:hide` directives show or hide a portion of the DOM tree (HTML)
+ * conditionally.
  *
  * @element ANY
  * @param {expression} expression If the {@link guide.expression expression} is truthy then the element
@@ -664,8 +675,8 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
    <doc:example>
      <doc:source>
         Click me: <input type="checkbox" name="checked"><br/>
-        Show: <span ng:show="checked">I show up when you checkbox is checked?</span> <br/>
-        Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
+        Show: <span ng:show="checked">I show up when your checkbox is checked.</span> <br/>
+        Hide: <span ng:hide="checked">I hide when your checkbox is checked.</span>
      </doc:source>
      <doc:scenario>
        it('should check ng:show / ng:hide', function(){
@@ -694,7 +705,7 @@ angularDirective("ng:show", function(expression, element){
  * @name angular.directive.ng:hide
  *
  * @description
- * The `ng:show` and `ng:hide` allows you to show or hide a portion
+ * The `ng:hide` and `ng:show` directives hide or show a portion
  * of the HTML conditionally.
  *
  * @element ANY
