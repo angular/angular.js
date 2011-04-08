@@ -132,10 +132,16 @@ describe("angular.scenario.dsl", function() {
         };
         $window.angular.scope = function() {
           return {
-            $location: {
-              hashSearch: {x: 2},
-              hashPath: '/bar',
-              search: {foo: 10}
+            $service: function(serviceId) {
+              if (serviceId == '$location') {
+                return {
+                  hashSearch: {x: 2},
+                  hashPath: '/bar',
+                  search: {foo: 10}
+                }
+              } else {
+                throw new Error('unknown service id ' + serviceId);
+              }
             }
           };
         };
