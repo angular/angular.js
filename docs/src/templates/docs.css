@@ -300,3 +300,73 @@ img.right {
 h1, h2, h3, h4, h5 {
   clear: both;
 }
+
+/* Tutorial Navigation */
+
+#tutorial_nav {
+  border:none;
+  width:100%;
+}
+
+#tutorial_nav tr td {
+  background-color: #F2C200;
+}
+
+#tutorial_nav tr.alt td {
+  background-color: #FFC800;
+}
+
+#tutorial_nav td {
+  height:2em;
+  width:20%;
+  padding:5px;
+}
+
+#previous_step {
+  text-align:center;
+}
+
+#next_step {
+  text-align:center;
+}
+
+#tut_home {
+  text-align:center;
+}
+
+#code_diff {
+  text-align:center;
+}
+
+#step_result {
+  text-align:center;
+}
+
+#tutorial_nav a:link {
+  display:block;
+  text-decoration:none;
+  font-weight:bold;
+}
+
+#tutorial_nav a:hover {
+  text-decoration:underline;
+}
+
+/* Glossary */
+
+#glossary {
+  width:100%;
+}
+
+#glossary td {
+}
+
+#glossary .td1 {
+  width:20%;
+  font-weight:bold;
+}
+
+#glossary .td2 {
+  width:80%;
+  padding:5px;
+}
