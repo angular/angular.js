@@ -4,8 +4,8 @@
  * @name angular.widget.HTML
  *
  * @description
- * The most common widgets you will use will be in the from of the
- * standard HTML set. These widgets are bound using the name attribute
+ * The most common widgets you will use will be in the form of the
+ * standard HTML set. These widgets are bound using the `name` attribute
  * to an expression. In addition they can have `ng:validate`, `ng:required`,
  * `ng:format`, `ng:change` attribute to further control their behavior.
  *
@@ -836,18 +836,20 @@ angularWidget('a', function() {
  * @name angular.widget.@ng:repeat
  *
  * @description
- * `ng:repeat` instantiates a template once per item from a collection. The collection is enumerated
- * with `ng:repeat-index` attribute starting from 0. Each template instance gets its own scope where
- * the given loop variable is set to the current collection item and `$index` is set to the item
- * index or key.
+ * The `ng:repeat` widget instantiates a template once per item from a collection. The collection is
+ * enumerated with the `ng:repeat-index` attribute, starting from 0. Each template instance gets 
+ * its own scope, where the given loop variable is set to the current collection item, and `$index` 
+ * is set to the item index or key.
  *
- * There are special properties exposed on the local scope of each template instance:
+ * Special properties are exposed on the local scope of each template instance, including:
  *
  *   * `$index` – `{number}` – iterator offset of the repeated element (0..length-1)
- *   * `$position` – {string} – position of the repeated element in the iterator. One of: `'first'`,
- *     `'middle'` or `'last'`.
+ *   * `$position` – `{string}` – position of the repeated element in the iterator. One of: 
+ *        * `'first'`,
+ *        * `'middle'` 
+ *        * `'last'`
  *
- * NOTE: `ng:repeat` looks like a directive, but is actually an attribute widget.
+ * Note: Although `ng:repeat` looks like a directive, it is actually an attribute widget.
  *
  * @element ANY
  * @param {string} repeat_expression The expression indicating how to enumerate a collection. Two
@@ -857,6 +859,7 @@ angularWidget('a', function() {
  *     is a scope expression giving the collection to enumerate.
  *
  *     For example: `track in cd.tracks`.
+ *
  *   * `(key, value) in expression` – where `key` and `value` can be any user defined identifiers,
  *     and `expression` is the scope expression giving the collection to enumerate.
  *
@@ -864,7 +867,7 @@ angularWidget('a', function() {
  *
  * @example
  * This example initializes the scope to a list of names and
- * than uses `ng:repeat` to display every person.
+ * then uses `ng:repeat` to display every person:
     <doc:example>
       <doc:source>
         <div ng:init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">

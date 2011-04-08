@@ -833,13 +833,18 @@ function encodeUriSegment(val) {
  * @TODO rename to ng:autobind to ng:autoboot
  *
  * @description
- * This section explains how to bootstrap your application with angular, using either the angular
- * javascript file, or manually.
+ * This section explains how to bootstrap your application with angular. You can use one of
+ * the versions of the angular JavaScript file ('http://code.angularjs.org/angular-x.x.x.min.js'), 
+ * or perform a manual bootstrap.
  *
  * # Auto-bootstrap with `ng:autobind`
- * The simplest way to get an <angular/> application up and running is by inserting a script tag in
- * your HTML file that bootstraps the `http://code.angularjs.org/angular-x.x.x.min.js` code and uses
- * the special `ng:autobind` attribute, like in this snippet of HTML:
+ * The simplest way to get an angular application up and running is by inserting a script tag in
+ * your HTML file that does these two things:
+ *
+ * * Bootstraps the angular JavaScript code 
+ * * Uses the special `ng:autobind` attribute
+ *
+ * For example:
  *
  * <pre>
     &lt;!doctype html&gt;
@@ -854,6 +859,10 @@ function encodeUriSegment(val) {
     &lt;/html&gt;
  * </pre>
  *
+ * The angular JavaScript code comes in debug (`angular-x.x.x.js`) and production 
+ * (`angular-x.x.x.min.js`) flavors. The debug code is human-readable, while the production code
+ * is minified.
+ *
  * The `ng:autobind` attribute without any value tells angular to compile and manage the whole HTML
  * document. The compilation occurs as soon as the document is ready for DOM manipulation. Note that
  * you don't need to explicitly add an `onLoad` event handler; auto bind mode takes care of all the
@@ -864,8 +873,8 @@ function encodeUriSegment(val) {
  *
  *
  * ## Auto-bootstrap with `#autobind`
- * In rare cases when you can't define the `ng` namespace before the script tag (e.g. in some CMS
- * systems, etc), it is possible to auto-bootstrap angular by appending `#autobind` to the script
+ * In some rare cases you can't define the `ng` namespace before the script tag (e.g. in some CMS
+ * systems). It is possible to auto-bootstrap angular by appending `#autobind` to the script
  * src URL, like in this snippet:
  *
  * <pre>
@@ -883,14 +892,14 @@ function encodeUriSegment(val) {
     &lt;/html&gt;
  * </pre>
  *
- * In this case it's the `#autobind` URL fragment that tells angular to auto-bootstrap.
+ * In this case it is the `#autobind` URL fragment that tells angular to auto-bootstrap.
  *
  * Similarly to `ng:autobind`, you can specify an element id that should be exclusively targeted for
  * compilation as the value of the `#autobind`, e.g. `#autobind=angularContent`.
  *
  * ## Filename Restrictions for Auto-bootstrap
  * In order for us to find the auto-bootstrap script attribute or URL fragment, the value of the
- * `script` `src` attribute that loads angular script must match one of these naming
+ * `script` `src` attribute that loads the angular script must match one of these naming
  * conventions:
  *
  * - `angular.js`
@@ -901,15 +910,15 @@ function encodeUriSegment(val) {
  * - `angular-x.x.x-xxxxxxxx.min.js` (dev snapshot)
  * - `angular-bootstrap.js` (used for development of angular)
  *
- * Optionally, any of the filename format above can be prepended with relative or absolute URL that
- * ends with `/`.
+ * Optionally, any of the filename formats above can be prepended with a relative or absolute URL 
+ * that ends with `/`.
  *
  *
- * ## Manual Bootstrap
- * Using auto-bootstrap is a handy way to start using <angular/>, but advanced users who want more
- * control over the initialization process might prefer to use manual bootstrap instead.
+ * # Manual Bootstrap
+ * Using auto-bootstrap is a handy way to start using angular, but advanced users who want more
+ * control over the initialization process might prefer to use the manual bootstrap method instead.
  *
- * The best way to get started with manual bootstraping is to look at the magic behind `ng:autobind`
+ * The best way to get started with manual bootstraping is to look at the magic behind `ng:autobind`,
  * by writing out each step of the autobind process explicitly. Note that the following code is
  * equivalent to the code in the previous section.
  *
@@ -933,14 +942,14 @@ function encodeUriSegment(val) {
  *
  * This is the sequence that your code should follow if you're bootstrapping angular on your own:
  *
- * * After the page is loaded, find the root of the HTML template, which is typically the root of
- *   the document.
- * * Run the HTML compiler, which converts the templates into an executable, bi-directionally bound
- *   application.
+ * 1. After the page is loaded, find the root of the HTML template, which is typically the root of
+ *    the document.
+ * 1. Run the HTML compiler, which converts the templates into an executable, bi-directionally bound
+ *    application.
  *
  *
- * ##XML Namespace
- * *IMPORTANT:* When using <angular/> you must declare the ng namespace using the xmlns tag. If you
+ * ## XML Namespace
+ * *IMPORTANT:* When using angular, you must declare the ng namespace using the xmlns tag. If you
  * don't declare the namespace, Internet Explorer does not render widgets properly.
  *
  * <pre>
@@ -948,7 +957,7 @@ function encodeUriSegment(val) {
  * </pre>
  *
  *
- * ## Create your own namespace
+ * ### Create your own namespace
  * If you want to define your own widgets, you must create your own namespace and use that namespace
  * to form the fully qualified widget name. For example, you could map the alias `my` to your domain
  * and create a widget called my:widget. To create your own namespace, simply add another xmlsn tag
@@ -959,8 +968,8 @@ function encodeUriSegment(val) {
  * </pre>
  *
  *
- * ## Global Object
- * The <angular/> script creates a single global variable `angular` in the global namespace. All
+ * ### Global Object
+ * The angular script creates a single global variable `angular` in the global namespace. All
  * APIs are bound to fields of this global object.
  *
  */
