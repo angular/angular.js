@@ -34,7 +34,8 @@ var XHR_HEADERS = {
 function Browser(window, document, body, XHR, $log) {
   var self = this,
       location = window.location,
-      setTimeout = window.setTimeout;
+      setTimeout = window.setTimeout,
+      clearTimeout = window.clearTimeout;
 
   self.isMock = false;
 
@@ -341,11 +342,32 @@ function Browser(window, document, body, XHR, $log) {
    * `setTimeout` in tests, the fns are queued in an array, which can be programmatically flushed via
    * `$browser.defer.flush()`.
    *
+   * @return {number} The unique ID of the deferred function. Can be used to cancel the deferred
+   *    function by calling $browser.clearDefer(deferId) 
    */
   self.defer = function(fn, delay) {
     outstandingRequestCount++;
-    setTimeout(function() { completeOutstandingRequest(fn); }, delay || 0);
+    return setTimeout(function() { completeOutstandingRequest(fn); }, delay || 0);
   };
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$browser#clearDefer
+   * @methodOf angular.service.$browser
+   * @param {number} deferId The ID of the deffered function which was returned from $browser.defer.
+   * 
+   * @description
+   * Clears a deferred function which was scheduled by $browser.defer.
+   *
+   * Unlike when calling `clearTimeout` directly, in test this function is mocked and instead of using
+   * `clearTimeout` in tests.
+   */
+  self.clearDefer = function(deferId) {
+    outstandingRequestCount--;
+    clearTimeout(deferId);
+  };
+
 
   //////////////////////////////////////////////////////////////
   // Misc API

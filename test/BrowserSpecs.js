@@ -1,25 +1,33 @@
 describe('browser', function(){
 
-  var browser, fakeWindow, xhr, logs, scripts, setTimeoutQueue;
+  var browser, fakeWindow, xhr, logs, scripts, setTimeoutQueue, clearTimeoutQueue;
 
   function fakeSetTimeout(fn) {
-    setTimeoutQueue.push(fn);
+    return setTimeoutQueue.push(fn) - 1;
   }
 
   fakeSetTimeout.flush = function() {
-    forEach(setTimeoutQueue, function(fn) {
-      fn();
+    forEach(setTimeoutQueue, function(fn, fnId) {
+      if (!clearTimeoutQueue['fn' + fnId])	{
+        fn();
+      }
     });
   };
+
+  function fakeClearTimeout(timeoutId) {
+    clearTimeoutQueue['fn' + timeoutId] = true;
+  }
 
 
   beforeEach(function(){
     setTimeoutQueue = [];
+    clearTimeoutQueue = {};
     scripts = [];
     xhr = null;
     fakeWindow = {
       location: {href:"http://server"},
-      setTimeout: fakeSetTimeout
+      setTimeout: fakeSetTimeout,
+      clearTimeout: fakeClearTimeout
     };
 
     var fakeBody = {append: function(node){scripts.push(node);}};
@@ -149,6 +157,22 @@ describe('browser', function(){
     });
   });
 
+
+  describe('clearDefer', function() {
+    it('should not execute deferred function that was cancelled via clearDefer', function() {
+      var counter = 0;
+      var deferId = browser.defer(function() {counter++;});
+      browser.defer(function() {counter+=10;});
+      
+      expect(counter).toBe(0);
+
+      browser.clearDefer(deferId);		
+
+      fakeSetTimeout.flush();
+      expect(counter).toBe(10);
+    });
+  });
+  
 
   describe('cookies', function() {
 
