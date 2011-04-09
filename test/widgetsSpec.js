@@ -668,7 +668,7 @@ describe("widget", function(){
 
       compile('<a href="">empty link</a>');
 
-      if (msie) {
+      if (msie < 9) {
 
         event = document.createEventObject();
         expect(event.returnValue).not.toBeDefined();
