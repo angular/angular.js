@@ -249,7 +249,7 @@ function browserTrigger(element, type) {
     element = element.parentNode;
     type = 'change';
   }
-  if (msie) {
+  if (msie < 9) {
     switch(element.type) {
       case 'radio':
       case 'checkbox':

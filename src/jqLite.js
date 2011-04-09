@@ -209,7 +209,7 @@ forEach({
     }
   },
 
-  text: extend(msie
+  text: extend((msie < 9)
       ? function(element, value) {
         // NodeType == 3 is text node
         if (element.nodeType == 3) {

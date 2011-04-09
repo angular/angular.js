@@ -194,6 +194,9 @@ function sortedHtml(element, showNgClass) {
         attrs.push(' class="' + className + '"');
       }
       for(var i=0; i<attributes.length; i++) {
+        if (i>0 && attributes[i] == attributes[i-1])
+          continue; //IE9 creates dupes. Ignore them!
+
         var attr = attributes[i];
         if(attr.name.match(/^ng:/) ||
             attr.value &&
