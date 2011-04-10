@@ -41,7 +41,7 @@ angular.widget('my:watch', function(compileElement) {
 Let's implement the same widget, but this time as an attribute
 that can be added to any existing DOM element.
 <pre>
-&lt;div my-watch="name"&gt;text&lt;/div&gt;
+&lt;div my:watch="name"&gt;text&lt;/div&gt;
 </pre>
 You can implement `my:watch` attribute like this:
 <pre>
