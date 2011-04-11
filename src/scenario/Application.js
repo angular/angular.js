@@ -50,7 +50,7 @@ angular.scenario.Application.prototype.getWindow_ = function() {
 angular.scenario.Application.prototype.checkUrlStatus_ = function(url, callback) {
   var self = this;
   _jQuery.ajax({
-    url: url,
+    url: url.replace(/#.*/, ''), //IE encodes and sends the url fragment, so we must strip it
     type: 'HEAD',
     complete: function(request) {
       if (request.status < 200 || request.status >= 300) {
