@@ -1,6 +1,19 @@
 <a name="0.9.15"><a/>
-# <angular/> 0.9.15 lethal-stutter (in-progress) #
+# <angular/> 0.9.15 lethal-stutter (2011-04-11) #
 
+### Features
+- IE9 support
+
+
+### Bug Fixes
+- reverted [ng:view] sync cache fix due to regression in the order of initialization of parent
+  and child controllers. (commits 9bd2c396 and 3d388498)
+- [$resource] success callback is now executed whenever the http status code is <200,300>
+
+
+### Docs
+- fixed intentation code that caused some of the snippets on docs.angularjs.org to be mangled.
+- many small improvements of the api docs.
 
 
 
