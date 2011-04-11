@@ -885,6 +885,45 @@ describe("widget", function(){
       expect($route.current.template).toEqual('viewPartial.html');
       dealoc($route.current.scope);
     });
+
+
+    it('should initialize view template after the view controller was initialized even when ' +
+       'templates were cached', function() {
+      //this is a test for a regression that was introduced by making the ng:view cache sync
+
+      $route.when('/foo', {controller: ParentCtrl, template: 'viewPartial.html'});
+
+      rootScope.log = [];
+
+      function ParentCtrl() {
+        this.log.push('parent');
+      }
+
+      rootScope.ChildCtrl = function() {
+        this.log.push('child');
+      }
+
+      $location.updateHash('/foo');
+      $browser.xhr.expectGET('viewPartial.html').
+          respond('<div ng:init="log.push(\'init\')">' +
+                    '<div ng:controller="ChildCtrl"></div>' +
+                  '</div>');
+      rootScope.$eval();
+      $browser.xhr.flush();
+
+      expect(rootScope.log).toEqual(['parent', 'init', 'child']);
+
+      $location.updateHash('');
+      rootScope.$eval();
+      expect(rootScope.log).toEqual(['parent', 'init', 'child']);
+
+      rootScope.log = [];
+      $location.updateHash('/foo');
+      rootScope.$eval();
+      $browser.defer.flush();
+
+      expect(rootScope.log).toEqual(['parent', 'init', 'child']);
+    });
   });
 });
 
