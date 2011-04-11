@@ -341,10 +341,10 @@ angularFilter.uppercase = uppercase;
  * @example
    <doc:example>
      <doc:source>
-       Snippet: <textarea name="snippet" cols="60" rows="3">
-        &lt;p style="color:blue"&gt;an html
-        &lt;em onmouseover="this.textContent='PWN3D!'"&gt;click here&lt;/em&gt;
-        snippet&lt;/p&gt;</textarea>
+      Snippet: <textarea name="snippet" cols="60" rows="3">
+     &lt;p style="color:blue"&gt;an html
+     &lt;em onmouseover="this.textContent='PWN3D!'"&gt;click here&lt;/em&gt;
+     snippet&lt;/p&gt;</textarea>
        <table>
          <tr>
            <td>Filter</td>
