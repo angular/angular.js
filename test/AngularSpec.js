@@ -582,4 +582,20 @@ describe('angular', function(){
       });
     }
   });
+
+
+  describe('nextUid()', function(){
+    it('should return new id per call', function(){
+      var seen = {};
+      var count = 100;
+
+      while(count--) {
+        var current = nextUid();
+        expect(current.match(/[\d\w]+/)).toBeTruthy();
+        expect(seen[current]).toBeFalsy();
+        seen[current] = true;
+      }
+    });
+  });
+
 });
