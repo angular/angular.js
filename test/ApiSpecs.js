@@ -252,5 +252,20 @@ describe('api', function(){
     assertEquals({a:1, b:2}, angular.Object.extend({a:1}, {b:2}));
   });
 
+  describe('HashMap', function(){
+    it('should do basic crud', function(){
+      var map = new HashMap();
+      var key = {};
+      var value1 = {};
+      var value2 = {};
+      expect(map.put(key, value1)).toEqual(undefined);
+      expect(map.put(key, value2)).toEqual(value1);
+      expect(map.get(key)).toEqual(value2);
+      expect(map.get({})).toEqual(undefined);
+      expect(map.remove(key)).toEqual(value2);
+      expect(map.get(key)).toEqual(undefined);
+    });
+  });
+
 });
 
