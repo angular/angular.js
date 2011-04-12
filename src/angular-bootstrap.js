@@ -55,17 +55,17 @@
         try {
           globalVars[varKey] = window[prop];
         } catch(e) {} //ignore properties that throw exception when accessed (common in FF)
-      } else if (globalVars[varKey] !== window[prop] && !isActuallyNaN(window[prop])) {
+      } else if (globalVars[varKey] !== window[prop] && !isActuallyNaN(window[prop]) && prop != 'jqLite') {
         clobbered.push(prop);
         console.error("Global variable clobbered by script " + file + "! Variable name: " + prop);
         globalVars[varKey] = window[prop];
       }
     }
-
     for (varKey in globalVars) {
       prop = varKey.substr(11);
       if (clobbered.indexOf(prop) == -1 &&
           prop != 'event' &&
+          prop != 'jqLite' &&
           !isActuallyNaN(globalVars[varKey]) &&
           globalVars[varKey] !== window[prop]) {
 
