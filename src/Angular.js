@@ -895,7 +895,13 @@ function encodeUriQuery(val, pctEncodeSpaces) {
     &lt;/html&gt;
  * </pre>
  *
- * The `ng:autobind` attribute without any value tells angular to compile and manage the whole HTML
+ * Essentially, Angular does not want to be over-zealous and assume the entire HTML document should be
+ * processed based soley on the fact you have included the angular.js script. It will only
+ * process the entire document if you have specify ng:autobind attribute or #autobind anchor. There 
+ * might be a case where you want Angular to only process a certain sub-section of your template. 
+ * You'll determine which sub-sections to process using one of the following techniques.
+ *
+ * As stated, the `ng:autobind` attribute without any value tells angular to compile and manage the whole HTML
  * document. The compilation occurs as soon as the document is ready for DOM manipulation. Note that
  * you don't need to explicitly add an `onLoad` event handler; auto bind mode takes care of all the
  * work for you.
