@@ -895,6 +895,10 @@ function encodeUriQuery(val, pctEncodeSpaces) {
     &lt;/html&gt;
  * </pre>
  *
+ * The reason why `ng:autobind` is needed at all is that angular does not want to be over-zealous
+ * and assume the entire HTML document should be processed based solely on the fact you have
+ * included the angular.js script.
+ *
  * The `ng:autobind` attribute without any value tells angular to compile and manage the whole HTML
  * document. The compilation occurs as soon as the document is ready for DOM manipulation. Note that
  * you don't need to explicitly add an `onLoad` event handler; auto bind mode takes care of all the
