@@ -18,6 +18,8 @@ angularService('$browser', function($log){
 }, {$inject:['$log']});
 
 extend(angular, {
+  // disabled for now until we agree on public name
+  //'annotate': annotate,
   'element': jqLite,
   'compile': compile,
   'scope': createScope,
