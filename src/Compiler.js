@@ -34,7 +34,7 @@ Template.prototype = {
     forEach(this.inits, function(fn) {
       queue.push(function() {
         childScope.$tryEval(function(){
-          return childScope.$service(fn, childScope, element);
+          return childScope.$service.invoke(childScope, fn, [element]);
         }, element);
       });
     });
@@ -49,9 +49,11 @@ Template.prototype = {
   },
 
 
-  addInit:function(init) {
-    if (init) {
-      this.inits.push(init);
+  addInit:function(linkingFn) {
+    if (linkingFn) {
+      if (!linkingFn.$inject)
+        linkingFn.$inject = [];
+      this.inits.push(linkingFn);
     }
   },
 

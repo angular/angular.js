@@ -156,6 +156,7 @@ function dealoc(obj) {
 }
 
 extend(angular, {
+  'annotate': annotate,
   'element': jqLite,
   'compile': compile,
   'scope': createScope,
@@ -168,6 +169,7 @@ extend(angular, {
   'toJson': toJson,
   'fromJson': fromJson,
   'identity':identity,
+  'injector': createInjector,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
   'isString': isString,

@@ -4,6 +4,11 @@
 ### Bug Fixes
 - Number filter would return incorrect value when fractional part had leading zeros.
 
+### Breaking changes
+- $service now has $service.invoke for method injection ($service(self, fn) no longer works)
+- injection name inference no longer supports method curry and linking functions. Both must be
+  explicitly specified using $inject property.
+
 
 <a name="0.9.16"><a/>
 # <angular/> 0.9.16 weather-control (2011-06-07) #

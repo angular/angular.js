@@ -522,7 +522,7 @@ function radioInit(model, view, element) {
     </doc:example>
  */
 function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
-  return injectService(['$updateView', '$defer'], function($updateView, $defer, element) {
+  return annotate('$updateView', '$defer', function($updateView, $defer, element) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
@@ -1097,7 +1097,7 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return injectService(['$xhr.cache', '$route'], function($xhr, $route, element){
+    return annotate('$xhr.cache', '$route', function($xhr, $route, element){
       var parentScope = this,
           childScope;
 

@@ -472,7 +472,7 @@ function createScope(parent, providers, instanceCache) {
         forEach(Class.prototype, function(fn, name){
           instance[name] = bind(instance, fn);
         });
-        instance.$service.apply(instance, concat([Class, instance], arguments, 1));
+        instance.$service.invoke(instance, Class, slice.call(arguments, 1, arguments.length));
 
         //TODO: backwards compatibility hack, remove when we don't depend on init methods
         if (isFunction(Class.prototype.init)) {
@@ -525,7 +525,7 @@ function createScope(parent, providers, instanceCache) {
      * @param {string} serviceId String ID of the service to return.
      * @returns {*} Value, object or function returned by the service factory function if any.
      */
-    (instance.$service = createInjector(instance, providers, instanceCache))();
+    instance.$service = createInjector(instance, providers, instanceCache);
   }
 
   $log = instance.$service('$log');
