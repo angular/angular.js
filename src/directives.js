@@ -443,10 +443,8 @@ var REMOVE_ATTRIBUTES = {
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
     var lastValue = {};
-    var updateFn = element.data($$update) || noop;
     this.$onEval(function(){
-      var values = this.$eval(expression),
-          dirty = noop;
+      var values = this.$eval(expression);
       for(var key in values) {
         var value = compileBindTemplate(values[key]).call(this, element),
             specialName = REMOVE_ATTRIBUTES[lowercase(key)];
@@ -464,10 +462,8 @@ angularDirective("ng:bind-attr", function(expression){
           } else {
             element.attr(key, value);
           }
-          dirty = updateFn;
         }
       }
-      dirty();
     }, element);
   };
 });

@@ -367,93 +367,6 @@ describe("widget", function(){
         expect(element[0].childNodes[0].selected).toEqual(true);
       });
 
-      it('should honor the value field in option', function(){
-        compile(
-            '<select name="selection" ng:format="number">' +
-              '<option value="{{$index}}" ng:repeat="name in [\'A\', \'B\', \'C\']">{{name}}</option>' +
-            '</select>');
-        // childNodes[0] is repeater comment
-        expect(scope.selection).toEqual(0);
-
-        browserTrigger(element[0].childNodes[2], 'change');
-        expect(scope.selection).toEqual(1);
-
-        scope.selection = 2;
-        scope.$eval();
-        expect(element[0].childNodes[3].selected).toEqual(true);
-      });
-
-      it('should unroll select options before eval', function(){
-        compile(
-            '<select name="selection" ng:required>' +
-              '<option value="{{$index}}" ng:repeat="opt in options">{{opt}}</option>' +
-            '</select>',
-            jqLite(document.body));
-        scope.selection = 1;
-        scope.options = ['one', 'two'];
-        scope.$eval();
-        expect(element[0].value).toEqual('1');
-        expect(element.hasClass(NG_VALIDATION_ERROR)).toEqual(false);
-      });
-
-      it('should update select when value changes', function(){
-        compile(
-            '<select name="selection">' +
-              '<option value="...">...</option>' +
-              '<option value="{{value}}">B</option>' +
-            '</select>');
-        scope.selection = 'B';
-        scope.$eval();
-        expect(element[0].childNodes[1].selected).toEqual(false);
-        scope.value = 'B';
-        scope.$eval();
-        expect(element[0].childNodes[1].selected).toEqual(true);
-      });
-
-      it('should select default option on repeater', function(){
-        compile(
-            '<select name="selection">' +
-              '<option ng:repeat="no in [1,2]">{{no}}</option>' +
-            '</select>');
-        expect(scope.selection).toEqual('1');
-      });
-
-      it('should select selected option on repeater', function(){
-        compile(
-            '<select name="selection">' +
-              '<option ng:repeat="no in [1,2]">{{no}}</option>' +
-              '<option selected>ABC</option>' +
-            '</select>');
-        expect(scope.selection).toEqual('ABC');
-      });
-
-      it('should select dynamically selected option on repeater', function(){
-        compile(
-            '<select name="selection">' +
-              '<option ng:repeat="no in [1,2]" ng:bind-attr="{selected:\'{{no==2}}\'}">{{no}}</option>' +
-            '</select>');
-        expect(scope.selection).toEqual('2');
-      });
-
-      it('should allow binding to objects through JSON', function(){
-        compile(
-            '<select name="selection" ng:format="json">' +
-              '<option ng:repeat="obj in objs" value="{{obj}}">{{obj.name}}</option>' +
-            '</select>');
-        scope.objs = [{name:'A'}, {name:'B'}];
-        scope.$eval();
-        expect(scope.selection).toEqual({name:'A'});
-      });
-
-      it('should allow binding to objects through index', function(){
-        compile(
-            '<select name="selection" ng:format="index:objs">' +
-              '<option ng:repeat="obj in objs" value="{{$index}}">{{obj.name}}</option>' +
-            '</select>');
-        scope.objs = [{name:'A'}, {name:'B'}];
-        scope.$eval();
-        expect(scope.selection).toBe(scope.objs[0]);
-      });
 
       it('should compile children of a select without a name, but not create a model for it',
           function() {
@@ -695,6 +608,256 @@ describe("widget", function(){
     });
   });
 
+  describe('ng:options', function(){
+    var select, scope;
+
+    function createSelect(multiple, blank, unknown){
+      select = jqLite(
+          '<select name="selected" ' + (multiple ? ' multiple' : '') +
+                 ' ng:options="value.name for value in values">' +
+            (blank ? '<option value="">blank</option>' : '') +
+            (unknown ? '<option value="?">unknown</option>' : '') +
+          '</select>');
+      scope = compile(select);
+    };
+
+    function createSingleSelect(blank, unknown){
+      createSelect(false, blank, unknown);
+    };
+
+    function createMultiSelect(blank, unknown){
+      createSelect(true, blank, unknown);
+    };
+
+    afterEach(function(){
+      dealoc(select);
+      dealoc(scope);
+    });
+
+    it('should throw when not formated "? for ? in ?"', function(){
+      expect(function(){
+        compile('<select name="selected" ng:options="i dont parse"></select>');
+      }).toThrow("Expected ng:options in form of '_expresion_ for _item_ in _collection_' but got 'i dont parse'.");
+
+      $logMock.error.logs.shift();
+    });
+
+    it('should render a list', function(){
+      createSingleSelect();
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      var options = select.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[0])).toEqual('<option value="0">A</option>');
+      expect(sortedHtml(options[1])).toEqual('<option value="1">B</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
+    });
+
+    it('should grow list', function(){
+      createSingleSelect();
+      scope.values = [];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(1); // because we add special empty option
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option></option>');
+
+      scope.values.push({name:'A'});
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(1);
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
+
+      scope.values.push({name:'B'});
+      scope.$eval();
+      expect(select.find('option').length).toEqual(2);
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
+      expect(sortedHtml(select.find('option')[1])).toEqual('<option value="1">B</option>');
+    });
+
+    it('should shrink list', function(){
+      createSingleSelect();
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(3);
+
+      scope.values.pop();
+      scope.$eval();
+      expect(select.find('option').length).toEqual(2);
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
+      expect(sortedHtml(select.find('option')[1])).toEqual('<option value="1">B</option>');
+
+      scope.values.pop();
+      scope.$eval();
+      expect(select.find('option').length).toEqual(1);
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
+
+      scope.values.pop();
+      scope.selected = null;
+      scope.$eval();
+      expect(select.find('option').length).toEqual(1); // we add back the special empty option
+    });
+
+    it('should update list', function(){
+      createSingleSelect();
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+
+      scope.values = [{name:'B'}, {name:'C'}, {name:'D'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      var options = select.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[0])).toEqual('<option value="0">B</option>');
+      expect(sortedHtml(options[1])).toEqual('<option value="1">C</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="2">D</option>');
+    });
+
+    it('should preserve existing options', function(){
+      createSingleSelect(true);
+
+      scope.$eval();
+      expect(select.find('option').length).toEqual(1);
+
+      scope.values = [{name:'A'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(2);
+      expect(jqLite(select.find('option')[0]).text()).toEqual('blank');
+      expect(jqLite(select.find('option')[1]).text()).toEqual('A');
+
+      scope.values = [];
+      scope.selected = null;
+      scope.$eval();
+      expect(select.find('option').length).toEqual(1);
+      expect(jqLite(select.find('option')[0]).text()).toEqual('blank');
+    });
+
+    describe('binding', function(){
+      it('should bind to scope value', function(){
+        createSingleSelect();
+        scope.values = [{name:'A'}, {name:'B'}];
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+
+        scope.selected = scope.values[1];
+        scope.$eval();
+        expect(select.val()).toEqual('1');
+      });
+
+      it('should insert a blank option if bound to null', function(){
+        createSingleSelect();
+        scope.values = [{name:'A'}];
+        scope.selected = null;
+        scope.$eval();
+        expect(select.find('option').length).toEqual(2);
+        expect(select.val()).toEqual('');
+        expect(jqLite(select.find('option')[0]).val()).toEqual('');
+
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+        expect(select.find('option').length).toEqual(1);
+      });
+
+      it('should reuse blank option if bound to null', function(){
+        createSingleSelect(true);
+        scope.values = [{name:'A'}];
+        scope.selected = null;
+        scope.$eval();
+        expect(select.find('option').length).toEqual(2);
+        expect(select.val()).toEqual('');
+        expect(jqLite(select.find('option')[0]).val()).toEqual('');
+
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+        expect(select.find('option').length).toEqual(2);
+      });
+
+      it('should insert a unknown option if bound to not in list', function(){
+        createSingleSelect();
+        scope.values = [{name:'A'}];
+        scope.selected = {};
+        scope.$eval();
+        expect(select.find('option').length).toEqual(2);
+        expect(select.val()).toEqual('?');
+        expect(jqLite(select.find('option')[0]).val()).toEqual('?');
+
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+        expect(select.find('option').length).toEqual(1);
+      });
+    });
+
+    describe('on change', function(){
+      it('should update model on change', function(){
+        createSingleSelect();
+        scope.values = [{name:'A'}, {name:'B'}];
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+
+        select.val('1');
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(scope.values[1]);
+      });
+
+      it('should update model to null on change', function(){
+        createSingleSelect(true);
+        scope.values = [{name:'A'}, {name:'B'}];
+        scope.selected = scope.values[0];
+        select.val('0');
+        scope.$eval();
+
+        select.val('');
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(null);
+      });
+    });
+
+    describe('select-many', function(){
+      it('should read multiple selection', function(){
+        createMultiSelect();
+        scope.values = [{name:'A'}, {name:'B'}];
+
+        scope.selected = [];
+        scope.$eval();
+        expect(select.find('option').length).toEqual(2);
+        expect(jqLite(select.find('option')[0]).attr('selected')).toEqual(false);
+        expect(jqLite(select.find('option')[1]).attr('selected')).toEqual(false);
+
+        scope.selected.push(scope.values[1]);
+        scope.$eval();
+        expect(select.find('option').length).toEqual(2);
+        expect(select.find('option')[0].selected).toEqual(false);
+        expect(select.find('option')[1].selected).toEqual(true);
+
+        scope.selected.push(scope.values[0]);
+        scope.$eval();
+        expect(select.find('option').length).toEqual(2);
+        expect(select.find('option')[0].selected).toEqual(true);
+        expect(select.find('option')[1].selected).toEqual(true);
+      });
+
+      it('should update model on change', function(){
+        createMultiSelect();
+        scope.values = [{name:'A'}, {name:'B'}];
+
+        scope.selected = [];
+        scope.$eval();
+        select.find('option')[0].selected = true;
+
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual([scope.values[0]]);
+      });
+    });
+
+  });
+
 
   describe('@ng:repeat', function() {
 
@@ -739,10 +902,10 @@ describe("widget", function(){
       var scope = compile('<ul><li ng:repeat="i dont parse"></li></ul>');
 
       expect(scope.$service('$log').error.logs.shift()[0]).
-        toEqualError("Expected ng:repeat in form of 'item in collection' but got 'i dont parse'.");
+        toEqualError("Expected ng:repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
 
       expect(scope.$element.attr('ng-exception')).
-        toMatch(/Expected ng:repeat in form of 'item in collection' but got 'i dont parse'/);
+        toMatch(/Expected ng:repeat in form of '_item_ in _collection_' but got 'i dont parse'/);
       expect(scope.$element).toHaveClass('ng-exception');
 
       dealoc(scope);

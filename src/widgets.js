@@ -166,18 +166,19 @@
 
 function modelAccessor(scope, element) {
   var expr = element.attr('name');
-  var assign;
+  var exprFn, assignFn;
   if (expr) {
-    assign = parser(expr).assignable().assign;
-    if (!assign) throw new Error("Expression '" + expr + "' is not assignable.");
+    exprFn = parser(expr).assignable();
+    assignFn = exprFn.assign;
+    if (!assignFn) throw new Error("Expression '" + expr + "' is not assignable.");
     return {
       get: function() {
-        return scope.$eval(expr);
+        return exprFn(scope);
       },
       set: function(value) {
         if (value !== undefined) {
           return scope.$tryEval(function(){
-            assign(scope, value);
+            assignFn(scope, value);
           }, element);
         }
       }
@@ -561,64 +562,241 @@ function inputWidgetSelector(element){
 angularWidget('input', inputWidgetSelector);
 angularWidget('textarea', inputWidgetSelector);
 angularWidget('button', inputWidgetSelector);
+
+/**
+ * @workInProgress
+ * @ngdoc directive
+ * @name angular.directive.ng:options
+ *
+ * @description
+ * Dynamically generate a list of `<option>` elements for a `<select>` element using the array
+ * obtained by evaluating the `ng:options` expression.
+ *
+ * When an item in the select menu is select, the array element represented by the selected option
+ * will be bound to the model identified by the `name` attribute of the parent select element.
+ *
+ * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
+ * be nested into the `<select>` element. This element will then represent `null` or "not selected"
+ * option. See example below for demonstration.
+ *
+ * Note: `ng:options` provides iterator facility for `<option>` element which must be used instead
+ * of {@link angular.widget.@ng:repeat ng:repeat}. `ng:repeat` is not suitable for use with
+ * `<option>` element because of the following reasons:
+ *
+ *   * value attribute of the option element that we need to bind to requires a string, but the
+ *     source of data for the iteration might be in a form of array containing objects instead of
+ *     strings
+ *   * {@link angular.widget.@ng:repeat ng:repeat} unrolls after the select binds causing
+ *     incorect rendering on most browsers.
+ *   * binding to a value not in list confuses most browsers.
+ *
+ * @element select
+ * @param {comprehension_expression} comprehension _expresion_ `for` _item_ `in` _array_.
+ *
+ *   * _array_: an expression which evaluates to an array of objects to bind.
+ *   * _item_: local variable which will reffer to the item in the _array_ during the itteration
+ *   * _expression_: The result of this expression will is `option` label. The
+ *        `expression` most likely reffers to the _item_ varibale.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+        <script>
+        function MyCntrl(){
+          this.colors = [
+            {name:'black'},
+            {name:'white'},
+            {name:'red'},
+            {name:'blue'},
+            {name:'green'}
+          ];
+          this.color = this.colors[2]; // red
+        }
+        </script>
+        <div ng:controller="MyCntrl">
+          <ul>
+            <li ng:repeat="color in colors">
+              Name: <input name="color.name"/> [<a href ng:click="colors.$remove(color)">X</a>]
+            </li>
+            <li>
+              [<a href ng:click="colors.push({})">add</a>]
+            </li>
+          </ul>
+          <hr/>
+          Color (null not allowed):
+          <select name="color" ng:options="c.name for c in colors"></select><br/>
+
+          Color (null allowed):
+          <select name="color" ng:options="c.name for c in colors">
+            <option value="">-- chose color --</option>
+          </select><br/>
+
+          Select <a href ng:click="color={name:'not in list'}">bogus</a>. <br/>
+          <hr/>
+          Currently selected: {{ {selected_color:color}  }}
+          <div style="border:solid 1px black;"
+               ng:style="{'background-color':color.name}">
+             &nbsp;
+          </div>
+        </div>
+      </doc:source>
+      <doc:scenario>
+         it('should check ng:options', function(){
+           expect(binding('color')).toMatch('red');
+           select('color').option('0');
+           expect(binding('color')).toMatch('black');
+           select('color').option('');
+           expect(binding('color')).toMatch('null');
+         });
+      </doc:scenario>
+    </doc:example>
+ */
+
+var NG_OPTIONS_REGEXP = /^(.*)\s+for\s+([\$\w][\$\w\d]*)\s+in\s+(.*)$/;
 angularWidget('select', function(element){
   this.descend(true);
-  return inputWidgetSelector.call(this, element);
-});
-
-
-/*
- * Consider this:
- * <select name="selection">
- *   <option ng:repeat="x in [1,2]">{{x}}</option>
- * </select>
- *
- * The issue is that the select gets evaluated before option is unrolled.
- * This means that the selection is undefined, but the browser
- * default behavior is to show the top selection in the list.
- * To fix that we register a $update function on the select element
- * and the option creation then calls the $update function when it is
- * unrolled. The $update function then calls this update function, which
- * then tries to determine if the model is unassigned, and if so it tries to
- * chose one of the options from the list.
- */
-angularWidget('option', function(){
-  this.descend(true);
   this.directives(true);
-  return function(option) {
-    var select = option.parent();
-    var isMultiple = select[0].type == 'select-multiple';
-    var scope = select.scope();
-    var model = modelAccessor(scope, select);
+  var isMultiselect = element.attr('multiple');
+  var expression = element.attr('ng:options');
+  var match;
+  if (!expression) {
+    return inputWidgetSelector.call(this, element);
+  }
+  if (! (match = expression.match(NG_OPTIONS_REGEXP))) {
+    throw Error(
+        "Expected ng:options in form of '_expresion_ for _item_ in _collection_' but got '" +
+        expression + "'.");
+  }
+  var displayFn = expressionCompile(match[1]).fnSelf;
+  var itemName = match[2];
+  var collectionFn = expressionCompile(match[3]).fnSelf;
+  // we can't just jqLite('<option>') since jqLite is not smart enough
+  // to create it in <select> and IE barfs otherwise.
+  var option = jqLite(document.createElement('option'));
+  return function(select){
+    var scope = this;
+    var optionElements = [];
+    var optionTexts = [];
+    var lastSelectValue = isMultiselect ? {} : false;
+    var nullOption = option.clone().val('');
+    var missingOption = option.clone().val('?');
+    var model = modelAccessor(scope, element);
 
-    //if parent select doesn't have a name, don't bother doing anything any more
-    if (!model) return;
+    // find existing special options
+    forEach(select.children(), function(option){
+      if (option.value == '') nullOption = false;
+    });
 
-    var formattedModel = modelFormattedAccessor(scope, select);
-    var view = isMultiple
-      ? optionsAccessor(scope, select)
-      : valueAccessor(scope, select);
-    var lastValue = option.attr($value);
-    var wasSelected = option.attr('ng-' + $selected);
-    option.data($$update, isMultiple
-      ? function(){
-          view.set(model.get());
+    select.bind('change', function(){
+      var collection = collectionFn(scope) || [];
+      var value = select.val();
+      var index, length;
+      if (isMultiselect) {
+        value = [];
+        for (index = 0, length = optionElements.length; index < length; index++) {
+          if (optionElements[index][0].selected) {
+            value.push(collection[index]);
+          }
         }
-      : function(){
-          var currentValue = option.attr($value);
-          var isSelected = option.attr('ng-' + $selected);
-          var modelValue = model.get();
-          if (wasSelected != isSelected || lastValue != currentValue) {
-            wasSelected = isSelected;
-            lastValue = currentValue;
-            if (isSelected || !modelValue == null || modelValue == undefined )
-              formattedModel.set(currentValue);
-            if (currentValue == modelValue) {
-              view.set(lastValue);
+      } else {
+        if (value == '?') {
+          value = undefined;
+        } else {
+          value = (value == '' ? null : collection[value]);
+        }
+      }
+      if (!isUndefined(value)) model.set(value);
+      scope.$tryEval(function(){
+        scope.$root.$eval();
+      });
+    });
+
+    scope.$onEval(function(){
+      var scope = this;
+      var collection = collectionFn(scope) || [];
+      var value;
+      var length;
+      var fragment;
+      var index;
+      var optionText;
+      var optionElement;
+      var optionScope = scope.$new();
+      var modelValue = model.get();
+      var currentItem;
+      var selectValue = '';
+      var isMulti = isMultiselect;
+
+      if (isMulti) {
+        selectValue = new HashMap();
+        if (modelValue && isNumber(length = modelValue.length)) {
+          for (index = 0; index < length; index++) {
+            selectValue.put(modelValue[index], true);
+          }
+        }
+      }
+      try {
+        for (index = 0, length = collection.length; index < length; index++) {
+          currentItem = optionScope[itemName] = collection[index];
+          optionText = displayFn(optionScope);
+          if (optionTexts.length > index) {
+            // reuse
+            optionElement = optionElements[index];
+            if (optionText != optionTexts[index]) {
+              (optionElement).text(optionTexts[index] = optionText);
+            }
+          } else {
+            // grow
+            if (!fragment) {
+              fragment = document.createDocumentFragment();
+            }
+            optionTexts.push(optionText);
+            optionElements.push(optionElement = option.clone());
+            optionElement.attr('value', index).text(optionText);
+            fragment.appendChild(optionElement[0]);
+          }
+          if (isMulti) {
+            if (lastSelectValue[index] != (value = selectValue.remove(currentItem))) {
+              optionElement[0].selected = !!(lastSelectValue[index] = value);
+            }
+          } else {
+            if (modelValue == currentItem) {
+              selectValue = index;
             }
           }
         }
-    );
+        if (fragment) select.append(jqLite(fragment));
+        // shrink children
+        while(optionElements.length > index) {
+          optionElements.pop().remove();
+          delete lastSelectValue[optionElements.length];
+        }
+
+        if (!isMulti) {
+          if (selectValue === '' && modelValue) {
+            // We could not find a match
+            selectValue = '?';
+          }
+
+          // update the selected item
+          if (lastSelectValue !== selectValue) {
+            if (nullOption) {
+              if (lastSelectValue == '') nullOption.remove();
+              if (selectValue === '') select.prepend(nullOption);
+            }
+
+            if (missingOption) {
+              if (lastSelectValue == '?') missingOption.remove();
+              if (selectValue === '?') select.prepend(missingOption);
+            }
+
+            select.val(lastSelectValue = selectValue);
+          }
+        }
+
+      } finally {
+        optionScope = null;
+      }
+    });
   };
 });
 
@@ -932,7 +1110,7 @@ angularWidget('@ng:repeat', function(expression, element){
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
     if (! match) {
-      throw Error("Expected ng:repeat in form of 'item in collection' but got '" +
+      throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
       expression + "'.");
     }
     lhs = match[1];

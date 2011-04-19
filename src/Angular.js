@@ -52,8 +52,9 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) { return String.fromCharCode(code); }
 
 
-var $$element         = '$element',
-    $$update          = '$update',
+var _undefined        = undefined,
+    _null             = null,
+    $$element         = '$element',
     $$scope           = '$scope',
     $$validate        = '$validate',
     $angular          = 'angular',

@@ -212,7 +212,7 @@ function sortedHtml(element, showNgClass) {
             attr.value !='auto' &&
             attr.value !='false' &&
             attr.value !='inherit' &&
-            attr.value !='0' &&
+            (attr.value !='0' || attr.name =='value') &&
             attr.name !='loop' &&
             attr.name !='complete' &&
             attr.name !='maxLength' &&
