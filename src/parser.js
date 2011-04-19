@@ -239,6 +239,8 @@ function parser(text, json){
       pipeFunction =
         function (){ throwError("is not valid json", {text:text, index:0}); };
   }
+  //TODO: Shouldn't all of the public methods have assertAllConsumed?
+  //TODO: I think these should be public as part of the parser api instead of scope.$eval().
   return {
       assignable: assertConsumed(assignable),
       primary: assertConsumed(primary),
@@ -656,7 +658,6 @@ function parser(text, json){
     };
   }
 }
-
 
 
 

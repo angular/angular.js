@@ -204,6 +204,7 @@ angularFormatter.trim = formatter(
  * @workInProgress
  * @ngdoc formatter
  * @name angular.formatter.index
+ * @deprecated
  * @description
  * Index formatter is meant to be used with `select` input widget. It is useful when one needs
  * to select from a set of objects. To create pull-down one can iterate over the array of object
@@ -250,6 +251,7 @@ angularFormatter.trim = formatter(
      </doc:scenario>
    </doc:example>
  */
+//TODO: delete me since this is replaced by ng:options
 angularFormatter.index = formatter(
   function(object, array){
     return '' + indexOf(array || [], object);
