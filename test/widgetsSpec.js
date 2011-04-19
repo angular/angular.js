@@ -901,7 +901,7 @@ describe("widget", function(){
 
       rootScope.ChildCtrl = function() {
         this.log.push('child');
-      }
+      };
 
       $location.updateHash('/foo');
       $browser.xhr.expectGET('viewPartial.html').
