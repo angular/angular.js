@@ -68,22 +68,22 @@ allow a user to enter data.
 
   it('should validate zip', function(){
     expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
-      .not().toMatch(/ng-validation-error/)
+      .not().toMatch(/ng-validation-error/);
 
     using('.example').input('user.address.zip').enter('abc');
 
     expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
-      .toMatch(/ng-validation-error/)
+      .toMatch(/ng-validation-error/);
   });
 
   it('should validate state', function(){
     expect(using('.example').element(':input[name=user.address.state]').attr('className'))
-      .not().toMatch(/ng-validation-error/)
+      .not().toMatch(/ng-validation-error/);
 
     using('.example').input('user.address.state').enter('XXX');
 
     expect(using('.example').element(':input[name=user.address.state]').attr('className'))
-      .toMatch(/ng-validation-error/)
+      .toMatch(/ng-validation-error/);
   });
  </doc:scenario>
 </doc:example>

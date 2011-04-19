@@ -16,8 +16,7 @@ angular.scenario.SpecRunner = function() {
  * based on the describe nesting.
  *
  * @param {Object} spec A spec object
- * @param {Object} specDone An angular.scenario.Application instance
- * @param {Function} Callback function that is called when the  spec finshes.
+ * @param {Function} specDone function that is called when the spec finshes. Function(error, index)
  */
 angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
   var self = this;

@@ -138,7 +138,7 @@ describe("angular.scenario.dsl", function() {
                   hashSearch: {x: 2},
                   hashPath: '/bar',
                   search: {foo: 10}
-                }
+                };
               } else {
                 throw new Error('unknown service id ' + serviceId);
               }
