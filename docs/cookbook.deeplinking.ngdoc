@@ -105,7 +105,7 @@ The two partials are defined in the following URLs:
 # Things to notice
 
 * Routes are defined in the `AppCntl` class. The initialization of the controller causes the
-  initialization of the {@link angular.service.$rouet $route} service with the proper URL routes.
+  initialization of the {@link angular.service.$route $route} service with the proper URL routes.
 * The  {@link angular.service.$route $route} service then watches the URL and instantiates the
   appropriate controller when the URL changes.
 * The  {@link angular.widget.ng:view ng:view} widget loads the view when the URL changes. It also

@@ -627,7 +627,7 @@ angularWidget('option', function(){
         it('should load date filter', function(){
          expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.date/);
         });
-        it('should change to hmtl filter', function(){
+        it('should change to html filter', function(){
          select('url').option('angular.filter.html.html');
          expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.html/);
         });
