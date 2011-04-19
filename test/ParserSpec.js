@@ -405,9 +405,14 @@ describe('parser', function() {
     });
 
     it('should delegate arguments', function(){
-      var index = parser('index:objs').formatter()();
-      expect(index.format({objs:['A','B']}, 'B')).toEqual('1');
-      expect(index.parse({objs:['A','B']}, '1')).toEqual('B');
+      angularFormatter.myArgs = {
+        parse: function(a, b){ return [a, b]; },
+        format: function(a, b){ return [a, b]; }
+      };
+      var myArgs = parser('myArgs:objs').formatter()();
+      expect(myArgs.format({objs:'B'}, 'A')).toEqual(['A', 'B']);
+      expect(myArgs.parse({objs:'D'}, 'C')).toEqual(['C', 'D']);
+      delete angularFormatter.myArgs;
     });
   });
 

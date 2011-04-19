@@ -15,6 +15,7 @@
 - injection name inference no longer supports method curry and linking functions. Both must be
   explicitly specified using $inject property.
 - Dynamic Iteration (ng:repeater) on <option> elements is no longer supported. Use ng:options
+- Removal of index formatter since its only use was with repeated options (see above)
 
 
 
