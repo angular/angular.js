@@ -395,43 +395,6 @@ describe("widget", function(){
         scope.$eval();
         expect(element[0].childNodes[0].selected).toEqual(true);
       });
-
-      it('should allow binding to objects through index', function(){
-        compile('<div ng:init="list = [{name:\'A\'}, {name:\'B\'}, {name:\'C\'}]">' +
-                  '<select name="selection" multiple ng:format="index:list">' +
-                    '<option selected value="0">A</option>' +
-                    '<option selected value="1">B</option>' +
-                    '<option value="2">C</option>' +
-                  '</select>' +
-                 '</div>');
-        scope.$eval();
-        expect(scope.selection).toEqual([{name:'A'}, {name:'B'}]);
-      });
-
-      it('should be empty array when no items are selected', function(){
-        compile(
-          '<select name="selection" multiple ng:format="index:list">' +
-            '<option value="0">A</option>' +
-            '<option value="1">B</option>' +
-            '<option value="2">C</option>' +
-          '</select>');
-        scope.list = [{name:'A'}, {name:'B'}, {name:'C'}];
-        scope.$eval();
-        expect(scope.selection).toEqual([]);
-      });
-
-      it('should be contain the selected object', function(){
-        compile('<div ng:init="list = [{name:\'A\'}, {name:\'B\'}, {name:\'C\'}]">' +
-                  '<select name="selection" multiple ng:format="index:list">' +
-                    '<option value="0">A</option>' +
-                    '<option value="1" selected>B</option>' +
-                    '<option value="2">C</option>' +
-                  '</select>' +
-                '</div>');
-        scope.$eval();
-        expect(scope.selection).toEqual([{name:'B'}]);
-      });
-
     });
 
     it('should ignore text widget which have no name', function(){
