@@ -543,6 +543,20 @@ describe('ngdoc', function(){
         expect(dom).toContain('var modelValue = angular.formatter.myFormatter.parse(userInputString, a);');
       });
     });
+
+    describe('property', function(){
+      it('should format', function(){
+        var doc = new Doc({
+          ngdoc:'property',
+          name:'myProp',
+          returns:{type: 'type', description: 'description'}
+        });
+        doc.html_usage_property(dom);
+        expect(dom).toContain('myProp');
+        expect(dom).toContain('type');
+        expect(dom).toContain('description');
+      });
+    });
   });
 
 });
