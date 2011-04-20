@@ -321,6 +321,17 @@ Doc.prototype = {
     });
   },
 
+  html_usage_property: function(dom){
+    var self = this;
+    dom.h('Usage', function(){
+      dom.code(function(){
+        dom.text(self.name);
+      });
+
+      self.html_usage_returns(dom);
+    });
+  },
+
   html_usage_directive: function(dom){
     var self = this;
     dom.h('Usage', function(){
