@@ -140,7 +140,7 @@ properties:
 
 * For additional hands-on examples of using `angular`, including more source 
   code that you can copy and paste into your own pages, take a look through 
-  the `angular` {@link Cookbook}.
+  the `angular` {@link cookbook Cookbook}.
 
 * For explanations of the `angular` concepts presented in the examples on this 
   page, see the {@link guide Developer Guide}.
