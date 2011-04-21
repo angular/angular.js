@@ -84,6 +84,7 @@ function getStyle(element) {
   return current;
 }
 
+//TODO: delete me! dead code?
 if (msie) {
   extend(JQLite.prototype, {
     text: function(value) {
@@ -226,6 +227,8 @@ var JQLitePrototype = JQLite.prototype = {
 // these functions return self on setter and
 // value on get.
 //////////////////////////////////////////
+var SPECIAL_ATTR = makeMap("multiple,selected,checked,disabled,readonly");
+
 forEach({
   data: JQLiteData,
 
@@ -252,7 +255,13 @@ forEach({
   },
 
   attr: function(element, name, value){
-    if (isDefined(value)) {
+    if (SPECIAL_ATTR[name]) {
+      if (isDefined(value)) {
+        element[name] = !!value;
+      } else {
+        return element[name];
+      }
+    } else if (isDefined(value)) {
       element.setAttribute(name, value);
     } else if (element.getAttribute) {
       // the extra argument "2" is to get the right thing for a.href in IE, see jQuery code

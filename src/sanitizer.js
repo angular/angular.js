@@ -187,17 +187,6 @@ function htmlParser( html, handler ) {
 }
 
 /**
- * @param str 'key1,key2,...'
- * @returns {object} in the form of {key1:true, key2:true, ...}
- */
-function makeMap(str){
-  var obj = {}, items = str.split(","), i;
-  for ( i = 0; i < items.length; i++ )
-    obj[ items[i] ] = true;
-  return obj;
-}
-
-/**
  * decodes all entities into regular string
  * @param value
  * @returns {string} A string with decoded entities.

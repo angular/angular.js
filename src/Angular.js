@@ -413,6 +413,19 @@ function isElement(node) {
 }
 
 /**
+ * @param str 'key1,key2,...'
+ * @returns {object} in the form of {key1:true, key2:true, ...}
+ */
+function makeMap(str){
+  var obj = {}, items = str.split(","), i;
+  for ( i = 0; i < items.length; i++ )
+    obj[ items[i] ] = true;
+  return obj;
+}
+
+
+
+/**
  * HTML class which is the only class which can be used in ng:bind to inline HTML for security reasons.
  * @constructor
  * @param html raw (unsafe) html

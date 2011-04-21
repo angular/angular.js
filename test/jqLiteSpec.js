@@ -128,7 +128,7 @@ describe('jqLite', function(){
 
 
   describe('attr', function(){
-    it('shoul read wirite and remove attr', function(){
+    it('shoul read write and remove attr', function(){
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -147,6 +147,21 @@ describe('jqLite', function(){
       expect(jqLite(a).attr('prop')).toBeFalsy();
       expect(jqLite(b).attr('prop')).toBeFalsy();
     });
+
+    it('should read special attributes as boolean', function(){
+      var select = jqLite('<select>');
+      expect(select.attr('multiple')).toEqual(false);
+      expect(jqLite('<select multiple>').attr('multiple')).toEqual(true);
+      expect(jqLite('<select multiple="">').attr('multiple')).toEqual(true);
+      expect(jqLite('<select multiple="x">').attr('multiple')).toEqual(true);
+
+      select.attr('multiple', false);
+      expect(select.attr('multiple')).toEqual(false);
+
+      select.attr('multiple', true);
+      expect(select.attr('multiple')).toEqual(true);
+    });
+
   });
 
 
