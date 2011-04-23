@@ -170,7 +170,7 @@ angular.scenario.dsl('binding', function() {
  * Usage:
  *    input(name).enter(value) enters value in input with specified name
  *    input(name).check() checks checkbox
- *    input(name).select(value) selects the readio button with specified name/value
+ *    input(name).select(value) selects the radio button with specified name/value
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
