@@ -1,0 +1,86 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 1
+@description
+<table id="tutorial_nav">
+  <tr>
+    <td id="previous_step">{@link tutorial Previous}</td>
+    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Example}</td>
+    <td id="tut_home">{@link tutorial Tutorial Home}</td>
+    <td id="code_diff">
+{@link https://github.com/angular/angular-phonecat/commit/fa2a351f0ede1666041e407c52e4e5daf448c5f8
+Code Diff}</td>
+    <td id="next_step">{@link tutorial.step_2 Next}</td>
+  </tr>
+</table>
+
+In this step, we will add basic information about two cell phones.  
+
+Note: We will usually include only the new code that we added for each step.  In this and
+subsequent examples, we will leave out code from the previous step that hasn't changed, for
+example:
+
+        ...
+        <html xmlns:ng="http://angularjs.org">
+        ...
+        
+Let's add the following code to `index.html`:
+
+__`app/index.html`:__
+<pre>
+<head>
+...
+  <title>Google Phone Gallery</title>
+...
+</head>
+...
+  <ul>
+    <li>
+      <span>Nexus S<span>
+      <p>
+        Fast just got faster with Nexus S.
+      </p>
+    </li>
+    <li>
+      <span>Motorola XOOM™ with Wi-Fi<span>
+      <p>
+        The Next, Next Generation tablet.
+      </p>
+    </li>
+  </ul>
+...
+</pre>
+
+## Discussion:
+
+* It's a static web page! We displayed info about two phones! Yay. 
+
+* For those of you playing along at home on your own web servers, did you switch to Step 1 and
+refresh your browsers?  
+
+    * __{@link tutorial_intro Using Git:}__ 
+
+        From your `angular-phonecat` directory, run this command:
+
+                git checkout step-1
+
+    * __{@link tutorial_intro Using Snapshots:}__ 
+
+        From `[install directory]/sandbox`, run this command:
+
+                ./goto_step.sh 1
+
+When you're ready, let's move on and start using some angular features to turn this static page
+into a dynamic web app.
+
+<table id="tutorial_nav">
+  <tr>
+    <td id="previous_step">{@link tutorial Previous}</td>
+    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Example}</td>
+    <td id="tut_home">{@link tutorial Tutorial Home}</td>
+    <td id="code_diff">
+{@link https://github.com/angular/angular-phonecat/commit/fa2a351f0ede1666041e407c52e4e5daf448c5f8
+Code Diff}</td>
+    <td id="next_step">{@link tutorial.step_2 Next}</td>
+  </tr>
+</table>

@@ -1,0 +1,114 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 4
+@description
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_3 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/b56c91f453114347f0cb25e70b1c4fa4f1421763 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_5 Next}</td>
+</tr>
+</table>
+
+In this step, we add a feature that lets our users choose which way to order the phone list.
+
+__`app/index.html`:__
+<pre>
+...
+  <ul class="predicates">
+    <li>
+      Search: <input type="text" name="query"/>
+    </li>
+    <li>
+      Sort by:
+      <select name="orderProp">
+        <option value="name">Alphabetical</option>
+        <option value="age">Newest</option>
+      </select>
+    </li>
+  </ul>
+
+  <ul class="phones">
+    <li ng:repeat="phone in phones.$filter(query).$orderBy(orderProp)">
+      {{phone.name}}
+      <p>{{phone.snippet}}</p>
+    </li>
+  </ul>
+...
+</pre>
+
+__`app/js/controller.js`:__
+<pre>
+/* App Controllers */
+
+function PhoneListCtrl() {
+  this.phones = [{"name": "Nexus S",
+                  "snippet": "Fast just got faster with Nexus S.",
+                  "age": 0},
+                 {"name": "Motorola XOOM™ with Wi-Fi",
+                  "snippet": "The Next, Next Generation tablet.",
+                  "age": 1},
+                 {"name": "MOTOROLA XOOM™",
+                  "snippet": "The Next, Next Generation tablet.",
+                  "age": 2}];
+
+  this.orderProp = 'age';
+}
+</pre>
+
+__`test/unit/controllerSpec.js`:__
+<pre>
+/* jasmine specs for controllers go here */
+describe('PhoneCat controllers', function() {
+
+  describe('PhoneListCtrl', function(){
+    var scope, $browser, ctrl;
+
+    beforeEach(function() {
+      ctrl = new PhoneListCtrl();
+    });
+
+
+    it('should create "phones" model with 3 phones', function() {
+      expect(ctrl.phones.length).toBe(3);
+    });
+
+
+    it('should set the default value of orderProp model', function() {
+      expect(ctrl.orderProp).toBe('age');
+    });
+  });
+});
+</pre>
+
+## Discussion:
+
+To provide dynamic ordering, we employ another one of angular's "array type augmenters" and let
+the data binding do the rest of the work for us:
+
+* Like {@link angular.Array.filter $filter}, {@link angular.Array.orderBy $orderBy} is a built-in
+method available on array objects in angular expressions.  In our UI template, we set up a select
+box that lets the user set the `orderProp` model variable to one of the string constants: `age` or
+`name`.
+
+* In our controller, we added a line to set the default value of `orderProp` to `age`.
+
+* Our unit test now verifies that our default ordering property is set.
+
+* Once again we added a little more CSS to improve the View.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_3 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/b56c91f453114347f0cb25e70b1c4fa4f1421763 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_5 Next}</td>
+</tr>
+</table>

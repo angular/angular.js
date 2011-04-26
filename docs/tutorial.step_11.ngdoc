@@ -1,0 +1,113 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 11
+@description
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_10 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-11/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/46e2bc3ff21a1385d6ef1860c5c242f8e0265379 Code
+Diff}</td>
+<td id="next_step">Next</td>
+</tr>
+</table>
+
+And so we arrive at the last step of this tutorial. Here we define a custom service that
+represents a {@link http://en.wikipedia.org/wiki/Representational_State_Transfer  RESTful} client
+object.  Using this client object we can make requests for data in an easier way, without having
+to deal with the lower-level {@link angular.service.$xhr $xhr} APIs.
+
+__`app/index.html`.__ 
+<pre>
+...
+  <script src="lib/angular/angular.js" ng:autobind></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/filters.js"></script>
+  <script src="js/services.js"></script>
+...
+</pre>
+
+
+__`app/js/services.js`.__ (New)
+<pre>
+ angular.service('Phone', function($resource){
+  return $resource('phones/:phoneId.json', {}, {
+    query: {method:'GET', params:{phoneId:'phones'}, isArray:true}
+  });
+ });
+</pre>
+
+__`app/js/controllers.js`.__
+<pre>
+function PhonesCtrl($route) {
+  var self = this;
+
+  $route.when('/phones',
+             {template:'partials/phone-list.html',   controller:PhoneListCtrl});
+  $route.when('/phones/:phoneId',
+             {template:'partials/phone-detail.html', controller:PhoneDetailCtrl});
+  $route.otherwise({redirectTo:'/phones'});
+
+  $route.onChange(function(){
+    self.params = $route.current.params;
+  });
+  $route.parent(this);
+}
+//PhonesCtrl.$inject = ['$route'];
+
+function PhoneListCtrl(Phone) {
+  this.orderProp = 'age';
+  this.phones = Phone.query();
+}
+//PhoneListCtrl.$inject = ['Phone'];
+
+
+function PhoneDetailCtrl(Phone) {
+  this.phone = Phone.get({phoneId:this.params.phoneId});
+}
+//PhoneDetailCtrl.$inject = ['Phone'];
+
+</pre>
+
+
+## Discussion:
+
+* We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
+lower-level `$xhr` service, replacing it with a new service called `Phone`.  Angular's {@link
+angular.service.$resource `$resource`}  service is easier to use than `$xhr` for interacting with
+data sources exposed as RESTful resources. It is also easier now to understand what the code in
+our controllers is doing.
+
+* Once again we make use of `$route's` params, this time to construct the URL passed as a
+parameter to `$resource` in our `services.js` script.
+
+There you have it!  We have created a web app in a relatively short amount of time.
+
+## Closing Notes:
+
+* For more details and examples of the angular concepts we touched on in this tutorial, see the
+{@link guide Developer Guide}.
+
+* For several more examples of sample code, see the {@link cookbook Cookbook}.
+
+* When you are ready to start developing a project using angular, be sure to begin with the {@link
+https://github.com/angular/angular-seed angular seed app}.
+
+* We hope this tutorial was useful to you, and that you learned enough about angular to make you
+want to learn more.  Of course, we especially hope you are inspired to go out and develop angular
+web apps of your own, and perhaps you might even be interested in {@link contribute contributing}
+to angular.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_10 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-11/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/46e2bc3ff21a1385d6ef1860c5c242f8e0265379 Code
+Diff}</td>
+<td id="next_step">Next</td>
+</tr>
+</table>

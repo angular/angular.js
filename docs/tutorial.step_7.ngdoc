@@ -1,0 +1,159 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 7
+@description
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_6 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-7/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/43ff5d76f1c0a464da67d691418e33e6c9d8dbc8 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_8 Next}</td>
+</tr>
+</table>
+
+In this step we introduce angular's {@link angular.service.$route $route} service.  This service
+is usually used in conjunction with the {@link angular.widget.ng:view ng:view} directive.  The
+`$route` service makes it easy to wire together controllers, View templates, and the current URL
+location in the browser.  Using this feature we can implement {@link
+http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
+History, and Back and Forward browser navigation.  
+
+We'll use {@link angular.service.$route $route} to implement two different views for our
+application: one view presents the phone listing, and the other view presents the details for a
+particular phone.  We'll use {@link angular.widget.ng:view ng:view} to include one or the other of
+those views in our main layout page (`index.html`). The view presented in the layout page is based
+on which URL the user navigates to.
+
+To manage our two different views, we'll move the existing phone list controller into a
+sub-controller, add a second sub-controller to handle the phone details, and we'll create a new
+root controller to implement the routing.  (We'll save the implementation of the phone details
+View for the next step.)
+
+__`app/index.html`:__
+<pre>
+<body ng:controller="PhoneCatCtrl">
+...
+
+  <ng:view></ng:view>
+...
+</pre>
+
+__`app/partials/phone-list.html`:__
+<pre>
+<ul class="predicates">
+  <li>
+    Search: <input type="text" name="query"/>
+  </li>
+  <li>
+    Sort by:
+    <select name="orderProp">
+      <option value="name">Alphabetical</option>
+      <option value="age">Newest</option>
+    </select>
+  </li>
+</ul>
+
+<ul class="phones">
+  <li ng:repeat="phone in phones.$filter(query).$orderBy(orderProp)">
+    <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+    <a href="#/phones/{{phone.id}}" class="thumb"><img ng:src="{{phone.imageUrl}}"></a>
+    <p>{{phone.snippet}}</p>
+  </li>
+</ul>
+</pre>
+
+__`app/js/controller.js`:__
+<pre>
+/* App Controllers */
+
+function PhoneCatCtrl($route) {
+  var self = this;
+
+  $route.when('/phones',
+              {template: 'partials/phone-list.html',   controller: PhoneListCtrl});
+  $route.when('/phones/:phoneId',
+              {template: 'partials/phone-detail.html', controller: PhoneDetailCtrl});
+  $route.otherwise({redirectTo: '/phones'});
+
+  $route.onChange(function(){
+    self.params = $route.current.params;
+  });
+
+  $route.parent(this);
+}
+
+//PhoneCatCtrl.$inject = ['$route'];
+
+
+function PhoneListCtrl($xhr) {
+  var self = this;
+
+  $xhr('GET', 'phones/phones.json', function(code, response) {
+    self.phones = response;
+  });
+
+  self.orderProp = 'age';
+}
+
+//PhoneListCtrl.$inject = ['$xhr'];
+
+
+function PhoneDetailCtrl() {}
+</pre>
+
+## Discussion:
+
+We have many changes to discuss here in Step 7:
+
+* __The View.__ Our View template in `index.html` has been reduced down to this:
+`<ng:view></ng:view>`.  It is now what we call a "layout template", because it contains
+information common for all views, including the layout of our application. The {@link
+angular.widget.ng:view ng:view} directive behaves like an "include" declaration (it's a
+specialized sibling of the {@link angular.widget.ng:include ng:include} directive) that works
+specifically with the {@link angular.service.$route $route} service.  The View template associated
+with the current route definition gets included "between those tags" (there's more to it than a
+simple include, but that explanation will do for now). 
+
+    * We added two new View templates:
+
+        *  `app/partials/phone-list.html` for the phone list;
+
+        *  `app/partials/phone-detail.html` for the phone details (just a stub for this step);
+
+* __The Controller(s).__ We now have a new root controller (`PhoneCatCtrl`) and two
+sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`). 
+
+    * __`$route.`__ The root controller's job now is to set up the `$route` configuration:
+
+        * When the fragment part of the URL in the browser ends in "/phones", `$route` grabs the
+        `phone-list.html` template, compiles it, and links it with a new scope that is controlled
+        by our `PhoneListCtrl` controller. 
+
+        * When the URL ends in "/phones/:phoneId", `$route` compiles and links the
+        `phone-detail.html` template as it did with `phone-list.html`. But note the use of the
+        variable `:phoneId` in the `path` parameter of `$route.when()`: `$route` stores that
+        portion of the current URL fragment in its current parameters in a property called
+        `params.phoneId`. We made the `$route` parameters available to our sub-controllers in the
+        `$route.onChange()` function in our root controller.  We will use the `phoneId` property
+        when we fetch the phone details in Step 8.
+
+        * Any other URL fragment gets redirected to `/phones`.
+
+    * __Deep Linking.__ In `$route`'s `onChange()` method, we copied {@link
+    http://en.wikipedia.org/wiki/Deep_linking deep linking} parameters to the `params` property in
+    the root scope, so we can use them in the child scopes managed by our sub-controllers.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_6 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-7/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/43ff5d76f1c0a464da67d691418e33e6c9d8dbc8 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_8 Next}</td>
+</tr>
+</table>
