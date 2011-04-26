@@ -1,0 +1,104 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 3
+@description
+<table id="tutorial_nav">
+<tr>
+  <td id="previous_step">{@link tutorial.step_2 Previous}</td>
+  <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-3/app Example}</td>
+  <td id="tut_home">{@link tutorial Tutorial Home}</td>
+  <td id="code_diff">{@link
+  https://github.com/angular/angular-phonecat/commit/a03815f8fb00217f5f9c1d3ef83282f79818e706 Code
+  Diff}</td>
+  <td id="next_step">{@link tutorial.step_4 Next}</td>
+</tr>
+</table>
+
+In this step, we will add full text search to our app.  We will also write an end-to-end test,
+because a good end-to-end test is a good friend. It stays with your app, keeps an eye on it, and
+quickly detects regressions. 
+
+__`app/index.html`:__
+<pre>
+...
+   Fulltext Search: <input name="query"/>
+
+  <ul class="phones">
+    <li ng:repeat="phone in phones.$filter(query)">
+      {{phone.name}}
+      <p>{{phone.snippet}}</p>
+    </li>
+  </ul>
+...
+</pre>
+__`test/e2e/scenarios.js`:__
+<pre>
+/* jasmine-like end2end tests go here */
+describe('PhoneCat App', function() {
+
+  describe('Phone list view', function() {
+
+    beforeEach(function() {
+      browser().navigateTo('../../app/index.html');
+    });
+
+
+    it('should filter the phone list as user types into the search box', function() {
+      expect(repeater('.phones li').count()).toBe(3);
+
+      input('query').enter('nexus');
+      expect(repeater('.phones li').count()).toBe(1);
+
+      input('query').enter('motorola');
+      expect(repeater('.phones li').count()).toBe(2);
+    });
+  });
+});
+</pre>
+
+## Discussion:
+
+We continued using the same controller that we set up in Step 2, but we added the following
+features to our app:
+
+* __Search Box:__  A standard HTML `<input>` tag combined with angular's {@link
+angular.Array.filter $filter} utility (added to the repeater) lets a user type in search criteria
+and immediately see the effects of their search on the phone list.  This new code demonstrates the
+following:
+
+   * Two-way data-binding.  This is one of the very nice features in angular.  In this example,
+   the data that you type into the input box (named __`query`__) is immediately available as a
+   filter in the list repeater (`phone in phones.$filter(`__`query`__`)`).  When the page loads,
+   angular binds the name of the input box to a variable of the same name in the data model. 
+   Whenever the data Model changes, the View reflects the change, and vice versa.    
+
+   * Use of `$filter` in a template.  The `$filter` function is one of several built-in utility
+   functions that augment JavaScript arrays during their evaluation as angular expressions.  An
+   {@link Angular.array angular array} is a JavaScript array object with additional functionality
+   added.  In {@link guide.expression angular expressions}, these array utilities are available as
+   methods. (They are prefixed with a $ to avoid naming collisions.)
+
+   * How `ng:repeat` automatically shrinks and grows the number of phones in the View, via DOM
+   manipulation that is completely transparent to the developer.  If you've written any DOM
+   manipulation code, this should make you happy.
+
+* __CSS:__ We added in some minimal CSS to the file we set up in Step 0: `./css/app.css`.
+
+* __Testing:__  This end-to-end test shows the following:
+
+    * Proof that the search box and the repeater are correctly wired together.
+
+    * How easy it is to write end-to-end tests.  This is just a simple test, but the point here is
+    to show how easy it is to set up a functional, readable, end-to-end test.
+
+<table id="tutorial_nav">
+<tr>
+  <td id="previous_step">{@link tutorial.step_2 Previous}</td>
+  <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-3/app Example}</td>
+  <td id="tut_home">{@link tutorial Tutorial Home}</td>
+  <td id="code_diff">{@link
+  https://github.com/angular/angular-phonecat/commit/a03815f8fb00217f5f9c1d3ef83282f79818e706 Code
+  Diff}</td>
+  <td id="next_step">{@link tutorial.step_4 Next}</td>
+</tr>
+</table>

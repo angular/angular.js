@@ -1,0 +1,87 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial
+@description
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">Previous</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">Code Diff</td>
+<td id="next_step">{@link tutorial.step_1 Next}</td>
+</tr>
+</table>
+
+Welcome to the angular tutorial!  Before you begin, you can check out the finished app here:
+{@link http://angular.github.com/angular-phonecat/step-11/app/ The Completed Tutorial App}. Also,
+if you missed the {@link tutorial_intro Intro to Tutorial} doc, it provides some background info,
+and describes different options you have in working through the tutorial.
+
+We'll begin the tutorial by creating a basic page, and then we'll add functionality to our app on
+each subsequent step.
+
+# Step 0
+The following sample code is our starting point.  It is a static HTML page that displays next to
+nothing, but it has everything we need to proceed. You can think of this bit of code as our
+prototype template, consisting of basic HTML tags and some key angular {@link angular.directive
+directives}. 
+
+__`app/index.html`:__
+<pre>
+<!doctype html>
+<html xmlns:ng="http://angularjs.org/">
+<head>
+  <meta charset="utf-8">
+  <title>my angular app</title>
+  <link rel="stylesheet" href="css/app.css"/>
+</head>
+<body>
+
+  Nothing here yet!
+
+  <script src="lib/angular/angular.js" ng:autobind></script>
+</body>
+</html>
+</pre>
+
+## Discussion:
+
+Although our app doesn't appear to do anything dynamic, note the following:
+
+* __... `xmlns:ng="http://angularjs.org"` ...__  This `xmlns` declaration for the `ng` namespace
+must be specified if you use XHTML, or if you are targeting IE older than 9 (regardless of whether
+you are using XHTML or HTML).
+
+* __`<script src="lib/angular/angular.js"` ...__ This downloads the `angular.js` bootstrap script
+and registers a callback that will be executed by the browser when the HTML is fully downloaded.
+When the callback is executed, angular looks for the {@link angular.directive.ng:autobind
+ng:autobind} attribute. If `ng:autobind` is found, it signals angular to compile and manage the
+whole page.  
+
+    Note: If you elected not to download any tutorial files but still want to try out some angular
+    code on your system, you can change the relative path to the `angular.js` script in your
+    template from `./lib/angular/angular.js` to the following:
+
+            <script src="http://code.angularjs.org/angular-0.9.14.js" ng:autobind></script>
+
+    This will bootstrap angular from the angular server instead of from a local file.
+
+* To try this code out in your browser, you need to navigate to the step-0 page (you are currently
+on Step 0 of the tutorial). If your http server is running, navigate to `app/index.html`.
+Remember, this is a relative URL (see the Relative URL section in {@link tutorial_intro Intro to
+Tutorial}). The browser will display the same thing as you would see if you go to
+http://angular.github.com/angular-phonecat/step-0/app (accessible from Example at the bottom of
+the page).
+
+Now we can move on and add some content to our developing web app.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">Previous</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">Code Diff</td>
+<td id="next_step">{@link tutorial.step_1 Next}</td>
+</tr>
+</table>

@@ -1,0 +1,110 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 8
+@description
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_7 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/1f91f571bdd6f1e705ebb303998afe7820ffc6d9 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_9 Next}</td>
+</tr>
+</table>
+
+In this step, we implement the Phone Details View template.  Once again we will use {@link
+angular.services.$xhr $xhr} to fetch our data, and we'll flesh out the `phone-details.html` View
+template.
+
+__`app/partials/phone-details.html`:__
+<pre>
+<img ng:src="{{phone.images[0]}}" class="phone"/>
+
+<h1>{{phone.name}}</h1>
+
+<p>{{phone.description}}</p>
+
+<ul class="phone-thumbs">
+  <li ng:repeat="img in phone.images">
+    <img ng:src="{{img}}"/>
+  </li>
+</ul>
+
+<ul class="specs">
+  <li>
+    <span>Availability and Networks</span>
+    <dl>
+      <dt>Availability</dt>
+      <dd ng:repeat="availability in phone.availability">{{availability}}</dd>
+    </dl>
+  </li>
+    ...
+    <span>Additional Features</span>
+    <dd>{{phone.additionalFeatures}}</dd>
+  </li>
+</ul>
+</pre>
+
+__`app/js/controller.js`:__
+<pre>
+function PhoneCatCtrl($route) (same as Step 7)
+
+function PhoneListCtrl($xhr) (same as Step 7)
+
+function PhoneDetailCtrl($xhr) {
+  var self = this;
+
+  $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
+    self.phone = response;
+  });
+}
+
+//PhoneDetailCtrl.$inject = ['$xhr'];
+</pre>
+
+__`app/phones/nexus-s.json`:__ (sample snippet)
+<pre>
+{
+  "additionalFeatures": "Contour Display, Near Field Communications (NFC), Three-axis gyroscope,
+  Anti-fingerprint display coating, Internet Calling support (VoIP/SIP)", 
+  "android": {
+      "os": "Android 2.3", 
+      "ui": "Android"
+  }, 
+  ...
+  "images": [
+      "img/phones/nexus-s.0.jpg", 
+      "img/phones/nexus-s.1.jpg", 
+      "img/phones/nexus-s.2.jpg", 
+      "img/phones/nexus-s.3.jpg"
+  ], 
+  "storage": {
+      "flash": "16384MB", 
+      "ram": "512MB"
+  }
+}
+</pre>
+
+## Discussion:
+
+* Phone Details View Template. There is nothing fancy or new here, just note where we use the
+angular `{{ expression }}` markup and directives to project phone data from our model.
+
+* Note how we used the `$route` `params` object from the scope managed by the root controller
+(`PhoneCatCtrl`), to construct the path to the phone details requested by the user. The rest of
+this step is simply applying the previously learned concepts and angular APIs to create a large
+template that displays a lot of data about a phone.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_7 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/1f91f571bdd6f1e705ebb303998afe7820ffc6d9 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_9 Next}</td>
+</tr>
+</table>

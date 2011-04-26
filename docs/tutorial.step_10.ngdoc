@@ -1,0 +1,109 @@
+@workInProgress
+@ngdoc overview
+@name Tutorial: Step 10
+@description
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_9 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/abe1e13c7d9e725fdd3b811ca5ec28ea0d973aab Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_11 Next}</td>
+</tr>
+</table>
+
+In this step we will add a phone image swapping feature. We want to be able to click on a
+thumbnail image in the phone details page, and have that action change the large phone image to
+match the selection.
+
+__`app/partials/phone-detail.html`.__
+<pre>
+<img ng:src="{{mainImageUrl}}" class="phone"/>
+
+<h1>{{phone.name}}</h1>
+
+<p>{{phone.description}}</p>
+
+<ul class="phone-thumbs">
+  <li ng:repeat="img in phone.images">
+    <img ng:src="{{img}}" ng:click="setImage(img)">
+  </li>
+</ul>
+...
+</pre>
+
+__`app/js/controllers.js`.__
+<pre>
+...
+function PhoneDetailCtrl($xhr) {
+  var self = this;
+
+  $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
+    self.phone = response;
+    self.mainImageUrl = response.images[0];
+  });
+
+  self.setImage = function(imageUrl) {
+    self.mainImageUrl = imageUrl;
+  }
+}
+
+//PhoneDetailCtrl.$inject = ['$xhr'];
+</pre>
+
+__`test/e2e/scenarios.js`.__
+<pre>
+/* jasmine-like end2end tests go here */
+...
+  describe('Phone detail view', function() {
+
+    beforeEach(function() {
+      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+    });
+
+
+    it('should display nexus-s page', function() {
+      expect(binding('phone.name')).toBe('Nexus S');
+    });
+
+    it('should display "0.large" image as the main phone image', function() {
+       expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+    });
+
+
+    it('should swap main image if a thumbnail image is clicked on', function() {
+      element('.phone-thumbs li:nth-child(3) img').click();
+      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.2.jpg');
+
+      element('.phone-thumbs li:nth-child(1) img').click();
+      expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
+    });
+  });
+});
+</pre>
+
+## Discussion:
+
+Adding the phone image swapping feature is fairly straightforward:
+
+- We defined the `mainImageUrl` model variable in the details controller (`PhoneDetailCtrl`) and
+set the default value of `mainImageUrl` to the first image in the array of images.
+- We created a `setImage` controller method to change `mainImageUrl` to the image clicked on by
+the user.
+- We registered an `ng:click` handler for thumb images to use the `setImage` controller method.
+- And of course, we added e2e tests for our new feature.
+
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_9 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/abe1e13c7d9e725fdd3b811ca5ec28ea0d973aab Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_11 Next}</td>
+</tr>
+</table>
