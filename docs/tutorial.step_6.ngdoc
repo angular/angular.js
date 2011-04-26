@@ -1,0 +1,101 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 6
+@description
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_5 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/2fb113a4da9b6d19e17627f351f0681befcccdc0 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_7 Next}</td>
+</tr>
+</table>
+
+In this step, we add thumbnail images, links, and a little more CSS to our app.  For now, our
+links go nowhere.  One step at a time; in the next step we'll implement new views that these links
+will open.
+
+__`app/index.html`:__
+<pre>
+...
+  <ul class="predicates">
+    <li>
+      Search: <input type="text" name="query"/>
+    </li>
+    <li>
+      Sort by:
+      <select name="orderProp">
+        <option value="name">Alphabetical</option>
+        <option value="age">Newest</option>
+      </select>
+    </li>
+  </ul>
+
+  <ul class="phones">
+    <li ng:repeat="phone in phones.$filter(query).$orderBy(orderProp)">
+      <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
+      <a href="#/phones/{{phone.id}}" class="thumb"><img ng:src="{{phone.imageUrl}}"></a>
+      <p>{{phone.snippet}}</p>
+    </li>
+  </ul>
+...
+</pre>
+
+__`app/js/controller.js`__ (Unchanged):
+<pre>
+/* App Controllers */
+
+function PhoneListCtrl($xhr) {
+  var self = this;
+
+  $xhr('GET', 'phones/phones.json', function(code, response) {
+    self.phones = response;
+  });
+
+  self.orderProp = 'age';
+}
+
+//PhoneListCtrl.$inject = ['$xhr'];
+</pre>
+
+__`app/phones/phones.json`__ (sample snippet):
+<pre>
+ [
+  {
+   "age": 4, 
+   ...
+   "carrier": "T-Mobile", 
+   "id": "motorola-defy-with-motoblur", 
+   "imageUrl": "http://google.com/phone/image/small/640001", 
+   "name": "Motorola DEFY\u2122 with MOTOBLUR\u2122", 
+   "snippet": "Are you ready for everything life throws your way?"
+  }, 
+  …
+ ]
+</pre>
+
+## Discussion:
+
+* Note that we're using {@link guide.expression angular expressions} enclosed in the now-familiar
+{@link angular.markup double-curly brace markup} in the href attribute values. These represent
+attribute bindings, and work the same way as the bindings we saw in previous steps.
+
+* Note also the use of the {@link angular.directive.ng:src ng:src} directive in the `<img>` tag. 
+That directive prevents the browser from treating the angular `{{ exppression }}` markup
+literally, as it would do if we tried to use markup in a regular `src` attribute.  Use `ng:src` to
+keep the browser from eagerly making an extra http request to an invalid location.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial.step_5 Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Example}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">{@link
+https://github.com/angular/angular-phonecat/commit/2fb113a4da9b6d19e17627f351f0681befcccdc0 Code
+Diff}</td>
+<td id="next_step">{@link tutorial.step_7 Next}</td>
+</tr>
+</table>

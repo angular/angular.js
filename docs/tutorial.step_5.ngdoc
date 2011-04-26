@@ -1,0 +1,109 @@
+﻿@workInProgress
+@ngdoc overview
+@name Tutorial: Step 5
+@description
+<table id="tutorial_nav">
+<tr>
+ <td id="previous_step">{@link tutorial.step_4 Previous}</td>
+ <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-5/app Example}</td>
+ <td id="tut_home">{@link tutorial Tutorial Home}</td>
+ <td id="code_diff">{@link
+ https://github.com/angular/angular-phonecat/commit/4f0a518557b5c7442568666b211aa79499870276 Code
+ Diff}</td>
+ <td id="next_step">{@link tutorial.step_6 Next}</td>
+</tr>
+</table>
+
+In this step, the View template remains the same but the Model and Controller change.  We'll
+introduce the use of an angular {@link angular.service service}, which we will use to implement an
+`HttpXmlRequest` request to communicate with a server. Angular provides the built-in {@link
+angular.service.$xhr $xhr} service for this purpose.
+
+The addition of the `$xhr` service to our app gives us the opportunity to talk about {@link
+guide.di Dependency Injection} (DI).  The use of DI is another cornerstone of the angular
+philosophy. DI helps make your web apps well structured, loosely coupled, and ultimately easier to
+test.  
+
+__`app/js/controllers.js:`__
+<pre>
+/* App Controllers */
+
+function PhoneListCtrl($xhr) {
+  var self = this;
+
+  $xhr('GET', 'phones/phones.json', function(code, response) {
+    self.phones = response;
+  });
+
+  self.orderProp = 'age';
+}
+
+//PhoneListCtrl.$inject = ['$xhr'];
+</pre>
+
+__`test/unit/controllerSpec.js`:__
+<pre>
+/* jasmine specs for controllers go here */
+describe('PhoneCat controllers', function() {
+
+  describe('PhoneListCtrl', function(){
+    var scope, $browser, ctrl;
+
+    beforeEach(function() {
+      scope = angular.scope();
+      $browser = scope.$service('$browser');
+
+      $browser.xhr.expectGET('phones/phones.json').respond([{name: 'Nexus S'},
+                                                            {name: 'Motorola DROID'}]);
+      ctrl = scope.$new(PhoneListCtrl);
+    });
+
+
+    it('should create "phones" model with 2 phones fetched from xhr', function() {
+      expect(ctrl.phones).toBeUndefined();
+      $browser.xhr.flush();
+
+      expect(ctrl.phones).toEqual([{name: 'Nexus S'},
+                                   {name: 'Motorola DROID'}]);
+    });
+
+
+    it('should set the default value of orderProp model', function() {
+      expect(ctrl.orderProp).toBe('age');
+    });
+  });
+});
+</pre>
+
+## Discussion:
+
+* __Services:__ {@link angular.service Services} are substitutable objects managed by angular's
+{@link guide.di DI subsystem}.  Angular services simplify some of the standard operations common
+to web apps.  Angular provides several built-in services (such as {@link angular.service.$xhr
+$xhr}). You can also create your own custom services.
+
+* __Dependency Injection:__ To use an angular service, you simply provide the name of the service
+as a parameter to the function in which you are using that service. Angular's {@link guide.di DI
+subsystem} recognizes the identity of the service by name, provides it for you when you need it,
+and manages any transitive dependencies the service may have (services often depend upon other
+services).
+
+* __`$xhr`:__ We moved our data set out of the controller and into the file `phones/phones.json`. 
+This file serves as our data store rather than an actual server (to the browser they look the
+same).  We now use the `$xhr` service to return our phone data, which you'll note is still within
+the scope of our controller function. 
+
+* __Testing:__  The unit test has been expanded.  It now verifies that the `$xhr` service behaves
+as expected.
+
+<table id="tutorial_nav">
+<tr>
+ <td id="previous_step">{@link tutorial.step_4 Previous}</td>
+ <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-5/app Example}</td>
+ <td id="tut_home">{@link tutorial Tutorial Home}</td>
+ <td id="code_diff">{@link
+ https://github.com/angular/angular-phonecat/commit/4f0a518557b5c7442568666b211aa79499870276 Code
+ Diff}</td>
+ <td id="next_step">{@link tutorial.step_6 Next}</td>
+</tr>
+</table>
