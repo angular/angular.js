@@ -270,7 +270,7 @@ extend(angularValidator, {
    * @example
     <doc:example>
       <doc:source>
-        Enter valid phone number:
+        Enter valid URL:
         <input name="text" value="http://example.com/abc.html" size="40" ng:validate="url" >
       </doc:source>
       <doc:scenario>
