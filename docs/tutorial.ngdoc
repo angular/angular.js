@@ -3,7 +3,7 @@
 @name Tutorial
 @description
 
-A great way to get introduced to angular is to work through the {@link tutorial.step_0 angular
+A great way to get introduced to angular is to work through the {@link tutorial.step_00 angular
 tutorial}, which walks you through the construction of an angular web app. The app you will build
 in the tutorial is loosely based on the {@link http://www.google.com/phone/ Google phone gallery
 app}. The {@link http://angular.github.com/angular-phonecat/step-11/app/ end result of our effort}

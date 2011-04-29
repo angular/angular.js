@@ -9,7 +9,7 @@
     <td id="tut_home">{@link tutorial Tutorial Home}</td>
     <td id="code_diff">
 {@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
-    <td id="next_step">{@link tutorial.step_2 Next}</td>
+    <td id="next_step">{@link tutorial.step_00 Next}</td>
   </tr>
 </table>
 
@@ -83,6 +83,6 @@ into a dynamic web app.
     <td id="tut_home">{@link tutorial Tutorial Home}</td>
     <td id="code_diff">
 {@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
-    <td id="next_step">{@link tutorial.step_2 Next}</td>
+    <td id="next_step">{@link tutorial.step_00 Next}</td>
   </tr>
 </table>
