@@ -4,12 +4,12 @@
 @description
 <table id="tutorial_nav">
 <tr>
-<td id="previous_step">{@link tutorial.step_5 Previous}</td>
+<td id="previous_step">{@link tutorial.step_00 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-5...step-6 Code
 Diff}</td>
-<td id="next_step">{@link tutorial.step_7 Next}</td>
+<td id="next_step">{@link tutorial.step_00 Next}</td>
 </tr>
 </table>
 
@@ -103,11 +103,11 @@ views we will implement in the upcoming steps.
 
 <table id="tutorial_nav">
 <tr>
-<td id="previous_step">{@link tutorial.step_5 Previous}</td>
+<td id="previous_step">{@link tutorial.step_00 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-5...step-6 Code
 Diff}</td>
-<td id="next_step">{@link tutorial.step_7 Next}</td>
+<td id="next_step">{@link tutorial.step_00 Next}</td>
 </tr>
 </table>

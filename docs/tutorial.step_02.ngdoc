@@ -4,12 +4,12 @@
 @description
 <table id="tutorial_nav">
  <tr>
-   <td id="previous_step">{@link tutorial.step_1 Previous}</td>
+   <td id="previous_step">{@link tutorial.step_00 Previous}</td>
    <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-2/app Example}</td>
    <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-1...step-2 Code
 Diff}</td>
-   <td id="next_step">{@link tutorial.step_3 Next}</td>
+   <td id="next_step">{@link tutorial.step_00 Next}</td>
  </tr>
 </table>
 
@@ -127,11 +127,11 @@ angular.  The test verifies that we have 3 records in the phones array.
 
 <table id="tutorial_nav">
  <tr>
-   <td id="previous_step">{@link tutorial.step_1 Previous}</td>
+   <td id="previous_step">{@link tutorial.step_00 Previous}</td>
    <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-2/app Example}</td>
    <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-1...step-2 Code
 Diff}</td>
-   <td id="next_step">{@link tutorial.step_3 Next}</td>
+   <td id="next_step">{@link tutorial.step_00 Next}</td>
  </tr>
 </table>

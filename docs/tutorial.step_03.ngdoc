@@ -4,13 +4,13 @@
 @description
 <table id="tutorial_nav">
 <tr>
-  <td id="previous_step">{@link tutorial.step_2 Previous}</td>
+  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
   <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-3/app Example}</td>
   <td id="tut_home">{@link tutorial Tutorial Home}</td>
   <td id="code_diff">{@link
   https://github.com/angular/angular-phonecat/commit/a03815f8fb00217f5f9c1d3ef83282f79818e706 Code
   Diff}</td>
-  <td id="next_step">{@link tutorial.step_4 Next}</td>
+  <td id="next_step">{@link tutorial.step_00 Next}</td>
 </tr>
 </table>
 
@@ -97,12 +97,12 @@ your browser. This end-to-end test shows the following:
 
 <table id="tutorial_nav">
 <tr>
-  <td id="previous_step">{@link tutorial.step_2 Previous}</td>
+  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
   <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-3/app Example}</td>
   <td id="tut_home">{@link tutorial Tutorial Home}</td>
   <td id="code_diff">{@link
   https://github.com/angular/angular-phonecat/commit/a03815f8fb00217f5f9c1d3ef83282f79818e706 Code
   Diff}</td>
-  <td id="next_step">{@link tutorial.step_4 Next}</td>
+  <td id="next_step">{@link tutorial.step_00 Next}</td>
 </tr>
 </table>

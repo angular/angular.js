@@ -1,4 +1,5 @@
-﻿@workInProgress
+﻿
+@workInProgress
 @ngdoc overview
 @name Tutorial: Step 0
 @description
@@ -9,7 +10,7 @@
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">Code Diff</td>
-<td id="next_step">{@link tutorial.step_1 Next}</td>
+<td id="next_step">{@link tutorial.step_01 Next}</td>
 </tr>
 </table>
 
@@ -72,6 +73,6 @@ Now we can move on and add some content to our developing web app.
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">Code Diff</td>
-<td id="next_step">{@link tutorial.step_1 Next}</td>
+<td id="next_step">{@link tutorial.step_01 Next}</td>
 </tr>
 </table>

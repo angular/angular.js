@@ -4,7 +4,7 @@
 @description
 <table id="tutorial_nav">
 <tr>
-<td id="previous_step">{@link tutorial.step_9 Previous}</td>
+<td id="previous_step">{@link tutorial.step_09 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Live Demo
 }</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
@@ -99,7 +99,7 @@ the `setImage` controller method.
 
 <table id="tutorial_nav">
 <tr>
-<td id="previous_step">{@link tutorial.step_9 Previous}</td>
+<td id="previous_step">{@link tutorial.step_09 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Live Demo
 }</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
