@@ -9,12 +9,14 @@ var fs       = require('fs'),
 var NEW_LINE = /\n\r?/;
 
 function collect(callback){
-  findJsFiles('src', callback.waitMany(function(file) {
-    //console.log('reading', file, '...');
-    findNgDocInJsFile(file, callback.waitMany(function(doc, line) {
-      callback(doc, file, line);
+/*
+   findJsFiles('src', callback.waitMany(function(file) {
+     //console.log('reading', file, '...');
+     findNgDocInJsFile(file, callback.waitMany(function(doc, line) {
+       callback(doc, file, line);
     }));
   }));
+*/
   findNgDocInDir('docs/', callback.waitMany(callback));
   callback.done();
 }
@@ -41,7 +43,7 @@ function findNgDocInDir(directory, docNotify) {
     if (err) return this.error(err);
     files.forEach(function(file){
       //console.log('reading', directory + file, '...');
-      if (!file.match(/\.ngdoc$/)) return;
+      if (!file.match(/tutorial.*\.ngdoc$/)) return;
       fs.readFile(directory + file, docNotify.waitFor(function(err, content){
         if (err) return this.error(err);
         docNotify(content.toString(), directory + file, 1);
