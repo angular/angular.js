@@ -38,35 +38,6 @@ angular.scenario.Application.prototype.getWindow_ = function() {
 };
 
 /**
- * Checks that a URL would return a 2xx success status code. Callback is called
- * with no arguments on success, or with an error on failure.
- *
- * Warning: This requires the server to be able to respond to HEAD requests
- * and not modify the state of your application.
- *
- * @param {string} url Url to check
- * @param {Function} callback function(error) that is called with result.
- */
-angular.scenario.Application.prototype.checkUrlStatus_ = function(url, callback) {
-  var self = this;
-  _jQuery.ajax({
-    url: url.replace(/#.*/, ''), //IE encodes and sends the url fragment, so we must strip it
-    type: 'HEAD',
-    complete: function(request) {
-      if (request.status < 200 || request.status >= 300) {
-        if (!request.status) {
-          callback.call(self, 'Sandbox Error: Cannot access ' + url);
-        } else {
-          callback.call(self, request.status + ' ' + request.statusText);
-        }
-      } else {
-        callback.call(self);
-      }
-    }
-  });
-};
-
-/**
  * Changes the location of the frame.
  *
  * @param {string} url The URL. If it begins with a # then only the
@@ -87,21 +58,16 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     this.executeAction(loadFn);
   } else {
     frame.css('display', 'none').attr('src', 'about:blank');
-    this.checkUrlStatus_(url, function(error) {
-      if (error) {
-        return errorFn(error);
+    this.context.find('#test-frames').append('<iframe>');
+    frame = this.getFrame_();
+    frame.load(function() {
+      frame.unbind();
+      try {
+        self.executeAction(loadFn);
+      } catch (e) {
+        errorFn(e);
       }
-      self.context.find('#test-frames').append('<iframe>');
-      frame = this.getFrame_();
-      frame.load(function() {
-        frame.unbind();
-        try {
-          self.executeAction(loadFn);
-        } catch (e) {
-          errorFn(e);
-        }
-      }).attr('src', url);
-    });
+    }).attr('src', url);
   }
   this.context.find('> h2 a').attr('href', url).text(url);
 };
