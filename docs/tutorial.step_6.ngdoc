@@ -7,8 +7,7 @@
 <td id="previous_step">{@link tutorial.step_5 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/2fb113a4da9b6d19e17627f351f0681befcccdc0 Code
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-5...step-6 Code
 Diff}</td>
 <td id="next_step">{@link tutorial.step_7 Next}</td>
 </tr>
@@ -77,6 +76,17 @@ __`app/phones/phones.json`__ (sample snippet):
  ]
 </pre>
 
+__`test/e2e/scenarios.js`__:
+<pre>
+...
+    it('should render phone specific links', function() {
+      input('query').enter('nexus');
+      element('.phones li a').click();
+      expect(browser().location().hash()).toBe('/phones/nexus-s');
+    });
+...
+</pre>
+
 ## Discussion:
 
 * Note that we're using {@link guide.expression angular expressions} enclosed in the now-familiar
@@ -88,13 +98,15 @@ That directive prevents the browser from treating the angular `{{ exppression }}
 literally, as it would do if we tried to use markup in a regular `src` attribute.  Use `ng:src` to
 keep the browser from eagerly making an extra http request to an invalid location.
 
+* We expanded our end-to-end test to verify that the app is generating correct links to the phone
+views we will implement in the upcoming steps.
+
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_5 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/2fb113a4da9b6d19e17627f351f0681befcccdc0 Code
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-5...step-6 Code
 Diff}</td>
 <td id="next_step">{@link tutorial.step_7 Next}</td>
 </tr>

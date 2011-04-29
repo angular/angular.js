@@ -1,87 +1,172 @@
-﻿@workInProgress
+@workInProgress
 @ngdoc overview
 @name Tutorial
 @description
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">Previous</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Example}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">Code Diff</td>
-<td id="next_step">{@link tutorial.step_1 Next}</td>
-</tr>
-</table>
+A great way to get introduced to angular is to work through the {@link tutorial.step_0 angular
+tutorial}, which walks you through the construction of an angular web app. The app you will build
+in the tutorial is loosely based on the {@link http://www.google.com/phone/ Google phone gallery
+app}. The {@link http://angular.github.com/angular-phonecat/step-11/app/ end result of our effort}
+is visually simpler, but demonstrates many of the angular features without distractions in the
+form of CSS code.
 
-Welcome to the angular tutorial!  Before you begin, you can check out the finished app here:
-{@link http://angular.github.com/angular-phonecat/step-11/app/ The Completed Tutorial App}. Also,
-if you missed the {@link tutorial_intro Intro to Tutorial} doc, it provides some background info,
-and describes different options you have in working through the tutorial.
+This tutorial app ends up like a Google phone gallery app, but is originally based on the {@link
+https://github.com/angular/angular-seed angular-seed project}. The angular seed app isn't
+necessary for building angular apps, but it helps you get started quickly and makes the
+development and testing process much easier. Angular-seed includes a simple example, the latest
+angular libraries, test libraries, and scripts.  It provides all of these in an environment that
+is pre-configured for developing a typical web app. 
 
-We'll begin the tutorial by creating a basic page, and then we'll add functionality to our app on
-each subsequent step.
+Once you set up your tutorial environment, you should be able to get through the material in less
+than a day and you'll have fun doing it. More experienced coders may be able to zip through the
+exercises in an afternoon. In any case, we promise that your time will be well spent!
 
-# Step 0
-The following sample code is our starting point.  It is a static HTML page that displays next to
-nothing, but it has everything we need to proceed. You can think of this bit of code as our
-prototype template, consisting of basic HTML tags and some key angular {@link angular.directive
-directives}. 
+When you finish the tutorial you will be able to:
 
-__`app/index.html`:__
-<pre>
-<!doctype html>
-<html xmlns:ng="http://angularjs.org/">
-<head>
-  <meta charset="utf-8">
-  <title>my angular app</title>
-  <link rel="stylesheet" href="css/app.css"/>
-</head>
-<body>
+* Create a simple dynamic application that works in any browser
+* Define the differences between angular and common JavaScript frameworks
+* Understand angular expressions
+* Understand how data binding works in angular
+* Use the angular-seed project to quickly boot-strap your own projects
+* Create and run tests
+* Identify resources for learning more about angular
 
-  Nothing here yet!
+You can work through the tutorial in any of the following ways:
 
-  <script src="lib/angular/angular.js" ng:autobind></script>
-</body>
-</html>
-</pre>
+* <a href="#UsingGit">Using Git</a>. Use the Git versioning system to get the files for each step.
+* <a href="#UsingSnapshots">Using Snapshots</a>. Download snapshots (files for each step of the
+tutorial) and tinker with them.
+* <a href="#ReadingExamples">Reading the Examples</a>. Read through the examples, and inspect
+results and code on our server.
 
-## Discussion:
+The first two ways (Git and snapshots) give you a fuller experience, in that you can run the unit
+and end-to-end tests in addition to the tutorial app.  They also give you the ability to play
+around with the code and get instant feedback in your browser.  The last way (reading through the
+tutorial online) requires no setup on your machine, but you can't run the tests, and it won't be
+as easy to play around with the code.
 
-Although our app doesn't appear to do anything dynamic, note the following:
+<a name="PreReqs"></a>
+# Prerequisites for Git and Snapshots
 
-* __... `xmlns:ng="http://angularjs.org"` ...__  This `xmlns` declaration for the `ng` namespace
-must be specified if you use XHTML, or if you are targeting IE older than 9 (regardless of whether
-you are using XHTML or HTML).
+To run the tutorial app and tests on your machine (using Git or the snapshots) you will need the
+following:
 
-* __`<script src="lib/angular/angular.js"` ...__ This downloads the `angular.js` bootstrap script
-and registers a callback that will be executed by the browser when the HTML is fully downloaded.
-When the callback is executed, angular looks for the {@link angular.directive.ng:autobind
-ng:autobind} attribute. If `ng:autobind` is found, it signals angular to compile and manage the
-whole page.  
+* You need to be running on a Mac or Linux machine.
+* An http server running on your system. If you don't already have one installed, you can install
+`node.js` ({@link https://github.com/joyent/node/wiki/Installation node.js install}) or another
+http sever (such as Apache, etc.).
+* Java. This is required for running tests. Angular itself doesn't require Java.
+* A modern browser (including IE8+). Needed for viewing and debugging code.
+* A text editor of your choice.
 
-    Note: If you elected not to download any tutorial files but still want to try out some angular
-    code on your system, you can change the relative path to the `angular.js` script in your
-    template from `./lib/angular/angular.js` to the following:
+<a name="UsingGit"></a>
+# Using Git
 
-            <script src="http://code.angularjs.org/angular-0.9.14.js" ng:autobind></script>
+The following instructions are for developers who are comfortable with Git's versioning system:
 
-    This will bootstrap angular from the angular server instead of from a local file.
+1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
 
-* To try this code out in your browser, you need to navigate to the step-0 page (you are currently
-on Step 0 of the tutorial). If your http server is running, navigate to `app/index.html`.
-Remember, this is a relative URL (see the Relative URL section in {@link tutorial_intro Intro to
-Tutorial}). The browser will display the same thing as you would see if you go to
-http://angular.github.com/angular-phonecat/step-0/app (accessible from Example at the bottom of
-the page).
+2. Clone the angular-phonecat repository located at {@link
+https://github.com/angular/angular-phonecat angular-phonecat} by running the following command in
+a terminal:
 
-Now we can move on and add some content to our developing web app.
+           git clone git://github.com/angular/angular-phonecat.git
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">Previous</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Example}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">Code Diff</td>
-<td id="next_step">{@link tutorial.step_1 Next}</td>
-</tr>
-</table>
+   This will create a directory called `angular-phonecat`.
+
+3. In terminal, navigate to the `angular-phonecat` directory and run:
+
+           git checkout step-0
+
+   (You can run `git checkout step-[0-11]` to go to any of the steps in the tutorial).
+
+4. To see the app running in a browser, do the following:
+   * __For node.js users:__
+       1. Run `./scripts/web-server.js` to start the app server.
+       2. Open a browser window for the app and navigate to http://localhost:8000/app/index.html.
+
+   * __For other http servers:__
+       1. Configure the server to serve the files in the `angular-phonecat` directory.
+       2. Run `./scripts/web-server.js` to start the app server.
+       3. Navigate in your browser to
+       http://localhost:[*port-number*]/[*context-path*]/app/index.html.
+
+5. To see tests running in a browser, do the following:
+   * __For node.js users:__
+       1. Run `./scripts/test-server.sh` to start the test web server.
+       2. Open a browser window for the tests, navigate to http://localhost:9876, and choose
+       "strict mode".
+   * __For other http servers:__
+       1. Configure the server to serve the files in the `angular-phonecat` directory.
+       1. Run `./scripts/test-server.sh` to start the test web server.
+       3. Navigate in your browser to http://localhost:[*port-number*]/, and choose "strict mode".
+
+
+
+<a name="UsingSnapshots"></a>
+# Using Snapshots
+
+Snapshots are the sets of files that reflect the state of the tutorial app at each step. These
+files include the HTML, CSS, and JavaScript for the app, plus Jasmine JavaScript files and Java
+libraries for the test stack. These will let you run the tutorial app and tests, without requiring
+knowledge of Git.  You can download and install the snapshot files as follows:
+
+1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
+
+2. Navigate to [*the angular server*], and download and unzip [*the snapshot file*] to an
+[*install-dir*] of your choosing.
+
+3. Change directories to [*install-dir*]/sandbox.
+
+4. Run the following command:
+    * `./goto_step.sh 0`
+
+    You have to start out at the beginning, which is Step 0. After you set up Step 0, you can skip
+    around between any steps. 
+
+1. To see the app running in your browser, do the following:
+    * __For node.js users:__
+       1. Run `./scripts/web-server.js` to run the web server.
+       2. Open a browser window for the app and navigate to http://localhost:8000/app/index.html.
+       3. Open a browser window for the tests, navigate to http://localhost:9876, and choose
+       "strict mode".
+
+   * __For other http servers:__
+       1. Configure servers to serve the app and test files in the [*install-dir*]/sandbox.
+       2. Start the server.
+       3. Navigate in your app browser to
+       http://localhost:[*port-number*]/[*context-path*]/app/index.html.
+       4. Navigate in your test browser to http://localhost:[*port-number*] and choose "strict
+       mode".
+
+1. To view the tutorial app at different steps, run `./goto_step.sh [0-11]` and then refresh your
+browser. For example, say you're on Step 5 of the tutorial, and you want to see the app in action:
+
+    1. Run `goto_step.sh 5` from the command line in the `sandbox` directory.
+    1. Refresh your app browser.
+
+<a name="ReadingExamples"></a>
+# Reading the Examples
+
+If you don't want to set up anything on your local machine, you can read through the tutorial and
+inspect the tutorial files on our servers; doing this will give you a good idea of what angular
+does, but you won't be able to make any code changes and experiment on your own.
+
+To see the running app at each tutorial step, click the "Example" link at the top or bottom of
+each tutorial page. 
+
+To view the code differences between tutorial steps, click the Code Diff link at top or bottom of
+each tutorial page. Additions are highlighted in green; deletions are highlighted in red. 
+
+
+# Relative URLs
+Throughout the tutorial, we use relative URLs to refer to files hosted on our local http server.
+The absolute URL depends on your configuration. For example, if you are using the node.js server,
+`app/index.html` translates to:
+
+       http://localhost:8000/app/index.html
+
+If you are using your own http server running on port 8080 and the tutorial files are hosted at
+`/angular_tutorial`, `app/index.html` translates to:
+
+       http://localhost:8080/angular_tutorial/app/index.html
