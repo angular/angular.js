@@ -7,8 +7,7 @@
 <td id="previous_step">{@link tutorial.step_3 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/b56c91f453114347f0cb25e70b1c4fa4f1421763 Code
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 Code
 Diff}</td>
 <td id="next_step">{@link tutorial.step_5 Next}</td>
 </tr>
@@ -85,19 +84,68 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
+__`test/e2e/scenarios.js`:__
+<pre>
+/* jasmine-like end2end tests go here */
+describe('PhoneCat App', function() {
+
+  describe('Phone list view', function() {
+
+    beforeEach(function() {
+      browser().navigateTo('../../app/index.html');
+    });
+
+
+    it('should filter the phone list as user types into the search box', function() {
+      expect(repeater('.phones li').count()).toBe(3);
+
+      input('query').enter('nexus');
+      expect(repeater('.phones li').count()).toBe(1);
+
+      input('query').enter('motorola');
+      expect(repeater('.phones li').count()).toBe(2);
+    });
+
+
+    it('should be possible to control phone order via the drop down select box', function() {
+      input('query').enter('tablet'); //let's narrow the dataset to make the test assertions
+      shorter
+
+      expect(repeater('.phones li', 'Phone List').column('a')).
+          toEqual(["Motorola XOOM\u2122 with Wi-Fi",
+                   "MOTOROLA XOOM\u2122"]);
+
+      select('orderProp').option('alphabetical');
+
+      expect(repeater('.phones li', 'Phone List').column('a')).
+          toEqual(["MOTOROLA XOOM\u2122",
+                   "Motorola XOOM\u2122 with Wi-Fi"]);
+    });
+  });
+});
+</pre>
+
 ## Discussion:
 
 To provide dynamic ordering, we employ another one of angular's "array type augmenters" and let
 the data binding do the rest of the work for us:
+
+* First, we provide a `<select>` element named `orderProp` for our users so they can choose to
+sort the phone list either alphabetically or by the age of the phone.  We added the `age` property
+to each phone record so we can sort by that field.
 
 * Like {@link angular.Array.filter $filter}, {@link angular.Array.orderBy $orderBy} is a built-in
 method available on array objects in angular expressions.  In our UI template, we set up a select
 box that lets the user set the `orderProp` model variable to one of the string constants: `age` or
 `name`.
 
-* In our controller, we added a line to set the default value of `orderProp` to `age`.
+* In our controller, we added a line to set the default value of `orderProp` to `age`.  If we
+don't override the default value, angular uses the value of the first `<option>` element when it
+initializes the data model.
 
 * Our unit test now verifies that our default ordering property is set.
+
+* We added an end-to-end test to verify that our select box ordering mechanism works properly.
 
 * Once again we added a little more CSS to improve the View.
 
@@ -106,8 +154,7 @@ box that lets the user set the `orderProp` model variable to one of the string c
 <td id="previous_step">{@link tutorial.step_3 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Example}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/b56c91f453114347f0cb25e70b1c4fa4f1421763 Code
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 Code
 Diff}</td>
 <td id="next_step">{@link tutorial.step_5 Next}</td>
 </tr>

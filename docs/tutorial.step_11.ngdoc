@@ -5,26 +5,23 @@
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_10 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-11/app Example}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-11/app Live Demo
+}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/46e2bc3ff21a1385d6ef1860c5c242f8e0265379 Code
-Diff}</td>
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-10...step-11
+Code Diff}</td>
 <td id="next_step">Next</td>
 </tr>
 </table>
 
 And so we arrive at the last step of this tutorial. Here we define a custom service that
-represents a {@link http://en.wikipedia.org/wiki/Representational_State_Transfer  RESTful} client
-object.  Using this client object we can make requests for data in an easier way, without having
-to deal with the lower-level {@link angular.service.$xhr $xhr} APIs.
+represents a {@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. 
+Using this client we can make xhr requests for data in an easier way, without having to deal with
+the lower-level {@link angular.service.$xhr $xhr} APIs, HTTP methods and URLs.
 
 __`app/index.html`.__ 
 <pre>
 ...
-  <script src="lib/angular/angular.js" ng:autobind></script>
-  <script src="js/controllers.js"></script>
-  <script src="js/filters.js"></script>
   <script src="js/services.js"></script>
 ...
 </pre>
@@ -41,34 +38,85 @@ __`app/js/services.js`.__ (New)
 
 __`app/js/controllers.js`.__
 <pre>
-function PhonesCtrl($route) {
-  var self = this;
+...
 
-  $route.when('/phones',
-             {template:'partials/phone-list.html',   controller:PhoneListCtrl});
-  $route.when('/phones/:phoneId',
-             {template:'partials/phone-detail.html', controller:PhoneDetailCtrl});
-  $route.otherwise({redirectTo:'/phones'});
-
-  $route.onChange(function(){
-    self.params = $route.current.params;
-  });
-  $route.parent(this);
-}
-//PhonesCtrl.$inject = ['$route'];
-
-function PhoneListCtrl(Phone) {
+function PhoneListCtrl(Phone_) {
   this.orderProp = 'age';
-  this.phones = Phone.query();
+  this.phones = Phone_.query();
 }
 //PhoneListCtrl.$inject = ['Phone'];
 
 
-function PhoneDetailCtrl(Phone) {
-  this.phone = Phone.get({phoneId:this.params.phoneId});
+function PhoneDetailCtrl(Phone_) {
+  this.phone = Phone_.get({phoneId:this.params.phoneId});
 }
 //PhoneDetailCtrl.$inject = ['Phone'];
+</pre>
 
+__`test/unit/controllersSpec.js`:__
+<pre>
+/* jasmine specs for controllers go here */
+describe('PhoneCat controllers', function() {
+
+  beforeEach(function(){
+    this.addMatchers({
+      toEqualData: function(expected) {
+        return angular.equals(this.actual, expected);
+      }
+    });
+  });
+
+  describe('PhoneListCtrl', function(){
+    var scope, $browser, ctrl;
+
+    beforeEach(function() {
+      scope = angular.scope();
+      $browser = scope.$service('$browser');
+
+      $browser.xhr.expectGET('phones/phones.json').respond([{name: 'Nexus S'},
+                                                            {name: 'Motorola DROID'}]);
+      ctrl = scope.$new(PhoneListCtrl);
+    });
+
+    it('should create "phones" model with 2 phones fetched from xhr', function() {
+      expect(ctrl.phones).toEqual([]);
+      $browser.xhr.flush();
+
+      expect(ctrl.phones).toEqualData([{name: 'Nexus S'},
+                                       {name: 'Motorola DROID'}]);
+    });
+
+    it('should set the default value of orderProp model', function() {
+      expect(ctrl.orderProp).toBe('age');
+    });
+  });
+
+
+  describe('PhoneDetailCtrl', function(){
+    var scope, $browser, ctrl;
+
+    beforeEach(function() {
+      scope = angular.scope();
+      $browser = scope.$service('$browser');
+    });
+
+    beforeEach(function() {
+      scope = angular.scope();
+      $browser = scope.$service('$browser');
+    });
+
+    it('should fetch phone detail', function(){
+      scope.params = {phoneId:'xyz'};
+      $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
+      ctrl = scope.$new(PhoneDetailCtrl);
+
+      expect(ctrl.phone).toEqualData({});
+      $browser.xhr.flush();
+
+      expect(ctrl.phone).toEqualData({name:'phone xyz'});
+    });
+  });
+});
 </pre>
 
 
@@ -80,8 +128,25 @@ angular.service.$resource `$resource`}  service is easier to use than `$xhr` for
 data sources exposed as RESTful resources. It is also easier now to understand what the code in
 our controllers is doing.
 
+    An important thing to notice in our controller code is that we don't pass any callback
+    functions when invoking methods of our Phone services. It looks as if the result were returned
+    synchronously. That is not the case at all. What is returned synchronously is a "future" — an
+    object, which will be filled with data when the xhr response returns. Because of the
+    data-binding in angular, we can use this future and bind it to our template.  Then, when the
+    data arrives, the view will automatically update.  See?  Angular tries hard to make simple
+    stuff simple.
+
 * Once again we make use of `$route's` params, this time to construct the URL passed as a
 parameter to `$resource` in our `services.js` script.
+
+* Last, but certainly not least, we expanded and modified our unit test to verify that our new
+service is returning data as we expect it to.
+
+  In our assertions we use a newly-defined `toEqualData` {@link
+  http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine matcher}, which
+  compares only object properties and ignores methods. This is necessary, because the `$resource`
+  client will augment the response object with handy methods for updating and deleting the
+  resource (we don't use these in our tutorial though).
 
 There you have it!  We have created a web app in a relatively short amount of time.
 
@@ -103,11 +168,11 @@ to angular.
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_10 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-11/app Example}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-11/app Live Demo
+}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/46e2bc3ff21a1385d6ef1860c5c242f8e0265379 Code
-Diff}</td>
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-10...step-11
+Code Diff}</td>
 <td id="next_step">Next</td>
 </tr>
 </table>

@@ -7,17 +7,18 @@
    <td id="previous_step">{@link tutorial.step_1 Previous}</td>
    <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-2/app Example}</td>
    <td id="tut_home">{@link tutorial Tutorial Home}</td>
-   <td id="code_diff">{@link
-   https://github.com/angular/angular-phonecat/commit/02e30dd64e0e5554fbf4d442ade5b1a251f2bf56
-   Code Diff}</td>
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-1...step-2 Code
+Diff}</td>
    <td id="next_step">{@link tutorial.step_3 Next}</td>
  </tr>
 </table>
 
-An important feature of angular is the incorporation of the principles behind {@link
-http://en.wikipedia.org/wiki/Model–View–Controller the MVC design pattern} into client-side web
-apps. With that in mind, let's use a little angular and a little JavaScript to add Model, View,
-and Controller components to our app.
+In the last step, we remembered what a basic, static web page looks like, and now we want to get
+dynamic. There are many ways to do this, but an important feature of angular is the incorporation
+of the principles behind {@link http://en.wikipedia.org/wiki/Model–View–Controller the MVC design
+pattern} into client-side web apps. With that in mind, let's use a little angular and a little
+JavaScript to add Model, View, and Controller components to our app, and change the static page
+into one that is dynamically generated.
 
 Our __View__ component is constructed by angular from this template:
 
@@ -39,7 +40,7 @@ __`app/index.html`:__
 ...
 </pre>
 
-Our data __Model__ (a small set of phones in object literal notation) is instantiated within our
+Our data __Model__ (a short list of phones in object literal notation) is instantiated within our
 __Controller__ function (`PhoneListCtrl`): 
 
 __`app/js/controllers.js`:__
@@ -88,14 +89,15 @@ enclosed in curly braces: `{{phone.name}}` and `{{phone.snippet}}`:
     * The curly braces around `phone.name` and `phone.snippet` are an example of {@link
     angular.markup angular markup}. The curly braces are shorthand for the angular directive
     {@link angular.directive.ng:bind ng:bind}.  They indicate to angular that these are template
-    binding points. Binding points are locations in the template where angular constructs two-way
+    binding points. Binding points are locations in the template where angular creates
     data-binding between the View and the Model. In angular, the View is a projection of the Model
-    through the HTML template.
+    through the HTML template. This means that whenever the model changes, angular refreshes the
+    appropriate binding points, which updates the view.
 
 * __Controller:__  At this point, it doesn't appear as if our controller is doing very much
 controlling, but it is playing a crucial role: providing context for our data model so we can
-establish two-way data-binding between the model and the view.  Note in the following how we
-connected the dots between our presentation, data, and logic components: 
+establish data-binding between the model and the view.  Note in the following how we connected the
+dots between our presentation, data, and logic components: 
 
     * The name of our controller function (in the JavaScript file `controllers.js`) matches the
     {@link angular.directive.ng:controller ng:controller} directive in the `<body>` tag
@@ -104,7 +106,6 @@ connected the dots between our presentation, data, and logic components:
     binding points are located within the block bounded by the `<body
     ng:controller="PhoneListCtrl>` tag.
 
-    So, our controller function becomes the {@link angular.scope scope} of our data model. 
     Angular uses scopes, along with the information contained in the template, data model, and
     controller to keep the Model and View separated but in sync: any changes to the model are
     reflected in the view; any changes that occur in the view are reflected in the model.
@@ -114,20 +115,23 @@ literal notation.
 
 * __Testing:__ Ease of testing is another cornerstone of angular's design philosophy.  All we are
 doing here is showing how easy it is to create a unit test using the technology baked into
-angular.  The test verifies that we have some data, and that there are 3 records in the data set. 
+angular.  The test verifies that we have 3 records in the phones array.
 
-    Angular's testing stack utilizes Jasmine's Behavior-driven Development (BDD) framework. You
-    can learn about it on the {@link http://pivotal.github.com/jasmine/ Jasmine home page} and on
-    the {@link https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
+    To run this test, make sure you have a {@link tutorial test server running}, and type
+    `./scripts/test.sh` from the command line.
+
+    Angular developers prefer the syntax of Jasmine's Behavior-driven Development (BDD) framework
+    when writing tests. So while Jasmine is not required by angular, we use it to write all tests
+    in this tutorial. You can learn about Jasmine on the {@link http://pivotal.github.com/jasmine/
+    Jasmine home page} and on the {@link https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
 
 <table id="tutorial_nav">
  <tr>
    <td id="previous_step">{@link tutorial.step_1 Previous}</td>
    <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-2/app Example}</td>
    <td id="tut_home">{@link tutorial Tutorial Home}</td>
-   <td id="code_diff">{@link
-   https://github.com/angular/angular-phonecat/commit/02e30dd64e0e5554fbf4d442ade5b1a251f2bf56
-   Code Diff}</td>
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-1...step-2 Code
+Diff}</td>
    <td id="next_step">{@link tutorial.step_3 Next}</td>
  </tr>
 </table>

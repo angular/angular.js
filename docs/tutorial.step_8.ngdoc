@@ -5,10 +5,10 @@
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_7 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Example}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Live Demo
+}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/1f91f571bdd6f1e705ebb303998afe7820ffc6d9 Code
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-7...step-8 Code
 Diff}</td>
 <td id="next_step">{@link tutorial.step_9 Next}</td>
 </tr>
@@ -41,6 +41,7 @@ __`app/partials/phone-details.html`:__
     </dl>
   </li>
     ...
+  </li>
     <span>Additional Features</span>
     <dd>{{phone.additionalFeatures}}</dd>
   </li>
@@ -87,23 +88,60 @@ __`app/phones/nexus-s.json`:__ (sample snippet)
 }
 </pre>
 
+__`test/unit/controllerSpec.js`:__
+<pre>
+...
+    it('should fetch phone detail', function(){
+      scope.params = {phoneId:'xyz'};
+      $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
+      ctrl = scope.$new(PhoneDetailCtrl);
+
+      expect(ctrl.phone).toBeUndefined();
+      $browser.xhr.flush();
+
+      expect(ctrl.phone).toEqual({name:'phone xyz'});
+    });
+...
+</pre>
+
+__`test/e2e/scenarios.js`:__
+<pre>
+...
+  describe('Phone detail view', function() {
+
+    beforeEach(function() {
+      browser().navigateTo('../../app/index.html#/phones/nexus-s');
+    });
+
+
+    it('should display nexus-s page', function() {
+      expect(binding('phone.name')).toBe('Nexus S');
+    });
+  });
+...
+</pre>
+
 ## Discussion:
 
 * Phone Details View Template. There is nothing fancy or new here, just note where we use the
-angular `{{ expression }}` markup and directives to project phone data from our model.
+angular `{{ expression }}` markup and directives to project phone data from our model into the
+view.
 
 * Note how we used the `$route` `params` object from the scope managed by the root controller
-(`PhoneCatCtrl`), to construct the path to the phone details requested by the user. The rest of
-this step is simply applying the previously learned concepts and angular APIs to create a large
-template that displays a lot of data about a phone.
+(`PhoneCatCtrl`), to construct the path for the phone details xhr request. The rest of this step
+is simply applying the previously learned concepts and angular APIs to create a large template
+that displays a lot of data about a phone.
+
+* Tests. We updated the existing end to end test and wrote a new unit test that is similar in
+spirit to the one we wrote for the `PhoneListCtrl` controller.
 
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_7 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Example}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Live Demo
+}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link
-https://github.com/angular/angular-phonecat/commit/1f91f571bdd6f1e705ebb303998afe7820ffc6d9 Code
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-7...step-8 Code
 Diff}</td>
 <td id="next_step">{@link tutorial.step_9 Next}</td>
 </tr>

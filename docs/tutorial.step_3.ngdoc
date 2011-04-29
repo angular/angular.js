@@ -14,9 +14,10 @@
 </tr>
 </table>
 
-In this step, we will add full text search to our app.  We will also write an end-to-end test,
-because a good end-to-end test is a good friend. It stays with your app, keeps an eye on it, and
-quickly detects regressions. 
+We did a lot of work in laying the foundation of our app in the last step, so now we'll do
+something simple, and add full text search.  We will also write an end-to-end test, because a good
+end-to-end test is a good friend. It stays with your app, keeps an eye on it, and quickly detects
+regressions. 
 
 __`app/index.html`:__
 <pre>
@@ -66,25 +67,28 @@ angular.Array.filter $filter} utility (added to the repeater) lets a user type i
 and immediately see the effects of their search on the phone list.  This new code demonstrates the
 following:
 
-   * Two-way data-binding.  This is one of the very nice features in angular.  In this example,
-   the data that you type into the input box (named __`query`__) is immediately available as a
-   filter in the list repeater (`phone in phones.$filter(`__`query`__`)`).  When the page loads,
-   angular binds the name of the input box to a variable of the same name in the data model. 
-   Whenever the data Model changes, the View reflects the change, and vice versa.    
+   * Two way Data-binding.  This is one of the core features in angular.  When the page loads,
+   angular binds the name of the input box to a variable of the same name in the data model and
+   keeps the two in sync.
 
-   * Use of `$filter` in a template.  The `$filter` function is one of several built-in utility
-   functions that augment JavaScript arrays during their evaluation as angular expressions.  An
-   {@link Angular.array angular array} is a JavaScript array object with additional functionality
-   added.  In {@link guide.expression angular expressions}, these array utilities are available as
-   methods. (They are prefixed with a $ to avoid naming collisions.)
+In this example, the data that you type into the input box (named __`query`__) is immediately
+available as a filter input in the list repeater (`phone in phones.$filter(`__`query`__`)`). 
+Whenever the data model changes and this change causes the input to the repeater to change, the
+repeater will efficiently update the DOM to reflect the current state of the model.
 
-   * How `ng:repeat` automatically shrinks and grows the number of phones in the View, via DOM
+   * Use of `$filter` in a template.  The `$filter` function is one of several built-in {@link
+   angular.Array angular functions} that augment JavaScript arrays during their evaluation as
+   angular expressions. In {@link guide.expression angular expressions}, these array utilities are
+   available as array methods. (They are prefixed with a $ to avoid naming collisions.)
+
+   * `ng:repeat` automatically shrinks and grows the number of phones in the View, via DOM
    manipulation that is completely transparent to the developer.  If you've written any DOM
    manipulation code, this should make you happy.
 
 * __CSS:__ We added in some minimal CSS to the file we set up in Step 0: `./css/app.css`.
 
-* __Testing:__  This end-to-end test shows the following:
+* __Testing:__  To run the end to end test, open http://localhost:8000/test/e2e/runner.html in
+your browser. This end-to-end test shows the following:
 
     * Proof that the search box and the repeater are correctly wired together.
 
