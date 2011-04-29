@@ -1,4 +1,4 @@
-﻿@workInProgress
+@workInProgress
 @ngdoc overview
 @name Tutorial: Step 11
 @description
@@ -15,11 +15,11 @@ Code Diff}</td>
 </table>
 
 And so we arrive at the last step of this tutorial. Here we define a custom service that
-represents a {@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. 
+represents a {@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client.
 Using this client we can make xhr requests for data in an easier way, without having to deal with
 the lower-level {@link angular.service.$xhr $xhr} APIs, HTTP methods and URLs.
 
-__`app/index.html`.__ 
+__`app/index.html`.__
 <pre>
 ...
   <script src="js/services.js"></script>

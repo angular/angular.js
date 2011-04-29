@@ -1,23 +1,23 @@
-﻿@workInProgress
+@workInProgress
 @ngdoc overview
 @name Tutorial: Step 3
 @description
 <table id="tutorial_nav">
 <tr>
-  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+  <td id="previous_step">{@link tutorial.step_02 Previous}</td>
   <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-3/app Example}</td>
   <td id="tut_home">{@link tutorial Tutorial Home}</td>
   <td id="code_diff">{@link
   https://github.com/angular/angular-phonecat/commit/a03815f8fb00217f5f9c1d3ef83282f79818e706 Code
   Diff}</td>
-  <td id="next_step">{@link tutorial.step_00 Next}</td>
+  <td id="next_step">{@link tutorial.step_04 Next}</td>
 </tr>
 </table>
 
 We did a lot of work in laying the foundation of our app in the last step, so now we'll do
 something simple, and add full text search.  We will also write an end-to-end test, because a good
 end-to-end test is a good friend. It stays with your app, keeps an eye on it, and quickly detects
-regressions. 
+regressions.
 
 __`app/index.html`:__
 <pre>
@@ -72,7 +72,7 @@ following:
    keeps the two in sync.
 
 In this example, the data that you type into the input box (named __`query`__) is immediately
-available as a filter input in the list repeater (`phone in phones.$filter(`__`query`__`)`). 
+available as a filter input in the list repeater (`phone in phones.$filter(`__`query`__`)`).
 Whenever the data model changes and this change causes the input to the repeater to change, the
 repeater will efficiently update the DOM to reflect the current state of the model.
 
@@ -97,12 +97,12 @@ your browser. This end-to-end test shows the following:
 
 <table id="tutorial_nav">
 <tr>
-  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+  <td id="previous_step">{@link tutorial.step_02 Previous}</td>
   <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-3/app Example}</td>
   <td id="tut_home">{@link tutorial Tutorial Home}</td>
   <td id="code_diff">{@link
   https://github.com/angular/angular-phonecat/commit/a03815f8fb00217f5f9c1d3ef83282f79818e706 Code
   Diff}</td>
-  <td id="next_step">{@link tutorial.step_00 Next}</td>
+  <td id="next_step">{@link tutorial.step_04 Next}</td>
 </tr>
 </table>

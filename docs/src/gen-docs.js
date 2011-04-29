@@ -20,7 +20,7 @@ var work = callback.chain(function(){
 var writes = callback.chain(function(){
   ngdoc.merge(docs);
   docs.forEach(function(doc){
-    writer.output(doc.id + '.html', doc.html(), writes.waitFor());
+    writer.output(doc.section + '/' + doc.id + '.html', doc.html(), writes.waitFor());
   });
   var metadata = ngdoc.metadata(docs);
   writer.output('docs-keywords.js', ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';'], writes.waitFor());

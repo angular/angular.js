@@ -1,16 +1,16 @@
-﻿@workInProgress
+@workInProgress
 @ngdoc overview
 @name Tutorial: Step 8
 @description
 <table id="tutorial_nav">
 <tr>
-<td id="previous_step">{@link tutorial.step_00 Previous}</td>
+<td id="previous_step">{@link tutorial.step_07 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Live Demo
 }</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-7...step-8 Code
 Diff}</td>
-<td id="next_step">{@link tutorial.step_00 Next}</td>
+<td id="next_step">{@link tutorial.step_09 Next}</td>
 </tr>
 </table>
 
@@ -69,20 +69,20 @@ __`app/phones/nexus-s.json`:__ (sample snippet)
 <pre>
 {
   "additionalFeatures": "Contour Display, Near Field Communications (NFC), Three-axis gyroscope,
-  Anti-fingerprint display coating, Internet Calling support (VoIP/SIP)", 
+  Anti-fingerprint display coating, Internet Calling support (VoIP/SIP)",
   "android": {
-      "os": "Android 2.3", 
+      "os": "Android 2.3",
       "ui": "Android"
-  }, 
+  },
   ...
   "images": [
-      "img/phones/nexus-s.0.jpg", 
-      "img/phones/nexus-s.1.jpg", 
-      "img/phones/nexus-s.2.jpg", 
+      "img/phones/nexus-s.0.jpg",
+      "img/phones/nexus-s.1.jpg",
+      "img/phones/nexus-s.2.jpg",
       "img/phones/nexus-s.3.jpg"
-  ], 
+  ],
   "storage": {
-      "flash": "16384MB", 
+      "flash": "16384MB",
       "ram": "512MB"
   }
 }
@@ -137,12 +137,12 @@ spirit to the one we wrote for the `PhoneListCtrl` controller.
 
 <table id="tutorial_nav">
 <tr>
-<td id="previous_step">{@link tutorial.step_00 Previous}</td>
+<td id="previous_step">{@link tutorial.step_07 Previous}</td>
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Live Demo
 }</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-7...step-8 Code
 Diff}</td>
-<td id="next_step">{@link tutorial.step_00 Next}</td>
+<td id="next_step">{@link tutorial.step_09 Next}</td>
 </tr>
 </table>

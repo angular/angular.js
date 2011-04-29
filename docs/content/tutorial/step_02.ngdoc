@@ -1,15 +1,15 @@
-﻿@workInProgress
+@workInProgress
 @ngdoc overview
 @name Tutorial: Step 2
 @description
 <table id="tutorial_nav">
  <tr>
-   <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+   <td id="previous_step">{@link tutorial.step_01 Previous}</td>
    <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-2/app Example}</td>
    <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-1...step-2 Code
 Diff}</td>
-   <td id="next_step">{@link tutorial.step_00 Next}</td>
+   <td id="next_step">{@link tutorial.step_03 Next}</td>
  </tr>
 </table>
 
@@ -41,7 +41,7 @@ __`app/index.html`:__
 </pre>
 
 Our data __Model__ (a short list of phones in object literal notation) is instantiated within our
-__Controller__ function (`PhoneListCtrl`): 
+__Controller__ function (`PhoneListCtrl`):
 
 __`app/js/controllers.js`:__
 <pre>
@@ -84,7 +84,7 @@ enclosed in curly braces: `{{phone.name}}` and `{{phone.snippet}}`:
 
     * The `ng:repeat="phone in phones"` statement in the `<li>` tag is an angular repeater.  It
     tells angular to create a `<li>` element for each phone in the phones list, using the first
-    `<li>` tag as the template. 
+    `<li>` tag as the template.
 
     * The curly braces around `phone.name` and `phone.snippet` are an example of {@link
     angular.markup angular markup}. The curly braces are shorthand for the angular directive
@@ -97,11 +97,11 @@ enclosed in curly braces: `{{phone.name}}` and `{{phone.snippet}}`:
 * __Controller:__  At this point, it doesn't appear as if our controller is doing very much
 controlling, but it is playing a crucial role: providing context for our data model so we can
 establish data-binding between the model and the view.  Note in the following how we connected the
-dots between our presentation, data, and logic components: 
+dots between our presentation, data, and logic components:
 
     * The name of our controller function (in the JavaScript file `controllers.js`) matches the
     {@link angular.directive.ng:controller ng:controller} directive in the `<body>` tag
-    (`PhoneListCtrl`). 
+    (`PhoneListCtrl`).
     * We instantiated our data within the scope of our controller function, and our template
     binding points are located within the block bounded by the `<body
     ng:controller="PhoneListCtrl>` tag.
@@ -127,11 +127,11 @@ angular.  The test verifies that we have 3 records in the phones array.
 
 <table id="tutorial_nav">
  <tr>
-   <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+   <td id="previous_step">{@link tutorial.step_01 Previous}</td>
    <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-2/app Example}</td>
    <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-1...step-2 Code
 Diff}</td>
-   <td id="next_step">{@link tutorial.step_00 Next}</td>
+   <td id="next_step">{@link tutorial.step_03 Next}</td>
  </tr>
 </table>

@@ -1,15 +1,15 @@
-﻿@workInProgress
+@workInProgress
 @ngdoc overview
 @name Tutorial: Step 5
 @description
 <table id="tutorial_nav">
 <tr>
- <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+ <td id="previous_step">{@link tutorial.step_04 Previous}</td>
  <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-5/app Example}</td>
  <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-4...step-5 Code
 Diff}</td>
- <td id="next_step">{@link tutorial.step_00 Next}</td>
+ <td id="next_step">{@link tutorial.step_06 Next}</td>
 </tr>
 </table>
 
@@ -21,7 +21,7 @@ angular.service.$xhr $xhr} service to make this easy.
 The addition of the `$xhr` service to our app gives us the opportunity to talk about {@link
 guide.di Dependency Injection} (DI).  The use of DI is another cornerstone of the angular
 philosophy. DI helps make your web apps well structured, loosely coupled, and ultimately easier to
-test.  
+test.
 
 __`app/js/controllers.js:`__
 <pre>
@@ -137,11 +137,11 @@ reason, we need to:
 
 <table id="tutorial_nav">
 <tr>
- <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+ <td id="previous_step">{@link tutorial.step_04 Previous}</td>
  <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-5/app Example}</td>
  <td id="tut_home">{@link tutorial Tutorial Home}</td>
  <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-4...step-5
  Code Diff}</td>
- <td id="next_step">{@link tutorial.step_00 Next}</td>
+ <td id="next_step">{@link tutorial.step_06 Next}</td>
 </tr>
 </table>
