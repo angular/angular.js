@@ -70,7 +70,12 @@ Doc.prototype = {
     parts.forEach(function(text, i){
       if (text.match(/^<pre>/)) {
         text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
-          return '<div ng:non-bindable><pre class="brush: js; html-script: true;">' +
+          var clazz = 'brush: js;'
+          if (content.match(/\<\w/)) {
+            // we are HTML
+            clazz += ' html-script: true;';
+          }
+          return '<div ng:non-bindable><pre class="' + clazz +'">' +
                   content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
                  '</pre></div>';
         });
