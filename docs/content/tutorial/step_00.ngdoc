@@ -1,4 +1,3 @@
-﻿
 @workInProgress
 @ngdoc overview
 @name Tutorial: Step 0
@@ -16,7 +15,7 @@
 
 The following sample code is our starting point.  It is a static HTML page that displays next to
 nothing, but it has everything we need to proceed. You can think of this bit of code as our
-prototype template, consisting of basic HTML tags with a pair of angular specific attributes. 
+prototype template, consisting of basic HTML tags with a pair of angular specific attributes.
 
 __`app/index.html`:__
 <pre>

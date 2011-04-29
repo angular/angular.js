@@ -36,7 +36,6 @@ Doc.METADATA_IGNORE = (function(){
 })();
 
 
-
 Doc.prototype = {
   keywords: function keywords(){
     var keywords = {};
@@ -57,6 +56,38 @@ Doc.prototype = {
     return words.join(' ');
   },
 
+
+  /*
+   * This function is here to act as a huristic based translator from the old style urls to
+   * the new style which use sections.
+   */
+  sectionHuristic: function (url){
+    // if we are new styl URL with section/id then just return;
+    if (url.match(/\//)) return url;
+    var match = url.match(/(\w+)(\.(.*))?/);
+    var section = match[1];
+    var id = match[3] || 'index';
+    switch(section) {
+      case 'angular':
+        section = 'api';
+        id = 'angular.' + id;
+        break;
+      case 'api':
+      case 'cookbook':
+      case 'guide':
+      case 'intro':
+      case 'tutorial':
+        break;
+      default:
+        id = section + '.' + id;
+        section = 'intro';
+    }
+    var newUrl = section + '/' + (id || 'index');
+    console.log('WARNING:', 'found old style url', url, 'at', this.file, this.line,
+        'converting to', newUrl);
+    return newUrl;
+  },
+
   markdown: function (text) {
     var self = this;
     var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/;
@@ -70,7 +101,7 @@ Doc.prototype = {
     parts.forEach(function(text, i){
       if (text.match(/^<pre>/)) {
         text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
-          var clazz = 'brush: js;'
+          var clazz = 'brush: js;';
           if (content.match(/\<\w/)) {
             // we are HTML
             clazz += ' html-script: true;';
@@ -93,7 +124,8 @@ Doc.prototype = {
         text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
-            return '<a href="' + (url.match(IS_URL) ? '' : '#!') + url + '">'
+            var isFullUrl = url.match(IS_URL);
+            return '<a href="' + (isFullUrl ? '' + url : '#!' + self.sectionHuristic(url)) + '">'
               + (url.match(IS_ANGULAR) ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
               + (url.match(IS_ANGULAR) ? '</code>' : '')
@@ -525,6 +557,7 @@ function metadata(docs){
     var depth = path.length - 1;
     var shortName = path.pop();
     words.push({
+      section: doc.section,
       id: doc.id,
       name: doc.name,
       depth: depth,
@@ -538,7 +571,7 @@ function metadata(docs){
 }
 
 var KEYWORD_PRIORITY = {
-  '.started': 1,
+  '.index': 1,
   '.guide': 2,
   '.guide.overview': 1,
   '.angular': 7,
@@ -562,7 +595,7 @@ function keywordSort(a, b){
       mangled.push(KEYWORD_PRIORITY[partialName] || 5);
       mangled.push(name);
     });
-    return mangled.join('.');
+    return doc.section + '/' + mangled.join('.');
   }
   var nameA = mangleName(a);
   var nameB = mangleName(b);

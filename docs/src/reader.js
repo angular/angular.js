@@ -9,15 +9,13 @@ var fs       = require('fs'),
 var NEW_LINE = /\n\r?/;
 
 function collect(callback){
-/*
    findJsFiles('src', callback.waitMany(function(file) {
-     //console.log('reading', file, '...');
+     console.log('reading', file, '...');
      findNgDocInJsFile(file, callback.waitMany(function(doc, line) {
-       callback(doc, file, line);
+       callback('@section api\n' + doc, file, line);
     }));
   }));
-*/
-  findNgDocInDir('docs/', callback.waitMany(callback));
+  findNgDocInDir('docs/content', callback.waitMany(callback));
   callback.done();
 }
 
@@ -42,11 +40,18 @@ function findNgDocInDir(directory, docNotify) {
   fs.readdir(directory, docNotify.waitFor(function(err, files){
     if (err) return this.error(err);
     files.forEach(function(file){
-      //console.log('reading', directory + file, '...');
-      if (!file.match(/tutorial.*\.ngdoc$/)) return;
-      fs.readFile(directory + file, docNotify.waitFor(function(err, content){
+      fs.stat(directory + '/' + file, docNotify.waitFor(function(err, stats){
         if (err) return this.error(err);
-        docNotify(content.toString(), directory + file, 1);
+        if (stats.isFile()) {
+          console.log('reading', directory + '/' + file, '...');
+          fs.readFile(directory + '/' + file, docNotify.waitFor(function(err, content){
+            if (err) return this.error(err);
+            var section = '@section ' + directory.split('/').pop() + '\n';
+            docNotify(section + content.toString(), directory + '/' +file, 1);
+          }));
+        } else if(stats.isDirectory()) {
+          findNgDocInDir(directory + '/' + file, docNotify.waitFor(docNotify));
+        }
       }));
     });
     docNotify.done();

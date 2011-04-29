@@ -10,12 +10,20 @@ function output(docs, content, callback){
   callback();
 }
 
+function parent(file) {
+  var parts = file.split('/');
+  parts.pop();
+  return parts.join('/');
+}
+
 exports.output = function(file, content, callback){
-  //console.log('writing', OUTPUT_DIR + file, '...');
-  fs.writeFile(
-      OUTPUT_DIR + file,
-      exports.toString(content),
-      callback);
+  console.log('write', file);
+  exports.makeDir(parent(OUTPUT_DIR + file), callback.waitFor(function(){
+    fs.writeFile(
+        OUTPUT_DIR + file,
+        exports.toString(content),
+        callback);
+  }));
 };
 
 
@@ -39,7 +47,8 @@ exports.toString = function toString(obj){
 exports.makeDir = function (path, callback) {
   var parts = path.split(/\//);
   path = '.';
-  (function next(){
+  (function next(error){
+    if (error && error.code != 'EEXIST') return callback.error(error);
     if (parts.length) {
       path += '/' + parts.shift();
       fs.mkdir(path, 0777, next);

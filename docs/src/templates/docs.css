@@ -18,6 +18,24 @@ a {
   height: 3.5em;
 }
 
+#header .navigation {
+  position: absolute;
+  text-align: center;
+  top: 0;
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 0;
+}
+#header .navigation > li {
+  display: inline;
+  padding: 0 .5em;
+}
+
+#header .navigation > li.selected {
+  font-weight: bold;
+}
+
 #sidebar,
 #main {
   position: absolute;
@@ -191,12 +209,8 @@ a {
   margin-top: 0;
 }
 
-#sidebar ul li.level-1.level-angular {
+#sidebar ul li.monospace{
   font-family: monospace;
-  font-weight: normal;
-  font-size: 1em;
-  margin-top: 0;
-  margin-bottom: 0;
 }
 
 #sidebar ul li.level-1 {
@@ -208,17 +222,14 @@ a {
 
 #sidebar ul li.level-2 {
   margin-left: 2em;
-  font-family: monospace;
 }
 
 #sidebar ul li.level-3 {
   margin-left: 3em;
-  font-family: monospace;
 }
 
 #sidebar ul li.level-4 {
   margin-left: 4em;
-  font-family: monospace;
 }
 
 
