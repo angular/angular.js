@@ -307,10 +307,10 @@ describe('ngdoc', function(){
 
     describe('@description', function(){
       it('should support pre blocks', function(){
-        var doc = new Doc("@description <pre>abc</pre>");
+        var doc = new Doc("@description <pre><b>abc</b></pre>");
         doc.parse();
         expect(doc.description).
-          toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>');
+          toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">&lt;b&gt;abc&lt;/b&gt;</pre></div>');
       });
 
       it('should support multiple pre blocks', function() {
@@ -318,10 +318,10 @@ describe('ngdoc', function(){
         doc.parse();
         expect(doc.description).
           toBe('<p>foo </p>' +
-               '<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>' +
+               '<div ng:non-bindable><pre class="brush: js;">abc</pre></div>' +
                '<h1>bah</h1>\n\n' +
                '<p>foo </p>' +
-               '<div ng:non-bindable><pre class="brush: js; html-script: true;">cba</pre></div>');
+               '<div ng:non-bindable><pre class="brush: js;">cba</pre></div>');
 
       });
 
