@@ -1,11 +1,10 @@
-@workInProgress
-@ngdoc overview
+﻿@ngdoc overview
 @name Tutorial: Step 4
 @description
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_03 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Example}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Live Demo}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 Code
 Diff}</td>
@@ -13,7 +12,30 @@ Diff}</td>
 </tr>
 </table>
 
-In this step, we add a feature that lets our users choose which way to order the phone list.
+In this step, you will add a feature to let your users select the order of the items in the phone
+list. The dynamic ordering is implemented by creating a new model property, wiring it together
+with the repeater, and letting the data binding magic do the rest of the work.
+
+
+1. Reset your workspace to Step 4 using:
+
+    git checkout --force step-4
+
+or
+
+    ./goto_step.sh 4
+
+2. Refresh your browser or check the app out on {@link
+http://angular.github.com/angular-phonecat/step-4/app our server}. You should see that in addition
+to the search box, the app displays a drop down menu that allows users to control the order in
+which the phones are listed.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-3...step-4
+GitHub}:
+
+
+## Template
 
 __`app/index.html`:__
 <pre>
@@ -40,6 +62,26 @@ __`app/index.html`:__
 ...
 </pre>
 
+In the `index.html` template we made the following changes:
+
+* First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
+two provided sorting options.
+
+* We then chained the `$filter` method with `{@link angular.Array.orderBy $orderBy}` method to
+further process the input into the repeater.
+
+Angular creates a two way data-binding between the select element and the `orderProp` model.
+`orderProp` is then used as the input for the `$orderBy` method.
+
+As we discussed in the section about data-binding and the repeater in Step 3, whenever the model
+changes (for example because a user changes the order with the select drop down menu), angular's
+data-binding will cause the view to automatically update. No bloated DOM manipulation code is
+necessary! 
+
+
+
+## Controller
+
 __`app/js/controller.js`:__
 <pre>
 /* App Controllers */
@@ -58,6 +100,21 @@ function PhoneListCtrl() {
   this.orderProp = 'age';
 }
 </pre>
+
+* We modified the `phones` model - the array of phones - and added an `age` property to each phone
+record. This property is used to order phones by age.
+
+* We added a line to the controller that sets the default value of `orderProp` to `age`. If we had
+not set the default value here, angular would have used the value of the first `<option>` element
+(`'name'`) when it initialized the data model.
+
+
+
+
+## Test
+
+The changes we made should be verified with both a unit test and an end-to-end test. Let's look at
+the unit test first.
 
 __`test/unit/controllerSpec.js`:__
 <pre>
@@ -84,29 +141,26 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
+
+The unit test now verifies that the default ordering property is set.
+
+We used Jasmine's API to extract the controller construction into a `beforeEach` block, which is
+shared by all tests in the nearest `describe` block.
+
+To run the unit tests, once again execute the `./scripts/test.sh` script and you should see the
+following output.
+
+    Chrome: Runner reset.
+    ..
+    Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
+      Chrome 11.0.696.57 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+
+
+Let's turn our attention to the end-to-end test.
+
 __`test/e2e/scenarios.js`:__
 <pre>
-/* jasmine-like end2end tests go here */
-describe('PhoneCat App', function() {
-
-  describe('Phone list view', function() {
-
-    beforeEach(function() {
-      browser().navigateTo('../../app/index.html');
-    });
-
-
-    it('should filter the phone list as user types into the search box', function() {
-      expect(repeater('.phones li').count()).toBe(3);
-
-      input('query').enter('nexus');
-      expect(repeater('.phones li').count()).toBe(1);
-
-      input('query').enter('motorola');
-      expect(repeater('.phones li').count()).toBe(2);
-    });
-
-
+...
     it('should be possible to control phone order via the drop down select box', function() {
       input('query').enter('tablet'); //let's narrow the dataset to make the test assertions
       shorter
@@ -121,38 +175,24 @@ describe('PhoneCat App', function() {
           toEqual(["MOTOROLA XOOM\u2122",
                    "Motorola XOOM\u2122 with Wi-Fi"]);
     });
-  });
-});
+...
 </pre>
 
-## Discussion:
+The end-to-end test verifies that the ordering mechanism of the select box is working correctly.
 
-To provide dynamic ordering, we employ another one of angular's "array type augmenters" and let
-the data binding do the rest of the work for us:
+You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
+can see them running on {@link
+http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html
+angular's server}.
 
-* First, we provide a `<select>` element named `orderProp` for our users so they can choose to
-sort the phone list either alphabetically or by the age of the phone.  We added the `age` property
-to each phone record so we can sort by that field.
+Now that you have added list sorting and tested the app, go to Step 5 to learn about angular
+services and how angular uses dependency injection.
 
-* Like {@link angular.Array.filter $filter}, {@link angular.Array.orderBy $orderBy} is a built-in
-method available on array objects in angular expressions.  In our UI template, we set up a select
-box that lets the user set the `orderProp` model variable to one of the string constants: `age` or
-`name`.
-
-* In our controller, we added a line to set the default value of `orderProp` to `age`.  If we
-don't override the default value, angular uses the value of the first `<option>` element when it
-initializes the data model.
-
-* Our unit test now verifies that our default ordering property is set.
-
-* We added an end-to-end test to verify that our select box ordering mechanism works properly.
-
-* Once again we added a little more CSS to improve the View.
 
 <table id="tutorial_nav">
 <tr>
 <td id="previous_step">{@link tutorial.step_03 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Example}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Live Demo}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 Code
 Diff}</td>

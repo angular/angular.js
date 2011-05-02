@@ -1,11 +1,11 @@
-@workInProgress
-@ngdoc overview
+﻿@ngdoc overview
 @name Tutorial: Step 1
 @description
 <table id="tutorial_nav">
   <tr>
-   <td id="previous_step">{@link tutorial.step_00 Previous}</td>
-    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Example}</td>
+  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Live
+    Demo}</td>
     <td id="tut_home">{@link tutorial Tutorial Home}</td>
     <td id="code_diff">
 {@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
@@ -13,26 +13,28 @@
   </tr>
 </table>
 
-Now that we have the basic ingredients in place, let's add some basic information about two cell
-phones to our app.
+In this step you will add some basic information about two cell phones to our app.  
 
-Note: We will usually include only the new code that we added for each step.  In this and
-subsequent examples, we will leave out code from the previous step that hasn't changed, for
-example:
+1. Do one of the following to reset your workspace to Step 1; be aware that this will throw away
+any changes you might have made to the tutorial files:
 
-        ...
-        <html xmlns:ng="http://angularjs.org">
-        ...
+  * Git users run:
 
-Let's add the following code to `index.html`:
+              git checkout --force step-1
+
+  * Snapshot users run:
+
+              ./goto_step.sh 1
+
+2. Refresh your browser or check the app out on {@link
+http://angular.github.com/angular-phonecat/step-1/app, our server}. Your page now contains a list
+with information about two phones.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
 
 __`app/index.html`:__
 <pre>
-<head>
-...
-  <title>Google Phone Gallery</title>
-...
-</head>
 ...
   <ul>
     <li>
@@ -51,35 +53,14 @@ __`app/index.html`:__
 ...
 </pre>
 
-## Discussion:
-
-* It's a static web page! We displayed info about two phones! Yay.
-
-* For those of you playing along at home on your own web servers, did you switch to Step 1 and
-refresh your browsers?
-
-    * __{@link tutorial Using Git:}__
-
-        From your `angular-phonecat` directory, run this command:
-
-                git checkout step-1
-
-    * __{@link tutorial Using Snapshots:}__
-
-        From `[install directory]/sandbox`, run this command:
-
-                ./goto_step.sh 1
-
-* Now would be a good time to open up `app/index.html` in your browser and see the current state
-of our "application". It's not very exciting, but that's ok.
-
-When you're ready, let's move on and start using some angular features to turn this static page
-into a dynamic web app.
+This addition to your app uses static HTML to display the list. Now, let's go to Step 2 to learn
+how to use angular to dynamically generate the same list.
 
 <table id="tutorial_nav">
   <tr>
-   <td id="previous_step">{@link tutorial.step_00 Previous}</td>
-    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Example}</td>
+  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Live
+    Demo}</td>
     <td id="tut_home">{@link tutorial Tutorial Home}</td>
     <td id="code_diff">
 {@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>

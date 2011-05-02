@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Tutorial: Step 10
 @description
@@ -14,25 +13,29 @@ Code Diff}</td>
 </tr>
 </table>
 
+In this step, you will add a clickable phone image swapper to the phone details page.
+
+1. Reset your workspace to Step 10 using:
+
+    git checkout --force step-10
+
+or
+
+    ./goto_step.sh 10
+
+2. Refresh your browser or check the app out on {@link
+http://angular.github.com/angular-phonecat/step-10/app our server}.
+
 The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
 clicking on the desired thumbnail image. Let's have a look how we can do this with angular.
 
-__`app/partials/phone-detail.html`:__
-<pre>
-<img ng:src="{{mainImageUrl}}" class="phone"/>
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-9...step-10
+GitHub}:
 
-<h1>{{phone.name}}</h1>
 
-<p>{{phone.description}}</p>
-
-<ul class="phone-thumbs">
-  <li ng:repeat="img in phone.images">
-    <img ng:src="{{img}}" ng:click="setImage(img)">
-  </li>
-</ul>
-...
-</pre>
+## Controller
 
 __`app/js/controllers.js`:__
 <pre>
@@ -53,9 +56,43 @@ function PhoneDetailCtrl($xhr) {
 //PhoneDetailCtrl.$inject = ['$xhr'];
 </pre>
 
+In the `PhoneDetailCtrl` controller, the statement `self.mainImageUrl = response.images[0];`
+creates the `mainImageUrl` model property and set its default value to the first phone image url.
+
+We also created a `setImage` controller method to change the value of `mainImageUrl`.
+
+
+## Template
+
+__`app/partials/phone-detail.html`:__
+<pre>
+<img ng:src="{{mainImageUrl}}" class="phone"/>
+
+...
+
+<ul class="phone-thumbs">
+  <li ng:repeat="img in phone.images">
+    <img ng:src="{{img}}" ng:click="setImage(img)">
+  </li>
+</ul>
+...
+</pre>
+
+We bound the `ng:src` attribute of the large image to the `mainImageUrl` property.
+
+We also registered an `{@link angular.directive.ng:click ng:click}` handler with thumbnail images.
+When a user clicks on one of the thumbnail images, the handler will use the `setImage` controller
+method to change the value of the `mainImageUrl` property to the url of the thumbnail image.
+
+
+## Test
+
+To verify this new feature, we added two end-to-end tests. One verifies that the main image is set
+to the first phone image by default. The second test clicks on several thumbnail images and
+verifies that the main image changed appropriately.
+
 __`test/e2e/scenarios.js`:__
 <pre>
-/* jasmine-like end2end tests go here */
 ...
   describe('Phone detail view', function() {
 
@@ -63,10 +100,6 @@ __`test/e2e/scenarios.js`:__
       browser().navigateTo('../../app/index.html#/phones/nexus-s');
     });
 
-
-    it('should display nexus-s page', function() {
-      expect(binding('phone.name')).toBe('Nexus S');
-    });
 
     it('should display the first phone image as the main phone image', function() {
        expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
@@ -84,18 +117,14 @@ __`test/e2e/scenarios.js`:__
 });
 </pre>
 
-## Discussion:
+You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
+can see them running on {@link
+http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
+angular's server}.
 
-Adding the phone image swapping feature is fairly straightforward:
 
-* We defined the `mainImageUrl` model property in the details controller (`PhoneDetailCtrl`) and
-set the default value of `mainImageUrl` to the first image in the array of images.
-* We created a `setImage` controller method to change `mainImageUrl` to the image clicked on by
-the user.
-* We registered an `{@link angular.directive.ng:click ng:click}` handler for thumb images to use
-the `setImage` controller method.
-* We expanded the end-to-end test to verify that our new feature is swapping images correctly.
-
+With the phone image swapper in place, we're ready for Step 11 (the last step!) to learn an even
+better way to fetch data.
 
 <table id="tutorial_nav">
 <tr>
