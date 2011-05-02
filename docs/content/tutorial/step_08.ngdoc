@@ -18,16 +18,15 @@ a phone in the phone list.
 
 1. Reset your workspace to Step 8 using:
 
-    git checkout --force step-8
+         git checkout --force step-8
 
-or
+  or
 
-    ./goto_step.sh 8
+         ./goto_step.sh 8
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-8/app our server}. Now when you click on a phone
-on the list, the phone details page with phone-specific information is displayed.
-
+http://angular.github.com/angular-phonecat/step-8/app angular's server}. Now when you click on a
+phone on the list, the phone details page with phone-specific information is displayed.
 
 To implement the phone details view we will use {@link angular.services.$xhr $xhr} to fetch our
 data, and we'll flesh out the `phone-details.html` view template.
@@ -87,14 +86,15 @@ function PhoneDetailCtrl($xhr) {
 //PhoneDetailCtrl.$inject = ['$xhr'];
 </pre>
 
-  
+To construct the URL for the HTTP request, we use `params.phoneId` extracted from the current
+route in the `PhoneCatCtrl` controller. 
 
 
 ## Template
 
 The TBD placeholder line has been replaced with lists and bindings that comprise the phone
-details. Note where we use the angular `{{ expression }}` markup and `ng:repeater`s to project
-phone data from our model into the view.
+details. Note where we use the angular `{{expression}}` markup and `ng:repeater`s to project phone
+data from our model into the view.
 
 
 __`app/partials/phone-details.html`:__
@@ -131,7 +131,7 @@ __`app/partials/phone-details.html`:__
 ## Test
 
 We wrote a new unit test that is similar to the one we wrote for the `PhoneListCtrl` controller in
-Step 5.
+step 5.
 
 __`test/unit/controllerSpec.js`:__
 <pre>
@@ -152,10 +152,10 @@ __`test/unit/controllerSpec.js`:__
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
 
-    Chrome: Runner reset.
-    ...
-    Total 3 tests (Passed: 3; Fails: 0; Errors: 0) (5.00 ms)
-      Chrome 11.0.696.57 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
+        Chrome: Runner reset.
+        ...
+        Total 3 tests (Passed: 3; Fails: 0; Errors: 0) (5.00 ms)
+          Chrome 11.0.696.57 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
 
 
 We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that
@@ -184,8 +184,19 @@ can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
 angular's server}.
 
-Now the phone details view is in place, proceed to Step 9 to learn how to write your own custom
-display filter.
+# Experiments
+
+* Stretching:
+    * Alternate chin-to-chest with look-at-ceiling.  Repeat eight times.
+    * Now do ear-to-shoulder (left ear to left shoulder, right to right. Caution: do not try left
+    ear to right shoulder!).  Repeat eight times.
+    * Finally, do chin-to-shoulder, left right left right.  Repeat eight times.
+
+
+# Summary
+
+Now that the phone details view is in place, proceed to step 9 to learn how to write your own
+custom display filter.
 
 <table id="tutorial_nav">
 <tr>

@@ -17,15 +17,15 @@ In this step you will learn how to create your own custom display filter.
 
 1. Reset your workspace to Step 9 using:
 
-    git checkout --force step-9
+         git checkout --force step-9
 
-or
+  or
 
-    ./goto_step.sh 9
+         ./goto_step.sh 9
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-9/app our server}. Navigate to one of the detail
-pages. 
+http://angular.github.com/angular-phonecat/step-9/app angular's server}. Navigate to one of the
+detail pages. 
 
 In the previous step, the details page displayed either "true" or "false" to indicate whether
 certain phone features were present or not. We have used a custom filter to convert those text
@@ -38,8 +38,8 @@ GitHub}:
 
 ## Custom Filter
 
-In order to create a new filter, simply register your custom filter function with the `{@link
-angular.filter angular.filter}` API.
+In order to create a new filter, simply register your custom filter function with the {@link
+angular.filter `angular.filter`} API.
 
 __`app/js/filters.js`:__
 <pre>
@@ -48,7 +48,7 @@ angular.filter('checkmark', function(input) {
 });
 </pre>
 
-The name of our filter is "checkmark". The `input` evaluates to either "true" or "false", and we
+The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
 return one of two unicode characters we have chosen to represent true or false (`\u2713` and
 `\u2718`).  
 
@@ -105,13 +105,30 @@ describe('checkmark filter', function() {
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
 
-    Chrome: Runner reset.
-    ....
-    Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
-      Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
+        Chrome: Runner reset.
+        ....
+        Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
+          Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
 
-Now that you have learned how to write and test a custom filter, go to Step 10 to learn how we can
+# Experiments
+
+* Let's experiment with some of the {@link angular.filter built-in angular filters} and add the
+following bindings to `index.html`:
+  * `{{ "lower cap string" | uppercase }}`
+  * `{{ {foo: "bar", baz: 23} | json }}`
+  * `{{ 1304375948024 | date }}`
+  * `{{ 1304375948024 | date:"'MM/dd/yyyy @ h:mma" }}`
+
+*  We can also create a model with an input element, and combine it with a filtered binding. Add
+the following to index.html:
+
+        <input name="userInput"> Uppercased: {{ userInput | uppercase }}
+
+
+# Summary
+
+Now that you have learned how to write and test a custom filter, go to step 10 to learn how we can
 use angular to enhance the phone details page further.
 
 <table id="tutorial_nav">

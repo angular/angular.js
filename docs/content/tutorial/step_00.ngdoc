@@ -8,13 +8,13 @@
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Live Demo}</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">Code Diff</td>
-<td id="next_step">{@link tutorial.step_0 Next}</td>
+<td id="next_step">{@link tutorial.step_01 Next}</td>
 </tr>
 </table>
 
 You are now ready to build the phone cat application. In this step, you will become familiar with
-the most important source code files, learn how to start the web services, and run the application
-in the browser.
+the most important source code files, learn how to start the development servers bundled with
+angular-seed, and run the application in the browser.
 
 1. Do one of the following:
 
@@ -22,11 +22,11 @@ in the browser.
 
                git checkout step-0
 
-   * Snapshot users: In the `[install directory]/sandbox` directory, run this command:
+   * Snapshot users: In the `[tutorial-dir]/sandbox` directory, run this command:
 
                ./goto_step.sh 0
 
-This resets your workspace to Step 0 of the tutorial app. 
+  This resets your workspace to Step 0 of the tutorial app. 
 
 2. To see the app running in a browser, do one of the following:
    * __For node.js users:__
@@ -36,8 +36,7 @@ This resets your workspace to Step 0 of the tutorial app.
 
    * __For other http servers:__
        1. Configure the server to serve the files in the `angular-phonecat` directory.
-       2. Run `./scripts/web-server.js` to start the app server.
-       3. Navigate in your browser to
+       2. Navigate in your browser to
        http://localhost:[*port-number*]/[*context-path*]/app/index.html.
 
 You can now see the app in the browser. It's not very exciting, but that's OK.
@@ -75,9 +74,11 @@ versions older than 9 (regardless of whether you are using XHTML or HTML).
 registers a callback that will be executed by the browser when the containing HTML page is fully
 downloaded. When the callback is executed, angular looks for the {@link
 angular.directive.ng:autobind ng:autobind} attribute. If `ng:autobind` is found, it signals
-angular to bootstrap and compile and manage the whole html page.
+angular to bootstrap, compile, and manage the whole html page.
 
-Now let's go to Step 1 and add some content to the web app.
+# Summary
+
+Now let's go to step 1 and add some content to the web app.
 
 <table id="tutorial_nav">
 <tr>

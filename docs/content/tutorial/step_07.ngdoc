@@ -18,16 +18,16 @@ multiple views by adding routing.
 
 1. Reset your workspace to Step 7 using:
 
-   git checkout --force step-7
+         git checkout --force step-7
 
-or
+  or
 
-   ./goto_step.sh 7
+         ./goto_step.sh 7
 
-2. Refresh your browser, but be sure that there is nothing in the url after app/index.html, or
-check the app out on {@link http://angular.github.com/angular-phonecat/step-7/app our server}.
-Note that you are redirected to `app/index.html#/phones` and the same phone list appears in the
-browser. When you click on a phone link the stub of a phone detail page is displayed.
+2. Refresh your browser, but be sure that there is nothing in the url after `app/index.html`, or
+check the app out on {@link http://angular.github.com/angular-phonecat/step-7/app angular's
+server}. Note that you are redirected to `app/index.html#/phones` and the same phone list appears
+in the browser. When you click on a phone link the stub of a phone detail page is displayed.
 
 
 The most important changes are listed below. You can see the full diff on {@link
@@ -36,7 +36,7 @@ GitHub}:
 
 ## What's going on here?
 
-Our app is slowly growing and becoming more complex. Before Step 7, the app provided our users
+Our app is slowly growing and becoming more complex. Before step 7, the app provided our users
 with a single view (the list of all phones), and all of the template code was located in the
 `index.html` file. The next step in building the app is the addition of a view that will show
 detailed information about each of the devices in our list.  
@@ -84,14 +84,15 @@ service and used this service to declare that our application consists of two di
 * The phone list view will be shown when the URL hash fragment is `/phone`. To construct this
 view, angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
 
-* The phone details view will be show when the URL hash fragment matches '/phone/[phoneId]'. To
+* The phone details view will be shown when the URL hash fragment matches '/phone/[phoneId]'. To
 construct this view, angular will use the `phone-detail.html` template and the `PhoneDetailCtrl`
 controller.
 
 We reused the `PhoneListCtrl` controller for the first view and we added an empty
 `PhoneDetailCtrl` controller to the `app/js/controllers.js` file for the second one.
-The statement `$route.otherwise({redirectTo: '/phones'});`, triggers a redirection to `/phones`
-when none of our routes is matched.
+
+The statement `$route.otherwise({redirectTo: '/phones'})` triggers a redirection to `/phones` when
+the browser address doesn't match either of our routes.
 
 Thanks to the `$route.parent(this);` statement and `ng:controller="PhoneCatCtrl"` declaration in
 the `index.html` template, the `PhoneCatCtrl` controller has a special role in our app. It is the
@@ -99,13 +100,17 @@ the `index.html` template, the `PhoneCatCtrl` controller has a special role in o
 `PhoneDetailCtrl`). The sub-controllers inherit the model properties and behavior from the root
 controller.
 
-
 Note the use of the `:phoneId` parameter in the second route declaration (`'/phones/:phoneId'`).
-When the current URL matches this route, the `$route` service extracts the phoneId string from the
-current URL and provides it to our controller via the `$route.current.params` map. We will use the
-`phoneId` parameter in the `phone-details.html` template.
-
+When the current URL matches this route, the `$route` service extracts the `phoneId` string from
+the current URL and provides it to our controller via the `$route.current.params` map. We will use
+the `phoneId` parameter in the `phone-details.html` template thanks to the alias created in the
+{@link angular.service.$route `$route.onChange`} callback.
         
+In this `onChange` callback, we aliased url parameters extracted from the current route to the
+`params` property in the root scope. This model property is inherited by child scopes created for
+our routes and accessible by their controllers and templates, just like the `phone-list.html`
+template demonstrates.
+
 
 ## Template
 
@@ -161,10 +166,12 @@ __`app/partials/phone-list.html`:__
 TBD: detail view for {{params.phoneId}}
 </pre>
 
+Note how we are using `params` model defined in the `PhoneCanCtrl` controller.
+
 
 ## Test
 
-To automatically verify that everything is wired properly, we wrote end to end tests that navigate
+To automatically verify that everything is wired properly, we wrote end-to-end tests that navigate
 to various URLs and verify that the correct view was rendered.
 
 <pre>
@@ -195,7 +202,22 @@ http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
 angular's server}.
 
 
-With the routing set up and the phone list view implemented, we're ready to go to Step 8 to
+# Experiments
+
+* Try to add an `{{orderProp}}` binding to `index.html`, and you'll see that nothing happens even
+when you are in the phone list view. This is because the `orderProp` model is visible only in the
+scope managed by `PhoneListCtrl`, which is associated with the `<ng:view>` element. If you add the
+same binding into the `phone-list.html` template, the binding will work as expected.
+
+* In `PhoneCatCtrl`, create a new model called "`firstName`" with `this.hero = 'Zoro'`. In
+`PhoneListCtrl` let's shadow it with `this.hero = 'Batman'`, and in `PhoneDetailCtrl` we'll use
+`this.hero = "Captain Proton"`. Then add the `<p>hero = {{hero}}</p>` to all three of our
+templates (`index.html`, `phone-list.html`, and `phone-detail.html`). Open the app and you'll see
+scope inheritance and model property shadowing do some wonders. 
+
+# Summary
+
+With the routing set up and the phone list view implemented, we're ready to go to step 8 to
 implement the phone details view.
 
 <table id="tutorial_nav">
