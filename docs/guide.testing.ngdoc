@@ -5,4 +5,38 @@
 
 # Testing Angular Applications
 
-to be written...
+## Running unit tests
+
+We recommend using jasmine and JsTestDriver for your unit tests/specs, but you are free to use
+whatever works for you.
+
+Requires java and a local or remote browser.
+
+start scripts/test-server.sh
+navigate your browser to http://localhost:9876/
+click on one of the capture links (preferably the "strict" one)
+run scripts/test.sh
+
+## Continuous unit testing
+
+Requires ruby and watchr gem.
+
+start JSTD server and capture a browser as described above
+start watchr as watchr scripts/watchr.rb
+in a different window/tab/editor tail -f logs/jstd.log
+edit files in app/ or src/ and save them
+watch the log to see updates
+There are many other ways to achieve the same effect. Feel free to use them if you prefer them
+over watchr.
+
+## End to end testing
+
+angular ships with a baked-in end-to-end test runner that understands angular, your app and allows
+you to write your tests with jasmine-like BDD syntax.
+
+Requires a webserver, node.js or your backend server that hosts the angular static files.
+
+create your end-to-end tests in test/e2e/scenarios.js
+serve your project directory with your http/backend server or node.js + scripts/web-server.js
+open http://localhost:port/test/e2e/runner.html in your browser
+

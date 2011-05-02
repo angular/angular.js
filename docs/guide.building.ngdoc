@@ -1,0 +1,42 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Building Angular Apps
+@description
+
+
+# Bootstrapping Angular
+	## Bootstrap Automatically
+	## Bootstrap Manually
+# Working With Angular Templates
+## Expressions
+## Directives (and widgets, markup)
+## CSS
+# Working With the Data Model
+## Creating a Data Model
+### Implicit
+### Explicit
+## Server Communications
+### $xhr
+### $resource
+# Working With Controllers
+## Creating
+### Declaring
+### Coding in JavaScript
+### Instantiating
+## Using DI With Controllers
+### Declaring dependencies for the Injector
+# Working With Angular Services
+## Using DI With Services
+## Creating / Registering a service
+## Instantiating 
+## Built-in Services
+### List, Describe, Examples, Links to API
+## Writing Your Own Services
+# Working With Advanced Dependency Injection
+## Inferring dependencies from the signature of the factory function or constructor
+## "Currying" of arguments
+# Extending the Angular HTML Compiler
+## Extension points (widgets, directives, markup, filters)
+## The apis
+## How to create custom extensions
+## How to test all of these custom extensions

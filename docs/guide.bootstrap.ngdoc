@@ -62,36 +62,37 @@ equivalent to the code in the previous section.
 
 This is the sequence that your code should follow if you're writing your own manual binding code:
 
- * After the page is loaded, find the root of the HTML template, which is typically the root of
+1. After the page is loaded, find the root of the HTML template, which is typically the root of
    the document.
- * Run the HTML compiler, which converts the templates into an executable, bi-directionally
+1. Run the HTML compiler, which converts the templates into an executable, bi-directionally
    bound application.
 
 
 # XML Namespace
 
-**IMPORTANT:** When using angular you must declare the `ng` namespace using the `xmlns` tag.
-  If you don't declare the namespace, Internet Explorer does not render widgets properly.
+**IMPORTANT:** When using angular, you must declare the `ng` namespace using the `xmlns` tag in
+the following scenarios:
 
-<pre>
-<html  xmlns:ng="http://angularjs.org">
-</pre>
+* If you are using XHTML
+* If you are targeting IE older than 9 (regardless of whether you are using XHTML or HTML).  
+
+If you don't declare the `ng` namespace in either of these scenarios, your browser will not render
+widgets properly.  To declare the `ng` namespace:
+
+        <html xmlns:ng="http://angularjs.org">
 
 
 # Create your own namespace
 
 If you want to define your own widgets, you must create your own namespace and use that namespace
-to form the fully qualified widget name. For example, you could map the alias my to your domain
-and create a widget called my:widget. To create your own namespace, simply add another xmlns tag
-to your page, create an alias, and set it to your unique domain:
+to form the fully qualified widget name. For example, you could map the alias "my" to your domain
+and create a widget called `my:widget`. To create your own namespace, simply add another `xmlns`
+tag to your page, create an alias, and set it to your unique domain:
 
-<pre>
-<html  xmlns:my="http://mydomain.com">
-</pre>
+        <html xmlns:my="http://mydomain.com">
 
 
 # Global Object
 
-The angular script creates a single global variable `angular` in the global namespace. All APIs are
-bound to fields of this global object.
-
+The angular script creates a single global variable `angular` in the global namespace. All APIs
+are bound to fields of this global object.

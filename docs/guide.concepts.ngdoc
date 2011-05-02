@@ -1,0 +1,499 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Angular Concepts
+@description
+
+This part of the angular Developer Guide provides conceptual information about what angular is and
+how it works.  For task-oriented documentation (how to use and customize specific features) see
+{@link guide.building Building Angular Apps} Finally, you can see the API Reference for precise,
+detailed usage and examples of specific angular features.
+
+# Overview
+
+Angular is pure client-side technology, written entirely in JavaScript.  It works with the
+long-established technologies of the web (HTML, CSS, and JavaScript) to make the development of
+web apps easier and faster than ever before.
+
+In one sense, angular simplifies web development by increasing the level of abstraction between
+the developer and most low-level tasks.  Angular does many of the routine, time-consuming coding
+tasks for you, including:
+
+* DOM Manipulation
+* Setting Up Listeners
+* Input Validation
+
+    Because angular handles much of the work involved in these tasks, developers can concentrate
+    more on application logic and less on repetitive, error-prone, lower-level coding.
+
+At the same time that angular simplifies web development, it brings relatively sophisticated
+techniques to client-side web app development, including:
+
+* Two-way Data Binding between your data model and your view
+* Separation between data, application logic, and presentation (Client-side MVC, if you will...)
+* Services (such as $xhr, that generates an XHR request)
+* Dependency Injection
+* An extensible HTML compiler
+* Ease of Testability
+
+The following sections provide more information about what angular is and how angular works:
+
+* <a href="#H1_LifeCycle">Life Cycle of an Angular App</a>
+* <a href="#H1_MVC">MVC in Angular</a>
+* <a href="#H1_Scope">Scope in Angular</a>
+
+<a name="H1_LifeCycle"></a>
+# Life Cycle of an Angular App
+
+* <a href="#H2_SPA">Single Page Versus Round Trip Apps</a>
+* <a href="#H2_U_Bootstrap">Understanding Angular Bootstrap</a>
+
+
+<a name="H2_SPA"></a>
+## Single Page Versus Round Trip Apps
+
+Angular can work in both Single Page App (SPA) and Round Trip App (RTA) configurations, but is
+designed to implement SPAs.  Angular supports browser history, forward and back buttons, and
+bookmarking.  (Angular currently uses the URL hash fragment technique to , although a future
+version will employ a different technique.)
+
+You normally wouldn't want to load angular with every page change, as would be the case in an RTA.
+However, if you were adding a subset of angular's features to an existing RTA, such as templating
+(to leverage two-way data binding), it would make sense to include angular in each page,
+especially in a scenario such as the migration-in-place of an app to angular.
+
+<a name="H2_U_Bootstrap"></a>
+## Understanding the Angular Initialization Process
+
+Angular initializes automatically when you load the angular script into your page with a
+`<script>` tag that includes the `ng:autobind` attribute:
+
+        <script src="angular.js" ng:autobind>
+
+Note: You can also create a {@link guide.building customized initialization process} [ ed. note:
+will eventually link to guide.building.bootstrap] if you have specific requirements at startup.
+ 
+The angular script comes in two flavors, a production script and a debug script:
+
+* angular-[version].js - This one is human-readable; good for development / debugging.
+* angular-[version].min.js - This one is compressed and obfuscated; suitable for production.
+
+From a high level view, this is what happens during angular's automatic initialization process
+(using `ng:autobind`):
+
+1. The browser loads the angular script.
+1. The `ng:autobind` attribute tells angular to compile and manage the whole HTML document.  The
+compilation phase is initiated in the page's onLoad handler, so angular doesn't begin working
+until after the page load is complete.
+1. Angular finds the root of the HTML document and creates a global variable `angular` in the
+global namespace.  Everything that angular subsequently creates is bound to fields in this global
+object.
+1. Angular walks the DOM looking for angular widgets, directives, and markup (such as `ng:init` or
+`ng:repeat`).  As angular encounters these, it creates child scopes as necessary and attaches them
+to the DOM, registers listeners on the scopes, associates any controller functions with their data
+and their part of the view, and so ultimately constructs a runnable application.  The resulting
+app features two-way data-binding and a nice separation between data, presentation, and business
+logic. 
+1. For the duration of the application session (while the page is loaded), angular monitors the
+state of the application, and updates the view and the data model whenever the state of either one
+changes.
+
+For details on how the compiler works, see <a href="#html_compiler">Angular HTML Compiler</a>.
+
+<a name="H1_Scope"></a>
+# Scope In Angular
+
+This section describes the role of scope in angular.  Scopes are a fundamental part of how angular
+works: they are both the glue that connects the components of angular together, and also the seal
+that keeps app logic, data, and presentation in their own separate areas.
+
+So, what are angular scopes?  Angular scopes:
+
+* Are JavaScript objects.
+* Are attached to the DOM.  Angular attaches a root scope to the root DOM element, and based on
+what it finds in the template can attach child scopes to elements further down in the DOM tree. 
+* Are the `this` of a controller.  The `this` we are referring to here is familiar to JavaScript
+developers as the language keyword that refers to the object that a function belongs to. A
+controller in angular always belongs to an angular scope (either the root scope or a child scope),
+and angular scopes are attached to the DOM, so an angular scope is the `this` of a controller.  
+
+What do angular scopes do?  Angular scopes:
+
+* Can {@link angular.scope.$watch $watch} properties and fire events. 
+* Use {@link angular.scope.$eval $eval} to update their view.
+
+Consider a very simple scenario in which you have say, a page that displays one angular string
+expression, and that string expression is obtained from an input widget.  In this scenario,
+angular does the following:
+
+* Creates one root scope (a JavaScript object) and attaches it to the root DOM element of the page
+(usually `<html>`).  
+* Binds the input widget to a property on root scope, and binds that same property to the point in
+the view as directed by a directive in the template (angular markup, such as `{{ my_string }}`).
+* Employs the scope's $watch method to watch for any change to the value of its property (our 
+string expression). When a change occurs to the string expression, the controller  updates the
+view.
+
+In a more realistic (i.e., complicated) scenario, the angular app might feature multiple child
+scopes attached to different parts of the DOM, with multiple controllers and services and
+dependency injection to handle application logic, and with a more complex data model than our
+single string expression in the simple scenario above. But no matter how complicated an angular
+app gets, the scenario is essentially the same as described above, with angular scopes providing
+the "glue" for holding the other components together.
+
+In the following sections we describe in more detail how scope is used to implement angular's
+design principles, and we look at the role scope plays in some of angular's key features.
+
+* <a href="#H2_Scope_and_MVC">Scope and MVC</a>
+* <a href="#H2_Scope_Eval">When Scopes Are Evaluated</a>
+
+<a name="H2_Scope_and_MVC"></a>
+## Scope and MVC
+As mentioned in the {@link guide.overview Overview}, one of the motivations behind angular's
+design was to leverage the principles behind the Model-View-Controller design pattern into the
+world of HTML / CSS / JavaScript web applications.  
+
+The following sections describe angular scopes in more detail:
+
+* <a href="#H3_Scope_and_Model">Scope and Model</a>
+* <a href="#H3_Scope_and_Controllers">Scope and Controllers</a>
+* <a href="#H3_Scope_and_View">Scope and View</a>
+* <a href="#H3_Scope_and_DI">Scope and Dependency Injection</a>
+
+<a name="H3_Scope_and_Model"></a>
+### Scope and Model
+Angular scopes serve as the frame on which your data model is built.  The data could originate
+from a local file system, live on a remote server, or be input by a user, but regardless of where
+the data ultimately comes from, within an angular app it is always referenced from scope
+properties.  
+
+Scopes also provide the loose coupling between the data model and the view: data displayed in the
+view is only a projection of the data in the model.  Angular accomplishes this (in part) by
+attaching angular scope objects to DOM elements based on the angular directives defined in the
+view template (your HTML tags, angular attributes, and CSS code).  The data model is always
+referenced from the relevant angular scopes, and the relevant scopes are attached to the
+appropriate elements of the DOM tree.  
+
+Angular scopes are JavaScript objects, and of course objects can be nested.  A child scope always
+has a parent scope upstream in the DOM, and child scopes inherits properties from their parents. 
+So angular can find the right data to display by searching up through the DOM tree until it finds
+the nearest attached scope.   
+
+In the following snippet of code, you can see how scope comes into play by observing how the value
+of `name` changes, based on the HTML element it is displayed in:
+
+<doc:example>
+<doc:source>
+   <ul ng:init="name='Hank'; names=['Igor', 'Misko', 'Gail', 'Kai']">
+     <li ng:repeat="name in names">
+   	  Name = {{name}}!
+     </li>
+   </ul>
+  <p>Name={{name}}</p>
+</doc:source>
+<doc:scenario>
+     it('should override the name property', function() {
+       expect(using('.doc-example-live').repeater('li').row(0)).
+         toEqual(['Igor']);
+       expect(using('.doc-example-live').repeater('li').row(1)).
+         toEqual(['Misko']);
+       expect(using('.doc-example-live').repeater('li').row(2)).
+         toEqual(['Gail']);
+       expect(using('.doc-example-live').repeater('li').row(3)).
+         toEqual(['Kai']);
+       expect(using('.doc-example-live').element('pre').text()).
+         toBe('Name=Hank');
+     });
+</doc:scenario>
+</doc:example>
+
+Note that the angular {@link ng:repeat ng:repeat} directive creates a new scope for each item that
+it repeats.  So in this example, attached a scope object to the root DOM element, which the `<ul>`
+element is a child of.  It also attached a child scope to each `<li>` element in the list.  The
+`ng:repeat` directive causes angular to create a new scope for each element that it repeats. 
+(Another angular directive that causes a new scope to be created is {@link ng:controller
+ng:controller}.)  
+
+In the `<ul>` element, we initialized `name` to "Hank", and we also created an array called
+`names` to use as the data source for the list items.  In each `<li>` element, `name` from the
+parent scope is overridden.  Outside of the `<li>` repeater, the original value of `name` is
+displayed.
+
+Here is an illustration showing the DOM tree and angular scopes for the example above:
+
+<img class="left" src="img/dom_scope.png" />
+
+
+
+<a name="H3_Scope_and_View"></a>
+### Scope and View
+
+As described in the Scope and Model section above, the data displayed in an angular View is a
+projection of the data in the Model.  This is part of the "Zen of Angular", which says that your
+data should be the single source of truth in your application.  The data exists in just once
+place, and when the data changes the view gets updated; when the view changes, the data gets
+updated.  It's two-way data-binding.
+
+<a name="H3_Scope_and_Controllers"></a>
+### Scope and Controllers
+While scope holds a _reference_ to your Model, scope _becomes_ your controller.  The controller's
+behavior is on the scope.  For example, when a scope's listener fires upon a change to one of its
+properties, you can invoke a function that implements some aspect of your behavior.  You can
+create "instances" of a controller on a scope, by requesting a parent scope to create a child
+scope using a controller as a template.  
+
+An angular template should contain only HTML, CSS, angular directives, and angular expressions. 
+To maintain separation between the Controller and View components, angular expressions don't let
+you do loops, conditionals, and other control flow operations.  You should write these types of
+expressions in JavaScript functions inside your controllers.
+
+For example:
+
+<pre>
+var scope = angular.scope();
+scope.salutation = 'Hello';
+scope.name = 'World';
+
+expect(scope.greeting).toEqual(undefined);
+
+scope.$watch('name', function(){
+this.greeting = this.salutation + ' ' + this.name + '!';
+});
+
+expect(scope.greeting).toEqual('Hello World!');
+scope.name = 'Misko';
+// scope.$eval() will propagate the change to listeners
+expect(scope.greeting).toEqual('Hello World!');
+
+scope.$eval();
+expect(scope.greeting).toEqual('Hello Misko!');
+</pre>
+
+<a name="H3_Scope_and_DI"></a>
+### Scopes and Dependency Injection
+Dependency Injection (DI) is another of the core design principles behind angular.  Here we
+discuss DI only briefly as it relates to angular scopes.  For more information on how DI works in
+angular, see {@link guide.concepts Dependency Injection}.  To see how to use DI in your angular
+apps, see {@link guide.building Working With Dependency Injection}.
+
+One of the responsibilities of angular's DI subsystem is to provide {@link angular.service
+service} location.  The {@link angular.injector injector} that handles this task is created and
+configured when a root scope gets created.  The injector is responsible for caching instances of
+services, and the services cache is bound to the scope. This means that different root scopes have
+different instances of the injector. This is usually not an issue in your angular applications,
+because they will typically have only one root scope (the services will act like application
+singletons).  But in tests it is important to not share singletons across test invocations (for
+isolation purposes). You can achieve this isolation by having each test create its own separate
+root scope:
+
+<pre>
+ var rootScope = angular.scope();
+ // accesss the service loctor
+ var myService = rootScope.$service('myService');
+</pre>
+
+<a name="H2_Scope_Eval"></a>
+## When Scopes Are Evaluated
+
+You can update a scope by calling its {@link angular.scope.$eval $eval()} method, but usually you
+don't have to do this explicitly.  In most cases, angular intercepts all external events (such as
+user interactions, XHRs, timers, and so on) and calls the `$eval()` method for you at the right
+time.
+
+Angular widgets copy data that is input by the user to the appropriate scope, and then they call
+the `$eval()` method on the root scope to update the view. This creates a spreadsheet-like
+behavior: the bound views update immediately as the user enters data.
+
+Similarly, when a request to fetch data from a server is made and the response comes back, the
+data is written into the model and then `$eval()` is called to push updates through to the view and
+any other dependents.
+
+Because a change in the model (triggered either by user input or by a server response) calls
+`$eval()`, it is unnecessary to call `$eval()` from within your controller. The only time when
+calling `$eval()` is needed is when implementing a custom widget or service.
+
+Because scopes are inherited, the child scope `$eval()` overrides the parent `$eval()` method.
+So to update the whole page you need to call `$eval()` on the root scope as `$root.$eval()`.
+
+Note: A widget that creates scopes (such as {@link angular.widget.@ng:repeat ng:repeat}) is
+responsible for forwarding `$eval()` calls from the parent to those child scopes. That way,
+calling $eval() on the root scope will update the whole page.
+
+# MVC Angular-style
+## Model
+### Single Source of Truth
+### Example
+## View
+### Templates
+### Single Page
+### Partials
+### Example
+## Controller
+### Example
+# Two-way Data Binding
+# Dependency Injection
+## Overview - Why DI? + links to external DI references
+## How does scope relate to DI
+
+<a name="html_compiler"></a>
+# Angular HTML Compiler
+The core of angular is its HTML compiler. Like the rest of angular, it is written in JavaScript
+and runs entirely within your browser.  
+
+The compiler is what allows you to add behavior to existing HTML tags through the use of angular
+{@link angular.widget widgets} and {@link angular.directive directives}.  Angular's default HTML
+transformations of these widgets and directives are very useful for building generic web apps, but
+you can also extend the compiler to create a domain-specific language for building specific types
+of web applications.
+
+## Understanding How the Compiler Works
+
+This section describes the steps that angular's HTML compiler goes through when it processes a
+page. If you use {@link angular.directive.ng:autobind ng:autobind} in your application, the
+compilation process happens automatically.  The compiler runs when the user loads the app in a
+browser (more precisely, in the browser's `onLoad()` function). If you're an advanced
+user you can run in manual bind mode, in which you can decide when and how often the compilation
+happens.
+
+Every {@link angular.widget widget}, {@link angular.directive directive} and
+{@link angular.markup markup} is defined with a compile function, and that compile function
+returns an optional link function. Here is the relationship between the compile and link functions:
+
+* **compile function** - Registers a listener for the widget, directive, or markup's expression.
+  This function is called exactly once.
+* **link function** - Sets up the listener registered in the compile function. This function can
+be called multiple times, once per cloned DOM element.  For example, in the case of the {@link
+angular.widget.ng:repeat repeater widget} used in a list element (`<li ng:repeat="[item in
+dataset]"`) , the link function gets called to set up a listener on each element in the list.
+
+Note that angular's built-in widgets, directives, and markup have predefined compile and link
+functions that you don't need to modify. However, if you're writing your own widgets, directives,
+or markup, you must write compile and link functions for them. Refer to the {@link angular.compile
+Compiler API} for more information.
+
+When the HTML compiler compiles a page, it goes through 3 phases: Compile, Create Root Scope, and
+Link:
+
+* ## Compile Phase
+
+1. Recursively traverse the DOM, depth-first.
+1. Look for a matching compile function of type widget, then markup, then directive.
+1. If a compile function is found then execute it.
+1. When the compile function completes, it should return a link function. Aggregate this link
+  function with all link functions returned previously by step 3.
+1. Repeat steps 3 and 4 for all compile functions found. The result of the compilation step is
+  the aggregate link function, which comprises all of the individual link functions.
+
+* ## Create Root Scope
+
+* Inject all of the services into the root scope.
+
+* ## Link Phase
+
+1. Execute the aggregate link function with the root scope. The aggregate link function calls all
+  of the individual link functions that were generated in the compile phase.
+1. If there are any clones of the DOM caused by repeating elements, call the link function
+multiple times, one for each repeating item.
+
+Note that while the compile function is executed exactly once, the link function can be executed
+multiple times: once for each iteration in a repeater.
+
+# Example
+
+The compilation process is best understood by looking at an example. Let's say that you want to
+create a new DOM element <my:greeter/>, which should display a greeting.  
+
+If we want this HTML source:
+
+<pre>
+<div ng:init="salutation='Hello'; name='World'">
+ <my:greeter salutation="salutation" name="name"/>
+</div>
+</pre>
+
+To produce this DOM:
+
+<pre>
+<div ng:init="salutation='Hello'; name='World'">
+ <my:greeter salutation="salutation" name="name"/>
+   <span class="salutation">Hello</span>
+   <span class="name">World</span>!
+ </my:greeter>
+</div>
+</pre>
+
+Write this widget definition (assuming you've already declared the my {@link guide.namespace
+namespace} in the page):
+
+
+<pre>
+angular.widget('my:greeter', function(compileElement){
+ var compiler = this;
+ compileElement.css('display', 'block');
+ var salutationExp = compileElement.attr('salutation');
+ var nameExp = compileElement.attr('name');
+ return function(linkElement){
+   var salutationSpan = angular.element('<span class="salutation"></span');
+   var nameSpan = angular.element('<span class="name"></span>');
+   linkElement.append(salutationSpan);
+   linkElement.append(compiler.text(' '));
+   linkElement.append(nameSpan);
+   linkElement.append(compiler.text('!'));
+   this.$watch(salutationExp, function(value){
+     salutationSpan.text(value);
+   });
+   this.$watch(nameExp, function(value){
+   nameSpan.text(value);
+   });
+ };
+});
+</pre>
+
+Note: For more about widgets, see {@link angular.widget Widget}.
+
+## Compilation process for this example
+
+Here are the steps that the compiler goes through for the page that contains this widget
+definition:
+
+### Compile Phase
+
+* Recursively traverse the DOM depth-first.
+* Find the angular.widget definition.
+*  Find and execute the widget's compileElement function, which includes the following steps:
+  * Add a style element with attribute display: block; to the template DOM so that the browser
+    knows to treat the element as block element for rendering. (Note: because this style element
+    was added on the template compileElement, this style is automatically applied to any clones
+    of the template (i.e. any repeating elements)).
+  * Extract the salutation and name HTML attributes as angular expressions.
+* Return the aggregate link function, which includes just one link function in this example.
+
+### Link Phase
+
+* Execute the aggregate link function, which includes the following steps:
+  * Create a <span> element set to the salutation class
+  * Create a <span> element set to the name class.
+* Add the span elements to the linkElement. (Note: be careful not to add them to the
+  compileElement, because that's the template.)
+* Set up watches on the expressions. When an expression changes, copy the data to the
+  corresponding spans.
+
+
+## Compiler API
+
+If you define your own widgets, markup, or directives, you need to access the compiler API.
+This section describes the methods on the compiler that you can call.
+
+## what does it do + why/when should a developer care about it
+## Template
+### What is it
+### What is it composed of
+### How is it transformed by the compiler into a view
+
+# Services
+## What are they
+## Relationship to DI
+
+# Directives (Widgets/Markup)
+## What are they?
+## Why directives?
+## Directives and scope
