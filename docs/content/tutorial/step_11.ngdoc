@@ -1,5 +1,4 @@
-@workInProgress
-@ngdoc overview
+﻿@ngdoc overview
 @name Tutorial: Step 11
 @description
 <table id="tutorial_nav">
@@ -14,20 +13,45 @@ Code Diff}</td>
 </tr>
 </table>
 
-And so we arrive at the last step of this tutorial. Here we define a custom service that
-represents a {@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client.
-Using this client we can make xhr requests for data in an easier way, without having to deal with
-the lower-level {@link angular.service.$xhr $xhr} APIs, HTTP methods and URLs.
+In this step, you will improve the way our app fetches data. 
 
-__`app/index.html`.__
+1. Reset your workspace to Step 11 using:
+
+    git checkout --force step-11
+
+or
+
+    ./goto_step.sh 11
+
+2. Refresh your browser or check the app out on {@link
+http://angular.github.com/angular-phonecat/step-11/app our server}.
+
+
+The last improvement we will make to our app is to define a custom service that represents a
+{@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this
+client we can make xhr requests for data in an easier way, without having to deal with the
+lower-level {@link angular.service.$xhr $xhr} API, HTTP methods and URLs.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-10...step-11
+GitHub}:
+
+
+## Template 
+
+The custom service is defined in `app/js/services.js` so we need to include this file in our
+layout template:
+
+__`app/index.html`.__ 
 <pre>
 ...
   <script src="js/services.js"></script>
 ...
 </pre>
 
+## Service
 
-__`app/js/services.js`.__ (New)
+__`app/js/services.js`.__
 <pre>
  angular.service('Phone', function($resource){
   return $resource('phones/:phoneId.json', {}, {
@@ -35,6 +59,25 @@ __`app/js/services.js`.__ (New)
   });
  });
 </pre>
+
+We used the {@link angular.service} API to register a custom service. We passed in the name of the
+service - 'Phone' - and a factory function. The factory function is similar to a controller's
+constructor in that both can declare dependencies via function arguments. The Phone service
+declared a dependency on the `$resource` service.
+
+The `{@link angular.service.$resource $resource}` service makes it easy to create a {@link
+http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client with just a few lines
+of code. This client can then be used in our application, instead of the lower-level `$xhr`
+service.
+
+
+## Controller
+
+We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
+lower-level `$xhr` service, replacing it with a new service called `Phone`. Angular's {@link
+angular.service.$resource `$resource`} service is easier to use than `$xhr` for interacting with
+data sources exposed as RESTful resources. It is also easier now to understand what the code in
+our controllers is doing.
 
 __`app/js/controllers.js`.__
 <pre>
@@ -48,14 +91,59 @@ function PhoneListCtrl(Phone_) {
 
 
 function PhoneDetailCtrl(Phone_) {
-  this.phone = Phone_.get({phoneId:this.params.phoneId});
+  var self = this;
+
+  self.phone = Phone_.get({phoneId: self.params.phoneId}, function(phone) {
+    self.mainImageUrl = phone.images[0];
+  });
+
+  ...
 }
 //PhoneDetailCtrl.$inject = ['Phone'];
 </pre>
 
+Notice how in `PhoneListCtrl` we replaced:
+
+    $xhr('GET', 'phones/phones.json', function(code, response) {
+      self.phones = response;
+    });
+
+with:
+
+    this.phones = Phone_.query();
+
+This is a simple statement that we want to query for all phones.
+
+An important thing to notice in the code above is that we don't pass any callback functions when
+invoking methods of our Phone service. Although it looks as if the result were returned
+synchronously, that is not the case at all. What is returned synchronously is a "future" — an
+object, which will be filled with data when the xhr response returns. Because of the data-binding
+in angular, we can use this future and bind it to our template. Then, when the data arrives, the
+view will automatically update. 
+
+Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
+we require, so in these cases, we can add a callback to process the server response. The
+`PhoneDetailCtrl` controller illustrates this by setting the `mainImageUrl` in a callback. 
+
+   
+
+
+## Test
+
+We have modified our unit tests to verify that our new service is issuing HTTP requests and
+processing them as expected. The tests also check that our controllers are interacting with the
+service correctly.
+
+The `$resource` client augments the response object with methods for updating and deleting the
+resource. If we were to use the standard `toEqual` matcher, our tests would fail because the test
+values would not match the responses exactly. To solve the problem, we use a newly-defined
+`toEqualData` {@link http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine
+matcher}. When the `toEqualData` matcher compares two objects, it takes only object properties
+into account and ignores methods. 
+
+
 __`test/unit/controllersSpec.js`:__
 <pre>
-/* jasmine specs for controllers go here */
 describe('PhoneCat controllers', function() {
 
   beforeEach(function(){
@@ -119,34 +207,14 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
+To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
+output.
 
-## Discussion:
+   Chrome: Runner reset.
+   ....
+   Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
+     Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
-* We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
-lower-level `$xhr` service, replacing it with a new service called `Phone`.  Angular's {@link
-angular.service.$resource `$resource`}  service is easier to use than `$xhr` for interacting with
-data sources exposed as RESTful resources. It is also easier now to understand what the code in
-our controllers is doing.
-
-    An important thing to notice in our controller code is that we don't pass any callback
-    functions when invoking methods of our Phone services. It looks as if the result were returned
-    synchronously. That is not the case at all. What is returned synchronously is a "future" — an
-    object, which will be filled with data when the xhr response returns. Because of the
-    data-binding in angular, we can use this future and bind it to our template.  Then, when the
-    data arrives, the view will automatically update.  See?  Angular tries hard to make simple
-    stuff simple.
-
-* Once again we make use of `$route's` params, this time to construct the URL passed as a
-parameter to `$resource` in our `services.js` script.
-
-* Last, but certainly not least, we expanded and modified our unit test to verify that our new
-service is returning data as we expect it to.
-
-  In our assertions we use a newly-defined `toEqualData` {@link
-  http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine matcher}, which
-  compares only object properties and ignores methods. This is necessary, because the `$resource`
-  client will augment the response object with handy methods for updating and deleting the
-  resource (we don't use these in our tutorial though).
 
 There you have it!  We have created a web app in a relatively short amount of time.
 
@@ -155,15 +223,17 @@ There you have it!  We have created a web app in a relatively short amount of ti
 * For more details and examples of the angular concepts we touched on in this tutorial, see the
 {@link guide Developer Guide}.
 
-* For several more examples of sample code, see the {@link cookbook Cookbook}.
+* For several more examples of code, see the {@link cookbook Cookbook}.
 
-* When you are ready to start developing a project using angular, be sure to begin with the {@link
-https://github.com/angular/angular-seed angular seed app}.
+* When you are ready to start developing a project using angular, we recommend that you bootstrap
+your development with the {@link https://github.com/angular/angular-seed angular seed} project.
 
-* We hope this tutorial was useful to you, and that you learned enough about angular to make you
-want to learn more.  Of course, we especially hope you are inspired to go out and develop angular
-web apps of your own, and perhaps you might even be interested in {@link contribute contributing}
-to angular.
+* We hope this tutorial was useful to you and that you learned enough about angular to make you
+want to learn more. We especially hope you are inspired to go out and develop angular web apps of
+your own, and that you might be interested in {@link contribute contributing} to angular. 
+
+* If you have questions or feedback or just want to say "hi", please post a message at
+https://groups.google.com/forum/#!forum/angular.
 
 <table id="tutorial_nav">
 <tr>

@@ -1,5 +1,4 @@
-@workInProgress
-@ngdoc overview
+﻿@ngdoc overview
 @name Tutorial: Step 9
 @description
 <table id="tutorial_nav">
@@ -14,64 +13,85 @@ Diff}</td>
 </tr>
 </table>
 
-In this step, we have determined that the built-in angular display filters ({@link
-angular.filter.number number}, {@link angular.filter.currency currency}, {@link
-angular.filter.date date}, etc.) don't handle what we want to do, so we get to create our own
-custom {@link angular.filter filter}.
+In this step you will learn how to create your own custom display filter.
+
+1. Reset your workspace to Step 9 using:
+
+    git checkout --force step-9
+
+or
+
+    ./goto_step.sh 9
+
+2. Refresh your browser or check the app out on {@link
+http://angular.github.com/angular-phonecat/step-9/app our server}. Navigate to one of the detail
+pages. 
 
 In the previous step, the details page displayed either "true" or "false" to indicate whether
-certain phone features were present or not.  Our custom "checkmark" filter replaces those text
-strings with glyphs: ✓ for "true", and ✘ for "false".
+certain phone features were present or not. We have used a custom filter to convert those text
+strings into glyphs: ✓ for "true", and ✘ for "false". Let's see, what the filter code looks like.
 
-Our filter code lives in `app/js/filters.js`:
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-8...step-9
+GitHub}:
 
-__`app/index.html`:__
-<pre>
-...
- <script src="lib/angular/angular.js" ng:autobind></script>
- <script src="js/controllers.js"></script>
- <script src="app/js/filters.js"></script>
-...
-</pre>
 
-In the phone details template, we employ our filter for angular expressions whose values are
-"true" or "false"; `{{ [phone_feature] | checkmark }}`:
+## Custom Filter
 
-__`app/partials/phone-detail.html`:__
-<pre>
-<img ng:src="{{phone.images[0].large}}" class="phone"/>
-<h1>{{phone.name}}</h1>
-<p>{{phone.description}}</p>
-...
-<ul class="specs">
-  ...
-  <li>
-    <span>Connectivity</span>
-    <dl>
-      <dt>Network Support</dt>
-      <dd>{{phone.connectivity.cell}}</dd>
-      <dt>WiFi</dt>
-      <dd>{{phone.connectivity.wifi}}</dd>
-      <dt>Bluetooth</dt>
-      <dd>{{phone.connectivity.bluetooth}}</dd>
-      <dt>Infrared</dt>
-      <dd>{{phone.connectivity.infrared | checkmark}}</dd>
-      <dt>GPS</dt>
-      <dd>{{phone.connectivity.gps | checkmark}}</dd>
-    </dl>
-  </li>
-...
-</ul>
-</pre>
+In order to create a new filter, simply register your custom filter function with the `{@link
+angular.filter angular.filter}` API.
 
-__`app/js/filters.js`:__ (New)
+__`app/js/filters.js`:__
 <pre>
 angular.filter('checkmark', function(input) {
   return input ? '\u2713' : '\u2718';
 });
 </pre>
 
-__`test/unit/filtersSpec.js`:__ (New)
+The name of our filter is "checkmark". The `input` evaluates to either "true" or "false", and we
+return one of two unicode characters we have chosen to represent true or false (`\u2713` and
+`\u2718`).  
+
+
+## Template
+
+Since the filter code lives in the `app/js/filters.js` file, we need to include this file in our
+layout template.
+
+__`app/index.html`:__ 
+<pre>
+...
+ <script src="js/controllers.js"></script>
+ <script src="js/filters.js"></script>
+...
+</pre>
+
+The syntax for using filters in angular templates is as follows:
+
+    {{ expression | filter }}
+
+Let's employ the filter in the phone details template:
+ 
+
+
+__`app/partials/phone-detail.html`:__ 
+<pre>
+...
+    <dl>
+      <dt>Infrared</dt>
+      <dd>{{phone.connectivity.infrared | checkmark}}</dd>
+      <dt>GPS</dt>
+      <dd>{{phone.connectivity.gps | checkmark}}</dd>
+    </dl>
+...
+</pre>
+
+
+## Test
+
+Filters, like any other component, should be tested and these tests are very easy to write.
+
+__`test/unit/filtersSpec.js`:__
 <pre>
 describe('checkmark filter', function() {
 
@@ -82,18 +102,17 @@ describe('checkmark filter', function() {
 })
 </pre>
 
-## Discussion:
+To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
+output.
 
-* This example shows how easy it is to roll your own filters for displaying data.  As explained in
-the "Writing your own Filters" section of the {@link angular.filter angular.filter} page, you
-simply register your custom filter function on to the `angular.filter` function.
+    Chrome: Runner reset.
+    ....
+    Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
+      Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
-* In this example, our filter name is "checkmark"; our input is either "true" or "false", and we
-return one of two unicode characters we have chosen to represent true or false (`\u2713` and
-`\u2718`).
 
-* We created a new unit test to verify that our custom filter converts boolean values to unicode
-characters.
+Now that you have learned how to write and test a custom filter, go to Step 10 to learn how we can
+use angular to enhance the phone details page further.
 
 <table id="tutorial_nav">
 <tr>
