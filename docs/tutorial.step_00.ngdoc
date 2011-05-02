@@ -1,0 +1,90 @@
+﻿@ngdoc overview
+@name Tutorial: Step 0
+@description
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Live Demo}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">Code Diff</td>
+<td id="next_step">{@link tutorial.step_0 Next}</td>
+</tr>
+</table>
+
+You are now ready to build the phone cat application. In this step, you will become familiar with
+the most important source code files, learn how to start the web services, and run the application
+in the browser.
+
+1. Do one of the following:
+
+   * Git users: In the `angular-phonecat` directory, run this command:
+
+               git checkout step-0
+
+   * Snapshot users: In the `[install directory]/sandbox` directory, run this command:
+
+               ./goto_step.sh 0
+
+This resets your workspace to Step 0 of the tutorial app. 
+
+2. To see the app running in a browser, do one of the following:
+   * __For node.js users:__
+       1. In a _separate_ terminal tab or window, run `./scripts/web-server.js` to start the app
+       server.
+       2. Open a browser window for the app and navigate to http://localhost:8000/app/index.html.
+
+   * __For other http servers:__
+       1. Configure the server to serve the files in the `angular-phonecat` directory.
+       2. Run `./scripts/web-server.js` to start the app server.
+       3. Navigate in your browser to
+       http://localhost:[*port-number*]/[*context-path*]/app/index.html.
+
+You can now see the app in the browser. It's not very exciting, but that's OK.
+
+The code that created this app is shown below. You will see that it creates a static HTML page
+that displays "Nothing here yet!"; the code does, however, have everything we need to proceed.
+This bit of code serves as a prototype template, consisting of basic HTML tags with a pair of
+angular-specific attributes. 
+
+__`app/index.html`:__
+<pre>
+<!doctype html>
+<html xmlns:ng="http://angularjs.org/">
+<head>
+  <meta charset="utf-8">
+  <title>my angular app</title>
+  <link rel="stylesheet" href="css/app.css"/>
+</head>
+<body>
+
+  Nothing here yet!
+
+  <script src="lib/angular/angular.js" ng:autobind></script>
+</body>
+</html>
+</pre>
+
+## What is the code doing?
+
+* __... `xmlns:ng="http://angularjs.org"` ...__  This `xmlns` declaration for the `ng` namespace
+must be specified in all angular applications if you use XHTML, or if you are targeting IE
+versions older than 9 (regardless of whether you are using XHTML or HTML).
+
+* __`<script src="lib/angular/angular.js"` ...__ This downloads the `angular.js` script and
+registers a callback that will be executed by the browser when the containing HTML page is fully
+downloaded. When the callback is executed, angular looks for the {@link
+angular.directive.ng:autobind ng:autobind} attribute. If `ng:autobind` is found, it signals
+angular to bootstrap and compile and manage the whole html page.
+
+Now let's go to Step 1 and add some content to the web app.
+
+<table id="tutorial_nav">
+<tr>
+<td id="previous_step">{@link tutorial Previous}</td>
+<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-0/app Live Demo}</td>
+<td id="tut_home">{@link tutorial Tutorial Home}</td>
+<td id="code_diff">Code Diff</td>
+<td id="next_step">{@link tutorial.step_01 Next}</td>
+</tr>
+</table>

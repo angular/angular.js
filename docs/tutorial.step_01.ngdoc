@@ -1,0 +1,69 @@
+﻿@ngdoc overview
+@name Tutorial: Step 1
+@description
+<table id="tutorial_nav">
+  <tr>
+  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Live
+    Demo}</td>
+    <td id="tut_home">{@link tutorial Tutorial Home}</td>
+    <td id="code_diff">
+{@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
+    <td id="next_step">{@link tutorial.step_02 Next}</td>
+  </tr>
+</table>
+
+In this step you will add some basic information about two cell phones to our app.  
+
+1. Do one of the following to reset your workspace to Step 1; be aware that this will throw away
+any changes you might have made to the tutorial files:
+
+  * Git users run:
+
+              git checkout --force step-1
+
+  * Snapshot users run:
+
+              ./goto_step.sh 1
+
+2. Refresh your browser or check the app out on {@link
+http://angular.github.com/angular-phonecat/step-1/app, our server}. Your page now contains a list
+with information about two phones.
+
+The most important changes are listed below. You can see the full diff on {@link
+https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
+
+__`app/index.html`:__
+<pre>
+...
+  <ul>
+    <li>
+      <span>Nexus S<span>
+      <p>
+        Fast just got faster with Nexus S.
+      </p>
+    </li>
+    <li>
+      <span>Motorola XOOM™ with Wi-Fi<span>
+      <p>
+        The Next, Next Generation tablet.
+      </p>
+    </li>
+  </ul>
+...
+</pre>
+
+This addition to your app uses static HTML to display the list. Now, let's go to Step 2 to learn
+how to use angular to dynamically generate the same list.
+
+<table id="tutorial_nav">
+  <tr>
+  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
+    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Live
+    Demo}</td>
+    <td id="tut_home">{@link tutorial Tutorial Home}</td>
+    <td id="code_diff">
+{@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
+    <td id="next_step">{@link tutorial.step_02 Next}</td>
+  </tr>
+</table>
