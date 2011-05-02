@@ -404,8 +404,8 @@ extend(angularValidator, {
    *        error: validation error
    *     },
    *   current: 'current input'
+   *   }
    * }
-   *
    */
   'asynchronous': function(input, asynchronousFn, updateFn) {
     if (!input) return;
