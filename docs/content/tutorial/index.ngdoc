@@ -18,10 +18,10 @@ developing a typical web app. For this tutorial, we modified the angular-seed as
 
 * Removed the example app
 * Added phone images to `app/img/phones`
-* Added phone data files (JSON) to `app/phones`  
+* Added phone data files (JSON) to `app/phones` 
 
-    Note: Using the angular seed app isn't required for building angular apps, but doing so helps
-    you get started quickly and makes the development and testing process much easier. 
+**Note**: Using the angular seed app isn't required for building angular apps, but doing so helps
+you get started quickly and makes the development and testing process much easier. 
 
 When you finish the tutorial you will be able to:
 
@@ -46,36 +46,38 @@ To run the tutorial app and tests on your machine you will need the following:
 
 * A Mac or Linux machine (required by the tutorial scripts, not angular)
 * An http server running on your system. If you don't already have one installed, you can install
-`node.js` ({@link https://github.com/joyent/node/wiki/Installation node.js install}) or another
-http sever (such as Apache, etc.).
-* Java. This is only required for if you want to run tests via JsTestDriver.
+`node.js` ({@link https://github.com/joyent/node/wiki/Installation node.js install guide}) or
+another http sever (such as Apache, etc.).
+* Java. This is required for running tests with JsTestDriver.
 * A web browser.
 * A text editor.
 
-# Using Git
 
-The following instructions are for developers who are comfortable with Git versioning system:
+# Working with the code
+
+There are two ways that you can you follow this tutorial and hack on the code:
+
+## Using Git
+
+The following instructions are for developers who are comfortable with the Git versioning system:
 
 1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
 
 2. Clone the angular-phonecat repository located at {@link
-https://github.com/angular/angular-phonecat angular-phonecat} by running the following command in
-a terminal:
+https://github.com/angular/angular-phonecat GitHub} by running the following command in a terminal:
 
-      git clone git://github.com/angular/angular-phonecat.git
+        git clone git://github.com/angular/angular-phonecat.git
 
    This will create a directory called `angular-phonecat` in the current directory. 
 
 3. Change your current directory to `angular-phonecat`. 
 
-      cd angular-phonecat  
+        cd angular-phonecat  
 
     The tutorial instructions assume you are running all commands from this directory.
 
-Read the Tutorial Navigation section, then navigate to Step 0.
 
-
-# Using Snapshots
+## Using Snapshots
 
 Snapshots are the sets of files that reflect the state of the tutorial app at each step. These
 files include the HTML, CSS, and JavaScript for the app, plus Jasmine JavaScript files and Java
@@ -84,18 +86,21 @@ knowledge of Git.  You can download and install the snapshot files as follows:
 
 1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
 
-2. Navigate to [*the angular server*], download and then unzip [*the snapshot file*] to an
-[*install-dir*].
+2. {@link TODO Download the zip archive} with all files and unzip them into `[tutorial-dir]`
+directory.
 
-3. Change directories to [*install-dir*]/sandbox.
 
-    cd [*install-dir*]/sandbox
+3. Change directories to `[tutorial-dir]/sandbox`.
 
-Read the Tutorial Navigation section, then navigate to step-0.
+        cd [tutorial-dir]/sandbox
+
 
 # Tutorial Navigation
 
 To see the app running on the angular server, click the "Live Demo" link at the top or bottom of
 any tutorial page. To view the code differences between tutorial steps, click the Code Diff link
 at top or bottom of each tutorial page. In the Code Diff, additions are highlighted in green;
-deletions are highlighted in red. 
+deletions are highlighted in red.
+
+
+Let's get going and proceed to {@link tutorial/step_00 step 0}.

@@ -17,18 +17,18 @@ In this step, you will add a clickable phone image swapper to the phone details 
 
 1. Reset your workspace to Step 10 using:
 
-    git checkout --force step-10
+         git checkout --force step-10
 
-or
+  or
 
-    ./goto_step.sh 10
+         ./goto_step.sh 10
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-10/app our server}.
+http://angular.github.com/angular-phonecat/step-10/app angular's server}.
 
 The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
-clicking on the desired thumbnail image. Let's have a look how we can do this with angular.
+clicking on the desired thumbnail image. Let's have a look at how we can do this with angular.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-9...step-10
@@ -56,8 +56,8 @@ function PhoneDetailCtrl($xhr) {
 //PhoneDetailCtrl.$inject = ['$xhr'];
 </pre>
 
-In the `PhoneDetailCtrl` controller, the statement `self.mainImageUrl = response.images[0];`
-creates the `mainImageUrl` model property and set its default value to the first phone image url.
+In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
+default value to the first phone image url.
 
 We also created a `setImage` controller method to change the value of `mainImageUrl`.
 
@@ -80,7 +80,7 @@ __`app/partials/phone-detail.html`:__
 
 We bound the `ng:src` attribute of the large image to the `mainImageUrl` property.
 
-We also registered an `{@link angular.directive.ng:click ng:click}` handler with thumbnail images.
+We also registered an {@link angular.directive.ng:click `ng:click`} handler with thumbnail images.
 When a user clicks on one of the thumbnail images, the handler will use the `setImage` controller
 method to change the value of the `mainImageUrl` property to the url of the thumbnail image.
 
@@ -122,8 +122,31 @@ can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
 angular's server}.
 
+# Experiments
 
-With the phone image swapper in place, we're ready for Step 11 (the last step!) to learn an even
+* Let's add a new controller method to `PhoneCatCtrl`:
+
+          this.hello(name) = function(name) {
+              alert('Hello ' + (name || 'world') + '!');
+          }
+
+  and add:
+
+          <button ng:click="hello('Elmo')">Hello</button>
+
+  to the `index.html` template.
+
+  The controller methods are inherited between controllers/scopes, so you can use the same snippet
+  in the `phone-list.html` template as well.
+
+* Move the `hello` method from `PhoneCatCtrl` to `PhoneListCtrl` and you'll see that the button
+declared in `index.html` will stop working, while the one declared in the `phone-list.html`
+template remains operational.
+
+
+# Summary
+
+With the phone image swapper in place, we're ready for step 11 (the last step!) to learn an even
 better way to fetch data.
 
 <table id="tutorial_nav">

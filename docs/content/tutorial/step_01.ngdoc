@@ -15,7 +15,7 @@
 
 In this step you will add some basic information about two cell phones to our app.  
 
-1. Do one of the following to reset your workspace to Step 1; be aware that this will throw away
+1. Do one of the following to reset your workspace to step 1; be aware that this will throw away
 any changes you might have made to the tutorial files:
 
   * Git users run:
@@ -27,8 +27,8 @@ any changes you might have made to the tutorial files:
               ./goto_step.sh 1
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-1/app, our server}. Your page now contains a list
-with information about two phones.
+http://angular.github.com/angular-phonecat/step-1/app anglar's server}. The page now contains a
+list with information about two phones.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-0...step-1 GitHub}:
@@ -53,7 +53,16 @@ __`app/index.html`:__
 ...
 </pre>
 
-This addition to your app uses static HTML to display the list. Now, let's go to Step 2 to learn
+# Experiments
+
+* Try adding more static html to `index.html`. For example: 
+
+            <p>Total number of phones: 3</p>
+
+
+# Summary
+
+This addition to your app uses static HTML to display the list. Now, let's go to step 2 to learn
 how to use angular to dynamically generate the same list.
 
 <table id="tutorial_nav">

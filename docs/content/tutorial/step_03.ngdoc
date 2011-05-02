@@ -20,15 +20,15 @@ eye on it, and quickly detects regressions.
 
 1. Reset your workspace to Step 3 using:
 
-     git checkout --force step-3
+         git checkout --force step-3
 
- or
+  or
 
-     ./goto_step.sh 3
+         ./goto_step.sh 3
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-3/app our server}. The app now has a search box.
-The phone list on the page changes depending on what a user types into the search box.
+http://angular.github.com/angular-phonecat/step-3/app angular's server}. The app now has a search
+box. The phone list on the page changes depending on what a user types into the search box.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-2...step-3
@@ -71,15 +71,15 @@ sync.
   When changes to the data model cause the repeater's input to change, the repeater efficiently
   updates the DOM to reflect the current state of the model.
 
-* Use of `$filter`. The `{@link angular.Array.filter $filter}` method, uses the `query` value, to
+* Use of `$filter`. The {@link angular.Array.filter $filter} method, uses the `query` value, to
 create a new array that contains only those records that match the `query`.
 
-* `ng:repeat` automatically updates the view in response to the changing number of phones returned
-by the `$filter`. The process is completely transparent to the developer.
+  `ng:repeat` automatically updates the view in response to the changing number of phones returned
+  by the `$filter`. The process is completely transparent to the developer.
 
 ## Test
 
-In Step 2, we learned how to write and run unit tests. Unit tests are perfect for testing
+In step 2, we learned how to write and run unit tests. Unit tests are perfect for testing
 controllers and other components of our application written in JavaScript, but they can't easily
 test DOM manipulation or the wiring of our application. For these, an end-to-end test is a much
 better choice.
@@ -117,17 +117,48 @@ angular's end-to-end test runner}.
 
 To run the end-to-end test, open the following in a new browser tab:
 
-* node.js users: http://localhost:8000/test/e2e/runner.html
+* node.js users: {@link http://localhost:8000/test/e2e/runner.html}
 * users with other http servers:
-http://localhost:[*port-number*]/[*context-path*]/test/e2e/runner.html
-* casual reader: http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html
+`http://localhost:[*port-number*]/[*context-path*]/test/e2e/runner.html`
+* casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
 
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in angular. Although this example is for a simple test, it
 really is that easy to set up any functional, readable, end-to-end test.
 
-Now that you've verified everything, go to Step 4 to learn how to add sorting capability to the
-phone list app. 
+# Experiments
+
+* Display the current value of the `query` model by adding a `{{query}}` binding into the
+`index.html` template, and see how it changes when you type in the input box.
+
+* Change `index.html` to reflect the current search query in the html title by replacing the title
+tag in the head section with: 
+
+          <title>Google Phone Gallery: {{query}}</title>` 
+
+  If you reload the page, you won't see the expected result. This is because the "query" model
+  lives in the scope defined by: 
+
+          <body ng:controller="PhoneListCtrl">
+
+  In order to be able to bind to the query mode from `<title>`, we need to move the
+  `ng:controller` declaration to an element that is a common parent for both the body and title
+  elements.  In our case that's the html element: 
+
+          <html ng:controller="PhoneListCtrl">
+
+* Make the end-to-end test fail by changing the first `toBe(3)` statement to `toBe(4)`, and
+refresh the end-to-end test runner tab in the browser to rerun the test.
+* Add a `wait();` statement into the end-to-end test and rerun it.  You'll see the runner pausing,
+giving you the opportunity to explore the state of your application displayed in the browser. The
+app is live! Change the search query to prove it. This is great for troubleshooting end-to-end
+tests.
+
+
+# Summary
+
+With full text search under our belt and a test to verify it, let's go to step 4 to learn how to
+add sorting capability to the phone app. 
 
 <table id="tutorial_nav">
 <tr>

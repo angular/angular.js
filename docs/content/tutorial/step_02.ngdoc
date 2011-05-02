@@ -21,16 +21,17 @@ of {@link http://en.wikipedia.org/wiki/Model–View–Controller the MVC design 
 the code and separate concerns. With that in mind, let's use a little angular and JavaScript to
 add Model, View, and Controller components to our app.
 
-1. Reset your workspace to Step 2 using:
+1. Reset your workspace to step 2 using:
 
-      git checkout --force step-2
-  or
+          git checkout --force step-2
 
-      ./goto_step.sh 2
+   or
+
+          ./goto_step.sh 2
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-2/app our server}. The app now contains a list
-with 3 phones.
+http://angular.github.com/angular-phonecat/step-2/app angular's server}. The app now contains a
+list with 3 phones.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-1...step-2 GitHub}:
@@ -67,9 +68,9 @@ and `{{phone.snippet}}`:
     `<li>` tag as the template. 
 
     * The curly braces around `phone.name` and `phone.snippet` are an example of {@link
-    angular.markup angular markup}. The curly braces are shorthand for the angular directive
-    {@link angular.directive.ng:bind ng:bind}. They indicate to angular that these are template
-    binding points. Binding points are locations in the template where angular creates
+    angular.markup angular markup}. The curly markup is shorthand for the angular directive {@link
+    angular.directive.ng:bind ng:bind}. `ng:bind` directives indicates to angular that these are
+    template binding points. Binding points are locations in the template where angular creates
     data-binding between the View and the Model. In angular, the View is a projection of the Model
     through the HTML template. This means that whenever the model changes, angular refreshes the
     appropriate binding points, which updates the view.
@@ -102,7 +103,7 @@ data, and logic components:
     (`PhoneListCtrl`). 
     * We instantiated our data within the scope of our controller function, and our template
     binding points are located within the block bounded by the `<body
-    ng:controller="PhoneListCtrl>` tag.
+    ng:controller="PhoneListCtrl">` tag.
 
     Angular uses scopes, along with the information contained in the template, data model, and
     controller to keep the Model and View separated but in sync: any changes to the model are
@@ -139,26 +140,59 @@ writing tests. Although Jasmine is not required by angular, we used it to write 
 tutorial. You can learn about Jasmine on the {@link http://pivotal.github.com/jasmine/ Jasmine
 home page} and on the {@link https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
 
-angular-seed project is pre-configured to run all unit tests using {@link
+The angular-seed project is pre-configured to run all unit tests using {@link
 http://code.google.com/p/js-test-driver/ JsTestDriver}. To run the test, do the following:
 
-       1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
-       `./scripts/test-server.sh` to start the test web server.
+1. In a _separate_ terminal window or tab, go to the `angular-phonecat` directory and run
+`./scripts/test-server.sh` to start the test web server.
 
-       2. Open a new browser tab or window, navigate to http://localhost:9876, and choose "strict
-       mode". At this point, you can leave this tab open and forget about it. JsTestDriver will
-       use it to execute our tests and report the results in the terminal.
+2. Open a new browser tab or window, navigate to http://localhost:9876, and choose "strict mode".
+At this point, you can leave this tab open and forget about it. JsTestDriver will use it to
+execute our tests and report the results in the terminal.
 
-       3. Execute the test by running `./scripts/test.sh`
+3. Execute the test by running `./scripts/test.sh`
 
-You should see the following or similar output:
+   You should see the following or similar output:
 
-    Chrome: Runner reset.
-    .
-    Total 1 tests (Passed: 1; Fails: 0; Errors: 0) (2.00 ms)
-      Chrome 11.0.696.57 Mac OS: Run 1 tests (Passed: 1; Fails: 0; Errors 0) (2.00 ms)
+             Chrome: Runner reset.
+             .
+             Total 1 tests (Passed: 1; Fails: 0; Errors: 0) (2.00 ms)
+               Chrome 11.0.696.57 Mac OS: Run 1 tests (Passed: 1; Fails: 0; Errors 0) (2.00 ms)
 
-Yay! The test passed! Now, let's go to Step 3 to learn how to add full text search to the app.
+  Yay! The test passed! 
+
+# Experiments
+
+* Add another binding to `index.html`.  For example: 
+
+          <p>Total number of phones: {{phones.length}}</p>
+
+* Create a new model property in the controller and bind to it from the template.  For example:
+
+          this.hello = "Hello, World!" 
+
+* Create a repeater that constructs a simple table:
+
+          <table>
+            <tr><th>row number</th></tr>
+            <tr ng:repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i}}</td></tr>
+          </table>
+
+  Now, make the list 1-based by incrementing `i` by one in the binding:
+
+          <table>
+            <tr><th>row number</th></tr>
+            <tr ng:repeat="i in [0, 1, 2, 3, 4, 5, 6, 7]"><td>{{i+1}}</td></tr>
+          </table>
+
+* Make the unit test fail by changing the `toBe(3)` statement to `toBe(4)`, and rerun the
+`./scripts/test.sh` script.
+
+
+# Summary
+
+You now have a dynamic app that features separate model, view, and controller components, and
+you're testing as you go. Now, let's go to step 3 to learn how to add full text search to the app.
 
 
 <table id="tutorial_nav">

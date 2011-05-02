@@ -20,15 +20,16 @@ the `PhoneListCtrl` controller.
 
 1. Reset your workspace to Step 5 using:
 
-   git checkout --force step-5
+         git checkout --force step-5
 
-or
+  or
 
-   ./goto_step.sh 5
+         ./goto_step.sh 5
+
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-5/app our server}. You should now see a list of 20
-phones.
+http://angular.github.com/angular-phonecat/step-5/app angular's server}. You should now see a list
+of 20 phones.
 
 
 The most important changes are listed below. You can see the full diff on {@link
@@ -166,45 +167,57 @@ in the production code behind the scenes.
 
 To create the controller in the test environment, do the following:
 
-    * Create a root scope object by calling `angular.scope()`
+* Create a root scope object by calling `angular.scope()`
 
-    * Call `scope.$new(PhoneListCtrl)` to get angular to create the child scope associated with
-    the `PhoneListCtrl` controller.
+* Call `scope.$new(PhoneListCtrl)` to get angular to create the child scope associated with the
+`PhoneListCtrl` controller.
 
 Because our code now uses the `$xhr` service to fetch the phone list data in our controller,
 before we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an
 incoming request from the controller. To do this we:
 
-    * Use the `{@link angular.scope.$service $service}` method to retrieve the `$browser` service,
-    a service that angular uses to represent various browser APIs. In tests, angular automatically
-    uses a mock version of this service that allows you to write tests without having to deal with
-    these native APIs and the global state associated with them.
+* Use the {@link angular.scope.$service `$service`} method to retrieve the `$browser` service, a
+service that angular uses to represent various browser APIs. In tests, angular automatically uses
+a mock version of this service that allows you to write tests without having to deal with these
+native APIs and the global state associated with them.
 
-    * We use the `$browser.expectGET` method to train the `$browser` object to expect an incoming
-    HTTP request and tell it what to respond with. Note that the responses are not returned before
-    we call the `$browser.xhr.flush()` method.
+* We use the `$browser.expectGET` method to train the `$browser` object to expect an incoming HTTP
+request and tell it what to respond with. Note that the responses are not returned before we call
+the `$browser.xhr.flush` method.
 
-    * We then make assertions to verify that the `phones` model doesn't exist on the scope, before
-    the response is received.
+* We then make assertions to verify that the `phones` model doesn't exist on the scope, before the
+response is received.
 
-    * We flush the xhr queue in the browser by calling `$browser.xhr.flush()`. This causes the
-    callback we passed into the `$xhr` service to be executed with the trained response.
+* We flush the xhr queue in the browser by calling `$browser.xhr.flush()`. This causes the
+callback we passed into the `$xhr` service to be executed with the trained response.
 
-    * Finally, we make the assertions, verifying that the phone model now exists on the scope.
+* Finally, we make the assertions, verifying that the phone model now exists on the scope.
 
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
 
-   Chrome: Runner reset.
-   ..
-   Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
-     Chrome 11.0.696.57 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+       Chrome: Runner reset.
+       ..
+       Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
+         Chrome 11.0.696.57 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
 
+
+# Experiments
+
+* At the bottom of `index.html`, add a `{{phones}}` binding to see the list of phones displayed in
+json format.
+
+* In the `PhoneListCtrl` controller, pre-process the xhr response by limiting the number of phones
+to the first 5 in the list.  Use the following code in the xhr callback: 
+
+         self.phones = response.splice(0, 5);
+
+
+# Summary
 
 Now that you have learned how easy it is to use angular services (thanks to angular's
-implementation of dependency injection), go to Step 6, where you will add some thumbnail images of
+implementation of dependency injection), go to step 6, where you will add some thumbnail images of
 phones and some links.
-
 
 <table id="tutorial_nav">
 <tr>

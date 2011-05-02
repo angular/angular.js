@@ -19,15 +19,15 @@ about the phones in the catalog.
 
 1. Reset your workspace to Step 6 using:
 
-  git checkout --force step-6
+         git checkout --force step-6
 
-or
+  or
 
-  ./goto_step.sh 6
+         ./goto_step.sh 6
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-6/app our server}. You should now see links and
-images of the phones in the list.
+http://angular.github.com/angular-phonecat/step-6/app angular's server}. You should now see links
+and images of the phones in the list.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-5...step-6
@@ -102,7 +102,17 @@ can see them running on {@link
 http://angular.github.com/angular-phonecat/step-6/test/e2e/runner.html
 angular's server}.
 
-Now that you have added phone images and links, go to Step 7 to learn about angular layout
+# Experiments
+
+* Replace the `ng:src` directive with a plain old `<src>` attribute, and using tools such as
+Firebug, or Chrome's Web Inspector, or by inspecting the webserver access logs, confirm that the
+app is indeed making an extraneous request to `/app/%7B%7Bphone.imageUrl%7D%7D` (or
+`/app/index.html/{{phone.imageUrl}}`).
+
+
+# Summary
+
+Now that you have added phone images and links, go to step 7 to learn about angular layout
 templates and how angular makes it easy to create applications that have multiple views.
 
 

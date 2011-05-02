@@ -17,14 +17,14 @@ In this step, you will improve the way our app fetches data.
 
 1. Reset your workspace to Step 11 using:
 
-    git checkout --force step-11
+         git checkout --force step-11
 
-or
+  or
 
-    ./goto_step.sh 11
+         ./goto_step.sh 11
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-11/app our server}.
+http://angular.github.com/angular-phonecat/step-11/app angular's server}.
 
 
 The last improvement we will make to our app is to define a custom service that represents a
@@ -65,7 +65,7 @@ service - 'Phone' - and a factory function. The factory function is similar to a
 constructor in that both can declare dependencies via function arguments. The Phone service
 declared a dependency on the `$resource` service.
 
-The `{@link angular.service.$resource $resource}` service makes it easy to create a {@link
+The {@link angular.service.$resource `$resource`} service makes it easy to create a {@link
 http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client with just a few lines
 of code. This client can then be used in our application, instead of the lower-level `$xhr`
 service.
@@ -124,8 +124,6 @@ view will automatically update.
 Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
 we require, so in these cases, we can add a callback to process the server response. The
 `PhoneDetailCtrl` controller illustrates this by setting the `mainImageUrl` in a callback. 
-
-   
 
 
 ## Test
@@ -210,30 +208,16 @@ describe('PhoneCat controllers', function() {
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
 
-   Chrome: Runner reset.
-   ....
-   Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
-     Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
+       Chrome: Runner reset.
+       ....
+       Total 4 tests (Passed: 4; Fails: 0; Errors: 0) (3.00 ms)
+         Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
+
+# Summary
 
 There you have it!  We have created a web app in a relatively short amount of time.
 
-## Closing Notes:
-
-* For more details and examples of the angular concepts we touched on in this tutorial, see the
-{@link guide Developer Guide}.
-
-* For several more examples of code, see the {@link cookbook Cookbook}.
-
-* When you are ready to start developing a project using angular, we recommend that you bootstrap
-your development with the {@link https://github.com/angular/angular-seed angular seed} project.
-
-* We hope this tutorial was useful to you and that you learned enough about angular to make you
-want to learn more. We especially hope you are inspired to go out and develop angular web apps of
-your own, and that you might be interested in {@link contribute contributing} to angular. 
-
-* If you have questions or feedback or just want to say "hi", please post a message at
-https://groups.google.com/forum/#!forum/angular.
 
 <table id="tutorial_nav">
 <tr>

@@ -12,23 +12,23 @@ Diff}</td>
 </tr>
 </table>
 
-In this step, you will add a feature to let your users select the order of the items in the phone
+In this step, you will add a feature to let your users control the order of the items in the phone
 list. The dynamic ordering is implemented by creating a new model property, wiring it together
 with the repeater, and letting the data binding magic do the rest of the work.
 
 
 1. Reset your workspace to Step 4 using:
 
-    git checkout --force step-4
+         git checkout --force step-4
 
-or
+  or
 
-    ./goto_step.sh 4
+         ./goto_step.sh 4
 
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-4/app our server}. You should see that in addition
-to the search box, the app displays a drop down menu that allows users to control the order in
-which the phones are listed.
+http://angular.github.com/angular-phonecat/step-4/app angular's server}. You should see that in
+addition to the search box, the app displays a drop down menu that allows users to control the
+order in which the phones are listed.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-3...step-4
@@ -67,13 +67,14 @@ In the `index.html` template we made the following changes:
 * First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
 two provided sorting options.
 
-* We then chained the `$filter` method with `{@link angular.Array.orderBy $orderBy}` method to
-further process the input into the repeater.
+* We then chained the `$filter` method with {@link angular.Array.orderBy `$orderBy`} method to
+further process the input into the repeater. `$orderBy` is a utility method similar to {@link
+angular.Array.filter `$filter`}, but instead of filtering an array, it reorders it.
 
 Angular creates a two way data-binding between the select element and the `orderProp` model.
 `orderProp` is then used as the input for the `$orderBy` method.
 
-As we discussed in the section about data-binding and the repeater in Step 3, whenever the model
+As we discussed in the section about data-binding and the repeater in step 3, whenever the model
 changes (for example because a user changes the order with the select drop down menu), angular's
 data-binding will cause the view to automatically update. No bloated DOM manipulation code is
 necessary! 
@@ -108,6 +109,12 @@ record. This property is used to order phones by age.
 not set the default value here, angular would have used the value of the first `<option>` element
 (`'name'`) when it initialized the data model.
 
+  This is a good time to talk about two-way data-binding. Notice that when the app is loaded in
+  the browser, "Newest" is selected in the drop down menu. This is because we set `orderProp` to
+  `'age'` in the controller. So the binding works in the direction from our model to the UI. Now
+  if you select "Alphabetically" in the drop down menu, the model will be updated as well and the
+  phones will be reordered. That is the data-binding doing its job in the opposite direction —
+  from the UI to the model.
 
 
 
@@ -118,7 +125,6 @@ the unit test first.
 
 __`test/unit/controllerSpec.js`:__
 <pre>
-/* jasmine specs for controllers go here */
 describe('PhoneCat controllers', function() {
 
   describe('PhoneListCtrl', function(){
@@ -150,10 +156,10 @@ shared by all tests in the nearest `describe` block.
 To run the unit tests, once again execute the `./scripts/test.sh` script and you should see the
 following output.
 
-    Chrome: Runner reset.
-    ..
-    Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
-      Chrome 11.0.696.57 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
+        Chrome: Runner reset.
+        ..
+        Total 2 tests (Passed: 2; Fails: 0; Errors: 0) (3.00 ms)
+          Chrome 11.0.696.57 Mac OS: Run 2 tests (Passed: 2; Fails: 0; Errors 0) (3.00 ms)
 
 
 Let's turn our attention to the end-to-end test.
@@ -185,7 +191,18 @@ can see them running on {@link
 http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html
 angular's server}.
 
-Now that you have added list sorting and tested the app, go to Step 5 to learn about angular
+# Experiments
+
+* In the `PhoneListCtrl` controller, remove the statement that sets the `orderProp` value and
+you'll see that the ordering as well as the current selection in the dropdown menu will default to
+"Alphabetical".
+
+* Add an `{{orderProp}}` binding into the `index.html` template to display its current value as
+text.
+
+# Summary
+
+Now that you have added list sorting and tested the app, go to step 5 to learn about angular
 services and how angular uses dependency injection.
 
 
