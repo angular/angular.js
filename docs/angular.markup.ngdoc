@@ -4,39 +4,41 @@
 
 @description
 #Overview
-Markups allow the angular compiler to transform content of DOM elements or portions of this content
-into other text or DOM elements for further compilation. Markup extensions do not themselves produce
-linking functions. Think of markup as a way to produce shorthand for a {@link angular.widget widget}
- or a {@link angular.directive directive}.
+Markups allow the angular compiler to transform the content of DOM elements (or portions of the 
+content) into other text or DOM elements for further compilation. Markup extensions do not 
+themselves produce linking functions. Think of markup as a way to produce shorthand for a {@link 
+angular.widget widget} or a {@link angular.directive directive}.
 
-#`{{}}` (double curly) built-in markup
-`{{}}` markup is a built-in markup, which translates the enclosed expression into an
-{@link angular.directive.ng:bind ng:bind} directive. It simply transforms
+# The Double Curly Braces Markup
+The `{{ }}` markup is built-in to angular. It translates an enclosed expression into an
+{@link angular.directive.ng:bind ng:bind} directive:
 
 <pre>
 {{expression}}
 </pre>
 
-to:
+is translated to:
 
 <pre>
 <span ng:bind="expression"></span>
 </pre>
 
-For example `{{1+2}}` is easier to write and understand than `<span ng:bind="1+2"></span>`. The
+For example, `{{1+2}}` is easier to write and understand than `<span ng:bind="1+2"></span>`. The
 expanded elements are then {@link guide.compiler compiled} normally.
 
-# Custom markup
+# Custom Markup
 Let's say you want to define this shorthand for a horizontal rule: `---` for `<hr/>`.
 
-In other words, this HTML:
+In other words, you want this HTML:
+
 <pre>
 header
 ---
 footer
 </pre>
 
-should translate to:
+to translate to:
+
 <pre>
 header
 <hr/>
@@ -60,7 +62,7 @@ angular.markup('---', function(text, textNode, parentElement) {
 });
 </pre>
 
-Unlike {@link angular.widget widgets} and {@link angular.directive directives}, in which the
-compiler matches the name of handler function to a DOM element or attribute name, for markup the
-compiler calls every markup handler for every text node, giving the handler a chance to transform
-the text. The markup handler needs to find all the matches in the text.
+For {@link angular.widget widgets} and {@link angular.directive directives}, the compiler matches 
+the name of the handler function to a DOM element or attribute name.  But for markup, the compiler 
+calls every markup handler for every text node, giving the handler a chance to transform the text. 
+The markup handler needs to find all the matches in the text.

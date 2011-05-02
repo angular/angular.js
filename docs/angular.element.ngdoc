@@ -4,7 +4,7 @@
 @function
 
 @description
-Wraps a raw DOM element or HTML string as [jQuery](http://jquery.com) element.
+Wraps a raw DOM element or HTML string as a [jQuery](http://jquery.com) element.
 `angular.element` is either an alias for [jQuery](http://api.jquery.com/jQuery/) function if
 jQuery is loaded or a function that wraps the element or string in angular's jQuery lite
 implementation.
@@ -40,8 +40,7 @@ raw DOM references.
 - [text()](http://api.jquery.com/text/)
 - [trigger()](http://api.jquery.com/trigger/)
 
-## Additionally these methods extend the jQuery and  are available in both jQuery and jQuery lite
-version:
+## These methods extend jQuery and are available in both jQuery and jQuery lite versions:
 
 - `scope()` - retrieves the current angular scope of the element.
 
