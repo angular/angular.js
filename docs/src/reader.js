@@ -43,6 +43,7 @@ function findNgDocInDir(directory, docNotify) {
       fs.stat(directory + '/' + file, docNotify.waitFor(function(err, stats){
         if (err) return this.error(err);
         if (stats.isFile()) {
+          if (!file.match(/\.ngdoc$/)) return;
           console.log('reading', directory + '/' + file, '...');
           fs.readFile(directory + '/' + file, docNotify.waitFor(function(err, content){
             if (err) return this.error(err);
