@@ -20,16 +20,18 @@ Route.prototype = {
     params = params || {};
     forEach(this.urlParams, function(_, urlParam){
       encodedVal = encodeUriSegment(params[urlParam] || self.defaults[urlParam] || "");
-      url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
+      if (encodedVal)
+        url = url.replace(new RegExp(":" + urlParam + "(\\W)"), encodedVal + "$1");
+      else
+        url = url.replace(new RegExp("/?:" + urlParam + "(\\W)"), "$1");
     });
-    url = url.replace(/\/?#$/, '');
+    url = url.replace(/#$/, '');
     var query = [];
     forEachSorted(params, function(value, key){
       if (!self.urlParams[key]) {
         query.push(encodeUriQuery(key) + '=' + encodeUriQuery(value));
       }
     });
-    url = url.replace(/\/*$/, '');
     return url + (query.length ? '?' + query.join('&') : '');
   }
 };
