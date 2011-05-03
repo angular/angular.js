@@ -101,16 +101,15 @@ describe('browser', function(){
 
     it('should set headers for all requests', function(){
       var code, response, headers = {};
-      browser.xhr('METHOD', 'URL', 'POST', function(c,r){
+      browser.xhr('GET', 'URL', 'POST', function(c,r){
         code = c;
         response = r;
       }, {'X-header': 'value'});
 
-      expect(xhr.method).toEqual('METHOD');
+      expect(xhr.method).toEqual('GET');
       expect(xhr.url).toEqual('URL');
       expect(xhr.post).toEqual('POST');
       expect(xhr.headers).toEqual({
-        "Content-Type": "application/x-www-form-urlencoded",
         "Accept": "application/json, text/plain, */*",
         "X-Requested-With": "XMLHttpRequest",
         "X-header":"value"
@@ -124,9 +123,27 @@ describe('browser', function(){
       expect(code).toEqual(202);
       expect(response).toEqual('RESPONSE');
     });
+    
+    it('should not set Content-type header for GET requests', function() {
+      browser.xhr('GET', 'URL', 'POST-DATA', function(c, r) {});
 
+      expect(xhr.headers['Content-Type']).not.toBeDefined();
+    });
+
+    it('should set Content-type header for POST requests', function() {
+      browser.xhr('POST', 'URL', 'POST-DATA', function(c, r) {});
+
+      expect(xhr.headers['Content-Type']).toBeDefined();
+      expect(xhr.headers['Content-Type']).toEqual('application/x-www-form-urlencoded');
+    });
+
+    it('should set default headers for custom methods', function() {
+      browser.xhr('CUSTOM', 'URL', 'POST-DATA', function(c, r) {});
+
+      expect(xhr.headers['Accept']).toEqual('application/json, text/plain, */*');
+      expect(xhr.headers['X-Requested-With']).toEqual('XMLHttpRequest');
+    });
   });
-
 
   describe('defer', function() {
     it('should execute fn asynchroniously via setTimeout', function() {
