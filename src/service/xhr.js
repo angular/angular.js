@@ -16,7 +16,7 @@
  * {@link angular.service.$browser $browser.xhr()} and adds error handling and security features.
  * While $xhr service provides nicer api than raw XmlHttpRequest, it is still considered a lower
  * level api in angular. For a higher level abstraction that utilizes `$xhr`, please check out the
- * {@link angular.service$resource $resource} service.
+ * {@link angular.service.$resource $resource} service.
  *
  * # Error handling
  * All XHR responses with response codes other then `2xx` are delegated to
