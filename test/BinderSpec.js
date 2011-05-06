@@ -40,8 +40,8 @@ describe('Binder', function(){
   });
 
   it('ChangingRadioUpdatesModel', function(){
-    var scope = this.compile('<input type="radio" name="model.price" value="A" checked>' +
-          '<input type="radio" name="model.price" value="B">');
+    var scope = this.compile('<div><input type="radio" name="model.price" value="A" checked>' +
+          '<input type="radio" name="model.price" value="B"></div>');
     scope.$eval();
     assertEquals(scope.model.price, 'A');
   });
