@@ -6,7 +6,7 @@ function DocsController($location, $browser, $window) {
   this.$location = $location;
 
   if (!HAS_HASH.test($location.href)) {
-    $location.hashPath = '!angular';
+    $location.hashPath = '!api/angular';
   }
 
   this.$watch('$location.hashPath', function(hashPath) {
