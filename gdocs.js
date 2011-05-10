@@ -38,9 +38,8 @@ function help(){
 };
 
 
-function fetch(name, url){
-  //https://docs.google.com/feeds/default/private/full/folder%3Afolder_id/contents
-  console.log('fetching a list of docs in collection ' + name + '...');
+function fetch(collection, url){
+  console.log('fetching a list of docs in collection ' + collection + '...');
   request('GET', url, {
         headers: {
           'Gdata-Version': '3.0',
@@ -54,14 +53,14 @@ function fetch(name, url){
           var title = entry.match(/<title>(.*?)<\/title>/)[1];
           if (title.match(/\.ngdoc$/)) {
             var exportUrl = entry.match(/<content type='text\/html' src='(.*?)'\/>/)[1];
-            download(title, exportUrl);
+            download(collection, title, exportUrl);
           }
         });
       }
     );
 }
 
-function download(name, url) {
+function download(collection, name, url) {
   console.log('Downloading:', name, '...');
   request('GET', url + '&exportFormat=txt',
       {
@@ -87,7 +86,7 @@ function download(name, url) {
 
 
         data = data + '\n';
-        fs.writeFileSync('docs/' + name, reflow(data, 100));
+        fs.writeFileSync('docs/content/' + collection + '/' + name, reflow(data, 100));
       }
     );
 }
