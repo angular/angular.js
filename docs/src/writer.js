@@ -70,12 +70,20 @@ function copy(from, to, callback) {
   });
 }
 
-exports.copyDir = function(dir, callback) {
+exports.copyDir = function copyDir(dir, callback) {
   exports.makeDir(OUTPUT_DIR + '/' + dir, callback.waitFor(function(){
     fs.readdir('docs/' + dir, callback.waitFor(function(err, files){
       if (err) return this.error(err);
       files.forEach(function(file){
-        copy('docs/' + dir + '/' + file, OUTPUT_DIR  + '/' + dir + '/' + file, callback.waitFor());
+        var path = 'docs/' + dir + '/' + file;
+        fs.stat(path, callback.waitFor(function(err, stat) {
+          if (err) return this.error(err);
+          if (stat.isDirectory()) {
+            copyDir(dir + '/' + file, callback.waitFor());
+          } else {
+            copy(path, OUTPUT_DIR  + '/' + dir + '/' + file, callback.waitFor());
+          }
+        }));
       });
       callback();
     }));
