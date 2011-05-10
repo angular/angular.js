@@ -5,10 +5,8 @@
 <head>
   <title ng:bind-template="&lt;angular/&gt;: {{partialTitle}}">&lt;angular/&gt;</title>
   <meta name="fragment" content="!">
-  <link rel="stylesheet" href="doc_widgets.css" type="text/css" />
-  <link rel="stylesheet" href="docs.css" type="text/css"/>
-  <link rel="stylesheet" href="syntaxhighlighter/shCore.css" type="text/css"/>
-  <link rel="stylesheet" href="syntaxhighlighter/shThemeDefault.css" type="text/css"/>
+  <link rel="stylesheet" href="docs-combined.css" type="text/css"/>
+  <link rel="stylesheet" href="syntaxhighlighter/syntaxhighlighter-combined.css" type="text/css"/>
   <script>
     /*!
      * $script.js v1.3
@@ -20,14 +18,11 @@
     !function(a,b,c){function w(a,c){var e=b.createElement("script"),f=0;e.onload=e[r]=function(){e[p]&&!!h.test(e[p])||f||(e.onload=e[r]=null,f=1,c())},e.async=1,e.src=a,d.parentNode.insertBefore(e,d)}function t(a,b){s(a,function(a){return!b(a)})}var d=b.getElementsByTagName("script")[0],e={},f={},g={},h=/^i|c/,i={},k="string",l=!1,m,n="push",o="DOMContentLoaded",p="readyState",q="addEventListener",r="onreadystatechange",s=function(a,b){for(m=0,j=a.length;m<j;++m)if(!b(a[m]))return 0;return 1};!b[p]&&b[q]&&(b[q](o,function u(){b.removeEventListener(o,u,l),b[p]="complete"},l),b[p]="loading");var v=function(a,b,d){function o(){if(!--l){e[k]=1,j&&j();for(var a in g)s(a.split("|"),m)&&!t(g[a],m)&&(g[a]=[])}}function m(a){return a.call?a():e[a]}a=a[n]?a:[a];var h=b&&b.call,j=h?b:d,k=h?a.join(""):b,l=a.length;c(function(){t(a,function(a){i[a]?(k&&(f[k]=1),o()):(i[a]=1,k&&(f[k]=1),w(v.path?v.path+a+".js":a,o))})},0);return v};v.get=w,v.ready=function(a,b,c){a=a[n]?a:[a];var d=[];!t(a,function(a){e[a]||d[n](a)})&&s(a,function(a){return e[a]})?b():!function(a){g[a]=g[a]||[],g[a][n](b),c&&c(d)}(a.join("|"));return v};var x=a.$script;v.noConflict=function(){a.$script=x;return this},typeof module!="undefined"&&module.exports?module.exports=v:a.$script=v}(this,document,setTimeout)
     $script([
       'jquery.min.js',
-      'syntaxhighlighter/shCore.js'], function(){
+      'syntaxhighlighter/syntaxhighlighter-combined.js'], function(){
       $script([
-        'syntaxhighlighter/shBrushJScript.js',
-        'syntaxhighlighter/shBrushXml.js',
         '../angular.min.js'], function(){
         $script([
-          'docs.js',
-          'doc_widgets.js',
+          'docs-combined.js',
           'docs-keywords.js'], function(){
              angular.compile(document)();
         });

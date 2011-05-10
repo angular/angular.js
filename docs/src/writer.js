@@ -89,3 +89,16 @@ exports.copyDir = function copyDir(dir, callback) {
     }));
   }));
 };
+
+
+exports.merge = function(srcs, to, callback){
+  merge(srcs.map(function(src) { return 'docs/src/templates/' + src }), OUTPUT_DIR + to, callback);
+};
+
+function merge(srcs, to, callback) {
+  var content = [];
+  srcs.forEach(function (src) {
+    content.push(fs.readFileSync(src));
+  });
+  fs.writeFile(to, content.join('\n'), callback.waitFor());
+}
