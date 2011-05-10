@@ -72,7 +72,6 @@ function download(collection, name, url) {
       function(data){
         data = data.replace('\ufeff', '');
         data = data.replace(/\r\n/mg, '\n');
-        data = data.replace(/^ /mg, '  '); //for some reason gdocs drop first space for indented lines
 
         // strip out all text annotation comments
         data = data.replace(/^\[a\][\S\s]*/m, '');
