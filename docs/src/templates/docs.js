@@ -38,11 +38,16 @@ function DocsController($location, $browser, $window) {
   };
 
   this.selectedSection = function(section) {
-    return section == self.sectionId ? 'selected' : null;
+    return section == self.sectionId ? 'current' : '';
   };
+
+  this.selectedPartial = function(partial) {
+    return partial.id == self.partialId ? 'current' : '';
+  }
 
   this.afterPartialLoaded = function() {
     SyntaxHighlighter.highlight();
+    window.scrollTo(0,0);
   };
 
   this.getFeedbackUrl = function() {
@@ -59,3 +64,4 @@ angular.widget('code', function(element){
 });
 
 SyntaxHighlighter['defaults'].toolbar = false;
+SyntaxHighlighter['defaults'].gutter = false;

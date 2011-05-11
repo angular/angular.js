@@ -3,6 +3,7 @@
       xmlns:doc="http://docs.angularjs.org/"
       ng:controller="DocsController">
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title ng:bind-template="&lt;angular/&gt;: {{partialTitle}}">&lt;angular/&gt;</title>
   <meta name="fragment" content="!">
   <link rel="stylesheet" href="docs-combined.css" type="text/css"/>
@@ -30,32 +31,58 @@
     });
   </script>
 </head>
-<body style="display:none;" ng:show="true">
-  <div id="header">
-    <h1>
-      <span class="main-title">{{partialTitle}}</span>
-      <a href="#" tabindex="0"><span class="angular">&lt;angular/&gt;</span> Docs</a>
-    </h1>
-    <ul class="navigation">
-      <li ng:class="selectedSection('intro')"><a href="#!intro">Introduction</a></li>
-      <li ng:class="selectedSection('tutorial')"><a href="#!tutorial">Tutorial</a></li>
-      <li ng:class="selectedSection('guide')"><a href="#!guide">Developer Guide</a></li>
-      <li ng:class="selectedSection('api')"><a href="#!api">API Reference</a></li>
-      <li ng:class="selectedSection('cookbook')"><a href="#!cookbook">Cookbook</a></li>
-    </ul>
+
+<body class="twoCol" style="display:none;" ng:show="true">
+  <!--[if lt IE 9]>
+    <div id="oldIePrompt">
+      You are using an old version of Internet Explorer.
+      For better and safer browsing experience please <a href="http://www.microsoft.com/IE9">upgrade IE</a>
+      or install <a href="http://google.com/chrome">Google Chrome browser</a>.
+    </div>
+  <![endif]-->
+  <div class="twoCol" id="container">
+    <div id="navigationHome">
+      <div id="navContainer">
+        <ul class="navContainerStyle">
+          <li><a href="http://angularjs.org/">&lt;angular/&gt;</a></li>
+          <li><a href="#!intro" ng:class="selectedSection('intro')">Introduction</a></li>
+          <li><a href="#!tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
+          <li><a href="#!guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
+          <li><a href="#!api" ng:class="selectedSection('api')">API Reference</a></li>
+          <li><a href="#!cookbook" ng:class="selectedSection('cookbook')">Cookbook</a></li>
+        </ul>
+    </div>
   </div>
   <div id="sidebar">
-    <input type="text" name="search" id="search-box" placeholder="search the docs"
-           tabindex="1" accesskey="s"/>
-    <ul id="api-list">
-      <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
-        <a href="{{getUrl(page)}}" ng:click="" tabindex="2">{{page.shortName}}</a>
-      </li>
-    </ul>
+    <div id="sidebarTop">
+      <input type="text" name="search" id="search-box" placeholder="search the docs"
+             tabindex="1" accesskey="s" size="35"/>
+    </div>
+    <div id="sidebarArea">
+      <div id="sideBarContent1">
+        <ul id="api-list">
+          <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
+            <a href="{{getUrl(page)}}" ng:class="selectedPartial(page)" tabindex="2">{{page.shortName}}</a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
-  <div id="main">
-    <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
-    <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
+
+  <div id="textbox">
+    <div id="textboxTop">
+      <div class=textboxContentHeader>
+        {{partialTitle}}
+        <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
+      </div>
+    </div>
+    <div id="devguide_header"></div>
+      <div id="textbox_content">
+        <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
+      </div>
+    </div>
+    <br class="clearFloat" />
+    <div id="twoColFooter">© 2010-2011 angular</div>
   </div>
 </body>
 </html>
