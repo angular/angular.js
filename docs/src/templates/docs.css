@@ -49,18 +49,6 @@ p {
     text-indent: 10px;
 }
 
-ul {
-    font-size: 14px;
-    line-height: 22px;
-    list-style: url(img/bullet.png) outside;
-    padding-left: 25px;
-}
-
-li {
-    line-height: 22px;
-    list-style: url(img/bullet.png) outside;
-}
-
 
 /*----- Global Layout -----*/
 
@@ -230,6 +218,12 @@ li {
     position: relative;
     padding-left: 10px;
 
+}
+
+#sideBarContent1 ul {
+    font-size: 14px;
+    line-height: 22px;
+    padding-left: 25px;
 }
 
 #sideBarContent1 a.current {
@@ -700,7 +694,9 @@ li {
 }
 
 div.syntaxhighlighter {
-  overflow: hidden !important;
+/*  overflow: hidden !important; */
+  border-left: 3px solid green;
+  padding-left: 1em;
 }
 
 #liveExText h3 {
