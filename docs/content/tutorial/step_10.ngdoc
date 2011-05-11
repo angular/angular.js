@@ -7,35 +7,46 @@
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Live Demo
 }</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-9...step-10
-Code Diff}</td>
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-9...step-10 Code
+Diff}</td>
 <td id="next_step">{@link tutorial.step_11 Next}</td>
 </tr>
 </table>
 
+
 In this step, you will add a clickable phone image swapper to the phone details page.
+
 
 1. Reset your workspace to Step 10 using:
 
-         git checkout --force step-10
+
+         git checkout -f step-10
+
 
   or
 
+
          ./goto_step.sh 10
+
 
 2. Refresh your browser or check the app out on {@link
 http://angular.github.com/angular-phonecat/step-10/app angular's server}.
 
+
 The phone details view displays one large image of the current phone and several smaller thumbnail
 images. It would be great if we could replace the large image with any of the thumbnails just by
 clicking on the desired thumbnail image. Let's have a look at how we can do this with angular.
+
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-9...step-10
 GitHub}:
 
 
+
+
 ## Controller
+
 
 __`app/js/controllers.js`:__
 <pre>
@@ -43,32 +54,42 @@ __`app/js/controllers.js`:__
 function PhoneDetailCtrl($xhr) {
   var self = this;
 
+
   $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
     self.phone = response;
-    self.mainImageUrl = response.images[0];
+    self.mainImageUrl = response.images;
   });
+
 
   self.setImage = function(imageUrl) {
     self.mainImageUrl = imageUrl;
   }
 }
 
+
 //PhoneDetailCtrl.$inject = ['$xhr'];
 </pre>
+
 
 In the `PhoneDetailCtrl` controller, we created the `mainImageUrl` model property and set its
 default value to the first phone image url.
 
+
 We also created a `setImage` controller method to change the value of `mainImageUrl`.
 
 
+
+
 ## Template
+
 
 __`app/partials/phone-detail.html`:__
 <pre>
 <img ng:src="{{mainImageUrl}}" class="phone"/>
 
+
 ...
+
 
 <ul class="phone-thumbs">
   <li ng:repeat="img in phone.images">
@@ -78,27 +99,38 @@ __`app/partials/phone-detail.html`:__
 ...
 </pre>
 
+
 We bound the `ng:src` attribute of the large image to the `mainImageUrl` property.
+
 
 We also registered an {@link angular.directive.ng:click `ng:click`} handler with thumbnail images.
 When a user clicks on one of the thumbnail images, the handler will use the `setImage` controller
 method to change the value of the `mainImageUrl` property to the url of the thumbnail image.
 
 
+<img src="img/tutorial/tutorial_10-11_final.png">
+
+
+
 ## Test
+
 
 To verify this new feature, we added two end-to-end tests. One verifies that the main image is set
 to the first phone image by default. The second test clicks on several thumbnail images and
 verifies that the main image changed appropriately.
+
 
 __`test/e2e/scenarios.js`:__
 <pre>
 ...
   describe('Phone detail view', function() {
 
+
     beforeEach(function() {
       browser().navigateTo('../../app/index.html#/phones/nexus-s');
     });
+
+
 
 
     it('should display the first phone image as the main phone image', function() {
@@ -106,9 +138,12 @@ __`test/e2e/scenarios.js`:__
     });
 
 
+
+
     it('should swap main image if a thumbnail image is clicked on', function() {
       element('.phone-thumbs li:nth-child(3) img').click();
       expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.2.jpg');
+
 
       element('.phone-thumbs li:nth-child(1) img').click();
       expect(element('img.phone').attr('src')).toBe('img/phones/nexus-s.0.jpg');
@@ -117,37 +152,50 @@ __`test/e2e/scenarios.js`:__
 });
 </pre>
 
+
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
 angular's server}.
 
+
 # Experiments
 
+
 * Let's add a new controller method to `PhoneCatCtrl`:
+
 
           this.hello(name) = function(name) {
               alert('Hello ' + (name || 'world') + '!');
           }
 
+
   and add:
+
 
           <button ng:click="hello('Elmo')">Hello</button>
 
+
   to the `index.html` template.
 
+
   The controller methods are inherited between controllers/scopes, so you can use the same snippet
-  in the `phone-list.html` template as well.
+in the `phone-list.html` template as well.
+
 
 * Move the `hello` method from `PhoneCatCtrl` to `PhoneListCtrl` and you'll see that the button
 declared in `index.html` will stop working, while the one declared in the `phone-list.html`
 template remains operational.
 
 
+
+
 # Summary
+
 
 With the phone image swapper in place, we're ready for step 11 (the last step!) to learn an even
 better way to fetch data.
+
 
 <table id="tutorial_nav">
 <tr>
@@ -155,8 +203,8 @@ better way to fetch data.
 <td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Live Demo
 }</td>
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-9...step-10
-Code Diff}</td>
+<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-9...step-10 Code
+Diff}</td>
 <td id="next_step">{@link tutorial.step_11 Next}</td>
 </tr>
 </table>

@@ -1,4 +1,4 @@
-﻿@ngdoc overview
+@ngdoc overview
 @name Tutorial: Step 8
 @description
 <table id="tutorial_nav">
@@ -13,103 +13,134 @@ Diff}</td>
 </tr>
 </table>
 
-In this step, you will implement the phone details view, which is displayed when a user clicks on
-a phone in the phone list.
+
+In this step, you will implement the phone details view, which is displayed when a user clicks on a
+phone in the phone list.
+
 
 1. Reset your workspace to Step 8 using:
 
-         git checkout --force step-8
+
+         git checkout -f step-8
+
 
   or
 
+
          ./goto_step.sh 8
 
+
 2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-8/app angular's server}. Now when you click on a
+http://angular.github.com/angular-phonecat/step-8/app angular's server}.
+
+Now when you click on a
 phone on the list, the phone details page with phone-specific information is displayed.
+
 
 To implement the phone details view we will use {@link angular.services.$xhr $xhr} to fetch our
 data, and we'll flesh out the `phone-details.html` view template.
+
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-7...step-8
 GitHub}:
 
+
 ## Data
+
 
 In addition to `phones.json`, the `app/phones/` directory also contains one json file for each
 phone:
+
 
 __`app/phones/nexus-s.json`:__ (sample snippet)
 <pre>
 {
   "additionalFeatures": "Contour Display, Near Field Communications (NFC), Three-axis gyroscope,
-  Anti-fingerprint display coating, Internet Calling support (VoIP/SIP)", 
+Anti-fingerprint display coating, Internet Calling support (VoIP/SIP)",
   "android": {
-      "os": "Android 2.3", 
+      "os": "Android 2.3",
       "ui": "Android"
-  }, 
+  },
   ...
   "images": [
-      "img/phones/nexus-s.0.jpg", 
-      "img/phones/nexus-s.1.jpg", 
-      "img/phones/nexus-s.2.jpg", 
+      "img/phones/nexus-s.0.jpg",
+      "img/phones/nexus-s.1.jpg",
+      "img/phones/nexus-s.2.jpg",
       "img/phones/nexus-s.3.jpg"
-  ], 
+  ],
   "storage": {
-      "flash": "16384MB", 
+      "flash": "16384MB",
       "ram": "512MB"
   }
 }
 </pre>
 
 
+
+
 Each of these files describes various properties of the phone using the same data structure. We'll
 show this data in the phone detail view.
 
 
+
+
 ## Controller
+
 
 We'll expand the `PhoneDetailCtrl` by using the `$xhr` service to fetch the json files. This works
 the same way as the phone list controller.
+
 
 __`app/js/controller.js`:__
 <pre>
 function PhoneDetailCtrl($xhr) {
   var self = this;
 
+
   $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
     self.phone = response;
   });
 }
 
+
 //PhoneDetailCtrl.$inject = ['$xhr'];
 </pre>
 
-To construct the URL for the HTTP request, we use `params.phoneId` extracted from the current
-route in the `PhoneCatCtrl` controller. 
+
+To construct the URL for the HTTP request, we use `params.phoneId` extracted from the current route
+in the `PhoneCatCtrl` controller.
+
+
 
 
 ## Template
 
-The TBD placeholder line has been replaced with lists and bindings that comprise the phone
-details. Note where we use the angular `{{expression}}` markup and `ng:repeater`s to project phone
-data from our model into the view.
+
+The TBD placeholder line has been replaced with lists and bindings that comprise the phone details.
+Note where we use the angular `{{expression}}` markup and `ng:repeater`s to project phone data from
+our model into the view.
+
+
 
 
 __`app/partials/phone-details.html`:__
 <pre>
-<img ng:src="{{phone.images[0]}}" class="phone"/>
+<img ng:src="{{phone.images}}" class="phone"/>
+
 
 <h1>{{phone.name}}</h1>
 
+
 <p>{{phone.description}}</p>
+
 
 <ul class="phone-thumbs">
   <li ng:repeat="img in phone.images">
     <img ng:src="{{img}}"/>
   </li>
 </ul>
+
 
 <ul class="specs">
   <li>
@@ -128,10 +159,15 @@ __`app/partials/phone-details.html`:__
 </pre>
 
 
+<img src="img/tutorial/tutorial_08-09_final.png">
+
+
 ## Test
+
 
 We wrote a new unit test that is similar to the one we wrote for the `PhoneListCtrl` controller in
 step 5.
+
 
 __`test/unit/controllerSpec.js`:__
 <pre>
@@ -141,16 +177,20 @@ __`test/unit/controllerSpec.js`:__
       $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
       ctrl = scope.$new(PhoneDetailCtrl);
 
+
       expect(ctrl.phone).toBeUndefined();
       $browser.xhr.flush();
+
 
       expect(ctrl.phone).toEqual({name:'phone xyz'});
     });
 ...
 </pre>
 
+
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
+
 
         Chrome: Runner reset.
         ...
@@ -158,17 +198,23 @@ output.
           Chrome 11.0.696.57 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
 
 
-We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that
-the heading on the page is "Nexus S".
+
+
+We also added a new end-to-end test that navigates to the Nexus S detail page and verifies that the
+heading on the page is "Nexus S".
+
 
 __`test/e2e/scenarios.js`:__
 <pre>
 ...
   describe('Phone detail view', function() {
 
+
     beforeEach(function() {
       browser().navigateTo('../../app/index.html#/phones/nexus-s');
     });
+
+
 
 
     it('should display nexus-s page', function() {
@@ -179,24 +225,31 @@ __`test/e2e/scenarios.js`:__
 </pre>
 
 
+
+
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-8/test/e2e/runner.html
 angular's server}.
 
+
 # Experiments
 
-* Stretching:
-    * Alternate chin-to-chest with look-at-ceiling.  Repeat eight times.
-    * Now do ear-to-shoulder (left ear to left shoulder, right to right. Caution: do not try left
-    ear to right shoulder!).  Repeat eight times.
-    * Finally, do chin-to-shoulder, left right left right.  Repeat eight times.
+
+* Using the {@link
+https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en&pli=1#
+end-to-end test runner API}, write a test that verifies that we display 4 thumbnail images on the
+Nexus S details page.
+
+
 
 
 # Summary
 
+
 Now that the phone details view is in place, proceed to step 9 to learn how to write your own
 custom display filter.
+
 
 <table id="tutorial_nav">
 <tr>
@@ -209,3 +262,6 @@ Diff}</td>
 <td id="next_step">{@link tutorial.step_09 Next}</td>
 </tr>
 </table>
+
+
+
