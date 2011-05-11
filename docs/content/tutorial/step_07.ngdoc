@@ -1,4 +1,4 @@
-﻿@ngdoc overview
+@ngdoc overview
 @name Tutorial: Step 7
 @description
 <table id="tutorial_nav">
@@ -13,39 +13,55 @@ Diff}</td>
 </tr>
 </table>
 
+
 In this step, you will learn how to create a layout template and how to build an app that has
-multiple views by adding routing. 
+multiple views by adding routing.
 
-1. Reset your workspace to Step 7 using:
 
-         git checkout --force step-7
+1. Reset your workspace to step 7.
+
+
+         git checkout -f step-7
+
 
   or
 
+
          ./goto_step.sh 7
+
 
 2. Refresh your browser, but be sure that there is nothing in the url after `app/index.html`, or
 check the app out on {@link http://angular.github.com/angular-phonecat/step-7/app angular's
-server}. Note that you are redirected to `app/index.html#/phones` and the same phone list appears
+server}.
+
+Note that you are redirected to `app/index.html#/phones` and the same phone list appears
 in the browser. When you click on a phone link the stub of a phone detail page is displayed.
+
+
 
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-6...step-7
 GitHub}:
 
-## What's going on here?
 
-Our app is slowly growing and becoming more complex. Before step 7, the app provided our users
-with a single view (the list of all phones), and all of the template code was located in the
-`index.html` file. The next step in building the app is the addition of a view that will show
-detailed information about each of the devices in our list.  
+
+
+## Multiple Views, Routing and Layout Template
+
+
+Our app is slowly growing and becoming more complex. Before step 7, the app provided our users with
+a single view (the list of all phones), and all of the template code was located in the
+`index.html` file. The next step in building the app is to add a view that will show detailed
+information about each of the devices in our list.
+
 
 To add the detailed view, we could expand the `index.html` file to contain template code for both
 views, but that would get messy very quickly. Instead, we are going to turn the `index.html`
 template into what we call a "layout template". This is a template that is common for all views in
-our application.   Other "partial templates" are then included into this layout template depending
-on the current "route" — the view that is currently displayed to the user.
+our application. Other "partial templates" are then included into this layout template depending on
+the current "route" — the view that is currently displayed to the user.
+
 
 Application routes in angular are declared via the {@link angular.service.$route $route} service.
 This service makes it easy to wire together controllers, view templates, and the current URL
@@ -54,12 +70,16 @@ http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize t
 history (back and forward navigation) and bookmarks.
 
 
+
+
 ## Controllers
+
 
 __`app/js/controller.js`:__
 <pre>
 function PhoneCatCtrl($route) {
   var self = this;
+
 
   $route.when('/phones',
               {template: 'partials/phone-list.html',   controller: PhoneListCtrl});
@@ -67,63 +87,76 @@ function PhoneCatCtrl($route) {
               {template: 'partials/phone-detail.html', controller: PhoneDetailCtrl});
   $route.otherwise({redirectTo: '/phones'});
 
+
   $route.onChange(function(){
     self.params = $route.current.params;
   });
 
+
   $route.parent(this);
 }
+
 
 //PhoneCatCtrl.$inject = ['$route'];
 ...
 </pre>
 
+
 We created a new controller called `PhoneCatCtrl`. We declared its dependency on the `$route`
-service and used this service to declare that our application consists of two different views: 
+service and used this service to declare that our application consists of two different views:
 
-* The phone list view will be shown when the URL hash fragment is `/phone`. To construct this
-view, angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
 
-* The phone details view will be shown when the URL hash fragment matches '/phone/[phoneId]'. To
-construct this view, angular will use the `phone-detail.html` template and the `PhoneDetailCtrl`
-controller.
+* The phone list view will be shown when the URL hash fragment is `/phone`. To construct this view,
+angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
 
-We reused the `PhoneListCtrl` controller for the first view and we added an empty
-`PhoneDetailCtrl` controller to the `app/js/controllers.js` file for the second one.
+
+* The phone details view will be shown when the URL hash fragment matches '/phone/:phoneId', where
+`:phoneId` is a variable part of the URL. To construct the phone details view, angular will use the
+`phone-detail.html` template and the `PhoneDetailCtrl` controller.
+
+
+We reused the `PhoneListCtrl` controller that we constructed in previous steps and we added a new,
+empty `PhoneDetailCtrl` controller to the `app/js/controllers.js` file for the phone details view.
+
 
 The statement `$route.otherwise({redirectTo: '/phones'})` triggers a redirection to `/phones` when
 the browser address doesn't match either of our routes.
 
+
 Thanks to the `$route.parent(this);` statement and `ng:controller="PhoneCatCtrl"` declaration in
 the `index.html` template, the `PhoneCatCtrl` controller has a special role in our app. It is the
-"root" controller or the parent controller for the other two sub-controllers (`PhoneListCtrl` and
+"root" controller and the parent controller for the other two sub-controllers (`PhoneListCtrl` and
 `PhoneDetailCtrl`). The sub-controllers inherit the model properties and behavior from the root
 controller.
 
-Note the use of the `:phoneId` parameter in the second route declaration (`'/phones/:phoneId'`).
-When the current URL matches this route, the `$route` service extracts the `phoneId` string from
-the current URL and provides it to our controller via the `$route.current.params` map. We will use
-the `phoneId` parameter in the `phone-details.html` template thanks to the alias created in the
-{@link angular.service.$route `$route.onChange`} callback.
-        
-In this `onChange` callback, we aliased url parameters extracted from the current route to the
-`params` property in the root scope. This model property is inherited by child scopes created for
-our routes and accessible by their controllers and templates, just like the `phone-list.html`
-template demonstrates.
+
+Note the use of the `:phoneId` parameter in the second route declaration. The `$route` service uses
+the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
+URL. All variables defined with the `:` notation are extracted into the `$route.current.params` map.
+
+
+The `params` alias created in the {@link angular.service.$route `$route.onChange`} callback allows
+us to use the `phoneId` property of this map in the `phone-details.html` template.
+
+
 
 
 ## Template
 
-The `$route` service is usually used in conjunction with the {@link angular.widget.ng:view
-ng:view} widget. The role of the `ng:view` widget is to include the view template for the current
-route into the layout template, which makes it a perfect fit for our `index.html` template.
+
+The `$route` service is usually used in conjunction with the {@link angular.widget.ng:view ng:view}
+widget. The role of the `ng:view` widget is to include the view template for the current route into
+the layout template, which makes it a perfect fit for our `index.html` template.
+
 
 __`app/index.html`:__
 <pre>
 ...
 <body ng:controller="PhoneCatCtrl">
 
+
   <ng:view></ng:view>
+
 
   <script src="lib/angular/angular.js" ng:autobind></script>
   <script src="js/controllers.js"></script>
@@ -131,9 +164,11 @@ __`app/index.html`:__
 </html>
 </pre>
 
+
 Note that we removed most of the code in the `index.html` template and replaced it with a single
 line containing the `ng:view` tag. The code that we removed was placed into the `phone-list.html`
 template:
+
 
 __`app/partials/phone-list.html`:__
 <pre>
@@ -150,6 +185,7 @@ __`app/partials/phone-list.html`:__
   </li>
 </ul>
 
+
 <ul class="phones">
   <li ng:repeat="phone in phones.$filter(query).$orderBy(orderProp)">
     <a href="#/phones/{{phone.id}}">{{phone.name}}</a>
@@ -159,20 +195,30 @@ __`app/partials/phone-list.html`:__
 </ul>
 </pre>
 
+
+<img src="img/tutorial/tutorial_07_final.png">
+
+
 We also added a placeholder template for the phone details view:
+
 
 __`app/partials/phone-list.html`:__
 <pre>
 TBD: detail view for {{params.phoneId}}
 </pre>
 
+
 Note how we are using `params` model defined in the `PhoneCanCtrl` controller.
+
+
 
 
 ## Test
 
+
 To automatically verify that everything is wired properly, we wrote end-to-end tests that navigate
 to various URLs and verify that the correct view was rendered.
+
 
 <pre>
 ...
@@ -182,11 +228,15 @@ to various URLs and verify that the correct view was rendered.
   });
 ...
 
+
  describe('Phone detail view', function() {
+
 
    beforeEach(function() {
       browser().navigateTo('../../app/index.html#/phones/nexus-s');
    });
+
+
 
 
    it('should display placeholder page with phoneId', function() {
@@ -196,29 +246,38 @@ to various URLs and verify that the correct view was rendered.
 </pre>
 
 
+
+
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-7/test/e2e/runner.html
 angular's server}.
 
 
+
+
 # Experiments
+
 
 * Try to add an `{{orderProp}}` binding to `index.html`, and you'll see that nothing happens even
 when you are in the phone list view. This is because the `orderProp` model is visible only in the
 scope managed by `PhoneListCtrl`, which is associated with the `<ng:view>` element. If you add the
 same binding into the `phone-list.html` template, the binding will work as expected.
 
-* In `PhoneCatCtrl`, create a new model called "`firstName`" with `this.hero = 'Zoro'`. In
+
+* In `PhoneCatCtrl`, create a new model called "`hero`" with `this.hero = 'Zoro'`. In
 `PhoneListCtrl` let's shadow it with `this.hero = 'Batman'`, and in `PhoneDetailCtrl` we'll use
-`this.hero = "Captain Proton"`. Then add the `<p>hero = {{hero}}</p>` to all three of our
-templates (`index.html`, `phone-list.html`, and `phone-detail.html`). Open the app and you'll see
-scope inheritance and model property shadowing do some wonders. 
+`this.hero = "Captain Proton"`. Then add the `<p>hero = {{hero}}</p>` to all three of our templates
+(`index.html`, `phone-list.html`, and `phone-detail.html`). Open the app and you'll see scope
+inheritance and model property shadowing do some wonders.
+
 
 # Summary
 
+
 With the routing set up and the phone list view implemented, we're ready to go to step 8 to
 implement the phone details view.
+
 
 <table id="tutorial_nav">
 <tr>
@@ -231,3 +290,6 @@ Diff}</td>
 <td id="next_step">{@link tutorial.step_08 Next}</td>
 </tr>
 </table>
+
+
+

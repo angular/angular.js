@@ -2,105 +2,133 @@
 @name Tutorial
 @description
 
-A great way to get introduced to angular is to work through the {@link tutorial.step_00 angular
-tutorial}, which walks you through the construction of an angular web app. The app you will build
-in the tutorial is loosely based on the {@link http://www.google.com/phone/ Google phone gallery
-app}. The {@link http://angular.github.com/angular-phonecat/step-11/app/#/phones end result of our
-effort} is visually simpler, but demonstrates many of the angular features without distractions in
-the form of CSS code.
 
-The starting point for our tutorial is the {@link https://github.com/angular/angular-seed
-angular-seed project}.
+A great way to get introduced to angular is to work through this tutorial, which walks you through
+the construction of an angular web app. The app you will build is a catalog that displays a list of
+Android devices, lets you filter the list to see only devices that interest you, and then view
+details for any device.
 
-The angular-seed project includes a simple example app, the latest angular libraries, test
-libraries, and scripts. It provides all of these in an environment that is pre-configured for
-developing a typical web app. For this tutorial, we modified the angular-seed as follows:
 
-* Removed the example app
-* Added phone images to `app/img/phones`
-* Added phone data files (JSON) to `app/phones` 
+<img src="img/tutorial/catalog_screen.png">
 
-**Note**: Using the angular seed app isn't required for building angular apps, but doing so helps
-you get started quickly and makes the development and testing process much easier. 
+
+As you work through this tutorial, you will learn how angular makes browsers smarter — without the
+use of extensions or plugins.
+
+
+* You will see examples of how to use client-side data binding and dependency injection to build
+dynamic views of data that change immediately in response to user actions.
+* You will see how Angular creates listeners on your data without the need for DOM manipulation.
+* You will learn a better, easier way to test your web apps.
+* You will learn how to use Angular services to make common web tasks, such as getting data into
+your app, easier.
+
+
+And all of this works in any browser without modifications!
+
 
 When you finish the tutorial you will be able to:
 
-* Create a simple dynamic application that works in any browser
+
+* Create a dynamic application that works in any browser
 * Define the differences between angular and common JavaScript frameworks
 * Understand how data binding works in angular
 * Use the angular-seed project to quickly boot-strap your own projects
 * Create and run tests
 * Identify resources for learning more about angular
 
+
 Mac and Linux users can work through the tutorial, run tests, and experiment with the code using
-Git or the snapshots described below. Windows users will be able follow the tutorial and read
-through the source code and view the application running on our servers at different stages.
+Git or the snapshots described below. Windows users will be able read the tutorial but won't be
+able to run the tests or experiment with the code.
+
 
 You can go through the whole tutorial in a couple of hours or you may want to spend a pleasant day
-really digging into it. In any case, we promise that your time will be well spent!
+really digging into it. If you're looking for a shorter introduction to angular, check out {@link
+http://docs.angularjs.org/#!started started}.
+
+
+
+
+
+
+
 
 <a name="PreReqs"></a>
 # Prerequisites
 
+
 To run the tutorial app and tests on your machine you will need the following:
 
-* A Mac or Linux machine (required by the tutorial scripts, not angular)
-* An http server running on your system. If you don't already have one installed, you can install
-`node.js` ({@link https://github.com/joyent/node/wiki/Installation node.js install guide}) or
-another http sever (such as Apache, etc.).
-* Java. This is required for running tests with JsTestDriver.
+
+* A Mac or Linux machine (required for running the tutorial scripts)
+* An http server running on your system. Mac and Linux machines typically have Apache preinstalled.
+If you don't already have an http server installed, you can install `node.js` ({@link
+https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager node.js install guide})
+or another http sever.
+* {@link http://java.com Java}.
 * A web browser.
 * A text editor.
 
 
+
+
 # Working with the code
+
 
 There are two ways that you can you follow this tutorial and hack on the code:
 
+
 ## Using Git
 
-The following instructions are for developers who are comfortable with the Git versioning system:
+
+The following instructions are for Git users. If you're not a Git user, skip down to the "Using
+Snapshots" section.
+
 
 1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
+
 
 2. Clone the angular-phonecat repository located at {@link
 https://github.com/angular/angular-phonecat GitHub} by running the following command in a terminal:
 
+
         git clone git://github.com/angular/angular-phonecat.git
 
-   This will create a directory called `angular-phonecat` in the current directory. 
 
-3. Change your current directory to `angular-phonecat`. 
+   This will create a directory called `angular-phonecat` in the current directory.
 
-        cd angular-phonecat  
+
+3. Change your current directory to `angular-phonecat`.
+
+
+        cd angular-phonecat
+
 
     The tutorial instructions assume you are running all commands from this directory.
 
 
+
+
 ## Using Snapshots
 
-Snapshots are the sets of files that reflect the state of the tutorial app at each step. These
-files include the HTML, CSS, and JavaScript for the app, plus Jasmine JavaScript files and Java
-libraries for the test stack. These will let you run the tutorial app and tests, without requiring
-knowledge of Git.  You can download and install the snapshot files as follows:
 
 1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
 
-2. {@link TODO Download the zip archive} with all files and unzip them into `[tutorial-dir]`
-directory.
+
+2. {@link http://code.angularjs.org/angular-phonecat-snapshots.zip Download the zip archive} with
+all files and unzip them into `[tutorial-dir]` directory.
+
+
 
 
 3. Change directories to `[tutorial-dir]/sandbox`.
 
+
         cd [tutorial-dir]/sandbox
 
 
-# Tutorial Navigation
-
-To see the app running on the angular server, click the "Live Demo" link at the top or bottom of
-any tutorial page. To view the code differences between tutorial steps, click the Code Diff link
-at top or bottom of each tutorial page. In the Code Diff, additions are highlighted in green;
-deletions are highlighted in red.
 
 
-Let's get going and proceed to {@link tutorial/step_00 step 0}.
+Let's get going with {@link tutorial/step_00 step 0}.
+

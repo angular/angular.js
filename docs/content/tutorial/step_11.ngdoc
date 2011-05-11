@@ -1,4 +1,4 @@
-﻿@ngdoc overview
+@ngdoc overview
 @name Tutorial: Step 11
 @description
 <table id="tutorial_nav">
@@ -13,43 +13,58 @@ Code Diff}</td>
 </tr>
 </table>
 
-In this step, you will improve the way our app fetches data. 
+
+In this step, you will improve the way our app fetches data.
+
 
 1. Reset your workspace to Step 11 using:
 
-         git checkout --force step-11
+
+         git checkout -f step-11
+
 
   or
 
+
          ./goto_step.sh 11
+
 
 2. Refresh your browser or check the app out on {@link
 http://angular.github.com/angular-phonecat/step-11/app angular's server}.
 
 
-The last improvement we will make to our app is to define a custom service that represents a
-{@link http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this
-client we can make xhr requests for data in an easier way, without having to deal with the
-lower-level {@link angular.service.$xhr $xhr} API, HTTP methods and URLs.
+
+
+The last improvement we will make to our app is to define a custom service that represents a {@link
+http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client. Using this client we
+can make xhr requests for data in an easier way, without having to deal with the lower-level {@link
+angular.service.$xhr $xhr} API, HTTP methods and URLs.
+
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-10...step-11
 GitHub}:
 
 
-## Template 
 
-The custom service is defined in `app/js/services.js` so we need to include this file in our
-layout template:
 
-__`app/index.html`.__ 
+## Template
+
+
+The custom service is defined in `app/js/services.js` so we need to include this file in our layout
+template:
+
+
+__`app/index.html`.__
 <pre>
 ...
   <script src="js/services.js"></script>
 ...
 </pre>
 
+
 ## Service
+
 
 __`app/js/services.js`.__
 <pre>
@@ -60,28 +75,34 @@ __`app/js/services.js`.__
  });
 </pre>
 
+
 We used the {@link angular.service} API to register a custom service. We passed in the name of the
 service - 'Phone' - and a factory function. The factory function is similar to a controller's
 constructor in that both can declare dependencies via function arguments. The Phone service
 declared a dependency on the `$resource` service.
 
+
 The {@link angular.service.$resource `$resource`} service makes it easy to create a {@link
 http://en.wikipedia.org/wiki/Representational_State_Transfer RESTful} client with just a few lines
-of code. This client can then be used in our application, instead of the lower-level `$xhr`
-service.
+of code. This client can then be used in our application, instead of the lower-level `$xhr` service.
+
+
 
 
 ## Controller
 
+
 We simplified our sub-controllers (`PhoneListCtrl` and `PhoneDetailCtrl`) by factoring out the
 lower-level `$xhr` service, replacing it with a new service called `Phone`. Angular's {@link
 angular.service.$resource `$resource`} service is easier to use than `$xhr` for interacting with
-data sources exposed as RESTful resources. It is also easier now to understand what the code in
-our controllers is doing.
+data sources exposed as RESTful resources. It is also easier now to understand what the code in our
+controllers is doing.
+
 
 __`app/js/controllers.js`.__
 <pre>
 ...
+
 
 function PhoneListCtrl(Phone_) {
   this.orderProp = 'age';
@@ -90,59 +111,77 @@ function PhoneListCtrl(Phone_) {
 //PhoneListCtrl.$inject = ['Phone'];
 
 
+
+
 function PhoneDetailCtrl(Phone_) {
   var self = this;
 
+
   self.phone = Phone_.get({phoneId: self.params.phoneId}, function(phone) {
-    self.mainImageUrl = phone.images[0];
+    self.mainImageUrl = phone.images;
   });
+
 
   ...
 }
 //PhoneDetailCtrl.$inject = ['Phone'];
 </pre>
 
+
 Notice how in `PhoneListCtrl` we replaced:
+
 
     $xhr('GET', 'phones/phones.json', function(code, response) {
       self.phones = response;
     });
 
+
 with:
+
 
     this.phones = Phone_.query();
 
+
 This is a simple statement that we want to query for all phones.
+
 
 An important thing to notice in the code above is that we don't pass any callback functions when
 invoking methods of our Phone service. Although it looks as if the result were returned
 synchronously, that is not the case at all. What is returned synchronously is a "future" — an
 object, which will be filled with data when the xhr response returns. Because of the data-binding
 in angular, we can use this future and bind it to our template. Then, when the data arrives, the
-view will automatically update. 
+view will automatically update.
+
 
 Sometimes, relying on the future object and data-binding alone is not sufficient to do everything
 we require, so in these cases, we can add a callback to process the server response. The
-`PhoneDetailCtrl` controller illustrates this by setting the `mainImageUrl` in a callback. 
+`PhoneDetailCtrl` controller illustrates this by setting the `mainImageUrl` in a callback.
+
+
 
 
 ## Test
+
 
 We have modified our unit tests to verify that our new service is issuing HTTP requests and
 processing them as expected. The tests also check that our controllers are interacting with the
 service correctly.
 
+
 The `$resource` client augments the response object with methods for updating and deleting the
 resource. If we were to use the standard `toEqual` matcher, our tests would fail because the test
 values would not match the responses exactly. To solve the problem, we use a newly-defined
 `toEqualData` {@link http://pivotal.github.com/jasmine/jsdoc/symbols/jasmine.Matchers.html Jasmine
-matcher}. When the `toEqualData` matcher compares two objects, it takes only object properties
-into account and ignores methods. 
+matcher}. When the `toEqualData` matcher compares two objects, it takes only object properties into
+account and ignores methods.
+
+
 
 
 __`test/unit/controllersSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
+
 
   beforeEach(function(){
     this.addMatchers({
@@ -152,25 +191,31 @@ describe('PhoneCat controllers', function() {
     });
   });
 
+
   describe('PhoneListCtrl', function(){
     var scope, $browser, ctrl;
+
 
     beforeEach(function() {
       scope = angular.scope();
       $browser = scope.$service('$browser');
+
 
       $browser.xhr.expectGET('phones/phones.json').respond([{name: 'Nexus S'},
                                                             {name: 'Motorola DROID'}]);
       ctrl = scope.$new(PhoneListCtrl);
     });
 
+
     it('should create "phones" model with 2 phones fetched from xhr', function() {
       expect(ctrl.phones).toEqual([]);
       $browser.xhr.flush();
 
+
       expect(ctrl.phones).toEqualData([{name: 'Nexus S'},
                                        {name: 'Motorola DROID'}]);
     });
+
 
     it('should set the default value of orderProp model', function() {
       expect(ctrl.orderProp).toBe('age');
@@ -178,26 +223,33 @@ describe('PhoneCat controllers', function() {
   });
 
 
+
+
   describe('PhoneDetailCtrl', function(){
     var scope, $browser, ctrl;
 
-    beforeEach(function() {
-      scope = angular.scope();
-      $browser = scope.$service('$browser');
-    });
 
     beforeEach(function() {
       scope = angular.scope();
       $browser = scope.$service('$browser');
     });
+
+
+    beforeEach(function() {
+      scope = angular.scope();
+      $browser = scope.$service('$browser');
+    });
+
 
     it('should fetch phone detail', function(){
       scope.params = {phoneId:'xyz'};
       $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
       ctrl = scope.$new(PhoneDetailCtrl);
 
+
       expect(ctrl.phone).toEqualData({});
       $browser.xhr.flush();
+
 
       expect(ctrl.phone).toEqualData({name:'phone xyz'});
     });
@@ -205,8 +257,10 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
+
 To run the unit tests, execute the `./scripts/test.sh` script and you should see the following
 output.
+
 
        Chrome: Runner reset.
        ....
@@ -214,9 +268,14 @@ output.
          Chrome 11.0.696.57 Mac OS: Run 4 tests (Passed: 4; Fails: 0; Errors 0) (3.00 ms)
 
 
+
+
 # Summary
 
+
 There you have it!  We have created a web app in a relatively short amount of time.
+
+
 
 
 <table id="tutorial_nav">
@@ -227,6 +286,9 @@ There you have it!  We have created a web app in a relatively short amount of ti
 <td id="tut_home">{@link tutorial Tutorial Home}</td>
 <td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-10...step-11
 Code Diff}</td>
-<td id="next_step">Next</td>
+<td id="next_step">{@link tutorial/the_end Next}</td>
 </tr>
 </table>
+
+
+

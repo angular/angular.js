@@ -1,6 +1,7 @@
-﻿@ngdoc overview
+@ngdoc overview
 @name Tutorial: Step 0
 @description
+
 
 <table id="tutorial_nav">
 <tr>
@@ -12,39 +13,54 @@
 </tr>
 </table>
 
+
 You are now ready to build the phone cat application. In this step, you will become familiar with
 the most important source code files, learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
+
 1. Do one of the following:
+
 
    * Git users: In the `angular-phonecat` directory, run this command:
 
-               git checkout step-0
+
+               git checkout -f step-0
+
 
    * Snapshot users: In the `[tutorial-dir]/sandbox` directory, run this command:
 
+
                ./goto_step.sh 0
 
-  This resets your workspace to Step 0 of the tutorial app. 
+
+  This resets your workspace to Step 0 of the tutorial app.
+
+
+  You must repeat this for every future step in the tutorial and change the number to the number of
+the step you are on. Either command will cause any changes you made within your working directory
+to be lost.
+
 
 2. To see the app running in a browser, do one of the following:
    * __For node.js users:__
        1. In a _separate_ terminal tab or window, run `./scripts/web-server.js` to start the app
-       server.
+server.
        2. Open a browser window for the app and navigate to http://localhost:8000/app/index.html.
+
 
    * __For other http servers:__
        1. Configure the server to serve the files in the `angular-phonecat` directory.
        2. Navigate in your browser to
-       http://localhost:[*port-number*]/[*context-path*]/app/index.html.
+http://localhost:[*port-number*]/[*context-path*]/app/index.html.
 
-You can now see the app in the browser. It's not very exciting, but that's OK.
 
-The code that created this app is shown below. You will see that it creates a static HTML page
-that displays "Nothing here yet!"; the code does, however, have everything we need to proceed.
-This bit of code serves as a prototype template, consisting of basic HTML tags with a pair of
-angular-specific attributes. 
+You can now see the page in your browser. It's not very exciting, but that's OK.
+
+
+The static HTML page that displays "Nothing here yet!" was constructed with the HTML code shown
+below. The code contains some key angular elements that we will need going forward.
+
 
 __`app/index.html`:__
 <pre>
@@ -57,28 +73,83 @@ __`app/index.html`:__
 </head>
 <body>
 
+
   Nothing here yet!
+
 
   <script src="lib/angular/angular.js" ng:autobind></script>
 </body>
 </html>
 </pre>
 
+
+
+
+
+
 ## What is the code doing?
 
-* __... `xmlns:ng="http://angularjs.org"` ...__  This `xmlns` declaration for the `ng` namespace
-must be specified in all angular applications if you use XHTML, or if you are targeting IE
-versions older than 9 (regardless of whether you are using XHTML or HTML).
 
-* __`<script src="lib/angular/angular.js"` ...__ This downloads the `angular.js` script and
-registers a callback that will be executed by the browser when the containing HTML page is fully
-downloaded. When the callback is executed, angular looks for the {@link
-angular.directive.ng:autobind ng:autobind} attribute. If `ng:autobind` is found, it signals
-angular to bootstrap, compile, and manage the whole html page.
+* xmlns declaration
+
+
+       <html xmlns:ng="http://angularjs.org">
+
+
+  This `xmlns` declaration for the `ng` namespace must be specified in all angular applications in
+order to make angular work with XHTML and IE versions older than 9 (regardless of whether you are
+using XHTML or HTML).
+
+
+* angular script tag
+
+
+       <script src="lib/angular/angular.js" ng:autobind>
+
+
+  This single line of code is all that is needed to bootstrap an angular application.
+
+
+  The code downloads the `angular.js` script and registers a callback that will be executed by the
+browser when the containing HTML page is fully downloaded. When the callback is executed, angular
+looks for the {@link angular.directive.ng:autobind ng:autobind} attribute. If angular finds
+`ng:autobind`, it creates a root scope for the application and associates it with the `<html>`
+element of the template:
+
+
+     <img src="img/tutorial/tutorial_00_final.png"/>
+
+
+    As you will see shortly, everything in angular is evaluated within a scope. We'll learn more
+about this in the next steps.
+
+
+
+
+## What are all these files in my working directory?
+
+
+Most of the files in your working directory come from the {@link
+https://github.com/angular/angular-seed angular-seed project} which is typically used to bootstrap
+new angular projects. The seed project includes the latest angular libraries, test libraries,
+scripts and a simple example app, all pre-configured for developing a typical web app.
+
+
+For the purposes of this tutorial, we modified the angular-seed with the following changes:
+
+
+* Removed the example app
+* Added phone images to `app/img/phones`
+* Added phone data files (JSON) to `app/phones`
+
+
+
 
 # Summary
 
+
 Now let's go to step 1 and add some content to the web app.
+
 
 <table id="tutorial_nav">
 <tr>
