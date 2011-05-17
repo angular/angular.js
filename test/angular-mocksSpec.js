@@ -201,7 +201,24 @@ describe('mocks', function(){
       browser.defer.flush(10);
       expect(browser.defer.now).toEqual(20);
       expect(log).toEqual('A;B;C;');
+    });
 
+    it('should defer and flush over time', function(){
+      browser.defer(logFn('A'), 1);
+      browser.defer(logFn('B'), 2);
+      browser.defer(logFn('C'), 3);
+
+      browser.defer.flush(0);
+      expect(browser.defer.now).toEqual(0);
+      expect(log).toEqual('');
+
+      browser.defer.flush(1);
+      expect(browser.defer.now).toEqual(1);
+      expect(log).toEqual('A;');
+
+      browser.defer.flush(2);
+      expect(browser.defer.now).toEqual(3);
+      expect(log).toEqual('A;B;C;');
     });
   });
 
