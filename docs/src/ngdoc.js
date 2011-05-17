@@ -29,6 +29,7 @@ function Doc(text, file, line) {
   this.param = this.param || [];
   this.properties = this.properties || [];
   this.methods = this.methods || [];
+  this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function(){
   var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
@@ -124,11 +125,16 @@ Doc.prototype = {
         text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
-            var isFullUrl = url.match(IS_URL);
-            return '<a href="' + (isFullUrl ? '' + url : '#!' + self.sectionHuristic(url)) + '">'
-              + (url.match(IS_ANGULAR) ? '<code>' : '')
+            var isFullUrl = url.match(IS_URL),
+                isAngular = url.match(IS_ANGULAR);
+
+            url = isFullUrl ? url : self.sectionHuristic(url);
+            self.links.push(url);
+
+            return '<a href="' + (isFullUrl ? '' + url : '#!' + url) + '">'
+              + (isAngular ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
-              + (url.match(IS_ANGULAR) ? '</code>' : '')
+              + (isAngular ? '</code>' : '')
               + '</a>';
           });
         text = new Showdown.converter().makeHtml(text);
@@ -659,9 +665,12 @@ function indent(text, spaceCount) {
 
 //////////////////////////////////////////////////////////
 function merge(docs){
-  var byName = {};
+  var byName = {},
+      byFullId = {};
+
   docs.forEach(function(doc){
     byName[doc.name] = doc;
+    byFullId[doc.section + '/' + doc.id] = doc;
   });
   for(var i=0; i<docs.length;) {
     if (findParent(docs[i], 'method') ||
@@ -671,6 +680,13 @@ function merge(docs){
       i++;
     }
   }
+  
+  // check links
+  docs.forEach(function(doc) {
+    doc.links.forEach(function(link) {
+      if (!byFullId[link]) throw 'Not existing link "' + link + '" in ' + doc.section + '/' + doc.id;
+    });
+  });
 
   function findParent(doc, name){
     var parentName = doc[name+'Of'];

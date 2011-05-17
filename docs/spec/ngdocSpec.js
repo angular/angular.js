@@ -96,6 +96,13 @@ describe('ngdoc', function(){
         expect(doc.description).toContain('<p>before </p><doc:example>' +
             '<pre class="doc-scenario">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
+      
+      it('should store all links', function() {
+        var doc = new Doc('@description {@link api/angular.link}');
+        doc.parse();
+
+        expect(doc.links).toContain('api/angular.link');
+      });
 
       describe('sorting', function(){
         function property(name) {
@@ -197,7 +204,37 @@ describe('ngdoc', function(){
       expect(docs[0].methods).toEqual([methodA, methodB]);
       expect(docs[0].properties).toEqual([propA, propB]);
     });
+    
+    describe('links checking', function() {
+      var docs;
+      beforeEach(function() {
+        docs = [new Doc({section: 'api', id: 'fake.id1', links: ['non-existing-link']}),
+                new Doc({section: 'api', id: 'fake.id2'}),
+                new Doc({section: 'api', id: 'fake.id3'})];
+      });
 
+      it('should throw exception when any link doesn\'t exist', function() {
+        expect(function() {
+          ngdoc.merge(docs);
+        }).toThrow();
+      });
+
+      it('should say which link doesn\'t exist', function() {
+        try {
+          ngdoc.merge(docs);
+        } catch (e) {
+          expect(e).toContain('non-existing-link');
+        }
+      });
+
+      it('should say where is the non-existing link', function() {
+        try {
+          ngdoc.merge(docs);
+        } catch (e) {
+          expect(e).toContain('api/fake.id1');
+        }
+      });
+    });
   });
 
   ////////////////////////////////////////
