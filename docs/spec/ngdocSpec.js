@@ -96,7 +96,7 @@ describe('ngdoc', function(){
         expect(doc.description).toContain('<p>before </p><doc:example>' +
             '<pre class="doc-scenario">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
-      
+
       it('should store all links', function() {
         var doc = new Doc('@description {@link api/angular.link}');
         doc.parse();
@@ -204,7 +204,9 @@ describe('ngdoc', function(){
       expect(docs[0].methods).toEqual([methodA, methodB]);
       expect(docs[0].properties).toEqual([propA, propB]);
     });
-    
+
+
+
     describe('links checking', function() {
       var docs;
       beforeEach(function() {
