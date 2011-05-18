@@ -92,7 +92,7 @@ exports.copyDir = function copyDir(dir, callback) {
 
 
 exports.merge = function(srcs, to, callback){
-  merge(srcs.map(function(src) { return 'docs/src/templates/' + src }), OUTPUT_DIR + to, callback);
+  merge(srcs.map(function(src) { return 'docs/src/templates/' + src; }), OUTPUT_DIR + to, callback);
 };
 
 function merge(srcs, to, callback) {

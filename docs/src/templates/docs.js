@@ -43,7 +43,7 @@ function DocsController($location, $browser, $window) {
 
   this.selectedPartial = function(partial) {
     return partial.id == self.partialId ? 'current' : '';
-  }
+  };
 
   this.afterPartialLoaded = function() {
     SyntaxHighlighter.highlight();
