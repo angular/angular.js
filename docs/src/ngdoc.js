@@ -669,6 +669,7 @@ function indent(text, spaceCount) {
 
 //////////////////////////////////////////////////////////
 function merge(docs){
+  // TODO(vojta) refactor to use only byFullId hash map
   var byName = {},
       byFullId = {};
 
@@ -686,6 +687,7 @@ function merge(docs){
   }
 
   // check links
+  // TODO(vojta) refactor to reuse the loop above
   docs.forEach(function(doc) {
     doc.links.forEach(function(link) {
       if (!byFullId[link]) console.log('WARNING: Non existing link "' + link + '" in ' + doc.section + '/' + doc.id);
