@@ -669,36 +669,33 @@ function indent(text, spaceCount) {
 
 //////////////////////////////////////////////////////////
 function merge(docs){
-  // TODO(vojta) refactor to use only byFullId hash map
-  var byName = {},
-      byFullId = {};
+  var byFullId = {};
 
-  docs.forEach(function(doc){
-    byName[doc.name] = doc;
+  docs.forEach(function (doc) {
     byFullId[doc.section + '/' + doc.id] = doc;
   });
-  for(var i=0; i<docs.length;) {
-    if (findParent(docs[i], 'method') ||
-          findParent(docs[i], 'property')) {
+
+  for(var i = 0; i < docs.length;) {
+    var doc = docs[i];
+
+    // check links - do they exist ?
+    doc.links.forEach(function(link) {
+      if (!byFullId[link]) console.log('WARNING: Non existing link "' + link + '" in ' + doc.section + '/' + doc.id);
+    });
+
+    // merge into parents
+    if (findParent(doc, 'method') || findParent(doc, 'property')) {
       docs.splice(i, 1);
     } else {
       i++;
     }
   }
 
-  // check links
-  // TODO(vojta) refactor to reuse the loop above
-  docs.forEach(function(doc) {
-    doc.links.forEach(function(link) {
-      if (!byFullId[link]) console.log('WARNING: Non existing link "' + link + '" in ' + doc.section + '/' + doc.id);
-    });
-  });
-
-  function findParent(doc, name){
-    var parentName = doc[name+'Of'];
+  function findParent(doc, name) {
+    var parentName = doc[name + 'Of'];
     if (!parentName) return false;
 
-    var parent = byName[parentName];
+    var parent = byFullId['api/' + parentName];
     if (!parent)
       throw new Error("No parent named '" + parentName + "' for '" +
           doc.name + "' in @" + name + "Of.");
