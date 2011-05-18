@@ -366,13 +366,13 @@ describe('ngdoc', function(){
             '{@link angular.directive.ng:foo ng:foo}');
         doc.parse();
         expect(doc.description).
-          toContain('foo <a href="#!angular.foo"><code>angular.foo</code></a>');
+          toContain('foo <a href="#!api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('da <a href="#!angular.foo"><code>bar foo bar</code></a>');
+          toContain('da <a href="#!api/angular.foo"><code>bar foo bar</code></a>');
         expect(doc.description).
-          toContain('dad<a href="#!angular.foo"><code>angular.foo</code></a>');
+          toContain('dad<a href="#!api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('<a href="#!angular.directive.ng:foo"><code>ng:foo</code></a>');
+          toContain('<a href="#!api/angular.directive.ng:foo"><code>ng:foo</code></a>');
         expect(doc.description).
           toContain('<a href="http://angularjs.org">http://angularjs.org</a>');
         expect(doc.description).
@@ -381,10 +381,10 @@ describe('ngdoc', function(){
 
       it('shoul support line breaks in @link', function(){
         var doc = new Doc("@description " +
-            '{@link\nurl\na\nb}');
+            '{@link\napi/angular.foo\na\nb}');
         doc.parse();
         expect(doc.description).
-          toContain('<a href="#!url">a b</a>');
+          toContain('<a href="#!api/angular.foo">a b</a>');
       });
 
     });
