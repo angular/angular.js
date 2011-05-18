@@ -29,7 +29,7 @@ attacks. angular does round-trip escaping on all strings for you.
 
 ### Can I download the source, build, and host the angular environment locally?
 
-Yes. See instructions in {@link downloading downloading}.
+Yes. See instructions in {@link intro.downloading downloading}.
 
 ### Is angular a templating system?
 

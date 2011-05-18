@@ -112,7 +112,7 @@ These input widgets look normal enough, but consider these points:
 of the input widgets (`qty` and `cost`) to variables of the same name.  Think of those variables as
 the "Model" part of the Model-View-Controller design pattern.
 * Note the angular directives, {@link angular.widget.@ng:validate ng:validate} and {@link
-ngular.widget.@ng:required ng:required}. You may have noticed that when you enter invalid data or
+angular.widget.@ng:required ng:required}. You may have noticed that when you enter invalid data or
 leave the the input fields blank, the borders turn a plainly irritated red color, and the display
 value disappears.  These `ng:` directives make it easier to implement field validators than coding
 them in JavaScript, no?  Yes.
