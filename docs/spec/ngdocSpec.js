@@ -208,31 +208,26 @@ describe('ngdoc', function(){
     describe('links checking', function() {
       var docs;
       beforeEach(function() {
+        spyOn(console, 'log');
         docs = [new Doc({section: 'api', id: 'fake.id1', links: ['non-existing-link']}),
                 new Doc({section: 'api', id: 'fake.id2'}),
                 new Doc({section: 'api', id: 'fake.id3'})];
       });
 
-      it('should throw exception when any link doesn\'t exist', function() {
-        expect(function() {
-          ngdoc.merge(docs);
-        }).toThrow();
+      it('should log warning when any link doesn\'t exist', function() {
+        ngdoc.merge(docs);
+        expect(console.log).toHaveBeenCalled();
+        expect(console.log.argsForCall[0][0]).toContain('WARNING:');
       });
 
       it('should say which link doesn\'t exist', function() {
-        try {
-          ngdoc.merge(docs);
-        } catch (e) {
-          expect(e).toContain('non-existing-link');
-        }
+        ngdoc.merge(docs);
+        expect(console.log.argsForCall[0][0]).toContain('non-existing-link');
       });
 
       it('should say where is the non-existing link', function() {
-        try {
-          ngdoc.merge(docs);
-        } catch (e) {
-          expect(e).toContain('api/fake.id1');
-        }
+        ngdoc.merge(docs);
+        expect(console.log.argsForCall[0][0]).toContain('api/fake.id1');
       });
     });
   });
