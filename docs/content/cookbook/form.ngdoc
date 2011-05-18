@@ -91,7 +91,7 @@ allow a user to enter data.
 
 # Things to notice
 
-* The user data model is initialized {@link angular.ng:controller controller} and is available in
+* The user data model is initialized {@link angular.directive.@ng:controller controller} and is available in
   the {@link angular.scope scope} with the initial data.
 * For debugging purposes we have included a debug view of the model to better understand what
   is going on.

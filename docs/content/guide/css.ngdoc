@@ -20,7 +20,7 @@ by a solid red border, for example:
 
 
 
-You can try to evaluate malformed expressions in {@link angualr.expression expression} to see the
+You can try to evaluate malformed expressions in {@link guide.expression expression} to see the
 `ng-exception` class' styling.
 
 ## `ng-validation-error`

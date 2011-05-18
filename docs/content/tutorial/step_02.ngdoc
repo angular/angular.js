@@ -133,7 +133,7 @@ data, and logic components:
 
 
     * The name of our controller function (in the JavaScript file `controllers.js`) matches the
-{@link angular.directive.ng:controller ng:controller} directive in the `<body>` tag
+{@link angular.directive.@ng:controller ng:controller} directive in the `<body>` tag
 (`PhoneListCtrl`).
     * We instantiated our data within the scope of our controller function, and our template
 binding points are located within the block bounded by the `<body ng:controller="PhoneListCtrl">`
@@ -145,7 +145,7 @@ the template, model and controller all work together. Angular uses scopes, along
 information contained in the template, data model, and controller, to keep the model and view
 separated but in sync. Any changes to the model are reflected in the view; any changes that occur
 in the view are reflected in the model. To learn more about angular scopes, see the {@link
-angular.scopes angular scope documentation}.
+angular.scope angular scope documentation}.
 
 
 

@@ -34,7 +34,7 @@ angularDirective("ng:init", function(expression){
 /**
  * @workInProgress
  * @ngdoc directive
- * @name angular.directive.ng:controller
+ * @name angular.directive.@ng:controller
  *
  * @description
  * The `ng:controller` directive assigns behavior to a scope. This is a key aspect of how angular

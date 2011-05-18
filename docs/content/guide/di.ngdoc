@@ -125,7 +125,7 @@ dependency injection since the caller is still responsible for retrieving the de
 dependency injection is like Chuck Norris. Chuck does not ask for dependencies; he declares them.*
 
 The most common place to use dependency injection in angular applications is in
-{@link angular.ng:controller controllers}. Here’s a simple example:
+{@link angular.directive.@ng:controller controllers}. Here’s a simple example:
 
 <pre>
 function MyController($route){

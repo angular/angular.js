@@ -32,8 +32,8 @@ attribute. So why have two different ways to do the same thing? The answer is th
 matters, but we have no control over the order in which attributes are read. To solve this
 we apply attribute widget before the directive.
 
-For example, consider this piece of HTML, which uses the directives `ng:repeat`, `ng:init`,
-and `ng:bind`:
+For example, consider this piece of HTML, which uses the `ng:repeat`, `ng:init`,
+and `ng:bind` widget and directives:
 <pre>
   <ul ng:init="people=['mike', 'mary']">
     <li ng:repeat="person in people" ng:init="a=a+1" ng:bind="person"></li>
@@ -41,7 +41,7 @@ and `ng:bind`:
 </pre>
 
 Notice that the order of execution matters here. We need to execute
-{@link angular.directive.ng:repeat ng:repeat} before we run the
+{@link angular.widget.@ng:repeat ng:repeat} before we run the
 {@link angular.directive.ng:init ng:init} and `ng:bind` on the `<li/>;`. This is because we
 want to run the `ng:init="a=a+1` and `ng:bind="person"` once for each person in people. We
 could not have used directive to create this template because attributes are read in an
