@@ -126,12 +126,16 @@ Doc.prototype = {
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
             var isFullUrl = url.match(IS_URL),
+                // FIXME(vojta) angular link could be api.angular now with sections
                 isAngular = url.match(IS_ANGULAR);
 
-            url = isFullUrl ? url : self.sectionHuristic(url);
-            self.links.push(url);
+            if (!isFullUrl) {
+              // TODO(vojta) there could be relative link, but not angular
+              // do we want to store all links (and check even the full links like http://github.com ?
+              self.links.push(self.sectionHuristic(url));
+            }
 
-            return '<a href="' + (isFullUrl ? '' + url : '#!' + url) + '">'
+            return '<a href="' + (isFullUrl ? '' + url : '#!' + self.sectionHuristic(url)) + '">'
               + (isAngular ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
               + (isAngular ? '</code>' : '')
@@ -680,11 +684,11 @@ function merge(docs){
       i++;
     }
   }
-  
+
   // check links
   docs.forEach(function(doc) {
     doc.links.forEach(function(link) {
-      if (!byFullId[link]) throw 'Not existing link "' + link + '" in ' + doc.section + '/' + doc.id;
+      if (!byFullId[link]) console.log('WARNING: Non existing link "' + link + '" in ' + doc.section + '/' + doc.id);
     });
   });
 
