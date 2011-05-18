@@ -7,9 +7,9 @@
  * @requires $updateView
  *
  * @description
- * Delegates to {@link angular.service.$browser.defer $browser.defer}, but wraps the `fn` function
+ * Delegates to {@link angular.service.$browser $browser.defer}, but wraps the `fn` function
  * into a try/catch block and delegates any exceptions to
- * {@link angular.services.$exceptionHandler $exceptionHandler} service.
+ * {@link angular.service.$exceptionHandler $exceptionHandler} service.
  *
  * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
  *
