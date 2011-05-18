@@ -120,10 +120,10 @@ function errorHandlerFor(element, error) {
  * - Scopes can be attached (bound) to the HTML DOM tree (the view).
  * - A scope {@link angular.scope.$become becomes} `this` for a controller.
  * - A scope's {@link angular.scope.$eval $eval} is used to update its view.
- * - Scopes can {@link angular.scope.$watch watch} properties and fire events.
+ * - Scopes can {@link angular.scope.$watch $watch} properties and fire events.
  *
  * # Basic Operations
- * Scopes can be created by calling {@link angular.scope() angular.scope()} or by compiling HTML.
+ * Scopes can be created by calling {@link angular.scope angular.scope()} or by compiling HTML.
  *
  * {@link angular.widget Widgets} and data bindings register listeners on the current scope to be
  * notified of changes to the scope state. When notified, these listeners push the updated state
@@ -206,7 +206,7 @@ function errorHandlerFor(element, error) {
  * This example demonstrates scope inheritance and property overriding.
  *
  * In this example, the root scope encompasses the whole HTML DOM tree. This scope has `salutation`,
- * `name`, and `names` properties. The {@link angular.widget@ng:repeat ng:repeat} creates a child
+ * `name`, and `names` properties. The {@link angular.widget.@ng:repeat ng:repeat} creates a child
  * scope, one for each element in the names array. The repeater also assigns $index and name into
  * the child scope.
  *
@@ -390,7 +390,7 @@ function createScope(parent, providers, instanceCache) {
      *
      * @description
      * Evaluates the expression in the context of the current scope just like
-     * {@link angular.scope.$eval()} with expression parameter, but also wraps it in a try/catch
+     * {@link angular.scope.$eval} with expression parameter, but also wraps it in a try/catch
      * block.
      *
      * If an exception is thrown then `exceptionHandler` is used to handle the exception.

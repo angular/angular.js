@@ -1026,7 +1026,7 @@ angularWidget("@ng:non-bindable", noop);
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * This widget provides functionality similar to {@link angular.service.ng:include ng:include} when
+ * This widget provides functionality similar to {@link angular.widget.ng:include ng:include} when
  * used like this:
  *
  *     <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
