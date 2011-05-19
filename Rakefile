@@ -188,12 +188,15 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter, :gen
 
   File.open(path_to('angular.js'), 'w') do |f|
     concat = 'cat ' + deps.flatten.join(' ')
-    f.write(%x{#{concat}})
+    f.write(%x{#{concat}}.
+              gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
+              gsub(/'USE STRICT'/, "'use strict'"))     # rename the placeholder in angular.prefix
     f.write(gen_css('css/angular.css', true))
   end
 
   %x(java -jar lib/closure-compiler/compiler.jar \
         --compilation_level SIMPLE_OPTIMIZATIONS \
+        --language_in ECMASCRIPT5_STRICT \
         --js #{path_to('angular.js')} \
         --js_output_file #{path_to('angular.min.js')})
 end
