@@ -8,7 +8,7 @@
  *  before the template enters execution mode during bootstrap.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval.
+ * @param {expression} expression {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>
@@ -52,7 +52,7 @@ angularDirective("ng:init", function(expression){
  *
  * @element ANY
  * @param {expression} expression Name of a globally accessible constructor function or an
- *     {@link guide.expression expression} that on the current scope evaluates to a constructor
+ *     {@link guide/expression expression} that on the current scope evaluates to a constructor
  *     function.
  *
  * @example
@@ -140,7 +140,7 @@ angularDirective("ng:controller", function(expression){
  * without displaying the result to the user.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval.
+ * @param {expression} expression {@link guide/expression Expression} to eval.
  *
  * @example
  * Notice that `{{` `obj.multiplied = obj.a * obj.b` `}}` has a side effect of assigning
@@ -189,7 +189,7 @@ angularDirective("ng:eval", function(expression){
  * `<span ng:bind="expression"></span>` at bootstrap time.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval.
+ * @param {expression} expression {@link guide/expression Expression} to eval.
  *
  * @example
  * You can try it right here: enter text in the text box and watch the greeting change.
@@ -348,10 +348,10 @@ var REMOVE_ATTRIBUTES = {
  * @name angular.directive.ng:bind-attr
  *
  * @description
- * The `ng:bind-attr` attribute specifies that {@link guide.data-binding databindings}  should be
+ * The `ng:bind-attr` attribute specifies that {@link guide/data-binding databindings}  should be
  * created between element attributes and given expressions. Unlike `ng:bind` the `ng:bind-attr`
  * contains a JSON key value pairs representing which attributes need to be mapped to which
- * {@link guide.expression expressions}.
+ * {@link guide/expression expressions}.
  *
  * You don't usually write the `ng:bind-attr` in the HTML since embedding
  * <tt ng:non-bindable>{{expression}}</tt> into the attribute directly as the attribute value is
@@ -438,7 +438,7 @@ angularDirective("ng:bind-attr", function(expression){
  * element is clicked.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval upon click.
+ * @param {expression} expression {@link guide/expression Expression} to eval upon click.
  *
  * @example
    <doc:example>
@@ -489,7 +489,7 @@ angularDirective("ng:click", function(expression, element){
  * server and reloading the current page).
  *
  * @element form
- * @param {expression} expression {@link guide.expression Expression} to eval.
+ * @param {expression} expression {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>
@@ -552,7 +552,7 @@ function ngClass(selector) {
  * conditionally.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval.
+ * @param {expression} expression {@link guide/expression Expression} to eval.
  *
  * @example
    <doc:example>
@@ -593,7 +593,7 @@ angularDirective("ng:class", ngClass(function(){return true;}));
  * and takes affect only on odd (even) rows.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval. Must be inside
+ * @param {expression} expression {@link guide/expression Expression} to eval. Must be inside
  * `ng:repeat`.
  *
  * @example
@@ -631,7 +631,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
  * and takes affect only on odd (even) rows.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} to eval. Must be inside
+ * @param {expression} expression {@link guide/expression Expression} to eval. Must be inside
  * `ng:repeat`.
  *
  * @example
@@ -668,7 +668,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * conditionally.
  *
  * @element ANY
- * @param {expression} expression If the {@link guide.expression expression} is truthy then the element
+ * @param {expression} expression If the {@link guide/expression expression} is truthy then the element
  *     is shown or hidden respectively.
  *
  * @example
@@ -709,7 +709,7 @@ angularDirective("ng:show", function(expression, element){
  * of the HTML conditionally.
  *
  * @element ANY
- * @param {expression} expression If the {@link guide.expression expression} truthy then the element
+ * @param {expression} expression If the {@link guide/expression expression} truthy then the element
  *     is shown or hidden respectively.
  *
  * @example
@@ -749,7 +749,7 @@ angularDirective("ng:hide", function(expression, element){
  * The ng:style allows you to set CSS style on an HTML element conditionally.
  *
  * @element ANY
- * @param {expression} expression {@link guide.expression Expression} which evals to an object whose
+ * @param {expression} expression {@link guide/expression Expression} which evals to an object whose
  *      keys are CSS style names and values are corresponding values for those CSS keys.
  *
  * @example

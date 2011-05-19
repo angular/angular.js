@@ -5,7 +5,7 @@
  *
  * @description
  * Creates an inject function that can be used for dependency injection.
- * (See {@link guide.di dependency injection})
+ * (See {@link guide/di dependency injection})
  *
  * The inject function can be used for retrieving service instances or for calling any function
  * which has the $inject property so that the services can be automatically provided. Angular
