@@ -837,16 +837,16 @@ angularWidget('a', function() {
  *
  * @description
  * The `ng:repeat` widget instantiates a template once per item from a collection. The collection is
- * enumerated with the `ng:repeat-index` attribute, starting from 0. Each template instance gets 
- * its own scope, where the given loop variable is set to the current collection item, and `$index` 
+ * enumerated with the `ng:repeat-index` attribute, starting from 0. Each template instance gets
+ * its own scope, where the given loop variable is set to the current collection item, and `$index`
  * is set to the item index or key.
  *
  * Special properties are exposed on the local scope of each template instance, including:
  *
  *   * `$index` – `{number}` – iterator offset of the repeated element (0..length-1)
- *   * `$position` – `{string}` – position of the repeated element in the iterator. One of: 
+ *   * `$position` – `{string}` – position of the repeated element in the iterator. One of:
  *        * `'first'`,
- *        * `'middle'` 
+ *        * `'middle'`
  *        * `'last'`
  *
  * Note: Although `ng:repeat` looks like a directive, it is actually an attribute widget.
