@@ -104,6 +104,23 @@ describe('ngdoc', function(){
         expect(doc.links).toContain('api/angular.link');
       });
 
+      describe('convertUrlToAbsolute', function() {
+        var doc;
+
+        beforeEach(function() {
+          doc = new Doc({section: 'section'});
+        });
+
+        it('should not change absolute url', function() {
+          expect(doc.convertUrlToAbsolute('guide/index')).toEqual('guide/index');
+        });
+
+        it('should prepend current section to relative url', function() {
+          expect(doc.convertUrlToAbsolute('angular.widget')).toEqual('section/angular.widget');
+        });
+
+      });
+
       describe('sorting', function(){
         function property(name) {
           return function(obj) {return obj[name];};
@@ -366,7 +383,10 @@ describe('ngdoc', function(){
             'external{@link http://angularjs.org}\n\n' +
             'external{@link ./static.html}\n\n' +
             '{@link angular.directive.ng:foo ng:foo}');
+
+        doc.section = 'api';
         doc.parse();
+
         expect(doc.description).
           toContain('foo <a href="#!api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
