@@ -1,7 +1,12 @@
 <a name="0.9.16"><a/>
 # <angular/> 0.9.16 weather-control (in-progress) #
 
+### Features
+- we can run scenario tests with jstd (from command line and in multiple browsers)
 
+
+### Breaking changes
+- html scenario runner requires ng:autotest option to start tests automatically
 
 
 <a name="0.9.15"><a/>

@@ -37,6 +37,9 @@ angular.scenario.Describe = function(descName, parent) {
 // Shared Unique ID generator for every describe block
 angular.scenario.Describe.id = 0;
 
+// Shared Unique ID generator for every it (spec)
+angular.scenario.Describe.specId = 0;
+
 /**
  * Defines a block to execute before each it or nested describe.
  *
@@ -93,6 +96,7 @@ angular.scenario.Describe.prototype.xdescribe = angular.noop;
  */
 angular.scenario.Describe.prototype.it = function(name, body) {
   this.its.push({
+    id: angular.scenario.Describe.specId++,
     definition: this,
     only: this.only,
     name: name,

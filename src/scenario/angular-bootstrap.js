@@ -23,7 +23,8 @@
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    angularScenarioInit($scenario, angularJsConfig(document));
+    var config = angularJsConfig(document);
+    if (config.autotest) angular.scenario.setUpAndRun(config);
   };
 
   addCSS("../../css/angular-scenario.css");
@@ -52,8 +53,7 @@
   // Create the runner (which also sets up the global API)
   document.write(
     '<script type="text/javascript">' +
-    'var $scenario = new angular.scenario.Runner(window, angular.scenario.SpecRunner);' +
-    '</script>'
-  );
+    '  var $runner = new angular.scenario.Runner(window);' +
+    '</script>');
 
 })(window.onload);

@@ -4,21 +4,26 @@
  * @param {Object} runner The scenario Runner instance to connect to.
  *
  * TODO(esprehn): Every output type creates one of these, but we probably
- *  want one glonal shared instance. Need to handle events better too
+ *  want one global shared instance. Need to handle events better too
  *  so the HTML output doesn't need to do spec model.getSpec(spec.id)
  *  silliness.
+ *
+ * TODO(vojta) refactor on, emit methods (from all objects) - use inheritance
  */
 angular.scenario.ObjectModel = function(runner) {
   var self = this;
 
   this.specMap = {};
+  this.listeners = [];
   this.value = {
     name: '',
     children: {}
   };
 
   runner.on('SpecBegin', function(spec) {
-    var block = self.value;
+    var block = self.value,
+        definitions = [];
+
     angular.forEach(self.getDefinitionPath(spec), function(def) {
       if (!block.children[def.name]) {
         block.children[def.name] = {
@@ -29,55 +34,114 @@ angular.scenario.ObjectModel = function(runner) {
         };
       }
       block = block.children[def.name];
+      definitions.push(def.name);
     });
-    self.specMap[spec.id] = block.specs[spec.name] =
-      new angular.scenario.ObjectModel.Spec(spec.id, spec.name);
+
+    var it = self.specMap[spec.id] =
+             block.specs[spec.name] =
+             new angular.scenario.ObjectModel.Spec(spec.id, spec.name, definitions);
+
+    // forward the event
+    self.emit('SpecBegin', it);
   });
 
   runner.on('SpecError', function(spec, error) {
     var it = self.getSpec(spec.id);
     it.status = 'error';
     it.error = error;
+
+    // forward the event
+    self.emit('SpecError', it, error);
   });
 
   runner.on('SpecEnd', function(spec) {
     var it = self.getSpec(spec.id);
     complete(it);
+
+    // forward the event
+    self.emit('SpecEnd', it);
   });
 
   runner.on('StepBegin', function(spec, step) {
     var it = self.getSpec(spec.id);
-    it.steps.push(new angular.scenario.ObjectModel.Step(step.name));
+    var step = new angular.scenario.ObjectModel.Step(step.name);
+    it.steps.push(step);
+
+    // forward the event
+    self.emit('StepBegin', it, step);
   });
 
   runner.on('StepEnd', function(spec, step) {
     var it = self.getSpec(spec.id);
-    if (it.getLastStep().name !== step.name)
-      throw 'Events fired in the wrong order. Step names don\' match.';
-    complete(it.getLastStep());
+    var step = it.getLastStep();
+    if (step.name !== step.name)
+      throw 'Events fired in the wrong order. Step names don\'t match.';
+    complete(step);
+
+    // forward the event
+    self.emit('StepEnd', it, step);
   });
 
   runner.on('StepFailure', function(spec, step, error) {
-    var it = self.getSpec(spec.id);
-    var item = it.getLastStep();
-    item.error = error;
-    if (!it.status) {
-      it.status = item.status = 'failure';
-    }
+    var it = self.getSpec(spec.id),
+        modelStep = it.getLastStep();
+
+    modelStep.setErrorStatus('failure', error, step.line());
+    it.setStatusFromStep(modelStep);
+
+    // forward the event
+    self.emit('StepFailure', it, modelStep, error);
   });
 
   runner.on('StepError', function(spec, step, error) {
-    var it = self.getSpec(spec.id);
-    var item = it.getLastStep();
-    it.status = 'error';
-    item.status = 'error';
-    item.error = error;
+    var it = self.getSpec(spec.id),
+        modelStep = it.getLastStep();
+
+    modelStep.setErrorStatus('error', error, step.line());
+    it.setStatusFromStep(modelStep);
+
+    // forward the event
+    self.emit('StepError', it, modelStep, error);
+  });
+
+  runner.on('RunnerEnd', function() {
+    self.emit('RunnerEnd');
   });
 
   function complete(item) {
     item.endTime = new Date().getTime();
     item.duration = item.endTime - item.startTime;
     item.status = item.status || 'success';
+  }
+};
+
+/**
+ * Adds a listener for an event.
+ *
+ * @param {string} eventName Name of the event to add a handler for
+ * @param {Function} listener Function that will be called when event is fired
+ */
+angular.scenario.ObjectModel.prototype.on = function(eventName, listener) {
+  eventName = eventName.toLowerCase();
+  this.listeners[eventName] = this.listeners[eventName] || [];
+  this.listeners[eventName].push(listener);
+};
+
+/**
+ * Emits an event which notifies listeners and passes extra
+ * arguments.
+ *
+ * @param {string} eventName Name of the event to fire.
+ */
+angular.scenario.ObjectModel.prototype.emit = function(eventName) {
+  var self = this,
+      args = Array.prototype.slice.call(arguments, 1),
+      eventName = eventName.toLowerCase();
+
+  if (this.listeners[eventName]) {
+    angular.forEach(this.listeners[eventName], function(listener) {
+      listener.apply(self, args);
+    });
   }
 };
 
@@ -113,12 +177,14 @@ angular.scenario.ObjectModel.prototype.getSpec = function(id) {
  *
  * @param {string} id Id of the spec
  * @param {string} name Name of the spec
+ * @param {Array<string>=} definitionNames List of all describe block names that wrap this spec
  */
-angular.scenario.ObjectModel.Spec = function(id, name) {
+angular.scenario.ObjectModel.Spec = function(id, name, definitionNames) {
   this.id = id;
   this.name = name;
   this.startTime = new Date().getTime();
   this.steps = [];
+  this.fullDefinitionName = (definitionNames || []).join(' ');
 };
 
 /**
@@ -143,6 +209,19 @@ angular.scenario.ObjectModel.Spec.prototype.getLastStep = function() {
 };
 
 /**
+ * Set status of the Spec from given Step
+ *
+ * @param {angular.scenario.ObjectModel.Step} step
+ */
+angular.scenario.ObjectModel.Spec.prototype.setStatusFromStep = function(step) {
+  if (!this.status || step.status == 'error') {
+    this.status = step.status;
+    this.error = step.error;
+    this.line = step.line;
+  }
+};
+
+/**
  * A single step inside a Spec.
  *
  * @param {string} step Name of the step
@@ -150,4 +229,17 @@ angular.scenario.ObjectModel.Spec.prototype.getLastStep = function() {
 angular.scenario.ObjectModel.Step = function(name) {
   this.name = name;
   this.startTime = new Date().getTime();
+};
+
+/**
+ * Helper method for setting all error status related properties
+ *
+ * @param {string} status
+ * @param {string} error
+ * @param {string} line
+ */
+angular.scenario.ObjectModel.Step.prototype.setErrorStatus = function(status, error, line) {
+  this.status = status;
+  this.error = error;
+  this.line = line;
 };

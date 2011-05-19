@@ -53,7 +53,7 @@ ANGULAR_SCENARIO = [
   'src/scenario/output/Html.js',
   'src/scenario/output/Json.js',
   'src/scenario/output/Xml.js',
-  'src/scenario/output/Object.js',
+  'src/scenario/output/Object.js'
 ]
 
 BUILD_DIR = 'build'
@@ -91,6 +91,30 @@ task :compile_scenario => :init do
     f.write(%x{#{concat}})
     f.write(gen_css('css/angular.css') + "\n")
     f.write(gen_css('css/angular-scenario.css'))
+  end
+end
+
+desc 'Compile JSTD Scenario Adapter'
+task :compile_jstd_scenario_adapter => :init do
+
+  deps = [
+      'src/jstd-scenario-adapter/angular.prefix',
+      'src/jstd-scenario-adapter/Adapter.js',
+      'src/jstd-scenario-adapter/angular.suffix',
+  ]
+
+  concat = 'cat ' + deps.flatten.join(' ')
+
+  File.open(path_to('jstd-scenario-adapter.js'), 'w') do |f|
+    f.write(%x{#{concat}})
+  end
+
+  # TODO(vojta) use jstd configuration when implemented
+  # (instead of including jstd-adapter-config.js)
+  File.open(path_to('jstd-scenario-adapter-config.js'), 'w') do |f|
+    f.write("/**\r\n" +
+            " * Configuration for jstd scenario adapter \n */\n" +
+            "var jstdScenarioAdapter = {\n  relativeUrlPrefix: '/build/docs/'\n};\n")
   end
 end
 
@@ -152,7 +176,7 @@ end
 
 
 desc 'Compile JavaScript'
-task :compile => [:init, :compile_scenario, :generate_ie_compat] do
+task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter, :generate_ie_compat] do
 
   deps = [
       'src/angular.prefix',
@@ -195,7 +219,9 @@ task :package => [:clean, :compile, :docs] do
     path_to('angular.js'),
     path_to('angular.min.js'),
     path_to('angular-ie-compat.js'),
-    path_to('angular-scenario.js')
+    path_to('angular-scenario.js'),
+    path_to('jstd-scenario-adapter.js'),
+    path_to('jstd-scenario-adapter-config.js'),
   ].each do |src|
     dest = src.gsub(/^[^\/]+\//, '').gsub(/((\.min)?\.js)$/, "-#{version}\\1")
     FileUtils.cp(src, pkg_dir + '/' + dest)

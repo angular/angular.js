@@ -1,5 +1,8 @@
 /**
- * Runner for scenarios.
+ * Runner for scenarios
+ *
+ * Has to be initialized before any test is loaded,
+ * because it publishes the API into window (global space).
  */
 angular.scenario.Runner = function($window) {
   this.listeners = [];
