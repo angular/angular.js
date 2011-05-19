@@ -57,36 +57,25 @@ Doc.prototype = {
     return words.join(' ');
   },
 
-
-  /*
-   * This function is here to act as a huristic based translator from the old style urls to
-   * the new style which use sections.
+  /**
+   * Converts relative urls (without section) into absolute
+   * Absolute url means url with section
+   *
+   * @example
+   * - if the link is inside any api doc:
+   * angular.widget -> api/angular.widget
+   *
+   * - if the link is inside any guid doc:
+   * intro -> guide/intro
+   *
+   * @param {string} url Absolute or relative url
+   * @returns {string} Absolute url
    */
-  sectionHuristic: function (url){
-    // if we are new styl URL with section/id then just return;
+  convertUrlToAbsolute: function(url) {
     if (url.match(/\//)) return url;
-    var match = url.match(/(\w+)(\.(.*))?/);
-    var section = match[1];
-    var id = match[3] || 'index';
-    switch(section) {
-      case 'angular':
-        section = 'api';
-        id = 'angular.' + id;
-        break;
-      case 'api':
-      case 'cookbook':
-      case 'guide':
-      case 'intro':
-      case 'tutorial':
-        break;
-      default:
-        id = section + '.' + id;
-        section = 'intro';
-    }
-    var newUrl = section + '/' + (id || 'index');
-    console.log('WARNING:', 'found old style url', url, 'at', this.file, this.line,
-        'converting to', newUrl);
-    return newUrl;
+
+    // remove this after
+    return this.section + '/' + url;
   },
 
   markdown: function (text) {
@@ -126,16 +115,13 @@ Doc.prototype = {
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
             var isFullUrl = url.match(IS_URL),
-                // FIXME(vojta) angular link could be api.angular now with sections
-                isAngular = url.match(IS_ANGULAR);
+                // FIXME(vojta) angular link could be api/angular now with sections
+                isAngular = url.match(IS_ANGULAR),
+                absUrl = isFullUrl ? url : self.convertUrlToAbsolute(url);
 
-            if (!isFullUrl) {
-              // TODO(vojta) there could be relative link, but not angular
-              // do we want to store all links (and check even the full links like http://github.com ?
-              self.links.push(self.sectionHuristic(url));
-            }
+            if (!isFullUrl) self.links.push(absUrl);
 
-            return '<a href="' + (isFullUrl ? '' + url : '#!' + self.sectionHuristic(url)) + '">'
+            return '<a href="' + (isFullUrl ? '' + url : '#!' + absUrl) + '">'
               + (isAngular ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
               + (isAngular ? '</code>' : '')
