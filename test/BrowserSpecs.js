@@ -123,7 +123,7 @@ describe('browser', function(){
       expect(code).toEqual(202);
       expect(response).toEqual('RESPONSE');
     });
-    
+
     it('should not set Content-type header for GET requests', function() {
       browser.xhr('GET', 'URL', 'POST-DATA', function(c, r) {});
 

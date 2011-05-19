@@ -11,7 +11,7 @@ describe('example.personalLog.LogCtrl', function() {
   beforeEach(function() {
     logCtrl = createNotesCtrl();
   });
-  
+
 
   it('should initialize notes with an empty array', function() {
     expect(logCtrl.logs).toEqual([]);
@@ -28,7 +28,7 @@ describe('example.personalLog.LogCtrl', function() {
     it('should add newMsg to logs as a log entry', function() {
       logCtrl.newMsg = 'first log message';
       logCtrl.addLog();
-      
+
       expect(logCtrl.logs.length).toBe(1);
       expect(logCtrl.logs[0].msg).toBe('first log message');
 
