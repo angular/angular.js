@@ -119,6 +119,9 @@ describe('ngdoc', function(){
           expect(doc.convertUrlToAbsolute('angular.widget')).toEqual('section/angular.widget');
         });
 
+        it('should change id to index if not specified', function() {
+          expect(doc.convertUrlToAbsolute('guide/')).toEqual('guide/index');
+        });
       });
 
       describe('sorting', function(){
