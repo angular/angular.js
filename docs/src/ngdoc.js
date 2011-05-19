@@ -680,7 +680,7 @@ function merge(docs){
 
     // check links - do they exist ?
     doc.links.forEach(function(link) {
-      if (!byFullId[link]) console.log('WARNING: Non existing link "' + link + '" in ' + doc.section + '/' + doc.id);
+      if (!byFullId[link]) console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
     });
 
     // merge into parents
