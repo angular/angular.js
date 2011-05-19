@@ -72,9 +72,8 @@ Doc.prototype = {
    * @returns {string} Absolute url
    */
   convertUrlToAbsolute: function(url) {
+    if (url.substr(-1) == '/') return url + 'index';
     if (url.match(/\//)) return url;
-
-    // remove this after
     return this.section + '/' + url;
   },
 
