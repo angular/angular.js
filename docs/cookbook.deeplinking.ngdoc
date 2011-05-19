@@ -34,8 +34,8 @@ In this example we have a simple app which consist of two screens:
 
 The two partials are defined in the following URLs:
 
-* {@link ./static/settings.html}
-* {@link ./static/welcome.html}
+* {@link ./examples/settings.html}
+* {@link ./examples/welcome.html}
 
 
 <doc:example>
@@ -44,8 +44,8 @@ The two partials are defined in the following URLs:
      AppCntl.$inject = ['$route']
      function AppCntl($route) {
       // define routes
-      $route.when("",          {template:'./static/welcome.html',  controller:WelcomeCntl});
-      $route.when("/settings", {template:'./static/settings.html', controller:SettingsCntl});
+      $route.when("",          {template:'./examples/welcome.html',  controller:WelcomeCntl});
+      $route.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
       $route.parent(this);
 
       // initialize the model to something useful

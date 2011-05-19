@@ -107,4 +107,14 @@ describe('angular.scenario.Describe', function() {
     var b = new angular.scenario.Describe();
     expect(a.id).toNotEqual(b.id);
   });
+
+  it('should create uniqueIds for each spec', function() {
+    var d = new angular.scenario.Describe();
+    d.it('fake', function() {});
+    d.it('fake', function() {});
+
+    expect(d.its[0].id).toBeDefined();
+    expect(d.its[1].id).toBeDefined();
+    expect(d.its[0].id).not.toEqual(d.its[1].id);
+  });
 });

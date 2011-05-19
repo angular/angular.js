@@ -1,10 +1,9 @@
 /**
  * Generates XML output into a context.
  */
-angular.scenario.output('xml', function(context, runner) {
-  var model = new angular.scenario.ObjectModel(runner);
+angular.scenario.output('xml', function(context, runner, model) {
   var $ = function(args) {return new context.init(args);};
-  runner.on('RunnerEnd', function() {
+  model.on('RunnerEnd', function() {
     var scenario = $('<scenario></scenario>');
     context.append(scenario);
     serializeXml(scenario, model.value);
