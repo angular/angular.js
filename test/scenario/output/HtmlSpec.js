@@ -1,5 +1,5 @@
 describe('angular.scenario.output.html', function() {
-  var runner, spec, listeners;
+  var runner, model, spec, listeners;
   var ui, context;
 
   beforeEach(function() {
@@ -22,8 +22,9 @@ describe('angular.scenario.output.html', function() {
       line: function() { return 'unknown:-1'; }
     };
     runner = new angular.scenario.testing.MockRunner();
+    model = new angular.scenario.ObjectModel(runner);
     context = _jQuery("<div></div>");
-    ui = angular.scenario.output.html(context, runner);
+    ui = angular.scenario.output.html(context, runner, model);
   });
 
   it('should create nested describe context', function() {

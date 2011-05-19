@@ -4,8 +4,9 @@
  * TODO(esprehn): This should be refactored now that ObjectModel exists
  *  to use angular bindings for the UI.
  */
-angular.scenario.output('html', function(context, runner) {
-  var model = new angular.scenario.ObjectModel(runner);
+angular.scenario.output('html', function(context, runner, model) {
+  var specUiMap = {},
+      lastStepUiMap = {};
 
   context.append(
     '<div id="header">' +
@@ -22,7 +23,7 @@ angular.scenario.output('html', function(context, runner) {
   );
 
   runner.on('InteractiveWait', function(spec, step) {
-    var ui = model.getSpec(spec.id).getLastStep().ui;
+    var ui = lastStepUiMap[spec.id];
     ui.find('.test-title').
       html('waiting for you to <a href="javascript:resume()">resume</a>.');
   });
@@ -58,59 +59,62 @@ angular.scenario.output('html', function(context, runner) {
         name.removeClass('closed').addClass('open');
       }
     });
-    model.getSpec(spec.id).ui = ui;
+
+    specUiMap[spec.id] = ui;
   });
 
   runner.on('SpecError', function(spec, error) {
-    var ui = model.getSpec(spec.id).ui;
+    var ui = specUiMap[spec.id];
     ui.append('<pre></pre>');
     ui.find('> pre').text(formatException(error));
   });
 
   runner.on('SpecEnd', function(spec) {
+    var ui = specUiMap[spec.id];
     spec = model.getSpec(spec.id);
-    spec.ui.removeClass('status-pending');
-    spec.ui.addClass('status-' + spec.status);
-    spec.ui.find("> .test-info .timer-result").text(spec.duration + "ms");
+    ui.removeClass('status-pending');
+    ui.addClass('status-' + spec.status);
+    ui.find("> .test-info .timer-result").text(spec.duration + "ms");
     if (spec.status === 'success') {
-      spec.ui.find('> .test-info .test-name').addClass('closed');
-      spec.ui.find('> .scrollpane .test-actions').hide();
+      ui.find('> .test-info .test-name').addClass('closed');
+      ui.find('> .scrollpane .test-actions').hide();
     }
     updateTotals(spec.status);
   });
 
   runner.on('StepBegin', function(spec, step) {
+    var ui = specUiMap[spec.id];
     spec = model.getSpec(spec.id);
     step = spec.getLastStep();
-    spec.ui.find('> .scrollpane .test-actions').
-      append('<li class="status-pending"></li>');
-    step.ui = spec.ui.find('> .scrollpane .test-actions li:last');
-    step.ui.append(
+    ui.find('> .scrollpane .test-actions').append('<li class="status-pending"></li>');
+    var stepUi = lastStepUiMap[spec.id] = ui.find('> .scrollpane .test-actions li:last');
+    stepUi.append(
       '<div class="timer-result"></div>' +
       '<div class="test-title"></div>'
     );
-    step.ui.find('> .test-title').text(step.name);
-    var scrollpane = step.ui.parents('.scrollpane');
+    stepUi.find('> .test-title').text(step.name);
+    var scrollpane = stepUi.parents('.scrollpane');
     scrollpane.attr('scrollTop', scrollpane.attr('scrollHeight'));
   });
 
   runner.on('StepFailure', function(spec, step, error) {
-    var ui = model.getSpec(spec.id).getLastStep().ui;
+    var ui = lastStepUiMap[spec.id];
     addError(ui, step.line, error);
   });
 
   runner.on('StepError', function(spec, step, error) {
-    var ui = model.getSpec(spec.id).getLastStep().ui;
+    var ui = lastStepUiMap[spec.id];
     addError(ui, step.line, error);
   });
 
   runner.on('StepEnd', function(spec, step) {
+    var stepUi = lastStepUiMap[spec.id];
     spec = model.getSpec(spec.id);
     step = spec.getLastStep();
-    step.ui.find('.timer-result').text(step.duration + 'ms');
-    step.ui.removeClass('status-pending');
-    step.ui.addClass('status-' + step.status);
-    var scrollpane = spec.ui.find('> .scrollpane');
+    stepUi.find('.timer-result').text(step.duration + 'ms');
+    stepUi.removeClass('status-pending');
+    stepUi.addClass('status-' + step.status);
+    var scrollpane = specUiMap[spec.id].find('> .scrollpane');
     scrollpane.attr('scrollTop', scrollpane.attr('scrollHeight'));
   });
 

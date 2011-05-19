@@ -1,13 +1,14 @@
 describe('angular.scenario.output.object', function() {
   var output;
-  var runner, $window;
+  var runner, model, $window;
   var spec, step;
 
   beforeEach(function() {
     $window = {};
     runner = new angular.scenario.testing.MockRunner();
+    model = new angular.scenario.ObjectModel(runner);
     runner.$window = $window;
-    output = angular.scenario.output.object(null, runner);
+    output = angular.scenario.output.object(null, runner, model);
     spec = {
       name: 'test spec',
       definition: {

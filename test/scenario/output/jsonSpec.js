@@ -1,13 +1,14 @@
 describe('angular.scenario.output.json', function() {
   var output, context;
-  var runner, $window;
+  var runner, model, $window;
   var spec, step;
 
   beforeEach(function() {
     $window = {};
     context = _jQuery('<div></div>');
     runner = new angular.scenario.testing.MockRunner();
-    output = angular.scenario.output.json(context, runner);
+    model = new angular.scenario.ObjectModel(runner);
+    output = angular.scenario.output.json(context, runner, model);
     spec = {
       name: 'test spec',
       definition: {

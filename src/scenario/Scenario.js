@@ -87,17 +87,20 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
 };
 
 /**
- * Initialization function for the scenario runner.
+ * Initialize the scenario runner and run !
  *
- * @param {angular.scenario.Runner} $scenario The runner to setup
- * @param {Object} config Config options
+ * Access global window and document object
+ * Access $runner through closure
+ *
+ * @param {Object=} config Config options
  */
-function angularScenarioInit($scenario, config) {
+angular.scenario.setUpAndRun = function (config) {
   var href = window.location.href;
   var body = _jQuery(document.body);
   var output = [];
+  var objModel = new angular.scenario.ObjectModel($runner);
 
-  if (config.scenario_output) {
+  if (config && config.scenario_output) {
     output = config.scenario_output.split(',');
   }
 
@@ -105,7 +108,7 @@ function angularScenarioInit($scenario, config) {
     if (!output.length || indexOf(output,name) != -1) {
       var context = body.append('<div></div>').find('div:last');
       context.attr('id', name);
-      fn.call({}, context, $scenario);
+      fn.call({}, context, $runner, objModel);
     }
   });
 
@@ -121,12 +124,12 @@ function angularScenarioInit($scenario, config) {
   var appFrame = body.append('<div id="application"></div>').find('#application');
   var application = new angular.scenario.Application(appFrame);
 
-  $scenario.on('RunnerEnd', function() {
+  $runner.on('RunnerEnd', function() {
     appFrame.css('display', 'none');
     appFrame.find('iframe').attr('src', 'about:blank');
   });
 
-  $scenario.on('RunnerError', function(error) {
+  $runner.on('RunnerError', function(error) {
     if (window.console) {
       console.log(formatException(error));
     } else {
@@ -135,8 +138,8 @@ function angularScenarioInit($scenario, config) {
     }
   });
 
-  $scenario.run(application);
-}
+  $runner.run(application);
+};
 
 /**
  * Iterates through list with iterator function that must call the

@@ -49,7 +49,7 @@ exports.makeDir = function (path, callback) {
   })();
 };
 
-exports.copy = function(filename, callback){
+exports.copyTpl = function(filename, callback) {
   copy('docs/src/templates/' + filename, OUTPUT_DIR + filename, callback);
 };
 

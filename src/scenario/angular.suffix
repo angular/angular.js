@@ -1,7 +1,10 @@
-  var $scenario = new angular.scenario.Runner(window);
+var $runner = new angular.scenario.Runner(window),
+    config = angularJsConfig(document);
 
+if (config.autotest) {
   jqLiteWrap(document).ready(function() {
-    angularScenarioInit($scenario, angularJsConfig(document));
+    angular.scenario.setUpAndRun(config);
   });
-
+}
 })(window, document);
+
