@@ -79,6 +79,9 @@ function download(collection, name, url) {
         // strip out all text annotations
         data = data.replace(/\[\w{1,3}\]/mg, '');
 
+        // strip out all docos comments
+        data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '')
+
         // fix smart-quotes
         data = data.replace(/[“”]/g, '"');
         data = data.replace(/[‘’]/g, "'");
