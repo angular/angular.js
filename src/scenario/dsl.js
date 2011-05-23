@@ -180,7 +180,7 @@ angular.scenario.dsl('input', function() {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements(':input[name="$1"]', this.name);
       input.val(value);
-      input.trigger('change');
+      input.trigger('keydown');
       done();
     });
   };
