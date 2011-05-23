@@ -65,3 +65,21 @@ angular.widget('code', function(element){
 
 SyntaxHighlighter['defaults'].toolbar = false;
 SyntaxHighlighter['defaults'].gutter = false;
+
+/**
+ * Controller for tutorial instructions
+ * @param $cookieStore
+ * @constructor
+ */
+function TutorialInstructionsCtrl($cookieStore) {
+  this.selected = $cookieStore.get('selEnv') || 'git-mac';
+
+  this.currentCls = function(id, cls) {
+    return this.selected == id  ? cls || 'current' : '';
+  };
+
+  this.select = function(id) {
+    this.selected = id;
+    $cookieStore.put('selEnv', id);
+  };
+}

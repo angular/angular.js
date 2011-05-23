@@ -78,16 +78,27 @@ Doc.prototype = {
   },
 
   markdown: function (text) {
-    var self = this;
-    var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/;
-    var IS_ANGULAR = /^angular\./;
     if (!text) return text;
 
-    text = trim(text);
+    var self = this,
+        IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
+        IS_ANGULAR = /^angular\./,
+        parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:(\S*).*?>[\s\S]*?<\/doc:\2>)/);
 
-    var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/);
+    parts.forEach(function(text, i) {
 
-    parts.forEach(function(text, i){
+      function isDocWidget(name) {
+        if ((i + 1) % 3 != 2) return false;
+        if (name) return parts[i+1] == name;
+        return !!parts[i+1];
+      }
+
+      // ignore each third item which is doc widget tag
+      if (!((i + 1) % 3)) {
+        parts[i] = '';
+        return;
+      }
+
       if (text.match(/^<pre>/)) {
         text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
           var clazz = 'brush: js;';
@@ -99,7 +110,7 @@ Doc.prototype = {
                   content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
                  '</pre></div>';
         });
-      } else if (text.match(/^<doc:example>/)) {
+      } else if (isDocWidget('example')) {
         text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
           function(_, before, content, after){
             return '<pre class="doc-source">' + htmlEscape(content) + '</pre>';
@@ -109,7 +120,7 @@ Doc.prototype = {
             self.scenarios.push(content);
             return '<pre class="doc-scenario">' + htmlEscape(content) + '</pre>';
           });
-      } else {
+      } else if (!isDocWidget()) {
         text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
