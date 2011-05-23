@@ -165,10 +165,37 @@ describe('ngdoc', function(){
             '<p>asdf x</p>');
     });
 
+    it('should ignore doc widgets', function() {
+      expect(new Doc().markdown('text<doc:example>do not touch</doc:example>')).
+        toEqual('<p>text</p><doc:example>do not touch</doc:example>');
+
+      expect(new Doc().markdown('text<doc:tutorial-instructions>do not touch</doc:tutorial-instructions>')).
+        toEqual('<p>text</p><doc:tutorial-instructions>do not touch</doc:tutorial-instructions>');
+    });
+
+    it('should ignore doc widgets with params', function() {
+      expect(new Doc().markdown('text<doc:tutorial-instructions id="10" show="true">do not touch</doc:tutorial-instructions>')).
+        toEqual('<p>text</p><doc:tutorial-instructions id="10" show="true">do not touch</doc:tutorial-instructions>');
+    });
+
     it('should replace text between two <pre></pre> tags', function() {
       expect(new Doc().markdown('<pre>x</pre># One<pre>b</pre>')).
         toMatch('</div><h1>One</h1><div');
     });
+
+    it('should ignore nested doc widgets', function() {
+      expect(new Doc().markdown(
+        'before<doc:tutorial-instructions>\n' +
+          '<doc:tutorial-instruction id="git-mac" name="Git on Mac/Linux">' +
+          '\ngit bla bla\n</doc:tutorial-instruction>\n' +
+        '</doc:tutorial-instructions>')).toEqual(
+
+        '<p>before</p><doc:tutorial-instructions>\n' +
+          '<doc:tutorial-instruction id="git-mac" name="Git on Mac/Linux">\n' +
+          'git bla bla\n' +
+          '</doc:tutorial-instruction>\n' +
+        '</doc:tutorial-instructions>');
+      });
 
     it('should unindent text before processing based on the second line', function() {
       expect(new Doc().markdown('first line\n' +
