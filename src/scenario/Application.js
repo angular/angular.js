@@ -58,6 +58,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
     this.executeAction(loadFn);
   } else {
     frame.css('display', 'none').attr('src', 'about:blank');
+    frame.remove();
     this.context.find('#test-frames').append('<iframe>');
     frame = this.getFrame_();
     frame.load(function() {
