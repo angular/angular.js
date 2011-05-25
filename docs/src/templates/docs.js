@@ -47,7 +47,8 @@ function DocsController($location, $browser, $window) {
 
   this.afterPartialLoaded = function() {
     SyntaxHighlighter.highlight();
-    window.scrollTo(0,0);
+    $window.scrollTo(0,0);
+    $window._gaq.push(['_trackPageview', $location.hashPath.replace('!', '/')]);
   };
 
   this.getFeedbackUrl = function() {
