@@ -30,6 +30,7 @@
           'docs-combined.js',
           'docs-keywords.js'], function(){
              angular.compile(document)();
+             $script(('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js');
         });
       });
     });
@@ -88,14 +89,5 @@
     <br class="clearFloat" />
     <div id="twoColFooter">© 2010-2011 angular</div>
   </div>
-  
-  <script type="text/javascript">
-    // lazy load GA asynchronous tracker
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-  </script>
 </body>
 </html>
