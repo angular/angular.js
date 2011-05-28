@@ -5,8 +5,11 @@ describe('browser', function(){
   var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue;
 
   function fakeSetTimeout(fn) {
-    setTimeoutQueue.push(fn);
-    return Math.random();
+    return setTimeoutQueue.push(fn) - 1; //return position in the queue
+  }
+
+  function fakeClearTimeout(deferId) {
+    setTimeoutQueue[deferId] = noop; //replace fn with noop to preserve other deferId indexes
   }
 
   fakeSetTimeout.flush = function() {
@@ -25,7 +28,8 @@ describe('browser', function(){
     xhr = null;
     fakeWindow = {
       location: {href:"http://server"},
-      setTimeout: fakeSetTimeout
+      setTimeout: fakeSetTimeout,
+      clearTimeout: fakeClearTimeout
     };
 
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
@@ -160,6 +164,32 @@ describe('browser', function(){
 
       fakeSetTimeout.flush();
       expect(callback).toHaveBeenCalled();
+    });
+
+
+    it('should return unique deferId', function() {
+      var deferId1 = browser.defer(noop),
+          deferId2 = browser.defer(noop);
+
+      expect(deferId1).toBeDefined();
+      expect(deferId2).toBeDefined();
+      expect(deferId1).not.toEqual(deferId2);
+    })
+
+
+    describe('cancel', function() {
+      it('should allow tasks to be canceled with returned deferId', function() {
+        var log = [],
+            deferId1 = browser.defer(function() { log.push('cancel me') }),
+            deferId2 = browser.defer(function() { log.push('ok') }),
+            deferId3 = browser.defer(function() { log.push('cancel me, now!') });
+
+        expect(log).toEqual([]);
+        browser.defer.cancel(deferId1);
+        browser.defer.cancel(deferId3);
+        fakeSetTimeout.flush();
+        expect(log).toEqual(['ok']);
+      });
     });
   });
 
