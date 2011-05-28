@@ -281,14 +281,31 @@ function MockBrowser() {
   self.cookieHash = {};
   self.lastCookieHash = {};
   self.deferredFns = [];
+  self.deferredNextId = 0;
 
   self.defer = function(fn, delay) {
     delay = delay || 0;
-    self.deferredFns.push({time:(self.defer.now + delay), fn:fn});
+    self.deferredFns.push({time:(self.defer.now + delay), fn:fn, id: self.deferredNextId});
     self.deferredFns.sort(function(a,b){ return a.time - b.time;});
+    return self.deferredNextId++;
   };
 
+
   self.defer.now = 0;
+
+
+  self.defer.cancel = function(deferId) {
+    var fnIndex;
+
+    forEach(self.deferredFns, function(fn, index) {
+      if (fn.id === deferId) fnIndex = index;
+    });
+
+    if (fnIndex) {
+      self.deferredFns.splice(fnIndex, 1);
+    }
+  }
+
 
   self.defer.flush = function(delay) {
     if (angular.isDefined(delay)) {
