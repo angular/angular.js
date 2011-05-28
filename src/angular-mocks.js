@@ -153,14 +153,24 @@ function MockBrowser() {
   self.cookieHash = {};
   self.lastCookieHash = {};
   self.deferredFns = [];
-
+  self.clearTimeoutQueue = {};
+  
   self.defer = function(fn) {
-    self.deferredFns.push(fn);
+    return self.deferredFns.push(fn) - 1;
   };
 
   self.defer.flush = function() {
-    while (self.deferredFns.length) self.deferredFns.shift()();
+    while (self.deferredFns.length) {
+      var fn = self.deferredFns.shift();
+      if (!clearTimeoutQueue['fn' + fnId])	{
+        fn();
+      }      
+    }
   };
+  
+  self.clearDefer = function(timeoutId) {
+    clearTimeoutQueue['fn' + timeoutId] = true;
+  }  
 }
 MockBrowser.prototype = {
 
