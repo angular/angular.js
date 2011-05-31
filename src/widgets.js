@@ -821,7 +821,15 @@ angularWidget('a', function() {
   this.directives(true);
 
   return function(element) {
-    if (element.attr('href') === '') {
+    var hasNgHref = ((element.attr('ng:bind-attr') || '').indexOf('"href":') !== -1);
+
+    // turn <a href ng:click="..">link</a> into a link in IE
+    // but only if it doesn't have name attribute, in which case it's an anchor
+    if (!hasNgHref && !element.attr('name') && !element.attr('href')) {
+      element.attr('href', '');
+    }
+
+    if (element.attr('href') === '' && !hasNgHref) {
       element.bind('click', function(event){
         event.preventDefault();
       });
