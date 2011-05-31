@@ -215,7 +215,7 @@ function sortedHtml(element, showNgClass) {
             attr.name !='style' &&
             attr.name.substr(0, 6) != 'jQuery') {
           // in IE we need to check for all of these.
-          if (!/ng-\d+/.exec(attr.name))
+          if (!/ng-\d+/.exec(attr.name) && attr.name != 'getElementById')
             attrs.push(' ' + attr.name + '="' + attr.value + '"');
         }
       }

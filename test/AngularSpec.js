@@ -454,9 +454,8 @@ describe('angular', function(){
         return this.childNodes[1];
       };
 
-      angularInit({autobind: 'child'}, dom);
 
-      delete dom.getElementById; //make IE and sortedHtml happy
+      angularInit({autobind: 'child'}, dom);
 
       expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
                                         '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
