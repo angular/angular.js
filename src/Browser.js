@@ -249,7 +249,9 @@ function Browser(window, document, body, XHR, $log) {
    * @return {function()} Returns the registered listener fn - handy if the fn is anonymous.
    */
   self.onHashChange = function(listener) {
-    if ('onhashchange' in window) {
+    // IE8 comp mode returns true, but doesn't support hashchange event
+    var dm = window.document.documentMode;
+    if ('onhashchange' in window && (isUndefined(dm) || dm >= 8)) {
       jqLite(window).bind('hashchange', listener);
     } else {
       var lastBrowserUrl = self.getUrl();

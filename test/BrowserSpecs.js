@@ -418,7 +418,10 @@ describe('browser', function(){
     it('should use $browser poller to detect url changes when onhashchange event is unsupported',
         function() {
 
-      fakeWindow = {location: {href:"http://server"}};
+      fakeWindow = {
+        location: {href:"http://server"},
+        document: {}
+      };
 
       browser = new Browser(fakeWindow, {}, {});
 
@@ -455,7 +458,8 @@ describe('browser', function(){
                       onHashChngListener = listener;
                     },
                     removeEventListener: angular.noop,
-                    detachEvent: angular.noop
+                    detachEvent: angular.noop,
+                    document: {}
                    };
       fakeWindow.onhashchange = true;
 
@@ -478,6 +482,25 @@ describe('browser', function(){
       if (!jQuery) {
         jqLite(fakeWindow).dealoc();
       }
+    });
+
+    // asynchronous test
+    it('should fire onHashChange when location.hash change', function() {
+      var callback = jasmine.createSpy('onHashChange');
+      browser = new Browser(window, {}, {});
+      browser.onHashChange(callback);
+
+      window.location.hash = 'new-hash';
+      browser.startPoller(100, setTimeout);
+
+      waitsFor(function() {
+        return callback.callCount;
+      }, 'onHashChange callback to be called', 1000);
+
+      runs(function() {
+        if (!jQuery) jqLite(window).dealoc();
+        window.location.hash = '';
+      });
     });
   });
 });
