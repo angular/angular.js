@@ -62,7 +62,7 @@ describe('scope/model', function(){
       var onEval = jasmine.createSpy('onEval');
       model.$onEval(onEval);
       model.$eval('');
-      expect(onEval).wasNotCalled();
+      expect(onEval).not.toHaveBeenCalled();
     });
 
     it('should ignore none string/function', function(){

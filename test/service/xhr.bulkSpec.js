@@ -57,10 +57,10 @@ describe('$xhr.bulk', function() {
     $xhrBulk.flush(function(){ log += 'DONE';});
     $browserXhr.flush();
 
-    expect($xhrError).wasCalled();
+    expect($xhrError).toHaveBeenCalled();
     var cb = $xhrError.mostRecentCall.args[0].callback;
     expect(typeof cb).toEqual($function);
-    expect($xhrError).wasCalledWith(
+    expect($xhrError).toHaveBeenCalledWith(
         {url:'/req1', method:'GET', data:null, callback:cb},
         {status:404, response:'NotFound'});
 

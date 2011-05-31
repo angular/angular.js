@@ -59,18 +59,18 @@ describe('browser', function(){
     it('should process callbacks immedietly with no outstanding requests', function(){
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
-      expect(callback).wasCalled();
+      expect(callback).toHaveBeenCalled();
     });
 
     it('should queue callbacks with outstanding requests', function(){
       var callback = jasmine.createSpy('callback');
       browser.xhr('GET', '/url', null, noop);
       browser.notifyWhenNoOutstandingRequests(callback);
-      expect(callback).not.wasCalled();
+      expect(callback).not.toHaveBeenCalled();
 
       xhr.readyState = 4;
       xhr.onreadystatechange();
-      expect(callback).wasCalled();
+      expect(callback).toHaveBeenCalled();
     });
   });
 
@@ -83,7 +83,7 @@ describe('browser', function(){
           log += code + ':' + data + ';';
         });
         browser.notifyWhenNoOutstandingRequests(callback);
-        expect(callback).not.wasCalled();
+        expect(callback).not.toHaveBeenCalled();
         expect(scripts.length).toEqual(1);
         var script = scripts[0];
         script.remove = function(){
@@ -93,7 +93,7 @@ describe('browser', function(){
         expect(url[0]).toEqual('http://example.org/path');
         expect(typeof fakeWindow[url[1]]).toEqual($function);
         fakeWindow[url[1]]('data');
-        expect(callback).wasCalled();
+        expect(callback).toHaveBeenCalled();
         expect(log).toEqual('remove();200:data;');
         expect(typeof fakeWindow[url[1]]).toEqual('undefined');
       });
@@ -172,10 +172,10 @@ describe('browser', function(){
     it('should update outstandingRequests counter', function() {
       var callback = jasmine.createSpy('callback');
       browser.defer(callback);
-      expect(callback).not.wasCalled();
+      expect(callback).not.toHaveBeenCalled();
 
       fakeSetTimeout.flush();
-      expect(callback).wasCalled();
+      expect(callback).toHaveBeenCalled();
     });
   });
 

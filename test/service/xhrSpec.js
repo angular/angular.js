@@ -60,7 +60,7 @@ describe('$xhr', function() {
     $xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
     $browserXhr.flush();
 
-    expect($log.error).wasCalledWith("MyException");
+    expect($log.error).toHaveBeenCalledWith("MyException");
   });
 
 

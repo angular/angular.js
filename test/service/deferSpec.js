@@ -43,10 +43,10 @@ describe('$defer', function() {
     var eval = this.spyOn(scope, '$eval').andCallThrough();
 
     $defer(function() {});
-    expect(eval).wasNotCalled();
+    expect(eval).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(eval).wasCalled();
+    expect(eval).toHaveBeenCalled();
 
     eval.reset(); //reset the spy;
 
@@ -61,10 +61,10 @@ describe('$defer', function() {
     var eval = this.spyOn(scope, '$eval').andCallThrough();
 
     $defer(function() {throw "Test Error";});
-    expect(eval).wasNotCalled();
+    expect(eval).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(eval).wasCalled();
+    expect(eval).toHaveBeenCalled();
   });
 
   it('should allow you to specify the delay time', function(){
