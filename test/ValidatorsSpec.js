@@ -131,10 +131,10 @@ describe('ValidatorTest', function(){
 
       var spy = jasmine.createSpy();
       asynchronous.call(self, "kai", spy);
-      expect(spy).wasNotCalled();
+      expect(spy).not.toHaveBeenCalled();
 
       asynchronous.call(self, "misko", spy);
-      expect(spy).wasCalled();
+      expect(spy).toHaveBeenCalled();
     });
 
     it("should ignore old callbacks, and not remove spinner", function(){
@@ -156,7 +156,7 @@ describe('ValidatorTest', function(){
       scope.updateFn = jasmine.createSpy();
       scope.name = 'misko';
       scope.$eval();
-      expect(scope.asyncFn).wasCalledWith('misko', scope.asyncFn.mostRecentCall.args[1]);
+      expect(scope.asyncFn).toHaveBeenCalledWith('misko', scope.asyncFn.mostRecentCall.args[1]);
       assertTrue(scope.$element.hasClass('ng-input-indicator-wait'));
       scope.asyncFn.mostRecentCall.args[1]('myError', {id: 1234, data:'data'});
       assertFalse(scope.$element.hasClass('ng-input-indicator-wait'));

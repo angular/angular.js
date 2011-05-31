@@ -128,17 +128,17 @@ describe('$xhr.cache', function() {
 
     $browserXhr.expectGET('/url').respond('+');
     cache('GET', '/url', null, callback);
-    expect(eval).wasNotCalled();
+    expect(eval).not.toHaveBeenCalled();
 
     $browserXhr.flush();
-    expect(eval).wasCalled();
+    expect(eval).toHaveBeenCalled();
 
     eval.reset(); //reset the spy
 
     cache('GET', '/url', null, callback);
-    expect(eval).wasNotCalled();
+    expect(eval).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(eval).wasCalled();
+    expect(eval).toHaveBeenCalled();
   });
 });

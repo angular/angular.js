@@ -29,7 +29,7 @@ describe('$xhr.error', function() {
     $browserXhr.flush();
     var cb = $xhrError.mostRecentCall.args[0].callback;
     expect(typeof cb).toEqual($function);
-    expect($xhrError).wasCalledWith(
+    expect($xhrError).toHaveBeenCalledWith(
         {url:'/req', method:'POST', data:'MyData', callback:cb},
         {status:500, body:'MyError'});
   });
