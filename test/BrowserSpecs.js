@@ -124,6 +124,19 @@ describe('browser', function(){
       expect(response).toEqual('RESPONSE');
     });
 
+    it('should normalize IE\'s 1223 status code into 204', function() {
+      var callback = jasmine.createSpy('XHR');
+
+      browser.xhr('GET', 'URL', 'POST', callback);
+
+      xhr.status = 1223;
+      xhr.readyState = 4;
+      xhr.onreadystatechange();
+
+      expect(callback).toHaveBeenCalled();
+      expect(callback.argsForCall[0][0]).toEqual(204);
+    });
+
     it('should not set Content-type header for GET requests', function() {
       browser.xhr('GET', 'URL', 'POST-DATA', function(c, r) {});
 
