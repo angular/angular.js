@@ -4,6 +4,7 @@ describe('browser', function(){
 
   function fakeSetTimeout(fn) {
     setTimeoutQueue.push(fn);
+    return Math.random();
   }
 
   fakeSetTimeout.flush = function() {
@@ -384,6 +385,10 @@ describe('browser', function(){
   });
 
   describe('poller', function(){
+    beforeEach(function() {
+      spyOn(browser, 'startPoller');
+    });
+
     it('should call all fns on poll', function(){
       var log = '';
       browser.addPollFn(function(){log+='a';});
@@ -399,6 +404,7 @@ describe('browser', function(){
       var log = '';
       var setTimeoutSpy = jasmine.createSpy('setTimeout');
       browser.addPollFn(function(){log+='.';});
+      browser.startPoller.andCallThrough();
       browser.startPoller(50, setTimeoutSpy);
       expect(log).toEqual('.');
       expect(setTimeoutSpy.mostRecentCall.args[1]).toEqual(50);
@@ -410,6 +416,22 @@ describe('browser', function(){
       var fn = function() { return 1; };
       var returnedFn = browser.addPollFn(fn);
       expect(returnedFn).toBe(fn);
+    });
+
+    it('should auto start poller when first fn registered', function() {
+      browser.addPollFn(function() {});
+
+      expect(browser.startPoller).toHaveBeenCalled();
+      expect(browser.startPoller.callCount).toBe(1);
+    });
+
+    it('should auto start poller only when first fn registered', function() {
+      browser.startPoller.andCallThrough();
+      browser.addPollFn(function() {});
+      browser.addPollFn(function() {});
+      browser.addPollFn(function() {});
+
+      expect(browser.startPoller.callCount).toBe(1);
     });
   });
 
@@ -424,6 +446,7 @@ describe('browser', function(){
       };
 
       browser = new Browser(fakeWindow, {}, {});
+      browser.startPoller = function() {};
 
       var events = [];
 
