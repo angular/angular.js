@@ -141,7 +141,8 @@ function Browser(window, document, body, XHR, $log) {
   //////////////////////////////////////////////////////////////
   // Poll Watcher API
   //////////////////////////////////////////////////////////////
-  var pollFns = [];
+  var pollFns = [],
+      pollTimeout;
 
   /**
    * @workInProgress
@@ -162,11 +163,13 @@ function Browser(window, document, body, XHR, $log) {
    * @param {function()} fn Poll function to add
    *
    * @description
-   * Adds a function to the list of functions that poller periodically executes
+   * Adds a function to the list of functions that poller periodically executes,
+   * and starts polling if not started yet.
    *
    * @returns {function()} the added function
    */
   self.addPollFn = function(fn) {
+    if (!pollTimeout) self.startPoller(100, setTimeout);
     pollFns.push(fn);
     return fn;
   };
@@ -187,7 +190,7 @@ function Browser(window, document, body, XHR, $log) {
   self.startPoller = function(interval, setTimeout) {
     (function check(){
       self.poll();
-      setTimeout(check, interval);
+      pollTimeout = setTimeout(check, interval);
     })();
   };
 
