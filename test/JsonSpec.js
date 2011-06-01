@@ -140,10 +140,10 @@ describe('json', function(){
         var spy = this.spyOn(JSON, 'parse').andCallThrough();
 
         expect(fromJson('{}')).toEqual({});
-        expect(spy).wasNotCalled();
+        expect(spy).not.toHaveBeenCalled();
 
         expect(fromJson('{}', true)).toEqual({});
-        expect(spy).wasCalled();
+        expect(spy).toHaveBeenCalled();
       });
 
 
