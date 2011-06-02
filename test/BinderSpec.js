@@ -425,10 +425,10 @@ describe('Binder', function(){
   it('BindStyle', function(){
     var scope = this.compile('<div ng:style="style"/>');
 
-    scope.$eval('style={color:"red"}');
+    scope.$eval('style={height: "10px"}');
     scope.$eval();
 
-    assertEquals("red", scope.$element.css('color'));
+    assertEquals("10px", scope.$element.css('height'));
 
     scope.$eval('style={}');
     scope.$eval();
