@@ -273,15 +273,15 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should get css', function() {
-        doc.append('<div id="test" style="border: 1px solid red"></div>');
-        $root.dsl.element('#test').css('border');
-        expect($root.futureResult).toMatch(/red/);
+        doc.append('<div id="test" style="height: 30px"></div>');
+        $root.dsl.element('#test').css('height');
+        expect($root.futureResult).toMatch(/30px/);
       });
 
       it('should set css', function() {
-        doc.append('<div id="test" style="border: 1px solid red"></div>');
-        $root.dsl.element('#test').css('border', '1px solid green');
-        expect(doc.find('#test').css('border')).toMatch(/green/);
+        doc.append('<div id="test" style="height: 10px"></div>');
+        $root.dsl.element('#test').css('height', '20px');
+        expect(doc.find('#test').css('height')).toEqual('20px');
       });
 
       it('should add all jQuery key/value methods', function() {

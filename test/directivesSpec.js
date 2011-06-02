@@ -196,9 +196,9 @@ describe("directive", function(){
 
   describe('ng:style', function(){
     it('should set', function(){
-      var scope = compile('<div ng:style="{color:\'red\'}"></div>');
+      var scope = compile('<div ng:style="{height: \'40px\'}"></div>');
       scope.$eval();
-      expect(element.css('color')).toEqual('red');
+      expect(element.css('height')).toEqual('40px');
     });
 
     it('should silently ignore undefined style', function() {
@@ -208,15 +208,15 @@ describe("directive", function(){
     });
 
     it('should preserve and remove previous style', function(){
-      var scope = compile('<div style="color:red;" ng:style="myStyle"></div>');
+      var scope = compile('<div style="height: 10px;" ng:style="myStyle"></div>');
       scope.$eval();
-      expect(getStyle(element)).toEqual({color:'red'});
-      scope.myStyle = {color:'blue', width:'10px'};
+      expect(getStyle(element)).toEqual({height: '10px'});
+      scope.myStyle = {height: '20px', width: '10px'};
       scope.$eval();
-      expect(getStyle(element)).toEqual({color:'blue', width:'10px'});
+      expect(getStyle(element)).toEqual({height: '20px', width: '10px'});
       scope.myStyle = {};
       scope.$eval();
-      expect(getStyle(element)).toEqual({color:'red'});
+      expect(getStyle(element)).toEqual({height: '10px'});
     });
   });
 
