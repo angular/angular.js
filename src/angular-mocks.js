@@ -203,7 +203,9 @@ MockBrowser.prototype = {
       }
       return this.cookieHash;
     }
-  }
+  },
+
+  addJs: function(){}
 };
 
 angular.service('$browser', function(){
