@@ -12,12 +12,6 @@ angularService('$browser', function($log){
   if (!browserSingleton) {
     browserSingleton = new Browser(window, jqLite(window.document), jqLite(window.document.body),
                                    XHR, $log);
-    var addPollFn = browserSingleton.addPollFn;
-    browserSingleton.addPollFn = function(){
-      browserSingleton.addPollFn = addPollFn;
-      browserSingleton.startPoller(100, function(delay, fn){setTimeout(delay,fn);});
-      return addPollFn.apply(browserSingleton, arguments);
-    };
     browserSingleton.bind();
   }
   return browserSingleton;

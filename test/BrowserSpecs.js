@@ -4,6 +4,7 @@ describe('browser', function(){
 
   function fakeSetTimeout(fn) {
     setTimeoutQueue.push(fn);
+    return Math.random();
   }
 
   fakeSetTimeout.flush = function() {
@@ -384,6 +385,10 @@ describe('browser', function(){
   });
 
   describe('poller', function(){
+    beforeEach(function() {
+      spyOn(browser, 'startPoller');
+    });
+
     it('should call all fns on poll', function(){
       var log = '';
       browser.addPollFn(function(){log+='a';});
@@ -399,6 +404,7 @@ describe('browser', function(){
       var log = '';
       var setTimeoutSpy = jasmine.createSpy('setTimeout');
       browser.addPollFn(function(){log+='.';});
+      browser.startPoller.andCallThrough();
       browser.startPoller(50, setTimeoutSpy);
       expect(log).toEqual('.');
       expect(setTimeoutSpy.mostRecentCall.args[1]).toEqual(50);
@@ -411,6 +417,22 @@ describe('browser', function(){
       var returnedFn = browser.addPollFn(fn);
       expect(returnedFn).toBe(fn);
     });
+
+    it('should auto start poller when first fn registered', function() {
+      browser.addPollFn(function() {});
+
+      expect(browser.startPoller).toHaveBeenCalled();
+      expect(browser.startPoller.callCount).toBe(1);
+    });
+
+    it('should auto start poller only when first fn registered', function() {
+      browser.startPoller.andCallThrough();
+      browser.addPollFn(function() {});
+      browser.addPollFn(function() {});
+      browser.addPollFn(function() {});
+
+      expect(browser.startPoller.callCount).toBe(1);
+    });
   });
 
 
@@ -418,9 +440,13 @@ describe('browser', function(){
     it('should use $browser poller to detect url changes when onhashchange event is unsupported',
         function() {
 
-      fakeWindow = {location: {href:"http://server"}};
+      fakeWindow = {
+        location: {href:"http://server"},
+        document: {}
+      };
 
       browser = new Browser(fakeWindow, {}, {});
+      browser.startPoller = function() {};
 
       var events = [];
 
@@ -455,7 +481,8 @@ describe('browser', function(){
                       onHashChngListener = listener;
                     },
                     removeEventListener: angular.noop,
-                    detachEvent: angular.noop
+                    detachEvent: angular.noop,
+                    document: {}
                    };
       fakeWindow.onhashchange = true;
 
@@ -478,6 +505,25 @@ describe('browser', function(){
       if (!jQuery) {
         jqLite(fakeWindow).dealoc();
       }
+    });
+
+    // asynchronous test
+    it('should fire onHashChange when location.hash change', function() {
+      var callback = jasmine.createSpy('onHashChange');
+      browser = new Browser(window, {}, {});
+      browser.onHashChange(callback);
+
+      window.location.hash = 'new-hash';
+      browser.startPoller(100, setTimeout);
+
+      waitsFor(function() {
+        return callback.callCount;
+      }, 'onHashChange callback to be called', 1000);
+
+      runs(function() {
+        if (!jQuery) jqLite(window).dealoc();
+        window.location.hash = '';
+      });
     });
   });
 });
