@@ -38,15 +38,15 @@ describe('angular.scenario.output.html', function() {
       toBeTruthy();
   });
 
-  it('should add link on InteractiveWait', function() {
+  it('should add link on InteractivePause', function() {
     runner.emit('SpecBegin', spec);
     runner.emit('StepBegin', spec, step);
     runner.emit('StepEnd', spec, step);
     runner.emit('StepBegin', spec, step);
-    runner.emit('InteractiveWait', spec, step);
+    runner.emit('InteractivePause', spec, step);
     expect(context.find('.test-actions .test-title:first').text()).toEqual('some step');
     expect(lowercase(context.find('.test-actions .test-title:last').html())).toEqual(
-      'waiting for you to <a href="javascript:resume()">resume</a>.'
+      'paused... <a href="javascript:resume()">resume</a> when ready.'
     );
   });
 

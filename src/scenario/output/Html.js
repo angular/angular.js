@@ -22,10 +22,10 @@ angular.scenario.output('html', function(context, runner, model) {
     '</div>'
   );
 
-  runner.on('InteractiveWait', function(spec, step) {
+  runner.on('InteractivePause', function(spec, step) {
     var ui = lastStepUiMap[spec.id];
     ui.find('.test-title').
-      html('waiting for you to <a href="javascript:resume()">resume</a>.');
+      html('paused... <a href="javascript:resume()">resume</a> when ready.');
   });
 
   runner.on('SpecBegin', function(spec) {
