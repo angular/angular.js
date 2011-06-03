@@ -764,11 +764,13 @@ var angularString = {
 
 var angularDate = {
     'toString':function(date){
-      return !date ?
-                date :
-                date.toISOString ?
-                  date.toISOString() :
-                  padNumber(date.getUTCFullYear(), 4) + '-' +
+       if (!date) return date;
+
+       var isoString = date.toISOString ? date.toISOString() : '';
+
+       return (isoString.length==24) ?
+                isoString :
+                padNumber(date.getUTCFullYear(), 4) + '-' +
                   padNumber(date.getUTCMonth() + 1, 2) + '-' +
                   padNumber(date.getUTCDate(), 2) + 'T' +
                   padNumber(date.getUTCHours(), 2) + ':' +
