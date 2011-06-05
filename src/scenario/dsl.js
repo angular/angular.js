@@ -4,12 +4,12 @@
 
  /**
  * Usage:
- *    wait() waits until you call resume() in the console
+ *    pause() pauses until you call resume() in the console
  */
-angular.scenario.dsl('wait', function() {
+angular.scenario.dsl('pause', function() {
   return function() {
-    return this.addFuture('waiting for you to resume', function(done) {
-      this.emit('InteractiveWait', this.spec, this.step);
+    return this.addFuture('pausing for you to resume', function(done) {
+      this.emit('InteractivePause', this.spec, this.step);
       this.$window.resume = function() { done(); };
     });
   };
@@ -17,11 +17,11 @@ angular.scenario.dsl('wait', function() {
 
 /**
  * Usage:
- *    pause(seconds) pauses the test for specified number of seconds
+ *    sleep(seconds) pauses the test for specified number of seconds
  */
-angular.scenario.dsl('pause', function() {
+angular.scenario.dsl('sleep', function() {
   return function(time) {
-    return this.addFuture('pause for ' + time + ' seconds', function(done) {
+    return this.addFuture('sleep for ' + time + ' seconds', function(done) {
       this.$window.setTimeout(function() { done(null, time * 1000); }, time * 1000);
     });
   };

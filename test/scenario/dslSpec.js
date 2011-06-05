@@ -46,20 +46,20 @@ describe("angular.scenario.dsl", function() {
       SpecRunner.prototype.addFutureAction;
   });
 
-  describe('Wait', function() {
-    it('should wait until resume to complete', function() {
+  describe('Pause', function() {
+    it('should pause until resume to complete', function() {
       expect($window.resume).toBeUndefined();
-      $root.dsl.wait();
+      $root.dsl.pause();
       expect(angular.isFunction($window.resume)).toBeTruthy();
       expect($root.futureLog).toEqual([]);
       $window.resume();
       expect($root.futureLog).
-        toEqual(['waiting for you to resume']);
-      expect(eventLog).toContain('InteractiveWait');
+        toEqual(['pausing for you to resume']);
+      expect(eventLog).toContain('InteractivePause');
     });
   });
 
-  describe('Pause', function() {
+  describe('Sleep', function() {
     beforeEach(function() {
       $root.$window.setTimeout = function(fn, value) {
         $root.timerValue = value;
@@ -67,8 +67,8 @@ describe("angular.scenario.dsl", function() {
       };
     });
 
-    it('should pause for specified seconds', function() {
-      $root.dsl.pause(10);
+    it('should sleep for specified seconds', function() {
+      $root.dsl.sleep(10);
       expect($root.timerValue).toEqual(10000);
       expect($root.futureResult).toEqual(10000);
     });

@@ -387,7 +387,7 @@ extend(angularValidator, {
          expect(textBox.attr('className')).not().toMatch(/ng-validation-error/);
          input('text').enter('X');
          expect(textBox.attr('className')).toMatch(/ng-input-indicator-wait/);
-         pause(.6);
+         sleep(.6);
          expect(textBox.attr('className')).not().toMatch(/ng-input-indicator-wait/);
          expect(textBox.attr('className')).toMatch(/ng-validation-error/);
         });
