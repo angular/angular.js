@@ -530,8 +530,15 @@ describe("angular.scenario.dsl", function() {
         chain.select('foo');
         expect($root.futureError).toMatch(/did not match/);
       });
-    });
 
+      describe('val', function() {
+        it('should return value in text input', function() {
+          doc.append('<input name="test.input" value="something">');
+          $root.dsl.input('test.input').val();
+          expect($root.futureResult).toEqual("something");
+        });
+      });
+    });
 
     describe('Textarea', function() {
 

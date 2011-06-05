@@ -171,6 +171,7 @@ angular.scenario.dsl('binding', function() {
  *    input(name).enter(value) enters value in input with specified name
  *    input(name).check() checks checkbox
  *    input(name).select(value) selects the radio button with specified name/value
+ *    input(name).val() returns the value of the input.
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
@@ -198,6 +199,13 @@ angular.scenario.dsl('input', function() {
         elements(':radio[name$="@$1"][value="$2"]', this.name, value);
       input.trigger('click');
       done();
+    });
+  };
+
+  chain.val = function() {
+    return this.addFutureAction("return input val", function($window, $document, done) {
+      var input = $document.elements(':input[name="$1"]', this.name);
+      done(null,input.val());
     });
   };
 
