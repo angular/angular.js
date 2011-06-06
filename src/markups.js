@@ -235,8 +235,171 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @param {template} template any string which can contain `{{}}` markup.
  */
 
+/**
+ * @workInProgress
+ * @ngdoc directive
+ * @name angular.directive.ng:disabled
+ *
+ * @description
+ *
+ * The following markup will make the button enabled on Chrome/Firefox but not on IE8 and older IEs:
+ * <pre>
+ * <div ng:init="scope = { isDisabled: false }">
+ *  <button disabled="{{scope.isDisabled}}">Disabled</button>
+ * </div>
+ * </pre>
+ *
+ * the HTML specs do not require browsers preserve the special attributes such as disabled.(The presense of them means true and absense means false)
+ * This prevents the angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce ng:disabled.
+ *
+ * @example
+    <doc:example>
+      <doc:source>
+        Click me to toggle: <input type="checkbox" name="checked"><br/>
+        <button name="button" ng:disabled="{{checked}}">Button</button>
+      </doc:source>
+      <doc:scenario>
+        it('should toggle button', function() {
+          expect(element('.doc-example-live :button').attr('disabled')).toBeFalsy();
+          input('checked').check();
+          expect(element('.doc-example-live :button').attr('disabled')).toBeTruthy();
+        });
+      </doc:scenario>
+    </doc:example>
+ *
+ * @element ANY
+ * @param {template} template any string which can contain '{{}}' markup.
+ */
+
+
+/**
+ * @workInProgress
+ * @ngdoc directive
+ * @name angular.directive.ng:checked
+ *
+ * @description
+ * the HTML specs do not require browsers preserve the special attributes such as checked.(The presense of them means true and absense means false)
+ * This prevents the angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce ng:checked.
+ * @example
+    <doc:example>
+      <doc:source>
+        Check me to check both: <input type="checkbox" name="master"><br/>
+        <input id="checkSlave" type="checkbox" ng:checked="{{master}}">
+      </doc:source>
+      <doc:scenario>
+        it('should check both checkBoxes', function() {
+          expect(element('.doc-example-live #checkSlave').attr('checked')).toBeFalsy();
+          input('master').check();
+          expect(element('.doc-example-live #checkSlave').attr('checked')).toBeTruthy();
+        });
+      </doc:scenario>
+    </doc:example>
+ *
+ * @element ANY
+ * @param {template} template any string which can contain '{{}}' markup.
+ */
+
+
+/**
+ * @workInProgress
+ * @ngdoc directive
+ * @name angular.directive.ng:multiple
+ *
+ * @description
+ * the HTML specs do not require browsers preserve the special attributes such as multiple.(The presense of them means true and absense means false)
+ * This prevents the angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce ng:multiple.
+ *
+ * @example
+     <doc:example>
+       <doc:source>
+         Check me check multiple: <input type="checkbox" name="checked"><br/>
+         <select id="select" ng:multiple="{{checked}}">
+           <option>Misko</option>
+           <option>Igor</option>
+           <option>Vojita</option>
+           <option>Di</option>
+         </select>
+       </doc:source>
+       <doc:scenario>
+         it('should toggle multiple', function() {
+           expect(element('.doc-example-live #select').attr('multiple')).toBeFalsy();
+           input('checked').check();
+           expect(element('.doc-example-live #select').attr('multiple')).toBeTruthy();
+         });
+       </doc:scenario>
+     </doc:example>
+ *
+ * @element ANY
+ * @param {template} template any string which can contain '{{}}' markup.
+ */
+
+
+/**
+ * @workInProgress
+ * @ngdoc directive
+ * @name angular.directive.ng:readonly
+ *
+ * @description
+ * the HTML specs do not require browsers preserve the special attributes such as readonly.(The presense of them means true and absense means false)
+ * This prevents the angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce ng:readonly.
+ * @example
+    <doc:example>
+      <doc:source>
+        Check me to make text readonly: <input type="checkbox" name="checked"><br/>
+        <input type="text" ng:readonly="{{checked}}" value="I'm Angular"/>
+      </doc:source>
+      <doc:scenario>
+        it('should toggle readonly attr', function() {
+          expect(element('.doc-example-live :text').attr('readonly')).toBeFalsy();
+          input('checked').check();
+          expect(element('.doc-example-live :text').attr('readonly')).toBeTruthy();
+        });
+      </doc:scenario>
+    </doc:example>
+ *
+ * @element ANY
+ * @param {template} template any string which can contain '{{}}' markup.
+ */
+
+
+/**
+* @workInProgress
+* @ngdoc directive
+* @name angular.directive.ng:selected
+*
+* @description
+* the HTML specs do not require browsers preserve the special attributes such as selected.(The presense of them means true and absense means false)
+* This prevents the angular compiler from correctly retrieving the binding expression.
+* To solve this problem, we introduce ng:selected.
+* @example
+   <doc:example>
+     <doc:source>
+       Check me to select: <input type="checkbox" name="checked"><br/>
+       <select>
+         <option>Hello!</option>
+         <option id="greet" ng:selected="{{checked}}">Greetings!</option>
+       </select>
+     </doc:source>
+     <doc:scenario>
+       it('should select Greetings!', function() {
+         expect(element('.doc-example-live #greet').attr('selected')).toBeFalsy();
+         input('checked').check();
+         expect(element('.doc-example-live #greet').attr('selected')).toBeTruthy();
+       });
+     </doc:scenario>
+   </doc:example>
+* @element ANY
+* @param {template} template any string which can contain '{{}}' markup.
+*/
+
+
 var NG_BIND_ATTR = 'ng:bind-attr';
 var SPECIAL_ATTRS = {};
+
 forEach('src,href,checked,disabled,multiple,readonly,selected'.split(','), function(name) {
   SPECIAL_ATTRS['ng:' + name] = name;
 });
