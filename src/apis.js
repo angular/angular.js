@@ -18,17 +18,21 @@ var angularGlobal = {
  * @function
  *
  * @description
- * `angular.Object` is a namespace for utility functions for manipulation with JavaScript objects.
+ * A namespace for utility functions used to work with JavaScript objects. These functions are
+ * exposed in two ways:
  *
- * These functions are exposed in two ways:
+ * __* Angular expressions:__ Functions are bound to all objects and augment the Object type. The
+ * names of these methods are prefixed with the '$' character in order to minimize naming collisions.
+ * To call a method, invoke the function without the first argument, e.g, `myObject.$foo(param2)`.
  *
- * - **in angular expressions**: the functions are bound to all objects and augment the Object
- *   type. The names of these methods are prefixed with `$` character to minimize naming collisions.
- *   To call a method, invoke the function without the first argument, e.g, `myObject.$foo(param2)`.
+ * __* JavaScript code:__ Functions don't augment the Object type and must be invoked as functions of
+ * `angular.Object` as `angular.Object.foo(myObject, param2)`.
  *
- * - **in JavaScript code**: the functions don't augment the Object type and must be invoked as
- *   functions of `angular.Object` as `angular.Object.foo(myObject, param2)`.
- *
+ * * {@link angular.Object.copy angular.Object.copy()} - Creates a deep copy of the source parameter
+ * * {@link angular.Object.equals angular.Object.equals()} - Determines if two objects or values are
+ * equivalent
+ * * {@link angular.Object.size angular.Object.size()} - Determines the number of elements in
+ * strings, arrays, and objects.
  */
 var angularCollection = {
   'copy': copy,
@@ -44,21 +48,32 @@ var angularObject = {
  * @name angular.Array
  *
  * @description
- * `angular.Array` is a namespace for utility functions for manipulation of JavaScript `Array`
- * objects.
+ * A namespace for utility functions for the manipulation of JavaScript Array objects.
  *
  * These functions are exposed in two ways:
  *
- * - **in angular expressions**: the functions are bound to the Array objects and augment the Array
- *   type as array methods. The names of these methods are prefixed with `$` character to minimize
- *   naming collisions. To call a method, invoke `myArrayObject.$foo(params)`.
+ * * __Angular expressions:__ Functions are bound to the Array objects and augment the Array type as
+ * array methods. The names of these methods are prefixed with $ character to minimize naming
+ * collisions. To call a method, invoke myArrayObject.$foo(params).
  *
- *   Because `Array` type is a subtype of the Object type, all {@link angular.Object} functions
- *   augment the `Array` type in angular expressions as well.
+ *     Because Array type is a subtype of the Object type, all angular.Object functions augment
+ *     theArray type in angular expressions as well.
  *
- * - **in JavaScript code**: the functions don't augment the `Array` type and must be invoked as
- *   functions of `angular.Array` as `angular.Array.foo(myArrayObject, params)`.
+ * * __JavaScript code:__ Functions don't augment the Array type and must be invoked as functions of
+ * `angular.Array` as `angular.Array.foo(myArrayObject, params)`.
  *
+ * The following APIs are built-in to the angular Array object:
+ *
+ * * {@link angular.Array.add angular.Array.add()} - Optionally adds a new element to an array.
+ * * {@link angular.Array.count angular.Array.count()} - Determines the number of elements in an
+ * array.
+ * * {@link angular.Array.filter angular.Array.filter()} - Returns a subset of items as a new array.
+ * * {@link angular.Array.indexOf angular.Array.indexOf()} - Determines the index of an array value.
+ * * {@link angular.Array.limitTo angular.Array.limitTo()} - Creates a new array off the front or
+ * back of an existing array.
+ * * {@link angular.Array.orderBy angular.Array.orderBy()} - Orders array elements
+ * * {@link angular.Array.remove angular.Array.remove()} - Removes array elements
+ * * {@link angular.Array.sum angular.Array.sum()} - Sums the number elements in an array
  */
 var angularArray = {
 

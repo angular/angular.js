@@ -1,32 +1,175 @@
 @workInProgress
 @ngdoc overview
 @name angular.service
+
 @description
+# Overview
+Services are substituable objects, which are wired together using dependency injection (DI).
+Each service could have dependencies (other services), which are passed in constructor.
+Because JS is dynamicaly typed language, dependency injection can not use static types
+to identify these dependencies, so each service must explicitely define its dependencies.
+This is done by `$inject` property.
 
 
-The services API provides objects for carrying out common web app tasks.  Service objects are
-managed by angular's {@link guide/dev_guide.di dependency injection system}.
+# Built-in services
+angular provides a set of services for common operations. These services can be overriden by custom
+services if needed.
 
+Like other core angular variables and identifiers, the built-in services always start with `$`.
 
-* {@link angular.service.$browser $browser } - Provides an instance of a browser object
-* {@link angular.service.$cookieStore $cookieStore } - Provides key / value storage backed by
-session cookies
-* {@link angular.service.$cookies $cookies } - Provides read / write access to browser cookies
-* {@link angular.service.$defer $defer } - Defers function execution and try / catch block
-* {@link angular.service.$document $document } - Provides reference to `window.document` element
-* {@link angular.service.$exceptionHandler $exceptionHandler } - Receives uncaught angular
-exceptions
-* {@link angular.service.$hover $hover } -
-* {@link angular.service.$invalidWidgets $invalidWidgets } - Holds references to invalid widgets
-* {@link angular.service.$location $location } - Parses the browser location URL
-* {@link angular.service.$log $log } - Provides logging service
-* {@link angular.service.$resource $resource } - Creates objects for interacting with RESTful
-server-side data sources
-* {@link angular.service.$route $route } - Provides deep-linking services
-* {@link angular.service.$updateView $updateView } - Queues view updates
-* {@link angular.service.$window $window } - References the browsers `window` object
-* {@link angular.service.$xhr $xhr} - Generates an XHR request.
+  * {@link angular.service.$browser $browser}
+  * {@link angular.service.$window $window}
+  * {@link angular.service.$document $document}
+  * {@link angular.service.$location $location}
+  * {@link angular.service.$log $log}
+  * {@link angular.service.$exceptionHandler $exceptionHandler}
+  * {@link angular.service.$hover $hover}
+  * {@link angular.service.$invalidWidgets $invalidWidgets}
+  * {@link angular.service.$route $route}
+  * {@link angular.service.$xhr $xhr}
+  * {@link angular.service.$xhr.error $xhr.error}
+  * {@link angular.service.$xhr.bulk $xhr.bulk}
+  * {@link angular.service.$xhr.cache $xhr.cache}
+  * {@link angular.service.$resource $resource}
+  * {@link angular.service.$cookies $cookies}
+  * {@link angular.service.$cookieStore $cookieStore}
 
+# Writing your own custom services
+angular provides only set of basic services, so for any nontrivial application it will be necessary
+to write one or more custom services. To do so, a factory function that creates a services needs to
+be registered with angular's dependency injector. This factory function must return an object - the
+service (it is not called with the `new` operator).
 
-For information on how angular services work and how to write your own services, see {@link
-guide/dev_guide.services Angular Services} in the angular Developer Guide.
+**angular.service** accepts three parameters:
+
+  - `{string} name` - Name of the service.
+  - `{function()} factory` - Factory function (called just once by DI).
+  - `{Object} config` -  Configuration object with following properties:
+    - `$inject` - {Array.<string>} - Array of service ids that this service depends on. These
+      services will be passed as arguments into the factory function in the same order as specified
+      in the `$inject` array. Defaults to `[]`.
+    - `$eager` - {boolean} - If true, the service factory will be called and thus, the service will
+      be instantiated when angular boots. If false, service will be lazily instantiated when it is
+      first requested during instantiation of a dependant. Defaults to `false`.
+
+The `this` of the factory function is bound to the root scope of the angular application.
+
+angular enables services to participate in dependency injection (DI) by registering themselves with
+angular's DI system (injector) under a `name` (id) as well as by declaring dependencies which need
+to be provided for the factory function of the registered service. The ability to swap dependencies
+for mocks/stubs/dummies in tests allows for services to be highly testable.
+
+Here is an example of very simple service. This service requires $window service (it's
+passed as a parameter to factory function) and it's just a function.
+
+This service simple stores all notifications and after third one, it displays all of them by
+window alert.
+<pre>
+       angular.service('notify', function(win) {
+         var msgs = [];
+         return function(msg) {
+           msgs.push(msg);
+           if (msgs.length == 3) {
+             win.alert(msgs.join("\n"));
+             msgs = [];
+           }
+         };
+       }, {$inject: ['$window']});
+</pre>
+
+And here is a unit test for this service. We use Jasmine spy (mock) instead of real browser's alert.
+<pre>
+var mock, notify;
+
+beforeEach(function() {
+  mock = {alert: jasmine.createSpy()};
+  notify = angular.service('notify')(mock);
+});
+
+it('should not alert first two notifications', function() {
+  notify('one');
+  notify('two');
+  expect(mock.alert).not.toHaveBeenCalled();
+});
+
+it('should alert all after third notification', function() {
+  notify('one');
+  notify('two');
+  notify('three');
+  expect(mock.alert).toHaveBeenCalledWith("one\ntwo\nthree");
+});
+
+it('should clear messages after alert', function() {
+  notify('one');
+  notify('two');
+  notify('third');
+  notify('more');
+  notify('two');
+  notify('third');
+  expect(mock.alert.callCount).toEqual(2);
+  expect(mock.alert.mostRecentCall.args).toEqual(["more\ntwo\nthird"]);
+});
+</pre>
+
+# Injecting services into controllers
+Using services as dependencies for controllers is very similar to using them as dependencies for
+another service.
+
+JavaScript is dynamic language, so DI is not able to figure out which services to inject by
+static types (like in static typed languages). Therefore you must specify the service name
+by the `$inject` property - it's an array that contains strings with names of services to be
+injected. The name must match the id that service has been registered as with angular.
+The order of the services in the array matters, because this order will be used when calling
+the factory function with injected parameters. The names of parameters in factory function
+don't matter, but by convention they match the service ids.
+<pre>
+function myController($loc, $log) {
+  this.firstMethod = function() {
+    // use $location service
+    $loc.setHash();
+  };
+  this.secondMethod = function() {
+    // use $log service
+    $log.info('...');
+  };
+}
+// which services to inject ?
+myController.$inject = ['$location', '$log'];
+</pre>
+
+@example
+<doc:example>
+ <doc:source>
+  <script type="text/javascript">
+   angular.service('notify', function(win) {
+     var msgs = [];
+     return function(msg) {
+       msgs.push(msg);
+       if (msgs.length == 3) {
+         win.alert(msgs.join("\n"));
+         msgs = [];
+       }
+     };
+   }, {$inject: ['$window']});
+
+   function myController(notifyService) {
+     this.callNotify = function(msg) {
+       notifyService(msg);
+     };
+   }
+
+   myController.$inject = ['notify'];
+  </script>
+
+  <div ng:controller="myController">
+  <p>Let's try this simple notify service, injected into the controller...</p>
+  <input ng:init="message='test'" type="text" name="message" />
+  <button ng:click="callNotify(message);">NOTIFY</button>
+  </div>
+ </doc:source>
+ <doc:scenario>
+   it('should test service', function(){
+     expect(element(':input[name=message]').val()).toEqual('test');
+   });
+ </doc:scenario>
+</doc:example>

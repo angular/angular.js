@@ -1,5 +1,31 @@
 /**
  * @workInProgress
+ * @ngdoc overview
+ * @name angular.filter
+ * @description
+ *
+ * Filters are used for formatting data displayed to the user.
+ *
+ * The general syntax in templates is as follows:
+ *
+ *         {{ expression | [ filter_name ] }}
+ *
+ * Following is the list of built-in angular filters:
+ *
+ * * {@link angular.Filter.currency currency}
+ * * {@link angular.Filter.date date}
+ * * {@link angular.Filter.html html}
+ * * {@link angular.Filter.json json}
+ * * {@link angular.Filter.linky linky}
+ * * {@link angular.Filter.lowercase lowercase}
+ * * {@link angular.Filter.number number}
+ * * {@link angular.Filter.uppercase uppercase}
+ *
+ * For more information about how angular filters work, and how to create your own filters, see {@link guide/filters Understanding Angular Filters} in the angular Developer Guide.
+ */
+
+/**
+ * @workInProgress
  * @ngdoc filter
  * @name angular.filter.currency
  * @function

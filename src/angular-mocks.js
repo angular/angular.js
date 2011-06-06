@@ -57,14 +57,21 @@
 
 
 /**
+ * @workInProgress
  * @ngdoc overview
  * @name angular.mock
- * @namespace Namespace for all built-in angular mocks.
- *
  * @description
- * `angular.mock` is a namespace for all built-in mocks that ship with angular and automatically
- * replace real services if `angular-mocks.js` file is loaded after `angular.js` and before any
- * tests.
+ *
+ * The `angular.mock` object is a namespace for all built-in mock services that ship with angular.
+ * It automatically replaces real services if the `angular-mocks.js` file is loaded after
+ * `angular.js` and before any tests.
+ *
+ * Built-in mocks:
+ *
+ * * {@link angular.Mock.service.$browser $browser } - A mock implementation of the browser.
+ * * {@link angular.Mock.service.$exceptionHandler $exceptionHandler } - A mock implementation of the
+ * angular service exception handler.
+ * * {@link angular.Mock.service.$log $log } - A mock implementation of the angular service log.
  */
 angular.mock = {};
 
