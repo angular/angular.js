@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Getting Started
 @description
@@ -105,15 +104,11 @@ These are some of the important points to note from this example:
 
 
 * The text input {@link api/angular.widget widget} called `yourname` is bound to a model variable
-called
-  `yourname`.
-* The double curly braces notation binds the variable `yourname` to the
-  greeting text.
-<!--
-* The variable `yourname` is implicitly created in the root scope.
--->
-* You did not need to explicitly register an event listener or define an event
-  handler for events!
+called `yourname`.
+* The double curly braces notation binds the `yourname` model to the greeting text.
+
+
+* You did not need to explicitly register an event listener or define an event handler for events!
 
 
 Now try typing your name into the input box, and notice the immediate change to
