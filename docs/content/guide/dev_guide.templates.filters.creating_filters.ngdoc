@@ -1,0 +1,74 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Templates: Filters: Creating Angular Filters
+@description
+
+
+Writing your own filter is very easy: just define a JavaScript function on the `angular.filter`
+object.
+The framework passes in the input value as the first argument to your function. Any filter
+arguments are passed in as additional function arguments.
+
+
+You can use these variables in the function:
+
+
+* `this` — The current scope.
+* `this.$element` — The DOM element containing the binding. The `$element` variable allows the
+filter to manipulate the DOM.
+
+
+The following sample filter reverses a text string. In addition, it conditionally makes the
+text upper-case and assigns color.
+
+
+<doc:example>
+<doc:source>
+<script type="text/javascript">
+ angular.filter('reverse', function(input, uppercase, color) {
+   var out = "";
+   for (var i = 0; i < input.length; i++) {
+     out = input.charAt(i) + out;
+   }
+   // conditional based on optional argument
+   if (uppercase) {
+     out = out.toUpperCase();
+   }
+   // DOM manipulation using $element
+   if (color) {
+     this.$element.css('color', color);
+   }
+   return out;
+ });
+</script>
+
+
+<input name="text" type="text" value="hello" /><br>
+No filter: {{text}}<br>
+Reverse: {{text|reverse}}<br>
+Reverse + uppercase: {{text|reverse:true}}<br>
+Reverse + uppercase + blue:  {{text|reverse:true:"blue"}}
+</doc:source>
+<doc:scenario>
+it('should reverse text', function(){
+expect(binding('text|reverse')).toEqual('olleh');
+input('text').enter('ABC');
+expect(binding('text|reverse')).toEqual('CBA');
+});
+</doc:scenario>
+</doc:example>
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.templates.filters Understanding Angular Filters}
+* {@link dev_guide.compiler Angular HTML Compiler}
+
+
+## Related API
+
+
+* {@link api/angular.filter Angular Filter API}

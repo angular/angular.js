@@ -2,14 +2,10 @@
 @name Contributing
 @description
 
-<a name="H1_1"></a>
-# Open Source
 
-`Angular` is an open source project licensed under the {@link
-http://github.com/angular/angular.js/blob/master/LICENSE MIT license}. Your contributions are
-always welcome. When working with `angular` source base, please follow the guidelines provided on
-this page.
 
+
+* <a href="#H1_1">License</a>
 * <a href="#H1_2">Contributing to Source Code</a>
 * <a href="#H1_3">Applying Code Standards</a>
 * <a href="#H1_4">Checking Out and Building `Angular`</a>
@@ -17,217 +13,348 @@ this page.
 
 
 
+
+<a name="H1_1"></a>
+# License
+
+
+`Angular` is an open source project licensed under the {@link
+http://github.com/angular/angular.js/blob/master/LICENSE MIT license}. Your contributions are
+always welcome. When working with `angular` source base, please follow the guidelines provided on
+this page.
+
+
+
+
 <a name="H1_2"></a>
 # Contributing to Source Code
 
+
 We'd love for you to contribute to our source code and to make `angular` even better than it is
 today! Here are the guidelines we'd like you to use:
+
 
 * Major changes that you intend to contribute to the project must be discussed first on our {@link
 https://groups.google.com/forum/?hl=en#!forum/angular mailing list} so that we can better
 coordinate our efforts, prevent  duplication of work, and help you to craft the change so that it
 is successfully accepted upstream.
+
+
 * Small changes and bug fixes can be crafted and submitted to Github as a <a href="#H1_5">pull
 request</a>.
+
+
+
 
 
 
 <a name="H1_3"></a>
 # Applying Code Standards
 
+
 To ensure consistency throughout the source code, keep these rules in mind as you are working:
 
+
 * All features or bug fixes must be tested by one or more <a href="#unit-tests">specs</a>.
+
+
 * All public API methods must be documented with ngdoc, an extended version of jsdoc (we added
 support for markdown and templating via `@ngdoc` tag). To see how we document our APIs, please
 check out the existing ngdocs.
+
+
 * With the exceptions listed below, we follow the rules contained in {@link
 http://google-styleguide.googlecode.com/svn/trunk/javascriptguide.xml Google's JavaScript Style
 Guide}:
 
+
   * Do not use namespaces: Instead, we wrap the entire `angular` code base in an anonymous closure
 and export our API explicitly rather than implicitly.
+
+
   * Wrap all code at 100 characters.
+
+
   * Instead of complex inheritance hierarchies, we prefer simple objects. We use prototypical
 inheritance only when absolutely necessary.
+
+
   * We love functions and closures and, whenever possible, prefer them over objects.
+
+
   * To write concise code that can be better minified, internally we use aliases that map to the
 external API. See our existing code to see what we mean.
+
+
   * We don't go crazy with type annotations for private internal APIs unless it's an internal API
 that is used throughout `angular`. The best guidance is to do what makes the most sense.
+
+
 
 
 <a name="H1_4"></a>
 # Checking Out and Building Angular
 
+
 The `angular` source code is hosted at {@link http://github.com Github}, which we also use to
 accept code contributions. Several steps are needed to check out and build `angular`:
 
 
+
+
 ## Installation Dependencies
+
 
 Before you can build `angular`, you must install or configure the following dependencies on your
 machine:
+
 
 * {@link http://rake.rubyforge.org Rake}: We use Rake as our build system, which is pre-installed
 on most Macintosh and Linux machines. If that is not true in your case, you can grab it from the
 Rake website.
 
+
 * {@link http://nodejs.org Node.js}: We use Node to generate the documentation and to run a
 development web server. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
+
 * Java: The Java runtime is used to run {@link http://code.google.com/p/js-test-driver
 JsTestDriver} (JSTD), which we use to run our unit test suite. JSTD binaries are part of the
 `angular` source base, which means there is no need to install or configure it separately.
+
+
 * Git: The {@link http://help.github.com/mac-git-installation Github Guide to Installing Git} is
 quite a good source for information on Git.
 
 
+
+
 ## Creating a Github Account and Forking Angular
+
 
 To create a Github account, follow the instructions {@link https://github.com/signup/free here}.
 Afterwards, go ahead and {@link http://help.github.com/forking fork} the {@link
 https://github.com/angular/angular.js main angular repository}.
 
 
+
+
 ## Building `Angular`
+
 
 To build `angular`, you check out the source code and use Rake to generate the non-minified and
 minified `angular` files:
 
+
 1. To clone your Github repository, run:
+
 
         git clone git@github.com:<github username>/angular.js.git
 
+
 2. To go to the `angular` directory, run:
+
 
         cd angular.js
 
+
 3. To add the main `angular` repository as an upstream remote to your repository, run:
+
 
         git remote add upstream https://github.com/angular/angular.js.git
 
+
 4. To build `angular`, run:
 
+
         rake package
+
 
 The build output can be located under the `build` directory. It consists of the following files and
 directories:
 
-* `angular-x.y.z-<git sha>.tgz` — This is the complete tarball, which  contains all of the release
-build artifacts.
+
+* `angular-<version>.tgz` — This is the complete tarball, which  contains all of the release build
+artifacts.
+
+
 * `angular.js` — The non-minified `angular` script.
+
+
 * `angular.min.js` —  The minified `angular` script.
+
+
 * `angular-scenario.js` — The `angular` End2End test runner.
+
+
 * `angular-ie-compat.js` —  The Internet Explorer compatibility patch file.
+
+
 * `docs/` — A directory that contains all of the files needed to run `docs.angularjs.org`.
+
+
 * `docs/index.html` — The main page for the documentation.
+
+
 * `docs/docs-scenario.html` — The End2End test runner for the documentation application.
+
+
 
 
 ## Running a Local Development Web Server
 
+
 To debug or test code, it is often useful to have a local HTTP server. For this purpose, we have
 made available a local web server based on Node.js.
 
+
 1. To start the web server, run:
+
 
         ./nodeserver.sh
 
+
 2. To access the local server, go to this website:
+
 
         http://localhost:8000/
 
+
    By default, it serves the contents of the `angular` project directory.
+
+
 
 
 <a name="unit-tests"></a>
 ## Running the Unit Test Suite
 
+
 Our unit and integration tests are written with Jasmine and executed with JsTestDriver.  To run the
 tests:
 
+
 1. To start the JSTD server, run:
+
 
         ./server.sh
 
+
 2. To capture one or more browsers, go to this website:
+
 
         http://localhost:9876/
 
+
 3. To trigger a test execution, run:
 
-         ./test.sh
+
+        ./test.sh
+
 
 4. To automatically run the test suite each time one or more of the files in the project directory
 is changed, you can install `watchr` and then run:
 
+
         watchr watchr.rb
 
+
 5. To view the output of each test run, you can tail this log file:
+
 
         ./logs/jstd.log
 
 
+
+
 ## Running the End2End Test Suite
 
+
 To run the End2End test suite:
+
 
 1. Start the local web server.
 2. In a browser, go to:
 
+
         http://localhost:8000/build/docs/docs-scenario.html
 
+
    The tests are executed automatically.
+
+
+
 
 
 
 <a name="H1_5"></a>
 # Submitting Your Changes
 
+
 To create and submit a change:
+
 
 1. Create a new branch off the master for your changes:
 
+
         git branch my-fix-branch
+
 
 2. Check out the branch:
 
+
         git checkout my-fix-branch
+
 
 3. Create your patch, make sure to have plenty of tests (that pass).
 
+
 4. Commit your changes:
+
 
         git commit -a
 
+
 5. Run JavaScript Lint and be sure to address all new warnings and errors:
+
 
         rake lint
 
+
 6. Push your branch to Github:
+
 
         git push origin my-fix-branch
 
+
 7. In Github, send a pull request to `angular:master`.
+
 
 8. When the patch is reviewed and merged, delete your branch and pull yours — and other — changes
 from the main (upstream) repository:
-  * To delete the branch in Github, run:
+
+  1. To delete the branch in Github, run:
+
 
             git push origin :my-fix-branch
 
-  * To check out the master branch, run:
+
+  2. To check out the master branch, run:
+
 
             git checkout master
 
-  * To delete a local branch, run:
+
+  3. To delete a local branch, run:
+
 
             git branch -D my-fix-branch
 
-  * To update your master with the latest upstream version, run:
+
+  4. To update your master with the latest upstream version, run:
+
 
             git pull --ff upstream master
+
 
 That's it! Thank you for your contribution!

@@ -1,0 +1,70 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Angular Services: Testing Angular Services
+@description
+
+
+Following is a unit test for the service in the example in {@link
+dev_guide.services.registering_services Registering Angular Services}. The unit test example uses
+Jasmine spy (mock) instead of a real browser alert.
+
+
+<pre>
+var mock, notify;
+
+
+beforeEach(function() {
+mock = {alert: jasmine.createSpy()};
+notify = angular.service('notify')(mock);
+});
+
+
+it('should not alert first two notifications', function() {
+notify('one');
+notify('two');
+expect(mock.alert).not.toHaveBeenCalled();
+});
+
+
+it('should alert all after third notification', function() {
+notify('one');
+notify('two');
+notify('three');
+expect(mock.alert).toHaveBeenCalledWith("one\ntwo\nthree");
+});
+
+
+it('should clear messages after alert', function() {
+notify('one');
+notify('two');
+notify('third');
+notify('more');
+notify('two');
+notify('third');
+expect(mock.alert.callCount).toEqual(2);
+expect(mock.alert.mostRecentCall.args).toEqual(["more\ntwo\nthird"]);
+});
+</pre>
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.services.understanding_services Understanding Angular Services}
+* {@link dev_guide.services.creating_services Creating Angular Services}
+* {@link dev_guide.services.registering_services Registering Angular Services}
+* {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
+* {@link dev_guide.services.injecting_controllers Injecting Services Into Conrollers}
+
+
+## Related API
+
+
+* {@link api/angular.service Angular Service API}
+
+
+
+
+

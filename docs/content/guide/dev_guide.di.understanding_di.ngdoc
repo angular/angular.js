@@ -1,0 +1,141 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: DI: Understanding DI in Angular
+@description
+
+
+
+
+While DI is widely used in statically typed languages such as Java or C++, it has not been widely
+used in JavaScript. Angular brings the benefits of DI into JavaScript apps.
+
+
+In angular, DI is implemented as a subsystem that manages dependencies between services,
+controllers, widgets, and filters. The most important of these are {@link api/angular.service
+services}.
+
+
+Services are objects that handle common tasks in web applications. Angular provides several{@link
+api/angular.service built-in services}, and you can create your own custom services.
+
+
+The main job of angular's DI subsystem is to provide services to angular components that depend on
+them. The way the DI subsystem provides services is as follows: all services are registered with
+angular's {@link api/angular.service service API}, and all components that depend on services
+define those dependencies as a property (`$inject`). With this information, the DI subsystem
+manages the creation of service objects and the provision of those objects to the components that
+need them, at the time they need them. The following illustration steps through the sequence of
+events:
+
+
+<img src="img/guide/di_sequence_final.png">
+
+
+In the illustration above, the dependency injection sequence proceeds as follows:
+
+
+1. Service factory functions are registered with angular's service factory repository.
+2. `ng:autobind` triggers angular's bootstrap sequence, during which angular compiles the template,
+creates the root scope, and creates the dependency injector.
+3. The `ng:controller` directive implicitly creates a new child scope, augmented by the application
+of the `PhoneListCtrl` controller function.
+4. The Injector identifies the `$xhr` service as `PhoneListCtrl` controller's only dependency.
+5. The Injector checks if the `$xhr` service has already been instantiated, and if not uses the
+factory function from the service factory repository to construct it.
+6. DI provides the instance of $xhr service to the PhoneListCtrl controller constructor
+
+
+
+
+## How Scope Relates to DI
+
+
+The {@link api/angular.injector injector} is responsible for resolving the service dependencies in
+the application. It gets created and configured with the creation of a root scope. The injector
+caches instances of services, with the services cache bound to the root scope.
+
+
+Different root scopes have different instances of the injector. While typical angular applications
+will only have one root scope (and hence the services will act like application singletons), in
+tests it is important to not share singletons across test invocations for isolation reasons. We
+achieve the necessary isolation by having each test create its own separate root scope.
+
+
+<pre>
+// create a root scope
+var rootScope = angular.scope();
+// access the service locator
+var myService = rootScope.$service('myService');
+</pre>
+
+
+## Inferring dependencies from the signature of the factory function or constructor
+
+
+**EXPERIMENTAL FEATURE**: This is an experimental feature. See the important note at the end of
+this section for drawbacks.
+
+
+We resort to `$inject` and our own annotation because there is no way in JavaScript to get a list
+of arguments. Or is there? It turns out that calling `.toString()` on a function returns the
+function declaration along with the argument names as shown below:
+
+
+<pre>
+function myFn(a,b){}
+expect(myFn.toString()).toEqual('function myFn(a,b){}');
+</pre>
+
+
+This means that angular can infer the function names after all and use that information to generate
+the `$inject` annotation automatically. Therefore the following two function definitions are
+equivalent:
+
+
+<pre>
+// given a user defined service
+angular.service('serviceA', ...);
+
+
+// inject '$window', 'serviceA', curry 'name';
+function fnA($window, serviceA, name){};
+fnA.$inject = ['$window', 'serviceA'];
+
+
+// inject '$window', 'serviceA', curry 'name';
+function fnB($window, serviceA_, name){};
+// implies: fnB.$inject = ['$window', 'serviceA'];
+</pre>
+
+
+If angular does not find a `$inject` annotation on the function, then it calls the `.toString()`
+method and tries to infer what should be injected using the following rules:
+
+
+* Any argument starting with `$` is an angular service and will be added to the `$inject` property
+array
+* Any argument ending with `_` will be added to the `$inject` property array (angular strips the
+`_`)
+* All arguments following an argument which has neither `$` nor `_` , must not have `$` nor `_`
+(these are free arguments for {@link http://en.wikipedia.org/wiki/Currying currying})
+
+
+**IMPORTANT**
+Minifiers/obfuscators change the names of function arguments and will therefore break the `$inject`
+inference. For this reason, either explicitly declare the `$inject` or do not use
+minifiers/obfuscators. In the future, we may provide a pre-processor which will scan the source
+code and insert the `$inject` into the source code so that it can be minified/obfuscated.
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.services Angular Services}
+
+
+## Related API
+
+
+* {@link api/angular.service Services API}

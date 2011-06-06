@@ -1,36 +1,21 @@
 @ngdoc overview
-@name Tutorial: Step 10
+@name Tutorial: 10 - Event Handlers
 @description
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_09 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-9...step-10 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_11 Next}</td>
-</tr>
-</table>
+
+
+<ul doc:tutorial-nav="10"></ul>
+
+
 
 
 In this step, you will add a clickable phone image swapper to the phone details page.
 
 
-1. Reset your workspace to Step 10 using:
 
 
-         git checkout -f step-10
+<doc:tutorial-instructions step="10"></doc:tutorial-instructions>
 
 
-  or
-
-
-         ./goto_step.sh 10
-
-
-2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-10/app angular's server}.
 
 
 The phone details view displays one large image of the current phone and several smaller thumbnail
@@ -103,9 +88,10 @@ __`app/partials/phone-detail.html`:__
 We bound the `ng:src` attribute of the large image to the `mainImageUrl` property.
 
 
-We also registered an {@link angular.directive.ng:click `ng:click`} handler with thumbnail images.
-When a user clicks on one of the thumbnail images, the handler will use the `setImage` controller
-method to change the value of the `mainImageUrl` property to the url of the thumbnail image.
+We also registered an {@link api/angular.directive.ng:click `ng:click`} handler with thumbnail
+images. When a user clicks on one of the thumbnail images, the handler will use the `setImage`
+controller method to change the value of the `mainImageUrl` property to the url of the thumbnail
+image.
 
 
 <img src="img/tutorial/tutorial_10-11_final.png">
@@ -197,14 +183,6 @@ With the phone image swapper in place, we're ready for step 11 (the last step!) 
 better way to fetch data.
 
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_09 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-10/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-9...step-10 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_11 Next}</td>
-</tr>
-</table>
+
+
+<ul doc:tutorial-nav="10"></ul>

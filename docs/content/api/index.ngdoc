@@ -1,0 +1,78 @@
+@workInProgress
+@ngdoc overview
+@name API Reference
+@description
+
+
+## Angular Compiler API
+
+
+* {@link angular.widget Widgets} - Angular custom DOM element
+* {@link angular.directive Directives} - Angular DOM element attributes
+* {@link angular.filter Filters} - Angular filter functions
+* {@link angular.formatter Formatters} - Angular formatting functions
+* {@link angular.validator Validators} - Angular validators
+
+
+
+
+## Angular Scope API
+
+
+* {@link angular.scope Scope Object} - Angular scope object functions
+
+
+
+
+## Angular Services API
+
+
+* {@link angular.service Angular Services}
+
+
+
+
+## Angular Testing API
+
+
+* {@link angular.mock Testing Mocks API} - Mock objects for testing
+* {@link
+https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en_US
+Angular Scenario Runner} - Automated scenario testing documentation
+
+
+
+
+## Angular Utilities API
+
+
+* {@link angular.bind angular.bind() }
+* {@link angular.compile angular.compile() }
+* {@link angular.extend angular.extend() }
+* {@link angular.forEach angular.forEach() }
+* {@link angular.fromJson angular.fromJson() }
+* {@link angular.identity angular.identity() }
+* {@link angular.injector angular.injector() }
+* {@link angular.isArray angular.isArray() }
+* {@link angular.isDate angular.isDate() }
+* {@link angular.isDefined angular.isDefined() }
+* {@link angular.isFunction angular.isFunction() }
+* {@link angular.isNumber angular.isNumber() }
+* {@link angular.isObject angular.isObject() }
+* {@link angular.isString angular.isString() }
+* {@link angular.isUndefined angular.isUndefined() }
+* {@link angular.lowercase angular.lowercase() }
+* {@link angular.noop angular.noop() }
+* {@link angular.toJson angular.toJson() }
+* {@link angular.uppercase angular.uppercase() }
+
+
+
+
+
+
+## Augmented JavaScript Objects
+
+
+* {@link angular.object Object API} - Utility functions for JavaScript objects
+* {@link angular.array Array API} - Utility functions for JavaScript arrays

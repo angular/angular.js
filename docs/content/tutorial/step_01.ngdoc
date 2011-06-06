@@ -1,17 +1,11 @@
 @ngdoc overview
-@name Tutorial: Step 1
+@name Tutorial: 1 - Static Template
 @description
-<table id="tutorial_nav">
-  <tr>
-  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
-    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Live
-Demo}</td>
-    <td id="tut_home">{@link tutorial Tutorial Home}</td>
-    <td id="code_diff">
-{@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
-    <td id="next_step">{@link tutorial.step_02 Next}</td>
-  </tr>
-</table>
+
+
+<ul doc:tutorial-nav="1"></ul>
+
+
 
 
 In order to illustrate how angular enhances standard HTML, you will create a purely *static* HTML
@@ -22,23 +16,11 @@ dynamically display the same result with any set of data.
 In this step you will add some basic information about two cell phones to an HTML page.
 
 
-1. Reset the workspace to step 1.
 
 
-   * Git users run:
+<doc:tutorial-instructions step="1" show="true"></doc:tutorial-instructions>
 
 
-              git checkout -f step-1
-
-
-   * Snapshot users run:
-
-
-              ./goto_step.sh 1
-
-
-2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-1/app anglar's server}.
 
 
 The page now contains a list with information about two phones.
@@ -77,9 +59,7 @@ __`app/index.html`:__
 * Try adding more static HTML to `index.html`. For example:
 
 
-  <pre>
-    <p>Total number of phones: 2</p>
-  </pre>
+          <p>Total number of phones: 2</p>
 
 
 
@@ -91,15 +71,7 @@ This addition to your app uses static HTML to display the list. Now, let's go to
 how to use angular to dynamically generate the same list.
 
 
-<table id="tutorial_nav">
-  <tr>
-  <td id="previous_step">{@link tutorial.step_00 Previous}</td>
-    <td id="step_result">{@link http://angular.github.com/angular-phonecat/step-1/app Live
-Demo}</td>
-    <td id="tut_home">{@link tutorial Tutorial Home}</td>
-    <td id="code_diff">
-{@link https://github.com/angular/angular-phonecat/compare/step-0...step-1 Code Diff}</td>
-    <td id="next_step">{@link tutorial.step_02 Next}</td>
-  </tr>
-</table>
+
+
+<ul doc:tutorial-nav="1"></ul>
 
