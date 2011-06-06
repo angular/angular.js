@@ -137,7 +137,7 @@ h4 {
 #sidebar {
   margin-top: 4em;
   width: 15.5em;
-  padding: 0.7em;
+  padding: 0.8em 0.7em 0.7em 0.7em;
   background: #7989D6;
   overflow: hidden;
   float: left;
@@ -157,7 +157,7 @@ h4 {
 
 
 #sidebar input {
-  width: 18.9em;
+  width: 207px;
 }
 
 
