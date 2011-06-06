@@ -4,12 +4,12 @@
 
  /**
  * Usage:
- *    wait() waits until you call resume() in the console
+ *    pause() pauses until you call resume() in the console
  */
-angular.scenario.dsl('wait', function() {
+angular.scenario.dsl('pause', function() {
   return function() {
-    return this.addFuture('waiting for you to resume', function(done) {
-      this.emit('InteractiveWait', this.spec, this.step);
+    return this.addFuture('pausing for you to resume', function(done) {
+      this.emit('InteractivePause', this.spec, this.step);
       this.$window.resume = function() { done(); };
     });
   };
@@ -17,11 +17,11 @@ angular.scenario.dsl('wait', function() {
 
 /**
  * Usage:
- *    pause(seconds) pauses the test for specified number of seconds
+ *    sleep(seconds) pauses the test for specified number of seconds
  */
-angular.scenario.dsl('pause', function() {
+angular.scenario.dsl('sleep', function() {
   return function(time) {
-    return this.addFuture('pause for ' + time + ' seconds', function(done) {
+    return this.addFuture('sleep for ' + time + ' seconds', function(done) {
       this.$window.setTimeout(function() { done(null, time * 1000); }, time * 1000);
     });
   };
@@ -171,6 +171,7 @@ angular.scenario.dsl('binding', function() {
  *    input(name).enter(value) enters value in input with specified name
  *    input(name).check() checks checkbox
  *    input(name).select(value) selects the radio button with specified name/value
+ *    input(name).val() returns the value of the input.
  */
 angular.scenario.dsl('input', function() {
   var chain = {};
@@ -198,6 +199,13 @@ angular.scenario.dsl('input', function() {
         elements(':radio[name$="@$1"][value="$2"]', this.name, value);
       input.trigger('click');
       done();
+    });
+  };
+
+  chain.val = function() {
+    return this.addFutureAction("return input val", function($window, $document, done) {
+      var input = $document.elements(':input[name="$1"]', this.name);
+      done(null,input.val());
     });
   };
 
