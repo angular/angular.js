@@ -181,9 +181,11 @@ h4 {
   font-weight: bold;
 }
 
-#content-list .level-2, #content-list.level-3 {
+#content-list .level-2,
+#content-list .level-3 {
   margin-left: 1em;
 }
+
 
 #content-list a.current {
   font-weight: bold;
