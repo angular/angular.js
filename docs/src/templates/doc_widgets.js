@@ -169,7 +169,7 @@
   });
 
 
-  angular.directive('doc:tutorial-nav', function(step) {    
+  angular.directive('doc:tutorial-nav', function(step) {
     return function(element) {
       var prevStep, codeDiff, nextStep,
           content;
@@ -185,7 +185,7 @@
         nextStep = 'the_end';
         codeDiff = 'step-10...step-11';
       } else {
-        prevStep = 'step_' + pad(step - 1)
+        prevStep = 'step_' + pad(step - 1);
         nextStep = 'step_'  + pad(step + 1);
         codeDiff = 'step-' + step + '...step-' + step;
       }
@@ -199,7 +199,7 @@
 
       element.attr('id', 'tutorial-nav');
       element.append(content);
-    }
+    };
 
     function pad(step) {
       return (step < 10) ? ('0' + step) : step;
