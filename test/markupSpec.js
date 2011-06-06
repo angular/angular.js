@@ -89,6 +89,56 @@ describe("markups", function(){
     expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}"}"></a>');
   });
 
+  it('should bind disabled', function() {
+    compile('<button ng:disabled="{{isDisabled}}">Button</button>');
+    scope.isDisabled = false;
+    scope.$eval();
+    expect(element.attr('disabled')).toBeFalsy();
+    scope.isDisabled = true;
+    scope.$eval();
+    expect(element.attr('disabled')).toBeTruthy();
+  });
+
+  it('should bind checked', function() {
+    compile('<input type="checkbox" ng:checked="{{isChecked}}" />');
+    scope.isChecked = false;
+    scope.$eval();
+    expect(element.attr('checked')).toBeFalsy();
+    scope.isChecked=true;
+    scope.$eval();
+    expect(element.attr('checked')).toBeTruthy();
+  });
+
+  it('should bind selected', function() {
+    compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>');
+    scope.isSelected=false;
+    scope.$eval();
+    expect(element.children()[1].selected).toBeFalsy();
+    scope.isSelected=true;
+    scope.$eval();
+    expect(element.children()[1].selected).toBeTruthy();
+  });
+
+  it('should bind readonly', function() {
+    compile('<input type="text" ng:readonly="{{isReadonly}}" />');
+    scope.isReadonly=false;
+    scope.$eval();
+    expect(element.attr('readOnly')).toBeFalsy();
+    scope.isReadonly=true;
+    scope.$eval();
+    expect(element.attr('readOnly')).toBeTruthy();
+  });
+
+  it('should bind multiple', function() {
+    compile('<select ng:multiple="{{isMultiple}}"></select>');
+    scope.isMultiple=false;
+    scope.$eval();
+    expect(element.attr('multiple')).toBeFalsy();
+    scope.isMultiple='multiple';
+    scope.$eval();
+    expect(element.attr('multiple')).toBeTruthy();
+  });
+
   it('should bind src', function() {
     compile('<img ng:src="{{url}}" />');
     scope.url = 'http://localhost/';

@@ -4,6 +4,7 @@
 ### New Features
 - Added prepend() to jqLite
 - Added ng:options directive (http://docs.angularjs.org/#!angular.directive.ng:options)
+- Added ng:disabled, ng:selected, ng:checked, ng:multiple, ng:readonly directive.
 
 
 ### Bug Fixes

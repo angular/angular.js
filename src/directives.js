@@ -384,7 +384,8 @@ var REMOVE_ATTRIBUTES = {
   'disabled':'disabled',
   'readonly':'readOnly',
   'checked':'checked',
-  'selected':'selected'
+  'selected':'selected',
+  'multiple':'multiple'
 };
 /**
  * @workInProgress
