@@ -1,17 +1,11 @@
 @ngdoc overview
-@name Tutorial: Step 6
+@name Tutorial: 6 - Templating Links & Images
 @description
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_05 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-5...step-6 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_07 Next}</td>
-</tr>
-</table>
+
+
+<ul doc:tutorial-nav="6"></ul>
+
+
 
 
 In this step, you will add thumbnail images for the phones in the phone list, and links that, for
@@ -19,20 +13,12 @@ now, will go nowhere. In subsequent steps you will use the links to display addi
 about the phones in the catalog.
 
 
-1. Reset your workspace to step 6.
 
 
-         git checkout -f step-6
+<doc:tutorial-instructions step="6"></doc:tutorial-instructions>
 
 
-  or
 
-
-         ./goto_step.sh 6
-
-
-2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-6/app angular's server}.
 
 You should now see links and images of the phones in the list.
 
@@ -86,16 +72,16 @@ __`app/index.html`:__
 
 
 To dynamically generate links that will in the future lead to phone detail pages, we used the
-now-familiar {@link angular.markup double-curly brace markup} in the `href` attribute values. In
-step 2, we added the `{{phone.name}}` binding as the element content. In this step the
-'{{phone.id}}' binding is used in the element attribute.
+now-familiar {@link guide/dev_guide.compiler.markup double-curly brace markup} in the `href`
+attribute values. In step 2, we added the `{{phone.name}}` binding as the element content. In this
+step the '{{phone.id}}' binding is used in the element attribute.
 
 
 We also added phone images next to each record using an image tag with the {@link
-angular.directive.ng:src ng:src} directive. That directive prevents the browser from treating the
-angular `{{ exppression }}` markup literally, which it would have done if we had only specified an
-attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`). Using `ng:src`
-prevents the browser from making an http request to an invalid location.
+api/angular.directive.ng:src ng:src} directive. That directive prevents the browser from treating
+the angular `{{ exppression }}` markup literally, which it would have done if we had only specified
+an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`). Using
+`ng:src` prevents the browser from making an http request to an invalid location.
 
 
 
@@ -145,15 +131,5 @@ templates and how angular makes it easy to create applications that have multipl
 
 
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_05 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-6/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-5...step-6 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_07 Next}</td>
-</tr>
-</table>
+<ul doc:tutorial-nav="6"></ul>
 

@@ -38,14 +38,14 @@ When you finish the tutorial you will be able to:
 * Identify resources for learning more about angular
 
 
-Mac and Linux users can work through the tutorial, run tests, and experiment with the code using
-Git or the snapshots described below. Windows users will be able read the tutorial but won't be
-able to run the tests or experiment with the code.
+The tutorial is will guide you through the process of building a simple application, including
+writing and running unit and end-to-end tests, and will allow you to experiment with angular and
+the application through experiments suggested at the end of each step.
 
 
 You can go through the whole tutorial in a couple of hours or you may want to spend a pleasant day
-really digging into it. If you're looking for a shorter introduction to angular, check out {@link
-http://docs.angularjs.org/#!started started}.
+really digging into it. If you're looking for a shorter introduction to angular, check out the
+{@link misc/started Getting Started} document.
 
 
 
@@ -54,21 +54,8 @@ http://docs.angularjs.org/#!started started}.
 
 
 
-<a name="PreReqs"></a>
-# Prerequisites
 
 
-To run the tutorial app and tests on your machine you will need the following:
-
-
-* A Mac or Linux machine (required for running the tutorial scripts)
-* An http server running on your system. Mac and Linux machines typically have Apache preinstalled.
-If you don't already have an http server installed, you can install `node.js` ({@link
-https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager node.js install guide})
-or another http sever.
-* {@link http://java.com Java}.
-* A web browser.
-* A text editor.
 
 
 
@@ -76,59 +63,113 @@ or another http sever.
 # Working with the code
 
 
-There are two ways that you can you follow this tutorial and hack on the code:
+There are two ways that you can you follow this tutorial and hack on the code, both available on
+Mac/Linux or Windows environment. The first work flow uses Git versioning system for source code
+management, the second work flow doesn't depend on any source control system and instead uses
+scripts to copy snapshots of project files into your workspace (`sandbox`) directory. Choose the
+one you prefer:
 
 
-## Using Git
+<doc:tutorial-instructions show="true">
+  <doc:tutorial-instruction id="git-mac" title="Git on Mac/Linux">
+    <ol>
+      <li><p>Verify that you have <a href="http://java.com/">Java</a> installed by running the
+following command in a terminal window:</p>
+      <pre><code>java -version</code></pre>
+      <p>You will need Java to run unit tests.</p></li>
+      <li><p>Get Git from <a href="http://git-scm.com/download">here</a></p>
+      <p>You can build it from source or use pre-compiled package.</p></li>
+      <li><p>Clone the angular-phonecat repository located at <a
+href="https://github.com/angular/angular-phonecat">Github</a> by running this command:</p>
+      <pre><code>git clone git://github.com/angular/angular-phonecat.git</code></pre>
+      <p>This will create <code>angular-phonecat</code> directory in current directory.</p></li>
+      <li><p>Change your current directory to <code>angular-phonecat</code>:</p>
+      <pre><code>cd angular-phonecat</code></pre>
+      <p>The tutorial instructions assume you are running all commands from this directory.</p></li>
+      <li><p>You'll also need an http server running on your system. Mac and Linux machines
+typically have Apache preinstalled.</p>
+      <p>If you don't already have an http server installed, you can <a
+href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">install
+node.js</a> and use it to run <code>scripts/web-server.js</code> — a simple bundled http
+server.</p></li>
+    </ol>
+  </doc:tutorial-instruction>
 
 
-The following instructions are for Git users. If you're not a Git user, skip down to the "Using
-Snapshots" section.
+  <doc:tutorial-instruction id="git-win" title="Git on Windows">
+    <ol>
+      <li><p>Verify that you have <a href="http://java.com/">Java</a> installed and that the
+<code>java</code> executable is on your <code>PATH</code> by running this command in windows
+command line:</p>
+      <pre><code>java -version</code></pre>
+      <p>You will need Java to run unit tests.</p></li>
+      <li><p>Install msysGit from <a href="http://git-scm.com/download">here</a></p></li>
+      <li><p>Open msysGit bash and clone the angular-phonecat repository located at <a
+href="https://github.com/angular/angular-phonecat">Github</a> by running this command:</p>
+      <pre><code>git clone git://github.com/angular/angular-phonecat.git</code></pre>
+      <p>This will create angular-phonecat directory in your current directory.</p></li>
+      <li><p>Change your current directory to angular-phonecat:</p>
+      <pre><code>cd angular-phonecat</code></pre>
+      <p>The tutorial instructions assume you are running all commands from this directory.</p>
+      <p>You should run all <code>git</code> commands from msysGit bash.</p>
+      <p>Other commands like <code>test-server.bat</code> or <code>test.bat</code> that will be
+introduced soon, should be executed from the windows command line.</li>
+      <li><p>You'll also need an http server running on your system.</p>
+      <p>If you don't already have an http server installed, you can install <a
+href="http://nodejs.org/">node.js</a>. Just download <a
+href="http://node-js.prcn.co.cc/">pre-compiled binaries</a>, unzip them and add
+<code>nodejs\bin</code> into your <code>PATH</code> and use <code>node</code> to run
+<code>scripts\web-server.js</code> — a simple bundled http server.</p></li>
+    </ol>
+  </doc:tutorial-instruction>
 
 
-1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
+  <doc:tutorial-instruction id="ss-mac" title="Snapshots on Mac/Linux">
+    <ol>
+      <li><p>Verify that you have <a href="http://java.com/">Java</a> installed by running the
+following command in a terminal window:</p>
+      <pre><code>java -version</code></pre>
+      <p>You will need Java to run unit tests.</p></li>
+      <li><p>Download the <a href="http://code.angularjs.org/angular-phonecat/">zip archive</a>
+with all files and unzip them into [tutorial-dir] directory</p></li>
+      <li><p>Change your current directory to [tutorial-dir]/sanbox:</p>
+      <pre><code>cd [tutorial-dir]/sandbox</code></pre>
+      <p>The tutorial instructions assume you are running all commands from this directory.</p></li>
+      <li><p>You'll also need an http server running on your system. Mac and Linux machines
+typically have Apache preinstalled.</p>
+      <p>If you don't already have an http server installed, you can <a
+href="https://github.com/joyent/node/wiki/Installing-Node.js-via-package-manager">install
+node.js</a> and use it to run <code>scripts/web-server.js</code> — a simple bundled http
+server.</p></li>
+    </ol>
+  </doc:tutorial-instruction>
 
 
-2. Clone the angular-phonecat repository located at {@link
-https://github.com/angular/angular-phonecat GitHub} by running the following command in a terminal:
+  <doc:tutorial-instruction id="ss-win" title="Snapshots on Windows">
+    <ol>
+      <li><p>Verify that you have <a href="http://java.com/">Java</a> installed and that the
+<code>java</code> executable is on your <code>PATH</code> by running this command in windows
+command line:</p>
+      <pre><code>java -version</code></pre>
+      <p>You will need Java to run unit tests.</p></li>
+      <li><p>Download the <a href="http://code.angularjs.org/angular-phonecat/">zip archive</a>
+with all files and unzip them into [tutorial-dir] directory</p></li>
+      <li><p>Change your current directory to [tutorial-dir]/sanbox:</p>
+      <pre><code>cd [tutorial-dir]/sandbox</code></pre>
+      <p>The tutorial instructions assume you are running all commands from this directory.</p></li>
+      <li><p>You'll also need an http server running on your system.</p>
+      <p>If you don't already have an http server installed, you can install <a
+href="http://nodejs.org/">node.js</a>. Just download <a
+href="http://node-js.prcn.co.cc/">pre-compiled binaries</a>, unzip them and add
+<code>nodejs\bin</code> into your <code>PATH</code> and use <code>node</code> to run
+<code>scripts\web-server.js</code> — a simple bundled http server.</p></li>
+    </ol>
+  </doc:tutorial-instruction>
+</doc:tutorial-instructions>
 
 
-        git clone git://github.com/angular/angular-phonecat.git
+For either work flow you'll also need a web browser and your favorite text editor.
 
 
-   This will create a directory called `angular-phonecat` in the current directory.
-
-
-3. Change your current directory to `angular-phonecat`.
-
-
-        cd angular-phonecat
-
-
-    The tutorial instructions assume you are running all commands from this directory.
-
-
-
-
-## Using Snapshots
-
-
-1. Check to be sure you have all of the <a href="#PreReqs">prerequisites</a> on your system.
-
-
-2. {@link http://code.angularjs.org/angular-phonecat-snapshots.zip Download the zip archive} with
-all files and unzip them into `[tutorial-dir]` directory.
-
-
-
-
-3. Change directories to `[tutorial-dir]/sandbox`.
-
-
-        cd [tutorial-dir]/sandbox
-
-
-
-
-Let's get going with {@link tutorial/step_00 step 0}.
+Let's get going with {@link step_00 step 0}.
 

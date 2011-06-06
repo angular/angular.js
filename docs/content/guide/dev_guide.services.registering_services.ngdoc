@@ -1,0 +1,86 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Angular Services: Registering Angular Services
+@description
+
+
+To register a service, register a factory function that creates the service with angular's
+Injector. The Injector is exposed as `{@link api/angular.scope.$service scope.$service}`. The
+following pseudo-code shows a simple service registration:
+
+
+<pre>
+angular.service('service id', function() {
+  var shinyNewServiceInstance;
+  //factory function body that constructs shinyNewServiceInstance
+  return shinyNewServiceInstance;
+});
+</pre>
+
+
+Note that you are not registering a service instance, but rather a factory function that will
+create this instance when called.
+
+
+# Instantiating Angular Services
+
+
+A service can be instantiated eagerly or lazily. By default angular instantiates services lazily,
+which means that a service will be created only when it is needed for instantiation of a service or
+an application component that depends on it. In other words, angular won't instantiate lazy
+services unless they are requested directly or indirectly by the application.
+
+
+Eager services on the other hand, are instantiated right after the injector itself is created,
+which happens when the angular {@link dev_guide.bootstrap application initializes}.
+
+
+To override the default, you can request that a service is eagerly instantiated as follows:
+
+
+<pre>
+angular.service('service id', function() {
+  var shinyNewServiceInstance;
+  //factory function body that constructs shinyNewServiceInstance
+  return shinyNewServiceInstance;
+}, {$eager: true});
+</pre>
+
+
+While it is tempting to declare services as eager, only in few cases it is actually useful. If you
+are unsure whether to make a service eager, it likely doesn't need to be. To be more specific, a
+service should be declared as eager only if it fits one of these scenarios:
+
+
+* Nothing in your application declares this service as its dependency, and this service affects the
+state or configuration of the application (e.g. a service that configures `$route` or `$resource`
+services)
+* A guarantee is needed that the service will be instantiated at application boot time, usually
+because the service passively observes the application and it is optional for other application
+components to depend on it.  An example of this scenario is a service that monitors and logs
+application memory usage.
+
+
+Lastly, it is important to realize that all angular services are applicaiton singletons. This means
+that there is only one instance of a given service per injector. Since angular is lethally allergic
+to the global state, it is possible to create multiple injectors, each with its own instance of a
+given service, but that is rarely needed, except in tests where this property is crucially
+important.
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.services.understanding_services Understanding Angular Services}
+* {@link dev_guide.services.creating_services Creating Angular Services}
+* {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
+* {@link dev_guide.services.injecting_controllers Injecting Services Into Controllers }
+* {@link dev_guide.services.testing_services Testing Angular Services}
+
+
+## Related API
+
+
+* {@link api/angular.service Angular Service API}

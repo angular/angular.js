@@ -1,16 +1,11 @@
 @ngdoc overview
-@name Tutorial: Step 4
+@name Tutorial: 4 - Two-way Data Binding
 @description
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_03 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Live Demo}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_05 Next}</td>
-</tr>
-</table>
+
+
+<ul doc:tutorial-nav="4"></ul>
+
+
 
 
 In this step, you will add a feature to let your users control the order of the items in the phone
@@ -20,24 +15,13 @@ the repeater, and letting the data binding magic do the rest of the work.
 
 
 
-1. Reset your workspace to Step 4 using:
+<doc:tutorial-instructions step="4"></doc:tutorial-instructions>
 
 
-         git checkout -f step-4
 
 
-  or
-
-
-         ./goto_step.sh 4
-
-
-2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-4/app angular's server}.
-
-You should see that in
-addition to the search box, the app displays a drop down menu that allows users to control the
-order in which the phones are listed.
+You should see that in addition to the search box, the app displays a drop down menu that allows
+users to control the order in which the phones are listed.
 
 
 The most important changes are listed below. You can see the full diff on {@link
@@ -87,9 +71,9 @@ two provided sorting options.
       <img src="img/tutorial/tutorial_04-06_final.png">
 
 
-* We then chained the `$filter` method with {@link angular.Array.orderBy `$orderBy`} method to
+* We then chained the `$filter` method with {@link api/angular.array.orderBy `$orderBy`} method to
 further process the input into the repeater. `$orderBy` is a utility method similar to {@link
-angular.Array.filter `$filter`}, but instead of filtering an array, it reorders it.
+api/angular.array.filter `$filter`}, but instead of filtering an array, it reorders it.
 
 
 Angular creates a two way data-binding between the select element and the `orderProp` model.
@@ -220,7 +204,7 @@ __`test/e2e/scenarios.js`:__
     it('should be possible to control phone order via the drop down select box', function() {
 
 
-      //let's narrow the dataset to make the test assertions shorter
+      // let's narrow the dataset to make the test assertions shorter
       input('query').enter('tablet');
 
 
@@ -270,16 +254,5 @@ services and how angular uses dependency injection.
 
 
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_03 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-4/app Live Demo}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_05 Next}</td>
-</tr>
-</table>
-
-
+<ul doc:tutorial-nav="4"></ul>
 

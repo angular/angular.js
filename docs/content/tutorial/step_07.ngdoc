@@ -1,41 +1,26 @@
 @ngdoc overview
-@name Tutorial: Step 7
+@name Tutorial: 7 - Routing & Multiple Views
 @description
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_06 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-7/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-6...step-7 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_08 Next}</td>
-</tr>
-</table>
+
+
+<ul doc:tutorial-nav="7"></ul>
+
+
 
 
 In this step, you will learn how to create a layout template and how to build an app that has
 multiple views by adding routing.
 
 
-1. Reset your workspace to step 7.
 
 
-         git checkout -f step-7
+<doc:tutorial-instructions step="7"></doc:tutorial-instructions>
 
 
-  or
 
 
-         ./goto_step.sh 7
-
-
-2. Refresh your browser, but be sure that there is nothing in the url after `app/index.html`, or
-check the app out on {@link http://angular.github.com/angular-phonecat/step-7/app angular's
-server}.
-
-Note that you are redirected to `app/index.html#/phones` and the same phone list appears
-in the browser. When you click on a phone link the stub of a phone detail page is displayed.
+Note that you are redirected to `app/index.html#/phones` and the same phone list appears in the
+browser. When you click on a phone link the stub of a phone detail page is displayed.
 
 
 
@@ -63,9 +48,9 @@ our application. Other "partial templates" are then included into this layout te
 the current "route" — the view that is currently displayed to the user.
 
 
-Application routes in angular are declared via the {@link angular.service.$route $route} service.
-This service makes it easy to wire together controllers, view templates, and the current URL
-location in the browser. Using this feature we can implement {@link
+Application routes in angular are declared via the {@link api/angular.service.$route $route}
+service. This service makes it easy to wire together controllers, view templates, and the current
+URL location in the browser. Using this feature we can implement {@link
 http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
 history (back and forward navigation) and bookmarks.
 
@@ -82,13 +67,13 @@ function PhoneCatCtrl($route) {
 
 
   $route.when('/phones',
-              {template: 'partials/phone-list.html',   controller: PhoneListCtrl});
+      {template: 'partials/phone-list.html',   controller: PhoneListCtrl});
   $route.when('/phones/:phoneId',
-              {template: 'partials/phone-detail.html', controller: PhoneDetailCtrl});
+      {template: 'partials/phone-detail.html', controller: PhoneDetailCtrl});
   $route.otherwise({redirectTo: '/phones'});
 
 
-  $route.onChange(function(){
+  $route.onChange(function() {
     self.params = $route.current.params;
   });
 
@@ -135,8 +120,8 @@ the route declaration — `'/phones/:phoneId'` — as a template that is matched
 URL. All variables defined with the `:` notation are extracted into the `$route.current.params` map.
 
 
-The `params` alias created in the {@link angular.service.$route `$route.onChange`} callback allows
-us to use the `phoneId` property of this map in the `phone-details.html` template.
+The `params` alias created in the {@link api/angular.service.$route `$route.onChange`} callback
+allows us to use the `phoneId` property of this map in the `phone-details.html` template.
 
 
 
@@ -144,9 +129,9 @@ us to use the `phoneId` property of this map in the `phone-details.html` templat
 ## Template
 
 
-The `$route` service is usually used in conjunction with the {@link angular.widget.ng:view ng:view}
-widget. The role of the `ng:view` widget is to include the view template for the current route into
-the layout template, which makes it a perfect fit for our `index.html` template.
+The `$route` service is usually used in conjunction with the {@link api/angular.widget.ng:view
+ng:view} widget. The role of the `ng:view` widget is to include the view template for the current
+route into the layout template, which makes it a perfect fit for our `index.html` template.
 
 
 __`app/index.html`:__
@@ -279,17 +264,7 @@ With the routing set up and the phone list view implemented, we're ready to go t
 implement the phone details view.
 
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_06 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-7/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-6...step-7 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_08 Next}</td>
-</tr>
-</table>
 
 
+<ul doc:tutorial-nav="7"></ul>
 

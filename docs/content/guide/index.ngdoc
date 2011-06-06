@@ -3,32 +3,78 @@
 @name Developer Guide
 @description
 
-* {@link guide.overview Overview} - An overview of angular, including its philosophy and how it
-  works.
-* {@link guide.bootstrap Bootstrap} - How to bootstrap your application to the angular environment.
-* {@link guide.template Template} - How to define your application's view using HTML, CSS, and
-  other built-in angular constructs.
-* {@link guide.compiler Compiler} - All about the HTML compiler that's at the core of angular.
-  * {@link angular.directive Directive} - How to use XML attributes to augment an existing DOM
-    element.
-  * {@link angular.markup Markup} - How to use markup to create shorthand for a widget or a
-    directive. For example, markup is what allows you to use the double curly brace notation
-    `{{}}` to bind expressions to elements.
-    * {@link guide.data-binding Data Binding} - About the mechanism that keeps the model the single
-      source of truth of your application at all times, with the view as a live projection of the
-      model.
-    * {@link angular.filter Filter} - How to format your data for display to the user.
-  * {@link angular.widget Widget} - How to create new DOM elements that the browser doesn't already
-    understand.
-    * {@link angular.validator Validator} - How to validate user input.
-    * {@link angular.formatter Formatter} - How to format stored data to user-readable text and
-      parse the text back to the stored form.
-  * {@link guide.css CSS} - Built-in CSS classes, when angular assigns them, and how to override
-    their styles.
-* {@link angular.scope Scope} - The model in the model-view-controller design pattern. You can
-  think about scopes as the JavaScript objects that have extra APIs for registering watchers.
-  * {@link guide.expression Expression} - The bindings that are embedded in an angular View.
-* {@link angular.service Service} - Objects that are wired through dependency injection and then
-  injected into the root scope.
-* {@link guide.testing Testing}
-  * service:$browser(mock)
+
+Welcome to the angular Developer Guide.  If you are here to learn the details of how to use angular
+to develop web apps, you've come to the right place.
+
+
+If you are completely or relatively unfamiliar with angular, you may want to check out one or both
+of the following documents before returning here to the Developer Guide:
+
+
+* {@link intro/started Getting Started}
+* {@link tutorial/index Angular Tutorial}
+
+
+<hr>
+
+
+## {@link dev_guide.overview Overview of Angular}
+
+
+## {@link dev_guide.bootstrap Initializing Angular}
+
+
+* {@link dev_guide.bootstrap.auto_bootstrap Understanding Automatic Initialization}
+* {@link dev_guide.bootstrap.manual_bootstrap Understanding Manual Initialization}
+
+
+## {@link dev_guide.mvc About MVC in Angular}
+
+
+* {@link dev_guide.mvc.understanding_model Understanding the Model Component}
+* {@link dev_guide.mvc.understanding_controller Understanding the Controller Component}
+* {@link dev_guide.mvc.understanding_view Understanding the View Component}
+
+
+## {@link dev_guide.scopes Angular Scope Objects}
+
+
+* {@link dev_guide.scopes.understanding_scopes Understanding Angular Scope Objects}
+* {@link dev_guide.scopes.working_scopes Working With Angular Scopes}
+* {@link dev_guide.scopes.controlling_scopes Applying Controllers to Scopes}
+* {@link dev_guide.scopes.updating_scopes Updating Scope Properties}
+
+
+## {@link dev_guide.compiler Angular HTML Compiler}
+
+
+* {@link dev_guide.compiler.directives Understanding Angular Directives}
+* {@link dev_guide.compiler.widgets Understanding Angular Widgets}
+* {@link dev_guide.compiler.directives_widgets Comparing Directives and Widgets}
+* {@link dev_guide.compiler.markup Understanding Angular Markup}
+
+
+## {@link dev_guide.templates Angular Templates}
+
+
+* {@link dev_guide.templates.filters Understanding Angular Filters}
+* {@link dev_guide.templates.formatters Understanding Angular Formatters}
+* {@link dev_guide.templates.validators Understanding Angular Validators}
+
+
+## {@link dev_guide.services Angular Services}
+
+
+* {@link dev_guide.services.understanding_services Understanding Angular Services}
+* {@link dev_guide.services.creating_services Creating Angular Services}
+* {@link dev_guide.services.registering_services Registering Angular Services}
+* {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
+* {@link dev_guide.services.testing_services Testing Angular Services}
+
+
+## {@link dev_guide.di About Dependency Injection}
+
+
+* {@link dev_guide.di.understanding_di Understanding DI in Angular}
+* {@link dev_guide.di.using_di_controllers Using DI in Controllers}

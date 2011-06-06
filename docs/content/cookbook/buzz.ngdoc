@@ -3,11 +3,14 @@
 @name Cookbook: Resources - Buzz
 @description
 
+
 External resources are URLs that provide JSON data, which are then rendered with the help of
 templates. angular has a resource factory that can be used to give names to the URLs and then
 attach behavior to them. For example you can use the
-{@link http://code.google.com/apis/buzz/v1/getting_started.html#background-operations| Google Buzz API}
+{@link http://code.google.com/apis/buzz/v1/getting_started.html#background-operations| Google Buzz
+API}
 to retrieve Buzz activity and comments.
+
 
 <doc:example>
  <doc:source>
@@ -40,7 +43,7 @@ to retrieve Buzz activity and comments.
        <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
        <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
        <a href="" ng:click="expandReplies(item)" style="float: right;">
-        Expand replies: {{item.links.replies[0].count}}
+        Expand replies: {{item.links.replies.count}}
        </a>
       </h1>
       {{item.object.content | html}}

@@ -1,0 +1,96 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Angular Services: Managing Service Dependencies
+@description
+
+
+Angular allows services to declare other services as dependencies needed for construction of their
+instances.
+
+
+To declare dependencies, you specify them in the factory function signature and via the `$inject`
+property, as an array of string identifiers. Optionally the `$inject` property declaration can be
+dropped (see "Inferring `$inject`" but note that that is currently an experimental feature).
+
+
+Here is an example of two services that depend on each other, as well as on other services that are
+provided by angular's web framework:
+
+
+<pre>
+/**
+* batchLog service allows for messages to be queued in memory and flushed
+* to the console.log every 50 seconds.
+*
+* @param {*} message Message to be logged.
+*/
+angular.service('batchLog', function($defer, $log) {
+var messageQueue = [];
+
+
+function log() {
+ if (messageQueue.length) {
+   $log('batchLog messages: ', messageQueue);
+   messageQueue = [];
+ }
+ $defer(log, 50000);
+ }
+
+
+return function(message) {
+ messageQueue.push(message);
+}
+}, {$inject: ['$defer', '$log']);
+// note how we declared dependency on built-in $defer and $log services above
+
+
+/**
+* routeTemplateMonitor monitors each $route change and logs the current
+* template via the batchLog service.
+*/
+angular.service('routeTemplateMonitor', function($route, batchLogbatchLog) {
+$route.onChange(function() {
+ batchLog($route.current ? $route.current.template : null);
+});
+}, {$inject: ['$route', 'batchLog'], $eager: true});
+</pre>
+
+
+Things to notice in this example:
+
+
+* The `batchLog` service depends on the built-in `{@link api/angular.service.$defer $defer}` and
+`{@link api/angular.service.$log $log}` services, and allows messages to be logged into the
+`console.log` in batches.
+* The `routeTemplateMonitor` service depends on the built-in `{@link api/angular.service.$route
+$route}` service as well as our custom `batchLog` service.
+* The `routeTemplateMonitor` service is declared to be eager, so that it is started as soon as the
+application starts.
+* To underline the need for the eager instantiation of the `routeTemplateMonitor` service, nothing
+else in the application depends on this service, and in this particular case the factory function
+of this service doesn't return anything at all.
+* Both of our services use the factory function signature as well as the `$inject` property to
+declare their dependencies. It is important that the order of the string identifiers in the array
+associated with the `$inject` property is the same as the order of argument names in the signature
+of the factory function. Unless the dependencies are inferred from the function signature, it is
+this array with IDs and their order that the injector uses to determine which services and in which
+order to inject.
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.services.understanding_services Understanding Angular Services}
+* {@link dev_guide.services.creating_services Creating Angular Services}
+* {@link dev_guide.services.registering_services Registering Services}
+* {@link dev_guide.services.injecting_controllers Injecting Services Into Controllers }
+* {@link dev_guide.services.testing_services Testing Angular Services}
+
+
+## Related API
+
+
+* {@link api/angular.service Angular Service API}
+* {@link api/angular.injector Angular Injector API}

@@ -1,0 +1,49 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Angular HTML Compiler: Directives: Creating Custom Angular Directives
+@description
+
+
+The following code snippet shows how to define a custom directive. You define a new directive by
+extending the {@link dev_guide.compiler Angular HTML compiler}. The code snippet below is a
+simplified definition of the built-in {@link api/angular.directive.ng:bind ng:bind} directive:
+
+
+<pre>
+angular.directive('ng:bind', function(expression, compiledElement) {
+    var compiler = this;
+    return function(linkElement) {
+        var currentScope = this;
+        currentScope.$watch(expression, function(value) {
+            linkElement.text(value);
+        });
+    };
+});
+</pre>
+
+
+# Additional Compiler Methods for Custom Directives
+
+
+The angular compiler exposes methods that you may need to use when writing your own widgets and
+directives.  For example, the `descend()` method lets you control whether the compiler ignores or
+processes child elements of the element it is compiling.  For information on this and other
+compiler methods, see the {@link api/angular.compile Compiler API doc}.
+
+
+
+
+## Related Docs
+
+
+* {@link dev_guide.compiler.directives Understanding Angular Directives}
+* {@link dev_guide.compiler.directives_widgets Comparing Directives and Widgets}
+* {@link dev_guide.compiler Angular HTML Compiler}
+
+
+
+
+## Related API
+
+
+* {@link api/angular.directive Angular Directive API}.

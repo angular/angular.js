@@ -1,43 +1,29 @@
 @ngdoc overview
-@name Tutorial: Step 8
+@name Tutorial: 8 - More Templating
 @description
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_07 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-7...step-8 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_09 Next}</td>
-</tr>
-</table>
+
+
+<ul doc:tutorial-nav="8"></ul>
+
+
 
 
 In this step, you will implement the phone details view, which is displayed when a user clicks on a
 phone in the phone list.
 
 
-1. Reset your workspace to Step 8 using:
 
 
-         git checkout -f step-8
+<doc:tutorial-instructions step="8"></doc:tutorial-instructions>
 
 
-  or
 
 
-         ./goto_step.sh 8
+Now when you click on a phone on the list, the phone details page with phone-specific information
+is displayed.
 
 
-2. Refresh your browser or check the app out on {@link
-http://angular.github.com/angular-phonecat/step-8/app angular's server}.
-
-Now when you click on a
-phone on the list, the phone details page with phone-specific information is displayed.
-
-
-To implement the phone details view we will use {@link angular.service.$xhr $xhr} to fetch our
+To implement the phone details view we will use {@link api/angular.service.$xhr $xhr} to fetch our
 data, and we'll flesh out the `phone-details.html` view template.
 
 
@@ -56,8 +42,7 @@ phone:
 __`app/phones/nexus-s.json`:__ (sample snippet)
 <pre>
 {
-  "additionalFeatures": "Contour Display, Near Field Communications (NFC), Three-axis gyroscope,
-Anti-fingerprint display coating, Internet Calling support (VoIP/SIP)",
+  "additionalFeatures": "Contour Display, Near Field Communications (NFC),...",
   "android": {
       "os": "Android 2.3",
       "ui": "Android"
@@ -172,7 +157,7 @@ step 5.
 __`test/unit/controllerSpec.js`:__
 <pre>
 ...
-    it('should fetch phone detail', function(){
+    it('should fetch phone detail', function() {
       scope.params = {phoneId:'xyz'};
       $browser.xhr.expectGET('phones/xyz.json').respond({name:'phone xyz'});
       ctrl = scope.$new(PhoneDetailCtrl);
@@ -192,10 +177,10 @@ To run the unit tests, execute the `./scripts/test.sh` script and you should see
 output.
 
 
-        Chrome: Runner reset.
-        ...
-        Total 3 tests (Passed: 3; Fails: 0; Errors: 0) (5.00 ms)
-          Chrome 11.0.696.57 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
+    Chrome: Runner reset.
+    ...
+    Total 3 tests (Passed: 3; Fails: 0; Errors: 0) (5.00 ms)
+      Chrome 11.0.696.57 Mac OS: Run 3 tests (Passed: 3; Fails: 0; Errors 0) (5.00 ms)
 
 
 
@@ -251,17 +236,7 @@ Now that the phone details view is in place, proceed to step 9 to learn how to w
 custom display filter.
 
 
-<table id="tutorial_nav">
-<tr>
-<td id="previous_step">{@link tutorial.step_07 Previous}</td>
-<td id="step_result">{@link  http://angular.github.com/angular-phonecat/step-8/app Live Demo
-}</td>
-<td id="tut_home">{@link tutorial Tutorial Home}</td>
-<td id="code_diff">{@link https://github.com/angular/angular-phonecat/compare/step-7...step-8 Code
-Diff}</td>
-<td id="next_step">{@link tutorial.step_09 Next}</td>
-</tr>
-</table>
 
 
+<ul doc:tutorial-nav="8"></ul>
 

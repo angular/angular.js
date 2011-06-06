@@ -1,0 +1,116 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Angular HTML Compiler: Widgets: Creating Custom Widgets
+@description
+
+
+When you create your own widgets, you must set up your own namespace for them.  (See
+dev_guide.bootstrap Initializing Angular} for information about namespaces in angular.)
+
+
+Let's say we would like to create a new element type in the namespace `my` that can watch an
+expression and `alert()` the user with each new value:
+
+
+<pre>
+// An element widget
+<my:watch exp="name"/>
+</pre>
+
+
+You can implement `my:watch` like this:
+
+
+<pre>
+angular.widget('my:watch', function(compileElement) {
+ var compiler = this;
+ var exp = compileElement.attr('exp');
+ return function(linkElement) {
+   var currentScope = this;
+   currentScope.$watch(exp, function(value){
+     alert(value);
+   });
+ };
+});
+</pre>
+
+
+
+
+# Creating a Custom Attribute Widget
+
+
+Let's implement the same widget as in the example in Defining an Element Widget, but this time as
+an attribute that can be added to any existing DOM element:
+
+
+<pre>
+// An attribute widget (my-watch) in a div tag
+<div my-watch="name">text</div>
+</pre>
+You can implement `my:watch` attribute like this:
+<pre>
+angular.widget('@my:watch', function(expression, compileElement) {
+var compiler = this;
+return function(linkElement) {
+var currentScope = this;
+currentScope.$watch(expression, function(value){
+  alert(value);
+});
+};
+});
+</pre>
+
+
+
+
+# Live Example of a Custom Element Widget
+
+
+<doc:example>
+<doc:source>
+<script>
+angular.widget('my:time', function(compileElement){
+  compileElement.css('display', 'block');
+  return function(linkElement){
+    function update(){
+      linkElement.text('Current time is: ' + new Date());
+      setTimeout(update, 1000);
+    }
+    update();
+  };
+});
+</script>
+<my:time></my:time>
+</doc:source>
+<doc:scenario>
+</doc:scenario>
+</doc:example>
+
+
+
+
+# Additional Compiler Methods for Custom Widgets
+
+
+The angular compiler exposes methods that you may need to use of when writing your own widgets and
+directives.  For example, the `descend()` method lets you control whether the compiler ignores or
+processes child elements of the element it is compiling.  For information on this and other
+compiler methods, see the {@link api/angular.compile Compiler API doc}.
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.compiler Angular HTML Compiler}
+* {@link dev_guide.compiler.directives Angular Directives}
+* {@link dev_guide.compiler.widgets Angular Widgets}
+* {@link dev_guide.compiler.directives.creating_directives Creating Custom Directives}
+
+
+## Related API
+
+
+* {@link api/angular.compile Compiler API}
