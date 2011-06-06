@@ -1,3 +1,33 @@
+/**
+ * @workInProgress
+ * @ngdoc overview
+ * @name angular.validator
+ * @description
+ *
+ * Most of the built-in angular validators are used to check user input against defined types or
+ * patterns.  You can easily create your own custom validators as well.
+ *
+ * Following is the list of built-in angular validators:
+ *
+ * * {@link angular.Validator.asynchronous asynchronous()} - Provides asynchronous validation via a
+ * callback function.
+ * * {@link angular.Validator.date date()} - Checks user input against default date format:
+ * "MM/DD/YYYY"
+ * * {@link angular.Validator.email email()} - Validates that user input is a well-formed email
+ * address.
+ * * {@link angular.Validator.integer integer()} - Validates that user input is an integer
+ * * {@link angular.Validator.json json()} - Validates that user input is valid JSON
+ * * {@link angular.Validator.number number()} - Validates that user input is a number
+ * * {@link angular.Validator.phone phone()} - Validates that user input matches the pattern
+ * "1(123)123-1234"
+ * * {@link angular.Validator.regexp regexp()} - Restricts valid input to a specified regular
+ * expression pattern
+ * * {@link angular.Validator.url url()} - Validates that user input is a well-formed URL.
+ *
+ * For more information about how angular validators work, and how to create your own validators,
+ * see {@link guide/validators Understanding Angular Validators} in the angular Developer Guide.
+ */
+
 extend(angularValidator, {
   'noop': function() { return null; },
 

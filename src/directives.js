@@ -1,5 +1,47 @@
 /**
  * @workInProgress
+ * @ngdoc overview
+ * @name angular.directive
+ * @description
+ *
+ * Custom attributes for DOM elements.  Directives modify the behavior of the element they are
+ * specified in, but are not intended to add elements to the DOM as are {@link widget widgets}.
+ *
+ * Following is the list of built-in angular directives:
+ *
+ * * {@link angular.Directive.ng:bind ng:bind} - Creates a data-binding between HTML text value and
+ * data model.
+ * * {@link angular.Directive.ng:bind-attr ng:bind-attr} - Creates a data-binding as in `ng:bind`,
+ * but uses JSON key / value pairs.
+ * * {@link angular.Directive.ng:bind-template ng:bind-template} - Replaces text value of an element
+ * with a specified template.
+ * * {@link angular.Directive.ng:change ng:change} - Executes an expression when the value of an
+ * input widget changes.
+ * * {@link angular.Directive.ng:class ng:class} - Conditionally set CSS class on an element.
+ * * {@link angular.Directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
+ * conjunction with {@link widget.@ng:repeat} to affect even rows in a collection.
+ * * {@link angular.Directive.ng:class-odd ng:class-odd} - Like `ng:class`, but works with {@link
+ * widget.@ng:repeat}  to affect odd rows.
+ * * {@link angular.Directive.ng:click ng:click} - Executes custom behavior when element is clicked.
+ * * {@link angular.Directive.ng:controller ng:controller} - Creates a scope object linked to the
+ * DOM element and assigns behavior to the scope.
+ * * {@link angular.Directive.ng:eval ng:eval} - Executes a binding but blocks output.
+ * * {@link angular.Directive.ng:eval-order ng:eval-order} - Change evaluation order when updating
+ * the view.
+ * * {@link angular.Directive.ng:hide ng:hide} - Conditionally hides a portion of HTML.
+ * * {@link angular.Directive.ng:href ng:href} - Places an href in the angular namespace.
+ * * {@link angular.Directive.ng:init} - Initialization tasks run before a template is executed.
+ * * {@link angular.Directive.ng:show ng:show} - Conditionally displays a portion of HTML.
+ * * {@link angular.Directive.ng:src ng:src} - Places a `src` attribute into the angular namespace.
+ * * {@link angular.Directive.ng:style ng:style} - Conditionally set CSS styles on an element.
+ * * {@link angular.Directive.ng:submit} - Binds angular expressions to `onSubmit` events.
+ *
+ * For more information about how angular directives work, and how to create your own directives,
+ * see {@link guide/directives Understanding Angular Directives} in the angular Developer Guide.
+ */
+
+/**
+ * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:init
  *

@@ -104,6 +104,7 @@ function errorHandlerFor(element, error) {
   elementError(element, NG_EXCEPTION, isDefined(error) ? formatError(error) : error);
 }
 
+
 /**
  * @workInProgress
  * @ngdoc overview
@@ -111,134 +112,24 @@ function errorHandlerFor(element, error) {
  *
  * @description
  * Scope is a JavaScript object and the execution context for expressions. You can think about
- * scopes as JavaScript objects that have extra APIs for registering watchers. A scope is the model
- * in the model-view-controller design pattern.
+ * scopes as JavaScript objects that have extra APIs for registering watchers. A scope is the
+ * context in which model (from the model-view-controller design pattern) exists.
  *
- * A few other characteristics of scopes:
+ * Angular scope objects provide the following methods:
  *
- * - Scopes can be nested. A scope (prototypically) inherits properties from its parent scope.
- * - Scopes can be attached (bound) to the HTML DOM tree (the view).
- * - A scope {@link angular.scope.$become becomes} `this` for a controller.
- * - A scope's {@link angular.scope.$eval $eval} is used to update its view.
- * - Scopes can {@link angular.scope.$watch $watch} properties and fire events.
+ * * {@link angular.Scope.$become $become()} -
+ * * {@link angular.Scope.$bind $bind()} -
+ * * {@link angular.Scope.$eval $eval()} -
+ * * {@link angular.Scope.$get $get()} -
+ * * {@link angular.Scope.$new $new()} -
+ * * {@link angular.Scope.$onEval $onEval()} -
+ * * {@link angular.Scope.$service $service()} -
+ * * {@link angular.Scope.$set $set()} -
+ * * {@link angular.Scope.$tryEval $tryEval()} -
+ * * {@link angular.Scope.$watch $watch()} -
  *
- * # Basic Operations
- * Scopes can be created by calling {@link angular.scope angular.scope()} or by compiling HTML.
- *
- * {@link angular.widget Widgets} and data bindings register listeners on the current scope to be
- * notified of changes to the scope state. When notified, these listeners push the updated state
- * through to the DOM.
- *
- * Here is a simple scope snippet to show how you can interact with the scope.
- * <pre>
-       var scope = angular.scope();
-       scope.salutation = 'Hello';
-       scope.name = 'World';
-
-       expect(scope.greeting).toEqual(undefined);
-
-       scope.$watch('name', function(){
-         this.greeting = this.salutation + ' ' + this.name + '!';
-       });
-
-       expect(scope.greeting).toEqual('Hello World!');
-       scope.name = 'Misko';
-       // scope.$eval() will propagate the change to listeners
-       expect(scope.greeting).toEqual('Hello World!');
-
-       scope.$eval();
-       expect(scope.greeting).toEqual('Hello Misko!');
- * </pre>
- *
- * # Inheritance
- * A scope can inherit from a parent scope, as in this example:
- * <pre>
-     var parent = angular.scope();
-     var child = angular.scope(parent);
-
-     parent.salutation = "Hello";
-     child.name = "World";
-     expect(child.salutation).toEqual('Hello');
-
-     child.salutation = "Welcome";
-     expect(child.salutation).toEqual('Welcome');
-     expect(parent.salutation).toEqual('Hello');
- * </pre>
- *
- * # Dependency Injection
- * Scope also acts as a simple dependency injection framework.
- *
- * **TODO**: more info needed
- *
- * # When scopes are evaluated
- * Anyone can update a scope by calling its {@link angular.scope.$eval $eval()} method. By default
- * angular widgets listen to user change events (e.g. the user enters text into a text field), copy
- * the data from the widget to the scope (the MVC model), and then call the `$eval()` method on the
- * root scope to update dependents. This creates a spreadsheet-like behavior: the bound views update
- * immediately as the user types into the text field.
- *
- * Similarly, when a request to fetch data from a server is made and the response comes back, the
- * data is written into the model and then $eval() is called to push updates through to the view and
- * any other dependents.
- *
- * Because a change in the model that's triggered either by user input or by server response calls
- * `$eval()`, it is unnecessary to call `$eval()` from within your controller. The only time when
- * calling `$eval()` is needed is when implementing a custom widget or service.
- *
- * Because scopes are inherited, the child scope `$eval()` overrides the parent `$eval()` method.
- * So to update the whole page you need to call `$eval()` on the root scope as `$root.$eval()`.
- *
- * Note: A widget that creates scopes (i.e. {@link angular.widget.@ng:repeat ng:repeat}) is
- * responsible for forwarding `$eval()` calls from the parent to those child scopes. That way,
- * calling $eval() on the root scope will update the whole page.
- *
- *
- * @TODO THESE PARAMS AND RETURNS ARE NOT RENDERED IN THE TEMPLATE!! FIX THAT!
- * @param {Object} parent The scope that should become the parent for the newly created scope.
- * @param {Object.<string, function()>=} providers Map of service factory which need to be provided
- *     for the current scope. Usually {@link angular.service}.
- * @param {Object.<string, *>=} instanceCache Provides pre-instantiated services which should
- *     append/override services provided by `providers`.
- * @returns {Object} Newly created scope.
- *
- *
- * @example
- * This example demonstrates scope inheritance and property overriding.
- *
- * In this example, the root scope encompasses the whole HTML DOM tree. This scope has `salutation`,
- * `name`, and `names` properties. The {@link angular.widget.@ng:repeat ng:repeat} creates a child
- * scope, one for each element in the names array. The repeater also assigns $index and name into
- * the child scope.
- *
- * Notice that:
- *
- * - While the name is set in the child scope it does not change the name defined in the root scope.
- * - The child scope inherits the salutation property from the root scope.
- * - The $index property does not leak from the child scope to the root scope.
- *
-   <doc:example>
-     <doc:source>
-       <ul ng:init="salutation='Hello'; name='Misko'; names=['World', 'Earth']">
-         <li ng:repeat="name in names">
-           {{$index}}: {{salutation}} {{name}}!
-         </li>
-       </ul>
-       <pre>
-       $index={{$index}}
-       salutation={{salutation}}
-       name={{name}}</pre>
-     </doc:source>
-     <doc:scenario>
-       it('should inherit the salutation property and override the name property', function() {
-         expect(using('.doc-example-live').repeater('li').row(0)).
-           toEqual(['0', 'Hello', 'World']);
-         expect(using('.doc-example-live').repeater('li').row(1)).
-           toEqual(['1', 'Hello', 'Earth']);
-         expect(using('.doc-example-live').element('pre').text()).
-           toBe('       $index=\n       salutation=Hello\n       name=Misko');
-       });
-     </doc:scenario>
-   </doc:example>
+ * For more information about how angular scope objects work,, see {@link guide/scopes Angular Scope
+ * Objects} in the angular Developer Guide.
  */
 function createScope(parent, providers, instanceCache) {
   function Parent(){}
