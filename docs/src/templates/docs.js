@@ -15,7 +15,7 @@ function DocsController($location, $browser, $window) {
       self.sectionId = parts[1];
       self.partialId = parts[2] || 'index';
       self.pages = angular.Array.filter(NG_PAGES, {section:self.sectionId});
-      self.partialTitle = (angular.Array.filter(self.pages, function(doc){return doc.id == self.partialId;})[0]||{}).name;
+      self.partialTitle = (angular.Array.filter(self.pages, function(doc){return doc.id == self.partialId;})[0]||{}).name || 'Error: Page Not Found!';
     }
   });
 
@@ -84,3 +84,26 @@ function TutorialInstructionsCtrl($cookieStore) {
     $cookieStore.put('selEnv', id);
   };
 }
+
+/**
+ * Display 404 page and suggest new link if possible
+ */
+angular.service('$xhr.error', function($location) {
+  function suggestLink(wrongLink) {
+    var link = wrongLink.replace(/^!\/?/, '');
+
+    if (link.match(/^angular/)) return 'api/' + link;
+    else if (link.match(/^cookbook/)) return link.replace('cookbook.', 'cookbook/');
+  }
+
+  return function(request, response) {
+    var suggestion = suggestLink($location.hashPath),
+        HTML_404 = '<h1>Error: Page Not Found</h1>' +
+                   '<p>Sorry this page has not been found.</p>';
+
+    if (suggestion)
+      HTML_404 += '<p>Looks like you are using an old link. Please update your bookmark to: <a href="#!/' + suggestion + '">' + suggestion + '</a></p>';
+
+    request.callback(200, HTML_404);
+  };
+});
