@@ -8,38 +8,37 @@ body {
 /*----- Layout Generic Styles -----*/
 
 body,td,th {
-    font-family: Arial, Helvetica, sans-serif;
-    font-size: 14px;
-    color: #000;
-    margin: 0px;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  color: #000;
+  margin: 0px;
 }
 
 a:link, a:visited, a:hover {
-    color: #5d6db6;
-    text-decoration: none;
+  color: #5d6db6;
+  text-decoration: none;
 }
 
 a:active {
-    text-decoration: none;
+  text-decoration: none;
 }
 
 p {
-    font-size: 14px;
-    padding-right: 10px;
-    padding-left: 15px;
+  font-size: 14px;
+  padding: 0.1em 1em;
+  line-height: 1.4em;
 }
 
-.h1 {
-    font-size: 24px;
-    color: #000;
-    text-align: left;
-    font-weight: bold;
+h2 {
+  margin: 1.5em 0 1em 0;
 }
 
-.h2 {
-    font-size: 18px;
-    text-align: left;
-    text-indent: 10px;
+h3 {
+  margin: 1.8em 0 1em 0;
+}
+
+h4 {
+  margin: 2em 0 1em 0;
 }
 
 
@@ -52,6 +51,7 @@ p {
     text-align: center;
     padding: 5px 0;
 }
+
 
 #oldIePrompt a,
 #oldIePrompt a:visited {
@@ -89,9 +89,11 @@ p {
   border-bottom: 4px solid #808080;
 }
 
+
 #navbar li {
   display: inline;
 }
+
 
 #navbar a:link, #navbar a:visited {
   font-size: 1.2em;
@@ -104,20 +106,25 @@ p {
   padding: 0.5em 0;
 }
 
+
 #navbar a:hover {
   color: #000;
 }
 
+
 #navbar a.current {
   font-weight: bold;
   background-color: #333;
+
   border-radius: 10px;
   -webkit-border-radius:10px;
   -moz-border-radius: 10px;
+
   box-shadow: 4px 4px 6px #48577D;
   -webkit-box-shadow: 4px 4px 6px #48577D;
   -moz-box-shadow: 4px 4px 6px #48577D;
 }
+
 
 #navbar a.current:hover {
   color: #fff;
@@ -156,17 +163,17 @@ p {
 
 #content-list {
   background: #fff;
-  padding: 1em 0em 1em 2.5em;
+  padding: 1em 0.4em 1em 2em;
   margin: 0.95em -1em -1em -0.6em;
   line-height: 1.5em;
 }
 
 
 #content-list .level-0 {
-  font-size: 1.8em;
+  font-size: 1.3em;
   list-style: none;
-  margin-left: -0.8em;
-  padding-bottom: 0.7em;
+  margin-left: -1.2em;
+  padding-bottom: 0.2em;
 }
 
 #content-list .level-1 {
@@ -187,6 +194,7 @@ p {
 
 
 /*----- content styles -----*/
+
 #content-panel {
   float: left;
   margin-top: 4em;
@@ -209,7 +217,7 @@ p {
   font-size: 2em;
   font-weight: normal;
   color: #fff;
-  margin: 0;
+  margin: 0 4em 0 0;
   height: 1em;
 }
 
@@ -219,6 +227,16 @@ p {
   display: block;
   margin: 0.7em -1em -1em;
   padding: 0.5em 1.5em;
+}
+
+
+#feedback {
+  float: right;
+  margin-top: -2.3em;
+  margin-right: 0.5em;
+  width: 8em;
+  font-size: 0.8em;
+  color: #fff;
 }
 
 
@@ -237,17 +255,17 @@ p {
   -webkit-box-shadow: 4px 4px 6px #48577D;
   box-shadow: 4px 4px 6px #48577D;
 
-
   -moz-border-radius: 15px;
   -webkit-border-radius: 15px;
   border-radius: 15px;
 }
 
-#feedback {
-  float: right;
-  margin-top: -2.3em;
-  margin-right: 0.5em;
-  width: 8em;
-  font-size: 0.8em;
-  color: #fff;
+
+#content > div > pre {
+  padding-left: 1.5em;
+}
+
+
+#content .syntaxhighlighter  {
+  margin: 1.5em 0 1.5em 0 !important;;
 }

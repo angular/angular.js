@@ -6,7 +6,7 @@ function DocsController($location, $browser, $window) {
   this.$location = $location;
 
   if (!HAS_HASH.test($location.href)) {
-    $location.hashPath = '!api/angular';
+    $location.hashPath = '!api/';
   }
 
   this.$watch('$location.hashPath', function(hashPath) {
@@ -65,7 +65,7 @@ angular.widget('code', function(element){
 });
 
 SyntaxHighlighter['defaults'].toolbar = false;
-SyntaxHighlighter['defaults'].gutter = false;
+SyntaxHighlighter['defaults'].gutter = true;
 
 /**
  * Controller for tutorial instructions

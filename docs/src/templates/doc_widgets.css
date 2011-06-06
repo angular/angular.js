@@ -84,3 +84,42 @@ div.tabs-content-inner {
   -moz-border-radius: 6px;
   -webkit-border-radius: 6px;
 }
+
+
+/* Tutorial Nav Bar */
+
+#tutorial-nav {
+  margin: 0.5em 0 1em 0;
+  padding: 0;
+  list-style-type: none;
+  background: #7989D6;
+
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+
+  -moz-box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  box-shadow: 4px 4px 6px #48577D;
+}
+
+
+#tutorial-nav li {
+  display: inline;
+}
+
+
+#tutorial-nav a:link, #tutorial-nav a:visited {
+  font-size: 1.2em;
+  color: #FFF;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  width: 11em;
+  padding: 0.2em 0;
+}
+
+
+#tutorial-nav a:hover {
+  color: #000;
+}

@@ -86,7 +86,7 @@
   };
 
   var HTML_TPL =
-      '<a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Show Instructions</a>' +
+      '<p><a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Workspace Reset Instructions</a></p>' +
       '<div ng:controller="TutorialInstructionsCtrl" ng:show="showInstructions">' +
         '<div class="tabs-nav">' +
           '<ul>' +
@@ -111,7 +111,7 @@
       '<ol>' +
       '<li><p>Reset the workspace to step {step}.</p>' +
       '<pre><code> git checkout -f step-{step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">anglar\'s server</a>.</p></li>' +
+      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
       '</ol>' +
     '</div>' +
 
@@ -135,7 +135,7 @@
       '<ol>' +
       '<li><p>Reset the workspace to step {step}.</p>' +
       '<pre><code> ./goto_step.bat {step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">anglar\'s server</a>.</p></li>' +
+      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
       '</ol>' +
     '</div>';
 
@@ -166,5 +166,43 @@
     element.html('');
     element.append(tabs);
     element.show();
+  });
+
+
+  angular.directive('doc:tutorial-nav', function(step) {    
+    return function(element) {
+      var prevStep, codeDiff, nextStep,
+          content;
+
+      step = parseInt(step, 10);
+
+      if (step === 0) {
+        prevStep = '';
+        nextStep = 'step_01';
+        codeDiff = 'step-0~7...step-0';
+      } else if (step === 11){
+        prevStep = 'step_10';
+        nextStep = 'the_end';
+        codeDiff = 'step-10...step-11';
+      } else {
+        prevStep = 'step_' + pad(step - 1)
+        nextStep = 'step_'  + pad(step + 1);
+        codeDiff = 'step-' + step + '...step-' + step;
+      }
+
+      content = angular.element(
+        '<li><a href="#!tutorial/' + prevStep + '">Previous</a></li>' +
+        '<li><a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Live Demo</a></li>' +
+        '<li><a href="https://github.com/angular/angular-phonecat/compare/' + codeDiff + '">Code Diff</a></li>' +
+        '<li><a href="#!tutorial/' + nextStep + '">Next</a></li>'
+      );
+
+      element.attr('id', 'tutorial-nav');
+      element.append(content);
+    }
+
+    function pad(step) {
+      return (step < 10) ? ('0' + step) : step;
+    }
   });
 })();
