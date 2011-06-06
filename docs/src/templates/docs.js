@@ -6,21 +6,21 @@ function DocsController($location, $browser, $window) {
   this.$location = $location;
 
   if (!HAS_HASH.test($location.href)) {
-    $location.hashPath = '!api/';
+    $location.hashPath = '!/api';
   }
 
   this.$watch('$location.hashPath', function(hashPath) {
     if (hashPath.match(/^!/)) {
       var parts = hashPath.substring(1).split('/');
-      self.sectionId = parts[0];
-      self.partialId = parts[1] || 'index';
+      self.sectionId = parts[1];
+      self.partialId = parts[2] || 'index';
       self.pages = angular.Array.filter(NG_PAGES, {section:self.sectionId});
       self.partialTitle = (angular.Array.filter(self.pages, function(doc){return doc.id == self.partialId;})[0]||{}).name;
     }
   });
 
   this.getUrl = function(page){
-    return '#!' + page.section + '/' + page.id;
+    return '#!/' + page.section + '/' + page.id;
   };
 
   this.getCurrentPartial = function(){
@@ -48,7 +48,7 @@ function DocsController($location, $browser, $window) {
   this.afterPartialLoaded = function() {
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
-    $window._gaq.push(['_trackPageview', $location.hashPath.replace('!', '/')]);
+    $window._gaq.push(['_trackPageview', $location.hashPath.substr(1)]);
   };
 
   this.getFeedbackUrl = function() {
