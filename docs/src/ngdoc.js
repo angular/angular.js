@@ -82,7 +82,7 @@ Doc.prototype = {
 
     var self = this,
         IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
-        IS_ANGULAR = /^angular\./,
+        IS_ANGULAR = /^(api\/)?angular\./,
         parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:(\S*).*?>[\s\S]*?<\/doc:\2>)/);
 
     parts.forEach(function(text, i) {
@@ -125,7 +125,6 @@ Doc.prototype = {
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
             var isFullUrl = url.match(IS_URL),
-                // FIXME(vojta) angular link could be api/angular now with sections
                 isAngular = url.match(IS_ANGULAR),
                 absUrl = isFullUrl ? url : self.convertUrlToAbsolute(url);
 

@@ -59,11 +59,11 @@ $route.onChange(function() {
 Things to notice in this example:
 
 
-* The `batchLog` service depends on the built-in `{@link api/angular.service.$defer $defer}` and
-`{@link api/angular.service.$log $log}` services, and allows messages to be logged into the
+* The `batchLog` service depends on the built-in {@link api/angular.service.$defer $defer} and
+{@link api/angular.service.$log $log} services, and allows messages to be logged into the
 `console.log` in batches.
-* The `routeTemplateMonitor` service depends on the built-in `{@link api/angular.service.$route
-$route}` service as well as our custom `batchLog` service.
+* The `routeTemplateMonitor` service depends on the built-in {@link api/angular.service.$route
+$route} service as well as our custom `batchLog` service.
 * The `routeTemplateMonitor` service is declared to be eager, so that it is started as soon as the
 application starts.
 * To underline the need for the eager instantiation of the `routeTemplateMonitor` service, nothing

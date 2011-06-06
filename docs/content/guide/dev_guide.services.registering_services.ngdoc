@@ -5,7 +5,7 @@
 
 
 To register a service, register a factory function that creates the service with angular's
-Injector. The Injector is exposed as `{@link api/angular.scope.$service scope.$service}`. The
+Injector. The Injector is exposed as {@link api/angular.scope.$service scope.$service}. The
 following pseudo-code shows a simple service registration:
 
 
