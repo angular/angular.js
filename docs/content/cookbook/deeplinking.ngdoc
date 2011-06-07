@@ -44,9 +44,9 @@ In this example we have a simple app which consist of two screens:
 
 The two partials are defined in the following URLs:
 
+
 * {@link ./examples/settings.html}
 * {@link ./examples/welcome.html}
-
 
 
 <doc:example>

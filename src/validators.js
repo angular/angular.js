@@ -9,23 +9,24 @@
  *
  * Following is the list of built-in angular validators:
  *
- * * {@link angular.Validator.asynchronous asynchronous()} - Provides asynchronous validation via a
+ * * {@link angular.validator.asynchronous asynchronous()} - Provides asynchronous validation via a
  * callback function.
- * * {@link angular.Validator.date date()} - Checks user input against default date format:
+ * * {@link angular.validator.date date()} - Checks user input against default date format:
  * "MM/DD/YYYY"
- * * {@link angular.Validator.email email()} - Validates that user input is a well-formed email
+ * * {@link angular.validator.email email()} - Validates that user input is a well-formed email
  * address.
- * * {@link angular.Validator.integer integer()} - Validates that user input is an integer
- * * {@link angular.Validator.json json()} - Validates that user input is valid JSON
- * * {@link angular.Validator.number number()} - Validates that user input is a number
- * * {@link angular.Validator.phone phone()} - Validates that user input matches the pattern
+ * * {@link angular.validator.integer integer()} - Validates that user input is an integer
+ * * {@link angular.validator.json json()} - Validates that user input is valid JSON
+ * * {@link angular.validator.number number()} - Validates that user input is a number
+ * * {@link angular.validator.phone phone()} - Validates that user input matches the pattern
  * "1(123)123-1234"
- * * {@link angular.Validator.regexp regexp()} - Restricts valid input to a specified regular
+ * * {@link angular.validator.regexp regexp()} - Restricts valid input to a specified regular
  * expression pattern
- * * {@link angular.Validator.url url()} - Validates that user input is a well-formed URL.
+ * * {@link angular.validator.url url()} - Validates that user input is a well-formed URL.
  *
  * For more information about how angular validators work, and how to create your own validators,
- * see {@link guide/validators Understanding Angular Validators} in the angular Developer Guide.
+ * see {@link guide/dev_guide.templates.validators Understanding Angular Validators} in the angular
+ * Developer Guide.
  */
 
 extend(angularValidator, {

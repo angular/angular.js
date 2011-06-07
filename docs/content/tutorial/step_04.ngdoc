@@ -71,9 +71,9 @@ two provided sorting options.
       <img src="img/tutorial/tutorial_04-06_final.png">
 
 
-* We then chained the `$filter` method with {@link api/angular.array.orderBy `$orderBy`} method to
+* We then chained the `$filter` method with {@link api/angular.Array.orderBy `$orderBy`} method to
 further process the input into the repeater. `$orderBy` is a utility method similar to {@link
-api/angular.array.filter `$filter`}, but instead of filtering an array, it reorders it.
+api/angular.Array.filter `$filter`}, but instead of filtering an array, it reorders it.
 
 
 Angular creates a two way data-binding between the select element and the `orderProp` model.
@@ -201,7 +201,8 @@ Let's turn our attention to the end-to-end test.
 __`test/e2e/scenarios.js`:__
 <pre>
 ...
-    it('should be possible to control phone order via the drop down select box', function() {
+    it('should be possible to control phone order via the drop down select box',
+        function() {
 
 
       // let's narrow the dataset to make the test assertions shorter

@@ -8,6 +8,7 @@
 
 * {@link angular.widget Widgets} - Angular custom DOM element
 * {@link angular.directive Directives} - Angular DOM element attributes
+* {@link angular.markup Markup} and {@link angular.attrMarkup Attribute Markup}
 * {@link angular.filter Filters} - Angular output filters
 * {@link angular.formatter Formatters} - Angular converters for form elements
 * {@link angular.validator Validators} - Angular input validators

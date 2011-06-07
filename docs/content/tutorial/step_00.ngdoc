@@ -8,7 +8,7 @@
 
 
 
-You are now ready to build the phone cat application. In this step, you will become familiar with
+You are now ready to build the phonecat application. In this step, you will become familiar with
 the most important source code files, learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
@@ -20,7 +20,7 @@ angular-seed, and run the application in the browser.
     <ol>
       <li><p>In angular-phonecat directory, run this command:</p>
       <pre><code>git checkout -f step-0</code></pre>
-      <p>This resets your workspace to Step 0 of the tutorial app.</p>
+      <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
       your working directory to be lost.</p></li>
@@ -56,7 +56,7 @@ directory.</li>
     <ol>
       <li><p>Open msysGit bash and run this command (in angular-phonecat directory):</p>
       <pre><code>git checkout -f step-0</code></pre>
-      <p>This resets your workspace to Step 0 of the tutorial app.</p>
+      <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
       your working directory to be lost.</p></li>
@@ -90,7 +90,7 @@ directory.</li>
     <ol>
       <li><p>In angular-phonecat directory, run this command:</p>
       <pre><code>./goto_step.sh 0</code></pre>
-      <p>This resets your workspace to Step 0 of the tutorial app.</p>
+      <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
       your working directory to be lost.</p></li>
@@ -124,7 +124,7 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
     <ol>
       <li><p>Open windows command line and run this command (in angular-phonecat directory):</p>
       <pre><code>goto_step.bat 0</code></pre>
-      <p>This resets your workspace to Step 0 of the tutorial app.</p>
+      <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
       your working directory to be lost.</p></li>

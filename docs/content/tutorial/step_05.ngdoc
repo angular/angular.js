@@ -103,7 +103,7 @@ To use a service in angular, you simply declare the names of the services you ne
 the controller's constructor function, as follows:
 
 
-    function PhoneListCtrl($xhr) {
+    function PhoneListCtrl($xhr) {...}
 
 
 Angular's dependency injector provides services to your controller when the controller is being

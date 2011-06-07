@@ -117,19 +117,19 @@ function errorHandlerFor(element, error) {
  *
  * Angular scope objects provide the following methods:
  *
- * * {@link angular.Scope.$become $become()} -
- * * {@link angular.Scope.$bind $bind()} -
- * * {@link angular.Scope.$eval $eval()} -
- * * {@link angular.Scope.$get $get()} -
- * * {@link angular.Scope.$new $new()} -
- * * {@link angular.Scope.$onEval $onEval()} -
- * * {@link angular.Scope.$service $service()} -
- * * {@link angular.Scope.$set $set()} -
- * * {@link angular.Scope.$tryEval $tryEval()} -
- * * {@link angular.Scope.$watch $watch()} -
+ * * {@link angular.scope.$become $become()} -
+ * * {@link angular.scope.$bind $bind()} -
+ * * {@link angular.scope.$eval $eval()} -
+ * * {@link angular.scope.$get $get()} -
+ * * {@link angular.scope.$new $new()} -
+ * * {@link angular.scope.$onEval $onEval()} -
+ * * {@link angular.scope.$service $service()} -
+ * * {@link angular.scope.$set $set()} -
+ * * {@link angular.scope.$tryEval $tryEval()} -
+ * * {@link angular.scope.$watch $watch()} -
  *
- * For more information about how angular scope objects work,, see {@link guide/scopes Angular Scope
- * Objects} in the angular Developer Guide.
+ * For more information about how angular scope objects work, see {@link guide/dev_guide.scopes
+ * Angular Scope Objects} in the angular Developer Guide.
  */
 function createScope(parent, providers, instanceCache) {
   function Parent(){}

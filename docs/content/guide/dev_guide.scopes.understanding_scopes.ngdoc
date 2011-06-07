@@ -39,7 +39,7 @@ code, observe how the value of `name` changes, based on the HTML element it is d
      expect(using('.doc-example-live').repeater('li').row(0)).
        toEqual(['Igor']);
      expect(using('.doc-example-live').repeater('li').row(1)).
-       toEqual(['Misko']);g/@
+       toEqual(['Misko']);
 
 
      expect(using('.doc-example-live').repeater('li').row(2)).

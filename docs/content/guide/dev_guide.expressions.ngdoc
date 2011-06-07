@@ -169,7 +169,7 @@ JavaScript method instead.
 Built-in types have methods like `[].push()`, but the richness of these methods is limited.
 Consider the example below, which allows you to do a simple search over a canned set of contacts.
 The example would be much more complicated if we did not have the `Array:$filter()`. There is no
-built-in method on `Array` called {@link api/angular.array.filter $filter} and angular doesn't add
+built-in method on `Array` called {@link api/angular.Array.filter $filter} and angular doesn't add
 it to `Array.prototype` because that could collide with other JavaScript frameworks.
 
 

@@ -1,3 +1,52 @@
+/**
+ * @workInProgress
+ * @ngdoc overview
+ * @name angular.markup
+ * @description
+ *
+ * Angular markup transforms content of DOM elements or portions of this content into other text or
+ * DOM elements for further compilation.
+ *
+ * Markup extensions do not themselves produce linking functions. Think of markup as a way to
+ * produce shorthand for a {@link angular.widget widget} or a {@link angular.directive directive}.
+ *
+ * The most prominent example of an markup in angular is the built-in double curly markup
+ * `{{expression}}`, which is a shorthand for `<span ng:bind="expression"></span>`.
+ *
+ * Create custom markup like this:
+ *
+ * <pre>
+ *   angular.markup('newMarkup', function(text, textNode, parentElement){
+ *     //tranformation code
+ *   });
+ * </pre>
+ *
+ * For more information about angular markup, see {@link guide/dev_guide.compiler.markup
+ * Understanding Angular Markup} in the angular Developer Guide.
+ */
+
+/**
+ * @workInProgress
+ * @ngdoc overview
+ * @name angular.attrMarkup
+ * @description
+ *
+ * Attribute markup extends the angular compiler in a very similar way as {@link angular.markup}
+ * except that it allows you to modify the state of the attribute text rather then the content of a
+ * node.
+ *
+ * Create custom attribute markup like this:
+ *
+ * <pre>
+ *   angular.attrMarkup('newAttrMarkup', function(attrValue, attrName, element){
+ *     //tranformation code
+ *   });
+ * </pre>
+ *
+ * For more information about angular attribute markup, see {@link guide/dev_guide.compiler.markup
+ * Understanding Angular Markup} in the angular Developer Guide.
+ */
+
 function parseBindings(string) {
   var results = [];
   var lastIndex = 0;

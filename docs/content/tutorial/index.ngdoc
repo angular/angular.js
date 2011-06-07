@@ -18,9 +18,9 @@ use of extensions or plugins.
 
 * You will see examples of how to use client-side data binding and dependency injection to build
 dynamic views of data that change immediately in response to user actions.
-* You will see how Angular creates listeners on your data without the need for DOM manipulation.
+* You will see how angular creates listeners on your data without the need for DOM manipulation.
 * You will learn a better, easier way to test your web apps.
-* You will learn how to use Angular services to make common web tasks, such as getting data into
+* You will learn how to use angular services to make common web tasks, such as getting data into
 your app, easier.
 
 

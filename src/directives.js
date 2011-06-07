@@ -5,39 +5,41 @@
  * @description
  *
  * Custom attributes for DOM elements.  Directives modify the behavior of the element they are
- * specified in, but are not intended to add elements to the DOM as are {@link widget widgets}.
+ * specified in, but are not intended to add elements to the DOM as are
+ * {@link angular.widget widgets}.
  *
  * Following is the list of built-in angular directives:
  *
- * * {@link angular.Directive.ng:bind ng:bind} - Creates a data-binding between HTML text value and
+ * * {@link angular.directive.ng:bind ng:bind} - Creates a data-binding between HTML text value and
  * data model.
- * * {@link angular.Directive.ng:bind-attr ng:bind-attr} - Creates a data-binding as in `ng:bind`,
+ * * {@link angular.directive.ng:bind-attr ng:bind-attr} - Creates a data-binding as in `ng:bind`,
  * but uses JSON key / value pairs.
- * * {@link angular.Directive.ng:bind-template ng:bind-template} - Replaces text value of an element
+ * * {@link angular.directive.ng:bind-template ng:bind-template} - Replaces text value of an element
  * with a specified template.
- * * {@link angular.Directive.ng:change ng:change} - Executes an expression when the value of an
+ * * {@link angular.directive.ng:change ng:change} - Executes an expression when the value of an
  * input widget changes.
- * * {@link angular.Directive.ng:class ng:class} - Conditionally set CSS class on an element.
- * * {@link angular.Directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
- * conjunction with {@link widget.@ng:repeat} to affect even rows in a collection.
- * * {@link angular.Directive.ng:class-odd ng:class-odd} - Like `ng:class`, but works with {@link
- * widget.@ng:repeat}  to affect odd rows.
- * * {@link angular.Directive.ng:click ng:click} - Executes custom behavior when element is clicked.
- * * {@link angular.Directive.ng:controller ng:controller} - Creates a scope object linked to the
+ * * {@link angular.directive.ng:class ng:class} - Conditionally set CSS class on an element.
+ * * {@link angular.directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
+ * conjunction with {@link angular.widget.@ng:repeat} to affect even rows in a collection.
+ * * {@link angular.directive.ng:class-odd ng:class-odd} - Like `ng:class`, but works with {@link
+ * angular.widget.@ng:repeat}  to affect odd rows.
+ * * {@link angular.directive.ng:click ng:click} - Executes custom behavior when element is clicked.
+ * * {@link angular.directive.ng:controller ng:controller} - Creates a scope object linked to the
  * DOM element and assigns behavior to the scope.
- * * {@link angular.Directive.ng:eval ng:eval} - Executes a binding but blocks output.
- * * {@link angular.Directive.ng:eval-order ng:eval-order} - Change evaluation order when updating
+ * * {@link angular.directive.ng:eval ng:eval} - Executes a binding but blocks output.
+ * * {@link angular.directive.ng:eval-order ng:eval-order} - Change evaluation order when updating
  * the view.
- * * {@link angular.Directive.ng:hide ng:hide} - Conditionally hides a portion of HTML.
- * * {@link angular.Directive.ng:href ng:href} - Places an href in the angular namespace.
- * * {@link angular.Directive.ng:init} - Initialization tasks run before a template is executed.
- * * {@link angular.Directive.ng:show ng:show} - Conditionally displays a portion of HTML.
- * * {@link angular.Directive.ng:src ng:src} - Places a `src` attribute into the angular namespace.
- * * {@link angular.Directive.ng:style ng:style} - Conditionally set CSS styles on an element.
- * * {@link angular.Directive.ng:submit} - Binds angular expressions to `onSubmit` events.
+ * * {@link angular.directive.ng:hide ng:hide} - Conditionally hides a portion of HTML.
+ * * {@link angular.directive.ng:href ng:href} - Places an href in the angular namespace.
+ * * {@link angular.directive.ng:init} - Initialization tasks run before a template is executed.
+ * * {@link angular.directive.ng:show ng:show} - Conditionally displays a portion of HTML.
+ * * {@link angular.directive.ng:src ng:src} - Places a `src` attribute into the angular namespace.
+ * * {@link angular.directive.ng:style ng:style} - Conditionally set CSS styles on an element.
+ * * {@link angular.directive.ng:submit} - Binds angular expressions to `onSubmit` events.
  *
  * For more information about how angular directives work, and how to create your own directives,
- * see {@link guide/directives Understanding Angular Directives} in the angular Developer Guide.
+ * see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in the angular
+ * Developer Guide.
  */
 
 /**
@@ -50,7 +52,7 @@
  *  before the template enters execution mode during bootstrap.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
  *
  * @example
    <doc:example>
@@ -76,7 +78,7 @@ angularDirective("ng:init", function(expression){
 /**
  * @workInProgress
  * @ngdoc directive
- * @name angular.directive.@ng:controller
+ * @name angular.directive.ng:controller
  *
  * @description
  * The `ng:controller` directive assigns behavior to a scope. This is a key aspect of how angular
@@ -94,8 +96,8 @@ angularDirective("ng:init", function(expression){
  *
  * @element ANY
  * @param {expression} expression Name of a globally accessible constructor function or an
- *     {@link guide/expression expression} that on the current scope evaluates to a constructor
- *     function.
+ *     {@link guide/dev_guide.expressions expression} that on the current scope evaluates to a
+ *     constructor function.
  *
  * @example
  * Here is a simple form for editing user contact information. Adding, removing, clearing, and
@@ -182,7 +184,7 @@ angularDirective("ng:controller", function(expression){
  * without displaying the result to the user.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
  *
  * @example
  * Notice that `{{` `obj.multiplied = obj.a * obj.b` `}}` has a side effect of assigning
@@ -231,7 +233,7 @@ angularDirective("ng:eval", function(expression){
  * `<span ng:bind="expression"></span>` at bootstrap time.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
  *
  * @example
  * You can try it right here: enter text in the text box and watch the greeting change.
@@ -390,10 +392,11 @@ var REMOVE_ATTRIBUTES = {
  * @name angular.directive.ng:bind-attr
  *
  * @description
- * The `ng:bind-attr` attribute specifies that {@link guide/data-binding databindings}  should be
- * created between element attributes and given expressions. Unlike `ng:bind` the `ng:bind-attr`
- * contains a JSON key value pairs representing which attributes need to be mapped to which
- * {@link guide/expression expressions}.
+ * The `ng:bind-attr` attribute specifies that
+ * {@link guide/dev_guide.templates.databinding databindings}  should be created between element
+ * attributes and given expressions. Unlike `ng:bind` the `ng:bind-attr` contains a JSON key value
+ * pairs representing which attributes need to be mapped to which
+ * {@link guide/dev_guide.expressions expressions}.
  *
  * You don't usually write the `ng:bind-attr` in the HTML since embedding
  * <tt ng:non-bindable>{{expression}}</tt> into the attribute directly as the attribute value is
@@ -480,7 +483,7 @@ angularDirective("ng:bind-attr", function(expression){
  * element is clicked.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval upon click.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval upon click.
  *
  * @example
    <doc:example>
@@ -531,7 +534,7 @@ angularDirective("ng:click", function(expression, element){
  * server and reloading the current page).
  *
  * @element form
- * @param {expression} expression {@link guide/expression Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
  *
  * @example
    <doc:example>
@@ -594,7 +597,7 @@ function ngClass(selector) {
  * conditionally.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
  *
  * @example
    <doc:example>
@@ -635,8 +638,8 @@ angularDirective("ng:class", ngClass(function(){return true;}));
  * and takes affect only on odd (even) rows.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval. Must be inside
- * `ng:repeat`.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. Must be
+ *  inside `ng:repeat`.
  *
  * @example
    <doc:example>
@@ -673,8 +676,8 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
  * and takes affect only on odd (even) rows.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} to eval. Must be inside
- * `ng:repeat`.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. Must be
+ *  inside `ng:repeat`.
  *
  * @example
    <doc:example>
@@ -710,8 +713,8 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * conditionally.
  *
  * @element ANY
- * @param {expression} expression If the {@link guide/expression expression} is truthy then the element
- *     is shown or hidden respectively.
+ * @param {expression} expression If the {@link guide/dev_guide.expressions expression} is truthy
+ *     then the element is shown or hidden respectively.
  *
  * @example
    <doc:example>
@@ -751,8 +754,8 @@ angularDirective("ng:show", function(expression, element){
  * of the HTML conditionally.
  *
  * @element ANY
- * @param {expression} expression If the {@link guide/expression expression} truthy then the element
- *     is shown or hidden respectively.
+ * @param {expression} expression If the {@link guide/dev_guide.expressions expression} truthy then
+ *     the element is shown or hidden respectively.
  *
  * @example
    <doc:example>
@@ -791,8 +794,9 @@ angularDirective("ng:hide", function(expression, element){
  * The ng:style allows you to set CSS style on an HTML element conditionally.
  *
  * @element ANY
- * @param {expression} expression {@link guide/expression Expression} which evals to an object whose
- *      keys are CSS style names and values are corresponding values for those CSS keys.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} which evals to an
+ *      object whose keys are CSS style names and values are corresponding values for those CSS
+ *      keys.
  *
  * @example
    <doc:example>
