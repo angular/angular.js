@@ -32,7 +32,7 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
      <doc:source>
        <div ng:init="$location = $service('$location')">
          <a id="ex-test" href="#myPath?name=misko">test hash</a>|
-         <a id="ex-reset" href="#!angular.service.$location">reset hash</a><br/>
+         <a id="ex-reset" href="#!/api/angular.service.$location">reset hash</a><br/>
          <input type='text' name="$location.hash" size="30">
          <pre>$location = {{$location}}</pre>
        </div>
@@ -40,7 +40,7 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
      <doc:scenario>
        it('should initialize the input field', function() {
          expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
-           toBe('!angular.service.$location');
+           toBe('!/api/angular.service.$location');
        });
 
 
@@ -60,7 +60,7 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
          using('.doc-example-live').input('$location.hash').enter('foo');
          using('.doc-example-live').element('#ex-reset').click();
          expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
-           toBe('!angular.service.$location');
+           toBe('!/api/angular.service.$location');
        });
 
      </doc:scenario>
