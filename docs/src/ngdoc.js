@@ -588,7 +588,8 @@ var KEYWORD_PRIORITY = {
   '.angular.scope': 7,
   '.angular.service': 7,
   '.angular.validator': 7,
-  '.angular.widget': 7
+  '.angular.widget': 7,
+  '.angular.mock': 8
 };
 function keywordSort(a, b){
   function mangleName(doc) {
