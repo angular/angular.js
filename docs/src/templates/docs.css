@@ -275,3 +275,13 @@ li {
 #content .syntaxhighlighter  {
   margin: 1.5em 0 1.5em 0 !important;;
 }
+
+#content .parameters p:nth-child(2) {
+  display: inline;
+  padding-left: 0;
+}
+
+#content .returns p:nth-child(2) {
+  display: inline;
+  padding-left: 0;
+}
