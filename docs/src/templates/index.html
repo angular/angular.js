@@ -1,7 +1,8 @@
 <!doctype html>
 <html xmlns:ng="http://angularjs.org/"
       xmlns:doc="http://docs.angularjs.org/"
-      ng:controller="DocsController">
+      ng:controller="DocsController"
+      manifest="app-cache.manifest">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title ng:bind-template="&lt;angular/&gt;: {{partialTitle}}">&lt;angular/&gt;</title>
@@ -20,6 +21,14 @@
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
+
+    // force page reload when new update is available
+    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
+      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+        window.applicationCache.swapCache();
+        window.location.reload();
+      }
+    }, false);
   </script>
 </head>
 

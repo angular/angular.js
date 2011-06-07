@@ -27,6 +27,10 @@ var writes = callback.chain(function(){
   writer.copyDir('img', writes.waitFor());
   writer.copyDir('examples', writes.waitFor());
   writer.copyTpl('index.html', writes.waitFor());
+  writer.copyTpl('offline.html', writes.waitFor());
+  writer.output('app-cache.manifest',
+                appCacheTemplate().replace(/%TIMESTAMP%/, (new Date()).toISOString()),
+                writes.waitFor());
   writer.merge(['docs.js',
                 'doc_widgets.js'],
                'docs-combined.js',
@@ -59,3 +63,28 @@ writer.makeDir('build/docs/syntaxhighlighter', work);
 
 ///////////////////////////////////
 function now(){ return new Date().getTime(); }
+
+
+function appCacheTemplate() {
+  return ["CACHE MANIFEST",
+          "# %TIMESTAMP%",
+          "",
+          "# cache all of these",
+          "CACHE:",
+          "jquery.min.js",
+          "syntaxhighlighter/syntaxhighlighter-combined.js",
+          "../angular.min.js",
+          "docs-combined.js",
+          "docs-keywords.js",
+          "docs-combined.css",
+          "syntaxhighlighter/syntaxhighlighter-combined.css",
+          "img/texture_1.png",
+          "img/yellow_bkgnd.jpg",
+          "",
+          "FALLBACK:",
+          "/ offline.html",
+          "",
+          "# allow access to google analytics and twitter when we are online",
+          "NETWORK:",
+          "*"].join('\n');
+}
