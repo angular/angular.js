@@ -1,12 +1,32 @@
 <a name="0.9.16"><a/>
-# <angular/> 0.9.16 weather-control (in-progress) #
+# <angular/> 0.9.16 weather-control (2011-06-07) #
 
 ### Features
-- we can run scenario tests with jstd (from command line and in multiple browsers)
+- [JsTD Scenario Adapter] for running scenario tests with jstd (from command line and in multiple
+  browsers)
+
+
+### Documentation
+- brand new template for <http://docs.angularjs.com/>
+- brand new tutorial that describes how to build a typical angular app
+  <http://docs.angularjs.com/#!/tutorial>
+- lots of new content for the dev guide (still work in progress)
+  <http://docs.angularjs.com/#!/guide>
+
+
+### Bug Fixes
+- ng:href produces unclickable links on IE7 [#352](https://github.com/angular/angular.js/issues/352)
+- IE 8 in compatibility mode breaks routing [#353](https://github.com/angular/angular.js/issues/353)
+- IE translates a 204 response code to 1223 [#357](https://github.com/angular/angular.js/issues/357)
+- Fixed unit test in IE7 [#360](https://github.com/angular/angular.js/pull/360)
+- Fixed unit tests on FF4, Opera [#364](https://github.com/angular/angular.js/pull/364)
+- Fixed opera date.toISOString issue [#367](https://github.com/angular/angular.js/pull/367)
 
 
 ### Breaking changes
-- html scenario runner requires ng:autotest option to start tests automatically
+- html scenario runner requires ng:autotest script attribute to start tests automatically
+  ([example](https://github.com/angular/angular.js/blob/master/example/personalLog/scenario/runner.html#L5))
+
 
 
 <a name="0.9.15"><a/>
@@ -142,7 +162,7 @@
 - many, but by far not all, docs were updated, improved and cleaned up
 
 ### Features
-- [`$route`](http://docs.angularjs.org/#!angular.service.$route) service now supports these
+- [`$route`](http://docs.angularjs.org/#!/api/angular.service.$route) service now supports these
   features:
   - route not found handling via `#otherwise()`
   - redirection support via `#when('/foo', {redirectTo: '/bar'})` (including param interpolation)
@@ -158,7 +178,7 @@
 - other various small fixes
 
 ### Breaking changes
-- mock [`$browser`](http://docs.angularjs.org/#!angular.mock.service.$browser) now throws an
+- mock [`$browser`](http://docs.angularjs.org/#!/api/angular.mock.service.$browser) now throws an
   exception if the `flush()` method is called when there are no requests to be flushed. If you
   experience `No xhr requests to be flushed!` errors in your tests, it's because you called
   `$browser.xhr.flush()` unexpectedly. To make the error go away, either make sure your code makes a
@@ -169,12 +189,12 @@
 # <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
 
 ### Features
-- new [`ng:view`](http://docs.angularjs.org/#!angular.widget.ng:view) widget to simplify integration
+- new [`ng:view`](http://docs.angularjs.org/#!/api/angular.widget.ng:view) widget to simplify integration
 with the `$route` service
 - the content of all standard HTML widgets is now being processed
   (e.g. `<button>{{foo}}</button>` works now) (commit 1d7b9d56)
-- new [`$log`](http://docs.angularjs.org/#!angular.mock.service.$log) and
-  [`$exceptionHandler`](http://docs.angularjs.org/#!angular.mock.service.$exceptionHandler) service
+- new [`$log`](http://docs.angularjs.org/#!/api/angular.mock.service.$log) and
+  [`$exceptionHandler`](http://docs.angularjs.org/#!/api/angular.mock.service.$exceptionHandler) service
   mocks now part of `angular-mocks.js` (commit f5d08963)
 
 ### Bug Fixes
@@ -221,7 +241,7 @@ with the `$route` service
 
 ### Breaking changes
 - API for accessing registered services — `scope.$inject` — was renamed to
-  [`scope.$service`](http://docs.angularjs.org/#!angular.scope.$service). (commit b2631f61)
+  [`scope.$service`](http://docs.angularjs.org/#!/api/angular.scope.$service). (commit b2631f61)
 
 - Support for `eager-published` services was removed. This change was done to make explicit
   dependency declaration always required in order to allow making relatively expensive services
@@ -482,20 +502,21 @@ with the `$route` service
 
 
 
-[scope]: http://docs.angularjs.org/#!angular.scope
-[compile]: http://docs.angularjs.org/#!angular.compile
-[element]: http://docs.angularjs.org/#!angular.element
-[widget]: http://docs.angularjs.org/#!angular.widget
-[ng:repeat]: http://docs.angularjs.org/#!angular.widget.@ng:repeat
-[ng:view]: http://docs.angularjs.org/#!angular.widget.ng:view
-[ng:include]: http://docs.angularjs.org/#!angular.widget.ng:include
-[$defer]: http://docs.angularjs.org/#!angular.service.$defer
-[$cookies]: http://docs.angularjs.org/#!angular.service.$cookies
-[$xhr]: http://docs.angularjs.org/#!angular.service.$xhr
-[$xhr.cache]: http://docs.angularjs.org/#!angular.service.$xhr.cache
-[$resource]: http://docs.angularjs.org/#!angular.service.$resource
-[directive]: http://docs.angularjs.org/#!angular.directive
-[ng:autobind]: http://docs.angularjs.org/#!angular.directive.ng:autobind
-[guide.di]: http://docs.angularjs.org/#!guide.di
-[downloading]: http://docs.angularjs.org/#!downloading
-[contribute]: http://docs.angularjs.org/#!contribute
+[scope]: http://docs.angularjs.org/#!/api/angular.scope
+[compile]: http://docs.angularjs.org/#!/api/angular.compile
+[element]: http://docs.angularjs.org/#!/api/angular.element
+[widget]: http://docs.angularjs.org/#!/api/angular.widget
+[ng:repeat]: http://docs.angularjs.org/#!/api/angular.widget.@ng:repeat
+[ng:view]: http://docs.angularjs.org/#!/api/angular.widget.ng:view
+[ng:include]: http://docs.angularjs.org/#!/api/angular.widget.ng:include
+[$defer]: http://docs.angularjs.org/#!/api/angular.service.$defer
+[$cookies]: http://docs.angularjs.org/#!/api/angular.service.$cookies
+[$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
+[$xhr.cache]: http://docs.angularjs.org/#!/api/angular.service.$xhr.cache
+[$resource]: http://docs.angularjs.org/#!/api/angular.service.$resource
+[directive]: http://docs.angularjs.org/#!/api/angular.directive
+[ng:autobind]: http://docs.angularjs.org/#!/api/angular.directive.ng:autobind
+[guide.di]: http://docs.angularjs.org/#!/guide/dev_guide.di
+[downloading]: http://docs.angularjs.org/#!/misc/downloading
+[contribute]: http://docs.angularjs.org/#!/misc/contribute
+[Jstd Scenario Adapter]: https://github.com/angular/angular.js/blob/master/src/jstd-scenario-adapter/Adapter.js
