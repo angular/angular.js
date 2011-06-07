@@ -578,7 +578,6 @@ function metadata(docs){
 var KEYWORD_PRIORITY = {
   '.index': 1,
   '.guide': 2,
-  '.dev_guide.overview': 1,
   '.angular': 7,
   '.angular.Array': 7,
   '.angular.Object': 7,
@@ -589,7 +588,16 @@ var KEYWORD_PRIORITY = {
   '.angular.service': 7,
   '.angular.validator': 7,
   '.angular.widget': 7,
-  '.angular.mock': 8
+  '.angular.mock': 8,
+  '.dev_guide.overview': 1,
+  '.dev_guide.bootstrap': 2,
+  '.dev_guide.mvc': 3,
+  '.dev_guide.scopes': 4,
+  '.dev_guide.compiler': 5,
+  '.dev_guide.templates': 6,
+  '.dev_guide.services': 7,
+  '.dev_guide.di': 8,
+  '.dev_guide.unit-testing': 9
 };
 function keywordSort(a, b){
   function mangleName(doc) {
