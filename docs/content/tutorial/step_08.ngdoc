@@ -111,7 +111,7 @@ our model into the view.
 
 __`app/partials/phone-details.html`:__
 <pre>
-<img ng:src="{{phone.images}}" class="phone"/>
+<img ng:src="{{phone.images[0]}}" class="phone"/>
 
 
 <h1>{{phone.name}}</h1>

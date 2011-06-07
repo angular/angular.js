@@ -180,7 +180,7 @@ The unit test now verifies that the default ordering property is set.
 
 
 We used Jasmine's API to extract the controller construction into a `beforeEach` block, which is
-shared by all tests in the nearest `describe` block.
+shared by all tests in the parent `describe` block.
 
 
 To run the unit tests, once again execute the `./scripts/test.sh` script and you should see the
@@ -205,7 +205,7 @@ __`test/e2e/scenarios.js`:__
         function() {
 
 
-      // let's narrow the dataset to make the test assertions shorter
+      // narrow the dataset to make the test assertions shorter
       input('query').enter('tablet');
 
 

@@ -42,7 +42,7 @@ function PhoneDetailCtrl($xhr) {
 
   $xhr('GET', 'phones/' + self.params.phoneId + '.json', function(code, response) {
     self.phone = response;
-    self.mainImageUrl = response.images;
+    self.mainImageUrl = response.images[0];
   });
 
 

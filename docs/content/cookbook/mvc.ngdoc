@@ -17,7 +17,7 @@ no connection between the controller and the view.
 
 
 <doc:example>
- <doc:source>
+  <doc:source>
     <script>
     function TicTacToeCntl($location){
       this.$location = $location;
@@ -34,8 +34,8 @@ no connection between the controller and the view.
     }
     TicTacToeCntl.prototype = {
       dropPiece: function(row, col) {
-        if (!this.winner && !this.board) {
-          this.board = this.nextMove;
+        if (!this.winner && !this.board[row][col]) {
+          this.board[row][col] = this.nextMove;
           this.nextMove = this.nextMove == 'X' ? 'O' : 'X';
           this.setUrl();
         }
@@ -51,15 +51,15 @@ no connection between the controller and the view.
         this.setUrl();
       },
       grade: function(){
-       var b = this.board;
-       this.winner =
-        row(0) || row(1) || row(2) ||
-        col(0) || col(1) || col(2) ||
-        diagonal(-1) || diagonal(1);
-       function row(r) { return same(b, b, b);}
-       function col(c) { return same(b, b, b);}
-       function diagonal(i) { return same(b[1-i], b, b[1+i]);}
-       function same(a, b, c) { return (a==b && b==c) ? a : '';};
+        var b = this.board;
+        this.winner =
+          row(0) || row(1) || row(2) ||
+          col(0) || col(1) || col(2) ||
+          diagonal(-1) || diagonal(1);
+        function row(row) { return same(b[row][0], b[row][1], b[row][2]);}
+        function col(col) { return same(b[0][col], b[1][col], b[2][col]);}
+        function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
+        function same(a, b, c) { return (a==b && b==c) ? a : '';};
       },
       setUrl: function(){
         var rows = [];
@@ -68,12 +68,12 @@ no connection between the controller and the view.
         });
         this.$location.hashSearch.board = rows.join(';') + '/' + this.nextMove;
       },
-      readUrl: function(scope, value) {
+      readUrl: function(value) {
         if (value) {
           value = value.split('/');
-          this.nextMove = value;
-          angular.forEach(value.split(';'), function(row, i){
-            this.board = row.split(',');
+          this.nextMove = value[1];
+          angular.forEach(value[0].split(';'), function(row, col){
+            this.board[col] = row.split(',');
           }, this);
           this.grade();
         } else {
@@ -82,36 +82,38 @@ no connection between the controller and the view.
       }
     };
     </script>
+
+
     <h3>Tic-Tac-Toe</h3>
     <div ng:controller="TicTacToeCntl">
     Next Player: {{nextMove}}
     <div class="winner" ng:show="winner">Player {{winner}} has won!</div>
-    <table class="board">
-      <tr ng:repeat="row in board" style="height:15px;">
-        <td ng:repeat="cell in row" ng:style="cellStyle"
-                ng:click="dropPiece($parent.$index, $index)">{{cell}}</td>
-      </tr>
-    </table>
-    <button ng:click="reset()">reset board</button>
+      <table class="board">
+        <tr ng:repeat="row in board" style="height:15px;">
+          <td ng:repeat="cell in row" ng:style="cellStyle"
+              ng:click="dropPiece($parent.$index, $index)">{{cell}}</td>
+        </tr>
+      </table>
+      <button ng:click="reset()">reset board</button>
     </div>
- </doc:source>
- <doc:scenario>
-   it('should play a game', function(){
-    piece(1, 1);
-    expect(binding('nextMove')).toEqual('O');
-    piece(3, 1);
-    expect(binding('nextMove')).toEqual('X');
-    piece(1, 2);
-    piece(3, 2);
-    piece(1, 3);
-    expect(element('.winner').text()).toEqual('Player X has won!');
-   });
+  </doc:source>
+  <doc:scenario>
+    it('should play a game', function(){
+     piece(1, 1);
+     expect(binding('nextMove')).toEqual('O');
+     piece(3, 1);
+     expect(binding('nextMove')).toEqual('X');
+     piece(1, 2);
+     piece(3, 2);
+     piece(1, 3);
+     expect(element('.winner').text()).toEqual('Player X has won!');
+    });
 
 
-   function piece(row, col) {
-     element('.board tr:nth-child('+row+') td:nth-child('+col+')').click();
-   }
- </doc:scenario>
+    function piece(row, col) {
+      element('.board tr:nth-child('+row+') td:nth-child('+col+')').click();
+    }
+  </doc:scenario>
 </doc:example>
 
 
@@ -123,13 +125,12 @@ no connection between the controller and the view.
 * The controller is defined in JavaScript and has no reference to the rendering logic.
 * The controller is instantiated by <angular/> and injected into the view.
 * The controller can be instantiated in isolation (without a view) and the code will still execute.
-  This makes it very testable.
+This makes it very testable.
 * The HTML view is a projection of the model. In the above example, the model is stored in the
-  board variable.
+board variable.
 * All of the controller's properties (such as board and nextMove) are available to the view.
 * Changing the model changes the view.
 * The view can call any controller function.
 * In this example, the `setUrl()` and `readUrl()` functions copy the game state to/from the URL's
-  hash so the browser's back button will undo game steps. See deep-linking. This example calls
-  {@link api/angular.scope.$watch $watch()} to set up a listener that invokes `readUrl()` when
-needed.
+hash so the browser's back button will undo game steps. See deep-linking. This example calls {@link
+api/angular.scope.$watch $watch()} to set up a listener that invokes `readUrl()` when needed.
