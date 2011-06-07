@@ -102,7 +102,7 @@ function PhoneDetailCtrl(Phone_) {
 
 
   self.phone = Phone_.get({phoneId: self.params.phoneId}, function(phone) {
-    self.mainImageUrl = phone.images;
+    self.mainImageUrl = phone.images[0];
   });
 
 
