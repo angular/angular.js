@@ -73,12 +73,6 @@ function download(collection, name, url) {
         data = data.replace('\ufeff', '');
         data = data.replace(/\r\n/mg, '\n');
 
-        // strip out all text annotation comments
-        data = data.replace(/^\[a\][\S\s]*/m, '');
-
-        // strip out all text annotations
-        data = data.replace(/\[\w{1,3}\]/mg, '');
-
         // strip out all docos comments
         data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '')
 
