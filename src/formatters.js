@@ -1,3 +1,26 @@
+/**
+ * @workInProgress
+ * @ngdoc overview
+ * @name angular.formatter
+ * @description
+ *
+ * Formatters are used for translating data formats between those used in for display and those used
+ * for storage.
+ *
+ * Following is the list of built-in angular formatters:
+ *
+ * * {@link angular.formatter.boolean boolean} - Formats user input in boolean format
+ * * {@link angular.formatter.index index} - Manages indexing into an HTML select widget
+ * * {@link angular.formatter.json json} - Formats user input in JSON format
+ * * {@link angular.formatter.list list} - Formats user input string as an array
+ * * {@link angular.formatter.number} - Formats user input strings as a number
+ * * {@link angular.formatter.trim} - Trims extras spaces from end of user input
+ *
+ * For more information about how angular formatters work, and how to create your own formatters,
+ * see {@link guide/dev_guide.templates.formatters Understanding Angular Formatters} in the angular
+ * Developer Guide.
+ */
+
 function formatter(format, parse) {return {'format':format, 'parse':parse || format};}
 function toString(obj) {
   return (isDefined(obj) && obj !== null) ? "" + obj : obj;

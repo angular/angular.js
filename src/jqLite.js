@@ -2,6 +2,58 @@
 //JQLite
 //////////////////////////////////
 
+/**
+ * @workInProgress
+ * @ngdoc function
+ * @name angular.element
+ * @function
+ *
+ * @description
+ * Wraps a raw DOM element or HTML string as [jQuery](http://jquery.com) element.
+ * `angular.element` is either an alias for [jQuery](http://api.jquery.com/jQuery/) function if
+ * jQuery is loaded or a function that wraps the element or string in angular's jQuery lite
+ * implementation.
+ *
+ * Real jQuery always takes precedence (as long as it was loaded before `DOMContentEvent`)
+ *
+ * Angular's jQuery lite implementation is a tiny API-compatible subset of jQuery which allows
+ * angular to manipulate DOM. The jQuery lite implements only a subset of jQuery api, with the
+ * focus on the most commonly needed functionality and minimal footprint. For this reason only a
+ * limited number of jQuery methods, arguments and invocation styles are supported.
+ *
+ * NOTE: All element references in angular are always wrapped with jQuery (lite) and are never
+ * raw DOM references.
+ *
+ * ## Angular's jQuery lite implements these functions:
+ *
+ * - [addClass()](http://api.jquery.com/addClass/)
+ * - [after()](http://api.jquery.com/after/)
+ * - [append()](http://api.jquery.com/append/)
+ * - [attr()](http://api.jquery.com/attr/)
+ * - [bind()](http://api.jquery.com/bind/)
+ * - [children()](http://api.jquery.com/children/)
+ * - [clone()](http://api.jquery.com/clone/)
+ * - [css()](http://api.jquery.com/css/)
+ * - [data()](http://api.jquery.com/data/)
+ * - [hasClass()](http://api.jquery.com/hasClass/)
+ * - [parent()](http://api.jquery.com/parent/)
+ * - [remove()](http://api.jquery.com/remove/)
+ * - [removeAttr()](http://api.jquery.com/removeAttr/)
+ * - [removeClass()](http://api.jquery.com/removeClass/)
+ * - [removeData()](http://api.jquery.com/removeData/)
+ * - [replaceWith()](http://api.jquery.com/replaceWith/)
+ * - [text()](http://api.jquery.com/text/)
+ * - [trigger()](http://api.jquery.com/trigger/)
+ *
+ * ## Additionally these methods extend the jQuery and  are available in both jQuery and jQuery lite
+ * version:
+ *
+ *- `scope()` - retrieves the current angular scope of the element.
+ *
+ * @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
+ * @returns {Object} jQuery object.
+ */
+
 var jqCache = {},
     jqName = 'ng-' + new Date().getTime(),
     jqId = 1,

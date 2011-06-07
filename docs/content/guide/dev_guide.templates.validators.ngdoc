@@ -1,0 +1,160 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Templates: Understanding Angular Validators
+@description
+
+
+Angular validators are attributes that test the validity of different types of user input. Angular
+provides a set of built-in input validators:
+
+
+* {@link api/angular.validator.phone phone number}
+* {@link api/angular.validator.number number}
+* {@link api/angular.validator.integer integer}
+* {@link api/angular.validator.date date}
+* {@link api/angular.validator.email email address}
+* {@link api/angular.validator.json JSON}
+* {@link api/angular.validator.regexp regular expressions}
+* {@link api/angular.validator.url URLs}
+* {@link api/angular.validator.asynchronous asynchronous}
+
+
+You can also create your own custom validators.
+
+
+# Using Angular Validators
+
+
+You can use angular validators in HTML template bindings, and in JavaScript:
+
+
+* Validators in HTML Template Bindings
+
+
+<pre>
+<input ng:validator="validator_type:parameters" [...]>
+</pre>
+
+
+* Validators in JavaScript
+
+
+<pre>
+angular.validator.[validator_type](parameters)
+</pre>
+
+
+The following example shows how to use the built-in angular integer validator:
+
+
+<doc:example>
+<doc:source>
+ Change me: <input type="text" name="number" ng:validate="integer" value="123">
+</doc:source>
+<doc:scenario>
+ it('should validate the default number string', function() {
+   expect(element('input[name=number]').attr('class')).
+      not().toMatch(/ng-validation-error/);
+ });
+ it('should not validate "foo"', function() {
+   input('number').enter('foo');
+   expect(element('input[name=number]').attr('class')).
+      toMatch(/ng-validation-error/);
+ });
+</doc:scenario>
+</doc:example>
+
+
+# Creating an Angular Validator
+
+
+To create a custom validator, you simply add your validator code as a method onto the
+`angular.validator` object and provide input(s) for the validator function. Each input provided is
+treated as an argument to the validator function.  Any additional inputs should be separated by
+commas.
+
+
+The following bit of pseudo-code shows how to set up a custom validator:
+
+
+<pre>
+angular.validator('your_validator', function(input [,additional params]) {
+        [your validation code];
+        if ( [validation succeeds] ) {
+                return false;
+        } else {
+                return true; // No error message specified
+                          }
+}
+</pre>
+
+
+Note that this validator returns "true" when the user's input is incorrect, as in "Yes, it's true,
+there was a problem with that input". If you prefer to provide more information when a validator
+detects a problem with input, you can specify an error message in the validator that angular will
+display when the user hovers over the input widget.
+
+
+To specify an error message, replace "`return true;`" with an error string, for example:
+
+
+      return "Must be a value between 1 and 5!";
+
+
+Following is a sample UPS Tracking Number validator:
+
+
+<doc:example>
+<doc:source>
+<script>
+angular.validator('upsTrackingNo', function(input, format) {
+  var regexp = new RegExp("^" + format.replace(/9/g, '\\d') + "$");
+  return input.match(regexp)?"":"The format must match " + format;
+});
+</script>
+<input type="text" name="trackNo" size="40"
+     ng:validate="upsTrackingNo:'1Z 999 999 99 9999 999 9'"
+     value="1Z 123 456 78 9012 345 6"/>
+</doc:source>
+<doc:scenario>
+it('should validate correct UPS tracking number', function() {
+ expect(element('input[name=trackNo]').attr('class')).
+    not().toMatch(/ng-validation-error/);
+});
+
+
+it('should not validate in correct UPS tracking number', function() {
+ input('trackNo').enter('foo');
+ expect(element('input[name=trackNo]').attr('class')).
+    toMatch(/ng-validation-error/);
+});
+</doc:scenario>
+</doc:example>
+
+
+In this sample validator, we specify a regular expression against which to test the user's input.
+Note that when the user's input matches `regexp`, the function returns "false" (""); otherwise it
+returns the specified error message ("true").
+
+
+Note: you can also access the current angular scope and DOM element objects in your validator
+functions as follows:
+
+
+* `this` ===  The current angular scope.
+* `this.$element` ===  The DOM element that contains the binding. This allows the filter to
+manipulate the DOM in addition to transforming the input.
+
+
+
+
+## Related Topics
+
+
+* {@link dev_guide.templates Angular Templates}
+
+
+## Related API
+
+
+* {@link api/angular.validator Validator API}

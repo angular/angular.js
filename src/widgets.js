@@ -1,5 +1,32 @@
 /**
  * @workInProgress
+ * @ngdoc overview
+ * @name angular.widget
+ * @description
+ *
+ * Widgets are custom DOM elements.  An angular widget can be either a custom 
+ * attribute that modifies an existing DOM elements or an entirely new DOM element.
+ *
+ * Following is the list of built-in angular widgets:
+ *
+ * * {@link angular.widget.@ng:format ng:format} - Formats data for display to user and for storage.
+ * * {@link angular.widget.@ng:non-bindable ng:non-bindable} - Blocks angular from processing an
+ *   HTML element.
+ * * {@link angular.widget.@ng:repeat ng:repeat} - Creates and manages a collection of cloned HTML
+ *   elements.
+ * * {@link angular.widget.@ng:required ng:required} - Verifies presence of user input.
+ * * {@link angular.widget.@ng:validate ng:validate} - Validates content of user input.
+ * * {@link angular.widget.HTML HTML} - Standard HTML processed by angular.
+ * * {@link angular.widget.ng:view ng:view} - Works with $route to "include" partial templates
+ * * {@link angular.widget.ng:switch ng:switch} - Conditionally changes DOM structure
+ * * {@link angular.widget.ng:include ng:include} - Includes an external HTML fragment
+ *
+ * For more information about angular widgets, see {@link guide/dev_guide.compiler.widgets
+ * Understanding Angular Widgets} in the angular Developer Guide.
+ */
+
+/**
+ * @workInProgress
  * @ngdoc widget
  * @name angular.widget.HTML
  *
@@ -1026,7 +1053,7 @@ angularWidget("@ng:non-bindable", noop);
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * This widget provides functionality similar to {@link angular.service.ng:include ng:include} when
+ * This widget provides functionality similar to {@link angular.widget.ng:include ng:include} when
  * used like this:
  *
  *     <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>

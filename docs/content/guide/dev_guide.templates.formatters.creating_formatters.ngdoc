@@ -1,0 +1,63 @@
+@workInProgress
+@ngdoc overview
+@name Developer Guide: Templates: Angular Formatters: Creating Angular Formatters
+@description
+
+
+To create your own formatter, you can simply register a pair of JavaScript functions with
+`angular.formatter`. One of your functions is used to parse text from the input widget into the
+data storage format; the other function is used to format stored data into user-readable text.
+
+
+The following example demonstrates a "reverse" formatter. Data is stored in uppercase and in
+reverse, but it is displayed in lower case and non-reversed. When a user edits the data model via
+the input widget, the input is automatically parsed into the internal data storage format, and when
+the data changes in the model, it is automatically formatted to the user-readable form for display
+in the view.
+
+
+<pre>
+function reverse(text) {
+var reversed = [];
+for (var i = 0; i < text.length; i++) {
+reversed.unshift(text.charAt(i));
+}
+return reversed.join('');
+}
+
+
+angular.formatter('reverse', {
+parse: function(value){
+return reverse(value||'').toUpperCase();
+},
+format: function(value){
+return reverse(value||'').toLowerCase();
+}
+});
+</pre>
+
+
+<doc:example>
+<doc:source>
+<script type="text/javascript">
+function reverse(text) {
+var reversed = [];
+for (var i = 0; i < text.length; i++) {
+  reversed.unshift(text.charAt(i));
+}
+return reversed.join('');
+}
+
+
+angular.formatter('reverse', {
+parse: function(value){
+  return reverse(value||'').toUpperCase();
+},
+format: function(value){
+  return reverse(value||'').toLowerCase();
+}
+});
+</script>
+
+
+

@@ -6,3 +6,4 @@ regression/temp*.html
 performance/temp*.html
 .idea/workspace.xml
 *~
+angular.js.tmproj

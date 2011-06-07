@@ -29,12 +29,12 @@ function Doc(text, file, line) {
   this.param = this.param || [];
   this.properties = this.properties || [];
   this.methods = this.methods || [];
+  this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function(){
   var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
   return words.toString().split(/[,\s\n\r]+/gm);
 })();
-
 
 
 Doc.prototype = {
@@ -57,24 +57,60 @@ Doc.prototype = {
     return words.join(' ');
   },
 
+  /**
+   * Converts relative urls (without section) into absolute
+   * Absolute url means url with section
+   *
+   * @example
+   * - if the link is inside any api doc:
+   * angular.widget -> api/angular.widget
+   *
+   * - if the link is inside any guid doc:
+   * intro -> guide/intro
+   *
+   * @param {string} url Absolute or relative url
+   * @returns {string} Absolute url
+   */
+  convertUrlToAbsolute: function(url) {
+    if (url.substr(-1) == '/') return url + 'index';
+    if (url.match(/\//)) return url;
+    return this.section + '/' + url;
+  },
+
   markdown: function (text) {
-    var self = this;
-    var IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/;
-    var IS_ANGULAR = /^angular\./;
     if (!text) return text;
 
-    text = trim(text);
+    var self = this,
+        IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
+        IS_ANGULAR = /^(api\/)?angular\./,
+        parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:(\S*).*?>[\s\S]*?<\/doc:\2>)/);
 
-    var parts = text.split(/(<pre>[\s\S]*?<\/pre>|<doc:example>[\s\S]*?<\/doc:example>)/);
+    parts.forEach(function(text, i) {
 
-    parts.forEach(function(text, i){
+      function isDocWidget(name) {
+        if ((i + 1) % 3 != 2) return false;
+        if (name) return parts[i+1] == name;
+        return !!parts[i+1];
+      }
+
+      // ignore each third item which is doc widget tag
+      if (!((i + 1) % 3)) {
+        parts[i] = '';
+        return;
+      }
+
       if (text.match(/^<pre>/)) {
         text = text.replace(/^<pre>([\s\S]*)<\/pre>/mi, function(_, content){
-          return '<div ng:non-bindable><pre class="brush: js; html-script: true;">' +
+          var clazz = 'brush: js;';
+          if (content.match(/\<\w/)) {
+            // we are HTML
+            clazz += ' html-script: true;';
+          }
+          return '<div ng:non-bindable><pre class="' + clazz +'">' +
                   content.replace(/</g, '&lt;').replace(/>/g, '&gt;') +
                  '</pre></div>';
         });
-      } else if (text.match(/^<doc:example>/)) {
+      } else if (isDocWidget('example')) {
         text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
           function(_, before, content, after){
             return '<pre class="doc-source">' + htmlEscape(content) + '</pre>';
@@ -84,14 +120,20 @@ Doc.prototype = {
             self.scenarios.push(content);
             return '<pre class="doc-scenario">' + htmlEscape(content) + '</pre>';
           });
-      } else {
+      } else if (!isDocWidget()) {
         text = text.replace(/<angular\/>/gm, '<tt>&lt;angular/&gt;</tt>');
         text = text.replace(/{@link\s+([^\s}]+)\s*([^}]*?)\s*}/g,
           function(_all, url, title){
-            return '<a href="' + (url.match(IS_URL) ? '' : '#!') + url + '">'
-              + (url.match(IS_ANGULAR) ? '<code>' : '')
+            var isFullUrl = url.match(IS_URL),
+                isAngular = url.match(IS_ANGULAR),
+                absUrl = isFullUrl ? url : self.convertUrlToAbsolute(url);
+
+            if (!isFullUrl) self.links.push(absUrl);
+
+            return '<a href="' + (isFullUrl ? '' + url : '#!/' + absUrl) + '">'
+              + (isAngular ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
-              + (url.match(IS_ANGULAR) ? '</code>' : '')
+              + (isAngular ? '</code>' : '')
               + '</a>';
           });
         text = new Showdown.converter().makeHtml(text);
@@ -491,9 +533,9 @@ Doc.prototype = {
 function scenarios(docs){
   var specs = [];
   docs.forEach(function(doc){
-    specs.push('describe("' + doc.id + '", function(){');
+    specs.push('describe("' + doc.section + '/' + doc.id + '", function(){');
     specs.push('  beforeEach(function(){');
-    specs.push('    browser().navigateTo("index.html#!' + doc.id + '");');
+    specs.push('    browser().navigateTo("index.html#!/' + doc.section + '/' + doc.id + '");');
     specs.push('  });');
     specs.push('');
     doc.scenarios.forEach(function(scenario){
@@ -520,6 +562,7 @@ function metadata(docs){
     var depth = path.length - 1;
     var shortName = path.pop();
     words.push({
+      section: doc.section,
       id: doc.id,
       name: doc.name,
       depth: depth,
@@ -533,9 +576,8 @@ function metadata(docs){
 }
 
 var KEYWORD_PRIORITY = {
-  '.started': 1,
+  '.index': 1,
   '.guide': 2,
-  '.guide.overview': 1,
   '.angular': 7,
   '.angular.Array': 7,
   '.angular.Object': 7,
@@ -545,7 +587,17 @@ var KEYWORD_PRIORITY = {
   '.angular.scope': 7,
   '.angular.service': 7,
   '.angular.validator': 7,
-  '.angular.widget': 7
+  '.angular.widget': 7,
+  '.angular.mock': 8,
+  '.dev_guide.overview': 1,
+  '.dev_guide.bootstrap': 2,
+  '.dev_guide.mvc': 3,
+  '.dev_guide.scopes': 4,
+  '.dev_guide.compiler': 5,
+  '.dev_guide.templates': 6,
+  '.dev_guide.services': 7,
+  '.dev_guide.di': 8,
+  '.dev_guide.unit-testing': 9
 };
 function keywordSort(a, b){
   function mangleName(doc) {
@@ -557,7 +609,7 @@ function keywordSort(a, b){
       mangled.push(KEYWORD_PRIORITY[partialName] || 5);
       mangled.push(name);
     });
-    return mangled.join('.');
+    return doc.section + '/' + mangled.join('.');
   }
   var nameA = mangleName(a);
   var nameB = mangleName(b);
@@ -621,24 +673,33 @@ function indent(text, spaceCount) {
 
 //////////////////////////////////////////////////////////
 function merge(docs){
-  var byName = {};
-  docs.forEach(function(doc){
-    byName[doc.name] = doc;
+  var byFullId = {};
+
+  docs.forEach(function (doc) {
+    byFullId[doc.section + '/' + doc.id] = doc;
   });
-  for(var i=0; i<docs.length;) {
-    if (findParent(docs[i], 'method') ||
-          findParent(docs[i], 'property')) {
+
+  for(var i = 0; i < docs.length;) {
+    var doc = docs[i];
+
+    // check links - do they exist ?
+    doc.links.forEach(function(link) {
+      if (!byFullId[link]) console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
+    });
+
+    // merge into parents
+    if (findParent(doc, 'method') || findParent(doc, 'property')) {
       docs.splice(i, 1);
     } else {
       i++;
     }
   }
 
-  function findParent(doc, name){
-    var parentName = doc[name+'Of'];
+  function findParent(doc, name) {
+    var parentName = doc[name + 'Of'];
     if (!parentName) return false;
 
-    var parent = byName[parentName];
+    var parent = byFullId['api/' + parentName];
     if (!parent)
       throw new Error("No parent named '" + parentName + "' for '" +
           doc.name + "' in @" + name + "Of.");

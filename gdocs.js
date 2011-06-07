@@ -7,6 +7,7 @@ var fs = require('fs');
 var collections = {
   'guide': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmANGUwMGVhZmYtMTk1ZC00NTdmLWIxMDAtZGI5YWNlZjQ2YjZl/contents',
   'api': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDYjMwYTc2YWUtZTgzYy00YjIxLThlZDYtYWJlOTFlNzE2NzEw/contents',
+  'tutorial': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmAYWMxYWE3MzYtYzdjYS00OGQxLWJhZjItYzZkMzJiZTRhZjFl/contents',
   'cookbook': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDNzkxZWM5ZTItN2M5NC00NWIxLTg2ZDMtMmYwNDY1NWM1MGU4/contents',
   'misc': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZjVlNmZkYzQtMjZlOC00NmZhLWI5MjAtMGRjZjlkOGJkMDBi/contents'
 }
@@ -37,9 +38,8 @@ function help(){
 };
 
 
-function fetch(name, url){
-  //https://docs.google.com/feeds/default/private/full/folder%3Afolder_id/contents
-  console.log('fetching a list of docs in collection ' + name + '...');
+function fetch(collection, url){
+  console.log('fetching a list of docs in collection ' + collection + '...');
   request('GET', url, {
         headers: {
           'Gdata-Version': '3.0',
@@ -53,14 +53,14 @@ function fetch(name, url){
           var title = entry.match(/<title>(.*?)<\/title>/)[1];
           if (title.match(/\.ngdoc$/)) {
             var exportUrl = entry.match(/<content type='text\/html' src='(.*?)'\/>/)[1];
-            download(title, exportUrl);
+            download(collection, title, exportUrl);
           }
         });
       }
     );
 }
 
-function download(name, url) {
+function download(collection, name, url) {
   console.log('Downloading:', name, '...');
   request('GET', url + '&exportFormat=txt',
       {
@@ -72,7 +72,6 @@ function download(name, url) {
       function(data){
         data = data.replace('\ufeff', '');
         data = data.replace(/\r\n/mg, '\n');
-        data = data.replace(/^ /mg, '  '); //for some reason gdocs drop first space for indented lines
 
         // strip out all text annotation comments
         data = data.replace(/^\[a\][\S\s]*/m, '');
@@ -80,13 +79,16 @@ function download(name, url) {
         // strip out all text annotations
         data = data.replace(/\[\w{1,3}\]/mg, '');
 
+        // strip out all docos comments
+        data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '')
+
         // fix smart-quotes
         data = data.replace(/[“”]/g, '"');
         data = data.replace(/[‘’]/g, "'");
 
 
         data = data + '\n';
-        fs.writeFileSync('docs/' + name, reflow(data, 100));
+        fs.writeFileSync('docs/content/' + collection + '/' + name, reflow(data, 100));
       }
     );
 }

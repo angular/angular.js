@@ -110,15 +110,15 @@ Template.prototype = {
  * @returns {function([scope][, cloneAttachFn])} a template function which is used to bind template
  * (a DOM element/tree) to a scope. Where:
  *
- *   * `scope` - A {@link angular.scope scope} to bind to. If none specified, then a new
+ *  * `scope` - A {@link angular.scope Scope} to bind to. If none specified, then a new
  *               root scope is created.
- *   * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
+ *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
  *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
  *               cloned elements to the DOM document at the approriate place. The `cloneAttachFn` is
  *               called as: <br/> `cloneAttachFn(clonedElement, scope)` where:
  *
- *     * `clonedElement` - is a clone of the original `element` passed into the compiler.
- *     * `scope` - is the current scope with which the linking function is working with.
+ *      * `clonedElement` - is a clone of the original `element` passed into the compiler.
+ *      * `scope` - is the current scope with which the linking function is working with.
  *
  * Calling the template function returns the scope to which the element is bound to. It is either
  * the same scope as the one passed into the template function, or if none were provided it's the
@@ -148,6 +148,33 @@ Template.prototype = {
  *
  *     //now we have reference to the cloned DOM via `clone`
  *   </pre>
+ *
+ *
+ * Compiler Methods For Widgets and Directives:
+ *
+ * The following methods are available for use when you write your own widgets, directives,
+ * and markup.  (Recall that the compile function's this is a reference to the compiler.)
+ *
+ *  `compile(element)` - returns linker -
+ *  Invoke a new instance of the compiler to compile a DOM element and return a linker function.
+ *  You can apply the linker function to the original element or a clone of the original element.
+ *  The linker function returns a scope.
+ *
+ *  * `comment(commentText)` - returns element - Create a comment element.
+ *
+ *  * `element(elementName)` - returns element - Create an element by name.
+ *
+ *  * `text(text)` - returns element - Create a text element.
+ *
+ *  * `descend([set])` - returns descend state (true or false). Get or set the current descend
+ *  state. If true the compiler will descend to children elements.
+ *
+ *  * `directives([set])` - returns directive state (true or false). Get or set the current
+ *  directives processing state. The compiler will process directives only when directives set to
+ *  true.
+ *
+ * For information on how the compiler works, see the 
+ * {@link guide/dev_guide.compiler Angular HTML Compiler} section of the Developer Guide.
  */
 function Compiler(markup, attrMarkup, directives, widgets){
   this.markup = markup;

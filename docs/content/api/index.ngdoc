@@ -1,0 +1,100 @@
+@ngdoc overview
+@name API Reference
+@description
+
+
+## Angular Compiler API
+
+
+* {@link angular.widget Widgets} - Angular custom DOM element
+* {@link angular.directive Directives} - Angular DOM element attributes
+* {@link angular.markup Markup} and {@link angular.attrMarkup Attribute Markup}
+* {@link angular.filter Filters} - Angular output filters
+* {@link angular.formatter Formatters} - Angular converters for form elements
+* {@link angular.validator Validators} - Angular input validators
+* {@link angular.compile angular.compile()} - Template compiler
+
+
+## Angular Scope API
+
+
+* {@link angular.scope Scope Object} - Angular scope object
+
+
+
+
+## Angular Services & Dependency Injection API
+
+
+* {@link angular.service Angular Services}
+* {@link angular.injector angular.injector() }
+
+
+
+
+## Angular Testing API
+
+
+* {@link angular.mock Testing Mocks API} - Mock objects for testing
+* {@link
+https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en_US
+Angular Scenario Runner} - Automated scenario testing documentation
+
+
+
+
+## Angular Utility Functions
+
+
+### HTML & DOM Manipulation
+
+
+* {@link angular.element angular.element()}
+
+
+### Misc
+
+
+* {@link angular.bind angular.bind() }
+* {@link angular.extend angular.extend() }
+* {@link angular.forEach angular.forEach() }
+* {@link angular.identity angular.identity() }
+* {@link angular.noop angular.noop() }
+
+
+
+
+## Type Identification
+
+
+* {@link angular.isArray angular.isArray() }
+* {@link angular.isDate angular.isDate() }
+* {@link angular.isDefined angular.isDefined() }
+* {@link angular.isFunction angular.isFunction() }
+* {@link angular.isNumber angular.isNumber() }
+* {@link angular.isObject angular.isObject() }
+* {@link angular.isString angular.isString() }
+* {@link angular.isUndefined angular.isUndefined() }
+
+
+## Strings
+
+
+* {@link angular.lowercase angular.lowercase() }
+* {@link angular.uppercase angular.uppercase() }
+
+
+### JSON
+
+
+* {@link angular.fromJson angular.fromJson() }
+* {@link angular.toJson angular.toJson() }
+
+
+
+
+
+
+## Utility methods for JavaScript types
+* {@link angular.Object Object API} - Utility functions for JavaScript objects
+* {@link angular.Array Array API} - Utility functions for JavaScript arrays

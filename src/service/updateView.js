@@ -33,7 +33,7 @@
  *      without angular knowledge and you may need to call '$updateView()' directly.
  *
  * NOTE: if you wish to update the view immediately (without delay), you can do so by calling
- * {@link scope.$eval} at any time from your code:
+ * {@link angular.scope.$eval} at any time from your code:
  * <pre>scope.$root.$eval()</pre>
  *
  * In unit-test mode the update is instantaneous and synchronous to simplify writing tests.

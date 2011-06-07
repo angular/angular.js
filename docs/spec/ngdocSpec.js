@@ -97,6 +97,33 @@ describe('ngdoc', function(){
             '<pre class="doc-scenario">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
 
+      it('should store all links', function() {
+        var doc = new Doc('@description {@link api/angular.link}');
+        doc.parse();
+
+        expect(doc.links).toContain('api/angular.link');
+      });
+
+      describe('convertUrlToAbsolute', function() {
+        var doc;
+
+        beforeEach(function() {
+          doc = new Doc({section: 'section'});
+        });
+
+        it('should not change absolute url', function() {
+          expect(doc.convertUrlToAbsolute('guide/index')).toEqual('guide/index');
+        });
+
+        it('should prepend current section to relative url', function() {
+          expect(doc.convertUrlToAbsolute('angular.widget')).toEqual('section/angular.widget');
+        });
+
+        it('should change id to index if not specified', function() {
+          expect(doc.convertUrlToAbsolute('guide/')).toEqual('guide/index');
+        });
+      });
+
       describe('sorting', function(){
         function property(name) {
           return function(obj) {return obj[name];};
@@ -138,10 +165,37 @@ describe('ngdoc', function(){
             '<p>asdf x</p>');
     });
 
+    it('should ignore doc widgets', function() {
+      expect(new Doc().markdown('text<doc:example>do not touch</doc:example>')).
+        toEqual('<p>text</p><doc:example>do not touch</doc:example>');
+
+      expect(new Doc().markdown('text<doc:tutorial-instructions>do not touch</doc:tutorial-instructions>')).
+        toEqual('<p>text</p><doc:tutorial-instructions>do not touch</doc:tutorial-instructions>');
+    });
+
+    it('should ignore doc widgets with params', function() {
+      expect(new Doc().markdown('text<doc:tutorial-instructions id="10" show="true">do not touch</doc:tutorial-instructions>')).
+        toEqual('<p>text</p><doc:tutorial-instructions id="10" show="true">do not touch</doc:tutorial-instructions>');
+    });
+
     it('should replace text between two <pre></pre> tags', function() {
       expect(new Doc().markdown('<pre>x</pre># One<pre>b</pre>')).
         toMatch('</div><h1>One</h1><div');
     });
+
+    it('should ignore nested doc widgets', function() {
+      expect(new Doc().markdown(
+        'before<doc:tutorial-instructions>\n' +
+          '<doc:tutorial-instruction id="git-mac" name="Git on Mac/Linux">' +
+          '\ngit bla bla\n</doc:tutorial-instruction>\n' +
+        '</doc:tutorial-instructions>')).toEqual(
+
+        '<p>before</p><doc:tutorial-instructions>\n' +
+          '<doc:tutorial-instruction id="git-mac" name="Git on Mac/Linux">\n' +
+          'git bla bla\n' +
+          '</doc:tutorial-instruction>\n' +
+        '</doc:tutorial-instructions>');
+      });
 
     it('should unindent text before processing based on the second line', function() {
       expect(new Doc().markdown('first line\n' +
@@ -185,19 +239,46 @@ describe('ngdoc', function(){
 
   describe('merge', function(){
     it('should merge child with parent', function(){
-      var parent = new Doc({name:'angular.service.abc'});
-      var methodA = new Doc({name:'methodA', methodOf:'angular.service.abc'});
-      var methodB = new Doc({name:'methodB', methodOf:'angular.service.abc'});
-      var propA = new Doc({name:'propA', propertyOf:'angular.service.abc'});
-      var propB = new Doc({name:'propB', propertyOf:'angular.service.abc'});
+      var parent = new Doc({id: 'angular.service.abc', name: 'angular.service.abc', section: 'api'});
+      var methodA = new Doc({name: 'methodA', methodOf: 'angular.service.abc'});
+      var methodB = new Doc({name: 'methodB', methodOf: 'angular.service.abc'});
+      var propA = new Doc({name: 'propA', propertyOf: 'angular.service.abc'});
+      var propB = new Doc({name: 'propB', propertyOf: 'angular.service.abc'});
       var docs = [methodB, methodA, propB, propA, parent]; // keep wrong order;
       ngdoc.merge(docs);
       expect(docs.length).toEqual(1);
-      expect(docs[0].name).toEqual('angular.service.abc');
+      expect(docs[0].id).toEqual('angular.service.abc');
       expect(docs[0].methods).toEqual([methodA, methodB]);
       expect(docs[0].properties).toEqual([propA, propB]);
     });
 
+
+
+    describe('links checking', function() {
+      var docs;
+      beforeEach(function() {
+        spyOn(console, 'log');
+        docs = [new Doc({section: 'api', id: 'fake.id1', links: ['non-existing-link']}),
+                new Doc({section: 'api', id: 'fake.id2'}),
+                new Doc({section: 'api', id: 'fake.id3'})];
+      });
+
+      it('should log warning when any link doesn\'t exist', function() {
+        ngdoc.merge(docs);
+        expect(console.log).toHaveBeenCalled();
+        expect(console.log.argsForCall[0][0]).toContain('WARNING:');
+      });
+
+      it('should say which link doesn\'t exist', function() {
+        ngdoc.merge(docs);
+        expect(console.log.argsForCall[0][0]).toContain('non-existing-link');
+      });
+
+      it('should say where is the non-existing link', function() {
+        ngdoc.merge(docs);
+        expect(console.log.argsForCall[0][0]).toContain('api/fake.id1');
+      });
+    });
   });
 
   ////////////////////////////////////////
@@ -307,10 +388,10 @@ describe('ngdoc', function(){
 
     describe('@description', function(){
       it('should support pre blocks', function(){
-        var doc = new Doc("@description <pre>abc</pre>");
+        var doc = new Doc("@description <pre><b>abc</b></pre>");
         doc.parse();
         expect(doc.description).
-          toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>');
+          toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">&lt;b&gt;abc&lt;/b&gt;</pre></div>');
       });
 
       it('should support multiple pre blocks', function() {
@@ -318,10 +399,10 @@ describe('ngdoc', function(){
         doc.parse();
         expect(doc.description).
           toBe('<p>foo </p>' +
-               '<div ng:non-bindable><pre class="brush: js; html-script: true;">abc</pre></div>' +
+               '<div ng:non-bindable><pre class="brush: js;">abc</pre></div>' +
                '<h1>bah</h1>\n\n' +
                '<p>foo </p>' +
-               '<div ng:non-bindable><pre class="brush: js; html-script: true;">cba</pre></div>');
+               '<div ng:non-bindable><pre class="brush: js;">cba</pre></div>');
 
       });
 
@@ -332,15 +413,18 @@ describe('ngdoc', function(){
             'external{@link http://angularjs.org}\n\n' +
             'external{@link ./static.html}\n\n' +
             '{@link angular.directive.ng:foo ng:foo}');
+
+        doc.section = 'api';
         doc.parse();
+
         expect(doc.description).
-          toContain('foo <a href="#!angular.foo"><code>angular.foo</code></a>');
+          toContain('foo <a href="#!api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('da <a href="#!angular.foo"><code>bar foo bar</code></a>');
+          toContain('da <a href="#!api/angular.foo"><code>bar foo bar</code></a>');
         expect(doc.description).
-          toContain('dad<a href="#!angular.foo"><code>angular.foo</code></a>');
+          toContain('dad<a href="#!api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('<a href="#!angular.directive.ng:foo"><code>ng:foo</code></a>');
+          toContain('<a href="#!api/angular.directive.ng:foo"><code>ng:foo</code></a>');
         expect(doc.description).
           toContain('<a href="http://angularjs.org">http://angularjs.org</a>');
         expect(doc.description).
@@ -349,10 +433,10 @@ describe('ngdoc', function(){
 
       it('shoul support line breaks in @link', function(){
         var doc = new Doc("@description " +
-            '{@link\nurl\na\nb}');
+            '{@link\napi/angular.foo\na\nb}');
         doc.parse();
         expect(doc.description).
-          toContain('<a href="#!url">a b</a>');
+          toContain('<a href="#!api/angular.foo">a b</a>');
       });
 
     });

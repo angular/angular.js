@@ -1,46 +1,84 @@
 <!doctype html>
 <html xmlns:ng="http://angularjs.org/"
       xmlns:doc="http://docs.angularjs.org/"
-      ng:controller="DocsController">
+      ng:controller="DocsController"
+      manifest="app-cache.manifest">
 <head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title ng:bind-template="&lt;angular/&gt;: {{partialTitle}}">&lt;angular/&gt;</title>
-
   <meta name="fragment" content="!">
+  <link rel="stylesheet" href="docs-combined.css" type="text/css"/>
+  <link rel="stylesheet" href="syntaxhighlighter/syntaxhighlighter-combined.css" type="text/css"/>
 
-  <link rel="stylesheet" href="doc_widgets.css" type="text/css" />
-  <link rel="stylesheet" href="docs.css" type="text/css"/>
-  <link rel="stylesheet" href="syntaxhighlighter/shCore.css" type="text/css"/>
-  <link rel="stylesheet" href="syntaxhighlighter/shThemeDefault.css" type="text/css"/>
+  <script>
+    // GA asynchronous tracker
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-8594346-3']);
+    _gaq.push(['_setDomainName', '.angularjs.org']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+
+    // force page reload when new update is available
+    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
+      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+        window.applicationCache.swapCache();
+        window.location.reload();
+      }
+    }, false);
+  </script>
+</head>
+
+<body>
+  <div id="container">
+
+    <!--[if lt IE 9]>
+      <div id="oldIePrompt">
+        You are using an old version of Internet Explorer.
+        For better and safer browsing experience please <a href="http://www.microsoft.com/IE9">upgrade IE</a>
+        or install <a href="http://google.com/chrome">Google Chrome browser</a>.
+      </div>
+    <![endif]-->
+
+    <ul id="navbar">
+      <li><a href="http://angularjs.org/">&lt;angular/&gt;</a></li>
+      <li><a href="#!/guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
+      <li><a href="#!/api" ng:class="selectedSection('api')">API Reference</a></li>
+      <li><a href="#!/cookbook" ng:class="selectedSection('cookbook')">Examples</a></li>
+      <li><a href="#!/misc/started" ng:class="selectedSection('misc')">Getting Started</a></li>
+      <li><a href="#!/tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
+    </ul>
+
+    <div id="sidebar">
+      <input type="text" name="search" id="search-box" placeholder="search the docs"
+             tabindex="1" accesskey="s">
+
+      <ul id="content-list">
+        <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
+          <a href="{{getUrl(page)}}" ng:class="selectedPartial(page)"
+             ng:bind="page.shortName"
+             tabindex="2"></a>
+        </li>
+      </ul>
+    </div>
+
+
+    <div id="content-panel">
+      <h2 ng:bind="partialTitle"></h2>
+      <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
+      <ng:include id="content" src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
+    </div>
+
+    <div id="footer">© 2010-2011 angular</div>
+  </div>
 
   <script src="jquery.min.js"></script>
-  <script src="syntaxhighlighter/shCore.js"></script>
-  <script src="syntaxhighlighter/shBrushJScript.js"></script>
-  <script src="syntaxhighlighter/shBrushXml.js"></script>
-
+  <script src="syntaxhighlighter/syntaxhighlighter-combined.js"></script>
   <script src="../angular.min.js" ng:autobind></script>
-  <script src="docs.js"></script>
-  <script src="doc_widgets.js"></script>
+  <script src="docs-combined.js"></script>
   <script src="docs-keywords.js"></script>
-</head>
-<body style="display:none;" ng:show="true">
-  <div id="header">
-    <h1>
-      <span class="main-title">{{partialTitle}}</span>
-      <a href="#" tabindex="0"><span class="angular">&lt;angular/&gt;</span> Docs</a>
-    </h1>
-  </div>
-  <div id="sidebar">
-    <input type="text" name="search" id="search-box" placeholder="search the docs"
-           tabindex="1" accesskey="s"/>
-    <ul id="api-list">
-      <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
-        <a href="{{getUrl(page)}}" ng:click="" tabindex="2">{{page.shortName}}</a>
-      </li>
-    </ul>
-  </div>
-  <div id="main">
-    <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
-    <ng:include src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
-  </div>
 </body>
 </html>

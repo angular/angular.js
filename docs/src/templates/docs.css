@@ -1,302 +1,287 @@
-/* Common Style */
+@charset "UTF-8";
+
 
 body {
-  font-family: Arial, sans-serif;
+  background: #000 url("img/texture_1.png");
+}
+
+/*----- Layout Generic Styles -----*/
+
+body,td,th {
+  font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
+  color: #000;
+  margin: 0px;
+}
+
+a:link, a:visited, a:hover {
+  color: #5d6db6;
+  text-decoration: none;
+}
+
+a:active {
+  text-decoration: none;
+}
+
+p {
+  font-size: 14px;
+  padding: 0.1em 1em;
+  line-height: 1.4em;
+}
+
+h2 {
+  margin: 1.5em 0 1em 0;
+}
+
+h3 {
+  margin: 1.8em 0 1em 0;
+}
+
+h4 {
+  margin: 2em 0 1em 0;
+}
+
+li {
+  margin: 0.3em 0 0.3em 0;
+}
+
+
+/*----- Upgrade IE Prompt -----*/
+
+#oldIePrompt {
+    margin: 0 auto;
+    background-color: red;
+    color: black;
+    text-align: center;
+    padding: 5px 0;
+}
+
+
+#oldIePrompt a,
+#oldIePrompt a:visited {
+    color: yellow;
+}
+
+
+
+/*----- Global Layout -----*/
+
+#container  {
+    width: 1150px;
+    margin: 0 auto;
+    background: #F8AC09 url(img/yellow_bkgnd.jpg) no-repeat top left;
+}
+
+
+#footer {
+    clear: both;
+    padding: 2em 4em 1em;
+    text-align: right;
+    font-size: 12px;
+}
+
+
+
+/*----- navigation styles -----*/
+
+#navbar {
   margin: 0;
   padding: 0;
-}
-
-a {
-  color: blue;
-}
-
-
-/* Main Layout */
-
-#header {
-  height: 3.5em;
-}
-
-#sidebar,
-#main {
-  position: absolute;
-  top: 3.5em;
-  bottom: 0;
-  margin-top: 1px;
-  overflow-x: hidden;
-}
-
-#sidebar {
-  width: 13.8em;
-  padding: 0.8em 0em 1.5em 0.8em;
-}
-
-#main {
-  left: 14.6em;
-  right: 0;
-  padding: 1em;
-  overflow-y: scroll;
-}
-
-#api-list {
-  position: absolute;
-  top: 3em;
-  bottom: 1em;
-  overflow-y: scroll;
-  padding-right: 0.8em;
-}
-
-
-/* App Header */
-
-#header {
-  background-color: #F2C200;
-  border-bottom: 1px solid #957800;
-}
-
-#header h1 {
-  font-weight: normal;
-  font-size: 30px;
-  line-height: 30px;
-  margin: 0;
-  padding: 10px 10px;
-  height: 30px;
-}
-
-#header .angular {
-  font-family: "Courier New", monospace;
-  font-weight: bold;
-}
-
-#header h1 a {
-  color: black;
-  text-decoration: none;
-}
-
-#header h1 a:hover {
-  text-decoration: underline;
-}
-
-
-/* Main main Style */
-
-#main h1 {
-  font-family: monospace;
-  margin-top: 0;
-  padding-bottom: 5px;
-  border-bottom: 1px solid #CCC;
-}
-
-#main h2 {
-  margin-top: 1.8em;
-}
-
-#main h1 + h2 {
-  margin-top: 1.3em;
-}
-
-#main h3 {
-  margin-top: 1.5em;
-}
-
-#main ul.methods,
-#main ul.properties {
-  margin: 0;
-  padding-left: 1em;
-}
-
-#main ul.methods > li,
-#main ul.properties > li {
-  list-style: none;
-  padding: 0 10px 10px 10px;
-  margin-top: 1.5em;
-  border: 1px solid #000;
-}
-
-#main ul.methods > li > h3,
-#main ul.properties > li > h3 {
-  font-family: "Courier New", monospace;
-  background-color: #E0E0E0;
-  margin: 0 -10px 5px -10px;
-  padding: .5em .5em .25em .5em;
-  border-bottom: 1px solid #888;
-}
-
-#main ul.parameters li > p,
-#main div.returns > p {
-  display: inline; /* the top most paragraph should not cause new lines inside lists. */
-}
-
-.main-title {
-  float: right;
-}
-
-
-/* Searchbox & Sidebar Style */
-
-#search-box, #sidebar {
-  border-right: 1px solid #DDD;
-}
-
-#sidebar {
-  background-color: #EEE;
-}
-
-#search-box {
-  width: 16em;
-  margin-bottom: 1em;
-}
-
-#sidebar a {
-  text-decoration: none;
-}
-
-#sidebar a:hover {
-  text-decoration: underline;
-}
-
-#sidebar ul {
   list-style-type: none;
-  /*TODO(esprehn): Can we just reset globally and not break examples?*/
-  margin: 0;
-  padding: 0 0.8em 0 0;
-  width: 13em;
+  background: #7989D6;
+  height: 3.5em;
+  border-bottom: 4px solid #808080;
 }
 
-#sidebar ul li {
+
+#navbar li {
+  display: inline;
 }
 
-#sidebar ul li a {
-  display: block;
-  padding: 2px 2px 2px 4px;
-}
 
-#sidebar ul li.selected a {
-  background-color: #DDD;
-  border-radius: 5px;
-  -moz-border-radius: 5px;
-  border: 1px solid #CCC;
-  padding: 1px 1px 1px 3px;
-}
-
-#sidebar ul li.level-0 {
-  margin-top: 0.5em;
-  margin-left: 0em;
-  font-weight: bold;
+#navbar a:link, #navbar a:visited {
   font-size: 1.2em;
+  color: #FFF;
+  text-decoration: none;
+  text-align: center;
+  display: inline-block;
+  width: 11em;
+  margin-top: 0.4em;
+  padding: 0.5em 0;
 }
 
-#sidebar ul li.level-0:first-child {
-  margin-top: 0;
+
+#navbar a:hover {
+  color: #000;
 }
 
-#sidebar ul li.level-1.level-angular {
-  font-family: monospace;
-  font-weight: normal;
-  font-size: 1em;
-  margin-top: 0;
-  margin-bottom: 0;
+
+#navbar a.current {
+  font-weight: bold;
+  background-color: #333;
+
+  border-radius: 10px;
+  -webkit-border-radius:10px;
+  -moz-border-radius: 10px;
+
+  box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  -moz-box-shadow: 4px 4px 6px #48577D;
 }
 
-#sidebar ul li.level-1 {
-  margin-left: 1em;
-  margin-top: 5px;
+
+#navbar a.current:hover {
+  color: #fff;
+}
+
+
+
+/*------ sidebar styles ------*/
+
+#sidebar {
+  margin-top: 4em;
+  width: 15.5em;
+  padding: 0.8em 0.7em 0.7em 0.7em;
+  background: #7989D6;
+  overflow: hidden;
+  float: left;
+
+  -moz-box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  box-shadow: 4px 4px 6px #48577D;
+
+  -moz-border-radius-topright: 15px;
+  -webkit-border-top-right-radius: 15px;
+  border-top-right-radius: 15px;
+
+  -moz-border-radius-bottomright: 15px;
+  -webkit-border-bottom-right-radius: 15px;
+  border-bottom-right-radius: 15px;
+}
+
+
+#sidebar input {
+  width: 207px;
+}
+
+
+#content-list {
+  background: #fff;
+  padding: 1em 0.4em 1em 2em;
+  margin: 0.95em -1em -1em -0.6em;
+  line-height: 1.5em;
+}
+
+
+#content-list .level-0 {
+  font-size: 1.3em;
+  list-style: none;
+  margin-left: -1.2em;
+  padding-bottom: 0.2em;
+}
+
+#content-list .level-1 {
   font-size: 1.1em;
   font-weight: bold;
 }
 
-#sidebar ul li.level-2 {
-  margin-left: 2em;
-  font-family: monospace;
+#content-list .level-2,
+#content-list .level-3 {
+  margin-left: 1em;
 }
 
-#sidebar ul li.level-3 {
+
+#content-list a.current {
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+}
+
+
+
+/*----- content styles -----*/
+
+#content-panel {
+  float: left;
+  margin-top: 4em;
   margin-left: 3em;
-  font-family: monospace;
+  width: 57em;
+  padding: 0.5em 1em 1em 1em;
+  background: #7989D6;
+  overflow: hidden;
+
+  -moz-box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  box-shadow: 4px 4px 6px #48577D;
+
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
 }
 
-#sidebar ul li.level-4 {
-  margin-left: 4em;
-  font-family: monospace;
-}
-
-
-/* Warning and Info Banners */
-
-.deprecated {
-  border: 2px solid red;
-}
-
-.deprecated legend {
-  font-weight: bold;
-  color: red;
-}
-
-.workInProgress {
-  border: 2px solid orange;
-}
-
-.workInProgress legend {
-  font-weight: bold;
-  color: orange;
+#content-panel > h2 {
+  font-size: 2em;
+  font-weight: normal;
+  color: #fff;
+  margin: 0 4em 0 0;
+  height: 1em;
 }
 
 
-/* Feedback Link */
+#content {
+  background-color: #fff;
+  display: block;
+  margin: 0.7em -1em -1em;
+  padding: 0.5em 1.5em;
+}
+
 
 #feedback {
   float: right;
-  width: 10em;
-  text-align: right;
+  margin-top: -2.3em;
+  margin-right: 0.5em;
+  width: 8em;
+  font-size: 0.8em;
+  color: #fff;
 }
 
 
-/* Live Example Style */
-
-.doc-example-live table td {
-  padding: 0 1.5em;
+#content > h1 {
+  display: none;
 }
 
 
-/* Scrollbars */
+#content img {
+  display: block;
+  margin: 2em auto;
+  padding: 1em;
+  border: 1px solid black;
 
-::-webkit-scrollbar{
-  width:0.8em;
-  margin: 0.2em 0em;
+  -moz-box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  box-shadow: 4px 4px 6px #48577D;
+
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
 }
 
-::-webkit-scrollbar:hover{
-  background-color:#eee;
+
+#content > div > pre {
+  padding-left: 1.5em;
 }
 
-::-webkit-scrollbar-thumb{
-  min-height:0.8em;
-  min-width:0.8em;
-  -webkit-border-radius:0.5em;
-  background-color: #ddd;
+
+#content .syntaxhighlighter  {
+  margin: 1.5em 0 1.5em 0 !important;;
 }
 
-::-webkit-scrollbar-thumb:hover{
-  background-color: #bbb;
+#content .parameters p:nth-child(2) {
+  display: inline;
+  padding-left: 0;
 }
 
-::-webkit-scrollbar-thumb:active{
-  background-color:#888;
-}
-
-#sidebar::-webkit-scrollbar {
-  background-color:#eee;
-}
-
-#main::-webkit-scrollbar {
-  background-color:#fff;
-}
-
-/* Content */
-img.right {
-  float: right;
-}
-h1, h2, h3, h4, h5 {
-  clear: both;
+#content .returns p:nth-child(2) {
+  display: inline;
+  padding-left: 0;
 }
