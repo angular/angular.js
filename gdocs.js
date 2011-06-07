@@ -10,7 +10,7 @@ var collections = {
   'tutorial': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmAYWMxYWE3MzYtYzdjYS00OGQxLWJhZjItYzZkMzJiZTRhZjFl/contents',
   'cookbook': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDNzkxZWM5ZTItN2M5NC00NWIxLTg2ZDMtMmYwNDY1NWM1MGU4/contents',
   'misc': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZjVlNmZkYzQtMjZlOC00NmZhLWI5MjAtMGRjZjlkOGJkMDBi/contents'
-}
+};
 
 console.log('Google Docs...');
 
@@ -74,7 +74,7 @@ function download(collection, name, url) {
         data = data.replace(/\r\n/mg, '\n');
 
         // strip out all docos comments
-        data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '')
+        data = data.replace(/^[^\s_]+:\n\S+[\S\s]*$/m, '');
 
         // fix smart-quotes
         data = data.replace(/[“”]/g, '"');
@@ -175,7 +175,7 @@ function askPassword(callback) {
   stdio.setRawMode();
 
   console.log('Enter your password:');
-  var password = ""
+  var password = "";
   stdin.on("data", function (c) {
     c = c + "";
     switch (c) {
