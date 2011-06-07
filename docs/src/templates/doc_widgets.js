@@ -191,10 +191,10 @@
       }
 
       content = angular.element(
-        '<li><a href="#!tutorial/' + prevStep + '">Previous</a></li>' +
+        '<li><a href="#!/tutorial/' + prevStep + '">Previous</a></li>' +
         '<li><a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Live Demo</a></li>' +
         '<li><a href="https://github.com/angular/angular-phonecat/compare/' + codeDiff + '">Code Diff</a></li>' +
-        '<li><a href="#!tutorial/' + nextStep + '">Next</a></li>'
+        '<li><a href="#!/tutorial/' + nextStep + '">Next</a></li>'
       );
 
       element.attr('id', 'tutorial-nav');

@@ -130,7 +130,7 @@ Doc.prototype = {
 
             if (!isFullUrl) self.links.push(absUrl);
 
-            return '<a href="' + (isFullUrl ? '' + url : '#!' + absUrl) + '">'
+            return '<a href="' + (isFullUrl ? '' + url : '#!/' + absUrl) + '">'
               + (isAngular ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
               + (isAngular ? '</code>' : '')
