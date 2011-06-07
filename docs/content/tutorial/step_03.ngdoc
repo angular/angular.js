@@ -59,7 +59,7 @@ __`app/index.html`:__
 </pre>
 
 
-We added a standard HTML `<input>` tag and use angular's {@link api/angular.array.filter $filter}
+We added a standard HTML `<input>` tag and use angular's {@link api/angular.Array.filter $filter}
 function to process the input for the `ng:repeater`.
 
 
@@ -80,7 +80,7 @@ the DOM to reflect the current state of the model.
       <img src="img/tutorial/tutorial_03_final.png">
 
 
-* Use of `$filter`. The {@link api/angular.array.filter $filter} method, uses the `query` value, to
+* Use of `$filter`. The {@link api/angular.Array.filter $filter} method, uses the `query` value, to
 create a new array that contains only those records that match the `query`.
 
 
@@ -207,7 +207,7 @@ element with `id` `"status"` and content with the `query` binding into the `inde
 make the test pass.
 
 
-* Add a `wait();` statement into an end-to-end test and rerun it.  You'll see the runner pausing,
+* Add a `pause()` statement into an end-to-end test and rerun it.  You'll see the runner pausing,
 giving you the opportunity to explore the state of your application displayed in the browser. The
 app is live! Change the search query to prove it. This is great for troubleshooting end-to-end
 tests.

@@ -51,13 +51,13 @@ an attribute that can be added to any existing DOM element:
 You can implement `my:watch` attribute like this:
 <pre>
 angular.widget('@my:watch', function(expression, compileElement) {
-var compiler = this;
-return function(linkElement) {
-var currentScope = this;
-currentScope.$watch(expression, function(value){
-  alert(value);
-});
-};
+  var compiler = this;
+  return function(linkElement) {
+    var currentScope = this;
+    currentScope.$watch(expression, function(value){
+      alert(value);
+    });
+  };
 });
 </pre>
 

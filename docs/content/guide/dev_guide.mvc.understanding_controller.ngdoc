@@ -101,7 +101,7 @@ instances).
 
 
 You can associate controllers with scope objects explicitly via the {@link api/angular.scope.$new
-scope.$new} api or implicitly via the {@link api/angular.directive.@ng:controller ng:controller
+scope.$new} api or implicitly via the {@link api/angular.directive.ng:controller ng:controller
 directive} or {@link api/angular.service.$route $route service}.
 
 

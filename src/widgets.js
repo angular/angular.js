@@ -9,20 +9,20 @@
  *
  * Following is the list of built-in angular widgets:
  *
- * * {@link angular.Widget.@ng:format ng:format} - Formats data for display to user and for storage.
- * * {@link angular.Widget.@ng:non-bindable ng:non-bindable} - Blocks angular from processing an
+ * * {@link angular.widget.@ng:format ng:format} - Formats data for display to user and for storage.
+ * * {@link angular.widget.@ng:non-bindable ng:non-bindable} - Blocks angular from processing an
  *   HTML element.
- * * {@link angular.Widget.@ng:repeat ng:repeat} - Creates and manages a collection of cloned HTML
+ * * {@link angular.widget.@ng:repeat ng:repeat} - Creates and manages a collection of cloned HTML
  *   elements.
- * * {@link angular.Widget.@ng:required ng:required} - Verifies presence of user input.
- * * {@link angular.Widget.@ng:validate ng:validate} - Validates content of user input.
- * * {@link angular.Widget.HTML HTML} - Standard HTML processed by angular.
- * * {@link angular.Widget.ng:view ng:view} - Works with $route to "include" partial templates
- * * {@link angular.Widget.ng:switch ng:switch} - Conditionally changes DOM structure
- * * {@link angular.Widget.ng:include ng:include} - Includes an external HTML fragment
+ * * {@link angular.widget.@ng:required ng:required} - Verifies presence of user input.
+ * * {@link angular.widget.@ng:validate ng:validate} - Validates content of user input.
+ * * {@link angular.widget.HTML HTML} - Standard HTML processed by angular.
+ * * {@link angular.widget.ng:view ng:view} - Works with $route to "include" partial templates
+ * * {@link angular.widget.ng:switch ng:switch} - Conditionally changes DOM structure
+ * * {@link angular.widget.ng:include ng:include} - Includes an external HTML fragment
  *
- * For more information about angular widgets, see {@link guide/widgets Understanding Angular
- * Widgets} in the angular Developer Guide.
+ * For more information about angular widgets, see {@link guide/dev_guide.compiler.widgets
+ * Understanding Angular Widgets} in the angular Developer Guide.
  */
 
 /**

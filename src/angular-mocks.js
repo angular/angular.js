@@ -68,10 +68,10 @@
  *
  * Built-in mocks:
  *
- * * {@link angular.Mock.service.$browser $browser } - A mock implementation of the browser.
- * * {@link angular.Mock.service.$exceptionHandler $exceptionHandler } - A mock implementation of the
+ * * {@link angular.mock.service.$browser $browser } - A mock implementation of the browser.
+ * * {@link angular.mock.service.$exceptionHandler $exceptionHandler } - A mock implementation of the
  * angular service exception handler.
- * * {@link angular.Mock.service.$log $log } - A mock implementation of the angular service log.
+ * * {@link angular.mock.service.$log $log } - A mock implementation of the angular service log.
  */
 angular.mock = {};
 

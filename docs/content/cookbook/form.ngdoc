@@ -109,7 +109,7 @@ ng:validate="regexp:zip"/><br/><br/>
 # Things to notice
 
 
-* The user data model is initialized {@link api/angular.directive.@ng:controller controller} and is
+* The user data model is initialized {@link api/angular.directive.ng:controller controller} and is
 available in
   the {@link api/angular.scope scope} with the initial data.
 * For debugging purposes we have included a debug view of the model to better understand what

@@ -578,7 +578,7 @@ function metadata(docs){
 var KEYWORD_PRIORITY = {
   '.index': 1,
   '.guide': 2,
-  '.guide.overview': 1,
+  '.dev_guide.overview': 1,
   '.angular': 7,
   '.angular.Array': 7,
   '.angular.Object': 7,
