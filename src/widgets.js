@@ -4,7 +4,7 @@
  * @name angular.widget
  * @description
  *
- * Widgets are custom DOM elements.  An angular widget can be either a custom 
+ * Widgets are custom DOM elements.  An angular widget can be either a custom
  * attribute that modifies an existing DOM elements or an entirely new DOM element.
  *
  * Following is the list of built-in angular widgets:
@@ -642,8 +642,8 @@ angularWidget('option', function(){
     <doc:example>
       <doc:source>
        <select name="url">
-        <option value="angular.filter.date.html">date filter</option>
-        <option value="angular.filter.html.html">html filter</option>
+        <option value="api/angular.filter.date.html">date filter</option>
+        <option value="api/angular.filter.html.html">html filter</option>
         <option value="">(blank)</option>
        </select>
        <tt>url = <a href="{{url}}">{{url}}</a></tt>
@@ -655,7 +655,7 @@ angularWidget('option', function(){
          expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.date/);
         });
         it('should change to html filter', function(){
-         select('url').option('angular.filter.html.html');
+         select('url').option('api/angular.filter.html.html');
          expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.html/);
         });
         it('should change to blank', function(){
