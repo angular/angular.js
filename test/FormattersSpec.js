@@ -40,13 +40,4 @@ describe("formatter", function(){
     });
   });
 
-  describe('index', function(){
-    it('should parse an object from array', function(){
-      expect(angular.formatter.index.parse('1', ['A', 'B', 'C'])).toEqual('B');
-    });
-    it('should format an index from array', function(){
-      expect(angular.formatter.index.format('B', ['A', 'B', 'C'])).toEqual('1');
-    });
-  });
-
 });

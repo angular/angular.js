@@ -103,7 +103,13 @@ afterEach(function() {
     if ($logMock[logLevel].logs.length) {
       forEach($logMock[logLevel].logs, function(log) {
         forEach(log, function deleteStack(logItem) {
-          if (logItem instanceof Error) delete logItem.stack;
+          if (logItem instanceof Error) {
+            dump(logItem.stack);
+            delete logItem.stack;
+            delete logItem.arguments;
+          } else {
+            dump(logItem);
+          }
         });
       });
 
@@ -150,6 +156,7 @@ function dealoc(obj) {
 }
 
 extend(angular, {
+  'annotate': annotate,
   'element': jqLite,
   'compile': compile,
   'scope': createScope,
@@ -162,6 +169,7 @@ extend(angular, {
   'toJson': toJson,
   'fromJson': fromJson,
   'identity':identity,
+  'injector': createInjector,
   'isUndefined': isUndefined,
   'isDefined': isDefined,
   'isString': isString,
@@ -204,7 +212,7 @@ function sortedHtml(element, showNgClass) {
             attr.value !='auto' &&
             attr.value !='false' &&
             attr.value !='inherit' &&
-            attr.value !='0' &&
+            (attr.value !='0' || attr.name =='value') &&
             attr.name !='loop' &&
             attr.name !='complete' &&
             attr.name !='maxLength' &&

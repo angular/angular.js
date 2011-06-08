@@ -807,6 +807,69 @@ var angularFunction = {
   }
 };
 
+/**
+ * Computes a hash of an 'obj'.
+ * Hash of a:
+ *  string is string
+ *  number is number as string
+ *  object is either call $hashKey function on object or assign unique hashKey id.
+ * 
+ * @param obj
+ * @returns {String} hash string such that the same input will have the same hash string
+ */
+function hashKey(obj) {
+  var objType = typeof obj;
+  var key = obj;
+  if (objType == 'object') {
+    if (typeof (key = obj.$hashKey) == 'function') {
+      // must invoke on object to keep the right this
+      key = obj.$hashKey();
+    } else if (key === undefined) {
+      key = obj.$hashKey = nextUid();
+    }
+  };
+  return objType + ':' + key;
+}
+
+/**
+ * HashMap which can use objects as keys
+ */
+function HashMap(){}
+HashMap.prototype = {
+  /**
+   * Store key value pair
+   * @param key key to store can be any type
+   * @param value value to store can be any type
+   * @returns old value if any
+   */
+  put: function(key, value) {
+    var _key = hashKey(key);
+    var oldValue = this[_key];
+    this[_key] = value;
+    return oldValue;
+  },
+  
+  /**
+   * @param key
+   * @returns the value for the key
+   */
+  get: function(key) {
+    return this[hashKey(key)];
+  },
+  
+  /**
+   * Remove the key/value pair
+   * @param key
+   * @returns value associated with key before it was removed
+   */
+  remove: function(key) {
+    var _key = hashKey(key);
+    var value = this[_key];
+    delete this[_key];
+    return value;
+  }
+};
+
 function defineApi(dst, chain){
   angular[dst] = angular[dst] || {};
   forEach(chain, function(parent){
@@ -820,5 +883,5 @@ defineApi('Object', [angularGlobal, angularCollection, angularObject]);
 defineApi('String', [angularGlobal, angularString]);
 defineApi('Date', [angularGlobal, angularDate]);
 //IE bug
-angular['Date']['toString'] = angularDate['toString'];
+angular.Date.toString = angularDate.toString;
 defineApi('Function', [angularGlobal, angularCollection, angularFunction]);

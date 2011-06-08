@@ -239,23 +239,32 @@ function parser(text, json){
       pipeFunction =
         function (){ throwError("is not valid json", {text:text, index:0}); };
   }
+  //TODO: Shouldn't all of the public methods have assertAllConsumed?
+  //TODO: I think these should be public as part of the parser api instead of scope.$eval().
   return {
-      assertAllConsumed: assertAllConsumed,
-      assignable: assignable,
-      primary: primary,
-      statements: statements,
-      validator: validator,
-      formatter: formatter,
-      filter: filter,
-      //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
-      watch: watch
+      assignable: assertConsumed(assignable),
+      primary: assertConsumed(primary),
+      statements: assertConsumed(statements),
+      validator: assertConsumed(validator),
+      formatter: assertConsumed(formatter),
+      filter: assertConsumed(filter)
   };
+
+  function assertConsumed(fn) {
+    return function(){
+      var value = fn();
+      if (tokens.length !== 0) {
+        throwError("is an unexpected token", tokens[0]);
+      }
+      return value;
+    };
+  }
 
   ///////////////////////////////////
   function throwError(msg, token) {
-    throw Error("Parse Error: Token '" + token.text +
+    throw Error("Syntax Error: Token '" + token.text +
       "' " + msg + " at column " +
-      (token.index + 1) + " of expression [" +
+      (token.index + 1) + " of the expression [" +
       text + "] starting at [" + text.substring(token.index) + "].");
   }
 
@@ -313,27 +322,25 @@ function parser(text, json){
     return tokens.length > 0;
   }
 
-  function assertAllConsumed(){
-    if (tokens.length !== 0) {
-      throwError("is extra token not part of expression", tokens[0]);
-    }
-  }
-
   function statements(){
     var statements = [];
     while(true) {
       if (tokens.length > 0 && !peek('}', ')', ';', ']'))
         statements.push(filterChain());
       if (!expect(';')) {
-        return function (self){
-          var value;
-          for ( var i = 0; i < statements.length; i++) {
-            var statement = statements[i];
-            if (statement)
-              value = statement(self);
-          }
-          return value;
-        };
+        // optimize for the common case where there is only one statement.
+        // TODO(size): maybe we should not support multiple statements?
+        return statements.length == 1
+          ? statements[0]
+          : function (self){
+            var value;
+            for ( var i = 0; i < statements.length; i++) {
+              var statement = statements[i];
+              if (statement)
+                value = statement(self);
+            }
+            return value;
+          };
       }
     }
   }
@@ -635,24 +642,6 @@ function parser(text, json){
     };
   }
 
-  //TODO: delete me, since having watch in UI is logic in UI. (leftover form getangular)
-  function watch () {
-    var decl = [];
-    while(hasTokens()) {
-      decl.push(watchDecl());
-      if (!expect(';')) {
-        assertAllConsumed();
-      }
-    }
-    assertAllConsumed();
-    return function (self){
-      for ( var i = 0; i < decl.length; i++) {
-        var d = decl[i](self);
-        self.addListener(d.name, d.fn);
-      }
-    };
-  }
-
   function watchDecl () {
     var anchorName = expect().text;
     consume(":");
@@ -669,7 +658,6 @@ function parser(text, json){
     };
   }
 }
-
 
 
 

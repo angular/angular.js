@@ -40,8 +40,8 @@ describe('Binder', function(){
   });
 
   it('ChangingRadioUpdatesModel', function(){
-    var scope = this.compile('<input type="radio" name="model.price" value="A" checked>' +
-          '<input type="radio" name="model.price" value="B">');
+    var scope = this.compile('<div><input type="radio" name="model.price" value="A" checked>' +
+          '<input type="radio" name="model.price" value="B"></div>');
     scope.$eval();
     assertEquals(scope.model.price, 'A');
   });
@@ -463,12 +463,6 @@ describe('Binder', function(){
     assertEquals('123{{a}}{{b}}{{c}}', scope.$element.text());
   });
 
-  it('OptionShouldUpdateParentToGetProperBinding', function(){
-    var scope = this.compile('<select name="s"><option ng:repeat="i in [0,1]" value="{{i}}" ng:bind="i"></option></select>');
-    scope.$set('s', 1);
-    scope.$eval();
-    assertEquals(1, scope.$element[0].selectedIndex);
-  });
 
   it('RepeaterShouldBindInputsDefaults', function () {
     var scope = this.compile('<div><input value="123" name="item.name" ng:repeat="item in items"></div>');
@@ -581,7 +575,7 @@ describe('Binder', function(){
 
     browserTrigger(second, 'click');
     assertTrue(second.hasClass("ng-exception"));
-    expect(errorLogs.shift()[0]).toMatchError(/Parse Error: Token ':' not a primary expression/);
+    expect(errorLogs.shift()[0]).toMatchError(/Syntax Error: Token ':' not a primary expression/);
   });
 
   it('ItShouldSelectTheCorrectRadioBox', function(){

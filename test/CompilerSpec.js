@@ -35,6 +35,15 @@ describe('compiler', function(){
     dealoc(scope);
   });
 
+  it('should not allow compilation of multiple roots', function(){
+    expect(function(){
+      compiler.compile('<div>A</div><span></span>');
+    }).toThrow("Cannot compile multiple element roots: " + ie("<div>A</div><span></span>"));
+    function ie(text) {
+      return msie ? uppercase(text) : text;
+    }
+  });
+
   it('should recognize a directive', function(){
     var e = jqLite('<div directive="expr" ignore="me"></div>');
     directives.directive = function(expression, element){

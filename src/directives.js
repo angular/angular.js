@@ -443,10 +443,8 @@ var REMOVE_ATTRIBUTES = {
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
     var lastValue = {};
-    var updateFn = element.data($$update) || noop;
     this.$onEval(function(){
-      var values = this.$eval(expression),
-          dirty = noop;
+      var values = this.$eval(expression);
       for(var key in values) {
         var value = compileBindTemplate(values[key]).call(this, element),
             specialName = REMOVE_ATTRIBUTES[lowercase(key)];
@@ -464,10 +462,8 @@ angularDirective("ng:bind-attr", function(expression){
           } else {
             element.attr(key, value);
           }
-          dirty = updateFn;
         }
       }
-      dirty();
     }, element);
   };
 });
@@ -511,7 +507,7 @@ angularDirective("ng:bind-attr", function(expression){
  * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 angularDirective("ng:click", function(expression, element){
-  return injectUpdateView(function($updateView, element){
+  return annotate('$updateView', function($updateView, element){
     var self = this;
     element.bind('click', function(event){
       self.$tryEval(expression, element);
@@ -561,7 +557,7 @@ angularDirective("ng:click", function(expression, element){
    </doc:example>
  */
 angularDirective("ng:submit", function(expression, element) {
-  return injectUpdateView(function($updateView, element) {
+  return annotate('$updateView', function($updateView, element) {
     var self = this;
     element.bind('submit', function(event) {
       self.$tryEval(expression, element);

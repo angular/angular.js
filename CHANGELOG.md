@@ -1,6 +1,22 @@
 <a name="0.9.17"><a/>
 # <angular/> 0.9.17 vegetable-reanimation (in progress) #
 
+### New Features
+- Added prepend() to jqLite
+- Added ng:options directive (http://docs.angularjs.org/#!angular.directive.ng:options)
+
+
+### Bug Fixes
+- Number filter would return incorrect value when fractional part had leading zeros.
+
+
+### Breaking changes
+- $service now has $service.invoke for method injection ($service(self, fn) no longer works)
+- injection name inference no longer supports method curry and linking functions. Both must be
+  explicitly specified using $inject property.
+- Dynamic Iteration (ng:repeater) on <option> elements is no longer supported. Use ng:options
+- Removal of index formatter since its only use was with repeated options (see above)
+
 
 
 <a name="0.9.16"><a/>

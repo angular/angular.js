@@ -34,7 +34,7 @@ Template.prototype = {
     forEach(this.inits, function(fn) {
       queue.push(function() {
         childScope.$tryEval(function(){
-          return childScope.$service(fn, childScope, element);
+          return childScope.$service.invoke(childScope, fn, [element]);
         }, element);
       });
     });
@@ -49,9 +49,11 @@ Template.prototype = {
   },
 
 
-  addInit:function(init) {
-    if (init) {
-      this.inits.push(init);
+  addInit:function(linkingFn) {
+    if (linkingFn) {
+      if (!linkingFn.$inject)
+        linkingFn.$inject = [];
+      this.inits.push(linkingFn);
     }
   },
 
@@ -189,6 +191,11 @@ Compiler.prototype = {
     var index = 0,
         template,
         parent = templateElement.parent();
+    if (templateElement.length > 1) {
+      // https://github.com/angular/angular.js/issues/338
+      throw Error("Cannot compile multiple element roots: " +
+          jqLite('<div>').append(templateElement.clone()).html());
+    }
     if (parent && parent[0]) {
       parent = parent[0];
       for(var i = 0; i < parent.childNodes.length; i++) {

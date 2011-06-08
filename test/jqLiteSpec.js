@@ -128,7 +128,7 @@ describe('jqLite', function(){
 
 
   describe('attr', function(){
-    it('shoul read wirite and remove attr', function(){
+    it('shoul read write and remove attr', function(){
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -147,6 +147,21 @@ describe('jqLite', function(){
       expect(jqLite(a).attr('prop')).toBeFalsy();
       expect(jqLite(b).attr('prop')).toBeFalsy();
     });
+
+    it('should read special attributes as boolean', function(){
+      var select = jqLite('<select>');
+      expect(select.attr('multiple')).toEqual(false);
+      expect(jqLite('<select multiple>').attr('multiple')).toEqual(true);
+      expect(jqLite('<select multiple="">').attr('multiple')).toEqual(true);
+      expect(jqLite('<select multiple="x">').attr('multiple')).toEqual(true);
+
+      select.attr('multiple', false);
+      expect(select.attr('multiple')).toEqual(false);
+
+      select.attr('multiple', true);
+      expect(select.attr('multiple')).toEqual(true);
+    });
+
   });
 
 
@@ -362,6 +377,24 @@ describe('jqLite', function(){
       var root = jqLite(document.createDocumentFragment());
       expect(root.append('<p>foo</p>')).toBe(root);
       expect(root.children().length).toBe(0);
+    });
+  });
+
+  describe('prepend', function(){
+    it('should prepend to empty', function(){
+      var root = jqLite('<div>');
+      expect(root.prepend('<span>abc</span>')).toEqual(root);
+      expect(root.html().toLowerCase()).toEqual('<span>abc</span>');
+    });
+    it('should prepend to content', function(){
+      var root = jqLite('<div>text</div>');
+      expect(root.prepend('<span>abc</span>')).toEqual(root);
+      expect(root.html().toLowerCase()).toEqual('<span>abc</span>text');
+    });
+    it('should prepend text to content', function(){
+      var root = jqLite('<div>text</div>');
+      expect(root.prepend('abc')).toEqual(root);
+      expect(root.html().toLowerCase()).toEqual('abctext');
     });
   });
 

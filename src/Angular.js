@@ -52,8 +52,9 @@ if ('i' !== 'I'.toLowerCase()) {
 function fromCharCode(code) { return String.fromCharCode(code); }
 
 
-var $$element         = '$element',
-    $$update          = '$update',
+var _undefined        = undefined,
+    _null             = null,
+    $$element         = '$element',
     $$scope           = '$scope',
     $$validate        = '$validate',
     $angular          = 'angular',
@@ -114,6 +115,7 @@ var $$element         = '$element',
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
     rngScript         = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/,
+    uid               = ['0', '0', '0'];
     DATE_ISOSTRING_LN = 24;
 
 /**
@@ -189,6 +191,36 @@ function formatError(arg) {
   return arg;
 }
 
+/**
+ * @description
+ * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
+ * characters such as '012ABC'. The reason why we are not using simply a number counter is that
+ * the number string gets longer over time, and it can also overflow, where as the the nextId
+ * will grow much slower, it is a string, and it will never overflow.
+ *
+ * @returns an unique alpha-numeric string
+ */
+function nextUid() {
+  var index = uid.length;
+  var digit;
+
+  while(index) {
+    index--;
+    digit = uid[index].charCodeAt(0);
+    if (digit == 57 /*'9'*/) {
+      uid[index] = 'A';
+      return uid.join('');
+    }
+    if (digit == 90  /*'Z'*/) {
+      uid[index] = '0';
+    } else {
+      uid[index] = String.fromCharCode(digit + 1);
+      return uid.join('');
+    }
+  }
+  uid.unshift('0');
+  return uid.join('');
+}
 
 /**
  * @workInProgress
@@ -411,6 +443,19 @@ function isElement(node) {
     (node.nodeName  // we are a direct element
     || (node.bind && node.find));  // we have a bind and find method part of jQuery API
 }
+
+/**
+ * @param str 'key1,key2,...'
+ * @returns {object} in the form of {key1:true, key2:true, ...}
+ */
+function makeMap(str){
+  var obj = {}, items = str.split(","), i;
+  for ( i = 0; i < items.length; i++ )
+    obj[ items[i] ] = true;
+  return obj;
+}
+
+
 
 /**
  * HTML class which is the only class which can be used in ng:bind to inline HTML for security reasons.
@@ -751,13 +796,21 @@ function concat(array1, array2, index) {
  * @returns {function()} Function that wraps the `fn` with all the specified bindings.
  */
 function bind(self, fn) {
-  var curryArgs = arguments.length > 2 ? slice.call(arguments, 2, arguments.length) : [];
+  var curryArgs = arguments.length > 2
+    ? slice.call(arguments, 2, arguments.length)
+    : [];
   if (typeof fn == $function && !(fn instanceof RegExp)) {
-    return curryArgs.length ? function() {
-      return arguments.length ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0, arguments.length))) : fn.apply(self, curryArgs);
-    }: function() {
-      return arguments.length ? fn.apply(self, arguments) : fn.call(self);
-    };
+    return curryArgs.length
+      ? function() {
+          return arguments.length
+            ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0, arguments.length)))
+            : fn.apply(self, curryArgs);
+        }
+      : function() {
+          return arguments.length
+            ? fn.apply(self, arguments)
+            : fn.call(self);
+        };
   } else {
     // in IE, native methods are not functions and so they can not be bound (but they don't need to be)
     return fn;
@@ -942,7 +995,6 @@ function assertArg(arg, name, reason) {
   if (!arg) {
     var error = new Error("Argument '" + (name||'?') + "' is " +
         (reason || "required"));
-    if (window.console) window.console.log(error.stack);
     throw error;
   }
 }

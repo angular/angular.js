@@ -1,8 +1,5 @@
 #!/bin/bash
-tests=$1
-if [[ $tests = "" ]]; then
-  tests="all"
+if [ ! -e test.dissable ]; then
+  java -jar lib/jstestdriver/JsTestDriver.jar --tests all $@
+  #java -jar lib/jstestdriver/JsTestDriver.jar --tests all --config jsTestDriver-jquery.conf $@
 fi
-
-java -jar lib/jstestdriver/JsTestDriver.jar --tests "$tests"
-#java -jar lib/jstestdriver/JsTestDriver.jar --tests "$tests" --config jsTestDriver-jquery.conf

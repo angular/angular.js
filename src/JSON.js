@@ -35,19 +35,14 @@ function toJson(obj, pretty) {
 function fromJson(json, useNative) {
   if (!isString(json)) return json;
 
-  var obj, p, expression;
+  var obj;
 
   try {
     if (useNative && window.JSON && window.JSON.parse) {
       obj = JSON.parse(json);
       return transformDates(obj);
     }
-
-    p = parser(json, true);
-    expression =  p.primary();
-    p.assertAllConsumed();
-    return expression();
-
+    return parser(json, true).primary()();
   } catch (e) {
     error("fromJson error: ", json, e);
     throw e;
@@ -66,8 +61,8 @@ function fromJson(json, useNative) {
   }
 }
 
-angular['toJson'] = toJson;
-angular['fromJson'] = fromJson;
+angular.toJson = toJson;
+angular.fromJson = fromJson;
 
 function toJsonArray(buf, obj, pretty, stack) {
   if (isObject(obj)) {
@@ -90,7 +85,7 @@ function toJsonArray(buf, obj, pretty, stack) {
   if (obj === null) {
     buf.push($null);
   } else if (obj instanceof RegExp) {
-    buf.push(angular['String']['quoteUnicode'](obj.toString()));
+    buf.push(angular.String.quoteUnicode(obj.toString()));
   } else if (isFunction(obj)) {
     return;
   } else if (isBoolean(obj)) {
@@ -102,7 +97,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       buf.push('' + obj);
     }
   } else if (isString(obj)) {
-    return buf.push(angular['String']['quoteUnicode'](obj));
+    return buf.push(angular.String.quoteUnicode(obj));
   } else if (isObject(obj)) {
     if (isArray(obj)) {
       buf.push("[");
@@ -120,7 +115,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       }
       buf.push("]");
     } else if (isDate(obj)) {
-      buf.push(angular['String']['quoteUnicode'](angular['Date']['toString'](obj)));
+      buf.push(angular.String.quoteUnicode(angular.Date.toString(obj)));
     } else {
       buf.push("{");
       if (pretty) buf.push(pretty);
@@ -128,9 +123,9 @@ function toJsonArray(buf, obj, pretty, stack) {
       var childPretty = pretty ? pretty + "  " : false;
       var keys = [];
       for(var k in obj) {
-        if (obj[k] === undefined)
-          continue;
-        keys.push(k);
+        if (obj.hasOwnProperty(k) && obj[k] !== undefined) {
+          keys.push(k);
+        }
       }
       keys.sort();
       for ( var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
@@ -141,7 +136,7 @@ function toJsonArray(buf, obj, pretty, stack) {
             buf.push(",");
             if (pretty) buf.push(pretty);
           }
-          buf.push(angular['String']['quote'](key));
+          buf.push(angular.String.quote(key));
           buf.push(":");
           toJsonArray(buf, value, childPretty, stack);
           comma = true;

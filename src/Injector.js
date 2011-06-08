@@ -4,81 +4,114 @@
  * @function
  *
  * @description
- * Creates an inject function that can be used for dependency injection.
- * (See {@link guide/dev_guide.di dependency injection})
+ * Creates an injector function that can be used for retrieving services as well as for
+ * dependency injection (see {@link guide/dev_guide.di dependency injection}).
  *
- * The inject function can be used for retrieving service instances or for calling any function
- * which has the $inject property so that the services can be automatically provided. Angular
- * creates an injection function automatically for the root scope and it is available as
- * {@link angular.scope.$service $service}.
+ * Angular creates an injector automatically for the root scope and it is available as the
+ * {@link angular.scope.$service $service} property. Creation of the injector automatically creates
+ * all of the `$eager` {@link angular.service services}.
  *
- * @param {Object=} [providerScope={}] provider's `this`
- * @param {Object.<string, function()>=} [providers=angular.service] Map of provider (factory)
- *     function.
- * @param {Object.<string, function()>=} [cache={}] Place where instances are saved for reuse. Can
- *     also be used to override services speciafied by `providers` (useful in tests).
- * @returns
- *   {function()} Injector function: `function(value, scope, args...)`:
+ * @param {Object=} [factoryScope={}] `this` for the service factory function.
+ * @param {Object.<string, function()>=} [factories=angular.service] Map of service factory
+ *     functions.
+ * @param {Object.<string, function()>=} [instanceCache={}] Place where instances of services are
+ *     saved for reuse. Can also be used to override services specified by `serviceFactory`
+ *     (useful in tests).
+ * @returns {function()} Injector function:
  *
- *     * `value` - `{string|array|function}`
- *     * `scope(optional=rootScope)` -  optional function "`this`" when `value` is type `function`.
- *     * `args(optional)` - optional set of arguments to pass to function after injection arguments.
- *        (also known as curry arguments or currying).
+ *   * `injector(serviceName)`:
+ *     * `serviceName` - `{string=}` - name of the service to retrieve.
  *
- *   #Return value of `function(value, scope, args...)`
- *   The injector function return value depended on the type of `value` argument:
+ * The injector function also has these properties:
  *
- *     * `string`: return an instance for the injection key.
- *     * `array` of keys: returns an array of instances for those keys. (see `string` above.)
- *     * `function`: look at `$inject` property of function to determine instances to inject
- *       and then call the function with instances and `scope`. Any additional arguments
- *       (`args`) are appended to the function arguments.
- *     * `none`: initialize eager providers.
- *
+ *   * an `invoke` property which can be used to invoke methods with dependency-injected arguments.
+ *    `injector.invoke(self, fn, curryArgs)`
+ *     * `self` -  "`this`" to be used when invoking the function.
+ *     * `fn` - the function to be invoked. The function may have the `$inject` property which
+ *        lists the set of arguments which should be auto injected
+ *        (see {@link guide.di dependency injection}).
+ *     * `curryArgs(array)` - optional array of arguments to pass to function invocation after the
+ *        injection arguments (also known as curry arguments or currying).
+ *   * an `eager` property which is used to initialize the eager services.
+ *     `injector.eager()`
  */
-function createInjector(providerScope, providers, cache) {
-  providers = providers || angularService;
-  cache = cache || {};
-  providerScope = providerScope || {};
-  return function inject(value, scope, args){
-    var returnValue, provider;
-    if (isString(value)) {
-      if (!(value in cache)) {
-        provider = providers[value];
-        if (!provider) throw "Unknown provider for '"+value+"'.";
-        cache[value] = inject(provider, providerScope);
-      }
-      returnValue = cache[value];
-    } else if (isArray(value)) {
-      returnValue = [];
-      forEach(value, function(name) {
-        returnValue.push(inject(name));
-      });
-    } else if (isFunction(value)) {
-      returnValue = inject(injectionArgs(value));
-      returnValue = value.apply(scope, concat(returnValue, arguments, 2));
-    } else if (isObject(value)) {
-      forEach(providers, function(provider, name){
-        if (provider.$eager)
-          inject(name);
+function createInjector(factoryScope, factories, instanceCache) {
+  factories = factories || angularService;
+  instanceCache = instanceCache || {};
+  factoryScope = factoryScope || {};
+  injector.invoke = invoke;
 
-        if (provider.$creation)
-          throw new Error("Failed to register service '" + name +
-              "': $creation property is unsupported. Use $eager:true or see release notes.");
-      });
-    } else {
-      returnValue = inject(providerScope);
-    }
-    return returnValue;
+  injector.eager = function(){
+    forEach(factories, function(factory, name){
+      if (factory.$eager)
+        injector(name);
+
+      if (factory.$creation)
+        throw new Error("Failed to register service '" + name +
+        "': $creation property is unsupported. Use $eager:true or see release notes.");
+    });
   };
+  return injector;
+
+  function injector(value){
+    if (!(value in instanceCache)) {
+      var factory = factories[value];
+      if (!factory) throw Error("Unknown provider for '"+value+"'.");
+      instanceCache[value] = invoke(factoryScope, factory);
+    }
+    return instanceCache[value];
+  };
+
+  function invoke(self, fn, args){
+    args = args || [];
+    var injectNames = injectionArgs(fn);
+    var i = injectNames.length;
+    while(i--) {
+      args.unshift(injector(injectNames[i]));
+    }
+    return fn.apply(self, args);
+  }
 }
 
-function injectService(services, fn) {
-  return extend(fn, {$inject:services});
-}
-
-function injectUpdateView(fn) {
-  return injectService(['$updateView'], fn);
+/*NOT_PUBLIC_YET
+ * @ngdoc function
+ * @name angular.annotate
+ * @function
+ *
+ * @description
+ * Annotate the function with injection arguments. This is equivalent to setting the `$inject`
+ * property as described in {@link guide.di dependency injection}.
+ *
+ * <pre>
+ * var MyController = angular.annotate('$location', function($location){ ... });
+ * </pre>
+ *
+ * is the same as
+ *
+ * <pre>
+ * var MyController = function($location){ ... };
+ * MyController.$inject = ['$location'];
+ * </pre>
+ *
+ * @param {String|Array} serviceName... zero or more service names to inject into the
+ *     `annotatedFunction`.
+ * @param {function} annotatedFunction function to annotate with `$inject`
+ *     functions.
+ * @returns {function} `annotatedFunction`
+ */
+function annotate(services, fn) {
+  if (services instanceof Array) {
+    fn.$inject = services;
+    return fn;
+  } else {
+    var i = 0,
+        length = arguments.length - 1, // last one is the destination function
+        $inject = arguments[length].$inject = [];
+    for (; i < length; i++) {
+      $inject.push(arguments[i]);
+    }
+    return arguments[length]; // return the last one
+  }
 }
 
 function angularServiceInject(name, fn, inject, eager) {
@@ -89,12 +122,12 @@ function angularServiceInject(name, fn, inject, eager) {
 /**
  * @returns the $inject property of function. If not found the
  * the $inject is computed by looking at the toString of function and
- * extracting all arguments which start with $ or end with _ as the
+ * extracting all arguments which and assuming that they are the
  * injection names.
  */
 var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/;
 var FN_ARG_SPLIT = /,/;
-var FN_ARG = /^\s*(((\$?).+?)(_?))\s*$/;
+var FN_ARG = /^\s*(.+?)\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 function injectionArgs(fn) {
   assertArgFn(fn);
@@ -103,12 +136,8 @@ function injectionArgs(fn) {
     var fnText = fn.toString().replace(STRIP_COMMENTS, '');
     var argDecl = fnText.match(FN_ARGS);
     forEach(argDecl[1].split(FN_ARG_SPLIT), function(arg){
-      arg.replace(FN_ARG, function(all, name, injectName, $, _){
-        assertArg(args, name, 'after non-injectable arg');
-        if ($ || _)
-          args.push(injectName);
-        else
-          args = null; // once we reach an argument which is not injectable then ignore
+      arg.replace(FN_ARG, function(all, name){
+        args.push(name);
       });
     });
   }

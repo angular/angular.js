@@ -1,29 +1,23 @@
 describe('injector', function(){
   var providers;
   var cache;
-  var inject;
+  var injector;
   var scope;
 
   beforeEach(function(){
     providers = extensionMap({}, 'providers');
     cache = {};
     scope = {};
-    inject = createInjector(scope, providers, cache);
+    injector = createInjector(scope, providers, cache);
   });
 
   it("should return same instance from calling provider", function(){
     providers('text', function(){ return scope.name; });
     scope.name = 'abc';
-    expect(inject('text')).toEqual('abc');
+    expect(injector('text')).toEqual('abc');
     expect(cache.text).toEqual('abc');
     scope.name = 'deleted';
-    expect(inject('text')).toEqual('abc');
-  });
-
-  it("should return an array of instances", function(){
-    cache.a = 0;
-    providers('b', function(){return 2;});
-    expect(inject(['a', 'b'])).toEqual([0,2]);
+    expect(injector('text')).toEqual('abc');
   });
 
   it("should call function", function(){
@@ -34,14 +28,14 @@ describe('injector', function(){
       args = [this, a, b, c, d];
     }
     fn.$inject = ['a', 'b'];
-    inject(fn, {name:"this"}, 3, 4);
+    injector.invoke({name:"this"}, fn, [3, 4]);
     expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
   });
 
   it('should inject providers', function(){
     providers('a', function(){return this.mi = 'Mi';});
     providers('b', function(mi){return this.name = mi+'sko';}, {$inject:['a']});
-    expect(inject('b')).toEqual('Misko');
+    expect(injector('b')).toEqual('Misko');
     expect(scope).toEqual({mi:'Mi', name:'Misko'});
   });
 
@@ -65,24 +59,24 @@ describe('injector', function(){
     providers('s5', function(){ log.push('s5'); });
     providers('s6', function(){ log.push('s6'); });
 
-    inject('s1');
+    injector('s1');
 
-    expect(log).toEqual(['s6', 's3', 's5', 's4', 's2', 's1']);
+    expect(log).toEqual(['s6', 's5', 's3', 's4', 's2', 's1']);
   });
 
 
   it('should provide usefull message if no provider', function(){
-    assertThrows("Unknown provider for 'idontexist'.", function(){
-      inject('idontexist');
-    });
+    expect(function(){
+      injector('idontexist');
+    }).toThrow("Unknown provider for 'idontexist'.");
   });
 
   it('should autostart eager services', function(){
     var log = '';
     providers('eager', function(){log += 'eager;'; return 'foo';}, {$eager: true});
-    inject();
+    injector.eager();
     expect(log).toEqual('eager;');
-    expect(inject('eager')).toBe('foo');
+    expect(injector('eager')).toBe('foo');
   });
 
   describe('annotation', function(){
@@ -105,9 +99,10 @@ describe('injector', function(){
                  multi-line comment
                  function (a, b){}
                  */
-          /* {some type} */ c){ extraParans();}
-      expect(injectionArgs($f_n0)).toEqual(['$a', 'b']);
-      expect($f_n0.$inject).toEqual(['$a', 'b']);
+          _c,
+          /* {some type} */ d){ extraParans();}
+      expect(injectionArgs($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
+      expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
     });
 
     it('should handle no arg functions', function(){
@@ -118,8 +113,8 @@ describe('injector', function(){
 
     it('should handle args with both $ and _', function(){
       function $f_n0($a_){}
-      expect(injectionArgs($f_n0)).toEqual(['$a']);
-      expect($f_n0.$inject).toEqual(['$a']);
+      expect(injectionArgs($f_n0)).toEqual(['$a_']);
+      expect($f_n0.$inject).toEqual(['$a_']);
     });
 
     it('should throw on non function arg', function(){
@@ -128,11 +123,17 @@ describe('injector', function(){
       }).toThrow();
     });
 
-    it('should throw on injectable after non-injectable arg', function(){
-      expect(function(){
-        injectionArgs(function($a, b_, nonInject, d_){});
-      }).toThrow();
+  });
+
+  describe('inject', function(){
+    it('should inject names', function(){
+      expect(angular.annotate('a', {}).$inject).toEqual(['a']);
+      expect(angular.annotate('a', 'b', {}).$inject).toEqual(['a', 'b']);
     });
 
+    it('should inject array', function(){
+      expect(angular.annotate(['a'], {}).$inject).toEqual(['a']);
+      expect(angular.annotate(['a', 'b'], {}).$inject).toEqual(['a', 'b']);
+    });
   });
 });

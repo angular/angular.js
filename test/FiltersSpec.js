@@ -52,6 +52,20 @@ describe('filter', function() {
       expect(number(Number.NaN)).toEqual('');
       expect(number("1234.5678")).toEqual('1,234.57');
       expect(number(1/0)).toEqual("");
+      expect(number(1,        2)).toEqual("1.00");
+      expect(number(.1,       2)).toEqual("0.10");
+      expect(number(.01,      2)).toEqual("0.01");
+      expect(number(.001,     3)).toEqual("0.001");
+      expect(number(.0001,    3)).toEqual("0.000");
+      expect(number(9,        2)).toEqual("9.00");
+      expect(number(.9,       2)).toEqual("0.90");
+      expect(number(.99,      2)).toEqual("0.99");
+      expect(number(.999,     3)).toEqual("0.999");
+      expect(number(.9999,    3)).toEqual("1.000");
+      expect(number(1e50,     0)).toEqual("1e+50");
+      expect(number(1234.567, 0)).toEqual("1,235");
+      expect(number(1234.567, 1)).toEqual("1,234.6");
+      expect(number(1234.567, 2)).toEqual("1,234.57");
     });
   });
 

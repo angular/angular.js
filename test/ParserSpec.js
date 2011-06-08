@@ -200,7 +200,7 @@ describe('parser', function() {
 
     expect(function() {
       scope.$eval("1|nonExistant");
-    }).toThrow(new Error("Parse Error: Token 'nonExistant' should be a function at column 3 of expression [1|nonExistant] starting at [nonExistant]."));
+    }).toThrow(new Error("Syntax Error: Token 'nonExistant' should be a function at column 3 of the expression [1|nonExistant] starting at [nonExistant]."));
 
     scope.$set('offset', 3);
     expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
@@ -405,9 +405,14 @@ describe('parser', function() {
     });
 
     it('should delegate arguments', function(){
-      var index = parser('index:objs').formatter()();
-      expect(index.format({objs:['A','B']}, 'B')).toEqual('1');
-      expect(index.parse({objs:['A','B']}, '1')).toEqual('B');
+      angularFormatter.myArgs = {
+        parse: function(a, b){ return [a, b]; },
+        format: function(a, b){ return [a, b]; }
+      };
+      var myArgs = parser('myArgs:objs').formatter()();
+      expect(myArgs.format({objs:'B'}, 'A')).toEqual(['A', 'B']);
+      expect(myArgs.parse({objs:'D'}, 'C')).toEqual(['C', 'D']);
+      delete angularFormatter.myArgs;
     });
   });
 
