@@ -170,32 +170,32 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       <doc:scenario>
         it('should execute ng:click but not reload when href without value', function() {
           element('#link-1').click();
-          expect(element('input[name=value]').val()).toEqual('1');
+          expect(input('value').val()).toEqual('1');
           expect(element('#link-1').attr('href')).toBe("");
         });
 
         it('should execute ng:click but not reload when href empty string', function() {
           element('#link-2').click();
-          expect(element('input[name=value]').val()).toEqual('2');
+          expect(input('value').val()).toEqual('2');
           expect(element('#link-2').attr('href')).toBe("");
         });
 
         it('should execute ng:click and change url when ng:href specified', function() {
           element('#link-3').click();
-          expect(element('input[name=value]').val()).toEqual('3');
+          expect(input('value').val()).toEqual('3');
           expect(element('#link-3').attr('href')).toBe("#123");
           expect(browser().location().hash()).toEqual('123');
         });
 
         it('should execute ng:click but not reload when href empty string and name specified', function() {
           element('#link-4').click();
-          expect(element('input[name=value]').val()).toEqual('4');
+          expect(input('value').val()).toEqual('4');
           expect(element('#link-4').attr('href')).toBe("");
         });
 
         it('should execute ng:click but not reload when no href but name specified', function() {
           element('#link-5').click();
-          expect(element('input[name=value]').val()).toEqual('5');
+          expect(input('value').val()).toEqual('5');
           expect(element('#link-5').attr('href')).toBe(undefined);
         });
 

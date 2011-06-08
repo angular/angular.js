@@ -39,7 +39,7 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
      </doc:source>
      <doc:scenario>
        it('should initialize the input field', function() {
-         expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
+         expect(using('.doc-example-live').input('$location.hash').val()).
            toBe('!/api/angular.service.$location');
        });
 
@@ -52,14 +52,14 @@ var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+)
 
        it('should set the hash to a test string with test link is presed', function() {
          using('.doc-example-live').element('#ex-test').click();
-         expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
+         expect(using('.doc-example-live').input('$location.hash').val()).
            toBe('myPath?name=misko');
        });
 
        it('should reset $location when reset link is pressed', function() {
          using('.doc-example-live').input('$location.hash').enter('foo');
          using('.doc-example-live').element('#ex-reset').click();
-         expect(using('.doc-example-live').element('input[name=$location.hash]').val()).
+         expect(using('.doc-example-live').input('$location.hash').val()).
            toBe('!/api/angular.service.$location');
        });
 
