@@ -28,11 +28,11 @@
 
 
 ### Documentation
-- brand new template for <http://docs.angularjs.com/>
+- brand new template for <http://docs.angularjs.org/>
 - brand new tutorial that describes how to build a typical angular app
-  <http://docs.angularjs.com/#!/tutorial>
+  <http://docs.angularjs.org/#!/tutorial>
 - lots of new content for the dev guide (still work in progress)
-  <http://docs.angularjs.com/#!/guide>
+  <http://docs.angularjs.org/#!/guide>
 
 
 ### Bug Fixes
