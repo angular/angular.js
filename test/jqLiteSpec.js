@@ -380,6 +380,24 @@ describe('jqLite', function(){
     });
   });
 
+  describe('prepend', function(){
+    it('should prepend to empty', function(){
+      var root = jqLite('<div>');
+      expect(root.prepend('<span>abc</span>')).toEqual(root);
+      expect(root.html().toLowerCase()).toEqual('<span>abc</span>');
+    });
+    it('should prepend to content', function(){
+      var root = jqLite('<div>text</div>');
+      expect(root.prepend('<span>abc</span>')).toEqual(root);
+      expect(root.html().toLowerCase()).toEqual('<span>abc</span>text');
+    });
+    it('should prepend text to content', function(){
+      var root = jqLite('<div>text</div>');
+      expect(root.prepend('abc')).toEqual(root);
+      expect(root.html().toLowerCase()).toEqual('abctext');
+    });
+  });
+
 
   describe('remove', function(){
     it('should remove', function(){

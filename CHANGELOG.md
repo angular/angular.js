@@ -1,6 +1,10 @@
 <a name="0.9.17"><a/>
 # <angular/> 0.9.17 vegetable-reanimation (in progress) #
 
+### New Features
+- Added prepend() to jqLite
+
+
 ### Bug Fixes
 - Number filter would return incorrect value when fractional part had leading zeros.
 
