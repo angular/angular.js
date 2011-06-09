@@ -16,47 +16,46 @@ to retrieve Buzz activity and comments.
  <doc:source>
     <script>
     BuzzController.$inject = ['$resource'];
-    function BuzzController($resource){
+    function BuzzController($resource) {
      this.Activity = $resource(
       'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
-      {alt:'json', callback:'JSON_CALLBACK'},
-      { get:     {method:'JSON', params:{visibility:'@self'}},
-       replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}
+      {alt: 'json', callback: 'JSON_CALLBACK'},
+      { get:     {method: 'JSON', params: {visibility: '@self'}},
+        replies: {method: 'JSON', params: {visibility: '@self', comments: '@comments'}}
       });
     }
     BuzzController.prototype = {
-     fetch: function(){
+     fetch: function() {
       this.activities = this.Activity.get({userId:this.userId});
      },
      expandReplies: function(activity) {
-      activity.replies =
-       this.Activity.replies({userId:this.userId, activityId:activity.id});
+      activity.replies = this.Activity.replies({userId: this.userId, activityId: activity.id});
      }
     };
     </script>
     <div ng:controller="BuzzController">
-     <input name="userId" value="googlebuzz"/>
+     <input name="userId" value="misko.hevery"/>
      <button ng:click="fetch()">fetch</button>
      <hr/>
      <div class="buzz" ng:repeat="item in activities.data.items">
       <h1 style="font-size: 15px;">
-       <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-       <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-       <a href="" ng:click="expandReplies(item)" style="float: right;">
+       <img ng:src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng:href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+       <a href ng:click="expandReplies(item)" style="float: right;">
         Expand replies: {{item.links.replies[0].count}}
        </a>
       </h1>
       {{item.object.content | html}}
       <div class="reply" ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
-       <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-       <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
+       <img ng:src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng:href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
        {{reply.content | html}}
       </div>
      </div>
     </div>
  </doc:source>
  <doc:scenario>
-  it('fetch buzz and expand', function(){
+  it('fetch buzz and expand', function() {
     element(':button:contains(fetch)').click();
     expect(repeater('div.buzz').count()).toBeGreaterThan(0);
     element('.buzz a:contains(Expand replies):first').click();
