@@ -144,11 +144,23 @@ describe('browser', function(){
       expect(xhr.headers['Content-Type']).not.toBeDefined();
     });
 
-    it('should set Content-type header for POST requests', function() {
-      browser.xhr('POST', 'URL', 'POST-DATA', function(c, r) {});
+    describe('non GET requests', function(){
+      afterEach(function() {
+        expect(xhr.headers['Content-Type']).toBeDefined();
+        expect(xhr.headers['Content-Type']).toEqual('application/x-www-form-urlencoded');
+      });
 
-      expect(xhr.headers['Content-Type']).toBeDefined();
-      expect(xhr.headers['Content-Type']).toEqual('application/x-www-form-urlencoded');
+      it('should set Content-type header for POST requests', function() {
+        browser.xhr('POST', 'URL', 'POST-DATA', function(c, r) {});
+      });
+
+      it('should set Content-type header for PUT requests', function() {
+        browser.xhr('PUT', 'URL', 'POST-DATA', function(c, r) {});
+      });
+
+      it('should set Content-type header for DELETE requests', function() {
+        browser.xhr('PUT', 'URL', 'POST-DATA', function(c, r) {});
+      });
     });
 
     it('should set default headers for custom methods', function() {

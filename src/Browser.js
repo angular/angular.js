@@ -14,8 +14,9 @@ var XHR_HEADERS = {
     "Accept": "application/json, text/plain, */*",
     "X-Requested-With": "XMLHttpRequest"
   },
-  POST: {'Content-Type': 'application/x-www-form-urlencoded'}
+  NON_GET: {'Content-Type': 'application/x-www-form-urlencoded'}
 };
+XHR_HEADERS.POST = XHR_HEADERS.PUT = XHR_HEADERS.DELETE = XHR_HEADERS.NON_GET
 
 /**
  * @private
