@@ -119,7 +119,7 @@
       '<ol>' +
       '<li><p>Reset the workspace to step {step}.</p>' +
       '<pre><code> git checkout -f step-{step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">anglar\'s server</a>.</p></li>' +
+      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
       '</ol>' +
     '</div>' +
 
@@ -127,7 +127,7 @@
       '<ol>' +
       '<li><p>Reset the workspace to step {step}.</p>' +
       '<pre><code> ./goto_step.sh {step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">anglar\'s server</a>.</p></li>' +
+      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
       '</ol>' +
     '</div>' +
 
