@@ -71,8 +71,8 @@ ng:validate="regexp:zip"/><br/><br/>
        <input type="text" name="contact.value" ng:required/>
         [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
      </div>
-   <button ng:click="cancel()" disabled="{{master.$equals(form)}}">Cancel</button>
-   <button ng:click="save()" disabled="{{$invalidWidgets.visible() ||
+   <button ng:click="cancel()" ng:disabled="{{master.$equals(form)}}">Cancel</button>
+   <button ng:click="save()" ng:disabled="{{$invalidWidgets.visible() ||
 master.$equals(form)}}">Save</button>
 
 

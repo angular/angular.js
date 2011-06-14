@@ -236,7 +236,11 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  */
 
 var NG_BIND_ATTR = 'ng:bind-attr';
-var SPECIAL_ATTRS = {'ng:src': 'src', 'ng:href': 'href'};
+var SPECIAL_ATTRS = {};
+forEach('src,href,checked,disabled,multiple,readonly,selected'.split(','), function(name) {
+  SPECIAL_ATTRS['ng:' + name] = name;
+});
+
 angularAttrMarkup('{{}}', function(value, name, element){
   // don't process existing attribute markup
   if (angularDirective(name) || angularDirective("@" + name)) return;
