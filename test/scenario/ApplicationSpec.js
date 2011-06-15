@@ -79,14 +79,16 @@ describe('angular.scenario.Application', function() {
     expect(called).toBeTruthy();
   });
 
-  it('should hide old iframes and navigate to about:blank', function() {
+  it('should remove old iframes', function() {
     app.navigateTo('http://localhost/#foo');
+    frames.find('iframe')[0].id = 'test';
+
     app.navigateTo('http://localhost/#bar');
     var iframes = frames.find('iframe');
-    expect(iframes.length).toEqual(2);
-    expect(iframes[0].src).toEqual('about:blank');
-    expect(iframes[1].src).toEqual('http://localhost/#bar');
-    expect(_jQuery(iframes[0]).css('display')).toEqual('none');
+
+    expect(iframes.length).toEqual(1);
+    expect(iframes[0].src).toEqual('http://localhost/#bar');
+    expect(iframes[0].id).toBeFalsy();
   });
 
   it('should URL update description bar', function() {
