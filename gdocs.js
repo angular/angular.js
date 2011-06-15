@@ -85,6 +85,10 @@ function download(collection, name, url) {
 
 
         data = data + '\n';
+
+        //this should be a bug in Google Doc API, hence need to remove this once the bug is fixed
+        data = data.replace(/\n\n/g, '\n');
+
         fs.writeFileSync('docs/content/' + collection + '/' + name, reflow(data, 100));
       }
     );
