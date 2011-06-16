@@ -3,7 +3,6 @@
 @name Developer Guide: Unit Testing
 @description
 
-
 JavaScript is a dynamically typed language which comes with great power of expression, but it also
 come with almost no-help from the compiler. For this reason we feel very strongly that any code
 written in JavaScript needs to come with a strong set of tests. We have built many features into
@@ -27,7 +26,6 @@ DOM in the right way. Angular is written with testability in mind, but it still 
 do the right thing. We tried to make the right thing easy, but angular is not magic, which means if
 you don't follow these, you may very well end up with an untestable application.
 
-
 ## Dependency Inject
 There are several ways in which you can get a hold of a dependency:
 1. You could create it using the `new` operator.
@@ -36,17 +34,13 @@ There are several ways in which you can get a hold of a dependency:
 the registry? Must likely by looking it up in a well know place. See #2)
 4. You could expect that the it be handed to you.
 
-
 Out of the list above only the last of is testable. Lets look at why:
 
-
 ### Using the `new` operator
-
 
 While there is nothing wrong with the `new` operator fundamentally the issue is that calling a new
 on a constructor permanently binds the call site to the type. For example lets say that we are
 trying to instantiate an `XHR` so that we can get some data from the server.
-
 
 <pre>
 function MyClass(){
@@ -59,12 +53,10 @@ function MyClass(){
 }
 </pre>
 
-
 The issue becomes, that in tests, we would very much like to instantiate a `MockXHR` which would
 allow us to return fake data and simulate network failures. By calling `new XHR()` we are
 permanently bound to the actual one, and there is no good way to replace it. Yes there is monkey
 patching, that is a bad idea for many reasons, which is outside the scope of this document.
-
 
 The class above is hard to test since we have to resort to monkey patching:
 <pre>
@@ -77,11 +69,8 @@ XHR = oldXHR; // if you forget this bad things will happen
 </pre>
 
 
-
-
 ### Global look-up:
 Another way to approach the problem is look for the service in a well known location.
-
 
 <pre>
 function MyClass(){
@@ -95,14 +84,12 @@ function MyClass(){
 }
 </pre>
 
-
 While no new instance of dependency is being created, it is fundamentally the same as `new`, in
 that there is no good way to intercept the call to `global.xhr` for testing purposes, other then
 through monkey patching. The basic issue for testing is that global variable needs to be mutated in
 order to replace it with call to a mock method. For further explanation why this is bad see: {@link
 http://misko.hevery.com/code-reviewers-guide/flaw-brittle-global-state-singletons/ Brittle Global
 State & Singletons}
-
 
 The class above is hard to test since we have to change global state:
 <pre>
@@ -115,14 +102,10 @@ global.xhr = oldXHR; // if you forget this bad things will happen
 </pre>
 
 
-
-
 ### Service Registry:
-
 
 It may seem as that this can be solved by having a registry for all of the services, and then
 having the tests replace the services as needed.
-
 
 <pre>
 function MyClass() {
@@ -137,12 +120,10 @@ function MyClass() {
 }
 </pre>
 
-
 However, where dose the serviceRegistry come from? if it is:
 * `new`-ed up, the the test has no chance to reset the services for testing
 *  global look-up, then the service returned is global as well (but resetting is easier, since
 there is only one global variable to be reset).
-
 
 The class above is hard to test since we have to change global state:
 <pre>
@@ -155,11 +136,8 @@ glabal.serviceLocator = oldServiceLocator; // if you forget this bad things will
 </pre>
 
 
-
-
 ### Passing in Dependencies:
 Lastly the dependency can be passed in.
-
 
 <pre>
 function MyClass(xhr) {
@@ -227,10 +205,8 @@ function PasswordController(){
 }
 </pre>
 
-
 The code above is problematic from testability, since it requires your test to have the right kind
 of DOM present when the code executes. The test would look like this:
-
 
 <pre>
 var input = $('<input type="text"/>');
@@ -246,10 +222,8 @@ expect(span.text()).toEqual('weak');
 $('body').html('');
 </pre>
 
-
 In angular the controllers are strictly separated from the DOM manipulation logic which results in
 a much easier testability story as can be seen in this example:
-
 
 <pre>
 function PasswordCntrl(){
@@ -267,9 +241,7 @@ function PasswordCntrl(){
 }
 </pre>
 
-
 and the tests is straight forward
-
 
 <pre>
 var pc = new PasswordController();
@@ -278,11 +250,8 @@ pc.grade();
 expect(span.strength).toEqual('weak');
 </pre>
 
-
 Notice that the test is not only much shorter but it is easier to follow what is going on. We say
 that such a test tells a story, rather then asserting random bits which don't seem to be related.
-
-
 
 
 ## Filters
@@ -290,23 +259,18 @@ that such a test tells a story, rather then asserting random bits which don't se
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 
-
 <pre>
 angular.filter('length', function(text){
   return (''+(text||'')).length;
 });
-
 
 var length = angular.filter('length');
 expect(length(null)).toEqual(0);
 expect(length('abc')).toEqual(3);
 </pre>
 
-
 ## Directives
 Directives in angular are responsible for updating the DOM when the state of the model changes.
-
-
 
 
 ## Mocks

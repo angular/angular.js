@@ -3,48 +3,37 @@
 @name Developer Guide: Scopes: Applying Controllers to Scopes
 @description
 
-
 When a controller function is applied to a scope, the scope is augmented with the behavior defined
 in the controller. The end result is that the scope behaves as if it were the controller:
-
 
 <pre>
 var scope = angular.scope();
 scope.salutation = 'Hello';
 scope.name = 'World';
 
-
 expect(scope.greeting).toEqual(undefined);
-
 
 scope.$watch('name', function(){
 this.greeting = this.salutation + ' ' + this.name + '!';
 });
-
 
 expect(scope.greeting).toEqual('Hello World!');
 scope.name = 'Misko';
 // scope.$eval() will propagate the change to listeners
 expect(scope.greeting).toEqual('Hello World!');
 
-
 scope.$eval();
 expect(scope.greeting).toEqual('Hello Misko!');
 </pre>
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.scopes Angular Scope Objects}
 * {@link dev_guide.scopes.understanding_scopes Understanding Angular Scopes}
 * {@link dev_guide.scopes.working_scopes Working With Angular Scopes}
 * {@link dev_guide.scopes.updating_scopes Updating Angular Scopes}
 
-
 ## Related API
-
 
 * {@link api/angular.scope Angular Scope API}

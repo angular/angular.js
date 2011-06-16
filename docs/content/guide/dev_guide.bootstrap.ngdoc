@@ -3,19 +3,15 @@
 @name Developer Guide: Initializing Angular
 @description
 
-
 Initializing angular consists of loading the `angular.js` script in your page, and specifying how
 angular should process and manage the page. To initialize angular you do the following:
-
 
 * Specify the angular namespace in the `<html>` page
 * Choose which flavor of angular script to load (debug or production)
 * Specify whether or not angular should process and manage the page automatically (`ng:autobind`)
 
-
 The simplest way to initialize angular is to load the angular script and tell angular to compile
 and manage the whole page. You do this as follows:
-
 
 <pre>
 <!doctype html>
@@ -30,57 +26,40 @@ and manage the whole page. You do this as follows:
 </pre>
 
 
-
-
 ## Specifying the Angular Namespace
-
 
         <html xmlns:ng="http://angularjs.org">
 
-
 You need to declare the angular namespace declaration in the following cases:
-
 
 * For all types of browser if you are using XHTML.
 * For Internet Explorer older than version 9 (because older versions of IE do not render widgets
 properly for either HTML or XHTML).
 
 
-
-
 ## Creating Your Own Namespaces
-
 
 When you are ready to define your own {@link dev_guide.compiler.widgets widgets}, you must create
 your own namespace in addition to specifying the angular namespace. You use your own namespace to
 form the fully qualified name for widgets that you create.
 
-
 For example, you could map the alias `my` to your domain, and create a widget called `my:widget`.
 To create your own namespace, simply add another `xmlns` tag to your page, create an alias, and set
 it to your unique domain:
 
-
         <html xmlns:ng="http://angularjs.org" xmlns:my="http://mydomain.com">
-
-
 
 
 ## Loading the Angular Bootstrap Script
 
-
 The angular bootstrap script comes in two flavors; a debug script, and a production script:
-
 
 * angular-[version].js - This is a human-readable file, suitable for development and debugging.
 * angular-[version].min.js - This is a compressed and obfuscated file, suitable for use in
 production.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.bootstrap.auto_bootstrap Automatic Initialization}
 * {@link dev_guide.bootstrap.manual_bootstrap Manual Initialization}

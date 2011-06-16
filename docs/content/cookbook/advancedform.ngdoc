@@ -3,10 +3,8 @@
 @name Cookbook: Advanced Form
 @description
 
-
 Here we extend the basic form example to include common features such as reverting, dirty state
 detection, and preventing invalid form submission.
-
 
 <doc:example>
 <doc:source>
@@ -31,12 +29,10 @@ detection, and preventing invalid form submission.
      this.cancel();
    }
 
-
    UserForm.prototype = {
      cancel: function(){
        this.form = angular.copy(this.master);
      },
-
 
      save: function(){
        this.master = this.form;
@@ -46,10 +42,8 @@ detection, and preventing invalid form submission.
    </script>
    <div ng:controller="UserForm">
 
-
      <label>Name:</label><br/>
      <input type="text" name="form.name" ng:required/> <br/><br/>
-
 
      <label>Address:</label><br/>
      <input type="text" name="form.address.line1" size="33" ng:required/> <br/>
@@ -57,7 +51,6 @@ detection, and preventing invalid form submission.
      <input type="text" name="form.address.state" size="2" ng:required ng:validate="regexp:state"/>
      <input type="text" name="form.address.zip" size="5" ng:required
 ng:validate="regexp:zip"/><br/><br/>
-
 
      <label>Contacts:</label>
      [ <a href="" ng:click="form.contacts.$add()">add</a> ]
@@ -74,7 +67,6 @@ ng:validate="regexp:zip"/><br/><br/>
    <button ng:click="cancel()" ng:disabled="{{master.$equals(form)}}">Cancel</button>
    <button ng:click="save()" ng:disabled="{{$invalidWidgets.visible() ||
 master.$equals(form)}}">Save</button>
-
 
    <hr/>
    Debug View:
@@ -104,10 +96,7 @@ master.$equals(form)}}">Save</button>
 </doc:example>
 
 
-
-
 #Things to notice
-
 
 * Cancel & save buttons are only enabled if the form is dirty — there is something to cancel or
 save.

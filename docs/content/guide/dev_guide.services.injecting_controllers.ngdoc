@@ -3,10 +3,8 @@
 @name Developer Guide: Angular Services: Injecting Services Into Controllers
 @description
 
-
 Using services as dependencies for controllers is very similar to using services as dependencies
 for another service.
-
 
 Since JavaScript is a dynamic language, DI can't figure out which services to inject by static
 types (like in static typed languages). Therefore, you must specify the service name by using the
@@ -15,7 +13,6 @@ The name must match the corresponding service ID registered with angular. The or
 IDs matters: the order of the services in the array will be used when calling the factory function
 with injected parameters. The names of parameters in factory function don't matter, but by
 convention they match the service IDs.
-
 
 <pre>
 function myController($loc, $log) {
@@ -32,7 +29,6 @@ this.secondMethod = function() {
 myController.$inject = ['$location', '$log'];
 </pre>
 
-
 <doc:example>
 <doc:source>
 <script type="text/javascript">
@@ -47,17 +43,14 @@ angular.service('notify', function(win) {
   };
 }, {$inject: ['$window']});
 
-
 function myController(notifyService) {
   this.callNotify = function(msg) {
     notifyService(msg);
   };
 }
 
-
 myController.$inject = ['notify'];
 </script>
-
 
 <div ng:controller="myController">
 <p>Let's try this simple notify service, injected into the controller...</p>
@@ -73,10 +66,7 @@ it('should test service', function(){
 </doc:example>
 
 
-
-
 ## Related Topics
-
 
 {@link dev_guide.services.understanding_services Understanding Angular Services}
 {@link dev_guide.services.creating_services Creating Angular Services}
@@ -84,8 +74,6 @@ it('should test service', function(){
 {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
 {@link dev_guide.services.testing_services Testing Angular Services}
 
-
 ## Related API
-
 
 {@link api/angular.service Angular Service API}

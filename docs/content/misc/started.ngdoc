@@ -2,13 +2,10 @@
 @name Getting Started
 @description
 
-
 # Hello World!
-
 
 A great way for you to get started with `angular` is to create the tradtional
 "Hello World!" app:
-
 
 1. In your favorite text editor, create an HTML file
    (for example, `helloworld.html`).
@@ -16,74 +13,57 @@ A great way for you to get started with `angular` is to create the tradtional
    (Double-click on the source to easily select all.)
 3. Open the file in your web browser.
 
-
 <doc:example>
     <doc:source>
         Hello {{'World'}}!
     </doc:source>
 </doc:example>
 
-
 The resulting web page should look something like the following:
 
-
 <img class="center" src="img/helloworld.png" border="1" />
-
 
 Now let's take a closer look at that code, and see what is going on behind
 the scenes.
 
-
 The first line of interest defines the `ng` namespace, which makes
 `angular` work across all browsers (especially important for IE):
-
 
 <pre>
     <html xmlns:ng="http://angularjs.org">
 </pre>
 
-
 The next line downloads the `angular` script, and instructs `angular` to process
 the entire HTML page when it is loaded:
-
 
 <pre>
     <script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js"
 ng:autobind></script>
 </pre>
 
-
 (For details on what happens when `angular` processes an HTML page,
 see {@link guide/dev_guide.bootstrap Bootstrap}.)
 
-
 Finally, this line in the `<body>` of the page is the template that describes
 how to display our greeting in the UI:
-
 
 <pre>
     Hello {{'World'}}!
 </pre>
 
-
 Note the use of the double curly brace markup (`{{ }}`) to bind the expression to
 the greeting text. Here the expression is the string literal 'World'.
-
 
 Next let's look at a more interesting example, that uses `angular` to
 bind a dynamic expression to our greeting text.
 
-
 # Hello <angular/> World!
 
-
 This example demonstrates `angular`'s two-way data binding:
-
 
 1. Edit the HTML file you created in the "Hello World!" example above.
 2. Replace the contents of `<body>` with the code from the __Source__ box below.
 3. Refresh your browswer window.
-
 
 <doc:example>
  <doc:source>
@@ -93,23 +73,17 @@ This example demonstrates `angular`'s two-way data binding:
  </doc:source>
 </doc:example>
 
-
 After the refresh, the page should look something like this:
-
 
 <img class="left" src="img/helloworld_2way.png" border="1" />
 
-
 These are some of the important points to note from this example:
-
 
 * The text input {@link api/angular.widget widget} called `yourname` is bound to a model variable
 called `yourname`.
 * The double curly braces notation binds the `yourname` model to the greeting text.
 
-
 * You did not need to explicitly register an event listener or define an event handler for events!
-
 
 Now try typing your name into the input box, and notice the immediate change to
 the displayed greeting. This demonstrates the concept of `angular`'s
@@ -119,27 +93,19 @@ reflected in the model (one direction), and any changes to the model are
 reflected in the greeting text (the other direction).
 
 
-
-
 # Anatomy Of An Angular App
-
 
 This section describes the 3 parts of an angular app, and explains how they map to the
 Model-View-Controller design pattern:
 
-
 ## Templates
-
 
 Templates, which you write in HTML and CSS, serve as the View. You add elements, attributes, and
 markup to HTML, which serve as instructions to the angular compiler. The angular compiler is fully
 extensible, meaning that with angular you can build your own declarative language on top of HTML!
 
 
-
-
 ## Application Logic and Behavior
-
 
 Application Logic and Behavior, which you define in JavaScript, serve as the Controller. With
 angular (unlike with standard AJAX applications) you don't need to write additional listeners or
@@ -147,42 +113,30 @@ DOM manipulators, because they are built-in. This feature makes your application
 write, test, maintain, and understand.
 
 
-
-
 ## Data
-
 
 The Model is referenced from properties on {@link guide/dev_guide.scopes angular scope objects}.
 The data in your model could be Javascript objects, arrays, or primitives, it doesn't matter.  What
 matters is that these are all referenced by the scope object.
 
-
 Angular employs scopes to keep your data model and your UI in sync.  Whenever something occurs to
 change the state of the model, angular immediately reflects that change in the UI, and vice versa.
 
-
 The following illustration shows the parts of an angular application and how they work together:
-
 
 <img class="left" src="img/angular_parts.png" border="0" />
 
-
 In addition, angular comes with a set of Services, which have the following properties:
-
 
 * The services provided are very useful for building web applications.
 * You can extend and add application-specific behavior to services.
 * Services include Dependency-Injection, XHR, caching, URL routing, and browser abstraction.
 
 
-
-
 # Where To Go Next
-
 
 * For explanations and examples of the angular concepts presented on this page, see the {@link
 guide/index Developer Guide}.
-
 
 * For additional hands-on examples of using `angular`, including more source  code that you can
 copy and paste into your own pages, take a look through the `angular` {@link cookbook/ Cookbook}.

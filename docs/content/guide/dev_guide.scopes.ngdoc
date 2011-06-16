@@ -4,26 +4,20 @@
 @description
 
 
-
-
 An angular scope is a JavaScript type defined by angular. Instances of this type are objects that
 serve as the context within which all model and controller methods live and get evaluated.
-
 
 Angular links scope objects to specific points in a compiled (processed) template. This linkage
 provides the contexts in which angular creates data-bindings between the model and the view. You
 can think of angular scope objects as the medium through which the model, view, and controller
 communicate.
 
-
 In addition to providing the context in which data is evaluated, angular scope objects watch for
 model changes. The scope objects also notify all components interested in any model changes (for
 example, functions registered through {@link api/angular.scope.$watch $watch}, bindings created by
 {@link api/angular.directive.ng:bind ng:bind}, or HTML input elements).
 
-
 Angular scope objects are responsible for:
-
 
 * Gluing the model, controller and view template together.
 * Providing the mechanism to watch for model changes ({@link api/angular.scope.$watch}).
@@ -31,21 +25,14 @@ Angular scope objects are responsible for:
 * Providing the context in which all controller functions and angular expressions are evaluated.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.scopes.understanding_scopes Understanding Scopes}
 * {@link dev_guide.scopes.working_scopes Working With Scopes}
 * {@link dev_guide.scopes.controlling_scopes Applying Controllers to Scopes}
 * {@link dev_guide.scopes.updating_scopes Updating Scopes}
 
-
 ## Related API
 
-
 * {@link api/angular.scope Angular Scope API}
-
-
 

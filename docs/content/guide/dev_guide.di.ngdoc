@@ -3,10 +3,8 @@
 @name Developer Guide: About Dependency Injection (DI)
 @description
 
-
 Dependency Injection (DI) is an object-oriented software design pattern that supports the
 decoupling and dependency management of application components.
-
 
 The idea behind DI is to decouple each component from all of the other components that it depends
 on to do its particular job. The way this is done in DI is by moving the responsibility for
@@ -14,10 +12,8 @@ managing dependencies out of each individual component and into a provider compo
 (or injector) component manages the life cycles and dependencies for all of the other components in
 an application.
 
-
 Angular has a built-in dependency management subsystem that helps to make your applications easier
 to develop, understand, and test.
-
 
 For more information on DI in general, see {@link http://en.wikipedia.org/wiki/Dependency_injection
 Dependency Injection} at Wikipedia, and {@link http://martinfowler.com/articles/injection.html
@@ -25,19 +21,13 @@ Inversion of Control} by Martin Fowler, or read about DI in your favorite softwa
 book.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.di.understanding_di Understanding DI in Angular}
 * {@link dev_guide.services Angular Services}
 
 
-
-
 ## Related API
-
 
 * {@link api/angular.service Service API}
 * {@link api/angular.injector Angular Injector API}

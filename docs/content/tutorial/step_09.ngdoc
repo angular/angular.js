@@ -2,43 +2,30 @@
 @name Tutorial: 9 - Filters
 @description
 
-
 <ul doc:tutorial-nav="9"></ul>
-
-
 
 
 In this step you will learn how to create your own custom display filter.
 
 
-
-
 <doc:tutorial-instructions step="9"></doc:tutorial-instructions>
-
-
 
 
 Navigate to one of the detail pages.
 
-
 In the previous step, the details page displayed either "true" or "false" to indicate whether
 certain phone features were present or not. We have used a custom filter to convert those text
 strings into glyphs: ✓ for "true", and ✘ for "false". Let's see, what the filter code looks like.
-
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-8...step-9
 GitHub}:
 
 
-
-
 ## Custom Filter
-
 
 In order to create a new filter, simply register your custom filter function with the {@link
 api/angular.filter `angular.filter`} API.
-
 
 __`app/js/filters.js`:__
 <pre>
@@ -47,20 +34,15 @@ angular.filter('checkmark', function(input) {
 });
 </pre>
 
-
 The name of our filter is "checkmark". The `input` evaluates to either `true` or `false`, and we
 return one of two unicode characters we have chosen to represent true or false (`\u2713` and
 `\u2718`).
 
 
-
-
 ## Template
-
 
 Since the filter code lives in the `app/js/filters.js` file, we need to include this file in our
 layout template.
-
 
 __`app/index.html`:__
 <pre>
@@ -70,16 +52,11 @@ __`app/index.html`:__
 ...
 </pre>
 
-
 The syntax for using filters in angular templates is as follows:
-
 
     {{ expression | filter }}
 
-
 Let's employ the filter in the phone details template:
-
-
 
 
 
@@ -96,18 +73,13 @@ __`app/partials/phone-detail.html`:__
 </pre>
 
 
-
-
 ## Test
 
-
 Filters, like any other component, should be tested and these tests are very easy to write.
-
 
 __`test/unit/filtersSpec.js`:__
 <pre>
 describe('checkmark filter', function() {
-
 
   it('should convert boolean values to unicode checkmark or cross', function() {
     expect(angular.filter.checkmark(true)).toBe('\u2713');

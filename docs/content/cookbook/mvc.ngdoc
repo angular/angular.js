@@ -3,17 +3,13 @@
 @name Cookbook: MVC
 @description
 
-
 MVC allows for a clean an testable separation between the behavior (controller) and the view
 (HTML template). A Controller is just a JavaScript class which is grafted onto the scope of the
 view. This makes it very easy for the controller and the view to share the model.
 
-
 The model is simply the controller's this. This makes it very easy to test the controller in
 isolation since one can simply instantiate the controller and test without a view, because there is
 no connection between the controller and the view.
-
-
 
 
 <doc:example>
@@ -83,7 +79,6 @@ no connection between the controller and the view.
     };
     </script>
 
-
     <h3>Tic-Tac-Toe</h3>
     <div ng:controller="TicTacToeCntl">
     Next Player: {{nextMove}}
@@ -109,7 +104,6 @@ no connection between the controller and the view.
      expect(element('.winner').text()).toEqual('Player X has won!');
     });
 
-
     function piece(row, col) {
       element('.board tr:nth-child('+row+') td:nth-child('+col+')').click();
     }
@@ -117,10 +111,7 @@ no connection between the controller and the view.
 </doc:example>
 
 
-
-
 # Things to notice
-
 
 * The controller is defined in JavaScript and has no reference to the rendering logic.
 * The controller is instantiated by <angular/> and injected into the view.

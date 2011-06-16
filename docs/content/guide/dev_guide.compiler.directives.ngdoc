@@ -3,38 +3,29 @@
 @name Developer Guide: Angular HTML Compiler: Understanding Angular Directives
 @description
 
-
 An angular directive is a custom HTML attribute that angular knows how to process.  You add them to
 a template element like any other attribute.  Angular directives all have a `ng:` prefix.  In the
 following example, the angular directive (`ng:controller`) is  a div tag:
 
-
         <div ng:controller>
-
 
 You use angular directives to modify DOM element properties. The element you modify can be an
 existing HTML element type or a custom DOM element type that you created. You can use any number of
 directives per element.
 
-
 You add angular directives to a standard HTML tag as in the following example, in which we have
 added the {@link api/angular.directive.ng:click ng:click} directive to a button tag:
 
-
         <button name="button1" ng:click="foo()">Click This</button>
-
 
 In the example above, `name` is the standard HTML attribute, and `ng:click` is the angular
 directive. The `ng:click` directive lets you implement custom behavior in an associated controller
 function.
 
-
 In the next example, we add the {@link api/angular.directive.ng:bind ng:bind} directive to a
 `<span>` tag:
 
-
         <span ng:bind="1+2"></span>
-
 
 The `ng:bind` directive tells angular to set up {@link dev_guide.templates.databinding data
 binding} between the data model and the view for the specified expression.  When the angular {@link
@@ -44,18 +35,13 @@ the expression in the model, the view is updated to display the span text with t
 expression value.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.compiler Angular HTML Compiler}
 * {@link dev_guide.compiler.directives.creating_directives Creating Angular Directives}
 * {@link dev_guide.compiler.directives_widgets Comparing Directives and Widgets}
 
-
 ## Related API:
-
 
 * {@link api/angular.directive Directive API}
 * {@link api/angular.widget Widget API}

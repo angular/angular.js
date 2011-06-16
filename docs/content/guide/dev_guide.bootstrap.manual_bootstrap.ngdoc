@@ -3,16 +3,13 @@
 @name  Developer Guide: Initializing Angular: Manual Initialization
 @description
 
-
 Letting angular handle the initialization process (bootstrapping) is a handy way to start using
 angular, but advanced users who want more control over the initialization process can choose to use
 the manual bootstrapping method instead.
 
-
 The best way to get started with manual bootstrapping is to look at the what happens when you use
 {@link api/angular.directive.ng:autobind ng:autobind}, by showing each step of the process
 explicitly.
-
 
 <pre>
 <!doctype html>
@@ -32,9 +29,7 @@ Hello {{'World'}}!
 </html>
 </pre>
 
-
 This is the sequence that your code should follow if you bootstrap angular on your own:
-
 
 1. After the page is loaded, find the root of the HTML template, which is typically the root of
 the document.
@@ -42,17 +37,12 @@ the document.
 an executable, bi-directionally bound application.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.bootstrap Initializing Angular}
 * {@link dev_guide.bootstrap.auto_bootstrap Automatic Initialization}
 * {@link dev_guide.compiler Angular HTML compiler}
 
-
 ## Related API
-
 
 {@link api/angular.compile Compiler API}

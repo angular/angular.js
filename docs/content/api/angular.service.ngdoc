@@ -3,10 +3,8 @@
 @name angular.service
 @description
 
-
 The services API provides objects for carrying out common web app tasks.  Service objects are
 managed by angular's {@link guide/dev_guide.di dependency injection system}.
-
 
 * {@link angular.service.$browser $browser } - Provides an instance of a browser object
 * {@link angular.service.$cookieStore $cookieStore } - Provides key / value storage backed by
@@ -26,7 +24,6 @@ server-side data sources
 * {@link angular.service.$updateView $updateView } - Queues view updates
 * {@link angular.service.$window $window } - References the browsers `window` object
 * {@link angular.service.$xhr $xhr} - Generates an XHR request.
-
 
 For information on how angular services work and how to write your own services, see {@link
 guide/dev_guide.services Angular Services} in the angular Developer Guide.

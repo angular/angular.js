@@ -4,65 +4,47 @@
 @description
 
 
-
-
 Angular includes built-in CSS classes, which in turn have predefined CSS styles.
-
 
 # Built-in CSS classes
 
-
 * `ng-exception`
-
 
 **Usage:** angular applies this class to a DOM element if that element contains an Expression that
 threw an exception when evaluated.
 
-
 **Styling:** The built-in styling of the ng-exception class displays an error message surrounded
 by a solid red border, for example:
 
-
  <div class="ng-exception">Error message</div>
-
 
 You can try to evaluate malformed expressions in {@link dev_guide.expressions expressions} to see
 the `ng-exception` class' styling.
 
-
 * `ng-validation-error`
-
 
 **Usage:** angular applies this class to an input widget element if that element's input does not
 pass validation. Note that you set the validation criteria on the input widget element using the
 Ng:validate or Ng:required directives.
 
-
 **Styling:** The built-in styling of the ng-validation-error class turns the border of the input
 box red and includes a hovering UI element that includes more details of the validation error. You
 can see an example in {@link api/angular.widget.@ng:validate ng:validate example}.
 
-
 ## Overriding Styles for Angular CSS Classes
 
-
 To override the styles for angular's built-in CSS classes, you can do any of the following:
-
 
 * Download the source code, edit angular.css, and host the source on your own server.
 * Create a local CSS file, overriding any styles that you'd like, and link to it from your HTML file
 as you normally would:
-
 
 <pre>
 <link href="yourfile.css" rel="stylesheet" type="text/css">
 </pre>
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.templates Angular Templates}
 * {@link dev_guide.templates.css Working With CSS in Angular}

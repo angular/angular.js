@@ -3,16 +3,13 @@
 @name Developer Guide: Understanding Angular Templates
 @description
 
-
 An angular template is the declarative specification that, along with information from the model
 and controller, becomes the rendered view that a user sees in the browser. It is the static DOM,
 containing HTML, CSS, and angular-specific elements and angular-specific element attributes.  The
 angular elements and attributes direct angular to add behavior and transform the template DOM into
 the dynamic view DOM.
 
-
 These are the types of angular elements and element attributes you can use in a template:
-
 
 * {@link dev_guide.compiler.directives Directive} — An attribute that augments an existing DOM
 element.
@@ -25,15 +22,12 @@ curly brace notation `{{ }}` to bind expressions to elements is built-in angular
 * {@link dev_guide.templates.formatters Formatter} — Lets you format the input object into a user
 readable view.
 
-
 Note:  In addition to declaring the elements above in templates, you can also access these elements
 in JavaScript code.
-
 
 The following code snippet shows a simple angular template made up of standard HTML tags along with
 angular {@link dev_guide.compiler.directives directives}, {@link dev_guide.compiler.markup markup},
 and {@link dev_guide.expressions expressions}:
-
 
 <pre>
 <html>
@@ -49,7 +43,6 @@ and {@link dev_guide.expressions expressions}:
 </html>
 </pre>
 
-
 In a simple single-page app, the template consists of HTML, CSS, and angular directives contained
 in just one HTML file (usually `index.html`). In a more complex app, you can display multiple views
 within one main page using "partials", which are segments of template located in separate HTML
@@ -59,17 +52,12 @@ example of this technique is shown in the {@link tutorial/ angular tutorial}, in
 eight.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.templates.filters Angular Filters}
 * {@link dev_guide.templates.formatters Angular Formatters}
 * {@link dev_guide.templates.validators Angular Validators}
 
-
 ## Related API
-
 
 * {@link api/index API Reference}

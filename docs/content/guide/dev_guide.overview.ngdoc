@@ -3,32 +3,24 @@
 @description
 
 
-
-
 # What Is Angular?
-
 
 The short answer: angular is a new, powerful, client-side technology that makes it much easier for
 you to create dynamic web sites and complex web apps, all without leaving the comfort of your HTML
 / JavaScript home.
 
-
 The long answer: it depends on where you're coming from...
-
 
 * If you're a web designer, you might perceive angular to be a sweet {@link dev_guide.templates
 templating} system, that doesn't get in your way and provides you with lots of nice built-ins that
 make it easier to do what you want to do.
 
-
 * If you're a web developer, you might be thrilled that angular functions as an excellent web
 framework, one that assists you all the way through the development cycle.
-
 
 * If you want to go deeper, you can immerse yourself in angular's extensible  HTML {@link
 dev_guide.compiler compiler} that runs in your browser. The angular compiler teaches your browser
 new tricks.
-
 
 Angular is not just a templating system, but you can create fantastic templates with it. Angular is
 not just a web framework, but it features a very nice framework. Angular is not just an extensible
@@ -37,21 +29,16 @@ components, along with others. Angular is far greater than the sum of its parts.
 better way to develop web applications!
 
 
-
-
 ## An Introductory Angular Example
-
 
 Let's say that you are a web designer, and you've spent many thous — erm, hundreds of hours
 designing web sites. But at this point, the thought of manipulating the DOM, writing listeners and
 input validators, all just to implement a simple form?  No. You either don't want to go there in
 the first place or you've been there and the thrill is gone.
 
-
 So look over the following simple example written using angular.  Note that it features only the
 templating aspect of angular, but this should suffice for now to quickly demonstrate how much
 easier a web developer's life can if they're using angular:
-
 
 <doc:example>
 <doc:source>
@@ -85,42 +72,31 @@ ng:required/></td>
 -->
 </doc:example>
 
-
 Try out the Live Preview above, and then let's walk through the example and describe what's going
 on.
 
-
 In the `<html>` tag, we add an attribute to let the browser know about the angular namespace:
-
 
         <html xmlns:ng="http://angularjs.org">
 
-
 This ensures angular runs nicely in all major browsers.
 
-
 In the `<script>` tag we do two angular setup tasks:
-
 
 1. We load `angular.js`.
 2. The angular {@link api/angular.directive.ng:autobind ng:autobind} directive tells angular to
 {@link dev_guide.compiler compile} and manage the whole HTML document.
 
-
     `<script src="http://code.angularjs.org/0.9.15/angular-0.9.15.min.js"
              ng:autobind></script>`
-
 
 From the `name` attribute of the `<input>` tags, angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
 
-
         Quantity: <input name="qty" value="1" ng:validate="integer:0" ng:required/>
         Cost: <input name="cost" value="199.95" ng:validate="number" ng:required/>
 
-
 These input widgets look normal enough, but consider these points:
-
 
 * When this page loaded, angular bound the names of the input widgets (`qty` and `cost`) to
 variables of the same name. Think of those variables as the "Model" component of the
@@ -131,12 +107,9 @@ or leave the the input fields blank, the borders turn red color, and the display
 These `ng:` directives make it easier to implement field validators than coding them in JavaScript,
 no?  Yes.
 
-
 And finally, the mysterious `{{ double curly braces }}`:
 
-
          Total: {{qty * cost | currency}}
-
 
 This notation, `{{ _expression_ }}`, is a bit of built-in angular {@link dev_guide.compiler.markup
 markup}, a shortcut for displaying data to the user. The expression within curly braces gets
@@ -145,35 +118,27 @@ ng:bind}). The expression itself can be a combination of both an expression and 
 dev_guide.templates.filters filter}: `{{ expression | filter }}`. Angular provides filters for
 formatting display data.
 
-
 In the example above, the expression in double-curly braces directs angular to, "Bind the data we
 got from the input widgets to the display, multiply them together, and format the resulting number
 into output that looks like money."
 
 
-
-
 # The Angular Philosophy
-
 
 Angular is built around the belief that declarative code is better than imperative when it comes to
 building UIs and wiring software components together, while imperative code is excellent for
 expressing business logic.
 
-
 Not to put too fine a point on it, but if you wanted to add a new label to your application, you
 could do so by simply adding text to the HTML template, saving the code, and refreshing your
 browser:
-
 
 <pre>
 <span class="label">Hello</span>
 </pre>
 
-
 Or, as in programmatic systems (like {@link http://code.google.com/webtoolkit/ GWT}), you would
 have to write the code and then run the code like this:
-
 
 <pre>
 var label = new Label();
@@ -182,14 +147,10 @@ label.setClass('label');
 parent.addChild(label);
 </pre>
 
-
 That's one line of markup versus four times as much code.
 
 
-
-
 ## More Angular Philosophy
-
 
 * It is a very good idea to decouple DOM manipulation from app logic. This dramatically improves
 the testability of the code.
@@ -201,10 +162,8 @@ development work to progress in parallel, and allows for reuse of both sides.
 building an app: from designing the UI, through writing the business logic, to testing.
 * It is always good to make common tasks trivial and difficult tasks possible.
 
-
 Now that we're homing in on what angular is, perhaps now would be a good time to list a few things
 that angular is not:
-
 
 * It's not a Library. You don't just call its functions, although it does provide you with some
 utility APIs.
@@ -225,13 +184,9 @@ changes to the model are automatically reflected in the view. Any changes by the
 are automatically reflected in the model.
 
 
-
-
 # Why You Want Angular
 
-
 Angular frees you from the following pain:
-
 
 * **Registering callbacks:** Registering callbacks clutters your code, making it hard to see the
 forest for the trees. Removing common boilerplate code such as callbacks is a good thing. It vastly
@@ -256,14 +211,10 @@ get started developing features quickly. As a bonus, you get full control over t
 process in automated tests.
 
 
-
-
 # Watch a Presentation About Angular
-
 
 Here is an early presentation on angular, but note that substantial development has occurred since
 the talk was given in July of 2010.
-
 
 <object width="480" height="385">
  <param name="movie" value="http://www.youtube.com/v/elvcgVSynRg&amp;hl=en_US&amp;fs=1"></param>
@@ -273,7 +224,6 @@ the talk was given in July of 2010.
         type="application/x-shockwave-flash" allowscriptaccess="always"
         allowfullscreen="true" width="480" height="385"></embed>
 </object>
-
 
 {@link
 
