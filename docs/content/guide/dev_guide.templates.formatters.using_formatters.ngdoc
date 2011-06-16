@@ -3,10 +3,7 @@
 @name Developer Guide: Templates: Angular Formatters: Using Angular Formatters
 @description
 
-
 The following snippet shows how to use a formatter in a template. The formatter below is
 `ng:format="reverse"`, added as an attribute to an `<input>` tag.
 
-
 <pre>
-

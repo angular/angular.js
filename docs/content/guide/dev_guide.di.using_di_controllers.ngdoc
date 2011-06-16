@@ -3,10 +3,8 @@
 @name Developer Guide: DI: Using DI in Controllers
 @description
 
-
 The most common place to use dependency injection in angular applications is in {@link
 dev_guide.mvc.understanding_controller controllers}. Here is a simple example:
-
 
 <pre>
 function MyController($route){
@@ -16,13 +14,11 @@ function MyController($route){
 MyController.$inject = ['$route'];
 </pre>
 
-
 In this example, the `MyController` constructor function takes one argument, the {@link
 api/angular.service.$route $route} service. Angular is then responsible for supplying the instance
 of `$route` to the controller when the constructor is instantiated. There are two ways to cause
 controller instantiation – by configuring routes with the `$route` service, or by referencing the
 controller from the HTML template, as follows:
-
 
 <pre>
 <!doctype html>
@@ -34,33 +30,25 @@ controller from the HTML template, as follows:
 </html>
 </pre>
 
-
 When angular is instantiating your controller, it needs to know what services, if any, should be
 injected (passed in as arguments) into the controller. Since there is no reflection in JavaScript,
 we have to supply this information to angular in the form of an additional property on the
 controller constructor function called `$inject`. Think of it as annotations for JavaScript.
 
-
 <pre>
 MyController.$inject = ['$route'];
 </pre>
-
 
 The information in `$inject` is then used by the {@link api/angular.injector injector} to call the
 function with the correct arguments.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.di About Dependency Injection}
 * {@link dev_guide.di.understanding_di Understanding Dependency Injection in Angular}
 * {@link dev_guide.services Angular Services}
 
-
 ## Related API
-
 
 * {@link api/angular.injector Angular Injector API}

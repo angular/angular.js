@@ -3,24 +3,18 @@
 @name Developer Guide: Templates: Angular Formatters
 @description
 
-
 In angular, formatters are responsible for translating user-readable text entered in an {@link
 api/angular.widget.HTML input widget} to a JavaScript object in the data model that the application
 can manipulate.
 
-
 You can use formatters in a template, and also in JavaScript.  Angular provides built-in
 formatters, and of course you can create your own formatters.
 
-
 ## Related Topics
-
 
 * {@link dev_guide.templates.formatters.using_formatters Using Angular Formatters}
 * {@link dev_guide.templates.formatters.creating_formatters Creating Angular Formatters}
 
-
 ## Related API
-
 
 * {@link api/angular.formatter Angular Formatter API}

@@ -3,7 +3,6 @@
 @name Cookbook: Hello World
 @description
 
-
 <doc:example>
  <doc:source>
   Your name: <input type="text" name="name" value="World"/>
@@ -19,12 +18,9 @@
  </doc:scenario>
 </doc:example>
 
-
 # Things to notice
 
-
 Take a look through the source and note:
-
 
 * The script tag that {@link guide/dev_guide.bootstrap bootstraps} the angular environment.
 * The text {@link api/angular.widget.HTML input widget} which is bound to the greeting name text.

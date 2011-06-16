@@ -3,29 +3,22 @@
 @name Developer Guide: Initializing Angular: Automatic Initiialization
 @description
 
-
 Angular initializes automatically when you load the angular script into your page, specifying
 angular's `ng:autobind` attribute with no arguments:
 
-
         <script src="angular.js" ng:autobind>
-
 
 From a high-level view, this is what happens during angular's automatic initialization process:
 
-
 1. The browser loads the page, and then runs the angular script.
-
 
     The `ng:autobind` attribute tells angular to compile and manage the whole HTML document. The
 compilation phase is initiated in the page's `onLoad()` handler. Angular doesn't begin processing
 the page until after the page load is complete.
 
-
 2. Angular finds the root of the HTML document and creates the global variable `angular` in the
 global namespace. Everything that angular subsequently creates is bound to fields in this global
 object.
-
 
 3. Angular walks the DOM looking for angular widgets, directives, and markup (such as `ng:init` or
 `ng:repeat`). As angular encounters these, it creates child scopes as necessary and attaches them
@@ -34,38 +27,28 @@ data and their part of the view, and ultimately constructs a runnable applicatio
 app features two-way data-binding and a nice separation between data, presentation, and business
 logic.
 
-
 4. For the duration of the application session (while the page is loaded), angular monitors the
 state of the application, and updates the view and the data model whenever the state of either one
 changes.
 
-
 For details on how the compiler works, see {@link dev_guide.compiler Angular HTML Compiler}.
 
 
-
-
 ## Initialization Options
-
 
 The reason why `ng:autobind` exists is because angular should not assume that the entire HTML
 document should be processed just because the `angular.js` script is included. In order to compile
 only a part of the document, specify the ID of the element you want to use for angular's root
 element as the value of the `ng:autobind` attribute:
 
-
         ng:autobind="angularContent"
-
-
 
 
 ## Auto-bootstrap with `#autobind`
 
-
 In some rare cases you can't define the `ng:` prefix before the script tag's attribute  (for
 example,  in some CMS systems). In those situations it is possible to auto-bootstrap angular by
 appending `#autobind` to the `<script src=...>` URL, like in this snippet:
-
 
 <pre>
   <!doctype html>
@@ -82,18 +65,14 @@ appending `#autobind` to the `<script src=...>` URL, like in this snippet:
   </html>
 </pre>
 
-
 As with `ng:autobind`, you can specify an element id that should be exclusively targeted for
 compilation as the value of the `#autobind`, for example: `#autobind=angularContent`.
 
-
 ## Filename Restrictions for Auto-bootstrap
-
 
 In order for us to find the auto-bootstrap from a script attribute or URL fragment, the value of
 the `script` `src` attribute that loads the angular script must match one of these naming
 conventions:
-
 
 - `angular.js`
 - `angular-min.js`
@@ -103,28 +82,20 @@ conventions:
 - `angular-x.x.x-xxxxxxxx.min.js` (dev snapshot)
 - `angular-bootstrap.js` (used for development of angular)
 
-
 Optionally, any of the filename formats above can be prepended with a relative or absolute URL that
 ends with `/`.
 
-
 ## Global Angular Object
-
 
 The angular script creates a single global variable `angular` in the global namespace. All angular
 APIs are bound to fields of this global object.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.bootstrap Initializing Angular}
 * {@link dev_guide.bootstrap.manual_bootstrap Manual Initialization}
 
-
 ## Related API
-
 
 {@link api/angular.compile Compiler API}

@@ -4,22 +4,15 @@
 @description
 
 
-
-
 "Testing, testing, come in, over?"
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.compiler Angular HTML Compiler}
 * {@link dev_guide.compiler.understanding_compiler Understanding How the Compiler Works}
 * {@link dev_guide.compiler.extending_compiler Extending the Angular Compiler}
 
-
 ## Related API
-
 
 * {@link api/angular.compile angular.compile()}

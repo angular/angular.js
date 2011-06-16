@@ -2,17 +2,12 @@
 @name Tutorial: 0 - angular-seed
 @description
 
-
 <ul doc:tutorial-nav="0"></ul>
-
-
 
 
 You are now ready to build the phonecat application. In this step, you will become familiar with
 the most important source code files, learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
-
-
 
 
 <doc:tutorial-instructions show="true">
@@ -24,7 +19,6 @@ angular-seed, and run the application in the browser.
       <p>You must repeat this for every future step in the tutorial and change the number to
       the number of the step you are on. This will cause any changes you made within
       your working directory to be lost.</p></li>
-
 
       <li>To see the app running in a browser, do one of the following:
         <ul>
@@ -48,8 +42,6 @@ directory.</li>
       </li>
     </ol>
   </doc:tutorial-instruction>
-
-
 
 
   <doc:tutorial-instruction id="git-win" title="Git on Windows">
@@ -84,8 +76,6 @@ directory.</li>
   </doc:tutorial-instruction>
 
 
-
-
   <doc:tutorial-instruction id="ss-mac" title="Snapshots on Mac/Linux">
     <ol>
       <li><p>In angular-phonecat directory, run this command:</p>
@@ -116,8 +106,6 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
       </li>
     </ol>
   </doc:tutorial-instruction>
-
-
 
 
   <doc:tutorial-instruction id="ss-win" title="Snapshots on Windows">
@@ -153,14 +141,10 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
 </doc:tutorial-instructions>
 
 
-
-
 You can now see the page in your browser. It's not very exciting, but that's OK.
-
 
 The static HTML page that displays "Nothing here yet!" was constructed with the HTML code shown
 below. The code contains some key angular elements that we will need going forward.
-
 
 __`app/index.html`:__
 <pre>
@@ -173,9 +157,7 @@ __`app/index.html`:__
 </head>
 <body>
 
-
   Nothing here yet!
-
 
   <script src="lib/angular/angular.js" ng:autobind></script>
 </body>
@@ -184,31 +166,21 @@ __`app/index.html`:__
 
 
 
-
-
-
 ## What is the code doing?
-
 
 * xmlns declaration
 
-
           <html xmlns:ng="http://angularjs.org">
-
 
   This `xmlns` declaration for the `ng` namespace must be specified in all angular applications in
 order to make angular work with XHTML and IE versions older than 9 (regardless of whether you are
 using XHTML or HTML).
 
-
 * angular script tag
-
 
           <script src="lib/angular/angular.js" ng:autobind>
 
-
   This single line of code is all that is needed to bootstrap an angular application.
-
 
   The code downloads the `angular.js` script and registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, angular
@@ -216,41 +188,29 @@ looks for the {@link api/angular.directive.ng:autobind ng:autobind} attribute. I
 `ng:autobind`, it creates a root scope for the application and associates it with the `<html>`
 element of the template:
 
-
-          <img src="img/tutorial/tutorial_00_final.png"/>
-
+  <img src="img/tutorial/tutorial_00_final.png">
 
     As you will see shortly, everything in angular is evaluated within a scope. We'll learn more
 about this in the next steps.
 
 
-
-
 ## What are all these files in my working directory?
-
 
 Most of the files in your working directory come from the {@link
 https://github.com/angular/angular-seed angular-seed project} which is typically used to bootstrap
 new angular projects. The seed project includes the latest angular libraries, test libraries,
 scripts and a simple example app, all pre-configured for developing a typical web app.
 
-
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
-
 
 * Removed the example app
 * Added phone images to `app/img/phones`
 * Added phone data files (JSON) to `app/phones`
 
 
-
-
 # Summary
 
-
 Now let's go to step 1 and add some content to the web app.
-
-
 
 
 <ul doc:tutorial-nav="0"></ul>

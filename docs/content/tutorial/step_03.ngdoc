@@ -2,10 +2,7 @@
 @name Tutorial: 3 - Filtering Repeaters
 @description
 
-
 <ul doc:tutorial-nav="3"></ul>
-
-
 
 
 We did a lot of work in laying a foundation for the app in the last step, so now we'll do something
@@ -14,40 +11,28 @@ because a good end-to-end test is a good friend. It stays with your app, keeps a
 quickly detects regressions.
 
 
-
-
 <doc:tutorial-instructions step="3"></doc:tutorial-instructions>
-
-
 
 
 The app now has a search box. The phone list on the page changes depending on what a user types
 into the search box.
-
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-2...step-3
  GitHub}:
 
 
-
-
 ## Controller
-
 
 We made no changes to the controller.
 
 
-
-
 ## Template
-
 
 __`app/index.html`:__
 <pre>
 ...
    Fulltext Search: <input name="query"/>
-
 
   <ul class="phones">
     <li ng:repeat="phone in phones.$filter(query)">
@@ -58,69 +43,53 @@ __`app/index.html`:__
 ...
 </pre>
 
-
 We added a standard HTML `<input>` tag and use angular's {@link api/angular.Array.filter $filter}
 function to process the input for the `ng:repeater`.
-
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
 list.  This new code demonstrates the following:
 
-
 * Data-binding. This is one of the core features in angular. When the page loads, angular binds the
 name of the input box to a variable of the same name in the data model and keeps the two in sync.
-
 
   In this code, the data that a user types into the input box (named __`query`__) is immediately
 available as a filter input in the list repeater (`phone in phones.$filter(`__`query`__`)`). When
 changes to the data model cause the repeater's input to change, the repeater efficiently updates
 the DOM to reflect the current state of the model.
 
-
       <img src="img/tutorial/tutorial_03_final.png">
-
 
 * Use of `$filter`. The {@link api/angular.Array.filter $filter} method, uses the `query` value, to
 create a new array that contains only those records that match the `query`.
 
-
   `ng:repeat` automatically updates the view in response to the changing number of phones returned
 by the `$filter`. The process is completely transparent to the developer.
 
-
 ## Test
-
 
 In step 2, we learned how to write and run unit tests. Unit tests are perfect for testing
 controllers and other components of our application written in JavaScript, but they can't easily
 test DOM manipulation or the wiring of our application. For these, an end-to-end test is a much
 better choice.
 
-
 The search feature was fully implemented via templates and data-binding, so we'll write our first
 end-to-end test, to verify that the feature works.
-
 
 __`test/e2e/scenarios.js`:__
 <pre>
 describe('PhoneCat App', function() {
 
-
   describe('Phone list view', function() {
-
 
     beforeEach(function() {
       browser().navigateTo('../../app/index.html');
     });
 
-
     it('should filter the phone list as user types into the search box', function() {
       expect(repeater('.phones li').count()).toBe(3);
 
-
       input('query').enter('nexus');
       expect(repeater('.phones li').count()).toBe(1);
-
 
       input('query').enter('motorola');
       expect(repeater('.phones li').count()).toBe(2);
@@ -129,63 +98,47 @@ describe('PhoneCat App', function() {
 });
 </pre>
 
-
 Even though the syntax of this test looks very much like our controller unit test written with
 Jasmine, the end-to-end test uses APIs of {@link
 https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en&pli=1#
 angular's end-to-end test runner}.
 
-
 To run the end-to-end test, open the following in a new browser tab:
-
 
 * node.js users: {@link http://localhost:8000/test/e2e/runner.html}
 * users with other http servers:
 `http://localhost:[port-number]/[context-path]/test/e2e/runner.html`
 * casual reader: {@link http://angular.github.com/angular-phonecat/step-3/test/e2e/runner.html}
 
-
 This test verifies that the search box and the repeater are correctly wired together. Notice how
 easy it is to write end-to-end tests in angular. Although this example is for a simple test, it
 really is that easy to set up any functional, readable, end-to-end test.
 
-
 # Experiments
-
 
 * Display the current value of the `query` model by adding a `{{query}}` binding into the
 `index.html` template, and see how it changes when you type in the input box.
 
-
 * Let's see how we can get the current value of the `query` model to appear in the HTML page title.
-
 
   You might think you could just add the {{query}} to the title tag element as follows:
 
-
           <title>Google Phone Gallery: {{query}}</title>
-
 
   However, when you reload the page, you won't see the expected result. This is because the "query"
 model lives in the scope defined by the body element:
 
-
           <body ng:controller="PhoneListCtrl">
-
 
   If you want to bind to the query model from the `<title>` element, you must __move__ the
 `ng:controller` declaration to the HTML element because it is the common parent of both the body
 and title elements:
 
-
           <html ng:controller="PhoneListCtrl">
-
 
   Be sure to *remove* the `ng:controller` declaration from the body element.
 
-
 * Add the following end-to-end test into the `describe` block within `test/e2e/scenarios.js`:
-
 
   <pre>
     it('should display the current filter value within an element with id "status"',
@@ -201,11 +154,9 @@ and title elements:
     });
   </pre>
 
-
   Refresh the browser tab with end-to-end test runner to see the test fail. Now add a `div` or `p`
 element with `id` `"status"` and content with the `query` binding into the `index.html` template to
 make the test pass.
-
 
 * Add a `pause()` statement into an end-to-end test and rerun it.  You'll see the runner pausing,
 giving you the opportunity to explore the state of your application displayed in the browser. The
@@ -213,18 +164,11 @@ app is live! Change the search query to prove it. This is great for troubleshoot
 tests.
 
 
-
-
 # Summary
-
 
 With full text search under our belt and a test to verify it, let's go to step 4 to learn how to
 add sorting capability to the phone app.
 
 
-
-
 <ul doc:tutorial-nav="3"></ul>
-
-
 

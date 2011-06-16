@@ -65,16 +65,12 @@ return function(linkElement){
 Note: For more about widgets, see {@link dev_guide.compiler.widgets Understanding Angular Widgets}
 and the {@link api/angular.widget widget API reference page}.
 
-
 # Compilation process for `<my:greeter>`
-
 
 Here are the steps that the compiler takes in processing the page that contains the widget
 definition above:
 
-
 ## Compile Phase
-
 
 1. Recursively traverse the DOM depth-first.
 2. Find the angular.widget definition.
@@ -86,9 +82,7 @@ template (i.e. any repeating elements)).
    2. Extract the salutation and name HTML attributes as angular expressions.
 4. Return the aggregate link function, which includes just one link function in this example.
 
-
 ## Link Phase
-
 
 1. Execute the aggregate link function, which includes the following steps:
    1. Create a <span> element set to the salutation class
@@ -99,17 +93,12 @@ compileElement, because that's the template.)
 corresponding spans.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.compiler Angular HTML Compiler}
 * {@link dev_guide.compiler.understanding_compiler Understanding How the Compiler Works}
 * {@link dev_guide.compiler.testing_dom_element Testing a New DOM Element}
 
-
 ## Related API
-
 
 * {@link api/angular.compile angular.compile()}

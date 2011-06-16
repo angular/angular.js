@@ -3,17 +3,13 @@
 @name Cookbook: Deep Linking
 @description
 
-
 Deep linking allows you to encode the state of the application in the URL so that it can be
 bookmarked and the application can be restored from the URL to the same state.
-
 
 While <angular/> does not force you to deal with bookmarks in any particular way, it has services
 which make the common case described here very easy to implement.
 
-
 # Assumptions
-
 
 Your application consists of a single HTML page which bootstraps the application. We will refer
 to this page as the chrome.
@@ -25,29 +21,21 @@ screen will be constructed from an HTML snippet, which we will refer to as the p
 have multiple partials, but a single partial is the most common construct. This example makes the
 partial boundary visible using a blue line.
 
-
 You can make a routing table which shows which URL maps to which partial view template and which
 controller.
 
-
 # Example
 
-
 In this example we have a simple app which consist of two screens:
-
 
 * Welcome: url `#` Show the user contact information.
 * Settings: url `#/settings` Show an edit screen for user contact information.
 
 
-
-
 The two partials are defined in the following URLs:
-
 
 * {@link ./examples/settings.html}
 * {@link ./examples/welcome.html}
-
 
 <doc:example>
  <doc:source>
@@ -59,14 +47,12 @@ The two partials are defined in the following URLs:
       $route.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
       $route.parent(this);
 
-
       // initialize the model to something useful
       this.person = {
        name:'anonymous',
        contacts:[{type:'email', url:'anonymous@example.com'}]
       };
      }
-
 
      function WelcomeCntl($route){}
      WelcomeCntl.prototype = {
@@ -75,7 +61,6 @@ The two partials are defined in the following URLs:
       }
      };
 
-
      function SettingsCntl(){
       this.cancel();
      }
@@ -83,7 +68,6 @@ The two partials are defined in the following URLs:
       cancel: function(){
        this.form = angular.copy(this.person);
       },
-
 
       save: function(){
        angular.copy(this.form, this.person);
@@ -117,11 +101,7 @@ The two partials are defined in the following URLs:
 
 
 
-
-
-
 # Things to notice
-
 
 * Routes are defined in the `AppCntl` class. The initialization of the controller causes the
   initialization of the {@link api/angular.service.$route $route} service with the proper URL

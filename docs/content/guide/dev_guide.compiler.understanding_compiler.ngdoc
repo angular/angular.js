@@ -3,7 +3,6 @@
 @name Developer Guide: Angular HTML Compiler: Understanding How the Compiler Works
 @description
 
-
 Every {@link api/angular.widget widget}, {@link api/angular.directive directive} and {@link
 dev_guide.compiler.markup markup} is defined with a compile function, which the angular compiler
 executes on each widget or directive it encounters. The compile function optionally returns a link
@@ -11,9 +10,7 @@ function.  This compilation process happens automatically when the page is loade
 `ng:autobind` in the script tag from which you load the angular script file.  (See {@link
 dev_guide.bootstrap Initializing Angular}.)
 
-
 The compile and link functions are related as follows:
-
 
 * **compile function** — Registers a listener for the widget, directive, or markup expression. The
 compiler calls this function exactly once.
@@ -22,19 +19,15 @@ called multiple times, once per cloned DOM element. For example, in the case of 
 api/angular.widget.@ng:repeat repeater widget} used in a list element (`<li ng:repeat="[item in
 dataset]"`), the link function gets called to set up a listener on each element in the list.
 
-
 Note that angular's built-in widgets, directives, and markup have predefined compile and link
 functions that you don't need to modify. When you create your own widgets, directives, or markup,
 you must write compile and link functions for them. Refer to the {@link api/angular.compile
 Compiler API} for details.
 
-
 When the angular compiler compiles a page, it proceeds through 3 phases: Compile, Create Root
 Scope, and Link:
 
-
 1. Compile Phase
-
 
    1. Recursively traverse the DOM, depth-first.
    2. Look for a matching compile function of type widget, then markup, then directive.
@@ -43,46 +36,34 @@ Scope, and Link:
 function with all link functions returned previously by step 3.
    5. Repeat steps 3 and 4 for all compile functions found.
 
-
 The result of the compilation phase is an aggregate link function, which comprises all of the
 individual link functions.
 
-
 2. Create Root Scope Phase
-
 
 * Inject all services into the root scope.
 
-
 3. Link Phase
-
 
    1. Execute the aggregate link function with the root scope. The aggregate link function calls
 all of the individual link functions that were generated in the compile phase.
    2. If there are any clones of the DOM caused by repeating elements, call the link function
 multiple times, one for each repeating item.
 
-
 Note that while the compile function is executed exactly once, the link function can be executed
 multiple times, for example, once for each iteration in a repeater.
-
 
 The angular compiler exposes methods that you will need to make use of when writing your own
 widgets and directives.  For information on these methods, see the {@link api/angular.compile
 Compiler API doc}.
 
 
-
-
 ## Related Topics
-
 
 * {@link dev_guide.compiler Angular HTML Compiler}
 * {@link dev_guide.compiler.extending_compiler Extending the Angular Compiler}
 * {@link dev_guide.compiler.testing_dom_element Testing a New DOM Element}
 
-
 ## Related API
-
 
 * {@link api/angular.compile angular.compile()}

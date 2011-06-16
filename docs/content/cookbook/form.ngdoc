@@ -3,12 +3,9 @@
 @name Cookbook: Form
 @description
 
-
 A web application's main purpose is to present and gather data. For this reason angular strives
 to make both of these operations trivial. This example shows off how you can build a simple form to
 allow a user to enter data.
-
-
 
 
 <doc:example>
@@ -26,10 +23,8 @@ allow a user to enter data.
   </script>
   <div ng:controller="FormController" class="example">
 
-
     <label>Name:</label><br/>
     <input type="text" name="user.name" ng:required/> <br/><br/>
-
 
     <label>Address:</label><br/>
     <input type="text" name="user.address.line1" size="33" ng:required/> <br/>
@@ -37,7 +32,6 @@ allow a user to enter data.
     <input type="text" name="user.address.state" size="2" ng:required ng:validate="regexp:state"/>
     <input type="text" name="user.address.zip" size="5" ng:required
 ng:validate="regexp:zip"/><br/><br/>
-
 
     <label>Phone:</label>
     [ <a href="" ng:click="user.contacts.$add()">add</a> ]
@@ -56,7 +50,6 @@ ng:validate="regexp:zip"/><br/><br/>
     <pre>user={{user}}</pre>
   </div>
 
-
  </doc:source>
  <doc:scenario>
   it('should show debug', function(){
@@ -69,12 +62,10 @@ ng:validate="regexp:zip"/><br/><br/>
     expect(binding('user')).toMatch(/you@example.org/);
   });
 
-
   it('should remove contact', function(){
     using('.example').element('a:contains(X)').click();
     expect(binding('user')).not().toMatch(/\(234\) 555\-1212/);
   });
-
 
   it('should validate zip', function(){
     expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
@@ -83,7 +74,6 @@ ng:validate="regexp:zip"/><br/><br/>
     expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
       .toMatch(/ng-validation-error/);
   });
-
 
   it('should validate state', function(){
     expect(using('.example').element(':input[name=user.address.state]').attr('className'))
@@ -96,10 +86,7 @@ ng:validate="regexp:zip"/><br/><br/>
 </doc:example>
 
 
-
-
 # Things to notice
-
 
 * The user data model is initialized {@link api/angular.directive.ng:controller controller} and is
 available in
