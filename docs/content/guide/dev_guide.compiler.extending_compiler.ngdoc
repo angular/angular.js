@@ -3,61 +3,54 @@
 @name Developer Guide: Angular HTML Compiler: Extending the Angular Compiler
 @description
 
-
 Let's say that we want to create a new DOM element called `<my:greeter/>` that displays a greeting.
 We want this HTML source:
 
-
 <pre>
-<div ng:init="salutation='Hello'; name='World'">
-<my:greeter salutation="salutation" name="name"/>
-</div>
+   <div ng:init="s='Hello'; n='World'">
+      <my:greeter salutation="s" name="n"/>
+  </div>
 </pre>
-
 
 to produce this DOM:
 
-
 <pre>
-<div ng:init="salutation='Hello'; name='World'">
-<my:greeter salutation="salutation" name="name"/>
+<div ng:init="s='Hello'; n='World'">
+<my:greeter salutation="s" name="n"/>
   <span class="salutation">Hello</span>
   <span class="name">World</span>!
 </my:greeter>
 </div>
 </pre>
 
-
 That is, the new `<my:greeter/>` tag's `salutation` and `name` attributes should be transformed by
 the compiler such that two `<span>` tags display the values of the attributes, with CSS classes
 applied to the output.
-
 
 The following code snippet shows how to write a following widget definition that will be processed
 by the compiler. Note that you have to declare the {@link dev_guide.bootstrap namespace} `my` in
 the page:
 
-
 <pre>
 angular.widget('my:greeter', function(compileElement){
-var compiler = this;
-compileElement.css('display', 'block');
-var salutationExp = compileElement.attr('salutation');
-var nameExp = compileElement.attr('name');
-return function(linkElement){
-  var salutationSpan = angular.element('<span class="salutation"></span');
-  var nameSpan = angular.element('<span class="name"></span>');
-  linkElement.append(salutationSpan);
-  linkElement.append(compiler.text(' '));
-  linkElement.append(nameSpan);
-  linkElement.append(compiler.text('!'));
-  this.$watch(salutationExp, function(value){
-    salutationSpan.text(value);
-  });
-  this.$watch(nameExp, function(value){
-  nameSpan.text(value);
-  });
-};
+  var compiler = this;
+  compileElement.css('display', 'block');
+  var salutationExp = compileElement.attr('salutation');
+  var nameExp = compileElement.attr('name');
+  return function(linkElement){
+    var salutationSpan = angular.element('<span class="salutation"></span');
+    var nameSpan = angular.element('<span class="name"></span>');
+    linkElement.append(salutationSpan);
+    linkElement.append(compiler.text(' '));
+    linkElement.append(nameSpan);
+    linkElement.append(compiler.text('!'));
+    this.$watch(salutationExp, function(value){
+      salutationSpan.text(value);
+     });
+    this.$watch(nameExp, function(value){
+    nameSpan.text(value);
+    });
+  };
 });
 </pre>
 
