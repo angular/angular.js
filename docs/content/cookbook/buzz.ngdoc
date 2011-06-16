@@ -32,7 +32,7 @@ to retrieve Buzz activity and comments.
     };
     </script>
     <div ng:controller="BuzzController">
-     <input name="userId" value="misko.hevery"/>
+     <input name="userId" value="googlebuzz"/>
      <button ng:click="fetch()">fetch</button>
      <hr/>
      <div class="buzz" ng:repeat="item in activities.data.items">
