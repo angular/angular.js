@@ -113,7 +113,7 @@ angular's server}.
 
 * Let's add a new controller method to `PhoneCatCtrl`:
 
-          this.hello(name) = function(name) {
+          this.hello = function(name) {
               alert('Hello ' + (name || 'world') + '!');
           }
 
