@@ -40,7 +40,7 @@ describe('compiler', function(){
       compiler.compile('<div>A</div><span></span>');
     }).toThrow("Cannot compile multiple element roots: " + ie("<div>A</div><span></span>"));
     function ie(text) {
-      return msie ? uppercase(text) : text;
+      return msie && msie < 9 ? uppercase(text) : text;
     }
   });
 
