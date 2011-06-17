@@ -46,10 +46,6 @@ describe('widgets', function() {
     element('input[type="image"]', 'form image').click();
     expect(binding('button').fromJson()).toEqual({'count': 4});
 
-    element('#navigate a', "'Go to #route' link").click();
-    expect(binding('$location.hash')).toEqual('route');
-    expect(browser().location().hash()).toEqual('route');
-
     /**
      * Custom value parser for futures.
      */
