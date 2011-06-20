@@ -581,18 +581,17 @@ var angularArray = {
                                   {name:'Adam', phone:'555-5678', age:35},
                                   {name:'Julie', phone:'555-8765', age:29}]"></div>
 
-         <pre>Sorting predicate = {{predicate}}</pre>
+         <pre>Sorting predicate = {{predicate}} reverse = {{reverse}}</pre>
          <hr/>
+         [ <a href="" ng:click="predicate=''">unsorted</a> ]
          <table ng:init="predicate='-age'">
            <tr>
-             <th><a href="" ng:click="predicate = 'name'">Name</a>
-                 (<a href ng:click="predicate = '-name'">^</a>)</th>
-             <th><a href="" ng:click="predicate = 'phone'">Phone</a>
-                 (<a href ng:click="predicate = '-phone'">^</a>)</th>
-             <th><a href="" ng:click="predicate = 'age'">Age</a>
-                 (<a href ng:click="predicate = '-age'">^</a>)</th>
+             <th><a href="" ng:click="predicate = 'name'; reverse=false">Name</a>
+                 (<a href ng:click="predicate = '-name'; reverse=false">^</a>)</th>
+             <th><a href="" ng:click="predicate = 'phone'; reverse=!reverse">Phone</a></th>
+             <th><a href="" ng:click="predicate = 'age'; reverse=!reverse">Age</a></th>
            <tr>
-           <tr ng:repeat="friend in friends.$orderBy(predicate)">
+           <tr ng:repeat="friend in friends.$orderBy(predicate, reverse)">
              <td>{{friend.name}}</td>
              <td>{{friend.phone}}</td>
              <td>{{friend.age}}</td>
@@ -615,7 +614,7 @@ var angularArray = {
            expect(repeater('.doc-example-live table', 'friend in friends').column('friend.age')).
              toEqual(['35', '10', '29', '19', '21']);
 
-           element('.doc-example-live a:contains("Phone")+a:contains("^")').click();
+           element('.doc-example-live a:contains("Phone")').click();
            expect(repeater('.doc-example-live table', 'friend in friends').column('friend.phone')).
              toEqual(['555-9876', '555-8765', '555-5678', '555-4321', '555-1212']);
            expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
@@ -624,35 +623,34 @@ var angularArray = {
        </doc:scenario>
      </doc:example>
    */
-  //TODO: WTH is descend param for and how/when it should be used, how is it affected by +/- in
-  //      predicate? the code below is impossible to read and specs are not very good.
-  'orderBy':function(array, expression, descend) {
-    expression = isArray(expression) ? expression: [expression];
-    expression = map(expression, function($){
-      var descending = false, get = $ || identity;
-      if (isString($)) {
-        if (($.charAt(0) == '+' || $.charAt(0) == '-')) {
-          descending = $.charAt(0) == '-';
-          $ = $.substring(1);
+  'orderBy':function(array, sortPredicate, reverseOrder) {
+    if (!sortPredicate) return array;
+    sortPredicate = isArray(sortPredicate) ? sortPredicate: [sortPredicate];
+    sortPredicate = map(sortPredicate, function(predicate){
+      var descending = false, get = predicate || identity;
+      if (isString(predicate)) {
+        if ((predicate.charAt(0) == '+' || predicate.charAt(0) == '-')) {
+          descending = predicate.charAt(0) == '-';
+          predicate = predicate.substring(1);
         }
-        get = expressionCompile($).fnSelf;
+        get = expressionCompile(predicate).fnSelf;
       }
-      return reverse(function(a,b){
+      return reverseComparator(function(a,b){
         return compare(get(a),get(b));
       }, descending);
     });
     var arrayCopy = [];
     for ( var i = 0; i < array.length; i++) { arrayCopy.push(array[i]); }
-    return arrayCopy.sort(reverse(comparator, descend));
+    return arrayCopy.sort(reverseComparator(comparator, reverseOrder));
 
     function comparator(o1, o2){
-      for ( var i = 0; i < expression.length; i++) {
-        var comp = expression[i](o1, o2);
+      for ( var i = 0; i < sortPredicate.length; i++) {
+        var comp = sortPredicate[i](o1, o2);
         if (comp !== 0) return comp;
       }
       return 0;
     }
-    function reverse(comp, descending) {
+    function reverseComparator(comp, descending) {
       return toBoolean(descending)
           ? function(a,b){return comp(b,a);}
           : comp;
@@ -813,7 +811,7 @@ var angularFunction = {
  *  string is string
  *  number is number as string
  *  object is either call $hashKey function on object or assign unique hashKey id.
- * 
+ *
  * @param obj
  * @returns {String} hash string such that the same input will have the same hash string
  */
@@ -848,7 +846,7 @@ HashMap.prototype = {
     this[_key] = value;
     return oldValue;
   },
-  
+
   /**
    * @param key
    * @returns the value for the key
@@ -856,7 +854,7 @@ HashMap.prototype = {
   get: function(key) {
     return this[hashKey(key)];
   },
-  
+
   /**
    * Remove the key/value pair
    * @param key

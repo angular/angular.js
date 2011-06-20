@@ -160,15 +160,14 @@ describe('api', function(){
   });
 
   describe('orderBy', function(){
-    var orderBy = angular.Array.orderBy;
+    var orderBy;
+    beforeEach(function(){
+      orderBy = angular.Array.orderBy;
+    });
 
-    it('ShouldSortArray', function(){
-      assertEquals([2,15], angular.Array.orderBy([15,2]));
-      assertEquals(["a","B", "c"], angular.Array.orderBy(["c","B", "a"]));
-      assertEquals([15,"2"], angular.Array.orderBy([15,"2"]));
-      assertEquals(["15","2"], angular.Array.orderBy(["15","2"]));
-      assertJsonEquals([{a:2},{a:15}], angular.Array.orderBy([{a:15},{a:2}], 'a'));
-      assertJsonEquals([{a:2},{a:15}], angular.Array.orderBy([{a:15},{a:2}], 'a', "F"));
+    it('should return same array if predicate is falsy', function(){
+      var array = [1, 2, 3];
+      expect(orderBy(array)).toBe(array);
     });
 
     it('ShouldSortArrayInReverse', function(){
