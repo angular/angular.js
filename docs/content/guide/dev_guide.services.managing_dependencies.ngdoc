@@ -21,30 +21,33 @@ provided by angular's web framework:
 * @param {*} message Message to be logged.
 */
 angular.service('batchLog', function($defer, $log) {
-var messageQueue = [];
+  var messageQueue = [];
 
-function log() {
- if (messageQueue.length) {
-   $log('batchLog messages: ', messageQueue);
-   messageQueue = [];
- }
- $defer(log, 50000);
- }
+  function log() {
+    if (messageQueue.length) {
+      $log('batchLog messages: ', messageQueue);
+      messageQueue = [];
+    }
+    $defer(log, 50000);
+  }
 
-return function(message) {
- messageQueue.push(message);
-}
-}, {$inject: ['$defer', '$log']);
+  // start periodic checking
+  log();
+
+  return function(message) {
+    messageQueue.push(message);
+  }
+}, {$inject: ['$defer', '$log']});
 // note how we declared dependency on built-in $defer and $log services above
 
 /**
 * routeTemplateMonitor monitors each $route change and logs the current
 * template via the batchLog service.
 */
-angular.service('routeTemplateMonitor', function($route, batchLogbatchLog) {
-$route.onChange(function() {
- batchLog($route.current ? $route.current.template : null);
-});
+angular.service('routeTemplateMonitor', function($route, batchLog) {
+  $route.onChange(function() {
+    batchLog($route.current ? $route.current.template : null);
+  });
 }, {$inject: ['$route', 'batchLog'], $eager: true});
 </pre>
 
