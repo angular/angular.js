@@ -516,6 +516,13 @@ describe('angular', function(){
 	  angular.service('svc2', function(svc1) { return 'svc2-' + svc1; });
 	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
+
+    it('should eagerly instantiate a service if $eager is true', function() {
+      var log = [];
+      angular.service('svc1', function() { log.push('svc1'); }, {$eager: true});
+      angular.scope();
+      expect(log).toEqual(['svc1']);
+    });
   });
 
   describe('isDate', function() {
