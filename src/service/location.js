@@ -72,8 +72,8 @@ angularServiceInject("$location", function($browser) {
   var location = {update: update, updateHash: updateHash};
   var lastLocation = {}; // last state since last update().
 
-  $browser.onHashChange(bind(this, this.$apply, function() { //register
-    update($browser.getUrl());
+  $browser.onUrlChange(bind(this, this.$apply, function() { //register
+    update($browser.url());
   }))(); //initialize
 
   this.$watch(sync);
@@ -120,7 +120,7 @@ angularServiceInject("$location", function($browser) {
 
       location.href = composeHref(location);
     }
-    $browser.setUrl(location.href);
+    $browser.url(location.href);
     copy(location, lastLocation);
   }
 

@@ -2,7 +2,7 @@
 
 describe('browser', function(){
 
-  var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue;
+  var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue, sniffer;
 
   function fakeSetTimeout(fn) {
     return setTimeoutQueue.push(fn) - 1; //return position in the queue
@@ -26,8 +26,32 @@ describe('browser', function(){
     scripts = [];
     removedScripts = [];
     xhr = null;
+    sniffer = {history: true, hashchange: true};
+
+    // mock window, extract ?
     fakeWindow = {
-      location: {href:"http://server"},
+      events: {},
+      fire: function(name) {
+        forEach(this.events[name], function(listener) {
+          listener.apply(null, arguments);
+        });
+      },
+      addEventListener: function(name, listener) {
+        if (isUndefined(this.events[name])) {
+          this.events[name] = [];
+        }
+        this.events[name].push(listener);
+      },
+      attachEvent: function(name, listener) {
+        if (isUndefined(this.events[name])) {
+          this.events[name] = [];
+        }
+        this.events[name].push(listener);
+      },
+      removeEventListener: noop,
+      detachEvent: noop,
+      location: {href: 'http://server', replace: noop},
+      history: {replaceState: noop, pushState: noop},
       setTimeout: fakeSetTimeout,
       clearTimeout: fakeClearTimeout
     };
@@ -59,7 +83,7 @@ describe('browser', function(){
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
     browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, FakeXhr,
-                          fakeLog);
+                          fakeLog, sniffer);
   });
 
   it('should contain cookie cruncher', function() {
@@ -482,96 +506,162 @@ describe('browser', function(){
     });
   });
 
+  describe('url', function() {
+    var pushState, replaceState, locationReplace;
 
-  describe('url api', function() {
-    it('should use $browser poller to detect url changes when onhashchange event is unsupported',
-        function() {
-
-      fakeWindow = {
-        location: {href:"http://server"},
-        document: {},
-        setTimeout: fakeSetTimeout
-      };
-
-      browser = new Browser(fakeWindow, {}, {});
-      browser.startPoller = function() {};
-
-      var events = [];
-
-      browser.onHashChange(function() {
-        events.push('x');
-      });
-
-      fakeWindow.location.href = "http://server/#newHash";
-      expect(events).toEqual([]);
-      fakeSetTimeout.flush();
-      expect(events).toEqual(['x']);
-
-      //don't do anything if url hasn't changed
-      events = [];
-      fakeSetTimeout.flush();
-      expect(events).toEqual([]);
+    beforeEach(function() {
+      pushState = spyOn(fakeWindow.history, 'pushState');
+      replaceState = spyOn(fakeWindow.history, 'replaceState');
+      locationReplace = spyOn(fakeWindow.location, 'replace');
     });
 
+    it('should return current location.href', function() {
+      fakeWindow.location.href = 'http://test.com';
+      expect(browser.url()).toEqual('http://test.com');
 
-    it('should use onhashchange events to detect url changes when supported by browser',
-        function() {
-
-      var onHashChngListener;
-
-      fakeWindow = {location: {href:"http://server"},
-                    addEventListener: function(type, listener) {
-                      expect(type).toEqual('hashchange');
-                      onHashChngListener = listener;
-                    },
-                    attachEvent: function(type, listener) {
-                      expect(type).toEqual('onhashchange');
-                      onHashChngListener = listener;
-                    },
-                    removeEventListener: angular.noop,
-                    detachEvent: angular.noop,
-                    document: {}
-                   };
-      fakeWindow.onhashchange = true;
-
-      browser = new Browser(fakeWindow, {}, {});
-
-      var events = [],
-          event = {type: "hashchange"};
-
-      browser.onHashChange(function(e) {
-        events.push(e);
-      });
-
-      expect(events).toEqual([]);
-      onHashChngListener(event);
-
-      expect(events.length).toBe(1);
-      expect(events[0].originalEvent || events[0]).toBe(event); // please jQuery and jqLite
-
-      // clean up the jqLite cache so that the global afterEach doesn't complain
-      if (!jQuery) {
-        jqLite(fakeWindow).dealoc();
-      }
+      fakeWindow.location.href = 'https://another.com';
+      expect(browser.url()).toEqual('https://another.com');
     });
 
-    // asynchronous test
-    it('should fire onHashChange when location.hash change', function() {
-      var callback = jasmine.createSpy('onHashChange');
-      browser = new Browser(window, {}, {});
-      browser.onHashChange(callback);
+    it('should use history.pushState when available', function() {
+      sniffer.history = true;
+      browser.url('http://new.org');
 
-      window.location.hash = 'new-hash';
-      browser.addPollFn(function() {});
+      expect(pushState).toHaveBeenCalled();
+      expect(pushState.argsForCall[0][2]).toEqual('http://new.org');
 
-      waitsFor(function() {
-        return callback.callCount;
-      }, 'onHashChange callback to be called', 1000);
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server');
+    });
 
-      runs(function() {
-        if (!jQuery) jqLite(window).dealoc();
-        window.location.hash = '';
-      });
+    it('should use history.replaceState when available', function() {
+      sniffer.history = true;
+      browser.url('http://new.org', true);
+
+      expect(replaceState).toHaveBeenCalled();
+      expect(replaceState.argsForCall[0][2]).toEqual('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server');
+    });
+
+    it('should set location.href when pushState not available', function() {
+      sniffer.history = false;
+      browser.url('http://new.org');
+
+      expect(fakeWindow.location.href).toEqual('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+    });
+
+    it('should use location.replace when history.replaceState not available', function() {
+      sniffer.history = false;
+      browser.url('http://new.org', true);
+
+      expect(locationReplace).toHaveBeenCalledWith('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server');
+    });
+
+    it('should return $browser to allow chaining', function() {
+      expect(browser.url('http://any.com')).toBe(browser);
+    });
+  });
+
+  describe('urlChange', function() {
+    var callback;
+
+    beforeEach(function() {
+      callback = jasmine.createSpy('onUrlChange');
+    });
+
+    afterEach(function() {
+      if (!jQuery) jqLite(fakeWindow).dealoc();
+    });
+
+    it('should return registered callback', function() {
+      expect(browser.onUrlChange(callback)).toBe(callback);
+    });
+
+    it('should forward popstate event with new url when history supported', function() {
+      sniffer.history = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      fakeWindow.fire('popstate');
+      expect(callback).toHaveBeenCalledWith('http://server/new');
+
+      fakeWindow.fire('hashchange');
+      fakeSetTimeout.flush();
+      expect(callback.callCount).toBe(1);
+    });
+
+    it('should forward only popstate event when both history and hashchange supported', function() {
+      sniffer.history = true;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      fakeWindow.fire('popstate');
+      expect(callback).toHaveBeenCalledWith('http://server/new');
+
+      fakeWindow.fire('hashchange');
+      fakeSetTimeout.flush();
+      expect(callback.callCount).toBe(1);
+    });
+
+    it('should forward hashchange event with new url when only hashchange supported', function() {
+      sniffer.history = false;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      fakeWindow.fire('hashchange');
+      expect(callback).toHaveBeenCalledWith('http://server/new');
+
+      fakeWindow.fire('popstate');
+      fakeSetTimeout.flush();
+      expect(callback.callCount).toBe(1);
+    });
+
+    it('should use polling when neither history nor hashchange supported', function() {
+      sniffer.history = false;
+      sniffer.hashchange = false;
+      browser.onUrlChange(callback);
+
+      fakeWindow.location.href = 'http://server.new';
+      fakeSetTimeout.flush();
+      expect(callback).toHaveBeenCalledWith('http://server.new');
+
+      fakeWindow.fire('popstate');
+      fakeWindow.fire('hashchange');
+      expect(callback.callCount).toBe(1);
+    });
+
+    it('should not fire urlChange if changed by browser.url method (polling)', function() {
+      sniffer.history = false;
+      sniffer.hashchange = false;
+      browser.onUrlChange(callback);
+      browser.url('http://new.com');
+
+      fakeSetTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should not fire urlChange if changed by browser.url method (hashchange)', function() {
+      sniffer.history = false;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      browser.url('http://new.com');
+
+      fakeWindow.fire('hashchange');
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 

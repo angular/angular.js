@@ -40,7 +40,7 @@ describe("ScenarioSpec: Compilation", function(){
       var $location = scope.$service('$location');
       var $browser = scope.$service('$browser');
       expect($location.hashSearch.book).toBeUndefined();
-      $browser.setUrl(url);
+      $browser.url(url);
       $browser.poll();
       expect($location.hashSearch.book).toEqual('moby');
     });

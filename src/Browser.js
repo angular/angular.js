@@ -34,15 +34,16 @@ var XHR = window.XMLHttpRequest || function () {
  * @param {object} body jQuery wrapped document.body.
  * @param {function()} XHR XMLHttpRequest constructor.
  * @param {object} $log console.log or an object with the same interface.
+ * @param {object} $sniffer $sniffer service
  */
-function Browser(window, document, body, XHR, $log) {
+function Browser(window, document, body, XHR, $log, $sniffer) {
   var self = this,
       rawDocument = document[0],
       location = window.location,
+      history = window.history,
       setTimeout = window.setTimeout,
       clearTimeout = window.clearTimeout,
-      pendingDeferIds = {},
-      lastLocationUrl;
+      pendingDeferIds = {};
 
   self.isMock = false;
 
@@ -194,78 +195,103 @@ function Browser(window, document, body, XHR, $log) {
   // URL API
   //////////////////////////////////////////////////////////////
 
+  var lastBrowserUrl = location.href;
+
   /**
    * @workInProgress
    * @ngdoc method
-   * @name angular.service.$browser#setUrl
+   * @name angular.service.$browser#url
    * @methodOf angular.service.$browser
    *
-   * @param {string} url New url
-   *
    * @description
-   * Sets browser's url
+   * GETTER:
+   * Without any argument, this method just returns current value of location.href.
+   *
+   * SETTER:
+   * With at least one argument, this method sets url to new value.
+   * If html5 history api supported, pushState/replaceState is used, otherwise
+   * location.href/location.replace is used.
+   * Returns its own instance to allow chaining
+   *
+   * NOTE: this api is intended for use only by the $location service. Please use the
+   * {@link angular.service.$location $location service} to change url.
+   *
+   * @param {string} url New url (when used as setter)
+   * @param {boolean=} replace Should new url replace current history record ?
    */
-  self.setUrl = function(url) {
-
-    var existingURL = lastLocationUrl;
-    if (!existingURL.match(/#/)) existingURL += '#';
-    if (!url.match(/#/)) url += '#';
-    if (existingURL != url) {
-      location.href = url;
+  self.url = function(url, replace) {
+    // setter
+    if (url) {
+      lastBrowserUrl = url;
+      if ($sniffer.history) {
+        if (replace) history.replaceState(null, '', url);
+        else history.pushState(null, '', url);
+      } else {
+        if (replace) location.replace(url);
+        else location.href = url;
+      }
+      return self;
+    // getter
+    } else {
+      return location.href;
     }
-   };
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#getUrl
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Get current browser's url
-   *
-   * @returns {string} Browser's url
-   */
-  self.getUrl = function() {
-    return lastLocationUrl = location.href;
   };
 
+  var urlChangeListeners = [],
+      urlChangeInit = false;
+
+  function fireUrlChange() {
+    if (lastBrowserUrl == self.url()) return;
+
+    lastBrowserUrl = self.url();
+    forEach(urlChangeListeners, function(listener) {
+      listener(self.url());
+    });
+  }
 
   /**
    * @workInProgress
    * @ngdoc method
-   * @name angular.service.$browser#onHashChange
+   * @name angular.service.$browser#onUrlChange
    * @methodOf angular.service.$browser
+   * @TODO(vojta): refactor to use node's syntax for events
    *
    * @description
-   * Detects if browser support onhashchange events and register a listener otherwise registers
-   * $browser poller. The `listener` will then get called when the hash changes.
+   * Register callback function that will be called, when url changes.
    *
-   * The listener gets called with either HashChangeEvent object or simple object that also contains
-   * `oldURL` and `newURL` properties.
+   * It's only called when the url is changed by outside of angular:
+   * - user types different url into address bar
+   * - user clicks on history (forward/back) button
+   * - user clicks on a link
    *
-   * Note: this api is intended for use only by the $location service. Please use the
-   * {@link angular.service.$location $location service} to monitor hash changes in angular apps.
+   * It's not called when url is changed by $browser.url() method
    *
-   * @param {function(event)} listener Listener function to be called when url hash changes.
-   * @return {function()} Returns the registered listener fn - handy if the fn is anonymous.
+   * The listener gets called with new url as parameter.
+   *
+   * NOTE: this api is intended for use only by the $location service. Please use the
+   * {@link angular.service.$location $location service} to monitor url changes in angular apps.
+   *
+   * @param {function(string)} listener Listener function to be called when url changes.
+   * @return {function(string)} Returns the registered listener fn - handy if the fn is anonymous.
    */
-  self.onHashChange = function(listener) {
-    // IE8 comp mode returns true, but doesn't support hashchange event
-    var dm = window.document.documentMode;
-    if ('onhashchange' in window && (isUndefined(dm) || dm >= 8)) {
-      jqLite(window).bind('hashchange', listener);
-    } else {
-      var lastBrowserUrl = self.getUrl();
+  self.onUrlChange = function(callback) {
+    if (!urlChangeInit) {
+      // We listen on both (hashchange/popstate) when available, as some browsers (e.g. Opera)
+      // don't fire popstate when user change the address bar and don't fire hashchange when url
+      // changed by push/replaceState
 
-      self.addPollFn(function() {
-        if (lastBrowserUrl != self.getUrl()) {
-          listener();
-          lastBrowserUrl = self.getUrl();
-        }
-      });
+      // html5 history api - popstate event
+      if ($sniffer.history) jqLite(window).bind('popstate', fireUrlChange);
+      // hashchange event
+      if ($sniffer.hashchange) jqLite(window).bind('hashchange', fireUrlChange);
+      // polling
+      else self.addPollFn(fireUrlChange);
+
+      urlChangeInit = true;
     }
-    return listener;
+
+    urlChangeListeners.push(callback);
+    return callback;
   };
 
   //////////////////////////////////////////////////////////////

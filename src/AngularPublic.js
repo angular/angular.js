@@ -4,8 +4,9 @@ var browserSingleton;
 
 angularService('$browser', function($log){
   if (!browserSingleton) {
+    // TODO(vojta): inject $sniffer service when implemented
     browserSingleton = new Browser(window, jqLite(window.document), jqLite(window.document.body),
-                                   XHR, $log);
+                                   XHR, $log, {});
     browserSingleton.bind();
   }
   return browserSingleton;

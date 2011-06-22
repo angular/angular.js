@@ -32,24 +32,24 @@ describe('$location', function() {
 
   it('should update location when browser url changed', function() {
     var origUrl = $location.href;
-    expect(origUrl).toEqual($browser.getUrl());
+    expect(origUrl).toEqual($browser.url());
 
     var newUrl = 'http://somenew/url#foo';
-    $browser.setUrl(newUrl);
+    $browser.url(newUrl);
     $browser.poll();
     expect($location.href).toEqual(newUrl);
   });
 
 
   it('should update browser at the end of $eval', function() {
-    var origBrowserUrl = $browser.getUrl();
+    var origBrowserUrl = $browser.url();
     $location.update('http://www.angularjs.org/');
     $location.update({path: '/a/b'});
     expect($location.href).toEqual('http://www.angularjs.org/a/b');
-    expect($browser.getUrl()).toEqual('http://www.angularjs.org/a/b');
+    expect($browser.url()).toEqual('http://www.angularjs.org/a/b');
     $location.path = '/c';
     scope.$digest();
-    expect($browser.getUrl()).toEqual('http://www.angularjs.org/c');
+    expect($browser.url()).toEqual('http://www.angularjs.org/c');
   });
 
 
