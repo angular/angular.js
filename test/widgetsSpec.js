@@ -1183,7 +1183,7 @@ describe("widget", function(){
       var myApp = angular.scope();
       var $browser = myApp.$service('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
-      $browser.setUrl('http://server/#/foo');
+      $browser.url('http://server/#/foo');
 
       var $route = myApp.$service('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});

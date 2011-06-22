@@ -89,19 +89,19 @@ function MockBrowser() {
       requests = [];
 
   this.isMock = true;
-  self.url = "http://server";
-  self.lastUrl = self.url; // used by url polling fn
+  self.$$url = "http://server";
+  self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
 
   // register url polling fn
 
-  self.onHashChange = function(listener) {
+  self.onUrlChange = function(listener) {
     self.pollFns.push(
       function() {
-        if (self.lastUrl != self.url) {
-          self.lastUrl = self.url;
-          listener();
+        if (self.$$lastUrl != self.$$url) {
+          self.$$lastUrl = self.$$url;
+          listener(self.$$url);
         }
       }
     );
@@ -326,12 +326,13 @@ MockBrowser.prototype = {
   hover: function(onHover) {
   },
 
-  getUrl: function(){
-    return this.url;
-  },
+  url: function(url, replace) {
+    if (url) {
+      this.$$url = url;
+      return this;
+    }
 
-  setUrl: function(url){
-    this.url = url;
+    return this.$$url;
   },
 
   cookies:  function(name, value) {
