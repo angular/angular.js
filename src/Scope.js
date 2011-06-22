@@ -525,7 +525,7 @@ function createScope(parent, providers, instanceCache) {
      * @param {string} serviceId String ID of the service to return.
      * @returns {*} Value, object or function returned by the service factory function if any.
      */
-    instance.$service = createInjector(instance, providers, instanceCache);
+    (instance.$service = createInjector(instance, providers, instanceCache)).eager();
   }
 
   $log = instance.$service('$log');
