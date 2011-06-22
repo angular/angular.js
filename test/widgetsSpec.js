@@ -893,7 +893,11 @@ describe("widget", function(){
     it('should expose iterator position as $position when iterating over arrays', function() {
       var scope = compile('<ul><li ng:repeat="item in items" ' +
                                   'ng:bind="item + \':\' + $position + \'|\'"></li></ul>');
-      scope.items = ['misko', 'shyam', 'doug', 'frodo'];
+      scope.items = ['misko', 'shyam', 'doug'];
+      scope.$eval();
+      expect(element.text()).toEqual('misko:first|shyam:middle|doug:last|');
+
+      scope.items.push('frodo');
       scope.$eval();
       expect(element.text()).toEqual('misko:first|shyam:middle|doug:middle|frodo:last|');
     });
