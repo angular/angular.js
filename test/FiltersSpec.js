@@ -149,6 +149,12 @@ describe('filter', function() {
 
       expect(filter.date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
                        toEqual('2010-09-03 12=12:05:08pm0500');
+
+      expect(filter.date(noon, "EEE, MMM d, yyyy")).
+                       toEqual('Fri, Sep 3, 2010');
+
+      expect(filter.date(noon, "EEEE, MMMMM dd, yyyy")).
+                       toEqual('Friday, September 03, 2010');
     });
 
     it('should be able to parse ISO 8601 dates/times using', function() {

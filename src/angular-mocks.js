@@ -385,9 +385,12 @@ function TzDate(offset, timestamp) {
     return this.origDate.getUTCSeconds();
   };
 
+  this.getDay = function() {
+    return this.origDate.getDay();
+  };
 
   //hide all methods not implemented in this mock that the Date prototype exposes
-  var unimplementedMethods = ['getDay', 'getMilliseconds', 'getTime', 'getUTCDay',
+  var unimplementedMethods = ['getMilliseconds', 'getTime', 'getUTCDay',
       'getUTCMilliseconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
       'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
       'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
