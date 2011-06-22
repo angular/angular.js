@@ -10,6 +10,7 @@
 ### Bug Fixes
 - Number filter would return incorrect value when fractional part had leading zeros.
 - Issue #399: return unsorted array if no predicate
+- Fixed issues with incorrect value of $position in ng:repeat when collection size changes
 
 
 ### Breaking changes
