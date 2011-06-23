@@ -168,31 +168,53 @@ function dateGetter(name, size, offset, trim) {
   };
 }
 
+function dateStrGetter(name, shortForm) {
+  return function(date) {
+    var value = date['get' + name]();
+
+    if(name == 'Month') {
+      value = MONTH[value];
+    } else {
+      value = DAY[value];
+    }
+
+    return shortForm ? value.substr(0,3) : value;
+  };
+}
+
+var DAY = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'.split(',');
+
+var MONTH = 'January,February,March,April,May,June,July,August,September,October,November,December'.
+             split(',');
 
 var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
-  yy:   dateGetter('FullYear', 2, 0, true),
-  MM:   dateGetter('Month', 2, 1),
-   M:   dateGetter('Month', 1, 1),
-  dd:   dateGetter('Date', 2),
-   d:   dateGetter('Date', 1),
-  HH:   dateGetter('Hours', 2),
-   H:   dateGetter('Hours', 1),
-  hh:   dateGetter('Hours', 2, -12),
-   h:   dateGetter('Hours', 1, -12),
-  mm:   dateGetter('Minutes', 2),
-   m:   dateGetter('Minutes', 1),
-  ss:   dateGetter('Seconds', 2),
-   s:   dateGetter('Seconds', 1),
-  a:    function(date){return date.getHours() < 12 ? 'am' : 'pm';},
-  Z:    function(date){
+    yy: dateGetter('FullYear', 2, 0, true),
+ MMMMM: dateStrGetter('Month'),
+   MMM: dateStrGetter('Month', true),
+    MM: dateGetter('Month', 2, 1),
+     M: dateGetter('Month', 1, 1),
+    dd: dateGetter('Date', 2),
+     d: dateGetter('Date', 1),
+    HH: dateGetter('Hours', 2),
+     H: dateGetter('Hours', 1),
+    hh: dateGetter('Hours', 2, -12),
+     h: dateGetter('Hours', 1, -12),
+    mm: dateGetter('Minutes', 2),
+     m: dateGetter('Minutes', 1),
+    ss: dateGetter('Seconds', 2),
+     s: dateGetter('Seconds', 1),
+  EEEE: dateStrGetter('Day'),
+   EEE: dateStrGetter('Day', true),
+     a: function(date){return date.getHours() < 12 ? 'am' : 'pm';},
+     Z: function(date){
           var offset = date.getTimezoneOffset();
           return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
         }
 };
 
 
-var DATE_FORMATS_SPLIT = /([^yMdHhmsaZ]*)(y+|M+|d+|H+|h+|m+|s+|a|Z)(.*)/;
+var DATE_FORMATS_SPLIT = /([^yMdHhmsaZE]*)(E+|y+|M+|d+|H+|h+|m+|s+|a|Z)(.*)/;
 var NUMBER_STRING = /^\d+$/;
 
 
@@ -209,10 +231,14 @@ var NUMBER_STRING = /^\d+$/;
  *
  *   * `'yyyy'`: 4 digit representation of year e.g. 2010
  *   * `'yy'`: 2 digit representation of year, padded (00-99)
+ *   * `'MMMMM'`: Month in year (January‒December)
+ *   * `'MMM'`: Month in year (Jan - Dec)
  *   * `'MM'`: Month in year, padded (01‒12)
  *   * `'M'`: Month in year (1‒12)
  *   * `'dd'`: Day in month, padded (01‒31)
  *   * `'d'`: Day in month (1-31)
+ *   * `'EEEE'`: Day in Week,(Sunday‒Saturday)
+ *   * `'EEE'`: Day in Week, (Sun-Sat)
  *   * `'HH'`: Hour in day, padded (00‒23)
  *   * `'H'`: Hour in day (0-23)
  *   * `'hh'`: Hour in am/pm, padded (01‒12)
