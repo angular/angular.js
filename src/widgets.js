@@ -1104,7 +1104,7 @@ angularWidget('a', function() {
  */
 angularWidget('@ng:repeat', function(expression, element){
   element.removeAttr('ng:repeat');
-  element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' --!>'));
+  element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' -->'));
   var linker = this.compile(element);
   return function(iterStartElement){
     var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
