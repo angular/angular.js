@@ -115,6 +115,7 @@
              'service/resource.js',
              'service/route.js',
              'service/routeParams.js',
+             'service/sniffer.js',
              'service/window.js',
              'service/xhr.bulk.js',
              'service/xhr.cache.js',
