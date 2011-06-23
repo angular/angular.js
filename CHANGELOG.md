@@ -9,6 +9,8 @@
 
 ### Bug Fixes
 - Number filter would return incorrect value when fractional part had leading zeros.
+- Issue #399: return unsorted array if no predicate
+- Fixed issues with incorrect value of $position in ng:repeat when collection size changes
 
 
 ### Breaking changes
@@ -17,6 +19,8 @@
   explicitly specified using $inject property.
 - Dynamic Iteration (ng:repeater) on <option> elements is no longer supported. Use ng:options
 - Removal of index formatter since its only use was with repeated options (see above)
+- Not providing predicate to orderBy will now return the unsorted array, instead of ordering by
+  natural order.
 
 
 

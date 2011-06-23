@@ -1143,6 +1143,9 @@ angularWidget('@ng:repeat', function(expression, element){
             childScope[valueIdent] = collection[key];
             if (keyIdent) childScope[keyIdent] = key;
             lastIterElement = childScope.$element;
+            childScope.$position = index == 0
+                ? 'first'
+                : (index == collectionLength - 1 ? 'last' : 'middle');
             childScope.$eval();
           } else {
             // grow children
