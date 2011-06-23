@@ -1,60 +1,61 @@
 'use strict';
 
-describe('browser', function(){
+function MockWindow() {
+  var events = {};
+  var timeouts = this.timeouts = [];
 
-  var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue, sniffer;
+  this.setTimeout = function(fn) {
+    return timeouts.push(fn) - 1;
+  };
 
-  function fakeSetTimeout(fn) {
-    return setTimeoutQueue.push(fn) - 1; //return position in the queue
-  }
+  this.clearTimeout = function(id) {
+    timeouts[id] = noop;
+  };
 
-  function fakeClearTimeout(deferId) {
-    setTimeoutQueue[deferId] = noop; //replace fn with noop to preserve other deferId indexes
-  }
+  this.setTimeout.flush = function() {
+    var length = timeouts.length;
+    while (length-- > 0) timeouts.shift()();
+  };
 
-  fakeSetTimeout.flush = function() {
-    var currentTimeoutQueue = setTimeoutQueue;
-    setTimeoutQueue = [];
-    forEach(currentTimeoutQueue, function(fn) {
-      fn();
+  this.addEventListener = function(name, listener) {
+    if (isUndefined(events[name])) events[name] = [];
+    events[name].push(listener);
+  };
+
+  this.attachEvent = function(name, listener) {
+    this.addEventListener(name.substr(2), listener);
+  };
+
+  this.removeEventListener = noop;
+  this.detachEvent = noop;
+
+  this.fire = function(name) {
+    forEach(events[name], function(fn) {
+      fn({type: name}); // type to make jQuery happy
     });
   };
 
+  this.location = {
+    href: 'http://server',
+    replace: noop
+  };
+
+  this.history = {
+    replaceState: noop,
+    pushState: noop
+  };
+}
+
+describe('browser', function(){
+
+  var browser, fakeWindow, xhr, logs, scripts, removedScripts, sniffer;
 
   beforeEach(function(){
-    setTimeoutQueue = [];
     scripts = [];
     removedScripts = [];
     xhr = null;
     sniffer = {history: true, hashchange: true};
-
-    // mock window, extract ?
-    fakeWindow = {
-      events: {},
-      fire: function(name) {
-        forEach(this.events[name], function(listener) {
-          listener.apply(null, arguments);
-        });
-      },
-      addEventListener: function(name, listener) {
-        if (isUndefined(this.events[name])) {
-          this.events[name] = [];
-        }
-        this.events[name].push(listener);
-      },
-      attachEvent: function(name, listener) {
-        if (isUndefined(this.events[name])) {
-          this.events[name] = [];
-        }
-        this.events[name].push(listener);
-      },
-      removeEventListener: noop,
-      detachEvent: noop,
-      location: {href: 'http://server', replace: noop},
-      history: {replaceState: noop, pushState: noop},
-      setTimeout: fakeSetTimeout,
-      clearTimeout: fakeClearTimeout
-    };
+    fakeWindow = new MockWindow();
 
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
                      removeChild: function(node){removedScripts.push(node);}}];
@@ -226,22 +227,24 @@ describe('browser', function(){
 
   describe('defer', function() {
     it('should execute fn asynchroniously via setTimeout', function() {
-      var counter = 0;
-      browser.defer(function() {counter++;});
-      expect(counter).toBe(0);
+      var callback = jasmine.createSpy('deferred');
 
-      fakeSetTimeout.flush();
-      expect(counter).toBe(1);
+      browser.defer(callback);
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
 
     it('should update outstandingRequests counter', function() {
-      var callback = jasmine.createSpy('callback');
+      var callback = jasmine.createSpy('deferred');
+
       browser.defer(callback);
       expect(callback).not.toHaveBeenCalled();
 
-      fakeSetTimeout.flush();
-      expect(callback).toHaveBeenCalled();
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
 
@@ -265,7 +268,7 @@ describe('browser', function(){
         expect(log).toEqual([]);
         browser.defer.cancel(deferId1);
         browser.defer.cancel(deferId3);
-        fakeSetTimeout.flush();
+        fakeWindow.setTimeout.flush();
         expect(log).toEqual(['ok']);
       });
     });
@@ -482,21 +485,21 @@ describe('browser', function(){
       browser.addPollFn(function(){log+='a';});
       browser.addPollFn(function(){log+='b';});
       expect(log).toEqual('');
-      fakeSetTimeout.flush();
+      fakeWindow.setTimeout.flush();
       expect(log).toEqual('ab');
-      fakeSetTimeout.flush();
+      fakeWindow.setTimeout.flush();
       expect(log).toEqual('abab');
     });
 
     it('should startPoller', function(){
-      expect(setTimeoutQueue.length).toEqual(0);
+      expect(fakeWindow.timeouts.length).toEqual(0);
 
       browser.addPollFn(function(){});
-      expect(setTimeoutQueue.length).toEqual(1);
+      expect(fakeWindow.timeouts.length).toEqual(1);
 
       //should remain 1 as it is the check fn
       browser.addPollFn(function(){});
-      expect(setTimeoutQueue.length).toEqual(1);
+      expect(fakeWindow.timeouts.length).toEqual(1);
     });
 
     it('should return fn that was passed into addPollFn', function() {
@@ -527,7 +530,7 @@ describe('browser', function(){
       sniffer.history = true;
       browser.url('http://new.org');
 
-      expect(pushState).toHaveBeenCalled();
+      expect(pushState).toHaveBeenCalledOnce();
       expect(pushState.argsForCall[0][2]).toEqual('http://new.org');
 
       expect(replaceState).not.toHaveBeenCalled();
@@ -539,7 +542,7 @@ describe('browser', function(){
       sniffer.history = true;
       browser.url('http://new.org', true);
 
-      expect(replaceState).toHaveBeenCalled();
+      expect(replaceState).toHaveBeenCalledOnce();
       expect(replaceState.argsForCall[0][2]).toEqual('http://new.org');
 
       expect(pushState).not.toHaveBeenCalled();
@@ -598,8 +601,8 @@ describe('browser', function(){
       expect(callback).toHaveBeenCalledWith('http://server/new');
 
       fakeWindow.fire('hashchange');
-      fakeSetTimeout.flush();
-      expect(callback.callCount).toBe(1);
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
     it('should forward only popstate event when both history and hashchange supported', function() {
@@ -612,8 +615,8 @@ describe('browser', function(){
       expect(callback).toHaveBeenCalledWith('http://server/new');
 
       fakeWindow.fire('hashchange');
-      fakeSetTimeout.flush();
-      expect(callback.callCount).toBe(1);
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
     it('should forward hashchange event with new url when only hashchange supported', function() {
@@ -626,8 +629,8 @@ describe('browser', function(){
       expect(callback).toHaveBeenCalledWith('http://server/new');
 
       fakeWindow.fire('popstate');
-      fakeSetTimeout.flush();
-      expect(callback.callCount).toBe(1);
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
     it('should use polling when neither history nor hashchange supported', function() {
@@ -636,12 +639,12 @@ describe('browser', function(){
       browser.onUrlChange(callback);
 
       fakeWindow.location.href = 'http://server.new';
-      fakeSetTimeout.flush();
+      fakeWindow.setTimeout.flush();
       expect(callback).toHaveBeenCalledWith('http://server.new');
 
       fakeWindow.fire('popstate');
       fakeWindow.fire('hashchange');
-      expect(callback.callCount).toBe(1);
+      expect(callback).toHaveBeenCalledOnce();
     });
 
     it('should not fire urlChange if changed by browser.url method (polling)', function() {
@@ -650,7 +653,7 @@ describe('browser', function(){
       browser.onUrlChange(callback);
       browser.url('http://new.com');
 
-      fakeSetTimeout.flush();
+      fakeWindow.setTimeout.flush();
       expect(callback).not.toHaveBeenCalled();
     });
 
