@@ -14,7 +14,7 @@ function SiteMap(docs){
     docs.forEach(function(doc){
       map.push(' <url><loc>http://docs.angularjs.org/#!/' +
                             encode(doc.section) + '/' +
-                            encode(doc.name) +
+                            encode(doc.id) +
                      '</loc><changefreq>weekly</changefreq></url>');
     });
     map.push('</urlset>');
