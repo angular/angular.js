@@ -304,6 +304,13 @@ function MockBrowser() {
 }
 MockBrowser.prototype = {
 
+/**
+  * @name angular.mock.service.$browser#poll
+  * @methodOf angular.mock.service.$browser
+  *
+  * @description
+  * run all fns in pollFns
+  */
   poll: function poll(){
     angular.forEach(this.pollFns, function(pollFn){
       pollFn();

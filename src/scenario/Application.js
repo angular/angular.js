@@ -89,7 +89,6 @@ angular.scenario.Application.prototype.executeAction = function(action) {
     return action.call(this, $window, _jQuery($window.document));
   }
   var $browser = $window.angular.service.$browser();
-  $browser.poll();
   $browser.notifyWhenNoOutstandingRequests(function() {
     action.call(self, $window, _jQuery($window.document));
   });
