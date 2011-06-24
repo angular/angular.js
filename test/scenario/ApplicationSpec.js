@@ -121,9 +121,6 @@ describe('angular.scenario.Application', function() {
     };
     testWindow.angular.service.$browser = function() {
       return {
-        poll: function() {
-          polled = true;
-        },
         notifyWhenNoOutstandingRequests: function(fn) {
           handlers.push(fn);
         }
@@ -137,7 +134,6 @@ describe('angular.scenario.Application', function() {
       expect($document).toBeDefined();
       expect($document[0].className).toEqual('test-foo');
     });
-    expect(polled).toBeTruthy();
     expect(handlers.length).toEqual(1);
     handlers[0]();
   });

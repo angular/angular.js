@@ -18,8 +18,9 @@ var XHR_HEADERS = {
 };
 
 /**
- * @private
- * @name Browser
+ * @ngdoc service
+ * @name angular.service.$browser
+ * @requires $log
  *
  * @description
  * Constructor for the object exposed as $browser service.
@@ -29,6 +30,11 @@ var XHR_HEADERS = {
  * - hide all the global state in the browser caused by the window object
  * - abstract away all the browser specific features and inconsistencies
  *
+ * For tests we provide {@link angular.mock.service.$browser mock implementation} of the `$browser`
+ * service, which can be used for convenient testing of the application without the interaction with
+ * the real browser apis.
+ */
+/**
  * @param {object} window The global window object.
  * @param {object} document jQuery wrapped document.
  * @param {object} body jQuery wrapped document.body.
@@ -131,6 +137,8 @@ function Browser(window, document, body, XHR, $log) {
    * @param {function()} callback Function that will be called when no outstanding request
    */
   self.notifyWhenNoOutstandingRequests = function(callback) {
+    //force browser to execute fns in pollFns
+    forEach(pollFns, function(pollFn){ pollFn(); });
     if (outstandingRequestCount === 0) {
       callback();
     } else {
@@ -147,16 +155,6 @@ function Browser(window, document, body, XHR, $log) {
   /**
    * @workInProgress
    * @ngdoc method
-   * @name angular.service.$browser#poll
-   * @methodOf angular.service.$browser
-   */
-  self.poll = function() {
-    forEach(pollFns, function(pollFn){ pollFn(); });
-  };
-
-  /**
-   * @workInProgress
-   * @ngdoc method
    * @name angular.service.$browser#addPollFn
    * @methodOf angular.service.$browser
    *
@@ -169,14 +167,12 @@ function Browser(window, document, body, XHR, $log) {
    * @returns {function()} the added function
    */
   self.addPollFn = function(fn) {
-    if (!pollTimeout) self.startPoller(100, setTimeout);
+    if (!pollTimeout) startPoller(100, setTimeout);
     pollFns.push(fn);
     return fn;
   };
 
   /**
-   * @workInProgress
-   * @ngdoc method
    * @name angular.service.$browser#startPoller
    * @methodOf angular.service.$browser
    *
@@ -187,9 +183,9 @@ function Browser(window, document, body, XHR, $log) {
    * Configures the poller to run in the specified intervals, using the specified
    * setTimeout fn and kicks it off.
    */
-  self.startPoller = function(interval, setTimeout) {
-    (function check(){
-      self.poll();
+  function startPoller(interval, setTimeout) {
+    (function check() {
+      forEach(pollFns, function(pollFn){ pollFn(); });
       pollTimeout = setTimeout(check, interval);
     })();
   };
