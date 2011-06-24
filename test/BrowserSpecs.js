@@ -8,7 +8,9 @@ describe('browser', function(){
   }
 
   fakeSetTimeout.flush = function() {
-    forEach(setTimeoutQueue, function(fn) {
+    var currentTimeoutQueue = setTimeoutQueue;
+    setTimeoutQueue = [];
+    forEach(currentTimeoutQueue, function(fn) {
       fn();
     });
   };
@@ -364,53 +366,33 @@ describe('browser', function(){
   });
 
   describe('poller', function(){
-    beforeEach(function() {
-      spyOn(browser, 'startPoller');
-    });
 
-    it('should call all fns on poll', function(){
+    it('should call functions in pollFns in regular intervals', function(){
       var log = '';
       browser.addPollFn(function(){log+='a';});
       browser.addPollFn(function(){log+='b';});
       expect(log).toEqual('');
-      browser.poll();
+      fakeSetTimeout.flush();
       expect(log).toEqual('ab');
-      browser.poll();
+      fakeSetTimeout.flush();
       expect(log).toEqual('abab');
     });
 
     it('should startPoller', function(){
-      var log = '';
-      var setTimeoutSpy = jasmine.createSpy('setTimeout');
-      browser.addPollFn(function(){log+='.';});
-      browser.startPoller.andCallThrough();
-      browser.startPoller(50, setTimeoutSpy);
-      expect(log).toEqual('.');
-      expect(setTimeoutSpy.mostRecentCall.args[1]).toEqual(50);
-      setTimeoutSpy.mostRecentCall.args[0]();
-      expect(log).toEqual('..');
+      expect(setTimeoutQueue.length).toEqual(0);
+
+      browser.addPollFn(function(){});
+      expect(setTimeoutQueue.length).toEqual(1);
+
+      //should remain 1 as it is the check fn
+      browser.addPollFn(function(){});
+      expect(setTimeoutQueue.length).toEqual(1);
     });
 
     it('should return fn that was passed into addPollFn', function() {
       var fn = function() { return 1; };
       var returnedFn = browser.addPollFn(fn);
       expect(returnedFn).toBe(fn);
-    });
-
-    it('should auto start poller when first fn registered', function() {
-      browser.addPollFn(function() {});
-
-      expect(browser.startPoller).toHaveBeenCalled();
-      expect(browser.startPoller.callCount).toBe(1);
-    });
-
-    it('should auto start poller only when first fn registered', function() {
-      browser.startPoller.andCallThrough();
-      browser.addPollFn(function() {});
-      browser.addPollFn(function() {});
-      browser.addPollFn(function() {});
-
-      expect(browser.startPoller.callCount).toBe(1);
     });
   });
 
@@ -421,7 +403,8 @@ describe('browser', function(){
 
       fakeWindow = {
         location: {href:"http://server"},
-        document: {}
+        document: {},
+        setTimeout: fakeSetTimeout
       };
 
       browser = new Browser(fakeWindow, {}, {});
@@ -435,12 +418,12 @@ describe('browser', function(){
 
       fakeWindow.location.href = "http://server/#newHash";
       expect(events).toEqual([]);
-      browser.poll();
+      fakeSetTimeout.flush();
       expect(events).toEqual(['x']);
 
       //don't do anything if url hasn't changed
       events = [];
-      browser.poll();
+      fakeSetTimeout.flush();
       expect(events).toEqual([]);
     });
 
@@ -493,7 +476,7 @@ describe('browser', function(){
       browser.onHashChange(callback);
 
       window.location.hash = 'new-hash';
-      browser.startPoller(100, setTimeout);
+      browser.addPollFn(function() {});
 
       waitsFor(function() {
         return callback.callCount;
