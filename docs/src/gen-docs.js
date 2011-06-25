@@ -4,7 +4,8 @@ var reader = require('reader.js'),
     ngdoc = require('ngdoc.js'),
     writer = require('writer.js'),
     callback = require('callback.js'),
-    SiteMap = require('SiteMap.js').SiteMap;
+    SiteMap = require('SiteMap.js').SiteMap,
+    appCache = require('appCache.js');
 
 var docs = [];
 var start;
@@ -31,9 +32,9 @@ var writes = callback.chain(function(){
   writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html', writes.waitFor(),
               '<-- jquery place holder -->', '<script src=\"jquery.min.js\"><\/script>');
   writer.copyTpl('offline.html', writes.waitFor());
-  writer.output('app-cache.manifest',
-                appCacheTemplate().replace(/%TIMESTAMP%/, (new Date()).toISOString()),
-                writes.waitFor());
+  //writer.output('app-cache.manifest',
+    //            appCacheTemplate().replace(/%TIMESTAMP%/, (new Date()).toISOString()),
+      //          writes.waitFor());
   writer.merge(['docs.js',
                 'doc_widgets.js'],
                'docs-combined.js',
@@ -56,6 +57,7 @@ var writes = callback.chain(function(){
                'syntaxhighlighter/syntaxhighlighter-combined.css',
                writes.waitFor());
   writer.copyTpl('jquery.min.js', writes.waitFor());
+  writer.output('app-cache.manifest', appCache('build/docs/'), writes.waitFor());
 });
 writes.onDone(function(){
   console.log('DONE. Generated ' + docs.length + ' pages in ' +
@@ -80,8 +82,6 @@ function appCacheTemplate() {
           "docs-keywords.js",
           "docs-combined.css",
           "syntaxhighlighter/syntaxhighlighter-combined.css",
-          "img/texture_1.png",
-          "img/yellow_bkgnd.jpg",
           "",
           "FALLBACK:",
           "/ offline.html",
