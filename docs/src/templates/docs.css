@@ -11,7 +11,7 @@ body,td,th {
   font-family: Arial, Helvetica, sans-serif;
   font-size: 14px;
   color: #000;
-  margin: 0px;
+  margin: 0;
 }
 
 a:link, a:visited, a:hover {
@@ -120,13 +120,13 @@ li {
   font-weight: bold;
   background-color: #333;
 
-  border-radius: 10px;
   -webkit-border-radius:10px;
   -moz-border-radius: 10px;
+  border-radius: 10px;
 
-  box-shadow: 4px 4px 6px #48577D;
   -webkit-box-shadow: 4px 4px 6px #48577D;
   -moz-box-shadow: 4px 4px 6px #48577D;
+  box-shadow: 4px 4px 6px #48577D;
 }
 
 
@@ -273,7 +273,7 @@ li {
 
 
 #content .syntaxhighlighter  {
-  margin: 1.5em 0 1.5em 0 !important;;
+  margin: 1.5em 0 1.5em 0 !important;
 }
 
 #content .parameters p:nth-child(2) {
