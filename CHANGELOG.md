@@ -2,25 +2,29 @@
 # <angular/> 0.9.17 vegetable-reanimation (in progress) #
 
 ### New Features
-- Added prepend() to jqLite
-- Added ng:options directive (http://docs.angularjs.org/#!angular.directive.ng:options)
-- Added ng:disabled, ng:selected, ng:checked, ng:multiple, ng:readonly directive.
+- New [ng:options] directive to better bind a model to `<select>` and `<option>` elements.
+- New [ng:disabled], [ng:selected], [ng:checked], [ng:multiple] and [ng:readonly] directives.
+- Added support for string representation of month and day in [date] filter.
+- Added support for `prepend()` to [jqLite].
 
 
 ### Bug Fixes
 - Number filter would return incorrect value when fractional part had leading zeros.
-- Issue #399: return unsorted array if no predicate
-- Fixed issues with incorrect value of $position in ng:repeat when collection size changes
+- Issue #338: Show error when template with with multiple DOM roots is being compiled.
+- Issue #399: return unsorted array if no predicate.
+- Fixed issues with incorrect value of $position in ng:repeat when collection size changes.
+- Fixed JSONP support in [$xhr] which didn't work without jquery since v0.9.13.
 
 
 ### Breaking changes
 - $service now has $service.invoke for method injection ($service(self, fn) no longer works)
 - injection name inference no longer supports method curry and linking functions. Both must be
   explicitly specified using $inject property.
-- Dynamic Iteration (ng:repeater) on <option> elements is no longer supported. Use ng:options
-- Removal of index formatter since its only use was with repeated options (see above)
-- Not providing predicate to orderBy will now return the unsorted array, instead of ordering by
-  natural order.
+- Dynamic iteration (ng:repeat) on <option> elements is no longer supported. Use ng:options
+- Removal of index formatter (`ng:format="index"`) since its only use was with repeated `<options>`
+  (see above).
+- Calling [$orderBy] without a predicate now returns the original unsorted array, instead of
+  ordering by natural order.
 
 
 
@@ -535,14 +539,23 @@ with the `$route` service
 [ng:repeat]: http://docs.angularjs.org/#!/api/angular.widget.@ng:repeat
 [ng:view]: http://docs.angularjs.org/#!/api/angular.widget.ng:view
 [ng:include]: http://docs.angularjs.org/#!/api/angular.widget.ng:include
+[ng:options]: http://docs.angularjs.org/#!/api/angular.directive.ng:options
+[ng:disabled]: http://docs.angularjs.org/#!/api/angular.directive.ng:disabled
+[ng:selected]: http://docs.angularjs.org/#!/api/angular.directive.ng:selected
+[ng:checked]: http://docs.angularjs.org/#!/api/angular.directive.ng:checked
+[ng:multiple]: http://docs.angularjs.org/#!/api/angular.directive.ng:multiple
+[ng:readonly]: http://docs.angularjs.org/#!/api/angular.directive.ng:readonly
 [$defer]: http://docs.angularjs.org/#!/api/angular.service.$defer
 [$cookies]: http://docs.angularjs.org/#!/api/angular.service.$cookies
 [$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
 [$xhr.cache]: http://docs.angularjs.org/#!/api/angular.service.$xhr.cache
 [$resource]: http://docs.angularjs.org/#!/api/angular.service.$resource
+[$orderBy]: http://docs.angularjs.org/#!/api/angular.Array.orderBy
+[date]: http://docs.angularjs.org/#!/api/angular.filter.date
 [directive]: http://docs.angularjs.org/#!/api/angular.directive
 [ng:autobind]: http://docs.angularjs.org/#!/api/angular.directive.ng:autobind
 [guide.di]: http://docs.angularjs.org/#!/guide/dev_guide.di
 [downloading]: http://docs.angularjs.org/#!/misc/downloading
 [contribute]: http://docs.angularjs.org/#!/misc/contribute
+[jqLite]: http://docs.angularjs.org/#!/api/angular.element
 [Jstd Scenario Adapter]: https://github.com/angular/angular.js/blob/master/src/jstd-scenario-adapter/Adapter.js
