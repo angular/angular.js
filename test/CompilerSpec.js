@@ -177,4 +177,39 @@ describe('compiler', function(){
     var space = jqLite(scope.$element[0].firstChild);
     expect(space.hasClass('ng-space')).toEqual(true);
   });
+  
+  it('should register event listener and fire within same scope', function() {
+    var result = null;
+    var expected = {name:'simpleEvent', p1:1, p2:2, p3:3, p4:4};
+    scope = angular.scope();
+    scope.$onEvent('simpleEvent', function(name, p1, p2, p3, p4) {
+      result = {name:name, p1:p1, p2:p2, p3:p3, p4:p4};
+    });
+    scope.$fireEvent('simpleEvent', 1, 2, 3, 4);
+    scope.$fireEvent('anotherEvent', 666);
+    expect(result).toEqual(expected);
+  });
+  
+  it('should register event listener and fire in different scopes', function() {
+    scope = angular.scope();
+    var result1 = {count:0, payload:[]}, 
+        result2 = {count:0, payload:[]};
+    var s1 = scope.$new(), 
+        s2 = scope.$new();
+        
+    s1.$onEvent('event1', function(name, payload) {
+      result1.count += 1;
+      result1.payload.push(payload);
+    });
+    s2.$onEvent('event2', function(name, payload) {
+      result2.count += 1;
+      result2.payload.push(payload);
+    });
+    s1.$fireEvent('event1', 'fired by s1');
+    s2.$fireEvent('event1', 'fired by s2');
+    s1.$fireEvent('event2', 'fired by s1');
+    s2.$fireEvent('event2', 'fired by s2');
+    expect(result1).toEqual({count:2, payload:['fired by s1', 'fired by s2']});
+    expect(result2).toEqual({count:2, payload:['fired by s1', 'fired by s2']});
+  });
 });
