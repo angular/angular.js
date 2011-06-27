@@ -156,7 +156,6 @@ function dealoc(obj) {
 }
 
 extend(angular, {
-  'annotate': annotate,
   'element': jqLite,
   'compile': compile,
   'scope': createScope,
