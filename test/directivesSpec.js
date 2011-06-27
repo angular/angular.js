@@ -175,13 +175,37 @@ describe("directive", function(){
     });
   });
 
-  it('should ng:class', function(){
-    var scope = compile('<div class="existing" ng:class="[\'A\', \'B\']"></div>');
-    scope.$eval();
-    expect(element.hasClass('existing')).toBeTruthy();
-    expect(element.hasClass('A')).toBeTruthy();
-    expect(element.hasClass('B')).toBeTruthy();
+
+  describe('ng:class', function() {
+    it('should add new and remove old classes dynamically', function() {
+      var scope = compile('<div class="existing" ng:class="dynClass"></div>');
+      scope.dynClass = 'A';
+      scope.$eval();
+      expect(element.hasClass('existing')).toBe(true);
+      expect(element.hasClass('A')).toBe(true);
+
+      scope.dynClass = 'B';
+      scope.$eval();
+      expect(element.hasClass('existing')).toBe(true);
+      expect(element.hasClass('A')).toBe(false);
+      expect(element.hasClass('B')).toBe(true);
+
+      delete scope.dynClass;
+      scope.$eval();
+      expect(element.hasClass('existing')).toBe(true);
+      expect(element.hasClass('A')).toBe(false);
+      expect(element.hasClass('B')).toBe(false);
+    });
+
+    it('should support adding multiple classes', function(){
+      var scope = compile('<div class="existing" ng:class="[\'A\', \'B\']"></div>');
+      scope.$eval();
+      expect(element.hasClass('existing')).toBeTruthy();
+      expect(element.hasClass('A')).toBeTruthy();
+      expect(element.hasClass('B')).toBeTruthy();
+    });
   });
+
 
   it('should ng:class odd/even', function(){
     var scope = compile('<ul><li ng:repeat="i in [0,1]" class="existing" ng:class-odd="\'odd\'" ng:class-even="\'even\'"></li><ul>');
