@@ -37,6 +37,7 @@ var XHR_HEADERS = {
  */
 function Browser(window, document, body, XHR, $log) {
   var self = this,
+      rawDocument = document[0],
       location = window.location,
       setTimeout = window.setTimeout;
 
@@ -96,7 +97,7 @@ function Browser(window, document, body, XHR, $log) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      var script = jqLite('<script>')
+      var script = jqLite(rawDocument.createElement('script'))
           .attr({type: 'text/javascript', src: url.replace('JSON_CALLBACK', callbackId)});
       window[callbackId] = function(data){
         window[callbackId] = undefined;
@@ -272,7 +273,6 @@ function Browser(window, document, body, XHR, $log) {
   //////////////////////////////////////////////////////////////
   // Cookies API
   //////////////////////////////////////////////////////////////
-  var rawDocument = document[0];
   var lastCookies = {};
   var lastCookieString = '';
 
