@@ -80,6 +80,17 @@ angular.mock = {};
  * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$browser
+ *
+ * @description
+ * This service is a mock implementation of {@link angular.service.$browser}. It provides fake
+ * implementation for commonly used browser apis that are hard to test, e.g. setTimeout, xhr,
+ * cookies.
+ *
+ * This implementation is automatically available and replaces regular `browser` in tests when
+ *`angular-mocks.js` is loaded.
+ *
+ * The api of this service is the same as the real {@link angular.service.$browser $browser}, except
+ * that there are several helper methods available which can be used in tests.
  */
 function MockBrowser() {
   var self = this,
@@ -142,11 +153,82 @@ function MockBrowser() {
       }
     };
   };
+
+  /**
+    * @ngdoc function
+    * @name angular.mock.service.$browser#xhr.expectGET
+    * @methodOf angular.mock.service.$browser
+    *
+    * @description
+    * Trains browser to expect a `GET` request and respond to it.
+    *
+    * @param {string} url Url path for which a request is expected.
+    * @returns {object} Response configuration object. You can call its method `respond` to
+    *   configure what should the browser mock return when the response is
+    *   {@link angular.mock.$browser.#xhr.flush flushed}.
+    */
   self.xhr.expectGET    = angular.bind(self, self.xhr.expect, 'GET');
+
+  /**
+    * @ngdoc function
+    * @name angular.mock.service.$browser#xhr.expectPOST
+    * @methodOf angular.mock.service.$browser
+    *
+    * @description
+    * Trains browser to expect a `POST` request and respond to it.
+    *
+    * @param {string} url Url path for which a request is expected.
+    * @returns {object} Response configuration object. You can call its method `respond` to
+    *   configure what should the browser mock return when the response is
+    *   {@link angular.mock.$browser.#xhr.flush flushed}.
+    */
   self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
+
+  /**
+    * @ngdoc function
+    * @name angular.mock.service.$browser#xhr.expectDELETE
+    * @methodOf angular.mock.service.$browser
+    *
+    * @description
+    * Trains browser to expect a `DELETE` request and respond to it.
+    *
+    * @param {string} url Url path for which a request is expected.
+    * @returns {object} Response configuration object. You can call its method `respond` to
+    *   configure what should the browser mock return when the response is
+    *   {@link angular.mock.$browser.#xhr.flush flushed}.
+    */
   self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
+
+  /**
+    * @ngdoc function
+    * @name angular.mock.service.$browser#xhr.expectPUT
+    * @methodOf angular.mock.service.$browser
+    *
+    * @description
+    * Trains browser to expect a `PUT` request and respond to it.
+    *
+    * @param {string} url Url path for which a request is expected.
+    * @returns {object} Response configuration object. You can call its method `respond` to
+    *   configure what should the browser mock return when the response is
+    *   {@link angular.mock.$browser.#xhr.flush flushed}.
+    */
   self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
+
+  /**
+    * @ngdoc function
+    * @name angular.mock.service.$browser#xhr.expectJSON
+    * @methodOf angular.mock.service.$browser
+    *
+    * @description
+    * Trains browser to expect a `JSON` request and respond to it.
+    *
+    * @param {string} url Url path for which a request is expected.
+    * @returns {object} Response configuration object. You can call its method `respond` to
+    *   configure what should the browser mock return when the response is
+    *   {@link angular.mock.$browser.#xhr.flush flushed}.
+    */
   self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
+
   self.xhr.flush = function() {
     if (requests.length == 0) {
       throw new Error("No xhr requests to be flushed!");
