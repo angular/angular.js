@@ -127,13 +127,13 @@ describe('injector', function(){
 
   describe('inject', function(){
     it('should inject names', function(){
-      expect(angular.annotate('a', {}).$inject).toEqual(['a']);
-      expect(angular.annotate('a', 'b', {}).$inject).toEqual(['a', 'b']);
+      expect(annotate('a', {}).$inject).toEqual(['a']);
+      expect(annotate('a', 'b', {}).$inject).toEqual(['a', 'b']);
     });
 
     it('should inject array', function(){
-      expect(angular.annotate(['a'], {}).$inject).toEqual(['a']);
-      expect(angular.annotate(['a', 'b'], {}).$inject).toEqual(['a', 'b']);
+      expect(annotate(['a'], {}).$inject).toEqual(['a']);
+      expect(annotate(['a', 'b'], {}).$inject).toEqual(['a', 'b']);
     });
   });
 });
