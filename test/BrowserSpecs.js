@@ -100,31 +100,6 @@ describe('browser', function(){
       });
     });
 
-    it('should set headers for all requests', function(){
-      var code, response, headers = {};
-      browser.xhr('GET', 'URL', 'POST', function(c,r){
-        code = c;
-        response = r;
-      }, {'X-header': 'value'});
-
-      expect(xhr.method).toEqual('GET');
-      expect(xhr.url).toEqual('URL');
-      expect(xhr.post).toEqual('POST');
-      expect(xhr.headers).toEqual({
-        "Accept": "application/json, text/plain, */*",
-        "X-Requested-With": "XMLHttpRequest",
-        "X-header":"value"
-      });
-
-      xhr.status = 202;
-      xhr.responseText = 'RESPONSE';
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-
-      expect(code).toEqual(202);
-      expect(response).toEqual('RESPONSE');
-    });
-
     it('should normalize IE\'s 1223 status code into 204', function() {
       var callback = jasmine.createSpy('XHR');
 
@@ -138,24 +113,28 @@ describe('browser', function(){
       expect(callback.argsForCall[0][0]).toEqual(204);
     });
 
-    it('should not set Content-type header for GET requests', function() {
-      browser.xhr('GET', 'URL', 'POST-DATA', function(c, r) {});
+    it('should set only the requested headers', function() {
+      var code, response, headers = {};
+      browser.xhr('POST', 'URL', null, function(c,r){
+        code = c;
+        response = r;
+      }, {'X-header1': 'value1', 'X-header2': 'value2'});
 
-      expect(xhr.headers['Content-Type']).not.toBeDefined();
-    });
+      expect(xhr.method).toEqual('POST');
+      expect(xhr.url).toEqual('URL');
+      expect(xhr.post).toEqual('');
+      expect(xhr.headers).toEqual({
+        "X-header1":"value1",
+        "X-header2":"value2"
+      });
 
-    it('should set Content-type header for POST requests', function() {
-      browser.xhr('POST', 'URL', 'POST-DATA', function(c, r) {});
+      xhr.status = 202;
+      xhr.responseText = 'RESPONSE';
+      xhr.readyState = 4;
+      xhr.onreadystatechange();
 
-      expect(xhr.headers['Content-Type']).toBeDefined();
-      expect(xhr.headers['Content-Type']).toEqual('application/x-www-form-urlencoded');
-    });
-
-    it('should set default headers for custom methods', function() {
-      browser.xhr('CUSTOM', 'URL', 'POST-DATA', function(c, r) {});
-
-      expect(xhr.headers['Accept']).toEqual('application/json, text/plain, */*');
-      expect(xhr.headers['X-Requested-With']).toEqual('XMLHttpRequest');
+      expect(code).toEqual(202);
+      expect(response).toEqual('RESPONSE');
     });
   });
 
