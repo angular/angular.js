@@ -24,6 +24,22 @@
  * and process it in application specific way, or resume normal execution by calling the
  * request callback method.
  *
+ * # HTTP Headers
+ * The $xhr service will automatically add certain http headers to all requests. These defaults can
+ * be fully configured by accessing the `$xhr.defaults.headers` configuration object, which
+ * currently contains this default configuration:
+ *
+ * - `$xhr.defaults.headers.common` (headers that are common for all requests):
+ *   - `Accept: application/json, text/plain, *\/*`
+ *   - `X-Requested-With: XMLHttpRequest`
+ * - `$xhr.defaults.headers.post` (header defaults for HTTP POST requests):
+ *   - `Content-Type: application/x-www-form-urlencoded`
+ *
+ * To add or overwrite these defaults, simple add or remove a property from this configuration
+ * object. To add headers for an HTTP method other than POST, simple create a new object with name
+ * equal to the lowercased http method name, e.g. `$xhr.defaults.headers.get['My-Header']='value'`.
+ *
+ *
  * # Security Considerations
  * When designing web applications your design needs to consider security threats from
  * {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
@@ -126,7 +142,21 @@
    </doc:example>
  */
 angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
-  return function(method, url, post, callback){
+
+  var xhrHeaderDefaults = {
+    common: {
+      "Accept": "application/json, text/plain, */*",
+      "X-Requested-With": "XMLHttpRequest"
+    },
+    post: {'Content-Type': 'application/x-www-form-urlencoded'},
+    get: {},      // all these empty properties are needed so that client apps can just do:
+    head: {},     // $xhr.defaults.headers.head.foo="bar" without having to create head object
+    put: {},      // it also means that if we add a header for these methods in the future, it
+    'delete': {}, // won't be easily silently lost due to an object assignment.
+    patch: {}
+  };
+
+  function xhr(method, url, post, callback){
     if (isFunction(post)) {
       callback = post;
       post = null;
@@ -155,8 +185,12 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
       } finally {
         $updateView();
       }
-    }, {
-        'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']
-    });
+    }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
+              xhrHeaderDefaults.common,
+              xhrHeaderDefaults[lowercase(method)]));
   };
+
+  xhr.defaults = {headers: xhrHeaderDefaults};
+
+  return xhr;
 }, ['$browser', '$xhr.error', '$log', '$updateView']);

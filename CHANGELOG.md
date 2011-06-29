@@ -6,6 +6,7 @@
 - New [ng:disabled], [ng:selected], [ng:checked], [ng:multiple] and [ng:readonly] directives.
 - Added support for string representation of month and day in [date] filter.
 - Added support for `prepend()` to [jqLite].
+- Added support for configurable HTTP header defaults for the [$xhr] service.
 
 
 ### Bug Fixes

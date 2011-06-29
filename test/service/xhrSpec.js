@@ -102,6 +102,131 @@ describe('$xhr', function() {
     expect(response).toEqual([1, 'abc', {foo:'bar'}]);
   });
 
+
+  describe('http headers', function() {
+
+    describe('default headers', function() {
+
+      it('should set default headers for GET request', function(){
+        var callback = jasmine.createSpy('callback');
+
+        $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
+                                          'X-Requested-With': 'XMLHttpRequest'}).
+                    respond(234, 'OK');
+
+        $xhr('GET', 'URL', callback);
+        $browserXhr.flush();
+        expect(callback).toHaveBeenCalled();
+      });
+
+
+      it('should set default headers for POST request', function(){
+        var callback = jasmine.createSpy('callback');
+
+        $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
+                                             'X-Requested-With': 'XMLHttpRequest',
+                                             'Content-Type': 'application/x-www-form-urlencoded'}).
+                    respond(200, 'OK');
+
+        $xhr('POST', 'URL', 'xx', callback);
+        $browserXhr.flush();
+        expect(callback).toHaveBeenCalled();
+      });
+
+
+      it('should set default headers for custom HTTP method', function(){
+        var callback = jasmine.createSpy('callback');
+
+        $browserXhr.expect('FOO', 'URL', '', {'Accept': 'application/json, text/plain, */*',
+                                              'X-Requested-With': 'XMLHttpRequest'}).
+                    respond(200, 'OK');
+
+        $xhr('FOO', 'URL', callback);
+        $browserXhr.flush();
+        expect(callback).toHaveBeenCalled();
+      });
+
+
+      describe('custom headers', function() {
+
+        it('should allow appending a new header to the common defaults', function() {
+          var callback = jasmine.createSpy('callback');
+
+          $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'Custom-Header': 'value'}).
+                      respond(200, 'OK');
+
+          $xhr.defaults.headers.common['Custom-Header'] = 'value';
+          $xhr('GET', 'URL', callback);
+          $browserXhr.flush();
+          expect(callback).toHaveBeenCalled();
+          callback.reset();
+
+          $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
+                                               'X-Requested-With': 'XMLHttpRequest',
+                                               'Content-Type': 'application/x-www-form-urlencoded',
+                                               'Custom-Header': 'value'}).
+                      respond(200, 'OK');
+
+         $xhr('POST', 'URL', 'xx', callback);
+         $browserXhr.flush();
+         expect(callback).toHaveBeenCalled();
+        });
+
+
+        it('should allow appending a new header to a method specific defaults', function() {
+          var callback = jasmine.createSpy('callback');
+
+          $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
+                                            'X-Requested-With': 'XMLHttpRequest',
+                                            'Content-Type': 'application/json'}).
+                      respond(200, 'OK');
+
+          $xhr.defaults.headers.get['Content-Type'] = 'application/json';
+          $xhr('GET', 'URL', callback);
+          $browserXhr.flush();
+          expect(callback).toHaveBeenCalled();
+          callback.reset();
+
+          $browserXhr.expectPOST('URL', 'x', {'Accept': 'application/json, text/plain, */*',
+                                              'X-Requested-With': 'XMLHttpRequest',
+                                              'Content-Type': 'application/x-www-form-urlencoded'}).
+                      respond(200, 'OK');
+
+         $xhr('POST', 'URL', 'x', callback);
+         $browserXhr.flush();
+         expect(callback).toHaveBeenCalled();
+        });
+
+
+        it('should support overwriting and deleting default headers', function() {
+          var callback = jasmine.createSpy('callback');
+
+          $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*'}).
+                      respond(200, 'OK');
+
+          //delete a default header
+          delete $xhr.defaults.headers.common['X-Requested-With'];
+          $xhr('GET', 'URL', callback);
+          $browserXhr.flush();
+          expect(callback).toHaveBeenCalled();
+          callback.reset();
+
+          $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
+                                               'Content-Type': 'application/json'}).
+                      respond(200, 'OK');
+
+         //overwrite a default header
+         $xhr.defaults.headers.post['Content-Type'] = 'application/json';
+         $xhr('POST', 'URL', 'xx', callback);
+         $browserXhr.flush();
+         expect(callback).toHaveBeenCalled();
+        });
+      });
+    });
+  });
+
   describe('xsrf', function(){
     it('should copy the XSRF cookie into a XSRF Header', function(){
       var code, response;
