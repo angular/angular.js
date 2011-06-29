@@ -1,275 +1,505 @@
 'use strict';
 
 var URL_MATCH = /^(file|ftp|http|https):\/\/(\w+:{0,1}\w*@)?([\w\.-]*)(:([0-9]+))?(\/[^\?#]*)?(\?([^#]*))?(#(.*))?$/,
-    HASH_MATCH = /^([^\?]*)?(\?([^\?]*))?$/,
-    DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp':21};
+    PATH_MATCH = /^([^\?#]*)?(\?([^#]*))?(#(.*))?$/,
+    HASH_MATCH = PATH_MATCH,
+    DEFAULT_PORTS = {'http': 80, 'https': 443, 'ftp': 21};
+
 
 /**
- * @workInProgress
+ * Encode path using encodeUriSegment, ignoring forward slashes
+ *
+ * @param {string} path Path to encode
+ * @returns {string}
+ */
+function encodePath(path) {
+  var segments = path.split('/'),
+      i = segments.length;
+
+  while (i--) {
+    segments[i] = encodeUriSegment(segments[i]);
+  }
+
+  return segments.join('/');
+}
+
+
+function matchUrl(url, obj) {
+  var match = URL_MATCH.exec(url),
+
+  match = {
+      protocol: match[1],
+      host: match[3],
+      port: parseInt(match[5]) || DEFAULT_PORTS[match[1]] || null,
+      path: match[6] || '/',
+      search: match[8],
+      hash: match[10]
+    };
+
+  if (obj) {
+    obj.$$protocol = match.protocol;
+    obj.$$host = match.host;
+    obj.$$port = match.port;
+  }
+
+  return match;
+}
+
+
+function composeProtocolHostPort(protocol, host, port) {
+  return protocol + '://' + host + (port == DEFAULT_PORTS[protocol] ? '' : ':' + port);
+}
+
+
+function pathPrefixFromBase(basePath) {
+  return basePath.substr(0, basePath.lastIndexOf('/'));
+}
+
+
+function convertToHtml5Url(url, basePath, hashPrefix) {
+  var match = matchUrl(url);
+
+  // already html5 url
+  if (decodeURIComponent(match.path) != basePath || isUndefined(match.hash) ||
+      match.hash.indexOf(hashPrefix) != 0) {
+    return url;
+  // convert hashbang url -> html5 url
+  } else {
+    return composeProtocolHostPort(match.protocol, match.host, match.port) +
+           pathPrefixFromBase(basePath) + match.hash.substr(hashPrefix.length);
+  }
+}
+
+
+function convertToHashbangUrl(url, basePath, hashPrefix) {
+  var match = matchUrl(url);
+
+  // already hashbang url
+  if (decodeURIComponent(match.path) == basePath) {
+    return url;
+  // convert html5 url -> hashbang url
+  } else {
+    var search = match.search && '?' + match.search || '',
+        hash = match.hash && '#' + match.hash || '',
+        pathPrefix = pathPrefixFromBase(basePath),
+        path = match.path.substr(pathPrefix.length);
+
+    if (match.path.indexOf(pathPrefix) != 0) {
+      throw 'Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !';
+    }
+
+    return composeProtocolHostPort(match.protocol, match.host, match.port) + basePath +
+           '#' + hashPrefix + path + search + hash;
+  }
+}
+
+
+/**
+ * LocationUrl represents an url
+ * This object is exposed as $location service when html5 is enabled and supported
+ *
+ * @constructor
+ * @param {string} url Html5 url
+ * @param {string} pathPrefix
+ */
+function LocationUrl(url, pathPrefix) {
+  pathPrefix = pathPrefix || '';
+
+  /**
+   * Parse given html5 (regular) url string into properties
+   * @param {string} url Html5 url
+   * @private
+   */
+  this.$$parse = function(url) {
+    var match = matchUrl(url, this);
+
+    if (match.path.indexOf(pathPrefix) != 0) {
+      throw 'Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !';
+    }
+
+    this.$$path = decodeURIComponent(match.path.substr(pathPrefix.length));
+    this.$$search = parseKeyValue(match.search);
+    this.$$hash = match.hash && decodeURIComponent(match.hash) || '';
+
+    this.$$compose();
+  },
+
+  /**
+   * Compose url and update `absUrl` property
+   * @private
+   */
+  this.$$compose = function() {
+    var search = toKeyValue(this.$$search),
+        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+
+    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    this.$$absUrl = composeProtocolHostPort(this.$$protocol, this.$$host, this.$$port) +
+                    pathPrefix + this.$$url;
+  };
+
+  this.$$parse(url);
+}
+
+
+/**
+ * LocationHashbangUrl represents url
+ * This object is exposed as $location service when html5 history api is disabled or not supported
+ *
+ * @constructor
+ * @param {string} url Legacy url
+ * @param {string} hashPrefix Prefix for hash part (containing path and search)
+ */
+function LocationHashbangUrl(url, hashPrefix) {
+  var basePath;
+
+  /**
+   * Parse given hashbang url into properties
+   * @param {string} url Hashbang url
+   * @private
+   */
+  this.$$parse = function(url) {
+    var match = matchUrl(url, this);
+
+    if (match.hash && match.hash.indexOf(hashPrefix) != 0) {
+      throw 'Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '" !';
+    }
+
+    basePath = match.path + (match.search ? '?' + match.search : '');
+    match = HASH_MATCH.exec((match.hash || '').substr(hashPrefix.length));
+    if (match[1]) {
+      this.$$path = (match[1].charAt(0) == '/' ? '' : '/') + decodeURIComponent(match[1]);
+    } else {
+      this.$$path = '';
+    }
+
+    this.$$search = parseKeyValue(match[3]);
+    this.$$hash = match[5] && decodeURIComponent(match[5]) || '';
+
+    this.$$compose();
+  };
+
+  /**
+   * Compose hashbang url and update `absUrl` property
+   * @private
+   */
+  this.$$compose = function() {
+    var search = toKeyValue(this.$$search),
+        hash = this.$$hash ? '#' + encodeUriSegment(this.$$hash) : '';
+
+    this.$$url = encodePath(this.$$path) + (search ? '?' + search : '') + hash;
+    this.$$absUrl = composeProtocolHostPort(this.$$protocol, this.$$host, this.$$port) +
+                    basePath + (this.$$url ? '#' + hashPrefix + this.$$url : '');
+  };
+
+  this.$$parse(url);
+}
+
+
+LocationUrl.prototype = LocationHashbangUrl.prototype = {
+
+  /**
+   * Has any change been replacing ?
+   * @private
+   */
+  $$replace: false,
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#absUrl
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter only.
+   *
+   * Return full url representation with all segments encoded according to rules specified in
+   * {@link http://www.ietf.org/rfc/rfc3986.txt RFC 3986}.
+   *
+   * @return {string}
+   */
+  absUrl: locationGetter('$$absUrl'),
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#url
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter / setter.
+   *
+   * Return url (e.g. `/path?a=b#hash`) when called without any parameter.
+   *
+   * Change path, search and hash, when called with parameter and return `$location`.
+   *
+   * @param {string=} url New url without base prefix (e.g. `/path?a=b#hash`)
+   * @return {string}
+   */
+  url: function(url, replace) {
+    if (isUndefined(url))
+      return this.$$url;
+
+    var match = PATH_MATCH.exec(url);
+    this.path(decodeURIComponent(match[1] || '')).search(match[3] || '')
+        .hash(match[5] || '', replace);
+
+    return this;
+  },
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#protocol
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter only.
+   *
+   * Return protocol of current url.
+   *
+   * @return {string}
+   */
+  protocol: locationGetter('$$protocol'),
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#host
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter only.
+   *
+   * Return host of current url.
+   *
+   * @return {string}
+   */
+  host: locationGetter('$$host'),
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#port
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter only.
+   *
+   * Return port of current url.
+   *
+   * @return {Number}
+   */
+  port: locationGetter('$$port'),
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#path
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter / setter.
+   *
+   * Return path of current url when called without any parameter.
+   *
+   * Change path when called with parameter and return `$location`.
+   *
+   * Note: Path should always begin with forward slash (/), this method will add the forward slash
+   * if it is missing.
+   *
+   * @param {string=} path New path
+   * @return {string}
+   */
+  path: locationGetterSetter('$$path', function(path) {
+    return path.charAt(0) == '/' ? path : '/' + path;
+  }),
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#search
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter / setter.
+   *
+   * Return search part (as object) of current url when called without any parameter.
+   *
+   * Change search part when called with parameter and return `$location`.
+   *
+   * @param {string|object<string,string>=} search New search part - string or hash object
+   * @return {string}
+   */
+  search: function(search, paramValue) {
+    if (isUndefined(search))
+      return this.$$search;
+
+    if (isDefined(paramValue)) {
+      if (paramValue === null) {
+        delete this.$$search[search];
+      } else {
+        this.$$search[search] = escape(paramValue);
+      }
+    } else {
+      this.$$search = isString(search) ? parseKeyValue(search) : search;
+    }
+
+    this.$$compose();
+    return this;
+  },
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#hash
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * This method is getter / setter.
+   *
+   * Return hash fragment when called without any parameter.
+   *
+   * Change hash fragment when called with parameter and return `$location`.
+   *
+   * @param {string=} hash New hash fragment
+   * @return {string}
+   */
+  hash: locationGetterSetter('$$hash', identity),
+
+  /**
+   * @ngdoc method
+   * @name angular.service.$location#replace
+   * @methodOf angular.service.$location
+   *
+   * @description
+   * If called, all changes to $location during current `$digest` will be replacing current history
+   * record, instead of adding new one.
+   */
+  replace: function() {
+    this.$$replace = true;
+    return this;
+  }
+};
+
+
+function locationGetter(property) {
+  return function() {
+    return this[property];
+  };
+}
+
+
+function locationGetterSetter(property, preprocess) {
+  return function(value) {
+    if (isUndefined(value))
+      return this[property];
+
+    this[property] = preprocess(value);
+    this.$$compose();
+
+    return this;
+  };
+}
+
+
+/**
  * @ngdoc service
  * @name angular.service.$location
- * @requires $browser
  *
- * @property {string} href The full URL of the current location.
- * @property {string} protocol The protocol part of the URL (e.g. http or https).
- * @property {string} host The host name, ip address or FQDN of the current location.
- * @property {number} port The port number of the current location (e.g. 80, 443, 8080).
- * @property {string} path The path of the current location (e.g. /myapp/inbox).
- * @property {Object.<string|boolean>} search Map of query parameters (e.g. {user:"foo", page:23}).
- * @property {string} hash The fragment part of the URL of the current location (e.g. #foo).
- * @property {string} hashPath Similar to `path`, but located in the `hash` fragment
- *     (e.g. ../foo#/some/path  => /some/path).
- * @property {Object.<string|boolean>} hashSearch Similar to `search` but located in `hash`
- *     fragment (e.g. .../foo#/some/path?hashQuery=param  =>  {hashQuery: "param"}).
+ * @requires $browser
+ * @requires $sniffer
+ * @requires $config
+ * @requires $document
  *
  * @description
- * Parses the browser location url and makes it available to your application.
- * Any changes to the url are reflected into `$location` service and changes to
- * `$location` are reflected in the browser location url.
+ * The $location service parses the URL in the browser address bar (based on the {@link https://developer.mozilla.org/en/window.location window.location}) and makes the URL available to your application. Changes to the URL in the address bar are reflected into $location service and changes to $location are reflected into the browser address bar.
  *
- * Notice that using browser's forward/back buttons changes the $location.
+ * **The $location service:**
  *
- * @example
-   <doc:example>
-     <doc:source>
-       <div ng:init="$location = $service('$location')">
-         <a id="ex-test" href="#myPath?name=misko">test hash</a>|
-         <a id="ex-reset" href="#!/api/angular.service.$location">reset hash</a><br/>
-         <input type='text' name="$location.hash" size="30">
-         <pre>$location = {{$location}}</pre>
-       </div>
-     </doc:source>
-     <doc:scenario>
-       it('should initialize the input field', function() {
-         expect(using('.doc-example-live').input('$location.hash').val()).
-           toBe('!/api/angular.service.$location');
-       });
-
-
-       it('should bind $location.hash to the input field', function() {
-         using('.doc-example-live').input('$location.hash').enter('foo');
-         expect(browser().location().hash()).toBe('foo');
-       });
-
-
-       it('should set the hash to a test string with test link is presed', function() {
-         using('.doc-example-live').element('#ex-test').click();
-         expect(using('.doc-example-live').input('$location.hash').val()).
-           toBe('myPath?name=misko');
-       });
-
-       it('should reset $location when reset link is pressed', function() {
-         using('.doc-example-live').input('$location.hash').enter('foo');
-         using('.doc-example-live').element('#ex-reset').click();
-         expect(using('.doc-example-live').input('$location.hash').val()).
-           toBe('!/api/angular.service.$location');
-       });
-
-     </doc:scenario>
-    </doc:example>
+ * - Exposes the current URL in the browser address bar, so you can
+ *   - Watch and observe the URL.
+ *   - Change the URL.
+ * - Synchronizes the URL with the browser when the user
+ *   - Changes the address bar.
+ *   - Clicks the back or forward button (or clicks a History link).
+ *   - Clicks on a link.
+ * - Represents the URL object as a set of methods (protocol, host, port, path, search, hash).
+ *
+ * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
-angularServiceInject("$location", function($browser) {
-  var location = {update: update, updateHash: updateHash};
-  var lastLocation = {}; // last state since last update().
+angularServiceInject('$location', function($browser, $sniffer, $config, $document) {
+  var scope = this, currentUrl,
+      basePath = $browser.baseHref() || '/',
+      pathPrefix = pathPrefixFromBase(basePath),
+      hashPrefix = $config.hashPrefix || '',
+      initUrl = $browser.url();
 
-  $browser.onUrlChange(bind(this, this.$apply, function() { //register
-    update($browser.url());
-  }))(); //initialize
-
-  this.$watch(sync);
-
-  return location;
-
-  // PUBLIC METHODS
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$location#update
-   * @methodOf angular.service.$location
-   *
-   * @description
-   * Updates the location object.
-   * Does not immediately update the browser
-   * Browser is updated at the end of $digest()
-   *
-   * Does not immediately update the browser. Instead the browser is updated at the end of $eval()
-   * cycle.
-   *
-   * <pre>
-       $location.update('http://www.angularjs.org/path#hash?search=x');
-       $location.update({host: 'www.google.com', protocol: 'https'});
-       $location.update({hashPath: '/path', hashSearch: {a: 'b', x: true}});
-     </pre>
-   *
-   * @param {string|Object} href Full href as a string or object with properties
-   */
-  function update(href) {
-    if (isString(href)) {
-      extend(location, parseHref(href));
+  if ($config.html5Mode) {
+    if ($sniffer.history) {
+      currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
     } else {
-      if (isDefined(href.hash)) {
-        extend(href, isString(href.hash) ? parseHash(href.hash) : href.hash);
-      }
-
-      extend(location, href);
-
-      if (isDefined(href.hashPath || href.hashSearch)) {
-        location.hash = composeHash(location);
-      }
-
-      location.href = composeHref(location);
-    }
-    $browser.url(location.href);
-    copy(location, lastLocation);
-  }
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$location#updateHash
-   * @methodOf angular.service.$location
-   *
-   * @description
-   * Updates the hash fragment part of the url.
-   *
-   * @see update()
-   *
-   * <pre>
-       scope.$location.updateHash('/hp')
-         ==> update({hashPath: '/hp'})
-       scope.$location.updateHash({a: true, b: 'val'})
-         ==> update({hashSearch: {a: true, b: 'val'}})
-       scope.$location.updateHash('/hp', {a: true})
-         ==> update({hashPath: '/hp', hashSearch: {a: true}})
-     </pre>
-   *
-   * @param {string|Object} path A hashPath or hashSearch object
-   * @param {Object=} search A hashSearch object
-   */
-  function updateHash(path, search) {
-    var hash = {};
-
-    if (isString(path)) {
-      hash.hashPath = path;
-      hash.hashSearch = search || {};
-    } else
-      hash.hashSearch = path;
-
-    hash.hash = composeHash(hash);
-
-    update({hash: hash});
-  }
-
-
-  // INNER METHODS
-
-  /**
-   * Synchronizes all location object properties.
-   *
-   * User is allowed to change properties, so after property change,
-   * location object is not in consistent state.
-   *
-   * Properties are synced with the following precedence order:
-   *
-   * - `$location.href`
-   * - `$location.hash`
-   * - everything else
-   *
-   * Keep in mind that if the following code is executed:
-   *
-   * scope.$location.href = 'http://www.angularjs.org/path#a/b'
-   *
-   * immediately afterwards all other properties are still the old ones...
-   *
-   * This method checks the changes and update location to the consistent state
-   */
-  function sync() {
-    if (!equals(location, lastLocation)) {
-      if (location.href != lastLocation.href) {
-        update(location.href);
-      } else {
-        if (location.hash != lastLocation.hash) {
-          var hash = parseHash(location.hash);
-          updateHash(hash.hashPath, hash.hashSearch);
-        } else {
-          location.hash = composeHash(location);
-          location.href = composeHref(location);
-        }
-        update(location.href);
-      }
-    }
-  }
-
-
-  /**
-   * Compose href string from a location object
-   *
-   * @param {Object} loc The location object with all properties
-   * @return {string} Composed href
-   */
-  function composeHref(loc) {
-    var url = toKeyValue(loc.search);
-    var port = (loc.port == DEFAULT_PORTS[loc.protocol] ? null : loc.port);
-
-    return loc.protocol  + '://' + loc.host +
-          (port ? ':' + port : '') + loc.path +
-          (url ? '?' + url : '') + (loc.hash ? '#' + loc.hash : '');
-  }
-
-  /**
-   * Compose hash string from location object
-   *
-   * @param {Object} loc Object with hashPath and hashSearch properties
-   * @return {string} Hash string
-   */
-  function composeHash(loc) {
-    var hashSearch = toKeyValue(loc.hashSearch);
-    //TODO: temporary fix for issue #158
-    return escape(loc.hashPath).replace(/%21/gi, '!').replace(/%3A/gi, ':').replace(/%24/gi, '$') +
-          (hashSearch ? '?' + hashSearch : '');
-  }
-
-  /**
-   * Parse href string into location object
-   *
-   * @param {string} href
-   * @return {Object} The location object
-   */
-  function parseHref(href) {
-    var loc = {};
-    var match = URL_MATCH.exec(href);
-
-    if (match) {
-      loc.href = href.replace(/#$/, '');
-      loc.protocol = match[1];
-      loc.host = match[3] || '';
-      loc.port = match[5] || DEFAULT_PORTS[loc.protocol] || null;
-      loc.path = match[6] || '';
-      loc.search = parseKeyValue(match[8]);
-      loc.hash = match[10] || '';
-
-      extend(loc, parseHash(loc.hash));
+      currentUrl = new LocationHashbangUrl(convertToHashbangUrl(initUrl, basePath, hashPrefix),
+                                           hashPrefix);
     }
 
-    return loc;
+    // link rewriting
+    var u = currentUrl,
+        absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
+
+    $document.bind('click', function(event) {
+      // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
+      // currently we open nice url link and redirect then
+
+      if (uppercase(event.target.nodeName) != 'A' || event.ctrlKey || event.which == 2) return;
+
+      var elm = jqLite(event.target),
+          href = elm.attr('href');
+
+      if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
+
+      // remove same domain from full url links (IE7 always returns full hrefs)
+      href = href.replace(absUrlPrefix, '');
+
+      // link to different domain (or base path)
+      if (href.substr(0, 4) == 'http') return;
+
+      // remove pathPrefix from absolute links
+      href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
+
+      currentUrl.url(href);
+      scope.$apply();
+      event.preventDefault();
+    });
+  } else {
+    currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
   }
 
-  /**
-   * Parse hash string into object
-   *
-   * @param {string} hash
-   */
-  function parseHash(hash) {
-    var h = {};
-    var match = HASH_MATCH.exec(hash);
+  // rewrite hashbang url <> html5 url
+  if (currentUrl.absUrl() != initUrl) {
+    $browser.url(currentUrl.absUrl(), true);
+  }
 
-    if (match) {
-      h.hash = hash;
-      h.hashPath = unescape(match[1] || '');
-      h.hashSearch = parseKeyValue(match[3]);
+  // update $location when $browser url changes
+  $browser.onUrlChange(function(newUrl) {
+    if (currentUrl.absUrl() != newUrl) {
+      currentUrl.$$parse(newUrl);
+      scope.$apply();
+    }
+  });
+
+  // update browser
+  var changeCounter = 0;
+  scope.$watch(function() {
+    if ($browser.url() != currentUrl.absUrl()) {
+      changeCounter++;
+      scope.$evalAsync(function() {
+        $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
+        currentUrl.$$replace = false;
+      });
     }
 
-    return h;
-  }
-}, ['$browser']);
+    return changeCounter;
+  });
+
+  return currentUrl;
+}, ['$browser', '$sniffer', '$locationConfig', '$document']);
+
+
+angular.service('$locationConfig', function() {
+  return {
+    html5Mode: false,
+    hashPrefix: ''
+  };
+});
