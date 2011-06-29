@@ -8,14 +8,6 @@ var XHR = window.XMLHttpRequest || function () {
   throw new Error("This browser does not support XMLHttpRequest.");
 };
 
-// default xhr headers
-var XHR_HEADERS = {
-  DEFAULT: {
-    "Accept": "application/json, text/plain, */*",
-    "X-Requested-With": "XMLHttpRequest"
-  },
-  POST: {'Content-Type': 'application/x-www-form-urlencoded'}
-};
 
 /**
  * @private
@@ -108,8 +100,7 @@ function Browser(window, document, body, XHR, $log) {
     } else {
       var xhr = new XHR();
       xhr.open(method, url, true);
-      forEach(extend({}, XHR_HEADERS.DEFAULT, XHR_HEADERS[uppercase(method)] || {}, headers || {}),
-        function(value, key) {
+      forEach(headers, function(value, key) {
           if (value) xhr.setRequestHeader(key, value);
       });
       xhr.onreadystatechange = function() {
