@@ -1,5 +1,5 @@
 <a name="0.9.17"><a/>
-# <angular/> 0.9.17 vegetable-reanimation (in progress) #
+# <angular/> 0.9.17 vegetable-reanimation (2011-06-30) #
 
 ### New Features
 - New [ng:options] directive to better bind a model to `<select>` and `<option>` elements.
