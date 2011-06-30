@@ -250,6 +250,9 @@ task :package => [:clean, :compile, :docs] do
 
   %x(tar -czf #{path_to(tarball)} -C #{path_to('pkg')} .)
 
+  FileUtils.cp path_to(tarball), pkg_dir
+  FileUtils.mv pkg_dir, path_to(['pkg', version])
+
   puts "Package created: #{path_to(tarball)}"
 end
 
