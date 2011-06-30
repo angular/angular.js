@@ -17,6 +17,10 @@
 - Fixed JSONP support in [$xhr] which didn't work without jquery since v0.9.13.
 
 
+### Documentation
+- various small fixes and improvements
+
+
 ### Breaking changes
 - $service now has $service.invoke for method injection ($service(self, fn) no longer works)
 - injection name inference no longer supports method curry and linking functions. Both must be
