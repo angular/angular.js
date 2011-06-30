@@ -581,14 +581,14 @@ var angularArray = {
                                   {name:'Adam', phone:'555-5678', age:35},
                                   {name:'Julie', phone:'555-8765', age:29}]"></div>
 
-         <pre>Sorting predicate = {{predicate}} reverse = {{reverse}}</pre>
+         <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
          <hr/>
          [ <a href="" ng:click="predicate=''">unsorted</a> ]
          <table ng:init="predicate='-age'">
            <tr>
              <th><a href="" ng:click="predicate = 'name'; reverse=false">Name</a>
                  (<a href ng:click="predicate = '-name'; reverse=false">^</a>)</th>
-             <th><a href="" ng:click="predicate = 'phone'; reverse=!reverse">Phone</a></th>
+             <th><a href="" ng:click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
              <th><a href="" ng:click="predicate = 'age'; reverse=!reverse">Age</a></th>
            <tr>
            <tr ng:repeat="friend in friends.$orderBy(predicate, reverse)">
@@ -600,7 +600,7 @@ var angularArray = {
        </doc:source>
        <doc:scenario>
          it('should be reverse ordered by aged', function() {
-           expect(binding('predicate')).toBe('Sorting predicate = -age');
+           expect(binding('predicate')).toBe('Sorting predicate = -age; reverse = ');
            expect(repeater('.doc-example-live table', 'friend in friends').column('friend.age')).
              toEqual(['35', '29', '21', '19', '10']);
            expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
