@@ -806,12 +806,13 @@ angularWidget('select', function(element){
  * @name angular.widget.ng:include
  *
  * @description
- * Include external HTML fragment.
+ * Fetches, compiles and includes an external HTML fragment.
  *
  * Keep in mind that Same Origin Policy applies to included resources
  * (e.g. ng:include won't work for file:// access).
  *
- * @param {string} src expression evaluating to URL.
+ * @param {string} src angular expression evaluating to URL. If the source is a string constant,
+ *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an
  *                 instance of angular.scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
