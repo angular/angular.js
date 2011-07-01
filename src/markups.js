@@ -319,7 +319,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
          <select id="select" ng:multiple="{{checked}}">
            <option>Misko</option>
            <option>Igor</option>
-           <option>Vojita</option>
+           <option>Vojta</option>
            <option>Di</option>
          </select>
        </doc:source>
