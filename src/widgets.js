@@ -597,9 +597,9 @@ angularWidget('button', inputWidgetSelector);
  * @param {comprehension_expression} comprehension _expresion_ `for` _item_ `in` _array_.
  *
  *   * _array_: an expression which evaluates to an array of objects to bind.
- *   * _item_: local variable which will reffer to the item in the _array_ during the itteration
- *   * _expression_: The result of this expression will is `option` label. The
- *        `expression` most likely reffers to the _item_ varibale.
+ *   * _item_: local variable which will refer to the item in the _array_ during the iteration
+ *   * _expression_: The result of this expression will be `option` label. The
+ *        `expression` most likely refers to the _item_ variable.
  *
  * @example
     <doc:example>

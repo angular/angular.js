@@ -22,13 +22,16 @@
     <doc:example>
       <doc:source>
         <script>
-          angular.service('myApp', function($route) {
-            $route.when('/Book/:bookId', {template:'rsrc/book.html', controller:BookCntl});
-            $route.when('/Book/:bookId/ch/:chapterId', {template:'rsrc/chapter.html', controller:ChapterCntl});
+          function MainCntl($route, $location) {
+            this.$route = $route;
+            this.$location = $location;
+
+            $route.when('/Book/:bookId', {template: 'examples/book.html', controller: BookCntl});
+            $route.when('/Book/:bookId/ch/:chapterId', {template: 'examples/chapter.html', controller: ChapterCntl});
             $route.onChange(function() {
               $route.current.scope.params = $route.current.params;
             });
-          }, {$inject: ['$route']});
+          }
 
           function BookCntl() {
             this.name = "BookCntl";
@@ -39,18 +42,19 @@
           }
         </script>
 
-        Chose:
-        <a href="#/Book/Moby">Moby</a> |
-        <a href="#/Book/Moby/ch/1">Moby: Ch1</a> |
-        <a href="#/Book/Gatsby">Gatsby</a> |
-        <a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
-        <input type="text" name="$location.hashPath" size="80" />
-        <pre>$location={{$location}}</pre>
-        <pre>$route.current.template={{$route.current.template}}</pre>
-        <pre>$route.current.params={{$route.current.params}}</pre>
-        <pre>$route.current.scope.name={{$route.current.scope.name}}</pre>
-        <hr/>
-        <ng:include src="$route.current.template" scope="$route.current.scope"/>
+        <div ng:controller="MainCntl">
+          Choose:
+          <a href="#/Book/Moby">Moby</a> |
+          <a href="#/Book/Moby/ch/1">Moby: Ch1</a> |
+          <a href="#/Book/Gatsby">Gatsby</a> |
+          <a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
+          $location.hashPath: <input type="text" name="$location.hashPath" size="80" />
+          <pre>$route.current.template = {{$route.current.template}}</pre>
+          <pre>$route.current.params = {{$route.current.params}}</pre>
+          <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+          <hr />
+          <ng:view></ng:view>
+        </div>
       </doc:source>
       <doc:scenario>
       </doc:scenario>
