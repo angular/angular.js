@@ -31,7 +31,7 @@
 - $service now has $service.invoke for method injection ($service(self, fn) no longer works)
 - injection name inference no longer supports method curry and linking functions. Both must be
   explicitly specified using $inject property.
-- Dynamic iteration (ng:repeat) on <option> elements is no longer supported. Use ng:options
+- Dynamic iteration (ng:repeat) on `<option>` elements is no longer supported. Use ng:options
 - Removal of index formatter (`ng:format="index"`) since its only use was with repeated `<options>`
   (see above).
 - Calling [$orderBy] without a predicate now returns the original unsorted array, instead of
@@ -80,7 +80,7 @@
 ### Bug Fixes
 - reverted [ng:view] sync cache fix due to regression in the order of initialization of parent
   and child controllers. (commits 9bd2c396 and 3d388498)
-- [$resource] success callback is now executed whenever the http status code is <200,300>
+- [$resource] success callback is now executed whenever the http status code is `<200,300>`
 
 
 ### Docs
