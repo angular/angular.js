@@ -216,4 +216,13 @@ describe('mocks', function(){
     });
   });
 
+
+  describe('$exceptionHandler', function() {
+    it('should rethrow exceptions', function() {
+      var rootScope = angular.scope(),
+          exHandler = rootScope.$service('$exceptionHandler');
+
+      expect(function() { exHandler('myException') }).toThrow('myException');
+    });
+  });
 });
