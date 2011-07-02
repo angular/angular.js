@@ -190,16 +190,10 @@ describe('mocks', function(){
       expect(log).toEqual('');
 
       expect(browser.defer.now).toEqual(0);
-      browser.defer.flush();
-      browser.defer.flush();
+      browser.defer.flush(0);
       expect(log).toEqual('A;');
 
-      browser.defer.flush(10);
-      expect(browser.defer.now).toEqual(10);
-      expect(log).toEqual('A;B;');
-
-      browser.defer.flush(10);
-      expect(browser.defer.now).toEqual(20);
+      browser.defer.flush();
       expect(log).toEqual('A;B;C;');
     });
 
