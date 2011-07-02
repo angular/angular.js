@@ -169,8 +169,15 @@ function MockBrowser() {
 
   self.defer.now = 0;
 
-  self.defer.flush = function(time) {
-    self.defer.now += (time || 0);
+  self.defer.flush = function(delay) {
+    if (angular.isDefined(delay)) {
+      self.defer.now += delay;
+    } else {
+      if (self.deferredFns.length) {
+        self.defer.now = self.deferredFns[self.deferredFns.length-1].time;
+      }
+    }
+
     while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
       self.deferredFns.shift().fn();
     }
