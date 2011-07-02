@@ -236,7 +236,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function(){
-          dom.tag('a', {href:"#!angular.service." + require.name}, require.name);
+          dom.tag('a', {href:"#!/api/angular.service." + require.name}, require.name);
         });
         dom.html(require.text);
       });
