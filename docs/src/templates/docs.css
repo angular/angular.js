@@ -169,10 +169,20 @@ li {
 }
 
 
+#sidebar #content-list.tutorial {
+  list-style: none;
+  text-indent: -1.2em;
+}
+
+#sidebar #content-list.tutorial .level-0 {
+  text-indent: 0;
+}
+
+
 #content-list {
   background: #fff;
   padding: 1em 0.4em 1em 2em;
-  margin: 0.95em -1em -1em -0.6em;
+  margin: 0.95em -0.95em -1em -0.6em;
   line-height: 1.5em;
 }
 
