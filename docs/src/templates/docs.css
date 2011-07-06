@@ -29,6 +29,10 @@ p {
   line-height: 1.4em;
 }
 
+li > p {
+  padding-left: 0;
+}
+
 h2 {
   margin: 1.5em 0 1em 0;
 }
@@ -267,7 +271,7 @@ li {
 }
 
 
-#content > div > pre {
+#content pre {
   padding-left: 1.5em;
 }
 
