@@ -56,7 +56,7 @@
       <input type="text" name="search" id="search-box" placeholder="search the docs"
              tabindex="1" accesskey="s">
 
-      <ul id="content-list">
+      <ul id="content-list" ng:class="sectionId">
         <li ng:repeat="page in pages.$filter(search)" ng:class="getClass(page)">
           <a href="{{getUrl(page)}}" ng:class="selectedPartial(page)"
              ng:bind="page.shortName"
