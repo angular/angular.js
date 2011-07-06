@@ -125,7 +125,7 @@ function angularServiceInject(name, fn, inject, eager) {
  * extracting all arguments which and assuming that they are the
  * injection names.
  */
-var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/;
+var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(.+?)\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
