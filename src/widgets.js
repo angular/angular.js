@@ -596,12 +596,14 @@ angularWidget('button', inputWidgetSelector);
  *   * binding to a value not in list confuses most browsers.
  *
  * @element select
- * @param {comprehension_expression} comprehension _expresion_ `for` _item_ `in` _array_.
+ * @param {comprehension_expression} comprehension _select_ `as` _label_ `for` _item_ `in` _array_.
  *
  *   * _array_: an expression which evaluates to an array of objects to bind.
  *   * _item_: local variable which will refer to the item in the _array_ during the iteration
- *   * _expression_: The result of this expression will be `option` label. The
- *        `expression` most likely refers to the _item_ variable.
+ *   * _select_: The result of this expression will be assigned to the scope.
+ *      The _select_ can be ommited, in which case the _item_ itself will be assigned.
+ *   * _label_: The result of this expression will be the `option` label. The
+ *        `expression` most likely reffers to the _item_ variable. (optional)
  *
  * @example
     <doc:example>
@@ -657,7 +659,7 @@ angularWidget('button', inputWidgetSelector);
     </doc:example>
  */
 
-var NG_OPTIONS_REGEXP = /^(.*)\s+for\s+([\$\w][\$\w\d]*)\s+in\s+(.*)$/;
+var NG_OPTIONS_REGEXP = /^\s*((.*)\s+as\s+)?(.*)\s+for\s+([\$\w][\$\w\d]*)\s+in\s+(.*)$/;
 angularWidget('select', function(element){
   this.descend(true);
   this.directives(true);
@@ -669,12 +671,13 @@ angularWidget('select', function(element){
   }
   if (! (match = expression.match(NG_OPTIONS_REGEXP))) {
     throw Error(
-        "Expected ng:options in form of '_expresion_ for _item_ in _collection_' but got '" +
+        "Expected ng:options in form of '(_expression_ as)? _expresion_ for _item_ in _collection_' but got '" +
         expression + "'.");
   }
-  var displayFn = expressionCompile(match[1]).fnSelf;
-  var itemName = match[2];
-  var collectionFn = expressionCompile(match[3]).fnSelf;
+  var displayFn = expressionCompile(match[3]).fnSelf;
+  var itemName = match[4];
+  var itemFn = expressionCompile(match[2] || itemName).fnSelf;
+  var collectionFn = expressionCompile(match[5]).fnSelf;
   // we can't just jqLite('<option>') since jqLite is not smart enough
   // to create it in <select> and IE barfs otherwise.
   var option = jqLite(document.createElement('option'));
@@ -696,24 +699,33 @@ angularWidget('select', function(element){
       var collection = collectionFn(scope) || [];
       var value = select.val();
       var index, length;
-      if (isMultiselect) {
-        value = [];
-        for (index = 0, length = optionElements.length; index < length; index++) {
-          if (optionElements[index][0].selected) {
-            value.push(collection[index]);
+      var tempScope = scope.$new();
+      try {
+        if (isMultiselect) {
+          value = [];
+          for (index = 0, length = optionElements.length; index < length; index++) {
+            if (optionElements[index][0].selected) {
+              tempScope[itemName] = collection[index];
+              value.push(itemFn(tempScope));
+            }
+          }
+        } else {
+          if (value == '?') {
+            value = undefined;
+          } else if (value == ''){
+            value = null;
+          } else {
+            tempScope[itemName] = collection[value];
+            value = itemFn(tempScope);
           }
         }
-      } else {
-        if (value == '?') {
-          value = undefined;
-        } else {
-          value = (value == '' ? null : collection[value]);
-        }
+        if (!isUndefined(value)) model.set(value);
+        scope.$tryEval(function(){
+          scope.$root.$eval();
+        });
+      } finally {
+        tempScope = null; // TODO(misko): needs to be $destroy
       }
-      if (!isUndefined(value)) model.set(value);
-      scope.$tryEval(function(){
-        scope.$root.$eval();
-      });
     });
 
     scope.$onEval(function(){
@@ -731,17 +743,19 @@ angularWidget('select', function(element){
       var selectValue = '';
       var isMulti = isMultiselect;
 
-      if (isMulti) {
-        selectValue = new HashMap();
-        if (modelValue && isNumber(length = modelValue.length)) {
-          for (index = 0; index < length; index++) {
-            selectValue.put(modelValue[index], true);
+      try {
+        if (isMulti) {
+          selectValue = new HashMap();
+          if (modelValue && isNumber(length = modelValue.length)) {
+            for (index = 0; index < length; index++) {
+              selectValue.put(modelValue[index], true);
+            }
           }
         }
-      }
-      try {
+
         for (index = 0, length = collection.length; index < length; index++) {
-          currentItem = optionScope[itemName] = collection[index];
+          optionScope[itemName] = collection[index];
+          currentItem = itemFn(optionScope);
           optionText = displayFn(optionScope);
           if (optionTexts.length > index) {
             // reuse
@@ -799,7 +813,7 @@ angularWidget('select', function(element){
         }
 
       } finally {
-        optionScope = null;
+        optionScope = null; // TODO(misko): needs to be $destroy()
       }
     });
   };
