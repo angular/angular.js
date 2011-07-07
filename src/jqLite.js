@@ -351,11 +351,10 @@ forEach({
   dealoc: JQLiteDealoc,
 
   bind: function(element, type, fn){
-    var bind = JQLiteData(element, 'bind'),
-        eventHandler;
+    var bind = JQLiteData(element, 'bind');
     if (!bind) JQLiteData(element, 'bind', bind = {});
     forEach(type.split(' '), function(type){
-      eventHandler = bind[type];
+      var eventHandler = bind[type];
       if (!eventHandler) {
         bind[type] = eventHandler = function(event) {
           if (!event.preventDefault) {
