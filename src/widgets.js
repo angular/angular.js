@@ -4,8 +4,11 @@
  * @name angular.widget
  * @description
  *
- * Widgets are custom DOM elements.  An angular widget can be either a custom
- * attribute that modifies an existing DOM elements or an entirely new DOM element.
+ * An angular widget can be either a custom attribute that modifies an existing DOM elements or an
+ * entirely new DOM element.
+ *
+ * During html compilation, widgets are processed after {@link angular.markup markup}, but before
+ * {@link angular.directive directives}.
  *
  * Following is the list of built-in angular widgets:
  *
