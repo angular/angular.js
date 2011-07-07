@@ -331,6 +331,23 @@ describe('jqLite', function(){
       browserTrigger(b, 'click');
       expect(log).toEqual('click on: A;click on: B;');
     });
+
+    it('should bind to all events separated by space', function() {
+      var elm = jqLite(a),
+          callback = jasmine.createSpy('callback');
+
+      elm.bind('click keypress', callback);
+      elm.bind('click', callback);
+
+      browserTrigger(a, 'click');
+      expect(callback).toHaveBeenCalled();
+      expect(callback.callCount).toBe(2);
+
+      callback.reset();
+      browserTrigger(a, 'keypress');
+      expect(callback).toHaveBeenCalled();
+      expect(callback.callCount).toBe(1);
+    });
   });
 
 
