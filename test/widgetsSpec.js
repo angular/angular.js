@@ -576,22 +576,31 @@ describe("widget", function(){
   describe('ng:options', function(){
     var select, scope;
 
-    function createSelect(multiple, blank, unknown){
-      select = jqLite(
-          '<select name="selected" ' + (multiple ? ' multiple' : '') +
-                 ' ng:options="value.name for value in values">' +
-            (blank ? '<option value="">blank</option>' : '') +
-            (unknown ? '<option value="?">unknown</option>' : '') +
-          '</select>');
+    function createSelect(attrs, blank, unknown){
+      var html = '<select';
+      forEach(attrs, function(value, key){
+        if (typeof value == 'boolean') {
+          if (value) html += ' ' + key;
+        } else {
+          html+= ' ' + key + '="' + value + '"';
+        }
+      });
+      html += '>' +
+        (blank ? '<option value="">blank</option>' : '') +
+        (unknown ? '<option value="?">unknown</option>' : '') +
+      '</select>';
+      select = jqLite(html);
       scope = compile(select);
     };
 
     function createSingleSelect(blank, unknown){
-      createSelect(false, blank, unknown);
+      createSelect({name:'selected', 'ng:options':'value.name for value in values'},
+          blank, unknown);
     };
 
     function createMultiSelect(blank, unknown){
-      createSelect(true, blank, unknown);
+      createSelect({name:'selected', multiple:true, 'ng:options':'value.name for value in values'},
+          blank, unknown);
     };
 
     afterEach(function(){
@@ -602,7 +611,7 @@ describe("widget", function(){
     it('should throw when not formated "? for ? in ?"', function(){
       expect(function(){
         compile('<select name="selected" ng:options="i dont parse"></select>');
-      }).toThrow("Expected ng:options in form of '_expresion_ for _item_ in _collection_' but got 'i dont parse'.");
+      }).toThrow("Expected ng:options in form of '(_expression_ as)? _expresion_ for _item_ in _collection_' but got 'i dont parse'.");
 
       $logMock.error.logs.shift();
     });
@@ -712,6 +721,18 @@ describe("widget", function(){
         expect(select.val()).toEqual('1');
       });
 
+      it('should bind to scope value through experession', function(){
+        createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
+        scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
+        scope.selected = scope.values[0].id;
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+
+        scope.selected = scope.values[1].id;
+        scope.$eval();
+        expect(select.val()).toEqual('1');
+      });
+
       it('should insert a blank option if bound to null', function(){
         createSingleSelect();
         scope.values = [{name:'A'}];
@@ -769,6 +790,18 @@ describe("widget", function(){
         select.val('1');
         browserTrigger(select, 'change');
         expect(scope.selected).toEqual(scope.values[1]);
+      });
+
+      it('should update model on change through expression', function(){
+        createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
+        scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
+        scope.selected = scope.values[0].id;
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+
+        select.val('1');
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(scope.values[1].id);
       });
 
       it('should update model to null on change', function(){
