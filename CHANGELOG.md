@@ -1,6 +1,8 @@
 <a name="0.9.18"><a/>
 # <angular/> 0.9.18 jiggling-armfat (in-progress) #
 
+### Bug Fixes
+- Issue #449: [ng:options] should support binding to a property of an item.
 
 
 
