@@ -568,18 +568,25 @@ angularDirective("ng:submit", function(expression, element) {
   });
 });
 
-
 function ngClass(selector) {
   return function(expression, element){
-    var existing = element[0].className + ' ';
     return function(element){
-      this.$onEval(function(){
-        if (selector(this.$index)) {
-          var value = this.$eval(expression);
-          if (isArray(value)) value = value.join(' ');
-          element[0].className = trim(existing + value);
-        }
-      }, element);
+      if(selector(this.$index)) {
+        this.$watch(expression, function(newCls, oldCls) {
+          var cls = element.attr('class');
+          if (isArray(newCls)) newCls = newCls.join(' ');
+          if (isArray(oldCls)) oldCls = oldCls.join(' ');
+
+          // The time when newCls == oldCLs is when $watch just started
+          if (newCls == oldCls) {
+            cls += ' ' + newCls;
+          } else {
+            cls = cls.replace(' ' + oldCls, ' ' + newCls);
+          }
+
+          element.attr('class', cls);
+        });
+      }
     };
   };
 }
