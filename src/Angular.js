@@ -959,7 +959,7 @@ function angularJsConfig(document, config) {
     match = (scripts[j].src || "").match(rngScript);
     if (match) {
       config.base_url = match[1];
-      config.ie_compat = match[1] + 'angular-ie-compat' + (match[2] || '') + '.js';
+      config.ie_compat = 'angular-ie-compat' + (match[2] || '') + '.js';
       extend(config, parseKeyValue(match[6]));
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {
