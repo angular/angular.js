@@ -150,10 +150,12 @@
     // empty the cache to prevent mem leaks
     globalVars = {};
 
-    //angular-ie-compat.js needs to be pregenerated for development with IE<8
-    if (msie<8) addScript('../angular-ie-compat.js');
+    var config = angularJsConfig(document);
 
-    angularInit(angularJsConfig(document), document);
+    // angular-ie-compat.js needs to be pregenerated for development with IE<8
+    config.ie_compat = serverPath + '../build/angular-ie-compat.js';
+
+    angularInit(config, document);
   }
 
   if (window.addEventListener){
