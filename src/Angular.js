@@ -944,7 +944,7 @@ function angularInit(config, document){
     if (config.css)
       $browser.addCss(config.base_url + config.css);
     else if(msie<8)
-      $browser.addJs(config.base_url + config.ie_compat, config.ie_compat_id);
+      $browser.addJs(config.ie_compat, config.ie_compat_id);
   }
 }
 
