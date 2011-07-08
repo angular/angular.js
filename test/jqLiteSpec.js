@@ -352,6 +352,15 @@ describe('jqLite', function(){
       expect(callback).toHaveBeenCalled();
       expect(callback.callCount).toBe(1);
     });
+
+    it('should set event.target on IE', function() {
+      var elm = jqLite(a);
+      elm.bind('click', function(event) {
+        expect(event.target).toBe(a);
+      });
+
+      browserTrigger(a, 'click');
+    });
   });
 
 

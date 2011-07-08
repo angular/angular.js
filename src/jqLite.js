@@ -369,6 +369,9 @@ forEach({
               event.cancelBubble = true; //ie
             };
           }
+          if (!event.target) {
+            event.target = event.srcElement || document;
+          }
           forEach(eventHandler.fns, function(fn){
             fn.call(element, event);
           });
