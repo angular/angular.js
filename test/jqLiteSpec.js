@@ -162,6 +162,10 @@ describe('jqLite', function(){
       expect(select.attr('multiple')).toEqual(true);
     });
 
+    it('should return undefined for non-existing attributes', function() {
+      var elm = jqLite('<div class="any">a</div>');
+      expect(elm.attr('non-existing')).toBeUndefined();
+    });
   });
 
 
