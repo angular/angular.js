@@ -95,16 +95,16 @@ Template.prototype = {
  * that is a DOM clone of the original template.
  *
    <pre>
-    //copile the entire window.document and give me the scope bound to this template.
-    var rootSscope = angular.compile(window.document)();
+    // compile the entire window.document and give me the scope bound to this template.
+    var rootScope = angular.compile(window.document)();
 
-    //compile a piece of html
-    var rootScope2 = angular.compile(''<div ng:click="clicked = true">click me</div>')();
+    // compile a piece of html
+    var rootScope2 = angular.compile('<div ng:click="clicked = true">click me</div>')();
 
-    //compile a piece of html and retain reference to both the dom and scope
+    // compile a piece of html and retain reference to both the dom and scope
     var template = angular.element('<div ng:click="clicked = true">click me</div>'),
-        scoope = angular.compile(view)();
-    //at this point template was transformed into a view
+        scope = angular.compile(template)();
+    // at this point template was transformed into a view
    </pre>
  *
  *
@@ -175,7 +175,7 @@ Template.prototype = {
  *  directives processing state. The compiler will process directives only when directives set to
  *  true.
  *
- * For information on how the compiler works, see the 
+ * For information on how the compiler works, see the
  * {@link guide/dev_guide.compiler Angular HTML Compiler} section of the Developer Guide.
  */
 function Compiler(markup, attrMarkup, directives, widgets){
