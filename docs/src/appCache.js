@@ -3,48 +3,73 @@
 */
 
 exports.appCache = appCache;
-var fs = require('fs');
+var fs = require('q-fs');
+var Q = require('qq');
+function identity($) {return $;}
 
 function appCache(path) {
-    var blackList = [ "offline.html",
-                      "sitemap.xml",
-                      "robots.txt",
-                      "docs-scenario.html",
-                      "docs-scenario.js",
-                      "app-cache.manifest"
+    if(!path) {
+      return appCacheTemplate();
+    }
+    var blackList = ["offline.html",
+                     "sitemap.xml",
+                     "robots.txt",
+                     "docs-scenario.html",
+                     "docs-scenario.js",
+                     "appcache.manifest"
                     ];
 
     var result = ["CACHE MANIFEST",
-                        "# %TIMESTAMP%",
-                        "",
-                        "# cache all of these",
-                        "CACHE:",
-                        "../angular.min.js"];
+                  "# " + new Date().toISOString(),
+                  "",
+                  "# cache all of these",
+                  "CACHE:",
+                  "../angular.min.js"];
 
-    var resultPostfix = [ "",
-                        "FALLBACK:",
-                        "/offline.html",
-                        "",
-                        "# allow access to google analytics and twitter when we are online",
-                        "NETWORK:",
-                        "*"];
-    walk(path,result,blackList);
-    return result.join('\n').replace(/%TIMESTAMP%/, (new Date()).toISOString()) + '\n' + resultPostfix.join('\n');
+    var resultPostfix = ["",
+                         "FALLBACK:",
+                         "/offline.html",
+                         "",
+                         "# allow access to google analytics and twitter when we are online",
+                         "NETWORK:",
+                         "*"];
+
+    var promise = fs.listTree(path).then(function(files){
+      var fileFutures = [];
+      files.forEach(function(file){
+        fileFutures.push(fs.isFile(file).then(function(isFile){
+          if (isFile && blackList.indexOf(file) == -1) {
+            return file.replace('build/docs/','');
+          }
+        }));
+      });
+      return Q.deep(fileFutures);
+    }).then(function(files){
+     return result.concat(files.filter(identity)).concat(resultPostfix).join('\n');
+    });
+
+    return promise;
 }
 
-function walk(path, array, blackList) {
-  var temp = fs.readdirSync(path);
-  for (var i=0; i< temp.length; i++) {
-    if(blackList.indexOf(temp[i]) < 0) {
-      var currentPath = path + '/' + temp[i];
-      var stat = fs.statSync(currentPath);
-      
-      if (stat.isDirectory()) {
-        walk(currentPath, array, blackList);
-      }
-      else {
-        array.push(currentPath.replace('build/docs/',''));
-      }
-    }
-  }
+function appCacheTemplate() {
+  return ["CACHE MANIFEST",
+          "# " + new Date().toISOString(),
+          "",
+          "# cache all of these",
+          "CACHE:",
+          "syntaxhighlighter/syntaxhighlighter-combined.js",
+          "../angular.min.js",
+          "docs-combined.js",
+          "docs-keywords.js",
+          "docs-combined.css",
+          "syntaxhighlighter/syntaxhighlighter-combined.css",
+          "img/texture_1.png",
+          "img/yellow_bkgnd.jpg",
+          "",
+          "FALLBACK:",
+          "/ offline.html",
+          "",
+          "# allow access to google analytics and twitter when we are online",
+          "NETWORK:",
+          "*"].join('\n');
 }
