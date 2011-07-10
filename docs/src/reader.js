@@ -2,98 +2,98 @@
  * All reading related code here. This is so that we can separate the async code from sync code
  * for testability
  */
+
+exports.collect = collect;
+
 require.paths.push(__dirname);
-var fs       = require('fs'),
-    callback = require('callback');
+var ngdoc = require('ngdoc.js'),
+    Q = require('qq'),
+    qfs = require('q-fs');
 
 var NEW_LINE = /\n\r?/;
 
-function collect(callback){
-   findJsFiles('src', callback.waitMany(function(file) {
-     console.log('reading', file, '...');
-     findNgDocInJsFile(file, callback.waitMany(function(doc, line) {
-       callback('@section api\n' + doc, file, line);
-    }));
-  }));
-  findNgDocInDir('docs/content', callback.waitMany(callback));
-  callback.done();
-}
+function collect() {
+  var allDocs = [];
 
-function findJsFiles(dir, callback){
-  fs.readdir(dir, callback.waitFor(function(err, files){
-    if (err) return this.error(err);
-    files.forEach(function(file){
-      var path = dir + '/' + file;
-      fs.lstat(path, callback.waitFor(function(err, stat){
-        if (err) return this.error(err);
-        if (stat.isDirectory())
-          findJsFiles(path, callback.waitMany(callback));
-        else if (/\.js$/.test(path))
-          callback(path);
-      }));
-    });
-    callback.done();
-  }));
-}
-
-function findNgDocInDir(directory, docNotify) {
-  fs.readdir(directory, docNotify.waitFor(function(err, files){
-    if (err) return this.error(err);
-    files.forEach(function(file){
-      fs.stat(directory + '/' + file, docNotify.waitFor(function(err, stats){
-        if (err) return this.error(err);
-        if (stats.isFile()) {
-          if (!file.match(/\.ngdoc$/)) return;
-          console.log('reading', directory + '/' + file, '...');
-          fs.readFile(directory + '/' + file, docNotify.waitFor(function(err, content){
-            if (err) return this.error(err);
-            var section = '@section ' + directory.split('/').pop() + '\n';
-            docNotify(section + content.toString(), directory + '/' +file, 1);
-          }));
-        } else if(stats.isDirectory()) {
-          findNgDocInDir(directory + '/' + file, docNotify.waitFor(docNotify));
-        }
-      }));
-    });
-    docNotify.done();
-  }));
-}
-
-function findNgDocInJsFile(file, callback) {
-  fs.readFile(file, callback.waitFor(function(err, content){
-    var lines = content.toString().split(NEW_LINE);
-    var text;
-    var startingLine ;
-    var match;
-    var inDoc = false;
-    lines.forEach(function(line, lineNumber){
-      lineNumber++;
-      // is the comment starting?
-      if (!inDoc && (match = line.match(/^\s*\/\*\*\s*(.*)$/))) {
-        line = match[1];
-        inDoc = true;
-        text = [];
-        startingLine = lineNumber;
+  //collect docs in JS Files
+  var path = 'src';
+  var promiseA = Q.when(qfs.listTree(path), function(files) {
+    var done;
+    //read all files in parallel.
+    files.forEach(function(file) {
+      var work;
+      if(/\.js$/.test(file)) {
+        console.log("reading " + file + ".......");
+        work = Q.when(qfs.read(file), function(content) {
+          processJsFile(content, file).forEach (function(doc) {
+            allDocs.push(doc);
+          });
+        });
       }
-      // are we done?
-      if (inDoc && line.match(/\*\//)) {
-        text = text.join('\n');
-        text = text.replace(/^\n/, '');
-        if (text.match(/@ngdoc/)){
-          callback(text, startingLine);
-        }
-        doc = null;
-        inDoc = false;
-      }
-      // is the comment add text
-      if (inDoc){
-        text.push(line.replace(/^\s*\*\s?/, ''));
-      }
+      done = Q.when(done, function() {
+        return work;
+      });
     });
-    callback.done();
-  }));
+    return done;
+  });
+
+   //collect all NG Docs in Content Folder
+   var path2 = 'docs/content';
+   var promiseB = Q.when(qfs.listTree(path2), function(files){
+     var done2;
+     files.forEach(function(file) {
+       var work2;
+       if (file.match(/\.ngdoc$/)) {
+         console.log("reading " + file + ".......");
+         work2 = Q.when(qfs.read(file), function(content){
+            var section = '@section ' + file.split('/')[2] + '\n';
+            allDocs.push(new ngdoc.Doc(section + content.toString(),file, 1).parse());
+          });
+       }
+       done2 = Q.when(done2, function() {
+         return work2;
+       });
+     });
+     return done2;
+   });
+
+  return Q.join(promiseA, promiseB, function() {
+    return allDocs;
+  });
 }
 
+function processJsFile(content, file) {
+  var docs = [];
+  var lines = content.toString().split(NEW_LINE);
+  var text;
+  var startingLine ;
+  var match;
+  var inDoc = false;
 
-
-exports.collect = collect;
+  lines.forEach(function(line, lineNumber){
+    lineNumber++;
+    // is the comment starting?
+    if (!inDoc && (match = line.match(/^\s*\/\*\*\s*(.*)$/))) {
+      line = match[1];
+      inDoc = true;
+      text = [];
+      startingLine = lineNumber;
+    }
+    // are we done?
+    if (inDoc && line.match(/\*\//)) {
+      text = text.join('\n');
+      text = text.replace(/^\n/, '');
+      if (text.match(/@ngdoc/)){
+        //console.log(file, startingLine)
+        docs.push(new ngdoc.Doc('@section api\n' + text, file, startingLine).parse());
+      }
+      doc = null;
+      inDoc = false;
+    }
+    // is the comment add text
+    if (inDoc){
+      text.push(line.replace(/^\s*\*\s?/, ''));
+    }
+  });
+  return docs;
+}

@@ -3,90 +3,77 @@ require.paths.push('lib');
 var reader = require('reader.js'),
     ngdoc = require('ngdoc.js'),
     writer = require('writer.js'),
-    callback = require('callback.js'),
     SiteMap = require('SiteMap.js').SiteMap,
-    appCache = require('appCache.js');
+    appCache = require('appCache.js').appCache,
+    Q = require('qq');
 
-var docs = [];
-var start;
-var work = callback.chain(function(){
-  start = now();
+process.on('uncaughtException', function (err) {
+  console.error(err.stack || err);
+});
+
+var start = now();
+var docs;
+
+writer.makeDir('build/docs/syntaxhighlighter').then(function() {
   console.log('Generating Angular Reference Documentation...');
-  reader.collect(work.waitMany(function(text, file, line){
-    var doc = new ngdoc.Doc(text, file, line);
-    docs.push(doc);
-    doc.parse();
-  }));
-});
-var writes = callback.chain(function(){
+  return reader.collect();
+}).then(function generateHtmlDocPartials(docs_) {
+  docs = docs_;
   ngdoc.merge(docs);
+  var fileFutures = [];
   docs.forEach(function(doc){
-    writer.output(doc.section + '/' + doc.id + '.html', doc.html(), writes.waitFor());
+    fileFutures.push(writer.output(doc.section + '/' + doc.id + '.html', doc.html()));
   });
-  var metadata = ngdoc.metadata(docs);
-  writer.output('docs-keywords.js', ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';'], writes.waitFor());
-  writer.copyDir('img', writes.waitFor());
-  writer.copyDir('examples', writes.waitFor());
-  writer.copyTpl('index.html', writes.waitFor());
-  writer.copyTpl('.htaccess', writes.waitFor());
-  writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html', writes.waitFor(),
-              '<-- jquery place holder -->', '<script src=\"jquery.min.js\"><\/script>');
-  writer.copyTpl('offline.html', writes.waitFor());
-  //writer.output('app-cache.manifest',
-    //            appCacheTemplate().replace(/%TIMESTAMP%/, (new Date()).toISOString()),
-      //          writes.waitFor());
-  writer.merge(['docs.js',
-                'doc_widgets.js'],
-               'docs-combined.js',
-               writes.waitFor());
-  writer.merge(['docs.css',
-                'doc_widgets.css'],
-               'docs-combined.css',
-               writes.waitFor());
-  writer.copyTpl('docs-scenario.html', writes.waitFor());
-  writer.output('docs-scenario.js', ngdoc.scenarios(docs), writes.waitFor());
-  writer.output('sitemap.xml', new SiteMap(docs).render(), writes.waitFor());
-  writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n', writes.waitFor());
-  writer.merge(['syntaxhighlighter/shCore.js',
-                'syntaxhighlighter/shBrushJScript.js',
-                'syntaxhighlighter/shBrushXml.js'],
-               'syntaxhighlighter/syntaxhighlighter-combined.js',
-               writes.waitFor());
-  writer.merge(['syntaxhighlighter/shCore.css',
-                'syntaxhighlighter/shThemeDefault.css'],
-               'syntaxhighlighter/syntaxhighlighter-combined.css',
-               writes.waitFor());
-  writer.copyTpl('jquery.min.js', writes.waitFor());
-  writer.output('app-cache.manifest', appCache('build/docs/'), writes.waitFor());
-});
-writes.onDone(function(){
-  console.log('DONE. Generated ' + docs.length + ' pages in ' +
-      (now()-start) + 'ms.' );
-});
-work.onDone(writes);
-writer.makeDir('build/docs/syntaxhighlighter', work);
 
-///////////////////////////////////
+  writeTheRest(fileFutures);
+
+  return Q.deep(fileFutures);
+}).then(function generateManifestFile() {
+  return appCache('build/docs/').then(function(list) {
+    writer.output('appcache-offline.manifest',list)
+  });
+}).then(function printStats() {
+  console.log('DONE. Generated ' + docs.length + ' pages in ' + (now()-start) + 'ms.' );
+}).end();
+
+
+function writeTheRest(writesFuture) {
+  var metadata = ngdoc.metadata(docs);
+
+  writesFuture.push(writer.copyDir('img'));
+  writesFuture.push(writer.copyDir('examples'));
+  writesFuture.push(writer.copyTpl('index.html'));
+  writesFuture.push(writer.copy('docs/src/templates/index.html',
+                                'build/docs/index-jq.html',
+                                '<!-- jquery place holder -->',
+                                '<script src=\"jquery.min.js\"><\/script>'));
+  writesFuture.push(writer.copyTpl('offline.html'));
+  writesFuture.push(writer.copyTpl('docs-scenario.html'));
+  writesFuture.push(writer.copyTpl('jquery.min.js'));
+
+  writesFuture.push(writer.output('docs-keywords.js',
+                                ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
+  writesFuture.push(writer.output('sitemap.xml', new SiteMap(docs).render()));
+  writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
+  writesFuture.push(writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n'));
+  writesFuture.push(writer.output('appcache.manifest',appCache()));
+
+  writesFuture.push(writer.merge(['docs.js',
+                                  'doc_widgets.js'],
+                                  'docs-combined.js'));
+  writesFuture.push(writer.merge(['docs.css',
+                                  'doc_widgets.css'],
+                                  'docs-combined.css'));
+  writesFuture.push(writer.merge(['syntaxhighlighter/shCore.js',
+                                  'syntaxhighlighter/shBrushJScript.js',
+                                  'syntaxhighlighter/shBrushXml.js'],
+                                  'syntaxhighlighter/syntaxhighlighter-combined.js'));
+  writesFuture.push(writer.merge(['syntaxhighlighter/shCore.css',
+                                  'syntaxhighlighter/shThemeDefault.css'],
+                                  'syntaxhighlighter/syntaxhighlighter-combined.css'));
+}
+
+
 function now(){ return new Date().getTime(); }
 
-
-function appCacheTemplate() {
-  return ["CACHE MANIFEST",
-          "# %TIMESTAMP%",
-          "",
-          "# cache all of these",
-          "CACHE:",
-          "syntaxhighlighter/syntaxhighlighter-combined.js",
-          "../angular.min.js",
-          "docs-combined.js",
-          "docs-keywords.js",
-          "docs-combined.css",
-          "syntaxhighlighter/syntaxhighlighter-combined.css",
-          "",
-          "FALLBACK:",
-          "/ offline.html",
-          "",
-          "# allow access to google analytics and twitter when we are online",
-          "NETWORK:",
-          "*"].join('\n');
-}
+function noop(){};

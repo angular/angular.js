@@ -246,7 +246,7 @@ task :package => [:clean, :compile, :docs] do
     f.write text.sub('angular-scenario.js', "angular-scenario-#{version}.js")
   end
 
-  File.open("#{pkg_dir}/docs-#{version}/app-cache.manifest", File::RDWR) do |f|
+  File.open("#{pkg_dir}/docs-#{version}/appcache.manifest", File::RDWR) do |f|
     text = f.read
     f.rewind
     f.write text.sub('angular.min.js', "angular-#{version}.min.js")
