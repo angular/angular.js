@@ -452,6 +452,28 @@ describe('angular', function(){
     });
 
 
+    describe('locale recognition', function() {
+      it('should use browser loacle if lang attribute is not specified', function() {
+        spyOn(window, 'angularCompile');
+        var locale = (window.navigator.language || window.navigator.browserLanguage).toLowerCase();
+
+        expect(isString(locale)).toBeTruthy();
+        expect(angularInit({autobind:true}, dom)).toBe(locale);
+        expect(window.angularCompile).toHaveBeenCalled();
+
+      });
+
+
+      it('should use use locale specified by lang attribute', function() {
+        dom.getElementById = function() {
+          var temp = jqLite(this.childNodes[1]).attr('lang', 'zh_CN');
+          return temp[0];
+        };
+        expect(angularInit({autobind:'child'}, dom)).toBe('zh_cn');
+      });
+    });
+
+
     it('should compile only the element specified via autobind', function() {
       dom.getElementById = function() {
         return this.childNodes[1];
