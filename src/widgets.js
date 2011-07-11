@@ -783,10 +783,13 @@ angularWidget('select', function(element){
             }
           }
         }
-        if (fragment) select.append(jqLite(fragment));
+        if (fragment) {
+          select.append(jqLite(fragment));
+        }
         // shrink children
         while(optionElements.length > index) {
           optionElements.pop().remove();
+          optionTexts.pop();
           delete lastSelectValue[optionElements.length];
         }
 
