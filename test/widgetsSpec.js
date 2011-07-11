@@ -672,6 +672,24 @@ describe("widget", function(){
       expect(select.find('option').length).toEqual(1); // we add back the special empty option
     });
 
+    it('should shrink and then grow list', function(){
+      createSingleSelect();
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(3);
+
+      scope.values = [{name:'1'}, {name:'2'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(2);
+
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(3);
+    });
+
     it('should update list', function(){
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
