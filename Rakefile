@@ -157,11 +157,13 @@ task :generate_ie_compat => :init do
     # generate a javascript closure that contains a function which will append the generated css
     # string as a stylesheet to the current html document
     jsString = "(function(){ \r\n" +
-               "  var jsUri = document.location.href.replace(/\\/[^\/]+(#.*)?$/, '/') + " +
-               "              document.getElementById('ng-ie-compat').src; \r\n" +
-               "  var css = '#{cssString}' \r\n" +
-               "  var s = document.createElement('style'); \r\n" +
+               "  var jsUri = document.location.href.replace(/\\/[^\/]+(#.*)?$/, '/') + \r\n" +
+               "              document.getElementById('ng-ie-compat').src,\r\n" +
+               "      css = '#{cssString}',\r\n" +
+               "      s = document.createElement('style'); \r\n" +
+               "\r\n" +
                "  s.setAttribute('type', 'text/css'); \r\n" +
+               "\r\n" +
                "  if (s.styleSheet) { \r\n" +
                "    s.styleSheet.cssText = css; \r\n" +
                "  } else { \r\n" +
