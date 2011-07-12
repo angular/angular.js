@@ -64,6 +64,16 @@ task :default => [:compile, :test]
 desc 'Init the build workspace'
 task :init do
   FileUtils.mkdir(BUILD_DIR) unless File.directory?(BUILD_DIR)
+
+  v = YAML::load( File.open( 'version.yaml' ) )
+  match = v['version'].match(/^([^-]*)(-snapshot)?$/)
+
+  NG_VERSION = Struct.new(:full, :major, :minor, :dot, :codename).
+                      new(match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : ''),
+                          match[1].split('.')[0],
+                          match[1].split('.')[1],
+                          match[1].split('.')[2],
+                          v['codename'])
 end
 
 
@@ -188,9 +198,17 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter, :gen
 
   File.open(path_to('angular.js'), 'w') do |f|
     concat = 'cat ' + deps.flatten.join(' ')
-    f.write(%x{#{concat}}.
+
+    content = %x{#{concat}}.
+              gsub('"NG_VERSION_FULL"', NG_VERSION.full).
+              gsub('"NG_VERSION_MAJOR"', NG_VERSION.major).
+              gsub('"NG_VERSION_MINOR"', NG_VERSION.minor).
+              gsub('"NG_VERSION_DOT"', NG_VERSION.dot).
+              gsub('"NG_VERSION_CODENAME"', NG_VERSION.codename).
               gsub(/^\s*['"]use strict['"];?\s*$/, ''). # remove all file-specific strict mode flags
-              gsub(/'USE STRICT'/, "'use strict'"))     # rename the placeholder in angular.prefix
+              gsub(/'USE STRICT'/, "'use strict'")      # rename the placeholder in angular.prefix
+
+    f.write(content)
     f.write(gen_css('css/angular.css', true))
   end
 
@@ -210,13 +228,9 @@ end
 
 desc 'Create angular distribution'
 task :package => [:clean, :compile, :docs] do
-  v = YAML::load( File.open( 'version.yaml' ) )['version']
-  match = v.match(/^([^-]*)(-snapshot)?$/)
-  version = match[1] + (match[2] ? ('-' + %x(git rev-parse HEAD)[0..7]) : '')
+  tarball = "angular-#{NG_VERSION.full}.tgz"
 
-  tarball = "angular-#{version}.tgz"
-
-  pkg_dir = path_to("pkg/angular-#{version}")
+  pkg_dir = path_to("pkg/angular-#{NG_VERSION.full}")
   FileUtils.rm_r(path_to('pkg'), :force => true)
   FileUtils.mkdir_p(pkg_dir)
 
@@ -228,35 +242,36 @@ task :package => [:clean, :compile, :docs] do
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),
   ].each do |src|
-    dest = src.gsub(/^[^\/]+\//, '').gsub(/((\.min)?\.js)$/, "-#{version}\\1")
+    dest = src.gsub(/^[^\/]+\//, '').gsub(/((\.min)?\.js)$/, "-#{NG_VERSION.full}\\1")
     FileUtils.cp(src, pkg_dir + '/' + dest)
   end
 
-  FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{version}"
+  FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{NG_VERSION.full}"
 
-  File.open("#{pkg_dir}/docs-#{version}/index.html", File::RDWR) do |f|
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index.html", File::RDWR) do |f|
     text = f.read
     f.rewind
-    f.write text.sub('angular.min.js', "angular-#{version}.min.js")
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
   end
 
-  File.open("#{pkg_dir}/docs-#{version}/docs-scenario.html", File::RDWR) do |f|
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html", File::RDWR) do |f|
     text = f.read
     f.rewind
-    f.write text.sub('angular-scenario.js', "angular-scenario-#{version}.js")
+    f.write text.sub('angular-scenario.js', "angular-scenario-#{NG_VERSION.full}.js")
   end
 
-  File.open("#{pkg_dir}/docs-#{version}/appcache.manifest", File::RDWR) do |f|
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/appcache.manifest", File::RDWR) do |f|
+
     text = f.read
     f.rewind
-    f.write text.sub('angular.min.js', "angular-#{version}.min.js")
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
   end
 
 
   %x(tar -czf #{path_to(tarball)} -C #{path_to('pkg')} .)
 
   FileUtils.cp path_to(tarball), pkg_dir
-  FileUtils.mv pkg_dir, path_to(['pkg', version])
+  FileUtils.mv pkg_dir, path_to(['pkg', NG_VERSION.full])
 
   puts "Package created: #{path_to(tarball)}"
 end
