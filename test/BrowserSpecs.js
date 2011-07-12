@@ -1,6 +1,6 @@
 describe('browser', function(){
 
-  var browser, fakeWindow, xhr, logs, scripts, setTimeoutQueue;
+  var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue;
 
   function fakeSetTimeout(fn) {
     setTimeoutQueue.push(fn);
@@ -17,13 +17,15 @@ describe('browser', function(){
   beforeEach(function(){
     setTimeoutQueue = [];
     scripts = [];
+    removedScripts = [];
     xhr = null;
     fakeWindow = {
       location: {href:"http://server"},
       setTimeout: fakeSetTimeout
     };
 
-    var fakeBody = {append: function(node){scripts.push(node);}};
+    var fakeBody = [{appendChild: function(node){scripts.push(node);},
+                     removeChild: function(node){removedScripts.push(node);}}];
 
     var FakeXhr = function(){
       xhr = this;
@@ -87,15 +89,13 @@ describe('browser', function(){
         expect(callback).not.toHaveBeenCalled();
         expect(scripts.length).toEqual(1);
         var script = scripts[0];
-        script.remove = function(){
-          log += 'remove();';
-        };
-        var url = script.attr('src').split('?cb=');
+        var url = script.src.split('?cb=');
         expect(url[0]).toEqual('http://example.org/path');
         expect(typeof fakeWindow[url[1]]).toEqual($function);
         fakeWindow[url[1]]('data');
         expect(callback).toHaveBeenCalled();
-        expect(log).toEqual('remove();200:data;');
+        expect(log).toEqual('200:data;');
+        expect(scripts).toEqual(removedScripts);
         expect(fakeWindow[url[1]]).toBeUndefined();
       });
     });
