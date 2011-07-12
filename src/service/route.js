@@ -11,7 +11,7 @@
  * @property {Array.<Object>} routes Array of all configured routes.
  *
  * @description
- * Watches `$location.hashPath` and tries to map the hash to an existing route
+ * Watches `$location.url()` and tries to map the path to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  *
  * The `$route` service is typically used in conjunction with {@link angular.widget.ng:view ng:view}
@@ -20,7 +20,6 @@
  * @example
    This example shows how changing the URL hash causes the <tt>$route</tt>
    to match a route against the URL, and the <tt>[[ng:include]]</tt> pulls in the partial.
-   Try changing the URL in the input box to see changes.
 
     <doc:example>
       <doc:source jsfiddle="false">
@@ -51,7 +50,7 @@
           <a href="#/Book/Moby/ch/1">Moby: Ch1</a> |
           <a href="#/Book/Gatsby">Gatsby</a> |
           <a href="#/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a><br/>
-          $location.hashPath: <input type="text" name="$location.hashPath" size="80" />
+          <pre>$location.path() = {{$location.path()}}</pre>
           <pre>$route.current.template = {{$route.current.template}}</pre>
           <pre>$route.current.params = {{$route.current.params}}</pre>
           <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
@@ -159,21 +158,20 @@ angularServiceInject('$route', function($location, $routeParams) {
          *      {@link angular.widget.ng:view ng:view} or
          *      {@link angular.widget.ng:include ng:include} widgets.
          *    - `redirectTo` – {(string|function())=} – value to update
-         *      {@link angular.service.$location $location} hash with and trigger route redirection.
+         *      {@link angular.service.$location $location} path with and trigger route redirection.
          *
          *      If `redirectTo` is a function, it will be called with the following parameters:
          *
          *      - `{Object.<string>}` - route parameters extracted from the current
-         *        `$location.hashPath` by applying the current route template.
-         *      - `{string}` - current `$location.hash`
-         *      - `{string}` - current `$location.hashPath`
-         *      - `{string}` - current `$location.hashSearch`
+         *        `$location.path()` by applying the current route template.
+         *      - `{string}` - current `$location.path()`
+         *      - `{Object}` - current `$location.search()`
          *
          *      The custom `redirectTo` function is expected to return a string which will be used
-         *      to update `$location.hash`.
+         *      to update `$location.path()` and `$location.search()`.
          *
-         *    - `[reloadOnSearch=true]` - {boolean=} - reload route when $location.hashSearch
-         *      changes.
+         *    - `[reloadOnSearch=true]` - {boolean=} - reload route when only $location.search()
+         *    changes.
          *
          *      If the option is set to false and url in the browser changes, then
          *      $routeUpdate event is emited on the current route scope. You can use this event to
@@ -231,9 +229,7 @@ angularServiceInject('$route', function($location, $routeParams) {
         }
       };
 
-
-
-  this.$watch(function(){ return dirty + $location.hash; }, updateRoute);
+  this.$watch(function() { return dirty + $location.url(); }, updateRoute);
 
   return $route;
 
@@ -278,10 +274,13 @@ angularServiceInject('$route', function($location, $routeParams) {
       $route.current = next;
       if (next) {
         if (next.redirectTo) {
-          $location.update(isString(next.redirectTo)
-              ? {hashSearch: next.params, hashPath: interpolate(next.redirectTo, next.params)}
-          : {hash: next.redirectTo(next.pathParams,
-              $location.hash, $location.hashPath, $location.hashSearch)});
+          if (isString(next.redirectTo)) {
+            $location.path(interpolate(next.redirectTo, next.params)).search(next.params)
+                     .replace();
+          } else {
+            $location.url(next.redirectTo(next.pathParams, $location.path(), $location.search()))
+                     .replace();
+          }
         } else {
           copy(next.params, $routeParams);
           next.scope = parentScope.$new(next.controller);
@@ -299,9 +298,9 @@ angularServiceInject('$route', function($location, $routeParams) {
     // Match a route
     var params, match;
     forEach(routes, function(route, path) {
-      if (!match && (params = matcher($location.hashPath, path))) {
+      if (!match && (params = matcher($location.path(), path))) {
         match = inherit(route, {
-          params: extend({}, $location.hashSearch, params),
+          params: extend({}, $location.search(), params),
           pathParams: params});
         match.$route = route;
       }

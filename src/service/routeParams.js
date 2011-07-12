@@ -8,10 +8,10 @@
  *
  * @description
  * Current set of route parameters. The route parameters are a combination of the
- * {@link angular.service.$location $location} `hashSearch`, and `path`. The `path` parameters
+ * {@link angular.service.$location $location} `search()`, and `path()`. The `path` parameters
  * are extracted when the {@link angular.service.$route $route} path is matched.
  *
- * In case of parameter name collision, `path` params take precedence over `hashSearch` params.
+ * In case of parameter name collision, `path` params take precedence over `search` params.
  *
  * The service guarantees that the identity of the `$routeParams` object will remain unchanged
  * (but its properties will likely change) even when a route change occurs.

@@ -10,11 +10,11 @@ describe('$routeParams', function(){
     $route.when('/foo');
     $route.when('/bar/:barId');
 
-    $location.hash = '/foo?a=b';
+    $location.path('/foo').search('a=b');
     scope.$digest();
     expect($routeParams).toEqual({a:'b'});
 
-    $location.hash = '/bar/123?x=abc';
+    $location.path('/bar/123').search('x=abc');
     scope.$digest();
     expect($routeParams).toEqual({barId:'123', x:'abc'});
   });
@@ -30,11 +30,11 @@ describe('$routeParams', function(){
     $route.when('/foo');
     $route.when('/bar/:barId');
 
-    $location.hash = '/foo?a=b';
+    $location.path('/foo').search('a=b');
     scope.$digest();
     expect(scope.$service('$routeParams')).toBe(firstRouteParams);
 
-    $location.hash = '/bar/123?x=abc';
+    $location.path('/bar/123').search('x=abc');
     scope.$digest();
     expect(scope.$service('$routeParams')).toBe(firstRouteParams);
   });

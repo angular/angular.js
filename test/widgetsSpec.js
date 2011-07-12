@@ -1117,7 +1117,7 @@ describe("widget", function(){
 
 
     it('should do nothing when no routes are defined', function() {
-      $location.updateHash('/unknown');
+      $location.path('/unknown');
       rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
     });
@@ -1129,14 +1129,14 @@ describe("widget", function(){
 
       expect(rootScope.$element.text()).toEqual('');
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
-      $location.updateHash('/bar');
+      $location.path('/bar');
       $browser.xhr.expectGET('myUrl2').respond('angular is da best');
       rootScope.$digest();
       rootScope.$digest();
@@ -1147,14 +1147,14 @@ describe("widget", function(){
     it('should remove all content when location changes to an unknown route', function() {
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
-      $location.updateHash('/unknown');
+      $location.path('/unknown');
       rootScope.$digest();
       rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
@@ -1164,7 +1164,7 @@ describe("widget", function(){
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
       rootScope.parentVar = 'parent';
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
       rootScope.$digest();
       rootScope.$digest();
@@ -1183,7 +1183,7 @@ describe("widget", function(){
       var myApp = angular.scope();
       var $browser = myApp.$service('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
-      $browser.url('http://server/#/foo');
+      myApp.$service('$location').path('/foo');
 
       var $route = myApp.$service('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
@@ -1220,7 +1220,7 @@ describe("widget", function(){
         this.log.push('child');
       };
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('viewPartial.html').
           respond('<div ng:init="log.push(\'init\')">' +
                     '<div ng:controller="ChildCtrl"></div>' +
@@ -1230,12 +1230,12 @@ describe("widget", function(){
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
-      $location.updateHash('');
+      $location.path('/');
       rootScope.$apply();
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
       rootScope.log = [];
-      $location.updateHash('/foo');
+      $location.path('/foo');
       rootScope.$apply();
       $browser.defer.flush();
 
