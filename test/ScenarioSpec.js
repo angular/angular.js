@@ -32,17 +32,4 @@ describe("ScenarioSpec: Compilation", function(){
       expect(jqLite(scope.$element).text()).toEqual('123');
     });
   });
-
-  describe("configuration", function(){
-    it("should take location object", function(){
-      var url = "http://server/#?book=moby";
-      scope = angular.compile("<div>{{$location}}</div>")();
-      var $location = scope.$service('$location');
-      var $browser = scope.$service('$browser');
-      expect($location.hashSearch.book).toBeUndefined();
-      $browser.url(url);
-      $browser.poll();
-      expect($location.hashSearch.book).toEqual('moby');
-    });
-  });
 });
