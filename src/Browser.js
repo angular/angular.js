@@ -89,14 +89,12 @@ function Browser(window, document, body, XHR, $log) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      var script = jqLite(rawDocument.createElement('script'))
-          .attr({type: 'text/javascript', src: url.replace('JSON_CALLBACK', callbackId)});
+      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId));
       window[callbackId] = function(data){
         delete window[callbackId];
-        script.remove();
+        body[0].removeChild(script)
         completeOutstandingRequest(callback, 200, data);
       };
-      body.append(script);
     } else {
       var xhr = new XHR();
       xhr.open(method, url, true);
