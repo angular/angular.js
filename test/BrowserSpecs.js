@@ -96,7 +96,7 @@ describe('browser', function(){
         fakeWindow[url[1]]('data');
         expect(callback).toHaveBeenCalled();
         expect(log).toEqual('remove();200:data;');
-        expect(typeof fakeWindow[url[1]]).toEqual('undefined');
+        expect(fakeWindow[url[1]]).toBeUndefined();
       });
     });
 
