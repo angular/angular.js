@@ -92,7 +92,7 @@ function Browser(window, document, body, XHR, $log) {
       var script = jqLite(rawDocument.createElement('script'))
           .attr({type: 'text/javascript', src: url.replace('JSON_CALLBACK', callbackId)});
       window[callbackId] = function(data){
-        window[callbackId] = undefined;
+        delete window[callbackId];
         script.remove();
         completeOutstandingRequest(callback, 200, data);
       };
