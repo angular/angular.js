@@ -416,16 +416,26 @@ function Browser(window, document, body, XHR, $log) {
    * @methodOf angular.service.$browser
    *
    * @param {string} url Url to js file
-   * @param {string=} dom_id Optional id for the script tag
+   * @param {string=} domId Optional id for the script tag
    *
    * @description
    * Adds a script tag to the head.
    */
-  self.addJs = function(url, dom_id) {
-    var script = jqLite(rawDocument.createElement('script'));
-    script.attr('type', 'text/javascript');
-    script.attr('src', url);
-    if (dom_id) script.attr('id', dom_id);
-    body.append(script);
+  self.addJs = function(url, domId) {
+    // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
+    // - fetches local scripts via XHR and evals them
+    // - adds and immediately removes script elements from the document
+    //
+    // We need addJs to be able to add angular-ie-compat.js which is very special and must remain
+    // part of the DOM so that the embedded images can reference it. jQuery's append implementation
+    // (v1.4.2) fubars it.
+    var script = rawDocument.createElement('script');
+
+    script.type = 'text/javascript';
+    script.src = url;
+    if (domId) script.id = domId;
+    body[0].appendChild(script);
+
+    return script;
   };
 }
