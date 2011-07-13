@@ -13,8 +13,8 @@
  * * {@link angular.formatter.index index} - Manages indexing into an HTML select widget
  * * {@link angular.formatter.json json} - Formats user input in JSON format
  * * {@link angular.formatter.list list} - Formats user input string as an array
- * * {@link angular.formatter.number} - Formats user input strings as a number
- * * {@link angular.formatter.trim} - Trims extras spaces from end of user input
+ * * {@link angular.formatter.number number} - Formats user input strings as a number
+ * * {@link angular.formatter.trim trim} - Trims extras spaces from end of user input
  *
  * For more information about how angular formatters work, and how to create your own formatters,
  * see {@link guide/dev_guide.templates.formatters Understanding Angular Formatters} in the angular
