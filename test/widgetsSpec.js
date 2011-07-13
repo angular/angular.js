@@ -900,6 +900,11 @@ describe("widget", function(){
       scope.items.push('frodo');
       scope.$eval();
       expect(element.text()).toEqual('misko:first|shyam:middle|doug:middle|frodo:last|');
+
+      scope.items.pop();
+      scope.items.pop();
+      scope.$eval();
+      expect(element.text()).toEqual('misko:first|shyam:last|');
     });
 
     it('should expose iterator position as $position when iterating over objects', function() {
@@ -908,6 +913,11 @@ describe("widget", function(){
       scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
       scope.$eval();
       expect(element.text()).toEqual('misko:m:first|shyam:s:middle|doug:d:middle|frodo:f:last|');
+
+      delete scope.items.doug;
+      delete scope.items.frodo;
+      scope.$eval();
+      expect(element.text()).toEqual('misko:m:first|shyam:s:last|');
     });
   });
 
