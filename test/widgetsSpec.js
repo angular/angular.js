@@ -907,6 +907,18 @@ describe("widget", function(){
       expect(element.text()).toEqual('misko:first|shyam:last|');
     });
 
+    it('should has "$position == last" for second element when there are only two', function() {
+      var scope = compile('<ul><li ng:repeat="item in items" ' +
+                                  'ng:bind="item + \':\' + $position + \'|\'"></li></ul>');
+      scope.items = ['misko', 'shyam'];
+      scope.$eval();
+      expect(element.text()).toEqual('misko:first|shyam:last|');
+
+      scope.items.push('frodo');
+      scope.$eval();
+      expect(element.text()).toEqual('misko:first|shyam:middle|frodo:last|');
+    });
+
     it('should expose iterator position as $position when iterating over objects', function() {
       var scope = compile('<ul><li ng:repeat="(key, val) in items" ' +
                                   'ng:bind="key + \':\' + val + \':\' + $position + \'|\'"></li></ul>');
