@@ -184,6 +184,7 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
+
 var DAY = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'.split(',');
 
 var MONTH = 'January,February,March,April,May,June,July,August,September,October,November,December'.
@@ -192,7 +193,8 @@ var MONTH = 'January,February,March,April,May,June,July,August,September,October
 var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
     yy: dateGetter('FullYear', 2, 0, true),
- MMMMM: dateStrGetter('Month'),
+     y: dateGetter('FullYear', 1),
+  MMMM: dateStrGetter('Month'),
    MMM: dateStrGetter('Month', true),
     MM: dateGetter('Month', 2, 1),
      M: dateGetter('Month', 1, 1),
@@ -209,14 +211,28 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: function(date){return date.getHours() < 12 ? 'am' : 'pm';},
-     Z: function(date){
-          var offset = date.getTimezoneOffset();
-          return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
-        }
+     z: function(date) {return GET_TIME_ZONE.exec(date.toString())[0];},
+     Z: function(date) {
+           var offset = date.getTimezoneOffset();
+            return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
+         }
 };
 
+var DEFAULT_DATETIME_FORMATS = {
+         long: 'MMMM d, y h:mm:ss a z',
+       medium: 'MMM d, y h:mm:ss a',
+        short: 'M/d/yy h:mm a',
+    fullDate: 'EEEE, MMMM d, y',
+    longDate: 'MMMM d, y',
+  mediumDate: 'MMM d, y',
+   shortDate: 'M/d/yy',
+    longTime: 'h:mm:ss a z',
+  mediumTime: 'h:mm:ss a',
+   shortTime: 'h:mm a'
+};
 
-var DATE_FORMATS_SPLIT = /([^yMdHhmsaZE]*)(E+|y+|M+|d+|H+|h+|m+|s+|a|Z)(.*)/;
+var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
+var DATE_FORMATS_SPLIT = /([^yMdHhmsazZE]*)(E+|y+|M+|d+|H+|h+|m+|s+|a|Z|z)(.*)/;
 var NUMBER_STRING = /^\d+$/;
 
 
@@ -231,9 +247,10 @@ var NUMBER_STRING = /^\d+$/;
  *
  *   `format` string can be composed of the following elements:
  *
- *   * `'yyyy'`: 4 digit representation of year e.g. 2010
- *   * `'yy'`: 2 digit representation of year, padded (00-99)
- *   * `'MMMMM'`: Month in year (January‒December)
+ *   * `'yyyy'`: 4 digit representation of year (e.g. AD 1 => 0001, AD 2010 => 2010)
+ *   * `'yy'`: 2 digit representation of year, padded (00-99). (e.g. AD 2001 => 01, AD 2010 => 10)
+ *   * `'y'`: 1 digit representation of year, e.g. (AD 1 => 1, AD 199 => 199)
+ *   * `'MMMM'`: Month in year (January‒December)
  *   * `'MMM'`: Month in year (Jan - Dec)
  *   * `'MM'`: Month in year, padded (01‒12)
  *   * `'M'`: Month in year (1‒12)
@@ -251,6 +268,7 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'s'`: Second in minute (0‒59)
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200‒1200)
+ *   * `'z'`: short form of current timezone name (PDT)
  *
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
  *    number) or ISO 8601 extended datetime string (yyyy-MM-ddTHH:mm:ss.SSSZ).
@@ -276,6 +294,7 @@ var NUMBER_STRING = /^\d+$/;
    </doc:example>
  */
 angularFilter.date = function(date, format) {
+  format = DEFAULT_DATETIME_FORMATS[format] || format;
   if (isString(date)) {
     if (NUMBER_STRING.test(date)) {
       date = parseInt(date, 10);
