@@ -596,14 +596,23 @@ angularWidget('button', inputWidgetSelector);
  *   * binding to a value not in list confuses most browsers.
  *
  * @element select
- * @param {comprehension_expression} comprehension _select_ `as` _label_ `for` _item_ `in` _array_.
+ * @param {comprehension_expression} comprehension in following form
  *
- *   * _array_: an expression which evaluates to an array of objects to bind.
- *   * _item_: local variable which will refer to the item in the _array_ during the iteration
+ *   * _select_  `for` _value_ `in` _array_
+ *   * _select_ `as` _label_ `for` _value_ `in` _array_
+ *   * _select_  `for` `(`_key_`,` _value_`)` `in` _object_
+ *   * _select_ `as` _label_ `for` `(`_key_`,` _value_`)` `in` _object_
+ *
+ * Where:
+ *
+ *   * _array_ / _object_: an expression which evaluates to an array / object to iterate over.
+ *   * _value_: local variable which will reffer to the item in the _array_ or _object_ during
+ *      iteration
+ *   * _key_: local variable which will refer to the key in the _object_ during the iteration
  *   * _select_: The result of this expression will be assigned to the scope.
  *      The _select_ can be ommited, in which case the _item_ itself will be assigned.
  *   * _label_: The result of this expression will be the `option` label. The
- *        `expression` most likely reffers to the _item_ variable. (optional)
+ *        `expression` most likely refers to the _item_ variable. (optional)
  *
  * @example
     <doc:example>
@@ -658,8 +667,8 @@ angularWidget('button', inputWidgetSelector);
       </doc:scenario>
     </doc:example>
  */
-
-var NG_OPTIONS_REGEXP = /^\s*((.*)\s+as\s+)?(.*)\s+for\s+([\$\w][\$\w\d]*)\s+in\s+(.*)$/;
+//                       000012222111111111133330000000004555555555555555554666666777777777777777776666666888888888888888888888864000000009999
+var NG_OPTIONS_REGEXP = /^\s*((.*)\s+as\s+)?(.*)\s+for\s+(([\$\w][\$\w\d]*)|(\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
 angularWidget('select', function(element){
   this.descend(true);
   this.directives(true);
@@ -671,13 +680,14 @@ angularWidget('select', function(element){
   }
   if (! (match = expression.match(NG_OPTIONS_REGEXP))) {
     throw Error(
-        "Expected ng:options in form of '(_expression_ as)? _expresion_ for _item_ in _collection_' but got '" +
+        "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '" +
         expression + "'.");
   }
   var displayFn = expressionCompile(match[3]).fnSelf;
-  var itemName = match[4];
-  var itemFn = expressionCompile(match[2] || itemName).fnSelf;
-  var collectionFn = expressionCompile(match[5]).fnSelf;
+  var valueName = match[5] || match[8];
+  var keyName = match[7];
+  var valueFn = expressionCompile(match[2] || valueName).fnSelf;
+  var valuesFn = expressionCompile(match[9]).fnSelf;
   // we can't just jqLite('<option>') since jqLite is not smart enough
   // to create it in <select> and IE barfs otherwise.
   var option = jqLite(document.createElement('option'));
@@ -696,7 +706,7 @@ angularWidget('select', function(element){
     });
 
     select.bind('change', function(){
-      var collection = collectionFn(scope) || [];
+      var collection = valuesFn(scope) || [];
       var value = select.val();
       var index, length;
       var tempScope = scope.$new();
@@ -705,8 +715,8 @@ angularWidget('select', function(element){
           value = [];
           for (index = 0, length = optionElements.length; index < length; index++) {
             if (optionElements[index][0].selected) {
-              tempScope[itemName] = collection[index];
-              value.push(itemFn(tempScope));
+              tempScope[valueName] = collection[index];
+              value.push(valueFn(tempScope));
             }
           }
         } else {
@@ -715,8 +725,8 @@ angularWidget('select', function(element){
           } else if (value == ''){
             value = null;
           } else {
-            tempScope[itemName] = collection[value];
-            value = itemFn(tempScope);
+            tempScope[valueName] = collection[value];
+            value = valueFn(tempScope);
           }
         }
         if (!isUndefined(value)) model.set(value);
@@ -730,7 +740,9 @@ angularWidget('select', function(element){
 
     scope.$onEval(function(){
       var scope = this;
-      var collection = collectionFn(scope) || [];
+      var values = valuesFn(scope) || [];
+      var keys = values;
+      var key;
       var value;
       var length;
       var fragment;
@@ -753,9 +765,20 @@ angularWidget('select', function(element){
           }
         }
 
-        for (index = 0, length = collection.length; index < length; index++) {
-          optionScope[itemName] = collection[index];
-          currentItem = itemFn(optionScope);
+        // If we have a keyName then we are itterating over on object. We
+        // grab the keys and sort them.
+        if(keyName) {
+          keys = [];
+          for (key in values) {
+            if (values.hasOwnProperty(key))
+              keys.push(key);
+          }
+          keys.sort();
+        }
+
+        for (index = 0; length = keys.length, index < length; index++) {
+          optionScope[valueName] = values[keyName ? optionScope[keyName]=keys[index]:index];
+          currentItem = valueFn(optionScope);
           optionText = displayFn(optionScope);
           if (optionTexts.length > index) {
             // reuse
