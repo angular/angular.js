@@ -130,13 +130,9 @@ describe('mocks', function(){
 
 
     it('should throw error when no third param but toString called', function() {
-      var t = new TzDate(0, 0);
-      try {
-        t.toString();
-       } catch(err) {
-         expect(err.name).toBe('MethodNotImplemented');
-       }
-    })
+      expect(function() { new TzDate(0,0).toString() }).
+                           toThrow('Method \'toString\' is not implemented in the TzDate mock');
+    });
   });
 
   describe('$log mock', function() {
