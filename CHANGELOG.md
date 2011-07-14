@@ -5,6 +5,7 @@
 - Issue #449: [ng:options] should support binding to a property of an item.
 - Issue #464: [ng:options] incorrectly re-grew options on datasource change
 - Issue #448: [ng:options] should support iterating over objects
+- Issue #463: [ng:options] should support firing ng:change event
 
 ### Breaking changes
 - no longer support MMMMM in filter.date as we need to follow UNICODE LOCALE DATA formats.

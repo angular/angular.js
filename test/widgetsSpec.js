@@ -859,6 +859,27 @@ describe("widget", function(){
         expect(scope.selected).toEqual(scope.values[1]);
       });
 
+      it('should fire ng:change if present', function(){
+        createSelect({
+          name:'selected',
+          'ng:options':'value for value in values',
+          'ng:change':'count = count + 1'});
+        scope.values = [{name:'A'}, {name:'B'}];
+        scope.selected = scope.values[0];
+        scope.count = 0;
+        scope.$eval();
+        expect(scope.count).toEqual(0);
+
+        select.val('1');
+        browserTrigger(select, 'change');
+        expect(scope.count).toEqual(1);
+        expect(scope.selected).toEqual(scope.values[1]);
+
+        browserTrigger(select, 'change');
+        expect(scope.count).toEqual(1);
+        expect(scope.selected).toEqual(scope.values[1]);
+      });
+
       it('should update model on change through expression', function(){
         createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];

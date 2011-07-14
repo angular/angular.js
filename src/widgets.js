@@ -674,6 +674,7 @@ angularWidget('select', function(element){
   this.directives(true);
   var isMultiselect = element.attr('multiple');
   var expression = element.attr('ng:options');
+  var onChange = expressionCompile(element.attr('ng:change') || "").fnSelf;
   var match;
   if (!expression) {
     return inputWidgetSelector.call(this, element);
@@ -729,7 +730,10 @@ angularWidget('select', function(element){
             value = valueFn(tempScope);
           }
         }
-        if (!isUndefined(value)) model.set(value);
+        if (!isUndefined(value) && model.get() !== value) {
+          onChange(scope);
+          model.set(value);
+        }
         scope.$tryEval(function(){
           scope.$root.$eval();
         });
