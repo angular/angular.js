@@ -316,8 +316,8 @@ describe('ngdoc', function(){
         expect(doc.requires).toEqual([
           {name:'$service', text:'<p>for \n<code>A</code></p>'},
           {name:'$another', text:'<p>for <code>B</code></p>'}]);
-        expect(doc.html()).toContain('<a href="#!angular.service.$service">$service</a>');
-        expect(doc.html()).toContain('<a href="#!angular.service.$another">$another</a>');
+        expect(doc.html()).toContain('<a href="#!/api/angular.service.$service">$service</a>');
+        expect(doc.html()).toContain('<a href="#!/api/angular.service.$another">$another</a>');
         expect(doc.html()).toContain('<p>for \n<code>A</code></p>');
         expect(doc.html()).toContain('<p>for <code>B</code></p>');
       });
