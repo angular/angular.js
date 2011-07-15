@@ -44,6 +44,9 @@
  * - [replaceWith()](http://api.jquery.com/replaceWith/)
  * - [text()](http://api.jquery.com/text/)
  * - [trigger()](http://api.jquery.com/trigger/)
+ * - [eq()](http://api.jquery.com/eq/)
+ * - [show()](http://api.jquery.com/show/)
+ * - [hide()](http://api.jquery.com/hide/)
  *
  * ## Additionally these methods extend the jQuery and  are available in both jQuery and jQuery lite
  * version:
@@ -211,11 +214,16 @@ var JQLitePrototype = JQLite.prototype = {
     // we can not use jqLite since we are not done loading and jQuery could be loaded later.
     jqLiteWrap(window).bind('load', trigger); // fallback to window.onload for others
   },
-  toString: function(){
+  toString: function() {
     var value = [];
     forEach(this, function(e){ value.push('' + e);});
     return '[' + value.join(', ') + ']';
   },
+
+  eq: function(index) {
+      return (index >= 0) ? jqLite(this[index]) : jqLite(this[this.length + index]);
+  },
+
   length: 0,
   push: push,
   sort: [].sort,
@@ -461,6 +469,32 @@ forEach({
 
   find: function(element, selector) {
     return element.getElementsByTagName(selector);
+  },
+
+  hide: function(element) {
+    if (element.style) {
+      if(element.style.display !=="none" && !JQLiteData(element,"olddisplay")) {
+        JQLiteData( element, "olddisplay", element.style.display);
+      }
+      element.style.display = "none";
+    }
+  },
+
+  show: function(element) {
+   if(element.style) {
+     var display = element.style.display;
+     if ( display === "" || display === "none" ) {
+
+       // restore the original value overwritten by hide if present or default to nothing (which
+       // will let browser correctly choose between 'inline' or 'block')
+       element.style.display = JQLiteData(element, "olddisplay") || "";
+
+       // if the previous didn't make the element visible then there are some cascading rules that
+       // are still hiding it, so let's default to 'block', which might be incorrect in case of
+       // elmenents that should be 'inline' by default, but oh well :-)
+       if (!isVisible([element])) element.style.display = "block";
+     }
+   }
   },
 
   clone: JQLiteClone

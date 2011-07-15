@@ -507,4 +507,37 @@ describe('jqLite', function(){
       expect(innerDiv.html()).toEqual('text');
     });
   });
+
+
+  describe('hide', function() {
+    it('should hide the element', function() {
+      var element = jqLite('<div></div>');
+      expect(isCssVisible(element)).toBe(true);
+      element.hide();
+      expect(isCssVisible(element)).toBe(false);
+      dealoc(element);
+    });
+  });
+
+
+  describe('show', function() {
+    it('should show the element ', function() {
+      var element = jqLite('<div></div>');
+      element[0].style['display'] = 'none';
+      expect(isCssVisible(element)).toBe(false);
+      element.show();
+      expect(isCssVisible(element)).toBe(true);
+      dealoc(element);
+    });
+  });
+
+
+  describe('eq', function() {
+    it('should select the nth element ', function() {
+      var element = jqLite('<div><span>aa</span></div><div><span>bb</span></div>');
+      expect(element.find('span').eq(0).html()).toBe('aa');
+      expect(element.find('span').eq(-1).html()).toBe('bb');
+      expect(element.find('span').eq(20).length).toBe(0);;
+    });
+  });
 });
