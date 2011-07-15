@@ -510,24 +510,57 @@ describe('jqLite', function(){
 
 
   describe('hide', function() {
+    var element;
+
+    afterEach(function() {
+      if (element) dealoc(element);
+    });
+
     it('should hide the element', function() {
-      var element = jqLite('<div></div>');
+      element = jqLite('<div></div>');
       expect(isCssVisible(element)).toBe(true);
       element.hide();
       expect(isCssVisible(element)).toBe(false);
-      dealoc(element);
     });
   });
 
 
   describe('show', function() {
+    var element;
+
+    afterEach(function() {
+      if (element) dealoc(element);
+      element.remove();
+    });
+
+
     it('should show the element ', function() {
-      var element = jqLite('<div></div>');
-      element[0].style['display'] = 'none';
+      element = jqLite('<div></div>');
+      element[0].style.display = 'none';
       expect(isCssVisible(element)).toBe(false);
       element.show();
       expect(isCssVisible(element)).toBe(true);
-      dealoc(element);
+    });
+
+
+    it('should show previously hidden element and preserve the display value', function() {
+      element = jqLite('<div style="display:inline">xx</div>');
+      jqLite(document.body).append(element);
+      element.hide();
+      expect(isCssVisible(element)).toBe(false);
+      element.show();
+      expect(element[0].style.display).toBe('inline');
+      expect(isCssVisible(element)).toBe(true);
+
+      element[0].style.display = 'block';
+      element.hide();
+      expect(isCssVisible(element)).toBe(false);
+      element.show();
+      expect(isCssVisible(element)).toBe(true);
+
+      // this totally doesn't make sense, it should be 'block', but jquery (1.4.2+1.6.2) behaves
+      // this way.
+      expect(element[0].style.display).toBe('inline');
     });
   });
 
