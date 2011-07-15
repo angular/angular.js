@@ -470,7 +470,7 @@ describe('jqLite', function(){
     });
 
 
-    it('should return empty set when no parent', function(){
+    it('should return empty set when no parent', function() {
       var element = jqLite('<div>abc</div>');
       expect(element.parent()).toBeTruthy();
       expect(element.parent().length).toEqual(0);
@@ -489,7 +489,7 @@ describe('jqLite', function(){
   });
 
 
-  describe('next', function(){
+  describe('next', function() {
     it('should return next sibling', function(){
       var element = jqLite('<div><b>b</b><i>i</i></div>');
       var b = element.find('b');
@@ -499,7 +499,7 @@ describe('jqLite', function(){
   });
 
 
-  describe('find', function(){
+  describe('find', function() {
     it('should find child by name', function(){
       var root = jqLite('<div><div>text</div></div>');
       var innerDiv = root.find('div');
