@@ -274,9 +274,13 @@ function sortedHtml(element, showNgClass) {
   return html;
 }
 
+
+/**
+ * This method is a cheap way of testing if css for a given node is not set to 'none'. It doesn't
+ * actually test if an element is displayed by the browser. Be aware!!!
+ */
 function isCssVisible(node) {
   var display = node.css('display');
-  if (display == 'block') display = "";
   return display != 'none';
 }
 
