@@ -27,6 +27,8 @@ var writes = callback.chain(function(){
   writer.copyDir('img', writes.waitFor());
   writer.copyDir('examples', writes.waitFor());
   writer.copyTpl('index.html', writes.waitFor());
+  writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html', writes.waitFor(),
+              '<-- jquery place holder -->', '<script src=\"jquery.min.js\"><\/script>');
   writer.copyTpl('offline.html', writes.waitFor());
   writer.output('app-cache.manifest',
                 appCacheTemplate().replace(/%TIMESTAMP%/, (new Date()).toISOString()),
@@ -71,7 +73,6 @@ function appCacheTemplate() {
           "",
           "# cache all of these",
           "CACHE:",
-          "jquery.min.js",
           "syntaxhighlighter/syntaxhighlighter-combined.js",
           "../angular.min.js",
           "docs-combined.js",

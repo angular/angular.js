@@ -546,22 +546,35 @@ Doc.prototype = {
 //////////////////////////////////////////////////////////
 function scenarios(docs){
   var specs = [];
-  docs.forEach(function(doc){
-    specs.push('describe("' + doc.section + '/' + doc.id + '", function(){');
-    specs.push('  beforeEach(function(){');
-    specs.push('    browser().navigateTo("index.html#!/' + doc.section + '/' + doc.id + '");');
-    specs.push('  });');
-    specs.push('');
-    doc.scenarios.forEach(function(scenario){
-      specs.push(indent(trim(scenario), 2));
+
+  specs.push('describe("angular without jquery", function() {');
+  appendSpecs('index.html');
+  specs.push('});');
+
+  specs.push('');
+  specs.push('');
+
+  specs.push('describe("angular with jquery", function() {');
+  appendSpecs('index-jq.html');
+  specs.push('});');
+
+  return specs.join('\n');
+
+  function appendSpecs(htmlFile) {
+    docs.forEach(function(doc){
+      specs.push('  describe("' + doc.section + '/' + doc.id + '", function(){');
+      specs.push('    beforeEach(function(){');
+      specs.push('      browser().navigateTo("' + htmlFile + '#!/' + doc.section + '/' + doc.id + '");');
+      specs.push('    });');
+      specs.push('  ');
+      doc.scenarios.forEach(function(scenario){
+        specs.push(indent(trim(scenario), 4));
+        specs.push('');
+      });
+      specs.push('});');
       specs.push('');
     });
-    specs.push('});');
-    specs.push('');
-    if (doc.scenario) {
-    }
-  });
-  return specs.join('\n');
+  }
 }
 
 
