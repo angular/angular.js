@@ -579,7 +579,7 @@ describe("widget", function(){
     function createSelect(attrs, blank, unknown){
       var html = '<select';
       forEach(attrs, function(value, key){
-        if (typeof value == 'boolean') {
+        if (isBoolean(value)) {
           if (value) html += ' ' + key;
         } else {
           html+= ' ' + key + '="' + value + '"';
@@ -638,9 +638,9 @@ describe("widget", function(){
       scope.$eval();
       var options = select.find('option');
       expect(options.length).toEqual(3);
-      expect(sortedHtml(options[0])).toEqual('<option value="0">blue</option>');
-      expect(sortedHtml(options[1])).toEqual('<option value="1">green</option>');
-      expect(sortedHtml(options[2])).toEqual('<option value="2">red</option>');
+      expect(sortedHtml(options[0])).toEqual('<option value="blue">blue</option>');
+      expect(sortedHtml(options[1])).toEqual('<option value="green">green</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="red">red</option>');
       expect(options[2].selected).toEqual(true);
 
       scope.object.azur = '8888FF';
@@ -654,7 +654,7 @@ describe("widget", function(){
       scope.values = [];
       scope.$eval();
       expect(select.find('option').length).toEqual(1); // because we add special empty option
-      expect(sortedHtml(select.find('option')[0])).toEqual('<option></option>');
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option value="?"></option>');
 
       scope.values.push({name:'A'});
       scope.selected = scope.values[0];
@@ -760,6 +760,38 @@ describe("widget", function(){
         expect(select.val()).toEqual('1');
       });
 
+      it('should bind to scope value and group', function(){
+        createSelect({
+          name:'selected',
+          'ng:options':'item.name group by item.group for item in values'});
+        scope.values = [{name:'A'},
+                        {name:'B', group:'first'},
+                        {name:'C', group:'second'},
+                        {name:'D', group:'first'},
+                        {name:'E', group:'second'}];
+        scope.selected = scope.values[3];
+        scope.$eval();
+        expect(select.val()).toEqual('3');
+
+        var first = jqLite(select.find('optgroup')[0]);
+        var b = jqLite(first.find('option')[0]);
+        var d = jqLite(first.find('option')[1]);
+        expect(first.attr('label')).toEqual('first');
+        expect(b.text()).toEqual('B');
+        expect(d.text()).toEqual('D');
+
+        var second = jqLite(select.find('optgroup')[1]);
+        var c = jqLite(second.find('option')[0]);
+        var e = jqLite(second.find('option')[1]);
+        expect(second.attr('label')).toEqual('second');
+        expect(c.text()).toEqual('C');
+        expect(e.text()).toEqual('E');
+
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+      });
+
       it('should bind to scope value through experession', function(){
         createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
@@ -779,11 +811,11 @@ describe("widget", function(){
         scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
         scope.selected = 'green';
         scope.$eval();
-        expect(select.val()).toEqual('1');
+        expect(select.val()).toEqual('green');
 
         scope.selected = 'blue';
         scope.$eval();
-        expect(select.val()).toEqual('0');
+        expect(select.val()).toEqual('blue');
       });
 
       it('should bind to object value', function(){
@@ -793,11 +825,11 @@ describe("widget", function(){
         scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
         scope.selected = '00FF00';
         scope.$eval();
-        expect(select.val()).toEqual('1');
+        expect(select.val()).toEqual('green');
 
         scope.selected = '0000FF';
         scope.$eval();
-        expect(select.val()).toEqual('0');
+        expect(select.val()).toEqual('blue');
       });
 
       it('should insert a blank option if bound to null', function(){

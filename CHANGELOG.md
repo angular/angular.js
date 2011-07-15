@@ -6,6 +6,7 @@
 - Issue #464: [ng:options] incorrectly re-grew options on datasource change
 - Issue #448: [ng:options] should support iterating over objects
 - Issue #463: [ng:options] should support firing ng:change event
+- Issue #450: [ng:options] should support group by (select option groups)
 
 ### Breaking changes
 - no longer support MMMMM in filter.date as we need to follow UNICODE LOCALE DATA formats.
