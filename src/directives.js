@@ -539,19 +539,14 @@ angularDirective("ng:click", function(expression, element){
       <form ng:submit="list.push(text);text='';" ng:init="list=[]">
         Enter text and hit enter:
         <input type="text" name="text" value="hello"/>
+        <input type="submit" id="submit" value="Submit" />
       </form>
       <pre>list={{list}}</pre>
      </doc:source>
      <doc:scenario>
        it('should check ng:submit', function(){
          expect(binding('list')).toBe('list=[]');
-         element('.doc-example-live form input').click();
-         this.addFutureAction('submit from', function($window, $document, done) {
-           $window.angular.element(
-             $document.elements('.doc-example-live form')).
-               trigger('submit');
-           done();
-         });
+         element('.doc-example-live #submit').click();
          expect(binding('list')).toBe('list=["hello"]');
        });
      </doc:scenario>
