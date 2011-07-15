@@ -59,16 +59,19 @@ exports.makeDir = function (path, callback) {
 };
 
 exports.copyTpl = function(filename, callback) {
-  copy('docs/src/templates/' + filename, OUTPUT_DIR + filename, callback);
+  exports.copy('docs/src/templates/' + filename, OUTPUT_DIR + filename, callback);
 };
 
-function copy(from, to, callback) {
+exports.copy = function(from, to, callback, replacementKey, replacement) {
   //console.log('writing', to, '...');
   fs.readFile(from, function(err, content){
     if (err) return callback.error(err);
+    if(replacementKey && replacement) {
+      content = content.toString().replace(replacementKey, replacement);
+    }
     fs.writeFile(to, content, callback);
   });
-}
+};
 
 exports.copyDir = function copyDir(dir, callback) {
   exports.makeDir(OUTPUT_DIR + '/' + dir, callback.waitFor(function(){
@@ -81,7 +84,7 @@ exports.copyDir = function copyDir(dir, callback) {
           if (stat.isDirectory()) {
             copyDir(dir + '/' + file, callback.waitFor());
           } else {
-            copy(path, OUTPUT_DIR  + '/' + dir + '/' + file, callback.waitFor());
+            exports.copy(path, OUTPUT_DIR  + '/' + dir + '/' + file, callback.waitFor());
           }
         }));
       });
