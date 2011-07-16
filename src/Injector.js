@@ -29,7 +29,7 @@
  *     * `self` -  "`this`" to be used when invoking the function.
  *     * `fn` - the function to be invoked. The function may have the `$inject` property which
  *        lists the set of arguments which should be auto injected
- *        (see {@link guide.di dependency injection}).
+ *        (see {@link guide/dev_guide.di dependency injection}).
  *     * `curryArgs(array)` - optional array of arguments to pass to function invocation after the
  *        injection arguments (also known as curry arguments or currying).
  *   * an `eager` property which is used to initialize the eager services.

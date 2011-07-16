@@ -10,7 +10,6 @@
  * Following is the list of built-in angular formatters:
  *
  * * {@link angular.formatter.boolean boolean} - Formats user input in boolean format
- * * {@link angular.formatter.index index} - Manages indexing into an HTML select widget
  * * {@link angular.formatter.json json} - Formats user input in JSON format
  * * {@link angular.formatter.list list} - Formats user input string as an array
  * * {@link angular.formatter.number number} - Formats user input strings as a number
