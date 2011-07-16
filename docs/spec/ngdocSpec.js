@@ -461,8 +461,8 @@ describe('ngdoc', function(){
       });
     });
 
-    describe('@depricated', function() {
-      it('should parse @depricated', function() {
+    describe('@deprecated', function() {
+      it('should parse @deprecated', function() {
         var doc = new Doc('@deprecated Replaced with foo.');
         doc.parse();
         expect(doc.deprecated).toBe('Replaced with foo.');
