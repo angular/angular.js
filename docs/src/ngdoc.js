@@ -511,6 +511,9 @@ Doc.prototype = {
       dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
         dom.html(method.description);
         method.html_usage_parameters(dom);
+        self.html_usage_this(dom);
+        method.html_usage_returns(dom);
+
         dom.h('Example', method.example, dom.html);
       });
     });
