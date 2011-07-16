@@ -309,7 +309,7 @@ Doc.prototype = {
     var self = this;
     dom.h('Usage', function(){
       dom.code(function(){
-        dom.text(self.name);
+        dom.text(self.name.split('service.').pop());
         dom.text('(');
         self.parameters(dom, ', ');
         dom.text(');');
