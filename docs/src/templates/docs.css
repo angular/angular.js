@@ -204,6 +204,14 @@ li {
   margin-left: 1em;
 }
 
+#content-list .level-4 {
+  margin-left: 2em;
+}
+
+#content-list .level-5 {
+  margin-left: 3em;
+}
+
 
 #content-list a.current {
   font-weight: bold;
