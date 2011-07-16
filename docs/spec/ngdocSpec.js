@@ -496,6 +496,26 @@ describe('ngdoc', function(){
     });
 
 
+     describe('function', function(){
+      it('should format', function(){
+        var doc = new Doc({
+          ngdoc:'function',
+          name:'some.name',
+          param: [
+            {name:'a', optional: true},
+            {name:'b', type: 'someType', optional: true, 'default': '"xxx"'},
+            {name:'c', type: 'string', description: 'param desc'}
+          ],
+          returns: {type: 'number', description: 'return desc'}
+        });
+        doc.html_usage_function(dom);
+        expect(dom).toContain('some.name([a][, b], c)'); //TODO(i) the comma position here is lame
+        expect(dom).toContain('param desc');
+        expect(dom).toContain('(optional="xxx")');
+        expect(dom).toContain('return desc');
+      });
+    });
+
     describe('filter', function(){
       it('should format', function(){
         var doc = new Doc({
