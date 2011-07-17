@@ -73,8 +73,9 @@ function createInjector(factoryScope, factories, instanceCache) {
   }
 }
 
-/*NOT_PUBLIC_YET
- * @ngdoc function
+/**
+ * THIS IS NOT PUBLIC DOC YET!
+ *
  * @name angular.annotate
  * @function
  *
