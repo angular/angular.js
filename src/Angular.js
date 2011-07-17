@@ -115,7 +115,7 @@ var _undefined        = undefined,
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
     rngScript         = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/,
-    uid               = ['0', '0', '0'];
+    uid               = ['0', '0', '0'],
     DATE_ISOSTRING_LN = 24;
 
 /**
