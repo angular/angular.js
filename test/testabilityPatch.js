@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Here is the problem: http://bugs.jquery.com/ticket/7292
  * basically jQuery treats change event on some browsers (IE) as a

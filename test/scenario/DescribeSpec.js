@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.Describe', function() {
   var log;
   var root;

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$cookies', function() {
   var scope, $browser;
 

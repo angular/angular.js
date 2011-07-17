@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular', function(){
   describe('case', function(){
     it('should change case', function(){

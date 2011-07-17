@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.ObjectModel', function() {
   var model;
   var runner;

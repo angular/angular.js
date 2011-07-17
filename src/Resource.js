@@ -1,3 +1,5 @@
+'use strict';
+
 
 
 function Route(template, defaults) {

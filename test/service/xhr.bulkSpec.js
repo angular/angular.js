@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$xhr.bulk', function() {
   var scope, $browser, $browserXhr, $log, $xhrBulk, $xhrError, log;
 

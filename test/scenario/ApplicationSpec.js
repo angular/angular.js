@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.Application', function() {
   var $window;
   var app, frames;

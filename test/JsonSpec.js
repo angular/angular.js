@@ -1,3 +1,5 @@
+'use strict';
+
 describe('json', function(){
   it('should serialize primitives', function() {
     expect(toJson(0/0)).toEqual('null');

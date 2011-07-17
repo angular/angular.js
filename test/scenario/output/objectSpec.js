@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.output.object', function() {
   var output;
   var runner, model, $window;

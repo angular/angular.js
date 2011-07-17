@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @workInProgress
  * @ngdoc service

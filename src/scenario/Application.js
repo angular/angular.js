@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Represents the application currently being tested and abstracts usage
  * of iframes or separate windows.

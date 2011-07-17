@@ -1,3 +1,5 @@
+'use strict';
+
 describe('api', function(){
 
   describe('HashMap', function(){

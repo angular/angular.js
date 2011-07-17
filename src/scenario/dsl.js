@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Shared DSL statements that are useful to all scenarios.
  */

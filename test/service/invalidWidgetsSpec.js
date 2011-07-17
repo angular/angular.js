@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$invalidWidgets', function() {
   var scope;
 

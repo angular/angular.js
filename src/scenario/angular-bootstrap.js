@@ -1,3 +1,5 @@
+'use strict';
+
 (function(previousOnLoad){
   var prefix = (function(){
     var filename = /(.*\/)angular-bootstrap.js(#(.*))?/;

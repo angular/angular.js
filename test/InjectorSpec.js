@@ -1,3 +1,5 @@
+'use strict';
+
 describe('injector', function(){
   var providers;
   var cache;

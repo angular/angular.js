@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$window', function() {
   var scope;
 

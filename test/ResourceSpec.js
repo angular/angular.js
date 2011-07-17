@@ -1,3 +1,5 @@
+'use strict';
+
 describe("resource", function() {
   var xhr, resource, CreditCard, callback;
 

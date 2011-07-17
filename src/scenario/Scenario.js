@@ -1,3 +1,5 @@
+'use strict';
+
 
 /**
  * Setup file for the Scenario.

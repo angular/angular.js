@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Template provides directions an how to bind to a given element.
  * It contains a list of init functions which need to be called to

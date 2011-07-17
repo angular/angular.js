@@ -1,3 +1,5 @@
+'use strict';
+
 var OPERATORS = {
     'null':function(self){return null;},
     'true':function(self){return true;},

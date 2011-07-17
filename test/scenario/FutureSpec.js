@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.Future', function() {
   var future;
 
