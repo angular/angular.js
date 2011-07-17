@@ -824,21 +824,23 @@ angularWidget('select', function(element){
     <doc:example>
       <doc:source>
        <select name="url">
-        <option value="api/angular.filter.date.html">date filter</option>
-        <option value="api/angular.filter.html.html">html filter</option>
+        <option value="examples/ng-include/template1.html">template1.html</option>
+        <option value="examples/ng-include/template2.html">template2.html</option>
         <option value="">(blank)</option>
        </select>
-       <tt>url = <a href="{{url}}">{{url}}</a></tt>
+       url of the template: <tt><a href="{{url}}">{{url}}</a></tt>
        <hr/>
        <ng:include src="url"></ng:include>
       </doc:source>
       <doc:scenario>
-        it('should load date filter', function(){
-         expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.date/);
+        it('should load template1.html', function(){
+         expect(element('.doc-example-live ng\\:include').text()).
+           toBe('Content of template1.html\n');
         });
-        it('should change to html filter', function(){
-         select('url').option('api/angular.filter.html.html');
-         expect(element('.doc-example-live ng\\:include').text()).toMatch(/angular\.filter\.html/);
+        it('should load template2.html', function(){
+         select('url').option('examples/ng-include/template2.html');
+         expect(element('.doc-example-live ng\\:include').text()).
+           toBe('Content of template2.html\n');
         });
         it('should change to blank', function(){
          select('url').option('');
