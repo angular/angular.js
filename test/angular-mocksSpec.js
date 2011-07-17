@@ -1,3 +1,5 @@
+'use strict';
+
 describe('mocks', function(){
   describe('TzDate', function() {
 

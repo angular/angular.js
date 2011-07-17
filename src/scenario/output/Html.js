@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * User Interface for the Scenario Runner.
  *

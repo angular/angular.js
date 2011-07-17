@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Creates a global value $result with the result of the runner.
  */

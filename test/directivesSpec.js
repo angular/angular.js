@@ -1,3 +1,5 @@
+'use strict';
+
 describe("directive", function(){
 
   var compile, model, element;

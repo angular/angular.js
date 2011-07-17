@@ -1,3 +1,5 @@
+'use strict';
+
 function getter(instance, path, unboundFn) {
   if (!path) return instance;
   var element = path.split('.');

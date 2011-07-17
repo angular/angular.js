@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Maintains an object tree from the runner events.
  *

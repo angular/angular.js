@@ -1,3 +1,5 @@
+'use strict';
+
 describe("markups", function(){
 
   var compile, element, scope;

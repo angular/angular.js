@@ -1,3 +1,5 @@
+'use strict';
+
 describe('ValidatorTest', function(){
 
   it('ShouldHaveThisSet', function() {

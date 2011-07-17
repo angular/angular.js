@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Generates XML output into a context.
  */

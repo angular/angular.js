@@ -1,3 +1,5 @@
+'use strict';
+
 describe('filter', function() {
 
   var filter = angular.filter;

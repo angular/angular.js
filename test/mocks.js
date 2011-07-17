@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Mock implementation of {@link angular.service.$log} that gathers all logged messages in arrays
  * (one array per logging level). These arrays are exposed as `logs` property of each of the

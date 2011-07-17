@@ -1,3 +1,5 @@
+'use strict';
+
 describe('browser', function(){
 
   var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue;

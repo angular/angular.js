@@ -1,3 +1,5 @@
+'use strict';
+
 describe("angular.scenario.dsl", function() {
   var $window, $root;
   var application, eventLog;

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$location', function() {
   var scope, $location, $browser;
 

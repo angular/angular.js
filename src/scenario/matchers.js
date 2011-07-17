@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Matchers for implementing specs. Follows the Jasmine spec conventions.
  */

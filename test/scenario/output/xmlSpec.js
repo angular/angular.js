@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.output.json', function() {
   var output, context;
   var runner, model, $window;

@@ -1,3 +1,5 @@
+'use strict';
+
 angular.scenario.testing = angular.scenario.testing || {};
 
 angular.scenario.testing.MockAngular = function() {

@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$xhr', function() {
   var scope, $browser, $browserXhr, $log, $xhr, log;
 

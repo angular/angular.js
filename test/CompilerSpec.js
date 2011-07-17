@@ -1,3 +1,5 @@
+'use strict';
+
 describe('compiler', function(){
   var compiler, markup, attrMarkup, directives, widgets, compile, log, scope;
 

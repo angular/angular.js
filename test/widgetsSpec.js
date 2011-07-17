@@ -1,3 +1,5 @@
+'use strict';
+
 describe("widget", function(){
   var compile, element, scope;
 

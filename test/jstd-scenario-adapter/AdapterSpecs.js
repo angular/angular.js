@@ -1,3 +1,5 @@
+'use strict';
+
 describe('jstd-adapter', function() {
   var fakeJSTD = { pluginRegistrar: { register: function() {} } },
       originalNavigateTo = angular.scenario.Application.prototype.navigateTo;

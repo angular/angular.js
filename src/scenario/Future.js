@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * A future action in a spec.
  *

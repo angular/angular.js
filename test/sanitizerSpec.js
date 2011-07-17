@@ -1,3 +1,5 @@
+'use strict';
+
 describe('HTML', function(){
 
   function expectHTML(html) {

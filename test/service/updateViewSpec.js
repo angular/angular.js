@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$updateView', function() {
   var scope, browser, evalCount, $updateView;
 

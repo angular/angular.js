@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * JSTestDriver adapter for angular scenario tests
  *

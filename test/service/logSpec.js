@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$log', function() {
   var scope;
 
