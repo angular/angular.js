@@ -124,21 +124,21 @@ describe('$xhr.cache', function() {
 
 
   it('should call eval after callbacks for both cache hit and cache miss execute', function() {
-    var eval = this.spyOn(scope, '$eval').andCallThrough();
+    var evalSpy = this.spyOn(scope, '$eval').andCallThrough();
 
     $browserXhr.expectGET('/url').respond('+');
     cache('GET', '/url', null, callback);
-    expect(eval).not.toHaveBeenCalled();
+    expect(evalSpy).not.toHaveBeenCalled();
 
     $browserXhr.flush();
-    expect(eval).toHaveBeenCalled();
+    expect(evalSpy).toHaveBeenCalled();
 
-    eval.reset(); //reset the spy
+    evalSpy.reset(); //reset the spy
 
     cache('GET', '/url', null, callback);
-    expect(eval).not.toHaveBeenCalled();
+    expect(evalSpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(eval).toHaveBeenCalled();
+    expect(evalSpy).toHaveBeenCalled();
   });
 });

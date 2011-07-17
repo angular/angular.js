@@ -40,31 +40,31 @@ describe('$defer', function() {
 
 
   it('should call eval after each callback is executed', function() {
-    var eval = this.spyOn(scope, '$eval').andCallThrough();
+    var evalSpy = this.spyOn(scope, '$eval').andCallThrough();
 
     $defer(function() {});
-    expect(eval).not.toHaveBeenCalled();
+    expect(evalSpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(eval).toHaveBeenCalled();
+    expect(evalSpy).toHaveBeenCalled();
 
-    eval.reset(); //reset the spy;
+    evalSpy.reset(); //reset the spy;
 
     $defer(function() {});
     $defer(function() {});
     $browser.defer.flush();
-    expect(eval.callCount).toBe(2);
+    expect(evalSpy.callCount).toBe(2);
   });
 
 
   it('should call eval even if an exception is thrown in callback', function() {
-    var eval = this.spyOn(scope, '$eval').andCallThrough();
+    var evalSpy = this.spyOn(scope, '$eval').andCallThrough();
 
     $defer(function() {throw "Test Error";});
-    expect(eval).not.toHaveBeenCalled();
+    expect(evalSpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
-    expect(eval).toHaveBeenCalled();
+    expect(evalSpy).toHaveBeenCalled();
   });
 
   it('should allow you to specify the delay time', function(){

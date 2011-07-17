@@ -1,6 +1,5 @@
 describe('angular.scenario.output.html', function() {
-  var runner, model, spec, listeners;
-  var ui, context;
+  var runner, model, spec, step, listeners, ui, context;
 
   beforeEach(function() {
     listeners = [];
