@@ -8,7 +8,7 @@ _jQuery.event.special.change = undefined;
 
 
 if (window.jstestdriver) {
-  jstd = jstestdriver;
+  window.jstd = jstestdriver;
   window.dump = function(){
     var args = [];
     forEach(arguments, function(arg){
@@ -175,8 +175,7 @@ extend(angular, {
   'isFunction': isFunction,
   'isObject': isObject,
   'isNumber': isNumber,
-  'isArray': isArray,
-  'forEach': forEach
+  'isArray': isArray
 });
 
 
@@ -317,8 +316,8 @@ function assertThrows(error, fn){
   assertEquals(error, exception);
 }
 
-log = noop;
-error = noop;
+window.log = noop;
+window.error = noop;
 
 function rethrow(e) {
   if(e) {

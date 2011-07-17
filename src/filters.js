@@ -114,7 +114,7 @@ angularFilter.number = function(number, fractionSize){
       pow = Math.pow(10, fractionSize),
       whole = '' + number,
       formatedText = '',
-      i;
+      i, fraction;
 
   if (whole.indexOf('e') > -1) return whole;
 

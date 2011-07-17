@@ -290,11 +290,9 @@ function parser(text, json){
     var token = peek(e1, e2, e3, e4);
     if (token) {
       if (json && !token.json) {
-        index = token.index;
         throwError("is not valid json", token);
       }
       tokens.shift();
-      this.currentToken = token;
       return token;
     }
     return false;

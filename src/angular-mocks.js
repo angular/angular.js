@@ -523,7 +523,8 @@ function TzDate(offset, timestamp) {
   };
 
   //hide all methods not implemented in this mock that the Date prototype exposes
-  var unimplementedMethods = ['getMilliseconds', 'getTime', 'getUTCDay',
+  var self = this,
+      unimplementedMethods = ['getMilliseconds', 'getUTCDay',
       'getUTCMilliseconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
       'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
       'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
@@ -531,7 +532,7 @@ function TzDate(offset, timestamp) {
       'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString', 'valueOf'];
 
   angular.forEach(unimplementedMethods, function(methodName) {
-    this[methodName] = function() {
+    self[methodName] = function() {
       throw {
         name: "MethodNotImplemented",
         message: "Method '" + methodName + "' is not implemented in the TzDate mock"
