@@ -1,3 +1,5 @@
+'use strict';
+
 /*
  * HTML Parser By Misko Hevery (misko@hevery.com)
  * based on:  HTML Parser By John Resig (ejohn.org)

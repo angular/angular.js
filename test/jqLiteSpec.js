@@ -1,3 +1,5 @@
+'use strict';
+
 describe('jqLite', function(){
   var scope, a, b, c;
 

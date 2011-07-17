@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Generates JSON output into a context.
  */

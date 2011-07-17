@@ -1,3 +1,5 @@
+'use strict';
+
 describe('angular.scenario.matchers', function () {
   var matchers;
 

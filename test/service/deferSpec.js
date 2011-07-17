@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$defer', function() {
   var scope, $browser, $defer, $exceptionHandler;
 

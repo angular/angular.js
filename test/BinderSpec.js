@@ -1,3 +1,5 @@
+'use strict';
+
 describe('Binder', function(){
 
   beforeEach(function(){

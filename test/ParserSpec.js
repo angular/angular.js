@@ -1,3 +1,5 @@
+'use strict';
+
 describe('parser', function() {
   describe('lexer', function() {
     it('should tokenize a string', function() {

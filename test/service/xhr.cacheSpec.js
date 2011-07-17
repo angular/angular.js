@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$xhr.cache', function() {
   var scope, $browser, $browserXhr, cache, log;
 

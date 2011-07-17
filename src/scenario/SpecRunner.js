@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * This class is the "this" of the it/beforeEach/afterEach method.
  * Responsibilities:

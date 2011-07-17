@@ -1,3 +1,5 @@
+'use strict';
+
 ////////////////////////////////////
 
 if (typeof document.getAttribute == $undefined)

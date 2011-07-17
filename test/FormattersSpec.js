@@ -1,3 +1,5 @@
+'use strict';
+
 describe("formatter", function(){
   it('should noop', function(){
     assertEquals("abc", angular.formatter.noop.format("abc"));

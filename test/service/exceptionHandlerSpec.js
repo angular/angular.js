@@ -1,3 +1,5 @@
+'use strict';
+
 describe('$exceptionHandler', function() {
   var scope;
 

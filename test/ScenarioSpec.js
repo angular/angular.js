@@ -1,3 +1,5 @@
+'use strict';
+
 describe("ScenarioSpec: Compilation", function(){
   var scope;
 

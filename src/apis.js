@@ -1,3 +1,5 @@
+'use strict';
+
 var angularGlobal = {
   'typeOf':function(obj){
     if (obj === null) return $null;

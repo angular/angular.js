@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * The representation of define blocks. Don't used directly, instead use
  * define() in your tests.

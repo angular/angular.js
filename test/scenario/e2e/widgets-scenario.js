@@ -1,3 +1,5 @@
+'use strict';
+
 describe('widgets', function() {
   it('should verify that basic widgets work', function(){
     browser().navigateTo('widgets.html');

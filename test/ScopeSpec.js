@@ -1,3 +1,5 @@
+'use strict';
+
 describe('scope/model', function(){
 
   var temp;
