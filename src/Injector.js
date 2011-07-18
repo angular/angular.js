@@ -60,7 +60,7 @@ function createInjector(factoryScope, factories, instanceCache) {
       instanceCache[value] = invoke(factoryScope, factory);
     }
     return instanceCache[value];
-  };
+  }
 
   function invoke(self, fn, args){
     args = args || [];
