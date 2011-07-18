@@ -1261,9 +1261,12 @@ angularWidget("@ng:non-bindable", noop);
       <doc:source>
          <script>
            function MyCtrl($route) {
-             $route.when('/overview', {controller: OverviewCtrl, template: 'guide.overview.html'});
-             $route.when('/bootstrap', {controller: BootstrapCtrl, template: 'guide.bootstrap.html'});
-             console.log(window.$route = $route);
+             $route.when('/overview',
+               { controller: OverviewCtrl,
+                 template: 'guide/dev_guide.overview.html'});
+             $route.when('/bootstrap',
+               { controller: BootstrapCtrl,
+                 template: 'guide/dev_guide.bootstrap.auto_bootstrap.html'});
            };
            MyCtrl.$inject = ['$route'];
 
@@ -1271,13 +1274,25 @@ angularWidget("@ng:non-bindable", noop);
            function OverviewCtrl(){}
          </script>
          <div ng:controller="MyCtrl">
-           <a href="#/overview">overview</a> | <a href="#/bootstrap">bootstrap</a> | <a href="#/undefined">undefined</a><br/>
+           <a href="#/overview">overview</a> |
+           <a href="#/bootstrap">bootstrap</a> |
+           <a href="#/undefined">undefined</a>
+
+           <br/>
+
            The view is included below:
            <hr/>
            <ng:view></ng:view>
          </div>
       </doc:source>
       <doc:scenario>
+        it('should load templates', function(){
+          element('.doc-example-live a:contains(overview)').click();
+          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Overview/);
+
+          element('.doc-example-live a:contains(bootstrap)').click();
+          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Initializing Angular: Automatic Initiialization/);
+        });
       </doc:scenario>
     </doc:example>
  */
