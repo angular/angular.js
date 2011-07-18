@@ -470,7 +470,7 @@ describe('jqLite', function(){
     });
 
 
-    it('should return empty set when no parent', function(){
+    it('should return empty set when no parent', function() {
       var element = jqLite('<div>abc</div>');
       expect(element.parent()).toBeTruthy();
       expect(element.parent().length).toEqual(0);
@@ -489,7 +489,7 @@ describe('jqLite', function(){
   });
 
 
-  describe('next', function(){
+  describe('next', function() {
     it('should return next sibling', function(){
       var element = jqLite('<div><b>b</b><i>i</i></div>');
       var b = element.find('b');
@@ -499,12 +499,78 @@ describe('jqLite', function(){
   });
 
 
-  describe('find', function(){
+  describe('find', function() {
     it('should find child by name', function(){
       var root = jqLite('<div><div>text</div></div>');
       var innerDiv = root.find('div');
       expect(innerDiv.length).toEqual(1);
       expect(innerDiv.html()).toEqual('text');
+    });
+  });
+
+
+  describe('hide', function() {
+    var element;
+
+    afterEach(function() {
+      if (element) dealoc(element);
+    });
+
+    it('should hide the element', function() {
+      element = jqLite('<div></div>');
+      expect(isCssVisible(element)).toBe(true);
+      element.hide();
+      expect(isCssVisible(element)).toBe(false);
+    });
+  });
+
+
+  describe('show', function() {
+    var element;
+
+    afterEach(function() {
+      if (element) dealoc(element);
+      element.remove();
+    });
+
+
+    it('should show the element ', function() {
+      element = jqLite('<div></div>');
+      element[0].style.display = 'none';
+      expect(isCssVisible(element)).toBe(false);
+      element.show();
+      expect(isCssVisible(element)).toBe(true);
+    });
+
+
+    it('should show previously hidden element and preserve the display value', function() {
+      element = jqLite('<div style="display:inline">xx</div>');
+      jqLite(document.body).append(element);
+      element.hide();
+      expect(isCssVisible(element)).toBe(false);
+      element.show();
+      expect(element[0].style.display).toBe('inline');
+      expect(isCssVisible(element)).toBe(true);
+
+      element[0].style.display = 'block';
+      element.hide();
+      expect(isCssVisible(element)).toBe(false);
+      element.show();
+      expect(isCssVisible(element)).toBe(true);
+
+      // this totally doesn't make sense, it should be 'block', but jquery (1.4.2+1.6.2) behaves
+      // this way.
+      expect(element[0].style.display).toBe('inline');
+    });
+  });
+
+
+  describe('eq', function() {
+    it('should select the nth element ', function() {
+      var element = jqLite('<div><span>aa</span></div><div><span>bb</span></div>');
+      expect(element.find('span').eq(0).html()).toBe('aa');
+      expect(element.find('span').eq(-1).html()).toBe('bb');
+      expect(element.find('span').eq(20).length).toBe(0);;
     });
   });
 });
