@@ -339,7 +339,7 @@ function compileBindTemplate(template){
  * text should be replaced with the template in ng:bind-template.
  * Unlike ng:bind the ng:bind-template can contain multiple `{{` `}}`
  * expressions. (This is required since some HTML elements
- * can not have SPAN elements such as TITLE, or OPTION to name a few.
+ * can not have SPAN elements such as TITLE, or OPTION to name a few.)
  *
  * @element ANY
  * @param {string} template of form
