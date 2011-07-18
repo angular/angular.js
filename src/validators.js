@@ -434,7 +434,8 @@ extend(angularValidator, {
    *        response: server response,
    *        error: validation error
    *     },
-   *   current: 'current input'
+   *     current: 'current input'
+   *   }
    * }
    *
    */
