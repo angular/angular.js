@@ -121,6 +121,22 @@ describe('mocks', function(){
       expect(date2.getUTCMinutes()).toBe(0);
       expect(date2.getUTCSeconds()).toBe(0);
     });
+
+
+    it('should fake toString method when a third param is passed in', function() {
+      var t = new TzDate(0, 0, 'Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)');
+      expect(t.toString()).toBe('Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)');
+    });
+
+
+    it('should throw error when no third param but toString called', function() {
+      var t = new TzDate(0, 0);
+      try {
+        t.toString();
+       } catch(err) {
+         expect(err.name).toBe('MethodNotImplemented');
+       }
+    })
   });
 
   describe('$log mock', function() {
