@@ -143,28 +143,28 @@ describe('filter', function() {
 
     it('should accept various format strings', function() {
       expect(filter.date(morning, "yy-MM-dd HH:mm:ss")).
-                           toEqual('10-09-03 07:05:08');
+                      toEqual('10-09-03 07:05:08');
 
       expect(filter.date(midnight, "yyyy-M-d h=H:m:saZ")).
-                           toEqual('2010-9-3 12=0:5:8am0500');
+                      toEqual('2010-9-3 12=0:5:8am0500');
 
       expect(filter.date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                           toEqual('2010-09-03 12=00:05:08am0500');
+                      toEqual('2010-09-03 12=00:05:08am0500');
 
       expect(filter.date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                       toEqual('2010-09-03 12=12:05:08pm0500');
+                      toEqual('2010-09-03 12=12:05:08pm0500');
 
-     expect(filter.date(dateWithTimeZone, "yyyy-MM-dd hh=HH:mm:ss a z")).
+      expect(filter.date(dateWithTimeZone, "yyyy-MM-dd hh=HH:mm:ss a z")).
                       toEqual('2010-09-03 12=12:05:08 pm XYZ');
 
       expect(filter.date(noon, "EEE, MMM d, yyyy")).
-                       toEqual('Fri, Sep 3, 2010');
+                      toEqual('Fri, Sep 3, 2010');
 
       expect(filter.date(noon, "EEEE, MMMM dd, yyyy")).
-                       toEqual('Friday, September 03, 2010');
+                      toEqual('Friday, September 03, 2010');
 
       expect(filter.date(earlyDate, "MMMM dd, y")).
-                       toEqual('September 03, 1');
+                      toEqual('September 03, 1');
     });
 
     it('should accept default formats', function() {
