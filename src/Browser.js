@@ -39,7 +39,10 @@ function Browser(window, document, body, XHR, $log) {
   var self = this,
       rawDocument = document[0],
       location = window.location,
-      setTimeout = window.setTimeout;
+      setTimeout = window.setTimeout,
+      clearTimeout = window.clearTimeout,
+      pendingDeferIds = {},
+      lastLocationUrl;
 
   self.isMock = false;
 
@@ -162,15 +165,12 @@ function Browser(window, document, body, XHR, $log) {
    * @returns {function()} the added function
    */
   self.addPollFn = function(fn) {
-    if (!pollTimeout) startPoller(100, setTimeout);
+    if (isUndefined(pollTimeout)) startPoller(100, setTimeout);
     pollFns.push(fn);
     return fn;
   };
 
   /**
-   * @name angular.service.$browser#startPoller
-   * @methodOf angular.service.$browser
-   *
    * @param {number} interval How often should browser call poll functions (ms)
    * @param {function()} setTimeout Reference to a real or fake `setTimeout` function.
    *
@@ -201,10 +201,14 @@ function Browser(window, document, body, XHR, $log) {
    * Sets browser's url
    */
   self.setUrl = function(url) {
-    var existingURL = location.href;
+
+    var existingURL = lastLocationUrl;
     if (!existingURL.match(/#/)) existingURL += '#';
     if (!url.match(/#/)) url += '#';
-    location.href = url;
+    if (existingURL != url) {
+      console.log('$browser.setUrl', url);
+      location.href = url;
+    }
    };
 
   /**
@@ -219,7 +223,7 @@ function Browser(window, document, body, XHR, $log) {
    * @returns {string} Browser's url
    */
   self.getUrl = function() {
-    return location.href;
+    return lastLocationUrl = location.href;
   };
 
 
@@ -335,19 +339,48 @@ function Browser(window, document, body, XHR, $log) {
    * @methodOf angular.service.$browser
    * @param {function()} fn A function, who's execution should be defered.
    * @param {number=} [delay=0] of milliseconds to defer the function execution.
+   * @returns {*} DeferId that can be used to cancel the task via `$browser.defer.cancel()`.
    *
    * @description
    * Executes a fn asynchroniously via `setTimeout(fn, delay)`.
    *
    * Unlike when calling `setTimeout` directly, in test this function is mocked and instead of using
-   * `setTimeout` in tests, the fns are queued in an array, which can be programmatically flushed via
-   * `$browser.defer.flush()`.
+   * `setTimeout` in tests, the fns are queued in an array, which can be programmatically flushed
+   * via `$browser.defer.flush()`.
    *
    */
   self.defer = function(fn, delay) {
+    var timeoutId;
     outstandingRequestCount++;
-    setTimeout(function() { completeOutstandingRequest(fn); }, delay || 0);
+    timeoutId = setTimeout(function() {
+      delete pendingDeferIds[timeoutId];
+      completeOutstandingRequest(fn);
+    }, delay || 0);
+    pendingDeferIds[timeoutId] = true;
+    return timeoutId;
   };
+
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$browser.defer#cancel
+   * @methodOf angular.service.$browser.defer
+   * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
+   *
+   * @description
+   * Cancels a defered task identified with `deferId`.
+   */
+
+  self.defer.cancel = function(deferId) {
+    if (pendingDeferIds[deferId]) {
+      delete pendingDeferIds[deferId];
+      clearTimeout(deferId);
+      completeOutstandingRequest(noop);
+      return true;
+    }
+  };
+
 
   //////////////////////////////////////////////////////////////
   // Misc API
