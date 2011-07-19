@@ -267,7 +267,7 @@ function browserTrigger(element, type) {
     // forcing the browser to compute the element position (by reading its CSS)
     // puts the element in consistent state.
     element.style.posLeft;
-    element.fireEvent('on' + type);
+    var ret = element.fireEvent('on' + type);
     if (lowercase(element.type) == 'submit') {
       while(element) {
         if (lowercase(element.nodeName) == 'form') {
@@ -277,10 +277,11 @@ function browserTrigger(element, type) {
         element = element.parentNode;
       }
     }
+    return ret;
   } else {
     var evnt = document.createEvent('MouseEvents');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
-    element.dispatchEvent(evnt);
+    return element.dispatchEvent(evnt);
   }
 }
 
