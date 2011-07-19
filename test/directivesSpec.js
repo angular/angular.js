@@ -252,22 +252,40 @@ describe("directive", function(){
     expect(element.hasClass('ng-exception')).toBeFalsy();
   });
 
-  it('should ng:show', function(){
-    var scope = compile('<div ng:hide="hide"></div>');
-    scope.$eval();
-    expect(isCssVisible(scope.$element)).toEqual(true);
-    scope.$set('hide', true);
-    scope.$eval();
-    expect(isCssVisible(scope.$element)).toEqual(false);
+
+  describe('ng:show', function() {
+    it('should show and hide an element', function(){
+      var element = jqLite('<div ng:show="exp"></div>'),
+          scope = compile(element);
+
+      expect(isCssVisible(element)).toEqual(false);
+      scope.exp = true;
+      scope.$eval();
+      expect(isCssVisible(element)).toEqual(true);
+    });
+
+
+    it('should make hidden element visible', function() {
+      var element = jqLite('<div style="display: none" ng:show="exp"></div>'),
+          scope = compile(element);
+
+      expect(isCssVisible(element)).toBe(false);
+      scope.exp = true;
+      scope.$eval();
+      expect(isCssVisible(element)).toBe(true);
+    });
   });
 
-  it('should ng:hide', function(){
-    var scope = compile('<div ng:show="show"></div>');
-    scope.$eval();
-    expect(isCssVisible(scope.$element)).toEqual(false);
-    scope.$set('show', true);
-    scope.$eval();
-    expect(isCssVisible(scope.$element)).toEqual(true);
+  describe('ng:hide', function() {
+    it('should hide an element', function(){
+      var element = jqLite('<div ng:hide="exp"></div>'),
+          scope = compile(element);
+
+      expect(isCssVisible(element)).toBe(true);
+      scope.exp = true;
+      scope.$eval();
+      expect(isCssVisible(element)).toBe(false);
+    });
   });
 
   describe('ng:controller', function(){
