@@ -111,7 +111,7 @@ describe("directive", function(){
 
   describe('ng:bind-attr', function(){
     it('should bind attributes', function(){
-      var scope = compile('<img ng:bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>');
+      var scope = compile('<div ng:bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>');
       expect(element.attr('src')).toEqual('http://localhost/mysrc');
       expect(element.attr('alt')).toEqual('myalt');
     });
