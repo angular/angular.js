@@ -376,6 +376,20 @@ forEach({
           if (!event.target) {
             event.target = event.srcElement || document;
           }
+
+          if (isUndefined(event.defaultPrevented)) {
+            var prevent = event.preventDefault;
+            event.preventDefault = function() {
+              event.defaultPrevented = true;
+              prevent.call(event);
+            };
+            event.defaultPrevented = false;
+          }
+
+          event.isDefaultPrevented = function() {
+            return event.defaultPrevented;
+          };
+
           forEach(eventHandler.fns, function(fn){
             fn.call(element, event);
           });
