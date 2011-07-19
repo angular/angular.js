@@ -302,6 +302,11 @@ function MockBrowser() {
       self.deferredFns.shift().fn();
     }
   };
+
+  self.$$baseHref = '';
+  self.baseHref = function() {
+    return this.$$baseHref;
+  };
 }
 MockBrowser.prototype = {
 
