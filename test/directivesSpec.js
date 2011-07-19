@@ -179,7 +179,7 @@ describe("directive", function(){
 
 
   describe('ng:class', function() {
-    it('should change current class or remove old classes dynamically', function() {
+    it('should add new and remove old classes dynamically', function() {
       var scope = compile('<div class="existing" ng:class="dynClass"></div>');
       scope.dynClass = 'A';
       scope.$eval();
@@ -205,45 +205,6 @@ describe("directive", function(){
       expect(element.hasClass('existing')).toBeTruthy();
       expect(element.hasClass('A')).toBeTruthy();
       expect(element.hasClass('B')).toBeTruthy();
-    });
-
-    it('should preserve class added post compilation', function() {
-      var scope = compile('<div class="existing" ng:class="dynClass"></div>');
-      scope.dynClass = 'A';
-      scope.$eval();
-      expect(element.hasClass('existing')).toBe(true);
-
-      // add extra class, change model and eval
-      element.addClass('newClass');
-      scope.dynClass = 'B';
-      scope.$eval();
-
-      expect(element.hasClass('existing')).toBe(true);
-      expect(element.hasClass('B')).toBe(true);
-      expect(element.hasClass('newClass')).toBe(true);
-    });
-
-    it('should preserve class added post compilation even without existing classes"', function() {
-      var scope = compile('<div ng:class="dynClass"></div>');
-      scope.dynClass = 'A';
-      scope.$eval();
-      expect(element.hasClass('A')).toBe(true);
-
-      // add extra class, change model and eval
-      element.addClass('newClass');
-      scope.dynClass = 'B';
-      scope.$eval();
-
-      expect(element.hasClass('B')).toBe(true);
-      expect(element.hasClass('newClass')).toBe(true);
-    });
-
-    it('should preserve right classes"', function() {
-      var scope = compile('<div class="ui-panel ui-selected" ng:class="dynCls"></div>');
-      scope.dynCls = 'panel';
-      scope.dynCls = 'foo';
-      scope.$eval();
-      expect(element.attr('class')).toBe('ui-panel ui-selected ng-directive foo');
     });
   });
 
