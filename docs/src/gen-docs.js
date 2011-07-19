@@ -27,6 +27,7 @@ var writes = callback.chain(function(){
   writer.copyDir('img', writes.waitFor());
   writer.copyDir('examples', writes.waitFor());
   writer.copyTpl('index.html', writes.waitFor());
+  writer.copyTpl('.htaccess', writes.waitFor());
   writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html', writes.waitFor(),
               '<-- jquery place holder -->', '<script src=\"jquery.min.js\"><\/script>');
   writer.copyTpl('offline.html', writes.waitFor());
