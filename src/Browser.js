@@ -361,9 +361,9 @@ function Browser(window, document, body, XHR, $log) {
 
 
   /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser.defer#cancel
+   * THIS DOC IS NOT VISIBLE because ngdocs can't process docs for foo#method.method
+   *
+   * @name angular.service.$browser#defer.cancel
    * @methodOf angular.service.$browser.defer
    * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
    *
