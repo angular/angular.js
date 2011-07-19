@@ -509,4 +509,15 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
     return script;
   };
+
+  /**
+   * Returns current <base href>
+   * (always relative - without domain)
+   *
+   * @returns {string=}
+   */
+  self.baseHref = function() {
+    var href = document.find('base').attr('href');
+    return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : href;
+  };
 }

@@ -691,4 +691,40 @@ describe('browser', function(){
       expect(script).toBe(scripts[0]);
     });
   });
+
+  describe('baseHref', function() {
+    var jqDocHead;
+
+    function setDocumentBaseHrefTo(href) {
+      clearDocumentBaseHref();
+      jqDocHead.append('<base href="' + href +'" />');
+    }
+
+    function clearDocumentBaseHref() {
+      jqDocHead.find('base').remove();
+    }
+
+    beforeEach(function() {
+      jqDocHead = jqLite(document).find('head');
+    });
+
+    afterEach(clearDocumentBaseHref);
+
+    it('should return value from <base href>', function() {
+      setDocumentBaseHrefTo('/base/path/');
+      expect(browser.baseHref()).toEqual('/base/path/');
+    });
+
+    it('should return undefined if no <base href>', function() {
+      expect(browser.baseHref()).toBeUndefined();
+    });
+
+    it('should remove domain from <base href>', function() {
+      setDocumentBaseHrefTo('http://host.com/base/path/');
+      expect(browser.baseHref()).toEqual('/base/path/');
+
+      setDocumentBaseHrefTo('http://host.com/base/path/index.html');
+      expect(browser.baseHref()).toEqual('/base/path/index.html');
+    });
+  });
 });
