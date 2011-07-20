@@ -34,7 +34,7 @@ describe("markups", function(){
   });
 
   it('should translate {{}} in attributes', function(){
-    compile('<img src="http://server/{{path}}.png"/>');
+    compile('<div src="http://server/{{path}}.png"/>');
     expect(element.attr('ng:bind-attr')).toEqual('{"src":"http://server/{{path}}.png"}');
     scope.$set('path', 'a/b');
     scope.$eval();
@@ -142,7 +142,7 @@ describe("markups", function(){
   });
 
   it('should bind src', function() {
-    compile('<img ng:src="{{url}}" />');
+    compile('<div ng:src="{{url}}" />');
     scope.url = 'http://localhost/';
     scope.$eval();
     expect(element.attr('src')).toEqual('http://localhost/');

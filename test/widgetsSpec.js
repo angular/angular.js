@@ -576,22 +576,31 @@ describe("widget", function(){
   describe('ng:options', function(){
     var select, scope;
 
-    function createSelect(multiple, blank, unknown){
-      select = jqLite(
-          '<select name="selected" ' + (multiple ? ' multiple' : '') +
-                 ' ng:options="value.name for value in values">' +
-            (blank ? '<option value="">blank</option>' : '') +
-            (unknown ? '<option value="?">unknown</option>' : '') +
-          '</select>');
+    function createSelect(attrs, blank, unknown){
+      var html = '<select';
+      forEach(attrs, function(value, key){
+        if (isBoolean(value)) {
+          if (value) html += ' ' + key;
+        } else {
+          html+= ' ' + key + '="' + value + '"';
+        }
+      });
+      html += '>' +
+        (blank ? '<option value="">blank</option>' : '') +
+        (unknown ? '<option value="?">unknown</option>' : '') +
+      '</select>';
+      select = jqLite(html);
       scope = compile(select);
     };
 
     function createSingleSelect(blank, unknown){
-      createSelect(false, blank, unknown);
+      createSelect({name:'selected', 'ng:options':'value.name for value in values'},
+          blank, unknown);
     };
 
     function createMultiSelect(blank, unknown){
-      createSelect(true, blank, unknown);
+      createSelect({name:'selected', multiple:true, 'ng:options':'value.name for value in values'},
+          blank, unknown);
     };
 
     afterEach(function(){
@@ -602,7 +611,7 @@ describe("widget", function(){
     it('should throw when not formated "? for ? in ?"', function(){
       expect(function(){
         compile('<select name="selected" ng:options="i dont parse"></select>');
-      }).toThrow("Expected ng:options in form of '_expresion_ for _item_ in _collection_' but got 'i dont parse'.");
+      }).toThrow("Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got 'i dont parse'.");
 
       $logMock.error.logs.shift();
     });
@@ -619,12 +628,33 @@ describe("widget", function(){
       expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
     });
 
+    it('should render an object', function(){
+      createSelect({
+        name:'selected',
+        'ng:options': 'value as key for (key, value) in object'
+      });
+      scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
+      scope.selected = scope.object.red;
+      scope.$eval();
+      var options = select.find('option');
+      expect(options.length).toEqual(3);
+      expect(sortedHtml(options[0])).toEqual('<option value="blue">blue</option>');
+      expect(sortedHtml(options[1])).toEqual('<option value="green">green</option>');
+      expect(sortedHtml(options[2])).toEqual('<option value="red">red</option>');
+      expect(options[2].selected).toEqual(true);
+
+      scope.object.azur = '8888FF';
+      scope.$eval();
+      options = select.find('option');
+      expect(options[3].selected).toEqual(true);
+    });
+
     it('should grow list', function(){
       createSingleSelect();
       scope.values = [];
       scope.$eval();
       expect(select.find('option').length).toEqual(1); // because we add special empty option
-      expect(sortedHtml(select.find('option')[0])).toEqual('<option></option>');
+      expect(sortedHtml(select.find('option')[0])).toEqual('<option value="?"></option>');
 
       scope.values.push({name:'A'});
       scope.selected = scope.values[0];
@@ -661,6 +691,24 @@ describe("widget", function(){
       scope.selected = null;
       scope.$eval();
       expect(select.find('option').length).toEqual(1); // we add back the special empty option
+    });
+
+    it('should shrink and then grow list', function(){
+      createSingleSelect();
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(3);
+
+      scope.values = [{name:'1'}, {name:'2'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(2);
+
+      scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
+      scope.selected = scope.values[0];
+      scope.$eval();
+      expect(select.find('option').length).toEqual(3);
     });
 
     it('should update list', function(){
@@ -710,6 +758,78 @@ describe("widget", function(){
         scope.selected = scope.values[1];
         scope.$eval();
         expect(select.val()).toEqual('1');
+      });
+
+      it('should bind to scope value and group', function(){
+        createSelect({
+          name:'selected',
+          'ng:options':'item.name group by item.group for item in values'});
+        scope.values = [{name:'A'},
+                        {name:'B', group:'first'},
+                        {name:'C', group:'second'},
+                        {name:'D', group:'first'},
+                        {name:'E', group:'second'}];
+        scope.selected = scope.values[3];
+        scope.$eval();
+        expect(select.val()).toEqual('3');
+
+        var first = jqLite(select.find('optgroup')[0]);
+        var b = jqLite(first.find('option')[0]);
+        var d = jqLite(first.find('option')[1]);
+        expect(first.attr('label')).toEqual('first');
+        expect(b.text()).toEqual('B');
+        expect(d.text()).toEqual('D');
+
+        var second = jqLite(select.find('optgroup')[1]);
+        var c = jqLite(second.find('option')[0]);
+        var e = jqLite(second.find('option')[1]);
+        expect(second.attr('label')).toEqual('second');
+        expect(c.text()).toEqual('C');
+        expect(e.text()).toEqual('E');
+
+        scope.selected = scope.values[0];
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+      });
+
+      it('should bind to scope value through experession', function(){
+        createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
+        scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
+        scope.selected = scope.values[0].id;
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+
+        scope.selected = scope.values[1].id;
+        scope.$eval();
+        expect(select.val()).toEqual('1');
+      });
+
+      it('should bind to object key', function(){
+        createSelect({
+          name:'selected',
+          'ng:options':'key as value for (key, value) in object'});
+        scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
+        scope.selected = 'green';
+        scope.$eval();
+        expect(select.val()).toEqual('green');
+
+        scope.selected = 'blue';
+        scope.$eval();
+        expect(select.val()).toEqual('blue');
+      });
+
+      it('should bind to object value', function(){
+        createSelect({
+          name:'selected',
+          'ng:options':'value as key for (key, value) in object'});
+        scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
+        scope.selected = '00FF00';
+        scope.$eval();
+        expect(select.val()).toEqual('green');
+
+        scope.selected = '0000FF';
+        scope.$eval();
+        expect(select.val()).toEqual('blue');
       });
 
       it('should insert a blank option if bound to null', function(){
@@ -769,6 +889,39 @@ describe("widget", function(){
         select.val('1');
         browserTrigger(select, 'change');
         expect(scope.selected).toEqual(scope.values[1]);
+      });
+
+      it('should fire ng:change if present', function(){
+        createSelect({
+          name:'selected',
+          'ng:options':'value for value in values',
+          'ng:change':'count = count + 1'});
+        scope.values = [{name:'A'}, {name:'B'}];
+        scope.selected = scope.values[0];
+        scope.count = 0;
+        scope.$eval();
+        expect(scope.count).toEqual(0);
+
+        select.val('1');
+        browserTrigger(select, 'change');
+        expect(scope.count).toEqual(1);
+        expect(scope.selected).toEqual(scope.values[1]);
+
+        browserTrigger(select, 'change');
+        expect(scope.count).toEqual(1);
+        expect(scope.selected).toEqual(scope.values[1]);
+      });
+
+      it('should update model on change through expression', function(){
+        createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
+        scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
+        scope.selected = scope.values[0].id;
+        scope.$eval();
+        expect(select.val()).toEqual('0');
+
+        select.val('1');
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(scope.values[1].id);
       });
 
       it('should update model to null on change', function(){

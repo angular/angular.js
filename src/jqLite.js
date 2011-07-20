@@ -89,23 +89,6 @@ function getStyle(element) {
   return current;
 }
 
-//TODO: delete me! dead code?
-if (msie) {
-  extend(JQLite.prototype, {
-    text: function(value) {
-      var e = this[0];
-      // NodeType == 3 is text node
-      if (e.nodeType == 3) {
-        if (isDefined(value)) e.nodeValue = value;
-        return e.nodeValue;
-      } else {
-        if (isDefined(value)) e.innerText = value;
-        return e.innerText;
-      }
-    }
-  });
-}
-
 /////////////////////////////////////////////
 function jqLiteWrap(element) {
   if (isString(element) && element.charAt(0) != '<') {

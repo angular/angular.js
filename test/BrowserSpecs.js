@@ -174,15 +174,15 @@ describe('browser', function(){
       expect(deferId1).toBeDefined();
       expect(deferId2).toBeDefined();
       expect(deferId1).not.toEqual(deferId2);
-    })
+    });
 
 
     describe('cancel', function() {
       it('should allow tasks to be canceled with returned deferId', function() {
         var log = [],
-            deferId1 = browser.defer(function() { log.push('cancel me') }),
-            deferId2 = browser.defer(function() { log.push('ok') }),
-            deferId3 = browser.defer(function() { log.push('cancel me, now!') });
+            deferId1 = browser.defer(function() { log.push('cancel me'); }),
+            deferId2 = browser.defer(function() { log.push('ok'); }),
+            deferId3 = browser.defer(function() { log.push('cancel me, now!'); });
 
         expect(log).toEqual([]);
         browser.defer.cancel(deferId1);
