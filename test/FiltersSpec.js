@@ -111,8 +111,10 @@ describe('filter', function() {
     });
 
     it('should handle mailto:', function() {
-      expect(linky("mailto:me@example.com").html).toEqual('<a href="mailto:me@example.com">me@example.com</a>');
-      expect(linky("me@example.com").html).toEqual('<a href="mailto:me@example.com">me@example.com</a>');
+      expect(linky("mailto:me@example.com").html).
+                      toEqual('<a href="mailto:me@example.com">me@example.com</a>');
+      expect(linky("me@example.com").html).
+                      toEqual('<a href="mailto:me@example.com">me@example.com</a>');
       expect(linky("send email to me@example.com, but").html).
         toEqual('send email to <a href="mailto:me@example.com">me@example.com</a>, but');
     });
@@ -124,7 +126,8 @@ describe('filter', function() {
     var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
     var midnight = new TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
     var earlyDate = new TzDate(+5, '0001-09-03T05:05:08.000Z');
-    var dateWithTimeZone = new TzDate(+5, '2010-09-03T17:05:08.000Z', 'Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)');
+    var timZoneDate = new TzDate(+5, '2010-09-03T05:05:08.000Z',
+                                     'Mon Sep 3 2010 00:05:08 GMT+0500 (XYZ)'); //12am
 
     it('should ignore falsy inputs', function() {
       expect(filter.date(null)).toBeNull();
@@ -154,8 +157,8 @@ describe('filter', function() {
       expect(filter.date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
                       toEqual('2010-09-03 12=12:05:08pm0500');
 
-      expect(filter.date(dateWithTimeZone, "yyyy-MM-dd hh=HH:mm:ss a z")).
-                      toEqual('2010-09-03 12=12:05:08 pm XYZ');
+      expect(filter.date(timZoneDate, "yyyy-MM-dd hh=HH:mm:ss a z")).
+                      toEqual('2010-09-03 12=00:05:08 am XYZ');
 
       expect(filter.date(noon, "EEE, MMM d, yyyy")).
                       toEqual('Fri, Sep 3, 2010');
@@ -169,8 +172,8 @@ describe('filter', function() {
 
     it('should accept default formats', function() {
 
-      expect(filter.date(dateWithTimeZone, "long")).
-                      toEqual('September 3, 2010 12:05:08 pm XYZ');
+      expect(filter.date(timZoneDate, "long")).
+                      toEqual('September 3, 2010 12:05:08 am XYZ');
 
       expect(filter.date(noon, "medium")).
                       toEqual('Sep 3, 2010 12:05:08 pm');
@@ -190,8 +193,8 @@ describe('filter', function() {
       expect(filter.date(noon, "shortDate")).
                       toEqual('9/3/10');
 
-      expect(filter.date(dateWithTimeZone, "longTime")).
-                      toEqual('12:05:08 pm XYZ');
+      expect(filter.date(timZoneDate, "longTime")).
+                      toEqual('12:05:08 am XYZ');
 
       expect(filter.date(noon, "mediumTime")).
                       toEqual('12:05:08 pm');
@@ -202,13 +205,13 @@ describe('filter', function() {
 
 
     it('should parse timezone identifier from various toString values', function() {
-      //chrome format
+      //chrome and firefox format
       expect(filter.date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
                                     'Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)'), "z")).toBe('XYZ');
 
-      //firefox format
+      //opera format
       expect(filter.date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
-                                    'Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)'), "z")).toBe('XYZ');
+                                    '2010-09-03T17:05:08Z'), "z")).toBe('0500');
 
       //ie 8 format
       expect(filter.date(new TzDate(+5, '2010-09-03T17:05:08.000Z',

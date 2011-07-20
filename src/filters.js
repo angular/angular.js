@@ -184,6 +184,16 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
+function timeZoneGetter(numFormat) {
+  return function(date) {
+    var timeZone;
+    if (numFormat || !(timeZone = GET_TIME_ZONE.exec(date.toString()))) {
+      var offset = date.getTimezoneOffset();
+      return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
+    }
+    return timeZone[0];
+  };
+}
 
 var DAY = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'.split(',');
 
@@ -211,11 +221,8 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: function(date){return date.getHours() < 12 ? 'am' : 'pm';},
-     z: function(date) {return GET_TIME_ZONE.exec(date.toString())[0];},
-     Z: function(date) {
-           var offset = date.getTimezoneOffset();
-            return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
-         }
+     z: timeZoneGetter(false),
+     Z: timeZoneGetter(true)
 };
 
 var DEFAULT_DATETIME_FORMATS = {
@@ -233,6 +240,7 @@ var DEFAULT_DATETIME_FORMATS = {
 
 var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
 var DATE_FORMATS_SPLIT = /([^yMdHhmsazZE]*)(E+|y+|M+|d+|H+|h+|m+|s+|a|Z|z)(.*)/;
+var OPERA_TOSTRING_PATTERN = /^[\d].*Z$/;
 var NUMBER_STRING = /^\d+$/;
 
 
@@ -268,7 +276,20 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'s'`: Second in minute (0‒59)
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200‒1200)
- *   * `'z'`: short form of current timezone name (PDT)
+ *   * `'z'`: short form of current timezone name (e.g. PDT)
+ *
+ *   'format' string can also be the following default formats for current locale
+ *
+ *   * `'long'`: equivalent to `'MMMM d, y h:mm:ss a z'` for en_US  locale (e.g. September 3, 2010 12:05:08 pm PDT)
+ *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss a'` for en_US locale (e.g. Sep 3, 2010 12:05:08 pm)
+ *   * `'short'`: equivalent to `'M/d/yy h:mm a'` for en_US  locale (e.g. 9/3/10 12:05 pm)
+ *   * `'fullDate'`: equivalent to `'EEEE, MMMM d,y'` for en_US  locale (e.g. Friday, September 3, 2010)
+ *   * `'longDate'`: equivalent to `'MMMM d, y'` for en_US  locale (e.g. September 3, 2010
+ *   * `'mediumDate'`: equivalent to `'MMM d, y'` for en_US  locale (e.g. Sep 3, 2010)
+ *   * `'shortDate'`: equivalent to `'M/d/yy'` for en_US locale (e.g. 9/3/10)
+ *   * `'longTime'`: equivalent to `'h:mm:ss a z'` for en_US locale (e.g. 12:05:08 pm PDT)
+ *   * `'mediumTime'`: equivalent to `'h:mm:ss a'` for en_US locale (e.g. 12:05:08 pm)
+ *   * `'shortTime'`: equivalent to `'h:mm a'` for en_US locale (e.g. 12:05 pm)
  *
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
  *    number) or ISO 8601 extended datetime string (yyyy-MM-ddTHH:mm:ss.SSSZ).
