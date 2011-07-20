@@ -457,7 +457,7 @@ function MockLogFactory() {
  * </pre>
  *
  */
-function TzDate(offset, timestamp) {
+function TzDate(offset, timestamp, toStringVal) {
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
 
@@ -480,6 +480,10 @@ function TzDate(offset, timestamp) {
   this.getTime = function() {
     return this.date.getTime() - this.offsetDiff;
   };
+
+  this.toString = function() {
+   return toStringVal;
+  }
 
   this.toLocaleDateString = function() {
     return this.date.toLocaleDateString();
@@ -551,6 +555,8 @@ function TzDate(offset, timestamp) {
       'toLocaleTimeString', 'toSource', 'toString', 'toTimeString', 'toUTCString', 'valueOf'];
 
   angular.forEach(unimplementedMethods, function(methodName) {
+    if (methodName == 'toString' && toStringVal) return;
+
     self[methodName] = function() {
       throw {
         name: "MethodNotImplemented",

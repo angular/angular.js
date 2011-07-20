@@ -1,6 +1,7 @@
 <a name="0.9.18"><a/>
 # <angular/> 0.9.18 jiggling-armfat (in-progress) #
-
+### Breaking changes
+- no longer support MMMMM in filter.date as we need to follow UNICODE LOCALE DATA formats.
 
 
 
