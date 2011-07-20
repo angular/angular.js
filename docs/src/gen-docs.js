@@ -5,15 +5,14 @@ var reader = require('reader.js'),
     writer = require('writer.js'),
     SiteMap = require('SiteMap.js').SiteMap,
     appCache = require('appCache.js').appCache,
-    Q = require('q');
+    Q = require('qq');
     
 process.on('uncaughtException', function (err) {
   console.error(err.stack || err);
 });
 
-var start;
+var start = now();
 var docs;
-start = now();
 
 writer.makeDir('build/docs/syntaxhighlighter').then(function() {
   console.log('Generating Angular Reference Documentation...');
@@ -28,17 +27,14 @@ writer.makeDir('build/docs/syntaxhighlighter').then(function() {
 
   writeTheRest(fileFutures);
 
-  return Q.join(fileFutures, noop);
+  return Q.deep(fileFutures);
 }).then(function generateManifestFile() {
   return appCache('build/docs/').then(function(list) {
-    writer.output('app-cache.manifest',list)
+    writer.output('appcache-offline.manifest',list)
   });
 }).then(function printStats() {
   console.log('DONE. Generated ' + docs.length + ' pages in ' + (now()-start) + 'ms.' );
 }).end();
-
-function now(){ return new Date().getTime(); }
-function noop(){};
 
 
 function writeTheRest(writesFuture) {
@@ -49,16 +45,19 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyTpl('index.html'));
   writesFuture.push(writer.copy('docs/src/templates/index.html',
                                 'build/docs/index-jq.html',
-                                '<-- jquery place holder -->',
+                                '<!-- jquery place holder -->',
                                 '<script src=\"jquery.min.js\"><\/script>'));
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));
   writesFuture.push(writer.copyTpl('jquery.min.js'));
 
-  writesFuture.push(writer.output('docs-keywords.js', ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
+  writesFuture.push(writer.output('docs-keywords.js',
+                                ['NG_PAGES=', JSON.stringify(metadata).replace(/{/g, '\n{'), ';']));
   writesFuture.push(writer.output('sitemap.xml', new SiteMap(docs).render()));
   writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
   writesFuture.push(writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n'));
+  writesFuture.push(writer.output('appcache.manifest',appCache()));
+
   writesFuture.push(writer.merge(['docs.js',
                                   'doc_widgets.js'],
                                   'docs-combined.js'));
@@ -73,3 +72,8 @@ function writeTheRest(writesFuture) {
                                   'syntaxhighlighter/shThemeDefault.css'],
                                   'syntaxhighlighter/syntaxhighlighter-combined.css'));
 }
+
+
+function now(){ return new Date().getTime(); }
+
+function noop(){};

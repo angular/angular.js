@@ -7,8 +7,8 @@ exports.collect = collect;
 
 require.paths.push(__dirname);
 var ngdoc = require('ngdoc.js'),
-    Q        = require('qq'),
-    qfs       = require('q-fs');
+    Q = require('qq'),
+    qfs = require('q-fs');
 
 var NEW_LINE = /\n\r?/;
 
@@ -69,6 +69,7 @@ function processJsFile(content, file) {
   var startingLine ;
   var match;
   var inDoc = false;
+
   lines.forEach(function(line, lineNumber){
     lineNumber++;
     // is the comment starting?

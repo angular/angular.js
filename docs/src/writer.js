@@ -3,32 +3,33 @@
  * for testability
  */
 require.paths.push(__dirname);
-var qfs         = require('q-fs');
-var Q          = require('qq');
+var qfs = require('q-fs');
+var Q = require('qq');
 var OUTPUT_DIR = "build/docs/";
-var fs      = require('fs');
+var fs = require('fs');
 
 exports.output = function(file, content){
   console.log('writing ', file);
   var fullPath = OUTPUT_DIR + file;
   var dir = parent(fullPath);
   return Q.when(exports.makeDir(dir), function(error) {
-       qfs.write(fullPath,exports.toString(content));
-    });
+    qfs.write(fullPath,exports.toString(content));
+  });
 }
 
 //recursively create directory
 exports.makeDir = function (path) {
   var parts = path.split(/\//);
   var path = ".";
-  //Make Directory in Serial
+  //Sequentially create directories
   var done = Q.defer();
-  (function createPart(){
+  (function createPart() {
+
     if(!parts.length) {
       done.resolve();
     } else {
       path += "/" + parts.shift();
-      qfs.isDirectory(path).then(function(isDir){
+      qfs.isDirectory(path).then(function(isDir) {
         if(!isDir) {
           qfs.makeDirectory(path);
         }
@@ -43,30 +44,14 @@ exports.copyTpl = function(filename) {
   return exports.copy('docs/src/templates/' + filename, OUTPUT_DIR + filename);
 };
 
-exports.copy = function copy(from, to, replacementKey, replacement) {
-  var readFuture = Q.defer();
-  var writeFuture = Q.defer();
-  // qfs.read cannot read image files correctly, why????
-  fs.readFile(from, function(err, content) {
-    if(err) readFuture.reject(err);
+exports.copy = function (from, to, replacementKey, replacement) {  
+  // Have to use rb (read binary), char 'r' is infered by library.
+  return qfs.read(from,'b').then(function(content) {
     if(replacementKey && replacement) {
       content = content.toString().replace(replacementKey, replacement);
     }
-    readFuture.resolve(content);
+    qfs.write(to, content);
   });
-
-  readFuture.promise.then(function(content) {
-    fs.writeFile(to, content, function (error) {
-      if (error) {
-          error.message = "Can't write to " + to + ": " + error.message;
-          console.log(error.message);
-          writeFuture.reject(error);
-      } else {
-          writeFuture.resolve();
-      }
-    });
-  });
-  return writeFuture.promise;
 }
 
 exports.copyDir = function copyDir(dir) {
@@ -78,13 +63,13 @@ exports.copyDir = function copyDir(dir) {
       });
     });
     return done;
-    }).then(function() {
-      return qfs.listTree('docs/' + dir);
-    }).then(function(files) {
-      files.forEach( function(file) {
-        exports.copy(file,'./build/' + file);
-      });
+  }).then(function() {
+    return qfs.listTree('docs/' + dir);
+  }).then(function(files) {
+    files.forEach( function(file) {
+      exports.copy(file,'./build/' + file);
     });
+  });
 };
 
 exports.merge = function(srcs, to) {
@@ -93,21 +78,20 @@ exports.merge = function(srcs, to) {
 
 function merge(srcs, to) {
   var contents = [];
-  //read files in serial
+  //Sequentially read file
   var done;
   srcs.forEach(function (src) {
     done = Q.when(done, function(content) {
       if(content) contents.push(content);
-      //console.log('reading: ' + src);
       return qfs.read(src);
     });
   });
 
   // write to file
-  return Q.when(done,function(content) {
-      contents.push(content);
-      qfs.write(to, contents.join('\n'));
-    });
+  return Q.when(done, function(content) {
+    contents.push(content);
+    qfs.write(to, contents.join('\n'));
+  });
 }
 
 //----------------------- Synchronous Methods ----------------------------------
