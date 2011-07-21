@@ -72,7 +72,13 @@
       <ng:include id="content" src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
     </div>
 
-    <div id="footer">© 2010-2011 AngularJS</div>
+    <div id="footer">
+      <a id="version"
+         ng:href="https://github.com/angular/angular.js/blob/master/CHANGELOG.md#{{versionNumber}}"
+         ng:bind-template="v{{version}}">
+      </a>
+      <span id="copyright">© 2010-2011 AngularJS</span>
+    </div>
   </div>
 
   <script src="syntaxhighlighter/syntaxhighlighter-combined.js"></script>

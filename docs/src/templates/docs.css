@@ -80,10 +80,20 @@ li {
 #footer {
     clear: both;
     padding: 2em 4em 1em;
-    text-align: right;
     font-size: 12px;
 }
 
+#copyright {
+  float:right;
+  text-align: right;
+}
+
+#version {
+  margin-top: -1.2em;
+  margin-left: -2em;
+  margin-right: 0.5em;
+  color: #251BE0;
+}
 
 
 /*----- navigation styles -----*/
