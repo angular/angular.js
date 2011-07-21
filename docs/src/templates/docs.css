@@ -83,6 +83,12 @@ li {
     font-size: 12px;
 }
 
+#offline{
+  text-decoration:underline;
+  cursor:pointer;
+  color:blue;
+}
+
 #copyright {
   float:right;
   text-align: right;
@@ -316,4 +322,79 @@ li {
 #content .returns p:nth-child(2) {
   display: inline;
   padding-left: 0;
+}
+
+/* subpages */
+
+#fader {
+  display: none;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  opacity: 0.8;
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
+  z-index: 3;
+}
+
+#subpage {
+  display: none;
+}
+
+#subpage > div {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 729px;
+  margin-top: -140px;
+  margin-left: -365px;
+  z-index: 3;
+  background-color: #7989D6;
+  border-radius: 15px;
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  -moz-box-shadow: 4px 4px 6px #48577D;
+}
+
+#subpage h2 {
+  height: 1.8em;
+  -moz-border-radius-topright: 15px;
+  -moz-border-radius-topleft: 15px;
+  border-radius-topright: 15px;
+  border-radius-topleft: 15px;
+  -webkit-border-top-right-radius: 15px;
+  -webkit-border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  padding: 0.6em 0 0 1em;
+  margin: 0;
+  color: white;
+}
+
+#subpage > div > a {
+  color: black;
+  float: right;
+  margin: -40px 10px;
+  font-size: 1em;
+}
+
+#subpage > div > a:hover {
+  text-decoration: none;
+  color: white;
+}
+
+#subpage > div > p {
+  background-color: white;
+  padding: 0.5em 1em 0.5em 1em;
+  margin-bottom: 0.5em;
+}
+
+#cacheButton {
+  margin: 0em 2em 1em 0em;
+  float:right;
 }

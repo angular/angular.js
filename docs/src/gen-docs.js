@@ -57,6 +57,7 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.output('docs-scenario.js', ngdoc.scenarios(docs)));
   writesFuture.push(writer.output('robots.txt', 'Sitemap: http://docs.angularjs.org/sitemap.xml\n'));
   writesFuture.push(writer.output('appcache.manifest',appCache()));
+  writesFuture.push(writer.copyTpl('.htaccess'));
 
   writesFuture.push(writer.merge(['docs.js',
                                   'doc_widgets.js'],
