@@ -5,6 +5,12 @@ function DocsController($location, $browser, $window) {
   var self = this;
   this.$location = $location;
 
+  self.versionNumber = angular.version.full;
+  self.version = angular.version.full + "  " + angular.version.codeName;
+  self.cookieName = "angularPref";
+  self.subpage = false;
+  self.offlineEnabled = (document.cookie.indexOf(self.cookieName) !== -1);
+
   if (!HAS_HASH.test($location.href)) {
     $location.hashPath = '!/api';
   }
@@ -67,7 +73,6 @@ function DocsController($location, $browser, $window) {
            "subject=" + escape("Feedback on " + $location.href) + "&" +
            "body=" + escape("Hi there,\n\nI read " + $location.href + " and wanted to ask ....");
   };
-
 }
 
 // prevent compilation of code
