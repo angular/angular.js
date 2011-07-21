@@ -221,8 +221,14 @@ end
 
 
 desc 'Generate docs'
-task :docs do
+task :docs => [:init] do
   `node docs/src/gen-docs.js`
+  File.open(path_to('docs/.htaccess'), File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('"NG_VERSION_FULL"', NG_VERSION.full)
+  end
 end
 
 
@@ -250,19 +256,28 @@ task :package => [:clean, :compile, :docs] do
 
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index.html", File::RDWR) do |f|
     text = f.read
+    f.truncate 0
     f.rewind
     f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
   end
 
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html", File::RDWR) do |f|
     text = f.read
+    f.truncate 0
     f.rewind
     f.write text.sub('angular-scenario.js', "angular-scenario-#{NG_VERSION.full}.js")
   end
 
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/appcache.manifest", File::RDWR) do |f|
-
     text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
+  end
+
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/appcache-offline.manifest", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
     f.rewind
     f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
   end

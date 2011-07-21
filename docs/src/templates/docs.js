@@ -1,15 +1,17 @@
-var HAS_HASH = /#/;
-DocsController.$inject = ['$location', '$browser', '$window'];
-function DocsController($location, $browser, $window) {
+DocsController.$inject = ['$location', '$browser', '$window', '$cookies'];
+function DocsController($location, $browser, $window, $cookies) {
   window.$root = this.$root;
-  var self = this;
+
+  var self = this,
+      OFFLINE_COOKIE_NAME = 'ng-offline',
+      HAS_HASH = /#/;
+
   this.$location = $location;
 
   self.versionNumber = angular.version.full;
   self.version = angular.version.full + "  " + angular.version.codeName;
-  self.cookieName = "angularPref";
   self.subpage = false;
-  self.offlineEnabled = (document.cookie.indexOf(self.cookieName) !== -1);
+  self.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
 
   if (!HAS_HASH.test($location.href)) {
     $location.hashPath = '!/api';
@@ -73,6 +75,27 @@ function DocsController($location, $browser, $window) {
            "subject=" + escape("Feedback on " + $location.href) + "&" +
            "body=" + escape("Hi there,\n\nI read " + $location.href + " and wanted to ask ....");
   };
+
+  /** stores a cookie that is used by apache to decide which manifest ot send */
+  this.enableOffline = function() {
+    //The cookie will be good for one year!
+    var date = new Date();
+    date.setTime(date.getTime()+(365*24*60*60*1000));
+    var expires = "; expires="+date.toGMTString();
+    var value = angular.version.full;
+    document.cookie = OFFLINE_COOKIE_NAME + "="+value+expires+"; path=" + $location.path;
+
+    //force the page to reload so server can serve new manifest file
+    window.location.reload(true);
+  };
+
+  // bind escape to hash reset callback
+  angular.element(window).bind('keydown', function(e) {
+    if (e.keyCode === 27) {
+      self.subpage = false;
+      self.$eval();
+    }
+  });
 }
 
 // prevent compilation of code

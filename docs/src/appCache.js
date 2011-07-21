@@ -11,12 +11,13 @@ function appCache(path) {
     if(!path) {
       return appCacheTemplate();
     }
-    var blackList = ["offline.html",
-                     "sitemap.xml",
-                     "robots.txt",
-                     "docs-scenario.html",
-                     "docs-scenario.js",
-                     "appcache.manifest"
+    var blackList = ["build/docs/offline.html",
+                     "build/docs/sitemap.xml",
+                     "build/docs/robots.txt",
+                     "build/docs/docs-scenario.html",
+                     "build/docs/docs-scenario.js",
+                     "build/docs/appcache.manifest",
+                     "build/docs/.htaccess"
                     ];
 
     var result = ["CACHE MANIFEST",

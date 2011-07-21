@@ -1,57 +1,11 @@
-Options +Indexes
-IndexIgnore favicon.ico
+## OFFLINE SUPPORT ##
+
+# These rules tell apache to check if there is a cookie called "offline", with value set to the
+# current angular version. If this rule matches the appcache-offline.manifest will be served for
+# requests to appcache.manifest
+#
+# This file must be processed by Rake in order to replace %ANGULAR_VERSION% with the actual version.
+
 RewriteEngine on
-
-# Enable Crawling of AJAX apps.
-# See: http://code.google.com/web/ajaxcrawling/docs/getting-started.html
-RewriteCond %{QUERY_STRING} ^_escaped_fragment_=\/(.*)$
-RewriteRule ^(.*)$                                  /$1/%1.html?
-
-# Map versiond angular files to root folder.
-RewriteRule ^angular([\-\w]+)(\d+\.\d+\.\d+)(.*)$   /$2/angular$1$2$3
-# Map 1.2.3/docs to 1.2.3/docs-1.2.3/ so that we don't need the version in the URL twice
-RewriteRule ^(\d+\.\d+\.\d+)/docs/(.*)$             /$1/docs-$1/$2
-
-# If the user has forgot the trailing slash than add it through redirect
-RewriteRule ^latest$                                /latest/            [R]
-RewriteRule ^latest/docs$                           /latest/docs/       [R]
-
-# To change the latest version just change this line.
-# IMPORTANT: the order of lines matters, do not move to top!
-RewriteRule ^latest/(.*)$                           /0.9.17/$1
-
-# If the request comes on http://docs.angularjs.org then point it to latest/docs
-RewriteCond %{HTTP_HOST}        ^docs\.angularjs\.org$
-RewriteCond %{REQUEST_URI}      !^/\d+\.\d+\.\d+
-RewriteCond %{REQUEST_URI}      !^/latest
-RewriteCond %{REQUEST_URI}      !^/angular-
-RewriteCond %{REQUEST_URI}      !^/favicon.ico
-RewriteRule ^(.*)$              /latest/docs/$1
-
-## PERFORMANCE ##
-
-ExpiresActive On
-
-# cache js files for one year
-<FilesMatch "^angular-(ie-compat-)?[\d\.]+(\.min)?\.js">
-ExpiresDefault "access plus 1 year"
-</FilesMatch>
-
-# don't cache appcache manifests
-<FilesMatch "\.manifest$">
-ExpiresDefault "access"
-</FilesMatch>
-
-# cache everything else for 1h
-ExpiresDefault "access plus 60 minutes"
-
-
-# compression
-SetOutputFilter DEFLATE
-Header set Vary "Accept-Encoding"
-
-
-# content types
-AddType application/javascript js
-AddType text/cache-manifest .manifest
-
+RewriteCond %{HTTP_COOKIE}      ng-offline="NG_VERSION_FULL"
+RewriteRule appcache.manifest   appcache-offline.manifest
