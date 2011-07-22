@@ -625,4 +625,15 @@ describe('angular', function(){
     });
   });
 
+
+  describe('version', function() {
+    it('version should have full/major/minor/dot/codeName properties', function() {
+      expect(version).toBeDefined();
+      expect(version.full).toBe('"NG_VERSION_FULL"');
+      expect(version.major).toBe("NG_VERSION_MAJOR");
+      expect(version.minor).toBe("NG_VERSION_MINOR");
+      expect(version.dot).toBe("NG_VERSION_DOT");
+      expect(version.codeName).toBe('"NG_VERSION_CODENAME"');
+    });
+  })
 });

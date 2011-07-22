@@ -1004,3 +1004,25 @@ function assertArg(arg, name, reason) {
 function assertArgFn(arg, name) {
   assertArg(isFunction(arg, name, 'not a function'));
 }
+
+
+/**
+ * @ngdoc property
+ * @name angular.version
+ * @description
+ * Object which contains information about the current AngularJS version. The object has following
+ * properties:
+ *
+ * - `full` – `{string}` – full version string, e.g. "0.9.18"
+ * - `major` – `{number}` – major version number, e.g. 0
+ * - `minor` – `{number}` – minor version number, e.g. 9
+ * - `dot` – `{number}` – dot version number, e.g. 18
+ * - `codeName` – `{string}` – code name of the release, e.g. "jiggling-armfat"
+ */
+var version = {
+  full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by rake's
+  major: "NG_VERSION_MAJOR",    // compile task
+  minor: "NG_VERSION_MINOR",
+  dot: "NG_VERSION_DOT",
+  codeName: '"NG_VERSION_CODENAME"'
+}
