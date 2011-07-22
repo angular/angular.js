@@ -1,12 +1,12 @@
 'use strict';
 
 describe("resource", function() {
-  var xhr, resource, CreditCard, callback;
+  var xhr, resource, CreditCard, callback, $xhrErr;
 
-  beforeEach(function(){
-    var browser = new MockBrowser();
-    xhr = browser.xhr;
-    resource = new ResourceFactory(xhr);
+  beforeEach(function() {
+    var scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
+    xhr = scope.$service('$browser').xhr;
+    resource = new ResourceFactory(scope.$service('$xhr'));
     CreditCard = resource.route('/CreditCard/:id:verb', {id:'@id.key'}, {
       charge:{
         method:'POST',
@@ -242,19 +242,25 @@ describe("resource", function() {
     dealoc(scope);
   });
 
-  describe('failure mode', function(){
-    it('should report error when non 200', function(){
-      xhr.expectGET('/CreditCard/123').respond(500, "Server Error");
-      var cc = CreditCard.get({id:123});
-      try {
-        xhr.flush();
-        fail('expected exception, non thrown');
-      } catch (e) {
-        expect(e.status).toEqual(500);
-        expect(e.response).toEqual('Server Error');
-        expect(e.message).toEqual('500: Server Error');
-      }
+  describe('failure mode', function() {
+    var ERROR_CODE = 500,
+        ERROR_RESPONSE = 'Server Error';
+
+    beforeEach(function() {
+      xhr.expectGET('/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
+    });
+
+    it('should report error when non 2xx if error callback is not provided', function() {
+      CreditCard.get({id:123});
+      xhr.flush();
+      expect($xhrErr).toHaveBeenCalled();
+    });
+
+    it('should call the error callback if provided on non 2xx response', function() {
+      CreditCard.get({id:123}, noop, callback);
+      xhr.flush();
+      expect(callback).toHaveBeenCalledWith(500, ERROR_RESPONSE);
+      expect($xhrErr).not.toHaveBeenCalled();
     });
   });
-
 });

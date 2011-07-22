@@ -82,9 +82,9 @@
  *   The action methods on the class object or instance object can be invoked with the following
  *   parameters:
  *
- *   - HTTP GET "class" actions: `Resource.action([parameters], [callback])`
- *   - non-GET "class" actions: `Resource.action(postData, [parameters], [callback])`
- *   - non-GET instance actions:  `instance.$action([parameters], [callback])`
+ *   - HTTP GET "class" actions: `Resource.action([parameters], [success], [error])`
+ *   - non-GET "class" actions: `Resource.action(postData, [parameters], [success], [error])`
+ *   - non-GET instance actions:  `instance.$action([parameters], [success], [error])`
  *
  *
  * @example
@@ -142,8 +142,8 @@
      });
    </pre>
  *
- *     It's worth noting that the callback for `get`, `query` and other method gets passed in the
- *     response that came from the server, so one could rewrite the above example as:
+ *     It's worth noting that the success callback for `get`, `query` and other method gets passed
+ *     in the response that came from the server, so one could rewrite the above example as:
  *
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});

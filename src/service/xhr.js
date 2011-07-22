@@ -21,10 +21,10 @@
  * {@link angular.service.$resource $resource} service.
  *
  * # Error handling
- * All XHR responses with response codes other then `2xx` are delegated to
- * {@link angular.service.$xhr.error $xhr.error}. The `$xhr.error` can intercept the request
- * and process it in application specific way, or resume normal execution by calling the
- * request callback method.
+ * If no `error callback` is specified, XHR response with response code other then `2xx` will be
+ * delegated to {@link angular.service.$xhr.error $xhr.error}. The `$xhr.error` can intercept the
+ * request and process it in application specific way, or resume normal execution by calling the
+ * request `success` method.
  *
  * # HTTP Headers
  * The $xhr service will automatically add certain http headers to all requests. These defaults can
@@ -96,14 +96,16 @@
  *   angular generated callback function.
  * @param {(string|Object)=} post Request content as either a string or an object to be stringified
  *   as JSON before sent to the server.
- * @param {function(number, (string|Object))} callback A function to be called when the response is
- *   received. The callback will be called with:
+ * @param {function(number, (string|Object))} success A function to be called when the response is
+ *   received. The success function will be called with:
  *
  *   - {number} code [HTTP status code](http://en.wikipedia.org/wiki/List_of_HTTP_status_codes) of
  *     the response. This will currently always be 200, since all non-200 responses are routed to
- *     {@link angular.service.$xhr.error} service.
+ *     {@link angular.service.$xhr.error} service (or custom error callback).
  *   - {string|Object} response Response object as string or an Object if the response was in JSON
  *     format.
+ * @param {function(number, (string|Object))} error A function to be called if the response code is
+ *   not 2xx.. Accepts the same arguments as success, above.
  *
  * @example
    <doc:example>
@@ -158,9 +160,10 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
     patch: {}
   };
 
-  function xhr(method, url, post, callback){
+  function xhr(method, url, post, success, error) {
     if (isFunction(post)) {
-      callback = post;
+      error = success;
+      success = post;
       post = null;
     }
     if (post && isObject(post)) {
@@ -176,11 +179,13 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
           }
         }
         if (200 <= code && code < 300) {
-          callback(code, response);
+          success(code, response);
+        } else if (isFunction(error)) {
+          error(code, response);
         } else {
           $error(
-            {method: method, url:url, data:post, callback:callback},
-            {status: code, body:response});
+            {method: method, url: url, data: post, success: success},
+            {status: code, body: response});
         }
       } catch (e) {
         $log.error(e);

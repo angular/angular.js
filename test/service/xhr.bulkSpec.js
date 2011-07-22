@@ -4,13 +4,11 @@ describe('$xhr.bulk', function() {
   var scope, $browser, $browserXhr, $log, $xhrBulk, $xhrError, log;
 
   beforeEach(function(){
-    scope = angular.scope({}, angular.service, {
-      '$xhr.error': $xhrError = jasmine.createSpy('$xhr.error'),
-      '$log': $log = {}
-    });
+    scope = angular.scope({}, null, {'$xhr.error': $xhrError = jasmine.createSpy('$xhr.error')});
     $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;
     $xhrBulk = scope.$service('$xhr.bulk');
+    $log = scope.$service('$log');
     log = '';
   });
 
@@ -60,12 +58,29 @@ describe('$xhr.bulk', function() {
     $browserXhr.flush();
 
     expect($xhrError).toHaveBeenCalled();
-    var cb = $xhrError.mostRecentCall.args[0].callback;
+    var cb = $xhrError.mostRecentCall.args[0].success;
     expect(typeof cb).toEqual($function);
     expect($xhrError).toHaveBeenCalledWith(
-        {url:'/req1', method:'GET', data:null, callback:cb},
-        {status:404, response:'NotFound'});
+        {url: '/req1', method: 'GET', data: null, success: cb},
+        {status: 404, response: 'NotFound'});
 
     expect(log).toEqual('"second";DONE');
+  });
+
+  it('should handle non 200 status code by calling error callback if provided', function() {
+    var callback = jasmine.createSpy('error');
+
+    $xhrBulk.urls['/'] = {match: /.*/};
+    $xhrBulk('GET', '/req1', null, noop, callback);
+
+    $browserXhr.expectPOST('/', {
+      requests:[{method: 'GET',  url: '/req1', data: null}]
+    }).respond([{status: 404, response: 'NotFound'}]);
+
+    $xhrBulk.flush();
+    $browserXhr.flush();
+
+    expect($xhrError).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalledWith(404, 'NotFound');
   });
 });

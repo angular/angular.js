@@ -1,10 +1,10 @@
 'use strict';
 
 describe('$xhr.cache', function() {
-  var scope, $browser, $browserXhr, cache, log;
+  var scope, $browser, $browserXhr, $xhrErr, cache, log;
 
-  beforeEach(function(){
-    scope = angular.scope();
+  beforeEach(function() {
+    scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('$xhr.error')});
     $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;
     cache = scope.$service('$xhr.cache');
@@ -142,5 +142,37 @@ describe('$xhr.cache', function() {
 
     $browser.defer.flush();
     expect(evalSpy).toHaveBeenCalled();
+  });
+
+  it('should call the error callback on error if provided', function() {
+    var errorSpy = jasmine.createSpy('error'),
+        successSpy = jasmine.createSpy('success');
+
+    $browserXhr.expectGET('/url').respond(500, 'error');
+
+    cache('GET', '/url', null, successSpy, errorSpy, false, true);
+    $browserXhr.flush();
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(successSpy).not.toHaveBeenCalled();
+
+    errorSpy.reset();
+    cache('GET', '/url', successSpy, errorSpy, false, true);
+    $browserXhr.flush();
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(successSpy).not.toHaveBeenCalled();
+  });
+
+  it('should call the $xhr.error on error if error callback not provided', function() {
+    var errorSpy = jasmine.createSpy('error'),
+        successSpy = jasmine.createSpy('success');
+
+    $browserXhr.expectGET('/url').respond(500, 'error');
+    cache('GET', '/url', null, successSpy, false, true);
+    $browserXhr.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect($xhrErr).toHaveBeenCalledWith(
+      {method: 'GET', url: '/url', data: null, success: successSpy},
+      {status: 500, body: 'error'});
   });
 });
