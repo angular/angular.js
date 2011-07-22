@@ -104,6 +104,8 @@
  *     {@link angular.service.$xhr.error} service.
  *   - {string|Object} response Response object as string or an Object if the response was in JSON
  *     format.
+ * @param {function(number, (string|Object))} error A function to be called in if the request
+ *   fails. Accepts the same arguments as callback, above.
  *
  * @example
    <doc:example>
@@ -158,9 +160,10 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
     patch: {}
   };
 
-  function xhr(method, url, post, callback){
+  function xhr(method, url, post, callback, error){
     if (isFunction(post)) {
       callback = post;
+      error = callback;
       post = null;
     }
     if (post && isObject(post)) {
@@ -178,6 +181,10 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
         if (200 <= code && code < 300) {
           callback(code, response);
         } else {
+          if (isFunction(error)) {
+            error(code, response);
+          }
+
           $error(
             {method: method, url:url, data:post, callback:callback},
             {status: code, body:response});

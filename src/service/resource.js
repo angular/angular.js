@@ -82,9 +82,9 @@
  *   The action methods on the class object or instance object can be invoked with the following
  *   parameters:
  *
- *   - HTTP GET "class" actions: `Resource.action([parameters], [callback])`
- *   - non-GET "class" actions: `Resource.action(postData, [parameters], [callback])`
- *   - non-GET instance actions:  `instance.$action([parameters], [callback])`
+ *   - HTTP GET "class" actions: `Resource.action([parameters], [callback], [error])`
+ *   - non-GET "class" actions: `Resource.action(postData, [parameters], [callback], [error])`
+ *   - non-GET instance actions:  `instance.$action([parameters], [callback], [error])`
  *
  *
  * @example

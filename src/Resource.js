@@ -67,10 +67,11 @@ ResourceFactory.prototype = {
 
     forEach(actions, function(action, name){
       var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
-      Resource[name] = function (a1, a2, a3) {
+      Resource[name] = function (a1, a2, a3, a4) {
         var params = {};
         var data;
         var callback = noop;
+        var error = null;
         switch(arguments.length) {
         case 3: callback = a3;
         case 2:
@@ -98,18 +99,21 @@ ResourceFactory.prototype = {
           route.url(extend({}, action.params || {}, extractParams(data), params)),
           data,
           function(status, response, clear) {
-            if (200 <= status && status < 300) {
-              if (response) {
-                if (action.isArray) {
-                  value.length = 0;
-                  forEach(response, function(item){
-                    value.push(new Resource(item));
-                  });
-                } else {
-                  copy(response, value);
-                }
+            if (response) {
+              if (action.isArray) {
+                value.length = 0;
+                forEach(response, function(item){
+                  value.push(new Resource(item));
+                });
+              } else {
+                copy(response, value);
               }
-              (callback||noop)(value);
+            }
+            (callback||noop)(value);
+          },
+          function(status, response, clear) {
+            if (error) {
+              error(status, response);
             } else {
               throw {status: status, response:response, message: status + ": " + response};
             }
