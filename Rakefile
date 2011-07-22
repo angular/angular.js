@@ -98,7 +98,7 @@ task :compile_scenario => :init do
   concat = 'cat ' + deps.flatten.join(' ')
 
   File.open(path_to('angular-scenario.js'), 'w') do |f|
-    f.write(%x{#{concat}})
+    f.write(%x{#{concat}}.gsub('"NG_VERSION_FULL"', NG_VERSION.full))
     f.write(gen_css('css/angular.css') + "\n")
     f.write(gen_css('css/angular-scenario.css'))
   end
@@ -116,7 +116,7 @@ task :compile_jstd_scenario_adapter => :init do
   concat = 'cat ' + deps.flatten.join(' ')
 
   File.open(path_to('jstd-scenario-adapter.js'), 'w') do |f|
-    f.write(%x{#{concat}})
+    f.write(%x{#{concat}}.gsub('"NG_VERSION_FULL"', NG_VERSION.full))
   end
 
   # TODO(vojta) use jstd configuration when implemented
