@@ -1,12 +1,11 @@
 'use strict';
 
 describe('$xhr', function() {
-  var scope, $browser, $browserXhr, $log, $xhr, log;
+  var scope, $browser, $browserXhr, $log, $xhr, $xhrErr, log;
 
   beforeEach(function(){
-    scope = angular.scope({}, angular.service, { '$log': $log = {
-        error: dump
-    } });
+    var scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
+    $log = scope.$service('$log');
     $browser = scope.$service('$browser');
     $browserXhr = $browser.xhr;
     $xhr = scope.$service('$xhr');
@@ -57,12 +56,11 @@ describe('$xhr', function() {
 
 
   it('should handle exceptions in callback', function(){
-    $log.error = jasmine.createSpy('$log.error');
     $browserXhr.expectGET('/reqGET').respond('first');
     $xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
     $browserXhr.flush();
 
-    expect($log.error).toHaveBeenCalledWith("MyException");
+    expect($log.error.logs.shift()).toContain('MyException');
   });
 
 
@@ -104,6 +102,38 @@ describe('$xhr', function() {
     expect(response).toEqual([1, 'abc', {foo:'bar'}]);
   });
 
+  it('should call $xhr.error on error if no error callback provided', function() {
+    var successSpy = jasmine.createSpy('success');
+
+    $browserXhr.expectGET('/url').respond(500, 'error');
+    $xhr('GET', '/url', null, successSpy);
+    $browserXhr.flush();
+
+    expect(successSpy).not.toHaveBeenCalled();
+    expect($xhrErr).toHaveBeenCalledWith(
+      {method: 'GET', url: '/url', data: null, success: successSpy},
+      {status: 500, body: 'error'}
+    );
+  });
+
+  it('should call the error callback on error if provided', function() {
+    var errorSpy = jasmine.createSpy('error'),
+        successSpy = jasmine.createSpy('success');
+
+    $browserXhr.expectGET('/url').respond(500, 'error');
+    $xhr('GET', '/url', null, successSpy, errorSpy);
+    $browserXhr.flush();
+
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(successSpy).not.toHaveBeenCalled();
+
+    errorSpy.reset();
+    $xhr('GET', '/url', successSpy, errorSpy);
+    $browserXhr.flush();
+
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(successSpy).not.toHaveBeenCalled();
+  });
 
   describe('http headers', function() {
 
