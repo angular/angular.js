@@ -146,6 +146,56 @@ angularFilter.number = function(number, fractionSize){
 };
 
 
+var PATTERN_SEP = ';',
+    DECIMAL_SEP = '.',
+    GROUP_SEP   = ',',
+    ZERO        = '0',
+    DIGIT       = '#';
+
+function parsePattern(pattern) {
+  var p = {
+      minInteger: 1,
+      minFraction: 0,
+      maxFraction: 0,
+      positiveSuffix: '',
+      negativeSuffix: ''
+  };
+
+  var parts = pattern.split(PATTERN_SEP),
+      positive = parts[0],
+      negative = parts[1];
+
+  var parts = positive.split(DECIMAL_SEP),
+      integer = parts[0],
+      fraction = parts[1];
+
+  p.positivePrefix = integer.substr(0, integer.indexOf(DIGIT));
+
+  for (var i = 0; i < fraction.length; i++) {
+    var ch = fraction.charAt(i);
+    if (ch == ZERO) p.minFraction = p.maxFraction = i + 1;
+    else if (ch == DIGIT) p.maxFraction = i + 1;
+    else p.positiveSuffix += ch;
+  }
+
+  var groups = integer.split(GROUP_SEP);
+  p.groupSize = groups[1].length;
+  p.lastGroupSize = (groups[2] || groups[1]).length;
+
+  if (negative) {
+    var trunkLen = positive.length - p.positivePrefix.length - p.positiveSuffix.length,
+        pos = negative.indexOf(DIGIT);
+
+    p.negativePrefix = negative.substr(0, pos).replace(/\'/g, '');
+    p.negativeSuffix = negative.substr(pos + trunkLen).replace(/\'/g, '');
+  } else {
+    p.negativePrefix = p.positivePrefix + '-';
+  }
+
+  return p;
+}
+
+
 function padNumber(num, digits, trim) {
   var neg = '';
   if (num < 0) {

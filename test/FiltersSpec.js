@@ -69,6 +69,57 @@ describe('filter', function() {
       expect(number(1234.567, 1)).toEqual("1,234.6");
       expect(number(1234.567, 2)).toEqual("1,234.57");
     });
+
+
+    describe('parsePattern', function() {
+      function parseAndExpect(pattern, pp, np, ps, ns, mii, mif, maf, g, lg) {
+        var p = parsePattern(pattern);
+
+        expect(p.positivePrefix).toEqual(pp);
+        expect(p.negativePrefix).toEqual(np);
+        expect(p.positiveSuffix).toEqual(ps);
+        expect(p.negativeSuffix).toEqual(ns);
+
+        expect(p.minInteger).toEqual(mii);
+        expect(p.minFraction).toEqual(mif);
+        expect(p.maxFraction).toEqual(maf);
+
+        expect(p.groupSize).toBe(g);
+        expect(p.lastGroupSize).toBe(lg);
+      }
+
+      it('should parse DECIMAL patterns', function() {
+        // all DECIMAL patterns from closure
+        parseAndExpect('#,##0.###', '', '-', '', '', 1, 0, 3, 3, 3);
+        parseAndExpect('#,##0.###;#,##0.###-', '', '', '', '-', 1, 0, 3, 3, 3);
+        parseAndExpect('#,##,##0.###', '', '-', '', '', 1, 0, 3, 2, 3);
+        parseAndExpect('#,##0.###;\'\u202A\'-#,##0.###\'\u202C\'',
+            '', '\u202A-', '', '\u202C', 1, 0, 3, 3, 3);
+      });
+
+      it('should parse CURRENCY patterns', function() {
+        // all CURRENCY patterns from closure
+        parseAndExpect('#,##0.00 \u00A4', '', '-', ' \u00A4', '', 1, 2, 2, 3, 3);
+        parseAndExpect('#,##0.00\u00A0\u00A4;\'\u202A\'-#,##0.00\'\u202C\'\u00A0\u00A4',
+                       '', '\u202A-', '\u00A0\u00A4', '\u202C\u00A0\u00A4', 1, 2, 2, 3, 3);
+        parseAndExpect('#,##0.00 \u00A4;(#,##0.00 \u00A4)',
+                       '', '(', ' \u00A4', ' \u00A4)', 1, 2, 2, 3, 3);
+        parseAndExpect('#,##,##0.00\u00A4', '', '-', '\u00A4', '', 1, 2, 2, 2, 3);
+        parseAndExpect('#,##,##0.00\u00A4;(#,##,##0.00\u00A4)',
+                       '', '(', '\u00A4', '\u00A4)', 1, 2, 2, 2, 3);
+        parseAndExpect('\u00A4#,##0.00', '\u00A4', '\u00A4-', '', '', 1, 2, 2, 3, 3);
+        parseAndExpect('\u00A4#,##0.00;(\u00A4#,##0.00)',
+                       '\u00A4', '(\u00A4', '', ')', 1, 2, 2, 3, 3);
+        parseAndExpect('\u00A4#,##0.00;\u00A4-#,##0.00',
+                       '\u00A4', '\u00A4-', '', '', 1, 2, 2, 3, 3);
+        parseAndExpect('\u00A4 #,##0.00', '\u00A4 ', '\u00A4 -', '', '', 1, 2, 2, 3, 3);
+        parseAndExpect('\u00A4 #,##0.00;\u00A4-#,##0.00',
+                       '\u00A4 ', '\u00A4-', '', '', 1, 2, 2, 3, 3);
+        parseAndExpect('\u00A4 #,##0.00;\u00A4 #,##0.00-',
+                       '\u00A4 ', '\u00A4 ', '', '-', 1, 2, 2, 3, 3);
+        parseAndExpect('\u00A4 #,##,##0.00', '\u00A4 ', '\u00A4 -', '', '', 1, 2, 2, 2, 3);
+      });
+    });
   });
 
   describe('json', function () {
