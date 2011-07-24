@@ -35,9 +35,11 @@
  * @function
  *
  * @description
- *   Formats a number as a currency (ie $1,234.56).
+ *   Formats a number as a currency (ie $1,234.56). When no currency symbol is given, default symbol
+ * for current locale is used. Otherwise, user provided currency symbol will be used.
  *
  * @param {number} amount Input to filter.
+ * @param {string=} symbol currency symbol to be displayed
  * @returns {string} Formated number.
  *
  * @css ng-format-negative
@@ -47,24 +49,28 @@
    <doc:example>
      <doc:source>
        <input type="text" name="amount" value="1234.56"/> <br/>
-       {{amount | currency}}
+       default symbol: {{amount | currency}}<br/>
+       user supplied symbol: {{amount | currency:"USD$"}}
      </doc:source>
      <doc:scenario>
        it('should init with 1234.56', function(){
          expect(binding('amount | currency')).toBe('$1,234.56');
+         expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
        });
        it('should update', function(){
          input('amount').enter('-1234');
-         expect(binding('amount | currency')).toBe('$-1,234.00');
+         expect(binding('amount | currency')).toBe('($1,234.00)');
+         expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
          expect(element('.doc-example-live .ng-binding').attr('className')).
-           toMatch(/ng-format-negative/);
+            toMatch(/ng-format-negative/);
        });
      </doc:scenario>
    </doc:example>
  */
-angularFilter.currency = function(amount){
+angularFilter.currency = function(amount, symbol){
   this.$element.toggleClass('ng-format-negative', amount < 0);
-  return '$' + angularFilter.number.apply(this, [amount, 2]);
+  if(!symbol) symbol = NUMBER_FORMATS.CURRENCY_SYM;
+  return angularFilter.number.apply(this, [amount, 2, 'CURRENCY_PATTERN', symbol]);
 };
 
 /**
@@ -92,58 +98,118 @@ angularFilter.currency = function(amount){
      </doc:source>
      <doc:scenario>
        it('should format numbers', function(){
-         expect(binding('val | number')).toBe('1,234.57');
+         expect(binding('val | number')).toBe('1,234.568');
          expect(binding('val | number:0')).toBe('1,235');
          expect(binding('-val | number:4')).toBe('-1,234.5679');
        });
 
        it('should update', function(){
          input('val').enter('3374.333');
-         expect(binding('val | number')).toBe('3,374.33');
+         expect(binding('val | number')).toBe('3,374.333');
          expect(binding('val | number:0')).toBe('3,374');
          expect(binding('-val | number:4')).toBe('-3,374.3330');
        });
      </doc:scenario>
    </doc:example>
  */
-angularFilter.number = function(number, fractionSize){
+var PROCESSED_PATTERN = {};
+var NUMBER_FORMATS = {
+     DECIMAL_SEP: '.',
+     GROUP_SEP: ',',
+     MINUS_SIGN: '-',
+     DECIMAL_PATTERN: '#,##0.###',
+     CURRENCY_PATTERN:"\u00A4#,##0.00;(\u00A4#,##0.00)",
+     CURRENCY_SYM:"$",
+};
+
+angularFilter.number = function(number, fractionSize, type, symbol) {
   if (isNaN(number) || !isFinite(number)) {
     return '';
   }
-  fractionSize = isUndefined(fractionSize)? 2 : fractionSize;
+  var isNegative = number < 0.0;
+  if(!type) type = 'DECIMAL_PATTERN';
+  var pattern = PROCESSED_PATTERN[type] ? PROCESSED_PATTERN[type] :
+                         PROCESSED_PATTERN[type] = parsePattern(NUMBER_FORMATS[type]);
 
-  var isNegative = number < 0,
-      pow = Math.pow(10, fractionSize),
-      whole = '' + number,
-      formatedText = '',
-      i, fraction;
+  var numStr = number + '',
+      formatedText = "",
+      parts = [];
 
-  if (whole.indexOf('e') > -1) return whole;
+  if(numStr.indexOf('e') !== -1) {
+    var formatedText = isNegative ? numStr.substring(1) : numStr;
+  } else {
+    var fraction = numStr.split('.')[1] || "";
 
-  number = Math.round(number * pow) / pow;
-  fraction = ('' + number).split('.');
-  whole = fraction[0];
-  fraction = fraction[1] || '';
-  if (isNegative) {
-    formatedText = '-';
-    whole = whole.substring(1);
-  }
-
-
-  for (i = 0; i < whole.length; i++) {
-    if ((whole.length - i)%3 === 0 && i !== 0) {
-      formatedText += ',';
+    //determine fractionSize if it is not specified
+    if(isUndefined(fractionSize)) {
+      if( fraction.length > pattern.maxFraction) {
+        fractionSize = pattern.maxFraction;
+      } else if(fraction.length < pattern.minFraction){
+        fractionSize = pattern.minFraction;
+      } else {
+        fractionSize = fraction.length;
+      }
     }
-    formatedText += whole.charAt(i);
-  }
-  if (fractionSize) {
+
+    var pow = Math.pow(10, fractionSize);
+    number = Math.round(number * pow) / pow;
+    fraction = ('' + number).split('.');
+    var whole = fraction[0];
+    fraction = fraction[1] || '';
+
+    if (isNegative) {
+      whole = whole.substring(1);
+    }
+
+   var pos  = 0,
+       lgroup  = pattern.lastGroupSize,
+       group = pattern.groupSize;
+
+    if(whole.length >= (lgroup + group)) {
+      pos = whole.length - lgroup;
+      for (i = 0; i < pos; i++) {
+        if ((pos - i)%group === 0 && i !== 0) {
+          formatedText += ',';
+        }
+        formatedText += whole.charAt(i);
+      }
+    }
+
+    for ( var i = pos; i < whole.length; i++) {
+      if ((whole.length - i)%lgroup === 0 && i !== 0) {
+        formatedText += ',';
+      }
+      formatedText += whole.charAt(i);
+    }
+
+    // format fraction part.
     while(fraction.length < fractionSize) {
       fraction += '0';
     }
-    formatedText += '.' + fraction.substring(0, fractionSize);
+    if(fractionSize) formatedText += '.' + fraction.substring(0, fractionSize);
   }
-  return formatedText;
-};
+
+  // replace currency symbol placeholder with actual symbols
+  var nPrefix = '',
+     nSuffix = '',
+     prefix = '',
+     suffix = '';
+
+  if(!symbol) symbol = '';
+  if(isNegative) {
+    nPrefix = pattern.negativePrefix.replace(/\u00A4/g, symbol);
+    nSuffix = pattern.negativeSuffix.replace(/\u00A4/g, symbol);
+  } else {
+    prefix = pattern.positivePrefix.replace(/\u00A4/g, symbol);
+    suffix = pattern.positiveSuffix.replace(/\u00A4/g, symbol);
+  }
+
+  parts.push(isNegative ? nPrefix : prefix);
+  parts.push(formatedText);
+  parts.push(isNegative ? nSuffix : suffix);
+
+  return parts.join('');
+}
 
 
 var PATTERN_SEP = ';',
