@@ -35,9 +35,11 @@
  * @function
  *
  * @description
- *   Formats a number as a currency (ie $1,234.56).
+ * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
+ * symbol for current locale is used.
  *
  * @param {number} amount Input to filter.
+ * @param {string=} symbol Currency symbol or identifier to be displayed.
  * @returns {string} Formated number.
  *
  * @css ng-format-negative
@@ -47,24 +49,28 @@
    <doc:example>
      <doc:source>
        <input type="text" name="amount" value="1234.56"/> <br/>
-       {{amount | currency}}
+       default currency symbol ($): {{amount | currency}}<br/>
+       custom currency identifier (USD$): {{amount | currency:"USD$"}}
      </doc:source>
      <doc:scenario>
        it('should init with 1234.56', function(){
          expect(binding('amount | currency')).toBe('$1,234.56');
+         expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
        });
        it('should update', function(){
          input('amount').enter('-1234');
-         expect(binding('amount | currency')).toBe('$-1,234.00');
+         expect(binding('amount | currency')).toBe('($1,234.00)');
+         expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
          expect(element('.doc-example-live .ng-binding').attr('className')).
            toMatch(/ng-format-negative/);
        });
      </doc:scenario>
    </doc:example>
  */
-angularFilter.currency = function(amount){
+angularFilter.currency = function(amount, currencySymbol){
   this.$element.toggleClass('ng-format-negative', amount < 0);
-  return '$' + angularFilter.number.apply(this, [amount, 2]);
+  if (isUndefined(currencySymbol)) currencySymbol = NUMBER_FORMATS.CURRENCY_SYM;
+  return formatNumber(amount, 2, 1).replace(/\u00A4/g, currencySymbol);
 };
 
 /**
@@ -74,9 +80,9 @@ angularFilter.currency = function(amount){
  * @function
  *
  * @description
- *   Formats a number as text.
+ * Formats a number as text.
  *
- *   If the input is not a number empty string is returned.
+ * If the input is not a number empty string is returned.
  *
  * @param {number|string} number Number to format.
  * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
@@ -92,59 +98,104 @@ angularFilter.currency = function(amount){
      </doc:source>
      <doc:scenario>
        it('should format numbers', function(){
-         expect(binding('val | number')).toBe('1,234.57');
+         expect(binding('val | number')).toBe('1,234.568');
          expect(binding('val | number:0')).toBe('1,235');
          expect(binding('-val | number:4')).toBe('-1,234.5679');
        });
 
        it('should update', function(){
          input('val').enter('3374.333');
-         expect(binding('val | number')).toBe('3,374.33');
+         expect(binding('val | number')).toBe('3,374.333');
          expect(binding('val | number:0')).toBe('3,374');
          expect(binding('-val | number:4')).toBe('-3,374.3330');
        });
      </doc:scenario>
    </doc:example>
  */
-angularFilter.number = function(number, fractionSize){
-  if (isNaN(number) || !isFinite(number)) {
-    return '';
-  }
-  fractionSize = isUndefined(fractionSize)? 2 : fractionSize;
 
+// PATTERNS[0] is an array for Decimal Pattern, PATTERNS[1] is an array Currency Pattern
+// Following is the order in each pattern array:
+// 0: minInteger,
+// 1: minFraction,
+// 2: maxFraction,
+// 3: positivePrefix,
+// 4: positiveSuffix,
+// 5: negativePrefix,
+// 6: negativeSuffix,
+// 7: groupSize,
+// 8: lastGroupSize
+var NUMBER_FORMATS = {
+      DECIMAL_SEP: '.',
+      GROUP_SEP: ',',
+      PATTERNS: [[1, 0, 3, '', '', '-', '', 3, 3],[1, 2, 2, '\u00A4', '', '(\u00A4', ')', 3, 3]],
+      CURRENCY_SYM: '$'
+};
+var DECIMAL_SEP = '.';
+
+angularFilter.number = function(number, fractionSize) {
+  if (isNaN(number) || !isFinite(number)) return '';
+  return formatNumber(number, fractionSize, 0);
+}
+
+function formatNumber(number, fractionSize, type) {
   var isNegative = number < 0,
-      pow = Math.pow(10, fractionSize),
-      whole = '' + number,
+      type = type || 0, // 0 is decimal pattern, 1 is currency pattern
+      pattern = NUMBER_FORMATS.PATTERNS[type];
+
+  number = Math.abs(number);
+  var numStr =  number + '',
       formatedText = '',
-      i, fraction;
+      parts = [];
 
-  if (whole.indexOf('e') > -1) return whole;
+  if (numStr.indexOf('e') !== -1) {
+    var formatedText = numStr;
+  } else {
+    var fractionLen = (numStr.split(DECIMAL_SEP)[1] || '').length;
 
-  number = Math.round(number * pow) / pow;
-  fraction = ('' + number).split('.');
-  whole = fraction[0];
-  fraction = fraction[1] || '';
-  if (isNegative) {
-    formatedText = '-';
-    whole = whole.substring(1);
-  }
-
-
-  for (i = 0; i < whole.length; i++) {
-    if ((whole.length - i)%3 === 0 && i !== 0) {
-      formatedText += ',';
+    //determine fractionSize if it is not specified
+    if (isUndefined(fractionSize)) {
+      fractionSize = Math.min(Math.max(pattern[1], fractionLen), pattern[2]);
     }
-    formatedText += whole.charAt(i);
-  }
-  if (fractionSize) {
+
+    var pow = Math.pow(10, fractionSize);
+    number = Math.round(number * pow) / pow;
+    var fraction = ('' + number).split(DECIMAL_SEP);
+    var whole = fraction[0];
+    fraction = fraction[1] || '';
+
+    var pos = 0,
+        lgroup = pattern[8],
+        group = pattern[7];
+
+    if (whole.length >= (lgroup + group)) {
+      pos = whole.length - lgroup;
+      for (var i = 0; i < pos; i++) {
+        if ((pos - i)%group === 0 && i !== 0) {
+          formatedText += NUMBER_FORMATS.GROUP_SEP;
+        }
+        formatedText += whole.charAt(i);
+      }
+    }
+
+    for (i = pos; i < whole.length; i++) {
+      if ((whole.length - i)%lgroup === 0 && i !== 0) {
+        formatedText += NUMBER_FORMATS.GROUP_SEP;
+      }
+      formatedText += whole.charAt(i);
+    }
+
+    // format fraction part.
     while(fraction.length < fractionSize) {
       fraction += '0';
     }
-    formatedText += '.' + fraction.substring(0, fractionSize);
+    if (fractionSize) formatedText += NUMBER_FORMATS.DECIMAL_SEP + fraction.substr(0, fractionSize);
   }
-  return formatedText;
-};
 
+  parts.push(isNegative ? pattern[5] : pattern[3]);
+  parts.push(formatedText);
+  parts.push(isNegative ? pattern[6] : pattern[4]);
+  return parts.join('');
+}
 
 function padNumber(num, digits, trim) {
   var neg = '';
