@@ -28,16 +28,16 @@ describe('filter', function() {
   });
 
   describe('currency', function() {
-    it('should do basic filter', function() {
+    it('should do basic currency filtering', function() {
       var html = jqLite('<span/>');
       var context = {$element:html};
       var currency = bind(context, filter.currency);
 
       expect(currency(0)).toEqual('$0.00');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
-      expect(currency(-999)).toEqual('$-999.00');
+      expect(currency(-999)).toEqual('($999.00)');
       expect(html.hasClass('ng-format-negative')).toBeTruthy();
-      expect(currency(1234.5678)).toEqual('$1,234.57');
+      expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
   });
@@ -46,13 +46,14 @@ describe('filter', function() {
     it('should do basic filter', function() {
       var context = {jqElement:jqLite('<span/>')};
       var number = bind(context, filter.number);
-
       expect(number(0, 0)).toEqual('0');
-      expect(number(0)).toEqual('0.00');
-      expect(number(-999)).toEqual('-999.00');
-      expect(number(1234.5678)).toEqual('1,234.57');
+      expect(number(-999)).toEqual('-999');
+      expect(number(123)).toEqual('123');
+      expect(number(1234567)).toEqual('1,234,567');
+      expect(number(1234)).toEqual('1,234');
+      expect(number(1234.5678)).toEqual('1,234.568');
       expect(number(Number.NaN)).toEqual('');
-      expect(number("1234.5678")).toEqual('1,234.57');
+      expect(number("1234.5678")).toEqual('1,234.568');
       expect(number(1/0)).toEqual("");
       expect(number(1,        2)).toEqual("1.00");
       expect(number(.1,       2)).toEqual("0.10");
@@ -64,10 +65,16 @@ describe('filter', function() {
       expect(number(.99,      2)).toEqual("0.99");
       expect(number(.999,     3)).toEqual("0.999");
       expect(number(.9999,    3)).toEqual("1.000");
-      expect(number(1e50,     0)).toEqual("1e+50");
       expect(number(1234.567, 0)).toEqual("1,235");
       expect(number(1234.567, 1)).toEqual("1,234.6");
       expect(number(1234.567, 2)).toEqual("1,234.57");
+    });
+
+    it('should filter exponential numbers', function() {
+      var context = {jqElement:jqLite('<span/>')};
+      var number = bind(context, filter.number);
+      expect(number(1e50, 0)).toEqual('1e+50');
+      expect(number(-2e50, 2)).toEqual('-2e+50');
     });
   });
 
