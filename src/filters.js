@@ -29,13 +29,12 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.currency
  * @function
  *
  * @description
- * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default 
+ * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default
  * symbol for current locale is used.
  *
  * @param {number} amount Input to filter.
@@ -69,20 +68,19 @@
  */
 angularFilter.currency = function(amount, currencySymbol){
   this.$element.toggleClass('ng-format-negative', amount < 0);
-  if (!currencySymbol) currencySymbol = NUMBER_FORMATS.CURRENCY_SYM;
-  return angularFilter.number.call(this, amount, 2, currencySymbol);
+  if (isUndefined(currencySymbol)) currencySymbol = NUMBER_FORMATS.CURRENCY_SYM;
+  return formatNumber(amount, 2, 1).replace(/\u00A4/g, currencySymbol);
 };
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.number
  * @function
  *
  * @description
- *   Formats a number as text.
+ * Formats a number as text.
  *
- *   If the input is not a number empty string is returned.
+ * If the input is not a number empty string is returned.
  *
  * @param {number|string} number Number to format.
  * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
@@ -112,65 +110,67 @@ angularFilter.currency = function(amount, currencySymbol){
      </doc:scenario>
    </doc:example>
  */
-var PROCESSED_PATTERN = {};
+
+// PATTERNS[0] is an array for Decimal Pattern, PATTERNS[1] is an array Currency Pattern
+// Following is the order in each pattern array:
+// 0: minInteger,
+// 1: minFraction,
+// 2: maxFraction,
+// 3: positivePrefix,
+// 4: positiveSuffix,
+// 5: negativePrefix,
+// 6: negativeSuffix,
+// 7: groupSize,
+// 8: lastGroupSize
 var NUMBER_FORMATS = {
-     DECIMAL_SEP: '.',
-     GROUP_SEP: ',',
-     MINUS_SIGN: '-',
-     DECIMAL_PATTERN: '#,##0.###',
-     CURRENCY_PATTERN:"\u00A4#,##0.00;(\u00A4#,##0.00)",
-     CURRENCY_SYM:"$",
+      DECIMAL_SEP: '.',
+      GROUP_SEP: ',',
+      PATTERNS: [[1, 0, 3, '', '', '-', '', 3, 3],[1, 2, 2, '\u00A4', '', '(\u00A4', ')', 3, 3]],
+      CURRENCY_SYM: '$'
 };
+var DECIMAL_SEP = '.';
 
-angularFilter.number = function(number, fractionSize, currencySymbol) {
-  if (isNaN(number) || !isFinite(number)) {
-    return '';
-  }
+angularFilter.number = function(number, fractionSize) {
+  if (isNaN(number) || !isFinite(number)) return '';
+  return formatNumber(number, fractionSize, 0);
+}
 
-  var isNegative = number < 0;
-  var type = currencySymbol ? 'CURRENCY_PATTERN' : 'DECIMAL_PATTERN';
-  var pattern = PROCESSED_PATTERN[type] ||
-                (PROCESSED_PATTERN[type] = parsePattern(NUMBER_FORMATS[type]));
 
-  var numStr = number + '',
-      formatedText = "",
+function formatNumber(number, fractionSize, type) {
+  var isNegative = number < 0,
+      type = type || 0, // 0 is decimal pattern, 1 is currency pattern
+      pattern = NUMBER_FORMATS.PATTERNS[type];
+
+  number = Math.abs(number);
+  var numStr =  number + '',
+      formatedText = '',
       parts = [];
 
   if (numStr.indexOf('e') !== -1) {
-    var formatedText = isNegative ? numStr.substr(1) : numStr;
+    var formatedText = numStr;
   } else {
-    var fraction = numStr.split('.')[1] || "";
+    var fractionLen = (numStr.split(DECIMAL_SEP)[1] || '').length;
 
     //determine fractionSize if it is not specified
     if (isUndefined(fractionSize)) {
-      if ( fraction.length > pattern.maxFraction) {
-        fractionSize = pattern.maxFraction;
-      } else if (fraction.length < pattern.minFraction){
-        fractionSize = pattern.minFraction;
-      } else {
-        fractionSize = fraction.length;
-      }
+      fractionSize = Math.min(Math.max(pattern[1], fractionLen), pattern[2]);
     }
 
     var pow = Math.pow(10, fractionSize);
     number = Math.round(number * pow) / pow;
-    fraction = ('' + number).split('.');
+    var fraction = ('' + number).split(DECIMAL_SEP);
     var whole = fraction[0];
     fraction = fraction[1] || '';
 
-    if (isNegative) {
-      whole = whole.substr(1);
-    }
-
-   var pos = 0,
-       lgroup = pattern.lastGroupSize,
-       group = pattern.groupSize;
+    var pos = 0,
+        lgroup = pattern[8],
+        group = pattern[7];
 
     if (whole.length >= (lgroup + group)) {
       pos = whole.length - lgroup;
       for (var i = 0; i < pos; i++) {
         if ((pos - i)%group === 0 && i !== 0) {
-          formatedText += ',';
+          formatedText += NUMBER_FORMATS.GROUP_SEP;
         }
         formatedText += whole.charAt(i);
       }
@@ -178,85 +178,22 @@ angularFilter.number = function(number, fractionSize, currencySymbol) {
 
     for (i = pos; i < whole.length; i++) {
       if ((whole.length - i)%lgroup === 0 && i !== 0) {
-        formatedText += ',';
+        formatedText += NUMBER_FORMATS.GROUP_SEP;
       }
       formatedText += whole.charAt(i);
     }
 
     // format fraction part.
-    while (fraction.length < fractionSize) {
+    while(fraction.length < fractionSize) {
       fraction += '0';
     }
-    if (fractionSize) formatedText += '.' + fraction.substr(0, fractionSize);
+    if (fractionSize) formatedText += NUMBER_FORMATS.DECIMAL_SEP + fraction.substr(0, fractionSize);
   }
 
-  // replace currency symbol placeholder with actual symbols
-  var nPrefix, nSuffix, prefix, suffix;
-
-  currencySymbol = currencySymbol || '';
-  if (isNegative) {
-    nPrefix = pattern.negativePrefix.replace(/\u00A4/g, currencySymbol);
-    nSuffix = pattern.negativeSuffix.replace(/\u00A4/g, currencySymbol);
-  } else {
-    prefix = pattern.positivePrefix.replace(/\u00A4/g, currencySymbol);
-    suffix = pattern.positiveSuffix.replace(/\u00A4/g, currencySymbol);
-  }
-
-  parts.push(isNegative ? nPrefix : prefix);
+  parts.push(isNegative ? pattern[5] : pattern[3]);
   parts.push(formatedText);
-  parts.push(isNegative ? nSuffix : suffix);
-
+  parts.push(isNegative ? pattern[6] : pattern[4]);
   return parts.join('');
-}
-
-
-var PATTERN_SEP = ';',
-    DECIMAL_SEP = '.',
-    GROUP_SEP   = ',',
-    ZERO        = '0',
-    DIGIT       = '#';
-
-function parsePattern(pattern) {
-  var p = {
-      minInteger: 1,
-      minFraction: 0,
-      maxFraction: 0,
-      positiveSuffix: '',
-      negativeSuffix: ''
-  };
-
-  var parts = pattern.split(PATTERN_SEP),
-      positive = parts[0],
-      negative = parts[1];
-
-  var parts = positive.split(DECIMAL_SEP),
-      integer = parts[0],
-      fraction = parts[1];
-
-  p.positivePrefix = integer.substr(0, integer.indexOf(DIGIT));
-
-  for (var i = 0; i < fraction.length; i++) {
-    var ch = fraction.charAt(i);
-    if (ch == ZERO) p.minFraction = p.maxFraction = i + 1;
-    else if (ch == DIGIT) p.maxFraction = i + 1;
-    else p.positiveSuffix += ch;
-  }
-
-  var groups = integer.split(GROUP_SEP);
-  p.groupSize = groups[1].length;
-  p.lastGroupSize = (groups[2] || groups[1]).length;
-
-  if (negative) {
-    var trunkLen = positive.length - p.positivePrefix.length - p.positiveSuffix.length,
-        pos = negative.indexOf(DIGIT);
-
-    p.negativePrefix = negative.substr(0, pos).replace(/\'/g, '');
-    p.negativeSuffix = negative.substr(pos + trunkLen).replace(/\'/g, '');
-  } else {
-    p.negativePrefix = p.positivePrefix + '-';
-  }
-
-  return p;
 }
 
 
