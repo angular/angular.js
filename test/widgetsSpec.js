@@ -594,13 +594,18 @@ describe("widget", function(){
     };
 
     function createSingleSelect(blank, unknown){
-      createSelect({name:'selected', 'ng:options':'value.name for value in values'},
-          blank, unknown);
+      createSelect({
+        'name':'selected',
+        'ng:options':'value.name for value in values'
+      }, blank, unknown);
     };
 
     function createMultiSelect(blank, unknown){
-      createSelect({name:'selected', multiple:true, 'ng:options':'value.name for value in values'},
-          blank, unknown);
+      createSelect({
+        'name':'selected',
+        'multiple':true,
+        'ng:options':'value.name for value in values'
+      }, blank, unknown);
     };
 
     afterEach(function(){
@@ -611,9 +616,8 @@ describe("widget", function(){
     it('should throw when not formated "? for ? in ?"', function(){
       expect(function(){
         compile('<select name="selected" ng:options="i dont parse"></select>');
-      }).toThrow("Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got 'i dont parse'.");
-
-      $logMock.error.logs.shift();
+      }).toThrow("Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
+                 " _collection_' but got 'i dont parse'.");
     });
 
     it('should render a list', function(){
@@ -630,7 +634,7 @@ describe("widget", function(){
 
     it('should render an object', function(){
       createSelect({
-        name:'selected',
+        'name':'selected',
         'ng:options': 'value as key for (key, value) in object'
       });
       scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
@@ -762,8 +766,9 @@ describe("widget", function(){
 
       it('should bind to scope value and group', function(){
         createSelect({
-          name:'selected',
-          'ng:options':'item.name group by item.group for item in values'});
+          'name':'selected',
+          'ng:options':'item.name group by item.group for item in values'
+        });
         scope.values = [{name:'A'},
                         {name:'B', group:'first'},
                         {name:'C', group:'second'},
@@ -793,7 +798,7 @@ describe("widget", function(){
       });
 
       it('should bind to scope value through experession', function(){
-        createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
+        createSelect({'name':'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
         scope.selected = scope.values[0].id;
         scope.$eval();
@@ -806,8 +811,9 @@ describe("widget", function(){
 
       it('should bind to object key', function(){
         createSelect({
-          name:'selected',
-          'ng:options':'key as value for (key, value) in object'});
+          'name':'selected',
+          'ng:options':'key as value for (key, value) in object'
+        });
         scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
         scope.selected = 'green';
         scope.$eval();
@@ -821,7 +827,8 @@ describe("widget", function(){
       it('should bind to object value', function(){
         createSelect({
           name:'selected',
-          'ng:options':'value as key for (key, value) in object'});
+          'ng:options':'value as key for (key, value) in object'
+        });
         scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
         scope.selected = '00FF00';
         scope.$eval();
@@ -862,7 +869,7 @@ describe("widget", function(){
         expect(select.find('option').length).toEqual(2);
       });
 
-      it('should insert a unknown option if bound to not in list', function(){
+      it('should insert a unknown option if bound to something not in the list', function(){
         createSingleSelect();
         scope.values = [{name:'A'}];
         scope.selected = {};
@@ -895,7 +902,8 @@ describe("widget", function(){
         createSelect({
           name:'selected',
           'ng:options':'value for value in values',
-          'ng:change':'count = count + 1'});
+          'ng:change':'count = count + 1'
+        });
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
         scope.count = 0;

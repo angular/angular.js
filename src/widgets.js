@@ -21,7 +21,8 @@
  *   elements.
  * * {@link angular.widget.@ng:required ng:required} - Verifies presence of user input.
  * * {@link angular.widget.@ng:validate ng:validate} - Validates content of user input.
- * * {@link angular.widget.HTML HTML} - Standard HTML processed by angular.
+ * * {@link angular.widget.HTML HTML input elements} - Standard HTML input elements data-bound by
+ *   angular.
  * * {@link angular.widget.ng:view ng:view} - Works with $route to "include" partial templates
  * * {@link angular.widget.ng:switch ng:switch} - Conditionally changes DOM structure
  * * {@link angular.widget.ng:include ng:include} - Includes an external HTML fragment
@@ -574,11 +575,12 @@ angularWidget('button', inputWidgetSelector);
  * @name angular.directive.ng:options
  *
  * @description
- * Dynamically generate a list of `<option>` elements for a `<select>` element using the array
- * obtained by evaluating the `ng:options` expression.
+ * Dynamically generate a list of `<option>` elements for a `<select>` element using an array or
+ * an object obtained by evaluating the `ng:options` expression.
  *
- * When an item in the select menu is select, the array element represented by the selected option
- * will be bound to the model identified by the `name` attribute of the parent select element.
+ * When an item in the select menu is select, the value of array element or object property
+ * represented by the selected option will be bound to the model identified by the `name` attribute
+ * of the parent select element.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent `null` or "not selected"
@@ -596,29 +598,32 @@ angularWidget('button', inputWidgetSelector);
  *   * binding to a value not in list confuses most browsers.
  *
  * @element select
- * @param {comprehension_expression} comprehension in following form
+ * @param {comprehension_expression} comprehension in one of the following forms:
  *
- *   * _label_ `for` _value_ `in` _array_
- *   * _select_ `as` _label_ `for` _value_ `in` _array_
- *   * _select_ `as` _label_ `group by` _group_ `for` _value_ `in` _array_
- *   * _select_  `group by` _group_ `for` _value_ `in` _array_
- *   * _label_ `for` `(`_key_`,` _value_`)` `in` _object_
- *   * _select_ `as` _label_ `for` `(`_key_`,` _value_`)` `in` _object_
- *   * _select_ `as` _label_ `group by` _group_ `for` `(`_key_`,` _value_`)` `in` _object_
- *   * _select_ `group by` _group_ `for` `(`_key_`,` _value_`)` `in` _object_
+ *   * for array data sources:
+ *     * `label` **`for`** `value` **`in`** `array`
+ *     * `select` **`as`** `label` **`for`** `value` **`in`** `array`
+ *     * `label`  **`group by`** `group` **`for`** `value` **`in`** `array`
+ *     * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array`
+ *   * for object data sources:
+ *     * `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
+ *     * `select` **`as`** `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
+ *     * `label` **`group by`** `group` **`for (`**`key`**`,`** `value`**`) in`** `object`
+ *     * `select` **`as`** `label` **`group by`** `group`
+ *         **`for` `(`**`key`**`,`** `value`**`) in`** `object`
  *
  * Where:
  *
- *   * _array_ / _object_: an expression which evaluates to an array / object to iterate over.
- *   * _value_: local variable which will refer to each item in the _array_ or each value of
- *      _object_ during itteration.
- *   * _key_: local variable which will refer to the key in the _object_ during the iteration.
- *   * _label_: The result of this expression will be the `option` label. The
- *        `expression` will most likely refer to the _value_ variable.
- *   * _select_: The result of this expression will be bound to the scope. If not specified,
- *      _select_ expression will default to _value_.
- *   * _group_: The result of this expression will be used to group options using the `optgroup`
- *       DOM element.
+ *   * `array` / `object`: an expression which evaluates to an array / object to iterate over.
+ *   * `value`: local variable which will refer to each item in the `array` or each property value
+ *      of `object` during iteration.
+ *   * `key`: local variable which will refer to a property name in `object` during iteration.
+ *   * `label`: The result of this expression will be the label for `<option>` element. The
+ *     `expression` will most likely refer to the `value` variable (e.g. `value.propertyName`).
+ *   * `select`: The result of this expression will be bound to the model of the parent `<select>`
+ *      element. If not specified, `select` expression will default to `value`.
+ *   * `group`: The result of this expression will be used to group options using the `<optgroup>`
+ *      DOM element.
  *
  * @example
     <doc:example>
@@ -626,11 +631,11 @@ angularWidget('button', inputWidgetSelector);
         <script>
         function MyCntrl(){
           this.colors = [
-            {name:'black'},
-            {name:'white'},
-            {name:'red'},
-            {name:'blue'},
-            {name:'green'}
+            {name:'black', shade:'dark'},
+            {name:'white', shade:'light'},
+            {name:'red', shade:'dark'},
+            {name:'blue', shade:'dark'},
+            {name:'yellow', shade:'light'}
           ];
           this.color = this.colors[2]; // red
         }
@@ -638,7 +643,8 @@ angularWidget('button', inputWidgetSelector);
         <div ng:controller="MyCntrl">
           <ul>
             <li ng:repeat="color in colors">
-              Name: <input name="color.name"/> [<a href ng:click="colors.$remove(color)">X</a>]
+              Name: <input name="color.name">
+              [<a href ng:click="colors.$remove(color)">X</a>]
             </li>
             <li>
               [<a href ng:click="colors.push({})">add</a>]
@@ -646,19 +652,25 @@ angularWidget('button', inputWidgetSelector);
           </ul>
           <hr/>
           Color (null not allowed):
-          <select name="color" ng:options="c.name for c in colors"></select><br/>
+          <select name="color" ng:options="c.name for c in colors"></select><br>
 
           Color (null allowed):
-          <select name="color" ng:options="c.name for c in colors">
-            <option value="">-- chose color --</option>
+          <div  class="nullable">
+            <select name="color" ng:options="c.name for c in colors">
+              <option value="">-- chose color --</option>
+            </select>
+          </div><br/>
+
+          Color grouped by shade:
+          <select name="color" ng:options="c.name group by c.shade for c in colors">
           </select><br/>
 
-          Select <a href ng:click="color={name:'not in list'}">bogus</a>. <br/>
+
+          Select <a href ng:click="color={name:'not in list'}">bogus</a>.<br>
           <hr/>
           Currently selected: {{ {selected_color:color}  }}
-          <div style="border:solid 1px black;"
+          <div style="border:solid 1px black; height:20px"
                ng:style="{'background-color':color.name}">
-             &nbsp;
           </div>
         </div>
       </doc:source>
@@ -667,7 +679,7 @@ angularWidget('button', inputWidgetSelector);
            expect(binding('color')).toMatch('red');
            select('color').option('0');
            expect(binding('color')).toMatch('black');
-           select('color').option('');
+           using('.nullable').select('color').option('');
            expect(binding('color')).toMatch('null');
          });
       </doc:scenario>
@@ -678,37 +690,41 @@ var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+
 angularWidget('select', function(element){
   this.descend(true);
   this.directives(true);
-  var isMultiselect = element.attr('multiple');
-  var expression = element.attr('ng:options');
-  var onChange = expressionCompile(element.attr('ng:change') || "").fnSelf;
-  var match;
+
+  var isMultiselect = element.attr('multiple'),
+      expression = element.attr('ng:options'),
+      onChange = expressionCompile(element.attr('ng:change') || "").fnSelf,
+      match;
+
   if (!expression) {
     return inputWidgetSelector.call(this, element);
   }
   if (! (match = expression.match(NG_OPTIONS_REGEXP))) {
     throw Error(
-        "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_' but got '" +
-        expression + "'.");
+      "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+      " but got '" + expression + "'.");
   }
-  var displayFn = expressionCompile(match[2] || match[1]).fnSelf;
-  var valueName = match[4] || match[6];
-  var keyName = match[5];
-  var groupByFn = expressionCompile(match[3] || '').fnSelf;
-  var valueFn = expressionCompile(match[2] ? match[1] : valueName).fnSelf;
-  var valuesFn = expressionCompile(match[7]).fnSelf;
-  // we can't just jqLite('<option>') since jqLite is not smart enough
-  // to create it in <select> and IE barfs otherwise.
-  var optionTemplate = jqLite(document.createElement('option'));
-  var optGroupTemplate = jqLite(document.createElement('optgroup'));
-  var nullOption = false; // if false then user will not be able to select it
+
+  var displayFn = expressionCompile(match[2] || match[1]).fnSelf,
+      valueName = match[4] || match[6],
+      keyName = match[5],
+      groupByFn = expressionCompile(match[3] || '').fnSelf,
+      valueFn = expressionCompile(match[2] ? match[1] : valueName).fnSelf,
+      valuesFn = expressionCompile(match[7]).fnSelf,
+      // we can't just jqLite('<option>') since jqLite is not smart enough
+      // to create it in <select> and IE barfs otherwise.
+      optionTemplate = jqLite(document.createElement('option')),
+      optGroupTemplate = jqLite(document.createElement('optgroup')),
+      nullOption = false; // if false then user will not be able to select it
+
   return function(selectElement){
-    var scope = this;
 
     // This is an array of array of existing option groups in DOM. We try to reuse these if possible
     // optionGroupsCache[0] is the options with no option group
     // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-    var optionGroupsCache = [[{element: selectElement, label:''}]];
-    var model = modelAccessor(scope, element);
+    var optionGroupsCache = [[{element: selectElement, label:''}]],
+        scope = this,
+        model = modelAccessor(scope, element);
 
     // find existing special options
     forEach(selectElement.children(), function(option){
@@ -719,13 +735,12 @@ angularWidget('select', function(element){
     selectElement.html(''); // clear contents
 
     selectElement.bind('change', function(){
-      var optionGroup;
-      var collection = valuesFn(scope) || [];
-      var key = selectElement.val();
-      var value;
-      var optionElement;
-      var index, groupIndex, length, groupLength;
-      var tempScope = scope.$new();
+      var optionGroup,
+          collection = valuesFn(scope) || [],
+          key = selectElement.val(),
+          tempScope = scope.$new(),
+          value, optionElement, index, groupIndex, length, groupLength;
+
       try {
         if (isMultiselect) {
           value = [];
@@ -767,31 +782,27 @@ angularWidget('select', function(element){
     });
 
     scope.$onEval(function(){
-      var scope = this;
-
-      // Temporary location for the option groups before we render them
-      var optionGroups = {
-          '':[]
-      };
-      var optionGroupNames = [''];
-      var optionGroupName;
-      var optionGroup;
-      var option;
-      var existingParent, existingOptions, existingOption;
-      var values = valuesFn(scope) || [];
-      var keys = values;
-      var key;
-      var groupLength, length;
-      var fragment;
-      var groupIndex, index;
-      var optionElement;
-      var optionScope = scope.$new();
-      var modelValue = model.get();
-      var selected;
-      var selectedSet = false; // nothing is selected yet
-      var isMulti = isMultiselect;
-      var lastElement;
-      var element;
+      var scope = this,
+          optionGroups = {'':[]}, // Temporary location for the option groups before we render them
+          optionGroupNames = [''],
+          optionGroupName,
+          optionGroup,
+          option,
+          existingParent, existingOptions, existingOption,
+          values = valuesFn(scope) || [],
+          keys = values,
+          key,
+          groupLength, length,
+          fragment,
+          groupIndex, index,
+          optionElement,
+          optionScope = scope.$new(),
+          modelValue = model.get(),
+          selected,
+          selectedSet = false, // nothing is selected yet
+          isMulti = isMultiselect,
+          lastElement,
+          element;
 
       try {
         if (isMulti) {
@@ -807,8 +818,7 @@ angularWidget('select', function(element){
           selectedSet = true;
         }
 
-        // If we have a keyName then we are iterating over on object. We
-        // grab the keys and sort them.
+        // If we have a keyName then we are iterating over on object. Grab the keys and sort them.
         if(keyName) {
           keys = [];
           for (key in values) {
@@ -929,6 +939,7 @@ angularWidget('select', function(element){
     });
   };
 });
+
 
 /**
  * @workInProgress
