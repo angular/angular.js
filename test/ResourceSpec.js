@@ -243,18 +243,32 @@ describe("resource", function() {
   });
 
   describe('failure mode', function(){
-    it('should report error when non 200', function(){
-      xhr.expectGET('/CreditCard/123').respond(500, "Server Error");
+    var ERROR_CODE = 500,
+        ERROR_RESPONSE = 'Server Error';
+
+    beforeEach(function() {
+      xhr.expectGET('/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
+    });
+
+    it('should report error when non 2xx if error callback is not provided', function(){
       var cc = CreditCard.get({id:123});
       try {
         xhr.flush();
         fail('expected exception, non thrown');
       } catch (e) {
-        expect(e.status).toEqual(500);
-        expect(e.response).toEqual('Server Error');
-        expect(e.message).toEqual('500: Server Error');
+        expect(e.status).toEqual(ERROR_CODE);
+        expect(e.response).toEqual(ERROR_RESPONSE);
+        expect(e.message).toEqual(ERROR_CODE + ': ' + ERROR_RESPONSE);
       }
     });
+
+    it('should call the error callback if provided on non 2xx response', function() {
+      var errorCB = jasmine.createSpy();
+
+      CreditCard.get({id:123}, angular.noop, errorCB);
+      xhr.flush();
+      expect(errorCB).toHaveBeenCalledWith(500, ERROR_RESPONSE);
+    })
   });
 
 });
