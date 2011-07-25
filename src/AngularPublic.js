@@ -19,6 +19,7 @@ angularService('$browser', function($log){
   return browserSingleton;
 }, {$inject:['$log']});
 
+
 extend(angular, {
   // disabled for now until we agree on public name
   //'annotate': annotate,
@@ -41,7 +42,8 @@ extend(angular, {
   'isFunction': isFunction,
   'isObject': isObject,
   'isNumber': isNumber,
-  'isArray': isArray
+  'isArray': isArray,
+  'version': version
 });
 
 //try to bind to jquery now so that one can write angular.element().read()
