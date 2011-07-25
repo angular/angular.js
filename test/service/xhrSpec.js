@@ -104,6 +104,23 @@ describe('$xhr', function() {
     expect(response).toEqual([1, 'abc', {foo:'bar'}]);
   });
 
+  it('should call the error callback on error if provided', function() {
+    var errorSpy = jasmine.createSpy(),
+        callbackSpy = jasmine.createSpy();
+
+    $browserXhr.expectGET('/url').respond(500, 'error');
+
+    $xhr('GET', '/url', null, callbackSpy, errorSpy);
+    $browserXhr.flush();
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(callbackSpy).not.toHaveBeenCalled();
+
+    errorSpy = jasmine.createSpy();
+    $xhr('GET', '/url', callbackSpy, errorSpy);
+    $browserXhr.flush();
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(callbackSpy).not.toHaveBeenCalled();
+  });
 
   describe('http headers', function() {
 

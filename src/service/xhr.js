@@ -162,8 +162,8 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
 
   function xhr(method, url, post, callback, error){
     if (isFunction(post)) {
-      callback = post;
       error = callback;
+      callback = post;
       post = null;
     }
     if (post && isObject(post)) {
@@ -181,13 +181,13 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
         if (200 <= code && code < 300) {
           callback(code, response);
         } else {
-          if (isFunction(error)) {
-            error(code, response);
-          }
-
           $error(
             {method: method, url:url, data:post, callback:callback},
             {status: code, body:response});
+
+          if (isFunction(error)) {
+            error(code, response);
+          }
         }
       } catch (e) {
         $log.error(e);

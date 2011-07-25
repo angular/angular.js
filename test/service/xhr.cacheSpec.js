@@ -143,4 +143,26 @@ describe('$xhr.cache', function() {
     $browser.defer.flush();
     expect(evalSpy).toHaveBeenCalled();
   });
+
+  it('should call the error callback on error if provided', function() {
+    var errorSpy = jasmine.createSpy(),
+        callbackSpy = jasmine.createSpy(),
+        $log = angular.scope().$service('$log');
+
+    $browserXhr.expectGET('/url').respond(500, 'error');
+
+    cache('GET', '/url', null, callbackSpy, errorSpy, false, true);
+    $browserXhr.flush();
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(callbackSpy).not.toHaveBeenCalled();
+
+    errorSpy = jasmine.createSpy();
+    cache('GET', '/url', callbackSpy, errorSpy, false, true);
+    $browserXhr.flush();
+    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(callbackSpy).not.toHaveBeenCalled();
+
+    expect($log.error.logs.length).toEqual(2);
+    $log.error.logs = [];
+  });
 });

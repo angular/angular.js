@@ -45,7 +45,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
       verifyCache = error;
       error = noop;
     }
-    
+
     if (method == 'GET') {
       var data, dataCached;
       if (dataCached = cache.data[url]) {
@@ -64,7 +64,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
         data.callbacks.push(callback);
         data.errors.push(error);
       } else {
-        inflight[url] = {callbacks: [callback]};
+        inflight[url] = {callbacks: [callback], errors: [error]};
         cache.delegate(method, url, post,
           function(status, response) {
             if (status == 200)
@@ -80,9 +80,12 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
             });
           },
           function(status, response) {
+            var errors = inflight[url].errors;
+            delete inflight[url];
+
             forEach(errors, function(error) {
               try {
-                error(status, copy(response));
+                (error||noop)(status, copy(response));
               } catch(e) {
                 $log.error(e);
               }
