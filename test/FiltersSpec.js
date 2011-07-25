@@ -28,7 +28,7 @@ describe('filter', function() {
   });
 
   describe('currency', function() {
-    it('should do basic currency filter', function() {
+    it('should do basic currency filtering', function() {
       var html = jqLite('<span/>');
       var context = {$element:html};
       var currency = bind(context, filter.currency);

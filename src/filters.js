@@ -35,11 +35,11 @@
  * @function
  *
  * @description
- *   Formats a number as a currency (ie $1,234.56). When no currency symbol is given, default symbol
- * for current locale is used. Otherwise, user provided currency symbol will be used.
+ * Formats a number as a currency (ie $1,234.56). When no currency symbol is provided, default 
+ * symbol for current locale is used.
  *
  * @param {number} amount Input to filter.
- * @param {string=} symbol currency symbol to be displayed
+ * @param {string=} symbol Currency symbol or identifier to be displayed.
  * @returns {string} Formated number.
  *
  * @css ng-format-negative
@@ -49,8 +49,8 @@
    <doc:example>
      <doc:source>
        <input type="text" name="amount" value="1234.56"/> <br/>
-       default symbol: {{amount | currency}}<br/>
-       user supplied symbol: {{amount | currency:"USD$"}}
+       default currency symbol ($): {{amount | currency}}<br/>
+       custom currency identifier (USD$): {{amount | currency:"USD$"}}
      </doc:source>
      <doc:scenario>
        it('should init with 1234.56', function(){
@@ -62,15 +62,15 @@
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
          expect(element('.doc-example-live .ng-binding').attr('className')).
-            toMatch(/ng-format-negative/);
+           toMatch(/ng-format-negative/);
        });
      </doc:scenario>
    </doc:example>
  */
-angularFilter.currency = function(amount, symbol){
+angularFilter.currency = function(amount, currencySymbol){
   this.$element.toggleClass('ng-format-negative', amount < 0);
-  if(!symbol) symbol = NUMBER_FORMATS.CURRENCY_SYM;
-  return angularFilter.number.apply(this, [amount, 2, 'CURRENCY_PATTERN', symbol]);
+  if (!currencySymbol) currencySymbol = NUMBER_FORMATS.CURRENCY_SYM;
+  return angularFilter.number.call(this, amount, 2, currencySymbol);
 };
 
 /**
@@ -122,29 +122,30 @@ var NUMBER_FORMATS = {
      CURRENCY_SYM:"$",
 };
 
-angularFilter.number = function(number, fractionSize, type, symbol) {
+angularFilter.number = function(number, fractionSize, currencySymbol) {
   if (isNaN(number) || !isFinite(number)) {
     return '';
   }
-  var isNegative = number < 0.0;
-  if(!type) type = 'DECIMAL_PATTERN';
-  var pattern = PROCESSED_PATTERN[type] ? PROCESSED_PATTERN[type] :
-                         PROCESSED_PATTERN[type] = parsePattern(NUMBER_FORMATS[type]);
+
+  var isNegative = number < 0;
+  var type = currencySymbol ? 'CURRENCY_PATTERN' : 'DECIMAL_PATTERN';
+  var pattern = PROCESSED_PATTERN[type] ||
+                (PROCESSED_PATTERN[type] = parsePattern(NUMBER_FORMATS[type]));
 
   var numStr = number + '',
       formatedText = "",
       parts = [];
 
-  if(numStr.indexOf('e') !== -1) {
-    var formatedText = isNegative ? numStr.substring(1) : numStr;
+  if (numStr.indexOf('e') !== -1) {
+    var formatedText = isNegative ? numStr.substr(1) : numStr;
   } else {
     var fraction = numStr.split('.')[1] || "";
 
     //determine fractionSize if it is not specified
-    if(isUndefined(fractionSize)) {
-      if( fraction.length > pattern.maxFraction) {
+    if (isUndefined(fractionSize)) {
+      if ( fraction.length > pattern.maxFraction) {
         fractionSize = pattern.maxFraction;
-      } else if(fraction.length < pattern.minFraction){
+      } else if (fraction.length < pattern.minFraction){
         fractionSize = pattern.minFraction;
       } else {
         fractionSize = fraction.length;
@@ -158,16 +159,16 @@ angularFilter.number = function(number, fractionSize, type, symbol) {
     fraction = fraction[1] || '';
 
     if (isNegative) {
-      whole = whole.substring(1);
+      whole = whole.substr(1);
     }
 
-   var pos  = 0,
-       lgroup  = pattern.lastGroupSize,
+   var pos = 0,
+       lgroup = pattern.lastGroupSize,
        group = pattern.groupSize;
 
-    if(whole.length >= (lgroup + group)) {
+    if (whole.length >= (lgroup + group)) {
       pos = whole.length - lgroup;
-      for (i = 0; i < pos; i++) {
+      for (var i = 0; i < pos; i++) {
         if ((pos - i)%group === 0 && i !== 0) {
           formatedText += ',';
         }
@@ -175,7 +176,7 @@ angularFilter.number = function(number, fractionSize, type, symbol) {
       }
     }
 
-    for ( var i = pos; i < whole.length; i++) {
+    for (i = pos; i < whole.length; i++) {
       if ((whole.length - i)%lgroup === 0 && i !== 0) {
         formatedText += ',';
       }
@@ -183,25 +184,22 @@ angularFilter.number = function(number, fractionSize, type, symbol) {
     }
 
     // format fraction part.
-    while(fraction.length < fractionSize) {
+    while (fraction.length < fractionSize) {
       fraction += '0';
     }
-    if(fractionSize) formatedText += '.' + fraction.substring(0, fractionSize);
+    if (fractionSize) formatedText += '.' + fraction.substr(0, fractionSize);
   }
 
   // replace currency symbol placeholder with actual symbols
-  var nPrefix = '',
-     nSuffix = '',
-     prefix = '',
-     suffix = '';
+  var nPrefix, nSuffix, prefix, suffix;
 
-  if(!symbol) symbol = '';
-  if(isNegative) {
-    nPrefix = pattern.negativePrefix.replace(/\u00A4/g, symbol);
-    nSuffix = pattern.negativeSuffix.replace(/\u00A4/g, symbol);
+  currencySymbol = currencySymbol || '';
+  if (isNegative) {
+    nPrefix = pattern.negativePrefix.replace(/\u00A4/g, currencySymbol);
+    nSuffix = pattern.negativeSuffix.replace(/\u00A4/g, currencySymbol);
   } else {
-    prefix = pattern.positivePrefix.replace(/\u00A4/g, symbol);
-    suffix = pattern.positiveSuffix.replace(/\u00A4/g, symbol);
+    prefix = pattern.positivePrefix.replace(/\u00A4/g, currencySymbol);
+    suffix = pattern.positiveSuffix.replace(/\u00A4/g, currencySymbol);
   }
 
   parts.push(isNegative ? nPrefix : prefix);
