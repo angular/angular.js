@@ -985,8 +985,12 @@ function bindJQuery(){
   if (jQuery) {
     jqLite = jQuery;
     extend(jQuery.fn, {
-      scope: JQLitePrototype.scope
+      scope: JQLitePrototype.scope,
+      inheritedData: JQLitePrototype.inheritedData
     });
+    JQLitePatchJQueryRemove('remove', true);
+    JQLitePatchJQueryRemove('empty');
+    JQLitePatchJQueryRemove('html');
   } else {
     jqLite = jqLiteWrap;
   }

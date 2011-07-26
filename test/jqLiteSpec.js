@@ -83,6 +83,33 @@ describe('jqLite', function(){
   });
 
 
+  describe('inheritedData', function() {
+
+    it('should retrieve data attached to the current element', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('myData', 'abc');
+      expect(element.inheritedData('myData')).toBe('abc');
+      dealoc(element);
+    });
+
+
+    it('should walk up the dom to find data', function() {
+      var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
+      var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
+      element.data('myData', 'abc');
+      expect(deepChild.inheritedData('myData')).toBe('abc');
+      dealoc(element);
+    });
+
+
+    it('should return undefined when no data was found', function() {
+      var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
+      var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
+      expect(deepChild.inheritedData('myData')).toBeFalsy();
+      dealoc(element);
+    });
+  });
+
   describe('scope', function() {
     it('should retrieve scope attached to the current element', function() {
       var element = jqLite('<i>foo</i>');
