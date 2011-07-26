@@ -11,3 +11,4 @@ performance/temp*.html
 angular.js.tmproj
 node_modules
 jsTestDriver*.conf
+angular.xcodeproj
