@@ -146,8 +146,9 @@
     this.descend(true);
 
     var tabs = angular.element(HTML_TPL.replace('{show}', element.attr('show') || 'false')),
-        nav = tabs.find('.tabs-nav ul'),
-        content = tabs.find('.tabs-content-inner'),
+        nav = tabs.find('ul'),
+        // use simple selectors because jqLite find() supports getElementsByTagName only
+        content = tabs.find('div').find('div'),
         children = element.children();
 
     if (children.length) {
