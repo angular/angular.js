@@ -99,6 +99,46 @@ function camelCase(name) {
 }
 
 /////////////////////////////////////////////
+// jQuery mutation patch
+/////////////////////////////////////////////
+
+function JQLitePatchJQueryRemove(name, dispatchThis) {
+  var originalJqFn = jQuery.fn[name];
+  originalJqFn = originalJqFn.$original || originalJqFn;
+  removePatch.$original = originalJqFn;
+  jQuery.fn[name] = removePatch;
+
+  function removePatch() {
+    var list = [this],
+        fireEvent = dispatchThis,
+        set, setIndex, setLength,
+        element, childIndex, childLength, children,
+        fns, data;
+
+    while(list.length) {
+      set = list.shift();
+      for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
+        element = jqLite(set[setIndex]);
+        if (fireEvent) {
+          data = element.data('events');
+          if ( (fns = data && data.$destroy) ) {
+            forEach(fns, function(fn){
+              fn.handler();
+            });
+          }
+        } else {
+          fireEvent = !fireEvent;
+        }
+        for(childIndex = 0, childLength = (children = element.children()).length; childIndex < childLength; childIndex++) {
+          list.push(jQuery(children[childIndex]));
+        }
+      }
+    }
+    return originalJqFn.apply(this, arguments);
+  }
+}
+
+/////////////////////////////////////////////
 function jqLiteWrap(element) {
   if (isString(element) && element.charAt(0) != '<') {
     throw new Error('selectors not implemented');
@@ -137,9 +177,15 @@ function JQLiteRemoveData(element) {
   var cacheId = element[jqName],
   cache = jqCache[cacheId];
   if (cache) {
-    forEach(cache.bind || {}, function(fn, type){
-      removeEventListenerFn(element, type, fn);
-    });
+    if (cache.bind) {
+      forEach(cache.bind, function(fn, type){
+        if (type == '$destroy') {
+          fn({});
+        } else {
+          removeEventListenerFn(element, type, fn);
+        }
+      });
+    }
     delete jqCache[cacheId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
   }
@@ -241,13 +287,16 @@ var SPECIAL_ATTR = makeMap("multiple,selected,checked,disabled,readonly,required
 
 forEach({
   data: JQLiteData,
+  inheritedData: function(element, name, value) {
+    element = jqLite(element);
+    while (element.length) {
+      if (value = element.data(name)) return value;
+      element = element.parent();
+    }
+  },
 
   scope: function(element) {
-    var scope;
-    while (element && !(scope = jqLite(element).data($$scope))) {
-      element = element.parentNode;
-    }
-    return scope;
+    return jqLite(element).inheritedData($$scope);
   },
 
   removeAttr: function(element,name) {
