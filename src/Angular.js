@@ -1024,4 +1024,4 @@ var version = {
   minor: "NG_VERSION_MINOR",
   dot: "NG_VERSION_DOT",
   codeName: '"NG_VERSION_CODENAME"'
-}
+};

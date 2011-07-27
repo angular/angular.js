@@ -286,7 +286,7 @@ function MockBrowser() {
     if (fnIndex) {
       self.deferredFns.splice(fnIndex, 1);
     }
-  }
+  };
 
 
   self.defer.flush = function(delay) {
@@ -465,7 +465,7 @@ function TzDate(offset, timestamp, toStringVal) {
 
   this.toString = function() {
    return toStringVal;
-  }
+  };
 
   this.toLocaleDateString = function() {
     return this.date.toLocaleDateString();

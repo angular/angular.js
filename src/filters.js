@@ -135,7 +135,7 @@ var DECIMAL_SEP = '.';
 angularFilter.number = function(number, fractionSize) {
   if (isNaN(number) || !isFinite(number)) return '';
   return formatNumber(number, fractionSize, 0);
-}
+};
 
 function formatNumber(number, fractionSize, type) {
   var isNegative = number < 0,
