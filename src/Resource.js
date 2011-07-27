@@ -67,19 +67,25 @@ ResourceFactory.prototype = {
 
     forEach(actions, function(action, name){
       var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
-      Resource[name] = function (a1, a2, a3) {
+      Resource[name] = function (a1, a2, a3, a4) {
         var params = {};
         var data;
         var callback = noop;
+        var error = null;
         switch(arguments.length) {
-        case 3: callback = a3;
+        case 4:
+          error = a4;
+          callback = a3;
+        case 3:
         case 2:
           if (isFunction(a2)) {
             callback = a2;
+            error = a3;
             //fallthrough
           } else {
             params = a1;
             data = a2;
+            callback = a3;
             break;
           }
         case 1:
@@ -89,7 +95,8 @@ ResourceFactory.prototype = {
           break;
         case 0: break;
         default:
-          throw "Expected between 0-3 arguments [params, data, callback], got " + arguments.length + " arguments.";
+          throw "Expected between 0-4 arguments [params, data, callback, error], got " +
+            arguments.length + " arguments.";
         }
 
         var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
@@ -98,18 +105,21 @@ ResourceFactory.prototype = {
           route.url(extend({}, action.params || {}, extractParams(data), params)),
           data,
           function(status, response, clear) {
-            if (200 <= status && status < 300) {
-              if (response) {
-                if (action.isArray) {
-                  value.length = 0;
-                  forEach(response, function(item){
-                    value.push(new Resource(item));
-                  });
-                } else {
-                  copy(response, value);
-                }
+            if (response) {
+              if (action.isArray) {
+                value.length = 0;
+                forEach(response, function(item){
+                  value.push(new Resource(item));
+                });
+              } else {
+                copy(response, value);
               }
-              (callback||noop)(value);
+            }
+            (callback||noop)(value);
+          },
+          function(status, response, clear) {
+            if (error) {
+              error(status, response);
             } else {
               throw {status: status, response:response, message: status + ": " + response};
             }
@@ -122,18 +132,27 @@ ResourceFactory.prototype = {
         return self.route(url, extend({}, paramDefaults, additionalParamDefaults), actions);
       };
 
-      Resource.prototype['$' + name] = function(a1, a2){
+      Resource.prototype['$' + name] = function(a1, a2, a3){
         var params = extractParams(this);
         var callback = noop;
         switch(arguments.length) {
-        case 2: params = a1; callback = a2;
-        case 1: if (typeof a1 == $function) callback = a1; else params = a1;
+        case 3: params = a1; callback = a2; error = a3; break;
+        case 2:
+        case 1:
+          if (isFunction(a1)) {
+            callback = a1;
+            error = a2 || noop;
+          } else {
+            params = a1;
+            callback = a2 || noop;
+          }
         case 0: break;
         default:
-          throw "Expected between 1-2 arguments [params, callback], got " + arguments.length + " arguments.";
+          throw "Expected between 1-3 arguments [params, callback, error], got " +
+            arguments.length + " arguments.";
         }
         var data = isPostOrPut ? this : undefined;
-        Resource[name].call(this, params, data, callback);
+        Resource[name].call(this, params, data, callback, error);
       };
     });
     return Resource;

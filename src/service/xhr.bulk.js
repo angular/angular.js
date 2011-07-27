@@ -15,8 +15,9 @@
 angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
   var requests = [],
       scope = this;
-  function bulkXHR(method, url, post, callback) {
+  function bulkXHR(method, url, post, callback, error) {
     if (isFunction(post)) {
+      error = callback;
       callback = post;
       post = null;
     }
@@ -28,9 +29,14 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
     });
     if (currentQueue) {
       if (!currentQueue.requests) currentQueue.requests = [];
-      currentQueue.requests.push({method: method, url: url, data:post, callback:callback});
+      currentQueue.requests.push({
+        method: method,
+        url: url,
+        data: post,
+        callback: callback,
+        error: error});
     } else {
-      $xhr(method, url, post, callback);
+      $xhr(method, url, post, callback, error);
     }
   }
   bulkXHR.urls = {};
@@ -40,20 +46,30 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
       if (currentRequests && currentRequests.length) {
         queue.requests = [];
         queue.callbacks = [];
-        $xhr('POST', url, {requests:currentRequests}, function(code, response){
-          forEach(response, function(response, i){
-            try {
-              if (response.status == 200) {
-                (currentRequests[i].callback || noop)(response.status, response.response);
-              } else {
-                $error(currentRequests[i], response);
+        $xhr('POST', url, {requests:currentRequests},
+          function(code, response) {
+            forEach(response, function(response, i){
+              try {
+                if (response.status == 200) {
+                  (currentRequests[i].callback || noop)(response.status, response.response);
+                } else {
+                  $error(currentRequests[i], response);
+                }
+              } catch(e) {
+                $log.error(e);
               }
+            });
+            (callback || noop)();
+          },
+          function(code, response) {
+            try {
+              $error(currentRequests[i], response);
+              (currentRequests[i].error || noop)(response.status, response.response);
             } catch(e) {
               $log.error(e);
             }
+            (error || noop)();
           });
-          (callback || noop)();
-        });
         scope.$eval();
       }
     });

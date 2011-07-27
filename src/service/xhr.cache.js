@@ -19,6 +19,7 @@
  * @param {string} url Destination URL.
  * @param {(string|Object)=} post Request body.
  * @param {function(number, (string|Object))} callback Response callback.
+ * @param {function(number, (string|Object))=} error Response error callback.
  * @param {boolean=} [verifyCache=false] If `true` then a result is immediately returned from cache
  *   (if present) while a request is sent to the server for a fresh response that will update the
  *   cached entry. The `callback` function will be called when the response is received.
@@ -26,11 +27,25 @@
  */
 angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
   var inflight = {}, self = this;
-  function cache(method, url, post, callback, verifyCache, sync){
+  function cache(method, url, post, callback, error, verifyCache, sync){
     if (isFunction(post)) {
+      if (!isFunction(callback)) {
+        verifyCache = callback;
+        sync = error;
+        error = noop;
+      } else {
+        sync = verifyCache;
+        verifyCache = error;
+        error = callback;
+      }
       callback = post;
       post = null;
+    } else if (!isFunction(error)) {
+      sync = verifyCache;
+      verifyCache = error;
+      error = noop;
     }
+
     if (method == 'GET') {
       var data, dataCached;
       if (dataCached = cache.data[url]) {
@@ -47,26 +62,40 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $log){
 
       if (data = inflight[url]) {
         data.callbacks.push(callback);
+        data.errors.push(error);
       } else {
-        inflight[url] = {callbacks: [callback]};
-        cache.delegate(method, url, post, function(status, response){
-          if (status == 200)
-            cache.data[url] = { value: response };
-          var callbacks = inflight[url].callbacks;
-          delete inflight[url];
-          forEach(callbacks, function(callback){
-            try {
-              (callback||noop)(status, copy(response));
-            } catch(e) {
-              $log.error(e);
-            }
+        inflight[url] = {callbacks: [callback], errors: [error]};
+        cache.delegate(method, url, post,
+          function(status, response) {
+            if (status == 200)
+              cache.data[url] = { value: response };
+            var callbacks = inflight[url].callbacks;
+            delete inflight[url];
+            forEach(callbacks, function(callback){
+              try {
+                (callback||noop)(status, copy(response));
+              } catch(e) {
+                $log.error(e);
+              }
+            });
+          },
+          function(status, response) {
+            var errors = inflight[url].errors;
+            delete inflight[url];
+
+            forEach(errors, function(error) {
+              try {
+                (error||noop)(status, copy(response));
+              } catch(e) {
+                $log.error(e);
+              }
+            });
           });
-        });
       }
 
     } else {
       cache.data = {};
-      cache.delegate(method, url, post, callback);
+      cache.delegate(method, url, post, callback, error);
     }
   }
   cache.data = {};
