@@ -130,7 +130,7 @@ describe('mocks', function(){
 
 
     it('should throw error when no third param but toString called', function() {
-      expect(function() { new TzDate(0,0).toString() }).
+      expect(function() { new TzDate(0,0).toString(); }).
                            toThrow('Method \'toString\' is not implemented in the TzDate mock');
     });
   });
@@ -236,7 +236,7 @@ describe('mocks', function(){
       var rootScope = angular.scope(),
           exHandler = rootScope.$service('$exceptionHandler');
 
-      expect(function() { exHandler('myException') }).toThrow('myException');
+      expect(function() { exHandler('myException'); }).toThrow('myException');
     });
   });
 });

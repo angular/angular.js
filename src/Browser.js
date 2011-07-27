@@ -103,7 +103,7 @@ function Browser(window, document, body, XHR, $log) {
       var script = self.addJs(url.replace('JSON_CALLBACK', callbackId));
       window[callbackId] = function(data){
         delete window[callbackId];
-        body[0].removeChild(script)
+        body[0].removeChild(script);
         completeOutstandingRequest(callback, 200, data);
       };
     } else {

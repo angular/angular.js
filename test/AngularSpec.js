@@ -635,5 +635,5 @@ describe('angular', function(){
       expect(version.dot).toBe("NG_VERSION_DOT");
       expect(version.codeName).toBe('"NG_VERSION_CODENAME"');
     });
-  })
+  });
 });
