@@ -365,7 +365,7 @@ var NUMBER_STRING = /^\d+$/;
      <doc:scenario>
        it('should format date', function(){
          expect(binding("1288323623006 | date:'medium'")).
-            toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} pm/);
+            toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (am|pm)/);
          expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
             toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
          expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
