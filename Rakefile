@@ -32,6 +32,7 @@ ANGULAR = [
   'src/service/xhr.cache.js',
   'src/service/xhr.error.js',
   'src/service/xhr.js',
+  'src/service/locale.js',
   'src/directives.js',
   'src/markups.js',
   'src/widgets.js',
