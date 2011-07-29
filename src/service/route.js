@@ -10,7 +10,7 @@
  * @property {Array.<Object>} routes Array of all configured routes.
  *
  * @description
- * Watches `$location.hashPath` and tries to map the hash to an existing route
+ * Watches `$location.hash` and tries to map the hash to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  *
  * The `$route` service is typically used in conjunction with {@link angular.widget.ng:view ng:view}
@@ -68,6 +68,7 @@ angularServiceInject('$route', function(location, $updateView) {
       matcher = switchRouteMatcher,
       parentScope = this,
       dirty = 0,
+      locationWatchProp = 'hash',
       $route = {
         routes: routes,
 
@@ -178,6 +179,20 @@ angularServiceInject('$route', function(location, $updateView) {
          */
         reload: function() {
           dirty++;
+        },
+
+        /**
+         * @workInProgress
+         * @ngdoc method
+         * @name angular.service.$route#watchHashPathOnly
+         * @methodOf angular.service.$route
+         *
+         * @description
+         * Causes `$route` service to be reload only if `$location.hashPath` changes. Other properties of
+         * {@link angular.service.$location $location service} won't trigger reloads.
+         */
+        watchHashPathOnly: function(hashPathOnly) {
+          locationWatchProp = hashPathOnly ? 'hashPath' : 'hash';
         }
       };
 
@@ -266,7 +281,7 @@ angularServiceInject('$route', function(location, $updateView) {
   }
 
 
-  this.$watch(function(){return dirty + location.hash;}, updateRoute);
+  this.$watch(function(){return dirty + location[locationWatchProp];}, updateRoute);
 
   return $route;
 }, ['$location', '$updateView']);

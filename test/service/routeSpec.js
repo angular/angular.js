@@ -13,7 +13,7 @@ describe('$route', function() {
   });
 
 
-  it('should route and fire change event', function(){
+  it('should change route and fire change event', function(){
     var log = '',
         $location, $route;
 
@@ -51,6 +51,42 @@ describe('$route', function() {
     $route.when('/NONE', {template:'instant update'});
     scope.$eval();
     expect($route.current.template).toEqual('instant update');
+  });
+
+
+  it('should not reload route when only hashSearch changes, but hashPath does not', function() {
+    var scope = angular.scope(),
+        $location = scope.$service('$location'),
+        $route = scope.$service('$route'),
+        log = [];
+
+    $route.when('/foo', {controller: FooCtrl});
+
+    function FooCtrl() {
+      log.push('foo');
+    }
+
+    expect(log).toEqual([]);
+
+    //without watchHashPathOnly setting the route should always reload
+    $location.hashPath = '/foo';
+    scope.$eval();
+    $location.hashSearch.foo = 'bar';
+    scope.$eval();
+    expect(log).toEqual(['foo', 'foo']);
+
+    //reset log and change $route config
+    log = [];
+    $route.watchHashPathOnly(true);
+
+    //with watchHashPathOnly on, only hashPath changes should not trigger reload
+    $location.hashPath = '/foo';
+    scope.$eval();
+    expect(log).toEqual(['foo']);
+
+    $location.hashSearch.foo = 'bar';
+    scope.$eval();
+    expect(log).toEqual(['foo']);
   });
 
 
