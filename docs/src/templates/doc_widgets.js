@@ -88,7 +88,7 @@
   };
 
   var HTML_TPL =
-      '<p><a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Workspace Reset Instructions</a></p>' +
+      '<p><a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Workspace Reset Instructions &nbsp;&#x27A4;</a></p>' +
       '<div ng:controller="TutorialInstructionsCtrl" ng:show="showInstructions">' +
         '<div class="tabs-nav">' +
           '<ul>' +
