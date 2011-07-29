@@ -87,6 +87,15 @@ Rake website.
 development web server. Depending on your system, you can install Node either from source or as a
 pre-packaged bundle.
 
+  You'll also need npm and the following npm modules:
+
+  * install npm: `curl http://npmjs.org/install.sh | sh`
+  * install q: `npm install q`
+  * install qq: `npm install qq`
+  * install q-fs: `npm install q-fs`
+
+
+
 * Java: The Java runtime is used to run {@link http://code.google.com/p/js-test-driver
 JsTestDriver} (JSTD), which we use to run our unit test suite. JSTD binaries are part of the
 `angular` source base, which means there is no need to install or configure it separately.
