@@ -217,6 +217,8 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter, :gen
         --language_in ECMASCRIPT5_STRICT \
         --js #{path_to('angular.js')} \
         --js_output_file #{path_to('angular.min.js')})
+
+  FileUtils.cp_r 'i18n/locale', path_to('i18n')
 end
 
 
@@ -252,6 +254,7 @@ task :package => [:clean, :compile, :docs] do
     FileUtils.cp(src, pkg_dir + '/' + dest)
   end
 
+  FileUtils.cp_r path_to('i18n'), "#{pkg_dir}/i18n-#{NG_VERSION.full}"
   FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{NG_VERSION.full}"
 
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index.html", File::RDWR) do |f|
