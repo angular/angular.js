@@ -68,9 +68,11 @@
    </doc:example>
  */
 angularFilter.currency = function(amount, currencySymbol){
+  var formats = this.$service('$locale').NUMBER_FORMATS;
   this.$element.toggleClass('ng-format-negative', amount < 0);
-  if (isUndefined(currencySymbol)) currencySymbol = NUMBER_FORMATS.CURRENCY_SYM;
-  return formatNumber(amount, 2, 1).replace(/\u00A4/g, currencySymbol);
+  if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
+  return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2)
+                                                         .replace(/\u00A4/g, currencySymbol);
 };
 
 /**
@@ -113,35 +115,17 @@ angularFilter.currency = function(amount, currencySymbol){
    </doc:example>
  */
 
-// PATTERNS[0] is an array for Decimal Pattern, PATTERNS[1] is an array Currency Pattern
-// Following is the order in each pattern array:
-// 0: minInteger,
-// 1: minFraction,
-// 2: maxFraction,
-// 3: positivePrefix,
-// 4: positiveSuffix,
-// 5: negativePrefix,
-// 6: negativeSuffix,
-// 7: groupSize,
-// 8: lastGroupSize
-var NUMBER_FORMATS = {
-      DECIMAL_SEP: '.',
-      GROUP_SEP: ',',
-      PATTERNS: [[1, 0, 3, '', '', '-', '', 3, 3],[1, 2, 2, '\u00A4', '', '(\u00A4', ')', 3, 3]],
-      CURRENCY_SYM: '$'
-};
 var DECIMAL_SEP = '.';
 
 angularFilter.number = function(number, fractionSize) {
   if (isNaN(number) || !isFinite(number)) return '';
-  return formatNumber(number, fractionSize, 0);
-};
+  var formats = this.$service('$locale').NUMBER_FORMATS;
+  return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP,
+                                                  formats.DECIMAL_SEP, fractionSize);
+}
 
-function formatNumber(number, fractionSize, type) {
+function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   var isNegative = number < 0,
-      type = type || 0, // 0 is decimal pattern, 1 is currency pattern
-      pattern = NUMBER_FORMATS.PATTERNS[type];
-
   number = Math.abs(number);
   var numStr =  number + '',
       formatedText = '',
@@ -154,7 +138,7 @@ function formatNumber(number, fractionSize, type) {
 
     //determine fractionSize if it is not specified
     if (isUndefined(fractionSize)) {
-      fractionSize = Math.min(Math.max(pattern[1], fractionLen), pattern[2]);
+      fractionSize = Math.min(Math.max(pattern.minFrac, fractionLen), pattern.maxFrac);
     }
 
     var pow = Math.pow(10, fractionSize);
@@ -164,14 +148,14 @@ function formatNumber(number, fractionSize, type) {
     fraction = fraction[1] || '';
 
     var pos = 0,
-        lgroup = pattern[8],
-        group = pattern[7];
+        lgroup = pattern.lgSize,
+        group = pattern.gSize;
 
     if (whole.length >= (lgroup + group)) {
       pos = whole.length - lgroup;
       for (var i = 0; i < pos; i++) {
         if ((pos - i)%group === 0 && i !== 0) {
-          formatedText += NUMBER_FORMATS.GROUP_SEP;
+          formatedText += groupSep;
         }
         formatedText += whole.charAt(i);
       }
@@ -179,7 +163,7 @@ function formatNumber(number, fractionSize, type) {
 
     for (i = pos; i < whole.length; i++) {
       if ((whole.length - i)%lgroup === 0 && i !== 0) {
-        formatedText += NUMBER_FORMATS.GROUP_SEP;
+        formatedText += groupSep;
       }
       formatedText += whole.charAt(i);
     }
@@ -188,12 +172,13 @@ function formatNumber(number, fractionSize, type) {
     while(fraction.length < fractionSize) {
       fraction += '0';
     }
-    if (fractionSize) formatedText += NUMBER_FORMATS.DECIMAL_SEP + fraction.substr(0, fractionSize);
+
+    if (fractionSize) formatedText += decimalSep + fraction.substr(0, fractionSize);
   }
 
-  parts.push(isNegative ? pattern[5] : pattern[3]);
+  parts.push(isNegative ? pattern.negPre : pattern.posPre);
   parts.push(formatedText);
-  parts.push(isNegative ? pattern[6] : pattern[4]);
+  parts.push(isNegative ? pattern.negSuf : pattern.posSuf);
   return parts.join('');
 }
 
@@ -222,16 +207,11 @@ function dateGetter(name, size, offset, trim) {
 }
 
 function dateStrGetter(name, shortForm) {
-  return function(date) {
+  return function(date, formats) {
     var value = date['get' + name]();
+    var get = uppercase(shortForm ? ('SHORT' + name) : name);
 
-    if(name == 'Month') {
-      value = MONTH[value];
-    } else {
-      value = DAY[value];
-    }
-
-    return shortForm ? value.substr(0,3) : value;
+    return formats[get][value];
   };
 }
 
@@ -246,10 +226,9 @@ function timeZoneGetter(numFormat) {
   };
 }
 
-var DAY = 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'.split(',');
-
-var MONTH = 'January,February,March,April,May,June,July,August,September,October,November,December'.
-             split(',');
+function ampmGetter(date, formats) {
+  return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
+}
 
 var DATE_FORMATS = {
   yyyy: dateGetter('FullYear', 4),
@@ -271,26 +250,13 @@ var DATE_FORMATS = {
      s: dateGetter('Seconds', 1),
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
-     a: function(date){return date.getHours() < 12 ? 'am' : 'pm';},
+     a: ampmGetter,
      z: timeZoneGetter(false),
      Z: timeZoneGetter(true)
 };
 
-var DEFAULT_DATETIME_FORMATS = {
-         long: 'MMMM d, y h:mm:ss a z',
-       medium: 'MMM d, y h:mm:ss a',
-        short: 'M/d/yy h:mm a',
-    fullDate: 'EEEE, MMMM d, y',
-    longDate: 'MMMM d, y',
-  mediumDate: 'MMM d, y',
-   shortDate: 'M/d/yy',
-    longTime: 'h:mm:ss a z',
-  mediumTime: 'h:mm:ss a',
-   shortTime: 'h:mm a'
-};
-
 var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
-var DATE_FORMATS_SPLIT = /([^yMdHhmsazZE]*)(E+|y+|M+|d+|H+|h+|m+|s+|a|Z|z)(.*)/;
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/
 var OPERA_TOSTRING_PATTERN = /^[\d].*Z$/;
 var NUMBER_STRING = /^\d+$/;
 
@@ -329,8 +295,8 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-1200)
  *   * `'z'`: short form of current timezone name (e.g. PDT)
  *
- *   `format` string can also be the following default formats for `en_US` locale (support for other
- *    locales will be added in the future versions):
+ *   `format` string can also be one of the following predefined
+ *   {@link guide/dev_guide.i18n localizable formats}:
  *
  *   * `'long'`: equivalent to `'MMMM d, y h:mm:ss a z'` for en_US  locale
  *     (e.g. September 3, 2010 12:05:08 pm PDT)
@@ -345,6 +311,10 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'longTime'`: equivalent to `'h:mm:ss a z'` for en_US locale (e.g. 12:05:08 pm PDT)
  *   * `'mediumTime'`: equivalent to `'h:mm:ss a'` for en_US locale (e.g. 12:05:08 pm)
  *   * `'shortTime'`: equivalent to `'h:mm a'` for en_US locale (e.g. 12:05 pm)
+ *
+ *   `format` string can contain literal values. These need to be quoted with single quotes (e.g.
+ *   `"h 'in the morning'"`). In order to output single quote, use two single quotes in a sequence
+ *   (e.g. `"h o''clock"`).
  *
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
  *    number) or ISO 8601 extended datetime string (yyyy-MM-ddTHH:mm:ss.SSSZ).
@@ -365,17 +335,18 @@ var NUMBER_STRING = /^\d+$/;
      <doc:scenario>
        it('should format date', function(){
          expect(binding("1288323623006 | date:'medium'")).
-            toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (am|pm)/);
+            toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
          expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
             toMatch(/2010\-10\-2\d \d{2}:\d{2}:\d{2} \-?\d{4}/);
          expect(binding("'1288323623006' | date:'MM/dd/yyyy @ h:mma'")).
-            toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(am|pm)/);
+            toMatch(/10\/2\d\/2010 @ \d{1,2}:\d{2}(AM|PM)/);
        });
      </doc:scenario>
    </doc:example>
  */
 angularFilter.date = function(date, format) {
-  format = DEFAULT_DATETIME_FORMATS[format] || format;
+  var $locale = this.$service('$locale');
+  format = $locale.DATETIME_FORMATS[format] || format;
   if (isString(date)) {
     if (NUMBER_STRING.test(date)) {
       date = parseInt(date, 10);
@@ -408,7 +379,8 @@ angularFilter.date = function(date, format) {
     }
     forEach(parts, function(value){
       fn = DATE_FORMATS[value];
-      text += fn ? fn(date) : value;
+      text += fn ? fn(date, $locale.DATETIME_FORMATS)
+                 : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
     });
   }
   return text;
