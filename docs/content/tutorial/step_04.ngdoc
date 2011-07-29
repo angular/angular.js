@@ -16,9 +16,8 @@ the repeater, and letting the data binding magic do the rest of the work.
 You should see that in addition to the search box, the app displays a drop down menu that allows
 users to control the order in which the phones are listed.
 
-The most important changes are listed below. You can see the full diff on {@link
-https://github.com/angular/angular-phonecat/compare/step-3...step-4
-GitHub}:
+The most important differences between Steps 3 and 4 are listed below. You can see the full diff on
+{@link https://github.com/angular/angular-phonecat/compare/step-3...step-4 GitHub}:
 
 
 ## Template
@@ -48,7 +47,7 @@ __`app/index.html`:__
 ...
 </pre>
 
-In the `index.html` template we made the following changes:
+We made the following changes to the `index.html` template:
 
 * First, we added a `<select>` html element named `orderProp`, so that our users can pick from the
 two provided sorting options.
@@ -63,7 +62,7 @@ Angular creates a two way data-binding between the select element and the `order
 `orderProp` is then used as the input for the `$orderBy` method.
 
 As we discussed in the section about data-binding and the repeater in step 3, whenever the model
-changes (for example because a user changes the order with the select drop down menu), angular's
+changes (for example because a user changes the order with the select drop down menu), Angular's
 data-binding will cause the view to automatically update. No bloated DOM manipulation code is
 necessary!
 
@@ -179,7 +178,7 @@ The end-to-end test verifies that the ordering mechanism of the select box is wo
 You can now refresh the browser tab with the end-to-end test runner to see the tests run, or you
 can see them running on {@link
 http://angular.github.com/angular-phonecat/step-4/test/e2e/runner.html
-angular's server}.
+Angular's server}.
 
 # Experiments
 
@@ -192,8 +191,8 @@ text.
 
 # Summary
 
-Now that you have added list sorting and tested the app, go to step 5 to learn about angular
-services and how angular uses dependency injection.
+Now that you have added list sorting and tested the app, go to {@link step_05 step 5} to learn
+about Angular services and how Angular uses dependency injection.
 
 
 <ul doc:tutorial-nav="4"></ul>

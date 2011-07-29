@@ -68,8 +68,8 @@ function PhoneCatCtrl($route) {
 We created a new controller called `PhoneCatCtrl`. We declared its dependency on the `$route`
 service and used this service to declare that our application consists of two different views:
 
-* The phone list view will be shown when the URL hash fragment is `/phone`. To construct this view,
-angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
+* The phone list view will be shown when the URL hash fragment is `/phones`. To construct this
+view, angular will use the `phone-list.html` template and the `PhoneListCtrl` controller.
 
 * The phone details view will be shown when the URL hash fragment matches '/phone/:phoneId', where
 `:phoneId` is a variable part of the URL. To construct the phone details view, angular will use the
@@ -151,7 +151,7 @@ __`app/partials/phone-list.html`:__
 TBD: detail view for {{params.phoneId}}
 </pre>
 
-Note how we are using `params` model defined in the `PhoneCanCtrl` controller.
+Note how we are using `params` model defined in the `PhoneCatCtrl` controller.
 
 
 ## Test
@@ -202,8 +202,8 @@ inheritance and model property shadowing do some wonders.
 
 # Summary
 
-With the routing set up and the phone list view implemented, we're ready to go to step 8 to
-implement the phone details view.
+With the routing set up and the phone list view implemented, we're ready to go to {@link step_08
+step 8} to implement the phone details view.
 
 
 <ul doc:tutorial-nav="7"></ul>

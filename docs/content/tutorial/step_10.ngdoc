@@ -133,8 +133,8 @@ template remains operational.
 
 # Summary
 
-With the phone image swapper in place, we're ready for step 11 (the last step!) to learn an even
-better way to fetch data.
+With the phone image swapper in place, we're ready for {@link step_11 step 11} (the last step!) to
+learn an even better way to fetch data.
 
 
 <ul doc:tutorial-nav="10"></ul>

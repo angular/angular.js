@@ -114,8 +114,8 @@ the following to index.html:
 
 # Summary
 
-Now that you have learned how to write and test a custom filter, go to step 10 to learn how we can
-use angular to enhance the phone details page further.
+Now that you have learned how to write and test a custom filter, go to {@link step_10 step 10} to
+learn how we can use angular to enhance the phone details page further.
 
 
 <ul doc:tutorial-nav="9"></ul>
