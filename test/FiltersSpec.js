@@ -27,10 +27,66 @@ describe('filter', function() {
     delete filter['fakeFilter'];
   });
 
+  describe('formatNumber', function() {
+    var pattern;
+
+    beforeEach(function() {
+      pattern = { minInt: 1,
+                  minFrac: 0,
+                  maxFrac: 3,
+                  posPre: '',
+                  posSuf: '',
+                  negPre: '-',
+                  negSuf: '',
+                  gSize: 3,
+                  lgSize: 3 };
+    });
+
+    it('should format according to different patterns', function() {
+      pattern.gSize = 2;
+      var num = formatNumber(1234567.89, pattern, ',', '.');
+      expect(num).toBe('12,34,567.89');
+      num = formatNumber(1234.56, pattern, ',', '.');
+      expect(num).toBe('1,234.56');
+
+      pattern.negPre = '(';
+      pattern.negSuf = '-)';
+      num = formatNumber(-1234, pattern, ',', '.');
+      expect(num).toBe('(1,234-)');
+      pattern.posPre = '+';
+      pattern.posSuf = '+';
+      num = formatNumber(1234, pattern, ',', '.');
+      expect(num).toBe('+1,234+');
+      pattern.posPre = pattern.posSuf = '';
+
+      pattern.minFrac = 2;
+      num = formatNumber(1, pattern, ',', '.');
+      expect(num).toBe('1.00');
+      pattern.maxFrac = 4;
+      num = formatNumber(1.11119, pattern, ',', '.');
+      expect(num).toBe('1.1112');
+    });
+
+    it('should format according different seperators', function() {
+      var num = formatNumber(1234567.1, pattern, '.', ',', 2);
+      expect(num).toBe('1.234.567,10');
+    });
+
+    it('should format with or without fractionSize', function() {
+      var num = formatNumber(123.1, pattern, ',', '.', 3);
+      expect(num).toBe('123.100');
+      num = formatNumber(123.12, pattern, ',', '.');
+      expect(num).toBe('123.12');
+      var num = formatNumber(123.1116, pattern, ',', '.');
+      expect(num).toBe('123.112');
+    });
+  });
+
   describe('currency', function() {
     it('should do basic currency filtering', function() {
       var html = jqLite('<span/>');
-      var context = {$element:html};
+      var context = createScope();
+      context.$element = html;
       var currency = bind(context, filter.currency);
 
       expect(currency(0)).toEqual('$0.00');
@@ -39,13 +95,21 @@ describe('filter', function() {
       expect(html.hasClass('ng-format-negative')).toBeTruthy();
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
+
+      dealoc(context);
     });
   });
 
   describe('number', function() {
+    var context, number;
+
+    beforeEach(function() {
+      context = createScope();
+      number = bind(context, filter.number);
+    });
+
+
     it('should do basic filter', function() {
-      var context = {jqElement:jqLite('<span/>')};
-      var number = bind(context, filter.number);
       expect(number(0, 0)).toEqual('0');
       expect(number(-999)).toEqual('-999');
       expect(number(123)).toEqual('123');
@@ -71,8 +135,6 @@ describe('filter', function() {
     });
 
     it('should filter exponential numbers', function() {
-      var context = {jqElement:jqLite('<span/>')};
-      var number = bind(context, filter.number);
       expect(number(1e50, 0)).toEqual('1e+50');
       expect(number(-2e50, 2)).toEqual('-2e+50');
     });
@@ -136,104 +198,121 @@ describe('filter', function() {
     var timZoneDate = new TzDate(+5, '2010-09-03T05:05:08.000Z',
                                      'Mon Sep 3 2010 00:05:08 GMT+0500 (XYZ)'); //12am
 
+    var context, date;
+
+    beforeEach(function() {
+      context = createScope();
+      date = bind(context, filter.date);
+    });
+
     it('should ignore falsy inputs', function() {
-      expect(filter.date(null)).toBeNull();
-      expect(filter.date('')).toEqual('');
+      expect(date(null)).toBeNull();
+      expect(date('')).toEqual('');
     });
 
     it('should do basic filter', function() {
-      expect(filter.date(noon)).toEqual(noon.toLocaleDateString());
-      expect(filter.date(noon, '')).toEqual(noon.toLocaleDateString());
+      expect(date(noon)).toEqual(noon.toLocaleDateString());
+      expect(date(noon, '')).toEqual(noon.toLocaleDateString());
     });
 
     it('should accept number or number string representing milliseconds as input', function() {
-      expect(filter.date(noon.getTime())).toEqual(noon.toLocaleDateString());
-      expect(filter.date(noon.getTime() + "")).toEqual(noon.toLocaleDateString());
+      expect(date(noon.getTime())).toEqual(noon.toLocaleDateString());
+      expect(date(noon.getTime() + "")).toEqual(noon.toLocaleDateString());
     });
 
     it('should accept various format strings', function() {
-      expect(filter.date(morning, "yy-MM-dd HH:mm:ss")).
+      expect(date(morning, "yy-MM-dd HH:mm:ss")).
                       toEqual('10-09-03 07:05:08');
 
-      expect(filter.date(midnight, "yyyy-M-d h=H:m:saZ")).
+      expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
                       toEqual('2010-9-3 12=0:5:8am0500');
 
-      expect(filter.date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
+      expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
                       toEqual('2010-09-03 12=00:05:08am0500');
 
-      expect(filter.date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
+      expect(date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
                       toEqual('2010-09-03 12=12:05:08pm0500');
 
-      expect(filter.date(timZoneDate, "yyyy-MM-dd hh=HH:mm:ss a z")).
+      expect(date(timZoneDate, "yyyy-MM-dd hh=HH:mm:ss a z")).
                       toEqual('2010-09-03 12=00:05:08 am XYZ');
 
-      expect(filter.date(noon, "EEE, MMM d, yyyy")).
+      expect(date(noon, "EEE, MMM d, yyyy")).
                       toEqual('Fri, Sep 3, 2010');
 
-      expect(filter.date(noon, "EEEE, MMMM dd, yyyy")).
+      expect(date(noon, "EEEE, MMMM dd, yyyy")).
                       toEqual('Friday, September 03, 2010');
 
-      expect(filter.date(earlyDate, "MMMM dd, y")).
+      expect(date(earlyDate, "MMMM dd, y")).
                       toEqual('September 03, 1');
+    });
+
+    it('should treat single quoted strings as string literals', function() {
+      expect(date(midnight, "yyyy'de' 'a'x'dd' 'adZ' h=H:m:saZ")).
+                      toEqual('2010de axdd adZ 12=0:5:8AM0500');
+    });
+
+    it('should treat a sequence of two single quotes as a literal single quote', function() {
+      expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
+                      toEqual("2010de a'dd adZ 12=0:5:8AM0500");
     });
 
     it('should accept default formats', function() {
 
-      expect(filter.date(timZoneDate, "long")).
+      expect(date(timZoneDate, "long")).
                       toEqual('September 3, 2010 12:05:08 am XYZ');
 
-      expect(filter.date(noon, "medium")).
+      expect(date(noon, "medium")).
                       toEqual('Sep 3, 2010 12:05:08 pm');
 
-      expect(filter.date(noon, "short")).
+      expect(date(noon, "short")).
                       toEqual('9/3/10 12:05 pm');
 
-      expect(filter.date(noon, "fullDate")).
+      expect(date(noon, "fullDate")).
                       toEqual('Friday, September 3, 2010');
 
-      expect(filter.date(noon, "longDate")).
+      expect(date(noon, "longDate")).
                       toEqual('September 3, 2010');
 
-      expect(filter.date(noon, "mediumDate")).
+      expect(date(noon, "mediumDate")).
                       toEqual('Sep 3, 2010');
 
-      expect(filter.date(noon, "shortDate")).
+      expect(date(noon, "shortDate")).
                       toEqual('9/3/10');
 
-      expect(filter.date(timZoneDate, "longTime")).
+      expect(date(timZoneDate, "longTime")).
                       toEqual('12:05:08 am XYZ');
 
-      expect(filter.date(noon, "mediumTime")).
+      expect(date(noon, "mediumTime")).
                       toEqual('12:05:08 pm');
 
-      expect(filter.date(noon, "shortTime")).
+      expect(date(noon, "shortTime")).
                       toEqual('12:05 pm');
     });
 
 
     it('should parse timezone identifier from various toString values', function() {
       //chrome and firefox format
-      expect(filter.date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
+      expect(date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
                                     'Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)'), "z")).toBe('XYZ');
 
       //opera format
-      expect(filter.date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
+      expect(date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
                                     '2010-09-03T17:05:08Z'), "z")).toBe('0500');
 
       //ie 8 format
-      expect(filter.date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
+      expect(date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
                                     'Mon Sep 3 17:05:08 XYZ 2010'), "z")).toBe('XYZ');
     });
 
 
     it('should be able to parse ISO 8601 dates/times using', function() {
       var isoString = '2010-09-03T05:05:08.872Z';
-      expect(filter.date(isoString)).
+      expect(date(isoString)).
           toEqual(angular.String.toDate(isoString).toLocaleDateString());
     });
 
     it('should parse format ending with non-replaced string', function() {
-      expect(filter.date(morning, 'yy/xxx')).toEqual('10/xxx');
+      expect(date(morning, 'yy/xxx')).toEqual('10/xxx');
     });
   });
 });
