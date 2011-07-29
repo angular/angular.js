@@ -43,21 +43,17 @@ easier a web developer's life can if they're using angular:
 <doc:example>
 <doc:source>
  <b>Invoice:</b>
- <br/>
- <br/>
+ <br />
+ <br />
  <table>
   <tr><td> </td><td> </td>
   <tr><td>Quantity</td><td>Cost</td></tr>
   <tr>
-    <td><input name="qty" value="1"
-ng:validate="integer:0"
-ng:required/></td>
-    <td><input name="cost" value="19.95"
-ng:validate="number"
-ng:required/></td>
+    <td><input name="qty" value="1" ng:validate="integer:0" ng:required /></td>
+    <td><input name="cost" value="19.95" ng:validate="number" ng:required /></td>
   </tr>
  </table>
- <hr>
+ <hr />
  <b>Total:</b> {{qty * cost | currency}}
 </doc:source>
 <!--

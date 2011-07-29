@@ -87,14 +87,8 @@ function fnB($window, serviceA_, name){};
 </pre>
 
 If angular does not find a `$inject` annotation on the function, then it calls the `.toString()`
-method and tries to infer what should be injected using the following rules:
-
-* Any argument starting with `$` is an angular service and will be added to the `$inject` property
-array
-* Any argument ending with `_` will be added to the `$inject` property array (angular strips the
-`_`)
-* All arguments following an argument which has neither `$` nor `_` , must not have `$` nor `_`
-(these are free arguments for {@link http://en.wikipedia.org/wiki/Currying currying})
+method and tries to infer what should be injected by using function argument names as dependency
+identifiers.
 
 **IMPORTANT**
 Minifiers/obfuscators change the names of function arguments and will therefore break the `$inject`
