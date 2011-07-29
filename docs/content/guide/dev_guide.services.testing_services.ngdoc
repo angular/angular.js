@@ -4,39 +4,42 @@
 @description
 
 Following is a unit test for the service in the example in {@link
-dev_guide.services.registering_services Registering Angular Services}. The unit test example uses
-Jasmine spy (mock) instead of a real browser alert.
+dev_guide.services.creating_services Creating Angular Services}. The unit test example uses Jasmine
+spy (mock) instead of a real browser alert.
 
 <pre>
 var mock, notify;
 
 beforeEach(function() {
-mock = {alert: jasmine.createSpy()};
-notify = angular.service('notify')(mock);
+  mock = {alert: jasmine.createSpy()};
+  notify = angular.service('notify')(mock);
 });
 
 it('should not alert first two notifications', function() {
-notify('one');
-notify('two');
-expect(mock.alert).not.toHaveBeenCalled();
+  notify('one');
+  notify('two');
+
+  expect(mock.alert).not.toHaveBeenCalled();
 });
 
 it('should alert all after third notification', function() {
-notify('one');
-notify('two');
-notify('three');
-expect(mock.alert).toHaveBeenCalledWith("one\ntwo\nthree");
+  notify('one');
+  notify('two');
+  notify('three');
+
+  expect(mock.alert).toHaveBeenCalledWith("one\ntwo\nthree");
 });
 
 it('should clear messages after alert', function() {
-notify('one');
-notify('two');
-notify('third');
-notify('more');
-notify('two');
-notify('third');
-expect(mock.alert.callCount).toEqual(2);
-expect(mock.alert.mostRecentCall.args).toEqual(["more\ntwo\nthird"]);
+  notify('one');
+  notify('two');
+  notify('third');
+  notify('more');
+  notify('two');
+  notify('third');
+
+  expect(mock.alert.callCount).toEqual(2);
+  expect(mock.alert.mostRecentCall.args).toEqual(["more\ntwo\nthird"]);
 });
 </pre>
 

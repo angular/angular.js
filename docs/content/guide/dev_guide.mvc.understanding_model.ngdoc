@@ -39,7 +39,7 @@ only, not recommended for real applications):
 Angular creates models implicitly (by creating a scope property and assigning it a suitable value)
 when processing the following template constructs:
 
-* Form input, select, and textarea elements:
+* Form input, select, textarea and other form elements:
 
          <input name="query" value="fluffy cloud">
 

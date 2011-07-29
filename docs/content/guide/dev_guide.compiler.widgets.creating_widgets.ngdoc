@@ -11,7 +11,7 @@ expression and `alert()` the user with each new value:
 
 <pre>
 // An element widget
-<my:watch exp="name"/>
+<my:watch exp="name"></my:watch>
 </pre>
 
 You can implement `my:watch` like this:
@@ -36,8 +36,8 @@ Let's implement the same widget as in the example in Defining an Element Widget,
 an attribute that can be added to any existing DOM element:
 
 <pre>
-// An attribute widget (my-watch) in a div tag
-<div my-watch="name">text</div>
+// An attribute widget (my:watch) in a div tag
+<div my:watch="name">text</div>
 </pre>
 You can implement `my:watch` attribute like this:
 <pre>
@@ -45,7 +45,7 @@ angular.widget('@my:watch', function(expression, compileElement) {
   var compiler = this;
   return function(linkElement) {
     var currentScope = this;
-    currentScope.$watch(expression, function(value){
+    currentScope.$watch(expression, function(value) {
       alert(value);
     });
   };

@@ -57,12 +57,9 @@ angular.markup('---', function(text, textNode, parentElement) {
     var compiler = this;
     var index = text.indexOf('---');
     if (index > -1) {
-        var before = compiler.text(text.substring(0, index));
-        var hr = compiler.element('hr');
-        var after = compiler.text(text.substring(index + 3));
-        textNode.after(after);
-        textNode.after(hr);
-        textNode.after(before);
+        textNode.after(text.substring(index + 3));
+        textNode.after(angular.element('<hr>'));
+        textNode.after(text.substring(0, index));
         textNode.remove();
     }
 });
