@@ -49,6 +49,13 @@ describe('browser', function(){
       this.send = function(post){
         xhr.post = post;
       };
+      this.getResponseHeader = function(header) {
+        return header;
+      };
+      this.getAllResponseHeaders = function() {
+        return 'Content-Type: application/json\n\rContent-Encoding: gzip';
+      }
+      
     };
 
     logs = {log:[], warn:[], info:[], error:[]};
@@ -143,6 +150,33 @@ describe('browser', function(){
 
       expect(code).toEqual(202);
       expect(response).toEqual('RESPONSE');
+    });
+
+    describe('response headers', function() {
+      it('should return a single response header', function() {
+        browser.xhr('GET', 'URL', null, function(code, resp, headers) {
+          expect(headers('A-Header')).toEqual('A-Header');
+        });
+        
+        xhr.status = 200;
+        xhr.responseText = 'RESPONSE';
+        xhr.readyState = 4;
+        xhr.onreadystatechange();
+      });
+
+      it('should return an object containing all response headers', function() {
+        browser.xhr('GET', 'URL', null, function(code, resp, headers) {
+          expect(headers()).toEqual({
+            'Content-Type': 'application/json',
+            'Content-Encoding': 'gzip'
+          });
+        });
+
+        xhr.status = 200;
+        xhr.responseText = 'RESPONSE';
+        xhr.readyState = 4;
+        xhr.onreadystatechange();
+      });
     });
   });
 

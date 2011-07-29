@@ -83,7 +83,8 @@ describe("resource", function() {
     expect(callback).not.toHaveBeenCalled();
     xhr.flush();
     nakedExpect(cc).toEqual({id:123, name:'misko'});
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
   it("should read resource", function(){
@@ -94,7 +95,8 @@ describe("resource", function() {
     expect(callback).not.toHaveBeenCalled();
     xhr.flush();
     nakedExpect(cc).toEqual({id:123, number:'9876'});
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
   it("should read partial resource", function(){
@@ -108,7 +110,8 @@ describe("resource", function() {
     expect(cc.number).not.toBeDefined();
     cc.$get(callback);
     xhr.flush();
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
     expect(cc.number).toEqual('9876');
   });
 
@@ -129,7 +132,8 @@ describe("resource", function() {
     expect(callback).not.toHaveBeenCalled();
     xhr.flush();
     nakedExpect(ccs).toEqual([{id:1}, {id:2}]);
-    expect(callback).toHaveBeenCalledWith(ccs);
+    expect(callback.mostRecentCall.args[0]).toEqual(ccs);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
   it("should have all arguments optional", function(){
@@ -147,14 +151,16 @@ describe("resource", function() {
     CreditCard.remove({id:123}, callback);
     expect(callback).not.toHaveBeenCalled();
     xhr.flush();
-    nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
+    nakedExpect(callback.mostRecentCall.args[0]).toEqual({});
+    nakedExpect(callback.mostRecentCall.args[1]()).toEqual({});
 
     callback.reset();
     xhr.expectDELETE("/CreditCard/333").respond(204, null);
     CreditCard.remove({id:333}, callback);
     expect(callback).not.toHaveBeenCalled();
     xhr.flush();
-    nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
+    nakedExpect(callback.mostRecentCall.args[0]).toEqual({});
+    nakedExpect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
   it('should post charge verb', function(){
@@ -183,7 +189,8 @@ describe("resource", function() {
     nakedExpect(cc).toEqual({name:'misko'});
     xhr.flush();
     nakedExpect(cc).toEqual({id:123});
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   });
 
   it('should not mutate the resource object if response contains no body', function(){
@@ -259,7 +266,9 @@ describe("resource", function() {
     it('should call the error callback if provided on non 2xx response', function() {
       CreditCard.get({id:123}, noop, callback);
       xhr.flush();
-      expect(callback).toHaveBeenCalledWith(500, ERROR_RESPONSE);
+      expect(callback.mostRecentCall.args[0]).toEqual(500);
+      expect(callback.mostRecentCall.args[1]).toEqual(ERROR_RESPONSE);
+      expect(callback.mostRecentCall.args[2]()).toEqual({});
       expect($xhrErr).not.toHaveBeenCalled();
     });
   });

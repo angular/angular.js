@@ -17,8 +17,9 @@ describe('$xhr.cache', function() {
   });
 
 
-  function callback(code, response) {
+  function callback(code, response, responseHeaders) {
     expect(code).toEqual(200);
+    expect(responseHeaders()).toEqual({});
     log = log + toJson(response) + ';';
   }
 
@@ -55,7 +56,12 @@ describe('$xhr.cache', function() {
 
 
   it('should serve requests from cache', function(){
-    cache.data.url = {value:'123'};
+    cache.data.url = {
+      value: '123',
+      headers: function() {
+        return {};
+      }
+    };
     cache('GET', 'url', null, callback);
     $browser.defer.flush();
     expect(log).toEqual('"123";');
@@ -152,13 +158,17 @@ describe('$xhr.cache', function() {
 
     cache('GET', '/url', null, successSpy, errorSpy, false, true);
     $browserXhr.flush();
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({});
     expect(successSpy).not.toHaveBeenCalled();
 
     errorSpy.reset();
     cache('GET', '/url', successSpy, errorSpy, false, true);
     $browserXhr.flush();
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({});
     expect(successSpy).not.toHaveBeenCalled();
   });
 

@@ -147,8 +147,10 @@
  *
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});
-     User.get({userId:123}, function(u){
+     User.get({userId:123}, function(u, responseHeaders){
        u.abc = true;
+       u.encoding = responseHeaders('Content-Encoding');
+       u.allHeaders = responseHeaders();
        u.$save();
      });
    </pre>

@@ -84,7 +84,10 @@ function Browser(window, document, body, XHR, $log) {
    * @param {string} method Requested method (get|post|put|delete|head|json)
    * @param {string} url Requested url
    * @param {?string} post Post data to send (null if nothing to post)
-   * @param {function(number, string)} callback Function that will be called on response
+   * @param {function(number, string, function([string]))} callback
+   *   Function that will be called on response.
+   *   The third argument is a function that can be called to return a specified response header
+   *   or an Object containing all headers (when called with no arguments).
    * @param {object=} header additional HTTP headers to send with XHR.
    *   Standard headers are:
    *   <ul>
@@ -116,7 +119,28 @@ function Browser(window, document, body, XHR, $log) {
         if (xhr.readyState == 4) {
           // normalize IE bug (http://bugs.jquery.com/ticket/1450)
           var status = xhr.status == 1223 ? 204 : xhr.status || 200;
-          completeOutstandingRequest(callback, status, xhr.responseText);
+          completeOutstandingRequest(callback, status, xhr.responseText, function(header) {
+            if (header) {
+              return xhr.getResponseHeader(header);
+            } else {
+              // Return an object containing each response header
+              var parsed = {}, key, val, i;
+              forEach(xhr.getAllResponseHeaders().split('\n'), function(line) {
+                i = line.indexOf(':');
+                key = trim(line.substr(0, i));
+                val = trim(line.substr(i + 1));
+                if (key) {
+                  if (parsed[key]) {
+                    parsed[key] += ',' + val;
+                  } else {
+                    parsed[key] = val;
+                  }
+                }
+              });
+
+              return parsed;
+            }
+          });
         }
       };
       xhr.send(post || '');
