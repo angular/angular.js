@@ -1,15 +1,70 @@
 <a name="0.9.18"><a/>
-# <angular/> 0.9.18 jiggling-armfat (in-progress) #
+# AngularJS 0.9.18 jiggling-armfat (2011-07-29) #
+
+### Features
+- made angular(.min).js
+  [ECMAScript 5 Strict Mode](https://developer.mozilla.org/en/JavaScript/Strict_mode) compliant
+- [jqLite]
+  - added `show()`, `hide()` and `eq()` methods to jqlite
+    ([commit](https://github.com/angular/angular.js/commit/7a3fdda9650a06792d9278a8cef06d544d49300f))
+- added $defer.cancel to support cancelation of tasks defered via the [$defer] service
+- [date] filter
+  - added support for `full`, `long`, `medium` and `short` date-time format flags
+    ([commit](https://github.com/angular/angular.js/commit/3af1e7ca2ee8c2acd69e5bcbb3ffc1bf51239285))
+  - added support for `z` flag, which stands for short string timezone identifier, e.g. PST
+  - internal improvements to enable localization of date filter output
+- [number] filter
+  - internal improvements to enable localization of number filter output
+- [currency] filter
+  - support for custom currency symbols via an optional param
+  - internal improvements to enable localization of number filter output
+- added [angular.version] for exposing the version of the loaded angular.js file
+- updated angular.js and angular.min.js file headers with angular version and shorter & updated
+  license info
+- [ng:options]
+  - support binding to expression (Issue [#449](https://github.com/angular/angular.js/issues/449))
+  - support iterating over objects (Issue [#448](https://github.com/angular/angular.js/issues/448))
+  - support ng:change (Issue [#463](https://github.com/angular/angular.js/issues/463))
+  - support option groups (`<optgroup>`)
+    (Issue [#450](https://github.com/angular/angular.js/issues/450))
+- [$xhr] and [$resource] support for per-request error callbacks (Issue
+  [#408](https://github.com/angular/angular.js/issues/408)) (contributed by Karl Seamon)
+
 
 ### Bug Fixes
-- Issue #449: [ng:options] should support binding to a property of an item.
-- Issue #464: [ng:options] incorrectly re-grew options on datasource change
-- Issue #448: [ng:options] should support iterating over objects
-- Issue #463: [ng:options] should support firing ng:change event
-- Issue #450: [ng:options] should support group by (select option groups)
+- make injector compatible with Rhino (HtmlUnit) (contributed by Mårten Dolk)
+  [commit](https://github.com/angular/angular.js/commit/77ba539f630c57b17d71dbf1e9c5667a7eb603b7)
+- `ie-compat.js` fixes and improvements related to fetching this file on the fly on legacy browsers
+- [jqLite]
+  - fix `bind()` when binding to more events separated by space
+    [commit](https://github.com/angular/angular.js/commit/9ee9ca13da3883d06733637f9048a83d94e6f1f8)
+  - non-existing attributes should return undefined just like in jQuery
+    [commit](https://github.com/angular/angular.js/commit/10da625ed93511dbf5d4e61ca4e42f6f2d478959)
+  - set event.target for IE<8
+    [commit](https://github.com/angular/angular.js/commit/ce80576e0b8ac9ed5a5b1f1a4dbc2446434a0002)
+- improved implementation of [ng:show] and [ng:hide] directives by using jqLite/jQuery hide and
+  show methods
+- [ng:options]
+  - fix incorrect re-growing of options on datasource change
+    (Issue [#464](https://github.com/angular/angular.js/issues/464))
 
-### Breaking changes
-- no longer support MMMMM in filter.date as we need to follow UNICODE LOCALE DATA formats.
+
+### Docs
+- added full offline support for docs (click on the link in the footer of docs.angularjs.org)
+- many content improvements and corrections across all docs (reference api, tutorial, dev guide)
+- many small design improvements
+
+
+### Other
+- doubled our e2e test suite by running all angular e2e tests with jqLite in addition to jQuery
+
+
+### Breaking changes:
+- [commit](https://github.com/angular/angular.js/commit/3af1e7ca2ee8c2acd69e5bcbb3ffc1bf51239285)
+  removed support for the `MMMMM` (long month name), use `MMMM` instead. This was done to align
+  Angular with
+  [Unicode Technical Standard #35](http://unicode.org/reports/tr35/#Date_Format_Patterns) used by
+  Closure, as well as, future DOM apis currently being proposed to w3c.
 
 
 
@@ -565,6 +620,8 @@ with the `$route` service
 [ng:checked]: http://docs.angularjs.org/#!/api/angular.directive.ng:checked
 [ng:multiple]: http://docs.angularjs.org/#!/api/angular.directive.ng:multiple
 [ng:readonly]: http://docs.angularjs.org/#!/api/angular.directive.ng:readonly
+[ng:show]: http://docs.angularjs.org/#!/api/angular.directive.ng:show
+[ng:hide]: http://docs.angularjs.org/#!/api/angular.directive.ng:hide
 [$defer]: http://docs.angularjs.org/#!/api/angular.service.$defer
 [$cookies]: http://docs.angularjs.org/#!/api/angular.service.$cookies
 [$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
@@ -572,10 +629,13 @@ with the `$route` service
 [$resource]: http://docs.angularjs.org/#!/api/angular.service.$resource
 [$orderBy]: http://docs.angularjs.org/#!/api/angular.Array.orderBy
 [date]: http://docs.angularjs.org/#!/api/angular.filter.date
+[number]: http://docs.angularjs.org/#!/api/angular.filter.number
+[currency]: http://docs.angularjs.org/#!/api/angular.filter.currency
 [directive]: http://docs.angularjs.org/#!/api/angular.directive
 [ng:autobind]: http://docs.angularjs.org/#!/api/angular.directive.ng:autobind
 [guide.di]: http://docs.angularjs.org/#!/guide/dev_guide.di
 [downloading]: http://docs.angularjs.org/#!/misc/downloading
 [contribute]: http://docs.angularjs.org/#!/misc/contribute
 [jqLite]: http://docs.angularjs.org/#!/api/angular.element
+[angular.version]: http://docs.angularjs.org/#!/api/angular.version
 [Jstd Scenario Adapter]: https://github.com/angular/angular.js/blob/master/src/jstd-scenario-adapter/Adapter.js
