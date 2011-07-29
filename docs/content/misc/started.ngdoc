@@ -4,7 +4,7 @@
 
 # Hello World!
 
-A great way for you to get started with `angular` is to create the tradtional
+A great way for you to get started with AngularJS is to create the tradtional
 "Hello World!" app:
 
 1. In your favorite text editor, create an HTML file
@@ -27,13 +27,13 @@ Now let's take a closer look at that code, and see what is going on behind
 the scenes.
 
 The first line of interest defines the `ng` namespace, which makes
-`angular` work across all browsers (especially important for IE):
+AngularJS work across all browsers (especially important for IE):
 
 <pre>
     <html xmlns:ng="http://angularjs.org">
 </pre>
 
-The next line downloads the `angular` script, and instructs `angular` to process
+The next line downloads the angular script, and instructs angular to process
 the entire HTML page when it is loaded:
 
 <pre>
@@ -41,7 +41,7 @@ the entire HTML page when it is loaded:
 ng:autobind></script>
 </pre>
 
-(For details on what happens when `angular` processes an HTML page,
+(For details on what happens when angular processes an HTML page,
 see {@link guide/dev_guide.bootstrap Bootstrap}.)
 
 Finally, this line in the `<body>` of the page is the template that describes
@@ -54,16 +54,16 @@ how to display our greeting in the UI:
 Note the use of the double curly brace markup (`{{ }}`) to bind the expression to
 the greeting text. Here the expression is the string literal 'World'.
 
-Next let's look at a more interesting example, that uses `angular` to
+Next let's look at a more interesting example, that uses AngularJS to
 bind a dynamic expression to our greeting text.
 
-# Hello <angular/> World!
+# Hello AngularJS World!
 
-This example demonstrates `angular`'s two-way data binding:
+This example demonstrates angular's two-way data binding:
 
 1. Edit the HTML file you created in the "Hello World!" example above.
 2. Replace the contents of `<body>` with the code from the __Source__ box below.
-3. Refresh your browswer window.
+3. Refresh your browser window.
 
 <doc:example>
  <doc:source>
@@ -86,7 +86,7 @@ called `yourname`.
 * You did not need to explicitly register an event listener or define an event handler for events!
 
 Now try typing your name into the input box, and notice the immediate change to
-the displayed greeting. This demonstrates the concept of `angular`'s
+the displayed greeting. This demonstrates the concept of angular's
 {@link guide/dev_guide.templates.databinding bi-directional data binding}. Any changes to the input
 field are immediately
 reflected in the model (one direction), and any changes to the model are
@@ -135,8 +135,11 @@ In addition, angular comes with a set of Services, which have the following prop
 
 # Where To Go Next
 
-* For explanations and examples of the angular concepts presented on this page, see the {@link
-guide/index Developer Guide}.
+* If you like what you've learned so far, you should definitely check out our awesome {@link
+tutorial/ Tutorial}, which walk you through the process of building real apps with AngularJS.
 
-* For additional hands-on examples of using `angular`, including more source  code that you can
-copy and paste into your own pages, take a look through the `angular` {@link cookbook/ Cookbook}.
+* For further explanations and examples of the AngularJS concepts presented on this page, see the
+{@link guide/index Developer Guide}.
+
+* For additional hands-on examples of using AngularJS, including more source  code that you can
+copy and paste into your own pages, take a look through the {@link cookbook/ Cookbook}.
