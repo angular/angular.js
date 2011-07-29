@@ -84,7 +84,9 @@ function Browser(window, document, body, XHR, $log) {
    * @param {string} method Requested method (get|post|put|delete|head|json)
    * @param {string} url Requested url
    * @param {?string} post Post data to send (null if nothing to post)
-   * @param {function(number, string)} callback Function that will be called on response
+   * @param {function(number, string, function([string]))} callback Function that will be called on
+   *   response. The third argument is a function that can be called to return a specified response
+   *   header or an Object containing all headers (when called with no arguments).
    * @param {object=} header additional HTTP headers to send with XHR.
    *   Standard headers are:
    *   <ul>
@@ -97,6 +99,8 @@ function Browser(window, document, body, XHR, $log) {
    * Send ajax request
    */
   self.xhr = function(method, url, post, callback, headers) {
+    var parsedHeaders;
+
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
@@ -123,7 +127,34 @@ function Browser(window, document, body, XHR, $log) {
         if (xhr.readyState == 4) {
           // normalize IE bug (http://bugs.jquery.com/ticket/1450)
           var status = xhr.status == 1223 ? 204 : xhr.status || 200;
-          completeOutstandingRequest(callback, status, xhr.responseText);
+          completeOutstandingRequest(callback, status, xhr.responseText, function(header) {
+            header = lowercase(header);
+
+            if (header) {
+              return parsedHeaders
+                ? parsedHeaders[header] || null
+                : xhr.getResponseHeader(header);
+            } else {
+              // Return an object containing each response header
+              parsedHeaders = {};
+
+              forEach(xhr.getAllResponseHeaders().split('\n'), function(line) {
+                var i = line.indexOf(':'),
+                    key = lowercase(trim(line.substr(0, i))),
+                    value = trim(line.substr(i + 1));
+
+                if (parsedHeaders[key]) {
+                  // Combine repeated headers
+                  // http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2
+                  parsedHeaders[key] += ', ' + value;
+                } else {
+                  parsedHeaders[key] = value;
+                }
+              });
+
+              return parsedHeaders;
+            }
+          });
         }
       };
       xhr.send(post || '');

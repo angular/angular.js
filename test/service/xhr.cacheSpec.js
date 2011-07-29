@@ -1,7 +1,7 @@
 'use strict';
 
 describe('$xhr.cache', function() {
-  var scope, $browser, $browserXhr, $xhrErr, cache, log;
+  var scope, $browser, $browserXhr, $xhrErr, cache, log, rHeaders;
 
   beforeEach(function() {
     scope = angular.scope({}, null, {'$xhr.error': $xhrErr = jasmine.createSpy('$xhr.error')});
@@ -9,6 +9,7 @@ describe('$xhr.cache', function() {
     $browserXhr = $browser.xhr;
     cache = scope.$service('$xhr.cache');
     log = '';
+    rHeaders = {};
   });
 
 
@@ -17,18 +18,21 @@ describe('$xhr.cache', function() {
   });
 
 
-  function callback(code, response) {
+  function callback(code, response, responseHeaders) {
     expect(code).toEqual(200);
+    expect(responseHeaders()).toEqual(rHeaders);
     log = log + toJson(response) + ';';
   }
 
 
   it('should cache requests', function(){
-    $browserXhr.expectGET('/url').respond('first');
+    rHeaders = {foo: 'bar'};
+
+    $browserXhr.expectGET('/url').respond('first', rHeaders);
     cache('GET', '/url', null, callback);
     $browserXhr.flush();
 
-    $browserXhr.expectGET('/url').respond('ERROR');
+    $browserXhr.expectGET('/url').respond('ERROR', rHeaders);
     cache('GET', '/url', null, callback);
     $browser.defer.flush();
     expect(log).toEqual('"first";"first";');
@@ -40,11 +44,13 @@ describe('$xhr.cache', function() {
 
 
   it('should first return cache request, then return server request', function(){
-    $browserXhr.expectGET('/url').respond('first');
+    rHeaders = {foo: 'bar'};
+
+    $browserXhr.expectGET('/url').respond('first', rHeaders);
     cache('GET', '/url', null, callback, true);
     $browserXhr.flush();
 
-    $browserXhr.expectGET('/url').respond('ERROR');
+    $browserXhr.expectGET('/url').respond('ERROR', rHeaders);
     cache('GET', '/url', null, callback, true);
     $browser.defer.flush();
     expect(log).toEqual('"first";"first";');
@@ -55,7 +61,14 @@ describe('$xhr.cache', function() {
 
 
   it('should serve requests from cache', function(){
-    cache.data.url = {value:'123'};
+    rHeaders = {foo: 'bar'};
+
+    cache.data.url = {
+      value: '123',
+      headers: function() {
+        return rHeaders;
+      }
+    };
     cache('GET', 'url', null, callback);
     $browser.defer.flush();
     expect(log).toEqual('"123";');
@@ -152,13 +165,17 @@ describe('$xhr.cache', function() {
 
     cache('GET', '/url', null, successSpy, errorSpy, false, true);
     $browserXhr.flush();
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({});
     expect(successSpy).not.toHaveBeenCalled();
 
     errorSpy.reset();
     cache('GET', '/url', successSpy, errorSpy, false, true);
     $browserXhr.flush();
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({});
     expect(successSpy).not.toHaveBeenCalled();
   });
 

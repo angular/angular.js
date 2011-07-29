@@ -22,8 +22,8 @@
  * @param {string} method HTTP method.
  * @param {string} url Destination URL.
  * @param {(string|Object)=} post Request body.
- * @param {function(number, (string|Object))} success Response success callback.
- * @param {function(number, (string|Object))=} error Response error callback.
+ * @param {function(number, (string|Object), Function)} success Response success callback.
+ * @param {function(number, (string|Object), Function)} error Response error callback.
  * @param {boolean=} [verifyCache=false] If `true` then a result is immediately returned from cache
  *   (if present) while a request is sent to the server for a fresh response that will update the
  *   cached entry. The `success` function will be called when the response is received.
@@ -55,9 +55,9 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $error, $log) {
       if (dataCached = cache.data[url]) {
 
         if (sync) {
-          success(200, copy(dataCached.value));
+          success(200, copy(dataCached.value), copy(dataCached.headers));
         } else {
-          $defer(function() { success(200, copy(dataCached.value)); });
+          $defer(function() { success(200, copy(dataCached.value), copy(dataCached.headers)); });
         }
 
         if (!verifyCache)
@@ -70,20 +70,20 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $error, $log) {
       } else {
         inflight[url] = {successes: [success], errors: [error]};
         cache.delegate(method, url, post,
-          function(status, response) {
+          function(status, response, responseHeaders) {
             if (status == 200)
-              cache.data[url] = {value: response};
+              cache.data[url] = {value: response, headers: responseHeaders};
             var successes = inflight[url].successes;
             delete inflight[url];
             forEach(successes, function(success) {
               try {
-                (success||noop)(status, copy(response));
+                (success||noop)(status, copy(response), responseHeaders);
               } catch(e) {
                 $log.error(e);
               }
             });
           },
-          function(status, response) {
+          function(status, response, responseHeaders) {
             var errors = inflight[url].errors,
                 successes = inflight[url].successes;
             delete inflight[url];
@@ -91,7 +91,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $error, $log) {
             forEach(errors, function(error, i) {
               try {
                 if (isFunction(error)) {
-                  error(status, copy(response));
+                  error(status, copy(response), copy(responseHeaders));
                 } else {
                   $error(
                     {method: method, url: url, data: post, success: successes[i]},

@@ -48,13 +48,14 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
         queue.requests = [];
         queue.callbacks = [];
         $xhr('POST', url, {requests: currentRequests},
-          function(code, response) {
+          function(code, response, responseHeaders) {
             forEach(response, function(response, i) {
               try {
                 if (response.status == 200) {
-                  (currentRequests[i].success || noop)(response.status, response.response);
+                  (currentRequests[i].success || noop)
+                      (response.status, response.response, responseHeaders);
                 } else if (isFunction(currentRequests[i].error)) {
-                    currentRequests[i].error(response.status, response.response);
+                    currentRequests[i].error(response.status, response.response, responseHeaders);
                 } else {
                   $error(currentRequests[i], response);
                 }
@@ -64,11 +65,11 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
             });
             (success || noop)();
           },
-          function(code, response) {
+          function(code, response, responseHeaders) {
             forEach(currentRequests, function(request, i) {
               try {
                 if (isFunction(request.error)) {
-                  request.error(code, response);
+                  request.error(code, response, responseHeaders);
                 } else {
                   $error(request, response);
                 }

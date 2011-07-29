@@ -18,15 +18,16 @@ describe('$xhr', function() {
   });
 
 
-  function callback(code, response) {
-    log = log + '{code=' + code + '; response=' + toJson(response) + '}';
+  function callback(code, response, responseHeader) {
+    log = log + '{code=' + code + '; response=' + toJson(response) + '; responseHeaders=' +
+        toJson(responseHeader()) + '}';
   }
 
 
   it('should forward the request to $browser and decode JSON', function(){
-    $browserXhr.expectGET('/reqGET').respond('first');
-    $browserXhr.expectGET('/reqGETjson').respond('["second"]');
-    $browserXhr.expectPOST('/reqPOST', {post:'data'}).respond('third');
+    $browserXhr.expectGET('/reqGET').respond('first', {h: 'first'});
+    $browserXhr.expectGET('/reqGETjson').respond('["second"]', {h: 'second'});
+    $browserXhr.expectPOST('/reqPOST', {post:'data'}).respond('third', {h: 'third'});
 
     $xhr('GET', '/reqGET', null, callback);
     $xhr('GET', '/reqGETjson', null, callback);
@@ -35,23 +36,23 @@ describe('$xhr', function() {
     $browserXhr.flush();
 
     expect(log).toEqual(
-        '{code=200; response="third"}' +
-        '{code=200; response=["second"]}' +
-        '{code=200; response="first"}');
+        '{code=200; response="third"; responseHeaders={"h":"third"}}' +
+        '{code=200; response=["second"]; responseHeaders={"h":"second"}}' +
+        '{code=200; response="first"; responseHeaders={"h":"first"}}');
   });
 
   it('should allow all 2xx requests', function(){
-    $browserXhr.expectGET('/req1').respond(200, '1');
+    $browserXhr.expectGET('/req1').respond(200, '1', {h: '1'});
     $xhr('GET', '/req1', null, callback);
     $browserXhr.flush();
 
-    $browserXhr.expectGET('/req2').respond(299, '2');
+    $browserXhr.expectGET('/req2').respond(299, '2', {h: '2'});
     $xhr('GET', '/req2', null, callback);
     $browserXhr.flush();
 
     expect(log).toEqual(
-        '{code=200; response="1"}' +
-        '{code=299; response="2"}');
+        '{code=200; response="1"; responseHeaders={"h":"1"}}' +
+        '{code=299; response="2"; responseHeaders={"h":"2"}}');
   });
 
 
@@ -120,18 +121,24 @@ describe('$xhr', function() {
     var errorSpy = jasmine.createSpy('error'),
         successSpy = jasmine.createSpy('success');
 
-    $browserXhr.expectGET('/url').respond(500, 'error');
+    $browserXhr.expectGET('/url').respond(500, 'error', {foo: 'bar'});
     $xhr('GET', '/url', null, successSpy, errorSpy);
     $browserXhr.flush();
 
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]('foo')).toEqual('bar');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({foo: 'bar'});
     expect(successSpy).not.toHaveBeenCalled();
 
     errorSpy.reset();
     $xhr('GET', '/url', successSpy, errorSpy);
     $browserXhr.flush();
 
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]('foo')).toEqual('bar');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({foo: 'bar'});
     expect(successSpy).not.toHaveBeenCalled();
   });
 

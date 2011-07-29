@@ -152,7 +152,14 @@ function MockBrowser() {
           throw new Error("Missing HTTP request header: " + key + ": " + value);
         }
       });
-      callback(expectation.code, expectation.response);
+      callback(expectation.code, expectation.response, function(header) {
+        if (header) {
+          header = header.toLowerCase();
+          return expectation.responseHeaders && expectation.responseHeaders[header] || null;
+        } else {
+          return expectation.responseHeaders || {};
+        }
+      });
     });
   };
   self.xhr.expectations = expectations;
@@ -162,12 +169,22 @@ function MockBrowser() {
     if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || (expectations[method] = {});
     return {
-      respond: function(code, response) {
+      respond: function(code, response, responseHeaders) {
         if (!angular.isNumber(code)) {
+          responseHeaders = response;
           response = code;
           code = 200;
         }
-        expect[url] = {code:code, response:response, headers: headers || {}};
+        angular.forEach(responseHeaders, function(value, key) {
+          delete responseHeaders[key];
+          responseHeaders[key.toLowerCase()] = value;
+        });
+        expect[url] = {
+          code: code,
+          response: response,
+          headers: headers || {},
+          responseHeaders: responseHeaders || {}
+        };
       }
     };
   };
@@ -268,7 +285,7 @@ function MockBrowser() {
   self.defer = function(fn, delay) {
     delay = delay || 0;
     self.deferredFns.push({time:(self.defer.now + delay), fn:fn, id: self.deferredNextId});
-    self.deferredFns.sort(function(a,b){ return a.time - b.time;});
+    self.deferredFns.sort(function(a,b){return a.time - b.time;});
     return self.deferredNextId++;
   };
 
@@ -374,7 +391,7 @@ angular.service('$browser', function(){
  * See {@link angular.mock} for more info on angular mocks.
  */
 angular.service('$exceptionHandler', function() {
-  return function(e) { throw e;};
+  return function(e) {throw e;};
 });
 
 
@@ -394,10 +411,10 @@ angular.service('$log', MockLogFactory);
 
 function MockLogFactory() {
   var $log = {
-    log: function(){ $log.log.logs.push(arguments); },
-    warn: function(){ $log.warn.logs.push(arguments); },
-    info: function(){ $log.info.logs.push(arguments); },
-    error: function(){ $log.error.logs.push(arguments); }
+    log: function(){$log.log.logs.push(arguments);},
+    warn: function(){$log.warn.logs.push(arguments);},
+    info: function(){$log.info.logs.push(arguments);},
+    error: function(){$log.error.logs.push(arguments);}
   };
 
   $log.log.logs = [];

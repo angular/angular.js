@@ -18,8 +18,9 @@ describe('$xhr.bulk', function() {
   });
 
 
-  function callback(code, response) {
+  function callback(code, response, responseHeaders) {
     expect(code).toEqual(200);
+    expect(responseHeaders()).toEqual({});
     log = log + toJson(response) + ';';
   }
 
@@ -81,6 +82,8 @@ describe('$xhr.bulk', function() {
     $browserXhr.flush();
 
     expect($xhrError).not.toHaveBeenCalled();
-    expect(callback).toHaveBeenCalledWith(404, 'NotFound');
+    expect(callback.mostRecentCall.args[0]).toEqual(404);
+    expect(callback.mostRecentCall.args[1]).toEqual('NotFound');
+    expect(callback.mostRecentCall.args[2]()).toEqual({});
   });
 });

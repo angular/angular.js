@@ -111,7 +111,7 @@ ResourceFactory.prototype = {
           action.method,
           route.url(extend({}, action.params || {}, extractParams(data), params)),
           data,
-          function(status, response) {
+          function(status, response, responseHeaders) {
             if (response) {
               if (action.isArray) {
                 value.length = 0;
@@ -122,7 +122,7 @@ ResourceFactory.prototype = {
                 copy(response, value);
               }
             }
-            (success||noop)(value);
+            (success||noop)(value, responseHeaders);
           },
           error || action.verifyCache,
           action.verifyCache);
