@@ -967,11 +967,11 @@ function angularInit(config, document){
 
     // Opera outputs 'en' for window.navigator.language
     if (locale !== 'en' && locale !== 'en-us') {
-      $browser.addJs(config.base_url + 'angular_' + locale, null, function() {
+      $browser.addJs(config.base_url + 'angular_' + locale + '.js', null, function() {
         if (locale !== angular.service('$locale').IDENTIFIER) {
           //when it fails to load locale specific file, fall back to region file.
           //e.g. when angular_en_xxx.js does not exist, load angular_en.js instead
-          $browser.addJs(config.base_url + 'angular_' + locale.split('_')[0], null, function() {
+          $browser.addJs(config.base_url + 'angular_' + locale.split('-')[0] + '.js', null, function() {
             angularCompile(element, config, scope);
           });
         } else {
