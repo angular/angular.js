@@ -49,6 +49,8 @@ function setter(instance, path, value){
 var scopeId = 0,
     getterFnCache = {},
     compileCache = {},
+    eventTrigger = 0, //trigger implemented by watching value incrementation
+    eventPayload = null; //temporal payload storage during event fire
     JS_KEYWORDS = {};
 forEach(
     ("abstract,boolean,break,byte,case,catch,char,class,const,continue,debugger,default," +
@@ -128,6 +130,8 @@ function errorHandlerFor(element, error) {
  * * {@link angular.scope.$set $set()} -
  * * {@link angular.scope.$tryEval $tryEval()} -
  * * {@link angular.scope.$watch $watch()} -
+ * * {@link angular.scope.$watch $on()} -
+ * * {@link angular.scope.$watch $fire()} -
  *
  * For more information about how angular scope objects work, see {@link guide/dev_guide.scopes
  * Angular Scope Objects} in the angular Developer Guide.
@@ -504,6 +508,52 @@ function createScope(parent, providers, instanceCache) {
       child.$become.apply(instance, concat([constructor], arguments, 1));
       instance.$onEval(child.$eval);
       return child;
+    },
+    
+    /**
+     * @workInProgress
+     * @ngdoc function
+     * @name angular.scope.$fireEvent
+     * @function
+     *
+     * @description
+     * Fires event with specified name and any number of extra arguments,
+     * see {@link angular.scope.$onEvent}.
+     *
+     * @param {string} eventName event name.
+     * @param {...*} args Optional arguments, payload of the event.
+     */
+    $fireEvent: function() {
+      try {
+        eventPayload = arguments;
+        eventTrigger += 1;
+        instance.$root.$eval();
+      } finally {
+        eventPayload = null;
+      }
+    },
+    
+    /**
+     * @workInProgress
+     * @ngdoc function
+     * @name angular.scope.$onEvent
+     * @function
+     *
+     * @description
+     * Registers event listener for event with given name and any number
+     * of additional parameters, see {@link angular.scope.$fireEvent}.
+     *
+     * @param {string} eventName event name.
+     * @param {function} callback invoked when event fires;
+     *   the arguments of callback are <b>all</b> the arguments of $fire method 
+     *   (eventName and optional args).
+     */    
+    $onEvent: function(eventName, callback) {
+      instance.$watch(function() {
+        return eventTrigger;
+      }, function() {
+        eventPayload[0] === eventName && callback.apply(instance, eventPayload);
+      }, /*exception handler*/null, /*first run*/false);
     }
 
   });
