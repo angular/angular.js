@@ -119,6 +119,7 @@
              'service/xhr.cache.js',
              'service/xhr.error.js',
              'service/xhr.js',
+             'service/locale.js',
 
              'apis.js',
              'filters.js',
