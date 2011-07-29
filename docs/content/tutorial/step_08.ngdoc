@@ -181,8 +181,8 @@ Nexus S details page.
 
 # Summary
 
-Now that the phone details view is in place, proceed to step 9 to learn how to write your own
-custom display filter.
+Now that the phone details view is in place, proceed to {@link step_09 step 9} to learn how to
+write your own custom display filter.
 
 
 <ul doc:tutorial-nav="8"></ul>

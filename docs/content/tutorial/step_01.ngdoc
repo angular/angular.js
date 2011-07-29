@@ -50,8 +50,8 @@ __`app/index.html`:__
 
 # Summary
 
-This addition to your app uses static HTML to display the list. Now, let's go to step 2 to learn
-how to use angular to dynamically generate the same list.
+This addition to your app uses static HTML to display the list. Now, let's go to {@link step_02
+step 2} to learn how to use angular to dynamically generate the same list.
 
 
 <ul doc:tutorial-nav="1"></ul>

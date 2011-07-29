@@ -58,11 +58,11 @@ __`app/index.html`:__
 To dynamically generate links that will in the future lead to phone detail pages, we used the
 now-familiar {@link guide/dev_guide.compiler.markup double-curly brace markup} in the `href`
 attribute values. In step 2, we added the `{{phone.name}}` binding as the element content. In this
-step the '{{phone.id}}' binding is used in the element attribute.
+step the `{{phone.id}}` binding is used in the element attribute.
 
 We also added phone images next to each record using an image tag with the {@link
 api/angular.directive.ng:src ng:src} directive. That directive prevents the browser from treating
-the angular `{{ exppression }}` markup literally, which it would have done if we had only specified
+the angular `{{ expression }}` markup literally, which it would have done if we had only specified
 an attribute binding in a regular `src` attribute (`<img src="{{phone.imageUrl}}">`). Using
 `ng:src` prevents the browser from making an http request to an invalid location.
 
@@ -98,8 +98,8 @@ making an extraneous request to `/app/%7B%7Bphone.imageUrl%7D%7D` (or
 
 # Summary
 
-Now that you have added phone images and links, go to step 7 to learn about angular layout
-templates and how angular makes it easy to create applications that have multiple views.
+Now that you have added phone images and links, go to {@link step_07 step 7} to learn about angular
+layout templates and how angular makes it easy to create applications that have multiple views.
 
 
 <ul doc:tutorial-nav="6"></ul>

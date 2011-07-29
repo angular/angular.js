@@ -209,8 +209,8 @@ to the first 5 in the list. Use the following code in the xhr callback:
 # Summary
 
 Now that you have learned how easy it is to use angular services (thanks to angular's
-implementation of dependency injection), go to step 6, where you will add some thumbnail images of
-phones and some links.
+implementation of dependency injection), go to {@link step_06 step 6}, where you will add some
+thumbnail images of phones and some links.
 
 
 <ul doc:tutorial-nav="5"></ul>

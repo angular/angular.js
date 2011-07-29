@@ -5,8 +5,8 @@
 <ul doc:tutorial-nav="0"></ul>
 
 
-You are now ready to build the phonecat application. In this step, you will become familiar with
-the most important source code files, learn how to start the development servers bundled with
+You are now ready to build the Angular phonecat application. In this step, you will become familiar
+with the most important source code files, learn how to start the development servers bundled with
 angular-seed, and run the application in the browser.
 
 
@@ -78,7 +78,7 @@ directory.</li>
 
   <doc:tutorial-instruction id="ss-mac" title="Snapshots on Mac/Linux">
     <ol>
-      <li><p>In angular-phonecat directory, run this command:</p>
+      <li><p>In the angular-phonecat directory, run this command:</p>
       <pre><code>./goto_step.sh 0</code></pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
@@ -110,7 +110,7 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
 
   <doc:tutorial-instruction id="ss-win" title="Snapshots on Windows">
     <ol>
-      <li><p>Open windows command line and run this command (in angular-phonecat directory):</p>
+      <li><p>Open windows command line and run this command (in the angular-phonecat directory):</p>
       <pre><code>goto_step.bat 0</code></pre>
       <p>This resets your workspace to step 0 of the tutorial app.</p>
       <p>You must repeat this for every future step in the tutorial and change the number to
@@ -144,7 +144,7 @@ href="http://localhost:8000/app/index.html">http://localhost:8000/app/index.html
 You can now see the page in your browser. It's not very exciting, but that's OK.
 
 The static HTML page that displays "Nothing here yet!" was constructed with the HTML code shown
-below. The code contains some key angular elements that we will need going forward.
+below. The code contains some key Angular elements that we will need going forward.
 
 __`app/index.html`:__
 <pre>
@@ -172,25 +172,25 @@ __`app/index.html`:__
 
           <html xmlns:ng="http://angularjs.org">
 
-  This `xmlns` declaration for the `ng` namespace must be specified in all angular applications in
-order to make angular work with XHTML and IE versions older than 9 (regardless of whether you are
+  This `xmlns` declaration for the `ng` namespace must be specified in all Angular applications in
+order to make Angular work with XHTML and IE versions older than 9 (regardless of whether you are
 using XHTML or HTML).
 
-* angular script tag
+* Angular script tag
 
           <script src="lib/angular/angular.js" ng:autobind>
 
   This single line of code is all that is needed to bootstrap an angular application.
 
   The code downloads the `angular.js` script and registers a callback that will be executed by the
-browser when the containing HTML page is fully downloaded. When the callback is executed, angular
-looks for the {@link api/angular.directive.ng:autobind ng:autobind} attribute. If angular finds
+browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
+looks for the {@link api/angular.directive.ng:autobind ng:autobind} attribute. If Angular finds
 `ng:autobind`, it creates a root scope for the application and associates it with the `<html>`
 element of the template:
 
   <img src="img/tutorial/tutorial_00_final.png">
 
-    As you will see shortly, everything in angular is evaluated within a scope. We'll learn more
+    As you will see shortly, everything in Angular is evaluated within a scope. We'll learn more
 about this in the next steps.
 
 
@@ -198,7 +198,7 @@ about this in the next steps.
 
 Most of the files in your working directory come from the {@link
 https://github.com/angular/angular-seed angular-seed project} which is typically used to bootstrap
-new angular projects. The seed project includes the latest angular libraries, test libraries,
+new Angular projects. The seed project includes the latest Angular libraries, test libraries,
 scripts and a simple example app, all pre-configured for developing a typical web app.
 
 For the purposes of this tutorial, we modified the angular-seed with the following changes:
@@ -210,7 +210,7 @@ For the purposes of this tutorial, we modified the angular-seed with the followi
 
 # Summary
 
-Now let's go to step 1 and add some content to the web app.
+Now let's go to {@link step_01 step 1} and add some content to the web app.
 
 
 <ul doc:tutorial-nav="0"></ul>

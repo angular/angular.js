@@ -1,23 +1,23 @@
 @ngdoc overview
-@name Tutorial: 2 - Angular Template
+@name Tutorial: 2 - Angular Templates
 @description
 
 <ul doc:tutorial-nav="2"></ul>
 
 
-Now it's time to make this web page dynamic with angular. We'll also add a test that verifies the
+Now it's time to make the web page dynamic -- with Angular. We'll also add a test that verifies the
 code for the controller we are going to add.
 
-There are many ways to structure the code for an application. With angular, we encourage the use of
-{@link http://en.wikipedia.org/wiki/Model–View–Controller the MVC design pattern} to decouple the
-code and separate concerns. With that in mind, let's use a little angular and JavaScript to add
-model, view, and controller components to our app.
+There are many ways to structure the code for an application. For Angular apps, we encourage the
+use of {@link http://en.wikipedia.org/wiki/Model–View–Controller the Model-View-Controller (MVC)
+design pattern} to decouple the code and to separate concerns. With that in mind, let's use a
+little Angular and JavaScript to add model, view, and controller components to our app.
 
 
 <doc:tutorial-instructions step="2"></doc:tutorial-instructions>
 
 
-The app now contains a list with 3 phones.
+The app now contains a list with three phones.
 
 The most important changes are listed below. You can see the full diff on {@link
 https://github.com/angular/angular-phonecat/compare/step-1...step-2 GitHub}:
@@ -25,7 +25,7 @@ https://github.com/angular/angular-phonecat/compare/step-1...step-2 GitHub}:
 
 ## Template for the View
 
-The __view__ component is constructed by angular from this template:
+The __view__ component is constructed by Angular from this template:
 
 __`app/index.html`:__
 <pre>
@@ -46,22 +46,24 @@ __`app/index.html`:__
 </pre>
 
 We replaced the hard-coded phone list with the {@link api/angular.widget.@ng:repeat ng:repeat
-widget} and two {@link guide/dev_guide.expressions angular expressions} enclosed in curly braces:
+widget} and two {@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
-* The `ng:repeat="phone in phones"` statement in the `<li>` tag is an angular repeater.  It tells
-angular to create a `<li>` element for each phone in the phones list, using the first `<li>` tag as
-the template.
+* The `ng:repeat="phone in phones"` statement in the `<li>` tag is an Angular repeater. The
+repeater tells Angular to create a `<li>` element for each phone in the list using the first `<li>`
+tag as the template.
 
       <img src="img/tutorial/tutorial_02_final.png">
 
-* The curly braces around `phone.name` and `phone.snippet` are an example of {@link
-guide/dev_guide.compiler.markup angular markup}. The curly markup is shorthand for the angular
-directive {@link api/angular.directive.ng:bind ng:bind}. The `ng:bind` directives indicate to
-angular that these are template binding points. Binding points are locations in the template where
-angular creates data-binding between the view and the model. In angular, the view is a projection
-of the model through the HTML template. This means that whenever the model changes, angular
-refreshes the appropriate binding points, which updates the view.
+* The curly braces around `phone.name` and `phone.snippet` are examples of {@link
+guide/dev_guide.compiler.markup Angular markup}. The curly markup is shorthand for the Angular
+directive {@link api/angular.directive.ng:bind ng:bind}. An `ng:bind` directive indicates a
+template binding point to Angular. Binding points are locations in a template where Angular creates
+data-binding between the view and the model.
+
+In Angular, the view is a projection of the model through the HTML template. This means that
+whenever the model changes, Angular refreshes the appropriate binding points, which updates the
+view.
 
 
 ## Model and Controller
@@ -86,26 +88,27 @@ function PhoneListCtrl() {
 
 Although the controller is not yet doing very much controlling, it is playing a crucial role. By
 providing context for our data model, the controller allows us to establish data-binding between
-the model and the view. Note in the following how we connected the dots between our presentation,
-data, and logic components:
+the model and the view. We connected the dots between the presentation, data, and logic components
+as follows:
 
 * The name of our controller function (in the JavaScript file `controllers.js`) matches the {@link
 api/angular.directive.ng:controller ng:controller} directive in the `<body>` tag (`PhoneListCtrl`).
-* We instantiated our data within the scope of our controller function, and our template binding
+* The data is instantiated within the *scope* of our controller function; our template binding
 points are located within the block bounded by the `<body ng:controller="PhoneListCtrl">` tag.
 
-Angular scopes are a crucial concept in angular; you can think of scopes as the glue that makes the
-template, model and controller all work together. Angular uses scopes, along with the information
-contained in the template, data model, and controller, to keep the model and view separated but in
-sync. Any changes to the model are reflected in the view; any changes that occur in the view are
-reflected in the model. To learn more about angular scopes, see the {@link api/angular.scope
-angular scope documentation}.
+  The concept of a scope in Angular is crucial; a scope can be seen as the glue which allows the
+template, model and controller to work together. Angular uses scopes, along with the information
+contained in the template, data model, and controller, to keep models and views separate, but in
+sync. Any changes made to the model are reflected in the view; any changes that occur in the view
+are reflected in the model.
+
+  To learn more about Angular scopes, see the {@link api/angular.scope angular scope documentation}.
 
 
 ## Tests
 
-The "Angular way" makes it easy for us to test as we develop; the unit test for your newly created
-controller looks as follows:
+The "Angular way" makes it easy to test code as it is being developed. Take a look at the following
+unit test for your newly created controller:
 
 __`test/unit/controllersSpec.js`:__
 <pre>
@@ -121,14 +124,16 @@ describe('PhoneCat controllers', function() {
 });
 </pre>
 
-Ease of testing is another cornerstone of angular's design philosophy. All we are doing here is
-showing how easy it is to create a unit test. The test verifies that we have 3 records in the
-phones array.
+The test verifies that we have three records in the phones array and the example demonstrates how
+easy it is to create a unit test for code in Angular. Since testing is such a critical part of
+software development, we make it easy to create tests in Angular so that developers are encouraged
+to write them.
 
 Angular developers prefer the syntax of Jasmine's Behavior-driven Development  (BDD) framework when
-writing tests. Although Jasmine is not required by angular, we used it to write all tests in this
-tutorial. You can learn about Jasmine on the {@link http://pivotal.github.com/jasmine/ Jasmine home
-page} and on the {@link https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
+writing tests. Although Angular does not require you to use Jasmine, we wrote all of the tests in
+this tutorial in Jasmine. You can learn about Jasmine on the {@link
+http://pivotal.github.com/jasmine/ Jasmine home page} and on the {@link
+https://github.com/pivotal/jasmine/wiki Jasmine wiki}.
 
 The angular-seed project is pre-configured to run all unit tests using {@link
 http://code.google.com/p/js-test-driver/ JsTestDriver}. To run the test, do the following:
@@ -189,8 +194,9 @@ and kill the script, then repeat the procedure above.
 
 # Summary
 
-You now have a dynamic app that features separate model, view, and controller components, and
-you're testing as you go. Now, let's go to step 3 to learn how to add full text search to the app.
+You now have a dynamic app that features separate model, view, and controller components, and you
+are testing as you go. Now, let's go to {@link step_03 step 3} to learn how to add full text search
+to the app.
 
 
 <ul doc:tutorial-nav="2"></ul>
