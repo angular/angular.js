@@ -122,6 +122,7 @@ li {
 #navbar a:link, #navbar a:visited {
   font-size: 1.2em;
   color: #FFF;
+  font-weight: bold;
   text-decoration: none;
   text-align: center;
   display: inline-block;
@@ -137,7 +138,6 @@ li {
 
 
 #navbar a.current {
-  font-weight: bold;
   background-color: #333;
 
   -webkit-border-radius:10px;
