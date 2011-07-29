@@ -1,0 +1,16 @@
+<!document html>
+<html>
+  <head> 
+    <meta charset="utf-8">
+    <title>locale test</title>
+    <script src="../../build/angular.js" ng:autobind></script>
+    <script src="../../build/i18n/angular-locale_sk-sk.js"></script>
+  </head>
+  <body>
+    <input type="text" name="input" value="234234443432"><br>
+    date: {{input | date:"medium"}}<br>
+    date: {{input | date:"longDate"}}<br>
+    number: {{input | number}}<br>
+    currency: {{input | currency }}
+  </body>
+</html> 
