@@ -287,7 +287,8 @@ extend(angularValidator, {
     if (value.match(/^\+\d{2,3} (\(\d{1,5}\))?[\d ]+\d$/)) {
       return null;
     }
-    return "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
+    return "Phone number needs to be in 1(987)654-3210 format in North America " +
+           "or +999 (123) 45678 906 internationally.";
   },
 
   /**

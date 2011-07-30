@@ -9,7 +9,7 @@ function getter(instance, path, unboundFn) {
   for ( var i = 0; i < len; i++) {
     key = element[i];
     if (!key.match(/^[\$\w][\$\w\d]*$/))
-        throw "Expression '" + path + "' is not a valid expression for accesing variables.";
+        throw "Expression '" + path + "' is not a valid expression for accessing variables.";
     if (instance) {
       lastInstance = instance;
       instance = instance[key];
@@ -202,7 +202,7 @@ function createScope(parent, providers, instanceCache) {
      * @description
      * Assigns a value to a property of the current scope specified via `property_chain`. Unlike in
      * JavaScript, if there are any `undefined` intermediary properties, empty objects are created
-     * and assigned in to them instead of throwing an exception.
+     * and assigned to them instead of throwing an exception.
      *
        <pre>
          var scope = angular.scope();
@@ -368,7 +368,7 @@ function createScope(parent, providers, instanceCache) {
      *    parameters, `newValue` and `oldValue`.
      * @param {(function()|DOMElement)=} [exceptionHanlder=angular.service.$exceptionHandler] Handler
      *    that gets called when `watchExp` or `listener` throws an exception. If a DOMElement is
-     *    specified as handler, the element gets decorated by angular with the information about the
+     *    specified as a handler, the element gets decorated by angular with the information about the
      *    exception.
      * @param {boolean=} [initRun=true] Flag that prevents the first execution of the listener upon
      *    registration.

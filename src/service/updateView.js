@@ -34,7 +34,7 @@
  *      or 'XHR' (instead of {@link angular.service.$xhr}) then you may be changing the model
  *      without angular knowledge and you may need to call '$updateView()' directly.
  *
- * NOTE: if you wish to update the view immediately (without delay), you can do so by calling
+ * Note: if you wish to update the view immediately (without delay), you can do so by calling
  * {@link angular.scope.$eval} at any time from your code:
  * <pre>scope.$root.$eval()</pre>
  *

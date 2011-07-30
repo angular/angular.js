@@ -239,7 +239,7 @@ function Browser(window, document, body, XHR, $log) {
    * The listener gets called with either HashChangeEvent object or simple object that also contains
    * `oldURL` and `newURL` properties.
    *
-   * NOTE: this api is intended for use only by the $location service. Please use the
+   * Note: this api is intended for use only by the $location service. Please use the
    * {@link angular.service.$location $location service} to monitor hash changes in angular apps.
    *
    * @param {function(event)} listener Listener function to be called when url hash changes.
