@@ -27,6 +27,8 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|#)/,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
 
+// TODO: Seems like this code needs to be updated to support HTML5
+
 // Empty Elements - HTML 4.01
 var emptyElements = makeMap("area,br,col,hr,img");
 

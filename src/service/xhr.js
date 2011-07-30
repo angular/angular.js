@@ -6,7 +6,7 @@
  * @name angular.service.$xhr
  * @function
  * @requires $browser $xhr delegates all XHR requests to the `$browser.xhr()`. A mock version
- *                    of the $browser exists which allows setting expectaitions on XHR requests
+ *                    of the $browser exists which allows setting expectations on XHR requests
  *                    in your tests
  * @requires $xhr.error $xhr delegates all non `2xx` response code to this service.
  * @requires $log $xhr delegates all exceptions to `$log.error()`.
@@ -83,7 +83,7 @@
  * cookie called `XSRF-TOKEN` on first HTTP GET request. On subsequent non-GET requests the server
  * can verify that the cookie matches `X-XSRF-TOKEN` HTTP header, and therefore be sure that only
  * JavaScript running on your domain could have read the token. The token must be unique for each
- * user and must be verifiable by  the server (to prevent the JavaScript making up its own tokens).
+ * user and must be verifiable by the server (to prevent the JavaScript making up its own tokens).
  * We recommend that the token is a digest of your site's authentication cookie with
  * {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
  *
