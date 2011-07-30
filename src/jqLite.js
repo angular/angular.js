@@ -23,7 +23,7 @@
  * focus on the most commonly needed functionality and minimal footprint. For this reason only a
  * limited number of jQuery methods, arguments and invocation styles are supported.
  *
- * NOTE: All element references in angular are always wrapped with jQuery (lite) and are never
+ * Note: All element references in angular are always wrapped with jQuery (lite) and are never
  * raw DOM references.
  *
  * ## Angular's jQuery lite implements these functions:
@@ -152,7 +152,7 @@ function JQLiteData(element, key, value) {
 
 function JQLiteHasClass(element, selector, _) {
   // the argument '_' is important, since it makes the function have 3 arguments, which
-  // is neede for delegate function to realize the this is a getter.
+  // is needed for delegate function to realize the this is a getter.
   var className = " " + selector + " ";
   return ((" " + element.className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1);
 }

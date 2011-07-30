@@ -6,7 +6,7 @@
  * @name angular.formatter
  * @description
  *
- * Formatters are used for translating data formats between those used in for display and those used
+ * Formatters are used for translating data formats between those used for display and those used
  * for storage.
  *
  * Following is the list of built-in angular formatters:

@@ -64,7 +64,8 @@ describe('ValidatorTest', function(){
   });
 
   it('Phone', function() {
-    var error = "Phone number needs to be in 1(987)654-3210 format in North America or +999 (123) 45678 906 internationaly.";
+    var error = "Phone number needs to be in 1(987)654-3210 format in North America " +
+                "or +999 (123) 45678 906 internationally.";
     assertEquals(angular.validator.phone("ab"), error);
     assertEquals(null, angular.validator.phone("1(408)757-3023"));
     assertEquals(null, angular.validator.phone("+421 (0905) 933 297"));

@@ -89,7 +89,7 @@ Template.prototype = {
  * The compilation is a process of walking the DOM tree and trying to match DOM elements to
  * {@link angular.markup markup}, {@link angular.attrMarkup attrMarkup},
  * {@link angular.widget widgets}, and {@link angular.directive directives}. For each match it
- * executes coresponding markup, attrMarkup, widget or directive template function and collects the
+ * executes corresponding markup, attrMarkup, widget or directive template function and collects the
  * instance functions into a single template function which is then returned.
  *
  * The template function can then be used once to produce the view or as it is the case with
@@ -118,7 +118,7 @@ Template.prototype = {
  *               root scope is created.
  *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
  *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
- *               cloned elements to the DOM document at the approriate place. The `cloneAttachFn` is
+ *               cloned elements to the DOM document at the appropriate place. The `cloneAttachFn` is
  *               called as: <br/> `cloneAttachFn(clonedElement, scope)` where:
  *
  *      * `clonedElement` - is a clone of the original `element` passed into the compiler.
@@ -234,7 +234,7 @@ Compiler.prototype = {
    * not a problem, but under some circumstances the values for data
    * is not available until after the full view is computed. If such
    * values are needed before they are computed the order of
-   * evaluation can be change using ng:eval-order
+   * evaluation can be changed using ng:eval-order
    *
    * @element ANY
    * @param {integer|string=} [priority=0] priority integer, or FIRST, LAST constant

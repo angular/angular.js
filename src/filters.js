@@ -40,10 +40,10 @@
  *
  * @param {number} amount Input to filter.
  * @param {string=} symbol Currency symbol or identifier to be displayed.
- * @returns {string} Formated number.
+ * @returns {string} Formatted number.
  *
  * @css ng-format-negative
- *   When the value is negative, this css class is applied to the binding making it by default red.
+ *   When the value is negative, this css class is applied to the binding making it (by default) red.
  *
  * @example
    <doc:example>
@@ -82,7 +82,7 @@ angularFilter.currency = function(amount, currencySymbol){
  * @description
  * Formats a number as text.
  *
- * If the input is not a number empty string is returned.
+ * If the input is not a number an empty string is returned.
  *
  * @param {number|string} number Number to format.
  * @param {(number|string)=} [fractionSize=2] Number of decimal places to round the number to.
@@ -492,7 +492,7 @@ angularFilter.uppercase = uppercase;
  *
  *   The input is sanitized by parsing the html into tokens. All safe tokens (from a whitelist) are
  *   then serialized back to properly escaped html string. This means that no unsafe input can make
- *   it into the returned string, however since our parser is more strict than a typical browser
+ *   it into the returned string, however, since our parser is more strict than a typical browser
  *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
  *   browser, won't make it through the sanitizer.
  *
@@ -581,7 +581,7 @@ angularFilter.html =  function(html, option){
  *
  * @description
  *   Finds links in text input and turns them into html links. Supports http/https/ftp/mailto and
- *   plane email address links.
+ *   plain email address links.
  *
  * @param {string} text Input text.
  * @returns {string} Html-linkified text.

@@ -6,7 +6,7 @@
  * @name angular.widget
  * @description
  *
- * An angular widget can be either a custom attribute that modifies an existing DOM elements or an
+ * An angular widget can be either a custom attribute that modifies an existing DOM element or an
  * entirely new DOM element.
  *
  * During html compilation, widgets are processed after {@link angular.markup markup}, but before
@@ -39,7 +39,7 @@
  * @description
  * The most common widgets you will use will be in the form of the
  * standard HTML set. These widgets are bound using the `name` attribute
- * to an expression. In addition they can have `ng:validate`, `ng:required`,
+ * to an expression. In addition, they can have `ng:validate`, `ng:required`,
  * `ng:format`, `ng:change` attribute to further control their behavior.
  *
  * @usageContent
@@ -292,7 +292,7 @@ function compileFormatter(expr) {
  *
  * @description
  * The `ng:format` attribute widget formats stored data to user-readable text and parses the text
- * back to the stored form. You might find this useful for example if you collect user input in a
+ * back to the stored form. You might find this useful, for example, if you collect user input in a
  * text field but need to store the data in the model as a list. Check out
  * {@link angular.formatter formatters} to learn more.
  *
@@ -437,7 +437,7 @@ function noopAccessor() { return { get: noop, set: noop }; }
 /*
  * TODO: refactor
  *
- * The table bellow is not quite right. In some cases the formatter is on the model side
+ * The table below is not quite right. In some cases the formatter is on the model side
  * and in some cases it is on the view side. This is a historical artifact
  *
  * The concept of model/view accessor is useful for anyone who is trying to develop UI, and
@@ -1341,12 +1341,12 @@ angularWidget('@ng:repeat', function(expression, element){
  * Sometimes it is necessary to write code which looks like bindings but which should be left alone
  * by angular. Use `ng:non-bindable` to make angular ignore a chunk of HTML.
  *
- * NOTE: `ng:non-bindable` looks like a directive, but is actually an attribute widget.
+ * Note: `ng:non-bindable` looks like a directive, but is actually an attribute widget.
  *
  * @element ANY
  *
  * @example
- * In this example there are two location where a siple binding (`{{}}`) is present, but the one
+ * In this example there are two location where a simple binding (`{{}}`) is present, but the one
  * wrapped in `ng:non-bindable` is left alone.
  *
  * @example
