@@ -1,9 +1,8 @@
 <a name="0.9.18"><a/>
-# AngularJS 0.9.18 jiggling-armfat (2011-07-29) #
+# 0.9.18 jiggling-armfat (2011-07-29) #
 
 ### Features
-- made angular(.min).js
-  [ECMAScript 5 Strict Mode](https://developer.mozilla.org/en/JavaScript/Strict_mode) compliant
+- [ECMAScript 5 Strict Mode](https://developer.mozilla.org/en/JavaScript/Strict_mode) compliance
 - [jqLite]
   - added `show()`, `hide()` and `eq()` methods to jqlite
     ([commit](https://github.com/angular/angular.js/commit/7a3fdda9650a06792d9278a8cef06d544d49300f))
