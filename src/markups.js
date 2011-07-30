@@ -12,8 +12,8 @@
  * Markup extensions do not themselves produce linking functions. Think of markup as a way to
  * produce shorthand for a {@link angular.widget widget} or a {@link angular.directive directive}.
  *
- * The most prominent example of an markup in angular is the built-in double curly markup
- * `{{expression}}`, which is a shorthand for `<span ng:bind="expression"></span>`.
+ * The most prominent example of a markup in angular is the built-in double curly markup
+ * `{{expression}}`, which is shorthand for `<span ng:bind="expression"></span>`.
  *
  * Create custom markup like this:
  *
@@ -34,7 +34,7 @@
  * @description
  *
  * Attribute markup extends the angular compiler in a very similar way as {@link angular.markup}
- * except that it allows you to modify the state of the attribute text rather then the content of a
+ * except that it allows you to modify the state of the attribute text rather than the content of a
  * node.
  *
  * Create custom attribute markup like this:
@@ -138,7 +138,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  *
  * @description
  * Using <angular/> markup like {{hash}} in an href attribute makes
- * the page open to a wrong URL, ff the user clicks that link before
+ * the page open to a wrong URL, if the user clicks that link before
  * angular has a chance to replace the {{hash}} with actual URL, the
  * link will be broken and will most likely return a 404 error.
  * The `ng:href` solves this problem by placing the `href` in the
@@ -251,7 +251,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * </div>
  * </pre>
  *
- * the HTML specs do not require browsers preserve the special attributes such as disabled.(The presense of them means true and absense means false)
+ * The HTML specs do not require browsers to preserve the special attributes such as disabled.
+ * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
  * To solve this problem, we introduce ng:disabled.
  *
@@ -281,7 +282,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @name angular.directive.ng:checked
  *
  * @description
- * the HTML specs do not require browsers preserve the special attributes such as checked.(The presense of them means true and absense means false)
+ * The HTML specs do not require browsers to preserve the special attributes such as checked.
+ * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
  * To solve this problem, we introduce ng:checked.
  * @example
@@ -310,7 +312,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @name angular.directive.ng:multiple
  *
  * @description
- * the HTML specs do not require browsers preserve the special attributes such as multiple.(The presense of them means true and absense means false)
+ * The HTML specs do not require browsers to preserve the special attributes such as multiple.
+ * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
  * To solve this problem, we introduce ng:multiple.
  *
@@ -345,7 +348,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @name angular.directive.ng:readonly
  *
  * @description
- * the HTML specs do not require browsers preserve the special attributes such as readonly.(The presense of them means true and absense means false)
+ * The HTML specs do not require browsers to preserve the special attributes such as readonly.
+ * (The presence of them means true and absence means false)
  * This prevents the angular compiler from correctly retrieving the binding expression.
  * To solve this problem, we introduce ng:readonly.
  * @example
@@ -374,7 +378,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 * @name angular.directive.ng:selected
 *
 * @description
-* the HTML specs do not require browsers preserve the special attributes such as selected.(The presense of them means true and absense means false)
+* The HTML specs do not require browsers to preserve the special attributes such as selected.
+* (The presence of them means true and absence means false)
 * This prevents the angular compiler from correctly retrieving the binding expression.
 * To solve this problem, we introduce ng:selected.
 * @example

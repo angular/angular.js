@@ -145,7 +145,7 @@ var _undefined        = undefined,
  * @param {Object|Array} obj Object to iterate over.
  * @param {function()} iterator Iterator function.
  * @param {Object} context Object to become context (`this`) for the iterator function.
- * @returns {Objet|Array} Reference to `obj`.
+ * @returns {Object|Array} Reference to `obj`.
  */
 function forEach(obj, iterator, context) {
   var key;
@@ -875,7 +875,7 @@ function toKeyValue(obj) {
 
 
 /**
- * we need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
+ * We need our custom mehtod because encodeURIComponent is too agressive and doesn't follow
  * http://www.ietf.org/rfc/rfc3986.txt with regards to the character set (pchar) allowed in path
  * segments:
  *    segment       = *pchar

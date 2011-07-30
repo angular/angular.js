@@ -265,7 +265,7 @@ angularDirective("ng:bind", function(expression, element){
         error = formatError(e);
       });
       this.$element = oldElement;
-      // If we are HTML than save the raw HTML data so that we don't
+      // If we are HTML then save the raw HTML data so that we don't
       // recompute sanitization since it is expensive.
       // TODO: turn this into a more generic way to compute this
       if (isHtml = (value instanceof HTML))
