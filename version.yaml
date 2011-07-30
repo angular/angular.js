@@ -1,4 +1,4 @@
-# <angular/> build config file
+# AngularJS build config file
 ---
-version: 0.9.18
-codename: jiggling-armfat
+version: 0.9.19-snapshot
+codename: canine-psychokinesis
