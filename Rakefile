@@ -261,6 +261,15 @@ task :package => [:clean, :compile, :docs] do
     f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
   end
 
+
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq.html", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
+  end
+
+
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html", File::RDWR) do |f|
     text = f.read
     f.truncate 0
