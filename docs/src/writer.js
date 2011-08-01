@@ -83,7 +83,7 @@ function merge(srcs, to) {
   srcs.forEach(function (src) {
     done = Q.when(done, function(content) {
       if(content) contents.push(content);
-      return qfs.read(src);
+      return qfs.read(src, 'b');
     });
   });
 
