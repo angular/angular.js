@@ -130,10 +130,11 @@ function clearJqCache(){
     count ++;
     delete jqCache[key];
     forEach(value, function(value, key){
-      if (value.$element)
-        dump(key, sortedHtml(value.$element));
-      else
-        dump(key, toJson(value));
+      if (value.$element) {
+        dump('LEAK', key, value.$id, sortedHtml(value.$element));
+      } else {
+        dump('LEAK', key, toJson(value));
+      }
     });
   });
   if (count) {

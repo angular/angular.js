@@ -245,7 +245,6 @@ angular.scenario.dsl('repeater', function() {
 
   chain.row = function(index) {
     return this.addFutureAction("repeater '" + this.label + "' row '" + index + "'", function($window, $document, done) {
-      var values = [];
       var matches = $document.elements().slice(index, index + 1);
       if (!matches.length)
         return done('row ' + index + ' out of bounds');

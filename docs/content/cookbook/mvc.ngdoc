@@ -64,7 +64,7 @@ no connection between the controller and the view.
         });
         this.$location.hashSearch.board = rows.join(';') + '/' + this.nextMove;
       },
-      readUrl: function(value) {
+      readUrl: function(scope, value) {
         if (value) {
           value = value.split('/');
           this.nextMove = value[1];

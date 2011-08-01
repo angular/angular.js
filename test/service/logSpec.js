@@ -19,12 +19,12 @@ describe('$log', function() {
     function warn(){ logger+= 'warn;'; }
     function info(){ logger+= 'info;'; }
     function error(){ logger+= 'error;'; }
-    var scope = createScope({}, {$log: $logFactory},
-                                {$exceptionHandler: rethrow,
-                                 $window: {console: {log: log,
-                                                     warn: warn,
-                                                     info: info,
-                                                     error: error}}}),
+    var scope = createScope({$log: $logFactory},
+                            {$exceptionHandler: rethrow,
+                             $window: {console: {log: log,
+                                                 warn: warn,
+                                                 info: info,
+                                                 error: error}}}),
         $log = scope.$service('$log');
 
     $log.log();
@@ -38,9 +38,9 @@ describe('$log', function() {
   it('should use console.log() if other not present', function(){
     var logger = "";
     function log(){ logger+= 'log;'; }
-    var scope = createScope({}, {$log: $logFactory},
-                                {$window: {console:{log:log}},
-                                 $exceptionHandler: rethrow});
+    var scope = createScope({$log: $logFactory},
+                            {$window: {console:{log:log}},
+                             $exceptionHandler: rethrow});
     var $log = scope.$service('$log');
     $log.log();
     $log.warn();
@@ -51,9 +51,9 @@ describe('$log', function() {
 
 
   it('should use noop if no console', function(){
-    var scope = createScope({}, {$log: $logFactory},
-                                {$window: {},
-                                 $exceptionHandler: rethrow}),
+    var scope = createScope({$log: $logFactory},
+                            {$window: {},
+                             $exceptionHandler: rethrow}),
         $log = scope.$service('$log');
     $log.log();
     $log.warn();

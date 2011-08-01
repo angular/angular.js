@@ -35,8 +35,8 @@
  *      without angular knowledge and you may need to call '$updateView()' directly.
  *
  * Note: if you wish to update the view immediately (without delay), you can do so by calling
- * {@link angular.scope.$eval} at any time from your code:
- * <pre>scope.$root.$eval()</pre>
+ * {@link angular.scope.$apply} at any time from your code:
+ * <pre>scope.$apply()</pre>
  *
  * In unit-test mode the update is instantaneous and synchronous to simplify writing tests.
  *
@@ -47,7 +47,7 @@ function serviceUpdateViewFactory($browser){
   var scheduled;
   function update(){
     scheduled = false;
-    rootScope.$eval();
+    rootScope.$flush();
   }
   return $browser.isMock ? update : function(){
     if (!scheduled) {
