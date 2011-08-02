@@ -87,26 +87,80 @@ describe('browser', function(){
 
   describe('xhr', function(){
     describe('JSON', function(){
-      it('should add script tag for request', function() {
-        var callback = jasmine.createSpy('callback');
-        var log = "";
-        browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, function(code, data){
-          log += code + ':' + data + ';';
-        });
-        browser.notifyWhenNoOutstandingRequests(callback);
-        expect(callback).not.toHaveBeenCalled();
-        expect(scripts.length).toEqual(1);
-        var script = scripts[0];
-        var url = script.src.split('?cb=');
-        expect(url[0]).toEqual('http://example.org/path');
-        expect(typeof fakeWindow[url[1]]).toEqual($function);
-        fakeWindow[url[1]]('data');
-        expect(callback).toHaveBeenCalled();
-        expect(log).toEqual('200:data;');
-        expect(scripts).toEqual(removedScripts);
-        expect(fakeWindow[url[1]]).toBeUndefined();
+      var log;
+
+      function callback(code, data) {
+        log += code + ':' + data + ';';
+      }
+
+      beforeEach(function() {
+        log = "";
       });
+
+
+      // We don't have unit tests for IE because script.readyState is readOnly.
+      // Instead we run e2e tests on all browsers - see e2e for $xhr.
+      if (!msie) {
+
+        it('should add script tag for JSONP request', function() {
+          var notify = jasmine.createSpy('notify');
+          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.notifyWhenNoOutstandingRequests(notify);
+          expect(notify).not.toHaveBeenCalled();
+          expect(scripts.length).toEqual(1);
+          var script = scripts[0];
+          var url = script.src.split('?cb=');
+          expect(url[0]).toEqual('http://example.org/path');
+          expect(typeof fakeWindow[url[1]]).toEqual($function);
+          fakeWindow[url[1]]('data');
+          script.onload();
+
+          expect(notify).toHaveBeenCalled();
+          expect(log).toEqual('200:data;');
+          expect(scripts).toEqual(removedScripts);
+          expect(fakeWindow[url[1]]).toBeUndefined();
+        });
+
+
+        it('should call callback when script fails to load', function() {
+          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          var script = scripts[0];
+          expect(typeof script.onload).toBe($function);
+          expect(typeof script.onerror).toBe($function);
+          script.onerror();
+
+          expect(log).toEqual('undefined:undefined;');
+        });
+
+
+        it('should update the outstandingRequests counter for successful requests', function() {
+          var notify = jasmine.createSpy('notify');
+          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.notifyWhenNoOutstandingRequests(notify);
+          expect(notify).not.toHaveBeenCalled();
+
+          var script = scripts[0];
+          var url = script.src.split('?cb=');
+          fakeWindow[url[1]]('data');
+          script.onload();
+
+          expect(notify).toHaveBeenCalled();
+        });
+
+
+        it('should update the outstandingRequests counter for failed requests', function() {
+          var notify = jasmine.createSpy('notify');
+          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.notifyWhenNoOutstandingRequests(notify);
+          expect(notify).not.toHaveBeenCalled();
+
+          scripts[0].onerror();
+
+          expect(notify).toHaveBeenCalled();
+        });
+      }
     });
+
 
     it('should normalize IE\'s 1223 status code into 204', function() {
       var callback = jasmine.createSpy('XHR');
