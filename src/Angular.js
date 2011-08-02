@@ -793,11 +793,11 @@ function elementError(element, type, error) {
 }
 
 function concat(array1, array2, index) {
-  return array1.concat(slice.call(array2, index, array2.length));
+  return array1.concat(slice.call(array2, index));
 }
 
 function sliceArgs(args, startIndex) {
-  return slice.call(args, startIndex || 0, args.length);
+  return slice.call(args, startIndex || 0);
 }
 
 
@@ -823,7 +823,7 @@ function bind(self, fn) {
     return curryArgs.length
       ? function() {
           return arguments.length
-            ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0, arguments.length)))
+            ? fn.apply(self, curryArgs.concat(slice.call(arguments, 0)))
             : fn.apply(self, curryArgs);
         }
       : function() {
