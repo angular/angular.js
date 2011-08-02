@@ -86,6 +86,7 @@
   Angular with
   [Unicode Technical Standard #35](http://unicode.org/reports/tr35/#Date_Format_Patterns) used by
   Closure, as well as, future DOM apis currently being proposed to w3c.
+- `$xhr.error`'s `request` argument has no `callback` property anymore, use `success` instead
 
 
 
