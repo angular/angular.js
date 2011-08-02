@@ -95,8 +95,11 @@ function Scope() {
   this.$id = nextUid();
   this.$$phase = this.$parent = this.$$watchers =
     this.$$nextSibling = this.$$childHead = this.$$childTail = null;
+  this.$destructor = noop;
   this['this'] = this.$root =  this;
   this.$$asyncQueue = [];
+  this.$asyncQueue = [];
+  this.$$listeners = {};
 }
 
 /**
@@ -167,6 +170,7 @@ Scope.prototype = {
     Child.prototype = this;
     child = new Child();
     child['this'] = child;
+    child.$$listeners = {};
     child.$parent = this;
     child.$id = nextUid();
     child.$$asyncQueue = [];
@@ -382,12 +386,15 @@ Scope.prototype = {
    * scope and its children. Removal also implies that the current scope is eligible for garbage
    * collection.
    *
+   * The destructing scope emits an `$destroy` {@link angular.scope.$emit event}.
+   *
    * The `$destroy()` is usually used by directives such as
    * {@link angular.widget.@ng:repeat ng:repeat} for managing the unrolling of the loop.
    *
    */
   $destroy: function() {
     if (this.$root == this) return; // we can't remove the root node;
+    this.$emit('$destroy');
     var parent = this.$parent;
     var child = parent.$$childHead;
     var lastChild = null;
@@ -421,7 +428,7 @@ Scope.prototype = {
    * @function
    *
    * @description
-   * Executes the expression on the current scope returning the result. Any exceptions in the
+   * Executes the `expression` on the current scope returning the result. Any exceptions in the
    * expression are propagated (uncaught). This is useful when evaluating engular expressions.
    *
    * # Example
@@ -527,6 +534,133 @@ Scope.prototype = {
       this.$service('$exceptionHandler')(e);
     } finally {
       this.$root.$digest();
+    }
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$on
+   * @function
+   *
+   * @description
+   * Listen on events of a given type. See {@link angular.scope.$emit $emit} for discussion of
+   * event life cycle.
+   *
+   * @param {string} name Event name to listen on.
+   * @param {function(event)} listener Function to call when the event is emitted.
+   *
+   * The event listener function format is: `function(event)`. The `event` object passed into the
+   * listener has the following attributes
+   *   - `target` - {Scope}: the scope which initiated the event.
+   *   - `currentTarget` - {Scope}: the current scope which is handling the event.
+   *   - `name` - {string}: Name of the event.
+   *   - `cancel` - {function}: calling `cancel` function will cancel further event propagation.
+   *
+   * @param {boolean} capture Listen on the capture phase of the event life cycle.
+   */
+  $on: function(name, listener, capture) {
+    var namedListeners = this.$$asyncQueue[name];
+    if (!namedListeners) {
+      this.$$asyncQueue[name] = namedListeners = [];
+    }
+    namedListeners.push(capture ? {capture: listener} : {bubble:listener});
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$removeOn
+   * @function
+   *
+   * @description
+   * Remove the on listener registered by {@link angular.scope.$on $on}.
+   *
+   * @param {string} name Event name to remove on.
+   * @param {function} listener Function to remove.
+   * @param {boolean} capture Whether the removal is for the capture phase.
+   */
+  $removeOn: function(name, listener, capture) {
+    var namedListeners = this.$$asyncQueue[name];
+    var i, length;
+    if (namedListeners) {
+      for (i = 0, length = namedListeners.length; i < length; i++) {
+        if (capture ? namedListeners[i].capture == listener : namedListeners[i].bubble == listener) {
+          namedListeners.splice(i, 1);
+        }
+      }
+    }
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$emit
+   * @function
+   *
+   * @description
+   * Dispatch an event of through the scope hierarchy notifying the {@link angular.scope.$on}
+   * listeners.
+   *
+   * The event life cycle includes a capture followed by a bubble phase. The event can be canceled
+   * at any time preventing further listeners from being notified.
+   *
+   * During the capture phase the event starts at the root scope and moves in the direction of the
+   * scope which emitted the event. Any {@link angular.scope.$on capture listeners} registered on
+   * effected scope will be notified.
+   *
+   * Once the event reaches the scope which emitted the event, it switches to bubble phase and
+   * moves back up the scope chain towards the root scope triggering any
+   * {@link angular.scope.$on capture listeners} on the way.
+   *
+   * Any exception emmited from the {@link angular.scope.$on listeners} will be passed
+   * onto the {@link angular.service.$exceptionHandler $exceptionHandler} service.
+   *
+   * @param {string} name Event name to emit.
+   * @param {*} args.. Optional set of arguments which will be passed onto the event listeners.
+   */
+  $emit: function(name) {
+    var empty = [],
+        scopes = [],
+        listenerFns = [],
+        listeners,
+        listener,
+        fn,
+        canceled = false,
+        scope = this,
+        $root = scope.$root,
+        i, length,
+        event = {
+          target: this,
+          type: name,
+          cancel: function(){ canceled = true; }
+        },
+        args = concat([event], arguments, 1);
+
+    // add functions to the list in calling order
+    do {
+      listeners = scope.$$asyncQueue[name] || empty;
+      for (i = 0, length = listeners.length; i < length; i++) {
+        listener = listeners[i];
+        if (fn = listener.capture) {
+          listenerFns.unshift(fn);
+          scopes.unshift(scope);
+        }
+        if (fn = listener.bubble) {
+          listenerFns.push(fn);
+          scopes.push(scope);
+        }
+      }
+    } while (scope !== $root && (scope = scope.$parent));
+
+    for (i = 0, length = scopes.length; i < length; i++) {
+      event.currentTarget = scopes[i];
+      try {
+        listenerFns[i].apply(event, args);
+        if (canceled) return;
+      } catch (e) {
+        scope.$service('$exceptionHandler')(e);
+      }
     }
   }
 };

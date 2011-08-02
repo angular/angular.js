@@ -3,6 +3,7 @@
 
 ### Features
 - Scope $evalAsync()
+- Scope event API
 
 
 # Breaking Changes
