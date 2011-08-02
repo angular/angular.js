@@ -60,6 +60,7 @@ function createInjector(factoryScope, factories, instanceCache) {
     if (!(value in instanceCache)) {
       var factory = factories[value];
       if (!factory) throw Error("Unknown provider for '"+value+"'.");
+      inferInjectionArgs(factory);
       instanceCache[value] = invoke(factoryScope, factory);
     }
     return instanceCache[value];
@@ -67,7 +68,7 @@ function createInjector(factoryScope, factories, instanceCache) {
 
   function invoke(self, fn, args){
     args = args || [];
-    var injectNames = injectionArgs(fn);
+    var injectNames = fn.$inject || [];
     var i = injectNames.length;
     while(i--) {
       args.unshift(injector(injectNames[i]));
@@ -133,7 +134,7 @@ var FN_ARGS = /^function\s*[^\(]*\(([^\)]*)\)/m;
 var FN_ARG_SPLIT = /,/;
 var FN_ARG = /^\s*(.+?)\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
-function injectionArgs(fn) {
+function inferInjectionArgs(fn) {
   assertArgFn(fn);
   if (!fn.$inject) {
     var args = fn.$inject = [];
