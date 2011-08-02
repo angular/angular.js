@@ -19,7 +19,7 @@
  *   - `method` – `{string}` – The http request method.
  *   - `url` – `{string}` – The request destination.
  *   - `data` – `{(string|Object)=} – An optional request body.
- *   - `callback` – `{function()}` – The callback function
+ *   - `success` – `{function()}` – The success callback function
  *
  * @param {Object} response Response object.
  *
