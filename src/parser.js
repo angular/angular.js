@@ -744,7 +744,7 @@ function getterFn(path) {
               ' t = angular.Global.typeOf(l);\n' +
               ' fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n' +
               ' if (fn) s = function(){ return fn.apply(l, ' +
-                   '[l].concat(Array.prototype.slice.call(arguments, 0, arguments.length))); };\n' +
+                   '[l].concat(Array.prototype.slice.call(arguments, 0))); };\n' +
               '}\n';
     }
   });
