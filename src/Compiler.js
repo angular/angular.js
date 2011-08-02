@@ -40,8 +40,6 @@ Template.prototype = {
 
   addLinkFn:function(linkingFn) {
     if (linkingFn) {
-      if (!linkingFn.$inject)
-        linkingFn.$inject = [];
       this.linkFns.push(linkingFn);
     }
   },

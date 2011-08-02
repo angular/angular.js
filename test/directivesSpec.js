@@ -469,17 +469,21 @@ describe("directive", function() {
       expect(scope.$element.text()).toEqual('hey dude!');
     });
 
+    it('should infer injection arguments', function(){
+      temp.MyController = function($xhr){
+        this.$root.someService = $xhr;
+      };
+      var scope = compile('<div ng:controller="temp.MyController"></div>');
+      expect(scope.someService).toBe(scope.$service('$xhr'));
+    });
   });
 
   describe('ng:cloak', function() {
 
     it('should get removed when an element is compiled', function() {
       var element = jqLite('<div ng:cloak></div>');
-
       expect(element.attr('ng:cloak')).toBe('');
-
       angular.compile(element);
-
       expect(element.attr('ng:cloak')).toBeUndefined();
     });
 

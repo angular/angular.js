@@ -174,6 +174,7 @@ angularDirective("ng:controller", function(expression){
       getter(scope, expression, true) ||
       getter(window, expression, true);
     assertArgFn(Controller, expression);
+    inferInjectionArgs(Controller);
     return Controller;
   });
   return noop;
