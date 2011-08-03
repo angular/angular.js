@@ -90,8 +90,12 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    *     <li><tt>X-Requested-With</tt>: <tt>XMLHttpRequest</tt></li>
    *   </ul>
    *
+   * @returns {XMLHttpRequest|undefined} Raw XMLHttpRequest object or undefined when JSONP method
+   *
    * @description
    * Send ajax request
+   *
+   * TODO(vojta): change signature of this method to (method, url, data, headers, callback)
    */
   self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
@@ -124,6 +128,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
         }
       };
       xhr.send(post || '');
+      return xhr;
     }
   };
 

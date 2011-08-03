@@ -223,6 +223,10 @@ describe('browser', function() {
       expect(code).toEqual(202);
       expect(response).toEqual('RESPONSE');
     });
+
+    it('should return raw xhr object', function() {
+      expect(browser.xhr('GET', '/url', null, noop)).toBe(xhr);
+    });
   });
 
   describe('defer', function() {
