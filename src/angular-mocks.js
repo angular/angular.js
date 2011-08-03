@@ -152,6 +152,7 @@ function MockBrowser() {
       });
       callback(expectation.code, expectation.response);
     });
+    // TODO(vojta): return mock request object
   };
   self.xhr.expectations = expectations;
   self.xhr.requests = requests;
