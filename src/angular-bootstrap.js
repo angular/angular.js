@@ -116,10 +116,7 @@
              'service/resource.js',
              'service/route.js',
              'service/window.js',
-             'service/xhr.bulk.js',
-             'service/xhr.cache.js',
-             'service/xhr.error.js',
-             'service/xhr.js',
+             'service/http.js',
              'service/locale.js',
 
              'apis.js',
