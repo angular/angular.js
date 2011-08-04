@@ -502,12 +502,12 @@ describe("directive", function() {
       expect(element.text()).toEqual('hey dude!');
     }));
 
-    it('should infer injection arguments', inject(function($rootScope, $compile, $xhr) {
-      temp.MyController = function($xhr){
-        this.$root.someService = $xhr;
+    it('should infer injection arguments', inject(function($rootScope, $compile, $http) {
+      temp.MyController = function($http) {
+        this.$root.someService = $http;
       };
       var element = $compile('<div ng:controller="temp.MyController"></div>')($rootScope);
-      expect($rootScope.someService).toBe($xhr);
+      expect($rootScope.someService).toBe($http);
     }));
   });
 

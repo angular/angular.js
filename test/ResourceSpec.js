@@ -1,6 +1,6 @@
 'use strict';
 
-describe("resource", function() {
+xdescribe("resource", function() {
   var resource, CreditCard, callback;
 
   function nakedExpect(obj) {

@@ -77,6 +77,7 @@ function ngModule($provide, $injector) {
   $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
   $provide.service('$filter', $FilterProvider);
   $provide.service('$formFactory', $FormFactoryProvider);
+  $provide.service('$http', $HttpProvider);
   $provide.service('$location', $LocationProvider);
   $provide.service('$log', $LogProvider);
   $provide.service('$parse', $ParseProvider);
@@ -86,9 +87,5 @@ function ngModule($provide, $injector) {
   $provide.service('$rootScope', $RootScopeProvider);
   $provide.service('$sniffer', $SnifferProvider);
   $provide.service('$window', $WindowProvider);
-  $provide.service('$xhr.bulk', $XhrBulkProvider);
-  $provide.service('$xhr.cache', $XhrCacheProvider);
-  $provide.service('$xhr.error', $XhrErrorProvider);
-  $provide.service('$xhr', $XhrProvider);
 }
 

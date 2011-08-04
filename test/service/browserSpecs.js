@@ -124,7 +124,7 @@ describe('browser', function() {
 
 
       // We don't have unit tests for IE because script.readyState is readOnly.
-      // Instead we run e2e tests on all browsers - see e2e for $xhr.
+      // Instead we run e2e tests on all browsers - see e2e for $http.
       if (!msie) {
 
         it('should add script tag for JSONP request', function() {
