@@ -237,7 +237,7 @@ var JQLitePrototype = JQLite.prototype = {
 // these functions return self on setter and
 // value on get.
 //////////////////////////////////////////
-var SPECIAL_ATTR = makeMap("multiple,selected,checked,disabled,readonly");
+var SPECIAL_ATTR = makeMap("multiple,selected,checked,disabled,readonly,required");
 
 forEach({
   data: JQLiteData,
