@@ -4,7 +4,6 @@
 ### Features
 - Scope $evalAsync()
 
-
 # Breaking Changes
 - Controller constructor functions are now looked up on scope first and then on window.
 - angular.equals now use === which means that things which used to be equal are no longer.
@@ -23,6 +22,7 @@
 - removed $flush()/$observe on scope
 - removed ng:eval/ng:eval-order since it is incompatible with $digest phase
 - ng:init and ng:controllers are now called in the order of declaration in HTML
+- ignore properties with $$ during JSON serialization
 
 
 

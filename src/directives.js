@@ -235,7 +235,7 @@ angularDirective("ng:bind", function(expression, element){
       if (lastValue === value && lastError == error) return;
       isDomElement = isElement(value);
       if (!isHtml && !isDomElement && isObject(value)) {
-        value = toJson(value, true);
+        value = toJson(value, true, NG_PRIVATE);
       }
       if (value != lastValue || error != lastError) {
         lastValue = value;
@@ -291,7 +291,7 @@ function compileBindTemplate(template){
           if (isElement(value))
             value = '';
           else if (isObject(value))
-            value = toJson(value, prettyPrintJson);
+            value = toJson(value, prettyPrintJson, NG_PRIVATE);
           parts.push(value);
         }
         return parts.join('');

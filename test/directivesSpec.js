@@ -73,11 +73,16 @@ describe("directive", function(){
       expect(sortedHtml(scope.$element)).toEqual('<div>before<div class="filter" ng:bind="0|myFilter">HELLO</div>after</div>');
     });
 
-
     it('should suppress rendering of falsy values', function(){
       var scope = compile('<div>{{ null }}{{ undefined }}{{ "" }}-{{ 0 }}{{ false }}</div>');
       scope.$digest();
       expect(scope.$element.text()).toEqual('-0false');
+    });
+
+    it('should render object as JSON ignore $$', function(){
+      var scope = compile('<div>{{ {key:"value", $$key:"hide"}  }}</div>');
+      scope.$digest();
+      expect(scope.$element.text()).toEqual('{\n  "key":"value"}');
     });
 
   });
@@ -101,6 +106,12 @@ describe("directive", function(){
       scope.$digest();
       expect(scope.$element.text()).toEqual("beforeHELLOafter");
       expect(innerText).toEqual('INNER');
+    });
+
+    it('should render object as JSON ignore $$', function(){
+      var scope = compile('<pre>{{ {key:"value", $$key:"hide"}  }}</pre>');
+      scope.$digest();
+      expect(scope.$element.text()).toEqual('{\n  "key":"value"}');
     });
 
   });

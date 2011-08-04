@@ -1,6 +1,7 @@
 'use strict';
 
 var array = [].constructor;
+var NG_PRIVATE = /^\$\$/;
 
 /**
  * @workInProgress
@@ -13,11 +14,12 @@ var array = [].constructor;
  *
  * @param {Object|Array|Date|string|number} obj Input to jsonify.
  * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
+ * @param {regexp=} RegExp which is used for hiding properties (defaults to no properties hidden).
  * @returns {string} Jsonified string representing `obj`.
  */
-function toJson(obj, pretty) {
+function toJson(obj, pretty, hide) {
   var buf = [];
-  toJsonArray(buf, obj, pretty ? "\n  " : null, []);
+  toJsonArray(buf, obj, pretty ? "\n  " : null, [], hide || {test:noop});
   return buf.join('');
 }
 
@@ -66,7 +68,7 @@ function fromJson(json, useNative) {
 angular.toJson = toJson;
 angular.fromJson = fromJson;
 
-function toJsonArray(buf, obj, pretty, stack) {
+function toJsonArray(buf, obj, pretty, stack, hide) {
   if (isObject(obj)) {
     if (obj === window) {
       buf.push('WINDOW');
@@ -111,7 +113,7 @@ function toJsonArray(buf, obj, pretty, stack) {
         if (!(item instanceof RegExp) && (isFunction(item) || isUndefined(item))) {
           buf.push($null);
         } else {
-          toJsonArray(buf, item, pretty, stack);
+          toJsonArray(buf, item, pretty, stack, hide);
         }
         sep = true;
       }
@@ -128,7 +130,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       var childPretty = pretty ? pretty + "  " : false;
       var keys = [];
       for(var k in obj) {
-        if (obj.hasOwnProperty(k) && obj[k] !== undefined) {
+        if (!hide.test(k) && obj.hasOwnProperty(k) && obj[k] !== undefined) {
           keys.push(k);
         }
       }
@@ -143,7 +145,7 @@ function toJsonArray(buf, obj, pretty, stack) {
           }
           buf.push(angularString.quote(key));
           buf.push(":");
-          toJsonArray(buf, value, childPretty, stack);
+          toJsonArray(buf, value, childPretty, stack, hide);
           comma = true;
         }
       }
