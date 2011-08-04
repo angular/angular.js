@@ -67,17 +67,17 @@ __`app/js/controllers.js`.__
 <pre>
 ...
 
-function PhoneListCtrl(Phone_) {
+function PhoneListCtrl(Phone) {
   this.orderProp = 'age';
-  this.phones = Phone_.query();
+  this.phones = Phone.query();
 }
 //PhoneListCtrl.$inject = ['Phone'];
 
 
-function PhoneDetailCtrl(Phone_) {
+function PhoneDetailCtrl(Phone) {
   var self = this;
 
-  self.phone = Phone_.get({phoneId: self.params.phoneId}, function(phone) {
+  self.phone = Phone.get({phoneId: self.params.phoneId}, function(phone) {
     self.mainImageUrl = phone.images[0];
   });
 
@@ -94,7 +94,7 @@ Notice how in `PhoneListCtrl` we replaced:
 
 with:
 
-    this.phones = Phone_.query();
+    this.phones = Phone.query();
 
 This is a simple statement that we want to query for all phones.
 
@@ -116,7 +116,7 @@ We have modified our unit tests to verify that our new service is issuing HTTP r
 processing them as expected. The tests also check that our controllers are interacting with the
 service correctly.
 
-The {@link api/angular.service.$resource $resource} client augments the response object with
+The {@link api/angular.service.$resource $resource} service augments the response object with
 methods for updating and deleting the resource. If we were to use the standard `toEqual` matcher,
 our tests would fail because the test values would not match the responses exactly. To solve the
 problem, we use a newly-defined `toEqualData` {@link
