@@ -1,279 +1,859 @@
 'use strict';
 
-describe('$xhr', function() {
-  var scope, $browser, $browserXhr, $log, $xhr, $xhrErr, log;
+ddescribe('$xhr', function() {
 
-  beforeEach(function(){
-    var scope = angular.scope(angular.service, {
-        '$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
-    $log = scope.$service('$log');
-    $browser = scope.$service('$browser');
-    $browserXhr = $browser.xhr;
+  var $xhr, $browser, $log, // services
+      method, url, data, headers, // passed arguments
+      onSuccess, onError, // callback spies
+      scope, errorLogs, respond, rawXhrObject, future;
+
+  beforeEach(function() {
+    scope = angular.scope();
     $xhr = scope.$service('$xhr');
-    log = '';
+    $browser = scope.$service('$browser');
+    $log = scope.$service('$log');
+    errorLogs = $log.error.logs;
+
+    // TODO(vojta): move this into mock browser ?
+    respond = method = url = data = headers = null;
+    rawXhrObject = {
+      abort: jasmine.createSpy('request.abort'),
+      getResponseHeader: function(h) {return h + '-val';},
+      getAllResponseHeaders: function() {
+        return 'content-encoding: gzip\nserver: Apache\n';
+      }
+    };
+
+    spyOn(scope, '$apply');
+    spyOn($browser, 'xhr').andCallFake(function(m, u, d, c, h) {
+      method = m;
+      url = u;
+      data = d;
+      respond = c;
+      headers = h;
+      return rawXhrObject;
+    });
   });
 
+  function doCommonXhr(method, url) {
+    future = $xhr({method: method || 'GET', url: url || '/url'});
 
-  afterEach(function(){
-    dealoc(scope);
-  });
+    onSuccess = jasmine.createSpy('on200');
+    onError = jasmine.createSpy('on400');
+    future.on('200', onSuccess);
+    future.on('400', onError);
 
-
-  function callback(code, response) {
-    log = log + '{code=' + code + '; response=' + toJson(response) + '}';
+    return future;
   }
 
 
-  it('should forward the request to $browser and decode JSON', function(){
-    $browserXhr.expectGET('/reqGET').respond('first');
-    $browserXhr.expectGET('/reqGETjson').respond('["second"]');
-    $browserXhr.expectPOST('/reqPOST', {post:'data'}).respond('third');
-
-    $xhr('GET', '/reqGET', null, callback);
-    $xhr('GET', '/reqGETjson', null, callback);
-    $xhr('POST', '/reqPOST', {post:'data'}, callback);
-
-    $browserXhr.flush();
-
-    expect(log).toEqual(
-        '{code=200; response="third"}' +
-        '{code=200; response=["second"]}' +
-        '{code=200; response="first"}');
-  });
-
-  it('should allow all 2xx requests', function(){
-    $browserXhr.expectGET('/req1').respond(200, '1');
-    $xhr('GET', '/req1', null, callback);
-    $browserXhr.flush();
-
-    $browserXhr.expectGET('/req2').respond(299, '2');
-    $xhr('GET', '/req2', null, callback);
-    $browserXhr.flush();
-
-    expect(log).toEqual(
-        '{code=200; response="1"}' +
-        '{code=299; response="2"}');
+  it('should do basic request', function() {
+    $xhr({url: '/url', method: 'GET'});
+    expect($browser.xhr).toHaveBeenCalledOnce();
+    expect(url).toBe('/url');
+    expect(method).toBe('GET');
   });
 
 
-  it('should handle exceptions in callback', function(){
-    $browserXhr.expectGET('/reqGET').respond('first');
-    $xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
-    $browserXhr.flush();
-
-    expect($log.error.logs.shift()).toContain('MyException');
+  it('should send data if specified', function() {
+    $xhr({url: '/url', method: 'POST', data: 'some-data'});
+    expect($browser.xhr).toHaveBeenCalledOnce();
+    expect(url).toBe('/url');
+    expect(method).toBe('POST');
+    expect(data).toEqual('some-data');
   });
 
 
-  it('should automatically deserialize json objects', function() {
-    var response;
+  describe('callbacks', function() {
 
-    $browserXhr.expectGET('/foo').respond('{"foo":"bar","baz":23}');
-    $xhr('GET', '/foo', function(code, resp) {
-      response = resp;
+    beforeEach(doCommonXhr);
+
+    it('should log exceptions', function() {
+      onSuccess.andThrow('exception in success callback');
+      onError.andThrow('exception in error callback');
+
+      respond(200, 'content');
+      expect(errorLogs.pop()).toContain('exception in success callback');
+
+      respond(400, '');
+      expect(errorLogs.pop()).toContain('exception in error callback');
     });
-    $browserXhr.flush();
-
-    expect(response).toEqual({foo:'bar', baz:23});
-  });
 
 
-  it('should automatically deserialize json arrays', function() {
-    var response;
+    it('should log more exceptions', function() {
+      onError.andThrow('exception in error callback');
+      future.on('500', onError).on('50x', onError);
+      respond(500, '');
 
-    $browserXhr.expectGET('/foo').respond('[1, "abc", {"foo":"bar"}]');
-    $xhr('GET', '/foo', function(code, resp) {
-      response = resp;
+      expect(errorLogs.length).toBe(2);
+      $log.error.logs = [];
     });
-    $browserXhr.flush();
-
-    expect(response).toEqual([1, 'abc', {foo:'bar'}]);
-  });
 
 
-  it('should automatically deserialize json with security prefix', function() {
-    var response;
+    it('should get response as first param', function() {
+      respond(200, 'response');
+      expect(onSuccess).toHaveBeenCalledOnce();
+      expect(onSuccess.mostRecentCall.args[0]).toBe('response');
 
-    $browserXhr.expectGET('/foo').respond(')]}\',\n[1, "abc", {"foo":"bar"}]');
-    $xhr('GET', '/foo', function(code, resp) {
-      response = resp;
+      respond(400, 'empty');
+      expect(onError).toHaveBeenCalledOnce();
+      expect(onError.mostRecentCall.args[0]).toBe('empty');
     });
-    $browserXhr.flush();
-
-    expect(response).toEqual([1, 'abc', {foo:'bar'}]);
-  });
-
-  it('should call $xhr.error on error if no error callback provided', function() {
-    var successSpy = jasmine.createSpy('success');
-
-    $browserXhr.expectGET('/url').respond(500, 'error');
-    $xhr('GET', '/url', null, successSpy);
-    $browserXhr.flush();
-
-    expect(successSpy).not.toHaveBeenCalled();
-    expect($xhrErr).toHaveBeenCalledWith(
-      {method: 'GET', url: '/url', data: null, success: successSpy},
-      {status: 500, body: 'error'}
-    );
-  });
-
-  it('should call the error callback on error if provided', function() {
-    var errorSpy = jasmine.createSpy('error'),
-        successSpy = jasmine.createSpy('success');
-
-    $browserXhr.expectGET('/url').respond(500, 'error');
-    $xhr('GET', '/url', null, successSpy, errorSpy);
-    $browserXhr.flush();
-
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
-    expect(successSpy).not.toHaveBeenCalled();
-
-    errorSpy.reset();
-    $xhr('GET', '/url', successSpy, errorSpy);
-    $browserXhr.flush();
-
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
-    expect(successSpy).not.toHaveBeenCalled();
-  });
-
-  describe('http headers', function() {
-
-    describe('default headers', function() {
-
-      it('should set default headers for GET request', function(){
-        var callback = jasmine.createSpy('callback');
-
-        $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
-                                          'X-Requested-With': 'XMLHttpRequest'}).
-                    respond(234, 'OK');
-
-        $xhr('GET', 'URL', callback);
-        $browserXhr.flush();
-        expect(callback).toHaveBeenCalled();
-      });
 
 
-      it('should set default headers for POST request', function(){
-        var callback = jasmine.createSpy('callback');
+    it('should get status code as second param', function() {
+      respond(200, 'response');
+      expect(onSuccess).toHaveBeenCalledOnce();
+      expect(onSuccess.mostRecentCall.args[1]).toBe(200);
 
-        $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
-                                             'X-Requested-With': 'XMLHttpRequest',
-                                             'Content-Type': 'application/x-www-form-urlencoded'}).
-                    respond(200, 'OK');
-
-        $xhr('POST', 'URL', 'xx', callback);
-        $browserXhr.flush();
-        expect(callback).toHaveBeenCalled();
-      });
-
-
-      it('should set default headers for custom HTTP method', function(){
-        var callback = jasmine.createSpy('callback');
-
-        $browserXhr.expect('FOO', 'URL', '', {'Accept': 'application/json, text/plain, */*',
-                                              'X-Requested-With': 'XMLHttpRequest'}).
-                    respond(200, 'OK');
-
-        $xhr('FOO', 'URL', callback);
-        $browserXhr.flush();
-        expect(callback).toHaveBeenCalled();
-      });
-
-
-      describe('custom headers', function() {
-
-        it('should allow appending a new header to the common defaults', function() {
-          var callback = jasmine.createSpy('callback');
-
-          $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Custom-Header': 'value'}).
-                      respond(200, 'OK');
-
-          $xhr.defaults.headers.common['Custom-Header'] = 'value';
-          $xhr('GET', 'URL', callback);
-          $browserXhr.flush();
-          expect(callback).toHaveBeenCalled();
-          callback.reset();
-
-          $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
-                                               'X-Requested-With': 'XMLHttpRequest',
-                                               'Content-Type': 'application/x-www-form-urlencoded',
-                                               'Custom-Header': 'value'}).
-                      respond(200, 'OK');
-
-         $xhr('POST', 'URL', 'xx', callback);
-         $browserXhr.flush();
-         expect(callback).toHaveBeenCalled();
-        });
-
-
-        it('should allow appending a new header to a method specific defaults', function() {
-          var callback = jasmine.createSpy('callback');
-
-          $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
-                                            'X-Requested-With': 'XMLHttpRequest',
-                                            'Content-Type': 'application/json'}).
-                      respond(200, 'OK');
-
-          $xhr.defaults.headers.get['Content-Type'] = 'application/json';
-          $xhr('GET', 'URL', callback);
-          $browserXhr.flush();
-          expect(callback).toHaveBeenCalled();
-          callback.reset();
-
-          $browserXhr.expectPOST('URL', 'x', {'Accept': 'application/json, text/plain, */*',
-                                              'X-Requested-With': 'XMLHttpRequest',
-                                              'Content-Type': 'application/x-www-form-urlencoded'}).
-                      respond(200, 'OK');
-
-         $xhr('POST', 'URL', 'x', callback);
-         $browserXhr.flush();
-         expect(callback).toHaveBeenCalled();
-        });
-
-
-        it('should support overwriting and deleting default headers', function() {
-          var callback = jasmine.createSpy('callback');
-
-          $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*'}).
-                      respond(200, 'OK');
-
-          //delete a default header
-          delete $xhr.defaults.headers.common['X-Requested-With'];
-          $xhr('GET', 'URL', callback);
-          $browserXhr.flush();
-          expect(callback).toHaveBeenCalled();
-          callback.reset();
-
-          $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
-                                               'Content-Type': 'application/json'}).
-                      respond(200, 'OK');
-
-         //overwrite a default header
-         $xhr.defaults.headers.post['Content-Type'] = 'application/json';
-         $xhr('POST', 'URL', 'xx', callback);
-         $browserXhr.flush();
-         expect(callback).toHaveBeenCalled();
-        });
-      });
+      respond(400, 'empty');
+      expect(onError).toHaveBeenCalledOnce();
+      expect(onError.mostRecentCall.args[1]).toBe(400);
     });
   });
 
-  describe('xsrf', function(){
-    it('should copy the XSRF cookie into a XSRF Header', function(){
-      var code, response;
-      $browserXhr
-        .expectPOST('URL', 'DATA', {'X-XSRF-TOKEN': 'secret'})
-        .respond(234, 'OK');
+
+  describe('response headers', function() {
+
+    var callback;
+
+    beforeEach(function() {
+      callback = jasmine.createSpy('callback');
+    });
+
+    it('should return single header', function() {
+      callback.andCallFake(function callback(r, s, header) {
+        expect(header('date')).toBe('date-val');
+      });
+
+      $xhr({url: '/url', method: 'GET'}).on('200', callback);
+      respond(200, '');
+
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should return all headers as object', function() {
+      callback.andCallFake(function callback(r, s, header) {
+        expect(header()).toEqual({'content-encoding': 'gzip', 'server': 'Apache'});
+      });
+
+      $xhr({url: '/url', method: 'GET'}).on('200', callback);
+      respond(200, '');
+
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should return empty object for jsonp request', function() {
+      // jsonp doesn't return raw object
+      rawXhrObject = undefined;
+      callback.andCallFake(function(r, s, headers) {
+        expect(headers()).toEqual({});
+      });
+
+      $xhr({url: '/some', method: 'JSONP'}).on('200', callback);
+      respond(200, '');
+      expect(callback).toHaveBeenCalledOnce();
+    });
+  });
+
+
+  describe('response headers parser', function() {
+
+    it('should parse basic', function() {
+      var parsed = parseHeaders(
+          'date: Thu, 04 Aug 2011 20:23:08 GMT\n' +
+          'content-encoding: gzip\n' +
+          'transfer-encoding: chunked\n' +
+          'x-cache-info: not cacheable; response has already expired, not cacheable; response has already expired\n' +
+          'connection: Keep-Alive\n' +
+          'x-backend-server: pm-dekiwiki03\n' +
+          'pragma: no-cache\n' +
+          'server: Apache\n' +
+          'x-frame-options: DENY\n' +
+          'content-type: text/html; charset=utf-8\n' +
+          'vary: Cookie, Accept-Encoding\n' +
+          'keep-alive: timeout=5, max=1000\n' +
+          'expires: Thu: , 19 Nov 1981 08:52:00 GMT\n');
+
+      expect(parsed['date']).toBe('Thu, 04 Aug 2011 20:23:08 GMT');
+      expect(parsed['content-encoding']).toBe('gzip');
+      expect(parsed['transfer-encoding']).toBe('chunked');
+      expect(parsed['keep-alive']).toBe('timeout=5, max=1000');
+    });
+
+
+    it('should parse lines without space after colon', function() {
+      expect(parseHeaders('key:value').key).toBe('value');
+    });
+
+
+    it('should trim the values', function() {
+      expect(parseHeaders('key:    value ').key).toBe('value');
+    });
+
+
+    it('should allow headers without value', function() {
+      expect(parseHeaders('key:').key).toBe('');
+    });
+
+
+    it('should merge headers with same key', function() {
+      expect(parseHeaders('key: a\nkey:b\n').key).toBe('a,b');
+    });
+
+
+    it('should normalize keys to lower case', function() {
+      expect(parseHeaders('KeY: value').key).toBe('value');
+    });
+  });
+
+
+  describe('request headers', function() {
+
+    it('should send custom headers', function() {
+      $xhr({url: '/url', method: 'GET', headers: {
+        'Custom': 'header',
+        'Content-Type': 'application/json'
+      }});
+
+      expect(headers['Custom']).toEqual('header');
+      expect(headers['Content-Type']).toEqual('application/json');
+    });
+
+
+    it('should set default headers for GET request', function() {
+      $xhr({url: '/url', method: 'GET', headers: {}});
+
+      expect(headers['Accept']).toBe('application/json, text/plain, */*');
+      expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
+    });
+
+
+    it('should set default headers for POST request', function() {
+      $xhr({url: '/url', method: 'POST', headers: {}});
+
+      expect(headers['Accept']).toBe('application/json, text/plain, */*');
+      expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
+      expect(headers['Content-Type']).toBe('application/x-www-form-urlencoded');
+    });
+
+
+    it('should set default headers for custom HTTP method', function() {
+      $xhr({url: '/url', method: 'FOO', headers: {}});
+
+      expect(headers['Accept']).toBe('application/json, text/plain, */*');
+      expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
+    });
+
+
+    it('should override default headers with custom', function() {
+      $xhr({url: '/url', method: 'POST', headers: {
+        'Accept': 'Rewritten',
+        'Content-Type': 'Rewritten'
+      }});
+
+      expect(headers['Accept']).toBe('Rewritten');
+      expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
+      expect(headers['Content-Type']).toBe('Rewritten');
+    });
+
+
+    it('should set the XSRF cookie into a XSRF header', function() {
       $browser.cookies('XSRF-TOKEN', 'secret');
-      $xhr('POST', 'URL', 'DATA', function(c, r){
-        code = c;
-        response = r;
+
+      $xhr({url: '/url', method: 'GET'});
+      expect(headers['X-XSRF-TOKEN']).toBe('secret');
+
+      $xhr({url: '/url', method: 'POST', headers: {'S-ome': 'Header'}});
+      expect(headers['X-XSRF-TOKEN']).toBe('secret');
+
+      $xhr({url: '/url', method: 'PUT', headers: {'Another': 'Header'}});
+      expect(headers['X-XSRF-TOKEN']).toBe('secret');
+
+      $xhr({url: '/url', method: 'DELETE', headers: {}});
+      expect(headers['X-XSRF-TOKEN']).toBe('secret');
+    });
+  });
+
+
+  describe('short methods', function() {
+
+    it('should have .get()', function() {
+      $xhr.get('/url');
+
+      expect(method).toBe('GET');
+      expect(url).toBe('/url');
+    });
+
+
+    it('.get() should allow config param', function() {
+      $xhr.get('/url', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('GET');
+      expect(url).toBe('/url');
+      expect(headers['Custom']).toBe('Header');
+    });
+
+
+    it('should have .delete()', function() {
+      $xhr['delete']('/url');
+
+      expect(method).toBe('DELETE');
+      expect(url).toBe('/url');
+    });
+
+
+    it('.delete() should allow config param', function() {
+      $xhr['delete']('/url', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('DELETE');
+      expect(url).toBe('/url');
+      expect(headers['Custom']).toBe('Header');
+    });
+
+
+    it('should have .head()', function() {
+      $xhr.head('/url');
+
+      expect(method).toBe('HEAD');
+      expect(url).toBe('/url');
+    });
+
+
+    it('.head() should allow config param', function() {
+      $xhr.head('/url', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('HEAD');
+      expect(url).toBe('/url');
+      expect(headers['Custom']).toBe('Header');
+    });
+
+
+    it('should have .patch()', function() {
+      $xhr.patch('/url');
+
+      expect(method).toBe('PATCH');
+      expect(url).toBe('/url');
+    });
+
+
+    it('.patch() should allow config param', function() {
+      $xhr.patch('/url', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('PATCH');
+      expect(url).toBe('/url');
+      expect(headers['Custom']).toBe('Header');
+    });
+
+
+    it('should have .post()', function() {
+      $xhr.post('/url', 'some-data');
+
+      expect(method).toBe('POST');
+      expect(url).toBe('/url');
+      expect(data).toBe('some-data');
+    });
+
+
+    it('.post() should allow config param', function() {
+      $xhr.post('/url', 'some-data', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('POST');
+      expect(url).toBe('/url');
+      expect(data).toBe('some-data');
+      expect(headers['Custom']).toBe('Header');
+    });
+
+
+    it('should have .put()', function() {
+      $xhr.put('/url', 'some-data');
+
+      expect(method).toBe('PUT');
+      expect(url).toBe('/url');
+      expect(data).toBe('some-data');
+    });
+
+
+    it('.put() should allow config param', function() {
+      $xhr.put('/url', 'some-data', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('PUT');
+      expect(url).toBe('/url');
+      expect(data).toBe('some-data');
+      expect(headers['Custom']).toBe('Header');
+    });
+
+
+    it('should have .jsonp()', function() {
+      $xhr.jsonp('/url');
+
+      expect(method).toBe('JSONP');
+      expect(url).toBe('/url');
+    });
+
+
+    it('.jsonp() should allow config param', function() {
+      $xhr.jsonp('/url', {headers: {'Custom': 'Header'}});
+
+      expect(method).toBe('JSONP');
+      expect(url).toBe('/url');
+      expect(headers['Custom']).toBe('Header');
+    });
+  });
+
+
+  describe('future', function() {
+
+    describe('abort', function() {
+
+      beforeEach(doCommonXhr);
+
+      it('should allow aborting the request', function() {
+        future.abort();
+
+        expect(rawXhrObject.abort).toHaveBeenCalledOnce();
       });
-      $browserXhr.flush();
-      expect(code).toEqual(234);
-      expect(response).toEqual('OK');
+
+
+      it('should not abort already finished request', function() {
+        respond(200, 'content');
+
+        future.abort();
+        expect(rawXhrObject.abort).not.toHaveBeenCalled();
+      });
+
+
+      it('should not call any callback', function() {
+        future.on('xxx', onError);
+        future.abort();
+
+        expect(onError).not.toHaveBeenCalled();
+        expect(onSuccess).not.toHaveBeenCalled();
+      });
+    });
+
+
+    describe('repeat', function() {
+
+      it('should repeat last request with same callbacks', function() {
+        doCommonXhr('HEAD', '/url-x');
+        respond(200, '');
+        $browser.xhr.reset();
+        onSuccess.reset();
+
+        future.repeat();
+        expect($browser.xhr).toHaveBeenCalledOnce();
+        expect(method).toBe('HEAD');
+        expect(url).toBe('/url-x');
+
+        respond(200, 'body');
+        expect(onSuccess).toHaveBeenCalledOnce();
+      });
+
+
+      it('should return itself to allow chaining', function() {
+        doCommonXhr();
+        respond(200, '');
+        expect(future.repeat()).toBe(future);
+      });
+
+
+      it('should throw error when pending request', function() {
+        doCommonXhr();
+        expect(future.repeat).toThrow('Can not repeat request. Abort pending request first.');
+      });
+    });
+
+
+    describe('on', function() {
+
+      var callback;
+
+      beforeEach(function() {
+        future = $xhr({method: 'GET', url: '/url'});
+        callback = jasmine.createSpy('callback');
+      });
+
+      it('should return itself to allow chaining', function() {
+        expect(future.on('200', noop)).toBe(future);
+      });
+
+
+      it('should call exact status code callback', function() {
+        future.on('205', callback);
+        respond(205, '');
+
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should match 2xx', function() {
+        future.on('2xx', callback);
+
+        respond(200, '');
+        respond(201, '');
+        respond(266, '');
+
+        respond(400, '');
+        respond(300, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(3);
+      });
+
+
+      it('should match 20x', function() {
+        future.on('20x', callback);
+
+        respond(200, '');
+        respond(201, '');
+        respond(205, '');
+
+        respond(400, '');
+        respond(300, '');
+        respond(210, '');
+        respond(255, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(3);
+      });
+
+
+      it('should match 2x1', function() {
+        future.on('2x1', callback);
+
+        respond(201, '');
+        respond(211, '');
+        respond(251, '');
+
+        respond(400, '');
+        respond(300, '');
+        respond(210, '');
+        respond(255, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(3);
+      });
+
+
+      it('should match xxx', function() {
+        future.on('xxx', callback);
+
+        respond(201, '');
+        respond(211, '');
+        respond(251, '');
+        respond(404, '');
+        respond(501, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(5);
+      });
+
+
+      it('should call all matched callbacks', function() {
+        var no = jasmine.createSpy('wrong');
+        future.on('xxx', callback);
+        future.on('2xx', callback);
+        future.on('205', callback);
+        future.on('3xx', no);
+        future.on('2x1', no);
+        future.on('4xx', no);
+        respond(205, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(3);
+        expect(no).not.toHaveBeenCalled();
+      });
+
+
+      it('should allow list of status patterns', function() {
+        future.on('2xx,3xx', callback);
+
+        respond(405, '');
+        expect(callback).not.toHaveBeenCalled();
+
+        respond(201);
+        expect(callback).toHaveBeenCalledOnce();
+
+        respond(301);
+        expect(callback.callCount).toBe(2);
+      });
+
+
+      it('should preserve the order of listeners', function() {
+        var log = '';
+        future.on('2xx', function() {log += '1';});
+        future.on('201', function() {log += '2';});
+        future.on('2xx', function() {log += '3';});
+
+        respond(201);
+        expect(log).toBe('123');
+      });
+
+
+      it('should know "success" alias', function() {
+        future.on('success', callback);
+        respond(200, '');
+        expect(callback).toHaveBeenCalledOnce();
+
+        callback.reset();
+        respond(201, '');
+        expect(callback).toHaveBeenCalledOnce();
+
+        callback.reset();
+        respond(250, '');
+        expect(callback).toHaveBeenCalledOnce();
+
+        callback.reset();
+        respond(404, '');
+        respond(501, '');
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+
+      it('should know "error" alias', function() {
+        future.on('error', callback);
+        respond(401, '');
+        expect(callback).toHaveBeenCalledOnce();
+
+        callback.reset();
+        respond(500, '');
+        expect(callback).toHaveBeenCalledOnce();
+
+        callback.reset();
+        respond(0, '');
+        expect(callback).toHaveBeenCalledOnce();
+
+        callback.reset();
+        respond(201, '');
+        respond(200, '');
+        respond(300, '');
+        expect(callback).not.toHaveBeenCalled();
+      });
+
+
+      it('should know "always" alias', function() {
+        future.on('always', callback);
+        respond(201, '');
+        respond(200, '');
+        respond(300, '');
+        respond(401, '');
+        respond(502, '');
+
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(5);
+      });
+
+
+      it('should call "xxx" when 0 status code', function() {
+        future.on('xxx', callback);
+        respond(0, '');
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should not call "2xx" when 0 status code', function() {
+        future.on('2xx', callback);
+        respond(0, '');
+        expect(callback).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+
+  describe('scope.$apply', function() {
+
+    beforeEach(doCommonXhr);
+
+    it('should $apply after success callback', function() {
+      respond(200, '');
+      expect(scope.$apply).toHaveBeenCalledOnce();
+    });
+
+
+    it('should $apply after error callback', function() {
+      respond(404, '');
+      expect(scope.$apply).toHaveBeenCalledOnce();
+    });
+
+
+    it('should $apply even if exception thrown during callback', function() {
+      onSuccess.andThrow('error in callback');
+      onError.andThrow('error in callback');
+
+      respond(200, '');
+      expect(scope.$apply).toHaveBeenCalledOnce();
+
+      scope.$apply.reset();
+      respond(400, '');
+      expect(scope.$apply).toHaveBeenCalledOnce();
+
+      $log.error.logs = [];
+    });
+  });
+
+
+  describe('transform', function() {
+
+    describe('request', function() {
+
+      describe('default', function() {
+
+        it('should transform object into json', function() {
+          $xhr({method: 'POST', url: '/url', data: {one: 'two'}});
+          expect(data).toBe('{"one":"two"}');
+        });
+
+
+        it('should ignore strings', function() {
+          $xhr({method: 'POST', url: '/url', data: 'string-data'});
+          expect(data).toBe('string-data');
+        });
+      });
+    });
+
+
+    describe('response', function() {
+
+      describe('default', function() {
+
+        it('should deserialize json objects', function() {
+          doCommonXhr();
+          respond(200, '{"foo":"bar","baz":23}');
+
+          expect(onSuccess.mostRecentCall.args[0]).toEqual({foo: 'bar', baz: 23});
+        });
+
+
+        it('should deserialize json arrays', function() {
+          doCommonXhr();
+          respond(200, '[1, "abc", {"foo":"bar"}]');
+
+          expect(onSuccess.mostRecentCall.args[0]).toEqual([1, 'abc', {foo: 'bar'}]);
+        });
+
+
+        it('should deserialize json with security prefix', function() {
+          doCommonXhr();
+          respond(200, ')]}\',\n[1, "abc", {"foo":"bar"}]');
+
+          expect(onSuccess.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+        });
+      });
+
+      it('should pipeline more functions', function() {
+        function first(d) {return d + '1';}
+        function second(d) {return d + '2';}
+        onSuccess = jasmine.createSpy('onSuccess');
+
+        $xhr({method: 'POST', url: '/url', data: '0', transformResponse: [first, second]})
+          .on('200', onSuccess);
+
+        respond(200, '0');
+        expect(onSuccess).toHaveBeenCalledOnce();
+        expect(onSuccess.mostRecentCall.args[0]).toBe('012');
+      });
+    });
+  });
+
+
+  describe('cache', function() {
+
+    function doFirstCacheRequest(method, responseStatus) {
+      onSuccess = jasmine.createSpy('on200');
+      $xhr({method: method || 'get', url: '/url', cache: true});
+      respond(responseStatus || 200, 'content');
+      $browser.xhr.reset();
+    }
+
+    afterEach(function() {
+      $log.info.logs = [];
+    });
+
+    it('should cache GET request', function() {
+      doFirstCacheRequest();
+
+      $xhr({method: 'get', url: '/url', cache: true}).on('200', onSuccess);
+      $browser.defer.flush();
+
+      expect(onSuccess).toHaveBeenCalledOnce();
+      expect(onSuccess.mostRecentCall.args[0]).toBe('content');
+      expect($browser.xhr).not.toHaveBeenCalled();
+    });
+
+
+    it('should always call callback asynchronously', function() {
+      doFirstCacheRequest();
+
+      $xhr({method: 'get', url: '/url', cache: true}).on('200', onSuccess);
+      expect(onSuccess).not.toHaveBeenCalled();
+    });
+
+
+    it('should not cache POST request', function() {
+      doFirstCacheRequest('post');
+
+      $xhr({method: 'post', url: '/url', cache: true}).on('200', onSuccess);
+      $browser.defer.flush();
+      expect(onSuccess).not.toHaveBeenCalled();
+      expect($browser.xhr).toHaveBeenCalledOnce();
+    });
+
+
+    it('should not cache PUT request', function() {
+      doFirstCacheRequest('put');
+
+      $xhr({method: 'put', url: '/url', cache: true}).on('200', onSuccess);
+      $browser.defer.flush();
+      expect(onSuccess).not.toHaveBeenCalled();
+      expect($browser.xhr).toHaveBeenCalledOnce();
+    });
+
+
+    it('should not cache DELETE request', function() {
+      doFirstCacheRequest('delete');
+
+      $xhr({method: 'delete', url: '/url', cache: true}).on('200', onSuccess);
+      $browser.defer.flush();
+      expect(onSuccess).not.toHaveBeenCalled();
+      expect($browser.xhr).toHaveBeenCalledOnce();
+    });
+
+
+    it('should not cache non 2xx responses', function() {
+      doFirstCacheRequest('get', 404);
+
+      $xhr({method: 'get', url: '/url', cache: true}).on('200', onSuccess);
+      $browser.defer.flush();
+      expect(onSuccess).not.toHaveBeenCalled();
+      expect($browser.xhr).toHaveBeenCalledOnce();
+    });
+
+
+    it('should cache the headers as well', function() {
+      doFirstCacheRequest();
+      onSuccess.andCallFake(function(r, s, headers) {
+        expect(headers()).toEqual({'content-encoding': 'gzip', 'server': 'Apache'});
+        expect(headers('server')).toBe('Apache');
+      });
+
+      $xhr({method: 'get', url: '/url', cache: true}).on('200', onSuccess);
+      $browser.defer.flush();
+      expect(onSuccess).toHaveBeenCalledOnce();
+    });
+
+
+    it('should cache status code as well', function() {
+      doFirstCacheRequest('get', 201);
+      onSuccess.andCallFake(function(r, status, h) {
+        expect(status).toBe(201);
+      });
+
+      $xhr({method: 'get', url: '/url', cache: true}).on('2xx', onSuccess);
+      $browser.defer.flush();
+      expect(onSuccess).toHaveBeenCalledOnce();
     });
   });
 });
