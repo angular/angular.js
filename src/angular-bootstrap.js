@@ -110,6 +110,7 @@
              'service/document.js',
              'service/exceptionHandler.js',
              'service/hover.js',
+             'service/http.js',
              'service/invalidWidgets.js',
              'service/location.js',
              'service/log.js',
@@ -117,10 +118,6 @@
              'service/route.js',
              'service/routeParams.js',
              'service/window.js',
-             'service/xhr.bulk.js',
-             'service/xhr.cache.js',
-             'service/xhr.error.js',
-             'service/xhr.js',
              'service/locale.js',
 
              'apis.js',
