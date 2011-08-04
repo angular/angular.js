@@ -481,11 +481,11 @@ describe("directive", function() {
     });
 
     it('should infer injection arguments', function() {
-      temp.MyController = function($xhr){
-        this.$root.someService = $xhr;
+      temp.MyController = function($http) {
+        this.$root.someService = $http;
       };
       var scope = compile('<div ng:controller="temp.MyController"></div>');
-      expect(scope.someService).toBe(scope.$service('$xhr'));
+      expect(scope.someService).toBe(scope.$service('$http'));
     });
   });
 

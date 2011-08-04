@@ -1,6 +1,6 @@
 'use strict';
 
-describe("resource", function() {
+xdescribe("resource", function() {
   var xhr, resource, CreditCard, callback, $xhrErr;
 
   beforeEach(function() {
