@@ -90,12 +90,15 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$xhr.cache', '$autoScroll', '$element', function($xhr, $autoScroll, element) {
+    return ['$http', '$cacheFactory', '$autoScroll', '$element',
+    function($http, $cacheFactory,     $autoScroll,   element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
           childScope,
-          oldScope;
+          oldScope,
+          // TODO(vojta): configure the cache / extract into $tplCache service ?
+          cache = $cacheFactory.get('templates') || $cacheFactory('templates');
 
       function incrementChange() { changeCounter++;}
       this.$watch(srcExp, incrementChange);
@@ -108,26 +111,42 @@ angularWidget('ng:include', function(element){
       });
       this.$watch(function() {return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
-            useScope = scope.$eval(scopeExp);
+            useScope = scope.$eval(scopeExp),
+            fromCache;
+
+        function updateContent(content) {
+          element.html(content);
+          if (useScope) {
+            childScope = useScope;
+          } else {
+            releaseScopes.push(childScope = scope.$new());
+          }
+          compiler.compile(element)(childScope);
+          $autoScroll();
+          scope.$eval(onloadExp);
+        }
+
+        function clearContent() {
+          childScope = null;
+          element.html('');
+        }
 
         while(releaseScopes.length) {
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          $xhr('GET', src, null, function(code, response) {
-            element.html(response);
-            if (useScope) {
-              childScope = useScope;
-            } else {
-              releaseScopes.push(childScope = scope.$new());
-            }
-            compiler.compile(element)(childScope);
-            $autoScroll();
-            scope.$eval(onloadExp);
-          }, false, true);
+          if ((fromCache = cache.get(src))) {
+            scope.$evalAsync(function() {
+              updateContent(fromCache);
+            });
+          } else {
+            $http.get(src).on('success', function(response) {
+              updateContent(response);
+              cache.put(src, response);
+            }).on('error', clearContent);
+          }
         } else {
-          childScope = null;
-          element.html('');
+          clearContent();
         }
       });
     }];
@@ -556,28 +575,48 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$xhr.cache', '$route', '$autoScroll', '$element', function($xhr, $route, $autoScroll, element) {
+    return ['$http', '$cacheFactory', '$route', '$autoScroll', '$element',
+    function($http,   $cacheFactory,   $route,   $autoScroll,   element) {
       var template;
       var changeCounter = 0;
+
+      // TODO(vojta): configure the cache / extract into $tplCache service ?
+      var cache = $cacheFactory.get('templates') || $cacheFactory('templates');
 
       this.$on('$afterRouteChange', function() {
         changeCounter++;
       });
 
       this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
-        var template = $route.current && $route.current.template;
-        if (template) {
-          //xhr's callback must be async, see commit history for more info
-          $xhr('GET', template, function(code, response) {
-            // ignore callback if another route change occured since
-            if (newChangeCounter == changeCounter) {
-              element.html(response);
-              compiler.compile(element)($route.current.scope);
-              $autoScroll();
-            }
-          });
-        } else {
+        var template = $route.current && $route.current.template,
+            fromCache;
+
+        function updateContent(content) {
+          element.html(content);
+          compiler.compile(element)($route.current.scope);
+        }
+
+        function clearContent() {
           element.html('');
+        }
+
+        if (template) {
+          if ((fromCache = cache.get(template))) {
+            scope.$evalAsync(function() {
+              updateContent(fromCache);
+            });
+          } else {
+            // xhr's callback must be async, see commit history for more info
+            $http.get(template).on('success', function(response) {
+              // ignore callback if another route change occured since
+              if (newChangeCounter == changeCounter)
+                updateContent(response);
+              cache.put(template, response);
+              $autoScroll();
+            }).on('error', clearContent);
+          }
+        } else {
+          clearContent();
         }
       });
     }];
