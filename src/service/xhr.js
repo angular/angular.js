@@ -115,16 +115,21 @@
            var self = this;
 
            this.fetch = function() {
-             self.clear();
+             self.code = null;
+             self.response = null;
+
              $xhr(self.method, self.url, function(code, response) {
                self.code = code;
                self.response = response;
+             }, function(code, response) {
+               self.code = code;
+               self.response = response || "Request failed";
              });
            };
 
-           this.clear = function() {
-             self.code = null;
-             self.response = null;
+           this.updateModel = function(method, url) {
+             self.method = method;
+             self.url = url;
            };
          }
          FetchCntl.$inject = ['$xhr'];
@@ -134,15 +139,38 @@
            <option>GET</option>
            <option>JSON</option>
          </select>
-         <input type="text" name="url" value="index.html" size="80"/><br/>
-         <button ng:click="fetch()">fetch</button>
-         <button ng:click="clear()">clear</button>
-         <a href="" ng:click="method='GET'; url='index.html'">sample</a>
-         <a href="" ng:click="method='JSON'; url='https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK'">buzz</a>
+         <input type="text" name="url" value="index.html" size="80"/>
+         <button ng:click="fetch()">fetch</button><br>
+         <button ng:click="updateModel('GET', 'index.html')">Sample GET</button>
+         <button ng:click="updateModel('JSON', 'https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK')">Sample JSONP (Buzz API)</button>
+         <button ng:click="updateModel('JSON', 'https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK')">Invalid JSONP</button>
          <pre>code={{code}}</pre>
          <pre>response={{response}}</pre>
        </div>
      </doc:source>
+     <doc:scenario>
+       it('should make xhr GET request', function() {
+         element(':button:contains("Sample GET")').click();
+         element(':button:contains("fetch")').click();
+         expect(binding('code')).toBe('code=200');
+         expect(binding('response')).toMatch(/angularjs.org/);
+       });
+
+       it('should make JSONP request to the Buzz API', function() {
+         element(':button:contains("Buzz API")').click();
+         element(':button:contains("fetch")').click();
+         expect(binding('code')).toBe('code=200');
+         expect(binding('response')).toMatch(/buzz-feed/);
+       });
+
+       it('should make JSONP request to invalid URL and invoke the error handler',
+           function() {
+         element(':button:contains("Invalid JSONP")').click();
+         element(':button:contains("fetch")').click();
+         expect(binding('code')).toBe('code=');
+         expect(binding('response')).toBe('response=Request failed');
+       });
+     </doc:scenario>
    </doc:example>
  */
 angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
