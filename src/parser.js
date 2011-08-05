@@ -515,7 +515,7 @@ function parser(text, json){
       if (instance)
         instance = instance[key];
     }
-    if (typeof instance != $function) {
+    if (!isFunction(instance)) {
       throwError("should be a function", token);
     }
     return instance;
@@ -765,7 +765,7 @@ function compileExpr(expr) {
 // TODO(misko): Deprecate? Remove!
 // I think that compilation should be a service.
 function expressionCompile(exp) {
-  if (typeof exp === $function) return exp;
+  if (isFunction(exp)) return exp;
   var fn = compileCache[exp];
   if (!fn) {
     fn = compileCache[exp] =  parser(exp).statements();

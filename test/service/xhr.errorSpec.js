@@ -30,7 +30,7 @@ describe('$xhr.error', function() {
     $xhr('POST', '/req', 'MyData', callback);
     $browserXhr.flush();
     var cb = $xhrError.mostRecentCall.args[0].success;
-    expect(typeof cb).toEqual($function);
+    expect(typeof cb).toEqual('function');
     expect($xhrError).toHaveBeenCalledWith(
         {url: '/req', method: 'POST', data: 'MyData', success: cb},
         {status: 500, body: 'MyError'});

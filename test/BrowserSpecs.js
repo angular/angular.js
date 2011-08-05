@@ -111,7 +111,7 @@ describe('browser', function(){
           var script = scripts[0];
           var url = script.src.split('?cb=');
           expect(url[0]).toEqual('http://example.org/path');
-          expect(typeof fakeWindow[url[1]]).toEqual($function);
+          expect(typeof fakeWindow[url[1]]).toEqual('function');
           fakeWindow[url[1]]('data');
           script.onload();
 
@@ -125,8 +125,8 @@ describe('browser', function(){
         it('should call callback when script fails to load', function() {
           browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
           var script = scripts[0];
-          expect(typeof script.onload).toBe($function);
-          expect(typeof script.onerror).toBe($function);
+          expect(typeof script.onload).toBe('function');
+          expect(typeof script.onerror).toBe('function');
           script.onerror();
 
           expect(log).toEqual('undefined:undefined;');
