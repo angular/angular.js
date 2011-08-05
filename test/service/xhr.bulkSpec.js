@@ -62,7 +62,7 @@ describe('$xhr.bulk', function() {
 
     expect($xhrError).toHaveBeenCalled();
     var cb = $xhrError.mostRecentCall.args[0].success;
-    expect(typeof cb).toEqual($function);
+    expect(typeof cb).toEqual('function');
     expect($xhrError).toHaveBeenCalledWith(
         {url: '/req1', method: 'GET', data: null, success: cb},
         {status: 404, response: 'NotFound'});

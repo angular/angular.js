@@ -394,7 +394,7 @@ var angularArray = {
           }
         }
         break;
-      case $function:
+      case 'function':
         predicates.push(expression);
         break;
       default:

@@ -136,7 +136,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       for ( var keyIndex = 0; keyIndex < keys.length; keyIndex++) {
         var key = keys[keyIndex];
         var value = obj[key];
-        if (typeof value != $function) {
+        if (!isFunction(value)) {
           if (comma) {
             buf.push(",");
             if (pretty) buf.push(pretty);

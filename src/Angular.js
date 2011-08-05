@@ -64,7 +64,6 @@ var _undefined        = undefined,
     $console          = 'console',
     $date             = 'date',
     $display          = 'display',
-    $function         = 'function',
     $length           = 'length',
     $name             = 'name',
     $noop             = 'noop',
@@ -420,7 +419,7 @@ function isArray(value) { return value instanceof Array; }
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Function`.
  */
-function isFunction(value){ return typeof value == $function;}
+function isFunction(value){ return typeof value == 'function';}
 
 
 /**
@@ -819,7 +818,7 @@ function sliceArgs(args, startIndex) {
  */
 function bind(self, fn) {
   var curryArgs = arguments.length > 2 ? sliceArgs(arguments, 2) : [];
-  if (typeof fn == $function && !(fn instanceof RegExp)) {
+  if (isFunction(fn) && !(fn instanceof RegExp)) {
     return curryArgs.length
       ? function() {
           return arguments.length

@@ -28,7 +28,7 @@ describe('api', function(){
       assertEquals("string", angular.Object.typeOf(""));
       assertEquals("date", angular.Object.typeOf(new Date()));
       assertEquals("element", angular.Object.typeOf(document.body));
-      assertEquals($function, angular.Object.typeOf(function(){}));
+      assertEquals('function', angular.Object.typeOf(function(){}));
     });
 
     it('should extend object', function(){
