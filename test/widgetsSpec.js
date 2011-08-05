@@ -293,18 +293,6 @@ describe("widget", function(){
       expect(scope.$get('name')).toEqual('Kai');
     });
 
-    it('should call ng:change on button click', function(){
-      compile('<input type="button" value="Click Me" ng:change="clicked = true"/>');
-      browserTrigger(element);
-      expect(scope.$get('clicked')).toEqual(true);
-    });
-
-    it('should support button alias', function(){
-      compile('<button ng:change="clicked = true">Click {{"Me"}}.</button>');
-      browserTrigger(element);
-      expect(scope.$get('clicked')).toEqual(true);
-      expect(scope.$element.text()).toEqual("Click Me.");
-    });
 
     describe('radio', function(){
 
@@ -416,14 +404,6 @@ describe("widget", function(){
       expect(element.hasClass('ng-exception')).toBeTruthy();
       expect(scope.$service('$log').error.logs.shift()[0]).
         toMatchError(/Syntax Error: Token '''' is an unexpected token/);
-    });
-
-    it('should report error on ng:change exception', function(){
-      compile('<button ng:change="a-2=x">click</button>');
-      browserTrigger(element);
-      expect(element.hasClass('ng-exception')).toBeTruthy();
-      expect(scope.$service('$log').error.logs.shift()[0]).
-        toMatchError(/Syntax Error: Token '=' implies assignment but \[a-2\] can not be assigned to/);
     });
   });
 
