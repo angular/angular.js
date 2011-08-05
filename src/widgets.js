@@ -445,16 +445,11 @@ function noopAccessor() { return { get: noop, set: noop }; }
  *
  */
 var textWidget = inputWidget('keydown change', modelAccessor, valueAccessor, initWidgetValue(), true),
-    buttonWidget = inputWidget('click', noopAccessor, noopAccessor, noop),
     INPUT_TYPE = {
       'text':            textWidget,
       'textarea':        textWidget,
       'hidden':          textWidget,
       'password':        textWidget,
-      'button':          buttonWidget,
-      'submit':          buttonWidget,
-      'reset':           buttonWidget,
-      'image':           buttonWidget,
       'checkbox':        inputWidget('click', modelFormattedAccessor, checkedAccessor, initWidgetValue(false)),
       'radio':           inputWidget('click', modelFormattedAccessor, radioAccessor, radioInit),
       'select-one':      inputWidget('change', modelAccessor, valueAccessor, initWidgetValue(null)),
@@ -566,7 +561,7 @@ function inputWidgetSelector(element){
 
 angularWidget('input', inputWidgetSelector);
 angularWidget('textarea', inputWidgetSelector);
-angularWidget('button', inputWidgetSelector);
+
 
 /**
  * @workInProgress
