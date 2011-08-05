@@ -119,6 +119,9 @@
              $xhr(self.method, self.url, function(code, response) {
                self.code = code;
                self.response = response;
+             }, function(code, response) {
+               self.code = code;
+               self.response = response || "Request failed";
              });
            };
 
@@ -137,8 +140,9 @@
          <input type="text" name="url" value="index.html" size="80"/><br/>
          <button ng:click="fetch()">fetch</button>
          <button ng:click="clear()">clear</button>
-         <a href="" ng:click="method='GET'; url='index.html'">sample</a>
-         <a href="" ng:click="method='JSON'; url='https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK'">buzz</a>
+         <a href="" ng:click="method='GET'; url='index.html'">Sample GET</a> |
+         <a href="" ng:click="method='JSON'; url='https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK'">Sample JSONP (Buzz API)</a> |
+         <a href="" ng:click="method='JSON'; url='https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK'">Invalid JSONP</a>
          <pre>code={{code}}</pre>
          <pre>response={{response}}</pre>
        </div>
