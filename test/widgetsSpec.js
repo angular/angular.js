@@ -295,18 +295,6 @@ describe("widget", function(){
       expect(scope.name).toEqual('Kai');
     });
 
-    it('should call ng:change on button click', function(){
-      compile('<input type="button" value="Click Me" ng:change="clicked = true"/>');
-      browserTrigger(element);
-      expect(scope.clicked).toEqual(true);
-    });
-
-    it('should support button alias', function(){
-      compile('<button ng:change="clicked = true">Click {{"Me"}}.</button>');
-      browserTrigger(element);
-      expect(scope.clicked).toEqual(true);
-      expect(scope.$element.text()).toEqual("Click Me.");
-    });
 
     describe('radio', function(){
 
