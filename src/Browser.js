@@ -100,12 +100,19 @@ function Browser(window, document, body, XHR, $log) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId));
-      window[callbackId] = function(data){
+      window[callbackId] = function(data) {
+        window[callbackId].data = data;
+      };
+
+      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), null, function() {
+        if (window[callbackId].data) {
+          completeOutstandingRequest(callback, 200, window[callbackId].data);
+        } else {
+          completeOutstandingRequest(callback);
+        }
         delete window[callbackId];
         body[0].removeChild(script);
-        completeOutstandingRequest(callback, 200, data);
-      };
+      });
     } else {
       var xhr = new XHR();
       xhr.open(method, url, true);
@@ -452,7 +459,7 @@ function Browser(window, document, body, XHR, $log) {
    * @description
    * Adds a script tag to the head.
    */
-  self.addJs = function(url, domId) {
+  self.addJs = function(url, domId, done) {
     // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
     // - fetches local scripts via XHR and evals them
     // - adds and immediately removes script elements from the document
@@ -465,6 +472,15 @@ function Browser(window, document, body, XHR, $log) {
     script.type = 'text/javascript';
     script.src = url;
     if (domId) script.id = domId;
+
+    if (msie) {
+      script.onreadystatechange = function() {
+        /loaded|complete/.test(script.readyState) && done && done();
+      }
+    } else {
+      if (done) script.onload = script.onerror = done;
+    }
+
     body[0].appendChild(script);
 
     return script;
