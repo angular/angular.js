@@ -122,7 +122,7 @@ function Browser(window, document, body, XHR, $log) {
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-          var status = xhr.status == 1223 ? 204 : xhr.status || 200;
+          var status = xhr.status == 1223 ? 204 : xhr.status;
           completeOutstandingRequest(callback, status, xhr.responseText);
         }
       };
