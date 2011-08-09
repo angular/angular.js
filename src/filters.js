@@ -245,7 +245,7 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: AMPMGetter,
-     Z: timeZoneGetter;
+     Z: timeZoneGetter
 };
 
 var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
