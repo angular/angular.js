@@ -102,7 +102,7 @@ function Browser(window, document, body, XHR, $log) {
    */
   self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
-    if (lowercase(method) == 'json') {
+    if (lowercase(method) == 'jsonp') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
       window[callbackId] = function(data) {
         window[callbackId].data = data;
