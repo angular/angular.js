@@ -71,7 +71,7 @@ function createInjector(factoryScope, factories, instanceCache) {
     while(i--) {
       args.unshift(injector(injectNames[i]));
     }
-    return fn.apply(self, args);
+    return args.length ? fn.apply(self, args) : fn.call(self);
   }
 }
 

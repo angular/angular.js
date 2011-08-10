@@ -34,6 +34,17 @@ describe('injector', function(){
     expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
   });
 
+  it('should call a function with no $injects or arguments', function() {
+    var self;
+    var fn = function() {
+      self = this;
+    };
+    fn.$inject = [];
+
+    injector.invoke({name: 'this'}, fn);
+    expect(self).toEqual({name: 'this'});
+  });
+
   it('should inject providers', function(){
     providers('a', function(){return this.mi = 'Mi';});
     providers('b', function(mi){return this.name = mi+'sko';}, {$inject:['a']});
