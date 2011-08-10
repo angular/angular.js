@@ -18,8 +18,8 @@ to retrieve Buzz activity and comments.
      this.Activity = $resource(
       'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
       {alt: 'json', callback: 'JSON_CALLBACK'},
-      { get:     {method: 'JSON', params: {visibility: '@self'}},
-        replies: {method: 'JSON', params: {visibility: '@self', comments: '@comments'}}
+      { get:     {method: 'JSONP', params: {visibility: '@self'}},
+        replies: {method: 'JSONP', params: {visibility: '@self', comments: '@comments'}}
       });
     }
     BuzzController.prototype = {
