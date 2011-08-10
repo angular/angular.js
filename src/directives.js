@@ -571,9 +571,14 @@ function ngClass(selector) {
     var existing = element[0].className + ' ';
     return function(element){
       this.$onEval(function(){
-        if (selector(this.$index)) {
-          var value = this.$eval(expression);
+        var scope = this;
+
+        if (selector(scope.$index)) {
+          var ngClassVal = scope.$eval(element.attr('ng:class') || '');
+          if (isArray(ngClassVal)) ngClassVal = ngClassVal.join(' ');
+          var value = scope.$eval(expression);
           if (isArray(value)) value = value.join(' ');
+          if (ngClassVal && ngClassVal !== value) value = value + ' ' + ngClassVal;
           element[0].className = trim(existing + value);
         }
       }, element);
