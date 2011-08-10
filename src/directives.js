@@ -546,8 +546,11 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(function(scope) {
         if (selector(scope.$index)) {
+          var ngClassVal = scope.$eval(element.attr('ng:class'));
+          if (isArray(ngClassVal)) ngClassVal = ngClassVal.join(' ');
           var value = scope.$eval(expression);
           if (isArray(value)) value = value.join(' ');
+          if (ngClassVal && ngClassVal !== value) value = value + ' ' + ngClassVal;
           element[0].className = trim(existing + value);
         }
       });
