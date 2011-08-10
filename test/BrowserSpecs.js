@@ -111,7 +111,7 @@ describe('browser', function() {
   });
 
   describe('xhr', function() {
-    describe('JSON', function() {
+    describe('JSONP', function() {
       var log;
 
       function callback(code, data) {
@@ -129,7 +129,7 @@ describe('browser', function() {
 
         it('should add script tag for JSONP request', function() {
           var notify = jasmine.createSpy('notify');
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
           browser.notifyWhenNoOutstandingRequests(notify);
           expect(notify).not.toHaveBeenCalled();
           expect(scripts.length).toEqual(1);
@@ -148,7 +148,7 @@ describe('browser', function() {
 
 
         it('should call callback when script fails to load', function() {
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
           var script = scripts[0];
           expect(typeof script.onload).toBe('function');
           expect(typeof script.onerror).toBe('function');
@@ -160,7 +160,7 @@ describe('browser', function() {
 
         it('should update the outstandingRequests counter for successful requests', function() {
           var notify = jasmine.createSpy('notify');
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
           browser.notifyWhenNoOutstandingRequests(notify);
           expect(notify).not.toHaveBeenCalled();
 
@@ -175,7 +175,7 @@ describe('browser', function() {
 
         it('should update the outstandingRequests counter for failed requests', function() {
           var notify = jasmine.createSpy('notify');
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
+          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
           browser.notifyWhenNoOutstandingRequests(notify);
           expect(notify).not.toHaveBeenCalled();
 

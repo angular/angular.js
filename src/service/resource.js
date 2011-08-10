@@ -40,7 +40,7 @@
  *   - `action` – {string} – The name of action. This name becomes the name of the method on your
  *     resource object.
  *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
- *     and `JSON` (also known as JSONP).
+ *     and `JSONP`
  *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
  *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
@@ -163,7 +163,7 @@
            this.Activity = $resource(
              'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
              {alt:'json', callback:'JSON_CALLBACK'},
-             {get:{method:'JSON', params:{visibility:'@self'}}, replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}}
+             {get:{method:'JSONP', params:{visibility:'@self'}}, replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}}
            );
          }
 
