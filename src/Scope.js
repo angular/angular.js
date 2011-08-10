@@ -93,7 +93,7 @@ function createScope(providers, instanceCache) {
  */
 function Scope() {
   this.$id = nextUid();
-  this.$$phase = this.$parent = this.$$watchers = this.$$observers =
+  this.$$phase = this.$parent = this.$$watchers =
     this.$$nextSibling = this.$$childHead = this.$$childTail = null;
   this['this'] = this.$root =  this;
 }
@@ -145,7 +145,7 @@ Scope.prototype = {
    * @description
    * Creates a new child {@link angular.scope scope}. The new scope can optionally behave as a
    * controller. The parent scope will propagate the {@link angular.scope.$digest $digest()} and
-   * {@link angular.scope.$flush $flush()} events. The scope can be removed from the scope
+   * {@link angular.scope.$digest $digest()} events. The scope can be removed from the scope
    * hierarchy using {@link angular.scope.$destroy $destroy()}.
    *
    * {@link angular.scope.$destroy $destroy()} must be called on a scope when it is desired for
@@ -168,7 +168,7 @@ Scope.prototype = {
     child['this'] = child;
     child.$parent = this;
     child.$id = nextUid();
-    child.$$phase = child.$$watchers = child.$$observers =
+    child.$$phase = child.$$watchers =
       child.$$nextSibling = child.$$childHead = child.$$childTail = null;
     if (this.$$childHead) {
       this.$$childTail.$$nextSibling = child;
@@ -207,75 +207,14 @@ Scope.prototype = {
    *   {@link angular.copy} function is used. It also means that watching complex options will
    *   have adverse memory and performance implications.
    * - The watch `listener` may change the model, which may trigger other `listener`s to fire. This
-   *   is achieving my rerunning the watchers until no changes are detected. The rerun iteration
+   *   is achieved by rerunning the watchers until no changes are detected. The rerun iteration
    *   limit is 100 to prevent infinity loop deadlock.
    *
-   * # When to use `$watch`?
-   *
-   * The `$watch` should be used from within controllers to listen on properties *immediately* after
-   * a stimulus is applied to the system (see {@link angular.scope.$apply $apply()}). This is in
-   * contrast to {@link angular.scope.$observe $observe()} which is used from within the directives
-   * and which gets applied at some later point in time. In addition
-   * {@link angular.scope.$observe $observe()} must not modify the model.
    *
    * If you want to be notified whenever {@link angular.scope.$digest $digest} is called,
    * you can register an `watchExpression` function with no `listener`. (Since `watchExpression`,
    * can execute multiple times per {@link angular.scope.$digest $digest} cycle when a change is
    * detected, be prepared for multiple calls to your listener.)
-   *
-   * # `$watch` vs `$observe`
-   *
-   * <table class="table">
-   *   <tr>
-   *     <th></td>
-   *     <th>{@link angular.scope.$watch $watch()}</th>
-   *     <th>{@link angular.scope.$observe $observe()}</th>
-   *   </tr>
-   *   <tr><th colspan="3" class="section">When to use it?</th></tr>
-   *   <tr>
-   *     <th>Purpose</th>
-   *     <td>Application behavior (including further model mutation) in response to a model
-   *         mutation.</td>
-   *     <td>Update the DOM in response to a model mutation.</td>
-   *   </tr>
-   *   <tr>
-   *     <th>Used from</th>
-   *     <td>{@link angular.directive.ng:controller controller}</td>
-   *     <td>{@link angular.directive directives}</td>
-   *   </tr>
-   *   <tr><th colspan="3" class="section">What fires listeners?</th></tr>
-   *   <tr>
-   *     <th>Directly</th>
-   *     <td>{@link angular.scope.$digest $digest()}</td>
-   *     <td>{@link angular.scope.$flush $flush()}</td>
-   *   </tr>
-   *   <tr>
-   *     <th>Indirectly via {@link angular.scope.$apply $apply()}</th>
-   *     <td>{@link angular.scope.$apply $apply} calls
-   *         {@link angular.scope.$digest $digest()} after apply argument executes.</td>
-   *     <td>{@link angular.scope.$apply $apply} schedules
-   *         {@link angular.scope.$flush $flush()} at some future time via
-   *         {@link angular.service.$updateView $updateView}</td>
-   *   </tr>
-   *   <tr><th colspan="3" class="section">API contract</th></tr>
-   *   <tr>
-   *     <th>Model mutation</th>
-   *     <td>allowed: detecting mutations requires one or mare calls to `watchExpression' per
-   *         {@link angular.scope.$digest $digest()} cycle</td>
-   *     <td>not allowed: called once per {@link angular.scope.$flush $flush()} must be
-   *         {@link http://en.wikipedia.org/wiki/Idempotence idempotent}
-   *         (function without side-effects which can be called multiple times.)</td>
-   *   </tr>
-   *   <tr>
-   *     <th>Initial Value</th>
-   *     <td>uses the current value of `watchExpression` as the initial value. Does not fire on
-   *         initial call to {@link angular.scope.$digest $digest()}, unless `watchExpression` has
-   *         changed form the initial value.</td>
-   *     <td>fires on first run of {@link angular.scope.$flush $flush()} regardless of value of
-   *         `observeExpression`</td>
-   *   </tr>
-   * </table>
-   *
    *
    *
    * # Example
@@ -311,8 +250,6 @@ Scope.prototype = {
    *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
    *    - `function(scope, newValue, oldValue)`: called with current `scope` an previous and
    *       current values as parameters.
-   * @returns {function()} a function which will call the `listener` with apprariate arguments.
-   *    Useful for forcing initialization of listener.
    */
   $watch: function(watchExp, listener) {
     var scope = this;
@@ -326,15 +263,9 @@ Scope.prototype = {
     // the while loop reads in reverse order.
     array.unshift({
       fn: listenFn,
-      last: copy(get(scope)),
+      last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
       get: get
     });
-    // we only return the initialization function for $watch (not for $observe), since creating
-    // function cost time and memory, and $observe functions do not need it.
-    return function() {
-      var value = get(scope);
-      listenFn(scope, value, value);
-    };
   },
 
   /**
@@ -369,15 +300,15 @@ Scope.prototype = {
        scope.counter = 0;
 
        expect(scope.counter).toEqual(0);
-       scope.$flush('name', function(scope, newValue, oldValue) { counter = counter + 1; });
+       scope.$digest('name', function(scope, newValue, oldValue) { counter = counter + 1; });
        expect(scope.counter).toEqual(0);
 
-       scope.$flush();
+       scope.$digest();
        // no variable change
        expect(scope.counter).toEqual(0);
 
        scope.name = 'adam';
-       scope.$flush();
+       scope.$digest();
        expect(scope.counter).toEqual(1);
      </pre>
    *
@@ -432,222 +363,14 @@ Scope.prototype = {
   /**
    * @workInProgress
    * @ngdoc function
-   * @name angular.scope.$observe
-   * @function
-   *
-   * @description
-   * Registers a `listener` callback to be executed during the {@link angular.scope.$flush $flush()}
-   * phase when the `observeExpression` changes..
-   *
-   * - The `observeExpression` is called on every call to {@link angular.scope.$flush $flush()} and
-   *   should return the value which will be observed.
-   * - The `listener` is called only when the value from the current `observeExpression` and the
-   *   previous call to `observeExpression' are not equal. The inequality is determined according to
-   *   {@link angular.equals} function. To save the value of the object for later comparison
-   *   {@link angular.copy} function is used. It also means that watching complex options will
-   *   have adverse memory and performance implications.
-   *
-   * # When to use `$observe`?
-   *
-   * {@link angular.scope.$observe $observe()} is used from within directives and gets applied at
-   * some later point in time. Addition {@link angular.scope.$observe $observe()} must not
-   * modify the model. This is in contrast to {@link angular.scope.$watch $watch()} which should be
-   * used from within controllers to trigger a callback *immediately* after a stimulus is applied
-   * to the system (see {@link angular.scope.$apply $apply()}).
-   *
-   * If you want to be notified whenever {@link angular.scope.$flush $flush} is called,
-   * you can register an `observeExpression` function with no `listener`.
-   *
-   *
-   * # `$watch` vs `$observe`
-   *
-   * <table class="table">
-   *   <tr>
-   *     <th></td>
-   *     <th>{@link angular.scope.$watch $watch()}</th>
-   *     <th>{@link angular.scope.$observe $observe()}</th>
-   *   </tr>
-   *   <tr><th colspan="3" class="section">When to use it?</th></tr>
-   *   <tr>
-   *     <th>Purpose</th>
-   *     <td>Application behavior (including further model mutation) in response to a model
-   *         mutation.</td>
-   *     <td>Update the DOM in response to a model mutation.</td>
-   *   </tr>
-   *   <tr>
-   *     <th>Used from</th>
-   *     <td>{@link angular.directive.ng:controller controller}</td>
-   *     <td>{@link angular.directive directives}</td>
-   *   </tr>
-   *   <tr><th colspan="3" class="section">What fires listeners?</th></tr>
-   *   <tr>
-   *     <th>Directly</th>
-   *     <td>{@link angular.scope.$digest $digest()}</td>
-   *     <td>{@link angular.scope.$flush $flush()}</td>
-   *   </tr>
-   *   <tr>
-   *     <th>Indirectly via {@link angular.scope.$apply $apply()}</th>
-   *     <td>{@link angular.scope.$apply $apply} calls
-   *         {@link angular.scope.$digest $digest()} after apply argument executes.</td>
-   *     <td>{@link angular.scope.$apply $apply} schedules
-   *         {@link angular.scope.$flush $flush()} at some future time via
-   *         {@link angular.service.$updateView $updateView}</td>
-   *   </tr>
-   *   <tr><th colspan="3" class="section">API contract</th></tr>
-   *   <tr>
-   *     <th>Model mutation</th>
-   *     <td>allowed: detecting mutations requires one or mare calls to `watchExpression' per
-   *         {@link angular.scope.$digest $digest()} cycle</td>
-   *     <td>not allowed: called once per {@link angular.scope.$flush $flush()} must be
-   *         {@link http://en.wikipedia.org/wiki/Idempotence idempotent}
-   *         (function without side-effects which can be called multiple times.)</td>
-   *   </tr>
-   *   <tr>
-   *     <th>Initial Value</th>
-   *     <td>uses the current value of `watchExpression` as the initial value. Does not fire on
-   *         initial call to {@link angular.scope.$digest $digest()}, unless `watchExpression` has
-   *         changed form the initial value.</td>
-   *     <td>fires on first run of {@link angular.scope.$flush $flush()} regardless of value of
-   *         `observeExpression`</td>
-   *   </tr>
-   * </table>
-   *
-   * # Example
-     <pre>
-       var scope = angular.scope();
-       scope.name = 'misko';
-       scope.counter = 0;
-
-       expect(scope.counter).toEqual(0);
-       scope.$flush('name', function(scope, newValue, oldValue) { counter = counter + 1; });
-       expect(scope.counter).toEqual(0);
-
-       scope.$flush();
-       // no variable change
-       expect(scope.counter).toEqual(0);
-
-       scope.name = 'adam';
-       scope.$flush();
-       expect(scope.counter).toEqual(1);
-     </pre>
-   *
-   * @param {(function()|string)} observeExpression Expression that is evaluated on each
-   *    {@link angular.scope.$flush $flush} cycle. A change in the return value triggers a
-   *    call to the `listener`.
-   *
-   *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
-   *    - `function(scope)`: called with current `scope` as a parameter.
-   * @param {(function()|string)=} listener Callback called whenever the return value of
-   *   the `observeExpression` changes.
-   *
-   *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
-   *    - `function(scope, newValue, oldValue)`: called with current `scope` an previous and
-   *       current values as parameters.
-   */
-  $observe: function(watchExp, listener) {
-    var array = this.$$observers;
-
-    if (!array) {
-      array = this.$$observers = [];
-    }
-    // we use unshift since we use a while loop in $flush for speed.
-    // the while loop reads in reverse order.
-    array.unshift({
-      fn: compileToFn(listener || noop, 'listener'),
-      last: NaN,
-      get:  compileToFn(watchExp, 'watch')
-    });
-  },
-
-  /**
-   * @workInProgress
-   * @ngdoc function
-   * @name angular.scope.$flush
-   * @function
-   *
-   * @description
-   * Process all of the {@link angular.scope.$observe observers} of the current scope
-   * and its children.
-   *
-   * Usually you don't call `$flush()` directly in
-   * {@link angular.directive.ng:controller controllers} or in {@link angular.directive directives}.
-   * Instead a call to {@link angular.scope.$apply $apply()} (typically from within a
-   * {@link angular.directive directive}) will scheduled a call to `$flush()` (with the
-   * help of the {@link angular.service.$updateView $updateView} service).
-   *
-   * If you want to be notified whenever `$flush()` is called,
-   * you can register a `observeExpression` function  with {@link angular.scope.$observe $observe()}
-   * with no `listener`.
-   *
-   * You may have a need to call `$flush()` from within unit-tests, to simulate the scope
-   * life-cycle.
-   *
-   * # Example
-     <pre>
-       var scope = angular.scope();
-       scope.name = 'misko';
-       scope.counter = 0;
-
-       expect(scope.counter).toEqual(0);
-       scope.$flush('name', function(scope, newValue, oldValue) { counter = counter + 1; });
-       expect(scope.counter).toEqual(0);
-
-       scope.$flush();
-       // no variable change
-       expect(scope.counter).toEqual(0);
-
-       scope.name = 'adam';
-       scope.$flush();
-       expect(scope.counter).toEqual(1);
-     </pre>
-   *
-   */
-  $flush: function() {
-    var observers = this.$$observers,
-        child,
-        length,
-        observer, value, last;
-
-    if (this.$$phase) {
-      throw Error(this.$$phase + ' already in progress');
-    }
-    this.$$phase = '$flush';
-    if (observers) {
-      // process our watches
-      length = observers.length;
-      while (length--) {
-        try {
-          observer = observers[length];
-          // Most common watches are on primitives, in which case we can short
-          // circuit it with === operator, only when === fails do we use .equals
-          if ((value = observer.get(this)) !== (last = observer.last) && !equals(value, last)) {
-            observer.fn(this, observer.last = copy(value), last);
-          }
-        } catch (e){
-          this.$service('$exceptionHandler')(e);
-        }
-      }
-    }
-    // observers can create new children
-    child = this.$$childHead;
-    while(child) {
-      child.$flush();
-      child = child.$$nextSibling;
-    }
-    this.$$phase = null;
-  },
-
-  /**
-   * @workInProgress
-   * @ngdoc function
    * @name angular.scope.$destroy
    * @function
    *
    * @description
    * Remove the current scope (and all of its children) from the parent scope. Removal implies
-   * that calls to {@link angular.scope.$digest $digest()} and
-   * {@link angular.scope.$flush $flush()} will no longer propagate to the current scope and its
-   * children. Removal also implies that the current scope is eligible for garbage collection.
+   * that calls to {@link angular.scope.$digest $digest()} will no longer propagate to the current
+   * scope and its children. Removal also implies that the current scope is eligible for garbage
+   * collection.
    *
    * The `$destroy()` is usually used by directives such as
    * {@link angular.widget.@ng:repeat ng:repeat} for managing the unrolling of the loop.
@@ -726,9 +449,7 @@ Scope.prototype = {
    * (For example from browser DOM events, setTimeout, XHR or third party libraries).
    * Because we are calling into the angular framework we need to perform proper scope life-cycle
    * of {@link angular.service.$exceptionHandler exception handling},
-   * {@link angular.scope.$digest executing watches} and scheduling
-   * {@link angular.service.$updateView updating of the view} which in turn
-   * {@link angular.scope.$digest executes observers} to update the DOM.
+   * {@link angular.scope.$digest executing watches}.
    *
    * ## Life cycle
    *
@@ -740,7 +461,6 @@ Scope.prototype = {
           $exceptionHandler(e);
         } finally {
           $root.$digest();
-          $updateView();
         }
       }
    *
@@ -753,12 +473,6 @@ Scope.prototype = {
    *    {@link angular.service.$exceptionHandler $exceptionHandler} service.
    * 3. The {@link angular.scope.$watch watch} listeners are fired immediately after the expression
    *    was executed using the {@link angular.scope.$digest $digest()} method.
-   * 4. A DOM update is scheduled using the {@link angular.service.$updateView $updateView} service.
-   *    The `$updateView` may merge multiple update requests into a single update, if the requests
-   *    are issued in close time proximity.
-   * 6. The {@link angular.service.$updateView $updateView} service then fires DOM
-   *    {@link angular.scope.$observe observers} using the {@link angular.scope.$flush $flush()}
-   *    method.
    *
    *
    * @param {(string|function())=} exp An angular expression to be executed.
@@ -775,7 +489,6 @@ Scope.prototype = {
       this.$service('$exceptionHandler')(e);
     } finally {
       this.$root.$digest();
-      this.$service('$updateView')();
     }
   }
 };

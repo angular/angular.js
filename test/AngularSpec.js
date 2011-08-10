@@ -551,7 +551,7 @@ describe('angular', function(){
     it('should link to existing node and create scope', function(){
       template = angular.element('<div>{{greeting = "hello world"}}</div>');
       scope = angular.compile(template)();
-      scope.$flush();
+      scope.$digest();
       expect(template.text()).toEqual('hello world');
       expect(scope.greeting).toEqual('hello world');
     });
@@ -560,7 +560,7 @@ describe('angular', function(){
       scope = angular.scope();
       template = angular.element('<div>{{greeting = "hello world"}}</div>');
       angular.compile(template)(scope);
-      scope.$flush();
+      scope.$digest();
       expect(template.text()).toEqual('hello world');
       expect(scope).toEqual(scope);
     });
@@ -575,7 +575,7 @@ describe('angular', function(){
       templateFn(scope, function(clone){
         templateClone = clone;
       });
-      scope.$flush();
+      scope.$digest();
 
       expect(template.text()).toEqual('');
       expect(scope.$element.text()).toEqual('hello world');
@@ -586,7 +586,7 @@ describe('angular', function(){
     it('should link to cloned node and create scope', function(){
       scope = angular.scope();
       template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)(scope, noop).$flush();
+      angular.compile(template)(scope, noop).$digest();
       expect(template.text()).toEqual('');
       expect(scope.$element.text()).toEqual('hello world');
       expect(scope.greeting).toEqual('hello world');

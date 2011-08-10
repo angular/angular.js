@@ -27,7 +27,6 @@ ANGULAR = [
   'src/service/log.js',
   'src/service/resource.js',
   'src/service/route.js',
-  'src/service/updateView.js',
   'src/service/window.js',
   'src/service/xhr.bulk.js',
   'src/service/xhr.cache.js',

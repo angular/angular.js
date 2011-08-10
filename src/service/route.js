@@ -62,7 +62,7 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$route', function($location, $updateView) {
+angularServiceInject('$route', function($location) {
   var routes = {},
       onChange = [],
       matcher = switchRouteMatcher,
@@ -267,7 +267,7 @@ angularServiceInject('$route', function($location, $updateView) {
   }
 
 
-  this.$watch(function(){return dirty + $location.hash;}, updateRoute)();
+  this.$watch(function(){return dirty + $location.hash;}, updateRoute);
 
   return $route;
-}, ['$location', '$updateView']);
+}, ['$location']);

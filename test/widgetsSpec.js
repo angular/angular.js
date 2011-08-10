@@ -368,7 +368,7 @@ describe("widget", function(){
                 '</select>');
         scope.a = 'foo';
         scope.b = 'bar';
-        scope.$flush();
+        scope.$digest();
 
         expect(scope.$element.text()).toBe('foobarC');
       });
@@ -465,7 +465,7 @@ describe("widget", function(){
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko');
       dealoc(scope);
     });
@@ -477,12 +477,12 @@ describe("widget", function(){
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
-      scope.$flush();
+      scope.$digest();
 
       expect(element.text()).toEqual('igor');
 
       scope.url = undefined;
-      scope.$flush();
+      scope.$digest();
 
       expect(element.text()).toEqual('');
       dealoc(scope);
@@ -492,15 +492,15 @@ describe("widget", function(){
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
       var scope = angular.compile(element)();
       scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
-      scope.$flush();
+      scope.$service('$xhr.cache').data.myUrl = {value:'{{"abc"}}'};
+      scope.$digest();
       // TODO(misko): because we are using scope==this, the eval gets registered
       // during the flush phase and hence does not get called.
       // I don't think passing 'this' makes sense. Does having scope on ng:include makes sense?
       // should we make scope="this" ilegal?
-      scope.$flush();
+      scope.$digest();
 
-      expect(element.text()).toEqual('1');
+      expect(element.text()).toEqual('abc');
       dealoc(element);
     });
 
@@ -512,7 +512,7 @@ describe("widget", function(){
 
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
       dealoc(element);
@@ -526,11 +526,11 @@ describe("widget", function(){
 
       scope.url = 'myUrl';
       scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
-      scope.$flush();
+      scope.$digest();
       expect(scope.$$childHead).toBeTruthy();
 
       scope.url = null;
-      scope.$flush();
+      scope.$digest();
       expect(scope.$$childHead).toBeFalsy();
       dealoc(element);
     });
@@ -622,7 +622,7 @@ describe("widget", function(){
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       var options = select.find('option');
       expect(options.length).toEqual(3);
       expect(sortedHtml(options[0])).toEqual('<option value="0">A</option>');
@@ -637,7 +637,7 @@ describe("widget", function(){
       });
       scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
       scope.selected = scope.object.red;
-      scope.$flush();
+      scope.$digest();
       var options = select.find('option');
       expect(options.length).toEqual(3);
       expect(sortedHtml(options[0])).toEqual('<option value="blue">blue</option>');
@@ -646,7 +646,7 @@ describe("widget", function(){
       expect(options[2].selected).toEqual(true);
 
       scope.object.azur = '8888FF';
-      scope.$flush();
+      scope.$digest();
       options = select.find('option');
       expect(options[3].selected).toEqual(true);
     });
@@ -654,18 +654,18 @@ describe("widget", function(){
     it('should grow list', function(){
       createSingleSelect();
       scope.values = [];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(1); // because we add special empty option
       expect(sortedHtml(select.find('option')[0])).toEqual('<option value="?"></option>');
 
       scope.values.push({name:'A'});
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(1);
       expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
 
       scope.values.push({name:'B'});
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(2);
       expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
       expect(sortedHtml(select.find('option')[1])).toEqual('<option value="1">B</option>');
@@ -675,23 +675,23 @@ describe("widget", function(){
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(3);
 
       scope.values.pop();
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(2);
       expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
       expect(sortedHtml(select.find('option')[1])).toEqual('<option value="1">B</option>');
 
       scope.values.pop();
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(1);
       expect(sortedHtml(select.find('option')[0])).toEqual('<option value="0">A</option>');
 
       scope.values.pop();
       scope.selected = null;
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(1); // we add back the special empty option
     });
 
@@ -699,17 +699,17 @@ describe("widget", function(){
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(3);
 
       scope.values = [{name:'1'}, {name:'2'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(2);
 
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(3);
     });
 
@@ -717,11 +717,11 @@ describe("widget", function(){
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
 
       scope.values = [{name:'B'}, {name:'C'}, {name:'D'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       var options = select.find('option');
       expect(options.length).toEqual(3);
       expect(sortedHtml(options[0])).toEqual('<option value="0">B</option>');
@@ -732,19 +732,19 @@ describe("widget", function(){
     it('should preserve existing options', function(){
       createSingleSelect(true);
 
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(1);
 
       scope.values = [{name:'A'}];
       scope.selected = scope.values[0];
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(2);
       expect(jqLite(select.find('option')[0]).text()).toEqual('blank');
       expect(jqLite(select.find('option')[1]).text()).toEqual('A');
 
       scope.values = [];
       scope.selected = null;
-      scope.$flush();
+      scope.$digest();
       expect(select.find('option').length).toEqual(1);
       expect(jqLite(select.find('option')[0]).text()).toEqual('blank');
     });
@@ -754,11 +754,11 @@ describe("widget", function(){
         createSingleSelect();
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
 
         scope.selected = scope.values[1];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('1');
       });
 
@@ -773,7 +773,7 @@ describe("widget", function(){
                         {name:'D', group:'first'},
                         {name:'E', group:'second'}];
         scope.selected = scope.values[3];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('3');
 
         var first = jqLite(select.find('optgroup')[0]);
@@ -791,7 +791,7 @@ describe("widget", function(){
         expect(e.text()).toEqual('E');
 
         scope.selected = scope.values[0];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
       });
 
@@ -799,11 +799,11 @@ describe("widget", function(){
         createSelect({'name':'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
         scope.selected = scope.values[0].id;
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
 
         scope.selected = scope.values[1].id;
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('1');
       });
 
@@ -814,11 +814,11 @@ describe("widget", function(){
         });
         scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
         scope.selected = 'green';
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('green');
 
         scope.selected = 'blue';
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('blue');
       });
 
@@ -829,11 +829,11 @@ describe("widget", function(){
         });
         scope.object = {'red':'FF0000', 'green':'00FF00', 'blue':'0000FF'};
         scope.selected = '00FF00';
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('green');
 
         scope.selected = '0000FF';
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('blue');
       });
 
@@ -841,13 +841,13 @@ describe("widget", function(){
         createSingleSelect();
         scope.values = [{name:'A'}];
         scope.selected = null;
-        scope.$flush();
+        scope.$digest();
         expect(select.find('option').length).toEqual(2);
         expect(select.val()).toEqual('');
         expect(jqLite(select.find('option')[0]).val()).toEqual('');
 
         scope.selected = scope.values[0];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
         expect(select.find('option').length).toEqual(1);
       });
@@ -856,13 +856,13 @@ describe("widget", function(){
         createSingleSelect(true);
         scope.values = [{name:'A'}];
         scope.selected = null;
-        scope.$flush();
+        scope.$digest();
         expect(select.find('option').length).toEqual(2);
         expect(select.val()).toEqual('');
         expect(jqLite(select.find('option')[0]).val()).toEqual('');
 
         scope.selected = scope.values[0];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
         expect(select.find('option').length).toEqual(2);
       });
@@ -871,13 +871,13 @@ describe("widget", function(){
         createSingleSelect();
         scope.values = [{name:'A'}];
         scope.selected = {};
-        scope.$flush();
+        scope.$digest();
         expect(select.find('option').length).toEqual(2);
         expect(select.val()).toEqual('?');
         expect(jqLite(select.find('option')[0]).val()).toEqual('?');
 
         scope.selected = scope.values[0];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
         expect(select.find('option').length).toEqual(1);
       });
@@ -888,7 +888,7 @@ describe("widget", function(){
         createSingleSelect();
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
 
         select.val('1');
@@ -905,7 +905,7 @@ describe("widget", function(){
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
         scope.count = 0;
-        scope.$flush();
+        scope.$digest();
         expect(scope.count).toEqual(0);
 
         select.val('1');
@@ -922,7 +922,7 @@ describe("widget", function(){
         createSelect({name:'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
         scope.selected = scope.values[0].id;
-        scope.$flush();
+        scope.$digest();
         expect(select.val()).toEqual('0');
 
         select.val('1');
@@ -935,7 +935,7 @@ describe("widget", function(){
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
         select.val('0');
-        scope.$flush();
+        scope.$digest();
 
         select.val('');
         browserTrigger(select, 'change');
@@ -949,19 +949,19 @@ describe("widget", function(){
         scope.values = [{name:'A'}, {name:'B'}];
 
         scope.selected = [];
-        scope.$flush();
+        scope.$digest();
         expect(select.find('option').length).toEqual(2);
         expect(jqLite(select.find('option')[0]).attr('selected')).toEqual(false);
         expect(jqLite(select.find('option')[1]).attr('selected')).toEqual(false);
 
         scope.selected.push(scope.values[1]);
-        scope.$flush();
+        scope.$digest();
         expect(select.find('option').length).toEqual(2);
         expect(select.find('option')[0].selected).toEqual(false);
         expect(select.find('option')[1].selected).toEqual(true);
 
         scope.selected.push(scope.values[0]);
-        scope.$flush();
+        scope.$digest();
         expect(select.find('option').length).toEqual(2);
         expect(select.find('option')[0].selected).toEqual(true);
         expect(select.find('option')[1].selected).toEqual(true);
@@ -972,7 +972,7 @@ describe("widget", function(){
         scope.values = [{name:'A'}, {name:'B'}];
 
         scope.selected = [];
-        scope.$flush();
+        scope.$digest();
         select.find('option')[0].selected = true;
 
         browserTrigger(select, 'change');
@@ -991,20 +991,20 @@ describe("widget", function(){
       Array.prototype.extraProperty = "should be ignored";
       // INIT
       scope.items = ['misko', 'shyam'];
-      scope.$flush();
+      scope.$digest();
       expect(element.find('li').length).toEqual(2);
       expect(element.text()).toEqual('misko;shyam;');
       delete Array.prototype.extraProperty;
 
       // GROW
       scope.items = ['adam', 'kai', 'brad'];
-      scope.$flush();
+      scope.$digest();
       expect(element.find('li').length).toEqual(3);
       expect(element.text()).toEqual('adam;kai;brad;');
 
       // SHRINK
       scope.items = ['brad'];
-      scope.$flush();
+      scope.$digest();
       expect(element.find('li').length).toEqual(1);
       expect(element.text()).toEqual('brad;');
     });
@@ -1012,7 +1012,7 @@ describe("widget", function(){
     it('should ng:repeat over object', function(){
       var scope = compile('<ul><li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li></ul>');
       scope.items = {misko:'swe', shyam:'set'};
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:swe;shyam:set;');
     });
 
@@ -1024,7 +1024,7 @@ describe("widget", function(){
       var scope = compile('<ul><li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li></ul>');
       scope.items = new Class();
       scope.items.name = 'value';
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('name:value;');
     });
 
@@ -1040,7 +1040,7 @@ describe("widget", function(){
       var scope = compile('<ul><li ng:repeat="item in items" ' +
                                   'ng:bind="item + $index + \'|\'"></li></ul>');
       scope.items = ['misko', 'shyam', 'frodo'];
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko0|shyam1|frodo2|');
     });
 
@@ -1048,7 +1048,7 @@ describe("widget", function(){
       var scope = compile('<ul><li ng:repeat="(key, val) in items" ' +
                                   'ng:bind="key + \':\' + val + $index + \'|\'"></li></ul>');
       scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:m0|shyam:s1|frodo:f2|');
     });
 
@@ -1056,16 +1056,16 @@ describe("widget", function(){
       var scope = compile('<ul><li ng:repeat="item in items" ' +
                                   'ng:bind="item + \':\' + $position + \'|\'"></li></ul>');
       scope.items = ['misko', 'shyam', 'doug'];
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:first|shyam:middle|doug:last|');
 
       scope.items.push('frodo');
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:first|shyam:middle|doug:middle|frodo:last|');
 
       scope.items.pop();
       scope.items.pop();
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:first|shyam:last|');
     });
 
@@ -1073,12 +1073,12 @@ describe("widget", function(){
       var scope = compile('<ul><li ng:repeat="(key, val) in items" ' +
                                   'ng:bind="key + \':\' + val + \':\' + $position + \'|\'"></li></ul>');
       scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:m:first|shyam:s:middle|doug:d:middle|frodo:f:last|');
 
       delete scope.items.doug;
       delete scope.items.frodo;
-      scope.$flush();
+      scope.$digest();
       expect(element.text()).toEqual('misko:m:first|shyam:s:last|');
     });
   });
@@ -1126,14 +1126,14 @@ describe("widget", function(){
       $location.updateHash('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
-      rootScope.$flush();
+      rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
       $location.updateHash('/bar');
       $browser.xhr.expectGET('myUrl2').respond('angular is da best');
       rootScope.$digest();
-      rootScope.$flush();
+      rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('angular is da best');
     });
@@ -1144,13 +1144,13 @@ describe("widget", function(){
       $location.updateHash('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
-      rootScope.$flush();
+      rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
       $location.updateHash('/unknown');
       rootScope.$digest();
-      rootScope.$flush();
+      rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
     });
 
@@ -1161,13 +1161,13 @@ describe("widget", function(){
       $location.updateHash('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
       rootScope.$digest();
-      rootScope.$flush();
+      rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('parent');
 
       rootScope.parentVar = 'new parent';
       rootScope.$digest();
-      rootScope.$flush();
+      rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('new parent');
     });
 
@@ -1189,7 +1189,7 @@ describe("widget", function(){
       rootScope.$apply();
 
       $browser.xhr.expectGET('viewPartial.html').respond('content');
-      rootScope.$flush();
+      rootScope.$digest();
       $browser.xhr.flush();
 
       expect(rootScope.$element.text()).toEqual('include: view: content');
@@ -1222,18 +1222,18 @@ describe("widget", function(){
       rootScope.$apply();
       $browser.xhr.flush();
 
-      expect(rootScope.log).toEqual(['parent', 'child', 'init']);
+      expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
       $location.updateHash('');
       rootScope.$apply();
-      expect(rootScope.log).toEqual(['parent', 'child', 'init']);
+      expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
       rootScope.log = [];
       $location.updateHash('/foo');
       rootScope.$apply();
       $browser.defer.flush();
 
-      expect(rootScope.log).toEqual(['parent', 'child', 'init']);
+      expect(rootScope.log).toEqual(['parent', 'init', 'child']);
     });
   });
 });

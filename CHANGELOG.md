@@ -16,6 +16,9 @@
 - $route.onChange() callback (http://docs.angularjs.org/#!angular.service.$route)
   no longer has this bound.
 - Removed undocumented $config in root scope. (You should have not been depending on this.)
+- removed $flush()/$observe on scope
+- removed ng:eval/ng:eval-order since it is incompatible with $digest phase
+- ng:init and ng:controllers are now called in the order of declaration in HTML
 
 
 

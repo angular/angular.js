@@ -5,8 +5,6 @@
  * @ngdoc service
  * @name angular.service.$defer
  * @requires $browser
- * @requires $exceptionHandler
- * @requires $updateView
  *
  * @description
  * Delegates to {@link angular.service.$browser $browser.defer}, but wraps the `fn` function
@@ -25,4 +23,4 @@ angularServiceInject('$defer', function($browser) {
       scope.$apply(fn);
     }, delay);
   };
-}, ['$browser', '$exceptionHandler', '$updateView']);
+}, ['$browser']);
