@@ -91,7 +91,7 @@ angularServiceInject("$location", function($browser) {
    * @description
    * Updates the location object.
    * Does not immediately update the browser
-   * Browser is updated at the end of $flush()
+   * Browser is updated at the end of $digest()
    *
    * Does not immediately update the browser. Instead the browser is updated at the end of $eval()
    * cycle.

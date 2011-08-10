@@ -108,7 +108,9 @@ describe('$location', function() {
     var log = '';
     scope.$watch('$location.hash', function(scope){
       log += scope.$location.hashPath + ';';
-    })();
+    });
+    expect(log).toEqual('');
+    scope.$digest();
     expect(log).toEqual(';');
 
     log = '';

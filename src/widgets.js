@@ -548,7 +548,7 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
         if (!equals(lastValue, value)) {
           view.set(lastValue = value);
         }
-      })();
+      });
     }
   });
 }
@@ -773,7 +773,7 @@ angularWidget('select', function(element){
       }
     });
 
-    scope.$observe(function(scope) {
+    scope.$watch(function(scope) {
       var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
           optionGroupNames = [''],
           optionGroupName,
@@ -996,15 +996,15 @@ angularWidget('ng:include', function(element){
           oldScope;
 
       function incrementChange(){ changeCounter++;}
-      this.$observe(srcExp, incrementChange);
-      this.$observe(function(scope){
+      this.$watch(srcExp, incrementChange);
+      this.$watch(function(scope){
         var newScope = scope.$eval(scopeExp);
         if (newScope !== oldScope) {
           oldScope = newScope;
           incrementChange();
         }
       });
-      this.$observe(function(){return changeCounter;}, function(scope) {
+      this.$watch(function(){return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
             useScope = scope.$eval(scopeExp);
 
@@ -1124,9 +1124,9 @@ angularWidget('ng:switch', function (element) {
         childScope = scope.$new();
         childScope.$eval(changeExpr);
       }
-    })();
+    });
 
-    this.$observe(function(){return changeCounter;}, function() {
+    this.$watch(function(){return changeCounter;}, function() {
       element.html('');
       if (selectedTemplate) {
         selectedTemplate(childScope, function(caseElement) {
@@ -1251,7 +1251,7 @@ angularWidget('@ng:repeat', function(expression, element){
     var childScopes = [];
     var childElements = [iterStartElement];
     var parentScope = this;
-    this.$observe(function(scope){
+    this.$watch(function(scope){
       var index = 0,
           childCount = childScopes.length,
           collection = scope.$eval(rhs),
@@ -1285,11 +1285,11 @@ angularWidget('@ng:repeat', function(expression, element){
             linker(childScope, function(clone){
               clone.attr('ng:repeat-index', index);
               fragment.appendChild(clone[0]);
-              // TODO(misko): Temporary hack - maybe think about it - removed after we add fragment after $flush()
-              // This causes double $flush for children
+              // TODO(misko): Temporary hack - maybe think about it - removed after we add fragment after $digest()
+              // This causes double $digest for children
               // The first flush will couse a lot of DOM access (initial)
               // Second flush shuld be noop since nothing has change hence no DOM access.
-              childScope.$flush();
+              childScope.$digest();
               childElements[index + 1] = clone;
             });
           }
@@ -1300,7 +1300,7 @@ angularWidget('@ng:repeat', function(expression, element){
       //attach new nodes buffered in doc fragment
       if (addFragmentTo) {
         // TODO(misko): For performance reasons, we should do the addition after all other widgets
-        // have run. For this should happend after $flush() is done!
+        // have run. For this should happend after $digest() is done!
         addFragmentTo.after(jqLite(fragment));
       }
 
@@ -1429,7 +1429,7 @@ angularWidget('ng:view', function(element) {
       })(); //initialize the state forcefully, it's possible that we missed the initial
             //$route#onChange already
 
-      this.$observe(function(){return changeCounter;}, function() {
+      this.$watch(function(){return changeCounter;}, function() {
         var template = $route.current && $route.current.template;
         if (template) {
           //xhr's callback must be async, see commit history for more info

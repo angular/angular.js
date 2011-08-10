@@ -435,18 +435,11 @@ angularFilter.date = function(date, format) {
  * @example:
    <doc:example>
      <doc:source>
-       <input type="text" name="objTxt" value="{a:1, b:[]}"
-              ng:eval="obj = $eval(objTxt)"/>
-       <pre>{{ obj | json }}</pre>
+       <pre>{{ {'name':'value'} | json }}</pre>
      </doc:source>
      <doc:scenario>
        it('should jsonify filtered objects', function() {
-         expect(binding('obj | json')).toBe('{\n  "a":1,\n  "b":[]}');
-       });
-
-       it('should update', function() {
-         input('objTxt').enter('[1, 2, 3]');
-         expect(binding('obj | json')).toBe('[1,2,3]');
+         expect(binding('| json')).toBe('{\n  "name":"value"}');
        });
      </doc:scenario>
    </doc:example>

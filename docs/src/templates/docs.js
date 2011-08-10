@@ -27,7 +27,7 @@ function DocsController($location, $browser, $window, $cookies) {
       var i = self.pages.length;
       while (i--) {
         if (self.pages[i].id == self.partialId) {
-          self.partialTitle = self.pages[i].name
+          self.partialTitle = self.pages[i].name;
           break;
         }
       }
@@ -36,7 +36,7 @@ function DocsController($location, $browser, $window, $cookies) {
         delete self.partialId;
       }
     }
-  })();
+  });
 
   this.getUrl = function(page){
     return '#!/' + page.section + '/' + page.id;

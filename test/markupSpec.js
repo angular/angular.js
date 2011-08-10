@@ -21,16 +21,16 @@ describe("markups", function(){
     compile('<div>hello {{name}}!</div>');
     expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name"></span>!</div>');
     scope.name = 'Misko';
-    scope.$flush();
+    scope.$digest();
     expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name">Misko</span>!</div>');
   });
 
   it('should translate {{}} in terminal nodes', function(){
     compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
-    scope.$flush();
+    scope.$digest();
     expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option ng:bind-template="Greet {{name}}!">Greet !</option></select>');
     scope.name = 'Misko';
-    scope.$flush();
+    scope.$digest();
     expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option ng:bind-template="Greet {{name}}!">Greet Misko!</option></select>');
   });
 
@@ -38,7 +38,7 @@ describe("markups", function(){
     compile('<div src="http://server/{{path}}.png"/>');
     expect(element.attr('ng:bind-attr')).toEqual('{"src":"http://server/{{path}}.png"}');
     scope.path = 'a/b';
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('src')).toEqual("http://server/a/b.png");
   });
 
@@ -95,57 +95,57 @@ describe("markups", function(){
   it('should bind disabled', function() {
     compile('<button ng:disabled="{{isDisabled}}">Button</button>');
     scope.isDisabled = false;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('disabled')).toBeFalsy();
     scope.isDisabled = true;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('disabled')).toBeTruthy();
   });
 
   it('should bind checked', function() {
     compile('<input type="checkbox" ng:checked="{{isChecked}}" />');
     scope.isChecked = false;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('checked')).toBeFalsy();
     scope.isChecked=true;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('checked')).toBeTruthy();
   });
 
   it('should bind selected', function() {
     compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>');
     scope.isSelected=false;
-    scope.$flush();
+    scope.$digest();
     expect(element.children()[1].selected).toBeFalsy();
     scope.isSelected=true;
-    scope.$flush();
+    scope.$digest();
     expect(element.children()[1].selected).toBeTruthy();
   });
 
   it('should bind readonly', function() {
     compile('<input type="text" ng:readonly="{{isReadonly}}" />');
     scope.isReadonly=false;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('readOnly')).toBeFalsy();
     scope.isReadonly=true;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('readOnly')).toBeTruthy();
   });
 
   it('should bind multiple', function() {
     compile('<select ng:multiple="{{isMultiple}}"></select>');
     scope.isMultiple=false;
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('multiple')).toBeFalsy();
     scope.isMultiple='multiple';
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('multiple')).toBeTruthy();
   });
 
   it('should bind src', function() {
     compile('<div ng:src="{{url}}" />');
     scope.url = 'http://localhost/';
-    scope.$flush();
+    scope.$digest();
     expect(element.attr('src')).toEqual('http://localhost/');
   });
 

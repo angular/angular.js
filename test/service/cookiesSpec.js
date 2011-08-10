@@ -38,13 +38,13 @@ describe('$cookies', function() {
 
   it('should create or update a cookie when a value is assigned to a property', function() {
     scope.$cookies.oatmealCookie = 'nom nom';
-    scope.$flush();
+    scope.$digest();
 
     expect($browser.cookies()).
       toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
     scope.$cookies.oatmealCookie = 'gone';
-    scope.$flush();
+    scope.$digest();
 
     expect($browser.cookies()).
       toEqual({'preexisting': 'oldCookie', 'oatmealCookie': 'gone'});
@@ -56,7 +56,7 @@ describe('$cookies', function() {
     scope.$cookies.nullVal = null;
     scope.$cookies.undefVal = undefined;
     scope.$cookies.preexisting = function(){};
-    scope.$flush();
+    scope.$digest();
     expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
   });
@@ -64,13 +64,13 @@ describe('$cookies', function() {
 
   it('should remove a cookie when a $cookies property is deleted', function() {
     scope.$cookies.oatmealCookie = 'nom nom';
-    scope.$flush();
+    scope.$digest();
     $browser.poll();
     expect($browser.cookies()).
       toEqual({'preexisting': 'oldCookie', 'oatmealCookie':'nom nom'});
 
     delete scope.$cookies.oatmealCookie;
-    scope.$flush();
+    scope.$digest();
 
     expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
   });
@@ -85,16 +85,16 @@ describe('$cookies', function() {
 
     //drop if no previous value
     scope.$cookies.longCookie = longVal;
-    scope.$flush();
+    scope.$digest();
     expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
 
 
     //reset if previous value existed
     scope.$cookies.longCookie = 'shortVal';
-    scope.$flush();
+    scope.$digest();
     expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'longCookie': 'shortVal'});
     scope.$cookies.longCookie = longVal;
-    scope.$flush();
+    scope.$digest();
     expect(scope.$cookies).toEqual({'preexisting': 'oldCookie', 'longCookie': 'shortVal'});
   });
 });

@@ -28,9 +28,6 @@
  * * {@link angular.directive.ng:click ng:click} - Executes custom behavior when element is clicked.
  * * {@link angular.directive.ng:controller ng:controller} - Creates a scope object linked to the
  * DOM element and assigns behavior to the scope.
- * * {@link angular.directive.ng:eval ng:eval} - Executes a binding but blocks output.
- * * {@link angular.directive.ng:eval-order ng:eval-order} - Change evaluation order when updating
- * the view.
  * * {@link angular.directive.ng:hide ng:hide} - Conditionally hides a portion of HTML.
  * * {@link angular.directive.ng:href ng:href} - Places an href in the angular namespace.
  * * {@link angular.directive.ng:init} - Initialization tasks run before a template is executed.
@@ -177,54 +174,6 @@ angularDirective("ng:controller", function(expression){
 
 /**
  * @workInProgress
- * @deprecated
- * @ngdoc directive
- * @name angular.directive.ng:eval
- *
- * @description
- * The `ng:eval` allows you to execute a binding which has side effects
- * without displaying the result to the user.
- *
- * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
- *
- * @example
- * Notice that `{{` `obj.multiplied = obj.a * obj.b` `}}` has a side effect of assigning
- * a value to `obj.multiplied` and displaying the result to the user. Sometimes,
- * however, it is desirable to execute a side effect without showing the value to
- * the user. In such a case `ng:eval` allows you to execute code without updating
- * the display.
-   <doc:example>
-     <doc:source>
-       <input name="obj.a" value="6" >
-         * <input name="obj.b" value="2">
-         = {{obj.multiplied = obj.a * obj.b}} <br>
-       <span ng:eval="obj.divide = obj.a / obj.b"></span>
-       <span ng:eval="obj.updateCount = 1 + (obj.updateCount||0)">
-       </span>
-       <tt>obj.divide = {{obj.divide}}</tt><br>
-       <tt>obj.updateCount = {{obj.updateCount}}</tt>
-     </doc:source>
-     <doc:scenario>
-       it('should check eval', function(){
-         expect(binding('obj.divide')).toBe('3');
-         expect(binding('obj.updateCount')).toBe('1');
-         input('obj.a').enter('12');
-         expect(binding('obj.divide')).toBe('6');
-         expect(binding('obj.updateCount')).toBe('2');
-       });
-     </doc:scenario>
-   </doc:example>
- */
-// TODO(misko): remove me
-angularDirective("ng:eval", function(expression){
-  return function(element){
-    this.$observe(expression);
-  };
-});
-
-/**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind
  *
@@ -258,7 +207,7 @@ angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   return function(element) {
     var lastValue = noop, lastError = noop;
-    this.$observe(function(scope) {
+    this.$watch(function(scope) {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
       var error, value, html, isHtml, isDomElement,
           hadOwnElement = scope.hasOwnProperty('$element'),
@@ -398,7 +347,7 @@ angularDirective("ng:bind-template", function(expression, element){
   var templateFn = compileBindTemplate(expression);
   return function(element) {
     var lastValue;
-    this.$observe(function(scope) {
+    this.$watch(function(scope) {
       var value = templateFn(scope, element, true);
       if (value != lastValue) {
         element.text(value);
@@ -472,7 +421,7 @@ var REMOVE_ATTRIBUTES = {
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
     var lastValue = {};
-    this.$observe(function(scope){
+    this.$watch(function(scope){
       var values = scope.$eval(expression);
       for(var key in values) {
         var value = compileBindTemplate(values[key])(scope, element),
@@ -594,7 +543,7 @@ function ngClass(selector) {
   return function(expression, element) {
     var existing = element[0].className + ' ';
     return function(element) {
-      this.$observe(function(scope) {
+      this.$watch(function(scope) {
         if (selector(scope.$index)) {
           var value = scope.$eval(expression);
           if (isArray(value)) value = value.join(' ');
@@ -756,7 +705,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  */
 angularDirective("ng:show", function(expression, element){
   return function(element){
-    this.$observe(expression, function(scope, value){
+    this.$watch(expression, function(scope, value){
       toBoolean(value) ? element.show() : element.hide();
     });
   };
@@ -797,7 +746,7 @@ angularDirective("ng:show", function(expression, element){
  */
 angularDirective("ng:hide", function(expression, element){
   return function(element){
-    this.$observe(expression, function(scope, value){
+    this.$watch(expression, function(scope, value){
       toBoolean(value) ? element.hide() : element.show();
     });
   };
@@ -839,7 +788,7 @@ angularDirective("ng:hide", function(expression, element){
 angularDirective("ng:style", function(expression, element){
   return function(element){
     var resetStyle = getStyle(element);
-    this.$observe(function(scope){
+    this.$watch(function(scope){
       var style = scope.$eval(expression) || {}, key, mergedStyle = {};
       for(key in style) {
         if (resetStyle[key] === undefined) resetStyle[key] = '';
