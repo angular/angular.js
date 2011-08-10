@@ -225,6 +225,22 @@ describe("directive", function(){
     expect(e2.hasClass('even')).toBeTruthy();
   });
 
+
+  it('should allow both ng:class and ng:class odd/even on the same element', function() {
+    var scope = compile('<ul><li ng:repeat="i in [0,1]" ng:class="\'plainClass\'" ' +
+        'ng:class-odd="\'odd\'" ng:class-even="\'even\'"></li><ul>');
+    scope.$flush();
+    var e1 = jqLite(element[0].childNodes[1]);
+    var e2 = jqLite(element[0].childNodes[2]);
+
+    expect(e1.hasClass('plainClass')).toBeTruthy();
+    expect(e1.hasClass('odd')).toBeTruthy();
+    expect(e2.hasClass('plainClass')).toBeTruthy();
+    expect(e2.hasClass('even')).toBeTruthy();
+
+  });
+
+
   describe('ng:style', function(){
     it('should set', function(){
       var scope = compile('<div ng:style="{height: \'40px\'}"></div>');
