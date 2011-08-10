@@ -122,14 +122,14 @@ describe('browser', function(){
         });
 
 
-        it('should call callback when script fails to load', function() {
+        it('should call callback with status 0 when script fails to load', function() {
           browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
           var script = scripts[0];
           expect(typeof script.onload).toBe('function');
           expect(typeof script.onerror).toBe('function');
           script.onerror();
 
-          expect(log).toEqual('undefined:undefined;');
+          expect(log).toEqual('0:undefined;');
         });
 
 

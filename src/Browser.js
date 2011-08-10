@@ -112,7 +112,7 @@ function Browser(window, document, body, XHR, $log) {
         if (window[callbackId].data) {
           completeOutstandingRequest(callback, 200, window[callbackId].data);
         } else {
-          completeOutstandingRequest(callback);
+          completeOutstandingRequest(callback, 0);
         }
         delete window[callbackId];
         body[0].removeChild(script);
