@@ -96,7 +96,7 @@
  *   angular generated callback function.
  * @param {(string|Object)=} post Request content as either a string or an object to be stringified
  *   as JSON before sent to the server.
- * @param {function(number, (string|Object))} success A function to be called when the response is
+ * @param {function(number, (string|Object), Function)} success A function to be called when the response is
  *   received. The success function will be called with:
  *
  *   - {number} code [HTTP status code](http://en.wikipedia.org/wiki/List_of_HTTP_status_codes) of
@@ -104,6 +104,9 @@
  *     {@link angular.service.$xhr.error} service (or custom error callback).
  *   - {string|Object} response Response object as string or an Object if the response was in JSON
  *     format.
+ *   - {function(string=)} responseHeaders A function that when called with a {string} header name,
+ *     returns the value of that header or null if it does not exist; when called without
+ *     arguments, returns an object containing every response header
  * @param {function(number, (string|Object))} error A function to be called if the response code is
  *   not 2xx.. Accepts the same arguments as success, above.
  *
@@ -198,7 +201,7 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
       post = toJson(post);
     }
 
-    $browser.xhr(method, url, post, function(code, response){
+    $browser.xhr(method, url, post, function(code, response, responseHeaders){
       try {
         if (isString(response)) {
           if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
@@ -207,9 +210,9 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
           }
         }
         if (200 <= code && code < 300) {
-          success(code, response);
+          success(code, response, responseHeaders);
         } else if (isFunction(error)) {
-          error(code, response);
+          error(code, response, responseHeaders);
         } else {
           $error(
             {method: method, url: url, data: post, success: success},

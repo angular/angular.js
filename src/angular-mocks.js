@@ -152,7 +152,13 @@ function MockBrowser() {
           throw new Error("Missing HTTP request header: " + key + ": " + value);
         }
       });
-      callback(expectation.code, expectation.response);
+      callback(expectation.code, expectation.response, function(header) {
+        if (header) {
+          return expectation.responseHeaders && expectation.responseHeaders[header] || null;
+        } else {
+          return expectation.responseHeaders || {};
+        }
+      });
     });
   };
   self.xhr.expectations = expectations;
@@ -162,12 +168,18 @@ function MockBrowser() {
     if (data && angular.isString(data)) url += "|" + data;
     var expect = expectations[method] || (expectations[method] = {});
     return {
-      respond: function(code, response) {
+      respond: function(code, response, responseHeaders) {
         if (!angular.isNumber(code)) {
+          headers = response;
           response = code;
           code = 200;
         }
-        expect[url] = {code:code, response:response, headers: headers || {}};
+        expect[url] = {
+          code: code,
+          response: response,
+          headers: headers || {},
+          responseHeaders: responseHeaders || {}
+        };
       }
     };
   };

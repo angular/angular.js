@@ -19,8 +19,9 @@ describe('$xhr', function() {
   });
 
 
-  function callback(code, response) {
-    log = log + '{code=' + code + '; response=' + toJson(response) + '}';
+  function callback(code, response, responseHeader) {
+    log = log + '{code=' + code + '; response=' + toJson(response) + '; responseHeaders=' +
+        toJson(responseHeader()) + '}';
   }
 
 
@@ -36,9 +37,9 @@ describe('$xhr', function() {
     $browserXhr.flush();
 
     expect(log).toEqual(
-        '{code=200; response="third"}' +
-        '{code=200; response=["second"]}' +
-        '{code=200; response="first"}');
+        '{code=200; response="third"; responseHeaders={}}' +
+        '{code=200; response=["second"]; responseHeaders={}}' +
+        '{code=200; response="first"; responseHeaders={}}');
   });
 
   it('should allow all 2xx requests', function(){
@@ -51,8 +52,8 @@ describe('$xhr', function() {
     $browserXhr.flush();
 
     expect(log).toEqual(
-        '{code=200; response="1"}' +
-        '{code=299; response="2"}');
+        '{code=200; response="1"; responseHeaders={}}' +
+        '{code=299; response="2"; responseHeaders={}}');
   });
 
 
@@ -125,14 +126,18 @@ describe('$xhr', function() {
     $xhr('GET', '/url', null, successSpy, errorSpy);
     $browserXhr.flush();
 
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({});
     expect(successSpy).not.toHaveBeenCalled();
 
     errorSpy.reset();
     $xhr('GET', '/url', successSpy, errorSpy);
     $browserXhr.flush();
 
-    expect(errorSpy).toHaveBeenCalledWith(500, 'error');
+    expect(errorSpy.mostRecentCall.args[0]).toEqual(500);
+    expect(errorSpy.mostRecentCall.args[1]).toEqual('error');
+    expect(errorSpy.mostRecentCall.args[2]()).toEqual({});
     expect(successSpy).not.toHaveBeenCalled();
   });
 
