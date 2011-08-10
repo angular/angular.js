@@ -86,7 +86,7 @@
  * {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
  *
  * @param {string} method HTTP method to use. Valid values are: `GET`, `POST`, `PUT`, `DELETE`, and
- *   `JSON`. `JSON` is a special case which causes a
+ *   `JSONP`. `JSONP` is a special case which causes a
  *   [JSONP](http://en.wikipedia.org/wiki/JSON#JSONP) cross domain request using script tag
  *   insertion.
  * @param {string} url Relative or absolute URL specifying the destination of the request.  For
@@ -135,13 +135,13 @@
        <div ng:controller="FetchCntl">
          <select name="method">
            <option>GET</option>
-           <option>JSON</option>
+           <option>JSONP</option>
          </select>
          <input type="text" name="url" value="index.html" size="80"/>
          <button ng:click="fetch()">fetch</button><br>
          <button ng:click="updateModel('GET', 'index.html')">Sample GET</button>
-         <button ng:click="updateModel('JSON', 'https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK')">Sample JSONP (Buzz API)</button>
-         <button ng:click="updateModel('JSON', 'https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK')">Invalid JSONP</button>
+         <button ng:click="updateModel('JSONP', 'https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK')">Sample JSONP (Buzz API)</button>
+         <button ng:click="updateModel('JSONP', 'https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK')">Invalid JSONP</button>
          <pre>code={{code}}</pre>
          <pre>response={{response}}</pre>
        </div>
