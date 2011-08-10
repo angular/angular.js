@@ -165,7 +165,7 @@
            function() {
          element(':button:contains("Invalid JSONP")').click();
          element(':button:contains("fetch")').click();
-         expect(binding('code')).toBe('code=');
+         expect(binding('code')).toBe('code=-2');
          expect(binding('response')).toBe('response=Request failed');
        });
      </doc:scenario>
