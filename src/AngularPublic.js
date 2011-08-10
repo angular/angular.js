@@ -1,15 +1,7 @@
 'use strict';
 
 var browserSingleton;
-/**
- * @workInProgress
- * @ngdoc service
- * @name angular.service.$browser
- * @requires $log
- *
- * @description
- * Represents the browser.
- */
+
 angularService('$browser', function($log){
   if (!browserSingleton) {
     browserSingleton = new Browser(window, jqLite(window.document), jqLite(window.document.body),
