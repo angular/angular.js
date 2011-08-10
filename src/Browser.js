@@ -131,11 +131,9 @@ function Browser(window, document, body, XHR, $log) {
   };
 
   /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#notifyWhenNoOutstandingRequests
-   * @methodOf angular.service.$browser
-   *
+   * @private
+   * Note: this method is used only by scenario runner
+   * TODO(vojta): prefix this method with $$ ?
    * @param {function()} callback Function that will be called when no outstanding request
    */
   self.notifyWhenNoOutstandingRequests = function(callback) {
@@ -476,7 +474,7 @@ function Browser(window, document, body, XHR, $log) {
     if (msie) {
       script.onreadystatechange = function() {
         /loaded|complete/.test(script.readyState) && done && done();
-      }
+      };
     } else {
       if (done) script.onload = script.onerror = done;
     }
