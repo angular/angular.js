@@ -157,7 +157,7 @@
 
    Let's look at what a buzz client created with the `$resource` service looks like:
     <doc:example>
-      <doc:source>
+      <doc:source jsfiddle="false">
        <script>
          function BuzzController($resource) {
            this.Activity = $resource(

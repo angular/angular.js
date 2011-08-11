@@ -949,7 +949,7 @@ angularWidget('select', function(element){
  *
  * @example
     <doc:example>
-      <doc:source>
+      <doc:source jsfiddle="false">
        <select name="url">
         <option value="examples/ng-include/template1.html">template1.html</option>
         <option value="examples/ng-include/template2.html">template2.html</option>
@@ -1375,7 +1375,7 @@ angularWidget("@ng:non-bindable", noop);
  *
  * @example
     <doc:example>
-      <doc:source>
+      <doc:source jsfiddle="false">
          <script>
            function MyCtrl($route) {
              $route.when('/overview',

@@ -22,7 +22,7 @@
    Try changing the URL in the input box to see changes.
 
     <doc:example>
-      <doc:source>
+      <doc:source jsfiddle="false">
         <script>
           function MainCntl($route, $location) {
             this.$route = $route;
