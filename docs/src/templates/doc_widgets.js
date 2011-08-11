@@ -28,6 +28,7 @@
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
     var example = element.find('pre').eq(0),  //doc-source
         exampleSrc = example.text(),
+        jsfiddle = element.find('doc:source').attr('jsfiddle') || true,
         scenario = element.find('pre').eq(1); //doc-scenario
 
     var code = indent(exampleSrc);
@@ -35,7 +36,8 @@
       '<ul class="doc-example">' +
         '<li class="doc-example-heading"><h3>Source</h3></li>' +
         '<li class="doc-example-source" ng:non-bindable>' +
-          '<pre class="brush: js; html-script: true; highlight: [' +
+        jsFiddleButton(jsfiddle) + // may or may not have value
+        '<pre class="brush: js; html-script: true; highlight: [' +
           code.hilite + ']; toolbar: false;"></pre></li>' +
         '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
         '<li class="doc-example-live">' + exampleSrc +'</li>';
@@ -58,6 +60,45 @@
       window.eval(script);
     } catch (e) {
       alert(e);
+    }
+
+    function jsFiddleButton(jsfiddle) {
+      if (jsfiddle !== 'false') {
+        if(jsfiddle == true) {
+          //dynamically generate a fiddle
+          var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/',
+              fiddleSrc =  exampleSrc,
+              stripIndent = fiddleSrc.match(/^(\s*)/)[1].length;
+
+          //escape closing textarea
+          fiddleSrc = fiddleSrc.replace(/<\/textarea>/gi,'&lt;/textarea&gt;')
+          //strip extra indentation
+          fiddleSrc = fiddleSrc.replace(new RegExp('^\\s{' + stripIndent + '}', 'gm'), '');
+
+          return '<form class="jsfiddle" method="post" action="' + fiddleUrl + '" target="_blank">' +
+                    '<textarea name="css">' +
+                      'body { font-family: Arial,Helvetica,sans-serif; }\n' +
+                      'body, td, th { font-size: 14px; margin: 0; }\n' +
+                      'table { border-collapse: separate; border-spacing: 2px; display: table; margin-bottom: 0; margin-top: 0; -moz-box-sizing: border-box; text-indent: 0; }\n' +
+                      'a:link, a:visited, a:hover { color: #5D6DB6; text-decoration: none; }\n' +
+                    '</textarea>' +
+                    '<input type="text" name="title" value="AngularJS Live Example">' +
+                    '<textarea name="html">' +
+                      '<script src="' + angularJsUrl + '" ng:autobind></script>\n\n' +
+                      '<!-- AngularJS Example Code: -->\n\n' +
+                      fiddleSrc +
+                    '</textarea>' +
+                    '<button>edit at jsFiddle</button>' +
+                  '</form>';
+        } else {
+          //use existing fiddle
+          fiddleUrl = "http://jsfiddle.net" + jsfiddle;
+          return '<form class="jsfiddle" method="get" action="' + fiddleUrl + '" target="_blank">' +
+                   '<button>edit at jsFiddle</button>' +
+                 '</form>';
+        }
+      }
+      return '';
     }
   });
 

@@ -19,6 +19,37 @@ ul.doc-example > li.doc-example-heading {
   margin-bottom: -10px;
 }
 
+span.nojsfiddle {
+  float: right;
+  font-size: 14px;
+  margin-right:10px;
+  margin-top: 10px;
+}
+
+form.jsfiddle {
+  position: absolute;
+  right: 0;
+  z-index: 1;
+  height: 14px;
+}
+
+form.jsfiddle button {
+  cursor: pointer;
+  padding: 4px 10px;
+  margin: 10px;
+  background-color: #FFF;
+  font-weight: bold;
+  color: #7989D6;
+  border-color: #7989D6;
+  -moz-border-radius: 8px;
+  -webkit-border-radius:8px;
+  border-radius: 8px;
+}
+
+form.jsfiddle textarea, form.jsfiddle input {
+  display: none;
+}
+
 li.doc-example-live {
   padding: 10px;
   font-size: 1.2em;

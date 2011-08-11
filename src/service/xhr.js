@@ -109,7 +109,7 @@
  *
  * @example
    <doc:example>
-     <doc:source>
+     <doc:source jsfiddle="false">
        <script>
          function FetchCntl($xhr) {
            var self = this;
