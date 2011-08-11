@@ -389,14 +389,15 @@ Scope.prototype = {
         watch, value, last,
         watchers = this.$$watchers,
         length, count = 0,
-        iterationCount, ttl = 100;
+        dirtyCount, ttl = 100,
+        recheck = !this.$parent || !this.$parent.$$phase;
 
     if (this.$$phase) {
       throw Error(this.$$phase + ' already in progress');
     }
     this.$$phase = '$digest';
     do {
-      iterationCount = 0;
+      dirtyCount = 0;
       if (watchers) {
         // process our watches
         length = watchers.length;
@@ -406,7 +407,7 @@ Scope.prototype = {
             // Most common watches are on primitives, in which case we can short
             // circuit it with === operator, only when === fails do we use .equals
             if ((value = watch.get(this)) !== (last = watch.last) && !equals(value, last)) {
-              iterationCount++;
+              dirtyCount++;
               watch.fn(this, watch.last = copy(value), last);
             }
           } catch (e) {
@@ -416,14 +417,14 @@ Scope.prototype = {
       }
       child = this.$$childHead;
       while(child) {
-        iterationCount += child.$digest();
+        dirtyCount += child.$digest();
         child = child.$$nextSibling;
       }
-      count += iterationCount;
+      count += dirtyCount;
       if(!(ttl--)) {
         throw Error('100 $digest() iterations reached. Aborting!');
       }
-    } while (iterationCount);
+    } while (recheck && dirtyCount);
     this.$$phase = null;
     return count;
   },

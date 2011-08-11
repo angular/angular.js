@@ -178,6 +178,15 @@ describe('Scope', function(){
       expect(log).toEqual('abc');
     });
 
+    it('should repeat watch cycle from the root elemnt', function(){
+      var log = '';
+      var child = root.$new();
+      root.$watch(function(){ log += 'a'; });
+      child.$watch(function(){ log += 'b'; });
+      root.$digest();
+      expect(log).toEqual('abab');
+    });
+
 
     it('should prevent infinite recursion', function(){
       root.$watch('a', function(self, v){self.b++;});
