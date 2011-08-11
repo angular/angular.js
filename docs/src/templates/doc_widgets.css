@@ -25,6 +25,30 @@ ul.doc-example > li.doc-example-heading {
   margin-bottom: -10px;
 }
 
+li.doc-example-source form {
+ 	height:14px;
+}
+
+li.doc-example-source form button {
+	cursor: pointer;
+    float: right;
+    height: 24px;
+    width: 120px;
+    padding-bottom: 4px;
+    margin-right:10px;
+	margin-top: 10px;
+    background-color: #FFF;
+    font-weight: bold;
+    color: #7989D6;
+    border-color: #7989D6;
+    -moz-border-radius: 8px;
+    -webkit-border-radius:8px;
+    border-radius: 8px;
+}
+
+li.doc-example-source form textarea {
+	display: none;
+}
 li.doc-example-live {
   padding: 10px;
   font-size: 1.2em;

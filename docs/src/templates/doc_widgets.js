@@ -29,14 +29,37 @@
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
     var example = element.find('pre').eq(0),  //doc-source
         exampleSrc = example.text(),
-        scenario = element.find('pre').eq(1); //doc-scenario
+        sandbox = exampleSrc.match(/<doc:sandbox>(.*)<\/doc:sandbox>|<doc:sandbox\/>/),
+        scenario = element.find('pre').eq(1), //doc-scenario
+        sandboxLaunchCode = ''; 
 
+    // jsFiddle is default sandbox, if sandbox tag found use whatever is in there
+    if(sandbox.length > 0) {
+    	// ngdoc with this tag will not render form/button
+    	sandboxLaunchCode = sandbox[1] || ''; 
+    	exampleSrc = exampleSrc.replace(sandbox[0], '').trim(); // remove doc:sandbox from code sample
+    } else {
+    	var fiddleUrl = 'http://jsfiddle.net/api/post/jquery/1.5.2/';
+	    // nested textareas 
+        var fiddleSrc =  exampleSrc.replace(/<textarea>/gi,'&lt;textarea&gt;');
+        fiddleSrc = fiddleSrc.replace(/<\/textarea>/gi,'&lt;/textarea&gt;'); 
+        
+	    sandboxLaunchCode = '<form method="post" action="' + fiddleUrl + '" target="check">' +
+		    '<textarea name="html">' + 
+		    ' <script src="' + angularJsUrl + '" ng:autobind></script>' +
+		    fiddleSrc +  
+		    '</textarea>' +
+		    '<button name="jsFiddle" title="Fiddle with the sample.\nNOTE: a new browser tab/window will open" class="fiddle">' + 
+		    'edit at jsFiddle</button></form>';
+  	}
+    
     var code = indent(exampleSrc);
-    var tabHtml =
+    var tabHtml = 
       '<ul class="doc-example">' +
         '<li class="doc-example-heading"><h3>Source</h3></li>' +
         '<li class="doc-example-source" ng:non-bindable>' +
-          '<pre class="brush: js; html-script: true; highlight: [' +
+        sandboxLaunchCode + // may or may not have value
+        '<pre class="brush: js; html-script: true; highlight: [' +
           code.hilite + ']; toolbar: false;"></pre></li>' +
         '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
         '<li class="doc-example-live">' + exampleSrc +'</li>';
