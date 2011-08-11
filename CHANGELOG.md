@@ -1,6 +1,10 @@
 <a name="0.9.19"><a/>
 # 0.9.19 canine-psychokinesis (in-progress) #
 
+### Features
+- Scope $evalAsync()
+
+
 # Breaking Changes
 - Controller constructor functions are now looked up on scope first and then on window.
 - angular.equals now use === which means that things which used to be equal are no longer.
