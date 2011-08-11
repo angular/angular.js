@@ -306,6 +306,41 @@ describe('Scope', function(){
     });
   });
 
+  describe('$evalAsync', function(){
+
+    it('should run callback before $watch', function(){
+      var log = '';
+      var child = root.$new();
+      root.$evalAsync(function(scope){ log += 'parent.async;'; });
+      root.$watch('value', function(){ log += 'parent.$digest;'; });
+      child.$evalAsync(function(scope){ log += 'child.async;'; });
+      child.$watch('value', function(){ log += 'child.$digest;'; });
+      root.$digest();
+      expect(log).toEqual('parent.async;parent.$digest;child.async;child.$digest;');
+    });
+
+    it('should cause a $digest rerun', function(){
+      root.log = '';
+      root.value = 0;
+      root.$watch('value', 'log = log + ".";');
+      root.$watch('init', function(){
+        root.$evalAsync('value = 123; log = log + "=" ');
+        expect(root.value).toEqual(0);
+      });
+      root.$digest();
+      expect(root.log).toEqual('.=.');
+    });
+
+    it('should run async in the same order as added', function(){
+      root.log = '';
+      root.$evalAsync("log = log + 1");
+      root.$evalAsync("log = log + 2");
+      root.$digest();
+      expect(root.log).toBe('12');
+    });
+
+  });
+
 
   describe('$apply', function(){
     it('should apply expression with full lifecycle', function(){

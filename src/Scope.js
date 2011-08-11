@@ -96,6 +96,7 @@ function Scope() {
   this.$$phase = this.$parent = this.$$watchers =
     this.$$nextSibling = this.$$childHead = this.$$childTail = null;
   this['this'] = this.$root =  this;
+  this.$$asyncQueue = [];
 }
 
 /**
@@ -168,6 +169,7 @@ Scope.prototype = {
     child['this'] = child;
     child.$parent = this;
     child.$id = nextUid();
+    child.$$asyncQueue = [];
     child.$$phase = child.$$watchers =
       child.$$nextSibling = child.$$childHead = child.$$childTail = null;
     if (this.$$childHead) {
@@ -319,6 +321,7 @@ Scope.prototype = {
     var child,
         watch, value, last,
         watchers = this.$$watchers,
+        asyncQueue = this.$$asyncQueue,
         length, count = 0,
         dirtyCount, ttl = 100,
         recheck = !this.$parent || !this.$parent.$$phase;
@@ -328,6 +331,13 @@ Scope.prototype = {
     }
     this.$$phase = '$digest';
     do {
+      while(asyncQueue.length) {
+        try {
+          this.$eval(asyncQueue.shift());
+        } catch (e) {
+          this.$service('$exceptionHandler')(e);
+        }
+      }
       dirtyCount = 0;
       if (watchers) {
         // process our watches
@@ -436,6 +446,34 @@ Scope.prototype = {
       ? expressionCompile(expr)
       : expr || noop;
     return fn(this);
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$evalAsync
+   * @function
+   *
+   * @description
+   * Executes the expression on the current scope at a later point in time.
+   *
+   * The `$evalAsync` makes no guarantees as to when the `expression` will be executed, only that:
+   *
+   *   - it will execute in the current script execution context (before any DOM rendering).
+   *   - at least one {@link angular.scope.$digest $digest cycle} will be performed after
+   *     `expression` execution.
+   *
+   * Any exceptions from the execution of the expression are forwarded to the
+   * {@link angular.service.$exceptionHandler $exceptionHandler} service.
+   *
+   * @param {(string|function())=} expression An angular expression to be executed.
+   *
+   *    - `string`: execute using the rules as defined in  {@link guide/dev_guide.expressions expression}.
+   *    - `function(scope)`: execute the function with the current `scope` parameter.
+   *
+   */
+  $evalAsync: function(expr) {
+    this.$$asyncQueue.push(expr);
   },
 
   /**
