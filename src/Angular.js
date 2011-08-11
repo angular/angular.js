@@ -957,16 +957,47 @@ function angularInit(config, document){
 
   if (autobind) {
     var element = isString(autobind) ? document.getElementById(autobind) : document,
-        scope = compile(element)(createScope()),
-        $browser = scope.$service('$browser');
+        localeElement = (element == document) ? document.getElementsByTagName('html')[0] : element,
+        scope = createScope(),
+        $browser = scope.$service('$browser'),
+        // IE uses browserLanguage instead of just language!
+        locale = (localeElement && localeElement.getAttribute('lang') ||
+                                            window.navigator.language ||
+                                            window.navigator.browserLanguage).toLowerCase();
 
-    if (config.css)
-      $browser.addCss(config.base_url + config.css);
-    else if(msie<8)
-      $browser.addJs(config.ie_compat, config.ie_compat_id);
-    scope.$apply();
+    // Opera outputs 'en' for window.navigator.language
+    if (locale !== 'en' && locale !== 'en-us') {
+      $browser.addJs(config.base_url + 'angular_' + locale + '.js', null, function() {
+        if (locale !== angular.service('$locale').IDENTIFIER) {
+          //when it fails to load locale specific file, fall back to region file.
+          //e.g. when angular_en_xxx.js does not exist, load angular_en.js instead
+          $browser.addJs(config.base_url + 'angular_' + locale.split('-')[0] + '.js', null, function() {
+            angularCompile(element, config, scope);
+          });
+        } else {
+          angularCompile(element, config, scope);
+        }
+      });
+    } else {
+      angularCompile(element, config, scope);
+    }
+    //return locale for unit testing purpose
+    return locale;
   }
 }
+
+
+function angularCompile(element, config, scope) {
+  scope = compile(element)(scope);
+  var $browser = scope.$service('$browser');
+
+  if (config.css)
+    $browser.addCss(config.base_url + config.css);
+  else if(msie<8)
+    $browser.addJs(config.ie_compat, config.ie_compat_id);
+  scope.$apply();
+}
+
 
 function angularJsConfig(document, config) {
   bindJQuery();
