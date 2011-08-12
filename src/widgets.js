@@ -526,23 +526,21 @@ function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
     var scope = this,
         model = modelAccessor(scope, element),
         view = viewAccessor(scope, element),
-        action = element.attr('ng:change') || noop,
+        ngChange = element.attr('ng:change') || noop,
         lastValue;
     if (model) {
       initFn.call(scope, model, view, element);
       scope.$eval(element.attr('ng:init') || noop);
       element.bind(events, function(event){
         function handler(){
-          scope.$apply(function() {
-            var value = view.get();
-            if (!textBox || value != lastValue) {
-              model.set(value);
-              lastValue = model.get();
-              scope.$eval(action);
-            }
-          });
+          var value = view.get();
+          if (!textBox || value != lastValue) {
+            model.set(value);
+            lastValue = model.get();
+            scope.$eval(ngChange);
+          }
         }
-        event.type == 'keydown' ? $defer(handler) : handler();
+        event.type == 'keydown' ? $defer(handler) : scope.$apply(handler);
       });
       scope.$watch(model.get, function(scope, value) {
         if (!equals(lastValue, value)) {
