@@ -317,60 +317,67 @@ Scope.prototype = {
        expect(scope.counter).toEqual(1);
      </pre>
    *
-   * @returns {number} number of {@link angular.scope.$watch listeners} which fired.
-   *
    */
   $digest: function() {
-    var child,
-        watch, value, last,
-        watchers = this.$$watchers,
-        asyncQueue = this.$$asyncQueue,
-        length, count = 0,
-        dirtyCount, ttl = 100,
-        recheck = !this.$parent || !this.$parent.$$phase;
+    var watch, value, last, next,
+        watchers,
+        asyncQueue,
+        length,
+        dirty, ttl = 100,
+        scope;
 
     if (this.$$phase) {
       throw Error(this.$$phase + ' already in progress');
     }
-    this.$$phase = '$digest';
     do {
-      while(asyncQueue.length) {
-        try {
-          this.$eval(asyncQueue.shift());
-        } catch (e) {
-          this.$service('$exceptionHandler')(e);
-        }
-      }
-      dirtyCount = 0;
-      if (watchers) {
-        // process our watches
-        length = watchers.length;
-        while (length--) {
+
+      dirty = false;
+      scope = this;
+      do {
+        scope.$$phase = '$digest';
+        asyncQueue = scope.$$asyncQueue;
+        while(asyncQueue.length) {
           try {
-            watch = watchers[length];
-            // Most common watches are on primitives, in which case we can short
-            // circuit it with === operator, only when === fails do we use .equals
-            if ((value = watch.get(this)) !== (last = watch.last) && !equals(value, last)) {
-              dirtyCount++;
-              watch.fn(this, watch.last = copy(value), last);
-            }
+            scope.$eval(asyncQueue.shift());
           } catch (e) {
-            this.$service('$exceptionHandler')(e);
+            scope.$service('$exceptionHandler')(e);
           }
         }
-      }
-      child = this.$$childHead;
-      while(child) {
-        dirtyCount += child.$digest();
-        child = child.$$nextSibling;
-      }
-      count += dirtyCount;
+        if (watchers = scope.$$watchers) {
+          // process our watches
+          length = watchers.length;
+          while (length--) {
+            try {
+              watch = watchers[length];
+              // Most common watches are on primitives, in which case we can short
+              // circuit it with === operator, only when === fails do we use .equals
+              if ((value = watch.get(scope)) !== (last = watch.last) && !equals(value, last)) {
+                dirty = true;
+                watch.fn(scope, watch.last = copy(value), last);
+              }
+            } catch (e) {
+              scope.$service('$exceptionHandler')(e);
+            }
+          }
+        }
+
+
+        scope.$$phase = null;
+        // find the next scope in traversal.
+        if (!(next = scope.$$childHead || scope.$$nextSibling) && scope !== this) {
+          do {
+            scope = scope.$parent;
+            if (scope == this || (next = scope.$$nextSibling)) {
+              break;
+            }
+          } while (scope !== this);
+        }
+      } while (scope = next);
+
       if(!(ttl--)) {
         throw Error('100 $digest() iterations reached. Aborting!');
       }
-    } while (recheck && dirtyCount);
-    this.$$phase = null;
-    return count;
+    } while (dirty);
   },
 
   /**
