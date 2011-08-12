@@ -988,12 +988,14 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return extend(function(xhr, element){
+    return extend(function($xhr, $cacheFactory, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
           childScope,
-          oldScope;
+          oldScope,
+          // TODO(vojta): configure the cache
+          cache = $cacheFactory.get('templates') || $cacheFactory('templates');
 
       function incrementChange(){ changeCounter++;}
       this.$observe(srcExp, incrementChange);
@@ -1008,26 +1010,37 @@ angularWidget('ng:include', function(element){
         var src = scope.$eval(srcExp),
             useScope = scope.$eval(scopeExp);
 
+        function updateContent(content) {
+          element.html(content);
+          if (useScope) {
+            childScope = useScope;
+          } else {
+            releaseScopes.push(childScope = scope.$new());
+          }
+          compiler.compile(element)(childScope);
+          scope.$eval(onloadExp);
+        }
+
         while(releaseScopes.length) {
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          xhr('GET', src, null, function(code, response){
-            element.html(response);
-            if (useScope) {
-              childScope = useScope;
-            } else {
-              releaseScopes.push(childScope = scope.$new());
-            }
-            compiler.compile(element)(childScope);
-            scope.$eval(onloadExp);
-          }, false, true);
+          var fromCache = cache.get(src);
+          // TODO(vojta): do it async, using scope.$asyncEval()
+          if (fromCache) {
+            updateContent(fromCache);
+          } else {
+            $xhr.get(src).on('success', function(response) {
+              updateContent(response);
+              cache.put(src, response);
+            });
+          }
         } else {
           childScope = null;
           element.html('');
         }
       });
-    }, {$inject:['$xhr.cache']});
+    }, {$inject: ['$xhr', '$cacheFactory']});
   }
 });
 
@@ -1420,9 +1433,11 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return annotate('$xhr.cache', '$route', function($xhr, $route, element){
-      var template;
-      var changeCounter = 0;
+    return annotate('$xhr', '$cacheFactory', '$route', function($xhr, $cacheFactory, $route, element){
+      var template,
+          changeCounter = 0,
+          // TODO(vojta): configure cache
+          cache = $cacheFactory.get('templates') || $cacheFactory('templates');
 
       $route.onChange(function(){
         changeCounter++;
@@ -1431,12 +1446,24 @@ angularWidget('ng:view', function(element) {
 
       this.$observe(function(){return changeCounter;}, function() {
         var template = $route.current && $route.current.template;
+
+        function updateContent(content) {
+          element.html(content);
+          compiler.compile(element)($route.current.scope);
+        }
+
         if (template) {
-          //xhr's callback must be async, see commit history for more info
-          $xhr('GET', template, function(code, response) {
-            element.html(response);
-            compiler.compile(element)($route.current.scope);
-          });
+          var fromCache = cache.get(template);
+          if (fromCache) {
+            // TODO(vojta): do it async, using scope.$asyncEval()
+            updateContent(fromCache);
+          } else {
+            // xhr's callback must be async, see commit history for more info
+            $xhr.get(template).on('success', function(response) {
+              updateContent(response);
+              cache.put(template, response);
+            });
+          }
         } else {
           element.html('');
         }

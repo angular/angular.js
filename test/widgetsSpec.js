@@ -464,7 +464,7 @@ describe("widget", function(){
       scope.childScope = scope.$new();
       scope.childScope.name = 'misko';
       scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
+      scope.$service('$cacheFactory').get('templates').put('myUrl', '{{name}}');
       scope.$flush();
       expect(element.text()).toEqual('misko');
       dealoc(scope);
@@ -476,7 +476,7 @@ describe("widget", function(){
       scope.childScope = scope.$new();
       scope.childScope.name = 'igor';
       scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'{{name}}'};
+      scope.$service('$cacheFactory').get('templates').put('myUrl', '{{name}}');
       scope.$flush();
 
       expect(element.text()).toEqual('igor');
@@ -492,7 +492,7 @@ describe("widget", function(){
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
       var scope = angular.compile(element)();
       scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'{{c=c+1}}'};
+      scope.$service('$cacheFactory').get('templates').put('myUrl', '{{c=c+1}}');
       scope.$flush();
       // TODO(misko): because we are using scope==this, the eval gets registered
       // during the flush phase and hence does not get called.
@@ -511,7 +511,7 @@ describe("widget", function(){
       expect(scope.loaded).not.toBeDefined();
 
       scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
+      scope.$service('$cacheFactory').get('templates').put('myUrl', 'my partial');
       scope.$flush();
       expect(element.text()).toEqual('my partial');
       expect(scope.loaded).toBe(true);
@@ -525,7 +525,7 @@ describe("widget", function(){
       expect(scope.$$childHead).toBeFalsy();
 
       scope.url = 'myUrl';
-      scope.$service('$xhr.cache').data.myUrl = {value:'my partial'};
+      scope.$service('$cacheFactory').get('templates').put('myUrl', 'my partial');
       scope.$flush();
       expect(scope.$$childHead).toBeTruthy();
 
@@ -533,6 +533,27 @@ describe("widget", function(){
       scope.$flush();
       expect(scope.$$childHead).toBeFalsy();
       dealoc(element);
+    });
+
+    it('should do xhr request and cache it', function() {
+      var element = jqLite('<ng:include src="url"></ng:include>');
+      var scope = angular.compile(element)();
+      var $browserXhr = scope.$service('$browser').xhr;
+      $browserXhr.expectGET('myUrl').respond('my partial');
+
+      scope.url = 'myUrl';
+      scope.$flush();
+      $browserXhr.flush();
+      expect(element.text()).toEqual('my partial');
+
+      scope.url = null;
+      scope.$flush();
+      expect(element.text()).toEqual('');
+
+      scope.url = 'myUrl';
+      scope.$flush();
+      expect(element.text()).toEqual('my partial');
+      dealoc(scope);
     });
   });
 
