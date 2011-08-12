@@ -1,6 +1,6 @@
 'use strict';
 
-ddescribe('$xhr', function() {
+describe('$xhr', function() {
 
   var $xhr, $browser, $log, // services
       method, url, data, headers, // passed arguments
@@ -854,6 +854,41 @@ ddescribe('$xhr', function() {
       $xhr({method: 'get', url: '/url', cache: true}).on('2xx', onSuccess);
       $browser.defer.flush();
       expect(onSuccess).toHaveBeenCalledOnce();
+    });
+  });
+
+
+  describe('pendingCount', function() {
+    it('should return number of pending requests', function() {
+      expect($xhr.pendingCount()).toBe(0);
+
+      $xhr({method: 'get', url: '/some'});
+      expect($xhr.pendingCount()).toBe(1);
+
+      respond(200, '');
+      expect($xhr.pendingCount()).toBe(0);
+    });
+
+    it('should decrement the counter when request aborted', function() {
+      future = $xhr({method: 'get', url: '/x'});
+      expect($xhr.pendingCount()).toBe(1);
+
+      future.abort();
+      expect($xhr.pendingCount()).toBe(0);
+    });
+
+    it('should decrement the counter when served from cache', function() {
+      $xhr({method: 'get', url: '/cached', cache: true});
+      respond(200, 'content');
+      expect($xhr.pendingCount()).toBe(0);
+
+      $xhr({method: 'get', url: '/cached', cache: true});
+      expect($xhr.pendingCount()).toBe(1);
+
+      $browser.defer.flush();
+      expect($xhr.pendingCount()).toBe(0);
+
+      $log.info.logs.pop();
     });
   });
 });
