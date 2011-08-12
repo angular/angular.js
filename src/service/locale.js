@@ -50,14 +50,12 @@ angularServiceInject('$locale', function() {
       DAY: 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday'.split(','),
       SHORTDAY: 'Sun,Mon,Tue,Wed,Thu,Fri,Sat'.split(','),
       AMPMS: ['AM','PM'],
-      long: 'MMMM d, y h:mm:ss a z',
       medium: 'MMM d, y h:mm:ss a',
       short: 'M/d/yy h:mm a',
       fullDate: 'EEEE, MMMM d, y',
       longDate: 'MMMM d, y',
       mediumDate: 'MMM d, y',
       shortDate: 'M/d/yy',
-      longTime: 'h:mm:ss a z',
       mediumTime: 'h:mm:ss a',
       shortTime: 'h:mm a'
     }

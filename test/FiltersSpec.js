@@ -195,8 +195,6 @@ describe('filter', function() {
     var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
     var midnight = new TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
     var earlyDate = new TzDate(+5, '0001-09-03T05:05:08.000Z');
-    var timZoneDate = new TzDate(+5, '2010-09-03T05:05:08.000Z',
-                                     'Mon Sep 3 2010 00:05:08 GMT+0500 (XYZ)'); //12am
 
     var context, date;
 
@@ -225,16 +223,13 @@ describe('filter', function() {
                       toEqual('10-09-03 07:05:08');
 
       expect(date(midnight, "yyyy-M-d h=H:m:saZ")).
-                      toEqual('2010-9-3 12=0:5:8am0500');
+                      toEqual('2010-9-3 12=0:5:8AM0500');
 
       expect(date(midnight, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                      toEqual('2010-09-03 12=00:05:08am0500');
+                      toEqual('2010-09-03 12=00:05:08AM0500');
 
       expect(date(noon, "yyyy-MM-dd hh=HH:mm:ssaZ")).
-                      toEqual('2010-09-03 12=12:05:08pm0500');
-
-      expect(date(timZoneDate, "yyyy-MM-dd hh=HH:mm:ss a z")).
-                      toEqual('2010-09-03 12=00:05:08 am XYZ');
+                      toEqual('2010-09-03 12=12:05:08PM0500');
 
       expect(date(noon, "EEE, MMM d, yyyy")).
                       toEqual('Fri, Sep 3, 2010');
@@ -258,14 +253,11 @@ describe('filter', function() {
 
     it('should accept default formats', function() {
 
-      expect(date(timZoneDate, "long")).
-                      toEqual('September 3, 2010 12:05:08 am XYZ');
-
       expect(date(noon, "medium")).
-                      toEqual('Sep 3, 2010 12:05:08 pm');
+                      toEqual('Sep 3, 2010 12:05:08 PM');
 
       expect(date(noon, "short")).
-                      toEqual('9/3/10 12:05 pm');
+                      toEqual('9/3/10 12:05 PM');
 
       expect(date(noon, "fullDate")).
                       toEqual('Friday, September 3, 2010');
@@ -279,31 +271,12 @@ describe('filter', function() {
       expect(date(noon, "shortDate")).
                       toEqual('9/3/10');
 
-      expect(date(timZoneDate, "longTime")).
-                      toEqual('12:05:08 am XYZ');
-
       expect(date(noon, "mediumTime")).
-                      toEqual('12:05:08 pm');
+                      toEqual('12:05:08 PM');
 
       expect(date(noon, "shortTime")).
-                      toEqual('12:05 pm');
+                      toEqual('12:05 PM');
     });
-
-
-    it('should parse timezone identifier from various toString values', function() {
-      //chrome and firefox format
-      expect(date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
-                                    'Mon Sep 3 2010 17:05:08 GMT+0500 (XYZ)'), "z")).toBe('XYZ');
-
-      //opera format
-      expect(date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
-                                    '2010-09-03T17:05:08Z'), "z")).toBe('0500');
-
-      //ie 8 format
-      expect(date(new TzDate(+5, '2010-09-03T17:05:08.000Z',
-                                    'Mon Sep 3 17:05:08 XYZ 2010'), "z")).toBe('XYZ');
-    });
-
 
     it('should be able to parse ISO 8601 dates/times using', function() {
       var isoString = '2010-09-03T05:05:08.872Z';
