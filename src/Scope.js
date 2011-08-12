@@ -433,7 +433,7 @@ Scope.prototype = {
    */
   $eval: function(expr) {
     var fn = isString(expr)
-      ? parser(expr).statements()
+      ? expressionCompile(expr)
       : expr || noop;
     return fn(this);
   },
@@ -495,7 +495,7 @@ Scope.prototype = {
 
 function compileToFn(exp, name) {
   var fn = isString(exp)
-    ? parser(exp).statements()
+    ? expressionCompile(exp)
     : exp;
   assertArgFn(fn, name);
   return fn;

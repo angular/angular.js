@@ -205,6 +205,7 @@ angularDirective("ng:controller", function(expression){
  */
 angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
+  var exprFn = parser(expression).statements();
   return function(element) {
     var lastValue = noop, lastError = noop;
     this.$watch(function(scope) {
@@ -215,7 +216,7 @@ angularDirective("ng:bind", function(expression, element){
       // TODO(misko): get rid of $element https://github.com/angular/angular.js/issues/348
       scope.$element = element;
       try {
-        value = scope.$eval(expression);
+        value = exprFn(scope);
       } catch (e) {
         scope.$service('$exceptionHandler')(e);
         error = formatError(e);
