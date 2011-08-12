@@ -176,7 +176,7 @@ describe('Scope', function(){
       root.$digest();
       log = '';
       root.a = 1;
-      expect(root.$digest()).toEqual(3);
+      root.$digest();
       expect(root.b).toEqual(1);
       expect(root.c).toEqual(1);
       expect(root.d).toEqual(1);
@@ -211,7 +211,7 @@ describe('Scope', function(){
       root.$watch('b', function(){ log += 'b'; });
       root.$digest();
       log = '';
-      expect(root.$digest()).toEqual(0);
+      root.$digest();
       expect(log).toEqual('');
     });
 
