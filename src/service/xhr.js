@@ -1,46 +1,102 @@
 'use strict';
 
 /**
+ * Parse headers into key value object
+ *
+ * @param {string} headers Raw headers as a string
+ * @returns {Object} Parsed headers as key valu object
+ */
+function parseHeaders(headers) {
+  var parsed = {}, key, val, i;
+
+  forEach(headers.split('\n'), function(line) {
+    i = line.indexOf(':');
+    key = lowercase(trim(line.substr(0, i)));
+    val = trim(line.substr(i + 1));
+
+    if (key) {
+      if (parsed[key]) {
+        parsed[key] += ',' + val;
+      } else {
+        parsed[key] = val;
+      }
+    }
+  });
+
+  return parsed;
+}
+
+/**
+ * Chain all given functions
+ *
+ * This function is used for both request and response transforming
+ *
+ * @param {*} data Data to transform
+ * @param {function|Array.<function>} fns Function or an array of functions
+ * @param {*=} param Optional parameter to be passed to all transform functions
+ * @returns {*} Transformed data
+ */
+function transform(data, fns, param) {
+  if (isFunction(fns))
+    return fns(data);
+
+  forEach(fns, function(fn) {
+    data = fn(data, param);
+  });
+
+  return data;
+}
+
+/**
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr
  * @function
- * @requires $browser $xhr delegates all XHR requests to the `$browser.xhr()`. A mock version
- *                    of the $browser exists which allows setting expectations on XHR requests
- *                    in your tests
- * @requires $xhr.error $xhr delegates all non `2xx` response code to this service.
+ *
+ * @requires $browser $xhr delegates all XHR requests to the `$browser.xhr()`.
  * @requires $log $xhr delegates all exceptions to `$log.error()`.
- * @requires $updateView After a server response the view needs to be updated for data-binding to
- *           take effect.
+ * @requires $cacheFactory
  *
  * @description
- * Generates an XHR request. The $xhr service delegates all requests to
- * {@link angular.service.$browser $browser.xhr()} and adds error handling and security features.
- * While $xhr service provides nicer api than raw XmlHttpRequest, it is still considered a lower
- * level api in angular. For a higher level abstraction that utilizes `$xhr`, please check out the
- * {@link angular.service.$resource $resource} service.
+ * Generates an XHR request. The $xhr service is function which takes one parameter - configuration
+ * object. It returns XhrFuture object.
  *
- * # Error handling
- * If no `error callback` is specified, XHR response with response code other then `2xx` will be
- * delegated to {@link angular.service.$xhr.error $xhr.error}. The `$xhr.error` can intercept the
- * request and process it in application specific way, or resume normal execution by calling the
- * request `success` method.
+ * # Configuration
+ * - headers per method
+ * - transformResponse (default - remove XRSF prefix, parseJson string)
+ * - transformRequest (default toJson string)
  *
- * # HTTP Headers
- * The $xhr service will automatically add certain http headers to all requests. These defaults can
- * be fully configured by accessing the `$xhr.defaults.headers` configuration object, which
- * currently contains this default configuration:
- *
- * - `$xhr.defaults.headers.common` (headers that are common for all requests):
- *   - `Accept: application/json, text/plain, *\/*`
- *   - `X-Requested-With: XMLHttpRequest`
- * - `$xhr.defaults.headers.post` (header defaults for HTTP POST requests):
- *   - `Content-Type: application/x-www-form-urlencoded`
- *
- * To add or overwrite these defaults, simple add or remove a property from this configuration
- * object. To add headers for an HTTP method other than POST, simple create a new object with name
- * equal to the lowercased http method name, e.g. `$xhr.defaults.headers.get['My-Header']='value'`.
- *
+ * <pre>
+// default configuration
+angular.service('$xhrConfig', function() {
+  return {
+
+    // transform in-coming reponse data
+    transformResponse: function(data) {
+      if (isString(data)) {
+        if (/^\)\]\},\n/.test(data)) data = data.substr(6);
+        if (/^\s*[\[\{]/.test(data) && /[\}\]]\s*$/.test(data))
+          data = fromJson(data, true);
+      }
+      return data;
+    },
+
+    // transform out-going request data
+    transformRequest: function(d) {
+      return isObject(d) ? toJson(d) : d;
+    },
+
+    // default headers
+    headers: {
+      common: {
+        'Accept': 'application/json, text/plain, *&#47;*',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      post: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }
+  };
+});
+ * </pre>
  *
  * # Security Considerations
  * When designing web applications your design needs to consider security threats from
@@ -87,25 +143,50 @@
  * We recommend that the token is a digest of your site's authentication cookie with
  * {@link http://en.wikipedia.org/wiki/Rainbow_table salt for added security}.
  *
- * @param {string} method HTTP method to use. Valid values are: `GET`, `POST`, `PUT`, `DELETE`, and
- *   `JSON`. `JSON` is a special case which causes a
- *   [JSONP](http://en.wikipedia.org/wiki/JSON#JSONP) cross domain request using script tag
- *   insertion.
- * @param {string} url Relative or absolute URL specifying the destination of the request.  For
- *   `JSON` requests, `url` should include `JSON_CALLBACK` string to be replaced with a name of an
- *   angular generated callback function.
- * @param {(string|Object)=} post Request content as either a string or an object to be stringified
- *   as JSON before sent to the server.
- * @param {function(number, (string|Object))} success A function to be called when the response is
- *   received. The success function will be called with:
+ * @param {Object} config Configuration object, which can have these properties:
  *
- *   - {number} code [HTTP status code](http://en.wikipedia.org/wiki/List_of_HTTP_status_codes) of
- *     the response. This will currently always be 200, since all non-200 responses are routed to
- *     {@link angular.service.$xhr.error} service (or custom error callback).
- *   - {string|Object} response Response object as string or an Object if the response was in JSON
- *     format.
- * @param {function(number, (string|Object))} error A function to be called if the response code is
- *   not 2xx.. Accepts the same arguments as success, above.
+ *  - `{string} method` HTTP method to use. Valid values are: `GET`, `POST`, `PUT`, `DELETE`,
+ *    `HEAD`, `PATCH` and `JSONP`. `JSONP` is a special case which causes a
+ *    {@link http://en.wikipedia.org/wiki/JSON#JSONP JSONP} cross domain request using script tag
+ *    insertion.
+ *
+ *  - `{string} url` Relative or absolute URL specifying the destination of the request.
+ *    For `JSONP` requests, `url` should contain `JSON_CALLBACK` string to be replaced with a name
+ *    of an angular generated function.
+ *
+ *  - `{Object} headers` Request headers.
+ *
+ *  - `{*} data` Request content.
+ *
+ *  - `{function(*)|Array.<function(*)>}` transformRequest Function or an array of functions to
+ *    transform the data before sending.
+ *
+ *  - `{function(*)|Array.<function(*)>}` transformResponse Function or an array of functions to
+ *    transform the response before passing it to callbacks.
+ *
+ *  - `{boolean} cache` If true the request will be cached. If already cached version exists, it
+ *    will be served from cache, without performing a request to server.
+ *
+ * @returns {XhrFuture} Future object with these methods:
+ *
+ *  - `repeat({Object=})` Repeat the request using the original configuration, preserving all
+ *    registered callback functions. It accepts one optional parameter - config object, which
+ *    overrides the original config object, if specified.
+ *
+ *  - `on({string}, {function()})` Register a callback function for given status. Note: all
+ *    callbacks that match given pattern will be called in the same order in which they were
+ *    registered.
+ *
+ *  - `abort()` Abort the request
+ *
+ *
+ * The callback functions will be called with:
+ *
+ *  - `{*} response` Transformed response
+ *  - `{number} code` {@link http://en.wikipedia.org/wiki/List_of_HTTP_status_codes HTTP status code}
+ *  - `{function(string=)}` headers Function which return value of given header or all response
+ *     headers parsed as an object if no header specified. Note that all header keys are lower cased
+ *     to be consistent.
  *
  * @example
    <doc:example>
@@ -118,10 +199,11 @@
              self.code = null;
              self.response = null;
 
-             $xhr(self.method, self.url, function(code, response) {
+             $xhr({method: self.method, url: self.url
+             }).on('success' , function(response, code) {
                self.code = code;
                self.response = response;
-             }, function(code, response) {
+             }).on('error', function(response, code) {
                self.code = code;
                self.response = response || "Request failed";
              });
@@ -137,13 +219,13 @@
        <div ng:controller="FetchCntl">
          <select name="method">
            <option>GET</option>
-           <option>JSON</option>
+           <option>JSONP</option>
          </select>
          <input type="text" name="url" value="index.html" size="80"/>
          <button ng:click="fetch()">fetch</button><br>
          <button ng:click="updateModel('GET', 'index.html')">Sample GET</button>
-         <button ng:click="updateModel('JSON', 'https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK')">Sample JSONP (Buzz API)</button>
-         <button ng:click="updateModel('JSON', 'https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK')">Invalid JSONP</button>
+         <button ng:click="updateModel('JSONP', 'https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK')">Sample JSONP (Buzz API)</button>
+         <button ng:click="updateModel('JSONP', 'https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK')">Invalid JSONP</button>
          <pre>code={{code}}</pre>
          <pre>response={{response}}</pre>
        </div>
@@ -167,65 +249,377 @@
            function() {
          element(':button:contains("Invalid JSONP")').click();
          element(':button:contains("fetch")').click();
-         expect(binding('code')).toBe('code=');
+         expect(binding('code')).toBe('code=0');
          expect(binding('response')).toBe('response=Request failed');
        });
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
+angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
 
-  var xhrHeaderDefaults = {
-    common: {
-      "Accept": "application/json, text/plain, */*",
-      "X-Requested-With": "XMLHttpRequest"
-    },
-    post: {'Content-Type': 'application/x-www-form-urlencoded'},
-    get: {},      // all these empty properties are needed so that client apps can just do:
-    head: {},     // $xhr.defaults.headers.head.foo="bar" without having to create head object
-    put: {},      // it also means that if we add a header for these methods in the future, it
-    'delete': {}, // won't be easily silently lost due to an object assignment.
-    patch: {}
+  var rootScope = this.$root,
+      cache = $cacheFactory('$xhr'),
+      pendingRequestsCount = 0;
+
+  // the actual service
+  function $xhr(config) {
+    return new XhrFuture().repeat(config);
+  }
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#pendingCount
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Return number of pending requests
+   *
+   * @returns {number} Number of pending requests
+   */
+  $xhr.pendingCount = function() {
+    return pendingRequestsCount;
   };
 
-  function xhr(method, url, post, success, error) {
-    if (isFunction(post)) {
-      error = success;
-      success = post;
-      post = null;
-    }
-    if (post && isObject(post)) {
-      post = toJson(post);
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#get
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `GET` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#delete
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `DELETE` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#head
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `HEAD` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#patch
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `PATCH` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#jsonp
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `JSONP` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request.
+   *                     Should contain `JSON_CALLBACK` string.
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+  createShortMethods('get', 'delete', 'head', 'patch', 'jsonp');
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#post
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `POST` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request
+   * @param {*} data Request content
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc method
+   * @name angular.service.$xhr#put
+   * @methodOf angular.service.$xhr
+   *
+   * @description
+   * Shortcut method to perform `PUT` request
+   *
+   * @param {string} url Relative or absolute URL specifying the destination of the request
+   * @param {*} data Request content
+   * @param {Object=} config Optional configuration object
+   * @returns {XhrFuture} Future object
+   */
+  createShortMethodsWithData('post', 'put');
+
+  return $xhr;
+
+  function createShortMethods(names) {
+    forEach(arguments, function(name) {
+      $xhr[name] = function(url, config) {
+        return $xhr(extend(config || {}, {
+          method: name,
+          url: url
+        }));
+      };
+    });
+  }
+
+  function createShortMethodsWithData(name) {
+    forEach(arguments, function(name) {
+      $xhr[name] = function(url, data, config) {
+        return $xhr(extend(config || {}, {
+          method: name,
+          url: url,
+          data: data
+        }));
+      };
+    });
+  }
+
+  /**
+   * Represents Request object, returned by $xhr()
+   *
+   * !!! ACCESS CLOSURE VARS: $browser, $config, $log, rootScope, cache, pendingRequestsCount
+   */
+  function XhrFuture() {
+    var rawRequest, cfg = {}, callbacks = [],
+        defHeaders = $config.headers,
+        parsedHeaders;
+
+    /**
+     * Callback registered to $browser.xhr:
+     *  - caches the response if desired
+     *  - calls fireCallbacks()
+     *  - clears the reference to raw request object
+     */
+    function done(status, response) {
+      // probably jsonp
+      if (!rawRequest) parsedHeaders = {};
+
+      if (cfg.cache && cfg.method == 'GET' && 200 <= status && status < 300) {
+        parsedHeaders = parsedHeaders || parseHeaders(rawRequest.getAllResponseHeaders());
+        cache.put(cfg.url, [status, response, parsedHeaders]);
+      }
+
+      fireCallbacks(response, status);
+      rawRequest = null;
     }
 
-    $browser.xhr(method, url, post, function(code, response){
-      try {
-        if (isString(response)) {
-          if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
-          if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
-            response = fromJson(response, true);
+    /**
+     * Fire all registered callbacks for given status code
+     *
+     * This method when:
+     *  - serving response from real request ($browser.xhr callback)
+     *  - serving response from cache
+     *
+     * It does:
+     *  - transform the response
+     *  - call proper callbacks
+     *  - log errors
+     *  - apply the $scope
+     *  - clear parsed headers
+     */
+    function fireCallbacks(response, status) {
+      // transform the response
+      response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
+
+      var regexp = statusToRegexp(status),
+          pattern, callback;
+      for (var i = 0; i < callbacks.length; i += 2) {
+        pattern = callbacks[i];
+        callback = callbacks[i + 1];
+        if (regexp.test(pattern)) {
+          try {
+            callback(response, status, headers);
+          } catch(e) {
+            $log.error(e);
           }
         }
-        if (200 <= code && code < 300) {
-          success(code, response);
-        } else if (isFunction(error)) {
-          error(code, response);
-        } else {
-          $error(
-            {method: method, url: url, data: post, success: success},
-            {status: code, body: response});
-        }
-      } catch (e) {
-        $log.error(e);
-      } finally {
-        $updateView();
       }
-    }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
-              xhrHeaderDefaults.common,
-              xhrHeaderDefaults[lowercase(method)]));
+
+      rootScope.$apply();
+      parsedHeaders = null;
+      pendingRequestsCount--;
+    }
+
+    /**
+     * Convert given status code number into regexp
+     *
+     * It would be much easier to convert registered statuses (e.g. "2xx") into regexps,
+     * but this has an advantage of creating just one regexp, instead of one regexp per
+     * registered callback. Anyway, probably not big deal.
+     *
+     * @param status
+     * @returns {RegExp}
+     */
+    function statusToRegexp(status) {
+      var strStatus = status + '',
+          i = Math.max(3, strStatus.length),
+          regexp = '';
+
+      while(i--) {
+        regexp = '(' + (strStatus.charAt(i) || 0) + '|x)' + regexp;
+      }
+
+      return new RegExp(regexp);
+    }
+
+    /**
+     * This is the third argument in any user callback
+     * @see parseHeaders
+     *
+     * Return single header value or all headers parsed as object.
+     * Headers all lazy parsed when first requested.
+     *
+     * @param {string=} name Name of header
+     * @returns {string|Object}
+     */
+    function headers(name) {
+      if (name) {
+        if (parsedHeaders) return parsedHeaders[lowercase(name)];
+        return rawRequest.getResponseHeader(name);
+      }
+
+      parsedHeaders = parsedHeaders || parseHeaders(rawRequest.getAllResponseHeaders());
+
+      return parsedHeaders;
+    }
+
+    /**
+     * Repeat the request
+     *
+     * @param {Object=} config Optional config object to override original configuration
+     * @returns {XhrFuture}
+     */
+    this.repeat = function(config) {
+      if (rawRequest)
+        throw 'Can not repeat request. Abort pending request first.';
+
+      extend(cfg, config);
+      cfg.method = uppercase(cfg.method);
+
+      var data = transform(cfg.data, cfg.transformRequest || $config.transformRequest),
+          headers = extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
+                           defHeaders.common, defHeaders[lowercase(cfg.method)], cfg.headers);
+
+      var fromCache;
+      if (cfg.cache && cfg.method == 'GET' && (fromCache = cache.get(cfg.url))) {
+        $browser.defer(function() {
+          $log.info('Serving from $xhr cache');
+          parsedHeaders = fromCache[2];
+          fireCallbacks(fromCache[1], fromCache[0]);
+        });
+      } else {
+        rawRequest = $browser.xhr(cfg.method, cfg.url, data, done, headers);
+      }
+
+      pendingRequestsCount++;
+      return this;
+    };
+
+    /**
+     * Abort the request
+     */
+    this.abort = function() {
+      if (rawRequest) {
+        rawRequest.abort();
+        rawRequest = null;
+        pendingRequestsCount--;
+      }
+    };
+
+    /**
+     * Register a callback function based on status code
+     * Note: all matched callbacks will be called, preserving registered order !
+     *
+     * @example
+     *   .on('2xx', function(){});
+     *   .on('2x1', function(){});
+     *   .on('404', function(){});
+     *   .on('xxx', function(){});
+     *   .on('20x,3xx', function(){});
+     *   .on('success', function(){});
+     *   .on('error', function(){});
+     *   .on('always', function(){});
+     *
+     * @param {string} pattern Status code pattern with "x" for any number
+     * @param {function(*, number, Object)} callback Function to be called when response arrrives
+     * @returns {XhrFuture}
+     */
+    this.on = function(pattern, callback) {
+      var alias = {
+        success: '2xx',
+        error: '000,4xx,5xx',
+        always: 'xxx'
+      };
+
+      callbacks.push(alias[pattern] || pattern);
+      callbacks.push(callback);
+
+      return this;
+    };
+  }
+}, ['$browser', '$log', '$xhrConfig', '$cacheFactory']);
+
+// TODO(vojta): remove when we have the concept of configuration
+angular.service('$xhrConfig', function() {
+  return {
+
+    // transform in-coming reponse data
+    transformResponse: function(data) {
+      if (isString(data)) {
+        if (/^\)\]\}',\n/.test(data)) data = data.substr(6);
+        if (/^\s*[\[\{]/.test(data) && /[\}\]]\s*$/.test(data))
+          data = fromJson(data, true);
+      }
+      return data;
+    },
+
+    // transform out-going request data
+    transformRequest: function(d) {
+      return isObject(d) ? toJson(d) : d;
+    },
+
+    // default headers
+    headers: {
+      common: {
+        'Accept': 'application/json, text/plain, */*',
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      post: {'Content-Type': 'application/x-www-form-urlencoded'}
+    }
   };
-
-  xhr.defaults = {headers: xhrHeaderDefaults};
-
-  return xhr;
-}, ['$browser', '$xhr.error', '$log', '$updateView']);
+});

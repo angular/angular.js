@@ -93,12 +93,16 @@ function Browser(window, document, body, XHR, $log) {
    *     <li><tt>X-Requested-With</tt>: <tt>XMLHttpRequest</tt></li>
    *   </ul>
    *
+   * @returns {XMLHttpRequest|undefined} Raw XMLHttpRequest object or undefined when JSONP method
+   *
    * @description
    * Send ajax request
+   *
+   * TODO(vojta): change signature of this method to (method, url, data, headers, callback)
    */
   self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
-    if (lowercase(method) == 'json') {
+    if (lowercase(method) == 'jsonp') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
       window[callbackId] = function(data) {
         window[callbackId].data = data;
@@ -108,7 +112,7 @@ function Browser(window, document, body, XHR, $log) {
         if (window[callbackId].data) {
           completeOutstandingRequest(callback, 200, window[callbackId].data);
         } else {
-          completeOutstandingRequest(callback);
+          completeOutstandingRequest(callback, 0);
         }
         delete window[callbackId];
         body[0].removeChild(script);
@@ -122,11 +126,12 @@ function Browser(window, document, body, XHR, $log) {
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-          var status = xhr.status == 1223 ? 204 : xhr.status || 200;
+          var status = xhr.status == 1223 ? 204 : xhr.status;
           completeOutstandingRequest(callback, status, xhr.responseText);
         }
       };
       xhr.send(post || '');
+      return xhr;
     }
   };
 
