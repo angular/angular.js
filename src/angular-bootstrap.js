@@ -117,9 +117,6 @@
              'service/route.js',
              'service/updateView.js',
              'service/window.js',
-             'service/xhr.bulk.js',
-             'service/xhr.cache.js',
-             'service/xhr.error.js',
              'service/xhr.js',
 
              'apis.js',
