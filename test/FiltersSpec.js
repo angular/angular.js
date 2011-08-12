@@ -241,6 +241,11 @@ describe('filter', function() {
                       toEqual('September 03, 1');
     });
 
+    it('should treat single quoted strings as string literals', function() {
+      expect(date(midnight, "yyyy'de' 'a''dd' 'adZ' h=H:m:saZ")).
+                      toEqual('2010de add adZ 12=0:5:8AM0500');
+    });
+
     it('should accept default formats', function() {
 
       expect(date(noon, "medium")).

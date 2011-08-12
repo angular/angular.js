@@ -249,7 +249,7 @@ var DATE_FORMATS = {
 };
 
 var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
-var DATE_FORMATS_SPLIT = /([^yMdHhmsazZE]*)(E+|y+|M+|d+|H+|h+|m+|s+|a|Z|z)(.*)/;
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'[^']*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/
 var OPERA_TOSTRING_PATTERN = /^[\d].*Z$/;
 var NUMBER_STRING = /^\d+$/;
 
@@ -364,7 +364,7 @@ angularFilter.date = function(date, format) {
     }
     forEach(parts, function(value){
       fn = DATE_FORMATS[value];
-      text += fn ? fn(date, $locale.DATETIME_FORMATS) : value;
+      text += fn ? fn(date, $locale.DATETIME_FORMATS) :  value.replace(/\'/g,'');
     });
   }
   return text;
