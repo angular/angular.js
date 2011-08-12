@@ -76,7 +76,7 @@
 
     // load the js scripts
     for (i in Array.prototype.slice.call(arguments, 0)) {
-      file = arguments[i];
+      var file = arguments[i];
       document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
                              'onload="angularClobberTest(\'' + file + '\')"></script>');
     }
