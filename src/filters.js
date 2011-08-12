@@ -215,16 +215,10 @@ function dateStrGetter(name, shortForm) {
   };
 }
 
-function timeZoneGetter(numFormat) {
-  return function(date) {
-    var timeZone;
-    if (numFormat || !(timeZone = GET_TIME_ZONE.exec(date.toString()))) {
-      var offset = date.getTimezoneOffset();
-      return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
-    }
-    return timeZone[0];
-  };
-}
+function timeZoneGetter(date) {
+  var offset = date.getTimezoneOffset();
+  return padNumber(offset / 60, 2) + padNumber(Math.abs(offset % 60), 2);
+};
 
 function ampmGetter(date, formats) {
   return date.getHours() < 12 ? formats.AMPMS[0] : formats.AMPMS[1];
@@ -251,8 +245,7 @@ var DATE_FORMATS = {
   EEEE: dateStrGetter('Day'),
    EEE: dateStrGetter('Day', true),
      a: ampmGetter,
-     z: timeZoneGetter(false),
-     Z: timeZoneGetter(true)
+     Z: timeZoneGetter
 };
 
 var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
@@ -293,13 +286,10 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'s'`: Second in minute (0-59)
  *   * `'a'`: am/pm marker
  *   * `'Z'`: 4 digit (+sign) representation of the timezone offset (-1200-1200)
- *   * `'z'`: short form of current timezone name (e.g. PDT)
  *
  *   `format` string can also be one of the following predefined
  *   {@link guide/dev_guide.i18n localizable formats}:
  *
- *   * `'long'`: equivalent to `'MMMM d, y h:mm:ss a z'` for en_US  locale
- *     (e.g. September 3, 2010 12:05:08 pm PDT)
  *   * `'medium'`: equivalent to `'MMM d, y h:mm:ss a'` for en_US locale
  *     (e.g. Sep 3, 2010 12:05:08 pm)
  *   * `'short'`: equivalent to `'M/d/yy h:mm a'` for en_US  locale (e.g. 9/3/10 12:05 pm)
@@ -308,7 +298,6 @@ var NUMBER_STRING = /^\d+$/;
  *   * `'longDate'`: equivalent to `'MMMM d, y'` for en_US  locale (e.g. September 3, 2010
  *   * `'mediumDate'`: equivalent to `'MMM d, y'` for en_US  locale (e.g. Sep 3, 2010)
  *   * `'shortDate'`: equivalent to `'M/d/yy'` for en_US locale (e.g. 9/3/10)
- *   * `'longTime'`: equivalent to `'h:mm:ss a z'` for en_US locale (e.g. 12:05:08 pm PDT)
  *   * `'mediumTime'`: equivalent to `'h:mm:ss a'` for en_US locale (e.g. 12:05:08 pm)
  *   * `'shortTime'`: equivalent to `'h:mm a'` for en_US locale (e.g. 12:05 pm)
  *
