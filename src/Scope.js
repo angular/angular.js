@@ -94,7 +94,9 @@ function createScope(providers, instanceCache) {
 function Scope() {
   this.$id = nextUid();
   this.$$phase = this.$parent = this.$$watchers =
-    this.$$nextSibling = this.$$childHead = this.$$childTail = null;
+                 this.$$nextSibling = this.$$prevSibling =
+                 this.$$childHead = this.$$childTail = null;
+  this.$destructor = noop;
   this['this'] = this.$root =  this;
   this.$$asyncQueue = [];
 }
@@ -172,6 +174,7 @@ Scope.prototype = {
     child.$$asyncQueue = [];
     child.$$phase = child.$$watchers =
       child.$$nextSibling = child.$$childHead = child.$$childTail = null;
+    child.$$prevSibling = this.$$childTail;
     if (this.$$childHead) {
       this.$$childTail.$$nextSibling = child;
       this.$$childTail = child;
@@ -389,29 +392,11 @@ Scope.prototype = {
   $destroy: function() {
     if (this.$root == this) return; // we can't remove the root node;
     var parent = this.$parent;
-    var child = parent.$$childHead;
-    var lastChild = null;
-    var nextChild = null;
-    // We have to do a linear search, since we don't have doubly link list.
-    // But this is intentional since removals are rare, and doubly link list is not free.
-    while(child) {
-      if (child == this) {
-        nextChild = child.$$nextSibling;
-        if (parent.$$childHead == child) {
-          parent.$$childHead = nextChild;
-        }
-        if (lastChild) {
-          lastChild.$$nextSibling = nextChild;
-        }
-        if (parent.$$childTail == child) {
-          parent.$$childTail = lastChild;
-        }
-        return; // stop iterating we found it
-      } else {
-        lastChild = child;
-        child = child.$$nextSibling;
-      }
-    }
+
+    if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
+    if (parent.$$childTail == this) parent.$$childTail = this.$$prevSibling;
+    if (this.$$prevSibling) this.$$prevSibling.$$nextSibling = this.$$nextSibling;
+    if (this.$$nextSibling) this.$$nextSibling.$$prevSibling = this.$$prevSibling;
   },
 
   /**
