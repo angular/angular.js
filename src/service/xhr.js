@@ -10,8 +10,6 @@
  *                    in your tests
  * @requires $xhr.error $xhr delegates all non `2xx` response code to this service.
  * @requires $log $xhr delegates all exceptions to `$log.error()`.
- * @requires $updateView After a server response the view needs to be updated for data-binding to
- *           take effect.
  *
  * @description
  * Generates an XHR request. The $xhr service delegates all requests to
@@ -173,8 +171,8 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
-
+angularServiceInject('$xhr', function($browser, $error, $log){
+  var rootScope = this;
   var xhrHeaderDefaults = {
     common: {
       "Accept": "application/json, text/plain, */*",
@@ -206,19 +204,19 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
             response = fromJson(response, true);
           }
         }
-        if (200 <= code && code < 300) {
-          success(code, response);
-        } else if (isFunction(error)) {
-          error(code, response);
-        } else {
-          $error(
-            {method: method, url: url, data: post, success: success},
-            {status: code, body: response});
-        }
+        rootScope.$apply(function(){
+          if (200 <= code && code < 300) {
+              success(code, response);
+          } else if (isFunction(error)) {
+            error(code, response);
+          } else {
+            $error(
+              {method: method, url: url, data: post, success: success},
+              {status: code, body: response});
+          }
+        });
       } catch (e) {
         $log.error(e);
-      } finally {
-        $updateView();
       }
     }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
               xhrHeaderDefaults.common,
@@ -228,4 +226,4 @@ angularServiceInject('$xhr', function($browser, $error, $log, $updateView){
   xhr.defaults = {headers: xhrHeaderDefaults};
 
   return xhr;
-}, ['$browser', '$xhr.error', '$log', '$updateView']);
+}, ['$browser', '$xhr.error', '$log']);

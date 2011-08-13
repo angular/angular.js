@@ -126,7 +126,7 @@ describe('$xhr.cache', function() {
 
 
   it('should call eval after callbacks for both cache hit and cache miss execute', function() {
-    var flushSpy = this.spyOn(scope, '$flush').andCallThrough();
+    var flushSpy = this.spyOn(scope, '$digest').andCallThrough();
 
     $browserXhr.expectGET('/url').respond('+');
     cache('GET', '/url', null, callback);

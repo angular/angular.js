@@ -1,6 +1,11 @@
 <a name="0.9.19"><a/>
 # 0.9.19 canine-psychokinesis (in-progress) #
 
+### Features
+- Scope $evalAsync()
+- Scope event API
+
+
 # Breaking Changes
 - Controller constructor functions are now looked up on scope first and then on window.
 - angular.equals now use === which means that things which used to be equal are no longer.
@@ -16,6 +21,9 @@
 - $route.onChange() callback (http://docs.angularjs.org/#!angular.service.$route)
   no longer has this bound.
 - Removed undocumented $config in root scope. (You should have not been depending on this.)
+- removed $flush()/$observe on scope
+- removed ng:eval/ng:eval-order since it is incompatible with $digest phase
+- ng:init and ng:controllers are now called in the order of declaration in HTML
 
 
 

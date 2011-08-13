@@ -76,7 +76,7 @@
 
     // load the js scripts
     for (i in Array.prototype.slice.call(arguments, 0)) {
-      file = arguments[i];
+      var file = arguments[i];
       document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
                              'onload="angularClobberTest(\'' + file + '\')"></script>');
     }
@@ -114,7 +114,6 @@
              'service/log.js',
              'service/resource.js',
              'service/route.js',
-             'service/updateView.js',
              'service/window.js',
              'service/xhr.bulk.js',
              'service/xhr.cache.js',

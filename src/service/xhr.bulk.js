@@ -82,6 +82,6 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
       }
     });
   };
-  this.$observe(bulkXHR.flush);
+  this.$watch(bulkXHR.flush);
   return bulkXHR;
 }, ['$xhr', '$xhr.error', '$log']);

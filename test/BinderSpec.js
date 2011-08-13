@@ -54,8 +54,8 @@ describe('Binder', function(){
   });
 
   it('BindUpdate', function(){
-    var scope = this.compile('<div ng:eval="a=123"/>');
-    scope.$flush();
+    var scope = this.compile('<div ng:init="a=123"/>');
+    scope.$digest();
     assertEquals(123, scope.a);
   });
 
@@ -284,6 +284,7 @@ describe('Binder', function(){
     assertEquals(['ErrorMsg1'], errorLogs.shift());
 
     scope.error['throw'] = function(){throw "MyError";};
+    errorLogs.length = 0;
     scope.$apply();
     span = childNode(doc, 0);
     assertTrue(span.hasClass('ng-exception'));
@@ -309,8 +310,9 @@ describe('Binder', function(){
         'throw': function(){throw new Error("ErrorMsg" + (++count));}
     };
     scope.$apply();
-    expect(errorLogs.length).toMatch(1);
+    expect(errorLogs.length).not.toEqual(0);
     expect(errorLogs.shift()).toMatch(/ErrorMsg1/);
+    errorLogs.length = 0;
 
     scope.error['throw'] =  function(){ return 'X';};
     scope.$apply();

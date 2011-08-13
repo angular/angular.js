@@ -71,7 +71,7 @@ describe('$route', function() {
 
     $route.when('/foo', {template: 'foo.html'});
     $route.onChange(onChangeSpy);
-    expect($route.current).toBeNull();
+    expect($route.current).toBeUndefined();
     expect(onChangeSpy).not.toHaveBeenCalled();
 
     $location.updateHash('/foo');
@@ -94,7 +94,7 @@ describe('$route', function() {
     $route.when('/foo', {template: 'foo.html'});
     $route.otherwise({template: '404.html', controller: NotFoundCtrl});
     $route.onChange(onChangeSpy);
-    expect($route.current).toBeNull();
+    expect($route.current).toBeUndefined();
     expect(onChangeSpy).not.toHaveBeenCalled();
 
     $location.updateHash('/unknownRoute');
@@ -164,7 +164,7 @@ describe('$route', function() {
       $route.when('/baz', {redirectTo: '/bar'});
       $route.otherwise({template: '404.html'});
       $route.onChange(onChangeSpy);
-      expect($route.current).toBeNull();
+      expect($route.current).toBeUndefined();
       expect(onChangeSpy).not.toHaveBeenCalled();
 
       scope.$digest(); //triggers initial route change - match the redirect route

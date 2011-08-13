@@ -5,9 +5,6 @@ describe('Scope', function(){
 
   beforeEach(function(){
     root = createScope(angular.service, {
-      $updateView: function(){
-        root.$flush();
-      },
       '$exceptionHandler': $exceptionHandlerMockFactory()
     });
     mockHandler = root.$service('$exceptionHandler');
@@ -108,6 +105,9 @@ describe('Scope', function(){
     it('should watch and fire on simple property change', function(){
       var spy = jasmine.createSpy();
       root.$watch('name', spy);
+      root.$digest();
+      spy.reset();
+
       expect(spy).not.wasCalled();
       root.$digest();
       expect(spy).not.wasCalled();
@@ -120,6 +120,9 @@ describe('Scope', function(){
     it('should watch and fire on expression change', function(){
       var spy = jasmine.createSpy();
       root.$watch('name.first', spy);
+      root.$digest();
+      spy.reset();
+
       root.name = {};
       expect(spy).not.wasCalled();
       root.$digest();
@@ -170,12 +173,23 @@ describe('Scope', function(){
       root.$watch('c', function(self, v){self.d = v; log+='c'; });
       root.$watch('b', function(self, v){self.c = v; log+='b'; });
       root.$watch('a', function(self, v){self.b = v; log+='a'; });
+      root.$digest();
+      log = '';
       root.a = 1;
-      expect(root.$digest()).toEqual(3);
+      root.$digest();
       expect(root.b).toEqual(1);
       expect(root.c).toEqual(1);
       expect(root.d).toEqual(1);
       expect(log).toEqual('abc');
+    });
+
+    it('should repeat watch cycle from the root elemnt', function(){
+      var log = '';
+      var child = root.$new();
+      root.$watch(function(){ log += 'a'; });
+      child.$watch(function(){ log += 'b'; });
+      root.$digest();
+      expect(log).toEqual('abab');
     });
 
 
@@ -195,19 +209,10 @@ describe('Scope', function(){
       root.a = 1;
       root.$watch('a', function(){ log += 'a'; });
       root.$watch('b', function(){ log += 'b'; });
+      root.$digest();
+      log = '';
+      root.$digest();
       expect(log).toEqual('');
-      expect(root.$digest()).toEqual(0);
-      expect(log).toEqual('');
-    });
-
-
-    it('should return the listener to force a initial watch', function(){
-      var log = '';
-      root.a = 1;
-      root.$watch('a', function(scope, o1, o2){ log += scope.a + ':' + (o1 == o2 == 1) ; })();
-      expect(log).toEqual('1:true');
-      expect(root.$digest()).toEqual(0);
-      expect(log).toEqual('1:true');
     });
 
 
@@ -218,7 +223,7 @@ describe('Scope', function(){
       root.$watch('a', function(){ log +='.';});
       root.$watch('b', function(){ log +='!';});
       root.$digest();
-      expect(log).toEqual('');
+      log = '';
 
       root.a.push({});
       root.b.name = '';
@@ -234,145 +239,10 @@ describe('Scope', function(){
         expect(function(){
           root.$digest();
         }).toThrow('$digest already in progress');
-        expect(function(){
-          root.$flush();
-        }).toThrow('$digest already in progress');
         callCount++;
       });
       root.name = 'a';
       root.$digest();
-      expect(callCount).toEqual(1);
-    });
-  });
-
-
-  describe('$observe/$flush', function(){
-    it('should register simple property observer and fire on change', function(){
-      var spy = jasmine.createSpy();
-      root.$observe('name', spy);
-      expect(spy).not.wasCalled();
-      root.$flush();
-      expect(spy).wasCalled();
-      expect(spy.mostRecentCall.args[0]).toEqual(root);
-      expect(spy.mostRecentCall.args[1]).toEqual(undefined);
-      expect(spy.mostRecentCall.args[2].toString()).toEqual(NaN.toString());
-      root.name = 'misko';
-      root.$flush();
-      expect(spy).wasCalledWith(root, 'misko', undefined);
-    });
-
-
-    it('should register expression observers and fire them on change', function(){
-      var spy = jasmine.createSpy();
-      root.$observe('name.first', spy);
-      root.name = {};
-      expect(spy).not.wasCalled();
-      root.$flush();
-      expect(spy).wasCalled();
-      root.name.first = 'misko';
-      root.$flush();
-      expect(spy).wasCalled();
-    });
-
-
-    it('should delegate exceptions', function(){
-      root.$observe('a', function(){throw new Error('abc');});
-      root.a = 1;
-      root.$flush();
-      expect(mockHandler.errors[0].message).toEqual('abc');
-      $logMock.error.logs.shift();
-    });
-
-
-    it('should fire observers in order of addition', function(){
-      // this is not an external guarantee, just our own sanity
-      var log = '';
-      root.$observe('a', function(){ log += 'a'; });
-      root.$observe('b', function(){ log += 'b'; });
-      root.$observe('c', function(){ log += 'c'; });
-      root.a = root.b = root.c = 1;
-      root.$flush();
-      expect(log).toEqual('abc');
-    });
-
-
-    it('should delegate $flush to children in addition order', function(){
-      // this is not an external guarantee, just our own sanity
-      var log = '';
-      var childA = root.$new();
-      var childB = root.$new();
-      var childC = root.$new();
-      childA.$observe('a', function(){ log += 'a'; });
-      childB.$observe('b', function(){ log += 'b'; });
-      childC.$observe('c', function(){ log += 'c'; });
-      childA.a = childB.b = childC.c = 1;
-      root.$flush();
-      expect(log).toEqual('abc');
-    });
-
-
-    it('should fire observers once at beggining and on change', function(){
-      var log = '';
-      root.$observe('c', function(self, v){self.d = v; log += 'c';});
-      root.$observe('b', function(self, v){self.c = v; log += 'b';});
-      root.$observe('a', function(self, v){self.b = v; log += 'a';});
-      root.a = 1;
-      root.$flush();
-      expect(root.b).toEqual(1);
-      expect(log).toEqual('cba');
-      root.$flush();
-      expect(root.c).toEqual(1);
-      expect(log).toEqual('cbab');
-      root.$flush();
-      expect(root.d).toEqual(1);
-      expect(log).toEqual('cbabc');
-    });
-
-
-    it('should fire on initial observe', function(){
-      var log = '';
-      root.a = 1;
-      root.$observe('a', function(){ log += 'a'; });
-      root.$observe('b', function(){ log += 'b'; });
-      expect(log).toEqual('');
-      root.$flush();
-      expect(log).toEqual('ab');
-    });
-
-
-    it('should observe objects', function(){
-      var log = '';
-      root.a = [];
-      root.b = {};
-      root.$observe('a', function(){ log +='.';});
-      root.$observe('a', function(){ log +='!';});
-      root.$flush();
-      expect(log).toEqual('.!');
-
-      root.$flush();
-      expect(log).toEqual('.!');
-
-      root.a.push({});
-      root.b.name = '';
-
-      root.$digest();
-      expect(log).toEqual('.!');
-    });
-
-
-    it('should prevent recursion', function(){
-      var callCount = 0;
-      root.$observe('name', function(){
-        expect(function(){
-          root.$digest();
-        }).toThrow('$flush already in progress');
-        expect(function(){
-          root.$flush();
-        }).toThrow('$flush already in progress');
-        callCount++;
-      });
-      root.name = 'a';
-      root.$flush();
       expect(callCount).toEqual(1);
     });
   });
@@ -392,6 +262,7 @@ describe('Scope', function(){
       middle.$watch(function(){ log += '2';});
       last.$watch(function(){ log += '3';});
 
+      root.$digest();
       log = '';
     });
 
@@ -422,6 +293,16 @@ describe('Scope', function(){
       root.$digest();
       expect(log).toEqual('12');
     });
+
+    it('should fire a $destroy event', function(){
+      var destructedScopes = [];
+      middle.$on('$destroy', function(event) {
+        destructedScopes.push(event.currentTarget);
+      });
+      middle.$destroy();
+      expect(destructedScopes).toEqual([middle]);
+    });
+
   });
 
 
@@ -435,15 +316,49 @@ describe('Scope', function(){
     });
   });
 
+  describe('$evalAsync', function(){
+
+    it('should run callback before $watch', function(){
+      var log = '';
+      var child = root.$new();
+      root.$evalAsync(function(scope){ log += 'parent.async;'; });
+      root.$watch('value', function(){ log += 'parent.$digest;'; });
+      child.$evalAsync(function(scope){ log += 'child.async;'; });
+      child.$watch('value', function(){ log += 'child.$digest;'; });
+      root.$digest();
+      expect(log).toEqual('parent.async;parent.$digest;child.async;child.$digest;');
+    });
+
+    it('should cause a $digest rerun', function(){
+      root.log = '';
+      root.value = 0;
+      root.$watch('value', 'log = log + ".";');
+      root.$watch('init', function(){
+        root.$evalAsync('value = 123; log = log + "=" ');
+        expect(root.value).toEqual(0);
+      });
+      root.$digest();
+      expect(root.log).toEqual('.=.');
+    });
+
+    it('should run async in the same order as added', function(){
+      root.log = '';
+      root.$evalAsync("log = log + 1");
+      root.$evalAsync("log = log + 2");
+      root.$digest();
+      expect(root.log).toBe('12');
+    });
+
+  });
+
 
   describe('$apply', function(){
     it('should apply expression with full lifecycle', function(){
       var log = '';
       var child = root.$new();
       root.$watch('a', function(scope, a){ log += '1'; });
-      root.$observe('a', function(scope, a){ log += '2'; });
       child.$apply('$parent.a=0');
-      expect(log).toEqual('12');
+      expect(log).toEqual('1');
     });
 
 
@@ -451,25 +366,24 @@ describe('Scope', function(){
       var log = '';
       var child = root.$new();
       root.$watch('a', function(scope, a){ log += '1'; });
-      root.$observe('a', function(scope, a){ log += '2'; });
       root.a = 0;
       child.$apply(function(){ throw new Error('MyError'); });
-      expect(log).toEqual('12');
+      expect(log).toEqual('1');
       expect(mockHandler.errors[0].message).toEqual('MyError');
       $logMock.error.logs.shift();
     });
 
 
     describe('exceptions', function(){
-      var $exceptionHandler, $updateView, log;
+      var $exceptionHandler, log;
       beforeEach(function(){
         log = '';
         $exceptionHandler = jasmine.createSpy('$exceptionHandler');
-        $updateView = jasmine.createSpy('$updateView');
         root.$service = function(name) {
-          return {$updateView:$updateView, $exceptionHandler:$exceptionHandler}[name];
+          return {$exceptionHandler:$exceptionHandler}[name];
         };
         root.$watch(function(){ log += '$digest;'; });
+        root.$digest();
         log = '';
       });
 
@@ -481,7 +395,6 @@ describe('Scope', function(){
         })).toEqual('abc');
         expect(log).toEqual('$digest;');
         expect($exceptionHandler).not.wasCalled();
-        expect($updateView).wasCalled();
       });
 
 
@@ -490,8 +403,100 @@ describe('Scope', function(){
         root.$apply(function(){ throw error; });
         expect(log).toEqual('$digest;');
         expect($exceptionHandler).wasCalledWith(error);
-        expect($updateView).wasCalled();
       });
     });
+  });
+
+  describe('events', function(){
+    var log, child, grandChild, greatGrandChild;
+
+    beforeEach(function(){
+      log = '';
+      child = root.$new();
+      grandChild = child.$new();
+      greatGrandChild = child.$new();
+
+      root.id = 0;
+      child.id = 1;
+      grandChild.id = 2;
+      greatGrandChild.id = 3;
+
+      root.$on('myEvent', logger('<'));
+      root.$on('myEvent', logger('>'), true);
+      child.$on('myEvent', logger('<'));
+      child.$on('myEvent', logger('>'), true);
+      grandChild.$on('myEvent', logger('<'));
+      grandChild.$on('myEvent', logger('>'), true);
+      greatGrandChild.$on('myEvent', logger('<'));
+      greatGrandChild.$on('myEvent', logger('>'), true);
+    });
+
+    function logger(text) {
+      return function(event) {
+        log += event.currentTarget.id + text;
+      };
+    }
+
+    it('should fire event through capture and bubble phase', function(){
+      grandChild.$emit('myEvent');
+      expect(log).toEqual('0>1>2>2<1<0<');
+    });
+
+    it('should not propagate exceptions in bubble and capture', function(){
+      child.$on('myEvent', function(){ throw 'bubbleException'; });
+      child.$on('myEvent', function(){ throw 'captureException'; }, true);
+      grandChild.$emit('myEvent');
+      expect(log).toEqual('0>1>2>2<1<0<');
+      expect(mockHandler.errors[0]).toEqual('captureException');
+      expect(mockHandler.errors[1]).toEqual('bubbleException');
+    });
+
+    it('should allow cancalation of event propegation in bubble', function(){
+      child.$on('myEvent', function(event){ event.cancel(); });
+      grandChild.$emit('myEvent');
+      expect(log).toEqual('0>1>2>2<1<');
+    });
+
+    it('should allow cancalation of event propegation in capture', function(){
+      child.$on('myEvent', function(event){ event.cancel(); }, true);
+      grandChild.$emit('myEvent');
+      expect(log).toEqual('0>');
+    });
+
+    it('should remove event listener', function(){
+      function eventFn(){
+        log += 'abc;';
+      }
+
+      child.$on('abc', eventFn, true);
+      child.$emit('abc');
+      expect(log).toEqual('abc;');
+      log = '';
+      child.$removeOn('abc', eventFn, true);
+      child.$emit('abc');
+      expect(log).toEqual('');
+    });
+
+    it('should forward method arguments', function(){
+      child.$on('abc', function(event, arg1, arg2){
+        expect(arg1).toEqual('arg1');
+        expect(arg2).toEqual('arg2');
+      });
+      child.$emit('abc', 'arg1', 'arg2');
+    });
+
+    describe('event object', function(){
+      it('should have methods/properties', function(){
+        var event;
+        child.$on('myEvent', function(e){
+          expect(e.target).toBe(grandChild);
+          expect(e.currentTarget).toBe(child);
+          event = e;
+        });
+        grandChild.$emit('myEvent');
+        expect(event).toBeTruthy();
+      });
+    });
+
   });
 });

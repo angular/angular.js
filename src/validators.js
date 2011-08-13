@@ -469,7 +469,6 @@ extend(angularValidator, {
           $invalidWidgets.markValid(element);
         }
         element.data($$validate)();
-        scope.$service('$updateView')();
       });
     } else if (inputState.inFlight) {
       // request in flight, mark widget invalid, but don't show it to user
