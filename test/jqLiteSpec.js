@@ -572,7 +572,7 @@ describe('jqLite', function(){
       var element = jqLite('<div><span>aa</span></div><div><span>bb</span></div>');
       expect(element.find('span').eq(0).html()).toBe('aa');
       expect(element.find('span').eq(-1).html()).toBe('bb');
-      expect(element.find('span').eq(20).length).toBe(0);;
+      expect(element.find('span').eq(20).length).toBe(0);
     });
   });
 });

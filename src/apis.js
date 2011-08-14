@@ -827,7 +827,7 @@ function hashKey(obj) {
     } else if (key === undefined) {
       key = obj.$hashKey = nextUid();
     }
-  };
+  }
   return objType + ':' + key;
 }
 

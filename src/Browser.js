@@ -188,7 +188,7 @@ function Browser(window, document, body, XHR, $log) {
       forEach(pollFns, function(pollFn){ pollFn(); });
       pollTimeout = setTimeout(check, interval);
     })();
-  };
+  }
 
   //////////////////////////////////////////////////////////////
   // URL API
