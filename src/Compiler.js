@@ -229,14 +229,14 @@ Compiler.prototype = {
     template = new Template();
     eachAttribute(element, function(value, name){
       if (!widget) {
-        if (widget = self.widgets('@' + name)) {
+        if ((widget = self.widgets('@' + name))) {
           element.addClass('ng-attr-widget');
           widget = bind(selfApi, widget, value, element);
         }
       }
     });
     if (!widget) {
-      if (widget = self.widgets(elementName)) {
+      if ((widget = self.widgets(elementName))) {
         if (elementNamespace)
           element.addClass('ng-widget');
         widget = bind(selfApi, widget, element);

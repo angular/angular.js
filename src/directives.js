@@ -230,7 +230,7 @@ angularDirective("ng:bind", function(expression, element){
       // If we are HTML than save the raw HTML data so that we don't
       // recompute sanitization since it is expensive.
       // TODO: turn this into a more generic way to compute this
-      if (isHtml = (value instanceof HTML))
+      if ((isHtml = (value instanceof HTML)))
         value = (html = value).html;
       if (lastValue === value && lastError == error) return;
       isDomElement = isElement(value);

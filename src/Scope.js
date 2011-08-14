@@ -343,7 +343,7 @@ Scope.prototype = {
             scope.$service('$exceptionHandler')(e);
           }
         }
-        if (watchers = scope.$$watchers) {
+        if ((watchers = scope.$$watchers)) {
           // process our watches
           length = watchers.length;
           while (length--) {
@@ -372,7 +372,7 @@ Scope.prototype = {
             }
           } while (scope !== this);
         }
-      } while (scope = next);
+      } while ((scope = next));
 
       if(!(ttl--)) {
         throw Error('100 $digest() iterations reached. Aborting!');

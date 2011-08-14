@@ -52,7 +52,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $error, $log) {
 
     if (method == 'GET') {
       var data, dataCached;
-      if (dataCached = cache.data[url]) {
+      if ((dataCached = cache.data[url])) {
 
         if (sync) {
           success(200, copy(dataCached.value));
@@ -64,7 +64,7 @@ angularServiceInject('$xhr.cache', function($xhr, $defer, $error, $log) {
           return;
       }
 
-      if (data = inflight[url]) {
+      if ((data = inflight[url])) {
         data.successes.push(success);
         data.errors.push(error);
       } else {

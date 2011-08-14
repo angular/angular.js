@@ -216,7 +216,7 @@ angularServiceInject('$route', function($location) {
     // Match a route
     forEach(routes, function(rParams, rPath) {
       if (!pathParams) {
-        if (pathParams = matcher($location.hashPath, rPath)) {
+        if ((pathParams = matcher($location.hashPath, rPath))) {
           selectedRoute = rParams;
         }
       }
