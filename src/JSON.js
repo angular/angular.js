@@ -87,7 +87,7 @@ function toJsonArray(buf, obj, pretty, stack) {
   if (obj === null) {
     buf.push($null);
   } else if (obj instanceof RegExp) {
-    buf.push(angular.String.quoteUnicode(obj.toString()));
+    buf.push(angularString.quoteUnicode(obj.toString()));
   } else if (isFunction(obj)) {
     return;
   } else if (isBoolean(obj)) {
@@ -99,7 +99,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       buf.push('' + obj);
     }
   } else if (isString(obj)) {
-    return buf.push(angular.String.quoteUnicode(obj));
+    return buf.push(angularString.quoteUnicode(obj));
   } else if (isObject(obj)) {
     if (isArray(obj)) {
       buf.push("[");
@@ -120,7 +120,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       // TODO(misko): maybe in dev mode have a better error reporting?
       buf.push('DOM_ELEMENT');
     } else if (isDate(obj)) {
-      buf.push(angular.String.quoteUnicode(angular.Date.toString(obj)));
+      buf.push(angularString.quoteUnicode(angular.Date.toString(obj)));
     } else {
       buf.push("{");
       if (pretty) buf.push(pretty);
@@ -141,7 +141,7 @@ function toJsonArray(buf, obj, pretty, stack) {
             buf.push(",");
             if (pretty) buf.push(pretty);
           }
-          buf.push(angular.String.quote(key));
+          buf.push(angularString.quote(key));
           buf.push(":");
           toJsonArray(buf, value, childPretty, stack);
           comma = true;
