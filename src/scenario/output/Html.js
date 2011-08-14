@@ -142,7 +142,7 @@ angular.scenario.output('html', function(context, runner, model) {
       currentContext = context.find('#' + id);
     });
     return context.find('#describe-' + spec.definition.id);
-  };
+  }
 
   /**
    * Updates the test counter for the status.
@@ -167,5 +167,5 @@ angular.scenario.output('html', function(context, runner, model) {
     context.find('.test-title').append('<pre></pre>');
     var message = _jQuery.trim(line() + '\n\n' + formatException(error));
     context.find('.test-title pre:last').text(message);
-  };
+  }
 });

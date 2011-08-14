@@ -30,7 +30,7 @@ function createScope(providers, instanceCache) {
   var scope = new Scope();
   (scope.$service = createInjector(scope, providers, instanceCache)).eager();
   return scope;
-};
+}
 
 
 /**

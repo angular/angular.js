@@ -221,7 +221,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
     }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
               xhrHeaderDefaults.common,
               xhrHeaderDefaults[lowercase(method)]));
-  };
+  }
 
   xhr.defaults = {headers: xhrHeaderDefaults};
 

@@ -589,14 +589,14 @@ describe("widget", function(){
       '</select>';
       select = jqLite(html);
       scope = compile(select);
-    };
+    }
 
     function createSingleSelect(blank, unknown){
       createSelect({
         'name':'selected',
         'ng:options':'value.name for value in values'
       }, blank, unknown);
-    };
+    }
 
     function createMultiSelect(blank, unknown){
       createSelect({
@@ -604,7 +604,7 @@ describe("widget", function(){
         'multiple':true,
         'ng:options':'value.name for value in values'
       }, blank, unknown);
-    };
+    }
 
     afterEach(function(){
       dealoc(select);
