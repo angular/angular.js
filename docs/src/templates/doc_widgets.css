@@ -1,9 +1,3 @@
-@namespace doc url("http://docs.angularjs.org/");
-
-doc\:example {
-  display: none;
-}
-
 ul.doc-example {
   list-style-type: none;
   position: relative;
