@@ -738,7 +738,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
 angularDirective("ng:show", function(expression, element){
   return function(element){
     this.$onEval(function(){
-      toBoolean(this.$eval(expression)) ? element.show() : element.hide();
+      element.css('display', toBoolean(this.$eval(expression)) ? '' : 'none');
     }, element);
   };
 });
@@ -779,7 +779,7 @@ angularDirective("ng:show", function(expression, element){
 angularDirective("ng:hide", function(expression, element){
   return function(element){
     this.$onEval(function(){
-      toBoolean(this.$eval(expression)) ? element.hide() : element.show();
+      element.css('display', toBoolean(this.$eval(expression)) ? 'none' : '');
     }, element);
   };
 });
