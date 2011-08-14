@@ -23,7 +23,6 @@
 
   angular.widget('doc:example', function(element){
     this.descend(true); //compile the example code
-    element.hide();
 
     //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
@@ -53,7 +52,6 @@
 
     element.html('');
     element.append(tabs);
-    element.show();
 
     var script = (exampleSrc.match(/<script[^\>]*>([\s\S]*)<\/script>/) || [])[1] || '';
     try {
