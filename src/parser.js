@@ -421,7 +421,7 @@ function parser(text, json){
     var left = logicalOR();
     var right;
     var token;
-    if (token = expect('=')) {
+    if ((token = expect('='))) {
       if (!left.assign) {
         throwError("implies assignment but [" +
           text.substring(0, token.index) + "] can not be assigned to", token);
@@ -468,7 +468,7 @@ function parser(text, json){
   function relational(){
     var left = additive();
     var token;
-    if (token = expect('<', '>', '<=', '>=')) {
+    if ((token = expect('<', '>', '<=', '>='))) {
       left = binaryFn(left, token.fn, relational());
     }
     return left;
@@ -477,7 +477,7 @@ function parser(text, json){
   function additive(){
     var left = multiplicative();
     var token;
-    while(token = expect('+','-')) {
+    while ((token = expect('+','-'))) {
       left = binaryFn(left, token.fn, multiplicative());
     }
     return left;
@@ -486,7 +486,7 @@ function parser(text, json){
   function multiplicative(){
     var left = unary();
     var token;
-    while(token = expect('*','/','%')) {
+    while ((token = expect('*','/','%'))) {
       left = binaryFn(left, token.fn, unary());
     }
     return left;
@@ -496,9 +496,9 @@ function parser(text, json){
     var token;
     if (expect('+')) {
       return primary();
-    } else if (token = expect('-')) {
+    } else if ((token = expect('-'))) {
       return binaryFn(ZERO, token.fn, unary());
-    } else if (token = expect('!')) {
+    } else if ((token = expect('!'))) {
       return unaryFn(token.fn, unary());
     } else {
       return primary();
@@ -539,7 +539,7 @@ function parser(text, json){
       }
     }
     var next;
-    while (next = expect('(', '[', '.')) {
+    while ((next = expect('(', '[', '.'))) {
       if (next.text === '(') {
         primary = functionCall(primary);
       } else if (next.text === '[') {

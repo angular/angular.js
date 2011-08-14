@@ -610,7 +610,7 @@ angularFilter.linky = function(text) {
   var writer = htmlSanitizeWriter(html);
   var url;
   var i;
-  while (match = raw.match(LINKY_URL_REGEXP)) {
+  while ((match = raw.match(LINKY_URL_REGEXP))) {
     // We can not end in these as they are sometimes found at the end of the sentence
     url = match[0];
     // if we did not match ftp/http/mailto then assume mailto

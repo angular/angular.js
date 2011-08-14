@@ -877,7 +877,7 @@ angularWidget('select', function(element){
           lastElement = null;  // start at the begining
           for(index = 0, length = optionGroup.length; index < length; index++) {
             option = optionGroup[index];
-            if (existingOption = existingOptions[index+1]) {
+            if ((existingOption = existingOptions[index+1])) {
               // reuse elements
               lastElement = existingOption.element;
               if (existingOption.label !== option.label) {
@@ -1116,7 +1116,7 @@ angularWidget('ng:switch', function (element) {
 
     this.$watch(watchExpr, function(scope, value) {
       element.html('');
-      if (selectedTemplate = casesTemplate[value] || defaultCaseTemplate) {
+      if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
         changeCounter++;
         if (childScope) childScope.$destroy();
         childScope = scope.$new();
