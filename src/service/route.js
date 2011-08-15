@@ -68,6 +68,8 @@ angularServiceInject('$route', function(location, $updateView) {
       matcher = switchRouteMatcher,
       parentScope = this,
       dirty = 0,
+      lastHashPath,
+      lastRouteParams,
       $route = {
         routes: routes,
 
@@ -136,6 +138,18 @@ angularServiceInject('$route', function(location, $updateView) {
          *      The custom `redirectTo` function is expected to return a string which will be used
          *      to update `$location.hash`.
          *
+         *    - `[reloadOnSearch=true]` - {boolean=} - reload route when $location.hashSearch
+         *      changes. If this option is disabled, you should set up a $watch to be notified of
+         *      param (hashSearch) changes as follows:
+         *
+         *            function MyCtrl($route) {
+         *              this.$watch(function() {
+         *                return $route.current.params.myHashSearchParam;
+         *              }, function(params) {
+         *                //do stuff with params
+         *              });
+         *            }
+         *
          * @returns {Object} route object
          *
          * @description
@@ -144,8 +158,8 @@ angularServiceInject('$route', function(location, $updateView) {
         when:function (path, params) {
           if (isUndefined(path)) return routes; //TODO(im): remove - not needed!
           var route = routes[path];
-          if (!route) route = routes[path] = {};
-          if (params) extend(route, params);
+          if (!route) route = routes[path] = {reloadOnSearch: true};
+          if (params) extend(route, params); //TODO(im): what the heck? merge two route definitions?
           dirty++;
           return route;
         },
@@ -209,6 +223,14 @@ angularServiceInject('$route', function(location, $updateView) {
   function updateRoute(){
     var childScope, routeParams, pathParams, segmentMatch, key, redir;
 
+    if ($route.current) {
+      if (!$route.current.reloadOnSearch && (lastHashPath == location.hashPath)) {
+        $route.current.params = extend({}, location.hashSearch, lastRouteParams);
+        return;
+      }
+    }
+
+    lastHashPath = location.hashPath;
     $route.current = null;
     forEach(routes, function(rParams, rPath) {
       if (!pathParams) {
@@ -255,6 +277,7 @@ angularServiceInject('$route', function(location, $updateView) {
         scope: childScope,
         params: extend({}, location.hashSearch, pathParams)
       });
+      lastRouteParams = pathParams;
     }
 
     //fire onChange callbacks
@@ -266,7 +289,7 @@ angularServiceInject('$route', function(location, $updateView) {
   }
 
 
-  this.$watch(function(){return dirty + location.hash;}, updateRoute);
+  this.$watch(function(){ return dirty + location.hash; }, updateRoute);
 
   return $route;
 }, ['$location', '$updateView']);
