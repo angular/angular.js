@@ -94,7 +94,7 @@
   document.write('<script type="text/javascript" src="' + serverPath + '../angularFiles.js' + '" ' +
                  'onload="addScripts(angularFiles.angularSrc)"></script>');
 
-  function onLoadListener(){
+  function onLoadListener() {
     // empty the cache to prevent mem leaks
     globalVars = {};
 
@@ -106,9 +106,9 @@
     angularInit(config, document);
   }
 
-  if (window.addEventListener){
+  if (window.addEventListener) {
     window.addEventListener('load', onLoadListener, false);
-  } else if (window.attachEvent){
+  } else if (window.attachEvent) {
     window.attachEvent('onload', onLoadListener);
   }
 
