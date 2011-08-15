@@ -125,14 +125,14 @@ angularFilter.number = function(number, fractionSize) {
 }
 
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
-  var isNegative = number < 0,
+  var isNegative = number < 0;
   number = Math.abs(number);
   var numStr =  number + '',
       formatedText = '',
       parts = [];
 
   if (numStr.indexOf('e') !== -1) {
-    var formatedText = numStr;
+    formatedText = numStr;
   } else {
     var fractionLen = (numStr.split(DECIMAL_SEP)[1] || '').length;
 
