@@ -260,4 +260,139 @@ describe('$route', function() {
       }
     });
   });
+
+
+  describe('reloadOnSearch', function() {
+    it('should reload a route when reloadOnSearch is enabled and hashSearch changes', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          reloaded = jasmine.createSpy('route reload');
+
+      $route.when('/foo', {controller: FooCtrl});
+      $route.onChange(reloaded);
+
+      function FooCtrl() {
+        reloaded();
+      }
+
+      $location.updateHash('/foo');
+      scope.$digest();
+      expect(reloaded).toHaveBeenCalled();
+      reloaded.reset();
+
+      // trigger reload
+      $location.hashSearch.foo = 'bar';
+      scope.$digest();
+      expect(reloaded).toHaveBeenCalled();
+    });
+
+
+    it('should not reload a route when reloadOnSearch is disabled and only hashSearch changes',
+        function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          reloaded = jasmine.createSpy('route reload');
+
+      $route.when('/foo', {controller: FooCtrl, reloadOnSearch: false});
+      $route.onChange(reloaded);
+
+      function FooCtrl() {
+        reloaded();
+      }
+
+      expect(reloaded).not.toHaveBeenCalled();
+
+      $location.updateHash('/foo');
+      scope.$digest();
+      expect(reloaded).toHaveBeenCalled();
+      reloaded.reset();
+
+      // don't trigger reload
+      $location.hashSearch.foo = 'bar';
+      scope.$digest();
+      expect(reloaded).not.toHaveBeenCalled();
+    });
+
+
+    it('should reload reloadOnSearch route when url differs only in route path param', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          reloaded = jasmine.createSpy('routeReload'),
+          onRouteChange = jasmine.createSpy('onRouteChange');
+
+      $route.when('/foo/:fooId', {controller: FooCtrl, reloadOnSearch: false});
+      $route.onChange(onRouteChange);
+
+      function FooCtrl() {
+        reloaded();
+      }
+
+      expect(reloaded).not.toHaveBeenCalled();
+      expect(onRouteChange).not.toHaveBeenCalled();
+
+      $location.updateHash('/foo/aaa');
+      scope.$digest();
+      expect(reloaded).toHaveBeenCalled();
+      expect(onRouteChange).toHaveBeenCalled();
+      reloaded.reset();
+      onRouteChange.reset();
+
+      $location.updateHash('/foo/bbb');
+      scope.$digest();
+      expect(reloaded).toHaveBeenCalled();
+      expect(onRouteChange).toHaveBeenCalled();
+      reloaded.reset();
+      onRouteChange.reset();
+
+      $location.hashSearch.foo = 'bar';
+      scope.$digest();
+      expect(reloaded).not.toHaveBeenCalled();
+      expect(onRouteChange).not.toHaveBeenCalled();
+    });
+
+
+    it('should update route params when reloadOnSearch is disabled and hashSearch', function() {
+      var scope = angular.scope(),
+          $location = scope.$service('$location'),
+          $route = scope.$service('$route'),
+          routeParams = jasmine.createSpy('routeParams');
+
+      $route.when('/foo', {controller: FooCtrl});
+      $route.when('/bar/:barId', {controller: FooCtrl, reloadOnSearch: false});
+
+      function FooCtrl() {
+        this.$watch(function() {
+          return $route.current.params;
+        }, function(scope, value) {
+          routeParams(value);
+        });
+      }
+
+      expect(routeParams).not.toHaveBeenCalled();
+
+      $location.updateHash('/foo');
+      scope.$digest();
+      expect(routeParams).toHaveBeenCalledWith({});
+      routeParams.reset();
+
+      // trigger reload
+      $location.hashSearch.foo = 'bar';
+      scope.$digest();
+      expect(routeParams).toHaveBeenCalledWith({foo: 'bar'});
+      routeParams.reset();
+
+      $location.updateHash('/bar/123');
+      scope.$digest();
+      expect(routeParams).toHaveBeenCalledWith({barId: '123'});
+      routeParams.reset();
+
+      // don't trigger reload
+      $location.hashSearch.foo = 'bar';
+      scope.$digest();
+      expect(routeParams).toHaveBeenCalledWith({barId: '123', foo: 'bar'});
+    });
+  });
 });
