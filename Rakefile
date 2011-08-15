@@ -1,62 +1,8 @@
 require 'yaml'
 include FileUtils
 
-ANGULAR = [
-  'src/Angular.js',
-  'src/JSON.js',
-  'src/Compiler.js',
-  'src/Scope.js',
-  'src/Injector.js',
-  'src/parser.js',
-  'src/Resource.js',
-  'src/Browser.js',
-  'src/sanitizer.js',
-  'src/jqLite.js',
-  'src/apis.js',
-  'src/filters.js',
-  'src/formatters.js',
-  'src/validators.js',
-  'src/service/cookieStore.js',
-  'src/service/cookies.js',
-  'src/service/defer.js',
-  'src/service/document.js',
-  'src/service/exceptionHandler.js',
-  'src/service/hover.js',
-  'src/service/invalidWidgets.js',
-  'src/service/location.js',
-  'src/service/log.js',
-  'src/service/resource.js',
-  'src/service/route.js',
-  'src/service/routeParams.js',
-  'src/service/sniffer.js',
-  'src/service/window.js',
-  'src/service/xhr.bulk.js',
-  'src/service/xhr.cache.js',
-  'src/service/xhr.error.js',
-  'src/service/xhr.js',
-  'src/service/locale.js',
-  'src/directives.js',
-  'src/markups.js',
-  'src/widgets.js',
-  'src/AngularPublic.js',
-]
-
-ANGULAR_SCENARIO = [
-  'src/scenario/Scenario.js',
-  'src/scenario/Application.js',
-  'src/scenario/Describe.js',
-  'src/scenario/Future.js',
-  'src/scenario/ObjectModel.js',
-  'src/scenario/Describe.js',
-  'src/scenario/Runner.js',
-  'src/scenario/SpecRunner.js',
-  'src/scenario/dsl.js',
-  'src/scenario/matchers.js',
-  'src/scenario/output/Html.js',
-  'src/scenario/output/Json.js',
-  'src/scenario/output/Xml.js',
-  'src/scenario/output/Object.js'
-]
+content = File.open('angularFiles.js', 'r') {|f| f.read }
+files = eval(content.gsub(/angularFiles = /, '').gsub(/:/, '=>'));
 
 BUILD_DIR = 'build'
 
@@ -92,8 +38,8 @@ task :compile_scenario => :init do
   deps = [
       'lib/jquery/jquery-1.4.2.js',
       'src/scenario/angular.prefix',
-      ANGULAR,
-      ANGULAR_SCENARIO,
+      files['angularSrc'],
+      files['angularScenario'],
       'src/scenario/angular.suffix',
   ]
 
@@ -194,7 +140,7 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter, :gen
 
   deps = [
       'src/angular.prefix',
-      ANGULAR,
+      files['angularSrc'],
       'src/angular.suffix',
   ]
 
