@@ -407,6 +407,7 @@ describe('Scope', function(){
     });
   });
 
+
   describe('events', function(){
     var log, child, grandChild, greatGrandChild;
 
@@ -421,69 +422,62 @@ describe('Scope', function(){
       grandChild.id = 2;
       greatGrandChild.id = 3;
 
-      root.$on('myEvent', logger('<'));
-      root.$on('myEvent', logger('>'), true);
-      child.$on('myEvent', logger('<'));
-      child.$on('myEvent', logger('>'), true);
-      grandChild.$on('myEvent', logger('<'));
-      grandChild.$on('myEvent', logger('>'), true);
-      greatGrandChild.$on('myEvent', logger('<'));
-      greatGrandChild.$on('myEvent', logger('>'), true);
+      root.$on('myEvent', logger);
+      child.$on('myEvent', logger);
+      grandChild.$on('myEvent', logger);
+      greatGrandChild.$on('myEvent', logger);
     });
 
-    function logger(text) {
-      return function(event) {
-        log += event.currentTarget.id + text;
-      };
+    function logger(event) {
+      log += event.currentTarget.id + '>';
     }
 
-    it('should fire event through capture and bubble phase', function(){
+
+    it('should bubble event up to the root scope', function(){
       grandChild.$emit('myEvent');
-      expect(log).toEqual('0>1>2>2<1<0<');
+      expect(log).toEqual('2>1>0>');
     });
 
-    it('should not propagate exceptions in bubble and capture', function(){
+
+    it('should dispatch exceptions to the $exceptionHandler', function(){
       child.$on('myEvent', function(){ throw 'bubbleException'; });
-      child.$on('myEvent', function(){ throw 'captureException'; }, true);
       grandChild.$emit('myEvent');
-      expect(log).toEqual('0>1>2>2<1<0<');
-      expect(mockHandler.errors[0]).toEqual('captureException');
-      expect(mockHandler.errors[1]).toEqual('bubbleException');
+      expect(log).toEqual('2>1>0>');
+      expect(mockHandler.errors).toEqual(['bubbleException']);
     });
 
-    it('should allow cancalation of event propegation in bubble', function(){
+
+    it('should allow cancelation of event propagation', function(){
       child.$on('myEvent', function(event){ event.cancel(); });
       grandChild.$emit('myEvent');
-      expect(log).toEqual('0>1>2>2<1<');
+      expect(log).toEqual('2>1>');
     });
 
-    it('should allow cancalation of event propegation in capture', function(){
-      child.$on('myEvent', function(event){ event.cancel(); }, true);
-      grandChild.$emit('myEvent');
-      expect(log).toEqual('0>');
-    });
 
     it('should remove event listener', function(){
       function eventFn(){
         log += 'abc;';
       }
 
-      child.$on('abc', eventFn, true);
+      child.$on('abc', eventFn);
       child.$emit('abc');
       expect(log).toEqual('abc;');
       log = '';
-      child.$removeOn('abc', eventFn, true);
+      child.$removeOn('abc', eventFn);
       child.$emit('abc');
       expect(log).toEqual('');
     });
 
+
     it('should forward method arguments', function(){
       child.$on('abc', function(event, arg1, arg2){
-        expect(arg1).toEqual('arg1');
-        expect(arg2).toEqual('arg2');
+        expect(event.type).toBe('abc');
+        expect(arg1).toBe('arg1');
+        expect(arg2).toBe('arg2');
       });
       child.$emit('abc', 'arg1', 'arg2');
     });
+
 
     describe('event object', function(){
       it('should have methods/properties', function(){
@@ -494,9 +488,8 @@ describe('Scope', function(){
           event = e;
         });
         grandChild.$emit('myEvent');
-        expect(event).toBeTruthy();
+        expect(event).toBeDefined();
       });
     });
-
   });
 });

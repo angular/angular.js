@@ -546,15 +546,13 @@ Scope.prototype = {
    *   - `currentTarget` - {Scope}: the current scope which is handling the event.
    *   - `name` - {string}: Name of the event.
    *   - `cancel` - {function}: calling `cancel` function will cancel further event propagation.
-   *
-   * @param {boolean} capture Listen on the capture phase of the event life cycle.
    */
-  $on: function(name, listener, capture) {
+  $on: function(name, listener) {
     var namedListeners = this.$$listeners[name];
     if (!namedListeners) {
       this.$$listeners[name] = namedListeners = [];
     }
-    namedListeners.push(capture ? {capture: listener} : {bubble:listener});
+    namedListeners.push(listener);
   },
 
   /**
@@ -568,17 +566,13 @@ Scope.prototype = {
    *
    * @param {string} name Event name to remove on.
    * @param {function} listener Function to remove.
-   * @param {boolean} capture Whether the removal is for the capture phase.
    */
-  $removeOn: function(name, listener, capture) {
+  $removeOn: function(name, listener) {
     var namedListeners = this.$$listeners[name];
-    var i, length;
+    var i;
     if (namedListeners) {
-      for (i = 0, length = namedListeners.length; i < length; i++) {
-        if (capture ? namedListeners[i].capture == listener : namedListeners[i].bubble == listener) {
-          namedListeners.splice(i, 1);
-        }
-      }
+      i = namedListeners.indexOf(listener);
+      namedListeners.splice(i, 1);
     }
   },
 
@@ -589,71 +583,49 @@ Scope.prototype = {
    * @function
    *
    * @description
-   * Dispatch an event of through the scope hierarchy notifying the {@link angular.scope.$on}
-   * listeners.
+   * Dispatches an event `name` upwards through the scope hierarchy notifying the
+   * {@link angular.scope.$on} listeners.
    *
-   * The event life cycle includes a capture followed by a bubble phase. The event can be canceled
-   * at any time preventing further listeners from being notified.
-   *
-   * During the capture phase the event starts at the root scope and moves in the direction of the
-   * scope which emitted the event. Any {@link angular.scope.$on capture listeners} registered on
-   * effected scope will be notified.
-   *
-   * Once the event reaches the scope which emitted the event, it switches to bubble phase and
-   * moves back up the scope chain towards the root scope triggering any
-   * {@link angular.scope.$on capture listeners} on the way.
+   * The event life cycle starts at the scope on which `$emit` was called. All
+   * {@link angular.scope.$on listeners} listening for `name` event on this scope get notified.
+   * Afterwards, the event traverses upwards toward the root scope and calls all registered
+   * listeners along the way. The event will stop propagating if one of the listeners cancels it. 
    *
    * Any exception emmited from the {@link angular.scope.$on listeners} will be passed
    * onto the {@link angular.service.$exceptionHandler $exceptionHandler} service.
    *
    * @param {string} name Event name to emit.
-   * @param {*} args.. Optional set of arguments which will be passed onto the event listeners.
+   * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
    */
   $emit: function(name) {
     var empty = [],
-        scopes = [],
-        listenerFns = [],
-        listeners,
-        listener,
-        fn,
+        namedListeners,
         canceled = false,
         scope = this,
-        $root = scope.$root,
-        i, length,
         event = {
-          target: this,
+          target: scope,
           type: name,
-          cancel: function(){ canceled = true; }
+          cancel: function(){canceled = true;}
         },
-        args = concat([event], arguments, 1);
+        i, length;
 
-    // add functions to the list in calling order
     do {
-      listeners = scope.$$listeners[name] || empty;
-      for (i = 0, length = listeners.length; i < length; i++) {
-        listener = listeners[i];
-        if (fn = listener.capture) {
-          listenerFns.unshift(fn);
-          scopes.unshift(scope);
-        }
-        if (fn = listener.bubble) {
-          listenerFns.push(fn);
-          scopes.push(scope);
+      namedListeners = scope.$$listeners[name] || empty;
+      event.currentTarget = scope;
+      for (i=0, length=namedListeners.length; i<length; i++) {
+        try {
+          namedListeners[i].apply(null, concat([event], arguments, 1));
+          if (canceled) return;
+        } catch (e) {
+          scope.$service('$exceptionHandler')(e);
         }
       }
-    } while (scope !== $root && (scope = scope.$parent));
-
-    for (i = 0, length = scopes.length; i < length; i++) {
-      event.currentTarget = scopes[i];
-      try {
-        listenerFns[i].apply(event, args);
-        if (canceled) return;
-      } catch (e) {
-        scope.$service('$exceptionHandler')(e);
-      }
-    }
+      //traverse upwards
+      scope = scope.$parent;
+    } while (scope);
   }
 };
+
 
 function compileToFn(exp, name) {
   var fn = isString(exp)
