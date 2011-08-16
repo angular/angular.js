@@ -28,14 +28,43 @@
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
     var example = element.find('pre').eq(0),  //doc-source
         exampleSrc = example.text(),
-        scenario = element.find('pre').eq(1); //doc-scenario
+        nojsfiddle = exampleSrc.match(/<doc:nojsfiddle>(.*)<\/doc:nojsfiddle>|<doc:nojsfiddle\/>/),
+        scenario = element.find('pre').eq(1), //doc-scenario
+        jsfiddleLaunchCode = ''; 
 
+    // jsFiddle is there by default, doc:nojsfiddle is to opt out or use something else
+    if(nojsfiddle && nojsfiddle.length > 0) {
+    	// ngdoc with this tag will not render form/button
+    	jsfiddleLaunchCode = nojsfiddle[1] || ''; 
+    	exampleSrc = exampleSrc.replace(nojsfiddle[0], '').trim(); // remove doc:nojsfiddle from code sample
+    } else {
+    	var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/';
+	    // nested textareas 
+        var fiddleSrc =  exampleSrc.replace(/<textarea>/gi,'&lt;textarea&gt;');
+        fiddleSrc = fiddleSrc.replace(/<\/textarea>/gi,'&lt;/textarea&gt;'); 
+	    jsfiddleLaunchCode = '<form class="jsfiddle" method="post" action="' + fiddleUrl + '" target="_blank">' +
+	    	'<textarea name="css">' +
+	    	'body { font-family: Arial,Helvetica,sans-serif; }\n' +
+	    	'body, td, th { font-size: 14px; margin: 0; }\n' + 
+	    	'table { border-collapse: separate; border-spacing: 2px; display: table; margin-bottom: 0; margin-top: 0; -moz-box-sizing: border-box; text-indent: 0; }\n' +
+	    	'a:link, a:visited, a:hover { color: #5D6DB6; text-decoration: none; }\n' +
+	    	'</textarea>' + 
+	    	'<input type="text" name="title" value="AngularJS Live Example"/>' + 
+		    '<textarea name="html">' + 
+		    '<script src="' + angularJsUrl + '" ng:autobind></script>\n' +
+		    fiddleSrc +  
+		    '</textarea>' +
+		    '<button name="jsFiddle" title="Fiddle with the sample.\nNOTE: a new browser tab/window will open" class="fiddle">' + 
+		    'edit at jsFiddle</button></form>';
+  	}
+    
     var code = indent(exampleSrc);
-    var tabHtml =
+    var tabHtml = 
       '<ul class="doc-example">' +
         '<li class="doc-example-heading"><h3>Source</h3></li>' +
         '<li class="doc-example-source" ng:non-bindable>' +
-          '<pre class="brush: js; html-script: true; highlight: [' +
+        jsfiddleLaunchCode + // may or may not have value
+        '<pre class="brush: js; html-script: true; highlight: [' +
           code.hilite + ']; toolbar: false;"></pre></li>' +
         '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
         '<li class="doc-example-live">' + exampleSrc +'</li>';
