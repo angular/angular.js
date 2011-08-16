@@ -134,14 +134,13 @@ describe("widget", function() {
       expect($rootScope.$$childHead).toBeFalsy();
     }));
 
-    it('should do xhr request and cache it', inject(function($rootScope, $browser, $compile) {
+    it('should do xhr request and cache it', inject(function($rootScope, $httpBackend, $compile) {
       var element = $compile('<ng:include src="url"></ng:include>')($rootScope);
-      var $browserXhr = $browser.xhr;
-      $browserXhr.expectGET('myUrl').respond('my partial');
+      $httpBackend.expect('GET', 'myUrl').respond('my partial');
 
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browserXhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('my partial');
 
       $rootScope.url = null;
@@ -155,14 +154,13 @@ describe("widget", function() {
     }));
 
     it('should clear content when error during xhr request',
-        inject(function($browser, $compile, $rootScope) {
+        inject(function($httpBackend, $compile, $rootScope) {
       var element = $compile('<ng:include src="url">content</ng:include>')($rootScope);
-      var $browserXhr = $browser.xhr;
-      $browserXhr.expectGET('myUrl').respond(404, '');
+      $httpBackend.expect('GET', 'myUrl').respond(404, '');
 
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browserXhr.flush();
+      $httpBackend.flush();
 
       expect(element.text()).toBe('');
     }));
@@ -500,33 +498,33 @@ describe("widget", function() {
 
 
     it('should load content via xhr when route changes',
-        inject(function($rootScope, $compile, $browser, $location, $route) {
+        inject(function($rootScope, $compile, $httpBackend, $location, $route) {
       $route.when('/foo', {template: 'myUrl1'});
       $route.when('/bar', {template: 'myUrl2'});
 
       expect(element.text()).toEqual('');
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('4');
 
       $location.path('/bar');
-      $browser.xhr.expectGET('myUrl2').respond('angular is da best');
+      $httpBackend.expect('GET', 'myUrl2').respond('angular is da best');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('angular is da best');
     }));
 
     it('should remove all content when location changes to an unknown route',
-        inject(function($rootScope, $compile, $location, $browser, $route) {
+        inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       $route.when('/foo', {template: 'myUrl1'});
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('4');
 
       $location.path('/unknown');
@@ -535,14 +533,14 @@ describe("widget", function() {
     }));
 
     it('should chain scopes and propagate evals to the child scope',
-        inject(function($rootScope, $compile, $location, $browser, $route) {
+        inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       $route.when('/foo', {template: 'myUrl1'});
       $rootScope.parentVar = 'parent';
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{parentVar}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('parent');
 
       $rootScope.parentVar = 'new parent';
@@ -551,10 +549,11 @@ describe("widget", function() {
     }));
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
+      // TODO(vojta): refactor this test
       var injector = angular.injector('ng', 'ngMock');
       var myApp = injector.get('$rootScope');
-      var $browser = injector.get('$browser');
-      $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
+      var $httpBackend = injector.get('$httpBackend');
+      $httpBackend.expect('GET', 'includePartial.html').respond('view: <ng:view></ng:view>');
       injector.get('$location').path('/foo');
 
       var $route = injector.get('$route');
@@ -566,9 +565,10 @@ describe("widget", function() {
           '</div>')(myApp);
       myApp.$apply();
 
-      $browser.xhr.expectGET('viewPartial.html').respond('content');
+      $httpBackend.expect('GET', 'viewPartial.html').respond('content');
+      $httpBackend.flush();
       myApp.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
 
       expect(myApp.$element.text()).toEqual('include: view: content');
       expect($route.current.template).toEqual('viewPartial.html');
@@ -576,11 +576,10 @@ describe("widget", function() {
     }));
 
     it('should initialize view template after the view controller was initialized even when ' +
-       'templates were cached', inject(function($rootScope, $compile, $location, $browser, $route) {
+       'templates were cached', inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       //this is a test for a regression that was introduced by making the ng:view cache sync
 
       $route.when('/foo', {controller: ParentCtrl, template: 'viewPartial.html'});
-
       $rootScope.log = [];
 
       function ParentCtrl() {
@@ -592,12 +591,12 @@ describe("widget", function() {
       };
 
       $location.path('/foo');
-      $browser.xhr.expectGET('viewPartial.html').
+      $httpBackend.expect('GET', 'viewPartial.html').
           respond('<div ng:init="log.push(\'init\')">' +
                     '<div ng:controller="ChildCtrl"></div>' +
                   '</div>');
       $rootScope.$apply();
-      $browser.xhr.flush();
+      $httpBackend.flush();
 
       expect($rootScope.log).toEqual(['parent', 'init', 'child']);
 
@@ -608,13 +607,12 @@ describe("widget", function() {
       $rootScope.log = [];
       $location.path('/foo');
       $rootScope.$apply();
-      $browser.defer.flush();
 
       expect($rootScope.log).toEqual(['parent', 'init', 'child']);
     }));
 
     it('should discard pending xhr callbacks if a new route is requested before the current ' +
-        'finished loading', inject(function($route, $rootScope, $location, $browser) {
+        'finished loading', inject(function($route, $rootScope, $location, $httpBackend) {
       // this is a test for a bad race condition that affected feedback
 
       $route.when('/foo', {template: 'myUrl1'});
@@ -623,26 +621,26 @@ describe("widget", function() {
       expect($rootScope.$element.text()).toEqual('');
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       $rootScope.$digest();
       $location.path('/bar');
-      $browser.xhr.expectGET('myUrl2').respond('<div>{{1+1}}</div>');
+      $httpBackend.expect('GET', 'myUrl2').respond('<div>{{1+1}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush(); // now that we have to requests pending, flush!
+      $httpBackend.flush(); // now that we have to requests pending, flush!
 
       expect($rootScope.$element.text()).toEqual('2');
     }));
 
     it('should clear the content when error during xhr request',
-        inject(function($route, $location, $rootScope, $browser) {
+        inject(function($route, $location, $rootScope, $httpBackend) {
       $route.when('/foo', {controller: noop, template: 'myUrl1'});
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond(404, '');
+      $httpBackend.expect('GET', 'myUrl1').respond(404, '');
       $rootScope.$element.text('content');
 
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
 
       expect($rootScope.$element.text()).toBe('');
     }));

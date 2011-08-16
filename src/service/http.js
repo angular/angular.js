@@ -51,6 +51,7 @@ function transform(data, fns, param) {
 /**
  * @ngdoc object
  * @name angular.module.ng.$http
+ * @requires $httpBacked
  * @requires $browser
  * @requires $exceptionHandler
  * @requires $cacheFactory
@@ -85,8 +86,8 @@ function $HttpProvider() {
     }
   };
 
-  this.$get = ['$browser', '$exceptionHandler', '$cacheFactory', '$rootScope',
-      function($browser, $exceptionHandler, $cacheFactory, $rootScope) {
+  this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope',
+      function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope) {
 
   var cache = $cacheFactory('$http'),
       pendingRequestsCount = 0;
@@ -235,7 +236,7 @@ function $HttpProvider() {
   /**
    * Represents Request object, returned by $http()
    *
-   * !!! ACCESS CLOSURE VARS: $browser, $config, $log, $rootScope, cache, pendingRequestsCount
+   * !!! ACCESS CLOSURE VARS: $httpBackend, $browser, $config, $log, $rootScope, cache, pendingRequestsCount
    */
   function XhrFuture() {
     var rawRequest, cfg = {}, callbacks = [],
@@ -243,7 +244,7 @@ function $HttpProvider() {
         parsedHeaders;
 
     /**
-     * Callback registered to $browser.xhr:
+     * Callback registered to $httpBackend():
      *  - caches the response if desired
      *  - calls fireCallbacks()
      *  - clears the reference to raw request object
@@ -265,7 +266,7 @@ function $HttpProvider() {
      * Fire all registered callbacks for given status code
      *
      * This method when:
-     *  - serving response from real request ($browser.xhr callback)
+     *  - serving response from real request
      *  - serving response from cache
      *
      * It does:
@@ -368,7 +369,7 @@ function $HttpProvider() {
           fireCallbacks(fromCache[1], fromCache[0]);
         });
       } else {
-        rawRequest = $browser.xhr(cfg.method, cfg.url, data, done, headers, cfg.timeout);
+        rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
       pendingRequestsCount++;
