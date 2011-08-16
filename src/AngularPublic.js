@@ -78,6 +78,7 @@ function ngModule($provide, $injector) {
   $provide.service('$filter', $FilterProvider);
   $provide.service('$formFactory', $FormFactoryProvider);
   $provide.service('$http', $HttpProvider);
+  $provide.service('$httpBackend', $HttpBackendProvider);
   $provide.service('$location', $LocationProvider);
   $provide.service('$log', $LogProvider);
   $provide.service('$parse', $ParseProvider);

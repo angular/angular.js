@@ -21,6 +21,7 @@ angular.module.ngMock = function($provide){
   $provide.service('$browser', angular.module.ngMock.$BrowserProvider);
   $provide.service('$exceptionHandler', angular.module.ngMock.$ExceptionHandlerProvider);
   $provide.service('$log', angular.module.ngMock.$LogProvider);
+  $provide.service('$httpBackend', angular.module.ngMock.$HttpBackendProvider);
 };
 angular.module.ngMock.$inject = ['$provide'];
 
@@ -38,8 +39,6 @@ angular.module.ngMock.$inject = ['$provide'];
  *
  * The following apis can be used in tests:
  *
- * - {@link #xhr} — enables testing of code that uses
- *   the {@link angular.module.ng.$xhr $xhr service} to make XmlHttpRequests.
  * - $browser.defer — enables testing of code that uses
  *   {@link angular.module.ng.$defer $defer} for executing functions via the `setTimeout` api.
  */
@@ -719,6 +718,170 @@ angular.module.ngMock.dump = function(object){
     return log.join('\n' + offset);
   }
 };
+
+/**
+ * @ngdoc object
+ * @name angular.module.ngMock.$httpBackend
+ */
+angular.module.ngMock.$HttpBackendProvider = function() {
+  this.$get = function() {
+    var definitions = [],
+        expectations = [],
+        responses = [];
+
+    function createResponse(status, data, headers) {
+      return angular.isNumber(status) ? [status, data, headers] : [200, status, data];
+    }
+
+    // TODO(vojta): change params to: method, url, data, headers, callback
+    function $httpBackend(method, url, data, callback, headers) {
+      var xhr = new MockXhr(),
+          expectation = expectations[0],
+          wasExpected = false;
+
+      if (expectation && expectation.match(method, url)) {
+        if (!expectation.matchData(data))
+          throw Error('Expected ' + method + ' ' + url + ' with different data');
+
+        if (!expectation.matchHeaders(headers))
+          throw Error('Expected ' + method + ' ' + url + ' with different headers');
+
+        expectations.shift();
+
+        if (expectation.response) {
+          responses.push(function() {
+            xhr.$$headers = expectation.response[2];
+            callback(expectation.response[0], expectation.response[1]);
+          });
+          return method == 'JSONP' ? undefined : xhr;
+        }
+        wasExpected = true;
+      }
+
+      var i = -1, definition;
+      while ((definition = definitions[++i])) {
+        if (definition.match(method, url, data, headers || {})) {
+          if (!definition.response) throw Error('No response defined !');
+          responses.push(function() {
+            var response = angular.isFunction(definition.response) ?
+                           definition.response(method, url, data, headers) : definition.response;
+            xhr.$$headers = response[2];
+            callback(response[0], response[1]);
+          });
+          return method == 'JSONP' ? undefined : xhr;
+        }
+      }
+      throw wasExpected ? Error('No response defined !') :
+                          Error('Unexpected request: ' + method + ' ' + url);
+    }
+
+    $httpBackend.when = function(method, url, data, headers) {
+      var definition = new MockHttpExpectation(method, url, data, headers);
+      definitions.push(definition);
+      return {
+        then: function(status, data, headers) {
+          definition.response = angular.isFunction(status) ? status : createResponse(status, data, headers);
+        }
+      };
+    };
+
+    $httpBackend.expect = function(method, url, data, headers) {
+      var expectation = new MockHttpExpectation(method, url, data, headers);
+      expectations.push(expectation);
+      return {
+        respond: function(status, data, headers) {
+          expectation.response = createResponse(status, data, headers);
+        }
+      };
+    };
+
+    $httpBackend.flush = function(count) {
+      count = count || responses.length;
+      while (count--) {
+        if (!responses.length) throw Error('No more pending requests');
+        responses.shift()();
+      }
+    };
+
+
+
+    $httpBackend.verifyExpectations = function() {
+      if (expectations.length) {
+        throw Error('Unsatisfied requests: ' + expectations.join(', '));
+      }
+    };
+
+    $httpBackend.resetExpectations = function() {
+      expectations = [];
+      responses = [];
+    };
+
+    return $httpBackend;
+  };
+};
+
+function MockHttpExpectation(method, url, data, headers) {
+
+  this.match = function(m, u, d, h) {
+    if (method != m) return false;
+    if (!this.matchUrl(u)) return false;
+    if (angular.isDefined(d) && !this.matchData(d)) return false;
+    if (angular.isDefined(h) && !this.matchHeaders(h)) return false;
+    return true;
+  };
+
+  this.matchUrl = function(u) {
+    if (!url) return true;
+    if (angular.isFunction(url.test)) {
+      if (!url.test(u)) return false;
+    } else if (url != u) return false;
+
+    return true;
+  };
+
+  this.matchHeaders = function(h) {
+    if (angular.isUndefined(headers)) return true;
+    if (angular.isFunction(headers)) {
+      if (!headers(h)) return false;
+    } else if (!angular.equals(headers, h)) return false;
+
+    return true;
+  };
+
+  this.matchData = function(d) {
+    if (angular.isUndefined(data)) return true;
+    if (data && angular.isFunction(data.test)) {
+      if (!data.test(d)) return false;
+    } else if (data != d) return false;
+
+    return true;
+  };
+
+  this.toString = function() {
+    return method + ' ' + url;
+  };
+}
+
+function MockXhr() {
+
+  // hack for testing $http
+  MockXhr.$$lastInstance = this;
+
+  this.getResponseHeader = function(name) {
+    return this.$$headers[name];
+  };
+
+  this.getAllResponseHeaders = function() {
+    var lines = [];
+
+    angular.forEach(this.$$headers, function(value, key) {
+      lines.push(key + ': ' + value);
+    });
+    return lines.join('\n');
+  };
+
+  this.abort = noop;
+}
 
 window.jstestdriver && (function(window){
   /**
