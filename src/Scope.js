@@ -99,7 +99,6 @@ function Scope() {
   this.$destructor = noop;
   this['this'] = this.$root =  this;
   this.$$asyncQueue = [];
-  this.$asyncQueue = [];
   this.$$listeners = {};
 }
 
@@ -551,9 +550,9 @@ Scope.prototype = {
    * @param {boolean} capture Listen on the capture phase of the event life cycle.
    */
   $on: function(name, listener, capture) {
-    var namedListeners = this.$$asyncQueue[name];
+    var namedListeners = this.$$listeners[name];
     if (!namedListeners) {
-      this.$$asyncQueue[name] = namedListeners = [];
+      this.$$listeners[name] = namedListeners = [];
     }
     namedListeners.push(capture ? {capture: listener} : {bubble:listener});
   },
@@ -572,7 +571,7 @@ Scope.prototype = {
    * @param {boolean} capture Whether the removal is for the capture phase.
    */
   $removeOn: function(name, listener, capture) {
-    var namedListeners = this.$$asyncQueue[name];
+    var namedListeners = this.$$listeners[name];
     var i, length;
     if (namedListeners) {
       for (i = 0, length = namedListeners.length; i < length; i++) {
@@ -630,7 +629,7 @@ Scope.prototype = {
 
     // add functions to the list in calling order
     do {
-      listeners = scope.$$asyncQueue[name] || empty;
+      listeners = scope.$$listeners[name] || empty;
       for (i = 0, length = listeners.length; i < length; i++) {
         listener = listeners[i];
         if (fn = listener.capture) {
