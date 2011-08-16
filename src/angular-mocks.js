@@ -551,3 +551,59 @@ function TzDate(offset, timestamp, toStringVal) {
 
 //make "tzDateInstance instanceof Date" return true
 TzDate.prototype = Date.prototype;
+
+function MockXhrBackend() {
+  var definitions = [],
+      responses = [];
+
+  this.when = function(method, url, data, headers) {
+    var definition = new MockXhrExpectation(method, url, data, headers);
+    definitions.push(definition);
+    return {
+      then: function(status, data, headers) {
+        definition.response = isFunction(status) ? status : [status, data, headers];
+      }
+    };
+  };
+
+  this.flush = function() {
+    while (responses.length) responses.shift()();
+  };
+
+  // TODO(vojta): change params to: method, url, data, headers, callback
+  this.xhr = function(method, url, data, callback, headers) {
+    var i = -1, definition;
+    while ((definition = definitions[++i])) {
+      if (definition.match(method, url, data, headers)) {
+        var xhr = new MockXhr();
+        responses.push(function() {
+          var response = isFunction(definition.response) ?
+                         definition.response(method, url, data, headers) : definition.response;
+          xhr.$$headers = response[2];
+          callback(response[0], response[1]);
+        });
+        return xhr;
+      }
+    }
+    throw 'Unexpected request ' + method + ' "' + url + '"';
+  };
+
+}
+
+function MockXhrExpectation(method, url, data, headers) {
+  this.match = function(m, u, d, h) {
+    return method == m &&
+           (!url || url == u) &&
+           (!headers || equals(headers, h)) &&
+           (!data || equals(data, d));
+  };
+}
+
+function MockXhr() {
+  this.getResponseHeader = function(name) {
+    return this.$$headers[name];
+  };
+  this.getAllResponseHeaders = function() {
+    return toKeyValue(this.$$headers).replace(/=/g, ': ').replace(/&/g, '\n');
+  };
+}

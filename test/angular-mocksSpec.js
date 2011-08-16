@@ -239,4 +239,132 @@ describe('mocks', function(){
       expect(function() { exHandler('myException'); }).toThrow('myException');
     });
   });
+
+
+  ddescribe('$xhrBackend', function() {
+    var xb, callback;
+
+    beforeEach(function() {
+      xb = new MockXhrBackend();
+      callback = jasmine.createSpy();
+    });
+
+
+    it('should respond with first matched definition', function() {
+      xb.when('GET', '/url1').then(200, 'content', {});
+      xb.when('GET', '/url1').then(201, 'another', {});
+
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(200);
+        expect(response).toBe('content');
+      });
+
+      xb.xhr('GET', '/url1', null, callback);
+      expect(callback).not.toHaveBeenCalled();
+      xb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should throw error when unexpected request', function() {
+      xb.when('GET', '/url1').then(200, 'content');
+      expect(function() {
+        xb.xhr('GET', '/xxx');
+      }).toThrow('Unexpected request GET "/xxx"');
+    });
+
+
+    it('should match headers if specified', function() {
+      // should equal ? or just check only defined headers ?
+      xb.when('GET', '/url', null, {'X': 'val1'}).then(201, 'content1');
+      xb.when('GET', '/url', null, {'X': 'val2'}).then(202, 'content2');
+      xb.when('GET', '/url').then(203, 'content3');
+
+      xb.xhr('GET', '/url', null, function(status, response) {
+        expect(status).toBe(203);
+        expect(response).toBe('content3');
+      });
+
+      xb.xhr('GET', '/url', null, function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('content1');
+      }, {'X': 'val1'});
+
+      xb.xhr('GET', '/url', null, function(status, response) {
+        expect(status).toBe(202);
+        expect(response).toBe('content2');
+      }, {'X': 'val2'});
+
+      xb.flush();
+    });
+
+    it('should match data if specified', function() {
+      xb.when('GET', '/a/b', {a: true}).then(201, 'content1');
+      xb.when('GET', '/a/b').then(202, 'content2');
+
+      xb.xhr('GET', '/a/b', {a: true}, function(status, response) {
+        expect(status).toBe(201);
+        expect(response).toBe('content1');
+      });
+
+      xb.xhr('GET', '/a/b', null, function(status, response) {
+        expect(status).toBe(202);
+        expect(response).toBe('content2');
+      });
+
+      xb.flush();
+    });
+
+
+    it('should match only method', function() {
+      xb.when('GET').then(202, 'c');
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(202);
+        expect(response).toBe('c');
+      });
+
+      xb.xhr('GET', '/some', null, callback, {});
+      xb.xhr('GET', '/another', null, callback, {'X-Fake': 'Header'});
+      xb.xhr('GET', '/third', 'some-data', callback, {});
+      xb.flush();
+
+      expect(callback).toHaveBeenCalled();
+    });
+
+    it('should expose given headers', function() {
+      xb.when('GET', '/u1').then(200, null, {'X-Fake': 'Header', 'Content-Type': 'application/json'});
+      var xhr = xb.xhr('GET', '/u1', null, noop, {});
+      xb.flush();
+      expect(xhr.getResponseHeader('X-Fake')).toBe('Header');
+      expect(xhr.getAllResponseHeaders()).toBe('X-Fake: Header\nContent-Type: application/json');
+    });
+
+    it('should preserve the order of requests', function() {
+      xb.when('GET', '/url1').then(200, 'first');
+      xb.when('GET', '/url2').then(201, 'second');
+
+      xb.xhr('GET', '/url2', null, callback);
+      xb.xhr('GET', '/url1', null, callback);
+
+      xb.flush();
+
+      expect(callback.callCount).toBe(2);
+      expect(callback.argsForCall[0]).toEqual([201, 'second']);
+      expect(callback.argsForCall[1]).toEqual([200, 'first']);
+    });
+
+    it('then() should take function', function() {
+      xb.when('GET', '/some').then(function(m, u, d, h) {
+        return [301, m + u + ';' + d + ';' + toKeyValue(h), {'Connection': 'keep-alive'}];
+      });
+
+      var xhr = xb.xhr('GET', '/some', 'data', callback, {a: 'b'});
+      xb.flush();
+
+      expect(callback).toHaveBeenCalledOnce();
+      expect(callback.mostRecentCall.args[0]).toBe(301);
+      expect(callback.mostRecentCall.args[1]).toBe('GET/some;data;a=b');
+      expect(xhr.getResponseHeader('Connection')).toBe('keep-alive');
+    });
+  });
 });
