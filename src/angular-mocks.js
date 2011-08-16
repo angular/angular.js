@@ -79,7 +79,7 @@ angular.mock = {};
  * The following apis can be used in tests:
  *
  * - {@link angular.mock.service.$browser.xhr $browser.xhr} — enables testing of code that uses
- *   the {@link angular.service.$xhr $xhr service} to make XmlHttpRequests.
+ *   the {@link angular.service.$http $http service} to make XmlHttpRequests.
  * - $browser.defer — enables testing of code that uses
  *   {@link angular.service.$defer $defer service} for executing functions via the `setTimeout` api.
  */
@@ -545,3 +545,147 @@ function TzDate(offset, timestamp) {
 
 //make "tzDateInstance instanceof Date" return true
 TzDate.prototype = Date.prototype;
+
+function createMockHttpBackend() {
+  var definitions = [],
+      expectations = [],
+      responses = [];
+
+  function createResponse(status, data, headers) {
+    return isNumber(status) ? [status, data, headers] : [200, status, data];
+  }
+
+  // TODO(vojta): change params to: method, url, data, headers, callback
+  function $httpBackend(method, url, data, callback, headers) {
+    var xhr = new MockXhr(),
+        expectation = expectations[0];
+
+    if (expectation && expectation.match(method, url)) {
+      if (!expectation.matchData(data))
+        throw 'Expected ' + method + ' ' + url + ' with different data';
+
+      if (!expectation.matchHeaders(headers))
+        throw 'Expected ' + method + ' ' + url + ' with different headers';
+
+      expectations.shift();
+
+      if (expectation.response) {
+        responses.push(function() {
+          xhr.$$headers = expectation.response[2];
+          callback(expectation.response[0], expectation.response[1]);
+        });
+        return method == 'JSONP' ? undefined : xhr;
+      }
+    }
+
+    // TODO(vojta): what if request expected without response and not defined ? ignore ?
+    var i = -1, definition;
+    while ((definition = definitions[++i])) {
+      if (definition.match(method, url, data, headers || {})) {
+        responses.push(function() {
+          var response = isFunction(definition.response) ?
+                         definition.response(method, url, data, headers) : definition.response;
+          xhr.$$headers = response[2];
+          callback(response[0], response[1]);
+        });
+        return method == 'JSONP' ? undefined : xhr;
+      }
+    }
+    throw 'Unexpected request: ' + method + ' ' + url;
+  }
+
+  $httpBackend.when = function(method, url, data, headers) {
+    var definition = new MockHttpExpectation(method, url, data, headers);
+    definitions.push(definition);
+    return {
+      then: function(status, data, headers) {
+        definition.response = isFunction(status) ? status : createResponse(status, data, headers);
+      }
+    };
+  };
+
+  $httpBackend.expect = function(method, url, data, headers) {
+    var expectation = new MockHttpExpectation(method, url, data, headers);
+    expectations.push(expectation);
+    return {
+      respond: function(status, data, headers) {
+        expectation.response = createResponse(status, data, headers);
+      }
+    };
+  };
+
+  $httpBackend.flush = function() {
+    var length = responses.length;
+    while (length--) responses.shift()();
+  };
+
+
+
+  $httpBackend.verifyExpectations = function() {
+    if (expectations.length) {
+      throw 'Unsatisfied requests: ' + expectations.join(', ');
+    }
+  };
+
+  $httpBackend.resetExpectations = function() {
+    expectations = [];
+    responses = [];
+  };
+
+  return $httpBackend;
+}
+
+function MockHttpExpectation(method, url, data, headers) {
+
+  this.match = function(m, u, d, h) {
+    if (method != m) return false;
+    if (!this.matchUrl(u)) return false;
+    if (isDefined(d) && !this.matchData(d)) return false;
+    if (isDefined(h) && !this.matchHeaders(h)) return false;
+
+    return true;
+  };
+
+  this.matchUrl = function(u) {
+    if (!url) return true;
+    if (isFunction(url.test)) {
+      if (!url.test(u)) return false;
+    } else if (url != u) return false;
+
+    return true;
+  };
+
+  this.matchHeaders = function(h) {
+    if (isUndefined(headers)) return true;
+    if (isFunction(headers)) {
+      if (!headers(h)) return false;
+    } else if (!equals(headers, h)) return false;
+
+    return true;
+  };
+
+  this.matchData = function(d) {
+    if (isUndefined(data)) return true;
+    if (data && isFunction(data.test)) {
+      if (!data.test(d)) return false;
+    } else if (data != d) return false;
+
+    return true;
+  };
+
+  this.toString = function() {
+    return method + ' ' + url;
+  };
+}
+
+function MockXhr() {
+  // hack for testing $http
+  MockXhr.$$lastInstance = this;
+  this.getResponseHeader = function(name) {
+    return this.$$headers[name];
+  };
+  this.getAllResponseHeaders = function() {
+    return toKeyValue(this.$$headers).replace(/=/g, ': ').replace(/&/g, '\n');
+  };
+  this.abort = noop;
+}
