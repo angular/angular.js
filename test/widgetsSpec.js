@@ -154,12 +154,12 @@ describe("widget", function() {
     it('should do xhr request and cache it', function() {
       var element = jqLite('<ng:include src="url"></ng:include>');
       var scope = angular.compile(element)();
-      var $browserXhr = scope.$service('$browser').xhr;
-      $browserXhr.expectGET('myUrl').respond('my partial');
+      var $httpBackend = scope.$service('$httpBackend');
+      $httpBackend.expect('GET', 'myUrl').respond('my partial');
 
       scope.url = 'myUrl';
       scope.$digest();
-      $browserXhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('my partial');
 
       scope.url = null;
@@ -170,18 +170,20 @@ describe("widget", function() {
       scope.$digest();
       expect(element.text()).toEqual('my partial');
       dealoc(scope);
+      $httpBackend.verifyExpectations();
     });
 
     it('should clear content when error during xhr request', function() {
       scope = compile('<ng:include src="url">content</ng:include>');
-      var $browserXhr = scope.$service('$browser').xhr;
-      $browserXhr.expectGET('myUrl').respond(404, '');
+      var $httpBackend = scope.$service('$httpBackend');
+      $httpBackend.expect('GET', 'myUrl').respond(404, '');
 
       scope.url = 'myUrl';
       scope.$digest();
-      $browserXhr.flush();
+      $httpBackend.flush();
 
       expect(element.text()).toBe('');
+      $httpBackend.verifyExpectations();
     });
 
     it('should be async even if served from cache', function(){
@@ -476,13 +478,13 @@ describe("widget", function() {
 
 
   describe('ng:view', function() {
-    var rootScope, $route, $location, $browser;
+    var rootScope, $route, $location, $httpBackend;
 
     beforeEach(function() {
       rootScope = angular.compile('<ng:view></ng:view>')();
       $route = rootScope.$service('$route');
       $location = rootScope.$service('$location');
-      $browser = rootScope.$service('$browser');
+      $httpBackend = rootScope.$service('$httpBackend');
     });
 
     afterEach(function() {
@@ -497,33 +499,36 @@ describe("widget", function() {
     });
 
 
-    it('should load content via xhr when route changes', function() {
+    it('should load content via $http when route changes', function() {
       $route.when('/foo', {template: 'myUrl1'});
       $route.when('/bar', {template: 'myUrl2'});
 
       expect(rootScope.$element.text()).toEqual('');
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('4');
+      $httpBackend.verifyExpectations();
 
       $location.path('/bar');
-      $browser.xhr.expectGET('myUrl2').respond('angular is da best');
+      $httpBackend.expect('GET', 'myUrl2').respond('angular is da best');
       rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('angular is da best');
+      $httpBackend.verifyExpectations();
     });
 
     it('should remove all content when location changes to an unknown route', function() {
       $route.when('/foo', {template: 'myUrl1'});
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('4');
+      $httpBackend.verifyExpectations();
 
       $location.path('/unknown');
       rootScope.$digest();
@@ -535,10 +540,11 @@ describe("widget", function() {
       rootScope.parentVar = 'parent';
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{parentVar}}</div>');
       rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('parent');
+      $httpBackend.verifyExpectations();
 
       rootScope.parentVar = 'new parent';
       rootScope.$digest();
@@ -548,27 +554,31 @@ describe("widget", function() {
     it('should be possible to nest ng:view in ng:include', function() {
       dealoc(rootScope); // we are about to override it.
 
-      var myApp = angular.scope();
-      var $browser = myApp.$service('$browser');
-      $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
-      myApp.$service('$location').path('/foo');
+      rootScope = angular.scope();
+      $httpBackend = rootScope.$service('$httpBackend');
+      $httpBackend.expect('GET', 'includePartial.html').respond('view: <ng:view></ng:view>');
 
-      var $route = myApp.$service('$route');
-      $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
-
-      rootScope = angular.compile(
+      angular.compile(
           '<div>' +
             'include: <ng:include src="\'includePartial.html\'">' +
-          '</ng:include></div>')(myApp);
-      rootScope.$apply();
+          '</ng:include></div>')(rootScope);
 
-      $browser.xhr.expectGET('viewPartial.html').respond('content');
       rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
+      expect(rootScope.$element.text()).toEqual('include: view: ');
+
+      rootScope.$service('$location').path('/foo');
+      $route = rootScope.$service('$route');
+      $route.when('/foo', {controller: noop, template: 'viewPartial.html'});
+
+      $httpBackend.expect('GET', 'viewPartial.html').respond('content');
+      rootScope.$digest();
+      $httpBackend.flush();
 
       expect(rootScope.$element.text()).toEqual('include: view: content');
       expect($route.current.template).toEqual('viewPartial.html');
       dealoc($route.current.scope);
+      $httpBackend.verifyExpectations();
     });
 
     it('should initialize view template after the view controller was initialized even when ' +
@@ -588,12 +598,12 @@ describe("widget", function() {
       };
 
       $location.path('/foo');
-      $browser.xhr.expectGET('viewPartial.html').
+      $httpBackend.expect('GET', 'viewPartial.html').
           respond('<div ng:init="log.push(\'init\')">' +
                     '<div ng:controller="ChildCtrl"></div>' +
                   '</div>');
       rootScope.$apply();
-      $browser.xhr.flush();
+      $httpBackend.flush();
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
@@ -604,7 +614,7 @@ describe("widget", function() {
       rootScope.log = [];
       $location.path('/foo');
       rootScope.$apply();
-      $browser.defer.flush();
+      rootScope.$service('$browser').defer.flush();
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
     });
@@ -619,12 +629,12 @@ describe("widget", function() {
       expect(rootScope.$element.text()).toEqual('');
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       $location.path('/bar');
-      $browser.xhr.expectGET('myUrl2').respond('<div>{{1+1}}</div>');
+      $httpBackend.expect('GET', 'myUrl2').respond('<div>{{1+1}}</div>');
       rootScope.$digest();
-      $browser.xhr.flush(); // no that we have to requests pending, flush!
+      $httpBackend.flush(); // no that we have two requests pending, flush!
 
       expect(rootScope.$element.text()).toEqual('2');
     });
@@ -633,11 +643,11 @@ describe("widget", function() {
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond(404, '');
+      $httpBackend.expect('GET', 'myUrl1').respond(404, '');
       rootScope.$element.text('content');
 
       rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
 
       expect(rootScope.$element.text()).toBe('');
     });
