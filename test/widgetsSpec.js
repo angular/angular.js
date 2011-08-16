@@ -1236,5 +1236,131 @@ describe("widget", function(){
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
     });
   });
+
+
+  describe('ng:pluralize', function() {
+    describe('deal with pluralized strings without offset', function() {
+       beforeEach(function() {
+          compile('<ng:pluralize count="email"' +
+                                 "when=\"{'0': 'You have no new email'," +
+                                         "'one': 'You have one new email'," +
+                                         "'other': 'You have {} new emails'}\">" +
+                  '</ng:pluralize>');
+        });
+
+        it('should show single/plural strings', function() {
+          scope.email = 0;
+          scope.$digest();
+          expect(element.text()).toBe('You have no new email');
+
+          scope.email = '0';
+          scope.$digest();
+          expect(element.text()).toBe('You have no new email');
+
+          scope.email = 1;
+          scope.$digest();
+          expect(element.text()).toBe('You have one new email');
+
+          scope.email = 0.01;
+          scope.$digest();
+          expect(element.text()).toBe('You have 0.01 new emails');
+
+          scope.email = '0.1';
+          scope.$digest();
+          expect(element.text()).toBe('You have 0.1 new emails');
+
+          scope.email = 2;
+          scope.$digest();
+          expect(element.text()).toBe('You have 2 new emails');
+
+          scope.email = -0.1;
+          scope.$digest();
+          expect(element.text()).toBe('You have -0.1 new emails');
+
+          scope.email = '-0.01';
+          scope.$digest();
+          expect(element.text()).toBe('You have -0.01 new emails');
+
+          scope.email = -2;
+          scope.$digest();
+          expect(element.text()).toBe('You have -2 new emails');
+        });
+
+
+        it('should show single/plural strings with mal-formed inputs', function() {
+          scope.email = '';
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = null;
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = undefined;
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = 'a3';
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = '011';
+          scope.$digest();
+          expect(element.text()).toBe('You have 11 new emails');
+
+          scope.email = '-011';
+          scope.$digest();
+          expect(element.text()).toBe('You have -11 new emails');
+
+          scope.email = '1fff';
+          scope.$digest();
+          expect(element.text()).toBe('You have one new email');
+
+          scope.email = '0aa22';
+          scope.$digest();
+          expect(element.text()).toBe('You have no new email');
+
+          scope.email = '000001';
+          scope.$digest();
+          expect(element.text()).toBe('You have one new email');
+        });
+    });
+
+
+    describe('deal with pluralized strings with offset', function() {
+      it('should show single/plural strings with offset', function() {
+        compile("<ng:pluralize count=\"viewCount\"  offset=2 " +
+                    "when=\"{'0': 'Nobody is viewing.'," +
+                            "'1': '{{p1}} is viewing.'," +
+                            "'2': '{{p1}} and {{p2}} are viewing.'," +
+                            "'one': '{{p1}}, {{p2}} and one other person are viewing.'," +
+                            "'other': '{{p1}}, {{p2}} and {} other people are viewing.'}\">" +
+                "</ng:pluralize>");
+        scope.p1 = 'Igor';
+        scope.p2 = 'Misko';
+
+        scope.viewCount = 0;
+        scope.$digest();
+        expect(element.text()).toBe('Nobody is viewing.');
+
+        scope.viewCount = 1;
+        scope.$digest();
+        expect(element.text()).toBe('Igor is viewing.');
+
+        scope.viewCount = 2;
+        scope.$digest();
+        expect(element.text()).toBe('Igor and Misko are viewing.');
+
+        scope.viewCount = 3;
+        scope.$digest();
+        expect(element.text()).toBe('Igor, Misko and one other person are viewing.');
+
+        scope.viewCount = 4;
+        scope.$digest();
+        expect(element.text()).toBe('Igor, Misko and 2 other people are viewing.');
+      });
+    });
+
+  });
 });
 
