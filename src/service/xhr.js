@@ -16,7 +16,7 @@ function parseHeaders(headers) {
 
     if (key) {
       if (parsed[key]) {
-        parsed[key] += ',' + val;
+        parsed[key] += ', ' + val;
       } else {
         parsed[key] = val;
       }
@@ -31,10 +31,10 @@ function parseHeaders(headers) {
  *
  * This function is used for both request and response transforming
  *
- * @param {*} data Data to transform
- * @param {function|Array.<function>} fns Function or an array of functions
- * @param {*=} param Optional parameter to be passed to all transform functions
- * @returns {*} Transformed data
+ * @param {*} data Data to transform.
+ * @param {function|Array.<function>} fns Function or an array of functions.
+ * @param {*=} param Optional parameter to be passed to all transform functions.
+ * @returns {*} Transformed data.
  */
 function transform(data, fns, param) {
   if (isFunction(fns))
@@ -255,7 +255,7 @@ angular.service('$xhrConfig', function() {
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
+angularServiceInject('$xhr', function($browser, $error, $config, $cacheFactory) {
 
   var rootScope = this.$root,
       cache = $cacheFactory('$xhr'),
@@ -263,7 +263,7 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
 
   // the actual service
   function $xhr(config) {
-    return new XhrFuture().repeat(config);
+    return new XhrFuture().retry(config);
   }
 
   /**
@@ -426,7 +426,7 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
      *  - clears the reference to raw request object
      */
     function done(status, response) {
-      // probably jsonp
+      // aborted request or jsonp
       if (!rawRequest) parsedHeaders = {};
 
       if (cfg.cache && cfg.method == 'GET' && 200 <= status && status < 300) {
@@ -458,6 +458,7 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
 
       var regexp = statusToRegexp(status),
           pattern, callback;
+
       for (var i = 0; i < callbacks.length; i += 2) {
         pattern = callbacks[i];
         callback = callbacks[i + 1];
@@ -465,7 +466,7 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
           try {
             callback(response, status, headers);
           } catch(e) {
-            $log.error(e);
+            $error(e);
           }
         }
       }
@@ -519,14 +520,14 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
     }
 
     /**
-     * Repeat the request
+     * Retry the request
      *
-     * @param {Object=} config Optional config object to override original configuration
+     * @param {Object=} config Optional config object to extend the original configuration
      * @returns {XhrFuture}
      */
-    this.repeat = function(config) {
+    this.retry = function(config) {
       if (rawRequest)
-        throw 'Can not repeat request. Abort pending request first.';
+        throw 'Can not retry request. Abort pending request first.';
 
       extend(cfg, config);
       cfg.method = uppercase(cfg.method);
@@ -538,7 +539,6 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
       var fromCache;
       if (cfg.cache && cfg.method == 'GET' && (fromCache = cache.get(cfg.url))) {
         $browser.defer(function() {
-          $log.info('Serving from $xhr cache');
           parsedHeaders = fromCache[2];
           fireCallbacks(fromCache[1], fromCache[0]);
         });
@@ -576,7 +576,7 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
      *   .on('always', function(){});
      *
      * @param {string} pattern Status code pattern with "x" for any number
-     * @param {function(*, number, Object)} callback Function to be called when response arrrives
+     * @param {function(*, number, Object)} callback Function to be called when response arrives
      * @returns {XhrFuture}
      */
     this.on = function(pattern, callback) {
@@ -592,7 +592,7 @@ angularServiceInject('$xhr', function($browser, $log, $config, $cacheFactory) {
       return this;
     };
   }
-}, ['$browser', '$log', '$xhrConfig', '$cacheFactory']);
+}, ['$browser', '$exceptionHandler', '$xhrConfig', '$cacheFactory']);
 
 // TODO(vojta): remove when we have the concept of configuration
 angular.service('$xhrConfig', function() {
@@ -619,7 +619,8 @@ angular.service('$xhrConfig', function() {
         'Accept': 'application/json, text/plain, */*',
         'X-Requested-With': 'XMLHttpRequest'
       },
-      post: {'Content-Type': 'application/x-www-form-urlencoded'}
+      post: {'Content-Type': 'application/json'},
+      put:  {'Content-Type': 'application/json'}
     }
   };
 });

@@ -2,17 +2,16 @@
 
 describe('$xhr', function() {
 
-  var $xhr, $browser, $log, // services
+  var $xhr, $browser, $exceptionHandler, // services
       method, url, data, headers, // passed arguments
       onSuccess, onError, // callback spies
       scope, errorLogs, respond, rawXhrObject, future;
 
   beforeEach(function() {
-    scope = angular.scope();
+    scope = angular.scope(null, {$exceptionHandler: $exceptionHandlerMockFactory()});
     $xhr = scope.$service('$xhr');
     $browser = scope.$service('$browser');
-    $log = scope.$service('$log');
-    errorLogs = $log.error.logs;
+    $exceptionHandler = scope.$service('$exceptionHandler');
 
     // TODO(vojta): move this into mock browser ?
     respond = method = url = data = headers = null;
@@ -33,6 +32,10 @@ describe('$xhr', function() {
       headers = h;
       return rawXhrObject;
     });
+  });
+
+  afterEach(function() {
+    expect($exceptionHandler.errors.length).toBe(0);
   });
 
   function doCommonXhr(method, url) {
@@ -73,10 +76,10 @@ describe('$xhr', function() {
       onError.andThrow('exception in error callback');
 
       respond(200, 'content');
-      expect(errorLogs.pop()).toContain('exception in success callback');
+      expect($exceptionHandler.errors.pop()).toContain('exception in success callback');
 
       respond(400, '');
-      expect(errorLogs.pop()).toContain('exception in error callback');
+      expect($exceptionHandler.errors.pop()).toContain('exception in error callback');
     });
 
 
@@ -85,8 +88,8 @@ describe('$xhr', function() {
       future.on('500', onError).on('50x', onError);
       respond(500, '');
 
-      expect(errorLogs.length).toBe(2);
-      $log.error.logs = [];
+      expect($exceptionHandler.errors.length).toBe(2);
+      $exceptionHandler.errors = [];
     });
 
 
@@ -200,12 +203,18 @@ describe('$xhr', function() {
 
 
     it('should merge headers with same key', function() {
-      expect(parseHeaders('key: a\nkey:b\n').key).toBe('a,b');
+      expect(parseHeaders('key: a\nkey:b\n').key).toBe('a, b');
     });
 
 
     it('should normalize keys to lower case', function() {
       expect(parseHeaders('KeY: value').key).toBe('value');
+    });
+
+
+    it('should parse CRLF as delimiter', function() {
+      expect(parseHeaders('a: b\r\nc: d\r\n')).toEqual({a: 'b', c: 'd'});
+      expect(parseHeaders('a: b\r\nc: d\r\n').a).toBe('b');
     });
   });
 
@@ -236,7 +245,16 @@ describe('$xhr', function() {
 
       expect(headers['Accept']).toBe('application/json, text/plain, */*');
       expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
-      expect(headers['Content-Type']).toBe('application/x-www-form-urlencoded');
+      expect(headers['Content-Type']).toBe('application/json');
+    });
+
+
+    it('should set default headers for PUT request', function() {
+      $xhr({url: '/url', method: 'PUT', headers: {}});
+
+      expect(headers['Accept']).toBe('application/json, text/plain, */*');
+      expect(headers['X-Requested-With']).toBe('XMLHttpRequest');
+      expect(headers['Content-Type']).toBe('application/json');
     });
 
 
@@ -435,15 +453,15 @@ describe('$xhr', function() {
     });
 
 
-    describe('repeat', function() {
+    describe('retry', function() {
 
-      it('should repeat last request with same callbacks', function() {
+      it('should retry last request with same callbacks', function() {
         doCommonXhr('HEAD', '/url-x');
         respond(200, '');
         $browser.xhr.reset();
         onSuccess.reset();
 
-        future.repeat();
+        future.retry();
         expect($browser.xhr).toHaveBeenCalledOnce();
         expect(method).toBe('HEAD');
         expect(url).toBe('/url-x');
@@ -456,13 +474,13 @@ describe('$xhr', function() {
       it('should return itself to allow chaining', function() {
         doCommonXhr();
         respond(200, '');
-        expect(future.repeat()).toBe(future);
+        expect(future.retry()).toBe(future);
       });
 
 
       it('should throw error when pending request', function() {
         doCommonXhr();
-        expect(future.repeat).toThrow('Can not repeat request. Abort pending request first.');
+        expect(future.retry).toThrow('Can not retry request. Abort pending request first.');
       });
     });
 
@@ -690,7 +708,7 @@ describe('$xhr', function() {
       respond(400, '');
       expect(scope.$apply).toHaveBeenCalledOnce();
 
-      $log.error.logs = [];
+      $exceptionHandler.errors = [];
     });
   });
 
@@ -767,10 +785,6 @@ describe('$xhr', function() {
       respond(responseStatus || 200, 'content');
       $browser.xhr.reset();
     }
-
-    afterEach(function() {
-      $log.info.logs = [];
-    });
 
     it('should cache GET request', function() {
       doFirstCacheRequest();
@@ -887,8 +901,6 @@ describe('$xhr', function() {
 
       $browser.defer.flush();
       expect($xhr.pendingCount()).toBe(0);
-
-      $log.info.logs.pop();
     });
   });
 });
