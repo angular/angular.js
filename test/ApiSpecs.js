@@ -8,12 +8,27 @@ describe('api', function(){
       var key = {};
       var value1 = {};
       var value2 = {};
-      expect(map.put(key, value1)).toEqual(undefined);
-      expect(map.put(key, value2)).toEqual(value1);
-      expect(map.get(key)).toEqual(value2);
-      expect(map.get({})).toEqual(undefined);
-      expect(map.remove(key)).toEqual(value2);
-      expect(map.get(key)).toEqual(undefined);
+      map.put(key, value1);
+      map.put(key, value2);
+      expect(map.get(key)).toBe(value2);
+      expect(map.get({})).toBe(undefined);
+      expect(map.remove(key)).toBe(value2);
+      expect(map.get(key)).toBe(undefined);
+    });
+
+  });
+
+  describe('HashQueueMap', function(){
+
+    it('should do basic crud with collections', function(){
+      var map = new HashQueueMap();
+      map.push('key', 'a');
+      map.push('key', 'b');
+      expect(map[hashKey('key')]).toEqual(['a', 'b']);
+      expect(map.shift('key')).toEqual('a');
+      expect(map.shift('key')).toEqual('b');
+      expect(map.shift('key')).toEqual(undefined);
+      expect(map[hashKey('key')]).toEqual(undefined);
     });
   });
 

@@ -3,6 +3,7 @@
 
 ### Features
 - Scope $evalAsync()
+- ng:repeat -  collection items and DOM elements affinity / stability.
 
 # Breaking Changes
 - Controller constructor functions are now looked up on scope first and then on window.

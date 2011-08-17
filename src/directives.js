@@ -151,12 +151,12 @@ angularDirective("ng:init", function(expression){
      <doc:scenario>
        it('should check controller', function(){
          expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
-         expect(element('.doc-example-live li[ng\\:repeat-index="0"] input').val()).toBe('408 555 1212');
-         expect(element('.doc-example-live li[ng\\:repeat-index="1"] input').val()).toBe('john.smith@example.org');
+         expect(element('.doc-example-live li:nth-child(1) input').val()).toBe('408 555 1212');
+         expect(element('.doc-example-live li:nth-child(2) input').val()).toBe('john.smith@example.org');
          element('.doc-example-live li:first a:contains("clear")').click();
          expect(element('.doc-example-live li:first input').val()).toBe('');
          element('.doc-example-live li:last a:contains("add")').click();
-         expect(element('.doc-example-live li[ng\\:repeat-index="2"] input').val()).toBe('yourname@example.org');
+         expect(element('.doc-example-live li:nth-child(3) input').val()).toBe('yourname@example.org');
        });
      </doc:scenario>
    </doc:example>

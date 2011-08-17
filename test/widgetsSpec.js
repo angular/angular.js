@@ -1081,6 +1081,86 @@ describe("widget", function(){
       scope.$digest();
       expect(element.text()).toEqual('misko:m:first|shyam:s:last|');
     });
+
+    describe('stability', function(){
+      var a, b, c, d, scope, lis;
+
+      beforeEach(function(){
+        scope = compile('<ul><li ng:repeat="item in items" ' +
+        'ng:bind="key + \':\' + val + \':\' + $position + \'|\'"></li></ul>');
+        a = {};
+        b = {};
+        c = {};
+        d = {};
+
+        scope.items = [a, b, c];
+        scope.$digest();
+        lis = element.find('li');
+      });
+
+      it('should preserve the order of elements', function(){
+        scope.items = [a, c, d];
+        scope.$digest();
+        var newElements = element.find('li');
+        expect(newElements[0]).toEqual(lis[0]);
+        expect(newElements[1]).toEqual(lis[2]);
+        expect(newElements[2]).not.toEqual(lis[1]);
+      });
+
+      it('should support duplicates', function(){
+        scope.items = [a, a, b, c];
+        scope.$digest();
+        var newElements = element.find('li');
+        expect(newElements[0]).toEqual(lis[0]);
+        expect(newElements[1]).not.toEqual(lis[0]);
+        expect(newElements[2]).toEqual(lis[1]);
+        expect(newElements[3]).toEqual(lis[2]);
+
+        lis = newElements;
+        scope.$digest();
+        newElements = element.find('li');
+        expect(newElements[0]).toEqual(lis[0]);
+        expect(newElements[1]).toEqual(lis[1]);
+        expect(newElements[2]).toEqual(lis[2]);
+        expect(newElements[3]).toEqual(lis[3]);
+
+        scope.$digest();
+        newElements = element.find('li');
+        expect(newElements[0]).toEqual(lis[0]);
+        expect(newElements[1]).toEqual(lis[1]);
+        expect(newElements[2]).toEqual(lis[2]);
+        expect(newElements[3]).toEqual(lis[3]);
+      });
+
+      it('shuold remove last item when one item from duplicate is removed', function(){
+        scope.items = [a, a, a];
+        scope.$digest();
+        lis = element.find('li');
+
+        scope.items = [a, a];
+        scope.$digest();
+        var newElements = element.find('li');
+        expect(newElements.length).toEqual(2);
+        expect(newElements[0]).toEqual(lis[0]);
+        expect(newElements[1]).toEqual(lis[1]);
+      });
+
+      it('shuold remove last item when one item from duplicate is removed', function(){
+        scope.items = [a, b, c];
+        scope.$digest();
+        lis = element.find('li');
+
+        scope.items = [c, b, a];
+        scope.$digest();
+        var newElements = element.find('li');
+        expect(newElements.length).toEqual(3);
+        expect(newElements[0]).toEqual(lis[2]);
+        expect(newElements[1]).toEqual(lis[1]);
+        expect(newElements[2]).toEqual(lis[0]);
+      });
+
+    });
+
   });
 
 
