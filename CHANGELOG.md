@@ -52,7 +52,10 @@
 - If Angular is being used with jQuery older than 1.6, some features might not work properly. Please
   upgrade to jQuery version 1.6.4.
 
-
+## Breaking Changes
+- ng:repeat no longer has ng:repeat-index property. This is because the elements now have
+  affinity to the underlying collection, and moving items around in the collection would move
+  ng:repeat-index property rendering it meaningless.
 
 
 <a name="0.10.1"><a/>
@@ -88,7 +91,7 @@
     - $location.hashPath -> $location.path()
     - $location.hashSearch -> $location.search()
     - $location.search -> no equivalent, use $window.location.search (this is so that we can work in
-      hashBang and html5 mode at the same time, check out the docs) 
+      hashBang and html5 mode at the same time, check out the docs)
     - $location.update() / $location.updateHash() -> use $location.url()
     - n/a -> $location.replace() - new api for replacing history record instead of creating a new one
 
