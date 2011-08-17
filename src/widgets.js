@@ -1182,10 +1182,9 @@ angularWidget('a', function() {
  * @name angular.widget.@ng:repeat
  *
  * @description
- * The `ng:repeat` widget instantiates a template once per item from a collection. The collection is
- * enumerated with the `ng:repeat-index` attribute, starting from 0. Each template instance gets
- * its own scope, where the given loop variable is set to the current collection item, and `$index`
- * is set to the item index or key.
+ * The `ng:repeat` widget instantiates a template once per item from a collection. Each template
+ * instance gets its own scope, where the given loop variable is set to the current collection item,
+ * and `$index` is set to the item index or key.
  *
  * Special properties are exposed on the local scope of each template instance, including:
  *
@@ -1256,68 +1255,89 @@ angularWidget('@ng:repeat', function(expression, element){
     valueIdent = match[3] || match[1];
     keyIdent = match[2];
 
-    var childScopes = [];
-    var childElements = [iterStartElement];
     var parentScope = this;
+    // Store a list of elements from previous run. This is a hash where key is the item from the
+    // iterator, and the value is an array of objects with following properties.
+    //   - scope: bound scope
+    //   - element: previous element.
+    //   - index: position
+    // We need an array of these objects since the same object can be returned from the iterator.
+    // We expect this to be a rare case.
+    var lastOrder = new HashQueueMap();
     this.$watch(function(scope){
       var index = 0,
-          childCount = childScopes.length,
           collection = scope.$eval(rhs),
           collectionLength = size(collection, true),
-          fragment = document.createDocumentFragment(),
-          addFragmentTo = (childCount < collectionLength) ? childElements[childCount] : null,
           childScope,
-          key;
+          // Same as lastOrder but it has the current state. It will become the
+          // lastOrder on the next iteration.
+          nextOrder = new HashQueueMap(),
+          key, value, // key/value of iteration
+          array, last,       // last object information {scope, element, index}
+          cursor = iterStartElement;     // current position of the node
 
       for (key in collection) {
         if (collection.hasOwnProperty(key)) {
-          if (index < childCount) {
-            // reuse existing child
-            childScope = childScopes[index];
-            childScope[valueIdent] = collection[key];
-            if (keyIdent) childScope[keyIdent] = key;
-            childScope.$position = index == 0
-                ? 'first'
-                : (index == collectionLength - 1 ? 'last' : 'middle');
-            childScope.$eval();
+          last = lastOrder.shift(value = collection[key]);
+          if (last) {
+            // if we have already seen this object, then we need to reuse the
+            // associated scope/element
+            childScope = last.scope;
+            nextOrder.push(value, last);
+
+            if (index === last.index) {
+              // do nothing
+              cursor = last.element;
+            } else {
+              // existing item which got moved
+              last.index = index;
+              // This may be a noop, if the element is next, but I don't know of a good way to
+              // figure this out,  since it would require extra DOM access, so let's just hope that
+              // the browsers realizes that it is noop, and treats it as such.
+              cursor.after(last.element);
+              cursor = last.element;
+            }
           } else {
-            // grow children
+            // new item which we don't know about
             childScope = parentScope.$new();
-            childScope[valueIdent] = collection[key];
-            if (keyIdent) childScope[keyIdent] = key;
-            childScope.$index = index;
-            childScope.$position = index == 0
-                ? 'first'
-                : (index == collectionLength - 1 ? 'last' : 'middle');
-            childScopes.push(childScope);
+          }
+
+          childScope[valueIdent] = collection[key];
+          if (keyIdent) childScope[keyIdent] = key;
+          childScope.$index = index;
+          childScope.$position = index == 0
+              ? 'first'
+              : (index == collectionLength - 1 ? 'last' : 'middle');
+
+          if (!last) {
             linker(childScope, function(clone){
-              clone.attr('ng:repeat-index', index);
-              fragment.appendChild(clone[0]);
-              // TODO(misko): Temporary hack - maybe think about it - removed after we add fragment after $digest()
-              // This causes double $digest for children
-              // The first flush will couse a lot of DOM access (initial)
-              // Second flush shuld be noop since nothing has change hence no DOM access.
-              childScope.$digest();
-              childElements[index + 1] = clone;
+              cursor.after(clone);
+              last = {
+                  scope: childScope,
+                  element: (cursor = clone),
+                  index: index
+                };
+              nextOrder.push(value, last);
             });
           }
+
           index ++;
         }
       }
 
-      //attach new nodes buffered in doc fragment
-      if (addFragmentTo) {
-        // TODO(misko): For performance reasons, we should do the addition after all other widgets
-        // have run. For this should happend after $digest() is done!
-        addFragmentTo.after(jqLite(fragment));
+      //shrink children
+      for (key in lastOrder) {
+        if (lastOrder.hasOwnProperty(key)) {
+          array = lastOrder[key];
+          while(array.length) {
+            value = array.pop();
+            value.element.remove();
+            value.scope.$destroy();
+          }
+        }
       }
 
-      // shrink children
-      while(childScopes.length > index) {
-        // can not use $destroy(true) since  there may be multiple iterators on same parent.
-        childScopes.pop().$destroy();
-        childElements.pop().remove();
-      }
+      lastOrder = nextOrder;
     });
   };
 });
