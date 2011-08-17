@@ -102,11 +102,12 @@ beforeEach(function(){
       }
 
       this.message = function() {
+        var msg = 'Expected spy ' + this.actual.identity + ' to have been called once, but was ',
+            count = this.actual.callCount;
         return [
-          this.actual.callCount == 0 ?
-            'Expected spy ' + this.actual.identity + ' to have been called once, but was never called.' :
-            'Expected spy ' + this.actual.identity + ' to have been called once, but was called ' + this.actual.callCount + ' times.',
-          'Expected spy ' + this.actual.identity + ' not to have been called once, but was called once.'
+          count == 0 ? msg + 'never called.'
+                     : msg + 'called ' + count + ' times.',
+          msg.replace('to have', 'not to have') + 'called once.'
         ];
       };
 
