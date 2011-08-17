@@ -149,3 +149,12 @@ angularServiceInject('$cacheFactory', function() {
 
   return cacheFactory;
 });
+
+/**
+ * Used by ng:include, ng:view
+ * TODO(vojta): configuration
+ * TODO(vojta): extract into separate file ?
+ */
+angularServiceInject('$tplCache', function($cacheFactory) {
+  return $cacheFactory('templates');
+}, ['$cacheFactory']);
