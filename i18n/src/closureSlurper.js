@@ -11,7 +11,7 @@ var Q  = require('qq'),
     currencySymbols,
     goog = { provide: function() {},
              require: function() {},
-             i18n: {currency: {}} };
+             i18n: {currency: {}, pluralRules: {}} };
 
 createFolder('../locale/').then(function() {
   var promiseA = Q.defer(),
@@ -58,8 +58,28 @@ createFolder('../locale/').then(function() {
 
     promiseB.resolve();
   });
-  
+
   return Q.join(promiseA.promise, promiseB.promise, noop);
+}).then(function() {
+  var promise = Q.defer();
+
+  qfs.read(__dirname + '/../closure/pluralRules.js').then(function(content) {
+    for(var i = 0; i < localeIds.length; i++) {
+      //We don't need to care about country ID because the plural rules in more specific id are 
+      //always the same as those in its language ID.
+      // e.g. plural rules for en_SG is the same as those for en.
+      goog.LOCALE = localeIds[i].match(/[^_]+/)[0];
+      eval(content);
+      var temp = goog.i18n.pluralRules.select.toString().
+                     replace(/goog.i18n.pluralRules.Keyword/g, 'PLURAL_CATEGORY').replace(/\n/g, '');
+
+      ///@@ is a crazy place holder to be replaced before writing to file
+      localeInfo[localeIds[i]].pluralCat = "@@" + temp + "@@";
+    }
+    promise.resolve();
+  });
+
+  return promise.promise;
 }).then(function() {
   localeIds.forEach(function(localeID) {
     var fallBackID = localeID.match(/[A-Za-z]+/)[0],
@@ -80,14 +100,18 @@ createFolder('../locale/').then(function() {
     var correctedLocaleId = localeID.replace(/_/g, '-').toLowerCase();
     localeObj.id = correctedLocaleId;
 
-    var prefix = 'angular.service("$locale", function() {\nreturn ',
-        content = JSON.stringify(localeInfo[localeID]).replace(/\¤/g,'\\u00A4'),
-        suffix;
+    var prefix = 'angular.service("$locale", function() {\n' +
+                 'var PLURAL_CATEGORY = {' +
+                   'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
+                 '};\n' +
+                 'return ';
 
-    suffix = ';\n});';
+    var suffix = ';\n});';
+
+    var content = JSON.stringify(localeInfo[localeID]).replace(/\¤/g,'\\u00A4').
+                      replace(/"@@|@@"/g, '');
 
     var toWrite = prefix + content + suffix;
-
     qfs.write(__dirname + '/../locale/' + 'angular-locale_' + correctedLocaleId + '.js', toWrite);
   });
   console.log('Generated ' + localeIds.length + ' locale files!');
