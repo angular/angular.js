@@ -24,6 +24,7 @@ ANGULAR = [
   'src/service/exceptionHandler.js',
   'src/service/hover.js',
   'src/service/http.js',
+  'src/service/httpBackend.js',
   'src/service/invalidWidgets.js',
   'src/service/location.js',
   'src/service/log.js',

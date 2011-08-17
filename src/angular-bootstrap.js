@@ -111,6 +111,7 @@
              'service/exceptionHandler.js',
              'service/hover.js',
              'service/http.js',
+             'service/httpBackend.js',
              'service/invalidWidgets.js',
              'service/location.js',
              'service/log.js',

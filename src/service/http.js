@@ -52,13 +52,14 @@ function transform(data, fns, param) {
  * @workInProgress
  * @ngdoc service
  * @name angular.service.$http
+ * @requires $httpBacked
  * @requires $browser
  * @requires $exceptionHandler
  * @requires $cacheFactory
  *
  * @description
  */
-angularServiceInject('$http', function($browser, $error, $config, $cacheFactory) {
+angularServiceInject('$http', function($httpBackend, $browser, $error, $config, $cacheFactory) {
 
   var rootScope = this.$root,
       cache = $cacheFactory('$http'),
@@ -215,7 +216,7 @@ angularServiceInject('$http', function($browser, $error, $config, $cacheFactory)
   /**
    * Represents Request object, returned by $http()
    *
-   * !!! ACCESS CLOSURE VARS: $browser, $config, $log, rootScope, cache, pendingRequestsCount
+   * !!! ACCESS CLOSURE VARS: $httpBackend, $browser, $config, $log, rootScope, cache, pendingRequestsCount
    */
   function XhrFuture() {
     var rawRequest, cfg = {}, callbacks = [],
@@ -223,7 +224,7 @@ angularServiceInject('$http', function($browser, $error, $config, $cacheFactory)
         parsedHeaders;
 
     /**
-     * Callback registered to $browser.xhr:
+     * Callback registered to $httpBackend():
      *  - caches the response if desired
      *  - calls fireCallbacks()
      *  - clears the reference to raw request object
@@ -245,7 +246,7 @@ angularServiceInject('$http', function($browser, $error, $config, $cacheFactory)
      * Fire all registered callbacks for given status code
      *
      * This method when:
-     *  - serving response from real request ($browser.xhr callback)
+     *  - serving response from real request
      *  - serving response from cache
      *
      * It does:
@@ -348,7 +349,7 @@ angularServiceInject('$http', function($browser, $error, $config, $cacheFactory)
           fireCallbacks(fromCache[1], fromCache[0]);
         });
       } else {
-        rawRequest = $browser.xhr(cfg.method, cfg.url, data, done, headers, cfg.timeout);
+        rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
       pendingRequestsCount++;
@@ -403,7 +404,7 @@ angularServiceInject('$http', function($browser, $error, $config, $cacheFactory)
       return this;
     };
   }
-}, ['$browser', '$exceptionHandler', '$httpConfig', '$cacheFactory']);
+}, ['$httpBackend', '$browser', '$exceptionHandler', '$httpConfig', '$cacheFactory']);
 
 // TODO(vojta): remove when we have the concept of configuration
 angular.service('$httpConfig', function() {
