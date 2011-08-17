@@ -1,26 +1,39 @@
 'use strict';
 
-describe('api', function(){
+describe('api', function() {
 
-  describe('HashMap', function(){
-    it('should do basic crud', function(){
+  describe('HashMap', function() {
+    it('should do basic crud', function() {
       var map = new HashMap();
       var key = {};
       var value1 = {};
       var value2 = {};
-      expect(map.put(key, value1)).toEqual(undefined);
-      expect(map.put(key, value2)).toEqual(value1);
-      expect(map.get(key)).toEqual(value2);
-      expect(map.get({})).toEqual(undefined);
-      expect(map.remove(key)).toEqual(value2);
-      expect(map.get(key)).toEqual(undefined);
+      map.put(key, value1);
+      map.put(key, value2);
+      expect(map.get(key)).toBe(value2);
+      expect(map.get({})).toBe(undefined);
+      expect(map.remove(key)).toBe(value2);
+      expect(map.get(key)).toBe(undefined);
     });
   });
 
 
-  describe('Object', function(){
+  describe('HashQueueMap', function() {
+    it('should do basic crud with collections', function() {
+      var map = new HashQueueMap();
+      map.push('key', 'a');
+      map.push('key', 'b');
+      expect(map[hashKey('key')]).toEqual(['a', 'b']);
+      expect(map.shift('key')).toEqual('a');
+      expect(map.shift('key')).toEqual('b');
+      expect(map.shift('key')).toEqual(undefined);
+      expect(map[hashKey('key')]).toEqual(undefined);
+    });
+  });
 
-    it('should return type of', function(){
+
+  describe('Object', function() {
+    it('should return type of', function() {
       assertEquals("undefined", angular.Object.typeOf(undefined));
       assertEquals("null", angular.Object.typeOf(null));
       assertEquals("object", angular.Collection.typeOf({}));
@@ -28,46 +41,45 @@ describe('api', function(){
       assertEquals("string", angular.Object.typeOf(""));
       assertEquals("date", angular.Object.typeOf(new Date()));
       assertEquals("element", angular.Object.typeOf(document.body));
-      assertEquals('function', angular.Object.typeOf(function(){}));
+      assertEquals('function', angular.Object.typeOf(function() {}));
     });
 
-    it('should extend object', function(){
+    it('should extend object', function() {
       assertEquals({a:1, b:2}, angular.Object.extend({a:1}, {b:2}));
     });
-
   });
 
 
-  it('should return size', function(){
+  it('should return size', function() {
     assertEquals(0, angular.Collection.size({}));
     assertEquals(1, angular.Collection.size({a:"b"}));
     assertEquals(0, angular.Object.size({}));
     assertEquals(1, angular.Array.size([0]));
   });
 
-  describe('Array', function(){
 
-    describe('sum', function(){
+  describe('Array', function() {
 
-      it('should sum', function(){
+    describe('sum', function() {
+      it('should sum', function() {
         assertEquals(3, angular.Array.sum([{a:"1"}, {a:"2"}], 'a'));
       });
 
-      it('should sum containing NaN', function(){
+      it('should sum containing NaN', function() {
         assertEquals(1, angular.Array.sum([{a:1}, {a:Number.NaN}], 'a'));
-        assertEquals(1, angular.Array.sum([{a:1}, {a:Number.NaN}], function($){return $.a;}));
+        assertEquals(1, angular.Array.sum([{a:1}, {a:Number.NaN}], function($) {return $.a;}));
       });
-
     });
 
-    it('should find indexOf', function(){
+
+    it('should find indexOf', function() {
       assertEquals(angular.Array.indexOf(['a'], 'a'), 0);
       assertEquals(angular.Array.indexOf(['a', 'b'], 'a'), 0);
       assertEquals(angular.Array.indexOf(['b', 'a'], 'a'), 1);
       assertEquals(angular.Array.indexOf(['b', 'b'],'x'), -1);
     });
 
-    it('should remove item from array', function(){
+    it('should remove item from array', function() {
       var items = ['a', 'b', 'c'];
       assertEquals(angular.Array.remove(items, 'q'), 'q');
       assertEquals(items.length, 3);
@@ -85,8 +97,8 @@ describe('api', function(){
       assertEquals(items.length, 0);
     });
 
-    describe('filter', function(){
 
+    describe('filter', function() {
       it('should filter by string', function() {
         var items = ["MIsKO", {name:"shyam"}, ["adam"], 1234];
         assertEquals(4, angular.Array.filter(items, "").length);
@@ -113,7 +125,7 @@ describe('api', function(){
         assertEquals(0, angular.Array.filter(items, "misko").length);
       });
 
-      it('should filter on specific property', function(){
+      it('should filter on specific property', function() {
         var items = [{ignore:"a", name:"a"}, {ignore:"a", name:"abc"}];
         assertEquals(2, angular.Array.filter(items, {}).length);
 
@@ -123,12 +135,12 @@ describe('api', function(){
         assertEquals("abc", angular.Array.filter(items, {name:'b'})[0].name);
       });
 
-      it('should take function as predicate', function(){
+      it('should take function as predicate', function() {
         var items = [{name:"a"}, {name:"abc", done:true}];
-        assertEquals(1, angular.Array.filter(items, function(i){return i.done;}).length);
+        assertEquals(1, angular.Array.filter(items, function(i) {return i.done;}).length);
       });
 
-      it('should take object as perdicate', function(){
+      it('should take object as perdicate', function() {
         var items = [{first:"misko", last:"hevery"},
                      {first:"adam", last:"abrons"}];
 
@@ -139,7 +151,7 @@ describe('api', function(){
         assertEquals(items[0], angular.Array.filter(items, {first:'misko', last:'hevery'})[0]);
       });
 
-      it('should support negation operator', function(){
+      it('should support negation operator', function() {
         var items = ["misko", "adam"];
 
         assertEquals(1, angular.Array.filter(items, '!isk').length);
@@ -198,12 +210,12 @@ describe('api', function(){
     });
 
 
-    it('add', function(){
+    it('add', function() {
       var add = angular.Array.add;
       assertJsonEquals([{}, "a"], add(add([]),"a"));
     });
 
-    it('count', function(){
+    it('count', function() {
       var array = [{name:'a'},{name:'b'},{name:''}];
       var obj = {};
 
@@ -212,24 +224,25 @@ describe('api', function(){
       assertEquals(1, angular.Array.count(array, 'name=="a"'));
     });
 
-    describe('orderBy', function(){
+
+    describe('orderBy', function() {
       var orderBy;
-      beforeEach(function(){
+      beforeEach(function() {
         orderBy = angular.Array.orderBy;
       });
 
-      it('should return same array if predicate is falsy', function(){
+      it('should return same array if predicate is falsy', function() {
         var array = [1, 2, 3];
         expect(orderBy(array)).toBe(array);
       });
 
-      it('shouldSortArrayInReverse', function(){
+      it('shouldSortArrayInReverse', function() {
         assertJsonEquals([{a:15},{a:2}], angular.Array.orderBy([{a:15},{a:2}], 'a', true));
         assertJsonEquals([{a:15},{a:2}], angular.Array.orderBy([{a:15},{a:2}], 'a', "T"));
         assertJsonEquals([{a:15},{a:2}], angular.Array.orderBy([{a:15},{a:2}], 'a', "reverse"));
       });
 
-      it('should sort array by predicate', function(){
+      it('should sort array by predicate', function() {
         assertJsonEquals([{a:2, b:1},{a:15, b:1}],
             angular.Array.orderBy([{a:15, b:1},{a:2, b:1}], ['a', 'b']));
         assertJsonEquals([{a:2, b:1},{a:15, b:1}],
@@ -238,11 +251,11 @@ describe('api', function(){
             angular.Array.orderBy([{a:15, b:1},{a:2, b:1}], ['+b', '-a']));
       });
 
-      it('should use function', function(){
+      it('should use function', function() {
         expect(
           orderBy(
             [{a:15, b:1},{a:2, b:1}],
-            function(value){ return value.a; })).
+            function(value) { return value.a; })).
         toEqual([{a:2, b:1},{a:15, b:1}]);
       });
 
@@ -250,9 +263,9 @@ describe('api', function(){
 
   });
 
-  describe('string', function(){
 
-    it('should quote', function(){
+  describe('string', function() {
+    it('should quote', function() {
       assertEquals(angular.String.quote('a'), '"a"');
       assertEquals(angular.String.quote('\\'), '"\\\\"');
       assertEquals(angular.String.quote("'a'"), '"\'a\'"');
@@ -260,22 +273,22 @@ describe('api', function(){
       assertEquals(angular.String.quote('\n\f\r\t'), '"\\n\\f\\r\\t"');
     });
 
-    it('should quote slashes', function(){
+    it('should quote slashes', function() {
       assertEquals('"7\\\\\\\"7"', angular.String.quote("7\\\"7"));
     });
 
-    it('should quote unicode', function(){
+    it('should quote unicode', function() {
       assertEquals('"abc\\u00a0def"', angular.String.quoteUnicode('abc\u00A0def'));
     });
 
-    it('should read/write to date', function(){
+    it('should read/write to date', function() {
       var date = new Date("Sep 10 2003 13:02:03 GMT");
       assertEquals("date", angular.Object.typeOf(date));
       assertEquals("2003-09-10T13:02:03.000Z", angular.Date.toString(date));
       assertEquals(date.getTime(), angular.String.toDate(angular.Date.toString(date)).getTime());
     });
 
-    it('should convert to date', function(){
+    it('should convert to date', function() {
       //full ISO8061
       expect(angular.String.toDate("2003-09-10T13:02:03.000Z")).
         toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
@@ -297,14 +310,12 @@ describe('api', function(){
         toEqual(new Date("Sep 10 2003 00:00:00 GMT"));
     });
 
-    it('should parse date', function(){
+    it('should parse date', function() {
       var date = angular.String.toDate("2003-09-10T13:02:03.000Z");
       assertEquals("date", angular.Object.typeOf(date));
       assertEquals("2003-09-10T13:02:03.000Z", angular.Date.toString(date));
       assertEquals("str", angular.String.toDate("str"));
     });
-
   });
-
 });
 

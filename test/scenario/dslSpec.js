@@ -378,9 +378,9 @@ describe("angular.scenario.dsl", function() {
       beforeEach(function() {
         doc.append(
           '<ul>' +
-          '  <li ng:repeat-index="0"><span ng:bind="name" class="ng-binding">misko</span>' +
+          '  <li><span ng:bind="name" class="ng-binding">misko</span>' +
           '    <span ng:bind="test && gender" class="ng-binding">male</span></li>' +
-          '  <li ng:repeat-index="1"><span ng:bind="name" class="ng-binding">felisa</span>' +
+          '  <li><span ng:bind="name" class="ng-binding">felisa</span>' +
           '    <span ng:bind="gender | uppercase" class="ng-binding">female</span></li>' +
           '</ul>'
         );

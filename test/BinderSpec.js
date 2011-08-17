@@ -194,25 +194,25 @@ describe('Binder', function(){
     scope.$apply();
     assertEquals('<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind="item.a" ng:repeat-index="0">A</li>' +
-          '<li ng:bind="item.a" ng:repeat-index="1">B</li>' +
+          '<li ng:bind="item.a">A</li>' +
+          '<li ng:bind="item.a">B</li>' +
           '</ul>', sortedHtml(form));
 
     items.unshift({a:'C'});
     scope.$apply();
     assertEquals('<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind="item.a" ng:repeat-index="0">C</li>' +
-          '<li ng:bind="item.a" ng:repeat-index="1">A</li>' +
-          '<li ng:bind="item.a" ng:repeat-index="2">B</li>' +
+          '<li ng:bind="item.a">C</li>' +
+          '<li ng:bind="item.a">A</li>' +
+          '<li ng:bind="item.a">B</li>' +
           '</ul>', sortedHtml(form));
 
     items.shift();
     scope.$apply();
     assertEquals('<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind="item.a" ng:repeat-index="0">A</li>' +
-          '<li ng:bind="item.a" ng:repeat-index="1">B</li>' +
+          '<li ng:bind="item.a">A</li>' +
+          '<li ng:bind="item.a">B</li>' +
           '</ul>', sortedHtml(form));
 
     items.shift();
@@ -226,7 +226,7 @@ describe('Binder', function(){
     scope.$apply();
     assertEquals('<ul>' +
           '<#comment></#comment>' +
-          '<li ng:repeat-index="0"><span ng:bind="item.a">A</span></li>' +
+          '<li><span ng:bind="item.a">A</span></li>' +
           '</ul>', sortedHtml(scope.$element));
   });
 
@@ -329,15 +329,15 @@ describe('Binder', function(){
 
     assertEquals('<div>'+
         '<#comment></#comment>'+
-        '<div name="a" ng:bind-attr="{"name":"{{m.name}}"}" ng:repeat-index="0">'+
+        '<div name="a" ng:bind-attr="{"name":"{{m.name}}"}">'+
           '<#comment></#comment>'+
-          '<ul name="a1" ng:bind-attr="{"name":"{{i}}"}" ng:repeat-index="0"></ul>'+
-          '<ul name="a2" ng:bind-attr="{"name":"{{i}}"}" ng:repeat-index="1"></ul>'+
+          '<ul name="a1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+          '<ul name="a2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
         '</div>'+
-        '<div name="b" ng:bind-attr="{"name":"{{m.name}}"}" ng:repeat-index="1">'+
+        '<div name="b" ng:bind-attr="{"name":"{{m.name}}"}">'+
           '<#comment></#comment>'+
-          '<ul name="b1" ng:bind-attr="{"name":"{{i}}"}" ng:repeat-index="0"></ul>'+
-          '<ul name="b2" ng:bind-attr="{"name":"{{i}}"}" ng:repeat-index="1"></ul>'+
+          '<ul name="b1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+          '<ul name="b2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
         '</div></div>', sortedHtml(scope.$element));
   });
 
@@ -417,8 +417,8 @@ describe('Binder', function(){
     expect(d2.hasClass('e')).toBeTruthy();
     assertEquals(
         '<div><#comment></#comment>' +
-        '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat-index="0"></div>' +
-        '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat-index="1"></div></div>',
+        '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div>' +
+        '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div></div>',
         sortedHtml(scope.$element));
   });
 
@@ -459,8 +459,8 @@ describe('Binder', function(){
     scope.items = [{}, {name:'misko'}];
     scope.$apply();
 
-    assertEquals("123", scope.$eval('items[0].name'));
-    assertEquals("misko", scope.$eval('items[1].name'));
+    expect(scope.$eval('items[0].name')).toEqual("123");
+    expect(scope.$eval('items[1].name')).toEqual("misko");
   });
 
   it('ShouldTemplateBindPreElements', function () {
@@ -593,8 +593,8 @@ describe('Binder', function(){
     scope.$apply();
     assertEquals('<ul>' +
         '<#comment></#comment>' +
-        '<li ng:bind=\"k + v\" ng:repeat-index="0">a0</li>' +
-        '<li ng:bind=\"k + v\" ng:repeat-index="1">b1</li>' +
+        '<li ng:bind=\"k + v\">a0</li>' +
+        '<li ng:bind=\"k + v\">b1</li>' +
         '</ul>',
         sortedHtml(scope.$element));
   });
