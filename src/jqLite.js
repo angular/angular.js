@@ -208,8 +208,8 @@ function JQLiteData(element, key, value) {
 function JQLiteHasClass(element, selector, _) {
   // the argument '_' is important, since it makes the function have 3 arguments, which
   // is needed for delegate function to realize the this is a getter.
-  var className = " " + selector + " ";
-  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1);
+  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
+      indexOf( " " + selector + " " ) > -1);
 }
 
 function JQLiteRemoveClass(element, selector) {

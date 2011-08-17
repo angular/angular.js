@@ -318,10 +318,16 @@ describe('jqLite', function(){
     describe('removeClass', function(){
       it('should allow removal of class', function(){
         var selector = jqLite([a, b]);
+        selector.addClass('a');
+        selector.addClass('b');
+        selector.addClass('c');
         expect(selector.addClass('abc')).toEqual(selector);
         expect(selector.removeClass('abc')).toEqual(selector);
         expect(jqLite(a).hasClass('abc')).toEqual(false);
         expect(jqLite(b).hasClass('abc')).toEqual(false);
+        expect(jqLite(a).hasClass('a')).toEqual(true);
+        expect(jqLite(a).hasClass('b')).toEqual(true);
+        expect(jqLite(a).hasClass('c')).toEqual(true);
       });
 
 
