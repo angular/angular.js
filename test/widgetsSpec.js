@@ -555,6 +555,18 @@ describe("widget", function(){
       expect(element.text()).toEqual('my partial');
       dealoc(scope);
     });
+
+    it('should clear content when error during xhr request', function() {
+      scope = compile('<ng:include src="url">content</ng:include>');
+      var $browserXhr = scope.$service('$browser').xhr;
+      $browserXhr.expectGET('myUrl').respond(404, '');
+
+      scope.url = 'myUrl';
+      scope.$flush();
+      $browserXhr.flush();
+
+      expect(element.text()).toBe('');
+    });
   });
 
   describe('a', function() {
@@ -1255,6 +1267,20 @@ describe("widget", function(){
       $browser.defer.flush();
 
       expect(rootScope.log).toEqual(['parent', 'child', 'init']);
+    });
+
+    it('should clear the content when error during xhr request', function() {
+      $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
+
+      $location.updateHash('/foo');
+      $browser.xhr.expectGET('myUrl1').respond(404, '');
+      rootScope.$element.text('content');
+
+      rootScope.$digest();
+      rootScope.$flush();
+      $browser.xhr.flush();
+
+      expect(rootScope.$element.text()).toBe('');
     });
   });
 });

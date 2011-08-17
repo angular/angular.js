@@ -988,7 +988,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return extend(function($xhr, $cacheFactory, element) {
+    return annotate('$xhr', '$cacheFactory', function($xhr, $cacheFactory, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -1021,6 +1021,11 @@ angularWidget('ng:include', function(element){
           scope.$eval(onloadExp);
         }
 
+        function clearContent() {
+          childScope = null;
+          element.html('');
+        }
+
         while(releaseScopes.length) {
           releaseScopes.pop().$destroy();
         }
@@ -1033,14 +1038,13 @@ angularWidget('ng:include', function(element){
             $xhr.get(src).on('success', function(response) {
               updateContent(response);
               cache.put(src, response);
-            });
+            }).on('error', clearContent);
           }
         } else {
-          childScope = null;
-          element.html('');
+          clearContent();
         }
       });
-    }, {$inject: ['$xhr', '$cacheFactory']});
+    });
   }
 });
 
@@ -1452,6 +1456,10 @@ angularWidget('ng:view', function(element) {
           compiler.compile(element)($route.current.scope);
         }
 
+        function clearContent() {
+          element.html('');
+        }
+
         if (template) {
           var fromCache = cache.get(template);
           if (fromCache) {
@@ -1462,10 +1470,10 @@ angularWidget('ng:view', function(element) {
             $xhr.get(template).on('success', function(response) {
               updateContent(response);
               cache.put(template, response);
-            });
+            }).on('error', clearContent);
           }
         } else {
-          element.html('');
+          clearContent();
         }
       });
     });
