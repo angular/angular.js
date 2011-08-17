@@ -554,6 +554,7 @@ TzDate.prototype = Date.prototype;
 
 function MockXhrBackend() {
   var definitions = [],
+      expectations = [],
       responses = [];
 
   this.when = function(method, url, data, headers) {
@@ -566,16 +567,43 @@ function MockXhrBackend() {
     };
   };
 
+  this.expect = function(method, url, data, headers) {
+    var expectation = new MockXhrExpectation(method, url, data, headers);
+    expectations.push(expectation);
+    return {
+      respond: function(status, data, headers) {
+        expectation.response = [status, data, headers];
+      }
+    };
+  };
+
   this.flush = function() {
     while (responses.length) responses.shift()();
   };
 
   // TODO(vojta): change params to: method, url, data, headers, callback
   this.xhr = function(method, url, data, callback, headers) {
+    var xhr = new MockXhr(),
+        expectation = expectations[0];
+
+    if (expectation && expectation.match(method, url)) {
+      if (!expectation.matchData(data))
+        throw 'Expected ' + method + ' ' + url + ' with different data';
+
+      if (!expectation.matchHeaders(headers))
+        throw 'Expected ' + method + ' ' + url + ' with different headers';
+
+      var response = expectations.shift().response;
+      responses.push(function() {
+        xhr.$$headers = response[2];
+        callback(response[0], response[1]);
+      });
+      return xhr;
+    }
+
     var i = -1, definition;
     while ((definition = definitions[++i])) {
-      if (definition.match(method, url, data, headers)) {
-        var xhr = new MockXhr();
+      if (definition.match(method, url, data, headers || {})) {
         responses.push(function() {
           var response = isFunction(definition.response) ?
                          definition.response(method, url, data, headers) : definition.response;
@@ -585,17 +613,61 @@ function MockXhrBackend() {
         return xhr;
       }
     }
-    throw 'Unexpected request ' + method + ' "' + url + '"';
+    throw 'Unexpected request: ' + method + ' ' + url;
   };
 
+  this.verify = function() {
+    if (expectations.length) {
+      throw 'Unsatisfied requests: ' + expectations.join(', ');
+    }
+  };
+
+  this.reset = function() {
+    expectations = [];
+    responses = [];
+  };
 }
 
 function MockXhrExpectation(method, url, data, headers) {
+
   this.match = function(m, u, d, h) {
-    return method == m &&
-           (!url || url == u) &&
-           (!headers || equals(headers, h)) &&
-           (!data || equals(data, d));
+    if (method != m) return false;
+    if (!this.matchUrl(u)) return false;
+    if (isDefined(d) && !this.matchData(d)) return false;
+    if (isDefined(h) && !this.matchHeaders(h)) return false;
+
+    return true;
+  };
+
+  this.matchUrl = function(u) {
+    if (!url) return true;
+    if (isFunction(url.test)) {
+      if (!url.test(u)) return false;
+    } else if (url != u) return false;
+
+    return true;
+  };
+
+  this.matchHeaders = function(h) {
+    if (isUndefined(headers)) return true;
+    if (isFunction(headers)) {
+      if (!headers(h)) return false;
+    } else if (!equals(headers, h)) return false;
+
+    return true;
+  };
+
+  this.matchData = function(d) {
+    if (isUndefined(data)) return true;
+    if (data && isFunction(data.test)) {
+      if (!data.test(d)) return false;
+    } else if (data != d) return false;
+
+    return true;
+  };
+
+  this.toString = function() {
+    return method + ' ' + url;
   };
 }
 

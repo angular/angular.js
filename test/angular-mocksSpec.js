@@ -241,7 +241,7 @@ describe('mocks', function(){
   });
 
 
-  ddescribe('$xhrBackend', function() {
+  describe('$xhrBackend', function() {
     var xb, callback;
 
     beforeEach(function() {
@@ -270,12 +270,11 @@ describe('mocks', function(){
       xb.when('GET', '/url1').then(200, 'content');
       expect(function() {
         xb.xhr('GET', '/xxx');
-      }).toThrow('Unexpected request GET "/xxx"');
+      }).toThrow('Unexpected request: GET /xxx');
     });
 
 
     it('should match headers if specified', function() {
-      // should equal ? or just check only defined headers ?
       xb.when('GET', '/url', null, {'X': 'val1'}).then(201, 'content1');
       xb.when('GET', '/url', null, {'X': 'val2'}).then(202, 'content2');
       xb.when('GET', '/url').then(203, 'content3');
@@ -298,11 +297,12 @@ describe('mocks', function(){
       xb.flush();
     });
 
+
     it('should match data if specified', function() {
-      xb.when('GET', '/a/b', {a: true}).then(201, 'content1');
+      xb.when('GET', '/a/b', '{a: true}').then(201, 'content1');
       xb.when('GET', '/a/b').then(202, 'content2');
 
-      xb.xhr('GET', '/a/b', {a: true}, function(status, response) {
+      xb.xhr('GET', '/a/b', '{a: true}', function(status, response) {
         expect(status).toBe(201);
         expect(response).toBe('content1');
       });
@@ -331,6 +331,7 @@ describe('mocks', function(){
       expect(callback).toHaveBeenCalled();
     });
 
+
     it('should expose given headers', function() {
       xb.when('GET', '/u1').then(200, null, {'X-Fake': 'Header', 'Content-Type': 'application/json'});
       var xhr = xb.xhr('GET', '/u1', null, noop, {});
@@ -338,6 +339,7 @@ describe('mocks', function(){
       expect(xhr.getResponseHeader('X-Fake')).toBe('Header');
       expect(xhr.getAllResponseHeaders()).toBe('X-Fake: Header\nContent-Type: application/json');
     });
+
 
     it('should preserve the order of requests', function() {
       xb.when('GET', '/url1').then(200, 'first');
@@ -353,6 +355,7 @@ describe('mocks', function(){
       expect(callback.argsForCall[1]).toEqual([200, 'first']);
     });
 
+
     it('then() should take function', function() {
       xb.when('GET', '/some').then(function(m, u, d, h) {
         return [301, m + u + ';' + d + ';' + toKeyValue(h), {'Connection': 'keep-alive'}];
@@ -365,6 +368,150 @@ describe('mocks', function(){
       expect(callback.mostRecentCall.args[0]).toBe(301);
       expect(callback.mostRecentCall.args[1]).toBe('GET/some;data;a=b');
       expect(xhr.getResponseHeader('Connection')).toBe('keep-alive');
+    });
+
+
+    it('expect() should require specified order', function() {
+      xb.expect('GET', '/url1').respond(200, '');
+      xb.expect('GET', '/url2').respond(200, '');
+
+      expect(function() {
+        xb.xhr('GET', '/url2', null, noop, {});
+      }).toThrow('Unexpected request: GET /url2');
+    });
+
+
+    it('expect() should have precendence over when()', function() {
+      callback.andCallFake(function(status, response) {
+        expect(status).toBe(300);
+        expect(response).toBe('expect');
+      });
+
+      xb.when('GET', '/url').then(200, 'when');
+      xb.expect('GET', '/url').respond(300, 'expect');
+
+      xb.xhr('GET', '/url', null, callback, {});
+      xb.flush();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it ('should throw exception when only headers differes from expectation', function() {
+      xb.when('GET').then(200, '', {});
+      xb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
+
+      expect(function() {
+        xb.xhr('GET', '/match', null, noop, {});
+      }).toThrow('Expected GET /match with different headers');
+    });
+
+
+    it ('should throw exception when only data differes from expectation', function() {
+      xb.when('GET').then(200, '', {});
+      xb.expect('GET', '/match', 'some-data');
+
+      expect(function() {
+        xb.xhr('GET', '/match', 'different', noop, {});
+      }).toThrow('Expected GET /match with different data');
+    });
+
+
+    describe('verify', function() {
+
+      it('should throw exception if not all expectations were satisfied', function() {
+        xb.expect('POST', '/u1', 'ddd').respond(201, '', {});
+        xb.expect('GET', '/u2').respond(200, '', {});
+        xb.expect('POST', '/u3').respond(201, '', {});
+
+        xb.xhr('POST', '/u1', 'ddd', noop, {});
+
+        expect(function() {xb.verify();})
+          .toThrow('Unsatisfied requests: GET /u2, POST /u3');
+      });
+
+
+      it('should do nothing when no expectation', function() {
+        xb.when('DELETE', '/some').then(200, '');
+
+        expect(function() {xb.verify();}).not.toThrow();
+      });
+
+
+      it('should do nothing when all expectations satisfied', function() {
+        xb.expect('GET', '/u2').respond(200, '', {});
+        xb.expect('POST', '/u3').respond(201, '', {});
+        xb.when('DELETE', '/some').then(200, '');
+
+        xb.xhr('GET', '/u2', noop);
+        xb.xhr('POST', '/u3', noop);
+
+        expect(function() {xb.verify();}).not.toThrow();
+      });
+    });
+
+
+    describe('reset', function() {
+
+      it('should remove all expectations', function() {
+        xb.expect('GET', '/u2').respond(200, '', {});
+        xb.expect('POST', '/u3').respond(201, '', {});
+        xb.reset();
+
+        expect(function() {xb.verify();}).not.toThrow();
+      });
+
+
+      it('should remove all responses', function() {
+        xb.expect('GET', '/url').respond(200, '', {});
+        xb.xhr('GET', '/url', null, callback, {});
+        xb.reset();
+        xb.flush();
+
+        expect(callback).not.toHaveBeenCalled();
+      });
+    });
+
+
+    describe('MockXhrExpectation', function() {
+
+      it('should accept url as regexp', function() {
+        var exp = new MockXhrExpectation('GET', /^\/x/);
+
+        expect(exp.match('GET', '/x')).toBe(true);
+        expect(exp.match('GET', '/xxx/x')).toBe(true);
+        expect(exp.match('GET', 'x')).toBe(false);
+        expect(exp.match('GET', 'a/x')).toBe(false);
+      });
+
+
+      it('should accept data as regexp', function() {
+        var exp = new MockXhrExpectation('POST', '/url', /\{.*?\}/);
+
+        expect(exp.match('POST', '/url', '{"a": "aa"}')).toBe(true);
+        expect(exp.match('POST', '/url', '{"one": "two"}')).toBe(true);
+        expect(exp.match('POST', '/url', '{"one"')).toBe(false);
+      });
+
+
+      it('should ignore data only if undefined (not null or false)', function() {
+        var exp = new MockXhrExpectation('POST', '/url', null);
+        expect(exp.matchData(null)).toBe(true);
+        expect(exp.matchData('some-data')).toBe(false);
+
+        exp = new MockXhrExpectation('POST', '/url', undefined);
+        expect(exp.matchData(null)).toBe(true);
+        expect(exp.matchData('some-data')).toBe(true);
+      });
+
+
+      it('should accept headers as function', function() {
+        var exp = new MockXhrExpectation('GET', '/url', undefined, function(h) {
+          return h['Content-Type'] == 'application/json';
+        });
+
+        expect(exp.matchHeaders({})).toBe(false);
+        expect(exp.matchHeaders({'Content-Type': 'application/json', 'X-Another': 'true'})).toBe(true);
+      });
     });
   });
 });
