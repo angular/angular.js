@@ -11,6 +11,10 @@ describe('json', function(){
     expect(toJson("a \t \n \r b \\")).toEqual('"a \\t \\n \\r b \\\\"');
   });
 
+  it('should not serialize $$properties', function(){
+    expect(toJson({$$some:'value', 'this':1, '$parent':1}, false)).toEqual('{}');
+  });
+
   it('should serialize strings with escaped characters', function() {
     expect(toJson("7\\\"7")).toEqual("\"7\\\\\\\"7\"");
   });

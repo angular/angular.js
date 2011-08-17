@@ -254,7 +254,6 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
     OPERA_TOSTRING_PATTERN = /^[\d].*Z$/,
     NUMBER_STRING = /^\d+$/;
 
-
 /**
  * @workInProgress
  * @ngdoc filter
@@ -409,7 +408,7 @@ angularFilter.date = function(date, format) {
  */
 angularFilter.json = function(object) {
   this.$element.addClass("ng-monospace");
-  return toJson(object, true);
+  return toJson(object, true, /^(\$|this$)/);
 };
 
 
