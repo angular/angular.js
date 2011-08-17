@@ -409,86 +409,134 @@ describe('Scope', function() {
 
 
   describe('events', function() {
-    var log, child, grandChild, greatGrandChild;
 
-    beforeEach(function() {
-      log = '';
-      child = root.$new();
-      grandChild = child.$new();
-      greatGrandChild = child.$new();
+    describe('$emit', function() {
+      var log, child, grandChild, greatGrandChild;
 
-      root.id = 0;
-      child.id = 1;
-      grandChild.id = 2;
-      greatGrandChild.id = 3;
-
-      root.$on('myEvent', logger);
-      child.$on('myEvent', logger);
-      grandChild.$on('myEvent', logger);
-      greatGrandChild.$on('myEvent', logger);
-    });
-
-    function logger(event) {
-      log += event.currentTarget.id + '>';
-    }
-
-
-    it('should bubble event up to the root scope', function() {
-      grandChild.$emit('myEvent');
-      expect(log).toEqual('2>1>0>');
-    });
-
-
-    it('should dispatch exceptions to the $exceptionHandler', function() {
-      child.$on('myEvent', function() { throw 'bubbleException'; });
-      grandChild.$emit('myEvent');
-      expect(log).toEqual('2>1>0>');
-      expect(mockHandler.errors).toEqual(['bubbleException']);
-    });
-
-
-    it('should allow cancelation of event propagation', function() {
-      child.$on('myEvent', function(event){ event.cancel(); });
-      grandChild.$emit('myEvent');
-      expect(log).toEqual('2>1>');
-    });
-
-
-    it('should remove event listener', function() {
-      function eventFn(){
-        log += 'abc;';
+      function logger(event) {
+        log += event.currentTarget.id + '>';
       }
 
-      child.$on('abc', eventFn);
-      child.$emit('abc');
-      expect(log).toEqual('abc;');
-      log = '';
-      child.$removeOn('abc', eventFn);
-      child.$emit('abc');
-      expect(log).toEqual('');
-    });
+      beforeEach(function() {
+        log = '';
+        child = root.$new();
+        grandChild = child.$new();
+        greatGrandChild = grandChild.$new();
 
+        root.id = 0;
+        child.id = 1;
+        grandChild.id = 2;
+        greatGrandChild.id = 3;
 
-    it('should forward method arguments', function() {
-      child.$on('abc', function(event, arg1, arg2){
-        expect(event.type).toBe('abc');
-        expect(arg1).toBe('arg1');
-        expect(arg2).toBe('arg2');
+        root.$on('myEvent', logger);
+        child.$on('myEvent', logger);
+        grandChild.$on('myEvent', logger);
+        greatGrandChild.$on('myEvent', logger);
       });
-      child.$emit('abc', 'arg1', 'arg2');
+
+
+      it('should bubble event up to the root scope', function() {
+        grandChild.$emit('myEvent');
+        expect(log).toEqual('2>1>0>');
+      });
+
+
+      it('should dispatch exceptions to the $exceptionHandler', function() {
+        child.$on('myEvent', function() { throw 'bubbleException'; });
+        grandChild.$emit('myEvent');
+        expect(log).toEqual('2>1>0>');
+        expect(mockHandler.errors).toEqual(['bubbleException']);
+      });
+
+
+      it('should allow cancelation of event propagation', function() {
+        child.$on('myEvent', function(event){ event.cancel(); });
+        grandChild.$emit('myEvent');
+        expect(log).toEqual('2>1>');
+      });
+
+
+      it('should remove event listener', function() {
+        function eventFn(){
+          log += 'abc;';
+        }
+
+        child.$on('abc', eventFn);
+        child.$emit('abc');
+        expect(log).toEqual('abc;');
+        log = '';
+        child.$removeOn('abc', eventFn);
+        child.$emit('abc');
+        expect(log).toEqual('');
+      });
+
+
+      it('should forward method arguments', function() {
+        child.$on('abc', function(event, arg1, arg2){
+          expect(event.type).toBe('abc');
+          expect(arg1).toBe('arg1');
+          expect(arg2).toBe('arg2');
+        });
+        child.$emit('abc', 'arg1', 'arg2');
+      });
+
+      describe('event object', function() {
+        it('should have methods/properties', function() {
+          var event;
+          child.$on('myEvent', function(e){
+            expect(e.target).toBe(grandChild);
+            expect(e.currentTarget).toBe(child);
+            event = e;
+          });
+          grandChild.$emit('myEvent');
+          expect(event).toBeDefined();
+        });
+      });
     });
 
 
-    describe('event object', function() {
-      it('should have methods/properties', function() {
-        var event;
-        child.$on('myEvent', function(e){
-          expect(e.target).toBe(grandChild);
-          expect(e.currentTarget).toBe(child);
-          event = e;
-        });
-        grandChild.$emit('myEvent');
-        expect(event).toBeDefined();
+    ddescribe('$broadcast', function() {
+      var log, child1, child2, child3, grandChild11, grandChild21, greatGrandChild211;
+
+      function logger(event) {
+        log += event.currentTarget.id + '>';
+      }
+
+      beforeEach(function() {
+        log = '';
+        child1 = root.$new();
+        child2 = root.$new();
+        child3 = root.$new();
+        grandChild11 = child1.$new();
+        grandChild21 = child2.$new();
+        greatGrandChild211 = grandChild21.$new();
+
+        root.id = 0;
+        child1.id = 1;
+        child2.id = 2;
+        child3.id = 3;
+        grandChild11.id = 11;
+        grandChild21.id = 21;
+        greatGrandChild211.id = 211;
+
+        root.$on('myEvent', logger);
+        child1.$on('myEvent', logger);
+        child2.$on('myEvent', logger);
+        child3.$on('myEvent', logger);
+        grandChild11.$on('myEvent', logger);
+        grandChild21.$on('myEvent', logger);
+        greatGrandChild211.$on('myEvent', logger);
+      });
+
+      it('should broadcast an event from the root scope', function() {
+        root.$broadcast('myEvent');
+        expect(log).toBe('0>1>11>2>21>211>3>');
+      });
+
+
+      it('should not not fire any listeners for other events', function() {
+        root.$broadcast('fooEvent');
+        expect(log).toBe('');
       });
     });
   });

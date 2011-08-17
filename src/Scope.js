@@ -623,6 +623,30 @@ Scope.prototype = {
       //traverse upwards
       scope = scope.$parent;
     } while (scope);
+  },
+
+
+  $broadcast: function(name, message) {
+    var scope = this,
+        event = { type: name,
+                  source: scope,
+                  currentTarget: scope }
+
+    forEach(scope.$$listeners[name], function(listener) {
+      try {
+        listener(event, message);
+      } catch(e) {
+        scope.$service('$exceptionHandler')(e);
+      }
+    });
+
+    scope = scope.$$childHead;
+
+    while (scope) {
+      event.currentTarget = scope;
+      scope.$broadcast(name, message);
+      scope = scope.$$nextSibling
+    }
   }
 };
 
