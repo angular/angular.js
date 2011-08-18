@@ -1,6 +1,6 @@
 <!document html>
 <html>
-  <head> 
+  <head>
     <meta charset="utf-8">
     <title>locale test</title>
     <script src="../../build/angular.js" ng:autobind></script>
@@ -12,5 +12,12 @@
     date: {{input | date:"longDate"}}<br>
     number: {{input | number}}<br>
     currency: {{input | currency }}
+    <hr/>
+    <input type="text" name="plInput" value="1"><br>
+    <ng:pluralize count="plInput"
+                  when= "{ 'one': 'Mas jeden email!',
+                           'few': 'Mas {} emaily!',
+                           'other': 'Mas {} emailov!'}">
+    </ng:pluralize>
   </body>
-</html> 
+</html>
