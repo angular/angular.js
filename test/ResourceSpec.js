@@ -244,22 +244,35 @@ describe("resource", function() {
 
   describe('failure mode', function() {
     var ERROR_CODE = 500,
-        ERROR_RESPONSE = 'Server Error';
+        ERROR_RESPONSE = 'Server Error',
+        errorCB;
 
     beforeEach(function() {
-      xhr.expectGET('/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
+      errorCB = jasmine.createSpy();
     });
 
     it('should report error when non 2xx if error callback is not provided', function() {
+      xhr.expectGET('/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
       CreditCard.get({id:123});
       xhr.flush();
       expect($xhrErr).toHaveBeenCalled();
     });
 
     it('should call the error callback if provided on non 2xx response', function() {
-      CreditCard.get({id:123}, noop, callback);
+      xhr.expectGET('/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
+      CreditCard.get({id:123}, callback, errorCB);
       xhr.flush();
-      expect(callback).toHaveBeenCalledWith(500, ERROR_RESPONSE);
+      expect(errorCB).toHaveBeenCalledWith(500, ERROR_RESPONSE);
+      expect(callback).not.toHaveBeenCalled();
+      expect($xhrErr).not.toHaveBeenCalled();
+    });
+
+    it('should call the error callback if provided on non 2xx response', function() {
+      xhr.expectGET('/CreditCard').respond(ERROR_CODE, ERROR_RESPONSE);
+      CreditCard.get(callback, errorCB);
+      xhr.flush();
+      expect(errorCB).toHaveBeenCalledWith(500, ERROR_RESPONSE);
+      expect(callback).not.toHaveBeenCalled();
       expect($xhrErr).not.toHaveBeenCalled();
     });
   });
