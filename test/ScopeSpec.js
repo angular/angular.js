@@ -496,7 +496,7 @@ describe('Scope', function() {
 
 
     ddescribe('$broadcast', function() {
-      var log, child1, child2, child3, grandChild11, grandChild21, greatGrandChild211;
+      var log, child1, child2, child3, grandChild11, grandChild21, grandChild22, greatGrandChild211;
 
       function logger(event) {
         log += event.currentTarget.id + '>';
@@ -509,6 +509,7 @@ describe('Scope', function() {
         child3 = root.$new();
         grandChild11 = child1.$new();
         grandChild21 = child2.$new();
+        grandChild22 = child2.$new();
         greatGrandChild211 = grandChild21.$new();
 
         root.id = 0;
@@ -517,6 +518,7 @@ describe('Scope', function() {
         child3.id = 3;
         grandChild11.id = 11;
         grandChild21.id = 21;
+        grandChild22.id = 22;
         greatGrandChild211.id = 211;
 
         root.$on('myEvent', logger);
@@ -525,12 +527,34 @@ describe('Scope', function() {
         child3.$on('myEvent', logger);
         grandChild11.$on('myEvent', logger);
         grandChild21.$on('myEvent', logger);
+        grandChild22.$on('myEvent', logger);
         greatGrandChild211.$on('myEvent', logger);
+
+        //         R
+        //       / |  \
+        //     1   2   3
+        //    /   / \
+        //   11  21  22
+        //       |
+        //      211
       });
+
 
       it('should broadcast an event from the root scope', function() {
         root.$broadcast('myEvent');
-        expect(log).toBe('0>1>11>2>21>211>3>');
+        expect(log).toBe('0>1>11>2>21>211>22>3>');
+      });
+
+
+      it('should broadcast an event from a child scope', function() {
+        child2.$broadcast('myEvent');
+        expect(log).toBe('2>21>211>22>');
+      });
+
+
+      it('should broadcast an event from a leaf scope', function() {
+        grandChild22.$broadcast('myEvent');
+        expect(log).toBe('22>');
       });
 
 

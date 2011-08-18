@@ -589,7 +589,7 @@ Scope.prototype = {
    * The event life cycle starts at the scope on which `$emit` was called. All
    * {@link angular.scope.$on listeners} listening for `name` event on this scope get notified.
    * Afterwards, the event traverses upwards toward the root scope and calls all registered
-   * listeners along the way. The event will stop propagating if one of the listeners cancels it. 
+   * listeners along the way. The event will stop propagating if one of the listeners cancels it.
    *
    * Any exception emmited from the {@link angular.scope.$on listeners} will be passed
    * onto the {@link angular.service.$exceptionHandler $exceptionHandler} service.
@@ -627,26 +627,43 @@ Scope.prototype = {
 
 
   $broadcast: function(name, message) {
-    var scope = this,
+    var sourceScope = this,
+        currentScope = sourceScope,
+        nextScope = sourceScope,
         event = { type: name,
-                  source: scope,
-                  currentTarget: scope }
+                  source: sourceScope };
 
-    forEach(scope.$$listeners[name], function(listener) {
-      try {
-        listener(event, message);
-      } catch(e) {
-        scope.$service('$exceptionHandler')(e);
+    //down while you can, then up and next sibling or up and next sibling until back at root
+    do {
+      currentScope = nextScope;
+      event.currentTarget = currentScope;
+      forEach(currentScope.$$listeners[name], function(listener) {
+        try {
+          listener(event, message);
+        } catch(e) {
+          currentScope.$service('$exceptionHandler')(e);
+        }
+      });
+
+      // down or to the right!
+      nextScope = currentScope.$$childHead || currentScope.$$nextSibling;
+
+      if (nextScope) {
+        // found child or sibling
+        continue;
       }
-    });
 
-    scope = scope.$$childHead;
+      // we have to restore nextScope and go up!
+      nextScope = currentScope;
 
-    while (scope) {
-      event.currentTarget = scope;
-      scope.$broadcast(name, message);
-      scope = scope.$$nextSibling
-    }
+      while (!nextScope.$$nextSibling && (nextScope != sourceScope)) {
+        nextScope = nextScope.$parent;
+      }
+
+      if (nextScope != sourceScope) {
+        nextScope = nextScope.$$nextSibling;
+      }
+    } while (nextScope != sourceScope);
   }
 };
 
