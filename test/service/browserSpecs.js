@@ -228,6 +228,23 @@ describe('browser', function() {
       expect(browser.xhr('GET', '/url', null, noop)).toBe(xhr);
     });
 
+    it('should abort request on timeout', function() {
+      var callback = jasmine.createSpy('done').andCallFake(function(status, response) {
+        expect(status).toBe(-1);
+      });
+
+      browser.xhr('GET', '/url', null, callback, {}, 2000);
+      xhr.abort = jasmine.createSpy('xhr.abort');
+
+      fakeWindow.setTimeout.flush();
+      expect(xhr.abort).toHaveBeenCalledOnce();
+
+      xhr.status = 0;
+      xhr.readyState = 4;
+      xhr.onreadystatechange();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
     it('should be async even if xhr.send() is sync', function() {
       // IE6, IE7 is sync when serving from cache
       var xhr;

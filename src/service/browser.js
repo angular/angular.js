@@ -95,6 +95,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    *     <li><tt>X-Requested-With</tt>: <tt>XMLHttpRequest</tt></li>
    *   </ul>
    *
+   * @param {number=} timeout Timeout in ms, when the request will be aborted
    * @returns {XMLHttpRequest|undefined} Raw XMLHttpRequest object or undefined when JSONP method
    *
    * @description
@@ -102,7 +103,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    *
    * TODO(vojta): change signature of this method to (method, url, data, headers, callback)
    */
-  self.xhr = function(method, url, post, callback, headers) {
+  self.xhr = function(method, url, post, callback, headers, timeout) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'jsonp') {
       var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
@@ -126,19 +127,28 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
           if (value) xhr.setRequestHeader(key, value);
       });
 
+      var status;
       xhr.send(post || '');
 
       // IE6, IE7 bug - does sync when serving from cache
       if (xhr.readyState == 4) {
         setTimeout(function() {
-          completeOutstandingRequest(callback, fixStatus(xhr.status), xhr.responseText);
+          completeOutstandingRequest(callback, fixStatus(status || xhr.status), xhr.responseText);
         }, 0);
       } else {
         xhr.onreadystatechange = function() {
           if (xhr.readyState == 4) {
-            completeOutstandingRequest(callback, fixStatus(xhr.status), xhr.responseText);
+            completeOutstandingRequest(callback, fixStatus(status || xhr.status),
+                                       xhr.responseText);
           }
         };
+      }
+
+      if (timeout > 0) {
+        setTimeout(function() {
+          status = -1;
+          xhr.abort();
+        }, timeout);
       }
 
       return xhr;
