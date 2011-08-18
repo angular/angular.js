@@ -76,9 +76,16 @@ ResourceFactory.prototype = {
         case 4:
           error = a4;
           success = a3;
+          //fallthrough
         case 3:
         case 2:
           if (isFunction(a2)) {
+            if (isFunction(a1)) {
+              success = a1;
+              error = a2;
+              break;
+            }
+
             success = a2;
             error = a3;
             //fallthrough
