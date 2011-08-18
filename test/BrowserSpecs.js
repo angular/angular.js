@@ -227,6 +227,35 @@ describe('browser', function() {
     it('should return raw xhr object', function() {
       expect(browser.xhr('GET', '/url', null, noop)).toBe(xhr);
     });
+
+    it('should be async even if xhr.send() is sync', function() {
+      // IE6, IE7 is sync when serving from cache
+      var xhr;
+      function FakeXhr() {
+        xhr = this;
+        this.open = this.setRequestHeader = noop;
+        this.send = function() {
+          this.status = 200;
+          this.responseText = 'response';
+          this.readyState = 4;
+        };
+      }
+
+      var callback = jasmine.createSpy('done').andCallFake(function(status, response) {
+        expect(status).toBe(200);
+        expect(response).toBe('response');
+      });
+
+      browser = new Browser(fakeWindow, jqLite(window.document), null, FakeXhr, null);
+      browser.xhr('GET', '/url', null, callback);
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
+
+      (xhr.onreadystatechange || noop)();
+      expect(callback).toHaveBeenCalledOnce();
+    });
   });
 
   describe('defer', function() {
