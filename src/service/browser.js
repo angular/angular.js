@@ -73,6 +73,11 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
     }
   }
 
+  // normalize IE bug (http://bugs.jquery.com/ticket/1450)
+  function fixStatus(status) {
+    return status == 1223 ? 204 : status;
+  }
+
   /**
    * @ngdoc method
    * @name angular.module.ng.$browser#xhr
@@ -120,14 +125,22 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
       forEach(headers, function(value, key) {
           if (value) xhr.setRequestHeader(key, value);
       });
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-          // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-          var status = xhr.status == 1223 ? 204 : xhr.status;
-          completeOutstandingRequest(callback, status, xhr.responseText);
-        }
-      };
+
       xhr.send(post || '');
+
+      // IE6, IE7 bug - does sync when serving from cache
+      if (xhr.readyState == 4) {
+        setTimeout(function() {
+          completeOutstandingRequest(callback, fixStatus(xhr.status), xhr.responseText);
+        }, 0);
+      } else {
+        xhr.onreadystatechange = function() {
+          if (xhr.readyState == 4) {
+            completeOutstandingRequest(callback, fixStatus(xhr.status), xhr.responseText);
+          }
+        };
+      }
+
       return xhr;
     }
   };
