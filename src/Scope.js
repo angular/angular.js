@@ -630,13 +630,13 @@ Scope.prototype = {
     var sourceScope = this,
         currentScope = sourceScope,
         nextScope = sourceScope,
-        event = { type: name,
-                  source: sourceScope };
+        event = { name: name,
+                  sourceScope: sourceScope };
 
     //down while you can, then up and next sibling or up and next sibling until back at root
     do {
       currentScope = nextScope;
-      event.currentTarget = currentScope;
+      event.currentScope = currentScope;
       forEach(currentScope.$$listeners[name], function(listener) {
         try {
           listener(event, message);

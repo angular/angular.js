@@ -495,11 +495,11 @@ describe('Scope', function() {
     });
 
 
-    ddescribe('$broadcast', function() {
+    describe('$broadcast', function() {
       var log, child1, child2, child3, grandChild11, grandChild21, grandChild22, greatGrandChild211;
 
       function logger(event) {
-        log += event.currentTarget.id + '>';
+        log += event.currentScope.id + '>';
       }
 
       beforeEach(function() {
