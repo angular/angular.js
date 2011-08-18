@@ -1,6 +1,6 @@
 <!document html>
 <html>
-  <head> 
+  <head>
     <meta charset="utf-8">
     <title>locale test</title>
     <script src="../../build/angular.js" ng:autobind></script>
@@ -9,10 +9,31 @@
     -->
   </head>
   <body>
+    <h3>Datetime/Number/Currency filters demo:</h3>
     <input type="text" name="input" value="234234443432"><br>
-    date: {{input | date:"medium"}}<br>
-    date: {{input | date:"longDate"}}<br>
+    date(medium): {{input | date:"medium"}}<br>
+    date(longDate): {{input | date:"longDate"}}<br>
     number: {{input | number}}<br>
     currency: {{input | currency }}
+    <hr/>
+    <h3>Pluralization demo:</h3>
+    <input type="text" name="plInput" value="1"><br>
+    <ng:pluralize count="plInput"
+                  when= "{ '0': 'You have no email!',
+                           'one': 'You have one email!',
+                           'other': 'You have {} emails!'}">
+    </ng:pluralize>
+    <hr/>
+    <h3>Pluralization demo with offsets:</h3>
+    Name of person1:<input type="text" name="person1" value="Shanjian"/><br/>
+    Name of person2:<input type="text" name="person2" value="Di"/><br/>
+    <input type="text" name="plInput2" value="1"><br>
+    <ng:pluralize count="plInput2" offset=2
+                  when= "{'0':'Nobody is viewing!',
+                          '1': '{{person1}} is viewing!',
+                          '2': '{{person1}} and {{person2}} are viewing!',
+                          '3': '{{person1}}, {{person2}} and one other person are viewing!',
+                          'other': '{{person1}}, {{person2}} and {} other people are viewing!'}">
+    </ng:pluralize>
   </body>
-</html> 
+</html>
