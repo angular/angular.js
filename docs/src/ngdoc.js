@@ -115,6 +115,10 @@ Doc.prototype = {
           function(_, before, content, after){
             return '<pre class="doc-source">' + htmlEscape(content) + '</pre>';
           });
+        text = text.replace(/(<doc:source jsfiddle="false">)([\s\S]*)(<\/doc:source>)/mi,
+          function(_, before, content, after){
+            return '<pre class="doc-source" jsfiddle="false">' + htmlEscape(content) + '</pre>';
+          });
         text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
           function(_, before, content, after){
             self.scenarios.push(content);
