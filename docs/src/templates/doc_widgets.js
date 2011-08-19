@@ -28,7 +28,7 @@
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
     var example = element.find('pre').eq(0),  //doc-source
         exampleSrc = example.text(),
-        jsfiddle = element.find('doc:source').attr('jsfiddle') || true,
+        jsfiddle = example.attr('jsfiddle') || true,
         scenario = element.find('pre').eq(1); //doc-scenario
 
     var code = indent(exampleSrc);
