@@ -44,8 +44,8 @@ var manualUppercase = function (s) {
 
 
 // String#toLowerCase and String#toUpperCase don't produce correct results in browsers with Turkish
-// locale, for this reason we need to detect this case and redefine lowercase/uppercase methods with
-// correct but slower alternatives.
+// locale, for this reason we need to detect this case and redefine lowercase/uppercase methods
+// with correct but slower alternatives.
 if ('i' !== 'I'.toLowerCase()) {
   lowercase = manualLowercase;
   uppercase = manualUppercase;
@@ -118,10 +118,11 @@ var _undefined        = undefined,
  * @function
  *
  * @description
- * Invokes the `iterator` function once for each item in `obj` collection. The collection can either
- * be an object or an array. The `iterator` function is invoked with `iterator(value, key)`, where
- * `value` is the value of an object property or an array element and `key` is the object property
- * key or array element index. Optionally, `context` can be specified for the iterator function.
+ * Invokes the `iterator` function once for each item in `obj` collection. The collection can
+ * either be an object or an array. The `iterator` function is invoked with `iterator(value, key)`,
+ * where `value` is the value of an object property or an array element and `key` is the object
+ * property key or array element index. Optionally, `context` can be specified for the iterator
+ * function.
  *
  * Note: this function was previously known as `angular.foreach`.
  *
@@ -222,8 +223,8 @@ function nextUid() {
  * @function
  *
  * @description
- * Extends the destination object `dst` by copying all of the properties from the `src` object(s) to
- * `dst`. You can specify multiple `src` objects.
+ * Extends the destination object `dst` by copying all of the properties from the `src` object(s)
+ * to `dst`. You can specify multiple `src` objects.
  *
  * @param {Object} dst The destination object.
  * @param {...Object} src The source object(s).
@@ -428,9 +429,13 @@ function isWindow(obj) {
   return obj && obj.document && obj.location && obj.alert && obj.setInterval;
 }
 
-function isBoolean(value) { return typeof value == $boolean;}
+function isBoolean(value) { return typeof value == $boolean; }
 function isTextNode(node) { return nodeName_(node) == '#text'; }
-function trim(value) { return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value; }
+
+function trim(value) {
+  return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
+}
+
 function isElement(node) {
   return node &&
     (node.nodeName  // we are a direct element
@@ -451,10 +456,12 @@ function makeMap(str){
 
 
 /**
- * HTML class which is the only class which can be used in ng:bind to inline HTML for security reasons.
+ * HTML class which is the only class which can be used in ng:bind to inline HTML for security
+ * reasons.
+ *
  * @constructor
  * @param html raw (unsafe) html
- * @param {string=} option if set to 'usafe' then get method will return raw (unsafe/unsanitized) html
+ * @param {string=} option If set to 'usafe', get method will return raw (unsafe/unsanitized) html
  */
 function HTML(html, option) {
   this.html = html;
@@ -470,7 +477,8 @@ function HTML(html, option) {
 if (msie < 9) {
   nodeName_ = function(element) {
     element = element.nodeName ? element : element[0];
-    return (element.scopeName && element.scopeName != 'HTML' ) ? uppercase(element.scopeName + ':' + element.nodeName) : element.nodeName;
+    return (element.scopeName && element.scopeName != 'HTML')
+      ? uppercase(element.scopeName + ':' + element.nodeName) : element.nodeName;
   };
 } else {
   nodeName_ = function(element) {
@@ -500,26 +508,35 @@ function map(obj, iterator, context) {
  * @function
  *
  * @description
- * Determines the number of elements in an array, number of properties of an object or string
- * length.
+ * Determines the number of elements in an array, the number of properties an object has, or
+ * the length of a string.
  *
- * Note: this function is used to augment the Object type in angular expressions. See
- * {@link angular.Object} for more info.
+ * Note: This function is used to augment the Object type in Angular expressions. See
+ * {@link angular.Object} for more information about Angular arrays.
  *
- * @param {Object|Array|string} obj Object, array or string to inspect.
+ * @param {Object|Array|string} obj Object, array, or string to inspect.
  * @param {boolean} [ownPropsOnly=false] Count only "own" properties in an object
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object or an array.
  *
  * @example
  * <doc:example>
  *  <doc:source>
- *   Number of items in array: {{ [1,2].$size() }}<br/>
- *   Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
+ *   <script>
+ *     function SizeCtrl() {
+ *       this.fooStringLength = angular.Object.size('foo');
+ *     }
+ *   </script>
+ *   <div ng:controller="SizeCtrl">
+ *     Number of items in array: {{ [1,2].$size() }}<br/>
+ *     Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
+ *     String length: {{fooStringLength}}
+ *   </div>
  *  </doc:source>
  *  <doc:scenario>
  *   it('should print correct sizes for an array and an object', function() {
  *     expect(binding('[1,2].$size()')).toBe('2');
  *     expect(binding('{a:1, b:2, c:3}.$size()')).toBe('3');
+ *     expect(binding('fooStringLength')).toBe('3');
  *   });
  *  </doc:scenario>
  * </doc:example>
@@ -581,24 +598,21 @@ function isLeafNode (node) {
  * @function
  *
  * @description
- * Creates a deep copy of `source`.
+ * Creates a deep copy of `source`, which should be an object or an array.
  *
- * If `source` is an object or an array, all of its members will be copied into the `destination`
- * object.
+ * * If no destination is supplied, a copy of the object or array is created.
+ * * If a destination is provided, all of its elements (for array) or properties (for objects)
+ *   are deleted and then all elements/properties from the source are copied to it.
+ * * If  `source` is not an object or array, `source` is returned.
  *
- * If `destination` is not provided and `source` is an object or an array, a copy is created &
- * returned, otherwise the `source` is returned.
+ * Note: this function is used to augment the Object type in Angular expressions. See
+ * {@link angular.Array} for more information about Angular arrays.
  *
- * If `destination` is provided, all of its properties will be deleted.
- *
- * Note: this function is used to augment the Object type in angular expressions. See
- * {@link angular.Object} for more info.
- *
- * @param {*} source The source to be used to make a copy.
- *                   Can be any type including primitives, `null` and `undefined`.
- * @param {(Object|Array)=} destination Optional destination into which the source is copied. If
+ * @param {*} source The source that will be used to make a copy.
+ *                   Can be any type, including primitives, `null`, and `undefined`.
+ * @param {(Object|Array)=} destination Destination into which the source is copied. If
  *     provided, must be of the same type as `source`.
- * @returns {*} The copy or updated `destination` if `destination` was specified.
+ * @returns {*} The copy or updated `destination`, if `destination` was specified.
  *
  * @example
  * <doc:example>
@@ -660,7 +674,6 @@ function copy(source, destination){
 }
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.equals
  * @function
@@ -675,16 +688,19 @@ function copy(source, destination){
  * @function
  *
  * @description
- * Determines if two objects or value are equivalent.
+ * Determines if two objects or two values are equivalent. Supports value types, arrays and
+ * objects.
  *
- * To be equivalent, they must pass `===` comparison or be of the same type and have all their
- * properties pass `===` comparison. During property comparision properties of `function` type and
- * properties with name starting with `$` are ignored.
+ * Two objects or values are considered equivalent if at least one of the following is true:
  *
- * Supports values types, arrays and objects.
+ * * Both objects or values pass `===` comparison.
+ * * Both objects or values are of the same type and all of their properties pass `===` comparison.
  *
- * Note: this function is used to augment the Object type in angular expressions. See
- * {@link angular.Object} for more info.
+ * During a property comparision, properties of `function` type and properties with names
+ * that begin with `$` are ignored.
+ *
+ * Note: This function is used to augment the Object type in Angular expressions. See
+ * {@link angular.Array} for more information about Angular arrays.
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
@@ -732,7 +748,9 @@ function equals(o1, o2) {
     } else {
       keySet = {};
       for(key in o1) {
-        if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) return false;
+        if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) {
+          return false;
+        }
         keySet[key] = true;
       }
       for(key in o2) {
@@ -802,7 +820,9 @@ function sliceArgs(args, startIndex) {
  * @function
  *
  * @description
- * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for `fn`).
+ * Returns a function which calls function `fn` bound to `self`
+ * (`self` becomes the `this` for `fn`).
+ *
  * Optional `args` can be supplied which are prebound to the function, also known as
  * [function currying](http://en.wikipedia.org/wiki/Currying).
  *
@@ -826,7 +846,8 @@ function bind(self, fn) {
             : fn.call(self);
         };
   } else {
-    // in IE, native methods are not functions and so they can not be bound (but they don't need to be)
+    // in IE, native methods are not functions and so they can not be bound
+    // (but they don't need to be)
     return fn;
   }
 }
@@ -928,7 +949,6 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:autobind
  * @element script
@@ -938,14 +958,17 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * @TODO rename to ng:autobind to ng:autoboot
  *
  * @description
+ * Technically, ng:autobind is not a directive; it is an Angular bootstrap parameter that can act
+ * as a directive. It must exist in the script used to boot Angular and can be used only one time.
+ * For details on bootstrapping Angular, see {@link guide/dev_guide.bootstrap Initializing Angular}
+ * in the Angular Developer Guide.
  *
- * `ng:autobind` with no parameters tells angular to compile and manage the whole page.
+ * `ng:autobind` with no parameters tells Angular to compile and manage the whole page.
  *
- * `ng:autobind="[root element ID]"` tells angular to compile and manage part of the docucment,
+ * `ng:autobind="[root element ID]"` tells Angular to compile and manage part of the document,
  * starting at "root element ID".
  *
- * For details on bootstrapping angular, see {@link guide/dev_guide.bootstrap Initializing Angular}
- * in the Angular Developer Guide.
+
  */
 function angularInit(config, document){
   var autobind = config.autobind;
