@@ -1,44 +1,46 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.directive
  * @description
  *
- * Custom attributes for DOM elements.  Directives modify the behavior of the element they are
- * specified in, but are not intended to add elements to the DOM as are
- * {@link angular.widget widgets}.
+ * Angular directives create custom attributes for DOM elements. A directive can modify the
+ * behavior of the element in which it is specified. Do not use directives to add elements to the
+ * DOM; instead, use {@link angular.widget widgets} to add DOM elements.
  *
- * Following is the list of built-in angular directives:
+ * Following is the list of built-in Angular directives:
  *
- * * {@link angular.directive.ng:bind ng:bind} - Creates a data-binding between HTML text value and
- * data model.
- * * {@link angular.directive.ng:bind-attr ng:bind-attr} - Creates a data-binding as in `ng:bind`,
- * but uses JSON key / value pairs.
- * * {@link angular.directive.ng:bind-template ng:bind-template} - Replaces text value of an element
- * with a specified template.
+ * * {@link angular.directive.ng:autobind ng:autobind} - An Angular bootstrap parameter that can
+ * act as a directive.
+ * * {@link angular.directive.ng:bind ng:bind} - Creates a data-binding between an HTML text value
+ * and a data model.
+ * * {@link angular.directive.ng:bind-attr ng:bind-attr} - Creates a data-binding in a way similar
+ * to `ng:bind`, but uses JSON key / value pairs to do so.
+ * * {@link angular.directive.ng:bind-template ng:bind-template} - Replaces the text value of an
+ * element with a specified template.
  * * {@link angular.directive.ng:change ng:change} - Executes an expression when the value of an
  * input widget changes.
- * * {@link angular.directive.ng:class ng:class} - Conditionally set CSS class on an element.
+ * * {@link angular.directive.ng:class ng:class} - Conditionally set a CSS class on an element.
  * * {@link angular.directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
  * conjunction with {@link angular.widget.@ng:repeat} to affect even rows in a collection.
  * * {@link angular.directive.ng:class-odd ng:class-odd} - Like `ng:class`, but works with {@link
  * angular.widget.@ng:repeat}  to affect odd rows.
- * * {@link angular.directive.ng:click ng:click} - Executes custom behavior when element is clicked.
+ * * {@link angular.directive.ng:click ng:click} - Executes custom behavior when an element is
+ * clicked.
  * * {@link angular.directive.ng:controller ng:controller} - Creates a scope object linked to the
  * DOM element and assigns behavior to the scope.
  * * {@link angular.directive.ng:hide ng:hide} - Conditionally hides a portion of HTML.
- * * {@link angular.directive.ng:href ng:href} - Places an href in the angular namespace.
+ * * {@link angular.directive.ng:href ng:href} - Places an href in the Angular namespace.
  * * {@link angular.directive.ng:init} - Initialization tasks run before a template is executed.
  * * {@link angular.directive.ng:show ng:show} - Conditionally displays a portion of HTML.
- * * {@link angular.directive.ng:src ng:src} - Places a `src` attribute into the angular namespace.
+ * * {@link angular.directive.ng:src ng:src} - Places a `src` attribute into the Angular namespace.
  * * {@link angular.directive.ng:style ng:style} - Conditionally set CSS styles on an element.
- * * {@link angular.directive.ng:submit} - Binds angular expressions to `onSubmit` events.
+ * * {@link angular.directive.ng:submit} - Binds Angular expressions to `onSubmit` events.
  *
- * For more information about how angular directives work, and how to create your own directives,
- * see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in the angular
- * Developer Guide.
+ * For more information about how Angular directives work, and to learn how to create your own
+ * directives, see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in
+ * the Angular Developer Guide.
  */
 
 /**
@@ -151,12 +153,17 @@ angularDirective("ng:init", function(expression){
      <doc:scenario>
        it('should check controller', function(){
          expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
-         expect(element('.doc-example-live li[ng\\:repeat-index="0"] input').val()).toBe('408 555 1212');
-         expect(element('.doc-example-live li[ng\\:repeat-index="1"] input').val()).toBe('john.smith@example.org');
+         expect(element('.doc-example-live li[ng\\:repeat-index="0"] input').val())
+           .toBe('408 555 1212');
+         expect(element('.doc-example-live li[ng\\:repeat-index="1"] input').val())
+           .toBe('john.smith@example.org');
+
          element('.doc-example-live li:first a:contains("clear")').click();
          expect(element('.doc-example-live li:first input').val()).toBe('');
+
          element('.doc-example-live li:last a:contains("add")').click();
-         expect(element('.doc-example-live li[ng\\:repeat-index="2"] input').val()).toBe('yourname@example.org');
+         expect(element('.doc-example-live li[ng\\:repeat-index="2"] input').val())
+           .toBe('yourname@example.org');
        });
      </doc:scenario>
    </doc:example>
@@ -173,22 +180,21 @@ angularDirective("ng:controller", function(expression){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind
  *
  * @description
- * The `ng:bind` attribute asks angular to replace the text content of this
- * HTML element with the value of the given expression, and to keep the text
- * content up to date when the expression's value changes. Usually you would
- * just write `{{ expression }}` and let angular compile it into
+ * The `ng:bind` attribute tells Angular to replace the text content of the specified
+ * HTML element with the value of the given expression, and to update the text
+ * content whenever the expression's value changes. Usually, you would
+ * just write `{{ expression }}` and let Angular compile it into
  * `<span ng:bind="expression"></span>` at bootstrap time.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate.
  *
  * @example
- * You can try it right here: enter text in the text box and watch the greeting change.
+ * Enter a name in the Live Preview text box and watch the greeting below it change instantly.
    <doc:example>
      <doc:source>
        Enter name: <input type="text" name="name" value="Whirled"> <br>
@@ -227,8 +233,8 @@ angularDirective("ng:bind", function(expression, element){
           delete scope.$element;
         }
       }
-      // If we are HTML than save the raw HTML data so that we don't
-      // recompute sanitization since it is expensive.
+      // If we are HTML, then save the raw HTML data so that we don't
+      // recompute sanitization since that is expensive.
       // TODO: turn this into a more generic way to compute this
       if ((isHtml = (value instanceof HTML)))
         value = (html = value).html;
@@ -458,7 +464,8 @@ angularDirective("ng:bind-attr", function(expression){
  * element is clicked.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval upon click.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * click.
  *
  * @example
    <doc:example>
