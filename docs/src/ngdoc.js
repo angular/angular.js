@@ -111,9 +111,11 @@ Doc.prototype = {
                  '</pre></div>';
         });
       } else if (isDocWidget('example')) {
-        text = text.replace(/(<doc:source>)([\s\S]*)(<\/doc:source>)/mi,
-          function(_, before, content, after){
-            return '<pre class="doc-source">' + htmlEscape(content) + '</pre>';
+        text = text.replace(/<doc:source(\s+jsfiddle="[^"]+")?>([\s\S]*)<\/doc:source>/mi,
+          function(_, jsfiddle, content){
+            return '<pre class="doc-source"' + (jsfiddle || '') +'>' +
+                      htmlEscape(content) +
+                   '</pre>';
           });
         text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
           function(_, before, content, after){
