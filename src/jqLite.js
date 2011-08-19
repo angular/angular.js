@@ -159,7 +159,7 @@ function JQLiteRemoveClass(element, selector) {
   element.className = trim(
       (" " + element.className + " ")
       .replace(/[\n\t]/g, " ")
-      .replace(" " + selector + " ", "")
+      .replace(" " + selector + " ", " ")
   );
 }
 
