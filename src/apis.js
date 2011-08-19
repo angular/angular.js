@@ -23,17 +23,17 @@ var angularGlobal = {
  * A namespace for utility functions used to work with JavaScript objects. These functions are
  * exposed in two ways:
  *
- * __* Angular expressions:__ Functions are bound to all objects and augment the Object type. The
+ * * __Angular expressions:__ Functions are bound to all objects and augment the Object type. The
  * names of these methods are prefixed with the '$' character in order to minimize naming collisions.
- * To call a method, invoke the function without the first argument, e.g, `myObject.$foo(param2)`.
+ * To call a method, invoke the function without the first argument, for example, `myObject.$foo(param2)`.
  *
- * __* JavaScript code:__ Functions don't augment the Object type and must be invoked as functions of
+ * * __JavaScript code:__ Functions don't augment the Object type and must be invoked as functions of
  * `angular.Object` as `angular.Object.foo(myObject, param2)`.
  *
- * * {@link angular.Object.copy angular.Object.copy()} - Creates a deep copy of the source parameter
- * * {@link angular.Object.equals angular.Object.equals()} - Determines if two objects or values are
- * equivalent
- * * {@link angular.Object.size angular.Object.size()} - Determines the number of elements in
+ *   * {@link angular.Object.copy angular.Object.copy()} - Creates a deep copy of the source parameter.
+ *   * {@link angular.Object.equals angular.Object.equals()} - Determines if two objects or values are
+ *     equivalent.
+ *   * {@link angular.Object.size angular.Object.size()} - Determines the number of elements in
  * strings, arrays, and objects.
  */
 var angularCollection = {
@@ -55,27 +55,26 @@ var angularObject = {
  * These functions are exposed in two ways:
  *
  * * __Angular expressions:__ Functions are bound to the Array objects and augment the Array type as
- * array methods. The names of these methods are prefixed with $ character to minimize naming
+ * array methods. The names of these methods are prefixed with the $ character to minimize naming
  * collisions. To call a method, invoke myArrayObject.$foo(params).
  *
  *     Because Array type is a subtype of the Object type, all angular.Object functions augment
- *     theArray type in angular expressions as well.
+ *     the Array type in Angular expressions as well.
  *
- * * __JavaScript code:__ Functions don't augment the Array type and must be invoked as functions of
+ * * __JavaScript code:__ Functions do nor augment the Array type and must be invoked as functions of
  * `angular.Array` as `angular.Array.foo(myArrayObject, params)`.
  *
- * The following APIs are built-in to the angular Array object:
+ * The following APIs are built in to the Angular Array object:
  *
  * * {@link angular.Array.add angular.Array.add()} - Optionally adds a new element to an array.
  * * {@link angular.Array.count angular.Array.count()} - Determines the number of elements in an
  * array.
- * * {@link angular.Array.filter angular.Array.filter()} - Returns a subset of items as a new array.
+ * * {@link angular.Array.filter angular.Array.filter()} - Returns the subset of elements specified in the filter as a new array.
  * * {@link angular.Array.indexOf angular.Array.indexOf()} - Determines the index of an array value.
- * * {@link angular.Array.limitTo angular.Array.limitTo()} - Creates a new array off the front or
- * back of an existing array.
- * * {@link angular.Array.orderBy angular.Array.orderBy()} - Orders array elements
- * * {@link angular.Array.remove angular.Array.remove()} - Removes array elements
- * * {@link angular.Array.sum angular.Array.sum()} - Sums the number elements in an array
+ * * {@link angular.Array.limitTo angular.Array.limitTo()} - Creates a sub-array of an existing array.
+ * * {@link angular.Array.orderBy angular.Array.orderBy()} - Orders array elements.
+ * * {@link angular.Array.remove angular.Array.remove()} - Removes array elements.
+ * * {@link angular.Array.sum angular.Array.sum()} - Sums the numbers in an array.
  */
 var angularArray = {
 
@@ -86,14 +85,15 @@ var angularArray = {
    * @function
    *
    * @description
-   * Determines the index of `value` in `array`.
+   * Determines the index of a `value` in an `array`.
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more information about Angular arrays.
    *
    * @param {Array} array Array to search.
    * @param {*} value Value to search for.
-   * @returns {number} The position of the element in `array`. The position is 0-based. `-1` is returned if the value can't be found.
+   * @returns {number} The position of the element in `array`. The position is 0-based. 
+   * If the value cannot be found, `-1` is returned.
    *
    * @example
       <doc:example>
@@ -126,15 +126,16 @@ var angularArray = {
    * @function
    *
    * @description
-   * This function calculates the sum of all numbers in `array`. If the `expressions` is supplied,
-   * it is evaluated once for each element in `array` and then the sum of these values is returned.
+   * The `sum` function calculates the sum of all numbers in an `array`. If an `expression` is supplied, 
+   *  `sum`  evaluates each element in the `array` with the expression and then returns the sum of the
+   * calculated values.   
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more info about Angular arrays.
    *
    * @param {Array} array The source array.
-   * @param {(string|function())=} expression Angular expression or a function to be evaluated for each
-   *     element in `array`. The array element becomes the `this` during the evaluation.
+   * @param {(string|function())=} expression Angular expression or a function to be evaluated for 
+   *  each element in `array`. The array element becomes the `this` during the evaluation.
    * @returns {number} Sum of items in the array.
    *
    * @example
@@ -202,8 +203,8 @@ var angularArray = {
    * {@link angular.Array.indexOf indexOf} function on the `array` and only the first instance of
    * the element will be removed.
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more information about Angular arrays.
    *
    * @param {Array} array Array from which an element should be removed.
    * @param {*} value Element to be removed.
@@ -258,8 +259,8 @@ var angularArray = {
    * @description
    * Selects a subset of items from `array` and returns it as a new array.
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more information about Angular arrays.
    *
    * @param {Array} array The source array.
    * @param {string|Object|function()} expression The predicate to be used for selecting items from
@@ -412,28 +413,28 @@ var angularArray = {
 
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.Array.add
    * @function
    *
    * @description
-   * `add` is a function similar to JavaScript's `Array#push` method, in that it appends a new
-   * element to an array. The difference is that the value being added is optional and defaults to
-   * an empty object.
+   * The `add` function in Angualar is similar to JavaScript's `Array#push` method in that it 
+   * appends a new element to an array. Angular's function differs from the JavaScript method in that
+   * specifying a value for the function is optional and the default for the function is an 
+   * empty object.
+   *    
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more information about Angular arrays.
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
-   *
-   * @param {Array} array The array expand.
-   * @param {*=} [value={}] The value to be added.
+   * @param {Array} array The array to be expanded.
+   * @param {*=} [value={}] The value to be appended.
    * @returns {Array} The expanded array.
    *
    * @TODO simplify the example.
    *
    * @example
-   * This example shows how an initially empty array can be filled with objects created from user
-   * input via the `$add` method.
+   * This example shows how you can use the `$add` method to populate an initially empty array 
+   * with objects created from user input.
      <doc:example>
        <doc:source>
          [<a href="" ng:click="people.$add()">add empty</a>]
@@ -493,17 +494,18 @@ var angularArray = {
    * @function
    *
    * @description
-   * Determines the number of elements in an array. Optionally it will count only those elements
-   * for which the `condition` evaluates to `true`.
+   * Determines the number of elements in an array. Provides an option for counting only those
+   * elements for which a specified `condition` evaluates to `true`.
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more information about Angular arrays.
    *
-   * @param {Array} array The array to count elements in.
-   * @param {(function()|string)=} condition A function to be evaluated or angular expression to be
-   *     compiled and evaluated. The element that is currently being iterated over, is exposed to
-   *     the `condition` as `this`.
-   * @returns {number} Number of elements in the array (for which the condition evaluates to true).
+   * @param {Array} array The array containing the elements to be counted.
+   * @param {(function()|string)=} condition A function to be evaluated or 
+   *     an Angular expression to be compiled and evaluated. The element being  
+   *     iterated over is exposed to the `condition` as `this`.
+   * @returns {number} Number of elements in the array. If a `condition` is specified, returns 
+   * the number of elements whose `condition` evaluates to `true`.
    *
    * @example
      <doc:example>
@@ -552,10 +554,10 @@ var angularArray = {
    * @function
    *
    * @description
-   * Orders `array` by the `expression` predicate.
+   * Orders a specified `array` by the `expression` predicate.
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: this function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more informaton about Angular arrays.
    *
    * @param {Array} array The array to sort.
    * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be
@@ -563,13 +565,13 @@ var angularArray = {
    *
    *    Can be one of:
    *
-   *    - `function`: getter function. The result of this function will be sorted using the
-   *      `<`, `=`, `>` operator
-   *    - `string`: angular expression which evaluates to an object to order by, such as 'name' to
+   *    - `function`: Getter function. The result of this function will be sorted using the
+   *      `<`, `=`, `>` operator.
+   *    - `string`: An Angular expression which evaluates to an object to order by, such as 'name' to
    *      sort by a property called 'name'. Optionally prefixed with `+` or `-` to control ascending
-   *      or descending sort order (e.g. +name or -name).
-   *    - `Array`: array of function or string predicates, such that a first predicate in the array
-   *      is used for sorting, but when the items are equivalent next predicate is used.
+   *      or descending sort order (for example, +name or -name).
+   *    - `Array`: An array of function or string predicates. The first predicate in the array
+   *      is used for sorting, but when two items are equivalent, the next predicate is used.
    *
    * @param {boolean=} reverse Reverse the order the array.
    * @returns {Array} Sorted copy of the source array.
@@ -678,16 +680,17 @@ var angularArray = {
    * @function
    *
    * @description
-   * Creates a new array containing only the first, or last `limit` number of elements of the
-   * source `array`.
+   * Creates a new array containing only a specified number of elements in an array. The elements are
+   * taken from either the beginning or the end of the source array, as specified by the 
+   * value and sign (positive or negative) of `limit`.   
    *
-   * Note: this function is used to augment the `Array` type in angular expressions. See
-   * {@link angular.Array} for more info.
+   * Note: This function is used to augment the `Array` type in Angular expressions. See
+   * {@link angular.Array} for more information about Angular arrays.
    *
    * @param {Array} array Source array to be limited.
-   * @param {string|Number} limit The length of the returned array. If the number is positive, the
-   *     first `limit` items from the source array will be copied, if the number is negative, the
-   *     last `limit` items will be copied.
+   * @param {string|Number} limit The length of the returned array. If the `limit` number is positive, 
+   *     `limit` number of items from the beginning of the source array are copied. 
+   *     If the number is negative, `limit` number  of items from the end of the source array are copied.
    * @returns {Array} A new sub-array of length `limit`.
    *
    * @example
