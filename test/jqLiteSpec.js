@@ -222,6 +222,17 @@ describe('jqLite', function(){
         expect(jqLite(a).hasClass('abc')).toEqual(false);
         expect(jqLite(b).hasClass('abc')).toEqual(false);
       });
+
+      it('should correctly remove middle class', function() {
+        var element = jqLite('<div class="foo bar baz"></div>');
+        expect(element.hasClass('bar')).toBe(true);
+
+        element.removeClass('bar');
+
+        expect(element.hasClass('foo')).toBe(true);
+        expect(element.hasClass('bar')).toBe(false);
+        expect(element.hasClass('baz')).toBe(true);
+      });
     });
   });
 
