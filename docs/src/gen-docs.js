@@ -42,11 +42,27 @@ function writeTheRest(writesFuture) {
 
   writesFuture.push(writer.copyDir('img'));
   writesFuture.push(writer.copyDir('examples'));
-  writesFuture.push(writer.copyTpl('index.html'));
-  writesFuture.push(writer.copy('docs/src/templates/index.html',
-                                'build/docs/index-jq.html',
-                                '<!-- jquery place holder -->',
-                                '<script src=\"jquery.min.js\"><\/script>'));
+
+  var manifestPl = 'doc:manifest',
+      jqPl = '<!-- jquery place holder -->',
+      ngPl = '<!-- angular script place holder -->',
+      manifest = 'manifest="appcache.manifest"',
+      jq = '<script src="jquery.min.js"></script>',
+      ngMin = '<script src="../angular.min.js" ng:autobind></script>',
+      ng = '<script src="../angular.js" ng:autobind></script>'
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
+                                [manifestPl, ngPl], [manifest,ngMin]));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html',
+                                [manifestPl, jqPl, ngPl], [manifest, jq, ngMin]));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-debug.html',
+                                [ngPl], [ng]));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-debug.html',
+                                [jqPl, ngPl], [jq, ng]));
+
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));
   writesFuture.push(writer.copyTpl('jquery.min.js'));

@@ -44,11 +44,25 @@ exports.copyTpl = function(filename) {
   return exports.copy('docs/src/templates/' + filename, OUTPUT_DIR + filename);
 };
 
-exports.copy = function (from, to, replacementKey, replacement) {
-  // Have to use rb (read binary), char 'r' is infered by library.
-  return qfs.read(from,'b').then(function(content) {
-    if(replacementKey && replacement) {
-      content = content.toString().replace(replacementKey, replacement);
+/* Copy files from one place to another. Also replace placeholders accordingly
+ * @param from{string} path of the source file to be copied
+ * @param to{string} path of where the copied file should be stored
+ * @param replacementKeys{array=} optional array of placeholder strings
+ * @param  replacements{array=} array of strings that should be swapped with the placeholders
+ */
+exports.copy = function (from, to, replacementKeys, replacements) {
+  // We have to use binary reading, Since some characters are unicode.
+  return qfs.read(from, 'b').then(function(content) {
+    if (replacementKeys && replacements) {
+      if (replacementKeys.length !== replacements.length) {
+        console.log('WARNING: replacementKeys should have the same length as replacements' +
+                    ' in writer.js');
+      }
+
+      content = content.toString();
+      for(var i = 0; i < replacementKeys.length; i++) {
+        content = content.replace(replacementKeys[i], replacements[i]);
+      }
     }
     qfs.write(to, content);
   });
