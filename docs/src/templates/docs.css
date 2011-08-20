@@ -416,3 +416,7 @@ li {
   text-align: left;
   background-color: lightgray;
 }
+
+[ng\:template], .ng-template {
+  display: none;
+}

@@ -1,5 +1,9 @@
 @charset "UTF-8";
 
+[ng\:cloak], .ng-cloak {
+  display: none;
+}
+
 .ng-format-negative {
   color: red;
 }
