@@ -99,6 +99,7 @@ function Scope() {
   this.$destructor = noop;
   this['this'] = this.$root =  this;
   this.$$asyncQueue = [];
+  this.$$listeners = {};
 }
 
 /**
@@ -169,6 +170,7 @@ Scope.prototype = {
     Child.prototype = this;
     child = new Child();
     child['this'] = child;
+    child.$$listeners = {};
     child.$parent = this;
     child.$id = nextUid();
     child.$$asyncQueue = [];
@@ -392,12 +394,15 @@ Scope.prototype = {
    * scope and its children. Removal also implies that the current scope is eligible for garbage
    * collection.
    *
+   * The destructing scope emits an `$destroy` {@link angular.scope.$emit event}.
+   *
    * The `$destroy()` is usually used by directives such as
    * {@link angular.widget.@ng:repeat ng:repeat} for managing the unrolling of the loop.
    *
    */
   $destroy: function() {
     if (this.$root == this) return; // we can't remove the root node;
+    this.$emit('$destroy');
     var parent = this.$parent;
 
     if (parent.$$childHead == this) parent.$$childHead = this.$$nextSibling;
@@ -413,7 +418,7 @@ Scope.prototype = {
    * @function
    *
    * @description
-   * Executes the expression on the current scope returning the result. Any exceptions in the
+   * Executes the `expression` on the current scope returning the result. Any exceptions in the
    * expression are propagated (uncaught). This is useful when evaluating engular expressions.
    *
    * # Example
@@ -520,8 +525,148 @@ Scope.prototype = {
     } finally {
       this.$root.$digest();
     }
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$on
+   * @function
+   *
+   * @description
+   * Listen on events of a given type. See {@link angular.scope.$emit $emit} for discussion of
+   * event life cycle.
+   *
+   * @param {string} name Event name to listen on.
+   * @param {function(event)} listener Function to call when the event is emitted.
+   *
+   * The event listener function format is: `function(event)`. The `event` object passed into the
+   * listener has the following attributes
+   *   - `target` - {Scope}: the scope which initiated the event.
+   *   - `currentTarget` - {Scope}: the current scope which is handling the event.
+   *   - `name` - {string}: Name of the event.
+   *   - `cancel` - {function}: calling `cancel` function will cancel further event propagation.
+   */
+  $on: function(name, listener) {
+    var namedListeners = this.$$listeners[name];
+    if (!namedListeners) {
+      this.$$listeners[name] = namedListeners = [];
+    }
+    namedListeners.push(listener);
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$removeOn
+   * @function
+   *
+   * @description
+   * Remove the on listener registered by {@link angular.scope.$on $on}.
+   *
+   * @param {string} name Event name to remove on.
+   * @param {function} listener Function to remove.
+   */
+  $removeOn: function(name, listener) {
+    var namedListeners = this.$$listeners[name];
+    var i;
+    if (namedListeners) {
+      i = namedListeners.indexOf(listener);
+      namedListeners.splice(i, 1);
+    }
+  },
+
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$emit
+   * @function
+   *
+   * @description
+   * Dispatches an event `name` upwards through the scope hierarchy notifying the
+   * {@link angular.scope.$on} listeners.
+   *
+   * The event life cycle starts at the scope on which `$emit` was called. All
+   * {@link angular.scope.$on listeners} listening for `name` event on this scope get notified.
+   * Afterwards, the event traverses upwards toward the root scope and calls all registered
+   * listeners along the way. The event will stop propagating if one of the listeners cancels it.
+   *
+   * Any exception emmited from the {@link angular.scope.$on listeners} will be passed
+   * onto the {@link angular.service.$exceptionHandler $exceptionHandler} service.
+   *
+   * @param {string} name Event name to emit.
+   * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+   */
+  $emit: function(name) {
+    var empty = [],
+        namedListeners,
+        canceled = false,
+        scope = this,
+        event = {
+          target: scope,
+          type: name,
+          cancel: function(){canceled = true;}
+        },
+        i, length;
+
+    do {
+      namedListeners = scope.$$listeners[name] || empty;
+      event.currentTarget = scope;
+      for (i=0, length=namedListeners.length; i<length; i++) {
+        try {
+          namedListeners[i].apply(null, concat([event], arguments, 1));
+          if (canceled) return;
+        } catch (e) {
+          scope.$service('$exceptionHandler')(e);
+        }
+      }
+      //traverse upwards
+      scope = scope.$parent;
+    } while (scope);
+  },
+
+
+  $broadcast: function(name, message) {
+    var sourceScope = this,
+        currentScope = sourceScope,
+        nextScope = sourceScope,
+        event = { name: name,
+                  sourceScope: sourceScope };
+
+    //down while you can, then up and next sibling or up and next sibling until back at root
+    do {
+      currentScope = nextScope;
+      event.currentScope = currentScope;
+      forEach(currentScope.$$listeners[name], function(listener) {
+        try {
+          listener(event, message);
+        } catch(e) {
+          currentScope.$service('$exceptionHandler')(e);
+        }
+      });
+
+      // down or to the right!
+      nextScope = currentScope.$$childHead || currentScope.$$nextSibling;
+
+      if (nextScope) {
+        // found child or sibling
+        continue;
+      }
+
+      // we have to restore nextScope and go up!
+      nextScope = currentScope;
+
+      while (!nextScope.$$nextSibling && (nextScope != sourceScope)) {
+        nextScope = nextScope.$parent;
+      }
+
+      if (nextScope != sourceScope) {
+        nextScope = nextScope.$$nextSibling;
+      }
+    } while (nextScope != sourceScope);
   }
 };
+
 
 function compileToFn(exp, name) {
   var fn = isString(exp)
