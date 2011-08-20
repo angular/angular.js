@@ -17,7 +17,7 @@ if (window.jstestdriver) {
       if (isElement(arg)) {
         arg = sortedHtml(arg);
       } else if (isObject(arg)) {
-        arg = toJson(arg, true);
+        arg = toJson(arg, true, /^\$\$/);
       }
       args.push(arg);
     });

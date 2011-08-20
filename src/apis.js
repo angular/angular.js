@@ -821,11 +821,11 @@ function hashKey(obj) {
   var objType = typeof obj;
   var key = obj;
   if (objType == 'object') {
-    if (typeof (key = obj.$hashKey) == 'function') {
+    if (typeof (key = obj.$$hashKey) == 'function') {
       // must invoke on object to keep the right this
-      key = obj.$hashKey();
+      key = obj.$$hashKey();
     } else if (key === undefined) {
-      key = obj.$hashKey = nextUid();
+      key = obj.$$hashKey = nextUid();
     }
   }
   return objType + ':' + key;
@@ -840,13 +840,9 @@ HashMap.prototype = {
    * Store key value pair
    * @param key key to store can be any type
    * @param value value to store can be any type
-   * @returns old value if any
    */
   put: function(key, value) {
-    var _key = hashKey(key);
-    var oldValue = this[_key];
-    this[_key] = value;
-    return oldValue;
+    this[hashKey(key)] = value;
   },
 
   /**
@@ -860,13 +856,41 @@ HashMap.prototype = {
   /**
    * Remove the key/value pair
    * @param key
-   * @returns value associated with key before it was removed
    */
   remove: function(key) {
-    var _key = hashKey(key);
-    var value = this[_key];
-    delete this[_key];
+    var value = this[key = hashKey(key)];
+    delete this[key];
     return value;
+  }
+};
+
+function HashQueueMap(){}
+HashQueueMap.prototype = {
+  /**
+   * Same as array push, but using an array as the value for the hash
+   */
+  push: function(key, value) {
+    var array = this[key = hashKey(key)];
+    if (!array) {
+      this[key] = [value];
+    } else {
+      array.push(value);
+    }
+  },
+
+  /**
+   * Same as array shift, but using an array as the value for the hash
+   */
+  shift: function(key) {
+    var array = this[key = hashKey(key)];
+    if (array) {
+      if (array.length == 1) {
+        delete this[key];
+        return array[0];
+      } else {
+        return array.shift();
+      }
+    }
   }
 };
 
