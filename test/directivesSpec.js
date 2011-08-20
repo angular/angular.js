@@ -381,4 +381,31 @@ describe("directive", function(){
 
   });
 
+  describe('ng:cloak', function() {
+
+    it('should get removed when an element is compiled', function() {
+      var element = jqLite('<div ng:cloak></div>');
+
+      expect(element.attr('ng:cloak')).toBe('');
+
+      angular.compile(element)
+
+      expect(element.attr('ng:cloak')).toBeUndefined();
+    });
+
+
+    it('should remove ng-cloak class from a compiled element', function() {
+      var element = jqLite('<div ng:cloak class="foo ng-cloak bar"></div>');
+
+      expect(element.hasClass('foo')).toBe(true);
+      expect(element.hasClass('ng-cloak')).toBe(true);
+      expect(element.hasClass('bar')).toBe(true);
+
+      angular.compile(element);
+
+      expect(element.hasClass('foo')).toBe(true);
+      expect(element.hasClass('ng-cloak')).toBe(false);
+      expect(element.hasClass('bar')).toBe(true);
+    });
+  });
 });
