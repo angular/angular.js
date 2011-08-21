@@ -289,7 +289,8 @@ li {
 }
 
 
-#content img {
+#content img:not(.ng-directive) {
+  /* the negation rule above is to avoid applying this rule to images in buzz and other examples */
   display: block;
   margin: 2em auto;
   padding: 1em;
