@@ -18,6 +18,8 @@
 
 
 ## Fixes
+- fixed memory leak found in [ng:options] directive
+  ([commit](https://github.com/angular/angular.js/commit/6aa04b1db48853340d720e0a1a3e325ac523a06f))
 - make ng:class-even/odd compatible with ng:class
   (Issue [#508](https://github.com/angular/angular.js/issues/508))
 - fixed error handling for resources that didn't work in certain situations
