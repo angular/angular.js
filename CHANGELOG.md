@@ -1,30 +1,35 @@
 <a name="0.9.19"><a/>
-# 0.9.19 canine-psychokinesis (in-progress) #
+# 0.9.19 canine-psychokinesis (2011-08-20) #
 
-### Features
-- Scope $evalAsync()
-
-
-# Breaking Changes
-- Controller constructor functions are now looked up on scope first and then on window.
-- angular.equals now use === which means that things which used to be equal are no longer.
-  Example '0' !== 0 and [] !== ''
-- angular.scope (http://docs.angularjs.org/#!angular.scope) now (providers, cache) instead of
-  (parent, providers, cache)
-- Watch functions (see http://docs.angularjs.org/#!angular.scope.$watch) used to take
-  fn(newValue, oldValue) and be bound to scope, now they take fn(scope, newValue, oldValue)
-- calling $eval() [no args] should be replaced with call to $apply()
-  (http://docs.angularjs.org/#!angular.scope.$apply) ($eval(exp) should remain as is see
-  http://docs.angularjs.org/#!angular.scope.$eval)
-- scope $set/$get have been removed. ($get is same as $eval; no replacement for $set)
-- $route.onChange() callback (http://docs.angularjs.org/#!angular.service.$route)
-  no longer has this bound.
-- Removed undocumented $config in root scope. (You should have not been depending on this.)
-- removed $flush()/$observe on scope
-- removed ng:eval/ng:eval-order since it is incompatible with $digest phase
-- ng:init and ng:controllers are now called in the order of declaration in HTML
+## Features
+- added error handling support for JSONP requests (see error callback param of the [$xhr] service)
+  ([commit](https://github.com/angular/angular.js/commit/05e2c3196c857402a9aa93837b565e0a2736af23))
+- exposed http response headers in the [$xhr] and [$resource] callbacks
+  ([commit](https://github.com/angular/angular.js/commit/4ec1d8ee86e3138fb91543ca0dca28463895c090)
+  contributed by Karl Seamon)
+- added `reloadOnSearch` [$route] param support to prevent unnecessary controller reloads and
+  resulting flicker
+  ([commit](https://github.com/angular/angular.js/commit/e004378d100ce767a1107180102790a9a360644e))
 
 
+## Fixes
+- make ng:class-even/odd compatible with ng:class
+  (Issue [#508](https://github.com/angular/angular.js/issues/508))
+- fixed error handling for resources that didn't work in certain situations
+  ([commit](https://github.com/angular/angular.js/commit/c37bfde9eb31556ee1eb146795b0c1f1504a4a26)
+  contributed by Karl Seamon)
+
+
+## Docs
+- [jsFiddle](http://jsfiddle.net/) integration for all docs.angularjs.org examples (contributed by
+  Dan Doyon).
+
+
+## Breaking Changes
+- removed [jqLite] show/hide support. See the
+  [commit](https://github.com/angular/angular.js/commit/4c8eaa1eb05ba98d30ff83f4420d6fcd69045d99)
+  message for details. Developers should use jquery or jqLite's `css('display', 'none')` and
+  `css('display', 'block'/'inline'/..)` instead
 
 
 <a name="0.9.18"><a/>
@@ -87,7 +92,7 @@
 - doubled our e2e test suite by running all angular e2e tests with jqLite in addition to jQuery
 
 
-### Breaking changes:
+### Breaking changes
 - [commit](https://github.com/angular/angular.js/commit/3af1e7ca2ee8c2acd69e5bcbb3ffc1bf51239285)
   removed support for the `MMMMM` (long month name), use `MMMM` instead. This was done to align
   Angular with
@@ -296,8 +301,7 @@
 - many, but by far not all, docs were updated, improved and cleaned up
 
 ### Features
-- [`$route`](http://docs.angularjs.org/#!/api/angular.service.$route) service now supports these
-  features:
+- [$route] service now supports these features:
   - route not found handling via `#otherwise()`
   - redirection support via `#when('/foo', {redirectTo: '/bar'})` (including param interpolation)
   - setting the parent scope for scopes created by the service via `#parent()`
@@ -656,6 +660,7 @@ with the `$route` service
 [$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
 [$xhr.cache]: http://docs.angularjs.org/#!/api/angular.service.$xhr.cache
 [$resource]: http://docs.angularjs.org/#!/api/angular.service.$resource
+[$route]: http://docs.angularjs.org/#!/api/angular.service.$route
 [$orderBy]: http://docs.angularjs.org/#!/api/angular.Array.orderBy
 [date]: http://docs.angularjs.org/#!/api/angular.filter.date
 [number]: http://docs.angularjs.org/#!/api/angular.filter.number
