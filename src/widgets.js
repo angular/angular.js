@@ -733,7 +733,7 @@ angularWidget('select', function(element){
       var optionGroup,
           collection = valuesFn(scope) || [],
           key = selectElement.val(),
-          tempScope = scope.$new(),
+          tempScope = inherit(scope),
           value, optionElement, index, groupIndex, length, groupLength;
 
       try {
@@ -791,7 +791,7 @@ angularWidget('select', function(element){
           fragment,
           groupIndex, index,
           optionElement,
-          optionScope = scope.$new(),
+          optionScope = inherit(scope),
           modelValue = model.get(),
           selected,
           selectedSet = false, // nothing is selected yet
