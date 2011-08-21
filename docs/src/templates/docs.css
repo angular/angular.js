@@ -328,7 +328,6 @@ li {
 /* subpages */
 
 #fader {
-  display: none;
   position: fixed;
   top: 0px;
   left: 0px;
@@ -339,10 +338,6 @@ li {
   -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
   filter: alpha(opacity=80);
   z-index: 3;
-}
-
-#subpage {
-  display: none;
 }
 
 #subpage > div {
