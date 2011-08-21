@@ -181,7 +181,6 @@
     '</div>';
 
   angular.widget('doc:tutorial-instructions', function(element) {
-    element.hide();
     this.descend(true);
 
     var tabs = angular.element(HTML_TPL.replace('{show}', element.attr('show') || 'false')),
@@ -207,7 +206,6 @@
 
     element.html('');
     element.append(tabs);
-    element.show();
   });
 
 
