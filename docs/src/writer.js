@@ -44,28 +44,39 @@ exports.copyTpl = function(filename) {
   return exports.copy('docs/src/templates/' + filename, OUTPUT_DIR + filename);
 };
 
-/* Copy files from one place to another. Also replace placeholders accordingly
+/* Copy files from one place to another.
  * @param from{string} path of the source file to be copied
  * @param to{string} path of where the copied file should be stored
- * @param replacementKeys{array=} optional array of placeholder strings
- * @param  replacements{array=} array of strings that should be swapped with the placeholders
+ * @param  transform{function=} transfromation function to be applied before return
  */
-exports.copy = function (from, to, replacementKeys, replacements) {
+exports.copy = function(from, to, transform) {
+  var args = Array.prototype.slice.call(arguments, 3);
+
   // We have to use binary reading, Since some characters are unicode.
   return qfs.read(from, 'b').then(function(content) {
-    if (replacementKeys && replacements) {
-      if (replacementKeys.length !== replacements.length) {
-        console.log('WARNING: replacementKeys should have the same length as replacements' +
-                    ' in writer.js');
-      }
-
-      content = content.toString();
-      for(var i = 0; i < replacementKeys.length; i++) {
-        content = content.replace(replacementKeys[i], replacements[i]);
-      }
+    if (transform) {
+      args.unshift(content.toString());
+      content = transform.apply(null, args);
     }
     qfs.write(to, content);
   });
+}
+
+/* Replace placeholders in content accordingly
+ * @param content{string} content to be modified
+ * @param replacementKeys{array=} array of placeholder strings
+ * @param replacements{array=} array of strings that should be swapped with the placeholders
+ */
+exports.replace = function(content, replacementKeys, replacements) {
+  if (replacementKeys.length !== replacements.length) {
+    console.log('WARNING: replacementKeys does not have the same length as replacements' +
+                ' in writer.js');
+  }
+
+  for(var i = 0; i < replacementKeys.length; i++) {
+    content = content.replace(replacementKeys[i], replacements[i]);
+  }
+  return content;
 }
 
 exports.copyDir = function copyDir(dir) {

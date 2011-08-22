@@ -52,16 +52,16 @@ function writeTheRest(writesFuture) {
       ng = '<script src="../angular.js" ng:autobind></script>'
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
-                                [manifestPl, ngPl], [manifest,ngMin]));
+                                writer.replace, [manifestPl, ngPl], [manifest, ngMin]));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html',
-                                [manifestPl, jqPl, ngPl], [manifest, jq, ngMin]));
+                                writer.replace, [manifestPl, jqPl, ngPl], [manifest, jq, ngMin]));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-debug.html',
-                                [ngPl], [ng]));
+                                writer.replace, [ngPl], [ng]));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-debug.html',
-                                [jqPl, ngPl], [jq, ng]));
+                                writer.replace, [jqPl, ngPl], [jq, ng]));
 
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));
