@@ -300,6 +300,13 @@ angular.module.ngMock.$Browser = function() {
   self.baseHref = function() {
     return this.$$baseHref;
   };
+
+  self.$$scripts = [];
+  self.addJs = function(url, domId, done) {
+    var script = {url: url, id: domId, done: done};
+    self.$$scripts.push(script);
+    return script;
+  };
 }
 angular.module.ngMock.$Browser.prototype = {
 
