@@ -297,7 +297,7 @@ describe('Scope', function() {
     it('should fire a $destroy event', function() {
       var destructedScopes = [];
       middle.$on('$destroy', function(event) {
-        destructedScopes.push(event.currentTarget);
+        destructedScopes.push(event.currentScope);
       });
       middle.$destroy();
       expect(destructedScopes).toEqual([middle]);
@@ -414,7 +414,7 @@ describe('Scope', function() {
       var log, child, grandChild, greatGrandChild;
 
       function logger(event) {
-        log += event.currentTarget.id + '>';
+        log += event.currentScope.id + '>';
       }
 
       beforeEach(function() {
@@ -473,7 +473,7 @@ describe('Scope', function() {
 
       it('should forward method arguments', function() {
         child.$on('abc', function(event, arg1, arg2){
-          expect(event.type).toBe('abc');
+          expect(event.name).toBe('abc');
           expect(arg1).toBe('arg1');
           expect(arg2).toBe('arg2');
         });
@@ -484,8 +484,9 @@ describe('Scope', function() {
         it('should have methods/properties', function() {
           var event;
           child.$on('myEvent', function(e){
-            expect(e.target).toBe(grandChild);
-            expect(e.currentTarget).toBe(child);
+            expect(e.sourceScope).toBe(grandChild);
+            expect(e.currentScope).toBe(child);
+            expect(e.name).toBe('myEvent');
             event = e;
           });
           grandChild.$emit('myEvent');
@@ -496,71 +497,107 @@ describe('Scope', function() {
 
 
     describe('$broadcast', function() {
-      var log, child1, child2, child3, grandChild11, grandChild21, grandChild22, greatGrandChild211;
+      describe('event propagation', function() {
+        var log, child1, child2, child3, grandChild11, grandChild21, grandChild22,
+            greatGrandChild211;
 
-      function logger(event) {
-        log += event.currentScope.id + '>';
-      }
+        function logger(event) {
+          log += event.currentScope.id + '>';
+        }
 
-      beforeEach(function() {
-        log = '';
-        child1 = root.$new();
-        child2 = root.$new();
-        child3 = root.$new();
-        grandChild11 = child1.$new();
-        grandChild21 = child2.$new();
-        grandChild22 = child2.$new();
-        greatGrandChild211 = grandChild21.$new();
+        beforeEach(function() {
+          log = '';
+          child1 = root.$new();
+          child2 = root.$new();
+          child3 = root.$new();
+          grandChild11 = child1.$new();
+          grandChild21 = child2.$new();
+          grandChild22 = child2.$new();
+          greatGrandChild211 = grandChild21.$new();
 
-        root.id = 0;
-        child1.id = 1;
-        child2.id = 2;
-        child3.id = 3;
-        grandChild11.id = 11;
-        grandChild21.id = 21;
-        grandChild22.id = 22;
-        greatGrandChild211.id = 211;
+          root.id = 0;
+          child1.id = 1;
+          child2.id = 2;
+          child3.id = 3;
+          grandChild11.id = 11;
+          grandChild21.id = 21;
+          grandChild22.id = 22;
+          greatGrandChild211.id = 211;
 
-        root.$on('myEvent', logger);
-        child1.$on('myEvent', logger);
-        child2.$on('myEvent', logger);
-        child3.$on('myEvent', logger);
-        grandChild11.$on('myEvent', logger);
-        grandChild21.$on('myEvent', logger);
-        grandChild22.$on('myEvent', logger);
-        greatGrandChild211.$on('myEvent', logger);
+          root.$on('myEvent', logger);
+          child1.$on('myEvent', logger);
+          child2.$on('myEvent', logger);
+          child3.$on('myEvent', logger);
+          grandChild11.$on('myEvent', logger);
+          grandChild21.$on('myEvent', logger);
+          grandChild22.$on('myEvent', logger);
+          greatGrandChild211.$on('myEvent', logger);
 
-        //         R
-        //       / |  \
-        //     1   2   3
-        //    /   / \
-        //   11  21  22
-        //       |
-        //      211
+          //         R
+          //       / |  \
+          //     1   2   3
+          //    /   / \
+          //   11  21  22
+          //       |
+          //      211
+        });
+
+
+        it('should broadcast an event from the root scope', function() {
+          root.$broadcast('myEvent');
+          expect(log).toBe('0>1>11>2>21>211>22>3>');
+        });
+
+
+        it('should broadcast an event from a child scope', function() {
+          child2.$broadcast('myEvent');
+          expect(log).toBe('2>21>211>22>');
+        });
+
+
+        it('should broadcast an event from a leaf scope', function() {
+          grandChild22.$broadcast('myEvent');
+          expect(log).toBe('22>');
+        });
+
+
+        it('should not not fire any listeners for other events', function() {
+          root.$broadcast('fooEvent');
+          expect(log).toBe('');
+        });
       });
 
 
-      it('should broadcast an event from the root scope', function() {
-        root.$broadcast('myEvent');
-        expect(log).toBe('0>1>11>2>21>211>22>3>');
-      });
+      describe('listener', function() {
+        it('should receive event object', function() {
+          var scope = angular.scope(),
+              child = scope.$new(),
+              event;
+
+          child.$on('fooEvent', function(e) {
+            event = e;
+          });
+          scope.$broadcast('fooEvent');
+
+          expect(event.name).toBe('fooEvent');
+          expect(event.sourceScope).toBe(scope);
+          expect(event.currentScope).toBe(child);
+        });
 
 
-      it('should broadcast an event from a child scope', function() {
-        child2.$broadcast('myEvent');
-        expect(log).toBe('2>21>211>22>');
-      });
+        it('should support passing messages as varargs', function() {
+          var scope = angular.scope(),
+              child = scope.$new(),
+              args;
 
+          child.$on('fooEvent', function() {
+            args = arguments;
+          });
+          scope.$broadcast('fooEvent', 'do', 're', 'me', 'fa');
 
-      it('should broadcast an event from a leaf scope', function() {
-        grandChild22.$broadcast('myEvent');
-        expect(log).toBe('22>');
-      });
-
-
-      it('should not not fire any listeners for other events', function() {
-        root.$broadcast('fooEvent');
-        expect(log).toBe('');
+          expect(args.length).toBe(5);
+          expect([].splice.call(args, 1)).toEqual(['do', 're', 'me', 'fa']);
+        });
       });
     });
   });

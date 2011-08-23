@@ -156,8 +156,8 @@ Scope.prototype = {
    * the scope and its child scopes to be permanently detached from the parent and thus stop
    * participating in model change detection and listener notification by invoking.
    *
-   * @param {function()=} constructor Constructor function which the scope should behave as.
-   * @param {curryArguments=} ... Any additional arguments which are curried into the constructor.
+   * @param {function()=} Class Constructor function which the scope should be applied to the scope.
+   * @param {...*} curryArguments Any additional arguments which are curried into the constructor.
    *        See {@link guide/dev_guide.di dependency injection}.
    * @returns {Object} The newly created child scope.
    *
@@ -542,10 +542,11 @@ Scope.prototype = {
    *
    * The event listener function format is: `function(event)`. The `event` object passed into the
    * listener has the following attributes
-   *   - `target` - {Scope}: the scope which initiated the event.
-   *   - `currentTarget` - {Scope}: the current scope which is handling the event.
+   *   - `sourceScope` - {Scope}: the scope which initiated the event.
+   *   - `currentScope` - {Scope}: the current scope which is handling the event.
    *   - `name` - {string}: Name of the event.
-   *   - `cancel` - {function}: calling `cancel` function will cancel further event propagation.
+   *   - `cancel` - {function=}: calling `cancel` function will cancel further event propagation
+   *     (available only for events that were `$emit`-ed).
    */
   $on: function(name, listener) {
     var namedListeners = this.$$listeners[name];
@@ -584,7 +585,7 @@ Scope.prototype = {
    *
    * @description
    * Dispatches an event `name` upwards through the scope hierarchy notifying the
-   * {@link angular.scope.$on} listeners.
+   * registered {@link angular.scope.$on} listeners.
    *
    * The event life cycle starts at the scope on which `$emit` was called. All
    * {@link angular.scope.$on listeners} listening for `name` event on this scope get notified.
@@ -597,24 +598,25 @@ Scope.prototype = {
    * @param {string} name Event name to emit.
    * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
    */
-  $emit: function(name) {
+  $emit: function(name, args) {
     var empty = [],
         namedListeners,
         canceled = false,
         scope = this,
         event = {
-          target: scope,
-          type: name,
+          name: name,
+          sourceScope: scope,
           cancel: function(){canceled = true;}
         },
+        listenerArgs = concat([event], arguments, 1),
         i, length;
 
     do {
       namedListeners = scope.$$listeners[name] || empty;
-      event.currentTarget = scope;
+      event.currentScope = scope;
       for (i=0, length=namedListeners.length; i<length; i++) {
         try {
-          namedListeners[i].apply(null, concat([event], arguments, 1));
+          namedListeners[i].apply(null, listenerArgs);
           if (canceled) return;
         } catch (e) {
           scope.$service('$exceptionHandler')(e);
@@ -626,12 +628,34 @@ Scope.prototype = {
   },
 
 
-  $broadcast: function(name, message) {
+  /**
+   * @workInProgress
+   * @ngdoc function
+   * @name angular.scope.$broadcast
+   * @function
+   *
+   * @description
+   * Dispatches an event `name` downwards to all child scopes (and their children) notifying the
+   * registered {@link angular.scope.$on} listeners.
+   *
+   * The event life cycle starts at the scope on which `$broadcast` was called. All
+   * {@link angular.scope.$on listeners} listening for `name` event on this scope get notified.
+   * Afterwards, the event propagates to all direct and indirect scopes of the current scope and
+   * calls all registered listeners along the way. The event cannot be canceled.
+   *
+   * Any exception emmited from the {@link angular.scope.$on listeners} will be passed
+   * onto the {@link angular.service.$exceptionHandler $exceptionHandler} service.
+   *
+   * @param {string} name Event name to emit.
+   * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+   */
+  $broadcast: function(name, args) {
     var sourceScope = this,
         currentScope = sourceScope,
         nextScope = sourceScope,
         event = { name: name,
-                  sourceScope: sourceScope };
+                  sourceScope: sourceScope },
+        listenerArgs = concat([event], arguments, 1);
 
     //down while you can, then up and next sibling or up and next sibling until back at root
     do {
@@ -639,7 +663,7 @@ Scope.prototype = {
       event.currentScope = currentScope;
       forEach(currentScope.$$listeners[name], function(listener) {
         try {
-          listener(event, message);
+          listener.apply(null, listenerArgs);
         } catch(e) {
           currentScope.$service('$exceptionHandler')(e);
         }
