@@ -5,7 +5,7 @@ var browserSingleton;
 angularService('$browser', function($log, $sniffer) {
   if (!browserSingleton) {
     browserSingleton = new Browser(window, jqLite(window.document), jqLite(window.document.body),
-                                   XHR, $log, $sniffer);
+                                   $log, $sniffer);
   }
   return browserSingleton;
 }, {$inject: ['$log', '$sniffer']});
