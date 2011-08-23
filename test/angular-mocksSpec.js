@@ -1,6 +1,37 @@
 'use strict';
 
 describe('mocks', function() {
+
+  describe('$browser', function() {
+    var $browser;
+
+    beforeEach(function() {
+      $browser = new MockBrowser();
+    });
+
+    describe('addJs', function() {
+
+      it('should store url, id, done', function() {
+        var url  = 'some.js',
+            id   = 'js-id',
+            done = noop;
+
+        $browser.addJs(url, id, done);
+
+        var script = $browser.$$scripts.shift();
+        expect(script.url).toBe(url);
+        expect(script.id).toBe(id);
+        expect(script.done).toBe(done);
+      });
+
+
+      it('should return the script object', function() {
+        expect($browser.addJs('some.js', null, noop)).toBe($browser.$$scripts[0]);
+      });
+    });
+  });
+
+
   describe('TzDate', function() {
 
     function minutes(min) {
