@@ -48,33 +48,16 @@ function MockWindow() {
 
 describe('browser', function() {
 
-  var browser, fakeWindow, xhr, logs, scripts, removedScripts, sniffer;
+  var browser, fakeWindow, logs, scripts, removedScripts, sniffer;
 
   beforeEach(function() {
     scripts = [];
     removedScripts = [];
-    xhr = null;
     sniffer = {history: true, hashchange: true};
     fakeWindow = new MockWindow();
 
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
                      removeChild: function(node){removedScripts.push(node);}}];
-
-    var FakeXhr = function() {
-      xhr = this;
-      this.open = function(method, url, async){
-        xhr.method = method;
-        xhr.url = url;
-        xhr.async = async;
-        xhr.headers = {};
-      };
-      this.setRequestHeader = function(key, value){
-        xhr.headers[key] = value;
-      };
-      this.send = function(post){
-        xhr.post = post;
-      };
-    };
 
     logs = {log:[], warn:[], info:[], error:[]};
 
@@ -83,8 +66,7 @@ describe('browser', function() {
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
-    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, FakeXhr,
-                          fakeLog, sniffer);
+    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, fakeLog, sniffer);
   });
 
   it('should contain cookie cruncher', function() {
@@ -97,183 +79,8 @@ describe('browser', function() {
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
     });
-
-    it('should queue callbacks with outstanding requests', function() {
-      var callback = jasmine.createSpy('callback');
-      browser.xhr('GET', '/url', null, noop);
-      browser.notifyWhenNoOutstandingRequests(callback);
-      expect(callback).not.toHaveBeenCalled();
-
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-      expect(callback).toHaveBeenCalled();
-    });
   });
 
-  describe('xhr', function() {
-    describe('JSONP', function() {
-      var log;
-
-      function callback(code, data) {
-        log += code + ':' + data + ';';
-      }
-
-      beforeEach(function() {
-        log = "";
-      });
-
-
-      // We don't have unit tests for IE because script.readyState is readOnly.
-      // Instead we run e2e tests on all browsers - see e2e for $http.
-      if (!msie) {
-
-        it('should add script tag for JSONP request', function() {
-          var notify = jasmine.createSpy('notify');
-          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          browser.notifyWhenNoOutstandingRequests(notify);
-          expect(notify).not.toHaveBeenCalled();
-          expect(scripts.length).toEqual(1);
-          var script = scripts[0];
-          var url = script.src.split('?cb=');
-          expect(url[0]).toEqual('http://example.org/path');
-          expect(typeof fakeWindow[url[1]]).toEqual('function');
-          fakeWindow[url[1]]('data');
-          script.onload();
-
-          expect(notify).toHaveBeenCalled();
-          expect(log).toEqual('200:data;');
-          expect(scripts).toEqual(removedScripts);
-          expect(fakeWindow[url[1]]).toBeUndefined();
-        });
-
-
-        it('should call callback with status -2 when script fails to load', function() {
-          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          var script = scripts[0];
-          expect(typeof script.onload).toBe('function');
-          expect(typeof script.onerror).toBe('function');
-          script.onerror();
-
-          expect(log).toEqual('-2:undefined;');
-        });
-
-
-        it('should update the outstandingRequests counter for successful requests', function() {
-          var notify = jasmine.createSpy('notify');
-          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          browser.notifyWhenNoOutstandingRequests(notify);
-          expect(notify).not.toHaveBeenCalled();
-
-          var script = scripts[0];
-          var url = script.src.split('?cb=');
-          fakeWindow[url[1]]('data');
-          script.onload();
-
-          expect(notify).toHaveBeenCalled();
-        });
-
-
-        it('should update the outstandingRequests counter for failed requests', function() {
-          var notify = jasmine.createSpy('notify');
-          browser.xhr('JSONP', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          browser.notifyWhenNoOutstandingRequests(notify);
-          expect(notify).not.toHaveBeenCalled();
-
-          scripts[0].onerror();
-
-          expect(notify).toHaveBeenCalled();
-        });
-      }
-    });
-
-
-    it('should normalize IE\'s 1223 status code into 204', function() {
-      var callback = jasmine.createSpy('XHR');
-
-      browser.xhr('GET', 'URL', 'POST', callback);
-
-      xhr.status = 1223;
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-
-      expect(callback).toHaveBeenCalled();
-      expect(callback.argsForCall[0][0]).toEqual(204);
-    });
-
-    it('should set only the requested headers', function() {
-      var code, response, headers = {};
-      browser.xhr('POST', 'URL', null, function(c,r){
-        code = c;
-        response = r;
-      }, {'X-header1': 'value1', 'X-header2': 'value2'});
-
-      expect(xhr.method).toEqual('POST');
-      expect(xhr.url).toEqual('URL');
-      expect(xhr.post).toEqual('');
-      expect(xhr.headers).toEqual({
-        "X-header1":"value1",
-        "X-header2":"value2"
-      });
-
-      xhr.status = 202;
-      xhr.responseText = 'RESPONSE';
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-
-      expect(code).toEqual(202);
-      expect(response).toEqual('RESPONSE');
-    });
-
-    it('should return raw xhr object', function() {
-      expect(browser.xhr('GET', '/url', null, noop)).toBe(xhr);
-    });
-
-    it('should abort request on timeout', function() {
-      var callback = jasmine.createSpy('done').andCallFake(function(status, response) {
-        expect(status).toBe(-1);
-      });
-
-      browser.xhr('GET', '/url', null, callback, {}, 2000);
-      xhr.abort = jasmine.createSpy('xhr.abort');
-
-      fakeWindow.setTimeout.flush();
-      expect(xhr.abort).toHaveBeenCalledOnce();
-
-      xhr.status = 0;
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-      expect(callback).toHaveBeenCalledOnce();
-    });
-
-    it('should be async even if xhr.send() is sync', function() {
-      // IE6, IE7 is sync when serving from cache
-      var xhr;
-      function FakeXhr() {
-        xhr = this;
-        this.open = this.setRequestHeader = noop;
-        this.send = function() {
-          this.status = 200;
-          this.responseText = 'response';
-          this.readyState = 4;
-        };
-      }
-
-      var callback = jasmine.createSpy('done').andCallFake(function(status, response) {
-        expect(status).toBe(200);
-        expect(response).toBe('response');
-      });
-
-      browser = new Browser(fakeWindow, jqLite(window.document), null, FakeXhr, null);
-      browser.xhr('GET', '/url', null, callback);
-      expect(callback).not.toHaveBeenCalled();
-
-      fakeWindow.setTimeout.flush();
-      expect(callback).toHaveBeenCalledOnce();
-
-      (xhr.onreadystatechange || noop)();
-      expect(callback).toHaveBeenCalledOnce();
-    });
-  });
 
   describe('defer', function() {
     it('should execute fn asynchroniously via setTimeout', function() {
