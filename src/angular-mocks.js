@@ -57,6 +57,10 @@ angular.module.ngMock.$Browser = function() {
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
+  // TODO(vojta): remove this temporary api
+  self.$$completeOutstandingRequest = noop;
+  self.$$incOutstandingRequestCount = noop;
+
 
   // register url polling fn
 
@@ -71,165 +75,6 @@ angular.module.ngMock.$Browser = function() {
     );
 
     return listener;
-  };
-
-
-  /**
-    * @ngdoc method
-    * @name angular.module.ngMock.$browser#xhr
-    * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Generic method for training browser to expect a request in a test and respond to it.
-    *
-    * See also convenience methods for browser training:
-    *
-    * - {@link #xhr.expectGET}
-    * - {@link #xhr.expectPOST}
-    * - {@link #xhr.expectPUT}
-    * - {@link #xhr.expectDELETE}
-    * - {@link #xhr.expectJSON}
-    *
-    * To flush pending requests in tests use
-    * {@link #xhr.flush}.
-    *
-    * @param {string} method Expected HTTP method.
-    * @param {string} url Url path for which a request is expected.
-    * @param {(object|string)=} data Expected body of the (POST) HTTP request.
-    * @param {function(number, *)} callback Callback to call when response is flushed.
-    * @param {object} headers Key-value pairs of expected headers.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link #xhr.flush flushed}.
-    */
-  self.xhr = function(method, url, data, callback, headers) {
-    headers = headers || {};
-    if (data && angular.isObject(data)) data = angular.toJson(data);
-    if (data && angular.isString(data)) url += "|" + data;
-    var expect = expectations[method] || {};
-    var expectation = expect[url];
-    if (!expectation) {
-      throw new Error("Unexpected request for method '" + method + "' and url '" + url + "'.");
-    }
-    requests.push(function() {
-      angular.forEach(expectation.headers, function(value, key){
-        if (headers[key] !== value) {
-          throw new Error("Missing HTTP request header: " + key + ": " + value);
-        }
-      });
-      callback(expectation.code, expectation.response);
-    });
-    // TODO(vojta): return mock request object
-  };
-  self.xhr.expectations = expectations;
-  self.xhr.requests = requests;
-  self.xhr.expect = function(method, url, data, headers) {
-    if (data && angular.isObject(data)) data = angular.toJson(data);
-    if (data && angular.isString(data)) url += "|" + data;
-    var expect = expectations[method] || (expectations[method] = {});
-    return {
-      respond: function(code, response) {
-        if (!angular.isNumber(code)) {
-          response = code;
-          code = 200;
-        }
-        expect[url] = {code:code, response:response, headers: headers || {}};
-      }
-    };
-  };
-
-  /**
-    * @ngdoc method
-    * @name angular.module.ngMock.$browser#xhr.expectGET
-    * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `GET` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectGET    = angular.bind(self, self.xhr.expect, 'GET');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectPOST
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `POST` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectDELETE
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `DELETE` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectPUT
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `PUT` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectJSON
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `JSON` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.flush
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Flushes all pending requests and executes xhr callbacks with the trained response as the
-    * argument.
-    */
-  self.xhr.flush = function() {
-    if (requests.length == 0) {
-      throw new Error("No xhr requests to be flushed!");
-    }
-
-    while(requests.length) {
-      requests.pop()();
-    }
   };
 
   self.cookieHash = {};
@@ -871,8 +716,23 @@ function MockHttpExpectation(method, url, data, headers) {
 
 function MockXhr() {
 
-  // hack for testing $http
+  // hack for testing $http, $httpBackend
   MockXhr.$$lastInstance = this;
+
+  this.open = function(method, url, async) {
+    this.$$method = method;
+    this.$$url = url;
+    this.$$async = async;
+    this.$$headers = {};
+  };
+
+  this.send = function(data) {
+    this.$$data = data;
+  };
+
+  this.setRequestHeader = function(key, value) {
+    this.$$headers[key] = value;
+  };
 
   this.getResponseHeader = function(name) {
     return this.$$headers[name];
