@@ -689,3 +689,6 @@ function MockXhr() {
   };
   this.abort = noop;
 }
+
+// use the mock during testing
+angular.service('$httpBackend', createMockHttpBackend);

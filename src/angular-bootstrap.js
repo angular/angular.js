@@ -117,6 +117,7 @@
              'service/route.js',
              'service/window.js',
              'service/http.js',
+             'service/httpBackend.js',
              'service/locale.js',
 
              'apis.js',
