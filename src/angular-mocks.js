@@ -303,6 +303,13 @@ function MockBrowser() {
       self.deferredFns.shift().fn();
     }
   };
+
+  self.$$scripts = [];
+  self.addJs = function(url, domId, done) {
+    var script = {url: url, id: domId, done: done};
+    self.$$scripts.push(script);
+    return script;
+  };
 }
 MockBrowser.prototype = {
 
@@ -352,9 +359,7 @@ MockBrowser.prototype = {
       }
       return this.cookieHash;
     }
-  },
-
-  addJs: function(){}
+  }
 };
 
 angular.service('$browser', function(){
