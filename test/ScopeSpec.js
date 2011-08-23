@@ -465,7 +465,7 @@ describe('Scope', function() {
         child.$emit('abc');
         expect(log).toEqual('abc;');
         log = '';
-        child.$removeOn('abc', eventFn);
+        child.$removeListener('abc', eventFn);
         child.$emit('abc');
         expect(log).toEqual('');
       });

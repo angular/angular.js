@@ -558,7 +558,7 @@ Scope.prototype = {
   /**
    * @workInProgress
    * @ngdoc function
-   * @name angular.scope.$removeOn
+   * @name angular.scope.$removeListener
    * @function
    *
    * @description
@@ -567,7 +567,7 @@ Scope.prototype = {
    * @param {string} name Event name to remove on.
    * @param {function} listener Function to remove.
    */
-  $removeOn: function(name, listener) {
+  $removeListener: function(name, listener) {
     var namedListeners = this.$$listeners[name];
     var i;
     if (namedListeners) {
