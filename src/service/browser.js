@@ -1,16 +1,5 @@
 'use strict';
 
-//////////////////////////////
-// Browser
-//////////////////////////////
-var XHR = window.XMLHttpRequest || function() {
-  try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
-  try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
-  try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
-  throw new Error("This browser does not support XMLHttpRequest.");
-};
-
-
 /**
  * @ngdoc object
  * @name angular.module.ng.$browser
@@ -33,7 +22,7 @@ var XHR = window.XMLHttpRequest || function() {
  * @param {object} $log console.log or an object with the same interface.
  * @param {object} $sniffer $sniffer service
  */
-function Browser(window, document, body, XHR, $log, $sniffer) {
+function Browser(window, document, body, $log, $sniffer) {
   var self = this,
       rawDocument = document[0],
       location = window.location,
@@ -44,13 +33,12 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
   self.isMock = false;
 
-  //////////////////////////////////////////////////////////////
-  // XHR API
-  //////////////////////////////////////////////////////////////
-  var idCounter = 0;
   var outstandingRequestCount = 0;
   var outstandingRequestCallbacks = [];
 
+  // TODO(vojta): remove this temporary api
+  self.$$completeOutstandingRequest = completeOutstandingRequest;
+  self.$$incOutstandingRequestCount = function() { outstandingRequestCount++; };
 
   /**
    * Executes the `fn` function(supports currying) and decrements the `outstandingRequestCallbacks`
@@ -72,88 +60,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
       }
     }
   }
-
-  // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-  function fixStatus(status) {
-    return status == 1223 ? 204 : status;
-  }
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#xhr
-   * @methodOf angular.module.ng.$browser
-   *
-   * @param {string} method Requested method (get|post|put|delete|head|json)
-   * @param {string} url Requested url
-   * @param {?string} post Post data to send (null if nothing to post)
-   * @param {function(number, string)} callback Function that will be called on response
-   * @param {object=} header additional HTTP headers to send with XHR.
-   *   Standard headers are:
-   *   <ul>
-   *     <li><tt>Content-Type</tt>: <tt>application/x-www-form-urlencoded</tt></li>
-   *     <li><tt>Accept</tt>: <tt>application/json, text/plain, &#42;/&#42;</tt></li>
-   *     <li><tt>X-Requested-With</tt>: <tt>XMLHttpRequest</tt></li>
-   *   </ul>
-   *
-   * @param {number=} timeout Timeout in ms, when the request will be aborted
-   * @returns {XMLHttpRequest|undefined} Raw XMLHttpRequest object or undefined when JSONP method
-   *
-   * @description
-   * Send ajax request
-   *
-   * TODO(vojta): change signature of this method to (method, url, data, headers, callback)
-   */
-  self.xhr = function(method, url, post, callback, headers, timeout) {
-    outstandingRequestCount ++;
-    if (lowercase(method) == 'jsonp') {
-      var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      window[callbackId] = function(data) {
-        window[callbackId].data = data;
-      };
-
-      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), function() {
-        if (window[callbackId].data) {
-          completeOutstandingRequest(callback, 200, window[callbackId].data);
-        } else {
-          completeOutstandingRequest(callback, -2);
-        }
-        delete window[callbackId];
-        body[0].removeChild(script);
-      });
-    } else {
-      var xhr = new XHR();
-      xhr.open(method, url, true);
-      forEach(headers, function(value, key) {
-          if (value) xhr.setRequestHeader(key, value);
-      });
-
-      var status;
-      xhr.send(post || '');
-
-      // IE6, IE7 bug - does sync when serving from cache
-      if (xhr.readyState == 4) {
-        setTimeout(function() {
-          completeOutstandingRequest(callback, fixStatus(status || xhr.status), xhr.responseText);
-        }, 0);
-      } else {
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == 4) {
-            completeOutstandingRequest(callback, fixStatus(status || xhr.status),
-                                       xhr.responseText);
-          }
-        };
-      }
-
-      if (timeout > 0) {
-        setTimeout(function() {
-          status = -1;
-          xhr.abort();
-        }, timeout);
-      }
-
-      return xhr;
-    }
-  };
 
   /**
    * @private
@@ -502,6 +408,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 function $BrowserProvider(){
   this.$get = ['$window', '$log', '$sniffer', '$document',
       function( $window,   $log,   $sniffer,   $document){
-        return new Browser($window, $document, $document.find('body'), XHR, $log, $sniffer);
+        return new Browser($window, $document, $document.find('body'), $log, $sniffer);
       }];
 }
