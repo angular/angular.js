@@ -503,21 +503,21 @@ describe('angular', function(){
     });
 
     it('should inject dependencies specified by $inject', function() {
-	  angular.service('svc1', function() { return 'svc1'; });
-	  angular.service('svc2', function(svc1) { return 'svc2-' + svc1; }, {$inject: ['svc1']});
-	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      angular.service('svc1', function() { return 'svc1'; });
+      angular.service('svc2', function(svc1) { return 'svc2-' + svc1; }, {$inject: ['svc1']});
+      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
-	  angular.service('svc1', function() { return 'svc1'; });
-	  angular.service('svc2', function(foo) { return 'svc2-' + foo; }, {$inject: ['svc1']});
-	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      angular.service('svc1', function() { return 'svc1'; });
+      angular.service('svc2', function(foo) { return 'svc2-' + foo; }, {$inject: ['svc1']});
+      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
     it('should inject infered dependencies when $inject is missing', function() {
-	  angular.service('svc1', function() { return 'svc1'; });
-	  angular.service('svc2', function(svc1) { return 'svc2-' + svc1; });
-	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      angular.service('svc1', function() { return 'svc1'; });
+      angular.service('svc2', function(svc1) { return 'svc2-' + svc1; });
+      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
     it('should eagerly instantiate a service if $eager is true', function() {
