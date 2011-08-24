@@ -36,5 +36,13 @@ describe('$locale', function() {
     expect(datetime.MONTH.length).toBe(12);
     expect(datetime.AMPMS.length).toBe(2);
   });
+
+
+  it('should return correct plural types', function() {
+    expect($locale.getPluralCat(-1)).toBe('other');
+    expect($locale.getPluralCat(0)).toBe('other');
+    expect($locale.getPluralCat(2)).toBe('other');
+    expect($locale.getPluralCat(1)).toBe('one');
+  })
 });
 
