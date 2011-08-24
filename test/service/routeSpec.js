@@ -15,51 +15,53 @@ describe('$route', function() {
 
   it('should route and fire change event', function(){
     var log = '',
-        $location, $route;
+        $location, $route,
+        lastRoute,
+        nextRoute;
 
     function BookChapter() {
-      log += '<init>';
+      log += '<init>;';
     }
     scope = compile('<div></div>')();
     $location = scope.$service('$location');
     $route = scope.$service('$route');
     $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
     $route.when('/Blank');
-    $route.onChange(function(){
-      log += 'onChange();';
+    scope.$on('$beforeRouteChange', function(event, next, current){
+      log += 'before();';
+      expect(current).toBe($route.current);
+      lastRoute = current;
+      nextRoute = next;
+    });
+    scope.$on('$afterRouteChange', function(event, current, last){
+      log += 'after();';
+      expect(current).toBe($route.current);
+      expect(lastRoute).toBe(last);
+      expect(nextRoute).toBe(current);
     });
 
     $location.update('http://server#/Book/Moby/Chapter/Intro?p=123');
     scope.$digest();
-    expect(log).toEqual('onChange();<init>');
+    expect(log).toEqual('before();<init>;after();');
     expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
     var lastId = $route.current.scope.$id;
 
     log = '';
     $location.update('http://server#/Blank?ignore');
     scope.$digest();
-    expect(log).toEqual('onChange();');
+    expect(log).toEqual('before();after();');
     expect($route.current.params).toEqual({ignore:true});
     expect($route.current.scope.$id).not.toEqual(lastId);
 
     log = '';
     $location.update('http://server#/NONE');
     scope.$digest();
-    expect(log).toEqual('onChange();');
+    expect(log).toEqual('before();after();');
     expect($route.current).toEqual(null);
 
     $route.when('/NONE', {template:'instant update'});
     scope.$digest();
     expect($route.current.template).toEqual('instant update');
-  });
-
-
-  it('should return fn registered with onChange()', function() {
-    var scope = angular.scope(),
-        $route = scope.$service('$route'),
-        fn = function() {};
-
-    expect($route.onChange(fn)).toBe(fn);
   });
 
 
@@ -70,7 +72,7 @@ describe('$route', function() {
         onChangeSpy = jasmine.createSpy('onChange');
 
     $route.when('/foo', {template: 'foo.html'});
-    $route.onChange(onChangeSpy);
+    scope.$on('$beforeRouteChange', onChangeSpy);
     expect($route.current).toBeUndefined();
     expect(onChangeSpy).not.toHaveBeenCalled();
 
@@ -93,7 +95,7 @@ describe('$route', function() {
 
     $route.when('/foo', {template: 'foo.html'});
     $route.otherwise({template: '404.html', controller: NotFoundCtrl});
-    $route.onChange(onChangeSpy);
+    scope.$on('$beforeRouteChange', onChangeSpy);
     expect($route.current).toBeUndefined();
     expect(onChangeSpy).not.toHaveBeenCalled();
 
@@ -163,7 +165,7 @@ describe('$route', function() {
       $route.when('/bar', {template: 'bar.html'});
       $route.when('/baz', {redirectTo: '/bar'});
       $route.otherwise({template: '404.html'});
-      $route.onChange(onChangeSpy);
+      scope.$on('$beforeRouteChange', onChangeSpy);
       expect($route.current).toBeUndefined();
       expect(onChangeSpy).not.toHaveBeenCalled();
 
@@ -172,7 +174,8 @@ describe('$route', function() {
 
       expect($location.hash).toBe('/foo');
       expect($route.current.template).toBe('foo.html');
-      expect(onChangeSpy.callCount).toBe(1);
+      expect(onChangeSpy.callCount).toBe(2);
+
 
       onChangeSpy.reset();
       $location.updateHash('');
@@ -181,7 +184,7 @@ describe('$route', function() {
 
       expect($location.hash).toBe('/foo');
       expect($route.current.template).toBe('foo.html');
-      expect(onChangeSpy.callCount).toBe(1);
+      expect(onChangeSpy.callCount).toBe(2);
 
       onChangeSpy.reset();
       $location.updateHash('/baz');
@@ -190,7 +193,7 @@ describe('$route', function() {
 
       expect($location.hash).toBe('/bar');
       expect($route.current.template).toBe('bar.html');
-      expect(onChangeSpy.callCount).toBe(1);
+      expect(onChangeSpy.callCount).toBe(2);
     });
 
 
@@ -267,10 +270,11 @@ describe('$route', function() {
       var scope = angular.scope(),
           $location = scope.$service('$location'),
           $route = scope.$service('$route'),
+          $rouetParams = scope.$service('$routeParams'),
           reloaded = jasmine.createSpy('route reload');
 
       $route.when('/foo', {controller: FooCtrl});
-      $route.onChange(reloaded);
+      scope.$on('$beforeRouteChange', reloaded);
 
       function FooCtrl() {
         reloaded();
@@ -279,12 +283,14 @@ describe('$route', function() {
       $location.updateHash('/foo');
       scope.$digest();
       expect(reloaded).toHaveBeenCalled();
+      expect($rouetParams).toEqual({});
       reloaded.reset();
 
       // trigger reload
       $location.hashSearch.foo = 'bar';
       scope.$digest();
       expect(reloaded).toHaveBeenCalled();
+      expect($rouetParams).toEqual({foo:'bar'});
     });
 
 
@@ -293,13 +299,15 @@ describe('$route', function() {
       var scope = angular.scope(),
           $location = scope.$service('$location'),
           $route = scope.$service('$route'),
-          reloaded = jasmine.createSpy('route reload');
+          reloaded = jasmine.createSpy('route reload'),
+          routeUpdateEvent = jasmine.createSpy('route reload');
 
       $route.when('/foo', {controller: FooCtrl, reloadOnSearch: false});
-      $route.onChange(reloaded);
+      scope.$on('$beforeRouteChange', reloaded);
 
       function FooCtrl() {
         reloaded();
+        this.$on('$routeUpdate', routeUpdateEvent);
       }
 
       expect(reloaded).not.toHaveBeenCalled();
@@ -307,12 +315,14 @@ describe('$route', function() {
       $location.updateHash('/foo');
       scope.$digest();
       expect(reloaded).toHaveBeenCalled();
+      expect(routeUpdateEvent).not.toHaveBeenCalled();
       reloaded.reset();
 
       // don't trigger reload
       $location.hashSearch.foo = 'bar';
       scope.$digest();
       expect(reloaded).not.toHaveBeenCalled();
+      expect(routeUpdateEvent).toHaveBeenCalled();
     });
 
 
@@ -324,7 +334,7 @@ describe('$route', function() {
           onRouteChange = jasmine.createSpy('onRouteChange');
 
       $route.when('/foo/:fooId', {controller: FooCtrl, reloadOnSearch: false});
-      $route.onChange(onRouteChange);
+      scope.$on('$beforeRouteChange', onRouteChange);
 
       function FooCtrl() {
         reloaded();
@@ -394,5 +404,37 @@ describe('$route', function() {
       scope.$digest();
       expect(routeParams).toHaveBeenCalledWith({barId: '123', foo: 'bar'});
     });
+
+
+    describe('reload', function(){
+
+      it('should reload even if reloadOnSearch is false', function(){
+        var scope = angular.scope(),
+            $location = scope.$service('$location'),
+            $route = scope.$service('$route'),
+            $routeParams = scope.$service('$routeParams'),
+            count = 0;
+
+        $route.when('/bar/:barId', {controller: FooCtrl, reloadOnSearch: false});
+
+        function FooCtrl() { count ++; }
+
+        $location.updateHash('/bar/123');
+        scope.$digest();
+        expect($routeParams).toEqual({barId:'123'});
+        expect(count).toEqual(1);
+
+        $location.hash = '/bar/123?a=b';
+        scope.$digest();
+        expect($routeParams).toEqual({barId:'123', a:'b'});
+        expect(count).toEqual(1);
+
+        $route.reload();
+        scope.$digest();
+        expect($routeParams).toEqual({barId:'123', a:'b'});
+        expect(count).toEqual(2);
+      });
+    });
+
   });
 });

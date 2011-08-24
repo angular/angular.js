@@ -5,6 +5,7 @@
  * @ngdoc service
  * @name angular.service.$route
  * @requires $location
+ * @requires $routeParams
  *
  * @property {Object} current Reference to the current route definition.
  * @property {Array.<Object>} routes Array of all configured routes.
@@ -14,7 +15,7 @@
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  *
  * The `$route` service is typically used in conjunction with {@link angular.widget.ng:view ng:view}
- * widget.
+ * widget and the {@link angular.service.$routeParams $routeParams} service.
  *
  * @example
    This example shows how changing the URL hash causes the <tt>$route</tt>
@@ -24,23 +25,23 @@
     <doc:example>
       <doc:source jsfiddle="false">
         <script>
-          function MainCntl($route, $location) {
+          function MainCntl($route, $routeParams, $location) {
             this.$route = $route;
             this.$location = $location;
+            this.$routeParams = $routeParams;
 
             $route.when('/Book/:bookId', {template: 'examples/book.html', controller: BookCntl});
             $route.when('/Book/:bookId/ch/:chapterId', {template: 'examples/chapter.html', controller: ChapterCntl});
-            $route.onChange(function() {
-              $route.current.scope.params = $route.current.params;
-            });
           }
 
-          function BookCntl() {
+          function BookCntl($routeParams) {
             this.name = "BookCntl";
+            this.params = $routeParams;
           }
 
-          function ChapterCntl() {
+          function ChapterCntl($routeParams) {
             this.name = "ChapterCntl";
+            this.params = $routeParams;
           }
         </script>
 
@@ -54,6 +55,7 @@
           <pre>$route.current.template = {{$route.current.template}}</pre>
           <pre>$route.current.params = {{$route.current.params}}</pre>
           <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+          <pre>$routeParams = {{$routeParams}}</pre>
           <hr />
           <ng:view></ng:view>
         </div>
@@ -62,33 +64,65 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$route', function($location) {
+angularServiceInject('$route', function($location, $routeParams) {
+  /**
+   * @workInProgress
+   * @ngdoc event
+   * @name angular.service.$route#$beforeRouteChange
+   * @eventOf angular.service.$route
+   * @eventType Broadcast on root scope
+   * @description
+   * Broadcasted before a route change.
+   *
+   * @param {Route} next Future route information.
+   * @param {Route} current Current route information.
+   *
+   * The `Route` object extends the route definition with the following properties.
+   *
+   *    * `scope` - The instance of the route controller.
+   *    * `params` - The current {@link angular.service.$routeParams params}.
+   *
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc event
+   * @name angular.service.$route#$afterRouteChange
+   * @eventOf angular.service.$route
+   * @eventType Broadcast on root scope
+   * @description
+   * Broadcasted after a route change.
+   *
+   * @param {Route} current Current route information.
+   * @param {Route} previous Previous route information.
+   *
+   * The `Route` object extends the route definition with the following properties.
+   *
+   *    * `scope` - The instance of the route controller.
+   *    * `params` - The current {@link angular.service.$routeParams params}.
+   *
+   */
+
+  /**
+   * @workInProgress
+   * @ngdoc event
+   * @name angular.service.$route#$routeUpdate
+   * @eventOf angular.service.$route
+   * @eventType Emit on the current route scope.
+   * @description
+   *
+   * The `reloadOnSearch` property has been set to false, and we are reusing the same
+   * instance of the Controller.
+   */
+
   var routes = {},
-      onChange = [],
       matcher = switchRouteMatcher,
       parentScope = this,
+      rootScope = this,
       dirty = 0,
-      lastHashPath,
-      lastRouteParams,
+      allowReload = true,
       $route = {
         routes: routes,
-
-        /**
-         * @workInProgress
-         * @ngdoc method
-         * @name angular.service.$route#onChange
-         * @methodOf angular.service.$route
-         *
-         * @param {function()} fn Function that will be called when `$route.current` changes.
-         * @returns {function()} The registered function.
-         *
-         * @description
-         * Register a handler function that will be called when route changes
-         */
-        onChange: function(fn) {
-          onChange.push(fn);
-          return fn;
-        },
 
         /**
          * @workInProgress
@@ -114,7 +148,7 @@ angularServiceInject('$route', function($location) {
          * @methodOf angular.service.$route
          *
          * @param {string} path Route path (matched against `$location.hash`)
-         * @param {Object} params Mapping information to be assigned to `$route.current` on route
+         * @param {Object} route Mapping information to be assigned to `$route.current` on route
          *    match.
          *
          *    Object properties:
@@ -139,14 +173,15 @@ angularServiceInject('$route', function($location) {
          *      to update `$location.hash`.
          *
          *    - `[reloadOnSearch=true]` - {boolean=} - reload route when $location.hashSearch
-         *      changes. If this option is disabled, you should set up a $watch to be notified of
-         *      param (hashSearch) changes as follows:
+         *      changes.
          *
-         *            function MyCtrl($route) {
-         *              this.$watch(function() {
-         *                return $route.current.params;
-         *              }, function(scope, params) {
-         *                //do stuff with params
+         *      If the option is set to false and url in the browser changes, then
+         *      $routeUpdate event is emited on the current route scope. You can use this event to
+         *      react to {@link angular.service.$routeParams} changes:
+         *
+         *            function MyCtrl($route, $routeParams) {
+         *              this.$on('$routeUpdate', function() {
+         *                // do stuff with $routeParams
          *              });
          *            }
          *
@@ -155,13 +190,13 @@ angularServiceInject('$route', function($location) {
          * @description
          * Adds a new route definition to the `$route` service.
          */
-        when:function (path, params) {
+        when:function (path, route) {
           if (isUndefined(path)) return routes; //TODO(im): remove - not needed!
-          var route = routes[path];
-          if (!route) route = routes[path] = {reloadOnSearch: true};
-          if (params) extend(route, params); //TODO(im): what the heck? merge two route definitions?
+          var routeDef = routes[path];
+          if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
+          if (route) extend(routeDef, route); //TODO(im): what the heck? merge two route definitions?
           dirty++;
-          return route;
+          return routeDef;
         },
 
         /**
@@ -192,9 +227,17 @@ angularServiceInject('$route', function($location) {
          */
         reload: function() {
           dirty++;
+          allowReload = false;
         }
       };
 
+
+
+  this.$watch(function(){ return dirty + $location.hash; }, updateRoute);
+
+  return $route;
+
+  /////////////////////////////////////////////////////
 
   function switchRouteMatcher(on, when, dstName) {
     var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
@@ -219,79 +262,72 @@ angularServiceInject('$route', function($location) {
     return match ? dst : null;
   }
 
-
   function updateRoute(){
-    var selectedRoute, pathParams, segmentMatch, key, redir;
+    var next = parseRoute(),
+        last = $route.current;
 
-    if ($route.current) {
-      if (!$route.current.reloadOnSearch && (lastHashPath == $location.hashPath)) {
-        $route.current.params = extend($location.hashSearch, lastRouteParams);
-        return;
-      }
-
-      if ($route.current.scope) {
-        $route.current.scope.$destroy();
-      }
-    }
-
-    lastHashPath = $location.hashPath;
-    $route.current = null;
-    // Match a route
-    forEach(routes, function(rParams, rPath) {
-      if (!pathParams) {
-        if ((pathParams = matcher($location.hashPath, rPath))) {
-          selectedRoute = rParams;
-        }
-      }
-    });
-
-    // No route matched; fallback to "otherwise" route
-    selectedRoute = selectedRoute || routes[null];
-
-    if(selectedRoute) {
-      if (selectedRoute.redirectTo) {
-        if (isString(selectedRoute.redirectTo)) {
-          // interpolate the redirectTo string
-          redir = {hashPath: '',
-                   hashSearch: extend({}, $location.hashSearch, pathParams)};
-
-          forEach(selectedRoute.redirectTo.split(':'), function(segment, i) {
-            if (i==0) {
-              redir.hashPath += segment;
-            } else {
-              segmentMatch = segment.match(/(\w+)(.*)/);
-              key = segmentMatch[1];
-              redir.hashPath += pathParams[key] || $location.hashSearch[key];
-              redir.hashPath += segmentMatch[2] || '';
-              delete redir.hashSearch[key];
-            }
-          });
+    if (next && last && next.$route === last.$route
+        && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && allowReload) {
+      $route.current = next;
+      copy(next.params, $routeParams);
+      last.scope && last.scope.$emit('$routeUpdate');
+    } else {
+      allowReload = true;
+      rootScope.$broadcast('$beforeRouteChange', next, last);
+      last && last.scope && last.scope.$destroy();
+      $route.current = next;
+      if (next) {
+        if (next.redirectTo) {
+          $location.update(isString(next.redirectTo)
+              ? {hashSearch: next.params, hashPath: interpolate(next.redirectTo, next.params)}
+          : {hash: next.redirectTo(next.pathParams,
+              $location.hash, $location.hashPath, $location.hashSearch)});
         } else {
-          // call custom redirectTo function
-          redir = {hash: selectedRoute.redirectTo(pathParams, $location.hash, $location.hashPath,
-                                                $location.hashSearch)};
+          copy(next.params, $routeParams);
+          next.scope = parentScope.$new(next.controller);
         }
-
-        $location.update(redir);
-        return;
       }
-
-      $route.current = extend({}, selectedRoute);
-      $route.current.params = extend({}, $location.hashSearch, pathParams);
-      lastRouteParams = pathParams;
-    }
-
-    //fire onChange callbacks
-    forEach(onChange, parentScope.$eval, parentScope);
-
-    // Create the scope if we have matched a route
-    if ($route.current) {
-      $route.current.scope = parentScope.$new($route.current.controller);
+      rootScope.$broadcast('$afterRouteChange', next, last);
     }
   }
 
 
-  this.$watch(function(){ return dirty + $location.hash; }, updateRoute);
+  /**
+   * @returns the current active route, by matching it against the URL
+   */
+  function parseRoute(){
+    // Match a route
+    var params, match;
+    forEach(routes, function(route, path) {
+      if (!match && (params = matcher($location.hashPath, path))) {
+        match = inherit(route, {
+          params: extend({}, $location.hashSearch, params),
+          pathParams: params});
+        match.$route = route;
+      }
+    });
+    // No route matched; fallback to "otherwise" route
+    return match || routes[null] && inherit(routes[null], {params: {}, pathParams:{}});
+  }
 
-  return $route;
-}, ['$location']);
+  /**
+   * @returns interpolation of the redirect path with the parametrs
+   */
+  function interpolate(string, params) {
+    var result = [];
+    forEach((string||'').split(':'), function(segment, i) {
+      if (i == 0) {
+        result.push(segment);
+      } else {
+        var segmentMatch = segment.match(/(\w+)(.*)/);
+        var key = segmentMatch[1];
+        result.push(params[key]);
+        result.push(segmentMatch[2] || '');
+        delete params[key];
+      }
+    });
+    return result.join('');
+  }
+
+
+}, ['$location', '$routeParams']);
