@@ -15,7 +15,6 @@ angularService('$browser', function($log){
 extend(angular, {
   // disabled for now until we agree on public name
   //'annotate': annotate,
-  'element': jqLite,
   'compile': compile,
   'scope': createScope,
   'copy': copy,
@@ -35,7 +34,10 @@ extend(angular, {
   'isObject': isObject,
   'isNumber': isNumber,
   'isArray': isArray,
-  'version': version
+  'version': version,
+  'isDate': isDate,
+  'lowercase': lowercase,
+  'uppercase': uppercase
 });
 
 //try to bind to jquery now so that one can write angular.element().read()
