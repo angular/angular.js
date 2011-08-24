@@ -58,6 +58,13 @@ angularServiceInject('$locale', function() {
       shortDate: 'M/d/yy',
       mediumTime: 'h:mm:ss a',
       shortTime: 'h:mm a'
+    },
+
+    pluralCat: function(num) {
+      if (num === 1) {
+        return 'one';
+      }
+      return 'other';
     }
   };
 });
