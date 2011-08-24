@@ -64,17 +64,11 @@ exports.copy = function(from, to, transform) {
 
 /* Replace placeholders in content accordingly
  * @param content{string} content to be modified
- * @param replacementKeys{array=} array of placeholder strings
- * @param replacements{array=} array of strings that should be swapped with the placeholders
+ * @param replacements{obj} key and value pairs in which key will be replaced with value in content
  */
-exports.replace = function(content, replacementKeys, replacements) {
-  if (replacementKeys.length !== replacements.length) {
-    console.log('WARNING: replacementKeys does not have the same length as replacements' +
-                ' in writer.js');
-  }
-
-  for(var i = 0; i < replacementKeys.length; i++) {
-    content = content.replace(replacementKeys[i], replacements[i]);
+exports.replace = function(content, replacements) {
+  for(key in replacements) {
+    content = content.replace(key, replacements[key]);
   }
   return content;
 }
