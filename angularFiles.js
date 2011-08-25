@@ -19,7 +19,6 @@ angularFiles = {
     'src/service/defer.js',
     'src/service/document.js',
     'src/service/exceptionHandler.js',
-    'src/service/hover.js',
     'src/service/invalidWidgets.js',
     'src/service/location.js',
     'src/service/log.js',
