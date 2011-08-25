@@ -154,6 +154,14 @@ describe("markups", function(){
     expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}","rel":"{{rel}}"}"></a>');
   });
 
+  it('should bind Text with no Bindings', function() {
+    forEach('src,href,checked,disabled,multiple,readonly,selected'.split(','), function(name) {
+      compile('<div ng:' + name +'="some"></div>');
+      expect(sortedHtml(element)).toEqual('<div ng:bind-attr="{"' + name +'":"some"}"></div>');
+      dealoc(element);
+    });
+  })
+
   it('should Parse Text With No Bindings', function(){
     var parts = parseBindings("a");
     assertEquals(parts.length, 1);
