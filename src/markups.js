@@ -418,7 +418,7 @@ angularAttrMarkup('{{}}', function(value, name, element){
     value = decodeURI(value);
   var bindings = parseBindings(value),
       bindAttr;
-  if (hasBindings(bindings)) {
+  if (hasBindings(bindings) || SPECIAL_ATTRS[name]) {
     element.removeAttr(name);
     bindAttr = fromJson(element.attr(NG_BIND_ATTR) || "{}");
     bindAttr[SPECIAL_ATTRS[name] || name] = value;
