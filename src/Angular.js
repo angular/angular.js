@@ -71,8 +71,6 @@ var _undefined        = undefined,
     $value            = 'value',
     $selected         = 'selected',
     $undefined        = 'undefined',
-    NG_EXCEPTION      = 'ng-exception',
-    NG_VALIDATION_ERROR = 'ng-validation-error',
     NOOP              = 'noop',
     Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
@@ -755,36 +753,6 @@ function setHtml(node, html) {
     }
   } else {
     node.innerHTML = html;
-  }
-}
-
-function isRenderableElement(element) {
-  var name = element && element[0] && element[0].nodeName;
-  return name && name.charAt(0) != '#' &&
-    !includes(['TR', 'COL', 'COLGROUP', 'TBODY', 'THEAD', 'TFOOT'], name);
-}
-
-function elementError(element, type, error) {
-  var parent;
-
-  while (!isRenderableElement(element)) {
-    parent = element.parent();
-    if (parent.length) {
-      element = element.parent();
-    } else {
-      return;
-    }
-  }
-
-  if (element[0]['$NG_ERROR'] !== error) {
-    element[0]['$NG_ERROR'] = error;
-    if (error) {
-      element.addClass(type);
-      element.attr(type, error.message || error);
-    } else {
-      element.removeClass(type);
-      element.removeAttr(type);
-    }
   }
 }
 

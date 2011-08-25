@@ -8,17 +8,6 @@
   color: red;
 }
 
-.ng-exception {
-  border: 2px solid #FF0000;
-  font-family: "Courier New", Courier, monospace;
-  font-size: smaller;
-  white-space: pre;
-}
-
-.ng-validation-error {
-  border: 2px solid #FF0000;
-}
-
 /*****************
  * indicators
  *****************/

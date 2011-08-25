@@ -216,48 +216,44 @@ angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   var exprFn = parser(expression).statements();
   return function(element) {
-    var lastValue = noop, lastError = noop;
+    var lastValue = Number.NaN;
     this.$watch(function(scope) {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
-      var error, value, html, isHtml, isDomElement,
+      var value, html, isHtml, isDomElement,
           hadOwnElement = scope.hasOwnProperty('$element'),
           oldElement = scope.$element;
       // TODO(misko): get rid of $element https://github.com/angular/angular.js/issues/348
       scope.$element = element;
       try {
         value = exprFn(scope);
+        // If we are HTML than save the raw HTML data so that we don't recompute sanitization since
+        // it is expensive.
+        // TODO(misko): turn this into a more generic way to compute this
+        if ((isHtml = (value instanceof HTML)))
+          value = (html = value).html;
+        if (lastValue === value) return;
+        isDomElement = isElement(value);
+        if (!isHtml && !isDomElement && isObject(value)) {
+          value = toJson(value, true);
+        }
+        if (value != lastValue) {
+          lastValue = value;
+          if (isHtml) {
+            element.html(html.get());
+          } else if (isDomElement) {
+            element.html('');
+            element.append(value);
+          } else {
+            element.text(value == undefined ? '' : value);
+          }
+        }
       } catch (e) {
         scope.$service('$exceptionHandler')(e);
-        error = formatError(e);
       } finally {
         if (hadOwnElement) {
           scope.$element = oldElement;
         } else {
           delete scope.$element;
-        }
-      }
-      // If we are HTML, then save the raw HTML data so that we don't
-      // recompute sanitization since that is expensive.
-      // TODO: turn this into a more generic way to compute this
-      if ((isHtml = (value instanceof HTML)))
-        value = (html = value).html;
-      if (lastValue === value && lastError == error) return;
-      isDomElement = isElement(value);
-      if (!isHtml && !isDomElement && isObject(value)) {
-        value = toJson(value, true);
-      }
-      if (value != lastValue || error != lastError) {
-        lastValue = value;
-        lastError = error;
-        elementError(element, NG_EXCEPTION, error);
-        if (error) value = error;
-        if (isHtml) {
-          element.html(html.get());
-        } else if (isDomElement) {
-          element.html('');
-          element.append(value);
-        } else {
-          element.text(value == undefined ? '' : value);
         }
       }
     });
@@ -272,20 +268,8 @@ function compileBindTemplate(template){
     forEach(parseBindings(template), function(text){
       var exp = binding(text);
       bindings.push(exp
-        ? function(scope, element) {
-            var error, value;
-            try {
-              value = scope.$eval(exp);
-            } catch(e) {
-              scope.$service('$exceptionHandler')(e);
-              error = toJson(e);
-            }
-            elementError(element, NG_EXCEPTION, error);
-            return error ? error : value;
-          }
-        : function() {
-            return text;
-          });
+        ? function(scope, element) { return scope.$eval(exp); }
+        : function() { return text; });
     });
     bindTemplateCache[template] = fn = function(scope, element, prettyPrintJson) {
       var parts = [],

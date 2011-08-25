@@ -270,39 +270,25 @@ describe('Binder', function(){
 
   it('IfTextBindingThrowsErrorDecorateTheSpan', function(){
     var scope = this.compile('<div>{{error.throw()}}</div>', null, true);
-    var doc = scope.$element;
     var errorLogs = scope.$service('$exceptionHandler').errors;
 
     scope.error = {
         'throw': function(){throw "ErrorMsg1";}
     };
     scope.$apply();
-    var span = childNode(doc, 0);
-    assertTrue(span.hasClass('ng-exception'));
-    assertTrue(!!span.text().match(/ErrorMsg1/));
-    assertTrue(!!span.attr('ng-exception').match(/ErrorMsg1/));
-    assertEquals(['ErrorMsg1'], errorLogs.shift());
 
     scope.error['throw'] = function(){throw "MyError";};
     errorLogs.length = 0;
     scope.$apply();
-    span = childNode(doc, 0);
-    assertTrue(span.hasClass('ng-exception'));
-    assertTrue(span.text(), span.text().match('MyError') !== null);
-    assertEquals('MyError', span.attr('ng-exception'));
     assertEquals(['MyError'], errorLogs.shift());
 
     scope.error['throw'] = function(){return "ok";};
     scope.$apply();
-    assertFalse(span.hasClass('ng-exception'));
-    assertEquals('ok', span.text());
-    assertEquals(null, span.attr('ng-exception'));
     assertEquals(0, errorLogs.length);
   });
 
   it('IfAttrBindingThrowsErrorDecorateTheAttribute', function(){
     var scope = this.compile('<div attr="before {{error.throw()}} after"></div>', null, true);
-    var doc = scope.$element;
     var errorLogs = scope.$service('$exceptionHandler').errors;
     var count = 0;
 
