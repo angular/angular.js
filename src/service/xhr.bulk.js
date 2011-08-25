@@ -41,7 +41,9 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
     }
   }
   bulkXHR.urls = {};
-  bulkXHR.flush = function(success, error) {
+  bulkXHR.flush = function(success, errorback) {
+    assertArgFn(success = success || noop, 0);
+    assertArgFn(errorback = errorback || noop, 1);
     forEach(bulkXHR.urls, function(queue, url) {
       var currentRequests = queue.requests;
       if (currentRequests && currentRequests.length) {
@@ -62,7 +64,7 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
                 $log.error(e);
               }
             });
-            (success || noop)();
+            success();
           },
           function(code, response) {
             forEach(currentRequests, function(request, i) {
@@ -76,12 +78,11 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
                 $log.error(e);
               }
             });
-            (error || noop)();
+            noop();
           });
-        scope.$eval();
       }
     });
   };
-  this.$watch(bulkXHR.flush);
+  this.$watch(function(){ bulkXHR.flush(); });
   return bulkXHR;
 }, ['$xhr', '$xhr.error', '$log']);
