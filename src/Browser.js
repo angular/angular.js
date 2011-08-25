@@ -415,42 +415,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   // Misc API
   //////////////////////////////////////////////////////////////
-  var hoverListener = noop;
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#hover
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Set hover listener.
-   *
-   * @param {function(Object, boolean)} listener Function that will be called when a hover event
-   *    occurs.
-   */
-  self.hover = function(listener) { hoverListener = listener; };
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#bind
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Register hover function to real browser
-   */
-  self.bind = function() {
-    document.bind("mouseover", function(event){
-      hoverListener(jqLite(msie ? event.srcElement : event.target), true);
-      return true;
-    });
-    document.bind("mouseleave mouseout click dblclick keypress keyup", function(event){
-      hoverListener(jqLite(event.target), false);
-      return true;
-    });
-  };
-
 
   /**
    * @workInProgress

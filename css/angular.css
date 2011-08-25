@@ -19,68 +19,6 @@
   border: 2px solid #FF0000;
 }
 
-
-/*****************
- * TIP
- *****************/
-#ng-callout {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  outline: 0;
-  font-size: 13px;
-  font-weight: normal;
-  font-family: Verdana, Arial, Helvetica, sans-serif;
-  vertical-align: baseline;
-  background: transparent;
-  text-decoration: none;
-}
-
-#ng-callout .ng-arrow-left{
-  background-image: url("data:image/gif;base64,R0lGODlhCwAXAKIAAMzMzO/v7/f39////////wAAAAAAAAAAACH5BAUUAAQALAAAAAALABcAAAMrSLoc/AG8FeUUIN+sGebWAnbKSJodqqlsOxJtqYooU9vvk+vcJIcTkg+QAAA7");
-  background-repeat: no-repeat;
-  background-position: left top;
-  position: absolute;
-  z-index:101;
-  left:-12px;
-  height:23px;
-  width:10px;
-  top:-3px;
-}
-
-#ng-callout .ng-arrow-right{
-  background-image: url("data:image/gif;base64,R0lGODlhCwAXAKIAAMzMzO/v7/f39////////wAAAAAAAAAAACH5BAUUAAQALAAAAAALABcAAAMrCLTcoM29yN6k9socs91e5X3EyJloipYrO4ohTMqA0Fn2XVNswJe+H+SXAAA7");
-  background-repeat: no-repeat;
-  background-position: left top;
-  position: absolute;
-  z-index:101;
-  height:23px;
-  width:11px;
-    top:-2px;
-}
-
-#ng-callout {
-  position: absolute;
-  z-index:100;
-  border: 2px solid #CCCCCC;
-  background-color: #fff;
-}
-
-#ng-callout .ng-content{
-  padding:10px 10px 10px 10px;
-  color:#333333;
-}
-
-#ng-callout .ng-title{
-  background-color: #CCCCCC;
-  text-align: left;
-  padding-left: 8px;
-  padding-bottom: 5px;
-  padding-top: 2px;
-  font-weight:bold;
-}
-
-
 /*****************
  * indicators
  *****************/
