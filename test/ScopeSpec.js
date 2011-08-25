@@ -596,7 +596,7 @@ describe('Scope', function() {
           scope.$broadcast('fooEvent', 'do', 're', 'me', 'fa');
 
           expect(args.length).toBe(5);
-          expect([].splice.call(args, 1)).toEqual(['do', 're', 'me', 'fa']);
+          expect(sliceArgs(args, 1)).toEqual(['do', 're', 'me', 'fa']);
         });
       });
     });

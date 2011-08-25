@@ -569,10 +569,11 @@ Scope.prototype = {
    * @param {function} listener Function to remove.
    */
   $removeListener: function(name, listener) {
-    var namedListeners = this.$$listeners[name];
-    var i;
+    var namedListeners = this.$$listeners[name],
+        i;
+
     if (namedListeners) {
-      i = namedListeners.indexOf(listener);
+      i = indexOf(namedListeners, listener);
       namedListeners.splice(i, 1);
     }
   },
