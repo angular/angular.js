@@ -328,9 +328,6 @@ MockBrowser.prototype = {
     return pollFn;
   },
 
-  hover: function(onHover) {
-  },
-
   url: function(url, replace) {
     if (url) {
       this.$$url = url;
