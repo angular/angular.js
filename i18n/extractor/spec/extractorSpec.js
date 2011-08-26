@@ -124,6 +124,36 @@ describe('extract method', function() {
         expect(rdbObj).toEqual(desiredObj);
     })
 
+    it('should show error when ng:pluralize with offset lack explicit rules', function() {
+        rdbObj = {};
+        spyOn(console, 'error');
+
+        element = $('<ng:pluralize msgId="headCount" msgDesc="description of headcount" offset=2 ' +
+                        'count="count" ' +
+                        'when="{\'0\': \'Nobody is here.\',' +
+                               '\'1\': \'{{p1}} is here.\',' +
+                               '\'2\': \'{{p1}} and {{p2}} are here.\',' +
+                               '\'one\': \'{{p1}}, {{p2}} and one other person are here.\',' +
+                               '\'other\': \'{{p1}}, {{p2}} and {} other people are here.\'}">' +
+                    '</ng:pluralize>');
+
+        extractor.extractContent(rdbObj, element);
+        expect(console.error).not.toHaveBeenCalled();
+
+        rdbObj = {};
+        element = $('<ng:pluralize msgId="headCount" msgDesc="description of headcount" offset=2 ' +
+                        'count="count" ' +
+                        'when="{\'0\': \'Nobody is here.\',' +
+                               '\'1\': \'{{p1}} is here.\',' +
+                               '\'one\': \'{{p1}}, {{p2}} and one other person are here.\',' +
+                               '\'other\': \'{{p1}}, {{p2}} and {} other people are here.\'}">' +
+                    '</ng:pluralize>');
+
+        extractor.extractContent(rdbObj, element);
+        expect(console.error).toHaveBeenCalledWith('ng:pluralize #headCount ' +
+                                                   'is missing explicit number rule for number 2');
+    })
+
     it('should extract msgId and value with placeholders/bindings', function() {
       element = $('<div msgId="myId">Hello {{name}}</div>');
       extractor.extractContent(rdbObj, element);

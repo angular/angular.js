@@ -53,7 +53,7 @@ exports.extractContent = function(rdbObj, el) {
   if (nodeName == 'ng:pluralize') {
     var count = el.attr('count'),
         when = el.attr('when'),
-        offset = el.attr('offset');
+        offset = parseInt(el.attr('offset'));
     //TODO(Di) need to add test once we decide on an error reporting mechanism
     if (!count || !when) console.error(msgId + ' is an ng:pluralize widget but it does not have ' +
                                        'all the required fields!');
@@ -66,8 +66,18 @@ exports.extractContent = function(rdbObj, el) {
     if (offset) rdbObj[msgId] += ('offset:' + offset);
     eval('whens = ' + when); //Global variable 'whens'!
 
+    var errChecker = {};
     for(key in whens) {
       rdbObj[msgId] += ('=' + key + ' {' + whens[key] + '}');
+      errChecker[key] = true;
+    }
+
+    //Make sure all ng:pluraize with offset have the right number of explicit rules
+    if (offset) {
+     for(var i = 0; i<= offset; i++) {
+       if (!errChecker[i]) console.error('ng:pluralize ' + msgId + ' is missing' +
+                                         ' explicit number rule for number ' + i);
+     }
     }
 
     rdbObj[msgId] += '}';
