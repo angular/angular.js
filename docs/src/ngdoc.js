@@ -29,6 +29,7 @@ function Doc(text, file, line) {
   this.param = this.param || [];
   this.properties = this.properties || [];
   this.methods = this.methods || [];
+  this.events = this.events || [];
   this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function(){
@@ -217,6 +218,10 @@ Doc.prototype = {
               description: self.markdown(text.replace(match[0], match[4]))
             };
           self.properties.push(property);
+        } else if(atName == 'eventType') {
+          var match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
+          self.type = match[1];
+          self.source = match[2];
         } else {
           self[atName] = text;
         }
@@ -525,6 +530,18 @@ Doc.prototype = {
        dom.h('Example', property.example, dom.html);
       });
     });
+    dom.h('Events', this.events, function(event){
+      var signature = (event.param || []).map(property('name'));
+      dom.h(event.type + ' ' +
+          event.shortName + '(' + signature.join(', ') + ') on ' +
+          event.source, event, function(){
+        dom.html(event.description);
+        event.html_usage_parameters(dom);
+        self.html_usage_this(dom);
+
+        dom.h('Example', event.example, dom.html);
+      });
+    });
   },
 
   parameters: function(dom, separator, skipFirst, prefix) {
@@ -717,7 +734,7 @@ function merge(docs){
     });
 
     // merge into parents
-    if (findParent(doc, 'method') || findParent(doc, 'property')) {
+    if (findParent(doc, 'method') || findParent(doc, 'property') || findParent(doc, 'event')) {
       docs.splice(i, 1);
     } else {
       i++;
