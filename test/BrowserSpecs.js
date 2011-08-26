@@ -335,17 +335,17 @@ describe('browser', function(){
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
         var i, longVal = '', cookieStr;
 
-        for(i=0; i<4092; i++) {
+        for(i=0; i<4091; i++) {
           longVal += '+';
         }
 
         cookieStr = document.cookie;
-        browser.cookies('x', longVal); //total size 4094-4096, so it should go through
+        browser.cookies('x', longVal); //total size 4093-4096, so it should go through
         expect(document.cookie).not.toEqual(cookieStr);
         expect(browser.cookies()['x']).toEqual(longVal);
         expect(logs.warn).toEqual([]);
 
-        browser.cookies('x', longVal + 'xxx'); //total size 4097-4099, a warning should be logged
+        browser.cookies('x', longVal + 'xxxx'); //total size 4097-4099, a warning should be logged
         expect(logs.warn).toEqual(
           [[ "Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
              "bytes)!" ]]);
