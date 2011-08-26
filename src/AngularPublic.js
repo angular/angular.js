@@ -5,7 +5,7 @@ var browserSingleton;
 angularService('$browser', function($log){
   if (!browserSingleton) {
     browserSingleton = new Browser(window, jqLite(window.document), jqLite(window.document.body),
-                                   XHR, $log);
+                                   $log);
     browserSingleton.bind();
   }
   return browserSingleton;

@@ -986,7 +986,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return extend(function(xhr, element){
+    return annotate('$http', '$tplCache', function($http, $cache, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -1004,28 +1004,44 @@ angularWidget('ng:include', function(element){
       });
       this.$watch(function(){return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
-            useScope = scope.$eval(scopeExp);
+            useScope = scope.$eval(scopeExp),
+            fromCache;
+
+        function updateContent(content) {
+          element.html(content);
+          if (useScope) {
+            childScope = useScope;
+          } else {
+            releaseScopes.push(childScope = scope.$new());
+          }
+          compiler.compile(element)(childScope);
+          scope.$eval(onloadExp);
+        }
+
+        function clearContent() {
+          childScope = null;
+          element.html('');
+        }
 
         while(releaseScopes.length) {
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          xhr('GET', src, null, function(code, response){
-            element.html(response);
-            if (useScope) {
-              childScope = useScope;
-            } else {
-              releaseScopes.push(childScope = scope.$new());
-            }
-            compiler.compile(element)(childScope);
-            scope.$eval(onloadExp);
-          }, false, true);
+          if ((fromCache = $cache.get(src))) {
+            scope.$evalAsync(function() {
+              updateContent(fromCache);
+            });
+          } else {
+            $http.get(src).on('success', function(response) {
+              updateContent(response);
+              $cache.put(src, response);
+            }).on('error', clearContent);
+          }
         } else {
-          childScope = null;
-          element.html('');
+          clearContent();
         }
       });
-    }, {$inject:['$xhr.cache']});
+    });
   }
 });
 
@@ -1418,25 +1434,42 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return annotate('$xhr.cache', '$route', function($xhr, $route, element){
-      var template;
-      var changeCounter = 0;
+    return annotate('$http', '$tplCache', '$route', function($http, $cache, $route, element){
+      var template,
+          changeCounter = 0;
 
       $route.onChange(function(){
         changeCounter++;
       })(); //initialize the state forcefully, it's possible that we missed the initial
             //$route#onChange already
 
-      this.$watch(function(){return changeCounter;}, function() {
-        var template = $route.current && $route.current.template;
-        if (template) {
-          //xhr's callback must be async, see commit history for more info
-          $xhr('GET', template, function(code, response) {
-            element.html(response);
-            compiler.compile(element)($route.current.scope);
-          });
-        } else {
+      this.$watch(function(){return changeCounter;}, function(scope) {
+        var template = $route.current && $route.current.template,
+            fromCache;
+
+        function updateContent(content) {
+          element.html(content);
+          compiler.compile(element)($route.current.scope);
+        }
+
+        function clearContent() {
           element.html('');
+        }
+
+        if (template) {
+          if ((fromCache = $cache.get(template))) {
+            scope.$evalAsync(function() {
+              updateContent(fromCache);
+            });
+          } else {
+            // xhr's callback must be async, see commit history for more info
+            $http.get(template).on('success', function(response) {
+              updateContent(response);
+              $cache.put(template, response);
+            }).on('error', clearContent);
+          }
+        } else {
+          clearContent();
         }
       });
     });

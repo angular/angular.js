@@ -2,7 +2,7 @@
 
 describe('browser', function(){
 
-  var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue;
+  var browser, fakeWindow, logs, scripts, removedScripts, setTimeoutQueue;
 
   function fakeSetTimeout(fn) {
     return setTimeoutQueue.push(fn) - 1; //return position in the queue
@@ -25,7 +25,6 @@ describe('browser', function(){
     setTimeoutQueue = [];
     scripts = [];
     removedScripts = [];
-    xhr = null;
     fakeWindow = {
       location: {href:"http://server"},
       setTimeout: fakeSetTimeout,
@@ -35,22 +34,6 @@ describe('browser', function(){
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
                      removeChild: function(node){removedScripts.push(node);}}];
 
-    var FakeXhr = function(){
-      xhr = this;
-      this.open = function(method, url, async){
-        xhr.method = method;
-        xhr.url = url;
-        xhr.async = async;
-        xhr.headers = {};
-      };
-      this.setRequestHeader = function(key, value){
-        xhr.headers[key] = value;
-      };
-      this.send = function(post){
-        xhr.post = post;
-      };
-    };
-
     logs = {log:[], warn:[], info:[], error:[]};
 
     var fakeLog = {log: function() { logs.log.push(slice.call(arguments)); },
@@ -58,8 +41,7 @@ describe('browser', function(){
                    info: function() { logs.info.push(slice.call(arguments)); },
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
-    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, FakeXhr,
-                          fakeLog);
+    browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, fakeLog);
   });
 
   it('should contain cookie cruncher', function() {
@@ -72,133 +54,8 @@ describe('browser', function(){
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
     });
-
-    it('should queue callbacks with outstanding requests', function(){
-      var callback = jasmine.createSpy('callback');
-      browser.xhr('GET', '/url', null, noop);
-      browser.notifyWhenNoOutstandingRequests(callback);
-      expect(callback).not.toHaveBeenCalled();
-
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-      expect(callback).toHaveBeenCalled();
-    });
   });
 
-  describe('xhr', function(){
-    describe('JSON', function(){
-      var log;
-
-      function callback(code, data) {
-        log += code + ':' + data + ';';
-      }
-
-      beforeEach(function() {
-        log = "";
-      });
-
-
-      // We don't have unit tests for IE because script.readyState is readOnly.
-      // Instead we run e2e tests on all browsers - see e2e for $xhr.
-      if (!msie) {
-
-        it('should add script tag for JSONP request', function() {
-          var notify = jasmine.createSpy('notify');
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          browser.notifyWhenNoOutstandingRequests(notify);
-          expect(notify).not.toHaveBeenCalled();
-          expect(scripts.length).toEqual(1);
-          var script = scripts[0];
-          var url = script.src.split('?cb=');
-          expect(url[0]).toEqual('http://example.org/path');
-          expect(typeof fakeWindow[url[1]]).toEqual('function');
-          fakeWindow[url[1]]('data');
-          script.onload();
-
-          expect(notify).toHaveBeenCalled();
-          expect(log).toEqual('200:data;');
-          expect(scripts).toEqual(removedScripts);
-          expect(fakeWindow[url[1]]).toBeUndefined();
-        });
-
-
-        it('should call callback when script fails to load', function() {
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          var script = scripts[0];
-          expect(typeof script.onload).toBe('function');
-          expect(typeof script.onerror).toBe('function');
-          script.onerror();
-
-          expect(log).toEqual('undefined:undefined;');
-        });
-
-
-        it('should update the outstandingRequests counter for successful requests', function() {
-          var notify = jasmine.createSpy('notify');
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          browser.notifyWhenNoOutstandingRequests(notify);
-          expect(notify).not.toHaveBeenCalled();
-
-          var script = scripts[0];
-          var url = script.src.split('?cb=');
-          fakeWindow[url[1]]('data');
-          script.onload();
-
-          expect(notify).toHaveBeenCalled();
-        });
-
-
-        it('should update the outstandingRequests counter for failed requests', function() {
-          var notify = jasmine.createSpy('notify');
-          browser.xhr('JSON', 'http://example.org/path?cb=JSON_CALLBACK', null, callback);
-          browser.notifyWhenNoOutstandingRequests(notify);
-          expect(notify).not.toHaveBeenCalled();
-
-          scripts[0].onerror();
-
-          expect(notify).toHaveBeenCalled();
-        });
-      }
-    });
-
-
-    it('should normalize IE\'s 1223 status code into 204', function() {
-      var callback = jasmine.createSpy('XHR');
-
-      browser.xhr('GET', 'URL', 'POST', callback);
-
-      xhr.status = 1223;
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-
-      expect(callback).toHaveBeenCalled();
-      expect(callback.argsForCall[0][0]).toEqual(204);
-    });
-
-    it('should set only the requested headers', function() {
-      var code, response, headers = {};
-      browser.xhr('POST', 'URL', null, function(c,r){
-        code = c;
-        response = r;
-      }, {'X-header1': 'value1', 'X-header2': 'value2'});
-
-      expect(xhr.method).toEqual('POST');
-      expect(xhr.url).toEqual('URL');
-      expect(xhr.post).toEqual('');
-      expect(xhr.headers).toEqual({
-        "X-header1":"value1",
-        "X-header2":"value2"
-      });
-
-      xhr.status = 202;
-      xhr.responseText = 'RESPONSE';
-      xhr.readyState = 4;
-      xhr.onreadystatechange();
-
-      expect(code).toEqual(202);
-      expect(response).toEqual('RESPONSE');
-    });
-  });
 
   describe('defer', function() {
     it('should execute fn asynchroniously via setTimeout', function() {

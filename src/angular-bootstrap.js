@@ -103,6 +103,7 @@
 
              // Extension points
 
+             'service/cacheFactory.js',
              'service/cookieStore.js',
              'service/cookies.js',
              'service/defer.js',
@@ -115,10 +116,8 @@
              'service/resource.js',
              'service/route.js',
              'service/window.js',
-             'service/xhr.bulk.js',
-             'service/xhr.cache.js',
-             'service/xhr.error.js',
-             'service/xhr.js',
+             'service/http.js',
+             'service/httpBackend.js',
              'service/locale.js',
 
              'apis.js',
