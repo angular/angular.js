@@ -1422,10 +1422,9 @@ angularWidget('ng:view', function(element) {
       var template;
       var changeCounter = 0;
 
-      $route.onChange(function(){
+      this.$on('$afterRouteChange', function(){
         changeCounter++;
-      })(); //initialize the state forcefully, it's possible that we missed the initial
-            //$route#onChange already
+      });
 
       this.$watch(function(){return changeCounter;}, function() {
         var template = $route.current && $route.current.template;

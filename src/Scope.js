@@ -369,7 +369,7 @@ Scope.prototype = {
         if (!(next = scope.$$childHead || scope.$$nextSibling) && scope !== this) {
           do {
             scope = scope.$parent;
-            if (scope == this || (next = scope.$$nextSibling)) {
+            if (!scope || scope == this || (next = scope.$$nextSibling)) {
               break;
             }
           } while (scope !== this);
