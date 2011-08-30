@@ -250,6 +250,20 @@ describe("angular.scenario.dsl", function() {
         expect($window.location).toMatch(/#foo$/);
       });
 
+      it('should not navigate if click event was cancelled', function() {
+        var initLocation = $window.location,
+            elm = jqLite('<a href="#foo"></a>');
+
+        doc.append(elm);
+        elm.bind('click', function(event) {
+          event.preventDefault();
+        });
+
+        $root.dsl.element('a').click();
+        expect($window.location).toBe(initLocation);
+        dealoc(elm);
+      });
+
       it('should count matching elements', function() {
         doc.append('<span></span><span></span>');
         $root.dsl.element('span').count();

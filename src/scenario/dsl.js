@@ -323,8 +323,9 @@ angular.scenario.dsl('element', function() {
     return this.addFutureAction("element '" + this.label + "' click", function($window, $document, done) {
       var elements = $document.elements();
       var href = elements.attr('href');
-      elements.trigger('click');
-      if (href && elements[0].nodeName.toUpperCase() === 'A') {
+      var eventProcessDefault = elements.trigger('click')[0];
+
+      if (href && elements[0].nodeName.toUpperCase() === 'A' && eventProcessDefault) {
         this.application.navigateTo(href, function() {
           done();
         }, done);
