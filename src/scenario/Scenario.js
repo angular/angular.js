@@ -298,9 +298,14 @@ function browserTrigger(element, type) {
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
     if (/(click|change|keydown)/.test(type)) {
-      return this.each(function(index, node) {
-        browserTrigger(node, type);
+      var processDefaults = [];
+      this.each(function(index, node) {
+        processDefaults.push(browserTrigger(node, type));
       });
+
+      // this is not compatible with jQuery - we return an array of returned values,
+      // so that scenario runner know whether JS code has preventDefault() of the event or not...
+      return processDefaults;
     }
     return parentTrigger.apply(this, arguments);
   };
