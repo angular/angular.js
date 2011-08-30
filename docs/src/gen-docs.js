@@ -22,7 +22,7 @@ writer.makeDir('build/docs/syntaxhighlighter').then(function() {
   ngdoc.merge(docs);
   var fileFutures = [];
   docs.forEach(function(doc){
-    fileFutures.push(writer.output(doc.section + '/' + doc.id + '.html', doc.html()));
+    fileFutures.push(writer.output('partials/' + doc.section + '/' + doc.id + '.html', doc.html()));
   });
 
   writeTheRest(fileFutures);
@@ -43,28 +43,19 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyDir('img'));
   writesFuture.push(writer.copyDir('examples'));
 
-  var manifest = 'manifest="appcache.manifest"',
-      jq = '<script src="jquery.min.js"></script>',
-      ngMin = '<script src="../angular.min.js" ng:autobind></script>',
-      ng = '<script src="../angular.js" ng:autobind></script>';
+  var manifest = 'manifest="/build/docs/appcache.manifest"';
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
-                                writer.replace, {'doc:manifest': manifest,
-                                                 '<!-- angular script place holder -->': ngMin}));
+                                writer.replace, {'doc:manifest': manifest}));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html',
-                                writer.replace, {'doc:manifest': manifest,
-                                                 '<!-- angular script place holder -->': ngMin,
-                                                 '<!-- jquery place holder -->': jq}));
+                                writer.replace, {'doc:manifest': manifest}));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-debug.html',
-                                writer.replace, {'doc:manifest': '',
-                                                 '<!-- angular script place holder -->': ng}));
+                                writer.replace, {'doc:manifest': ''}));
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-debug.html',
-                                writer.replace, {'doc:manifest': '',
-                                                 '<!-- angular script place holder -->': ng,
-                                                 '<!-- jquery place holder -->': jq}));
+                                writer.replace, {'doc:manifest': ''}));
 
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));

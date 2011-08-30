@@ -28,14 +28,14 @@ controller.
 
 In this example we have a simple app which consist of two screens:
 
-* Welcome: url `#` Show the user contact information.
-* Settings: url `#/settings` Show an edit screen for user contact information.
+* Welcome: url `welcome` Show the user contact information.
+* Settings: url `settings` Show an edit screen for user contact information.
 
 
 The two partials are defined in the following URLs:
 
-* {@link ./examples/settings.html}
-* {@link ./examples/welcome.html}
+* <a href="./examples/settings.html" ng:ext-link>./examples/settings.html</a>
+* <a href="./examples/welcome.html" ng:ext-link>./examples/welcome.html</a>
 
 <doc:example>
  <doc:source>
@@ -79,7 +79,7 @@ The two partials are defined in the following URLs:
     </script>
     <div ng:controller="AppCntl">
       <h1>Your App Chrome</h1>
-      [ <a href="#!/welcome">Welcome</a> | <a href="#!/settings">Settings</a> ]
+      [ <a href="welcome">Welcome</a> | <a href="settings">Settings</a> ]
       <hr/>
       <span style="background-color: blue; color: white; padding: 3px;">
         Partial: {{$route.current.template}}

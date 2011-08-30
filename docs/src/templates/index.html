@@ -5,12 +5,66 @@
       doc:manifest>
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-  <title ng:bind-template="AngularJS: {{partialTitle}}">AngularJS</title>
   <meta name="fragment" content="!">
-  <link rel="stylesheet" href="docs-combined.css" type="text/css"/>
-  <link rel="stylesheet" href="syntaxhighlighter/syntaxhighlighter-combined.css" type="text/css"/>
+  <title ng:bind-template="AngularJS: {{partialTitle}}">AngularJS</title>
+  <script type="text/javascript">
+    // dynamically add base tag as well as css and javascript files.
+    // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
+    // before the base attribute is added, causing 404 and terribly slow loading of the docs app.
+    (function() {
+      var indexFile = (location.pathname.match(/\/(index[^\.]*\.html)/) || ['', 'index.html'])[1],
+          rUrl = /(api|guide|misc|tutorial|cookbook|index[^\.]*\.html).*$/,
+          baseUrl = location.href.replace(rUrl, indexFile),
+          jQuery = /index-jq[^\.]*\.html$/.test(baseUrl),
+          debug = /index[^\.]*-debug\.html$/.test(baseUrl),
+          angularPath = debug ? '../angular.js' : '../angular.min.js',
+          headEl = document.getElementsByTagName('head')[0],
+          sync = true;
 
-  <script>
+      addTag('base', {href: baseUrl});
+      addTag('link', {rel: 'stylesheet', href: 'docs-combined.css', type: 'text/css'});
+      addTag('link', {rel: 'stylesheet', href: 'syntaxhighlighter/syntaxhighlighter-combined.css',
+                      type: 'text/css'});
+      addTag('script', {src: 'syntaxhighlighter/syntaxhighlighter-combined.js'}, sync);
+      if (jQuery) addTag('script', {src: 'jquery.min.js'});
+      addTag('script', {src: angularPath, 'ng:autobind':''}, sync);
+      addTag('script', {src: 'docs-combined.js'}, sync);
+      addTag('script', {src: 'docs-keywords.js'}, sync);
+
+      function addTag(name, attributes, sync) {
+        var el = document.createElement(name),
+            attrName;
+
+        for (attrName in attributes) {
+          el.setAttribute(attrName, attributes[attrName]);
+        }
+
+        sync ? document.write(outerHTML(el)) : headEl.appendChild(el);
+      }
+
+      function outerHTML(node){
+        // if IE, Chrome take the internal method otherwise build one
+        return node.outerHTML || (
+            function(n){
+                var div = document.createElement('div'), h;
+                div.appendChild(n);
+                h = div.innerHTML;
+                div = null;
+                return h;
+            })(node);
+      }
+    })();
+
+
+    // force page reload when new update is available
+    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
+      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+        window.applicationCache.swapCache();
+        window.location.reload();
+      }
+    }, false);
+
+
     // GA asynchronous tracker
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-8594346-3']);
@@ -21,14 +75,6 @@
       ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
       var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-
-    // force page reload when new update is available
-    window.applicationCache && window.applicationCache.addEventListener('updateready', function(e) {
-      if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
-        window.applicationCache.swapCache();
-        window.location.reload();
-      }
-    }, false);
   </script>
 </head>
 
@@ -45,11 +91,11 @@
 
     <ul id="navbar">
       <li><a href="http://angularjs.org/">AngularJS</a></li>
-      <li><a href="#!/misc/started" ng:class="selectedSection('misc')">Getting Started</a></li>
-      <li><a href="#!/tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
-      <li><a href="#!/api" ng:class="selectedSection('api')">API Reference</a></li>
-      <li><a href="#!/cookbook" ng:class="selectedSection('cookbook')">Examples</a></li>
-      <li><a href="#!/guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
+      <li><a href="misc/started" ng:class="selectedSection('misc')">Getting Started</a></li>
+      <li><a href="tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
+      <li><a href="api" ng:class="selectedSection('api')">API Reference</a></li>
+      <li><a href="cookbook" ng:class="selectedSection('cookbook')">Examples</a></li>
+      <li><a href="guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
     </ul>
 
     <div id="sidebar">
@@ -100,11 +146,5 @@
       <button id="cacheButton" ng:click="enableOffline()">Let me have them all!</button>
     </div>
   </div>
-
-  <script src="syntaxhighlighter/syntaxhighlighter-combined.js"></script>
-  <!-- jquery place holder -->
-  <!-- angular script place holder -->
-  <script src="docs-combined.js"></script>
-  <script src="docs-keywords.js"></script>
 </body>
 </html>

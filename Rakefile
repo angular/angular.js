@@ -209,7 +209,8 @@ task :package => [:clean, :compile, :docs] do
     text = f.read
     f.truncate 0
     f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
   end
 
 
@@ -217,9 +218,27 @@ task :package => [:clean, :compile, :docs] do
     text = f.read
     f.truncate 0
     f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
   end
 
+
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-debug.html", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('../angular.js', "../angular-#{NG_VERSION.full}.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  end
+
+
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-debug.html", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('../angular.js', "../angular-#{NG_VERSION.full}.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  end
 
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/docs-scenario.html", File::RDWR) do |f|
     text = f.read
@@ -232,14 +251,16 @@ task :package => [:clean, :compile, :docs] do
     text = f.read
     f.truncate 0
     f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
   end
 
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/appcache-offline.manifest", File::RDWR) do |f|
     text = f.read
     f.truncate 0
     f.rewind
-    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js")
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
   end
 
 

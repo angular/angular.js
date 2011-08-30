@@ -4,7 +4,8 @@ function DocsController($location, $browser, $window, $cookies) {
 
   var self = this,
       OFFLINE_COOKIE_NAME = 'ng-offline',
-      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/;
+      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
+      INDEX_PATH = /^(\/|\/index[^\.]*.html)$/;
 
   this.$location = $location;
 
@@ -13,7 +14,7 @@ function DocsController($location, $browser, $window, $cookies) {
   self.subpage = false;
   self.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
 
-  if (!$location.path()) {
+  if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
   }
 
@@ -40,11 +41,11 @@ function DocsController($location, $browser, $window, $cookies) {
   });
 
   this.getUrl = function(page){
-    return '#!/' + page.section + '/' + page.id;
+    return page.section + '/' + page.id;
   };
 
   this.getCurrentPartial = function(){
-    return this.partialId ? ('./' + this.sectionId + '/' + this.partialId + '.html') : '';
+    return this.partialId ? ('./partials/' + this.sectionId + '/' + this.partialId + '.html') : '';
   };
 
   this.getClass = function(page) {
@@ -127,7 +128,7 @@ function TutorialInstructionsCtrl($cookieStore) {
 
 angular.service('$locationConfig', function() {
   return {
-    html5Mode: false,
+    html5Mode: true,
     hashPrefix: '!'
   };
 });
