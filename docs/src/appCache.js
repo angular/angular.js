@@ -29,7 +29,7 @@ function appCache(path) {
 
     var resultPostfix = ["",
                          "FALLBACK:",
-                         "/offline.html",
+                         "/ /build/docs/index.html",
                          "",
                          "# allow access to google analytics and twitter when we are online",
                          "NETWORK:",
@@ -68,7 +68,7 @@ function appCacheTemplate() {
           "img/yellow_bkgnd.jpg",
           "",
           "FALLBACK:",
-          "/ offline.html",
+          "/ /build/docs/offline.html",
           "",
           "# allow access to google analytics and twitter when we are online",
           "NETWORK:",

@@ -9,3 +9,7 @@
 RewriteEngine on
 RewriteCond %{HTTP_COOKIE}      ng-offline="NG_VERSION_FULL"
 RewriteRule appcache.manifest   appcache-offline.manifest
+
+
+## HTML5 URL Support ##
+RewriteRule ^(guide|api|cookbook|misc|tutorial)(/.*)?$    index.html
