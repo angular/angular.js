@@ -1390,10 +1390,10 @@ angularWidget("@ng:non-bindable", noop);
            function MyCtrl($route) {
              $route.when('/overview',
                { controller: OverviewCtrl,
-                 template: 'guide/dev_guide.overview.html'});
+                 template: 'partials/guide/dev_guide.overview.html'});
              $route.when('/bootstrap',
                { controller: BootstrapCtrl,
-                 template: 'guide/dev_guide.bootstrap.auto_bootstrap.html'});
+                 template: 'partials/guide/dev_guide.bootstrap.auto_bootstrap.html'});
            };
            MyCtrl.$inject = ['$route'];
 
@@ -1401,9 +1401,9 @@ angularWidget("@ng:non-bindable", noop);
            function OverviewCtrl(){}
          </script>
          <div ng:controller="MyCtrl">
-           <a href="#!/overview">overview</a> |
-           <a href="#!/bootstrap">bootstrap</a> |
-           <a href="#!/undefined">undefined</a>
+           <a href="overview">overview</a> |
+           <a href="bootstrap">bootstrap</a> |
+           <a href="undefined">undefined</a>
 
            <br/>
 

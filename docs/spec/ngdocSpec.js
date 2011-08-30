@@ -327,8 +327,8 @@ describe('ngdoc', function(){
         expect(doc.requires).toEqual([
           {name:'$service', text:'<p>for \n<code>A</code></p>'},
           {name:'$another', text:'<p>for <code>B</code></p>'}]);
-        expect(doc.html()).toContain('<a href="#!/api/angular.service.$service">$service</a>');
-        expect(doc.html()).toContain('<a href="#!/api/angular.service.$another">$another</a>');
+        expect(doc.html()).toContain('<a href="api/angular.service.$service">$service</a>');
+        expect(doc.html()).toContain('<a href="api/angular.service.$another">$another</a>');
         expect(doc.html()).toContain('<p>for \n<code>A</code></p>');
         expect(doc.html()).toContain('<p>for <code>B</code></p>');
       });
@@ -429,13 +429,13 @@ describe('ngdoc', function(){
         doc.parse();
 
         expect(doc.description).
-          toContain('foo <a href="#!/api/angular.foo"><code>angular.foo</code></a>');
+          toContain('foo <a href="api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('da <a href="#!/api/angular.foo"><code>bar foo bar</code></a>');
+          toContain('da <a href="api/angular.foo"><code>bar foo bar</code></a>');
         expect(doc.description).
-          toContain('dad<a href="#!/api/angular.foo"><code>angular.foo</code></a>');
+          toContain('dad<a href="api/angular.foo"><code>angular.foo</code></a>');
         expect(doc.description).
-          toContain('<a href="#!/api/angular.directive.ng:foo"><code>ng:foo</code></a>');
+          toContain('<a href="api/angular.directive.ng:foo"><code>ng:foo</code></a>');
         expect(doc.description).
           toContain('<a href="http://angularjs.org">http://angularjs.org</a>');
         expect(doc.description).
@@ -447,7 +447,7 @@ describe('ngdoc', function(){
             '{@link\napi/angular.foo\na\nb}');
         doc.parse();
         expect(doc.description).
-          toContain('<a href="#!/api/angular.foo"><code>a b</code></a>');
+          toContain('<a href="api/angular.foo"><code>a b</code></a>');
       });
 
     });
