@@ -11,6 +11,8 @@
  * * `id` – `{string}` – locale id formatted as `languageId-countryId` (e.g. `en-us`)
  */
 angularServiceInject('$locale', function() {
+
+  var PLURAL_CATEGORY = {ONE: 'one', OTHER: 'other'};
   return {
     id: 'en-us',
 
@@ -58,6 +60,13 @@ angularServiceInject('$locale', function() {
       shortDate: 'M/d/yy',
       mediumTime: 'h:mm:ss a',
       shortTime: 'h:mm a'
+    },
+
+    getPluralCat: function(num) {
+      if (num === 1) {
+        return PLURAL_CATEGORY.ONE;
+      }
+      return PLURAL_CATEGORY.OTHER;
     }
   };
 });
