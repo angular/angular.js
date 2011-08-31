@@ -25,15 +25,13 @@
     <doc:example>
       <doc:source jsfiddle="false">
         <script>
-          function MainCntl($route, $location) {
+          function MainCntl($route, $routeParams, $location) {
             this.$route = $route;
             this.$location = $location;
+            this.$routeParams = $routeParams;
 
             $route.when('/Book/:bookId', {template: 'examples/book.html', controller: BookCntl});
             $route.when('/Book/:bookId/ch/:chapterId', {template: 'examples/chapter.html', controller: ChapterCntl});
-            $route.onChange(function() {
-              $route.current.scope.params = $route.current.params;
-            });
           }
 
           function BookCntl($routeParams) {
@@ -57,6 +55,7 @@
           <pre>$route.current.template = {{$route.current.template}}</pre>
           <pre>$route.current.params = {{$route.current.params}}</pre>
           <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+          <pre>$routeParams = {{$routeParams}}</pre>
           <hr />
           <ng:view></ng:view>
         </div>
