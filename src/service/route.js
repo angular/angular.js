@@ -174,15 +174,15 @@ angularServiceInject('$route', function($location, $routeParams) {
          *      to update `$location.hash`.
          *
          *    - `[reloadOnSearch=true]` - {boolean=} - reload route when $location.hashSearch
-         *      changes. If the option is enabled, then `$routeUpdate` event is fired.
-         *      If this option is disabled, you should set up a $watch to be notified of
-         *      param (hashSearch) changes as follows:
+         *      changes.
          *
-         *            function MyCtrl($route) {
-         *              this.$watch(function() {
-         *                return $route.current.params;
-         *              }, function(scope, params) {
-         *                //do stuff with params
+         *      If the option is set to false and url in the browser changes, then
+         *      $routeUpdate event is emited on the current route scope. You can use this event to
+         *      react to {@link angular.service.$routeParams} changes:
+         *
+         *            function MyCtrl($route, $routeParams) {
+         *              this.$on('$routeUpdate', function() {
+         *                // do stuff with $routeParams
          *              });
          *            }
          *
