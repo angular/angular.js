@@ -54,7 +54,7 @@ function fetch(collection, url){
           if (title.match(/\.ngdoc$/)) {
             var exportUrl = entry.match(/<content type='text\/html' src='(.*?)'\/>/)[1];
             download(collection, title, exportUrl);
-          }
+          };
         });
       }
     );
@@ -136,7 +136,13 @@ function login(username, password){
 }
 
 function getAuthToken(){
-  return fs.readFileSync('tmp/gdocs.auth');
+  var pwdFile = 'tmp/gdocs.auth';
+  try {
+    fs.statSync(pwdFile);
+    return fs.readFileSync(pwdFile);
+  } catch (e) {
+    console.log('Please log in first...');
+  }
 }
 
 function request(method, url, options, response) {
@@ -147,14 +153,29 @@ function request(method, url, options, response) {
     path: url[3],
     method: method
   }, function(res){
-    var data = [];
-    res.setEncoding('utf8');
-    res.on('end', function(){
-      response(data.join(''));
-    });
-    res.on('data', function (chunk) {
-      data.push(chunk);
-    });
+    switch (res.statusCode) {
+      case 200: {
+        var data = [];
+        res.setEncoding('utf8');
+        res.on('end', function(){
+          response(data.join(''));
+        });
+        res.on('data', function (chunk) {
+          data.push(chunk);
+        });
+        res.on('error', function(e){
+          console.log(e);
+        });
+        break;
+      }
+      case 401: {
+        console.log('Eror: Login credentials expired! Please login.');
+        break;
+      }
+      default: {
+        console.log(res);
+      }
+    }
   });
   for(var header in options.headers) {
     request.setHeader(header, options.headers[header]);
