@@ -300,14 +300,14 @@ describe('$route', function() {
           $location = scope.$service('$location'),
           $route = scope.$service('$route'),
           reloaded = jasmine.createSpy('route reload'),
-          reloadEvent = jasmine.createSpy('route reload');
+          routeUpdateEvent = jasmine.createSpy('route reload');
 
       $route.when('/foo', {controller: FooCtrl, reloadOnSearch: false});
       scope.$on('$beforeRouteChange', reloaded);
 
       function FooCtrl() {
         reloaded();
-        this.$on('$routeReload', reloadEvent);
+        this.$on('$routeUpdate', routeUpdateEvent);
       }
 
       expect(reloaded).not.toHaveBeenCalled();
@@ -315,14 +315,14 @@ describe('$route', function() {
       $location.updateHash('/foo');
       scope.$digest();
       expect(reloaded).toHaveBeenCalled();
-      expect(reloadEvent).not.toHaveBeenCalled();
+      expect(routeUpdateEvent).not.toHaveBeenCalled();
       reloaded.reset();
 
       // don't trigger reload
       $location.hashSearch.foo = 'bar';
       scope.$digest();
       expect(reloaded).not.toHaveBeenCalled();
-      expect(reloadEvent).toHaveBeenCalled();
+      expect(routeUpdateEvent).toHaveBeenCalled();
     });
 
 
