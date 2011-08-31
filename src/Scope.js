@@ -321,31 +321,31 @@ Scope.prototype = {
    *
    */
   $digest: function() {
-    var watch, value, last, next,
+    var watch, value, last,
         watchers,
         asyncQueue,
         length,
         dirty, ttl = 100,
-        scope;
+        next, current, target = this;
 
-    if (this.$$phase) {
-      throw Error(this.$$phase + ' already in progress');
+    if (target.$$phase) {
+      throw Error(target.$$phase + ' already in progress');
     }
     do {
 
       dirty = false;
-      scope = this;
+      current = target;
       do {
-        scope.$$phase = '$digest';
-        asyncQueue = scope.$$asyncQueue;
+        current.$$phase = '$digest';
+        asyncQueue = current.$$asyncQueue;
         while(asyncQueue.length) {
           try {
-            scope.$eval(asyncQueue.shift());
+            current.$eval(asyncQueue.shift());
           } catch (e) {
-            scope.$service('$exceptionHandler')(e);
+            current.$service('$exceptionHandler')(e);
           }
         }
-        if ((watchers = scope.$$watchers)) {
+        if ((watchers = current.$$watchers)) {
           // process our watches
           length = watchers.length;
           while (length--) {
@@ -353,28 +353,27 @@ Scope.prototype = {
               watch = watchers[length];
               // Most common watches are on primitives, in which case we can short
               // circuit it with === operator, only when === fails do we use .equals
-              if ((value = watch.get(scope)) !== (last = watch.last) && !equals(value, last)) {
+              if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
                 dirty = true;
-                watch.fn(scope, watch.last = copy(value), last);
+                watch.fn(current, watch.last = copy(value), last);
               }
             } catch (e) {
-              scope.$service('$exceptionHandler')(e);
+              current.$service('$exceptionHandler')(e);
             }
           }
         }
 
+        current.$$phase = null;
 
-        scope.$$phase = null;
-        // find the next scope in traversal.
-        if (!(next = scope.$$childHead || scope.$$nextSibling) && scope !== this) {
-          do {
-            scope = scope.$parent;
-            if (scope == this || (next = scope.$$nextSibling)) {
-              break;
-            }
-          } while (scope !== this);
+        // Insanity Warning: scope depth-first traversal
+        // yes, this code is a bit crazy, but it works and we have tests to prove it!
+        // this piece should be kept in sync with the traversal in $broadcast
+        if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+          while(current !== target && !(next = current.$$nextSibling)) {
+            current = current.$parent;
+          }
         }
-      } while ((scope = next));
+      } while ((current = next));
 
       if(!(ttl--)) {
         throw Error('100 $digest() iterations reached. Aborting!');
@@ -651,44 +650,34 @@ Scope.prototype = {
    * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
    */
   $broadcast: function(name, args) {
-    var targetScope = this,
-        currentScope = targetScope,
-        nextScope = targetScope,
+    var target = this,
+        current = target,
+        next = target,
         event = { name: name,
-                  targetScope: targetScope },
+                  targetScope: target },
         listenerArgs = concat([event], arguments, 1);
 
     //down while you can, then up and next sibling or up and next sibling until back at root
     do {
-      currentScope = nextScope;
-      event.currentScope = currentScope;
-      forEach(currentScope.$$listeners[name], function(listener) {
+      current = next;
+      event.currentScope = current;
+      forEach(current.$$listeners[name], function(listener) {
         try {
           listener.apply(null, listenerArgs);
         } catch(e) {
-          currentScope.$service('$exceptionHandler')(e);
+          current.$service('$exceptionHandler')(e);
         }
       });
 
-      // down or to the right!
-      nextScope = currentScope.$$childHead || currentScope.$$nextSibling;
-
-      if (nextScope) {
-        // found child or sibling
-        continue;
+      // Insanity Warning: scope depth-first traversal
+      // yes, this code is a bit crazy, but it works and we have tests to prove it!
+      // this piece should be kept in sync with the traversal in $digest
+      if (!(next = (current.$$childHead || (current !== target && current.$$nextSibling)))) {
+        while(current !== target && !(next = current.$$nextSibling)) {
+          current = current.$parent;
+        }
       }
-
-      // we have to restore nextScope and go up!
-      nextScope = currentScope;
-
-      while (!nextScope.$$nextSibling && (nextScope != targetScope)) {
-        nextScope = nextScope.$parent;
-      }
-
-      if (nextScope != targetScope) {
-        nextScope = nextScope.$$nextSibling;
-      }
-    } while (nextScope != targetScope);
+    } while ((current = next));
   }
 };
 
