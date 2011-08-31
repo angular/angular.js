@@ -420,3 +420,8 @@ li {
 [ng\:cloak], .ng-cloak {
   display: none;
 }
+
+.inline * {
+  display: inline;
+}
+
