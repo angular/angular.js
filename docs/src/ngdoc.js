@@ -221,7 +221,7 @@ Doc.prototype = {
         } else if(atName == 'eventType') {
           var match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
           self.type = match[1];
-          self.source = match[2];
+          self.target = match[2];
         } else {
           self[atName] = text;
         }
@@ -531,11 +531,14 @@ Doc.prototype = {
       });
     });
     dom.h('Events', this.events, function(event){
-      var signature = (event.param || []).map(property('name'));
-      dom.h(event.type + ' ' +
-          event.shortName + '(' + signature.join(', ') + ') on ' +
-          event.source, event, function(){
+    dom.h(event.shortName, event, function(){
         dom.html(event.description);
+        dom.tag('div', {class:'inline'}, function(){
+          dom.h('Type:', event.type);
+        });
+        dom.tag('div', {class:'inline'}, function(){
+          dom.h('Target:', event.target);
+        });
         event.html_usage_parameters(dom);
         self.html_usage_this(dom);
 
