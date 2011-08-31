@@ -73,7 +73,7 @@ angularServiceInject('$route', function($location, $routeParams) {
    * @eventOf angular.service.$route
    * @eventType Broadcasted on root scope
    * @description
-   * Broadcast before a route change.
+   * Broadcasted before a route change.
    *
    * @param {Route} next Future route information.
    * @param {Route} current Current route information.
@@ -92,7 +92,7 @@ angularServiceInject('$route', function($location, $routeParams) {
    * @eventOf angular.service.$route
    * @eventType Broadcasted on root scope
    * @description
-   * Broadcast after a route change.
+   * Broadcasted after a route change.
    *
    * @param {Route} current Current route information.
    * @param {Route} previous Previous route information.
@@ -109,7 +109,7 @@ angularServiceInject('$route', function($location, $routeParams) {
    * @ngdoc event
    * @name angular.service.$route#$routeReload
    * @eventOf angular.service.$route
-   * @eventType Broadcasted on root scope
+   * @eventType Emitted on the current route scope.
    * @description
    *
    * The `reloadOnSearch` property has been set to false, and we are reusing the same
