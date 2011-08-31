@@ -332,29 +332,3 @@ angularServiceInject('$route', function($location, $routeParams) {
 
 
 }, ['$location', '$routeParams']);
-
-
-/**
- * @workInProgress
- * @ngdoc service
- * @name angular.service.$routeParams
- * @requires $route
- *
- * @description
- * Current set of route parameters. The route parameters are a combination of the
- * {@link angular.service.$location $location} `hashSearch`, and `path`. The `path` parameters
- * are extracted when the {@link angular.service.$route $route} path is matched.
- *
- * @example
- * <pre>
- *  // Given:
- *  // URL: http://server.com/index.html#/Chapter/1/Section/2?search=moby
- *  // Route: /Chapter/:chapterId/Section/:sectionId
- *  //
- *  // Then
- *  $routeParams ==> {chapterId:1, sectionId:2, search:'moby'}
- * </pre>
- */
-angularService('$routeParams', function(){
-  return {};
-});
