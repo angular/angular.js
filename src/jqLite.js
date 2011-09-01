@@ -155,16 +155,24 @@ function JQLiteHasClass(element, selector, _) {
 }
 
 function JQLiteRemoveClass(element, selector) {
-  element.className = trim(
-      (" " + element.className + " ")
-      .replace(/[\n\t]/g, " ")
-      .replace(" " + selector + " ", " ")
-  );
+  if (selector) {
+    forEach(selector.split(' '), function(cssClass) {
+      element.className = trim(
+          (" " + element.className + " ")
+          .replace(/[\n\t]/g, " ")
+          .replace(" " + trim(cssClass) + " ", " ")
+      );
+    });
+  }
 }
 
-function JQLiteAddClass(element, selector ) {
-  if (!JQLiteHasClass(element, selector)) {
-    element.className = trim(element.className + ' ' + selector);
+function JQLiteAddClass(element, selector) {
+  if (selector) {
+    forEach(selector.split(' '), function(cssClass) {
+      if (!JQLiteHasClass(element, cssClass)) {
+        element.className = trim(element.className + ' ' + trim(cssClass));
+      }
+    });
   }
 }
 
@@ -245,7 +253,13 @@ forEach({
   },
 
   attr: function(element, name, value){
-    if (SPECIAL_ATTR[name]) {
+    if (name === 'class') {
+      if(isDefined(value)) {
+        element.className = value;
+      } else {
+        return element.className;
+      }
+    } else if (SPECIAL_ATTR[name]) {
       if (isDefined(value)) {
         element[name] = !!value;
       } else {

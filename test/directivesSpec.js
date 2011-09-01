@@ -196,12 +196,102 @@ describe("directive", function(){
       expect(element.hasClass('B')).toBe(false);
     });
 
-    it('should support adding multiple classes', function(){
+
+    it('should support adding multiple classes via an array', function(){
       var scope = compile('<div class="existing" ng:class="[\'A\', \'B\']"></div>');
       scope.$digest();
       expect(element.hasClass('existing')).toBeTruthy();
       expect(element.hasClass('A')).toBeTruthy();
       expect(element.hasClass('B')).toBeTruthy();
+    });
+
+
+    it('should support adding multiple classes via a space delimited string', function(){
+      var scope = compile('<div class="existing" ng:class="\'A B\'"></div>');
+      scope.$digest();
+      expect(element.hasClass('existing')).toBeTruthy();
+      expect(element.hasClass('A')).toBeTruthy();
+      expect(element.hasClass('B')).toBeTruthy();
+    });
+
+
+    it('should preserve class added post compilation with pre-existing classes', function() {
+      var scope = compile('<div class="existing" ng:class="dynClass"></div>');
+      scope.dynClass = 'A';
+      scope.$digest();
+      expect(element.hasClass('existing')).toBe(true);
+
+      // add extra class, change model and eval
+      element.addClass('newClass');
+      scope.dynClass = 'B';
+      scope.$digest();
+
+      expect(element.hasClass('existing')).toBe(true);
+      expect(element.hasClass('B')).toBe(true);
+      expect(element.hasClass('newClass')).toBe(true);
+    });
+
+
+    it('should preserve class added post compilation without pre-existing classes"', function() {
+      var scope = compile('<div ng:class="dynClass"></div>');
+      scope.dynClass = 'A';
+      scope.$digest();
+      expect(element.hasClass('A')).toBe(true);
+
+      // add extra class, change model and eval
+      element.addClass('newClass');
+      scope.dynClass = 'B';
+      scope.$digest();
+
+      expect(element.hasClass('B')).toBe(true);
+      expect(element.hasClass('newClass')).toBe(true);
+    });
+
+
+    it('should preserve other classes with similar name"', function() {
+      var scope = compile('<div class="ui-panel ui-selected" ng:class="dynCls"></div>');
+      scope.dynCls = 'panel';
+      scope.$digest();
+      scope.dynCls = 'foo';
+      scope.$digest();
+      expect(element.attr('class')).toBe('ui-panel ui-selected ng-directive foo');
+    });
+
+
+    it('should not add duplicate classes', function() {
+      var scope = compile('<div class="panel bar" ng:class="dynCls"></div>');
+      scope.dynCls = 'panel';
+      scope.$digest();
+      expect(element.attr('class')).toBe('panel bar ng-directive');
+    });
+
+
+    it('should remove classes even if it was specified via class attribute', function() {
+      var scope = compile('<div class="panel bar" ng:class="dynCls"></div>');
+      scope.dynCls = 'panel';
+      scope.$digest();
+      scope.dynCls = 'window';
+      scope.$digest();
+      expect(element.attr('class')).toBe('bar ng-directive window');
+    });
+
+
+    it('should remove classes even if they were added by another code', function() {
+      var scope = compile('<div ng:class="dynCls"></div>');
+      scope.dynCls = 'foo';
+      scope.$digest();
+      element.addClass('foo');
+      scope.dynCls = '';
+      scope.$digest();
+      expect(element.attr('class')).toBe('ng-directive');
+    });
+
+
+    it('should convert undefined and null values to an empty string', function() {
+      var scope = compile('<div ng:class="dynCls"></div>');
+      scope.dynCls = [undefined, null];
+      scope.$digest();
+      expect(element.attr('class')).toBe('ng-directive');
     });
   });
 
