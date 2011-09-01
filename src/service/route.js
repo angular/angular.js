@@ -188,10 +188,10 @@ angularServiceInject('$route', function($location, $routeParams) {
          * @description
          * Adds a new route definition to the `$route` service.
          */
-        when:function (path, route) {
+        when: function (path, route) {
           var routeDef = routes[path];
           if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
-          if (route) extend(routeDef, route); //TODO(im): what the heck? merge two route definitions?
+          if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
           dirty++;
           return routeDef;
         },
@@ -238,7 +238,7 @@ angularServiceInject('$route', function($location, $routeParams) {
     var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
         params = [],
         dst = {};
-    forEach(when.split(/\W/), function(param){
+    forEach(when.split(/\W/), function(param) {
       if (param) {
         var paramRegExp = new RegExp(":" + param + "([\\W])");
         if (regex.match(paramRegExp)) {
@@ -249,14 +249,14 @@ angularServiceInject('$route', function($location, $routeParams) {
     });
     var match = on.match(new RegExp(regex));
     if (match) {
-      forEach(params, function(name, index){
+      forEach(params, function(name, index) {
         dst[name] = match[index + 1];
       });
     }
     return match ? dst : null;
   }
 
-  function updateRoute(){
+  function updateRoute() {
     var next = parseRoute(),
         last = $route.current;
 
@@ -292,7 +292,7 @@ angularServiceInject('$route', function($location, $routeParams) {
   /**
    * @returns the current active route, by matching it against the URL
    */
-  function parseRoute(){
+  function parseRoute() {
     // Match a route
     var params, match;
     forEach(routes, function(route, path) {
