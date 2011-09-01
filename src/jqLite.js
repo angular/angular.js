@@ -162,8 +162,8 @@ function JQLiteRemoveClass(element, selector) {
   );
 }
 
-function JQLiteAddClass(element, selector ) {
-  if (!JQLiteHasClass(element, selector)) {
+function JQLiteAddClass(element, selector) {
+  if (selector && !JQLiteHasClass(element, selector)) {
     element.className = trim(element.className + ' ' + selector);
   }
 }
