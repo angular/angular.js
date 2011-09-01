@@ -10,11 +10,12 @@
  * dependency injection (see {@link guide/dev_guide.di dependency injection}).
  *
  * Angular creates an injector automatically for the root scope and it is available as the
- * {@link angular.scope.$service $service} property. Creation of the injector automatically creates
- * all of the `$eager` {@link angular.service services}.
+ * {@link angular.scope.$service $service} property. Creating an injector doesn't automatically
+ * create all of the `$eager` {@link angular.service services}. You have to call `injector.eager()`
+ * to initialize them.
  *
- * @param {Object=} [factoryScope={}] `this` for the service factory function.
- * @param {Object.<string, function()>=} [factories=angular.service] Map of service factory
+ * @param {Object=} [factoryScope={}] The `this` for the service factory function.
+ * @param {Object.<string, function()>=} [factories=angular.service] Map of the service factory
  *     functions.
  * @param {Object.<string, function()>=} [instanceCache={}] Place where instances of services are
  *     saved for reuse. Can also be used to override services specified by `serviceFactory`
@@ -22,19 +23,19 @@
  * @returns {function()} Injector function:
  *
  *   * `injector(serviceName)`:
- *     * `serviceName` - `{string=}` - name of the service to retrieve.
+ *     * `serviceName` - `{string=}` - Name of the service to retrieve.
  *
  * The injector function also has these properties:
  *
- *   * an `invoke` property which can be used to invoke methods with dependency-injected arguments.
+ *   * An `invoke` property which can be used to invoke methods with dependency-injected arguments.
  *    `injector.invoke(self, fn, curryArgs)`
- *     * `self` -  "`this`" to be used when invoking the function.
- *     * `fn` - the function to be invoked. The function may have the `$inject` property which
- *        lists the set of arguments which should be auto injected
+ *     * `self` -  The "`this`" to be used when invoking the function.
+ *     * `fn` - The function to be invoked. The function may have the `$inject` property that
+ *        lists the set of arguments which should be auto-injected.
  *        (see {@link guide/dev_guide.di dependency injection}).
- *     * `curryArgs(array)` - optional array of arguments to pass to function invocation after the
- *        injection arguments (also known as curry arguments or currying).
- *   * an `eager` property which is used to initialize the eager services.
+ *     * `curryArgs(array)` - Optional array of arguments to pass to the function
+ *        invocation after the injection arguments (also known as curry arguments or currying).
+ *   * An `eager` property which is used to initialize the eager services.
  *     `injector.eager()`
  */
 function createInjector(factoryScope, factories, instanceCache) {

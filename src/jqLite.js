@@ -5,28 +5,28 @@
 //////////////////////////////////
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.element
  * @function
  *
  * @description
- * Wraps a raw DOM element or HTML string as [jQuery](http://jquery.com) element.
- * `angular.element` is either an alias for [jQuery](http://api.jquery.com/jQuery/) function if
- * jQuery is loaded or a function that wraps the element or string in angular's jQuery lite
- * implementation.
+ * Wraps a raw DOM element or HTML string as a [jQuery](http://jquery.com) element.
+ * `angular.element` can be either an alias for [jQuery](http://api.jquery.com/jQuery/) function, if
+ * jQuery is available, or a function that wraps the element or string in Angular's jQuery lite
+ * implementation (commonly referred to as jqLite).
  *
- * Real jQuery always takes precedence (as long as it was loaded before `DOMContentEvent`)
+ * Real jQuery always takes precedence over jqLite, provided it was loaded before `DOMContentLoaded`
+ * event fired.
  *
- * Angular's jQuery lite implementation is a tiny API-compatible subset of jQuery which allows
- * angular to manipulate DOM. The jQuery lite implements only a subset of jQuery api, with the
- * focus on the most commonly needed functionality and minimal footprint. For this reason only a
- * limited number of jQuery methods, arguments and invocation styles are supported.
+ * jqLite is a tiny, API-compatible subset of jQuery that allows
+ * Angular to manipulate the DOM. jqLite implements only the most commonly needed functionality
+ * within a very small footprint, so only a subset of the jQuery API - methods, arguments and
+ * invocation styles - are supported.
  *
- * Note: All element references in angular are always wrapped with jQuery (lite) and are never
+ * Note: All element references in Angular are always wrapped with jQuery or jqLite; they are never
  * raw DOM references.
  *
- * ## Angular's jQuery lite implements these functions:
+ * ## Angular's jQuery lite provides the following methods:
  *
  * - [addClass()](http://api.jquery.com/addClass/)
  * - [after()](http://api.jquery.com/after/)
@@ -48,10 +48,9 @@
  * - [trigger()](http://api.jquery.com/trigger/)
  * - [eq()](http://api.jquery.com/eq/)
  *
- * ## Additionally these methods extend the jQuery and  are available in both jQuery and jQuery lite
- * version:
+ * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
- *- `scope()` - retrieves the current angular scope of the element.
+ * - `scope()` - retrieves the current Angular scope of the element.
  *
  * @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
  * @returns {Object} jQuery object.
