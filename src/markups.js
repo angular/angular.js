@@ -1,18 +1,17 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.markup
  * @description
  *
- * Angular markup transforms content of DOM elements or portions of this content into other text or
- * DOM elements for further compilation.
+ * Angular markup transforms the content of DOM elements or portions of the content into other
+ * text or DOM elements for further compilation.
  *
  * Markup extensions do not themselves produce linking functions. Think of markup as a way to
  * produce shorthand for a {@link angular.widget widget} or a {@link angular.directive directive}.
  *
- * The most prominent example of a markup in angular is the built-in double curly markup
+ * The most prominent example of a markup in Angular is the built-in, double curly markup
  * `{{expression}}`, which is shorthand for `<span ng:bind="expression"></span>`.
  *
  * Create custom markup like this:
@@ -23,21 +22,24 @@
  *   });
  * </pre>
  *
- * For more information about angular markup, see {@link guide/dev_guide.compiler.markup
- * Understanding Angular Markup} in the angular Developer Guide.
+ * For more information, see {@link guide/dev_guide.compiler.markup Understanding Angular Markup}
+ * in the Angular Developer Guide.
  */
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.attrMarkup
  * @description
  *
- * Attribute markup extends the angular compiler in a very similar way as {@link angular.markup}
- * except that it allows you to modify the state of the attribute text rather than the content of a
- * node.
+ * Attribute markup allows you to modify the state of an attribute's text.
  *
- * Create custom attribute markup like this:
+ * Attribute markup extends the Angular complier in a way similar to {@link angular.markup},
+ * which allows you to modify the content of a node.
+ *
+ * The most prominent example of an attribute markup in Angular is the built-in double curly markup
+ * which is a shorthand for {@link angular.directive.ng:bind-attr ng:bind-attr}.
+ *
+ * ## Example
  *
  * <pre>
  *   angular.attrMarkup('newAttrMarkup', function(attrValue, attrName, element){
@@ -45,8 +47,8 @@
  *   });
  * </pre>
  *
- * For more information about angular attribute markup, see {@link guide/dev_guide.compiler.markup
- * Understanding Angular Markup} in the angular Developer Guide.
+ * For more information about Angular attribute markup, see {@link guide/dev_guide.compiler.markup
+ * Understanding Angular Markup} in the Angular Developer Guide.
  */
 
 function parseBindings(string) {

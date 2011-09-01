@@ -6,26 +6,24 @@ if (typeof document.getAttribute == $undefined)
   document.getAttribute = function() {};
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.lowercase
  * @function
  *
- * @description Converts string to lowercase
- * @param {string} string String to be lowercased.
+ * @description Converts the specified string to lowercase.
+ * @param {string} string String to be converted to lowercase.
  * @returns {string} Lowercased string.
  */
 var lowercase = function (string){ return isString(string) ? string.toLowerCase() : string; };
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.uppercase
  * @function
  *
- * @description Converts string to uppercase.
- * @param {string} string String to be uppercased.
+ * @description Converts the specified string to uppercase.
+ * @param {string} string String to be converted to uppercase.
  * @returns {string} Uppercased string.
  */
 var uppercase = function (string){ return isString(string) ? string.toUpperCase() : string; };
@@ -112,17 +110,15 @@ var _undefined        = undefined,
     DATE_ISOSTRING_LN = 24;
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.forEach
  * @function
  *
  * @description
- * Invokes the `iterator` function once for each item in `obj` collection. The collection can
- * either be an object or an array. The `iterator` function is invoked with `iterator(value, key)`,
- * where `value` is the value of an object property or an array element and `key` is the object
- * property key or array element index. Optionally, `context` can be specified for the iterator
- * function.
+ * Invokes the `iterator` function once for each item in `obj` collection, which can be either an
+ * object or an array. The `iterator` function is invoked with `iterator(value, key)`, where `value`
+ * is the value of an object property or an array element and `key` is the object property key or
+ * array element index. Specifying a `context` for the function is optional.
  *
  * Note: this function was previously known as `angular.foreach`.
  *
@@ -137,7 +133,7 @@ var _undefined        = undefined,
  *
  * @param {Object|Array} obj Object to iterate over.
  * @param {function()} iterator Iterator function.
- * @param {Object} context Object to become context (`this`) for the iterator function.
+ * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.
  */
 function forEach(obj, iterator, context) {
@@ -217,7 +213,6 @@ function nextUid() {
 }
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.extend
  * @function
@@ -226,8 +221,8 @@ function nextUid() {
  * Extends the destination object `dst` by copying all of the properties from the `src` object(s)
  * to `dst`. You can specify multiple `src` objects.
  *
- * @param {Object} dst The destination object.
- * @param {...Object} src The source object(s).
+ * @param {Object} dst Destination object.
+ * @param {...Object} src Source object(s).
  */
 function extend(dst) {
   forEach(arguments, function(obj){
@@ -247,14 +242,13 @@ function inherit(parent, extra) {
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.noop
  * @function
  *
  * @description
- * Empty function that performs no operation whatsoever. This function is useful when writing code
- * in the functional style.
+ * A function that performs no operations. This function can be useful when writing code in the
+ * functional style.
    <pre>
      function foo(callback) {
        var result = calculateResult();
@@ -266,14 +260,13 @@ function noop() {}
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.identity
  * @function
  *
  * @description
- * A function that does nothing except for returning its first argument. This function is useful
- * when writing code in the functional style.
+ * A function that returns its first argument. This function is useful when writing code in the
+ * functional style.
  *
    <pre>
      function transformer(transformationFn, value) {
@@ -298,13 +291,12 @@ function extensionMap(angular, name, transform) {
 }
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isUndefined
  * @function
  *
  * @description
- * Checks if a reference is undefined.
+ * Determines if a reference is undefined.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
@@ -313,13 +305,12 @@ function isUndefined(value){ return typeof value == $undefined; }
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isDefined
  * @function
  *
  * @description
- * Checks if a reference is defined.
+ * Determines if a reference is defined.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
@@ -328,14 +319,13 @@ function isDefined(value){ return typeof value != $undefined; }
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isObject
  * @function
  *
  * @description
- * Checks if a reference is an `Object`. Unlike in JavaScript `null`s are not considered to be
- * objects.
+ * Determines if a reference is an `Object`. Unlike `typeof` in JavaScript, `null`s are not
+ * considered to be objects.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
@@ -344,13 +334,12 @@ function isObject(value){ return value!=null && typeof value == $object;}
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isString
  * @function
  *
  * @description
- * Checks if a reference is a `String`.
+ * Determines if a reference is a `String`.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
@@ -359,13 +348,12 @@ function isString(value){ return typeof value == $string;}
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isNumber
  * @function
  *
  * @description
- * Checks if a reference is a `Number`.
+ * Determines if a reference is a `Number`.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
@@ -374,13 +362,12 @@ function isNumber(value){ return typeof value == $number;}
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isDate
  * @function
  *
  * @description
- * Checks if value is a date.
+ * Determines if a value is a date.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Date`.
@@ -389,13 +376,12 @@ function isDate(value){ return value instanceof Date; }
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isArray
  * @function
  *
  * @description
- * Checks if a reference is an `Array`.
+ * Determines if a reference is an `Array`.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
@@ -404,13 +390,12 @@ function isArray(value) { return value instanceof Array; }
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.isFunction
  * @function
  *
  * @description
- * Checks if a reference is a `Function`.
+ * Determines if a reference is a `Function`.
  *
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Function`.
@@ -516,7 +501,7 @@ function map(obj, iterator, context) {
  *
  * @param {Object|Array|string} obj Object, array, or string to inspect.
  * @param {boolean} [ownPropsOnly=false] Count only "own" properties in an object
- * @returns {number} The size of `obj` or `0` if `obj` is neither an object or an array.
+ * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
  *
  * @example
  * <doc:example>
@@ -583,7 +568,6 @@ function isLeafNode (node) {
 }
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.copy
  * @function
@@ -814,17 +798,14 @@ function sliceArgs(args, startIndex) {
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.bind
  * @function
  *
  * @description
- * Returns a function which calls function `fn` bound to `self`
- * (`self` becomes the `this` for `fn`).
- *
- * Optional `args` can be supplied which are prebound to the function, also known as
- * [function currying](http://en.wikipedia.org/wiki/Currying).
+ * Returns a function which calls function `fn` bound to `self` (`self` becomes the `this` for
+ * `fn`). You can supply optional `args` that are are prebound to the function. This feature is also
+ * known as [function currying](http://en.wikipedia.org/wiki/Currying).
  *
  * @param {Object} self Context which `fn` should be evaluated in.
  * @param {function()} fn Function to be bound.
@@ -846,8 +827,7 @@ function bind(self, fn) {
             : fn.call(self);
         };
   } else {
-    // in IE, native methods are not functions and so they can not be bound
-    // (but they don't need to be)
+    // in IE, native methods are not functions so they cannot be bound (note: they don't need to be)
     return fn;
   }
 }
@@ -1034,14 +1014,14 @@ function assertArgFn(arg, name) {
  * @ngdoc property
  * @name angular.version
  * @description
- * Object which contains information about the current AngularJS version. The object has following
- * properties:
+ * An object that contains information about the current AngularJS version. This object has the
+ * following properties:
  *
- * - `full` – `{string}` – full version string, e.g. "0.9.18"
- * - `major` – `{number}` – major version number, e.g. 0
- * - `minor` – `{number}` – minor version number, e.g. 9
- * - `dot` – `{number}` – dot version number, e.g. 18
- * - `codeName` – `{string}` – code name of the release, e.g. "jiggling-armfat"
+ * - `full` – `{string}` – Full version string, such as "0.9.18".
+ * - `major` – `{number}` – Major version number, such as "0".
+ * - `minor` – `{number}` – Minor version number, such as "9".
+ * - `dot` – `{number}` – Dot version number, such as "18".
+ * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
  */
 var version = {
   full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by rake's

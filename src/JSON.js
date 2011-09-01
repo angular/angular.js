@@ -3,15 +3,14 @@
 var array = [].constructor;
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.toJson
  * @function
  *
  * @description
- * Serializes the input into a JSON formated string.
+ * Serializes input into a JSON-formatted string.
  *
- * @param {Object|Array|Date|string|number} obj Input to jsonify.
+ * @param {Object|Array|Date|string|number} obj Input to be serialized into JSON.
  * @param {boolean=} pretty If set to true, the JSON output will contain newlines and whitespace.
  * @returns {string} Jsonified string representing `obj`.
  */
@@ -22,16 +21,15 @@ function toJson(obj, pretty) {
 }
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.fromJson
  * @function
  *
  * @description
- * Deserializes a string in the JSON format.
+ * Deserializes a JSON string.
  *
  * @param {string} json JSON string to deserialize.
- * @param {boolean} [useNative=false] Use native JSON parser if available
+ * @param {boolean} [useNative=false] Use native JSON parser, if available.
  * @returns {Object|Array|Date|string|number} Deserialized thingy.
  */
 function fromJson(json, useNative) {
