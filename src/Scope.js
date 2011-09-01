@@ -257,22 +257,29 @@ Scope.prototype = {
    *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
    *    - `function(scope, newValue, oldValue)`: called with current `scope` an previous and
    *       current values as parameters.
+   * @returns {function()} Returns a deregistration function for this listener.
    */
   $watch: function(watchExp, listener) {
-    var scope = this;
-    var get = compileToFn(watchExp, 'watch');
-    var listenFn = compileToFn(listener || noop, 'listener');
-    var array = scope.$$watchers;
+    var scope = this,
+        get = compileToFn(watchExp, 'watch'),
+        listenFn = compileToFn(listener || noop, 'listener'),
+        array = scope.$$watchers,
+        watcher = {
+          fn: listenFn,
+          last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
+          get: get
+        };
+
     if (!array) {
       array = scope.$$watchers = [];
     }
     // we use unshift since we use a while loop in $digest for speed.
     // the while loop reads in reverse order.
-    array.unshift({
-      fn: listenFn,
-      last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
-      get: get
-    });
+    array.unshift(watcher);
+
+    return function() {
+      angularArray.remove(array, watcher);
+    };
   },
 
   /**
@@ -538,6 +545,7 @@ Scope.prototype = {
    *
    * @param {string} name Event name to listen on.
    * @param {function(event)} listener Function to call when the event is emitted.
+   * @returns {function()} Returns a deregistration function for this listener.
    *
    * The event listener function format is: `function(event)`. The `event` object passed into the
    * listener has the following attributes
@@ -553,29 +561,12 @@ Scope.prototype = {
       this.$$listeners[name] = namedListeners = [];
     }
     namedListeners.push(listener);
+
+    return function() {
+      angularArray.remove(namedListeners, listener);
+    };
   },
 
-  /**
-   * @workInProgress
-   * @ngdoc function
-   * @name angular.scope.$removeListener
-   * @function
-   *
-   * @description
-   * Remove the on listener registered by {@link angular.scope.$on $on}.
-   *
-   * @param {string} name Event name to remove on.
-   * @param {function} listener Function to remove.
-   */
-  $removeListener: function(name, listener) {
-    var namedListeners = this.$$listeners[name],
-        i;
-
-    if (namedListeners) {
-      i = indexOf(namedListeners, listener);
-      namedListeners.splice(i, 1);
-    }
-  },
 
   /**
    * @workInProgress
