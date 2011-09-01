@@ -266,6 +266,19 @@ describe('jqLite', function(){
       expect(jqLite(a).css('prop')).toBeFalsy();
       expect(jqLite(b).css('prop')).toBeFalsy();
     });
+
+
+    it('should set a bunch of css properties specified via an object', function() {
+      expect(jqLite(a).css('foo')).toBeFalsy();
+      expect(jqLite(a).css('bar')).toBeFalsy();
+      expect(jqLite(a).css('baz')).toBeFalsy();
+
+      jqLite(a).css({'foo': 'a', 'bar': 'b', 'baz': ''});
+
+      expect(jqLite(a).css('foo')).toBe('a');
+      expect(jqLite(a).css('bar')).toBe('b');
+      expect(jqLite(a).css('baz')).toBeFalsy();
+    });
   });
 
 
