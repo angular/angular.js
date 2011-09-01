@@ -207,6 +207,7 @@ describe('Scope', function() {
       expect(log).toEqual('abc');
     });
 
+
     it('should repeat watch cycle from the root elemnt', function() {
       var log = '';
       var child = root.$new();
@@ -268,6 +269,29 @@ describe('Scope', function() {
       root.name = 'a';
       root.$digest();
       expect(callCount).toEqual(1);
+    });
+
+
+    it('should return a function that allows listeners to be unregistered', function() {
+      var root = angular.scope(),
+          listener = jasmine.createSpy('watch listener'),
+          listenerRemove;
+
+      listenerRemove = root.$watch('foo', listener);
+      root.$digest(); //init
+      expect(listener).toHaveBeenCalled();
+      expect(listenerRemove).toBeDefined();
+
+      listener.reset();
+      root.foo = 'bar';
+      root.$digest(); //triger
+      expect(listener).toHaveBeenCalledOnce();
+
+      listener.reset();
+      root.foo = 'baz';
+      listenerRemove();
+      root.$digest(); //trigger
+      expect(listener).not.toHaveBeenCalled();
     });
   });
 
@@ -434,6 +458,55 @@ describe('Scope', function() {
 
   describe('events', function() {
 
+    describe('$on', function() {
+
+      it('should add listener for both $emit and $broadcast events', function() {
+        var log = '',
+            root = angular.scope(),
+            child = root.$new();
+
+        function eventFn(){
+          log += 'X';
+        }
+
+        child.$on('abc', eventFn);
+        expect(log).toEqual('');
+
+        child.$emit('abc');
+        expect(log).toEqual('X');
+
+        child.$broadcast('abc');
+        expect(log).toEqual('XX');
+      });
+
+
+      it('should return a function that deregisters the listener', function() {
+        var log = '',
+            root = angular.scope(),
+            child = root.$new(),
+            listenerRemove;
+
+        function eventFn(){
+          log += 'X';
+        }
+
+        listenerRemove = child.$on('abc', eventFn);
+        expect(log).toEqual('');
+        expect(listenerRemove).toBeDefined();
+
+        child.$emit('abc');
+        child.$broadcast('abc');
+        expect(log).toEqual('XX');
+
+        log = '';
+        listenerRemove();
+        child.$emit('abc');
+        child.$broadcast('abc');
+        expect(log).toEqual('');
+      });
+    });
+
+
     describe('$emit', function() {
       var log, child, grandChild, greatGrandChild;
 
@@ -477,21 +550,6 @@ describe('Scope', function() {
         child.$on('myEvent', function(event){ event.cancel(); });
         grandChild.$emit('myEvent');
         expect(log).toEqual('2>1>');
-      });
-
-
-      it('should remove event listener', function() {
-        function eventFn(){
-          log += 'abc;';
-        }
-
-        child.$on('abc', eventFn);
-        child.$emit('abc');
-        expect(log).toEqual('abc;');
-        log = '';
-        child.$removeListener('abc', eventFn);
-        child.$emit('abc');
-        expect(log).toEqual('');
       });
 
 
