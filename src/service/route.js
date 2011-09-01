@@ -119,7 +119,7 @@ angularServiceInject('$route', function($location, $routeParams) {
       parentScope = this,
       rootScope = this,
       dirty = 0,
-      allowReload = true,
+      forceReload = false,
       $route = {
         routes: routes,
 
@@ -189,7 +189,6 @@ angularServiceInject('$route', function($location, $routeParams) {
          * Adds a new route definition to the `$route` service.
          */
         when:function (path, route) {
-          if (isUndefined(path)) return routes; //TODO(im): remove - not needed!
           var routeDef = routes[path];
           if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
           if (route) extend(routeDef, route); //TODO(im): what the heck? merge two route definitions?
@@ -225,7 +224,7 @@ angularServiceInject('$route', function($location, $routeParams) {
          */
         reload: function() {
           dirty++;
-          allowReload = false;
+          forceReload = true;
         }
       };
 
@@ -235,7 +234,7 @@ angularServiceInject('$route', function($location, $routeParams) {
 
   /////////////////////////////////////////////////////
 
-  function switchRouteMatcher(on, when, dstName) {
+  function switchRouteMatcher(on, when) {
     var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
         params = [],
         dst = {};
@@ -253,7 +252,6 @@ angularServiceInject('$route', function($location, $routeParams) {
       forEach(params, function(name, index){
         dst[name] = match[index + 1];
       });
-      if (dstName) this.$set(dstName, dst);
     }
     return match ? dst : null;
   }
@@ -263,12 +261,12 @@ angularServiceInject('$route', function($location, $routeParams) {
         last = $route.current;
 
     if (next && last && next.$route === last.$route
-        && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && allowReload) {
+        && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
       $route.current = next;
       copy(next.params, $routeParams);
       last.scope && last.scope.$emit('$routeUpdate');
     } else {
-      allowReload = true;
+      forceReload = false;
       rootScope.$broadcast('$beforeRouteChange', next, last);
       last && last.scope && last.scope.$destroy();
       $route.current = next;
