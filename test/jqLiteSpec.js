@@ -197,6 +197,20 @@ describe('jqLite', function(){
         expect(jqLite(a).hasClass('abc')).toEqual(true);
         expect(jqLite(b).hasClass('abc')).toEqual(true);
       });
+
+      it('should ignore falsy values', function() {
+        var jqA = jqLite(a);
+        expect(jqA[0].className).toBe('');
+
+        jqA.addClass(undefined);
+        expect(jqA[0].className).toBe('');
+
+        jqA.addClass(null);
+        expect(jqA[0].className).toBe('');
+
+        jqA.addClass(false);
+        expect(jqA[0].className).toBe('');
+      });
     });
 
 
