@@ -168,6 +168,15 @@ describe('jqLite', function(){
       var elm = jqLite('<div class="any">a</div>');
       expect(elm.attr('non-existing')).toBeUndefined();
     });
+
+    it('should special-case "class" attribute', function() {
+      // stupid IE9 returns null for element.getAttribute('class') when element has ng:class attr
+      var elm = jqLite('<div class=" any " ng:class="dynCls">a</div>');
+      expect(elm.attr('class')).toBe(' any ');
+
+      elm.attr('class', 'foo  bar');
+      expect(elm.attr('class')).toBe('foo  bar');
+    });
   });
 
 
