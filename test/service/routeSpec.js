@@ -3,14 +3,14 @@
 describe('$route', function() {
   var scope, $route, $location;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope();
     $location = scope.$service('$location');
     $route = scope.$service('$route');
   });
 
 
-  it('should route and fire change event', function(){
+  it('should route and fire change event', function() {
     var log = '',
         lastRoute,
         nextRoute;
@@ -19,15 +19,15 @@ describe('$route', function() {
       log += '<init>;';
     }
 
-    $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template:'Chapter.html'});
+    $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template: 'Chapter.html'});
     $route.when('/Blank');
-    scope.$on('$beforeRouteChange', function(event, next, current){
+    scope.$on('$beforeRouteChange', function(event, next, current) {
       log += 'before();';
       expect(current).toBe($route.current);
       lastRoute = current;
       nextRoute = next;
     });
-    scope.$on('$afterRouteChange', function(event, current, last){
+    scope.$on('$afterRouteChange', function(event, current, last) {
       log += 'after();';
       expect(current).toBe($route.current);
       expect(lastRoute).toBe(last);
@@ -57,6 +57,7 @@ describe('$route', function() {
     scope.$digest();
     expect($route.current.template).toEqual('instant update');
   });
+
 
   it('should change route even when only search param changes', function() {
     var callback = jasmine.createSpy('onRouteChange');
@@ -120,9 +121,10 @@ describe('$route', function() {
     expect(onChangeSpy).toHaveBeenCalled();
   });
 
-  it('should $destroy old routes', function(){
-    $route.when('/foo', {template: 'foo.html', controller: function(){ this.name = 'FOO';}});
-    $route.when('/bar', {template: 'bar.html', controller: function(){ this.name = 'BAR';}});
+
+  it('should $destroy old routes', function() {
+    $route.when('/foo', {template: 'foo.html', controller: function() {this.name = 'FOO';}});
+    $route.when('/bar', {template: 'bar.html', controller: function() {this.name = 'BAR';}});
     $route.when('/baz', {template: 'baz.html'});
 
     expect(scope.$childHead).toEqual(null);
@@ -220,6 +222,7 @@ describe('$route', function() {
       }
     });
 
+
     it('should replace the url when redirecting', function() {
       $route.when('/bar/:id', {template: 'bar.html'});
       $route.when('/foo/:id/:extra', {redirectTo: '/bar/:id'});
@@ -240,7 +243,7 @@ describe('$route', function() {
 
   describe('reloadOnSearch', function() {
     it('should reload a route when reloadOnSearch is enabled and .search() changes', function() {
-      var $rouetParams = scope.$service('$routeParams'),
+      var $routeParams = scope.$service('$routeParams'),
           reloaded = jasmine.createSpy('route reload');
 
       $route.when('/foo', {controller: FooCtrl});
@@ -253,14 +256,14 @@ describe('$route', function() {
       $location.path('/foo');
       scope.$digest();
       expect(reloaded).toHaveBeenCalled();
-      expect($rouetParams).toEqual({});
+      expect($routeParams).toEqual({});
       reloaded.reset();
 
       // trigger reload
       $location.search({foo: 'bar'});
       scope.$digest();
       expect(reloaded).toHaveBeenCalled();
-      expect($rouetParams).toEqual({foo:'bar'});
+      expect($routeParams).toEqual({foo:'bar'});
     });
 
 
@@ -367,9 +370,9 @@ describe('$route', function() {
     });
 
 
-    describe('reload', function(){
+    describe('reload', function() {
 
-      it('should reload even if reloadOnSearch is false', function(){
+      it('should reload even if reloadOnSearch is false', function() {
         var $routeParams = scope.$service('$routeParams'),
             count = 0;
 
@@ -393,6 +396,5 @@ describe('$route', function() {
         expect(count).toEqual(2);
       });
     });
-
   });
 });

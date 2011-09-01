@@ -160,7 +160,7 @@ describe("markups", function(){
       expect(sortedHtml(element)).toEqual('<div ng:bind-attr="{"' + name +'":"some"}"></div>');
       dealoc(element);
     });
-  })
+  });
 
   it('should Parse Text With No Bindings', function(){
     var parts = parseBindings("a");
