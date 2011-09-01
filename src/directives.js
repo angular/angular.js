@@ -200,7 +200,7 @@ angularDirective("ng:controller", function(expression){
    <doc:example>
      <doc:source>
        Enter name: <input type="text" name="name" value="Whirled"> <br>
-       Hello <span ng:bind="name" />!
+       Hello <span ng:bind="name"></span>!
      </doc:source>
      <doc:scenario>
        it('should check ng:bind', function(){
