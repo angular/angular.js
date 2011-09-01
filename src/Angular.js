@@ -862,19 +862,6 @@ function toBoolean(value) {
   return value;
 }
 
-function merge(src, dst) {
-  for ( var key in src) {
-    var value = dst[key];
-    var type = typeof value;
-    if (type == $undefined) {
-      dst[key] = fromJson(toJson(src[key]));
-    } else if (type == 'object' && value.constructor != array &&
-        key.substring(0, 1) != "$") {
-      merge(src[key], value);
-    }
-  }
-}
-
 
 /** @name angular.compile */
 function compile(element) {
