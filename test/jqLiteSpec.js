@@ -190,13 +190,14 @@ describe('jqLite', function(){
     });
 
 
-    describe('addClass', function(){
-      it('should allow adding of class', function(){
+    describe('addClass', function() {
+      it('should allow adding of class', function() {
         var selector = jqLite([a, b]);
         expect(selector.addClass('abc')).toEqual(selector);
         expect(jqLite(a).hasClass('abc')).toEqual(true);
         expect(jqLite(b).hasClass('abc')).toEqual(true);
       });
+
 
       it('should ignore falsy values', function() {
         var jqA = jqLite(a);
@@ -210,6 +211,28 @@ describe('jqLite', function(){
 
         jqA.addClass(false);
         expect(jqA[0].className).toBe('');
+      });
+
+
+      it('should allow multiple classes to be added in a single string', function() {
+        var jqA = jqLite(a);
+        expect(a.className).toBe('');
+
+        jqA.addClass('foo bar baz');
+        expect(a.className).toBe('foo bar baz');
+      });
+
+
+      it('should not add duplicate classes', function() {
+        var jqA = jqLite(a);
+        expect(a.className).toBe('');
+
+        a.className = 'foo';
+        jqA.addClass('foo');
+        expect(a.className).toBe('foo');
+
+        jqA.addClass('bar foo baz');
+        expect(a.className).toBe('foo bar baz');
       });
     });
 
@@ -246,6 +269,7 @@ describe('jqLite', function(){
         expect(jqLite(b).hasClass('abc')).toEqual(false);
       });
 
+
       it('should correctly remove middle class', function() {
         var element = jqLite('<div class="foo bar baz"></div>');
         expect(element.hasClass('bar')).toBe(true);
@@ -255,6 +279,15 @@ describe('jqLite', function(){
         expect(element.hasClass('foo')).toBe(true);
         expect(element.hasClass('bar')).toBe(false);
         expect(element.hasClass('baz')).toBe(true);
+      });
+
+
+      it('should remove multiple classes specified as one string', function() {
+        var jqA = jqLite(a);
+
+        a.className = 'foo bar baz';
+        jqA.removeClass('foo baz noexistent');
+        expect(a.className).toBe('bar');
       });
     });
   });

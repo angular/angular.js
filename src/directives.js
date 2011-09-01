@@ -549,16 +549,11 @@ angularDirective("ng:submit", function(expression, element) {
 
 function ngClass(selector) {
   return function(expression, element) {
-    var existing = element[0].className + ' ';
     return function(element) {
-      this.$watch(function(scope) {
+      this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          var ngClassVal = scope.$eval(element.attr('ng:class'));
-          if (isArray(ngClassVal)) ngClassVal = ngClassVal.join(' ');
-          var value = scope.$eval(expression);
-          if (isArray(value)) value = value.join(' ');
-          if (ngClassVal && ngClassVal !== value) value = value + ' ' + ngClassVal;
-          element[0].className = trim(existing + value);
+          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal)
+          element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
     };
@@ -571,11 +566,17 @@ function ngClass(selector) {
  * @name angular.directive.ng:class
  *
  * @description
- * The `ng:class` allows you to set CSS class on HTML element
- * conditionally.
+ * The `ng:class` allows you to set CSS class on HTML element dynamically by databinding an
+ * expression that represents all classes to be added.
+ *
+ * The directive won't add duplicate classes if a particular class was already set.
+ *
+ * When the expression changes, the previously added classes are removed and only then the classes
+ * new classes are added.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>
@@ -612,12 +613,15 @@ angularDirective("ng:class", ngClass(function(){return true;}));
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * `ng:class`, except it works in conjunction with `ng:repeat`
- * and takes affect only on odd (even) rows.
+ * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * takes affect only on odd (even) rows.
+ *
+ * This directive can be applied only within a scope of an
+ * {@link angular.widget.@ng:repeat ng:repeat}.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. Must be
- *  inside `ng:repeat`.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>
@@ -650,12 +654,15 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * `ng:class`, except it works in conjunction with `ng:repeat`
- * and takes affect only on odd (even) rows.
+ * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * takes affect only on odd (even) rows.
+ *
+ * This directive can be applied only within a scope of an
+ * {@link angular.widget.@ng:repeat ng:repeat}.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. Must be
- *  inside `ng:repeat`.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>

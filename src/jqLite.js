@@ -155,16 +155,24 @@ function JQLiteHasClass(element, selector, _) {
 }
 
 function JQLiteRemoveClass(element, selector) {
-  element.className = trim(
-      (" " + element.className + " ")
-      .replace(/[\n\t]/g, " ")
-      .replace(" " + selector + " ", " ")
-  );
+  if (selector) {
+    forEach(selector.split(' '), function(cssClass) {
+      element.className = trim(
+          (" " + element.className + " ")
+          .replace(/[\n\t]/g, " ")
+          .replace(" " + trim(cssClass) + " ", " ")
+      );
+    });
+  }
 }
 
 function JQLiteAddClass(element, selector) {
-  if (selector && !JQLiteHasClass(element, selector)) {
-    element.className = trim(element.className + ' ' + selector);
+  if (selector) {
+    forEach(selector.split(' '), function(cssClass) {
+      if (!JQLiteHasClass(element, cssClass)) {
+        element.className = trim(element.className + ' ' + trim(cssClass));
+      }
+    });
   }
 }
 

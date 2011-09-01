@@ -393,14 +393,6 @@ describe('Binder', function(){
     assertHidden(scope.$element);
   });
 
-  it('BindClassUndefined', function(){
-    var scope = this.compile('<div ng:class="undefined"/>');
-    scope.$apply();
-
-    assertEquals(
-        '<div class="undefined" ng:class="undefined"></div>',
-        sortedHtml(scope.$element));
-  });
 
   it('BindClass', function(){
     var scope = this.compile('<div ng:class="clazz"/>');
