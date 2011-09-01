@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Developer Guide: Scopes: Understanding Scopes
 @description
@@ -27,7 +26,7 @@ code, observe how the value of `name` changes, based on the HTML element it is d
            Name = {{name}}!
    </li>
  </ul>
-<pre>Name={{name}}</pre>
+ <pre>Name={{name}}</pre>
 </doc:source>
 <doc:scenario>
    it('should override the name property', function() {

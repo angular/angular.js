@@ -93,6 +93,7 @@ pre-packaged bundle.
   * install q: `npm install q`
   * install qq: `npm install qq`
   * install q-fs: `npm install q-fs`
+  * install jasmine-node: `npm install jasmine`
 
 
 

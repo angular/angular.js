@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Developer Guide: Scopes: Scope Internals
 @description
@@ -12,14 +11,14 @@ pattern, a scope's properties comprise both the model and the controller methods
 
 
 ### Scope characteristics
-- Scopes provide APIs ($watch and $observe) to observe model mutations.
-- Scopes provide APIs ($apply) to propagate any model changes through the system into the view from
-outside of the "Angular realm" (controllers, services, Angular event handlers).
+- Scopes provide APIs ({@link api/angular.scope.$watch $watch}) to observe model mutations.
+- Scopes provide APIs ({@link api/angular.scope.$apply $apply}) to propagate any model changes
+through the system into the view from outside of the "Angular realm" (controllers, services,
+Angular event handlers).
 - Scopes can be nested to isolate application components while providing access to shared model
 properties. A scope (prototypically) inherits properties from its parent scope.
 - In some parts of the system (such as controllers, services and directives), the scope is made
-available as `this` within the given context. (Note: This functionality will change before 1.0 is
-released.)
+available as `this` within the given context. (Note: This api will change before 1.0 is released.)
 
 
 ### Root scope
@@ -30,13 +29,14 @@ $service} property, and initializing the services.
 
 ### What is scope used for?
 
-{@link dev_guide.expressions Expressions} in the view are evaluated against the current scope. When
-HTML DOM elements are attached to a scope, expressions in those elements are evaluated against the
-attached scope.
+{@link dev_guide.expressions Expressions} in the view are {@link api/angular.scope.$eval evaluated}
+against the current scope. When HTML DOM elements are attached to a scope, expressions in those
+elements are evaluated against the attached scope.
 
 There are two kinds of expressions:
+
 - Binding expressions, which are observations of property changes. Property changes are reflected
-in the view during the {@link api/angular.scope.$flush flush cycle}.
+in the view during the {@link api/angular.scope.$digest digest cycle}.
 - Action expressions, which are expressions with side effects. Typically, the side effects cause
 execution of a method in a controller in response to a user action, such as clicking on a button.
 
@@ -72,7 +72,42 @@ expect(root.name).toEqual('angular');
 </pre>
 
 
+### Scope life cycle
+1. **Creation**
 
+   * You can create the root scope via {@link api/angular.scope angular.scope()}.
+   * To create a child scopes, you should call {@link api/angular.scope.$new parentScope.$new()}.
+
+2. **Watcher registration**
+
+   Watcher registration can happen at any time and on any scope (root or child) via {@link
+api/angular.scope.$watch scope.$watch()} API.
+
+3. **Model mutation**
+
+   For mutations to be properly observed, you should make them only within the execution of the
+function passed into {@link api/angular.scope.$apply scope.$apply()} call. (Angular apis do this
+implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers, or
+asynchronous work with {@link api/angular.service.$xhr $xhr} or {@link api/angular.service.$defer
+$defer} services.
+
+4. **Mutation observation**
+
+   At the end of each `$apply` call {@link api/angular.scope.$digest $digest} cycle is started on
+the root scope, which then propagates throughout all child scopes.
+
+   During the `$digest` cycle, all `$watch-ers` expressions or functions are checked for model
+mutation and if a mutation is detected, the `$watch-er` listener is called.
+
+5. **Scope destruction**
+
+   When child scopes are no longer needed, it is the responsibility of the child scope creator to
+destroy them via {@link api/angular.scope.$destroy scope.$destroy()} API. This will stop
+propagation of `$digest` calls into the child scope and allow for memory used by the child scope
+models to be reclaimed by the garbage collector.
+
+   The root scope can't be destroyed via the `$destroy` API. Instead, it is enough to remove all
+references from your application to the scope object and garbage collector will do its magic.
 ## Scopes in Angular applications
 To understand how Angular applications work, you need to understand how scopes work within an
 application. This section describes the typical life cycle of an application so you can see how
@@ -88,9 +123,9 @@ element.
 api/angular.directive directives} against the DOM template. The directives usually fall into one of
 two categories:
    - Observing {@link api/angular.directive directives}, such as double-curly expressions
-`{{expression}}`, register listeners using the {@link api/angular.scope.$observe $observe()}
-method. This type of directive needs to be notified whenever the expression changes so that it can
-update the view.
+`{{expression}}`, register listeners using the {@link api/angular.scope.$watch $watch()} method.
+This type of directive needs to be notified whenever the expression changes so that it can update
+the view.
    -  Listener directives, such as {@link api/angular.directive.ng:click ng:click}, register a
 listener with the DOM. When the DOM listener fires, the directive executes the associated
 expression and updates the view using  the {@link api/angular.scope.$apply $apply()} method.
@@ -119,39 +154,33 @@ execute immediately after the controller behavior executes, but before the DOM g
 See the {@link dev_guide.mvc.understanding_controller controller docs} for more information.
 
 ### Updating scope properties
-You can update a scope by calling its {@link api/angular.scope.$eval $eval()} method, but usually
-you do not have to do this explicitly. In most cases, angular intercepts all external events (such
-as user interactions, XHRs, and timers) and calls the `$eval()` method on the scope object for you
-at the right time. The only time you might need to call `$eval()` explicitly is when you create
-your own custom widget or service.
+You can update a scope by calling its {@link api/angular.scope.$apply $apply()} method with an
+expression or a function as the function argument. However it is typically not necessary to do this
+explicitly. In most cases, angular intercepts all external events (such as user interactions, XHRs,
+and timers) and wraps their callbacks into the `$apply()` method call on the scope object for you
+at the right time. The only time you might need to call `$apply()` explicitly is when you create
+your own custom asynchronous widget or service.
 
-The reason it is unnecessary to call `$eval()` from within your controller functions when you use
-built-in angular widgets and services is because a change in the data model triggers a call to the
-`$eval()` method on the scope object where the data model changed.
+The reason it is unnecessary to call `$apply()` from within your controller functions when you use
+built-in angular widgets and services is because your controllers are typically called from within
+an `$apply()` call already.
 
-When a user inputs data, angularized widgets copy the data to the appropriate scope and then call
-the `$eval()` method on the root scope to update the view. It works this way because scopes are
-inherited, and a child scope `$eval()` overrides its parent's `$eval()` method. Updating the whole
-page requires a call to `$eval()` on the root scope as `$root.$eval()`. Similarly, when a request
-to fetch data from a server is made and the response comes back, the data is written into the model
-and then `$eval()` is called to push updates through to the view and any other dependents.
+When a user inputs data, angularized widgets invoke `$apply()` on the current scope and evaluate an
+angular expression or execute a function on this scope. Afterwards `$apply` will trigger `$digest`
+call on the root scope, to propagate your changes through the entire system, which results in
+$watch-ers firing and view getting updated. Similarly, when a request to fetch data from a server
+is made and the response comes back, the data is written into the model (scope) within an $apply,
+which then pushes updates through to the view and any other dependents.
 
-A widget that creates scopes (such as {@link api/angular.widget.@ng:repeat ng:repeat}) is
-responsible for forwarding `$eval()` calls from the parent to those child scopes. That way, calling
-`$eval()` on the root scope will update the whole page. This creates a spreadsheet-like behavior
-for your app; the bound views update immediately as the user enters data.
+A widget that creates scopes (such as {@link api/angular.widget.@ng:repeat ng:repeat}) via `$new`,
+doesn't need to worry about propagating the `$digest` call from the parent scope to child scopes.
+This happens automatically.
 
 ## Scopes in unit-testing
-You can create scopes, including the root scope, in tests using the {@link api/angular.scope} API.
-This allows you to mimic the run-time environment and have full control over the life cycle of the
-scope so that you can assert correct model transitions. Since these scopes are created outside the
-normal compilation process, their life cycles must be managed by the test.
-
-There is a key difference between the way scopes are called in Angular applications and in Angular
-tests. In tests, the {@link api/angular.service.$updateView $updateView} calls the {@link
-api/angular.scope.$flush $flush()} method synchronously.(This is in contrast to the asynchronous
-calls used for applications.) Because test calls to scopes are synchronous, your tests are simpler
-to write.
+You can create scopes, including the root scope, in tests using the {@link api/angular.scope
+angular.scope()} API. This allows you to mimic the run-time environment and have full control over
+the life cycle of the scope so that you can assert correct model transitions. Since these scopes
+are created outside the normal compilation process, their life cycles must be managed by the test.
 
 ### Using scopes in unit-testing
 The following example demonstrates how the scope life cycle needs to be manually triggered from
@@ -181,7 +210,7 @@ service instances, as shown in the following example.
 
 <pre>
 var myLocation = {};
-var scope = angular.scope(null, {$location: myLocation});
+var scope = angular.scope(angular.service, {$location: myLocation});
 expect(scope.$service('$location')).toEqual(myLocation);
 </pre>
 
