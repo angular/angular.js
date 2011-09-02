@@ -53,7 +53,7 @@ to retrieve Buzz activity and comments.
     </div>
  </doc:source>
  <doc:scenario>
-  it('fetch buzz and expand', function() {
+  xit('fetch buzz and expand', function() {
     element(':button:contains(fetch)').click();
     expect(repeater('div.buzz').count()).toBeGreaterThan(0);
     element('.buzz a:contains(Expand replies):first').click();
