@@ -75,6 +75,15 @@ describe("resource", function() {
     nakedExpect(item).toEqual({id:'abc'});
   });
 
+  it("should build resource with action default param overriding default param", function(){
+    xhr.expectGET('/Customer/123').respond({id:'abc'});
+    var TypeItem = resource.route('/:type/:typeId', {type: 'Order'},
+                                  {get: {method: 'GET', params: {type: 'Customer'}}});
+    var item = TypeItem.get({typeId:123});
+    xhr.flush();
+    nakedExpect(item).toEqual({id:'abc'});
+  });
+
   it("should create resource", function(){
     xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123, name:'misko'});
 
