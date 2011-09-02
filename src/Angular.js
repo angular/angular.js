@@ -859,8 +859,8 @@ function parseKeyValue(/**string*/keyValue) {
   forEach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
-      key = unescape(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? unescape(key_value[1]) : true;
+      key = decodeURIComponent(key_value[0]);
+      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
     }
   });
   return obj;
@@ -869,7 +869,7 @@ function parseKeyValue(/**string*/keyValue) {
 function toKeyValue(obj) {
   var parts = [];
   forEach(obj, function(value, key) {
-    parts.push(escape(key) + (value === true ? '' : '=' + escape(value)));
+    parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
   });
   return parts.length ? parts.join('&') : '';
 }
