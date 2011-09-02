@@ -109,7 +109,7 @@ ResourceFactory.prototype = {
         var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
         self.xhr(
           action.method,
-          route.url(extend({}, action.params || {}, extractParams(data), params)),
+          route.url(extend({}, extractParams(data), action.params || {}, params)),
           data,
           function(status, response) {
             if (response) {
