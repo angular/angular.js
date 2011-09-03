@@ -93,7 +93,7 @@ no connection between the controller and the view.
     </div>
   </doc:source>
   <doc:scenario>
-    it('should play a game', function(){
+    xit('should play a game', function(){
      piece(1, 1);
      expect(binding('nextMove')).toEqual('O');
      piece(3, 1);
