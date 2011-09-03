@@ -900,22 +900,28 @@ describe("widget", function(){
         createSelect({
           name:'selected',
           'ng:options':'value for value in values',
-          'ng:change':'count = count + 1'
+          'ng:change':'log = log + selected.name'
         });
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
-        scope.count = 0;
+        scope.log = '';
         scope.$digest();
-        expect(scope.count).toEqual(0);
+        expect(scope.log).toEqual('');
 
         select.val('1');
         browserTrigger(select, 'change');
-        expect(scope.count).toEqual(1);
+        expect(scope.log).toEqual('B');
         expect(scope.selected).toEqual(scope.values[1]);
 
+        // ignore change event when the model doesn't change
         browserTrigger(select, 'change');
-        expect(scope.count).toEqual(1);
+        expect(scope.log).toEqual('B');
         expect(scope.selected).toEqual(scope.values[1]);
+
+        select.val('0');
+        browserTrigger(select, 'change');
+        expect(scope.log).toEqual('BA');
+        expect(scope.selected).toEqual(scope.values[0]);
       });
 
       it('should update model on change through expression', function(){
