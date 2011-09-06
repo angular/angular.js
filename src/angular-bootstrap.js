@@ -64,7 +64,10 @@
     }
   };
 
-  function addScripts(){
+  window.addScripts = function(scripts) {
+    delete window.addScripts;
+    delete window.angularFiles;
+
     var prop, i;
 
     // initialize the window property cache
@@ -75,8 +78,8 @@
     }
 
     // load the js scripts
-    for (i in Array.prototype.slice.call(arguments, 0)) {
-      var file = arguments[i];
+    for (i in scripts) {
+      var file = scripts[i].replace(/src\//, '');
       document.write('<script type="text/javascript" src="' + serverPath + file + '" ' +
                              'onload="angularClobberTest(\'' + file + '\')"></script>');
     }
@@ -88,50 +91,10 @@
   }
 
   addCss('angular.css');
+  document.write('<script type="text/javascript" src="' + serverPath + '../angularFiles.js' + '" ' +
+                 'onload="addScripts(angularFiles.angularSrc)"></script>');
 
-  addScripts('Angular.js',
-             'JSON.js',
-             'Compiler.js',
-             'Scope.js',
-             'Injector.js',
-             'jqLite.js',
-             'parser.js',
-             'Resource.js',
-             'Browser.js',
-             'sanitizer.js',
-             'AngularPublic.js',
-
-             // Extension points
-
-             'service/cookieStore.js',
-             'service/cookies.js',
-             'service/defer.js',
-             'service/document.js',
-             'service/exceptionHandler.js',
-             'service/hover.js',
-             'service/invalidWidgets.js',
-             'service/location.js',
-             'service/log.js',
-             'service/resource.js',
-             'service/route.js',
-             'service/routeParams.js',
-             'service/window.js',
-             'service/xhr.bulk.js',
-             'service/xhr.cache.js',
-             'service/xhr.error.js',
-             'service/xhr.js',
-             'service/locale.js',
-
-             'apis.js',
-             'filters.js',
-             'formatters.js',
-             'validators.js',
-             'directives.js',
-             'markups.js',
-             'widgets.js');
-
-
-  function onLoadListener(){
+  function onLoadListener() {
     // empty the cache to prevent mem leaks
     globalVars = {};
 
@@ -143,9 +106,9 @@
     angularInit(config, document);
   }
 
-  if (window.addEventListener){
+  if (window.addEventListener) {
     window.addEventListener('load', onLoadListener, false);
-  } else if (window.attachEvent){
+  } else if (window.attachEvent) {
     window.attachEvent('onload', onLoadListener);
   }
 
