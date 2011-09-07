@@ -118,13 +118,14 @@ angularFilter.currency = function(amount, currencySymbol){
 var DECIMAL_SEP = '.';
 
 angularFilter.number = function(number, fractionSize) {
-  if (isNaN(number) || !isFinite(number)) return '';
   var formats = this.$service('$locale').NUMBER_FORMATS;
   return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP,
                                                   formats.DECIMAL_SEP, fractionSize);
 }
 
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
+  if (isNaN(number) || !isFinite(number)) return '';
+
   var isNegative = number < 0;
   number = Math.abs(number);
   var numStr =  number + '',
