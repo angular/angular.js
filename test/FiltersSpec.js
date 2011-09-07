@@ -96,6 +96,7 @@ describe('filter', function() {
       dealoc(context);
     });
 
+
     it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
@@ -105,6 +106,7 @@ describe('filter', function() {
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
 
+
     it('should return empty string for non-numbers', function() {
       expect(currency()).toBe('');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
@@ -112,6 +114,7 @@ describe('filter', function() {
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
   });
+
 
   describe('number', function() {
     var context, number;
