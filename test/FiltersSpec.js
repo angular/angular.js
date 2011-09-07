@@ -83,20 +83,33 @@ describe('filter', function() {
   });
 
   describe('currency', function() {
-    it('should do basic currency filtering', function() {
-      var html = jqLite('<span/>');
-      var context = createScope();
-      context.$element = html;
-      var currency = bind(context, filter.currency);
+    var currency, html, context;
 
+    beforeEach(function() {
+      html = jqLite('<span></span>');
+      context = createScope();
+      context.$element = html;
+      currency = bind(context, filter.currency);
+    });
+
+    afterEach(function() {
+      dealoc(context);
+    });
+
+    it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
       expect(currency(-999)).toEqual('($999.00)');
       expect(html.hasClass('ng-format-negative')).toBeTruthy();
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
       expect(html.hasClass('ng-format-negative')).toBeFalsy();
+    });
 
-      dealoc(context);
+    it('should return empty string for non-numbers', function() {
+      expect(currency()).toBe('');
+      expect(html.hasClass('ng-format-negative')).toBeFalsy();
+      expect(currency('abc')).toBe('');
+      expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
   });
 
