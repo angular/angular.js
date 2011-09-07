@@ -71,8 +71,8 @@ angularFilter.currency = function(amount, currencySymbol){
   var formats = this.$service('$locale').NUMBER_FORMATS;
   this.$element.toggleClass('ng-format-negative', amount < 0);
   if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-  return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2)
-                                                         .replace(/\u00A4/g, currencySymbol);
+  return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+              replace(/\u00A4/g, currencySymbol);
 };
 
 /**
@@ -121,14 +121,14 @@ angularFilter.number = function(number, fractionSize) {
   var formats = this.$service('$locale').NUMBER_FORMATS;
   return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP,
                                                   formats.DECIMAL_SEP, fractionSize);
-}
+};
 
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   if (isNaN(number) || !isFinite(number)) return '';
 
   var isNegative = number < 0;
   number = Math.abs(number);
-  var numStr =  number + '',
+  var numStr = number + '',
       formatedText = '',
       parts = [];
 
@@ -137,7 +137,7 @@ function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   } else {
     var fractionLen = (numStr.split(DECIMAL_SEP)[1] || '').length;
 
-    //determine fractionSize if it is not specified
+    // determine fractionSize if it is not specified
     if (isUndefined(fractionSize)) {
       fractionSize = Math.min(Math.max(pattern.minFrac, fractionLen), pattern.maxFrac);
     }
@@ -249,10 +249,10 @@ var DATE_FORMATS = {
      Z: timeZoneGetter
 };
 
-var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/;
-var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/
-var OPERA_TOSTRING_PATTERN = /^[\d].*Z$/;
-var NUMBER_STRING = /^\d+$/;
+var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
+    DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
+    OPERA_TOSTRING_PATTERN = /^[\d].*Z$/,
+    NUMBER_STRING = /^\d+$/;
 
 
 /**
