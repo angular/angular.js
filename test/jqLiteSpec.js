@@ -443,6 +443,18 @@ describe('jqLite', function(){
 
       browserTrigger(a, 'click');
     });
+
+    it('should have event.isDefaultPrevented method', function() {
+      jqLite(a).bind('click', function(e) {
+        expect(function() {
+          expect(e.isDefaultPrevented()).toBe(false);
+          e.preventDefault();
+          expect(e.isDefaultPrevented()).toBe(true);
+        }).not.toThrow();
+      });
+
+      browserTrigger(a, 'click');
+    });
   });
 
 

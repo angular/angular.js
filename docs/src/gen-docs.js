@@ -30,7 +30,7 @@ writer.makeDir('build/docs/syntaxhighlighter').then(function() {
   return Q.deep(fileFutures);
 }).then(function generateManifestFile() {
   return appCache('build/docs/').then(function(list) {
-    writer.output('appcache-offline.manifest',list)
+    writer.output('appcache-offline.manifest', list);
   });
 }).then(function printStats() {
   console.log('DONE. Generated ' + docs.length + ' pages in ' + (now()-start) + 'ms.' );
@@ -46,7 +46,7 @@ function writeTheRest(writesFuture) {
   var manifest = 'manifest="appcache.manifest"',
       jq = '<script src="jquery.min.js"></script>',
       ngMin = '<script src="../angular.min.js" ng:autobind></script>',
-      ng = '<script src="../angular.js" ng:autobind></script>'
+      ng = '<script src="../angular.js" ng:autobind></script>';
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
                                 writer.replace, {'doc:manifest': manifest,

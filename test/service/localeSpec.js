@@ -43,6 +43,5 @@ describe('$locale', function() {
     expect($locale.pluralCat(0)).toBe('other');
     expect($locale.pluralCat(2)).toBe('other');
     expect($locale.pluralCat(1)).toBe('one');
-  })
+  });
 });
-

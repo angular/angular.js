@@ -28,6 +28,7 @@ ANGULAR = [
   'src/service/resource.js',
   'src/service/route.js',
   'src/service/routeParams.js',
+  'src/service/sniffer.js',
   'src/service/window.js',
   'src/service/xhr.bulk.js',
   'src/service/xhr.cache.js',

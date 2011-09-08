@@ -267,7 +267,7 @@ function browserTrigger(element, type) {
     // forcing the browser to compute the element position (by reading its CSS)
     // puts the element in consistent state.
     element.style.posLeft;
-    element.fireEvent('on' + type);
+    var ret = element.fireEvent('on' + type);
     if (lowercase(element.type) == 'submit') {
       while(element) {
         if (lowercase(element.nodeName) == 'form') {
@@ -277,10 +277,21 @@ function browserTrigger(element, type) {
         element = element.parentNode;
       }
     }
+    return ret;
   } else {
-    var evnt = document.createEvent('MouseEvents');
+    var evnt = document.createEvent('MouseEvents'),
+        processDefault = true,
+        originalPreventDefault = evnt.preventDefault;
+
+    // vojta: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
+    evnt.preventDefault = function() {
+      processDefault = false;
+      return originalPreventDefault.apply(evnt, arguments);
+    };
+
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
     element.dispatchEvent(evnt);
+    return processDefault;
   }
 }
 
@@ -297,9 +308,14 @@ function browserTrigger(element, type) {
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
     if (/(click|change|keydown)/.test(type)) {
-      return this.each(function(index, node) {
-        browserTrigger(node, type);
+      var processDefaults = [];
+      this.each(function(index, node) {
+        processDefaults.push(browserTrigger(node, type));
       });
+
+      // this is not compatible with jQuery - we return an array of returned values,
+      // so that scenario runner know whether JS code has preventDefault() of the event or not...
+      return processDefaults;
     }
     return parentTrigger.apply(this, arguments);
   };

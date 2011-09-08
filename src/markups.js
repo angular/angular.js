@@ -166,10 +166,10 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         <input name="value" /><br />
         <a id="link-1" href ng:click="value = 1">link 1</a> (link, don't reload)<br />
         <a id="link-2" href="" ng:click="value = 2">link 2</a> (link, don't reload)<br />
-        <a id="link-3" ng:href="#{{'123'}}" ng:click="value = 3">link 3</a> (link, reload!)<br />
+        <a id="link-3" ng:href="#!/{{'123'}}" ng:click="value = 3">link 3</a> (link, reload!)<br />
         <a id="link-4" href="" name="xx" ng:click="value = 4">anchor</a> (link, don't reload)<br />
         <a id="link-5" name="xxx" ng:click="value = 5">anchor</a> (no link)<br />
-        <a id="link-6" ng:href="#/{{value}}">link</a> (link, change hash)
+        <a id="link-6" ng:href="#!/{{value}}">link</a> (link, change hash)
       </doc:source>
       <doc:scenario>
         it('should execute ng:click but not reload when href without value', function() {
@@ -187,8 +187,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         it('should execute ng:click and change url when ng:href specified', function() {
           element('#link-3').click();
           expect(input('value').val()).toEqual('3');
-          expect(element('#link-3').attr('href')).toBe("#123");
-          expect(browser().location().hash()).toEqual('123');
+          expect(element('#link-3').attr('href')).toBe("#!/123");
+          expect(browser().location().hash()).toEqual('!/123');
         });
 
         it('should execute ng:click but not reload when href empty string and name specified', function() {
@@ -206,8 +206,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         it('should only change url when only ng:href', function() {
           input('value').enter('6');
           element('#link-6').click();
-          expect(browser().location().hash()).toEqual('/6');
-          expect(element('#link-6').attr('href')).toBe("#/6");
+          expect(browser().location().hash()).toEqual('!/6');
+          expect(element('#link-6').attr('href')).toBe("#!/6");
         });
       </doc:scenario>
     </doc:example>
