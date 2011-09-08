@@ -27,11 +27,11 @@ __`app/index.html`:__
 ...
   <ul class="controls">
     <li>
-      Search: <input type="text" name="query"/>
+      Search: <input type="text" ng:model="query"/>
     </li>
     <li>
       Sort by:
-      <select name="orderProp">
+      <select ng:model="orderProp">
         <option value="name">Alphabetical</option>
         <option value="age">Newest</option>
       </select>

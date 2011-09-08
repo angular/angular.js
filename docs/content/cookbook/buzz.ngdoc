@@ -15,6 +15,7 @@ to retrieve Buzz activity and comments.
     <script>
     BuzzController.$inject = ['$resource'];
     function BuzzController($resource) {
+     this.userId = 'googlebuzz';
      this.Activity = $resource(
       'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
       {alt: 'json', callback: 'JSON_CALLBACK'},
@@ -32,7 +33,7 @@ to retrieve Buzz activity and comments.
     };
     </script>
     <div ng:controller="BuzzController">
-     <input name="userId" value="googlebuzz"/>
+     <input ng:model="userId"/>
      <button ng:click="fetch()">fetch</button>
      <hr/>
      <div class="buzz" ng:repeat="item in activities.data.items">

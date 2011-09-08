@@ -19,8 +19,6 @@
  * to `ng:bind`, but uses JSON key / value pairs to do so.
  * * {@link angular.directive.ng:bind-template ng:bind-template} - Replaces the text value of an
  * element with a specified template.
- * * {@link angular.directive.ng:change ng:change} - Executes an expression when the value of an
- * input widget changes.
  * * {@link angular.directive.ng:class ng:class} - Conditionally set a CSS class on an element.
  * * {@link angular.directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
  * conjunction with {@link angular.widget.@ng:repeat} to affect even rows in a collection.
@@ -133,16 +131,16 @@ angularDirective("ng:init", function(expression){
         };
       </script>
       <div ng:controller="SettingsController">
-        Name: <input type="text" name="name"/>
+        Name: <input type="text" ng:model="name"/>
         [ <a href="" ng:click="greet()">greet</a> ]<br/>
         Contact:
         <ul>
           <li ng:repeat="contact in contacts">
-            <select name="contact.type">
+            <select ng:model="contact.type">
                <option>phone</option>
                <option>email</option>
             </select>
-            <input type="text" name="contact.value"/>
+            <input type="text" ng:model="contact.value"/>
             [ <a href="" ng:click="clearContact(contact)">clear</a>
             | <a href="" ng:click="removeContact(contact)">X</a> ]
           </li>
@@ -153,16 +151,16 @@ angularDirective("ng:init", function(expression){
      <doc:scenario>
        it('should check controller', function(){
          expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
-         expect(element('.doc-example-live li[ng\\:repeat-index="0"] input').val())
+         expect(element('.doc-example-live li:nth-child(1) input').val())
            .toBe('408 555 1212');
-         expect(element('.doc-example-live li[ng\\:repeat-index="1"] input').val())
+         expect(element('.doc-example-live li:nth-child(2) input').val())
            .toBe('john.smith@example.org');
 
          element('.doc-example-live li:first a:contains("clear")').click();
          expect(element('.doc-example-live li:first input').val()).toBe('');
 
          element('.doc-example-live li:last a:contains("add")').click();
-         expect(element('.doc-example-live li[ng\\:repeat-index="2"] input').val())
+         expect(element('.doc-example-live li:nth-child(3) input').val())
            .toBe('yourname@example.org');
        });
      </doc:scenario>
@@ -200,8 +198,15 @@ angularDirective("ng:controller", function(expression){
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
    <doc:example>
      <doc:source>
-       Enter name: <input type="text" name="name" value="Whirled"> <br>
-       Hello <span ng:bind="name"></span>!
+       <script>
+         function Ctrl(){
+           this.name = 'Whirled';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+         Enter name: <input type="text" ng:model="name"> <br/>
+         Hello <span ng:bind="name"></span>!
+       </div>
      </doc:source>
      <doc:scenario>
        it('should check ng:bind', function(){
@@ -320,9 +325,17 @@ function compileBindTemplate(template){
  * Try it here: enter text in text box and watch the greeting change.
    <doc:example>
      <doc:source>
-      Salutation: <input type="text" name="salutation" value="Hello"><br/>
-      Name: <input type="text" name="name" value="World"><br/>
-      <pre ng:bind-template="{{salutation}} {{name}}!"></pre>
+       <script>
+         function Ctrl(){
+           this.salutation = 'Hello';
+           this.name = 'World';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+        Salutation: <input type="text" ng:model="salutation"><br/>
+        Name: <input type="text" ng:model="name"><br/>
+        <pre ng:bind-template="{{salutation}} {{name}}!"></pre>
+       </div>
      </doc:source>
      <doc:scenario>
        it('should check ng:bind', function(){
@@ -351,13 +364,6 @@ angularDirective("ng:bind-template", function(expression, element){
   };
 });
 
-var REMOVE_ATTRIBUTES = {
-  'disabled':'disabled',
-  'readonly':'readOnly',
-  'checked':'checked',
-  'selected':'selected',
-  'multiple':'multiple'
-};
 /**
  * @ngdoc directive
  * @name angular.directive.ng:bind-attr
@@ -395,9 +401,16 @@ var REMOVE_ATTRIBUTES = {
  * Enter a search string in the Live Preview text box and then click "Google". The search executes instantly.
    <doc:example>
      <doc:source>
-      Google for:
-      <input type="text" name="query" value="AngularJS"/>
-      <a href="http://www.google.com/search?q={{query}}">Google</a>
+       <script>
+         function Ctrl(){
+           this.query = 'AngularJS';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+        Google for:
+        <input type="text" ng:model="query"/>
+        <a href="http://www.google.com/search?q={{query}}">Google</a>
+       </div>
      </doc:source>
      <doc:scenario>
        it('should check ng:bind-attr', function(){
@@ -417,18 +430,15 @@ angularDirective("ng:bind-attr", function(expression){
       var values = scope.$eval(expression);
       for(var key in values) {
         var value = compileBindTemplate(values[key])(scope, element),
-            specialName = REMOVE_ATTRIBUTES[lowercase(key)];
+            specialName = BOOLEAN_ATTR[lowercase(key)];
         if (lastValue[key] !== value) {
           lastValue[key] = value;
           if (specialName) {
             if (toBoolean(value)) {
               element.attr(specialName, specialName);
-              element.attr('ng-' + specialName, value);
             } else {
               element.removeAttr(specialName);
-              element.removeAttr('ng-' + specialName);
             }
-            (element.data($$validate)||noop)();
           } else {
             element.attr(key, value);
           }
@@ -505,12 +515,22 @@ angularDirective("ng:click", function(expression, element){
  * @example
    <doc:example>
      <doc:source>
-      <form ng:submit="list.push(text);text='';" ng:init="list=[]">
+      <script>
+        function Ctrl(){
+          this.list = [];
+          this.text = 'hello';
+          this.submit = function(){
+            this.list.push(this.text);
+            this.text = '';
+          };
+        }
+      </script>
+      <form ng:submit="submit()" ng:controller="Ctrl">
         Enter text and hit enter:
-        <input type="text" name="text" value="hello"/>
+        <input type="text" ng:model="text"/>
         <input type="submit" id="submit" value="Submit" />
+        <pre>list={{list}}</pre>
       </form>
-      <pre>list={{list}}</pre>
      </doc:source>
      <doc:scenario>
        it('should check ng:submit', function(){
@@ -537,7 +557,7 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal)
+          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
           element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
@@ -689,7 +709,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * @example
    <doc:example>
      <doc:source>
-        Click me: <input type="checkbox" name="checked"><br/>
+        Click me: <input type="checkbox" ng:model="checked"><br/>
         Show: <span ng:show="checked">I show up when your checkbox is checked.</span> <br/>
         Hide: <span ng:hide="checked">I hide when your checkbox is checked.</span>
      </doc:source>
@@ -730,7 +750,7 @@ angularDirective("ng:show", function(expression, element){
  * @example
    <doc:example>
      <doc:source>
-        Click me: <input type="checkbox" name="checked"><br/>
+        Click me: <input type="checkbox" ng:model="checked"><br/>
         Show: <span ng:show="checked">I show up when you checkbox is checked?</span> <br/>
         Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
      </doc:source>

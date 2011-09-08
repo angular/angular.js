@@ -260,7 +260,8 @@ angularServiceInject('$route', function($location, $routeParams) {
 
   function updateRoute() {
     var next = parseRoute(),
-        last = $route.current;
+        last = $route.current,
+        Controller;
 
     if (next && last && next.$route === last.$route
         && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
@@ -283,7 +284,8 @@ angularServiceInject('$route', function($location, $routeParams) {
           }
         } else {
           copy(next.params, $routeParams);
-          next.scope = parentScope.$new(next.controller);
+          (Controller = next.controller) && inferInjectionArgs(Controller);
+          next.scope = parentScope.$new(Controller);
         }
       }
       rootScope.$broadcast('$afterRouteChange', next, last);

@@ -101,9 +101,6 @@
 
     var config = angularJsConfig(document);
 
-    // angular-ie-compat.js needs to be pregenerated for development with IE<8
-    config.ie_compat = serverPath + '../build/angular-ie-compat.js';
-
     angularInit(config, document);
   }
 

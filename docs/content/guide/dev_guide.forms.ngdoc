@@ -1,0 +1,610 @@
+@ngdoc overview
+@name Developer Guide: Forms
+@description
+
+# Overview
+
+Forms allow users to enter data into your application. Forms represent the bidirectional data
+bindings in Angular.
+
+Forms consist of all of the following:
+
+  - the individual widgets with which users interact
+  - the validation rules for widgets
+  - the form, a collection of widgets that contains aggregated validation information
+
+
+# Form
+
+A form groups a set of widgets together into a single logical data-set. A form is created using
+the {@link api/angular.widget.form &lt;form&gt;} element that calls the
+{@link api/angular.service.$formFactory $formFactory} service. The form is responsible for managing
+the widgets and for tracking validation information.
+
+A form is:
+
+- The collection which contains widgets or other forms.
+- Responsible for marshaling data from the model into a widget. This is
+  triggered by {@link api/angular.scope.$watch $watch} of the model expression.
+- Responsible for marshaling data from the widget into the model. This is
+  triggered by the widget emitting the `$viewChange` event.
+- Responsible for updating the validation state of the widget, when the widget emits
+  `$valid` / `$invalid` event. The validation state is useful for controlling the validation
+   errors shown to the user in it consist of:
+
+  - `$valid` / `$invalid`: Complementary set of booleans which show if a widget is valid / invalid.
+  - `$error`: an object which has a property for each validation key emited by the widget.
+              The value of the key is always true. If widget is valid, then the `$error`
+              object has no properties. For example if the widget emits
+              `$invalid` event with `REQUIRED` key. The internal state of the `$error` would be
+              updated to `$error.REQUIRED == true`.
+
+- Responsible for aggregating widget validation information into the form.
+
+  - `$valid` / `$invalid`: Complementary set of booleans which show if all the child widgets
+              (or forms) are valid or if any are invalid.
+  - `$error`: an object which has a property for each validation key emited by the
+              child widget. The value of the key is an array of widgets which fired the invalid
+              event. If all child widgets are valid then, then the `$error` object has no
+              properties. For example if a child widget emits
+              `$invalid` event with `REQUIRED` key. The internal state of the `$error` would be
+              updated to `$error.REQUIRED == [ widgetWhichEmitedInvalid ]`.
+
+
+# Widgets
+
+In Angular, a widget is the term used for the UI with which the user input. Examples of
+bult-in Angular widgets are {@link api/angular.widget.input input} and
+{@link api/angular.widget.select select}. Widgets provide the rendering and the user
+interaction logic. Widgets should be declared inside a form, if no form is provided an implicit
+form {@link api/angular.service.$formFactory $formFactory.rootForm} form is used.
+
+Widgets are implemented as Angular controllers. A widget controller:
+
+-  implements methods:
+
+  - `$render` - Updates the DOM from the internal state as represented by `$viewValue`.
+  - `$parseView` - Translate `$viewValue` to `$modelValue`. (`$modelValue` will be assigned to
+     the model scope by the form)
+  - `$parseModel` - Translate `$modelValue` to `$viewValue`. (`$viewValue` will be assigned to
+     the DOM inside the `$render` method)
+
+- responds to events:
+
+  - `$validate` - Emitted by the form when the form determines that the widget needs to validate
+    itself. There may be more then one listener on the `$validate` event. The widget responds
+    by emitting `$valid` / `$invalid` event of its own.
+
+- emits events:
+
+  - `$viewChange` - Emitted when the user interacts with the widget and it is necessary to update
+     the model.
+  - `$valid` - Emitted when the widget determines that it is valid (usually as a response to
+    `$validate` event or inside `$parseView()` or `$parseModel()` method).
+  - `$invalid` - Emitted when the widget determines that it is invalid (usually as a response to
+    `$validate` event or inside `$parseView()` or `$parseModel()` method).
+  - `$destroy` - Emitted when the widget element is removed from the DOM.
+
+
+# CSS
+
+Angular-defined widgets and forms set `ng-valid` and `ng-invalid` classes on themselves to allow
+the web-designer a way to style them. If you write your own widgets, then their `$render()`
+methods must set the appropriate CSS classes to allow styling.
+(See {@link dev_guide.templates.css-styling CSS})
+
+
+# Example
+
+The following example demonstrates:
+
+  - How an error is displayed when a required field is empty.
+  - Error highlighting.
+  - How form submission is disabled when the form is invalid.
+  - The internal state of the widget and form in the the 'Debug View' area.
+
+
+<doc:example>
+<doc:source>
+   <style>
+     .ng-invalid { border: solid 1px red; }
+     .ng-form {display: block;}
+   </style>
+   <script>
+   function UserFormCntl(){
+     this.state = /^\w\w$/;
+     this.zip = /^\d\d\d\d\d$/;
+     this.master = {
+       customer: 'John Smith',
+       address:{
+         line1: '123 Main St.',
+         city:'Anytown',
+         state:'AA',
+         zip:'12345'
+       }
+     };
+     this.cancel();
+   }
+
+   UserFormCntl.prototype = {
+     cancel: function(){
+       this.form = angular.copy(this.master);
+     },
+
+     save: function(){
+       this.master = this.form;
+       this.cancel();
+     }
+   };
+   </script>
+   <div ng:controller="UserFormCntl">
+
+     <form name="userForm">
+
+       <label>Name:</label><br/>
+       <input type="text" name="customer" ng:model="form.customer" required/>
+       <span class="error" ng:show="userForm.customer.$error.REQUIRED">
+         Customer name is required!</span>
+       <br/><br/>
+
+       <ng:form name="addressForm">
+         <label>Address:</label> <br/>
+         <input type="text" name="line1" size="33" required
+                ng:model="form.address.line1"/> <br/>
+         <input type="text" name="city" size="12" required
+                ng:model="form.address.city"/>,
+         <input type="text" name="state" ng:pattern="state" size="2" required
+                ng:model="form.address.state"/>
+         <input type="text" name="zip" ng:pattern="zip" size="5" required
+                ng:model="form.address.zip"/><br/><br/>
+
+         <span class="error" ng:show="addressForm.$invalid">
+           Incomplete address:
+           <div class="error" ng:show="addressForm.state.$error.REQUIRED">
+             Missing state!</span>
+           <div class="error" ng:show="addressForm.state.$error.PATTERN">
+             Invalid state!</span>
+           <div class="error" ng:show="addressForm.zip.$error.REQUIRED">
+             Missing zip!</span>
+           <div class="error" ng:show="addressForm.zip.$error.PATTERN">
+             Invalid zip!</span>
+         </span>
+       </ng:form>
+
+       <button ng:click="cancel()"
+               ng:disabled="{{master.$equals(form)}}">Cancel</button>
+       <button ng:click="save()"
+               ng:disabled="{{userForm.$invalid || master.$equals(form)}}">
+          Save</button>
+     </form>
+
+     <hr/>
+     Debug View:
+     <pre>form={{form}}</pre>
+     <pre>master={{master}}</pre>
+     <pre>userForm={{userForm}}</pre>
+     <pre>addressForm={{addressForm}}</pre>
+   </div>
+</doc:source>
+<doc:scenario>
+  it('should enable save button', function(){
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+    input('form.customer').enter('');
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+    input('form.customer').enter('change');
+    expect(element(':button:contains(Save)').attr('disabled')).toBeFalsy();
+    element(':button:contains(Save)').click();
+    expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
+  });
+  it('should enable cancel button', function(){
+    expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
+    input('form.customer').enter('change');
+    expect(element(':button:contains(Cancel)').attr('disabled')).toBeFalsy();
+    element(':button:contains(Cancel)').click();
+    expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
+    expect(element(':input[ng\\:model="form.customer"]').val()).toEqual('John Smith');
+  });
+</doc:scenario>
+</doc:example>
+
+# Life-cycle
+
+- The `<form>` element triggers creation of a new form {@link dev_guide.scopes scope} using the
+  {@link api/angular.service.$formFactory $formfactory}. The new form scope is added to the
+  `<form>` element using the jQuery `.data()` method for later retrieval under the key `$form`.
+  The form also sets up these listeners:
+
+  - `$destroy` - This event is emitted by nested widget when it is removed from the view. It gives
+     the form a chance to clean up any validation references to the destroyed widget.
+  - `$valid` / `$invalid` - This event is emitted by the widget on validation state change.
+
+- `<input>` element triggers the creation of the widget using the
+  {@link api/angular.service.$formFactory $formfactory.$createWidget()} method. The `$createWidget()`
+  creates new widget instance by calling the current scope {@link api/angular.scope.$new .$new()} and
+  registers these listeners:
+
+  - `$watch` on the model scope.
+  - `$viewChange` event on the widget scope.
+  - `$validate` event on the widget scope.
+  - Element `change` event when the user enters data.
+
+<img class="center" src="img/form_data_flow.png" border="1" />
+
+
+- When the user interacts with the widget:
+
+  1. The DOM element fires the `change` event which the widget intercepts. Widget then emits
+     a `$viewChange` event which includes the new user-entered value. (Remember that the DOM events
+     are outside of the Angular environment so the widget must emit its event within the
+     {@link api/angular.scope.$apply $apply} method).
+  2. The form's `$viewChange` listener copies the user-entered value to the widget's `$viewValue`
+     property. Since the `$viewValue` is the raw value as entered by user, it may need to be
+     translated to a different format/type (for example, translating a string to a number).
+     If you need your widget to translate between the internal `$viewValue` and the external
+     `$modelValue` state, you must declare a `$parseView()` method. The `$parseView()` method
+     will copy `$viewValue` to `$modelValue` and perform any necessary translations.
+  3. The `$modelValue` is written into the application model.
+  4. The form then emits a `$validate` event, giving the widget's validators chance to validate the
+     input. There can be any number of validators registered. Each validator may in turn
+     emit a `$valid` / `$invalid` event with the validator's validation key. For example `REQUIRED`.
+  5. Form listens to `$valid`/`$invalid` events and updates both the form as well as the widget
+     scope with the validation state. The validation updates the `$valid` and `$invalid`, property
+     as well as `$error` object. The widget's `$error` object is updated with the validation key
+     such that `$error.REQUIRED == true` when the validation emits `$invalid` with `REQUIRED`
+     validation key. Similarly the form's `$error` object gets updated, but instead of boolean
+     `true` it contains an array of invalid widgets (widgets which fired `$invalid` event with
+     `REQUIRED` validation key).
+
+- When the model is updated:
+
+  1. The model `$watch` listener assigns the model value to `$modelValue` on the widget.
+  2. The form then calls `$parseModel` method on widget if present. The method converts the
+     value to renderable format and assigns it to `$viewValue` (for example converting number to a
+     string.)
+  3. The form then emits a `$validate` which behaves as described above.
+  4. The form then calls `$render` method on the widget to update the DOM structure from the
+     `$viewValue`.
+
+
+
+# Writing Your Own Widget
+
+This example shows how to implement a custom HTML editor widget in Angular.
+
+    <doc:example>
+      <doc:source>
+        <script>
+          function EditorCntl(){
+            this.htmlContent = '<b>Hello</b> <i>World</i>!';
+          }
+
+          function HTMLEditorWidget(element) {
+            var self = this;
+            var htmlFilter = angular.filter('html');
+
+            this.$parseModel = function(){
+              // need to protect for script injection
+              try {
+                this.$viewValue = htmlFilter(
+                  this.$modelValue || '').get();
+                if (this.$error.HTML) {
+                  // we were invalid, but now we are OK.
+                  this.$emit('$valid', 'HTML');
+                }
+              } catch (e) {
+                // if HTML not parsable invalidate form.
+                this.$emit('$invalid', 'HTML');
+              }
+            }
+
+            this.$render = function(){
+              element.html(this.$viewValue);
+            }
+
+            element.bind('keyup', function(){
+              self.$apply(function(){
+                self.$emit('$viewChange', element.html());
+              });
+            });
+          }
+
+          angular.directive('ng:html-editor-model', function(){
+            function linkFn($formFactory, element) {
+              var exp = element.attr('ng:html-editor-model'),
+                  form = $formFactory.forElement(element),
+                  widget;
+              element.attr('contentEditable', true);
+              widget = form.$createWidget({
+                scope: this,
+                model: exp,
+                controller: HTMLEditorWidget,
+                controllerArgs: [element]});
+              // if the element is destroyed, then we need to
+              // notify the form.
+              element.bind('$destroy', function(){
+                widget.$destroy();
+              });
+            }
+            linkFn.$inject = ['$formFactory'];
+            return linkFn;
+          });
+        </script>
+        <form name='editorForm' ng:controller="EditorCntl">
+          <div ng:html-editor-model="htmlContent"></div>
+          <hr/>
+          HTML: <br/>
+          <textarea ng:model="htmlContent" cols="80"></textarea>
+          <hr/>
+          <pre>editorForm = {{editorForm}}</pre>
+        </form>
+      </doc:source>
+      <doc:scenario>
+        it('should enter invalid HTML', function(){
+          expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
+          input('htmlContent').enter('<');
+          expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
+        });
+      </doc:scenario>
+    </doc:example>
+
+
+
+# HTML Inputs
+
+The most common widgets you will use will be in the form of the
+standard HTML set. These widgets are bound using the `name` attribute
+to an expression. In addition, they can have `required` attribute to further control their
+validation.
+<doc:example>
+  <doc:source>
+     <script>
+       function Ctrl(){
+         this.input1 = '';
+         this.input2 = '';
+         this.input3 = 'A';
+         this.input4 = false;
+         this.input5 = 'c';
+         this.input6 = [];
+       }
+     </script>
+    <table style="font-size:.9em;" ng:controller="Ctrl">
+      <tr>
+        <th>Name</th>
+        <th>Format</th>
+        <th>HTML</th>
+        <th>UI</th>
+        <th ng:non-bindable>{{input#}}</th>
+      </tr>
+      <tr>
+        <th>text</th>
+        <td>String</td>
+        <td><tt>&lt;input type="text" ng:model="input1"&gt;</tt></td>
+        <td><input type="text" ng:model="input1" size="4"></td>
+        <td><tt>{{input1|json}}</tt></td>
+      </tr>
+      <tr>
+        <th>textarea</th>
+        <td>String</td>
+        <td><tt>&lt;textarea ng:model="input2"&gt;&lt;/textarea&gt;</tt></td>
+        <td><textarea ng:model="input2" cols='6'></textarea></td>
+        <td><tt>{{input2|json}}</tt></td>
+      </tr>
+      <tr>
+        <th>radio</th>
+        <td>String</td>
+        <td><tt>
+          &lt;input type="radio" ng:model="input3" value="A"&gt;<br>
+          &lt;input type="radio" ng:model="input3" value="B"&gt;
+        </tt></td>
+        <td>
+          <input type="radio" ng:model="input3" value="A">
+          <input type="radio" ng:model="input3" value="B">
+        </td>
+        <td><tt>{{input3|json}}</tt></td>
+      </tr>
+      <tr>
+        <th>checkbox</th>
+        <td>Boolean</td>
+        <td><tt>&lt;input type="checkbox" ng:model="input4"&gt;</tt></td>
+        <td><input type="checkbox" ng:model="input4"></td>
+        <td><tt>{{input4|json}}</tt></td>
+      </tr>
+      <tr>
+        <th>pulldown</th>
+        <td>String</td>
+        <td><tt>
+          &lt;select ng:model="input5"&gt;<br>
+          &nbsp;&nbsp;&lt;option value="c"&gt;C&lt;/option&gt;<br>
+          &nbsp;&nbsp;&lt;option value="d"&gt;D&lt;/option&gt;<br>
+          &lt;/select&gt;<br>
+        </tt></td>
+        <td>
+          <select ng:model="input5">
+            <option value="c">C</option>
+            <option value="d">D</option>
+          </select>
+        </td>
+        <td><tt>{{input5|json}}</tt></td>
+      </tr>
+      <tr>
+        <th>multiselect</th>
+        <td>Array</td>
+        <td><tt>
+          &lt;select ng:model="input6" multiple size="4"&gt;<br>
+          &nbsp;&nbsp;&lt;option value="e"&gt;E&lt;/option&gt;<br>
+          &nbsp;&nbsp;&lt;option value="f"&gt;F&lt;/option&gt;<br>
+          &lt;/select&gt;<br>
+        </tt></td>
+        <td>
+          <select ng:model="input6" multiple size="4">
+            <option value="e">E</option>
+            <option value="f">F</option>
+          </select>
+        </td>
+        <td><tt>{{input6|json}}</tt></td>
+      </tr>
+    </table>
+  </doc:source>
+  <doc:scenario>
+
+    it('should exercise text', function(){
+     input('input1').enter('Carlos');
+     expect(binding('input1')).toEqual('"Carlos"');
+    });
+    it('should exercise textarea', function(){
+     input('input2').enter('Carlos');
+     expect(binding('input2')).toEqual('"Carlos"');
+    });
+    it('should exercise radio', function(){
+     expect(binding('input3')).toEqual('"A"');
+     input('input3').select('B');
+     expect(binding('input3')).toEqual('"B"');
+     input('input3').select('A');
+     expect(binding('input3')).toEqual('"A"');
+    });
+    it('should exercise checkbox', function(){
+     expect(binding('input4')).toEqual('false');
+     input('input4').check();
+     expect(binding('input4')).toEqual('true');
+    });
+    it('should exercise pulldown', function(){
+     expect(binding('input5')).toEqual('"c"');
+     select('input5').option('d');
+     expect(binding('input5')).toEqual('"d"');
+    });
+    it('should exercise multiselect', function(){
+     expect(binding('input6')).toEqual('[]');
+     select('input6').options('e');
+     expect(binding('input6')).toEqual('["e"]');
+     select('input6').options('e', 'f');
+     expect(binding('input6')).toEqual('["e","f"]');
+    });
+  </doc:scenario>
+</doc:example>
+
+#Testing
+
+When unit-testing a controller it may be desirable to have a reference to form and to simulate
+different form validation states.
+
+This example demonstrates a login form, where the login button is enabled only when the form is
+properly filled out.
+<pre>
+  <div ng:controller="LoginController">
+    <form name="loginForm">
+      <input type="text" ng:model="username" required/>
+      <input type="password" ng:model="password" required/>
+      <button ng:disabled="{{!disableLogin()}}" ng:click="login()">Login</login>
+    </form>
+  </div>
+</pre>
+
+In the unit tests we do not have access to the DOM, and therefore the `loginForm` reference does
+not get set on the controller. This example shows how it can be unit-tested, by creating a mock
+form.
+<pre>
+function LoginController() {
+  this.disableLogin = function() {
+    return this.loginForm.$invalid;
+  };
+}
+
+describe('LoginController', function() {
+  it('should disable login button when form is invalid', function() {
+    var scope = angular.scope();
+    var loginController = scope.$new(LoginController);
+
+    // In production the 'loginForm' form instance gets set from the view,
+    // but in unit-test we have to set it manually.
+    loginController.loginForm = scope.$service('$formFactory')();
+
+    expect(loginController.disableLogin()).toBe(false);
+
+    // Now simulate an invalid form
+    loginController.loginForm.$emit('$invalid', 'MyReason');
+    expect(loginController.disableLogin()).toBe(true);
+
+    // Now simulate a valid form
+    loginController.loginForm.$emit('$valid', 'MyReason');
+    expect(loginController.disableLogin()).toBe(false);
+  });
+});
+</pre>
+
+## Custom widgets
+
+This example demonstrates a login form, where the password has custom validation rules.
+<pre>
+  <div ng:controller="LoginController">
+    <form name="loginForm">
+      <input type="text" ng:model="username" required/>
+      <input type="@StrongPassword" ng:model="password" required/>
+      <button ng:disabled="{{!disableLogin()}}" ng:click="login()">Login</login>
+    </form>
+  </div>
+</pre>
+
+In the unit tests we do not have access to the DOM, and therefore the `loginForm` and custom
+input type reference does not get set on the controller. This example shows how it can be
+unit-tested, by creating a mock form and a mock custom input type.
+<pre>
+function LoginController(){
+  this.disableLogin = function() {
+    return this.loginForm.$invalid;
+  };
+
+  this.StrongPassword = function(element) {
+    var widget = this;
+    element.attr('type', 'password'); // act as password.
+    this.$on('$validate', function(){
+      widget.$emit(widget.$viewValue.length > 5 ? '$valid' : '$invalid', 'PASSWORD');
+    });
+  };
+}
+
+describe('LoginController', function() {
+  it('should disable login button when form is invalid', function() {
+    var scope = angular.scope();
+    var loginController = scope.$new(LoginController);
+    var input = angular.element('<input>');
+
+    // In production the 'loginForm' form instance gets set from the view,
+    // but in unit-test we have to set it manually.
+    loginController.loginForm = scope.$service('$formFactory')();
+
+    // now instantiate a custom input type
+    loginController.loginForm.$createWidget({
+      scope: loginController,
+      model: 'password',
+      alias: 'password',
+      controller: loginController.StrongPassword,
+      controllerArgs: [input]
+    });
+
+    // Verify that the custom password input type sets the input type to password
+    expect(input.attr('type')).toEqual('password');
+
+    expect(loginController.disableLogin()).toBe(false);
+
+    // Now simulate an invalid form
+    loginController.loginForm.password.$emit('$invalid', 'PASSWORD');
+    expect(loginController.disableLogin()).toBe(true);
+
+    // Now simulate a valid form
+    loginController.loginForm.password.$emit('$valid', 'PASSWORD');
+    expect(loginController.disableLogin()).toBe(false);
+
+    // Changing model state, should also influence the form validity
+    loginController.password = 'abc'; // too short so it should be invalid
+    scope.$digest();
+    expect(loginController.loginForm.password.$invalid).toBe(true);
+
+    // Changeing model state, should also influence the form validity
+    loginController.password = 'abcdef'; // should be valid
+    scope.$digest();
+    expect(loginController.loginForm.password.$valid).toBe(true);
+  });
+});
+</pre>
+
+

@@ -15,6 +15,13 @@ describe('api', function() {
       expect(map.remove(key)).toBe(value2);
       expect(map.get(key)).toBe(undefined);
     });
+
+    it('should init from an array', function(){
+      var map = new HashMap(['a','b']);
+      expect(map.get('a')).toBe(0);
+      expect(map.get('b')).toBe(1);
+      expect(map.get('c')).toBe(undefined);
+    });
   });
 
 

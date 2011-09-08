@@ -103,9 +103,16 @@ var angularArray = {
    * @example
       <doc:example>
         <doc:source>
-         <div ng:init="books = ['Moby Dick', 'Great Gatsby', 'Romeo and Juliet']"></div>
-         <input name='bookName' value='Romeo and Juliet'> <br>
-         Index of '{{bookName}}' in the list {{books}} is <em>{{books.$indexOf(bookName)}}</em>.
+         <script>
+           function Ctrl(){
+             this.books = ['Moby Dick', 'Great Gatsby', 'Romeo and Juliet'];
+             this.bookName = 'Romeo and Juliet';
+           }
+         </script>
+         <div ng:controller="Ctrl">
+           <input ng:model='bookName'> <br>
+           Index of '{{bookName}}' in the list {{books}} is <em>{{books.$indexOf(bookName)}}</em>.
+         </div>
         </doc:source>
         <doc:scenario>
          it('should correctly calculate the initial index', function() {
@@ -146,17 +153,29 @@ var angularArray = {
    * @example
       <doc:example>
        <doc:source>
-        <table ng:init="invoice= {items:[{qty:10, description:'gadget', cost:9.95}]}">
+        <script>
+          function Ctrl(){
+            this.invoice = {
+              items:[ {
+                   qty:10,
+                   description:'gadget',
+                   cost:9.95
+                 }
+              ]
+            };
+          }
+        </script>
+        <table class="invoice" ng:controller="Ctrl">
          <tr><th>Qty</th><th>Description</th><th>Cost</th><th>Total</th><th></th></tr>
          <tr ng:repeat="item in invoice.items">
-           <td><input name="item.qty" value="1" size="4" ng:required ng:validate="integer"></td>
-           <td><input name="item.description"></td>
-           <td><input name="item.cost" value="0.00" ng:required ng:validate="number" size="6"></td>
+           <td><input type="integer" ng:model="item.qty" size="4" required></td>
+           <td><input type="text" ng:model="item.description"></td>
+           <td><input type="number" ng:model="item.cost" required size="6"></td>
            <td>{{item.qty * item.cost | currency}}</td>
            <td>[<a href ng:click="invoice.items.$remove(item)">X</a>]</td>
          </tr>
          <tr>
-           <td><a href ng:click="invoice.items.$add()">add item</a></td>
+           <td><a href ng:click="invoice.items.$add({qty:1, cost:0})">add item</a></td>
            <td></td>
            <td>Total:</td>
            <td>{{invoice.items.$sum('qty*cost') | currency}}</td>
@@ -166,8 +185,8 @@ var angularArray = {
        <doc:scenario>
          //TODO: these specs are lame because I had to work around issues #164 and #167
          it('should initialize and calculate the totals', function() {
-           expect(repeater('.doc-example-live table tr', 'item in invoice.items').count()).toBe(3);
-           expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(1)).
+           expect(repeater('table.invoice tr', 'item in invoice.items').count()).toBe(3);
+           expect(repeater('table.invoice tr', 'item in invoice.items').row(1)).
              toEqual(['$99.50']);
            expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
            expect(binding("invoice.items.$sum('qty*cost')")).toBe('$99.50');
@@ -178,7 +197,7 @@ var angularArray = {
            using('.doc-example-live tr:nth-child(3)').input('item.qty').enter('20');
            using('.doc-example-live tr:nth-child(3)').input('item.cost').enter('100');
 
-           expect(repeater('.doc-example-live table tr', 'item in invoice.items').row(2)).
+           expect(repeater('table.invoice tr', 'item in invoice.items').row(2)).
              toEqual(['$2,000.00']);
            expect(binding("invoice.items.$sum('qty*cost')")).toBe('$2,099.50');
          });
@@ -297,7 +316,7 @@ var angularArray = {
                                   {name:'Adam', phone:'555-5678'},
                                   {name:'Julie', phone:'555-8765'}]"></div>
 
-         Search: <input name="searchText"/>
+         Search: <input ng:model="searchText"/>
          <table id="searchTextResults">
            <tr><th>Name</th><th>Phone</th><tr>
            <tr ng:repeat="friend in friends.$filter(searchText)">
@@ -306,9 +325,9 @@ var angularArray = {
            <tr>
          </table>
          <hr>
-         Any: <input name="search.$"/> <br>
-         Name only <input name="search.name"/><br>
-         Phone only <input name="search.phone"/><br>
+         Any: <input ng:model="search.$"/> <br>
+         Name only <input ng:model="search.name"/><br>
+         Phone only <input ng:model="search.phone"/><br>
          <table id="searchObjResults">
            <tr><th>Name</th><th>Phone</th><tr>
            <tr ng:repeat="friend in friends.$filter(search)">
@@ -442,22 +461,29 @@ var angularArray = {
    * with objects created from user input.
      <doc:example>
        <doc:source>
-         [<a href="" ng:click="people.$add()">add empty</a>]
-         [<a href="" ng:click="people.$add({name:'John', sex:'male'})">add 'John'</a>]
-         [<a href="" ng:click="people.$add({name:'Mary', sex:'female'})">add 'Mary'</a>]
+         <script>
+           function Ctrl(){
+             this.people = [];
+           }
+         </script>
+         <div ng:controller="Ctrl">
+           [<a href="" ng:click="people.$add()">add empty</a>]
+           [<a href="" ng:click="people.$add({name:'John', sex:'male'})">add 'John'</a>]
+           [<a href="" ng:click="people.$add({name:'Mary', sex:'female'})">add 'Mary'</a>]
 
-         <ul ng:init="people=[]">
-           <li ng:repeat="person in people">
-             <input name="person.name">
-             <select name="person.sex">
-               <option value="">--chose one--</option>
-               <option>male</option>
-               <option>female</option>
-             </select>
-             [<a href="" ng:click="people.$remove(person)">X</a>]
-           </li>
-         </ul>
-         <pre>people = {{people}}</pre>
+           <ul>
+             <li ng:repeat="person in people">
+               <input ng:model="person.name">
+               <select ng:model="person.sex">
+                 <option value="">--chose one--</option>
+                 <option>male</option>
+                 <option>female</option>
+               </select>
+               [<a href="" ng:click="people.$remove(person)">X</a>]
+             </li>
+           </ul>
+           <pre>people = {{people}}</pre>
+         </div>
        </doc:source>
        <doc:scenario>
          beforeEach(function() {
@@ -466,7 +492,7 @@ var angularArray = {
 
          it('should create an empty record when "add empty" is clicked', function() {
            element('.doc-example-live a:contains("add empty")').click();
-           expect(binding('people')).toBe('people = [{\n  "name":"",\n  "sex":null}]');
+           expect(binding('people')).toBe('people = [{\n  }]');
          });
 
          it('should create a "John" record when "add \'John\'" is clicked', function() {
@@ -521,7 +547,7 @@ var angularArray = {
          <ul>
            <li ng:repeat="item in items">
               {{item.name}}: points=
-              <input type="text" name="item.points"/> <!-- id="item{{$index}} -->
+              <input type="text" ng:model="item.points"/> <!-- id="item{{$index}} -->
            </li>
          </ul>
          <p>Number of items which have one point: <em>{{ items.$count('points==1') }}</em></p>
@@ -585,49 +611,56 @@ var angularArray = {
    * @example
      <doc:example>
        <doc:source>
-         <div ng:init="friends = [{name:'John', phone:'555-1212', age:10},
-                                  {name:'Mary', phone:'555-9876', age:19},
-                                  {name:'Mike', phone:'555-4321', age:21},
-                                  {name:'Adam', phone:'555-5678', age:35},
-                                  {name:'Julie', phone:'555-8765', age:29}]"></div>
-
-         <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
-         <hr/>
-         [ <a href="" ng:click="predicate=''">unsorted</a> ]
-         <table ng:init="predicate='-age'">
-           <tr>
-             <th><a href="" ng:click="predicate = 'name'; reverse=false">Name</a>
-                 (<a href ng:click="predicate = '-name'; reverse=false">^</a>)</th>
-             <th><a href="" ng:click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
-             <th><a href="" ng:click="predicate = 'age'; reverse=!reverse">Age</a></th>
-           <tr>
-           <tr ng:repeat="friend in friends.$orderBy(predicate, reverse)">
-             <td>{{friend.name}}</td>
-             <td>{{friend.phone}}</td>
-             <td>{{friend.age}}</td>
-           <tr>
-         </table>
+         <script>
+           function Ctrl(){
+             this.friends =
+                 [{name:'John', phone:'555-1212', age:10},
+                  {name:'Mary', phone:'555-9876', age:19},
+                  {name:'Mike', phone:'555-4321', age:21},
+                  {name:'Adam', phone:'555-5678', age:35},
+                  {name:'Julie', phone:'555-8765', age:29}]
+             this.predicate = '-age';
+           }
+         </script>
+         <div ng:controller="Ctrl">
+           <pre>Sorting predicate = {{predicate}}; reverse = {{reverse}}</pre>
+           <hr/>
+           [ <a href="" ng:click="predicate=''">unsorted</a> ]
+           <table class="friend">
+             <tr>
+               <th><a href="" ng:click="predicate = 'name'; reverse=false">Name</a>
+                   (<a href ng:click="predicate = '-name'; reverse=false">^</a>)</th>
+               <th><a href="" ng:click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
+               <th><a href="" ng:click="predicate = 'age'; reverse=!reverse">Age</a></th>
+             <tr>
+             <tr ng:repeat="friend in friends.$orderBy(predicate, reverse)">
+               <td>{{friend.name}}</td>
+               <td>{{friend.phone}}</td>
+               <td>{{friend.age}}</td>
+             <tr>
+           </table>
+         </div>
        </doc:source>
        <doc:scenario>
          it('should be reverse ordered by aged', function() {
            expect(binding('predicate')).toBe('Sorting predicate = -age; reverse = ');
-           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.age')).
+           expect(repeater('table.friend', 'friend in friends').column('friend.age')).
              toEqual(['35', '29', '21', '19', '10']);
-           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
+           expect(repeater('table.friend', 'friend in friends').column('friend.name')).
              toEqual(['Adam', 'Julie', 'Mike', 'Mary', 'John']);
          });
 
          it('should reorder the table when user selects different predicate', function() {
            element('.doc-example-live a:contains("Name")').click();
-           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
+           expect(repeater('table.friend', 'friend in friends').column('friend.name')).
              toEqual(['Adam', 'John', 'Julie', 'Mary', 'Mike']);
-           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.age')).
+           expect(repeater('table.friend', 'friend in friends').column('friend.age')).
              toEqual(['35', '10', '29', '19', '21']);
 
            element('.doc-example-live a:contains("Phone")').click();
-           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.phone')).
+           expect(repeater('table.friend', 'friend in friends').column('friend.phone')).
              toEqual(['555-9876', '555-8765', '555-5678', '555-4321', '555-1212']);
-           expect(repeater('.doc-example-live table', 'friend in friends').column('friend.name')).
+           expect(repeater('table.friend', 'friend in friends').column('friend.name')).
              toEqual(['Mary', 'Julie', 'Adam', 'Mike', 'John']);
          });
        </doc:scenario>
@@ -704,14 +737,20 @@ var angularArray = {
    * @example
      <doc:example>
        <doc:source>
-         <div ng:init="numbers = [1,2,3,4,5,6,7,8,9]">
-           Limit [1,2,3,4,5,6,7,8,9] to: <input name="limit" value="3"/>
+         <script>
+           function Ctrl(){
+             this.numbers = [1,2,3,4,5,6,7,8,9];
+             this.limit = 3;
+           }
+         </script>
+         <div ng:controller="Ctrl">
+           Limit {{numbers}} to: <input type="integer" ng:model="limit"/>
            <p>Output: {{ numbers.$limitTo(limit) | json }}</p>
          </div>
        </doc:source>
        <doc:scenario>
          it('should limit the numer array to first three items', function() {
-           expect(element('.doc-example-live input[name=limit]').val()).toBe('3');
+           expect(element('.doc-example-live input[ng\\:model=limit]').val()).toBe('3');
            expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3]');
          });
 
@@ -840,7 +879,7 @@ var angularFunction = {
  * Hash of a:
  *  string is string
  *  number is number as string
- *  object is either result of calling $$hashKey function on the object or uniquely generated id, 
+ *  object is either result of calling $$hashKey function on the object or uniquely generated id,
  *         that is also assigned to the $$hashKey property of the object.
  *
  * @param obj
@@ -864,7 +903,9 @@ function hashKey(obj) {
 /**
  * HashMap which can use objects as keys
  */
-function HashMap(){}
+function HashMap(array){
+  forEach(array, this.put, this);
+}
 HashMap.prototype = {
   /**
    * Store key value pair

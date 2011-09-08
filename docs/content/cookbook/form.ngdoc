@@ -24,25 +24,26 @@ allow a user to enter data.
   <div ng:controller="FormController" class="example">
 
     <label>Name:</label><br/>
-    <input type="text" name="user.name" ng:required/> <br/><br/>
+    <input type="text" ng:model="user.name" required/> <br/><br/>
 
     <label>Address:</label><br/>
-    <input type="text" name="user.address.line1" size="33" ng:required/> <br/>
-    <input type="text" name="user.address.city" size="12" ng:required/>,
-    <input type="text" name="user.address.state" size="2" ng:required ng:validate="regexp:state"/>
-    <input type="text" name="user.address.zip" size="5" ng:required
-ng:validate="regexp:zip"/><br/><br/>
+    <input type="text" ng:model="user.address.line1" size="33" required> <br/>
+    <input type="text" ng:model="user.address.city" size="12" required>,
+    <input type="text" ng:model="user.address.state" size="2"
+           ng:pattern="state" required>
+    <input type="text" ng:model="user.address.zip" size="5"
+           ng:pattern="zip"  required><br/><br/>
 
     <label>Phone:</label>
     [ <a href="" ng:click="user.contacts.$add()">add</a> ]
     <div ng:repeat="contact in user.contacts">
-      <select name="contact.type">
+      <select ng:model="contact.type">
         <option>email</option>
         <option>phone</option>
         <option>pager</option>
         <option>IM</option>
       </select>
-      <input type="text" name="contact.value" ng:required/>
+      <input type="text" ng:model="contact.value" required/>
        [ <a href="" ng:click="user.contacts.$remove(contact)">X</a> ]
     </div>
     <hr/>
@@ -68,19 +69,21 @@ ng:validate="regexp:zip"/><br/><br/>
   });
 
   it('should validate zip', function(){
-    expect(using('.example').element(':input[name="user.address.zip"]').prop('className'))
-      .not().toMatch(/ng-validation-error/);
+    expect(using('.example').
+      element(':input[ng\\:model="user.address.zip"]').
+      prop('className')).not().toMatch(/ng-invalid/);
     using('.example').input('user.address.zip').enter('abc');
-    expect(using('.example').element(':input[name="user.address.zip"]').prop('className'))
-      .toMatch(/ng-validation-error/);
+    expect(using('.example').
+      element(':input[ng\\:model="user.address.zip"]').
+      prop('className')).toMatch(/ng-invalid/);
   });
 
   it('should validate state', function(){
-    expect(using('.example').element(':input[name="user.address.state"]').prop('className'))
-      .not().toMatch(/ng-validation-error/);
+    expect(using('.example').element(':input[ng\\:model="user.address.state"]').prop('className'))
+      .not().toMatch(/ng-invalid/);
     using('.example').input('user.address.state').enter('XXX');
-    expect(using('.example').element(':input[name="user.address.state"]').prop('className'))
-      .toMatch(/ng-validation-error/);
+    expect(using('.example').element(':input[ng\\:model="user.address.state"]').prop('className'))
+      .toMatch(/ng-invalid/);
   });
  </doc:scenario>
 </doc:example>
@@ -94,7 +97,7 @@ available in
 * For debugging purposes we have included a debug view of the model to better understand what
   is going on.
 * The {@link api/angular.widget.HTML input widgets} simply refer to the model and are auto bound.
-* The inputs {@link api/angular.validator validate}. (Try leaving them blank or entering non digits
+* The inputs {@link guide/dev_guide.forms validate}. (Try leaving them blank or entering non digits
   in the zip field)
 * In your application you can simply read from or write to the model and the form will be updated.
 * By clicking the 'add' link you are adding new items into the `user.contacts` array which are then

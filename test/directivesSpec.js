@@ -80,6 +80,11 @@ describe("directive", function() {
       expect(scope.$element.text()).toEqual('-0false');
     });
 
+    it('should render object as JSON ignore $$', function(){
+      var scope = compile('<div>{{ {key:"value", $$key:"hide"}  }}</div>');
+      scope.$digest();
+      expect(fromJson(scope.$element.text())).toEqual({key:'value'});
+    });
   });
 
   describe('ng:bind-template', function() {
@@ -101,6 +106,12 @@ describe("directive", function() {
       scope.$digest();
       expect(scope.$element.text()).toEqual("beforeHELLOafter");
       expect(innerText).toEqual('INNER');
+    });
+
+    it('should render object as JSON ignore $$', function(){
+      var scope = compile('<pre>{{ {key:"value", $$key:"hide"}  }}</pre>');
+      scope.$digest();
+      expect(fromJson(scope.$element.text())).toEqual({key:'value'});
     });
 
   });

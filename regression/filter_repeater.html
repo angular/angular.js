@@ -14,7 +14,7 @@
   </ol>
   <p>Why doesn't the data goes back to the original?</p>
   <hr>
-  Input: <input type="text" name="filterName" id="filterInputField"/>
+  Input: <input type="text" ng:model="filterName" id="filterInputField"/>
   <br/>
   <table ng:eval="filtered_data = data.$filter(filterName)" style="border: 1px solid black">
   <tr>
