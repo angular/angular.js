@@ -15,6 +15,10 @@ describe('json', function(){
     expect(toJson({$$some:'value', 'this':1, '$parent':1}, false)).toEqual('{}');
   });
 
+  it('should not serialize this or $parent', function(){
+    expect(toJson({'this':'value', $parent:'abc'}, false)).toEqual('{}');
+  });
+
   it('should serialize strings with escaped characters', function() {
     expect(toJson("7\\\"7")).toEqual("\"7\\\\\\\"7\"");
   });

@@ -385,69 +385,23 @@ Doc.prototype = {
     });
   },
 
-  html_usage_formatter: function(dom){
+  html_usage_inputType: function(dom){
     var self = this;
     dom.h('Usage', function(){
-      dom.h('In HTML Template Binding', function(){
-        dom.code(function(){
-          if (self.inputType=='select')
-            dom.text('<select name="bindExpression"');
-          else
-            dom.text('<input type="text" name="bindExpression"');
-          dom.text(' ng:format="');
-          dom.text(self.shortName);
-          self.parameters(dom, ':', false, true);
-          dom.text('">');
+      dom.code(function(){
+        dom.text('<input type="' + self.shortName + '"');
+        (self.param||[]).forEach(function(param){
+          if (param.optional) {
+            dom.text(' [' + param.name + '="..."]');
+          } else {
+            dom.text(' ' + param.name + '="..."');
+          }
         });
-      });
-
-      dom.h('In JavaScript', function(){
-        dom.code(function(){
-          dom.text('var userInputString = angular.formatter.');
-          dom.text(self.shortName);
-          dom.text('.format(modelValue');
-          self.parameters(dom, ', ', false, true);
-          dom.text(');');
-          dom.text('\n');
-          dom.text('var modelValue = angular.formatter.');
-          dom.text(self.shortName);
-          dom.text('.parse(userInputString');
-          self.parameters(dom, ', ', false, true);
-          dom.text(');');
-        });
+        dom.text('>');
       });
 
       self.html_usage_parameters(dom);
-      self.html_usage_this(dom);
-      self.html_usage_returns(dom);
-    });
-  },
 
-  html_usage_validator: function(dom){
-    var self = this;
-    dom.h('Usage', function(){
-      dom.h('In HTML Template Binding', function(){
-        dom.code(function(){
-          dom.text('<input type="text" ng:validate="');
-          dom.text(self.shortName);
-          self.parameters(dom, ':', true);
-          dom.text('"/>');
-        });
-      });
-
-      dom.h('In JavaScript', function(){
-        dom.code(function(){
-          dom.text('angular.validator.');
-          dom.text(self.shortName);
-          dom.text('(');
-          self.parameters(dom, ', ');
-          dom.text(')');
-        });
-      });
-
-      self.html_usage_parameters(dom);
-      self.html_usage_this(dom);
-      self.html_usage_returns(dom);
     });
   },
 
@@ -632,10 +586,9 @@ var KEYWORD_PRIORITY = {
   '.angular.Object': 7,
   '.angular.directive': 7,
   '.angular.filter': 7,
-  '.angular.formatter': 7,
   '.angular.scope': 7,
   '.angular.service': 7,
-  '.angular.validator': 7,
+  '.angular.inputType': 7,
   '.angular.widget': 7,
   '.angular.mock': 8,
   '.dev_guide.overview': 1,

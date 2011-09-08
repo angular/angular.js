@@ -49,6 +49,10 @@ li {
   margin: 0.3em 0 0.3em 0;
 }
 
+.ng-invalid {
+  border: 1px solid red;
+}
+
 
 /*----- Upgrade IE Prompt -----*/
 

@@ -17,7 +17,7 @@
  * @example
    <doc:example>
      <doc:source>
-       <input ng:init="$window = $service('$window'); greeting='Hello World!'" type="text" name="greeting" />
+       <input ng:init="$window = $service('$window'); greeting='Hello World!'" type="text" ng:model="greeting" />
        <button ng:click="$window.alert(greeting)">ALERT</button>
      </doc:source>
      <doc:scenario>

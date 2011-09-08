@@ -42,8 +42,7 @@ of the following documents before returning here to the Developer Guide:
 ## {@link dev_guide.templates Angular Templates}
 
 * {@link dev_guide.templates.filters Understanding Angular Filters}
-* {@link dev_guide.templates.formatters Understanding Angular Formatters}
-* {@link dev_guide.templates.validators Understanding Angular Validators}
+* {@link dev_guide.forms Understanding Angular Forms}
 
 ## {@link dev_guide.services Angular Services}
 

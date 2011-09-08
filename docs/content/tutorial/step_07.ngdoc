@@ -122,11 +122,11 @@ __`app/partials/phone-list.html`:__
 <pre>
 <ul class="predicates">
   <li>
-    Search: <input type="text" name="query"/>
+    Search: <input type="text" ng:model="query"/>
   </li>
   <li>
     Sort by:
-    <select name="orderProp">
+    <select ng:model="orderProp">
       <option value="name">Alphabetical</option>
       <option value="age">Newest</option>
     </select>

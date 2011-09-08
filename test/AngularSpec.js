@@ -112,6 +112,13 @@ describe('angular', function(){
     });
   });
 
+  describe('snake to camel', function(){
+    it('should capitelize', function(){
+      expect(snakeToCamel('abc')).toEqual('Abc');
+      expect(snakeToCamel('a_b_c')).toEqual('ABC');
+      expect(snakeToCamel('aaa_bbb_ccc')).toEqual('AaaBbbCcc');
+    });
+  });
 
   describe('size', function() {
     it('should return the number of items in an array', function() {
@@ -167,6 +174,12 @@ describe('angular', function(){
 
     it('should parse true values into flags', function() {
       expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
+    });
+  });
+
+  describe('sortedKeys', function(){
+    it('should collect keys from object', function(){
+      expect(sortedKeys({a:0, b:0})).toEqual(['a', 'b']);
     });
   });
 
@@ -322,9 +335,7 @@ describe('angular', function(){
       }
       };
 
-      expect(angularJsConfig(doc)).toEqual({base_url: '',
-        ie_compat: 'angular-ie-compat.js',
-        ie_compat_id: 'ng-ie-compat'});
+      expect(angularJsConfig(doc)).toEqual({base_url: ''});
     });
 
 
@@ -335,16 +346,12 @@ describe('angular', function(){
         return [{nodeName: 'SCRIPT',
           src: 'angularjs/angular.js',
           attributes: [{name: 'ng:autobind', value:'elementIdToCompile'},
-                       {name: 'ng:css', value: 'css/my_custom_angular.css'},
-                       {name: 'ng:ie-compat', value: 'myjs/angular-ie-compat.js'},
-                       {name: 'ng:ie-compat-id', value: 'ngcompat'}] }];
+                       {name: 'ng:css', value: 'css/my_custom_angular.css'}] }];
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
         autobind: 'elementIdToCompile',
-        css: 'css/my_custom_angular.css',
-        ie_compat: 'myjs/angular-ie-compat.js',
-        ie_compat_id: 'ngcompat'});
+        css: 'css/my_custom_angular.css'});
     });
 
 
@@ -357,9 +364,7 @@ describe('angular', function(){
       }};
 
       expect(angularJsConfig(doc)).toEqual({autobind: true,
-                                            base_url: 'angularjs/',
-                                            ie_compat_id: 'ng-ie-compat',
-                                            ie_compat: 'angularjs/angular-ie-compat.js'});
+                                            base_url: 'angularjs/'});
     });
 
 
@@ -371,9 +376,7 @@ describe('angular', function(){
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: true,
-        ie_compat: 'angularjs/angular-ie-compat.js',
-        ie_compat_id: 'ng-ie-compat'});
+        autobind: true});
     });
 
 
@@ -385,9 +388,7 @@ describe('angular', function(){
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: 'foo',
-        ie_compat: 'angularjs/angular-ie-compat.js',
-        ie_compat_id: 'ng-ie-compat'});
+        autobind: 'foo'});
     });
 
 
@@ -398,9 +399,7 @@ describe('angular', function(){
           src: 'js/angular-0.9.0.js'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'js/',
-        ie_compat: 'js/angular-ie-compat-0.9.0.js',
-        ie_compat_id: 'ng-ie-compat'});
+      expect(angularJsConfig(doc)).toEqual({base_url: 'js/'});
     });
 
 
@@ -411,9 +410,7 @@ describe('angular', function(){
           src: 'js/angular-0.9.0-cba23f00.min.js'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'js/',
-        ie_compat: 'js/angular-ie-compat-0.9.0-cba23f00.js',
-        ie_compat_id: 'ng-ie-compat'});
+      expect(angularJsConfig(doc)).toEqual({base_url: 'js/'});
     });
   });
 

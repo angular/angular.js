@@ -77,66 +77,8 @@ task :compile_jstd_scenario_adapter => :init do
 end
 
 
-desc 'Generate IE css js patch'
-task :generate_ie_compat => :init do
-  css = File.open('css/angular.css', 'r') {|f| f.read }
-
-  # finds all css rules that contain backround images and extracts the rule name(s), content type of
-  # the image and base64 encoded image data
-  r = /\n([^\{\n]+)\s*\{[^\}]*background-image:\s*url\("data:([^;]+);base64,([^"]+)"\);[^\}]*\}/
-
-  images = css.scan(r)
-
-  # create a js file with multipart header containing the extracted images. the entire file *must*
-  # be CRLF (\r\n) delimited
-  File.open(path_to('angular-ie-compat.js'), 'w') do |f|
-    f.write("/*\r\n" +
-            "Content-Type: multipart/related; boundary=\"_\"\r\n" +
-            "\r\n")
-
-    images.each_index do |idx|
-      f.write("--_\r\n" +
-              "Content-Location:img#{idx}\r\n" +
-              "Content-Transfer-Encoding:base64\r\n" +
-              "\r\n" +
-              images[idx][2] + "\r\n")
-    end
-
-    f.write("--_--\r\n" +
-            "*/\r\n")
-
-    # generate a css string containing *background-image rules for IE that point to the mime type
-    # images in the header
-    cssString = ''
-    images.each_index do |idx|
-      cssString += "#{images[idx][0]}{*background-image:url(\"mhtml:' + jsUri + '!img#{idx}\")}"
-    end
-
-    # generate a javascript closure that contains a function which will append the generated css
-    # string as a stylesheet to the current html document
-    jsString = "(function(){ \r\n" +
-               "  var jsUri = document.location.href.replace(/\\/[^\\\/]+(#.*)?$/, '/') + \r\n" +
-               "              document.getElementById('ng-ie-compat').src,\r\n" +
-               "      css = '#{cssString}',\r\n" +
-               "      s = document.createElement('style'); \r\n" +
-               "\r\n" +
-               "  s.setAttribute('type', 'text/css'); \r\n" +
-               "\r\n" +
-               "  if (s.styleSheet) { \r\n" +
-               "    s.styleSheet.cssText = css; \r\n" +
-               "  } else { \r\n" +
-               "    s.appendChild(document.createTextNode(css)); \r\n" +
-               "  } \r\n" +
-               "  document.getElementsByTagName('head')[0].appendChild(s); \r\n" +
-               "})();\r\n"
-
-    f.write(jsString)
-  end
-end
-
-
 desc 'Compile JavaScript'
-task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter, :generate_ie_compat] do
+task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
 
   deps = [
       'src/angular.prefix',
@@ -193,7 +135,6 @@ task :package => [:clean, :compile, :docs] do
   ['src/angular-mocks.js',
     path_to('angular.js'),
     path_to('angular.min.js'),
-    path_to('angular-ie-compat.js'),
     path_to('angular-scenario.js'),
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),

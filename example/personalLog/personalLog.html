@@ -12,7 +12,7 @@
   <body ng:controller="example.personalLog.LogCtrl">
 
     <form action="" ng:submit="addLog(newMsg)">
-      <input type="text" name="newMsg" />
+      <input type="text" ng:model="newMsg" />
       <input type="submit" value="add" />
       <input type="button" value="remove all" ng:click="rmLogs()" />
     </form>

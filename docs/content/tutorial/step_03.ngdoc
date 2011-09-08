@@ -32,7 +32,7 @@ We made no changes to the controller.
 __`app/index.html`:__
 <pre>
 ...
-   Fulltext Search: <input name="query"/>
+   Fulltext Search: <input ng:model="query"/>
 
   <ul class="phones">
     <li ng:repeat="phone in phones.$filter(query)">
