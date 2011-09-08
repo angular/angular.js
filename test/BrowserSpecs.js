@@ -669,22 +669,12 @@ describe('browser', function(){
   });
 
   describe('addJs', function() {
-
     it('should append a script tag to body', function() {
       browser.addJs('http://localhost/bar.js');
       expect(scripts.length).toBe(1);
       expect(scripts[0].src).toBe('http://localhost/bar.js');
       expect(scripts[0].id).toBe('');
     });
-
-
-    it('should append a script with an id to body', function() {
-      browser.addJs('http://localhost/bar.js', 'foo-id');
-      expect(scripts.length).toBe(1);
-      expect(scripts[0].src).toBe('http://localhost/bar.js');
-      expect(scripts[0].id).toBe('foo-id');
-    });
-
 
     it('should return the appended script element', function() {
       var script = browser.addJs('http://localhost/bar.js');

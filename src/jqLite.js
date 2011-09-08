@@ -100,6 +100,10 @@ function camelCase(name) {
 
 /////////////////////////////////////////////
 // jQuery mutation patch
+//
+//  In conjunction with bindJQuery intercepts all jQuery's DOM destruction apis and fires a
+// $destroy event on all DOM nodes being removed.
+//
 /////////////////////////////////////////////
 
 function JQLitePatchJQueryRemove(name, dispatchThis) {
@@ -129,7 +133,9 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
         } else {
           fireEvent = !fireEvent;
         }
-        for(childIndex = 0, childLength = (children = element.children()).length; childIndex < childLength; childIndex++) {
+        for(childIndex = 0, childLength = (children = element.children()).length; 
+            childIndex < childLength; 
+            childIndex++) {
           list.push(jQuery(children[childIndex]));
         }
       }
@@ -283,7 +289,10 @@ var JQLitePrototype = JQLite.prototype = {
 // these functions return self on setter and
 // value on get.
 //////////////////////////////////////////
-var SPECIAL_ATTR = makeMap("multiple,selected,checked,disabled,readonly,required");
+var BOOLEAN_ATTR = {};
+forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value, key) {
+  BOOLEAN_ATTR[lowercase(value)] = value;
+});
 
 forEach({
   data: JQLiteData,
@@ -331,7 +340,7 @@ forEach({
   },
 
   attr: function(element, name, value){
-    if (SPECIAL_ATTR[name]) {
+    if (BOOLEAN_ATTR[name]) {
       if (isDefined(value)) {
         if (!!value) {
           element[name] = true;

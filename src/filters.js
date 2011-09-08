@@ -48,9 +48,16 @@
  * @example
    <doc:example>
      <doc:source>
-       <input type="text" name="amount" value="1234.56"/> <br/>
-       default currency symbol ($): {{amount | currency}}<br/>
-       custom currency identifier (USD$): {{amount | currency:"USD$"}}
+       <script>
+         function Ctrl(){
+           this.amount = 1234.56;
+         }
+       </script>
+       <div ng:controller="Ctrl">
+         <input type="number" ng:model="amount"/> <br/>
+         default currency symbol ($): {{amount | currency}}<br/>
+         custom currency identifier (USD$): {{amount | currency:"USD$"}}
+       </div>
      </doc:source>
      <doc:scenario>
        it('should init with 1234.56', function(){
@@ -93,10 +100,17 @@ angularFilter.currency = function(amount, currencySymbol){
  * @example
    <doc:example>
      <doc:source>
-       Enter number: <input name='val' value='1234.56789' /><br/>
-       Default formatting: {{val | number}}<br/>
-       No fractions: {{val | number:0}}<br/>
-       Negative number: {{-val | number:4}}
+       <script>
+         function Ctrl(){
+           this.val = 1234.56789;
+         }
+       </script>
+       <div ng:controller="Ctrl">
+         Enter number: <input ng:model='val'><br/>
+         Default formatting: {{val | number}}<br/>
+         No fractions: {{val | number:0}}<br/>
+         Negative number: {{-val | number:4}}
+       </div>
      </doc:source>
      <doc:scenario>
        it('should format numbers', function(){
@@ -462,36 +476,43 @@ angularFilter.uppercase = uppercase;
  * @example
    <doc:example>
      <doc:source>
-      Snippet: <textarea name="snippet" cols="60" rows="3">
-     &lt;p style="color:blue"&gt;an html
-     &lt;em onmouseover="this.textContent='PWN3D!'"&gt;click here&lt;/em&gt;
-     snippet&lt;/p&gt;</textarea>
-       <table>
-         <tr>
-           <td>Filter</td>
-           <td>Source</td>
-           <td>Rendered</td>
-         </tr>
-         <tr id="html-filter">
-           <td>html filter</td>
-           <td>
-             <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
-           </td>
-           <td>
-             <div ng:bind="snippet | html"></div>
-           </td>
-         </tr>
-         <tr id="escaped-html">
-           <td>no filter</td>
-           <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-           <td><div ng:bind="snippet"></div></td>
-         </tr>
-         <tr id="html-unsafe-filter">
-           <td>unsafe html filter</td>
-           <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
-           <td><div ng:bind="snippet | html:'unsafe'"></div></td>
-         </tr>
-       </table>
+       <script>
+         function Ctrl(){
+           this.snippet =
+             '<p style="color:blue">an html\n' +
+             '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
+             'snippet</p>';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+          Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
+           <table>
+             <tr>
+               <td>Filter</td>
+               <td>Source</td>
+               <td>Rendered</td>
+             </tr>
+             <tr id="html-filter">
+               <td>html filter</td>
+               <td>
+                 <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
+               </td>
+               <td>
+                 <div ng:bind="snippet | html"></div>
+               </td>
+             </tr>
+             <tr id="escaped-html">
+               <td>no filter</td>
+               <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng:bind="snippet"></div></td>
+             </tr>
+             <tr id="html-unsafe-filter">
+               <td>unsafe html filter</td>
+               <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng:bind="snippet | html:'unsafe'"></div></td>
+             </tr>
+           </table>
+         </div>
      </doc:source>
      <doc:scenario>
        it('should sanitize the html snippet ', function(){
@@ -543,12 +564,18 @@ angularFilter.html =  function(html, option){
  * @example
    <doc:example>
      <doc:source>
-       Snippet: <textarea name="snippet" cols="60" rows="3">
-  Pretty text with some links:
-  http://angularjs.org/,
-  mailto:us@somewhere.org,
-  another@somewhere.org,
-  and one more: ftp://127.0.0.1/.</textarea>
+       <script>
+         function Ctrl(){
+           this.snippet =
+             'Pretty text with some links:\n'+
+             'http://angularjs.org/,\n'+
+             'mailto:us@somewhere.org,\n'+
+             'another@somewhere.org,\n'+
+             'and one more: ftp://127.0.0.1/.';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+       Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
        <table>
          <tr>
            <td>Filter</td>

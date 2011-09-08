@@ -9,9 +9,7 @@ detection, and preventing invalid form submission.
 <doc:example>
 <doc:source>
    <script>
-   UserForm.$inject = ['$invalidWidgets'];
-   function UserForm($invalidWidgets){
-     this.$invalidWidgets = $invalidWidgets;
+   function UserForm(){
      this.state = /^\w\w$/;
      this.zip = /^\d\d\d\d\d$/;
      this.master = {
@@ -42,31 +40,34 @@ detection, and preventing invalid form submission.
    </script>
    <div ng:controller="UserForm">
 
-     <label>Name:</label><br/>
-     <input type="text" name="form.name" ng:required/> <br/><br/>
+     <form name="myForm">
 
-     <label>Address:</label><br/>
-     <input type="text" name="form.address.line1" size="33" ng:required/> <br/>
-     <input type="text" name="form.address.city" size="12" ng:required/>,
-     <input type="text" name="form.address.state" size="2" ng:required ng:validate="regexp:state"/>
-     <input type="text" name="form.address.zip" size="5" ng:required
-ng:validate="regexp:zip"/><br/><br/>
+       <label>Name:</label><br/>
+       <input type="text" ng:model="form.name" required/> <br/><br/>
 
-     <label>Contacts:</label>
-     [ <a href="" ng:click="form.contacts.$add()">add</a> ]
-     <div ng:repeat="contact in form.contacts">
-       <select name="contact.type">
-         <option>email</option>
-         <option>phone</option>
-         <option>pager</option>
-         <option>IM</option>
-       </select>
-       <input type="text" name="contact.value" ng:required/>
-        [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
-     </div>
-   <button ng:click="cancel()" ng:disabled="{{master.$equals(form)}}">Cancel</button>
-   <button ng:click="save()" ng:disabled="{{$invalidWidgets.visible() ||
-master.$equals(form)}}">Save</button>
+       <label>Address:</label> <br/>
+       <input type="text" ng:model="form.address.line1" size="33" required/> <br/>
+       <input type="text" ng:model="form.address.city" size="12" required/>,
+       <input type="text" ng:model="form.address.state" size="2"
+              ng:pattern="state" required/>
+       <input type="text" ng:model="form.address.zip" size="5"
+              ng:pattern="zip" required/><br/><br/>
+
+       <label>Contacts:</label>
+       [ <a href="" ng:click="form.contacts.$add()">add</a> ]
+       <div ng:repeat="contact in form.contacts">
+         <select ng:model="contact.type">
+           <option>email</option>
+           <option>phone</option>
+           <option>pager</option>
+           <option>IM</option>
+         </select>
+         <input type="text" ng:model="contact.value" required/>
+          [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
+       </div>
+     <button ng:click="cancel()" ng:disabled="{{master.$equals(form)}}">Cancel</button>
+     <button ng:click="save()" ng:disabled="{{myForm.$invalid || master.$equals(form)}}">Save</button>
+   </form>
 
    <hr/>
    Debug View:
@@ -90,7 +91,7 @@ master.$equals(form)}}">Save</button>
     expect(element(':button:contains(Cancel)').attr('disabled')).toBeFalsy();
     element(':button:contains(Cancel)').click();
     expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
-    expect(element(':input[name="form.name"]').val()).toEqual('John Smith');
+    expect(element(':input[ng\\:model="form.name"]').val()).toEqual('John Smith');
   });
 </doc:scenario>
 </doc:example>

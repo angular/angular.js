@@ -5,25 +5,34 @@
     <title>locale test</title>
     <script src="../../build/angular.js" ng:autobind></script>
     <script src="../../build/i18n/angular-locale_zh-cn.js"></script>
+    <script>
+      function AppCntl(){
+        this.input = 234234443432;
+        this.plInput = 1;
+        this.person1 = "Shanjian";
+        this.person2 = "Di";
+        this.plInput2 = 1;
+      }
+    </script>
   </head>
-  <body>
+  <body ng:controller="AppCntl">
     <h3>Datetime/Number/Currency filters demo:</h3>
-    <input type="text" name="input" value="234234443432"><br>
+    <input type="text" ng:model="input"><br>
     date(medium): {{input | date:"medium"}}<br>
     date(longDate): {{input | date:"longDate"}}<br>
     number: {{input | number}}<br>
     currency: {{input | currency }}
     <hr/>
     <h3>Pluralization demo:</h3>
-    <input type="text" name="plInput" value="1"><br>
+    <input type="text" ng:model="plInput"><br>
     <ng:pluralize count="plInput"
                   when= "{'other':'{}人在浏览该文件!'}">
     </ng:pluralize>
     <hr/>
     <h3>Pluralization demo with offsets:</h3>
-    Name of person1:<input type="text" name="person1" value="Shanjian"/><br/>
-    Name of person2:<input type="text" name="person2" value="Di"/><br/>
-    <input type="text" name="plInput2" value="1"><br>
+    Name of person1:<input type="text" ng:model="person1"/><br/>
+    Name of person2:<input type="text" ng:model="person2"/><br/>
+    <input type="text" ng:model="plInput2"><br>
     <ng:pluralize count="plInput2" offset=2
                   when= "{'0':'没有人在浏览该文件!',
                           '1': '{{person1}} 在浏览该文件!',

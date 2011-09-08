@@ -194,12 +194,12 @@ describe('ngdoc', function(){
     it('should ignore nested doc widgets', function() {
       expect(new Doc().markdown(
         'before<doc:tutorial-instructions>\n' +
-          '<doc:tutorial-instruction id="git-mac" name="Git on Mac/Linux">' +
+          '<doc:tutorial-instruction id="git-mac" ng:model="Git on Mac/Linux">' +
           '\ngit bla bla\n</doc:tutorial-instruction>\n' +
         '</doc:tutorial-instructions>')).toEqual(
 
         '<p>before</p><doc:tutorial-instructions>\n' +
-          '<doc:tutorial-instruction id="git-mac" name="Git on Mac/Linux">\n' +
+          '<doc:tutorial-instruction id="git-mac" ng:model="Git on Mac/Linux">\n' +
           'git bla bla\n' +
           '</doc:tutorial-instruction>\n' +
         '</doc:tutorial-instructions>');
@@ -540,38 +540,6 @@ describe('ngdoc', function(){
         doc.html_usage_filter(dom);
         expect(dom).toContain('myFilter_expression | myFilter:b');
         expect(dom).toContain('angular.filter.myFilter(a, b)');
-      });
-    });
-
-    describe('validator', function(){
-      it('should format', function(){
-        var doc = new Doc({
-          ngdoc:'validator',
-          shortName:'myValidator',
-          param: [
-            {name:'a'},
-            {name:'b'}
-          ]
-        });
-        doc.html_usage_validator(dom);
-        expect(dom).toContain('ng:validate="myValidator:b"');
-        expect(dom).toContain('angular.validator.myValidator(a, b)');
-      });
-    });
-
-    describe('formatter', function(){
-      it('should format', function(){
-        var doc = new Doc({
-          ngdoc:'formatter',
-          shortName:'myFormatter',
-          param: [
-            {name:'a'},
-          ]
-        });
-        doc.html_usage_formatter(dom);
-        expect(dom).toContain('ng:format="myFormatter:a"');
-        expect(dom).toContain('var userInputString = angular.formatter.myFormatter.format(modelValue, a);');
-        expect(dom).toContain('var modelValue = angular.formatter.myFormatter.parse(userInputString, a);');
       });
     });
 

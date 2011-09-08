@@ -247,7 +247,7 @@ function browserTrigger(element, type) {
         'radio':           'click',
         'select-one':      'change',
         'select-multiple': 'change'
-    }[element.type] || 'click';
+    }[lowercase(element.type)] || 'click';
   }
   if (lowercase(nodeName_(element)) == 'option') {
     element.parentNode.value = element.value;

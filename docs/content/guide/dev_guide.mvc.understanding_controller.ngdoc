@@ -68,7 +68,7 @@ Putting any presentation logic into controllers significantly affects testabilit
 logic. Angular offers {@link dev_guide.templates.databinding} for automatic DOM manipulation. If
 you have to perform your own manual DOM manipulation, encapsulate the presentation logic in {@link
 dev_guide.compiler.widgets widgets} and {@link dev_guide.compiler.directives directives}.
-- Input formatting — Use {@link dev_guide.templates.formatters angular formatters} instead.
+- Input formatting — Use {@link dev_guide.forms angular form widgets} instead.
 - Output filtering — Use {@link dev_guide.templates.filters angular filters} instead.
 - Run stateless or stateful code shared across controllers — Use {@link dev_guide.services angular
 services} instead.
@@ -139,7 +139,7 @@ previous example.
 
 <pre>
 <body ng:controller="SpicyCtrl">
- <input name="customSpice" value="wasabi">
+ <input ng:model="customSpice" value="wasabi">
  <button ng:click="spicy('chili')">Chili</button>
  <button ng:click="spicy(customSpice)">Custom spice</button>
  <p>The food is {{spice}} spicy!</p>

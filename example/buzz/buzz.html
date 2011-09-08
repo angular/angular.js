@@ -12,11 +12,11 @@
     <span>&lt;angular/&gt; Buzz</span>
     <span>
       filter:
-      <input type="text" name="filterText"/>
+      <input type="text" ng:model="filterText"/>
     </span>
     <span>
       user:
-      <input type="text" name="userId" ng:required/>
+      <input type="text" ng:model="userId" required/>
       <button ng:click="$location.hashPath = userId">fetch</button>
     </span>
   </div>

@@ -180,7 +180,7 @@ angular.scenario.dsl('input', function() {
 
   chain.enter = function(value) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
-      var input = $document.elements(':input[name="$1"]', this.name);
+      var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
       input.trigger('keydown');
       done();
@@ -189,7 +189,7 @@ angular.scenario.dsl('input', function() {
 
   chain.check = function() {
     return this.addFutureAction("checkbox '" + this.name + "' toggle", function($window, $document, done) {
-      var input = $document.elements(':checkbox[name="$1"]', this.name);
+      var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':checkbox');
       input.trigger('click');
       done();
     });
@@ -198,7 +198,7 @@ angular.scenario.dsl('input', function() {
   chain.select = function(value) {
     return this.addFutureAction("radio button '" + this.name + "' toggle '" + value + "'", function($window, $document, done) {
       var input = $document.
-        elements(':radio[name$="@$1"][value="$2"]', this.name, value);
+        elements('[ng\\:model="$1"][value="$2"]', this.name, value).filter(':radio');
       input.trigger('click');
       done();
     });
@@ -206,7 +206,7 @@ angular.scenario.dsl('input', function() {
 
   chain.val = function() {
     return this.addFutureAction("return input val", function($window, $document, done) {
-      var input = $document.elements(':input[name="$1"]', this.name);
+      var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       done(null,input.val());
     });
   };
@@ -268,8 +268,16 @@ angular.scenario.dsl('select', function() {
 
   chain.option = function(value) {
     return this.addFutureAction("select '" + this.name + "' option '" + value + "'", function($window, $document, done) {
-      var select = $document.elements('select[name="$1"]', this.name);
-      select.val(value);
+      var select = $document.elements('select[ng\\:model="$1"]', this.name);
+      var option = select.find('option[value="' + value + '"]');
+      if (option.length) {
+        select.val(value);
+      } else {
+        option = select.find('option:contains("' + value + '")');
+        if (option.length) {
+          select.val(option.val());
+        }
+      }
       select.trigger('change');
       done();
     });
@@ -278,7 +286,7 @@ angular.scenario.dsl('select', function() {
   chain.options = function() {
     var values = arguments;
     return this.addFutureAction("select '" + this.name + "' options '" + values + "'", function($window, $document, done) {
-      var select = $document.elements('select[multiple][name="$1"]', this.name);
+      var select = $document.elements('select[multiple][ng\\:model="$1"]', this.name);
       select.val(values);
       select.trigger('change');
       done();

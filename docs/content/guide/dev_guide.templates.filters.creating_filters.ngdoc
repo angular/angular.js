@@ -35,20 +35,26 @@ text upper-case and assigns color.
    }
    return out;
  });
+
+ function Ctrl(){
+   this.greeting = 'hello';
+ }
 </script>
 
-<input name="text" type="text" value="hello" /><br>
-No filter: {{text}}<br>
-Reverse: {{text|reverse}}<br>
-Reverse + uppercase: {{text|reverse:true}}<br>
-Reverse + uppercase + blue:  {{text|reverse:true:"blue"}}
+<div ng:controller="Ctrl">
+  <input ng:model="greeting" type="greeting"><br>
+  No filter: {{greeting}}<br>
+  Reverse: {{greeting|reverse}}<br>
+  Reverse + uppercase: {{greeting|reverse:true}}<br>
+  Reverse + uppercase + blue:  {{greeting|reverse:true:"blue"}}
+</div>
 </doc:source>
 <doc:scenario>
-it('should reverse text', function(){
-expect(binding('text|reverse')).toEqual('olleh');
-input('text').enter('ABC');
-expect(binding('text|reverse')).toEqual('CBA');
-});
+  it('should reverse greeting', function(){
+    expect(binding('greeting|reverse')).toEqual('olleh');
+    input('greeting').enter('ABC');
+    expect(binding('greeting|reverse')).toEqual('CBA');
+  });
 </doc:scenario>
 </doc:example>
 

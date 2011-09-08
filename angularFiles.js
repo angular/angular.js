@@ -12,14 +12,12 @@ angularFiles = {
     'src/jqLite.js',
     'src/apis.js',
     'src/filters.js',
-    'src/formatters.js',
-    'src/validators.js',
     'src/service/cookieStore.js',
     'src/service/cookies.js',
     'src/service/defer.js',
     'src/service/document.js',
     'src/service/exceptionHandler.js',
-    'src/service/invalidWidgets.js',
+    'src/service/formFactory.js',
     'src/service/location.js',
     'src/service/log.js',
     'src/service/resource.js',
@@ -35,6 +33,9 @@ angularFiles = {
     'src/directives.js',
     'src/markups.js',
     'src/widgets.js',
+    'src/widget/form.js',
+    'src/widget/input.js',
+    'src/widget/select.js',
     'src/AngularPublic.js',
   ],
 
@@ -74,6 +75,7 @@ angularFiles = {
     'test/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/service/*.js',
+    'test/widget/*.js',
     'example/personalLog/test/*.js'
   ],
 
