@@ -26,12 +26,18 @@ describe("markups", function(){
   });
 
   it('should translate {{}} in terminal nodes', function(){
-    compile('<select name="x"><option value="">Greet {{name}}!</option></select>');
+    compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>');
     scope.$digest();
-    expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option ng:bind-template="Greet {{name}}!">Greet !</option></select>');
+    expect(sortedHtml(element).replace(' selected="true"', '')).
+      toEqual('<select ng:model="x">' +
+                '<option ng:bind-template="Greet {{name}}!">Greet !</option>' +
+              '</select>');
     scope.name = 'Misko';
     scope.$digest();
-    expect(sortedHtml(element).replace(' selected="true"', '')).toEqual('<select name="x"><option ng:bind-template="Greet {{name}}!">Greet Misko!</option></select>');
+    expect(sortedHtml(element).replace(' selected="true"', '')).
+      toEqual('<select ng:model="x">' +
+                '<option ng:bind-template="Greet {{name}}!">Greet Misko!</option>' +
+              '</select>');
   });
 
   it('should translate {{}} in attributes', function(){
@@ -69,24 +75,24 @@ describe("markups", function(){
 
 
     it('should populate value attribute on OPTION', function(){
-      compile('<select name="x"><option>abc</option></select>');
+      compile('<select ng:model="x"><option>abc</option></select>');
       expect(element).toHaveValue('abc');
     });
 
     it('should ignore value if already exists', function(){
-      compile('<select name="x"><option value="abc">xyz</option></select>');
+      compile('<select ng:model="x"><option value="abc">xyz</option></select>');
       expect(element).toHaveValue('abc');
     });
 
     it('should set value even if newlines present', function(){
-      compile('<select name="x"><option attr="\ntext\n" \n>\nabc\n</option></select>');
+      compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>');
       expect(element).toHaveValue('\nabc\n');
     });
 
     it('should set value even if self closing HTML', function(){
       // IE removes the \n from option, which makes this test pointless
       if (msie) return;
-      compile('<select name="x"><option>\n</option></select>');
+      compile('<select ng:model="x"><option>\n</option></select>');
       expect(element).toHaveValue('\n');
     });
 

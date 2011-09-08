@@ -203,29 +203,40 @@ describe("angular.scenario.dsl", function() {
     describe('Select', function() {
       it('should select single option', function() {
         doc.append(
-          '<select name="test">' +
-          '  <option>A</option>' +
-          '  <option selected>B</option>' +
+          '<select ng:model="test">' +
+          '  <option value=A>one</option>' +
+          '  <option value=B selected>two</option>' +
           '</select>'
         );
         $root.dsl.select('test').option('A');
-        expect(_jQuery('[name="test"]').val()).toEqual('A');
+        expect(_jQuery('[ng\\:model="test"]').val()).toEqual('A');
+      });
+
+      it('should select option by name', function(){
+        doc.append(
+            '<select ng:model="test">' +
+            '  <option value=A>one</option>' +
+            '  <option value=B selected>two</option>' +
+            '</select>'
+          );
+          $root.dsl.select('test').option('one');
+          expect(_jQuery('[ng\\:model="test"]').val()).toEqual('A');
       });
 
       it('should select multiple options', function() {
         doc.append(
-          '<select name="test" multiple>' +
+          '<select ng:model="test" multiple>' +
           '  <option>A</option>' +
           '  <option selected>B</option>' +
           '  <option>C</option>' +
           '</select>'
         );
         $root.dsl.select('test').options('A', 'B');
-        expect(_jQuery('[name="test"]').val()).toEqual(['A','B']);
+        expect(_jQuery('[ng\\:model="test"]').val()).toEqual(['A','B']);
       });
 
       it('should fail to select multiple options on non-multiple select', function() {
-        doc.append('<select name="test"></select>');
+        doc.append('<select ng:model="test"></select>');
         $root.dsl.select('test').options('A', 'B');
         expect($root.futureError).toMatch(/did not match/);
       });
@@ -477,12 +488,12 @@ describe("angular.scenario.dsl", function() {
       it('should prefix selector in $document.elements()', function() {
         var chain;
         doc.append(
-          '<div id="test1"><input name="test.input" value="something"></div>' +
-          '<div id="test2"><input name="test.input" value="something"></div>'
+          '<div id="test1"><input ng:model="test.input" value="something"></div>' +
+          '<div id="test2"><input ng:model="test.input" value="something"></div>'
         );
         chain = $root.dsl.using('div#test2');
         chain.input('test.input').enter('foo');
-        var inputs = _jQuery('input[name="test.input"]');
+        var inputs = _jQuery('input[ng\\:model="test.input"]');
         expect(inputs.first().val()).toEqual('something');
         expect(inputs.last().val()).toEqual('foo');
       });
@@ -501,10 +512,10 @@ describe("angular.scenario.dsl", function() {
 
     describe('Input', function() {
       it('should change value in text input', function() {
-        doc.append('<input name="test.input" value="something">');
+        doc.append('<input ng:model="test.input" value="something">');
         var chain = $root.dsl.input('test.input');
         chain.enter('foo');
-        expect(_jQuery('input[name="test.input"]').val()).toEqual('foo');
+        expect(_jQuery('input[ng\\:model="test.input"]').val()).toEqual('foo');
       });
 
       it('should return error if no input exists', function() {
@@ -514,16 +525,16 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should toggle checkbox state', function() {
-        doc.append('<input type="checkbox" name="test.input" checked>');
-        expect(_jQuery('input[name="test.input"]').
+        doc.append('<input type="checkbox" ng:model="test.input" checked>');
+        expect(_jQuery('input[ng\\:model="test.input"]').
           prop('checked')).toBe(true);
         var chain = $root.dsl.input('test.input');
         chain.check();
-        expect(_jQuery('input[name="test.input"]').
+        expect(_jQuery('input[ng\\:model="test.input"]').
           prop('checked')).toBe(false);
         $window.angular.reset();
         chain.check();
-        expect(_jQuery('input[name="test.input"]').
+        expect(_jQuery('input[ng\\:model="test.input"]').
           prop('checked')).toBe(true);
       });
 
@@ -535,20 +546,20 @@ describe("angular.scenario.dsl", function() {
 
       it('should select option from radio group', function() {
         doc.append(
-          '<input type="radio" name="0@test.input" value="foo">' +
-          '<input type="radio" name="0@test.input" value="bar" checked="checked">'
+          '<input type="radio" name="r" ng:model="test.input" value="foo">' +
+          '<input type="radio" name="r" ng:model="test.input" value="bar" checked="checked">'
         );
         // HACK! We don't know why this is sometimes false on chrome
-        _jQuery('input[name="0@test.input"][value="bar"]').prop('checked', true);
-        expect(_jQuery('input[name="0@test.input"][value="bar"]').
+        _jQuery('input[ng\\:model="test.input"][value="bar"]').prop('checked', true);
+        expect(_jQuery('input[ng\\:model="test.input"][value="bar"]').
           prop('checked')).toBe(true);
-        expect(_jQuery('input[name="0@test.input"][value="foo"]').
+        expect(_jQuery('input[ng\\:model="test.input"][value="foo"]').
           prop('checked')).toBe(false);
         var chain = $root.dsl.input('test.input');
         chain.select('foo');
-        expect(_jQuery('input[name="0@test.input"][value="bar"]').
+        expect(_jQuery('input[ng\\:model="test.input"][value="bar"]').
           prop('checked')).toBe(false);
-        expect(_jQuery('input[name="0@test.input"][value="foo"]').
+        expect(_jQuery('input[ng\\:model="test.input"][value="foo"]').
           prop('checked')).toBe(true);
       });
 
@@ -560,7 +571,7 @@ describe("angular.scenario.dsl", function() {
 
       describe('val', function() {
         it('should return value in text input', function() {
-          doc.append('<input name="test.input" value="something">');
+          doc.append('<input ng:model="test.input" value="something">');
           $root.dsl.input('test.input').val();
           expect($root.futureResult).toEqual("something");
         });
@@ -570,10 +581,10 @@ describe("angular.scenario.dsl", function() {
     describe('Textarea', function() {
 
       it('should change value in textarea', function() {
-        doc.append('<textarea name="test.textarea">something</textarea>');
+        doc.append('<textarea ng:model="test.textarea">something</textarea>');
         var chain = $root.dsl.input('test.textarea');
         chain.enter('foo');
-        expect(_jQuery('textarea[name="test.textarea"]').val()).toEqual('foo');
+        expect(_jQuery('textarea[ng\\:model="test.textarea"]').val()).toEqual('foo');
       });
 
       it('should return error if no textarea exists', function() {

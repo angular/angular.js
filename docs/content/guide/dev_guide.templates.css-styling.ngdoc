@@ -4,48 +4,32 @@
 @description
 
 
-Angular includes built-in CSS classes, which in turn have predefined CSS styles.
+Angular sets these CSS classes. It is up to your application to provide useful styling.
 
-# Built-in CSS classes
+# CSS classes used by angular
 
-* `ng-exception`
+* `ng-invalid`, `ng-valid`
+  - **Usage:** angular applies this class to an input widget element if that element's input does
+    notpass validation. (see {@link api/angular.widget.input input} widget).
 
-**Usage:** angular applies this class to a DOM element if that element contains an Expression that
-threw an exception when evaluated.
+* `ng-pristine`, `ng-dirty`
+  - **Usage:** angular {@link api/angular.widget.input input} widget applies `ng-pristine` class
+    to a new input widget element which did not have user interaction. Once the user interacts with
+    the input widget the class is changed to `ng-dirty`.
 
-**Styling:** The built-in styling of the ng-exception class displays an error message surrounded
-by a solid red border, for example:
+# Marking CSS classes
 
- <div class="ng-exception">Error message</div>
+* `ng-widget`, `ng-directive`
+  -  **Usage:** angular sets these class on elements where {@link api/angular.widget widget} or
+     {@link api/angular.directive directive} has bound to.
 
-You can try to evaluate malformed expressions in {@link dev_guide.expressions expressions} to see
-the `ng-exception` class' styling.
 
-* `ng-validation-error`
-
-**Usage:** angular applies this class to an input widget element if that element's input does not
-pass validation. Note that you set the validation criteria on the input widget element using the
-Ng:validate or Ng:required directives.
-
-**Styling:** The built-in styling of the ng-validation-error class turns the border of the input
-box red and includes a hovering UI element that includes more details of the validation error. You
-can see an example in {@link api/angular.widget.@ng:validate ng:validate example}.
-
-## Overriding Styles for Angular CSS Classes
-
-To override the styles for angular's built-in CSS classes, you can do any of the following:
-
-* Download the source code, edit angular.css, and host the source on your own server.
-* Create a local CSS file, overriding any styles that you'd like, and link to it from your HTML file
-as you normally would:
-
-<pre>
-<link href="yourfile.css" rel="stylesheet" type="text/css">
-</pre>
-
+* Old browser support
+  - Pre v9, IE browsers could not select `ng:include` elements in CSS, because of the `:`
+    character. For this reason angular also sets `ng-include` class on any element which has `:`
+    character in the name by replacing `:` with `-`.
 
 ## Related Topics
 
 * {@link dev_guide.templates Angular Templates}
-* {@link dev_guide.templates.formatters Angular Formatters}
-* {@link dev_guide.templates.formatters.creating_formatters Creating Angular Formatters}
+* {@link dev_guide.forms Angular Forms}

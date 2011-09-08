@@ -12,7 +12,7 @@
      (TODO: I should fetch current tweets)
     <div class="tweeter box">
       <h1>Tweets: {{$anchor.user}}</h1>
-      [ Filter: <input type="text" name="tweetFilter"/> (TODO: this should act as search box)
+      [ Filter: <input type="text" ng:model="tweetFilter"/> (TODO: this should act as search box)
         <span ng:show="$anchor.user">| <a href="#user=">&lt;&lt; All</a></span>
       ]
       <div class="loading">Loading...</div>

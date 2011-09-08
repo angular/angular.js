@@ -354,7 +354,8 @@ Scope.prototype = {
               // circuit it with === operator, only when === fails do we use .equals
               if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
                 dirty = true;
-                watch.fn(current, watch.last = copy(value), last);
+                watch.last = copy(value);
+                watch.fn(current, value, last);
               }
             } catch (e) {
               current.$service('$exceptionHandler')(e);

@@ -15,34 +15,34 @@
       <tr>
         <td>basic</td>
         <td id="text-basic-box">
-          <input type="text" name="text.basic"/>
+          <input type="text" ng:model="text.basic"/>
         </td>
         <td>text.basic={{text.basic}}</td>
       </tr>
       <tr>
         <td>password</td>
-        <td><input type="password" name="text.password" /></td>
+        <td><input type="password" ng:model="text.password" /></td>
         <td>text.password={{text.password}}</td>
       </tr>
       <tr>
         <td>hidden</td>
-        <td><input type="hidden" name="text.hidden" value="hiddenValue" /></td>
+        <td><input type="hidden" ng:model="text.hidden" value="hiddenValue" /></td>
         <td>text.hidden={{text.hidden}}</td>
       </tr>
       <tr><th colspan="3">Input selection field</th></tr>
       <tr id="gender-box">
         <td>radio</td>
         <td>
-         <input type="radio" name="gender" value="female"/> Female <br/>
-         <input type="radio" name="gender" value="male" checked="checked"/> Male
+         <input type="radio" ng:model="gender" value="female"/> Female <br/>
+         <input type="radio" ng:model="gender" value="male" checked="checked"/> Male
         </td>
         <td>gender={{gender}}</td>
       </tr>
       <tr>
         <td>checkbox</td>
         <td>
-         <input type="checkbox" name="checkbox.tea" checked value="on"/> Tea<br/>
-         <input type="checkbox" name="checkbox.coffee" value="on"/> Coffe
+         <input type="checkbox" ng:model="checkbox.tea" checked value="on"/> Tea<br/>
+         <input type="checkbox" ng:model="checkbox.coffee" value="on"/> Coffe
         </td>
         <td>
           <pre>checkbox={{checkbox}}</pre>
@@ -51,7 +51,7 @@
       <tr>
         <td>select</td>
         <td>
-          <select name="select">
+          <select ng:model="select">
             <option>A</option>
             <option>B</option>
             <option>C</option>
@@ -62,7 +62,7 @@
       <tr>
         <td>multiselect</td>
         <td>
-          <select name="multiselect" multiple>
+          <select ng:model="multiselect" multiple>
             <option>A</option>
             <option>B</option>
             <option>C</option>

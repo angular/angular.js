@@ -28,54 +28,10 @@ describe('Binder', function(){
     }
   });
 
-
-  it('text-field should default to value attribute', function(){
-    var scope = this.compile('<input type="text" name="model.price" value="abc">');
-    scope.$apply();
-    assertEquals('abc', scope.model.price);
-  });
-
-  it('ChangingTextareaUpdatesModel', function(){
-    var scope = this.compile('<textarea name="model.note">abc</textarea>');
-    scope.$apply();
-    assertEquals(scope.model.note, 'abc');
-  });
-
-  it('ChangingRadioUpdatesModel', function(){
-    var scope = this.compile('<div><input type="radio" name="model.price" value="A" checked>' +
-          '<input type="radio" name="model.price" value="B"></div>');
-    scope.$apply();
-    assertEquals(scope.model.price, 'A');
-  });
-
-  it('ChangingCheckboxUpdatesModel', function(){
-    var scope = this.compile('<input type="checkbox" name="model.price" value="true" checked ng:format="boolean"/>');
-    assertEquals(true, scope.model.price);
-  });
-
   it('BindUpdate', function(){
     var scope = this.compile('<div ng:init="a=123"/>');
     scope.$digest();
     assertEquals(123, scope.a);
-  });
-
-  it('ChangingSelectNonSelectedUpdatesModel', function(){
-    var scope = this.compile('<select name="model.price"><option value="A">A</option><option value="B">B</option></select>');
-    assertEquals('A', scope.model.price);
-  });
-
-  it('ChangingMultiselectUpdatesModel', function(){
-    var scope = this.compile('<select name="Invoice.options" multiple="multiple">' +
-            '<option value="A" selected>Gift wrap</option>' +
-            '<option value="B" selected>Extra padding</option>' +
-            '<option value="C">Expedite</option>' +
-            '</select>');
-    assertJsonEquals(["A", "B"], scope.Invoice.options);
-  });
-
-  it('ChangingSelectSelectedUpdatesModel', function(){
-    var scope = this.compile('<select name="model.price"><option>A</option><option selected value="b">B</option></select>');
-    assertEquals(scope.model.price, 'b');
   });
 
   it('ExecuteInitialization', function(){
@@ -236,14 +192,13 @@ describe('Binder', function(){
   });
 
   it('RepeaterAdd', function(){
-    var scope = this.compile('<div><input type="text" name="item.x" ng:repeat="item in items"></div>');
+    var scope = this.compile('<div><input type="text" ng:model="item.x" ng:repeat="item in items"></div>');
     scope.items = [{x:'a'}, {x:'b'}];
     scope.$apply();
     var first = childNode(scope.$element, 1);
     var second = childNode(scope.$element, 2);
     expect(first.val()).toEqual('a');
     expect(second.val()).toEqual('b');
-    return
 
     first.val('ABC');
     browserTrigger(first, 'keydown');
@@ -440,15 +395,6 @@ describe('Binder', function(){
     assertEquals('123{{a}}{{b}}{{c}}', scope.$element.text());
   });
 
-  it('RepeaterShouldBindInputsDefaults', function () {
-    var scope = this.compile('<div><input value="123" name="item.name" ng:repeat="item in items"></div>');
-    scope.items = [{}, {name:'misko'}];
-    scope.$apply();
-
-    expect(scope.$eval('items[0].name')).toEqual("123");
-    expect(scope.$eval('items[1].name')).toEqual("misko");
-  });
-
   it('ShouldTemplateBindPreElements', function () {
     var scope = this.compile('<pre>Hello {{name}}!</pre>');
     scope.name = "World";
@@ -459,7 +405,11 @@ describe('Binder', function(){
 
   it('FillInOptionValueWhenMissing', function(){
     var scope = this.compile(
-        '<select name="foo"><option selected="true">{{a}}</option><option value="">{{b}}</option><option>C</option></select>');
+        '<select ng:model="foo">' +
+          '<option selected="true">{{a}}</option>' +
+          '<option value="">{{b}}</option>' +
+          '<option>C</option>' +
+        '</select>');
     scope.a = 'A';
     scope.b = 'B';
     scope.$apply();
@@ -477,52 +427,14 @@ describe('Binder', function(){
     expect(optionC.text()).toEqual('C');
   });
 
-  it('ValidateForm', function(){
-    var scope = this.compile('<div id="test"><input name="name" ng:required>' +
-            '<input ng:repeat="item in items" name="item.name" ng:required/></div>',
-            jqLite(document.body));
-    var items = [{}, {}];
-    scope.items = items;
-    scope.$apply();
-    assertEquals(3, scope.$service('$invalidWidgets').length);
-
-    scope.name = '';
-    scope.$apply();
-    assertEquals(3, scope.$service('$invalidWidgets').length);
-
-    scope.name = ' ';
-    scope.$apply();
-    assertEquals(3, scope.$service('$invalidWidgets').length);
-
-    scope.name = 'abc';
-    scope.$apply();
-    assertEquals(2, scope.$service('$invalidWidgets').length);
-
-    items[0].name = 'abc';
-    scope.$apply();
-    assertEquals(1, scope.$service('$invalidWidgets').length);
-
-    items[1].name = 'abc';
-    scope.$apply();
-    assertEquals(0, scope.$service('$invalidWidgets').length);
-  });
-
-  it('ValidateOnlyVisibleItems', function(){
-    var scope = this.compile('<div><input name="name" ng:required><input ng:show="show" name="name" ng:required></div>', jqLite(document.body));
-    scope.show = true;
-    scope.$apply();
-    assertEquals(2, scope.$service('$invalidWidgets').length);
-
-    scope.show = false;
-    scope.$apply();
-    assertEquals(1, scope.$service('$invalidWidgets').visible());
-  });
-
   it('DeleteAttributeIfEvaluatesFalse', function(){
     var scope = this.compile('<div>' +
-        '<input name="a0" ng:bind-attr="{disabled:\'{{true}}\'}"><input name="a1" ng:bind-attr="{disabled:\'{{false}}\'}">' +
-        '<input name="b0" ng:bind-attr="{disabled:\'{{1}}\'}"><input name="b1" ng:bind-attr="{disabled:\'{{0}}\'}">' +
-        '<input name="c0" ng:bind-attr="{disabled:\'{{[0]}}\'}"><input name="c1" ng:bind-attr="{disabled:\'{{[]}}\'}"></div>');
+        '<input ng:model="a0" ng:bind-attr="{disabled:\'{{true}}\'}">' +
+        '<input ng:model="a1" ng:bind-attr="{disabled:\'{{false}}\'}">' +
+        '<input ng:model="b0" ng:bind-attr="{disabled:\'{{1}}\'}">' +
+        '<input ng:model="b1" ng:bind-attr="{disabled:\'{{0}}\'}">' +
+        '<input ng:model="c0" ng:bind-attr="{disabled:\'{{[0]}}\'}">' +
+        '<input ng:model="c1" ng:bind-attr="{disabled:\'{{[]}}\'}"></div>');
     scope.$apply();
     function assertChild(index, disabled) {
       var child = childNode(scope.$element, index);
@@ -556,8 +468,8 @@ describe('Binder', function(){
 
   it('ItShouldSelectTheCorrectRadioBox', function(){
     var scope = this.compile('<div>' +
-        '<input type="radio" name="sex" value="female"/>' +
-        '<input type="radio" name="sex" value="male"/></div>');
+        '<input type="radio" ng:model="sex" value="female">' +
+        '<input type="radio" ng:model="sex" value="male"></div>');
     var female = jqLite(scope.$element[0].childNodes[0]);
     var male = jqLite(scope.$element[0].childNodes[1]);
 
@@ -601,25 +513,6 @@ describe('Binder', function(){
     var scope = this.compile('<div>{{\n 1 \n + \n 2 \n}}</div>');
     scope.$apply();
     assertEquals("3", scope.$element.text());
-  });
-
-  it('ItBindHiddenInputFields', function(){
-    var scope = this.compile('<input type="hidden" name="myName" value="abc" />');
-    scope.$apply();
-    assertEquals("abc", scope.myName);
-  });
-
-  it('ItShouldUseFormaterForText', function(){
-    var scope = this.compile('<input name="a" ng:format="list" value="a,b">');
-    scope.$apply();
-    assertEquals(['a','b'], scope.a);
-    var input = scope.$element;
-    input[0].value = ' x,,yz';
-    browserTrigger(input, 'change');
-    assertEquals(['x','yz'], scope.a);
-    scope.a = [1 ,2, 3];
-    scope.$apply();
-    assertEquals('1, 2, 3', input[0].value);
   });
 
 });
