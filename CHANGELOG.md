@@ -1,15 +1,56 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.0">0.10.0 chicken-hands</a>
+- The Latest Unstable Release: <a href="#0.10.1">0.10.1 chicken-hands</a>
 
-# 0.10.1 inexorable-juggernaut (in progress) #
 <a name="0.10.1"><a/>
+# 0.10.1 inexorable-juggernaut (2011-09-09) #
+
+## Features
+
+- complete rewrite of the $location service with HTML5 support, many API and semantic changes.
+  Please see:
+  - [$location service API docs](http://docs-next.angularjs.org/#!/api/angular.service.$location)
+  - [$location service dev guide article](http://docs-next.angularjs.org/#!/guide/dev_guide.services.$location)
+  - [location.js source file](https://github.com/angular/angular.js/blob/master/src/service/location.js)
+  - breaking changes section of this changelog
+
+
+## Bug Fixes
+
+- $xhr should not covert HTTP status 0 to 200
+  ([commit](https://github.com/angular/angular.js/commit/b0eb831bce7d0ea066fd0758124793ed3db6d692))
+- fixed several doc examples that were broken on IE
+- ng:change should be called after the new val is set
+  (Issue [#547](https://github.com/angular/angular.js/issues/547))
+- currency filter should return an empty string for non-numbers
+
+
+## Breaking Changes
+
+- $location related changes - for complete list of api changes see:
+  [Migrating from earlier AngularJS releases](http://docs-next.angularjs.org/#!/guide/dev_guide.services.$location)
+  - $location api changes:
+    - $location.href -> $location.absUrl()
+    - $location.hash -> $location.url()
+    - $location.hashPath -> $location.path()
+    - $location.hashSearch -> $location.search()
+    - $location.search -> no equivalent, use $window.location.search (this is so that we can work in
+      hashBang and html5 mode at the same time, check out the docs) 
+    - $location.update() / $location.updateHash() -> use $location.url()
+    - n/a -> $location.replace() - new api for replacing history record instead of creating a new one
+
+  - $location semantic changes:
+    - all url pieces are always in sync ($location.path(), $location.url(), $location.search(), ...) -
+      this was previously true only if you used update* methods instead of direct assignment
+      ($location.hashPath = 'foo')
+    - we now use (window.history.pushState || onHashChange event || polling) for detecting url changes
+      in the browser (we use the best one available).
 
 
 
 <a name="0.10.0"><a/>
 # 0.10.0 chicken-hands (2011-09-02) #
 
-## Features:
+## Features
 
 - complete rewrite of the Scope implementation with several API and semantic changes. Please see:
   - [angular.scope API docs](http://docs-next.angularjs.org/#!/api/angular.scope)
@@ -22,7 +63,7 @@
 - added [ng:cloak] directive for hiding uncompiled templates
 
 
-## Bug Fix:
+## Bug Fixes
 
 - make [ng:class] friendly towards other code adding/removing classes
   ([commit](https://github.com/angular/angular.js/commit/2a8fe56997fddbad673748ce02abf649a709c4ca))
@@ -33,7 +74,7 @@
 - expose missing [lowercase], [uppercase] and [isDate] APIs.
 
 
-## Docs:
+## Docs
 
 - many (but not all just yet) api docs were proof-read and improved
 
@@ -75,7 +116,7 @@
   ([commit](https://github.com/angular/angular.js/commit/e004378d100ce767a1107180102790a9a360644e))
 
 
-## Fixes
+## Bug Fixes
 - fixed memory leak found in [ng:options] directive
   ([commit](https://github.com/angular/angular.js/commit/6aa04b1db48853340d720e0a1a3e325ac523a06f))
 - make ng:class-even/odd compatible with ng:class
