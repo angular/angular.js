@@ -36,7 +36,7 @@ desc 'Compile Scenario'
 task :compile_scenario => :init do
 
   deps = [
-      'lib/jquery/jquery-1.4.2.js',
+      'lib/jquery/jquery.js',
       'src/scenario/angular.prefix',
       files['angularSrc'],
       files['angularScenario'],
