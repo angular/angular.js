@@ -17,6 +17,12 @@ function spyOnlyCallsWithArgs(obj, method) {
 describe('$location', function() {
   var url;
 
+  afterEach(function() {
+    // link rewriting used in html5 mode on legacy browsers binds to document.onClick, so we need
+    // to clean this up after each test.
+    jqLite(document).unbind('click');
+  });
+
   describe('NewUrl', function() {
     beforeEach(function() {
       url = new LocationUrl('http://www.domain.com:9877/path/b?search=a&b=c&d#hash');
