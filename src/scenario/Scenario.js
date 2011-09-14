@@ -321,6 +321,23 @@ function browserTrigger(element, type) {
   };
 })(_jQuery.fn);
 
+
+/**
+ * Patch for jQuery v1.6.4 `attr` method due to bug http://bugs.jquery.com/ticket/10278
+ */
+(function(fn){
+  var origAttr = fn.attr,
+      rboolean = /^(?:autofocus|autoplay|async|checked|controls|defer|disabled|hidden|loop|multiple|open|readonly|required|scoped|selected)$/i;
+
+  fn.attr = function(property) {
+    if (arguments.length === 1 && rboolean.test(property)) {
+      return this[0][property] ? lowercase(property) : undefined;
+    }
+    return origAttr.apply(this, arguments);
+  };
+})(_jQuery.fn);
+
+
 /**
  * Finds all bindings with the substring match of name and returns an
  * array of their values.
