@@ -716,7 +716,8 @@ angularWidget('select', function(element){
     // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
     var optionGroupsCache = [[{element: selectElement, label:''}]],
         scope = this,
-        model = modelAccessor(scope, element);
+        model = modelAccessor(scope, element),
+        inChangeEvent;
 
     // find existing special options
     forEach(selectElement.children(), function(option){
@@ -732,6 +733,12 @@ angularWidget('select', function(element){
           key = selectElement.val(),
           tempScope = scope.$new(),
           value, optionElement, index, groupIndex, length, groupLength;
+
+      // let's set a flag that the current model change is due to a change event.
+      // the default action of option selection will cause the appropriate option element to be
+      // deselected and another one to be selected - there is no need for us to be updating the DOM
+      // in this case.
+      inChangeEvent = true;
 
       try {
         if (isMultiselect) {
@@ -768,6 +775,7 @@ angularWidget('select', function(element){
         scope.$root.$apply();
       } finally {
         tempScope = null; // TODO(misko): needs to be $destroy
+        inChangeEvent = false;
       }
     });
 
@@ -886,8 +894,8 @@ angularWidget('select', function(element){
               if (existingOption.id !== option.id) {
                 lastElement.val(existingOption.id = option.id);
               }
-              if (existingOption.selected !== option.selected) {
-                lastElement.attr('selected', option.selected);
+              if (!inChangeEvent && existingOption.selected !== option.selected) {
+                lastElement.prop('selected', (existingOption.selected = option.selected));
               }
             } else {
               // grow elements
@@ -902,7 +910,7 @@ angularWidget('select', function(element){
                 element: element,
                 label: option.label,
                 id: option.id,
-                checked: option.selected
+                selected: option.selected
               });
               if (lastElement) {
                 lastElement.after(element);
