@@ -343,26 +343,28 @@ angular.scenario.dsl('element', function() {
 
   angular.forEach(KEY_VALUE_METHODS, function(methodName) {
     chain[methodName] = function(name, value) {
-      var futureName = "element '" + this.label + "' get " + methodName + " '" + name + "'";
-      if (angular.isDefined(value)) {
-        futureName = "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" + value + "'";
-      }
+      var args = arguments,
+          futureName = (args.length == 1)
+              ? "element '" + this.label + "' get " + methodName + " '" + name + "'"
+              : "element '" + this.label + "' set " + methodName + " '" + name + "' to " + "'" + value + "'";
+
       return this.addFutureAction(futureName, function($window, $document, done) {
         var element = $document.elements();
-        done(null, element[methodName].call(element, name, value));
+        done(null, element[methodName].apply(element, args));
       });
     };
   });
 
   angular.forEach(VALUE_METHODS, function(methodName) {
     chain[methodName] = function(value) {
-      var futureName = "element '" + this.label + "' " + methodName;
-      if (angular.isDefined(value)) {
-        futureName = "element '" + this.label + "' set " + methodName + " to '" + value + "'";
-      }
+      var args = arguments,
+          futureName = (args.length == 0)
+              ? "element '" + this.label + "' " + methodName
+              : futureName = "element '" + this.label + "' set " + methodName + " to '" + value + "'";
+
       return this.addFutureAction(futureName, function($window, $document, done) {
         var element = $document.elements();
-        done(null, element[methodName].call(element, value));
+        done(null, element[methodName].apply(element, args));
       });
     };
   });
