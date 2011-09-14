@@ -504,15 +504,15 @@ describe("angular.scenario.dsl", function() {
       it('should toggle checkbox state', function() {
         doc.append('<input type="checkbox" name="test.input" checked>');
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeTruthy();
+          prop('checked')).toBe(true);
         var chain = $root.dsl.input('test.input');
         chain.check();
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeFalsy();
+          prop('checked')).toBe(false);
         $window.angular.reset();
         chain.check();
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeTruthy();
+          prop('checked')).toBe(true);
       });
 
       it('should return error if checkbox did not match', function() {
@@ -527,17 +527,17 @@ describe("angular.scenario.dsl", function() {
           '<input type="radio" name="0@test.input" value="bar" checked="checked">'
         );
         // HACK! We don't know why this is sometimes false on chrome
-        _jQuery('input[name="0@test.input"][value="bar"]').attr('checked', true);
+        _jQuery('input[name="0@test.input"][value="bar"]').prop('checked', true);
         expect(_jQuery('input[name="0@test.input"][value="bar"]').
-          attr('checked')).toBeTruthy();
+          prop('checked')).toBe(true);
         expect(_jQuery('input[name="0@test.input"][value="foo"]').
-          attr('checked')).toBeFalsy();
+          prop('checked')).toBe(false);
         var chain = $root.dsl.input('test.input');
         chain.select('foo');
         expect(_jQuery('input[name="0@test.input"][value="bar"]').
-          attr('checked')).toBeFalsy();
+          prop('checked')).toBe(false);
         expect(_jQuery('input[name="0@test.input"][value="foo"]').
-          attr('checked')).toBeTruthy();
+          prop('checked')).toBe(true);
       });
 
       it('should return error if radio button did not match', function() {
