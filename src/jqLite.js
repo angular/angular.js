@@ -253,13 +253,7 @@ forEach({
   },
 
   attr: function(element, name, value){
-    if (name === 'class') {
-      if(isDefined(value)) {
-        element.className = value;
-      } else {
-        return element.className;
-      }
-    } else if (SPECIAL_ATTR[name]) {
+    if (SPECIAL_ATTR[name]) {
       if (isDefined(value)) {
         element[name] = !!value;
       } else {
