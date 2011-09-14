@@ -288,34 +288,35 @@ describe('jqLite', function(){
     it('should set and read css', function(){
       var selector = jqLite([a, b]);
 
-      expect(selector.css('prop', 'value')).toEqual(selector);
-      expect(jqLite(a).css('prop')).toEqual('value');
-      expect(jqLite(b).css('prop')).toEqual('value');
+      expect(selector.css('margin', '1px')).toEqual(selector);
+      expect(jqLite(a).css('margin')).toEqual('1px');
+      expect(jqLite(b).css('margin')).toEqual('1px');
 
-      expect(selector.css({'prop': 'new value'})).toEqual(selector);
-      expect(jqLite(a).css('prop')).toEqual('new value');
-      expect(jqLite(b).css('prop')).toEqual('new value');
+      expect(selector.css({'margin': '2px'})).toEqual(selector);
+      expect(jqLite(a).css('margin')).toEqual('2px');
+      expect(jqLite(b).css('margin')).toEqual('2px');
 
-      jqLite(b).css({'prop': 'new value 2'});
-      expect(jqLite(selector).css('prop')).toEqual('new value');
-      expect(jqLite(b).css('prop')).toEqual('new value 2');
+      jqLite(b).css({'margin': '3px'});
+      expect(jqLite(selector).css('margin')).toEqual('2px');
+      expect(jqLite(a).css('margin')).toEqual('2px');
+      expect(jqLite(b).css('margin')).toEqual('3px');
 
-      selector.css('prop', null);
-      expect(jqLite(a).css('prop')).toBeFalsy();
-      expect(jqLite(b).css('prop')).toBeFalsy();
+      selector.css('margin', '');
+      expect(jqLite(a).css('margin')).toBeFalsy();
+      expect(jqLite(b).css('margin')).toBeFalsy();
     });
 
 
     it('should set a bunch of css properties specified via an object', function() {
-      expect(jqLite(a).css('foo')).toBeFalsy();
-      expect(jqLite(a).css('bar')).toBeFalsy();
-      expect(jqLite(a).css('baz')).toBeFalsy();
+      expect(jqLite(a).css('margin')).toBeFalsy();
+      expect(jqLite(a).css('padding')).toBeFalsy();
+      expect(jqLite(a).css('border')).toBeFalsy();
 
-      jqLite(a).css({'foo': 'a', 'bar': 'b', 'baz': ''});
+      jqLite(a).css({'margin': '1px', 'padding': '2px', 'border': ''});
 
-      expect(jqLite(a).css('foo')).toBe('a');
-      expect(jqLite(a).css('bar')).toBe('b');
-      expect(jqLite(a).css('baz')).toBeFalsy();
+      expect(jqLite(a).css('margin')).toBe('1px');
+      expect(jqLite(a).css('padding')).toBe('2px');
+      expect(jqLite(a).css('border')).toBeFalsy();
     });
   });
 
