@@ -254,7 +254,7 @@ describe("directive", function() {
       scope.$digest();
       scope.dynCls = 'foo';
       scope.$digest();
-      expect(element.attr('class')).toBe('ui-panel ui-selected ng-directive foo');
+      expect(element[0].className).toBe('ui-panel ui-selected ng-directive foo');
     });
 
 
@@ -262,7 +262,7 @@ describe("directive", function() {
       var scope = compile('<div class="panel bar" ng:class="dynCls"></div>');
       scope.dynCls = 'panel';
       scope.$digest();
-      expect(element.attr('class')).toBe('panel bar ng-directive');
+      expect(element[0].className).toBe('panel bar ng-directive');
     });
 
 
@@ -272,7 +272,7 @@ describe("directive", function() {
       scope.$digest();
       scope.dynCls = 'window';
       scope.$digest();
-      expect(element.attr('class')).toBe('bar ng-directive window');
+      expect(element[0].className).toBe('bar ng-directive window');
     });
 
 
@@ -283,7 +283,7 @@ describe("directive", function() {
       element.addClass('foo');
       scope.dynCls = '';
       scope.$digest();
-      expect(element.attr('class')).toBe('ng-directive');
+      expect(element[0].className).toBe('ng-directive');
     });
 
 
@@ -291,7 +291,7 @@ describe("directive", function() {
       var scope = compile('<div ng:class="dynCls"></div>');
       scope.dynCls = [undefined, null];
       scope.$digest();
-      expect(element.attr('class')).toBe('ng-directive');
+      expect(element[0].className).toBe('ng-directive');
     });
   });
 
