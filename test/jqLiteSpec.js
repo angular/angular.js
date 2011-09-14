@@ -152,16 +152,16 @@ describe('jqLite', function(){
 
     it('should read special attributes as boolean', function(){
       var select = jqLite('<select>');
-      expect(select.attr('multiple')).toEqual(false);
-      expect(jqLite('<select multiple>').attr('multiple')).toEqual(true);
-      expect(jqLite('<select multiple="">').attr('multiple')).toEqual(true);
-      expect(jqLite('<select multiple="x">').attr('multiple')).toEqual(true);
+      expect(select.attr('multiple')).toBeUndefined();
+      expect(jqLite('<select multiple>').attr('multiple')).toBe('multiple');
+      expect(jqLite('<select multiple="">').attr('multiple')).toBe('multiple');
+      expect(jqLite('<select multiple="x">').attr('multiple')).toBe('multiple');
 
       select.attr('multiple', false);
-      expect(select.attr('multiple')).toEqual(false);
+      expect(select.attr('multiple')).toBeUndefined();
 
       select.attr('multiple', true);
-      expect(select.attr('multiple')).toEqual(true);
+      expect(select.attr('multiple')).toBe('multiple');
     });
 
     it('should return undefined for non-existing attributes', function() {

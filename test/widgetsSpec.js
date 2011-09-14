@@ -957,8 +957,8 @@ describe("widget", function(){
         scope.selected = [];
         scope.$digest();
         expect(select.find('option').length).toEqual(2);
-        expect(jqLite(select.find('option')[0]).attr('selected')).toEqual(false);
-        expect(jqLite(select.find('option')[1]).attr('selected')).toEqual(false);
+        expect(jqLite(select.find('option')[0]).attr('selected')).toBeUndefined();
+        expect(jqLite(select.find('option')[1]).attr('selected')).toBeUndefined();
 
         scope.selected.push(scope.values[1]);
         scope.$digest();

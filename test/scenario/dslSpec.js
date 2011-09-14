@@ -504,15 +504,15 @@ describe("angular.scenario.dsl", function() {
       it('should toggle checkbox state', function() {
         doc.append('<input type="checkbox" name="test.input" checked>');
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeTruthy();
+          attr('checked')).toBe('checked');
         var chain = $root.dsl.input('test.input');
         chain.check();
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeFalsy();
+          attr('checked')).toBeUndefined();
         $window.angular.reset();
         chain.check();
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeTruthy();
+          attr('checked')).toBe('checked');
       });
 
       it('should return error if checkbox did not match', function() {
