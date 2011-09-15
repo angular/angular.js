@@ -90,7 +90,7 @@ master.$equals(form)}}">Save</button>
     expect(element(':button:contains(Cancel)').attr('disabled')).toBeFalsy();
     element(':button:contains(Cancel)').click();
     expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
-    expect(element(':input[name=form.name]').val()).toEqual('John Smith');
+    expect(element(':input[name="form.name"]').val()).toEqual('John Smith');
   });
 </doc:scenario>
 </doc:example>

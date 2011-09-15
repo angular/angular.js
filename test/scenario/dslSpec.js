@@ -287,6 +287,18 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('div').attr('class')).toEqual('bam');
       });
 
+      it('should get property', function() {
+        doc.append('<div id="test" class="foo"></div>');
+        $root.dsl.element('#test').prop('className');
+        expect($root.futureResult).toEqual('foo');
+      });
+
+      it('should set property', function() {
+        doc.append('<div id="test" class="foo"></div>');
+        $root.dsl.element('#test').prop('className', 'bam');
+        expect(doc.find('div').prop('className')).toEqual('bam');
+      });
+
       it('should get css', function() {
         doc.append('<div id="test" style="height: 30px"></div>');
         $root.dsl.element('#test').css('height');
@@ -504,15 +516,15 @@ describe("angular.scenario.dsl", function() {
       it('should toggle checkbox state', function() {
         doc.append('<input type="checkbox" name="test.input" checked>');
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeTruthy();
+          attr('checked')).toBe('checked');
         var chain = $root.dsl.input('test.input');
         chain.check();
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeFalsy();
+          attr('checked')).toBeUndefined();
         $window.angular.reset();
         chain.check();
         expect(_jQuery('input[name="test.input"]').
-          attr('checked')).toBeTruthy();
+          attr('checked')).toBe('checked');
       });
 
       it('should return error if checkbox did not match', function() {

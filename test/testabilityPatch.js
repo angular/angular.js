@@ -28,6 +28,14 @@ if (window.jstestdriver) {
 beforeEach(function(){
   // This is to reset parsers global cache of expressions.
   compileCache = {};
+
+  // workaround for IE bug https://plus.google.com/104744871076396904202/posts/Kqjuj6RSbbT
+  // IE overwrite window.jQuery with undefined because of empty jQuery var statement, so we have to
+  // correct this, but only if we are not running in jqLite mode
+  if (!_jqLiteMode && _jQuery !== jQuery) {
+    jQuery = _jQuery;
+  }
+
   // reset to jQuery or default to us.
   bindJQuery();
   jqLite(document.body).html('');

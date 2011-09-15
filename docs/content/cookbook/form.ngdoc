@@ -68,18 +68,18 @@ ng:validate="regexp:zip"/><br/><br/>
   });
 
   it('should validate zip', function(){
-    expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
+    expect(using('.example').element(':input[name="user.address.zip"]').prop('className'))
       .not().toMatch(/ng-validation-error/);
     using('.example').input('user.address.zip').enter('abc');
-    expect(using('.example').element(':input[name=user.address.zip]').attr('className'))
+    expect(using('.example').element(':input[name="user.address.zip"]').prop('className'))
       .toMatch(/ng-validation-error/);
   });
 
   it('should validate state', function(){
-    expect(using('.example').element(':input[name=user.address.state]').attr('className'))
+    expect(using('.example').element(':input[name="user.address.state"]').prop('className'))
       .not().toMatch(/ng-validation-error/);
     using('.example').input('user.address.state').enter('XXX');
-    expect(using('.example').element(':input[name=user.address.state]').attr('className'))
+    expect(using('.example').element(':input[name="user.address.state"]').prop('className'))
       .toMatch(/ng-validation-error/);
   });
  </doc:scenario>

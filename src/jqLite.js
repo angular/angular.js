@@ -37,8 +37,10 @@
  * - [clone()](http://api.jquery.com/clone/)
  * - [css()](http://api.jquery.com/css/)
  * - [data()](http://api.jquery.com/data/)
+ * - [eq()](http://api.jquery.com/eq/)
  * - [hasClass()](http://api.jquery.com/hasClass/)
  * - [parent()](http://api.jquery.com/parent/)
+ * - [prop()](http://api.jquery.com/prop/)
  * - [remove()](http://api.jquery.com/remove/)
  * - [removeAttr()](http://api.jquery.com/removeAttr/)
  * - [removeClass()](http://api.jquery.com/removeClass/)
@@ -46,7 +48,7 @@
  * - [replaceWith()](http://api.jquery.com/replaceWith/)
  * - [text()](http://api.jquery.com/text/)
  * - [trigger()](http://api.jquery.com/trigger/)
- * - [eq()](http://api.jquery.com/eq/)
+ * - [unbind()](http://api.jquery.com/unbind/)
  *
  * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
@@ -248,22 +250,32 @@ forEach({
     if (isDefined(value)) {
       element.style[name] = value;
     } else {
-      return element.style[name];
+      var val;
+
+      if (msie <=8) {
+        // this is some IE specific weirdness that jQuery 1.6.4 does not sure why
+        val = element.currentStyle && element.currentStyle[name];
+        if (val === '') val = 'auto';
+      }
+
+      val = val || element.style[name];
+
+      return  (val === '') ? undefined : val;
     }
   },
 
   attr: function(element, name, value){
-    if (name === 'class') {
-      if(isDefined(value)) {
-        element.className = value;
-      } else {
-        return element.className;
-      }
-    } else if (SPECIAL_ATTR[name]) {
+    if (SPECIAL_ATTR[name]) {
       if (isDefined(value)) {
-        element[name] = !!value;
+        if (!!value) {
+          element[name] = true;
+          element.setAttribute(name, name);
+        } else {
+          element[name] = false;
+          element.removeAttribute(name);
+        }
       } else {
-        return element[name];
+        return (element[name] || element.getAttribute(name)) ? name : undefined;
       }
     } else if (isDefined(value)) {
       element.setAttribute(name, value);
@@ -273,6 +285,14 @@ forEach({
       var ret = element.getAttribute(name, 2);
       // normalize non-existing attributes to undefined (as jQuery)
       return ret === null ? undefined : ret;
+    }
+  },
+
+  prop: function(element, name, value) {
+    if (isDefined(value)) {
+      element[name] = value;
+    } else {
+      return element[name];
     }
   },
 
@@ -399,6 +419,25 @@ forEach({
       }
       eventHandler.fns.push(fn);
     });
+  },
+
+  unbind: function(element, type, fn) {
+    var bind = JQLiteData(element, 'bind');
+    if (!bind) return; //no listeners registered
+
+    if (isUndefined(type)) {
+      forEach(bind, function(eventHandler, type) {
+        removeEventListenerFn(element, type, eventHandler);
+        delete bind[type];
+      });
+    } else {
+      if (isUndefined(fn)) {
+        removeEventListenerFn(element, type, bind[type]);
+        delete bind[type];
+      } else {
+        angularArray.remove(bind[type].fns, fn);
+      }
+    }
   },
 
   replaceWith: function(element, replaceNode) {

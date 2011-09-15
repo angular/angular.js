@@ -244,11 +244,11 @@ function compileFormatter(expr) {
       </doc:source>
       <doc:scenario>
          it('should check ng:validate', function(){
-           expect(element('.doc-example-live :input:last').attr('className')).
+           expect(element('.doc-example-live :input:last').prop('className')).
              toMatch(/ng-validation-error/);
 
            input('value').enter('123');
-           expect(element('.doc-example-live :input:last').attr('className')).
+           expect(element('.doc-example-live :input:last').prop('className')).
              not().toMatch(/ng-validation-error/);
          });
       </doc:scenario>
@@ -276,9 +276,11 @@ function compileFormatter(expr) {
       </doc:source>
       <doc:scenario>
        it('should check ng:required', function(){
-         expect(element('.doc-example-live :input').attr('className')).toMatch(/ng-validation-error/);
+         expect(element('.doc-example-live :input').prop('className')).
+           toMatch(/ng-validation-error/);
          input('value').enter('123');
-         expect(element('.doc-example-live :input').attr('className')).not().toMatch(/ng-validation-error/);
+         expect(element('.doc-example-live :input').prop('className')).
+           not().toMatch(/ng-validation-error/);
        });
       </doc:scenario>
     </doc:example>
@@ -716,7 +718,8 @@ angularWidget('select', function(element){
     // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
     var optionGroupsCache = [[{element: selectElement, label:''}]],
         scope = this,
-        model = modelAccessor(scope, element);
+        model = modelAccessor(scope, element),
+        inChangeEvent;
 
     // find existing special options
     forEach(selectElement.children(), function(option){
@@ -732,6 +735,8 @@ angularWidget('select', function(element){
           key = selectElement.val(),
           tempScope = scope.$new(),
           value, optionElement, index, groupIndex, length, groupLength;
+
+      inChangeEvent = true;
 
       try {
         if (isMultiselect) {
@@ -768,6 +773,7 @@ angularWidget('select', function(element){
         scope.$root.$apply();
       } finally {
         tempScope = null; // TODO(misko): needs to be $destroy
+        inChangeEvent = false;
       }
     });
 
@@ -886,8 +892,8 @@ angularWidget('select', function(element){
               if (existingOption.id !== option.id) {
                 lastElement.val(existingOption.id = option.id);
               }
-              if (existingOption.selected !== option.selected) {
-                lastElement.attr('selected', option.selected);
+              if (!inChangeEvent && existingOption.selected !== option.selected) {
+                lastElement.prop('selected', (existingOption.selected = option.selected));
               }
             } else {
               // grow elements
@@ -902,7 +908,7 @@ angularWidget('select', function(element){
                 element: element,
                 label: option.label,
                 id: option.id,
-                checked: option.selected
+                selected: option.selected
               });
               if (lastElement) {
                 lastElement.after(element);

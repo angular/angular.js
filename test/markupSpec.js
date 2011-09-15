@@ -63,6 +63,11 @@ describe("markups", function(){
       });
     });
 
+    afterEach(function() {
+      if (element) element.remove();
+    });
+
+
     it('should populate value attribute on OPTION', function(){
       compile('<select name="x"><option>abc</option></select>');
       expect(element).toHaveValue('abc');
@@ -114,6 +119,7 @@ describe("markups", function(){
 
   it('should bind selected', function() {
     compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>');
+    jqLite(document.body).append(element)
     scope.isSelected=false;
     scope.$digest();
     expect(element.children()[1].selected).toBeFalsy();
