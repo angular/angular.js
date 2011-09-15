@@ -244,11 +244,11 @@ function compileFormatter(expr) {
       </doc:source>
       <doc:scenario>
          it('should check ng:validate', function(){
-           expect(element('.doc-example-live :input:last').attr('className')).
+           expect(element('.doc-example-live :input:last').prop('className')).
              toMatch(/ng-validation-error/);
 
            input('value').enter('123');
-           expect(element('.doc-example-live :input:last').attr('className')).
+           expect(element('.doc-example-live :input:last').prop('className')).
              not().toMatch(/ng-validation-error/);
          });
       </doc:scenario>
@@ -276,9 +276,11 @@ function compileFormatter(expr) {
       </doc:source>
       <doc:scenario>
        it('should check ng:required', function(){
-         expect(element('.doc-example-live :input').attr('className')).toMatch(/ng-validation-error/);
+         expect(element('.doc-example-live :input').prop('className')).
+           toMatch(/ng-validation-error/);
          input('value').enter('123');
-         expect(element('.doc-example-live :input').attr('className')).not().toMatch(/ng-validation-error/);
+         expect(element('.doc-example-live :input').prop('className')).
+           not().toMatch(/ng-validation-error/);
        });
       </doc:scenario>
     </doc:example>
