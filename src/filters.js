@@ -61,7 +61,7 @@
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
-         expect(element('.doc-example-live .ng-binding').attr('className')).
+         expect(element('.doc-example-live .ng-binding').prop('className')).
            toMatch(/ng-format-negative/);
        });
      </doc:scenario>
