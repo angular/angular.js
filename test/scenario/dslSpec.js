@@ -287,6 +287,18 @@ describe("angular.scenario.dsl", function() {
         expect(doc.find('div').attr('class')).toEqual('bam');
       });
 
+      it('should get property', function() {
+        doc.append('<div id="test" class="foo"></div>');
+        $root.dsl.element('#test').prop('className');
+        expect($root.futureResult).toEqual('foo');
+      });
+
+      it('should set property', function() {
+        doc.append('<div id="test" class="foo"></div>');
+        $root.dsl.element('#test').prop('className', 'bam');
+        expect(doc.find('div').prop('className')).toEqual('bam');
+      });
+
       it('should get css', function() {
         doc.append('<div id="test" style="height: 30px"></div>');
         $root.dsl.element('#test').css('height');
