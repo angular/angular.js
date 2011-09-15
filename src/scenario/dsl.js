@@ -302,7 +302,7 @@ angular.scenario.dsl('select', function() {
  *    element(selector, label).{method}(key, value) sets the value (as defined by jQuery, ex. attr)
  */
 angular.scenario.dsl('element', function() {
-  var KEY_VALUE_METHODS = ['attr', 'css'];
+  var KEY_VALUE_METHODS = ['attr', 'css', 'prop'];
   var VALUE_METHODS = [
     'val', 'text', 'html', 'height', 'innerHeight', 'outerHeight', 'width',
     'innerWidth', 'outerWidth', 'position', 'scrollLeft', 'scrollTop', 'offset'
