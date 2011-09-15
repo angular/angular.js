@@ -33,7 +33,7 @@ angular.scenario.Application.prototype.getFrame_ = function() {
  * @return {Object} the window of the frame
  */
 angular.scenario.Application.prototype.getWindow_ = function() {
-  var contentWindow = this.getFrame_().attr('contentWindow');
+  var contentWindow = this.getFrame_().prop('contentWindow');
   if (!contentWindow)
     throw 'Frame window is not accessible.';
   return contentWindow;
