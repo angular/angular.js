@@ -74,7 +74,7 @@ describe('compiler', function(){
 
 
   it('should observe scope', function(){
-    scope = compile('<span observe="name">');
+    scope = compile('<span observe="name"></span>');
     expect(log).toEqual("");
     scope.$digest();
     scope.name = 'misko';

@@ -339,15 +339,26 @@ describe('jqLite', function(){
       expect(jqLite(b).css('margin')).toEqual('3px');
 
       selector.css('margin', '');
-      expect(jqLite(a).css('margin')).toBeFalsy();
-      expect(jqLite(b).css('margin')).toBeFalsy();
+      if (msie <= 8) {
+        expect(jqLite(a).css('margin')).toBe('auto');
+        expect(jqLite(b).css('margin')).toBe('auto');
+      } else {
+        expect(jqLite(a).css('margin')).toBeFalsy();
+        expect(jqLite(b).css('margin')).toBeFalsy();
+      }
     });
 
 
     it('should set a bunch of css properties specified via an object', function() {
-      expect(jqLite(a).css('margin')).toBeFalsy();
-      expect(jqLite(a).css('padding')).toBeFalsy();
-      expect(jqLite(a).css('border')).toBeFalsy();
+      if (msie <= 8) {
+        expect(jqLite(a).css('margin')).toBe('auto');
+        expect(jqLite(a).css('padding')).toBe('0px');
+        expect(jqLite(a).css('border')).toBeUndefined();
+      } else {
+        expect(jqLite(a).css('margin')).toBeFalsy();
+        expect(jqLite(a).css('padding')).toBeFalsy();
+        expect(jqLite(a).css('border')).toBeFalsy();
+      }
 
       jqLite(a).css({'margin': '1px', 'padding': '2px', 'border': ''});
 
