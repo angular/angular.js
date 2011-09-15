@@ -266,9 +266,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       </doc:source>
       <doc:scenario>
         it('should toggle button', function() {
-          expect(element('.doc-example-live :button').attr('disabled')).toBeFalsy();
+          expect(element('.doc-example-live :button').prop('disabled')).toBeFalsy();
           input('checked').check();
-          expect(element('.doc-example-live :button').attr('disabled')).toBeTruthy();
+          expect(element('.doc-example-live :button').prop('disabled')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
@@ -296,9 +296,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       </doc:source>
       <doc:scenario>
         it('should check both checkBoxes', function() {
-          expect(element('.doc-example-live #checkSlave').attr('checked')).toBeFalsy();
+          expect(element('.doc-example-live #checkSlave').prop('checked')).toBeFalsy();
           input('master').check();
-          expect(element('.doc-example-live #checkSlave').attr('checked')).toBeTruthy();
+          expect(element('.doc-example-live #checkSlave').prop('checked')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
@@ -332,9 +332,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
        </doc:source>
        <doc:scenario>
          it('should toggle multiple', function() {
-           expect(element('.doc-example-live #select').attr('multiple')).toBeFalsy();
+           expect(element('.doc-example-live #select').prop('multiple')).toBeFalsy();
            input('checked').check();
-           expect(element('.doc-example-live #select').attr('multiple')).toBeTruthy();
+           expect(element('.doc-example-live #select').prop('multiple')).toBeTruthy();
          });
        </doc:scenario>
      </doc:example>
@@ -362,9 +362,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       </doc:source>
       <doc:scenario>
         it('should toggle readonly attr', function() {
-          expect(element('.doc-example-live :text').attr('readonly')).toBeFalsy();
+          expect(element('.doc-example-live :text').prop('readonly')).toBeFalsy();
           input('checked').check();
-          expect(element('.doc-example-live :text').attr('readonly')).toBeTruthy();
+          expect(element('.doc-example-live :text').prop('readonly')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
@@ -395,9 +395,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
      </doc:source>
      <doc:scenario>
        it('should select Greetings!', function() {
-         expect(element('.doc-example-live #greet').attr('selected')).toBeFalsy();
+         expect(element('.doc-example-live #greet').prop('selected')).toBeFalsy();
          input('checked').check();
-         expect(element('.doc-example-live #greet').attr('selected')).toBeTruthy();
+         expect(element('.doc-example-live #greet').prop('selected')).toBeTruthy();
        });
      </doc:scenario>
    </doc:example>
