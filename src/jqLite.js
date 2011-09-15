@@ -40,6 +40,7 @@
  * - [eq()](http://api.jquery.com/eq/)
  * - [hasClass()](http://api.jquery.com/hasClass/)
  * - [parent()](http://api.jquery.com/parent/)
+ * - [prop()](http://api.jquery.com/prop/)
  * - [remove()](http://api.jquery.com/remove/)
  * - [removeAttr()](http://api.jquery.com/removeAttr/)
  * - [removeClass()](http://api.jquery.com/removeClass/)
@@ -284,6 +285,14 @@ forEach({
       var ret = element.getAttribute(name, 2);
       // normalize non-existing attributes to undefined (as jQuery)
       return ret === null ? undefined : ret;
+    }
+  },
+
+  prop: function(element, name, value) {
+    if (isDefined(value)) {
+      element[name] = value;
+    } else {
+      return element[name];
     }
   },
 
