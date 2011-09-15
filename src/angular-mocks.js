@@ -296,7 +296,7 @@ function MockBrowser() {
   self.defer.cancel = function(deferId) {
     var fnIndex;
 
-    forEach(self.deferredFns, function(fn, index) {
+    angular.forEach(self.deferredFns, function(fn, index) {
       if (fn.id === deferId) fnIndex = index;
     });
 
