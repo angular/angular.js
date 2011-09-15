@@ -37,6 +37,7 @@
  * - [clone()](http://api.jquery.com/clone/)
  * - [css()](http://api.jquery.com/css/)
  * - [data()](http://api.jquery.com/data/)
+ * - [eq()](http://api.jquery.com/eq/)
  * - [hasClass()](http://api.jquery.com/hasClass/)
  * - [parent()](http://api.jquery.com/parent/)
  * - [remove()](http://api.jquery.com/remove/)
@@ -46,7 +47,7 @@
  * - [replaceWith()](http://api.jquery.com/replaceWith/)
  * - [text()](http://api.jquery.com/text/)
  * - [trigger()](http://api.jquery.com/trigger/)
- * - [eq()](http://api.jquery.com/eq/)
+ * - [unbind()](http://api.jquery.com/unbind/)
  *
  * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
@@ -399,6 +400,25 @@ forEach({
       }
       eventHandler.fns.push(fn);
     });
+  },
+
+  unbind: function(element, type, fn) {
+    var bind = JQLiteData(element, 'bind');
+    if (!bind) return; //no listeners registered
+
+    if (isUndefined(type)) {
+      forEach(bind, function(eventHandler, type) {
+        removeEventListenerFn(element, type, eventHandler);
+        delete bind[type];
+      });
+    } else {
+      if (isUndefined(fn)) {
+        removeEventListenerFn(element, type, bind[type]);
+        delete bind[type];
+      } else {
+        angularArray.remove(bind[type].fns, fn);
+      }
+    }
   },
 
   replaceWith: function(element, replaceNode) {
