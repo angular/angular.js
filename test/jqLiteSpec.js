@@ -450,6 +450,102 @@ describe('jqLite', function(){
   });
 
 
+  describe('unbind', function() {
+    it('should do nothing when no listener was registered with bound', function() {
+      var aElem = jqLite(a);
+
+      aElem.unbind();
+      aElem.unbind('click');
+      aElem.unbind('click', function() {});
+    });
+
+
+    it('should deregister all listeners', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.bind('click', clickSpy);
+      aElem.bind('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.unbind();
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).not.toHaveBeenCalled();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).not.toHaveBeenCalled();
+    });
+
+
+    it('should deregister listeners for specific type', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.bind('click', clickSpy);
+      aElem.bind('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.unbind('click');
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).not.toHaveBeenCalled();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      mouseoverSpy.reset();
+
+      aElem.unbind('mouseover');
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).not.toHaveBeenCalled();
+    });
+
+
+    it('should deregister specific listener', function() {
+      var aElem = jqLite(a),
+          clickSpy1 = jasmine.createSpy('click1'),
+          clickSpy2 = jasmine.createSpy('click2');
+
+      aElem.bind('click', clickSpy1);
+      aElem.bind('click', clickSpy2);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy1).toHaveBeenCalledOnce();
+      expect(clickSpy2).toHaveBeenCalledOnce();
+
+      clickSpy1.reset();
+      clickSpy2.reset();
+
+      aElem.unbind('click', clickSpy1);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy1).not.toHaveBeenCalled();
+      expect(clickSpy2).toHaveBeenCalledOnce();
+
+      clickSpy2.reset();
+
+      aElem.unbind('click', clickSpy2);
+      browserTrigger(a, 'click');
+      expect(clickSpy2).not.toHaveBeenCalled();
+    });
+  });
+
+
   describe('replaceWith', function(){
     it('should replaceWith', function(){
       var root = jqLite('<div>').html('before-<div></div>after');
