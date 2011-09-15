@@ -249,7 +249,17 @@ forEach({
     if (isDefined(value)) {
       element.style[name] = value;
     } else {
-      return element.style[name];
+      var val;
+
+      if (msie <=8) {
+        // this is some IE specific weirdness that jQuery 1.6.4 does not sure why
+        val = element.currentStyle && element.currentStyle[name];
+        if (val === '') val = 'auto';
+      }
+
+      val = val || element.style[name];
+
+      return  (val === '') ? undefined : val;
     }
   },
 
