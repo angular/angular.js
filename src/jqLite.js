@@ -255,9 +255,15 @@ forEach({
   attr: function(element, name, value){
     if (SPECIAL_ATTR[name]) {
       if (isDefined(value)) {
-        element[name] = !!value;
+        if (!!value) {
+          element[name] = true;
+          element.setAttribute(name, name);
+        } else {
+          element[name] = false;
+          element.removeAttribute(name);
+        }
       } else {
-        return element[name];
+        return (element[name] || element.getAttribute(name)) ? name : undefined;
       }
     } else if (isDefined(value)) {
       element.setAttribute(name, value);
