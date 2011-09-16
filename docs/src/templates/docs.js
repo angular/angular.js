@@ -13,7 +13,7 @@ function DocsController($location, $browser, $window, $cookies) {
   self.subpage = false;
   self.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
 
-  if (!$location.path()) {
+  if (!$location.path() || $location.path() == '/' || $location.path() == '/index.html') {
     $location.path('/api').replace();
   }
 
@@ -40,7 +40,7 @@ function DocsController($location, $browser, $window, $cookies) {
   });
 
   this.getUrl = function(page){
-    return '#!/' + page.section + '/' + page.id;
+    return page.section + '/' + page.id;
   };
 
   this.getCurrentPartial = function(){
@@ -127,7 +127,7 @@ function TutorialInstructionsCtrl($cookieStore) {
 
 angular.service('$locationConfig', function() {
   return {
-    html5Mode: false,
+    html5Mode: true,
     hashPrefix: '!'
   };
 });

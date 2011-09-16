@@ -133,7 +133,7 @@ Doc.prototype = {
 
             if (!isFullUrl) self.links.push(absUrl);
 
-            return '<a href="' + (isFullUrl ? '' + url : '#!/' + absUrl) + '">'
+            return '<a href="' + absUrl + '">'
               + (isAngular ? '<code>' : '')
               + (title || url).replace(/\n/g, ' ')
               + (isAngular ? '</code>' : '')
@@ -243,7 +243,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function(){
-          dom.tag('a', {href:"#!/api/angular.service." + require.name}, require.name);
+          dom.tag('a', {href: 'api/angular.service.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
@@ -586,7 +586,7 @@ function scenarios(docs){
     docs.forEach(function(doc){
       specs.push('  describe("' + doc.section + '/' + doc.id + '", function(){');
       specs.push('    beforeEach(function(){');
-      specs.push('      browser().navigateTo("' + htmlFile + '#!/' + doc.section + '/' + doc.id + '");');
+      specs.push('      browser().navigateTo("' + doc.section + '/' + doc.id + '");');
       specs.push('    });');
       specs.push('  ');
       doc.scenarios.forEach(function(scenario){

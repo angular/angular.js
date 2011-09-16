@@ -6,6 +6,9 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <title ng:bind-template="AngularJS: {{partialTitle}}">AngularJS</title>
+  <script type="text/javascript">
+    document.write('<base href="' + location.href.replace(/(api|guide|misc|tutorial|cookbook|index\.html).*$/, 'index.html') + '" />"');
+  </script>
   <meta name="fragment" content="!">
   <link rel="stylesheet" href="docs-combined.css" type="text/css"/>
   <link rel="stylesheet" href="syntaxhighlighter/syntaxhighlighter-combined.css" type="text/css"/>
@@ -44,12 +47,12 @@
     <![endif]-->
 
     <ul id="navbar">
-      <li><a href="http://angularjs.org/">AngularJS</a></li>
-      <li><a href="#!/misc/started" ng:class="selectedSection('misc')">Getting Started</a></li>
-      <li><a href="#!/tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
-      <li><a href="#!/api" ng:class="selectedSection('api')">API Reference</a></li>
-      <li><a href="#!/cookbook" ng:class="selectedSection('cookbook')">Examples</a></li>
-      <li><a href="#!/guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
+      <li><a href="http://angularjs.org/">&lt;angular/&gt;</a></li>
+      <li><a href="guide" ng:class="selectedSection('guide')">Developer Guide</a></li>
+      <li><a href="api" ng:class="selectedSection('api')">API Reference</a></li>
+      <li><a href="cookbook" ng:class="selectedSection('cookbook')">Examples</a></li>
+      <li><a href="misc/started" ng:class="selectedSection('misc')">Getting Started</a></li>
+      <li><a href="tutorial" ng:class="selectedSection('tutorial')">Tutorial</a></li>
     </ul>
 
     <div id="sidebar">

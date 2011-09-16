@@ -1401,9 +1401,9 @@ angularWidget("@ng:non-bindable", noop);
            function OverviewCtrl(){}
          </script>
          <div ng:controller="MyCtrl">
-           <a href="#!/overview">overview</a> |
-           <a href="#!/bootstrap">bootstrap</a> |
-           <a href="#!/undefined">undefined</a>
+           <a href="overview">overview</a> |
+           <a href="bootstrap">bootstrap</a> |
+           <a href="undefined">undefined</a>
 
            <br/>
 
