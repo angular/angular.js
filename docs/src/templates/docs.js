@@ -7,7 +7,6 @@ function DocsController($location, $browser, $window, $cookies) {
       HAS_HASH = /#/;
 
   this.$location = $location;
-
   self.versionNumber = angular.version.full;
   self.version = angular.version.full + "  " + angular.version.codeName;
   self.subpage = false;
@@ -65,9 +64,22 @@ function DocsController($location, $browser, $window, $cookies) {
   };
 
   this.afterPartialLoaded = function() {
+	var currentPageId = $location.hashPath.substr(1);
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
-    $window._gaq.push(['_trackPageview', $location.hashPath.substr(1)]);
+    $window._gaq.push(['_trackPageview', currentPageId]);
+    this.loadDisqus(currentPageId);
+  };
+  
+  this.loadDisqus = function(currentPageId) {
+    var disqus_shortname = 'angularjs'; // required: replace example with your forum shortname
+    var disqus_identifier = currentPageId;
+    /* * * Per Disqus: DON'T EDIT BELOW THIS LINE * * */
+	(function() {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+	  dsq.src = 'http://angularjs.disqus.com/embed.js';
+	  (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+	})();  
   };
 
   this.getFeedbackUrl = function() {
@@ -76,6 +88,7 @@ function DocsController($location, $browser, $window, $cookies) {
            "body=" + escape("Hi there,\n\nI read " + $location.href + " and wanted to ask ....");
   };
 
+  
   /** stores a cookie that is used by apache to decide which manifest ot send */
   this.enableOffline = function() {
     //The cookie will be good for one year!
