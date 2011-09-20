@@ -71,11 +71,13 @@ function DocsController($location, $window, $cookies) {
   };
 
   scope.afterPartialLoaded = function() {
+    var currentPageId = $location.path();
     scope.loading--;
     scope.partialTitle = scope.futurePartialTitle;
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
-    $window._gaq.push(['_trackPageview', $location.path()]);
+    $window._gaq.push(['_trackPageview', currentPageId]);
+    loadDisqus(currentPageId);
   };
 
   scope.getFeedbackUrl = function() {
@@ -105,6 +107,26 @@ function DocsController($location, $window, $cookies) {
       });
     }
   });
+
+  function loadDisqus(currentPageId) {
+    // http://docs.disqus.com/help/2/
+    window.disqus_shortname = 'angularjs';
+    window.disqus_identifier = currentPageId;
+
+    if ($location.host() == 'localhost') {
+      window.disqus_developer = 1;
+    }
+
+    // http://docs.disqus.com/developers/universal/
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://angularjs.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] ||
+        document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+
+    angular.element(document.getElementById('disqus_thread')).html('');
+  }
 }
 
 // prevent compilation of code
