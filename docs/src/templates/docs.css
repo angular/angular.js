@@ -268,7 +268,7 @@ li {
 
 /*----- content styles -----*/
 
-#content-panel {
+.content-panel {
   float: left;
   margin-top: 4em;
   margin-left: 3em;
@@ -286,7 +286,7 @@ li {
   border-radius: 15px;
 }
 
-#content-panel > h2 {
+.content-panel > h2 {
   font-size: 2em;
   font-weight: normal;
   color: #fff;
@@ -294,8 +294,7 @@ li {
   height: 1em;
 }
 
-
-#content {
+.content-panel-content {
   background-color: #fff;
   display: block;
   margin: 0.7em -1em -1em;
@@ -352,6 +351,10 @@ li {
 #content .returns p:nth-child(2) {
   display: inline;
   padding-left: 0;
+}
+
+#disqus #disqus_thread {
+  margin: 0.7em -1em -1em;
 }
 
 /* subpages */
