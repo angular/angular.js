@@ -114,10 +114,18 @@
     <div id="loading" ng:show="loading">Loading...</div>
 
 
-    <div id="content-panel">
+    <div class="content-panel">
       <h2 ng:bind="partialTitle"></h2>
       <a id="feedback" ng:href="{{getFeedbackUrl()}}">Report an Issue or Ask a Question</a>
-      <ng:include id="content" src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
+      <ng:include id="content"
+                  class="content-panel-content"
+                  src="getCurrentPartial()"
+                  onload="afterPartialLoaded()"></ng:include>
+    </div>
+
+    <div id="disqus" class="content-panel">
+      <h2>Discussion</h2>
+      <div id="disqus_thread" class="content-panel-content"></div>
     </div>
 
     <div id="footer" ng:cloak>
