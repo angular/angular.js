@@ -461,6 +461,8 @@ angularServiceInject('$location', function($browser, $sniffer, $config, $documen
       currentUrl.url(href);
       scope.$apply();
       event.preventDefault();
+      // hack to work around FF6 bug 684208 when scenario runner clicks on links
+      window.angular['ff-684208-preventDefault'] = true;
     });
   } else {
     currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
