@@ -279,19 +279,9 @@ function browserTrigger(element, type) {
     }
     return ret;
   } else {
-    var evnt = document.createEvent('MouseEvents'),
-        processDefault = true,
-        originalPreventDefault = evnt.preventDefault;
-
-    // vojta: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
-    evnt.preventDefault = function() {
-      processDefault = false;
-      return originalPreventDefault.apply(evnt, arguments);
-    };
-
+    var evnt = document.createEvent('MouseEvents');
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
-    element.dispatchEvent(evnt);
-    return processDefault;
+    return element.dispatchEvent(evnt);
   }
 }
 
