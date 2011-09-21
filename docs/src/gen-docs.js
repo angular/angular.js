@@ -48,8 +48,16 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
                                 writer.replace, {'doc:manifest': manifest}));
 
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-nocache.html',
+                                writer.replace, {'doc:manifest': ''}));
+
+
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html',
                                 writer.replace, {'doc:manifest': manifest}));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-nocache.html',
+                                writer.replace, {'doc:manifest': ''}));
+
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-debug.html',
                                 writer.replace, {'doc:manifest': ''}));
