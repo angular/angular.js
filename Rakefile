@@ -223,6 +223,24 @@ task :package => [:clean, :compile, :docs] do
   end
 
 
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-nocache.html", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  end
+
+
+  File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-jq-nocache.html", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('angular.min.js', "angular-#{NG_VERSION.full}.min.js").
+                 sub('/build/docs/', "/#{NG_VERSION.full}/docs-#{NG_VERSION.full}/")
+  end
+
+
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index-debug.html", File::RDWR) do |f|
     text = f.read
     f.truncate 0

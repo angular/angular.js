@@ -570,14 +570,14 @@ function scenarios(docs){
   var specs = [];
 
   specs.push('describe("angular+jqlite", function() {');
-  appendSpecs('');
+  appendSpecs('index-nocache.html#!/');
   specs.push('});');
 
   specs.push('');
   specs.push('');
 
   specs.push('describe("angular+jquery", function() {');
-  appendSpecs('index-jq.html#!/');
+  appendSpecs('index-jq-nocache.html#!/');
   specs.push('});');
 
   return specs.join('\n');
