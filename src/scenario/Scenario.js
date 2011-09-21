@@ -279,9 +279,28 @@ function browserTrigger(element, type) {
     }
     return ret;
   } else {
-    var evnt = document.createEvent('MouseEvents');
+    var evnt = document.createEvent('MouseEvents'),
+        originalPreventDefault = evnt.preventDefault,
+        iframe = _jQuery('#application iframe')[0],
+        appWindow = iframe ? iframe.contentWindow : window,
+        fakeProcessDefault = true,
+        finalProcessDefault;
+
+    // igor: temporary fix for https://bugzilla.mozilla.org/show_bug.cgi?id=684208
+    appWindow.angular['ff-684208-preventDefault'] = false;
+    evnt.preventDefault = function() {
+      fakeProcessDefault = false;
+      return originalPreventDefault.apply(evnt, arguments);
+    };
+
     evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
-    return element.dispatchEvent(evnt);
+
+    element.dispatchEvent(evnt);
+    finalProcessDefault = !(appWindow.angular['ff-684208-preventDefault'] || !fakeProcessDefault)
+
+    delete appWindow.angular['ff-684208-preventDefault'];
+
+    return finalProcessDefault;
   }
 }
 
