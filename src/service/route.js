@@ -197,14 +197,16 @@ angularServiceInject('$route', function(location, $updateView) {
 
 
   function switchRouteMatcher(on, when, dstName) {
-    var regex = '^' + when.replace(/[\.\\\(\)\^\$]/g, "\$1") + '$',
+    // TODO(i): this code is convoluted and inefficient, we should construct the route matching
+    //   regex only once and then reuse it
+    var regex = '^' + when.replace(/([\.\\\(\)\^\$])/g, "\\$1") + '$',
         params = [],
         dst = {};
     forEach(when.split(/\W/), function(param){
       if (param) {
         var paramRegExp = new RegExp(":" + param + "([\\W])");
         if (regex.match(paramRegExp)) {
-          regex = regex.replace(paramRegExp, "([^\/]*)$1");
+          regex = regex.replace(paramRegExp, "([^\\/]*)$1");
           params.push(param);
         }
       }

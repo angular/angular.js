@@ -55,11 +55,34 @@ describe('$route', function() {
 
 
   it('should return fn registered with onChange()', function() {
-    var scope = angular.scope(),
-        $route = scope.$service('$route'),
+    var $route = scope.$service('$route'),
         fn = function() {};
 
     expect($route.onChange(fn)).toBe(fn);
+  });
+
+
+  it('should match a route that contains special chars in the path', function() {
+    var $route = scope.$service('$route'),
+        $location = scope.$service('$location');
+
+    $route.when('/$test.23/foo(bar)/:baz', {template: 'test.html'});
+
+    $location.hashPath = '/test';
+    scope.$eval();
+    expect($route.current).toBe(null);
+
+    $location.hashPath = '/$testX23/foo(bar)/222';
+    scope.$eval();
+    expect($route.current).toBe(null);
+
+    $location.hashPath = '/$test.23/foo(bar)/222';
+    scope.$eval();
+    expect($route.current).toBeDefined();
+
+    $location.hashPath = '/$test.23/foo\\(bar)/222';
+    scope.$eval();
+    expect($route.current).toBe(null);
   });
 
 
