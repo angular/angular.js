@@ -59,6 +59,27 @@ describe('$route', function() {
   });
 
 
+  it('should match a route that contains special chars in the path', function() {
+    $route.when('/$test.23/foo(bar)/:baz', {template: 'test.html'});
+
+    $location.path('/test');
+    scope.$digest();
+    expect($route.current).toBeUndefined();
+
+    $location.path('/$testX23/foo(bar)/222');
+    scope.$digest();
+    expect($route.current).toBeUndefined();
+
+    $location.path('/$test.23/foo(bar)/222');
+    scope.$digest();
+    expect($route.current).toBeDefined();
+
+    $location.path('/$test.23/foo\\(bar)/222');
+    scope.$digest();
+    expect($route.current).toBeUndefined();
+  });
+
+
   it('should change route even when only search param changes', function() {
     var callback = jasmine.createSpy('onRouteChange');
 
