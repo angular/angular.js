@@ -43,10 +43,17 @@ function writeTheRest(writesFuture) {
   writesFuture.push(writer.copyDir('img'));
   writesFuture.push(writer.copyDir('examples'));
   writesFuture.push(writer.copyTpl('index.html'));
-  writesFuture.push(writer.copy('docs/src/templates/index.html',
-                                'build/docs/index-jq.html',
-                                '<!-- jquery place holder -->',
-                                '<script src=\"jquery.min.js\"><\/script>'));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq.html',
+                                '<!-- jquery place holder -->', '<script src=\"jquery.min.js\"><\/script>'));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-nocache.html',
+                                'manifest="appcache.manifest"', ''));
+
+  writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-jq-nocache.html',
+                                'manifest="appcache.manifest"', '',
+                                '<!-- jquery place holder -->', '<script src=\"jquery.min.js\"><\/script>'));
+
   writesFuture.push(writer.copyTpl('offline.html'));
   writesFuture.push(writer.copyTpl('docs-scenario.html'));
   writesFuture.push(writer.copyTpl('jquery.min.js'));

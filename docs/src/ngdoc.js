@@ -549,15 +549,15 @@ Doc.prototype = {
 function scenarios(docs){
   var specs = [];
 
-  specs.push('describe("angular without jquery", function() {');
-  appendSpecs('index.html');
+  specs.push('describe("angular+jqlite", function() {');
+  appendSpecs('index-nocache.html');
   specs.push('});');
 
   specs.push('');
   specs.push('');
 
-  specs.push('describe("angular with jquery", function() {');
-  appendSpecs('index-jq.html');
+  specs.push('describe("angular+jquery", function() {');
+  appendSpecs('index-jq-nocache.html');
   specs.push('});');
 
   return specs.join('\n');

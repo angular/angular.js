@@ -44,12 +44,25 @@ exports.copyTpl = function(filename) {
   return exports.copy('docs/src/templates/' + filename, OUTPUT_DIR + filename);
 };
 
-exports.copy = function (from, to, replacementKey, replacement) {
+exports.copy = function (from, to) {
+  var args = [].slice.call(arguments);
+
+  args.shift(); // drop 'from'
+  args.shift(); // drop 'to'
+
   // Have to use rb (read binary), char 'r' is infered by library.
   return qfs.read(from,'b').then(function(content) {
-    if(replacementKey && replacement) {
-      content = content.toString().replace(replacementKey, replacement);
+    var replacementKey,
+        replacement;
+
+    while (args.length) {
+      replacementKey = args.shift();
+      replacement = args.shift();
+      if(replacementKey != undefined && replacement != undefined) {
+        content = content.toString().replace(replacementKey, replacement);
+      }
     }
+
     qfs.write(to, content);
   });
 }
