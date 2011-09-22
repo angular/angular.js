@@ -146,7 +146,7 @@ __`app/partials/phone-list.html`:__
 
 We also added a placeholder template for the phone details view:
 
-__`app/partials/phone-list.html`:__
+__`app/partials/phone-detail.html`:__
 <pre>
 TBD: detail view for {{params.phoneId}}
 </pre>

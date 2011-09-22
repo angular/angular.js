@@ -45,7 +45,7 @@ angular.service('batchLog', function($defer, $log) {
 * template via the batchLog service.
 */
 angular.service('routeTemplateMonitor', function($route, batchLog) {
-  $route.onChange(function() {
+  this.$on('$afterRouteChange', function() {
     batchLog($route.current ? $route.current.template : null);
   });
 }, {$inject: ['$route', 'batchLog'], $eager: true});

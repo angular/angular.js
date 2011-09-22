@@ -588,17 +588,17 @@ function ngClass(selector) {
      </doc:source>
      <doc:scenario>
        it('should check ng:class', function(){
-         expect(element('.doc-example-live span').attr('className')).not().
+         expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-input-indicator-wait/);
 
          using('.doc-example-live').element(':button:first').click();
 
-         expect(element('.doc-example-live span').attr('className')).
+         expect(element('.doc-example-live span').prop('className')).
            toMatch(/ng-input-indicator-wait/);
 
          using('.doc-example-live').element(':button:last').click();
 
-         expect(element('.doc-example-live span').attr('className')).not().
+         expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-input-indicator-wait/);
        });
      </doc:scenario>
@@ -637,9 +637,9 @@ angularDirective("ng:class", ngClass(function(){return true;}));
      </doc:source>
      <doc:scenario>
        it('should check ng:class-odd and ng:class-even', function(){
-         expect(element('.doc-example-live li:first span').attr('className')).
+         expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
-         expect(element('.doc-example-live li:last span').attr('className')).
+         expect(element('.doc-example-live li:last span').prop('className')).
            toMatch(/ng-input-indicator-wait/);
        });
      </doc:scenario>
@@ -678,9 +678,9 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      </doc:source>
      <doc:scenario>
        it('should check ng:class-odd and ng:class-even', function(){
-         expect(element('.doc-example-live li:first span').attr('className')).
+         expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
-         expect(element('.doc-example-live li:last span').attr('className')).
+         expect(element('.doc-example-live li:last span').prop('className')).
            toMatch(/ng-input-indicator-wait/);
        });
      </doc:scenario>
@@ -796,7 +796,7 @@ angularDirective("ng:hide", function(expression, element){
        it('should check ng:style', function(){
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
          element('.doc-example-live :button[value=set]').click();
-         expect(element('.doc-example-live span').css('color')).toBe('red');
+         expect(element('.doc-example-live span').css('color')).toBe('rgb(255, 0, 0)');
          element('.doc-example-live :button[value=clear]').click();
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
        });

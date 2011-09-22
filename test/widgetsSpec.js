@@ -900,22 +900,28 @@ describe("widget", function(){
         createSelect({
           name:'selected',
           'ng:options':'value for value in values',
-          'ng:change':'count = count + 1'
+          'ng:change':'log = log + selected.name'
         });
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
-        scope.count = 0;
+        scope.log = '';
         scope.$digest();
-        expect(scope.count).toEqual(0);
+        expect(scope.log).toEqual('');
 
         select.val('1');
         browserTrigger(select, 'change');
-        expect(scope.count).toEqual(1);
+        expect(scope.log).toEqual('B');
         expect(scope.selected).toEqual(scope.values[1]);
 
+        // ignore change event when the model doesn't change
         browserTrigger(select, 'change');
-        expect(scope.count).toEqual(1);
+        expect(scope.log).toEqual('B');
         expect(scope.selected).toEqual(scope.values[1]);
+
+        select.val('0');
+        browserTrigger(select, 'change');
+        expect(scope.log).toEqual('BA');
+        expect(scope.selected).toEqual(scope.values[0]);
       });
 
       it('should update model on change through expression', function(){
@@ -951,8 +957,8 @@ describe("widget", function(){
         scope.selected = [];
         scope.$digest();
         expect(select.find('option').length).toEqual(2);
-        expect(jqLite(select.find('option')[0]).attr('selected')).toEqual(false);
-        expect(jqLite(select.find('option')[1]).attr('selected')).toEqual(false);
+        expect(select.find('option')[0].selected).toBe(false);
+        expect(select.find('option')[1].selected).toBe(false);
 
         scope.selected.push(scope.values[1]);
         scope.$digest();
@@ -1111,7 +1117,7 @@ describe("widget", function(){
 
 
     it('should do nothing when no routes are defined', function() {
-      $location.updateHash('/unknown');
+      $location.path('/unknown');
       rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
     });
@@ -1123,14 +1129,14 @@ describe("widget", function(){
 
       expect(rootScope.$element.text()).toEqual('');
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
-      $location.updateHash('/bar');
+      $location.path('/bar');
       $browser.xhr.expectGET('myUrl2').respond('angular is da best');
       rootScope.$digest();
       rootScope.$digest();
@@ -1141,14 +1147,14 @@ describe("widget", function(){
     it('should remove all content when location changes to an unknown route', function() {
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
-      $location.updateHash('/unknown');
+      $location.path('/unknown');
       rootScope.$digest();
       rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
@@ -1158,7 +1164,7 @@ describe("widget", function(){
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
       rootScope.parentVar = 'parent';
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
       rootScope.$digest();
       rootScope.$digest();
@@ -1177,7 +1183,7 @@ describe("widget", function(){
       var myApp = angular.scope();
       var $browser = myApp.$service('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
-      $browser.setUrl('http://server/#/foo');
+      myApp.$service('$location').path('/foo');
 
       var $route = myApp.$service('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
@@ -1214,7 +1220,7 @@ describe("widget", function(){
         this.log.push('child');
       };
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('viewPartial.html').
           respond('<div ng:init="log.push(\'init\')">' +
                     '<div ng:controller="ChildCtrl"></div>' +
@@ -1224,12 +1230,12 @@ describe("widget", function(){
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
-      $location.updateHash('');
+      $location.path('/');
       rootScope.$apply();
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
       rootScope.log = [];
-      $location.updateHash('/foo');
+      $location.path('/foo');
       rootScope.$apply();
       $browser.defer.flush();
 

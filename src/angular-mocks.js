@@ -89,19 +89,19 @@ function MockBrowser() {
       requests = [];
 
   this.isMock = true;
-  self.url = "http://server";
-  self.lastUrl = self.url; // used by url polling fn
+  self.$$url = "http://server";
+  self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
 
   // register url polling fn
 
-  self.onHashChange = function(listener) {
+  self.onUrlChange = function(listener) {
     self.pollFns.push(
       function() {
-        if (self.lastUrl != self.url) {
-          self.lastUrl = self.url;
-          listener();
+        if (self.$$lastUrl != self.$$url) {
+          self.$$lastUrl = self.$$url;
+          listener(self.$$url);
         }
       }
     );
@@ -279,11 +279,11 @@ function MockBrowser() {
   self.defer.cancel = function(deferId) {
     var fnIndex;
 
-    forEach(self.deferredFns, function(fn, index) {
+    angular.forEach(self.deferredFns, function(fn, index) {
       if (fn.id === deferId) fnIndex = index;
     });
 
-    if (fnIndex) {
+    if (fnIndex !== undefined) {
       self.deferredFns.splice(fnIndex, 1);
     }
   };
@@ -301,6 +301,11 @@ function MockBrowser() {
     while (self.deferredFns.length && self.deferredFns[0].time <= self.defer.now) {
       self.deferredFns.shift().fn();
     }
+  };
+
+  self.$$baseHref = '';
+  self.baseHref = function() {
+    return this.$$baseHref;
   };
 }
 MockBrowser.prototype = {
@@ -326,12 +331,13 @@ MockBrowser.prototype = {
   hover: function(onHover) {
   },
 
-  getUrl: function(){
-    return this.url;
-  },
+  url: function(url, replace) {
+    if (url) {
+      this.$$url = url;
+      return this;
+    }
 
-  setUrl: function(url){
-    this.url = url;
+    return this.$$url;
   },
 
   cookies:  function(name, value) {

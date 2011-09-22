@@ -597,7 +597,7 @@ describe('angular', function(){
   describe('nodeName_', function() {
     it('should correctly detect node name with "namespace" when xmlns is defined', function() {
       var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
-                         '<ngtest:foo ngtest:attr="bar"></ng:test>' +
+                         '<ngtest:foo ngtest:attr="bar"></ngtest:foo>' +
                        '</div>')[0];
       expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');

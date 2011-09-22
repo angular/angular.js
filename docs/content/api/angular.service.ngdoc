@@ -21,7 +21,6 @@ exceptions
 * {@link angular.service.$resource $resource } - Creates objects for interacting with RESTful
 server-side data sources
 * {@link angular.service.$route $route } - Provides deep-linking services
-* {@link angular.service.$updateView $updateView } - Queues view updates
 * {@link angular.service.$window $window } - References the browsers `window` object
 * {@link angular.service.$xhr $xhr} - Generates an XHR request.
 

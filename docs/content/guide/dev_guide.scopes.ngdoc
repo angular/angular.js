@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Developer Guide: Scopes
 @description
@@ -20,9 +19,9 @@ example, functions registered through {@link api/angular.scope.$watch $watch}, b
 Angular scope objects:
 
 * Link the model, controller and view template together.
-* Provide the mechanism to watch for model changes ({@link api/angular.scope.$watch}).
-* Notify interested components when the model changes ({@link api/angular.scope.$eval}).
-* Provide the context in which expressions are evaluated.
+* Provide the mechanism to watch for model changes ({@link api/angular.scope.$watch $watch}).
+* Apply model changes to the system ({@link api/angular.scope.$apply $apply}).
+* Provide the context in which expressions are evaluated ({@link api/angular.scope.$eval $eval}).
 
 
 ## Related Topics

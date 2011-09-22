@@ -43,7 +43,7 @@ The two partials are defined in the following URLs:
      AppCntl.$inject = ['$route']
      function AppCntl($route) {
       // define routes
-      $route.when("",          {template:'./examples/welcome.html',  controller:WelcomeCntl});
+      $route.when("/welcome",  {template:'./examples/welcome.html',  controller:WelcomeCntl});
       $route.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
       $route.parent(this);
 
@@ -61,7 +61,9 @@ The two partials are defined in the following URLs:
       }
      };
 
-     function SettingsCntl(){
+     SettingsCntl.$inject = ['$location'];
+     function SettingsCntl($location){
+      this.$location = $location;
       this.cancel();
      }
      SettingsCntl.prototype = {
@@ -71,13 +73,13 @@ The two partials are defined in the following URLs:
 
       save: function(){
        angular.copy(this.form, this.person);
-       window.location.hash = "#";
+       this.$location.path('/welcome');
       }
      };
     </script>
     <div ng:controller="AppCntl">
       <h1>Your App Chrome</h1>
-      [ <a href="#">Welcome</a> | <a href="#/settings">Settings</a> ]
+      [ <a href="#!/welcome">Welcome</a> | <a href="#!/settings">Settings</a> ]
       <hr/>
       <span style="background-color: blue; color: white; padding: 3px;">
         Partial: {{$route.current.template}}

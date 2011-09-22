@@ -613,8 +613,8 @@ function isLeafNode (node) {
  *  </doc:source>
  *  <doc:scenario>
    it('should print that initialy the form object is NOT equal to master', function() {
-     expect(element('.doc-example-live input[name=master.salutation]').val()).toBe('Hello');
-     expect(element('.doc-example-live input[name=master.name]').val()).toBe('world');
+     expect(element('.doc-example-live input[name="master.salutation"]').val()).toBe('Hello');
+     expect(element('.doc-example-live input[name="master.name"]').val()).toBe('world');
      expect(element('.doc-example-live span').css('display')).toBe('inline');
    });
 
@@ -705,8 +705,8 @@ function copy(source, destination){
  *  </doc:source>
  *  <doc:scenario>
      it('should print that initialy greeting is equal to the hardcoded value object', function() {
-       expect(element('.doc-example-live input[name=greeting.salutation]').val()).toBe('Hello');
-       expect(element('.doc-example-live input[name=greeting.name]').val()).toBe('world');
+       expect(element('.doc-example-live input[name="greeting.salutation"]').val()).toBe('Hello');
+       expect(element('.doc-example-live input[name="greeting.name"]').val()).toBe('world');
        expect(element('.doc-example-live span').css('display')).toBe('none');
      });
 
@@ -859,8 +859,8 @@ function parseKeyValue(/**string*/keyValue) {
   forEach((keyValue || "").split('&'), function(keyValue){
     if (keyValue) {
       key_value = keyValue.split('=');
-      key = unescape(key_value[0]);
-      obj[key] = isDefined(key_value[1]) ? unescape(key_value[1]) : true;
+      key = decodeURIComponent(key_value[0]);
+      obj[key] = isDefined(key_value[1]) ? decodeURIComponent(key_value[1]) : true;
     }
   });
   return obj;
@@ -869,7 +869,7 @@ function parseKeyValue(/**string*/keyValue) {
 function toKeyValue(obj) {
   var parts = [];
   forEach(obj, function(value, key) {
-    parts.push(escape(key) + (value === true ? '' : '=' + escape(value)));
+    parts.push(encodeUriQuery(key, true) + (value === true ? '' : '=' + encodeUriQuery(value, true)));
   });
   return parts.length ? parts.join('&') : '';
 }

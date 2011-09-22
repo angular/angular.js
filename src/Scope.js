@@ -34,7 +34,6 @@ function createScope(providers, instanceCache) {
 
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.scope
  *
@@ -103,7 +102,6 @@ function Scope() {
 }
 
 /**
- * @workInProgress
  * @ngdoc property
  * @name angular.scope.$id
  * @returns {number} Unique scope ID (monotonically increasing alphanumeric sequence) useful for
@@ -111,7 +109,6 @@ function Scope() {
  */
 
 /**
- * @workInProgress
  * @ngdoc property
  * @name angular.scope.$service
  * @function
@@ -125,14 +122,12 @@ function Scope() {
  */
 
 /**
- * @workInProgress
  * @ngdoc property
  * @name angular.scope.$root
  * @returns {Scope} The root scope of the current scope hierarchy.
  */
 
 /**
- * @workInProgress
  * @ngdoc property
  * @name angular.scope.$parent
  * @returns {Scope} The parent scope of the current scope.
@@ -141,7 +136,6 @@ function Scope() {
 
 Scope.prototype = {
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$new
    * @function
@@ -196,7 +190,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$watch
    * @function
@@ -283,7 +276,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$digest
    * @function
@@ -389,7 +381,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$destroy
    * @function
@@ -418,7 +409,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$eval
    * @function
@@ -452,7 +442,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$evalAsync
    * @function
@@ -480,7 +469,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$apply
    * @function
@@ -534,7 +522,6 @@ Scope.prototype = {
   },
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$on
    * @function
@@ -569,7 +556,6 @@ Scope.prototype = {
 
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$emit
    * @function
@@ -620,7 +606,6 @@ Scope.prototype = {
 
 
   /**
-   * @workInProgress
    * @ngdoc function
    * @name angular.scope.$broadcast
    * @function

@@ -30,7 +30,7 @@
   };
 
   addCSS("../../css/angular-scenario.css");
-  addScript("../../lib/jquery/jquery-1.4.2.js");
+  addScript("../../lib/jquery/jquery.js");
   document.write(
     '<script type="text/javascript">' +
     'var _jQuery = jQuery.noConflict(true);' +

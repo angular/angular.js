@@ -4,7 +4,7 @@ function DocsController($location, $browser, $window, $cookies) {
 
   var self = this,
       OFFLINE_COOKIE_NAME = 'ng-offline',
-      HAS_HASH = /#/;
+      DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/;
 
   this.$location = $location;
 
@@ -13,13 +13,14 @@ function DocsController($location, $browser, $window, $cookies) {
   self.subpage = false;
   self.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
 
-  if (!HAS_HASH.test($location.href)) {
-    $location.hashPath = '!/api';
+  if (!$location.path()) {
+    $location.path('/api').replace();
   }
 
-  this.$watch('$location.hashPath', function(scope, hashPath) {
-    if (hashPath.match(/^!/)) {
-      var parts = hashPath.substring(1).split('/');
+  this.$watch('$location.path()', function(scope, path) {
+    // ignore non-doc links which are used in examples
+    if (DOCS_PATH.test(path)) {
+      var parts = path.split('/');
       self.sectionId = parts[1];
       self.partialId = parts[2] || 'index';
       self.pages = angular.Array.filter(NG_PAGES, {section:self.sectionId});
@@ -67,13 +68,13 @@ function DocsController($location, $browser, $window, $cookies) {
   this.afterPartialLoaded = function() {
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
-    $window._gaq.push(['_trackPageview', $location.hashPath.substr(1)]);
+    $window._gaq.push(['_trackPageview', $location.path()]);
   };
 
   this.getFeedbackUrl = function() {
     return "mailto:angular@googlegroups.com?" +
-           "subject=" + escape("Feedback on " + $location.href) + "&" +
-           "body=" + escape("Hi there,\n\nI read " + $location.href + " and wanted to ask ....");
+           "subject=" + escape("Feedback on " + $location.absUrl()) + "&" +
+           "body=" + escape("Hi there,\n\nI read " + $location.absUrl() + " and wanted to ask ....");
   };
 
   /** stores a cookie that is used by apache to decide which manifest ot send */
@@ -123,3 +124,10 @@ function TutorialInstructionsCtrl($cookieStore) {
     $cookieStore.put('selEnv', id);
   };
 }
+
+angular.service('$locationConfig', function() {
+  return {
+    html5Mode: false,
+    hashPrefix: '!'
+  };
+});

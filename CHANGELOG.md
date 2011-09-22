@@ -1,5 +1,110 @@
+- The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
+- The Latest Unstable Release: <a href="#0.10.1">0.10.1 chicken-hands</a>
+
+<a name="0.10.2"><a/>
+# 0.10.2 sneaky-seagull (in-progress) #
+
+
+
+
+<a name="0.10.1"><a/>
+# 0.10.1 inexorable-juggernaut (2011-09-09) #
+
+## Features
+
+- complete rewrite of the $location service with HTML5 support, many API and semantic changes.
+  Please see:
+  - [$location service API docs](http://docs-next.angularjs.org/#!/api/angular.service.$location)
+  - [$location service dev guide article](http://docs-next.angularjs.org/#!/guide/dev_guide.services.$location)
+  - [location.js source file](https://github.com/angular/angular.js/blob/master/src/service/location.js)
+  - breaking changes section of this changelog
+
+
+## Bug Fixes
+
+- $xhr should not covert HTTP status 0 to 200
+  ([commit](https://github.com/angular/angular.js/commit/b0eb831bce7d0ea066fd0758124793ed3db6d692))
+- fixed several doc examples that were broken on IE
+- ng:change should be called after the new val is set
+  (Issue [#547](https://github.com/angular/angular.js/issues/547))
+- currency filter should return an empty string for non-numbers
+
+
+## Breaking Changes
+
+- $location related changes - for complete list of api changes see:
+  [Migrating from earlier AngularJS releases](http://docs-next.angularjs.org/#!/guide/dev_guide.services.$location)
+  - $location api changes:
+    - $location.href -> $location.absUrl()
+    - $location.hash -> $location.url()
+    - $location.hashPath -> $location.path()
+    - $location.hashSearch -> $location.search()
+    - $location.search -> no equivalent, use $window.location.search (this is so that we can work in
+      hashBang and html5 mode at the same time, check out the docs) 
+    - $location.update() / $location.updateHash() -> use $location.url()
+    - n/a -> $location.replace() - new api for replacing history record instead of creating a new one
+
+  - $location semantic changes:
+    - all url pieces are always in sync ($location.path(), $location.url(), $location.search(), ...) -
+      this was previously true only if you used update* methods instead of direct assignment
+      ($location.hashPath = 'foo')
+    - we now use (window.history.pushState || onHashChange event || polling) for detecting url changes
+      in the browser (we use the best one available).
+
+
+
 <a name="0.10.0"><a/>
-# 0.10.0 chicken-hands (in-progress) #
+# 0.10.0 chicken-hands (2011-09-02) #
+
+## Features
+
+- complete rewrite of the Scope implementation with several API and semantic changes. Please see:
+  - [angular.scope API docs](http://docs-next.angularjs.org/#!/api/angular.scope)
+  - [scopes dev guide article](http://docs-next.angularjs.org/#!/guide/dev_guide.scopes)
+  - [scope.js source file](https://github.com/angular/angular.js/blob/master/src/Scope.js)
+  - breaking changes section of this changelog
+- added event system to scopes (see [$on], [$emit] and [$broadcast])
+- added i18n and l10n support for date, currency and number filters see [i18n] docs for more info
+- added localizable [ng:pluralize] widget
+- added [ng:cloak] directive for hiding uncompiled templates
+
+
+## Bug Fixes
+
+- make [ng:class] friendly towards other code adding/removing classes
+  ([commit](https://github.com/angular/angular.js/commit/2a8fe56997fddbad673748ce02abf649a709c4ca))
+- several [jqLite] bugfixes and improvements
+- [ng:href], [ng:src] and friends now work properly when no expression is present in the attribute
+  value.
+  (Issue [#534](https://github.com/angular/angular.js/issues/534))
+- expose missing [lowercase], [uppercase] and [isDate] APIs.
+
+
+## Docs
+
+- many (but not all just yet) api docs were proof-read and improved
+
+
+## Breaking Changes:
+
+- many scope related changes:
+  - $onEval is no more (use $watch with a fn as the only param if you really miss it)
+  - $eval without params doesn't trigger model mutation observations (use $apply/$digest instead)
+  - $digest propagates through the scope tree automatically (this is the desired behavior anyway)
+  - $watch various API changes
+    - scope is now the first argument passed into the $watch listener
+    - `this` in the $watch listener is undefined instead of current scope
+    - objects and arrays are watched and compared by equality and not just identity
+    - the initial execution of the $watch listener now executes asynchronously with respect to the
+      code registering it via $watch
+    - exceptionHandler argument is no more
+    - initRun argument is no more
+  - angular.scope does not create child scopes by taking parent as the first argument - use $new
+    instead
+  - scope.$set and scope.$get were removed, use direct property assignment instead or $eval
+- $route.onChange was removed and replaced with $beforeRouteChange, $afterRouteChange and
+  $routeUpdate events that can be used together with the new $routeParams service
+- `angular.equals()` now uses `===` instead of `==` when comparing primitives
 
 
 
@@ -17,7 +122,7 @@
   ([commit](https://github.com/angular/angular.js/commit/e004378d100ce767a1107180102790a9a360644e))
 
 
-## Fixes
+## Bug Fixes
 - fixed memory leak found in [ng:options] directive
   ([commit](https://github.com/angular/angular.js/commit/6aa04b1db48853340d720e0a1a3e325ac523a06f))
 - make ng:class-even/odd compatible with ng:class
@@ -647,6 +752,9 @@ with the `$route` service
 
 
 
+[lowercase]: http://docs.angularjs.org/#!/api/angular.lowercase
+[uppercase]: http://docs.angularjs.org/#!/api/angular.uppercase
+[isDate]: http://docs.angularjs.org/#!/api/angular.isDate
 [scope]: http://docs.angularjs.org/#!/api/angular.scope
 [compile]: http://docs.angularjs.org/#!/api/angular.compile
 [element]: http://docs.angularjs.org/#!/api/angular.element
@@ -662,6 +770,9 @@ with the `$route` service
 [ng:readonly]: http://docs.angularjs.org/#!/api/angular.directive.ng:readonly
 [ng:show]: http://docs.angularjs.org/#!/api/angular.directive.ng:show
 [ng:hide]: http://docs.angularjs.org/#!/api/angular.directive.ng:hide
+[ng:class]: http://docs.angularjs.org/#!/api/angular.directive.ng:class
+[ng:src]: http://docs.angularjs.org/#!/api/angular.directive.ng:src
+[ng:href]: http://docs.angularjs.org/#!/api/angular.directive.ng:href
 [$defer]: http://docs.angularjs.org/#!/api/angular.service.$defer
 [$cookies]: http://docs.angularjs.org/#!/api/angular.service.$cookies
 [$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
@@ -680,3 +791,9 @@ with the `$route` service
 [jqLite]: http://docs.angularjs.org/#!/api/angular.element
 [angular.version]: http://docs.angularjs.org/#!/api/angular.version
 [Jstd Scenario Adapter]: https://github.com/angular/angular.js/blob/master/src/jstd-scenario-adapter/Adapter.js
+[i18n]: http://docs-next.angularjs.org/#!/guide/dev_guide.i18n
+[ng:pluralize]: http://docs-next.angularjs.org/#!/api/angular.widget.ng:pluralize
+[ng:cloak]: http://docs-next.angularjs.org/#!/api/angular.directive.ng:cloak
+[$on]: http://docs-next.angularjs.org/#!/api/angular.scope.$on
+[$emit]: http://docs-next.angularjs.org/#!/api/angular.scope.$emit
+[$broadcast]: http://docs-next.angularjs.org/#!/api/angular.scope.$broadcast
