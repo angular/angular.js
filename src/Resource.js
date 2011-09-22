@@ -36,8 +36,9 @@ Route.prototype = {
   }
 };
 
-function ResourceFactory(xhr) {
+function ResourceFactory(xhr, xhrError) {
   this.xhr = xhr;
+  this.xhrError = xhrError;
 }
 
 ResourceFactory.DEFAULT_ACTIONS = {
@@ -124,7 +125,7 @@ ResourceFactory.prototype = {
             }
             (success||noop)(value);
           },
-          error || action.verifyCache,
+          error || self.xhrError,
           action.verifyCache);
         return value;
       };
