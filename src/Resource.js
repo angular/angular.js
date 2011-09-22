@@ -124,7 +124,7 @@ ResourceFactory.prototype = {
             }
             (success||noop)(value);
           },
-          error || action.verifyCache,
+          error,
           action.verifyCache);
         return value;
       };
