@@ -697,8 +697,9 @@ var angularArray = {
    * @param {string|Number} limit The length of the returned array. If the `limit` number is
    *     positive, `limit` number of items from the beginning of the source array are copied.
    *     If the number is negative, `limit` number  of items from the end of the source array are
-   *     copied.
-   * @returns {Array} A new sub-array of length `limit`.
+   *     copied. The `limit` will be trimmed if it exceeds `array.length`
+   * @returns {Array} A new sub-array of length `limit` or less if input array had less than `limit`
+   *     elements.
    *
    * @example
      <doc:example>
@@ -718,6 +719,11 @@ var angularArray = {
            input('limit').enter(-3);
            expect(binding('numbers.$limitTo(limit) | json')).toEqual('[7,8,9]');
          });
+
+         it('should not exceed the maximum size of input array', function() {
+           input('limit').enter(100);
+           expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3,4,5,6,7,8,9]');
+         });
        </doc:scenario>
      </doc:example>
    */
@@ -725,6 +731,16 @@ var angularArray = {
     limit = parseInt(limit, 10);
     var out = [],
         i, n;
+
+    // check that array is iterable
+    if (!array || !(array instanceof Array))
+      return out;
+
+    // if abs(limit) exceeds maximum length, trim it
+    if (limit > array.length)
+      limit = array.length;
+    else if (limit < -array.length)
+      limit = -array.length;
 
     if (limit > 0) {
       i = 0;

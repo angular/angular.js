@@ -175,6 +175,26 @@ describe('api', function(){
         expect(angular.Array.limitTo(items, null)).toEqual([]);
         expect(angular.Array.limitTo(items, undefined)).toEqual([]);
       });
+
+
+      it('should return an empty array when input is not Array type', function() {
+        expect(angular.Array.limitTo('bogus', 1)).toEqual([]);
+        expect(angular.Array.limitTo(null, 1)).toEqual([]);
+        expect(angular.Array.limitTo(undefined, 1)).toEqual([]);
+        expect(angular.Array.limitTo(null, 1)).toEqual([]);
+        expect(angular.Array.limitTo(undefined, 1)).toEqual([]);
+        expect(angular.Array.limitTo({}, 1)).toEqual([]);
+      });
+
+
+      it('should return a copy of input array if X is exceeds array length', function () {
+        expect(angular.Array.limitTo(items, 19)).toEqual(items);
+        expect(angular.Array.limitTo(items, '9')).toEqual(items);
+        expect(angular.Array.limitTo(items, -9)).toEqual(items);
+        expect(angular.Array.limitTo(items, '-9')).toEqual(items);
+
+        expect(angular.Array.limitTo(items, 9)).not.toBe(items);
+      });
     });
 
 
