@@ -1424,8 +1424,10 @@ angularWidget("@ng:non-bindable", noop);
     </doc:example>
  */
 angularWidget('ng:view', function(element) {
-  var compiler = this;
-
+	var compiler = this, spinner;
+  if (element.attr('spinner') !== undefined) {
+      spinner = element.html();
+  }
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
     return annotate('$xhr.cache', '$route', function($xhr, $route, element){
@@ -1439,7 +1441,8 @@ angularWidget('ng:view', function(element) {
       this.$watch(function(){return changeCounter;}, function() {
         var template = $route.current && $route.current.template;
         if (template) {
-          //xhr's callback must be async, see commit history for more info
+          if (spinner) element.html(spinner);
+          //xhr's callback must be async, see commit history for more info	   
           $xhr('GET', template, function(code, response) {
             element.html(response);
             compiler.compile(element)($route.current.scope);
