@@ -714,7 +714,7 @@ var angularArray = {
            expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3]');
          });
 
-          it('should update the output when -3 is entered', function() {
+         it('should update the output when -3 is entered', function() {
            input('limit').enter(-3);
            expect(binding('numbers.$limitTo(limit) | json')).toEqual('[7,8,9]');
          });
@@ -723,8 +723,6 @@ var angularArray = {
            input('limit').enter(100);
            expect(binding('numbers.$limitTo(limit) | json')).toEqual('[1,2,3,4,5,6,7,8,9]');
          });
-
-         
        </doc:scenario>
      </doc:example>
    */

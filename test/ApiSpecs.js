@@ -186,6 +186,7 @@ describe('api', function(){
         expect(angular.Array.limitTo({}, 1)).toEqual([]);
       });
 
+
       it('should return a copy of input array if X is exceeds array length', function () {
         expect(angular.Array.limitTo(items, 19)).toEqual(items);
         expect(angular.Array.limitTo(items, '9')).toEqual(items);
