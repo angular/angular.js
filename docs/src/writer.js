@@ -8,14 +8,14 @@ var Q = require('qq');
 var OUTPUT_DIR = "build/docs/";
 var fs = require('fs');
 
-exports.output = function(file, content){
+exports.output = function(file, content) {
   console.log('writing ', file);
   var fullPath = OUTPUT_DIR + file;
   var dir = parent(fullPath);
   return Q.when(exports.makeDir(dir), function(error) {
     qfs.write(fullPath,exports.toString(content));
   });
-}
+};
 
 //recursively create directory
 exports.makeDir = function (path) {

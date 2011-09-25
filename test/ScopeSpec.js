@@ -153,7 +153,7 @@ describe('Scope', function() {
     });
 
 
-    it('should delegate $digest to children in addition order', function() {
+    it('should call child $watchers in addition order', function() {
       // this is not an external guarantee, just our own sanity
       var log = '';
       var childA = root.$new();
@@ -165,6 +165,30 @@ describe('Scope', function() {
       childA.a = childB.b = childC.c = 1;
       root.$digest();
       expect(log).toEqual('abc');
+    });
+
+
+    it('should allow $digest on a child scope with and without a right sibling', function() {
+      // tests a traversal edge case which we originally missed
+      var log = '',
+          childA = root.$new(),
+          childB = root.$new();
+
+      root.$watch(function() { log += 'r'; });
+      childA.$watch(function() { log += 'a'; });
+      childB.$watch(function() { log += 'b'; });
+
+      // init
+      root.$digest();
+      expect(log).toBe('rabrab');
+
+      log = '';
+      childA.$digest();
+      expect(log).toBe('a');
+
+      log = '';
+      childB.$digest();
+      expect(log).toBe('b');
     });
 
 
@@ -182,6 +206,7 @@ describe('Scope', function() {
       expect(root.d).toEqual(1);
       expect(log).toEqual('abc');
     });
+
 
     it('should repeat watch cycle from the root elemnt', function() {
       var log = '';
@@ -244,6 +269,29 @@ describe('Scope', function() {
       root.name = 'a';
       root.$digest();
       expect(callCount).toEqual(1);
+    });
+
+
+    it('should return a function that allows listeners to be unregistered', function() {
+      var root = angular.scope(),
+          listener = jasmine.createSpy('watch listener'),
+          listenerRemove;
+
+      listenerRemove = root.$watch('foo', listener);
+      root.$digest(); //init
+      expect(listener).toHaveBeenCalled();
+      expect(listenerRemove).toBeDefined();
+
+      listener.reset();
+      root.foo = 'bar';
+      root.$digest(); //triger
+      expect(listener).toHaveBeenCalledOnce();
+
+      listener.reset();
+      root.foo = 'baz';
+      listenerRemove();
+      root.$digest(); //trigger
+      expect(listener).not.toHaveBeenCalled();
     });
   });
 
@@ -410,6 +458,55 @@ describe('Scope', function() {
 
   describe('events', function() {
 
+    describe('$on', function() {
+
+      it('should add listener for both $emit and $broadcast events', function() {
+        var log = '',
+            root = angular.scope(),
+            child = root.$new();
+
+        function eventFn(){
+          log += 'X';
+        }
+
+        child.$on('abc', eventFn);
+        expect(log).toEqual('');
+
+        child.$emit('abc');
+        expect(log).toEqual('X');
+
+        child.$broadcast('abc');
+        expect(log).toEqual('XX');
+      });
+
+
+      it('should return a function that deregisters the listener', function() {
+        var log = '',
+            root = angular.scope(),
+            child = root.$new(),
+            listenerRemove;
+
+        function eventFn(){
+          log += 'X';
+        }
+
+        listenerRemove = child.$on('abc', eventFn);
+        expect(log).toEqual('');
+        expect(listenerRemove).toBeDefined();
+
+        child.$emit('abc');
+        child.$broadcast('abc');
+        expect(log).toEqual('XX');
+
+        log = '';
+        listenerRemove();
+        child.$emit('abc');
+        child.$broadcast('abc');
+        expect(log).toEqual('');
+      });
+    });
+
+
     describe('$emit', function() {
       var log, child, grandChild, greatGrandChild;
 
@@ -456,21 +553,6 @@ describe('Scope', function() {
       });
 
 
-      it('should remove event listener', function() {
-        function eventFn(){
-          log += 'abc;';
-        }
-
-        child.$on('abc', eventFn);
-        child.$emit('abc');
-        expect(log).toEqual('abc;');
-        log = '';
-        child.$removeListener('abc', eventFn);
-        child.$emit('abc');
-        expect(log).toEqual('');
-      });
-
-
       it('should forward method arguments', function() {
         child.$on('abc', function(event, arg1, arg2){
           expect(event.name).toBe('abc');
@@ -498,7 +580,7 @@ describe('Scope', function() {
 
     describe('$broadcast', function() {
       describe('event propagation', function() {
-        var log, child1, child2, child3, grandChild11, grandChild21, grandChild22,
+        var log, child1, child2, child3, grandChild11, grandChild21, grandChild22, grandChild23,
             greatGrandChild211;
 
         function logger(event) {
@@ -513,6 +595,7 @@ describe('Scope', function() {
           grandChild11 = child1.$new();
           grandChild21 = child2.$new();
           grandChild22 = child2.$new();
+          grandChild23 = child2.$new();
           greatGrandChild211 = grandChild21.$new();
 
           root.id = 0;
@@ -522,6 +605,7 @@ describe('Scope', function() {
           grandChild11.id = 11;
           grandChild21.id = 21;
           grandChild22.id = 22;
+          grandChild23.id = 23;
           greatGrandChild211.id = 211;
 
           root.$on('myEvent', logger);
@@ -531,13 +615,14 @@ describe('Scope', function() {
           grandChild11.$on('myEvent', logger);
           grandChild21.$on('myEvent', logger);
           grandChild22.$on('myEvent', logger);
+          grandChild23.$on('myEvent', logger);
           greatGrandChild211.$on('myEvent', logger);
 
-          //         R
-          //       / |  \
-          //     1   2   3
-          //    /   / \
-          //   11  21  22
+          //          R
+          //       /  |   \
+          //     1    2    3
+          //    /   / | \
+          //   11  21 22 23
           //       |
           //      211
         });
@@ -545,19 +630,25 @@ describe('Scope', function() {
 
         it('should broadcast an event from the root scope', function() {
           root.$broadcast('myEvent');
-          expect(log).toBe('0>1>11>2>21>211>22>3>');
+          expect(log).toBe('0>1>11>2>21>211>22>23>3>');
         });
 
 
         it('should broadcast an event from a child scope', function() {
           child2.$broadcast('myEvent');
-          expect(log).toBe('2>21>211>22>');
+          expect(log).toBe('2>21>211>22>23>');
         });
 
 
-        it('should broadcast an event from a leaf scope', function() {
+        it('should broadcast an event from a leaf scope with a sibling', function() {
           grandChild22.$broadcast('myEvent');
           expect(log).toBe('22>');
+        });
+
+
+        it('should broadcast an event from a leaf scope without a sibling', function() {
+          grandChild23.$broadcast('myEvent');
+          expect(log).toBe('23>');
         });
 
 

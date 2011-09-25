@@ -15,12 +15,11 @@ explicitly.
 <!doctype html>
 <html xmlns:ng="http://angularjs.org">
 <head>
-  <script type="text/javascript" src="http://code.angularjs.org/angular.js"
-            ng:autobind></script>
-  <script type="text/javascript">
-     (angular.element(document).ready(function() {
+  <script src="http://code.angularjs.org/angular.js"></script>
+  <script>
+     angular.element(document).ready(function() {
        angular.compile(document)();
-     })(document);
+     });
   </script>
 </head>
 <body>

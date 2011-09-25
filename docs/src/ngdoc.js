@@ -29,6 +29,7 @@ function Doc(text, file, line) {
   this.param = this.param || [];
   this.properties = this.properties || [];
   this.methods = this.methods || [];
+  this.events = this.events || [];
   this.links = this.links || [];
 }
 Doc.METADATA_IGNORE = (function(){
@@ -217,6 +218,10 @@ Doc.prototype = {
               description: self.markdown(text.replace(match[0], match[4]))
             };
           self.properties.push(property);
+        } else if(atName == 'eventType') {
+          var match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
+          self.type = match[1];
+          self.target = match[2];
         } else {
           self[atName] = text;
         }
@@ -525,6 +530,21 @@ Doc.prototype = {
        dom.h('Example', property.example, dom.html);
       });
     });
+    dom.h('Events', this.events, function(event){
+    dom.h(event.shortName, event, function(){
+        dom.html(event.description);
+        dom.tag('div', {class:'inline'}, function(){
+          dom.h('Type:', event.type);
+        });
+        dom.tag('div', {class:'inline'}, function(){
+          dom.h('Target:', event.target);
+        });
+        event.html_usage_parameters(dom);
+        self.html_usage_this(dom);
+
+        dom.h('Example', event.example, dom.html);
+      });
+    });
   },
 
   parameters: function(dom, separator, skipFirst, prefix) {
@@ -549,14 +569,14 @@ Doc.prototype = {
 function scenarios(docs){
   var specs = [];
 
-  specs.push('describe("angular without jquery", function() {');
+  specs.push('describe("angular+jqlite", function() {');
   appendSpecs('index.html');
   specs.push('});');
 
   specs.push('');
   specs.push('');
 
-  specs.push('describe("angular with jquery", function() {');
+  specs.push('describe("angular+jquery", function() {');
   appendSpecs('index-jq.html');
   specs.push('});');
 
@@ -717,7 +737,7 @@ function merge(docs){
     });
 
     // merge into parents
-    if (findParent(doc, 'method') || findParent(doc, 'property')) {
+    if (findParent(doc, 'method') || findParent(doc, 'property') || findParent(doc, 'event')) {
       docs.splice(i, 1);
     } else {
       i++;

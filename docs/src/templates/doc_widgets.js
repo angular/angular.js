@@ -56,8 +56,13 @@
     element.append(tabs);
 
     var script = (exampleSrc.match(/<script[^\>]*>([\s\S]*)<\/script>/) || [])[1] || '';
+
     try {
-      window.eval(script);
+      if (window.execScript) { // IE
+        window.execScript(script || '"stupid IE!"'); // IE complains when evaling empty string
+      } else {
+        window.eval(script);
+      }
     } catch (e) {
       alert(e);
     }

@@ -184,21 +184,23 @@ angularDirective("ng:controller", function(expression){
  * @name angular.directive.ng:bind
  *
  * @description
- * The `ng:bind` attribute tells Angular to replace the text content of the specified
- * HTML element with the value of the given expression, and to update the text
- * content whenever the expression's value changes. Usually, you would
- * just write `{{ expression }}` and let Angular compile it into
- * `<span ng:bind="expression"></span>` at bootstrap time.
+ * The `ng:bind` attribute tells Angular to replace the text content of the specified HTML element
+ * with the value of a given expression, and to update the text content when the value of that
+ * expression changes.
+ *
+ * Typically, you don't use `ng:bind` directly, but instead you use the double curly markup like
+ * `{{ expression }}` and let the Angular compiler transform it to
+ * `<span ng:bind="expression"></span>` when the template is compiled.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate.
  *
  * @example
- * Enter a name in the Live Preview text box and watch the greeting below it change instantly.
+ * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
    <doc:example>
      <doc:source>
        Enter name: <input type="text" name="name" value="Whirled"> <br>
-       Hello <span ng:bind="name" />!
+       Hello <span ng:bind="name"></span>!
      </doc:source>
      <doc:scenario>
        it('should check ng:bind', function(){
@@ -372,42 +374,40 @@ var REMOVE_ATTRIBUTES = {
   'multiple':'multiple'
 };
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind-attr
  *
  * @description
- * The `ng:bind-attr` attribute specifies that
- * {@link guide/dev_guide.templates.databinding databindings}  should be created between element
- * attributes and given expressions. Unlike `ng:bind` the `ng:bind-attr` contains a JSON key value
- * pairs representing which attributes need to be mapped to which
- * {@link guide/dev_guide.expressions expressions}.
+ * The `ng:bind-attr` attribute specifies that a
+ * {@link guide/dev_guide.templates.databinding databinding}  should be created between a particular
+ * element attribute and a given expression. Unlike `ng:bind`, the `ng:bind-attr` contains one or
+ * more JSON key value pairs; each pair specifies an attribute and the
+ * {@link guide/dev_guide.expressions expression} to which it will be mapped.
  *
- * You don't usually write the `ng:bind-attr` in the HTML since embedding
- * <tt ng:non-bindable>{{expression}}</tt> into the attribute directly as the attribute value is
- * preferred. The attributes get translated into `<span ng:bind-attr="{attr:expression}"/>` at
- * compile time.
+ * Instead of writing `ng:bind-attr` statements in your HTML, you can use double-curly markup to
+ * specify an <tt ng:non-bindable>{{expression}}</tt> for the value of an attribute.
+ * At compile time, the attribute is translated into an `<span ng:bind-attr="{attr:expression}"/>`
  *
- * This HTML snippet is preferred way of working with `ng:bind-attr`
+ * The following HTML snippet shows how to specify `ng:bind-attr`:
  * <pre>
  *   <a href="http://www.google.com/search?q={{query}}">Google</a>
  * </pre>
  *
- * The above gets translated to bellow during bootstrap time.
+ * During compilation, the snippet gets translated to the following:
  * <pre>
  *   <a ng:bind-attr='{"href":"http://www.google.com/search?q={{query}}"}'>Google</a>
  * </pre>
  *
  * @element ANY
- * @param {string} attribute_json a JSON key-value pairs representing
- *    the attributes to replace. Each key matches the attribute
+ * @param {string} attribute_json one or more JSON key-value pairs representing
+ *    the attributes to replace with expressions. Each key matches an attribute
  *    which needs to be replaced. Each value is a text template of
- *    the attribute with embedded
+ *    the attribute with the embedded
  *    <tt ng:non-bindable>{{expression}}</tt>s. Any number of
  *    key-value pairs can be specified.
  *
  * @example
- * Try it here: enter text in text box and click Google.
+ * Enter a search string in the Live Preview text box and then click "Google". The search executes instantly.
    <doc:example>
      <doc:source>
       Google for:
@@ -549,16 +549,11 @@ angularDirective("ng:submit", function(expression, element) {
 
 function ngClass(selector) {
   return function(expression, element) {
-    var existing = element[0].className + ' ';
     return function(element) {
-      this.$watch(function(scope) {
+      this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          var ngClassVal = scope.$eval(element.attr('ng:class'));
-          if (isArray(ngClassVal)) ngClassVal = ngClassVal.join(' ');
-          var value = scope.$eval(expression);
-          if (isArray(value)) value = value.join(' ');
-          if (ngClassVal && ngClassVal !== value) value = value + ' ' + ngClassVal;
-          element[0].className = trim(existing + value);
+          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal)
+          element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
     };
@@ -571,11 +566,17 @@ function ngClass(selector) {
  * @name angular.directive.ng:class
  *
  * @description
- * The `ng:class` allows you to set CSS class on HTML element
- * conditionally.
+ * The `ng:class` allows you to set CSS class on HTML element dynamically by databinding an
+ * expression that represents all classes to be added.
+ *
+ * The directive won't add duplicate classes if a particular class was already set.
+ *
+ * When the expression changes, the previously added classes are removed and only then the classes
+ * new classes are added.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>
@@ -587,17 +588,17 @@ function ngClass(selector) {
      </doc:source>
      <doc:scenario>
        it('should check ng:class', function(){
-         expect(element('.doc-example-live span').attr('className')).not().
+         expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-input-indicator-wait/);
 
          using('.doc-example-live').element(':button:first').click();
 
-         expect(element('.doc-example-live span').attr('className')).
+         expect(element('.doc-example-live span').prop('className')).
            toMatch(/ng-input-indicator-wait/);
 
          using('.doc-example-live').element(':button:last').click();
 
-         expect(element('.doc-example-live span').attr('className')).not().
+         expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-input-indicator-wait/);
        });
      </doc:scenario>
@@ -612,12 +613,15 @@ angularDirective("ng:class", ngClass(function(){return true;}));
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * `ng:class`, except it works in conjunction with `ng:repeat`
- * and takes affect only on odd (even) rows.
+ * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * takes affect only on odd (even) rows.
+ *
+ * This directive can be applied only within a scope of an
+ * {@link angular.widget.@ng:repeat ng:repeat}.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. Must be
- *  inside `ng:repeat`.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>
@@ -633,9 +637,9 @@ angularDirective("ng:class", ngClass(function(){return true;}));
      </doc:source>
      <doc:scenario>
        it('should check ng:class-odd and ng:class-even', function(){
-         expect(element('.doc-example-live li:first span').attr('className')).
+         expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
-         expect(element('.doc-example-live li:last span').attr('className')).
+         expect(element('.doc-example-live li:last span').prop('className')).
            toMatch(/ng-input-indicator-wait/);
        });
      </doc:scenario>
@@ -650,12 +654,15 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * `ng:class`, except it works in conjunction with `ng:repeat`
- * and takes affect only on odd (even) rows.
+ * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * takes affect only on odd (even) rows.
+ *
+ * This directive can be applied only within a scope of an
+ * {@link angular.widget.@ng:repeat ng:repeat}.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. Must be
- *  inside `ng:repeat`.
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>
@@ -671,9 +678,9 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      </doc:source>
      <doc:scenario>
        it('should check ng:class-odd and ng:class-even', function(){
-         expect(element('.doc-example-live li:first span').attr('className')).
+         expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
-         expect(element('.doc-example-live li:last span').attr('className')).
+         expect(element('.doc-example-live li:last span').prop('className')).
            toMatch(/ng-input-indicator-wait/);
        });
      </doc:scenario>
@@ -789,7 +796,7 @@ angularDirective("ng:hide", function(expression, element){
        it('should check ng:style', function(){
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
          element('.doc-example-live :button[value=set]').click();
-         expect(element('.doc-example-live span').css('color')).toBe('red');
+         expect(element('.doc-example-live span').css('color')).toBe('rgb(255, 0, 0)');
          element('.doc-example-live :button[value=clear]').click();
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
        });

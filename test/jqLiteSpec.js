@@ -39,6 +39,11 @@ describe('jqLite', function(){
   });
 
 
+  it('should be jqLite when jqLiteMode is on, otherwise jQuery', function() {
+    expect(jqLite).toBe(_jqLiteMode ? jqLiteWrap : _jQuery);
+  });
+
+
   describe('construction', function(){
     it('should allow construction with text node', function(){
       var text = a.firstChild;
@@ -150,23 +155,55 @@ describe('jqLite', function(){
       expect(jqLite(b).attr('prop')).toBeFalsy();
     });
 
-    it('should read special attributes as boolean', function(){
+    it('should read special attributes as strings', function(){
       var select = jqLite('<select>');
-      expect(select.attr('multiple')).toEqual(false);
-      expect(jqLite('<select multiple>').attr('multiple')).toEqual(true);
-      expect(jqLite('<select multiple="">').attr('multiple')).toEqual(true);
-      expect(jqLite('<select multiple="x">').attr('multiple')).toEqual(true);
+      expect(select.attr('multiple')).toBeUndefined();
+      expect(jqLite('<select multiple>').attr('multiple')).toBe('multiple');
+      expect(jqLite('<select multiple="">').attr('multiple')).toBe('multiple');
+      expect(jqLite('<select multiple="x">').attr('multiple')).toBe('multiple');
 
       select.attr('multiple', false);
-      expect(select.attr('multiple')).toEqual(false);
+      expect(select.attr('multiple')).toBeUndefined();
 
       select.attr('multiple', true);
-      expect(select.attr('multiple')).toEqual(true);
+      expect(select.attr('multiple')).toBe('multiple');
     });
 
     it('should return undefined for non-existing attributes', function() {
       var elm = jqLite('<div class="any">a</div>');
       expect(elm.attr('non-existing')).toBeUndefined();
+    });
+  });
+
+
+  describe('prop', function() {
+    it('should read element property', function() {
+      var elm = jqLite('<div class="foo">a</div>');
+      expect(elm.prop('className')).toBe('foo');
+    });
+
+    it('should set element property to a value', function() {
+      var elm = jqLite('<div class="foo">a</div>');
+      elm.prop('className', 'bar');
+      expect(elm[0].className).toBe('bar');
+      expect(elm.prop('className')).toBe('bar');
+    });
+
+    it('should set boolean element property', function() {
+      var elm = jqLite('<input type="checkbox">');
+      expect(elm.prop('checked')).toBe(false);
+
+      elm.prop('checked', true);
+      expect(elm.prop('checked')).toBe(true);
+
+      elm.prop('checked', '');
+      expect(elm.prop('checked')).toBe(false);
+
+      elm.prop('checked', 'lala');
+      expect(elm.prop('checked')).toBe(true);
+
+      elm.prop('checked', null);
+      expect(elm.prop('checked')).toBe(false);
     });
   });
 
@@ -181,12 +218,49 @@ describe('jqLite', function(){
     });
 
 
-    describe('addClass', function(){
-      it('should allow adding of class', function(){
+    describe('addClass', function() {
+      it('should allow adding of class', function() {
         var selector = jqLite([a, b]);
         expect(selector.addClass('abc')).toEqual(selector);
         expect(jqLite(a).hasClass('abc')).toEqual(true);
         expect(jqLite(b).hasClass('abc')).toEqual(true);
+      });
+
+
+      it('should ignore falsy values', function() {
+        var jqA = jqLite(a);
+        expect(jqA[0].className).toBe('');
+
+        jqA.addClass(undefined);
+        expect(jqA[0].className).toBe('');
+
+        jqA.addClass(null);
+        expect(jqA[0].className).toBe('');
+
+        jqA.addClass(false);
+        expect(jqA[0].className).toBe('');
+      });
+
+
+      it('should allow multiple classes to be added in a single string', function() {
+        var jqA = jqLite(a);
+        expect(a.className).toBe('');
+
+        jqA.addClass('foo bar baz');
+        expect(a.className).toBe('foo bar baz');
+      });
+
+
+      it('should not add duplicate classes', function() {
+        var jqA = jqLite(a);
+        expect(a.className).toBe('');
+
+        a.className = 'foo';
+        jqA.addClass('foo');
+        expect(a.className).toBe('foo');
+
+        jqA.addClass('bar foo baz');
+        expect(a.className).toBe('foo bar baz');
       });
     });
 
@@ -223,6 +297,7 @@ describe('jqLite', function(){
         expect(jqLite(b).hasClass('abc')).toEqual(false);
       });
 
+
       it('should correctly remove middle class', function() {
         var element = jqLite('<div class="foo bar baz"></div>');
         expect(element.hasClass('bar')).toBe(true);
@@ -233,6 +308,15 @@ describe('jqLite', function(){
         expect(element.hasClass('bar')).toBe(false);
         expect(element.hasClass('baz')).toBe(true);
       });
+
+
+      it('should remove multiple classes specified as one string', function() {
+        var jqA = jqLite(a);
+
+        a.className = 'foo bar baz';
+        jqA.removeClass('foo baz noexistent');
+        expect(a.className).toBe('bar');
+      });
     });
   });
 
@@ -241,21 +325,46 @@ describe('jqLite', function(){
     it('should set and read css', function(){
       var selector = jqLite([a, b]);
 
-      expect(selector.css('prop', 'value')).toEqual(selector);
-      expect(jqLite(a).css('prop')).toEqual('value');
-      expect(jqLite(b).css('prop')).toEqual('value');
+      expect(selector.css('margin', '1px')).toEqual(selector);
+      expect(jqLite(a).css('margin')).toEqual('1px');
+      expect(jqLite(b).css('margin')).toEqual('1px');
 
-      expect(selector.css({'prop': 'new value'})).toEqual(selector);
-      expect(jqLite(a).css('prop')).toEqual('new value');
-      expect(jqLite(b).css('prop')).toEqual('new value');
+      expect(selector.css({'margin': '2px'})).toEqual(selector);
+      expect(jqLite(a).css('margin')).toEqual('2px');
+      expect(jqLite(b).css('margin')).toEqual('2px');
 
-      jqLite(b).css({'prop': 'new value 2'});
-      expect(jqLite(selector).css('prop')).toEqual('new value');
-      expect(jqLite(b).css('prop')).toEqual('new value 2');
+      jqLite(b).css({'margin': '3px'});
+      expect(jqLite(selector).css('margin')).toEqual('2px');
+      expect(jqLite(a).css('margin')).toEqual('2px');
+      expect(jqLite(b).css('margin')).toEqual('3px');
 
-      selector.css('prop', null);
-      expect(jqLite(a).css('prop')).toBeFalsy();
-      expect(jqLite(b).css('prop')).toBeFalsy();
+      selector.css('margin', '');
+      if (msie <= 8) {
+        expect(jqLite(a).css('margin')).toBe('auto');
+        expect(jqLite(b).css('margin')).toBe('auto');
+      } else {
+        expect(jqLite(a).css('margin')).toBeFalsy();
+        expect(jqLite(b).css('margin')).toBeFalsy();
+      }
+    });
+
+
+    it('should set a bunch of css properties specified via an object', function() {
+      if (msie <= 8) {
+        expect(jqLite(a).css('margin')).toBe('auto');
+        expect(jqLite(a).css('padding')).toBe('0px');
+        expect(jqLite(a).css('border')).toBeUndefined();
+      } else {
+        expect(jqLite(a).css('margin')).toBeFalsy();
+        expect(jqLite(a).css('padding')).toBeFalsy();
+        expect(jqLite(a).css('border')).toBeFalsy();
+      }
+
+      jqLite(a).css({'margin': '1px', 'padding': '2px', 'border': ''});
+
+      expect(jqLite(a).css('margin')).toBe('1px');
+      expect(jqLite(a).css('padding')).toBe('2px');
+      expect(jqLite(a).css('border')).toBeFalsy();
     });
   });
 
@@ -373,6 +482,114 @@ describe('jqLite', function(){
       });
 
       browserTrigger(a, 'click');
+    });
+
+    it('should have event.isDefaultPrevented method', function() {
+      jqLite(a).bind('click', function(e) {
+        expect(function() {
+          expect(e.isDefaultPrevented()).toBe(false);
+          e.preventDefault();
+          expect(e.isDefaultPrevented()).toBe(true);
+        }).not.toThrow();
+      });
+
+      browserTrigger(a, 'click');
+    });
+  });
+
+
+  describe('unbind', function() {
+    it('should do nothing when no listener was registered with bound', function() {
+      var aElem = jqLite(a);
+
+      aElem.unbind();
+      aElem.unbind('click');
+      aElem.unbind('click', function() {});
+    });
+
+
+    it('should deregister all listeners', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.bind('click', clickSpy);
+      aElem.bind('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.unbind();
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).not.toHaveBeenCalled();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).not.toHaveBeenCalled();
+    });
+
+
+    it('should deregister listeners for specific type', function() {
+      var aElem = jqLite(a),
+          clickSpy = jasmine.createSpy('click'),
+          mouseoverSpy = jasmine.createSpy('mouseover');
+
+      aElem.bind('click', clickSpy);
+      aElem.bind('mouseover', mouseoverSpy);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).toHaveBeenCalledOnce();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      clickSpy.reset();
+      mouseoverSpy.reset();
+
+      aElem.unbind('click');
+
+      browserTrigger(a, 'click');
+      expect(clickSpy).not.toHaveBeenCalled();
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).toHaveBeenCalledOnce();
+
+      mouseoverSpy.reset();
+
+      aElem.unbind('mouseover');
+      browserTrigger(a, 'mouseover');
+      expect(mouseoverSpy).not.toHaveBeenCalled();
+    });
+
+
+    it('should deregister specific listener', function() {
+      var aElem = jqLite(a),
+          clickSpy1 = jasmine.createSpy('click1'),
+          clickSpy2 = jasmine.createSpy('click2');
+
+      aElem.bind('click', clickSpy1);
+      aElem.bind('click', clickSpy2);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy1).toHaveBeenCalledOnce();
+      expect(clickSpy2).toHaveBeenCalledOnce();
+
+      clickSpy1.reset();
+      clickSpy2.reset();
+
+      aElem.unbind('click', clickSpy1);
+
+      browserTrigger(a, 'click');
+      expect(clickSpy1).not.toHaveBeenCalled();
+      expect(clickSpy2).toHaveBeenCalledOnce();
+
+      clickSpy2.reset();
+
+      aElem.unbind('click', clickSpy2);
+      browserTrigger(a, 'click');
+      expect(clickSpy2).not.toHaveBeenCalled();
     });
   });
 

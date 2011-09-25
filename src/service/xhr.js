@@ -140,8 +140,8 @@
          <input type="text" name="url" value="index.html" size="80"/>
          <button ng:click="fetch()">fetch</button><br>
          <button ng:click="updateModel('GET', 'index.html')">Sample GET</button>
-         <button ng:click="updateModel('JSON', 'https://www.googleapis.com/buzz/v1/activities/googlebuzz/@self?alt=json&callback=JSON_CALLBACK')">Sample JSONP (Buzz API)</button>
-         <button ng:click="updateModel('JSON', 'https://www.invalid_JSONP_request.com&callback=JSON_CALLBACK')">Invalid JSONP</button>
+         <button ng:click="updateModel('JSON', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>
+         <button ng:click="updateModel('JSON', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">Invalid JSONP</button>
          <pre>code={{code}}</pre>
          <pre>response={{response}}</pre>
        </div>
@@ -154,11 +154,11 @@
          expect(binding('response')).toMatch(/angularjs.org/);
        });
 
-       it('should make JSONP request to the Buzz API', function() {
-         element(':button:contains("Buzz API")').click();
+       it('should make JSONP request to the angularjs.org', function() {
+         element(':button:contains("Sample JSONP")').click();
          element(':button:contains("fetch")').click();
          expect(binding('code')).toBe('code=200');
-         expect(binding('response')).toMatch(/buzz-feed/);
+         expect(binding('response')).toMatch(/Super Hero!/);
        });
 
        it('should make JSONP request to invalid URL and invoke the error handler',

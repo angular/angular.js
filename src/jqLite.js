@@ -5,28 +5,28 @@
 //////////////////////////////////
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.element
  * @function
  *
  * @description
- * Wraps a raw DOM element or HTML string as [jQuery](http://jquery.com) element.
- * `angular.element` is either an alias for [jQuery](http://api.jquery.com/jQuery/) function if
- * jQuery is loaded or a function that wraps the element or string in angular's jQuery lite
- * implementation.
+ * Wraps a raw DOM element or HTML string as a [jQuery](http://jquery.com) element.
+ * `angular.element` can be either an alias for [jQuery](http://api.jquery.com/jQuery/) function, if
+ * jQuery is available, or a function that wraps the element or string in Angular's jQuery lite
+ * implementation (commonly referred to as jqLite).
  *
- * Real jQuery always takes precedence (as long as it was loaded before `DOMContentEvent`)
+ * Real jQuery always takes precedence over jqLite, provided it was loaded before `DOMContentLoaded`
+ * event fired.
  *
- * Angular's jQuery lite implementation is a tiny API-compatible subset of jQuery which allows
- * angular to manipulate DOM. The jQuery lite implements only a subset of jQuery api, with the
- * focus on the most commonly needed functionality and minimal footprint. For this reason only a
- * limited number of jQuery methods, arguments and invocation styles are supported.
+ * jqLite is a tiny, API-compatible subset of jQuery that allows
+ * Angular to manipulate the DOM. jqLite implements only the most commonly needed functionality
+ * within a very small footprint, so only a subset of the jQuery API - methods, arguments and
+ * invocation styles - are supported.
  *
- * Note: All element references in angular are always wrapped with jQuery (lite) and are never
+ * Note: All element references in Angular are always wrapped with jQuery or jqLite; they are never
  * raw DOM references.
  *
- * ## Angular's jQuery lite implements these functions:
+ * ## Angular's jQuery lite provides the following methods:
  *
  * - [addClass()](http://api.jquery.com/addClass/)
  * - [after()](http://api.jquery.com/after/)
@@ -37,8 +37,10 @@
  * - [clone()](http://api.jquery.com/clone/)
  * - [css()](http://api.jquery.com/css/)
  * - [data()](http://api.jquery.com/data/)
+ * - [eq()](http://api.jquery.com/eq/)
  * - [hasClass()](http://api.jquery.com/hasClass/)
  * - [parent()](http://api.jquery.com/parent/)
+ * - [prop()](http://api.jquery.com/prop/)
  * - [remove()](http://api.jquery.com/remove/)
  * - [removeAttr()](http://api.jquery.com/removeAttr/)
  * - [removeClass()](http://api.jquery.com/removeClass/)
@@ -46,12 +48,11 @@
  * - [replaceWith()](http://api.jquery.com/replaceWith/)
  * - [text()](http://api.jquery.com/text/)
  * - [trigger()](http://api.jquery.com/trigger/)
- * - [eq()](http://api.jquery.com/eq/)
+ * - [unbind()](http://api.jquery.com/unbind/)
  *
- * ## Additionally these methods extend the jQuery and  are available in both jQuery and jQuery lite
- * version:
+ * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
- *- `scope()` - retrieves the current angular scope of the element.
+ * - `scope()` - retrieves the current Angular scope of the element.
  *
  * @param {string|DOMElement} element HTML string or DOMElement to be wrapped into jQuery.
  * @returns {Object} jQuery object.
@@ -156,16 +157,24 @@ function JQLiteHasClass(element, selector, _) {
 }
 
 function JQLiteRemoveClass(element, selector) {
-  element.className = trim(
-      (" " + element.className + " ")
-      .replace(/[\n\t]/g, " ")
-      .replace(" " + selector + " ", " ")
-  );
+  if (selector) {
+    forEach(selector.split(' '), function(cssClass) {
+      element.className = trim(
+          (" " + element.className + " ")
+          .replace(/[\n\t]/g, " ")
+          .replace(" " + trim(cssClass) + " ", " ")
+      );
+    });
+  }
 }
 
-function JQLiteAddClass(element, selector ) {
-  if (!JQLiteHasClass(element, selector)) {
-    element.className = trim(element.className + ' ' + selector);
+function JQLiteAddClass(element, selector) {
+  if (selector) {
+    forEach(selector.split(' '), function(cssClass) {
+      if (!JQLiteHasClass(element, cssClass)) {
+        element.className = trim(element.className + ' ' + trim(cssClass));
+      }
+    });
   }
 }
 
@@ -241,16 +250,32 @@ forEach({
     if (isDefined(value)) {
       element.style[name] = value;
     } else {
-      return element.style[name];
+      var val;
+
+      if (msie <=8) {
+        // this is some IE specific weirdness that jQuery 1.6.4 does not sure why
+        val = element.currentStyle && element.currentStyle[name];
+        if (val === '') val = 'auto';
+      }
+
+      val = val || element.style[name];
+
+      return  (val === '') ? undefined : val;
     }
   },
 
   attr: function(element, name, value){
     if (SPECIAL_ATTR[name]) {
       if (isDefined(value)) {
-        element[name] = !!value;
+        if (!!value) {
+          element[name] = true;
+          element.setAttribute(name, name);
+        } else {
+          element[name] = false;
+          element.removeAttribute(name);
+        }
       } else {
-        return element[name];
+        return (element[name] || element.getAttribute(name)) ? name : undefined;
       }
     } else if (isDefined(value)) {
       element.setAttribute(name, value);
@@ -260,6 +285,14 @@ forEach({
       var ret = element.getAttribute(name, 2);
       // normalize non-existing attributes to undefined (as jQuery)
       return ret === null ? undefined : ret;
+    }
+  },
+
+  prop: function(element, name, value) {
+    if (isDefined(value)) {
+      element[name] = value;
+    } else {
+      return element[name];
     }
   },
 
@@ -363,6 +396,20 @@ forEach({
           if (!event.target) {
             event.target = event.srcElement || document;
           }
+
+          if (isUndefined(event.defaultPrevented)) {
+            var prevent = event.preventDefault;
+            event.preventDefault = function() {
+              event.defaultPrevented = true;
+              prevent.call(event);
+            };
+            event.defaultPrevented = false;
+          }
+
+          event.isDefaultPrevented = function() {
+            return event.defaultPrevented;
+          };
+
           forEach(eventHandler.fns, function(fn){
             fn.call(element, event);
           });
@@ -372,6 +419,25 @@ forEach({
       }
       eventHandler.fns.push(fn);
     });
+  },
+
+  unbind: function(element, type, fn) {
+    var bind = JQLiteData(element, 'bind');
+    if (!bind) return; //no listeners registered
+
+    if (isUndefined(type)) {
+      forEach(bind, function(eventHandler, type) {
+        removeEventListenerFn(element, type, eventHandler);
+        delete bind[type];
+      });
+    } else {
+      if (isUndefined(fn)) {
+        removeEventListenerFn(element, type, bind[type]);
+        delete bind[type];
+      } else {
+        angularArray.remove(bind[type].fns, fn);
+      }
+    }
   },
 
   replaceWith: function(element, replaceNode) {

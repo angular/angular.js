@@ -900,22 +900,28 @@ describe("widget", function(){
         createSelect({
           name:'selected',
           'ng:options':'value for value in values',
-          'ng:change':'count = count + 1'
+          'ng:change':'log = log + selected.name'
         });
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
-        scope.count = 0;
+        scope.log = '';
         scope.$digest();
-        expect(scope.count).toEqual(0);
+        expect(scope.log).toEqual('');
 
         select.val('1');
         browserTrigger(select, 'change');
-        expect(scope.count).toEqual(1);
+        expect(scope.log).toEqual('B');
         expect(scope.selected).toEqual(scope.values[1]);
 
+        // ignore change event when the model doesn't change
         browserTrigger(select, 'change');
-        expect(scope.count).toEqual(1);
+        expect(scope.log).toEqual('B');
         expect(scope.selected).toEqual(scope.values[1]);
+
+        select.val('0');
+        browserTrigger(select, 'change');
+        expect(scope.log).toEqual('BA');
+        expect(scope.selected).toEqual(scope.values[0]);
       });
 
       it('should update model on change through expression', function(){
@@ -951,8 +957,8 @@ describe("widget", function(){
         scope.selected = [];
         scope.$digest();
         expect(select.find('option').length).toEqual(2);
-        expect(jqLite(select.find('option')[0]).attr('selected')).toEqual(false);
-        expect(jqLite(select.find('option')[1]).attr('selected')).toEqual(false);
+        expect(select.find('option')[0].selected).toBe(false);
+        expect(select.find('option')[1].selected).toBe(false);
 
         scope.selected.push(scope.values[1]);
         scope.$digest();
@@ -1111,7 +1117,7 @@ describe("widget", function(){
 
 
     it('should do nothing when no routes are defined', function() {
-      $location.updateHash('/unknown');
+      $location.path('/unknown');
       rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
     });
@@ -1123,14 +1129,14 @@ describe("widget", function(){
 
       expect(rootScope.$element.text()).toEqual('');
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
-      $location.updateHash('/bar');
+      $location.path('/bar');
       $browser.xhr.expectGET('myUrl2').respond('angular is da best');
       rootScope.$digest();
       rootScope.$digest();
@@ -1141,14 +1147,14 @@ describe("widget", function(){
     it('should remove all content when location changes to an unknown route', function() {
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
       rootScope.$digest();
       rootScope.$digest();
       $browser.xhr.flush();
       expect(rootScope.$element.text()).toEqual('4');
 
-      $location.updateHash('/unknown');
+      $location.path('/unknown');
       rootScope.$digest();
       rootScope.$digest();
       expect(rootScope.$element.text()).toEqual('');
@@ -1158,7 +1164,7 @@ describe("widget", function(){
       $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
       rootScope.parentVar = 'parent';
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
       rootScope.$digest();
       rootScope.$digest();
@@ -1177,7 +1183,7 @@ describe("widget", function(){
       var myApp = angular.scope();
       var $browser = myApp.$service('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
-      $browser.setUrl('http://server/#/foo');
+      myApp.$service('$location').path('/foo');
 
       var $route = myApp.$service('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
@@ -1214,7 +1220,7 @@ describe("widget", function(){
         this.log.push('child');
       };
 
-      $location.updateHash('/foo');
+      $location.path('/foo');
       $browser.xhr.expectGET('viewPartial.html').
           respond('<div ng:init="log.push(\'init\')">' +
                     '<div ng:controller="ChildCtrl"></div>' +
@@ -1224,17 +1230,143 @@ describe("widget", function(){
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
-      $location.updateHash('');
+      $location.path('/');
       rootScope.$apply();
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
 
       rootScope.log = [];
-      $location.updateHash('/foo');
+      $location.path('/foo');
       rootScope.$apply();
       $browser.defer.flush();
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
     });
+  });
+
+
+  describe('ng:pluralize', function() {
+    describe('deal with pluralized strings without offset', function() {
+       beforeEach(function() {
+          compile('<ng:pluralize count="email"' +
+                                 "when=\"{'0': 'You have no new email'," +
+                                         "'one': 'You have one new email'," +
+                                         "'other': 'You have {} new emails'}\">" +
+                  '</ng:pluralize>');
+        });
+
+        it('should show single/plural strings', function() {
+          scope.email = 0;
+          scope.$digest();
+          expect(element.text()).toBe('You have no new email');
+
+          scope.email = '0';
+          scope.$digest();
+          expect(element.text()).toBe('You have no new email');
+
+          scope.email = 1;
+          scope.$digest();
+          expect(element.text()).toBe('You have one new email');
+
+          scope.email = 0.01;
+          scope.$digest();
+          expect(element.text()).toBe('You have 0.01 new emails');
+
+          scope.email = '0.1';
+          scope.$digest();
+          expect(element.text()).toBe('You have 0.1 new emails');
+
+          scope.email = 2;
+          scope.$digest();
+          expect(element.text()).toBe('You have 2 new emails');
+
+          scope.email = -0.1;
+          scope.$digest();
+          expect(element.text()).toBe('You have -0.1 new emails');
+
+          scope.email = '-0.01';
+          scope.$digest();
+          expect(element.text()).toBe('You have -0.01 new emails');
+
+          scope.email = -2;
+          scope.$digest();
+          expect(element.text()).toBe('You have -2 new emails');
+        });
+
+
+        it('should show single/plural strings with mal-formed inputs', function() {
+          scope.email = '';
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = null;
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = undefined;
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = 'a3';
+          scope.$digest();
+          expect(element.text()).toBe('');
+
+          scope.email = '011';
+          scope.$digest();
+          expect(element.text()).toBe('You have 11 new emails');
+
+          scope.email = '-011';
+          scope.$digest();
+          expect(element.text()).toBe('You have -11 new emails');
+
+          scope.email = '1fff';
+          scope.$digest();
+          expect(element.text()).toBe('You have one new email');
+
+          scope.email = '0aa22';
+          scope.$digest();
+          expect(element.text()).toBe('You have no new email');
+
+          scope.email = '000001';
+          scope.$digest();
+          expect(element.text()).toBe('You have one new email');
+        });
+    });
+
+
+    describe('deal with pluralized strings with offset', function() {
+      it('should show single/plural strings with offset', function() {
+        compile("<ng:pluralize count=\"viewCount\"  offset=2 " +
+                    "when=\"{'0': 'Nobody is viewing.'," +
+                            "'1': '{{p1}} is viewing.'," +
+                            "'2': '{{p1}} and {{p2}} are viewing.'," +
+                            "'one': '{{p1}}, {{p2}} and one other person are viewing.'," +
+                            "'other': '{{p1}}, {{p2}} and {} other people are viewing.'}\">" +
+                "</ng:pluralize>");
+        scope.p1 = 'Igor';
+        scope.p2 = 'Misko';
+
+        scope.viewCount = 0;
+        scope.$digest();
+        expect(element.text()).toBe('Nobody is viewing.');
+
+        scope.viewCount = 1;
+        scope.$digest();
+        expect(element.text()).toBe('Igor is viewing.');
+
+        scope.viewCount = 2;
+        scope.$digest();
+        expect(element.text()).toBe('Igor and Misko are viewing.');
+
+        scope.viewCount = 3;
+        scope.$digest();
+        expect(element.text()).toBe('Igor, Misko and one other person are viewing.');
+
+        scope.viewCount = 4;
+        scope.$digest();
+        expect(element.text()).toBe('Igor, Misko and 2 other people are viewing.');
+      });
+    });
+
   });
 });
 

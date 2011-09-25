@@ -2,14 +2,14 @@
 
 var browserSingleton;
 
-angularService('$browser', function($log){
+angularService('$browser', function($log, $sniffer) {
   if (!browserSingleton) {
     browserSingleton = new Browser(window, jqLite(window.document), jqLite(window.document.body),
-                                   XHR, $log);
+                                   XHR, $log, $sniffer);
     browserSingleton.bind();
   }
   return browserSingleton;
-}, {$inject:['$log']});
+}, {$inject: ['$log', '$sniffer']});
 
 
 extend(angular, {

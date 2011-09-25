@@ -1,18 +1,17 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.markup
  * @description
  *
- * Angular markup transforms content of DOM elements or portions of this content into other text or
- * DOM elements for further compilation.
+ * Angular markup transforms the content of DOM elements or portions of the content into other
+ * text or DOM elements for further compilation.
  *
  * Markup extensions do not themselves produce linking functions. Think of markup as a way to
  * produce shorthand for a {@link angular.widget widget} or a {@link angular.directive directive}.
  *
- * The most prominent example of a markup in angular is the built-in double curly markup
+ * The most prominent example of a markup in Angular is the built-in, double curly markup
  * `{{expression}}`, which is shorthand for `<span ng:bind="expression"></span>`.
  *
  * Create custom markup like this:
@@ -23,21 +22,24 @@
  *   });
  * </pre>
  *
- * For more information about angular markup, see {@link guide/dev_guide.compiler.markup
- * Understanding Angular Markup} in the angular Developer Guide.
+ * For more information, see {@link guide/dev_guide.compiler.markup Understanding Angular Markup}
+ * in the Angular Developer Guide.
  */
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.attrMarkup
  * @description
  *
- * Attribute markup extends the angular compiler in a very similar way as {@link angular.markup}
- * except that it allows you to modify the state of the attribute text rather than the content of a
- * node.
+ * Attribute markup allows you to modify the state of an attribute's text.
  *
- * Create custom attribute markup like this:
+ * Attribute markup extends the Angular complier in a way similar to {@link angular.markup},
+ * which allows you to modify the content of a node.
+ *
+ * The most prominent example of an attribute markup in Angular is the built-in double curly markup
+ * which is a shorthand for {@link angular.directive.ng:bind-attr ng:bind-attr}.
+ *
+ * ## Example
  *
  * <pre>
  *   angular.attrMarkup('newAttrMarkup', function(attrValue, attrName, element){
@@ -45,8 +47,8 @@
  *   });
  * </pre>
  *
- * For more information about angular attribute markup, see {@link guide/dev_guide.compiler.markup
- * Understanding Angular Markup} in the angular Developer Guide.
+ * For more information about Angular attribute markup, see {@link guide/dev_guide.compiler.markup
+ * Understanding Angular Markup} in the Angular Developer Guide.
  */
 
 function parseBindings(string) {
@@ -164,10 +166,10 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         <input name="value" /><br />
         <a id="link-1" href ng:click="value = 1">link 1</a> (link, don't reload)<br />
         <a id="link-2" href="" ng:click="value = 2">link 2</a> (link, don't reload)<br />
-        <a id="link-3" ng:href="#{{'123'}}" ng:click="value = 3">link 3</a> (link, reload!)<br />
+        <a id="link-3" ng:href="#!/{{'123'}}" ng:click="value = 3">link 3</a> (link, reload!)<br />
         <a id="link-4" href="" name="xx" ng:click="value = 4">anchor</a> (link, don't reload)<br />
         <a id="link-5" name="xxx" ng:click="value = 5">anchor</a> (no link)<br />
-        <a id="link-6" ng:href="#/{{value}}">link</a> (link, change hash)
+        <a id="link-6" ng:href="#!/{{value}}">link</a> (link, change hash)
       </doc:source>
       <doc:scenario>
         it('should execute ng:click but not reload when href without value', function() {
@@ -185,8 +187,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         it('should execute ng:click and change url when ng:href specified', function() {
           element('#link-3').click();
           expect(input('value').val()).toEqual('3');
-          expect(element('#link-3').attr('href')).toBe("#123");
-          expect(browser().location().hash()).toEqual('123');
+          expect(element('#link-3').attr('href')).toBe("#!/123");
+          expect(browser().location().hash()).toEqual('!/123');
         });
 
         it('should execute ng:click but not reload when href empty string and name specified', function() {
@@ -204,8 +206,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         it('should only change url when only ng:href', function() {
           input('value').enter('6');
           element('#link-6').click();
-          expect(browser().location().hash()).toEqual('/6');
-          expect(element('#link-6').attr('href')).toBe("#/6");
+          expect(browser().location().hash()).toEqual('!/6');
+          expect(element('#link-6').attr('href')).toBe("#!/6");
         });
       </doc:scenario>
     </doc:example>
@@ -264,9 +266,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       </doc:source>
       <doc:scenario>
         it('should toggle button', function() {
-          expect(element('.doc-example-live :button').attr('disabled')).toBeFalsy();
+          expect(element('.doc-example-live :button').prop('disabled')).toBeFalsy();
           input('checked').check();
-          expect(element('.doc-example-live :button').attr('disabled')).toBeTruthy();
+          expect(element('.doc-example-live :button').prop('disabled')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
@@ -294,9 +296,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       </doc:source>
       <doc:scenario>
         it('should check both checkBoxes', function() {
-          expect(element('.doc-example-live #checkSlave').attr('checked')).toBeFalsy();
+          expect(element('.doc-example-live #checkSlave').prop('checked')).toBeFalsy();
           input('master').check();
-          expect(element('.doc-example-live #checkSlave').attr('checked')).toBeTruthy();
+          expect(element('.doc-example-live #checkSlave').prop('checked')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
@@ -330,9 +332,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
        </doc:source>
        <doc:scenario>
          it('should toggle multiple', function() {
-           expect(element('.doc-example-live #select').attr('multiple')).toBeFalsy();
+           expect(element('.doc-example-live #select').prop('multiple')).toBeFalsy();
            input('checked').check();
-           expect(element('.doc-example-live #select').attr('multiple')).toBeTruthy();
+           expect(element('.doc-example-live #select').prop('multiple')).toBeTruthy();
          });
        </doc:scenario>
      </doc:example>
@@ -360,9 +362,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
       </doc:source>
       <doc:scenario>
         it('should toggle readonly attr', function() {
-          expect(element('.doc-example-live :text').attr('readonly')).toBeFalsy();
+          expect(element('.doc-example-live :text').prop('readonly')).toBeFalsy();
           input('checked').check();
-          expect(element('.doc-example-live :text').attr('readonly')).toBeTruthy();
+          expect(element('.doc-example-live :text').prop('readonly')).toBeTruthy();
         });
       </doc:scenario>
     </doc:example>
@@ -393,9 +395,9 @@ angularTextMarkup('option', function(text, textNode, parentElement){
      </doc:source>
      <doc:scenario>
        it('should select Greetings!', function() {
-         expect(element('.doc-example-live #greet').attr('selected')).toBeFalsy();
+         expect(element('.doc-example-live #greet').prop('selected')).toBeFalsy();
          input('checked').check();
-         expect(element('.doc-example-live #greet').attr('selected')).toBeTruthy();
+         expect(element('.doc-example-live #greet').prop('selected')).toBeTruthy();
        });
      </doc:scenario>
    </doc:example>

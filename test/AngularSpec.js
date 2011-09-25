@@ -503,21 +503,21 @@ describe('angular', function(){
     });
 
     it('should inject dependencies specified by $inject', function() {
-	  angular.service('svc1', function() { return 'svc1'; });
-	  angular.service('svc2', function(svc1) { return 'svc2-' + svc1; }, {$inject: ['svc1']});
-	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      angular.service('svc1', function() { return 'svc1'; });
+      angular.service('svc2', function(svc1) { return 'svc2-' + svc1; }, {$inject: ['svc1']});
+      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
-	  angular.service('svc1', function() { return 'svc1'; });
-	  angular.service('svc2', function(foo) { return 'svc2-' + foo; }, {$inject: ['svc1']});
-	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      angular.service('svc1', function() { return 'svc1'; });
+      angular.service('svc2', function(foo) { return 'svc2-' + foo; }, {$inject: ['svc1']});
+      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
     it('should inject infered dependencies when $inject is missing', function() {
-	  angular.service('svc1', function() { return 'svc1'; });
-	  angular.service('svc2', function(svc1) { return 'svc2-' + svc1; });
-	  expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      angular.service('svc1', function() { return 'svc1'; });
+      angular.service('svc2', function(svc1) { return 'svc2-' + svc1; });
+      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
     it('should eagerly instantiate a service if $eager is true', function() {
@@ -597,7 +597,7 @@ describe('angular', function(){
   describe('nodeName_', function() {
     it('should correctly detect node name with "namespace" when xmlns is defined', function() {
       var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
-                         '<ngtest:foo ngtest:attr="bar"></ng:test>' +
+                         '<ngtest:foo ngtest:attr="bar"></ngtest:foo>' +
                        '</div>')[0];
       expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
       expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');

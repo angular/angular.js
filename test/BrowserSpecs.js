@@ -1,36 +1,61 @@
 'use strict';
 
-describe('browser', function(){
+function MockWindow() {
+  var events = {};
+  var timeouts = this.timeouts = [];
 
-  var browser, fakeWindow, xhr, logs, scripts, removedScripts, setTimeoutQueue;
+  this.setTimeout = function(fn) {
+    return timeouts.push(fn) - 1;
+  };
 
-  function fakeSetTimeout(fn) {
-    return setTimeoutQueue.push(fn) - 1; //return position in the queue
-  }
+  this.clearTimeout = function(id) {
+    timeouts[id] = noop;
+  };
 
-  function fakeClearTimeout(deferId) {
-    setTimeoutQueue[deferId] = noop; //replace fn with noop to preserve other deferId indexes
-  }
+  this.setTimeout.flush = function() {
+    var length = timeouts.length;
+    while (length-- > 0) timeouts.shift()();
+  };
 
-  fakeSetTimeout.flush = function() {
-    var currentTimeoutQueue = setTimeoutQueue;
-    setTimeoutQueue = [];
-    forEach(currentTimeoutQueue, function(fn) {
-      fn();
+  this.addEventListener = function(name, listener) {
+    if (isUndefined(events[name])) events[name] = [];
+    events[name].push(listener);
+  };
+
+  this.attachEvent = function(name, listener) {
+    this.addEventListener(name.substr(2), listener);
+  };
+
+  this.removeEventListener = noop;
+  this.detachEvent = noop;
+
+  this.fire = function(name) {
+    forEach(events[name], function(fn) {
+      fn({type: name}); // type to make jQuery happy
     });
   };
 
+  this.location = {
+    href: 'http://server',
+    replace: noop
+  };
+
+  this.history = {
+    replaceState: noop,
+    pushState: noop
+  };
+}
+
+describe('browser', function(){
+
+  var browser, fakeWindow, xhr, logs, scripts, removedScripts, sniffer;
 
   beforeEach(function(){
-    setTimeoutQueue = [];
     scripts = [];
     removedScripts = [];
     xhr = null;
-    fakeWindow = {
-      location: {href:"http://server"},
-      setTimeout: fakeSetTimeout,
-      clearTimeout: fakeClearTimeout
-    };
+    sniffer = {history: true, hashchange: true};
+    fakeWindow = new MockWindow();
 
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
                      removeChild: function(node){removedScripts.push(node);}}];
@@ -59,7 +84,7 @@ describe('browser', function(){
                    error: function() { logs.error.push(slice.call(arguments)); }};
 
     browser = new Browser(fakeWindow, jqLite(window.document), fakeBody, FakeXhr,
-                          fakeLog);
+                          fakeLog, sniffer);
   });
 
   it('should contain cookie cruncher', function() {
@@ -202,22 +227,24 @@ describe('browser', function(){
 
   describe('defer', function() {
     it('should execute fn asynchroniously via setTimeout', function() {
-      var counter = 0;
-      browser.defer(function() {counter++;});
-      expect(counter).toBe(0);
+      var callback = jasmine.createSpy('deferred');
 
-      fakeSetTimeout.flush();
-      expect(counter).toBe(1);
+      browser.defer(callback);
+      expect(callback).not.toHaveBeenCalled();
+
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
 
     it('should update outstandingRequests counter', function() {
-      var callback = jasmine.createSpy('callback');
+      var callback = jasmine.createSpy('deferred');
+
       browser.defer(callback);
       expect(callback).not.toHaveBeenCalled();
 
-      fakeSetTimeout.flush();
-      expect(callback).toHaveBeenCalled();
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
     });
 
 
@@ -241,7 +268,7 @@ describe('browser', function(){
         expect(log).toEqual([]);
         browser.defer.cancel(deferId1);
         browser.defer.cancel(deferId3);
-        fakeSetTimeout.flush();
+        fakeWindow.setTimeout.flush();
         expect(log).toEqual(['ok']);
       });
     });
@@ -335,17 +362,17 @@ describe('browser', function(){
       it('should log warnings when 4kb per cookie storage limit is reached', function() {
         var i, longVal = '', cookieStr;
 
-        for(i=0; i<4092; i++) {
+        for(i=0; i<4091; i++) {
           longVal += '+';
         }
 
         cookieStr = document.cookie;
-        browser.cookies('x', longVal); //total size 4094-4096, so it should go through
+        browser.cookies('x', longVal); //total size 4093-4096, so it should go through
         expect(document.cookie).not.toEqual(cookieStr);
         expect(browser.cookies()['x']).toEqual(longVal);
         expect(logs.warn).toEqual([]);
 
-        browser.cookies('x', longVal + 'xxx'); //total size 4097-4099, a warning should be logged
+        browser.cookies('x', longVal + 'xxxx'); //total size 4097-4099, a warning should be logged
         expect(logs.warn).toEqual(
           [[ "Cookie 'x' possibly not set or overflowed because it was too large (4097 > 4096 " +
              "bytes)!" ]]);
@@ -458,21 +485,21 @@ describe('browser', function(){
       browser.addPollFn(function(){log+='a';});
       browser.addPollFn(function(){log+='b';});
       expect(log).toEqual('');
-      fakeSetTimeout.flush();
+      fakeWindow.setTimeout.flush();
       expect(log).toEqual('ab');
-      fakeSetTimeout.flush();
+      fakeWindow.setTimeout.flush();
       expect(log).toEqual('abab');
     });
 
     it('should startPoller', function(){
-      expect(setTimeoutQueue.length).toEqual(0);
+      expect(fakeWindow.timeouts.length).toEqual(0);
 
       browser.addPollFn(function(){});
-      expect(setTimeoutQueue.length).toEqual(1);
+      expect(fakeWindow.timeouts.length).toEqual(1);
 
       //should remain 1 as it is the check fn
       browser.addPollFn(function(){});
-      expect(setTimeoutQueue.length).toEqual(1);
+      expect(fakeWindow.timeouts.length).toEqual(1);
     });
 
     it('should return fn that was passed into addPollFn', function() {
@@ -482,96 +509,162 @@ describe('browser', function(){
     });
   });
 
+  describe('url', function() {
+    var pushState, replaceState, locationReplace;
 
-  describe('url api', function() {
-    it('should use $browser poller to detect url changes when onhashchange event is unsupported',
-        function() {
-
-      fakeWindow = {
-        location: {href:"http://server"},
-        document: {},
-        setTimeout: fakeSetTimeout
-      };
-
-      browser = new Browser(fakeWindow, {}, {});
-      browser.startPoller = function() {};
-
-      var events = [];
-
-      browser.onHashChange(function() {
-        events.push('x');
-      });
-
-      fakeWindow.location.href = "http://server/#newHash";
-      expect(events).toEqual([]);
-      fakeSetTimeout.flush();
-      expect(events).toEqual(['x']);
-
-      //don't do anything if url hasn't changed
-      events = [];
-      fakeSetTimeout.flush();
-      expect(events).toEqual([]);
+    beforeEach(function() {
+      pushState = spyOn(fakeWindow.history, 'pushState');
+      replaceState = spyOn(fakeWindow.history, 'replaceState');
+      locationReplace = spyOn(fakeWindow.location, 'replace');
     });
 
+    it('should return current location.href', function() {
+      fakeWindow.location.href = 'http://test.com';
+      expect(browser.url()).toEqual('http://test.com');
 
-    it('should use onhashchange events to detect url changes when supported by browser',
-        function() {
-
-      var onHashChngListener;
-
-      fakeWindow = {location: {href:"http://server"},
-                    addEventListener: function(type, listener) {
-                      expect(type).toEqual('hashchange');
-                      onHashChngListener = listener;
-                    },
-                    attachEvent: function(type, listener) {
-                      expect(type).toEqual('onhashchange');
-                      onHashChngListener = listener;
-                    },
-                    removeEventListener: angular.noop,
-                    detachEvent: angular.noop,
-                    document: {}
-                   };
-      fakeWindow.onhashchange = true;
-
-      browser = new Browser(fakeWindow, {}, {});
-
-      var events = [],
-          event = {type: "hashchange"};
-
-      browser.onHashChange(function(e) {
-        events.push(e);
-      });
-
-      expect(events).toEqual([]);
-      onHashChngListener(event);
-
-      expect(events.length).toBe(1);
-      expect(events[0].originalEvent || events[0]).toBe(event); // please jQuery and jqLite
-
-      // clean up the jqLite cache so that the global afterEach doesn't complain
-      if (!jQuery) {
-        jqLite(fakeWindow).dealoc();
-      }
+      fakeWindow.location.href = 'https://another.com';
+      expect(browser.url()).toEqual('https://another.com');
     });
 
-    // asynchronous test
-    it('should fire onHashChange when location.hash change', function() {
-      var callback = jasmine.createSpy('onHashChange');
-      browser = new Browser(window, {}, {});
-      browser.onHashChange(callback);
+    it('should use history.pushState when available', function() {
+      sniffer.history = true;
+      browser.url('http://new.org');
 
-      window.location.hash = 'new-hash';
-      browser.addPollFn(function() {});
+      expect(pushState).toHaveBeenCalledOnce();
+      expect(pushState.argsForCall[0][2]).toEqual('http://new.org');
 
-      waitsFor(function() {
-        return callback.callCount;
-      }, 'onHashChange callback to be called', 1000);
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server');
+    });
 
-      runs(function() {
-        if (!jQuery) jqLite(window).dealoc();
-        window.location.hash = '';
-      });
+    it('should use history.replaceState when available', function() {
+      sniffer.history = true;
+      browser.url('http://new.org', true);
+
+      expect(replaceState).toHaveBeenCalledOnce();
+      expect(replaceState.argsForCall[0][2]).toEqual('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server');
+    });
+
+    it('should set location.href when pushState not available', function() {
+      sniffer.history = false;
+      browser.url('http://new.org');
+
+      expect(fakeWindow.location.href).toEqual('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(locationReplace).not.toHaveBeenCalled();
+    });
+
+    it('should use location.replace when history.replaceState not available', function() {
+      sniffer.history = false;
+      browser.url('http://new.org', true);
+
+      expect(locationReplace).toHaveBeenCalledWith('http://new.org');
+
+      expect(pushState).not.toHaveBeenCalled();
+      expect(replaceState).not.toHaveBeenCalled();
+      expect(fakeWindow.location.href).toEqual('http://server');
+    });
+
+    it('should return $browser to allow chaining', function() {
+      expect(browser.url('http://any.com')).toBe(browser);
+    });
+  });
+
+  describe('urlChange', function() {
+    var callback;
+
+    beforeEach(function() {
+      callback = jasmine.createSpy('onUrlChange');
+    });
+
+    afterEach(function() {
+      if (!jQuery) jqLite(fakeWindow).dealoc();
+    });
+
+    it('should return registered callback', function() {
+      expect(browser.onUrlChange(callback)).toBe(callback);
+    });
+
+    it('should forward popstate event with new url when history supported', function() {
+      sniffer.history = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      fakeWindow.fire('popstate');
+      expect(callback).toHaveBeenCalledWith('http://server/new');
+
+      fakeWindow.fire('hashchange');
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+    it('should forward only popstate event when both history and hashchange supported', function() {
+      sniffer.history = true;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      fakeWindow.fire('popstate');
+      expect(callback).toHaveBeenCalledWith('http://server/new');
+
+      fakeWindow.fire('hashchange');
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+    it('should forward hashchange event with new url when only hashchange supported', function() {
+      sniffer.history = false;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      fakeWindow.location.href = 'http://server/new';
+
+      fakeWindow.fire('hashchange');
+      expect(callback).toHaveBeenCalledWith('http://server/new');
+
+      fakeWindow.fire('popstate');
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+    it('should use polling when neither history nor hashchange supported', function() {
+      sniffer.history = false;
+      sniffer.hashchange = false;
+      browser.onUrlChange(callback);
+
+      fakeWindow.location.href = 'http://server.new';
+      fakeWindow.setTimeout.flush();
+      expect(callback).toHaveBeenCalledWith('http://server.new');
+
+      fakeWindow.fire('popstate');
+      fakeWindow.fire('hashchange');
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+    it('should not fire urlChange if changed by browser.url method (polling)', function() {
+      sniffer.history = false;
+      sniffer.hashchange = false;
+      browser.onUrlChange(callback);
+      browser.url('http://new.com');
+
+      fakeWindow.setTimeout.flush();
+      expect(callback).not.toHaveBeenCalled();
+    });
+
+    it('should not fire urlChange if changed by browser.url method (hashchange)', function() {
+      sniffer.history = false;
+      sniffer.hashchange = true;
+      browser.onUrlChange(callback);
+      browser.url('http://new.com');
+
+      fakeWindow.fire('hashchange');
+      expect(callback).not.toHaveBeenCalled();
     });
   });
 
@@ -596,6 +689,42 @@ describe('browser', function(){
     it('should return the appended script element', function() {
       var script = browser.addJs('http://localhost/bar.js');
       expect(script).toBe(scripts[0]);
+    });
+  });
+
+  describe('baseHref', function() {
+    var jqDocHead;
+
+    function setDocumentBaseHrefTo(href) {
+      clearDocumentBaseHref();
+      jqDocHead.append('<base href="' + href +'" />');
+    }
+
+    function clearDocumentBaseHref() {
+      jqDocHead.find('base').remove();
+    }
+
+    beforeEach(function() {
+      jqDocHead = jqLite(document).find('head');
+    });
+
+    afterEach(clearDocumentBaseHref);
+
+    it('should return value from <base href>', function() {
+      setDocumentBaseHrefTo('/base/path/');
+      expect(browser.baseHref()).toEqual('/base/path/');
+    });
+
+    it('should return undefined if no <base href>', function() {
+      expect(browser.baseHref()).toBeUndefined();
+    });
+
+    it('should remove domain from <base href>', function() {
+      setDocumentBaseHrefTo('http://host.com/base/path/');
+      expect(browser.baseHref()).toEqual('/base/path/');
+
+      setDocumentBaseHrefTo('http://host.com/base/path/index.html');
+      expect(browser.baseHref()).toEqual('/base/path/index.html');
     });
   });
 });

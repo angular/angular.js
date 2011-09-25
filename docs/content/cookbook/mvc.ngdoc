@@ -26,7 +26,7 @@ no connection between the controller and the view.
         'cursor': 'pointer'
       };
       this.reset();
-      this.$watch('$location.hashSearch.board', this.readUrl);
+      this.$watch('$location.search().board', this.readUrl);
     }
     TicTacToeCntl.prototype = {
       dropPiece: function(row, col) {
@@ -62,7 +62,7 @@ no connection between the controller and the view.
         angular.forEach(this.board, function(row){
           rows.push(row.join(','));
         });
-        this.$location.hashSearch.board = rows.join(';') + '/' + this.nextMove;
+        this.$location.search({board: rows.join(';') + '/' + this.nextMove});
       },
       readUrl: function(scope, value) {
         if (value) {
@@ -72,8 +72,6 @@ no connection between the controller and the view.
             this.board[col] = row.split(',');
           }, this);
           this.grade();
-        } else {
-          this.reset();
         }
       }
     };
