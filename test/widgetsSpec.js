@@ -1265,14 +1265,12 @@ describe("widget", function(){
         $location.path('/foo');
         $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
         rootScope.$digest();
-        rootScope.$digest();
         expect(rootScope.$element.text()).toEqual('Loading...');
         $browser.xhr.flush();
         expect(rootScope.$element.text()).toEqual('4');
 
         $location.path('/bar');
         $browser.xhr.expectGET('myUrl2').respond('<div>{{2+3}}</div>');
-        rootScope.$digest();
         rootScope.$digest();
         expect(rootScope.$element.text()).toEqual('Loading...');
         $browser.xhr.flush();

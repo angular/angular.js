@@ -1424,8 +1424,10 @@ angularWidget("@ng:non-bindable", noop);
     </doc:example>
  */
 angularWidget('ng:view', function(element) {
-	var compiler = this, spinner;
-  if (element.attr('spinner') !== undefined) {
+  var compiler = this,
+      spinner;
+
+  if (isDefined(element.attr('spinner'))) {
       spinner = element.html();
   }
   if (!element[0]['ng:compiled']) {
