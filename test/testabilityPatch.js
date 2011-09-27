@@ -120,6 +120,11 @@ beforeEach(function(){
       };
 
       return this.actual.callCount == 1;
+    },
+
+
+    toBeOneOf: function() {
+      return angularArray.indexOf(arguments, this.actual) !== -1;
     }
   });
 
