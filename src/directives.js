@@ -804,6 +804,8 @@ angularDirective("ng:hide", function(expression, element){
    </doc:example>
  */
 angularDirective("ng:style", function(expression, element){
+  // TODO(i): this is inefficient (runs on every $digest) and obtrusive (overrides 3rd part css)
+  //   we should change it in a similar way as I changed ng:class
   return function(element){
     var resetStyle = getStyle(element);
     this.$watch(function(scope){
