@@ -1363,6 +1363,10 @@ angularWidget("@ng:non-bindable", noop);
  * @name angular.widget.ng:view
  *
  * @description
+ *
+ * @param {*} spinner optional marker attribute which makes the original content be shown while retrieving a new
+ *                    template i.e. &lt;ng:view spinner>Loading...&lt;/ng:view> will show 'Loading...' while retrieving.
+ *
  * # Overview
  * `ng:view` is a widget that complements the {@link angular.service.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
