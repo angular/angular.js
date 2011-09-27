@@ -366,6 +366,25 @@ describe('jqLite', function(){
       expect(jqLite(a).css('padding')).toBe('2px');
       expect(jqLite(a).css('border')).toBeFalsy();
     });
+
+
+    it('should correctly handle dash-separated and camelCased properties', function() {
+      var jqA = jqLite(a);
+
+      expect(jqA.css('z-index')).toBeOneOf('', 'auto');
+      expect(jqA.css('zIndex')).toBeOneOf('', 'auto');
+
+
+      jqA.css({'zIndex':5});
+
+      expect(jqA.css('z-index')).toBeOneOf('5', 5);
+      expect(jqA.css('zIndex')).toBeOneOf('5', 5);
+
+      jqA.css({'z-index':7});
+
+      expect(jqA.css('z-index')).toBeOneOf('7', 7);
+      expect(jqA.css('zIndex')).toBeOneOf('7', 7);
+    });
   });
 
 
@@ -746,5 +765,28 @@ describe('jqLite', function(){
       expect(element.find('span').eq(-1).html()).toBe('bb');
       expect(element.find('span').eq(20).length).toBe(0);
     });
+  });
+
+
+  describe('camelCase', function() {
+
+   it('should leave non-dashed strings alone', function() {
+     expect(camelCase('foo')).toBe('foo');
+     expect(camelCase('')).toBe('');
+     expect(camelCase('fooBar')).toBe('fooBar');
+   });
+
+
+   it('should covert dash-separated strings to camelCase', function() {
+     expect(camelCase('foo-bar')).toBe('fooBar');
+     expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
+   });
+
+
+   it('should covert browser specific css properties', function() {
+     expect(camelCase('-moz-foo-bar')).toBe('MozFooBar');
+     expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+     expect(camelCase('-webkit-foo-bar')).toBe('webkitFooBar');
+   })
   });
 });
