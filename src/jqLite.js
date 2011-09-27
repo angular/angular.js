@@ -88,6 +88,30 @@ function getStyle(element) {
   return current;
 }
 
+
+/**
+ * Converts dash-separated names to camelCase. Useful for dealing with css properties.
+ */
+function camelCase(name) {
+  var parts = name.split('-');
+
+  name = parts.shift();
+
+  if (name == '' && parts.length) {
+    // browser specific property starting with "-"
+    name = parts.shift();
+
+    if (name == 'moz') name = 'Moz';
+  }
+
+  forEach(parts, function(part) {
+    name += part.charAt(0).toUpperCase();
+    name += part.substr(1);
+  });
+
+  return name;
+}
+
 /////////////////////////////////////////////
 function jqLiteWrap(element) {
   if (isString(element) && element.charAt(0) != '<') {
@@ -247,12 +271,14 @@ forEach({
   hasClass: JQLiteHasClass,
 
   css: function(element, name, value) {
+    name = camelCase(name);
+
     if (isDefined(value)) {
       element.style[name] = value;
     } else {
       var val;
 
-      if (msie <=8) {
+      if (msie <= 8) {
         // this is some IE specific weirdness that jQuery 1.6.4 does not sure why
         val = element.currentStyle && element.currentStyle[name];
         if (val === '') val = 'auto';
@@ -260,7 +286,12 @@ forEach({
 
       val = val || element.style[name];
 
-      return  (val === '') ? undefined : val;
+      if (msie <= 8) {
+        // jquery weirdness :-/
+        val = (val === '') ? undefined : val;
+      }
+
+      return  val;
     }
   },
 
