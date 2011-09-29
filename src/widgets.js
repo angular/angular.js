@@ -1363,6 +1363,7 @@ angularWidget("@ng:non-bindable", noop);
  * @name angular.widget.ng:view
  *
  * @description
+ *
  * # Overview
  * `ng:view` is a widget that complements the {@link angular.service.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
@@ -1382,6 +1383,8 @@ angularWidget("@ng:non-bindable", noop);
  * - more efficient execution
  * - doesn't require `$route` service to be available on the root scope
  *
+ * @param {*} spinner optional marker attribute which makes the original content be shown while retrieving a new
+ *                    template i.e. &lt;ng:view spinner>Loading...&lt;/ng:view> will show 'Loading...' while retrieving.
  *
  * @example
     <doc:example>
@@ -1424,8 +1427,12 @@ angularWidget("@ng:non-bindable", noop);
     </doc:example>
  */
 angularWidget('ng:view', function(element) {
-  var compiler = this;
+  var compiler = this,
+      spinner;
 
+  if (isDefined(element.attr('spinner'))) {
+      spinner = element.html();
+  }
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
     return annotate('$xhr.cache', '$route', function($xhr, $route, element){
@@ -1439,7 +1446,8 @@ angularWidget('ng:view', function(element) {
       this.$watch(function(){return changeCounter;}, function() {
         var template = $route.current && $route.current.template;
         if (template) {
-          //xhr's callback must be async, see commit history for more info
+          if (spinner) element.html(spinner);
+          //xhr's callback must be async, see commit history for more info	   
           $xhr('GET', template, function(code, response) {
             element.html(response);
             compiler.compile(element)($route.current.scope);

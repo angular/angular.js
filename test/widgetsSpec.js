@@ -1241,6 +1241,42 @@ describe("widget", function(){
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
     });
+    
+    describe('spinner', function() {
+      var rootScope, $route, $location, $browser;
+
+      beforeEach(function() {
+        rootScope = angular.compile('<ng:view spinner>Loading...</ng:view>')();
+        $route = rootScope.$service('$route');
+        $location = rootScope.$service('$location');
+        $browser = rootScope.$service('$browser');
+      });
+
+      afterEach(function() {
+        dealoc(rootScope);
+      });
+
+      it('should show default content during load', function() {
+        $route.when('/foo', {controller: angular.noop, template: 'myUrl1'});
+        $route.when('/bar', {controller: angular.noop, template: 'myUrl2'});
+
+        expect(rootScope.$element.text()).toEqual('Loading...');
+
+        $location.path('/foo');
+        $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+        rootScope.$digest();
+        expect(rootScope.$element.text()).toEqual('Loading...');
+        $browser.xhr.flush();
+        expect(rootScope.$element.text()).toEqual('4');
+
+        $location.path('/bar');
+        $browser.xhr.expectGET('myUrl2').respond('<div>{{2+3}}</div>');
+        rootScope.$digest();
+        expect(rootScope.$element.text()).toEqual('Loading...');
+        $browser.xhr.flush();
+        expect(rootScope.$element.text()).toEqual('5');
+      });
+    });
   });
 
 
