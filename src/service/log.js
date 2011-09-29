@@ -15,13 +15,20 @@
  * @example
     <doc:example>
       <doc:source>
-         <p>Reload this page with open console, enter text and hit the log button...</p>
-         Message:
-         <input type="text" name="message" value="Hello World!"/>
-         <button ng:click="$log.log(message)">log</button>
-         <button ng:click="$log.warn(message)">warn</button>
-         <button ng:click="$log.info(message)">info</button>
-         <button ng:click="$log.error(message)">error</button>
+         <script>
+           function LogCtrl($log) {
+             this.$log = $log;
+           }
+         </script>
+         <div ng:controller="LogCtrl">
+           <p>Reload this page with open console, enter text and hit the log button...</p>
+           Message:
+           <input type="text" name="message" value="Hello World!"/>
+           <button ng:click="$log.log(message)">log</button>
+           <button ng:click="$log.warn(message)">warn</button>
+           <button ng:click="$log.info(message)">info</button>
+           <button ng:click="$log.error(message)">error</button>
+         </div>
       </doc:source>
       <doc:scenario>
       </doc:scenario>
