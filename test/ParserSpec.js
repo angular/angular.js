@@ -399,22 +399,6 @@ describe('parser', function() {
     expect(scope.obj[0].name).toEqual(1);
   });
 
-  it('should short circuit AND operator', function(){
-    var scope = angular.scope();
-    scope.run = function(){
-      throw "IT SHOULD NOT HAVE RUN";
-    };
-    expect(scope.$eval('false && run()')).toBe(false);
-  });
-
-  it('should short circuit OR operator', function(){
-    var scope = angular.scope();
-    scope.run = function(){
-      throw "IT SHOULD NOT HAVE RUN";
-    };
-    expect(scope.$eval('true || run()')).toBe(true);
-  });
-
   describe('formatter', function(){
     it('should return no argument function', function() {
       var noop = parser('noop').formatter()();
