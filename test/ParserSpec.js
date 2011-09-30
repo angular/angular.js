@@ -391,7 +391,7 @@ describe('parser', function() {
     expect(scope.a).not.toBeDefined();
   });
 
-  it('should allow assignment after array dereference', function(){
+  it('should allow assignment after array dereference', function() {
     scope = angular.scope();
     scope.obj = [{}];
     scope.$eval('obj[0].name=1');
@@ -399,14 +399,30 @@ describe('parser', function() {
     expect(scope.obj[0].name).toEqual(1);
   });
 
-  describe('formatter', function(){
+  it('should short-circuit AND operator', function() {
+    var scope = angular.scope();
+    scope.run = function() {
+      throw "IT SHOULD NOT HAVE RUN";
+    };
+    expect(scope.$eval('false && run()')).toBe(false);
+  });
+
+  it('should short-circuit OR operator', function() {
+    var scope = angular.scope();
+    scope.run = function() {
+      throw "IT SHOULD NOT HAVE RUN";
+    };
+    expect(scope.$eval('true || run()')).toBe(true);
+  });
+
+  describe('formatter', function() {
     it('should return no argument function', function() {
       var noop = parser('noop').formatter()();
       expect(noop.format(null, 'abc')).toEqual('abc');
       expect(noop.parse(null, '123')).toEqual('123');
     });
 
-    it('should delegate arguments', function(){
+    it('should delegate arguments', function() {
       angularFormatter.myArgs = {
         parse: function(a, b){ return [a, b]; },
         format: function(a, b){ return [a, b]; }
