@@ -136,7 +136,7 @@ In addition, angular comes with a set of Services, which have the following prop
 # Where To Go Next
 
 * If you like what you've learned so far, you should definitely check out our awesome {@link
-tutorial/ Tutorial}, which walk you through the process of building real apps with AngularJS.
+tutorial/ Tutorial}, which walks you through the process of building real apps with AngularJS.
 
 * For further explanations and examples of the AngularJS concepts presented on this page, see the
 {@link guide/index Developer Guide}.
