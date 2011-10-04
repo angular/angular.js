@@ -295,12 +295,12 @@ namespace :server do
 
   desc 'Run JsTestDriver Server'
   task :start do
-    sh %x(java -jar lib/jstestdriver/JsTestDriver.jar --browser open --port 9876)
+    sh %x(java -jar lib/jstd-jasmine/jstestdriver/JsTestDriver.jar --browser open --port 9876)
   end
 
   desc 'Run JavaScript tests against the server'
   task :test do
-    sh %(java -jar lib/jstestdriver/JsTestDriver.jar --tests all)
+    sh %(java -jar lib/jstd-jasmine/jstestdriver/JsTestDriver.jar --tests all)
   end
 
 end
@@ -308,7 +308,7 @@ end
 
 desc 'Run JavaScript tests'
 task :test do
-  sh %(java -jar lib/jstestdriver/JsTestDriver.jar --tests all --browser open --port 9876)
+  sh %(java -jar lib/jstd-jasmine/jstestdriver/JsTestDriver.jar --tests all --browser open --port 9876)
 end
 
 

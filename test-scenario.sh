@@ -1,3 +1,3 @@
 #!/bin/bash
 
-java -jar lib/jstestdriver/JsTestDriver.jar --tests "all" --config jsTestDriver-scenario.conf --reset
+java -jar lib/jstd-jasmine/jstestdriver/JsTestDriver.jar --tests "all" --config jsTestDriver-scenario.conf --reset
