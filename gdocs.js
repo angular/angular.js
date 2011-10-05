@@ -5,21 +5,26 @@ var https = require('https');
 var fs = require('fs');
 
 var collections = {
-  'guide': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmANGUwMGVhZmYtMTk1ZC00NTdmLWIxMDAtZGI5YWNlZjQ2YjZl/contents',
-  'api': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDYjMwYTc2YWUtZTgzYy00YjIxLThlZDYtYWJlOTFlNzE2NzEw/contents',
-  'tutorial': 'http://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmAYWMxYWE3MzYtYzdjYS00OGQxLWJhZjItYzZkMzJiZTRhZjFl/contents',
-  'cookbook': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDNzkxZWM5ZTItN2M5NC00NWIxLTg2ZDMtMmYwNDY1NWM1MGU4/contents',
-  'misc': 'http://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZjVlNmZkYzQtMjZlOC00NmZhLWI5MjAtMGRjZjlkOGJkMDBi/contents'
+  'guide': 'https://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmANGUwMGVhZmYtMTk1ZC00NTdmLWIxMDAtZGI5YWNlZjQ2YjZl/contents',
+  'api': 'https://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDYjMwYTc2YWUtZTgzYy00YjIxLThlZDYtYWJlOTFlNzE2NzEw/contents',
+  'tutorial': 'https://docs.google.com/feeds/default/private/full/folder%3A0B9PsajIPqzmAYWMxYWE3MzYtYzdjYS00OGQxLWJhZjItYzZkMzJiZTRhZjFl/contents',
+  'cookbook': 'https://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDNzkxZWM5ZTItN2M5NC00NWIxLTg2ZDMtMmYwNDY1NWM1MGU4/contents',
+  'misc': 'https://docs.google.com/feeds/default/private/full/folder%3A0B7Ovm8bUYiUDZjVlNmZkYzQtMjZlOC00NmZhLWI5MjAtMGRjZjlkOGJkMDBi/contents'
 };
 
 console.log('Google Docs...');
 
 var flag = process && process.argv[2];
-if (flag == '--login')
-  askPassword(function(password){
-    login(process.argv[3], password);
-  });
-else if (flag == '--fetch') {
+if (flag == '--login') {
+  var username = process.argv[3];
+  if (username) {
+    askPassword(function(password){
+      login(username, password);
+    });
+  } else {
+    console.log('Missing username!');
+  }
+} else if (flag == '--fetch') {
   var collection = process.argv[3];
   if (collection) {
     fetch(collection, collections[collection]);
@@ -27,8 +32,9 @@ else if (flag == '--fetch') {
     for (collection in collections)
       fetch(collection, collections[collection]);
   }
-} else
+} else {
   help();
+}
 
 function help(){
   console.log('Synopsys');
@@ -147,34 +153,36 @@ function getAuthToken(){
 
 function request(method, url, options, response) {
   var url = url.match(/http(s?):\/\/(.+?)(\/.*)/);
-  var request = (url[1] ? https : http).request({
+  var isHttps = url[1];
+  var request = (isHttps ? https : http).request({
     host: url[2],
     port: (url[1] ? 443 : 80),
     path: url[3],
     method: method
   }, function(res){
     switch (res.statusCode) {
-      case 200: {
+      case 200:
         var data = [];
         res.setEncoding('utf8');
-        res.on('end', function(){
-          response(data.join(''));
-        });
-        res.on('data', function (chunk) {
-          data.push(chunk);
-        });
-        res.on('error', function(e){
-          console.log(e);
-        });
+        res.on('end', function (){ response(data.join('')); });
+        res.on('close', function (){ response(data.join('')); });  // https
+        res.on('data', function (chunk) { data.push(chunk); });
+        res.on('error', function (e){ console.log(e); });
         break;
-      }
-      case 401: {
+      case 401:
         console.log('Eror: Login credentials expired! Please login.');
         break;
-      }
-      default: {
-        console.log(res);
-      }
+      default:
+        var data = [];
+        console.log('ERROR: ', res.statusCode);
+        console.log('REQUEST URL: ', url[0]);
+        console.log('REQUEST POST: ', options.data);
+        console.log('REQUEST HEADERS: ', options.headers);
+        console.log('RESPONSE HEADERS: ', res.headers);
+        res.on('end', function (){ console.log('BODY: ', data.join('')); });
+        res.on('close', function (){ console.log('BODY: ', data.join('')); }); // https
+        res.on('data', function (chunk) { data.push(chunk); });
+        res.on('error', function (e){ console.log(e); });
     }
   });
   for(var header in options.headers) {
