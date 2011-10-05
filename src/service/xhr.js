@@ -111,6 +111,7 @@
        <script>
          function FetchCntl($xhr) {
            var self = this;
+           this.url = 'index.html';
 
            this.fetch = function() {
              self.code = null;
@@ -133,11 +134,11 @@
          FetchCntl.$inject = ['$xhr'];
        </script>
        <div ng:controller="FetchCntl">
-         <select name="method">
+         <select ng:model="method">
            <option>GET</option>
            <option>JSON</option>
          </select>
-         <input type="text" name="url" value="index.html" size="80"/>
+         <input type="text" ng:model="url" size="80"/>
          <button ng:click="fetch()">fetch</button><br>
          <button ng:click="updateModel('GET', 'index.html')">Sample GET</button>
          <button ng:click="updateModel('JSON', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>

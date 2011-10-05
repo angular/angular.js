@@ -105,7 +105,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
         window[callbackId].data = data;
       };
 
-      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), null, function() {
+      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), function() {
         if (window[callbackId].data) {
           completeOutstandingRequest(callback, 200, window[callbackId].data);
         } else {
@@ -415,42 +415,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   // Misc API
   //////////////////////////////////////////////////////////////
-  var hoverListener = noop;
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#hover
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Set hover listener.
-   *
-   * @param {function(Object, boolean)} listener Function that will be called when a hover event
-   *    occurs.
-   */
-  self.hover = function(listener) { hoverListener = listener; };
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#bind
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Register hover function to real browser
-   */
-  self.bind = function() {
-    document.bind("mouseover", function(event){
-      hoverListener(jqLite(msie ? event.srcElement : event.target), true);
-      return true;
-    });
-    document.bind("mouseleave mouseout click dblclick keypress keyup", function(event){
-      hoverListener(jqLite(event.target), false);
-      return true;
-    });
-  };
-
 
   /**
    * @workInProgress
@@ -478,24 +442,18 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    * @methodOf angular.service.$browser
    *
    * @param {string} url Url to js file
-   * @param {string=} domId Optional id for the script tag
    *
    * @description
    * Adds a script tag to the head.
    */
-  self.addJs = function(url, domId, done) {
+  self.addJs = function(url, done) {
     // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
     // - fetches local scripts via XHR and evals them
     // - adds and immediately removes script elements from the document
-    //
-    // We need addJs to be able to add angular-ie-compat.js which is very special and must remain
-    // part of the DOM so that the embedded images can reference it. jQuery's append implementation
-    // (v1.4.2) fubars it.
     var script = rawDocument.createElement('script');
 
     script.type = 'text/javascript';
     script.src = url;
-    if (domId) script.id = domId;
 
     if (msie) {
       script.onreadystatechange = function() {

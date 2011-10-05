@@ -83,6 +83,34 @@ describe('jqLite', function(){
   });
 
 
+  describe('inheritedData', function() {
+
+    it('should retrieve data attached to the current element', function() {
+      var element = jqLite('<i>foo</i>');
+      element.data('myData', 'abc');
+      expect(element.inheritedData('myData')).toBe('abc');
+      dealoc(element);
+    });
+
+
+    it('should walk up the dom to find data', function() {
+      var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
+      var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
+      element.data('myData', 'abc');
+      expect(deepChild.inheritedData('myData')).toBe('abc');
+      dealoc(element);
+    });
+
+
+    it('should return undefined when no data was found', function() {
+      var element = jqLite('<ul><li><p><b>deep deep</b><p></li></ul>');
+      var deepChild = jqLite(element[0].getElementsByTagName('b')[0]);
+      expect(deepChild.inheritedData('myData')).toBeFalsy();
+      dealoc(element);
+    });
+  });
+
+
   describe('scope', function() {
     it('should retrieve scope attached to the current element', function() {
       var element = jqLite('<i>foo</i>');
@@ -111,7 +139,7 @@ describe('jqLite', function(){
 
 
   describe('data', function(){
-    it('should set and get ande remove data', function(){
+    it('should set and get and remove data', function(){
       var selected = jqLite([a, b, c]);
 
       expect(selected.data('prop', 'value')).toEqual(selected);
@@ -131,6 +159,15 @@ describe('jqLite', function(){
       expect(jqLite(b).data('prop')).toEqual(undefined);
       expect(jqLite(c).data('prop')).toEqual(undefined);
     });
+
+    it('should call $destroy function if element romoved', function(){
+      var log = '';
+      var element = jqLite(a);
+      element.bind('$destroy', function(){log+= 'destroy;';});
+      element.remove();
+      expect(log).toEqual('destroy;');
+    });
+
   });
 
 
@@ -214,6 +251,21 @@ describe('jqLite', function(){
       it('should check class', function(){
         var selector = jqLite([a, b]);
         expect(selector.hasClass('abc')).toEqual(false);
+      });
+
+
+      it('should make sure that partial class is not checked as a subset', function(){
+        var selector = jqLite([a, b]);
+        selector.addClass('a');
+        selector.addClass('b');
+        selector.addClass('c');
+        expect(selector.addClass('abc')).toEqual(selector);
+        expect(selector.removeClass('abc')).toEqual(selector);
+        expect(jqLite(a).hasClass('abc')).toEqual(false);
+        expect(jqLite(b).hasClass('abc')).toEqual(false);
+        expect(jqLite(a).hasClass('a')).toEqual(true);
+        expect(jqLite(a).hasClass('b')).toEqual(true);
+        expect(jqLite(a).hasClass('c')).toEqual(true);
       });
     });
 

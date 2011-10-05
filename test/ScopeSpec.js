@@ -1,7 +1,7 @@
 'use strict';
 
-describe('Scope', function() {
-  var root, mockHandler;
+describe('Scope', function(){
+  var root = null, mockHandler = null;
 
   beforeEach(function() {
     root = createScope(angular.service, {
@@ -245,8 +245,14 @@ describe('Scope', function() {
       var log = '';
       root.a = [];
       root.b = {};
-      root.$watch('a', function() { log +='.';});
-      root.$watch('b', function() { log +='!';});
+      root.$watch('a', function(scope, value){
+        log +='.';
+        expect(value).toBe(root.a);
+      });
+      root.$watch('b', function(scope, value){
+        log +='!';
+        expect(value).toBe(root.b);
+      });
       root.$digest();
       log = '';
 
@@ -296,8 +302,8 @@ describe('Scope', function() {
   });
 
 
-  describe('$destroy', function() {
-    var first, middle, last, log;
+  describe('$destroy', function(){
+    var first = null, middle = null, last = null, log = null;
 
     beforeEach(function() {
       log = '';
@@ -530,7 +536,6 @@ describe('Scope', function() {
         grandChild.$on('myEvent', logger);
         greatGrandChild.$on('myEvent', logger);
       });
-
 
       it('should bubble event up to the root scope', function() {
         grandChild.$emit('myEvent');

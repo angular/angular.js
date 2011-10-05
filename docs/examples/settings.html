@@ -1,13 +1,13 @@
 <label>Name:</label>
-<input type="text" name="form.name" ng:required>
+<input type="text" ng:model="form.name" required>
 
 <div ng:repeat="contact in form.contacts">
-  <select name="contact.type">
+  <select ng:model="contact.type">
     <option>url</option>
     <option>email</option>
     <option>phone</option>
   </select>
-  <input type="text" name="contact.url">
+  <input type="text" ng:model="contact.url">
   [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
 </div>
 <div>

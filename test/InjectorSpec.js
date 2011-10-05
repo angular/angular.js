@@ -85,11 +85,11 @@ describe('injector', function(){
     it('should return $inject', function(){
       function fn(){}
       fn.$inject = ['a'];
-      expect(injectionArgs(fn)).toBe(fn.$inject);
-      expect(injectionArgs(function(){})).toEqual([]);
-      expect(injectionArgs(function (){})).toEqual([]);
-      expect(injectionArgs(function  (){})).toEqual([]);
-      expect(injectionArgs(function /* */ (){})).toEqual([]);
+      expect(inferInjectionArgs(fn)).toBe(fn.$inject);
+      expect(inferInjectionArgs(function(){})).toEqual([]);
+      expect(inferInjectionArgs(function (){})).toEqual([]);
+      expect(inferInjectionArgs(function  (){})).toEqual([]);
+      expect(inferInjectionArgs(function /* */ (){})).toEqual([]);
     });
 
     it('should create $inject', function(){
@@ -103,28 +103,35 @@ describe('injector', function(){
                  */
           _c,
           /* {some type} */ d){ extraParans();}
-      expect(injectionArgs($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
+      expect(inferInjectionArgs($f_n0)).toEqual(['$a', 'b_', '_c',  'd']);
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
     });
 
     it('should handle no arg functions', function(){
       function $f_n0(){}
-      expect(injectionArgs($f_n0)).toEqual([]);
+      expect(inferInjectionArgs($f_n0)).toEqual([]);
       expect($f_n0.$inject).toEqual([]);
     });
 
     it('should handle args with both $ and _', function(){
       function $f_n0($a_){}
-      expect(injectionArgs($f_n0)).toEqual(['$a_']);
+      expect(inferInjectionArgs($f_n0)).toEqual(['$a_']);
       expect($f_n0.$inject).toEqual(['$a_']);
     });
 
     it('should throw on non function arg', function(){
       expect(function(){
-        injectionArgs({});
+        inferInjectionArgs({});
       }).toThrow();
     });
 
+    it('should infer injection on services', function(){
+      var scope = angular.scope({
+        a: function(){ return 'a';},
+        b: function(a){ return a + 'b';}
+      });
+      expect(scope.$service('b')).toEqual('ab');
+    });
   });
 
   describe('inject', function(){

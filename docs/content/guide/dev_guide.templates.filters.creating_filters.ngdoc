@@ -35,20 +35,26 @@ text upper-case and assigns color.
    }
    return out;
  });
+
+ function Cntl(){
+   this.text = 'hello';
+ }
 </script>
 
-<input name="text" type="text" value="hello" /><br>
-No filter: {{text}}<br>
-Reverse: {{text|reverse}}<br>
-Reverse + uppercase: {{text|reverse:true}}<br>
-Reverse + uppercase + blue:  {{text|reverse:true:"blue"}}
+<div ng:controller="Cntl">
+  <input ng:model="text" type="text"><br>
+  No filter: {{text}}<br>
+  Reverse: {{text|reverse}}<br>
+  Reverse + uppercase: {{text|reverse:true}}<br>
+  Reverse + uppercase + blue:  {{text|reverse:true:"blue"}}
+</div>
 </doc:source>
 <doc:scenario>
-it('should reverse text', function(){
-expect(binding('text|reverse')).toEqual('olleh');
-input('text').enter('ABC');
-expect(binding('text|reverse')).toEqual('CBA');
-});
+  it('should reverse text', function(){
+    expect(binding('text|reverse')).toEqual('olleh');
+    input('text').enter('ABC');
+    expect(binding('text|reverse')).toEqual('CBA');
+  });
 </doc:scenario>
 </doc:example>
 

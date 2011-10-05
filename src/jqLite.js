@@ -99,6 +99,52 @@ function camelCase(name) {
 }
 
 /////////////////////////////////////////////
+// jQuery mutation patch
+//
+//  In conjunction with bindJQuery intercepts all jQuery's DOM destruction apis and fires a
+// $destroy event on all DOM nodes being removed.
+//
+/////////////////////////////////////////////
+
+function JQLitePatchJQueryRemove(name, dispatchThis) {
+  var originalJqFn = jQuery.fn[name];
+  originalJqFn = originalJqFn.$original || originalJqFn;
+  removePatch.$original = originalJqFn;
+  jQuery.fn[name] = removePatch;
+
+  function removePatch() {
+    var list = [this],
+        fireEvent = dispatchThis,
+        set, setIndex, setLength,
+        element, childIndex, childLength, children,
+        fns, data;
+
+    while(list.length) {
+      set = list.shift();
+      for(setIndex = 0, setLength = set.length; setIndex < setLength; setIndex++) {
+        element = jqLite(set[setIndex]);
+        if (fireEvent) {
+          data = element.data('events');
+          if ( (fns = data && data.$destroy) ) {
+            forEach(fns, function(fn){
+              fn.handler();
+            });
+          }
+        } else {
+          fireEvent = !fireEvent;
+        }
+        for(childIndex = 0, childLength = (children = element.children()).length; 
+            childIndex < childLength; 
+            childIndex++) {
+          list.push(jQuery(children[childIndex]));
+        }
+      }
+    }
+    return originalJqFn.apply(this, arguments);
+  }
+}
+
+/////////////////////////////////////////////
 function jqLiteWrap(element) {
   if (isString(element) && element.charAt(0) != '<') {
     throw new Error('selectors not implemented');
@@ -137,9 +183,15 @@ function JQLiteRemoveData(element) {
   var cacheId = element[jqName],
   cache = jqCache[cacheId];
   if (cache) {
-    forEach(cache.bind || {}, function(fn, type){
-      removeEventListenerFn(element, type, fn);
-    });
+    if (cache.bind) {
+      forEach(cache.bind, function(fn, type){
+        if (type == '$destroy') {
+          fn({});
+        } else {
+          removeEventListenerFn(element, type, fn);
+        }
+      });
+    }
     delete jqCache[cacheId];
     element[jqName] = undefined; // ie does not allow deletion of attributes on elements.
   }
@@ -162,8 +214,8 @@ function JQLiteData(element, key, value) {
 function JQLiteHasClass(element, selector, _) {
   // the argument '_' is important, since it makes the function have 3 arguments, which
   // is needed for delegate function to realize the this is a getter.
-  var className = " " + selector + " ";
-  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").indexOf( className ) > -1);
+  return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
+      indexOf( " " + selector + " " ) > -1);
 }
 
 function JQLiteRemoveClass(element, selector) {
@@ -237,17 +289,23 @@ var JQLitePrototype = JQLite.prototype = {
 // these functions return self on setter and
 // value on get.
 //////////////////////////////////////////
-var SPECIAL_ATTR = makeMap("multiple,selected,checked,disabled,readonly");
+var BOOLEAN_ATTR = {};
+forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value, key) {
+  BOOLEAN_ATTR[lowercase(value)] = value;
+});
 
 forEach({
   data: JQLiteData,
+  inheritedData: function(element, name, value) {
+    element = jqLite(element);
+    while (element.length) {
+      if (value = element.data(name)) return value;
+      element = element.parent();
+    }
+  },
 
   scope: function(element) {
-    var scope;
-    while (element && !(scope = jqLite(element).data($$scope))) {
-      element = element.parentNode;
-    }
-    return scope;
+    return jqLite(element).inheritedData($$scope);
   },
 
   removeAttr: function(element,name) {
@@ -282,7 +340,7 @@ forEach({
   },
 
   attr: function(element, name, value){
-    if (SPECIAL_ATTR[name]) {
+    if (BOOLEAN_ATTR[name]) {
       if (isDefined(value)) {
         if (!!value) {
           element[name] = true;

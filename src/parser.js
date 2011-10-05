@@ -247,8 +247,6 @@ function parser(text, json){
       assignable: assertConsumed(assignable),
       primary: assertConsumed(primary),
       statements: assertConsumed(statements),
-      validator: assertConsumed(validator),
-      formatter: assertConsumed(formatter),
       filter: assertConsumed(filter)
   };
 
@@ -359,36 +357,6 @@ function parser(text, json){
 
   function filter(){
     return pipeFunction(angularFilter);
-  }
-
-  function validator(){
-    return pipeFunction(angularValidator);
-  }
-
-  function formatter(){
-    var token = expect();
-    var formatter = angularFormatter[token.text];
-    var argFns = [];
-    if (!formatter) throwError('is not a valid formatter.', token);
-    while(true) {
-      if ((token = expect(':'))) {
-        argFns.push(expression());
-      } else {
-        return valueFn({
-          format:invokeFn(formatter.format),
-          parse:invokeFn(formatter.parse)
-        });
-      }
-    }
-    function invokeFn(fn){
-      return function(self, input){
-        var args = [input];
-        for ( var i = 0; i < argFns.length; i++) {
-          args.push(argFns[i](self));
-        }
-        return fn.apply(self, args);
-      };
-    }
   }
 
   function _pipeFunction(fnScope){
@@ -735,16 +703,19 @@ function getterFn(path) {
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
             's=s' + key + ';\n' +
-            'if(typeof s=="function" && !(s instanceof RegExp)) s = function(){ return l' +
-              key + '.apply(l, arguments); };\n';
+            'if(typeof s=="function" && !(s instanceof RegExp)) {\n' +
+              ' fn=function(){ return l' + key + '.apply(l, arguments); };\n' +
+              ' fn.$unboundFn=s;\n' +
+              ' s=fn;\n' +
+            '}\n';
     if (key.charAt(1) == '$') {
       // special code for super-imposed functions
       var name = key.substr(2);
       code += 'if(!s) {\n' +
               ' t = angular.Global.typeOf(l);\n' +
               ' fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n' +
-              ' if (fn) s = function(){ return fn.apply(l, ' +
-                   '[l].concat(Array.prototype.slice.call(arguments, 0))); };\n' +
+              ' if (fn) ' +
+                 's = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0))); };\n' +
               '}\n';
     }
   });

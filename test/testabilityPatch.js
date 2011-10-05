@@ -11,18 +11,39 @@ _jQuery.event.special.change = undefined;
 
 if (window.jstestdriver) {
   window.jstd = jstestdriver;
-  window.dump = function(){
+  window.dump = function dump(){
     var args = [];
     forEach(arguments, function(arg){
       if (isElement(arg)) {
         arg = sortedHtml(arg);
       } else if (isObject(arg)) {
-        arg = toJson(arg, true);
+        if (arg.$eval == Scope.prototype.$eval) {
+          arg = dumpScope(arg);
+        } else {
+          arg = toJson(arg, true);
+        }
       }
       args.push(arg);
     });
     jstd.console.log.apply(jstd.console, args);
   };
+}
+
+function dumpScope(scope, offset) {
+  offset = offset ||  '  ';
+  var log = [offset + 'Scope(' + scope.$id + '): {'];
+  for ( var key in scope ) {
+    if (scope.hasOwnProperty(key) && !key.match(/^(\$|this)/)) {
+      log.push('  ' + key + ': ' + toJson(scope[key]));
+    }
+  }
+  var child = scope.$$childHead;
+  while(child) {
+    log.push(dumpScope(child, offset + '  '));
+    child = child.$$nextSibling;
+  }
+  log.push('}');
+  return log.join('\n' + offset);
 }
 
 beforeEach(function(){
@@ -36,30 +57,41 @@ beforeEach(function(){
     jQuery = _jQuery;
   }
 
+  // This resets global id counter;
+  uid = ['0', '0', '0'];
+
   // reset to jQuery or default to us.
   bindJQuery();
   jqLite(document.body).html('');
-  this.addMatchers({
-    toBeInvalid: function(){
-      var element = jqLite(this.actual);
-      var hasClass = element.hasClass('ng-validation-error');
-      var validationError = element.attr('ng-validation-error');
-      this.message = function(){
-        if (!hasClass)
-          return "Expected class 'ng-validation-error' not found.";
-        return "Expected an error message, but none was found.";
-      };
-      return hasClass && validationError;
-    },
 
-    toBeValid: function(){
+  function cssMatcher(presentClasses, absentClasses) {
+    return function(){
       var element = jqLite(this.actual);
-      var hasClass = element.hasClass('ng-validation-error');
+      var present = true;
+      var absent = false;
+
+      forEach(presentClasses.split(' '), function(className){
+        present = present && element.hasClass(className);
+      });
+
+      forEach(absentClasses.split(' '), function(className){
+        absent = absent || element.hasClass(className);
+      });
+
       this.message = function(){
-        return "Expected to not have class 'ng-validation-error' but found.";
+        return "Expected to have " + presentClasses +
+          (absentClasses ? (" and not have " + absentClasses + "" ) : "") +
+          " but had " + element[0].className + ".";
       };
-      return !hasClass;
-    },
+      return present && !absent;
+    };
+  }
+
+  this.addMatchers({
+    toBeInvalid: cssMatcher('ng-invalid', 'ng-valid'),
+    toBeValid: cssMatcher('ng-valid', 'ng-invalid'),
+    toBeDirty: cssMatcher('ng-dirty', 'ng-pristine'),
+    toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
 
     toEqualData: function(expected) {
       return equals(this.actual, expected);

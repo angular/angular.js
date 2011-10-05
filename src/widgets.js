@@ -14,13 +14,10 @@
  *
  * Following is the list of built-in angular widgets:
  *
- * * {@link angular.widget.@ng:format ng:format} - Formats data for display to user and for storage.
  * * {@link angular.widget.@ng:non-bindable ng:non-bindable} - Blocks angular from processing an
  *   HTML element.
  * * {@link angular.widget.@ng:repeat ng:repeat} - Creates and manages a collection of cloned HTML
  *   elements.
- * * {@link angular.widget.@ng:required ng:required} - Verifies presence of user input.
- * * {@link angular.widget.@ng:validate ng:validate} - Validates content of user input.
  * * {@link angular.widget.HTML HTML input elements} - Standard HTML input elements data-bound by
  *   angular.
  * * {@link angular.widget.ng:view ng:view} - Works with $route to "include" partial templates
@@ -39,8 +36,8 @@
  * @description
  * The most common widgets you will use will be in the form of the
  * standard HTML set. These widgets are bound using the `name` attribute
- * to an expression. In addition, they can have `ng:validate`, `ng:required`,
- * `ng:format`, `ng:change` attribute to further control their behavior.
+ * to an expression. In addition, they can have `required` attribute to further control their
+ * validation.
  *
  * @usageContent
  *   see example below for usage
@@ -54,7 +51,17 @@
  * @example
     <doc:example>
       <doc:source>
-        <table style="font-size:.9em;">
+         <script>
+           function Cntl(){
+             this.input1 = '';
+             this.input2 = '';
+             this.input3 = 'A';
+             this.input4 = false;
+             this.input5 = 'c';
+             this.input6 = [];
+           }
+         </script>
+        <table style="font-size:.9em;" ng:controller="Cntl">
           <tr>
             <th>Name</th>
             <th>Format</th>
@@ -65,48 +72,48 @@
           <tr>
             <th>text</th>
             <td>String</td>
-            <td><tt>&lt;input type="text" name="input1"&gt;</tt></td>
-            <td><input type="text" name="input1" size="4"></td>
+            <td><tt>&lt;input type="text" ng:model="input1"&gt;</tt></td>
+            <td><input type="text" ng:model="input1" size="4"></td>
             <td><tt>{{input1|json}}</tt></td>
           </tr>
           <tr>
             <th>textarea</th>
             <td>String</td>
-            <td><tt>&lt;textarea name="input2"&gt;&lt;/textarea&gt;</tt></td>
-            <td><textarea name="input2" cols='6'></textarea></td>
+            <td><tt>&lt;textarea ng:model="input2"&gt;&lt;/textarea&gt;</tt></td>
+            <td><textarea ng:model="input2" cols='6'></textarea></td>
             <td><tt>{{input2|json}}</tt></td>
           </tr>
           <tr>
             <th>radio</th>
             <td>String</td>
             <td><tt>
-              &lt;input type="radio" name="input3" value="A"&gt;<br>
-              &lt;input type="radio" name="input3" value="B"&gt;
+              &lt;input type="radio" ng:model="input3" value="A"&gt;<br>
+              &lt;input type="radio" ng:model="input3" value="B"&gt;
             </tt></td>
             <td>
-              <input type="radio" name="input3" value="A">
-              <input type="radio" name="input3" value="B">
+              <input type="radio" ng:model="input3" value="A">
+              <input type="radio" ng:model="input3" value="B">
             </td>
             <td><tt>{{input3|json}}</tt></td>
           </tr>
           <tr>
             <th>checkbox</th>
             <td>Boolean</td>
-            <td><tt>&lt;input type="checkbox" name="input4" value="checked"&gt;</tt></td>
-            <td><input type="checkbox" name="input4" value="checked"></td>
+            <td><tt>&lt;input type="checkbox" ng:model="input4"&gt;</tt></td>
+            <td><input type="checkbox" ng:model="input4"></td>
             <td><tt>{{input4|json}}</tt></td>
           </tr>
           <tr>
             <th>pulldown</th>
             <td>String</td>
             <td><tt>
-              &lt;select name="input5"&gt;<br>
+              &lt;select ng:model="input5"&gt;<br>
               &nbsp;&nbsp;&lt;option value="c"&gt;C&lt;/option&gt;<br>
               &nbsp;&nbsp;&lt;option value="d"&gt;D&lt;/option&gt;<br>
               &lt;/select&gt;<br>
             </tt></td>
             <td>
-              <select name="input5">
+              <select ng:model="input5">
                 <option value="c">C</option>
                 <option value="d">D</option>
               </select>
@@ -117,13 +124,13 @@
             <th>multiselect</th>
             <td>Array</td>
             <td><tt>
-              &lt;select name="input6" multiple size="4"&gt;<br>
+              &lt;select ng:model="input6" multiple size="4"&gt;<br>
               &nbsp;&nbsp;&lt;option value="e"&gt;E&lt;/option&gt;<br>
               &nbsp;&nbsp;&lt;option value="f"&gt;F&lt;/option&gt;<br>
               &lt;/select&gt;<br>
             </tt></td>
             <td>
-              <select name="input6" multiple size="4">
+              <select ng:model="input6" multiple size="4">
                 <option value="e">E</option>
                 <option value="f">F</option>
               </select>
@@ -143,11 +150,11 @@
          expect(binding('input2')).toEqual('"Carlos"');
         });
         it('should exercise radio', function(){
-         expect(binding('input3')).toEqual('null');
-         input('input3').select('A');
          expect(binding('input3')).toEqual('"A"');
          input('input3').select('B');
          expect(binding('input3')).toEqual('"B"');
+         input('input3').select('A');
+         expect(binding('input3')).toEqual('"A"');
         });
         it('should exercise checkbox', function(){
          expect(binding('input4')).toEqual('false');
@@ -170,775 +177,6 @@
     </doc:example>
  */
 
-function modelAccessor(scope, element) {
-  var expr = element.attr('name');
-  var exprFn, assignFn;
-  if (expr) {
-    exprFn = parser(expr).assignable();
-    assignFn = exprFn.assign;
-    if (!assignFn) throw new Error("Expression '" + expr + "' is not assignable.");
-    return {
-      get: function() {
-        return exprFn(scope);
-      },
-      set: function(value) {
-        if (value !== undefined) {
-          assignFn(scope, value);
-        }
-      }
-    };
-  }
-}
-
-function modelFormattedAccessor(scope, element) {
-  var accessor = modelAccessor(scope, element),
-      formatterName = element.attr('ng:format') || NOOP,
-      formatter = compileFormatter(formatterName);
-  if (accessor) {
-    return {
-      get: function() {
-        return formatter.format(scope, accessor.get());
-      },
-      set: function(value) {
-        return accessor.set(formatter.parse(scope, value));
-      }
-    };
-  }
-}
-
-function compileValidator(expr) {
-  return parser(expr).validator()();
-}
-
-function compileFormatter(expr) {
-  return parser(expr).formatter()();
-}
-
-/**
- * @workInProgress
- * @ngdoc widget
- * @name angular.widget.@ng:validate
- *
- * @description
- * The `ng:validate` attribute widget validates the user input. If the input does not pass
- * validation, the `ng-validation-error` CSS class and the `ng:error` attribute are set on the input
- * element. Check out {@link angular.validator validators} to find out more.
- *
- * @param {string} validator The name of a built-in or custom {@link angular.validator validator} to
- *     to be used.
- *
- * @element INPUT
- * @css ng-validation-error
- *
- * @example
- * This example shows how the input element becomes red when it contains invalid input. Correct
- * the input to make the error disappear.
- *
-    <doc:example>
-      <doc:source>
-        I don't validate:
-        <input type="text" name="value" value="NotANumber"><br/>
-
-        I need an integer or nothing:
-        <input type="text" name="value" ng:validate="integer"><br/>
-      </doc:source>
-      <doc:scenario>
-         it('should check ng:validate', function(){
-           expect(element('.doc-example-live :input:last').prop('className')).
-             toMatch(/ng-validation-error/);
-
-           input('value').enter('123');
-           expect(element('.doc-example-live :input:last').prop('className')).
-             not().toMatch(/ng-validation-error/);
-         });
-      </doc:scenario>
-    </doc:example>
- */
-/**
- * @workInProgress
- * @ngdoc widget
- * @name angular.widget.@ng:required
- *
- * @description
- * The `ng:required` attribute widget validates that the user input is present. It is a special case
- * of the {@link angular.widget.@ng:validate ng:validate} attribute widget.
- *
- * @element INPUT
- * @css ng-validation-error
- *
- * @example
- * This example shows how the input element becomes red when it contains invalid input. Correct
- * the input to make the error disappear.
- *
-    <doc:example>
-      <doc:source>
-        I cannot be blank: <input type="text" name="value" ng:required><br/>
-      </doc:source>
-      <doc:scenario>
-       it('should check ng:required', function(){
-         expect(element('.doc-example-live :input').prop('className')).
-           toMatch(/ng-validation-error/);
-         input('value').enter('123');
-         expect(element('.doc-example-live :input').prop('className')).
-           not().toMatch(/ng-validation-error/);
-       });
-      </doc:scenario>
-    </doc:example>
- */
-/**
- * @workInProgress
- * @ngdoc widget
- * @name angular.widget.@ng:format
- *
- * @description
- * The `ng:format` attribute widget formats stored data to user-readable text and parses the text
- * back to the stored form. You might find this useful, for example, if you collect user input in a
- * text field but need to store the data in the model as a list. Check out
- * {@link angular.formatter formatters} to learn more.
- *
- * @param {string} formatter The name of the built-in or custom {@link angular.formatter formatter}
- *     to be used.
- *
- * @element INPUT
- *
- * @example
- * This example shows how the user input is converted from a string and internally represented as an
- * array.
- *
-    <doc:example>
-      <doc:source>
-        Enter a comma separated list of items:
-        <input type="text" name="list" ng:format="list" value="table, chairs, plate">
-        <pre>list={{list}}</pre>
-      </doc:source>
-      <doc:scenario>
-       it('should check ng:format', function(){
-         expect(binding('list')).toBe('list=["table","chairs","plate"]');
-         input('list').enter(',,, a ,,,');
-         expect(binding('list')).toBe('list=["a"]');
-       });
-      </doc:scenario>
-    </doc:example>
- */
-function valueAccessor(scope, element) {
-  var validatorName = element.attr('ng:validate') || NOOP,
-      validator = compileValidator(validatorName),
-      requiredExpr = element.attr('ng:required'),
-      formatterName = element.attr('ng:format') || NOOP,
-      formatter = compileFormatter(formatterName),
-      format, parse, lastError, required,
-      invalidWidgets = scope.$service('$invalidWidgets') || {markValid:noop, markInvalid:noop};
-  if (!validator) throw "Validator named '" + validatorName + "' not found.";
-  format = formatter.format;
-  parse = formatter.parse;
-  if (requiredExpr) {
-    scope.$watch(requiredExpr, function(scope, newValue) {
-      required = newValue;
-      validate();
-    });
-  } else {
-    required = requiredExpr === '';
-  }
-
-  element.data($$validate, validate);
-  return {
-    get: function(){
-      if (lastError)
-        elementError(element, NG_VALIDATION_ERROR, null);
-      try {
-        var value = parse(scope, element.val());
-        validate();
-        return value;
-      } catch (e) {
-        lastError = e;
-        elementError(element, NG_VALIDATION_ERROR, e);
-      }
-    },
-    set: function(value) {
-      var oldValue = element.val(),
-          newValue = format(scope, value);
-      if (oldValue != newValue) {
-        element.val(newValue || ''); // needed for ie
-      }
-      validate();
-    }
-  };
-
-  function validate() {
-    var value = trim(element.val());
-    if (element[0].disabled || element[0].readOnly) {
-      elementError(element, NG_VALIDATION_ERROR, null);
-      invalidWidgets.markValid(element);
-    } else {
-      var error, validateScope = inherit(scope, {$element:element});
-      error = required && !value
-              ? 'Required'
-              : (value ? validator(validateScope, value) : null);
-      elementError(element, NG_VALIDATION_ERROR, error);
-      lastError = error;
-      if (error) {
-        invalidWidgets.markInvalid(element);
-      } else {
-        invalidWidgets.markValid(element);
-      }
-    }
-  }
-}
-
-function checkedAccessor(scope, element) {
-  var domElement = element[0], elementValue = domElement.value;
-  return {
-    get: function(){
-      return !!domElement.checked;
-    },
-    set: function(value){
-      domElement.checked = toBoolean(value);
-    }
-  };
-}
-
-function radioAccessor(scope, element) {
-  var domElement = element[0];
-  return {
-    get: function(){
-      return domElement.checked ? domElement.value : null;
-    },
-    set: function(value){
-      domElement.checked = value == domElement.value;
-    }
-  };
-}
-
-function optionsAccessor(scope, element) {
-  var formatterName = element.attr('ng:format') || NOOP,
-      formatter = compileFormatter(formatterName);
-  return {
-    get: function(){
-      var values = [];
-      forEach(element[0].options, function(option){
-        if (option.selected) values.push(formatter.parse(scope, option.value));
-      });
-      return values;
-    },
-    set: function(values){
-      var keys = {};
-      forEach(values, function(value){
-        keys[formatter.format(scope, value)] = true;
-      });
-      forEach(element[0].options, function(option){
-        option.selected = keys[option.value];
-      });
-    }
-  };
-}
-
-function noopAccessor() { return { get: noop, set: noop }; }
-
-/*
- * TODO: refactor
- *
- * The table below is not quite right. In some cases the formatter is on the model side
- * and in some cases it is on the view side. This is a historical artifact
- *
- * The concept of model/view accessor is useful for anyone who is trying to develop UI, and
- * so it should be exposed to others. There should be a form object which keeps track of the
- * accessors and also acts as their factory. It should expose it as an object and allow
- * the validator to publish errors to it, so that the the error messages can be bound to it.
- *
- */
-var textWidget = inputWidget('keydown change', modelAccessor, valueAccessor, initWidgetValue(), true),
-    INPUT_TYPE = {
-      'text':            textWidget,
-      'textarea':        textWidget,
-      'hidden':          textWidget,
-      'password':        textWidget,
-      'checkbox':        inputWidget('click', modelFormattedAccessor, checkedAccessor, initWidgetValue(false)),
-      'radio':           inputWidget('click', modelFormattedAccessor, radioAccessor, radioInit),
-      'select-one':      inputWidget('change', modelAccessor, valueAccessor, initWidgetValue(null)),
-      'select-multiple': inputWidget('change', modelAccessor, optionsAccessor, initWidgetValue([]))
-//      'file':            fileWidget???
-    };
-
-
-function initWidgetValue(initValue) {
-  return function (model, view) {
-    var value = view.get();
-    if (!value && isDefined(initValue)) {
-      value = copy(initValue);
-    }
-    if (isUndefined(model.get()) && isDefined(value)) {
-      model.set(value);
-    }
-  };
-}
-
-function radioInit(model, view, element) {
- var modelValue = model.get(), viewValue = view.get(), input = element[0];
- input.checked = false;
- input.name = this.$id + '@' + input.name;
- if (isUndefined(modelValue)) {
-   model.set(modelValue = null);
- }
- if (modelValue == null && viewValue !== null) {
-   model.set(viewValue);
- }
- view.set(modelValue);
-}
-
-/**
- * @workInProgress
- * @ngdoc directive
- * @name angular.directive.ng:change
- *
- * @description
- * The directive executes an expression whenever the input widget changes.
- *
- * @element INPUT
- * @param {expression} expression to execute.
- *
- * @example
- * @example
-    <doc:example>
-      <doc:source>
-        <div ng:init="checkboxCount=0; textCount=0"></div>
-        <input type="text" name="text" ng:change="textCount = 1 + textCount">
-           changeCount {{textCount}}<br/>
-        <input type="checkbox" name="checkbox" ng:change="checkboxCount = 1 + checkboxCount">
-           changeCount {{checkboxCount}}<br/>
-      </doc:source>
-      <doc:scenario>
-         it('should check ng:change', function(){
-           expect(binding('textCount')).toBe('0');
-           expect(binding('checkboxCount')).toBe('0');
-
-           using('.doc-example-live').input('text').enter('abc');
-           expect(binding('textCount')).toBe('1');
-           expect(binding('checkboxCount')).toBe('0');
-
-
-           using('.doc-example-live').input('checkbox').check();
-           expect(binding('textCount')).toBe('1');
-           expect(binding('checkboxCount')).toBe('1');
-         });
-      </doc:scenario>
-    </doc:example>
- */
-function inputWidget(events, modelAccessor, viewAccessor, initFn, textBox) {
-  return annotate('$defer', function($defer, element) {
-    var scope = this,
-        model = modelAccessor(scope, element),
-        view = viewAccessor(scope, element),
-        ngChange = element.attr('ng:change') || noop,
-        lastValue;
-    if (model) {
-      initFn.call(scope, model, view, element);
-      scope.$eval(element.attr('ng:init') || noop);
-      element.bind(events, function(event){
-        function handler(){
-          var value = view.get();
-          if (!textBox || value != lastValue) {
-            model.set(value);
-            lastValue = model.get();
-            scope.$eval(ngChange);
-          }
-        }
-        event.type == 'keydown' ? $defer(handler) : scope.$apply(handler);
-      });
-      scope.$watch(model.get, function(scope, value) {
-        if (!equals(lastValue, value)) {
-          view.set(lastValue = value);
-        }
-      });
-    }
-  });
-}
-
-function inputWidgetSelector(element){
-  this.directives(true);
-  this.descend(true);
-  return INPUT_TYPE[lowercase(element[0].type)] || noop;
-}
-
-angularWidget('input', inputWidgetSelector);
-angularWidget('textarea', inputWidgetSelector);
-
-
-/**
- * @workInProgress
- * @ngdoc directive
- * @name angular.directive.ng:options
- *
- * @description
- * Dynamically generate a list of `<option>` elements for a `<select>` element using an array or
- * an object obtained by evaluating the `ng:options` expression.
- *
- * When an item in the select menu is select, the value of array element or object property
- * represented by the selected option will be bound to the model identified by the `name` attribute
- * of the parent select element.
- *
- * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
- * be nested into the `<select>` element. This element will then represent `null` or "not selected"
- * option. See example below for demonstration.
- *
- * Note: `ng:options` provides iterator facility for `<option>` element which must be used instead
- * of {@link angular.widget.@ng:repeat ng:repeat}. `ng:repeat` is not suitable for use with
- * `<option>` element because of the following reasons:
- *
- *   * value attribute of the option element that we need to bind to requires a string, but the
- *     source of data for the iteration might be in a form of array containing objects instead of
- *     strings
- *   * {@link angular.widget.@ng:repeat ng:repeat} unrolls after the select binds causing
- *     incorect rendering on most browsers.
- *   * binding to a value not in list confuses most browsers.
- *
- * @element select
- * @param {comprehension_expression} comprehension in one of the following forms:
- *
- *   * for array data sources:
- *     * `label` **`for`** `value` **`in`** `array`
- *     * `select` **`as`** `label` **`for`** `value` **`in`** `array`
- *     * `label`  **`group by`** `group` **`for`** `value` **`in`** `array`
- *     * `select` **`as`** `label` **`group by`** `group` **`for`** `value` **`in`** `array`
- *   * for object data sources:
- *     * `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
- *     * `select` **`as`** `label` **`for (`**`key` **`,`** `value`**`) in`** `object`
- *     * `label` **`group by`** `group` **`for (`**`key`**`,`** `value`**`) in`** `object`
- *     * `select` **`as`** `label` **`group by`** `group`
- *         **`for` `(`**`key`**`,`** `value`**`) in`** `object`
- *
- * Where:
- *
- *   * `array` / `object`: an expression which evaluates to an array / object to iterate over.
- *   * `value`: local variable which will refer to each item in the `array` or each property value
- *      of `object` during iteration.
- *   * `key`: local variable which will refer to a property name in `object` during iteration.
- *   * `label`: The result of this expression will be the label for `<option>` element. The
- *     `expression` will most likely refer to the `value` variable (e.g. `value.propertyName`).
- *   * `select`: The result of this expression will be bound to the model of the parent `<select>`
- *      element. If not specified, `select` expression will default to `value`.
- *   * `group`: The result of this expression will be used to group options using the `<optgroup>`
- *      DOM element.
- *
- * @example
-    <doc:example>
-      <doc:source>
-        <script>
-        function MyCntrl(){
-          this.colors = [
-            {name:'black', shade:'dark'},
-            {name:'white', shade:'light'},
-            {name:'red', shade:'dark'},
-            {name:'blue', shade:'dark'},
-            {name:'yellow', shade:'light'}
-          ];
-          this.color = this.colors[2]; // red
-        }
-        </script>
-        <div ng:controller="MyCntrl">
-          <ul>
-            <li ng:repeat="color in colors">
-              Name: <input name="color.name">
-              [<a href ng:click="colors.$remove(color)">X</a>]
-            </li>
-            <li>
-              [<a href ng:click="colors.push({})">add</a>]
-            </li>
-          </ul>
-          <hr/>
-          Color (null not allowed):
-          <select name="color" ng:options="c.name for c in colors"></select><br>
-
-          Color (null allowed):
-          <div  class="nullable">
-            <select name="color" ng:options="c.name for c in colors">
-              <option value="">-- chose color --</option>
-            </select>
-          </div><br/>
-
-          Color grouped by shade:
-          <select name="color" ng:options="c.name group by c.shade for c in colors">
-          </select><br/>
-
-
-          Select <a href ng:click="color={name:'not in list'}">bogus</a>.<br>
-          <hr/>
-          Currently selected: {{ {selected_color:color}  }}
-          <div style="border:solid 1px black; height:20px"
-               ng:style="{'background-color':color.name}">
-          </div>
-        </div>
-      </doc:source>
-      <doc:scenario>
-         it('should check ng:options', function(){
-           expect(binding('color')).toMatch('red');
-           select('color').option('0');
-           expect(binding('color')).toMatch('black');
-           using('.nullable').select('color').option('');
-           expect(binding('color')).toMatch('null');
-         });
-      </doc:scenario>
-    </doc:example>
- */
-//                       00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
-var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
-angularWidget('select', function(element){
-  this.descend(true);
-  this.directives(true);
-
-  var isMultiselect = element.attr('multiple'),
-      expression = element.attr('ng:options'),
-      onChange = expressionCompile(element.attr('ng:change') || ""),
-      match;
-
-  if (!expression) {
-    return inputWidgetSelector.call(this, element);
-  }
-  if (! (match = expression.match(NG_OPTIONS_REGEXP))) {
-    throw Error(
-      "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
-      " but got '" + expression + "'.");
-  }
-
-  var displayFn = expressionCompile(match[2] || match[1]),
-      valueName = match[4] || match[6],
-      keyName = match[5],
-      groupByFn = expressionCompile(match[3] || ''),
-      valueFn = expressionCompile(match[2] ? match[1] : valueName),
-      valuesFn = expressionCompile(match[7]),
-      // we can't just jqLite('<option>') since jqLite is not smart enough
-      // to create it in <select> and IE barfs otherwise.
-      optionTemplate = jqLite(document.createElement('option')),
-      optGroupTemplate = jqLite(document.createElement('optgroup')),
-      nullOption = false; // if false then user will not be able to select it
-
-  return function(selectElement){
-
-    // This is an array of array of existing option groups in DOM. We try to reuse these if possible
-    // optionGroupsCache[0] is the options with no option group
-    // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-    var optionGroupsCache = [[{element: selectElement, label:''}]],
-        scope = this,
-        model = modelAccessor(scope, element),
-        inChangeEvent;
-
-    // find existing special options
-    forEach(selectElement.children(), function(option){
-      if (option.value == '')
-        // User is allowed to select the null.
-        nullOption = {label:jqLite(option).text(), id:''};
-    });
-    selectElement.html(''); // clear contents
-
-    selectElement.bind('change', function(){
-      var optionGroup,
-          collection = valuesFn(scope) || [],
-          key = selectElement.val(),
-          tempScope = scope.$new(),
-          value, optionElement, index, groupIndex, length, groupLength;
-
-      // let's set a flag that the current model change is due to a change event.
-      // the default action of option selection will cause the appropriate option element to be
-      // deselected and another one to be selected - there is no need for us to be updating the DOM
-      // in this case.
-      inChangeEvent = true;
-
-      try {
-        if (isMultiselect) {
-          value = [];
-          for (groupIndex = 0, groupLength = optionGroupsCache.length;
-               groupIndex < groupLength;
-               groupIndex++) {
-            // list of options for that group. (first item has the parent)
-            optionGroup = optionGroupsCache[groupIndex];
-
-            for(index = 1, length = optionGroup.length; index < length; index++) {
-              if ((optionElement = optionGroup[index].element)[0].selected) {
-                if (keyName) tempScope[keyName] = key;
-                tempScope[valueName] = collection[optionElement.val()];
-                value.push(valueFn(tempScope));
-              }
-            }
-          }
-        } else {
-          if (key == '?') {
-            value = undefined;
-          } else if (key == ''){
-            value = null;
-          } else {
-            tempScope[valueName] = collection[key];
-            if (keyName) tempScope[keyName] = key;
-            value = valueFn(tempScope);
-          }
-        }
-        if (isDefined(value) && model.get() !== value) {
-          model.set(value);
-          onChange(scope);
-        }
-        scope.$root.$apply();
-      } finally {
-        tempScope = null; // TODO(misko): needs to be $destroy
-        inChangeEvent = false;
-      }
-    });
-
-    scope.$watch(function(scope) {
-      var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
-          optionGroupNames = [''],
-          optionGroupName,
-          optionGroup,
-          option,
-          existingParent, existingOptions, existingOption,
-          values = valuesFn(scope) || [],
-          keys = values,
-          key,
-          groupLength, length,
-          fragment,
-          groupIndex, index,
-          optionElement,
-          optionScope = scope.$new(),
-          modelValue = model.get(),
-          selected,
-          selectedSet = false, // nothing is selected yet
-          isMulti = isMultiselect,
-          lastElement,
-          element;
-
-      try {
-        if (isMulti) {
-          selectedSet = new HashMap();
-          if (modelValue && isNumber(length = modelValue.length)) {
-            for (index = 0; index < length; index++) {
-              selectedSet.put(modelValue[index], true);
-            }
-          }
-        } else if (modelValue === null || nullOption) {
-          // if we are not multiselect, and we are null then we have to add the nullOption
-          optionGroups[''].push(extend({selected:modelValue === null, id:'', label:''}, nullOption));
-          selectedSet = true;
-        }
-
-        // If we have a keyName then we are iterating over on object. Grab the keys and sort them.
-        if(keyName) {
-          keys = [];
-          for (key in values) {
-            if (values.hasOwnProperty(key))
-              keys.push(key);
-          }
-          keys.sort();
-        }
-
-        // We now build up the list of options we need (we merge later)
-        for (index = 0; length = keys.length, index < length; index++) {
-          optionScope[valueName] = values[keyName ? optionScope[keyName]=keys[index]:index];
-          optionGroupName = groupByFn(optionScope) || '';
-          if (!(optionGroup = optionGroups[optionGroupName])) {
-            optionGroup = optionGroups[optionGroupName] = [];
-            optionGroupNames.push(optionGroupName);
-          }
-          if (isMulti) {
-            selected = !!selectedSet.remove(valueFn(optionScope));
-          } else {
-            selected = modelValue === valueFn(optionScope);
-            selectedSet = selectedSet || selected; // see if at least one item is selected
-          }
-          optionGroup.push({
-              id: keyName ? keys[index] : index,   // either the index into array or key from object
-              label: displayFn(optionScope) || '', // what will be seen by the user
-              selected: selected                   // determine if we should be selected
-            });
-        }
-        optionGroupNames.sort();
-        if (!isMulti && !selectedSet) {
-          // nothing was selected, we have to insert the undefined item
-          optionGroups[''].unshift({id:'?', label:'', selected:true});
-        }
-
-        // Now we need to update the list of DOM nodes to match the optionGroups we computed above
-        for (groupIndex = 0, groupLength = optionGroupNames.length;
-             groupIndex < groupLength;
-             groupIndex++) {
-          // current option group name or '' if no group
-          optionGroupName = optionGroupNames[groupIndex];
-
-          // list of options for that group. (first item has the parent)
-          optionGroup = optionGroups[optionGroupName];
-
-          if (optionGroupsCache.length <= groupIndex) {
-            // we need to grow the optionGroups
-            optionGroupsCache.push(
-                existingOptions = [
-                  existingParent = {
-                      element: optGroupTemplate.clone().attr('label', optionGroupName),
-                      label: optionGroup.label
-                    }
-                ]
-            );
-            selectElement.append(existingParent.element);
-          } else {
-            existingOptions = optionGroupsCache[groupIndex];
-            existingParent = existingOptions[0];  // either SELECT (no group) or OPTGROUP element
-
-            // update the OPTGROUP label if not the same.
-            if (existingParent.label != optionGroupName) {
-              existingParent.element.attr('label', existingParent.label = optionGroupName);
-            }
-          }
-
-          lastElement = null;  // start at the begining
-          for(index = 0, length = optionGroup.length; index < length; index++) {
-            option = optionGroup[index];
-            if ((existingOption = existingOptions[index+1])) {
-              // reuse elements
-              lastElement = existingOption.element;
-              if (existingOption.label !== option.label) {
-                lastElement.text(existingOption.label = option.label);
-              }
-              if (existingOption.id !== option.id) {
-                lastElement.val(existingOption.id = option.id);
-              }
-              if (!inChangeEvent && existingOption.selected !== option.selected) {
-                lastElement.prop('selected', (existingOption.selected = option.selected));
-              }
-            } else {
-              // grow elements
-              // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
-              // in this version of jQuery on some browser the .text() returns a string
-              // rather then the element.
-              (element = optionTemplate.clone())
-                .val(option.id)
-                .attr('selected', option.selected)
-                .text(option.label);
-              existingOptions.push(existingOption = {
-                element: element,
-                label: option.label,
-                id: option.id,
-                selected: option.selected
-              });
-              if (lastElement) {
-                lastElement.after(element);
-              } else {
-                existingParent.element.append(element);
-              }
-              lastElement = element;
-            }
-          }
-          // remove any excessive OPTIONs in a group
-          index++; // increment since the existingOptions[0] is parent element not OPTION
-          while(existingOptions.length > index) {
-            existingOptions.pop().element.remove();
-          }
-        }
-        // remove any excessive OPTGROUPs from select
-        while(optionGroupsCache.length > groupIndex) {
-          optionGroupsCache.pop()[0].element.remove();
-        }
-      } finally {
-        optionScope.$destroy();
-      }
-    });
-  };
-});
-
 
 /**
  * @workInProgress
@@ -960,28 +198,36 @@ angularWidget('select', function(element){
  * @example
     <doc:example>
       <doc:source jsfiddle="false">
-       <select name="url">
-        <option value="examples/ng-include/template1.html">template1.html</option>
-        <option value="examples/ng-include/template2.html">template2.html</option>
-        <option value="">(blank)</option>
-       </select>
-       url of the template: <tt><a href="{{url}}">{{url}}</a></tt>
-       <hr/>
-       <ng:include src="url"></ng:include>
+       <script>
+         function Cntl(){
+           this.templates =
+             [ { name: 'template1.html', url: 'examples/ng-include/template1.html'}
+             , { name: 'template2.html', url: 'examples/ng-include/template2.html'} ];
+           this.template = this.templates[0];
+         }
+       </script>
+       <div ng:controller="Cntl">
+         <select ng:model="template" ng:options="t.name for t in templates">
+          <option value="">(blank)</option>
+         </select>
+         url of the template: <tt><a href="{{template.url}}">{{template.url}}</a></tt>
+         <hr/>
+         <ng:include src="template.url"></ng:include>
+       </div>
       </doc:source>
       <doc:scenario>
         it('should load template1.html', function(){
-         expect(element('.doc-example-live ng\\:include').text()).
+         expect(element('.doc-example-live .ng-include').text()).
            toBe('Content of template1.html\n');
         });
         it('should load template2.html', function(){
-         select('url').option('examples/ng-include/template2.html');
-         expect(element('.doc-example-live ng\\:include').text()).
+         select('template').option('1');
+         expect(element('.doc-example-live .ng-include').text()).
            toBe('Content of template2.html\n');
         });
         it('should change to blank', function(){
-         select('url').option('');
-         expect(element('.doc-example-live ng\\:include').text()).toEqual('');
+         select('template').option('');
+         expect(element('.doc-example-live .ng-include').text()).toEqual('');
         });
       </doc:scenario>
     </doc:example>
@@ -1064,30 +310,34 @@ angularWidget('ng:include', function(element){
  * @example
     <doc:example>
       <doc:source>
-        <select name="switch">
-          <option>settings</option>
-          <option>home</option>
-          <option>other</option>
-        </select>
-        <tt>switch={{switch}}</tt>
-        </hr>
-        <ng:switch on="switch" >
-          <div ng:switch-when="settings">Settings Div</div>
-          <span ng:switch-when="home">Home Span</span>
-          <span ng:switch-default>default</span>
-        </ng:switch>
-        </code>
+        <script>
+          function Cntl(){
+            this.items = ['settings', 'home', 'other'];
+            this.selection = this.items[0];
+          }
+        </script>
+        <div ng:controller="Cntl">
+          <select ng:model="selection" ng:options="item for item in items">
+          </select>
+          <tt>selection={{selection}}</tt>
+          <hr/>
+          <ng:switch on="selection" >
+            <div ng:switch-when="settings">Settings Div</div>
+            <span ng:switch-when="home">Home Span</span>
+            <span ng:switch-default>default</span>
+          </ng:switch>
+        </div>
       </doc:source>
       <doc:scenario>
         it('should start in settings', function(){
          expect(element('.doc-example-live ng\\:switch').text()).toEqual('Settings Div');
         });
         it('should change to home', function(){
-         select('switch').option('home');
+         select('selection').option('home');
          expect(element('.doc-example-live ng\\:switch').text()).toEqual('Home Span');
         });
         it('should select deafault', function(){
-         select('switch').option('other');
+         select('selection').option('other');
          expect(element('.doc-example-live ng\\:switch').text()).toEqual('default');
         });
       </doc:scenario>
@@ -1182,10 +432,9 @@ angularWidget('a', function() {
  * @name angular.widget.@ng:repeat
  *
  * @description
- * The `ng:repeat` widget instantiates a template once per item from a collection. The collection is
- * enumerated with the `ng:repeat-index` attribute, starting from 0. Each template instance gets
- * its own scope, where the given loop variable is set to the current collection item, and `$index`
- * is set to the item index or key.
+ * The `ng:repeat` widget instantiates a template once per item from a collection. Each template
+ * instance gets its own scope, where the given loop variable is set to the current collection item,
+ * and `$index` is set to the item index or key.
  *
  * Special properties are exposed on the local scope of each template instance, including:
  *
@@ -1256,68 +505,89 @@ angularWidget('@ng:repeat', function(expression, element){
     valueIdent = match[3] || match[1];
     keyIdent = match[2];
 
-    var childScopes = [];
-    var childElements = [iterStartElement];
     var parentScope = this;
+    // Store a list of elements from previous run. This is a hash where key is the item from the
+    // iterator, and the value is an array of objects with following properties.
+    //   - scope: bound scope
+    //   - element: previous element.
+    //   - index: position
+    // We need an array of these objects since the same object can be returned from the iterator.
+    // We expect this to be a rare case.
+    var lastOrder = new HashQueueMap();
     this.$watch(function(scope){
       var index = 0,
-          childCount = childScopes.length,
           collection = scope.$eval(rhs),
           collectionLength = size(collection, true),
-          fragment = document.createDocumentFragment(),
-          addFragmentTo = (childCount < collectionLength) ? childElements[childCount] : null,
           childScope,
-          key;
+          // Same as lastOrder but it has the current state. It will become the
+          // lastOrder on the next iteration.
+          nextOrder = new HashQueueMap(),
+          key, value, // key/value of iteration
+          array, last,       // last object information {scope, element, index}
+          cursor = iterStartElement;     // current position of the node
 
       for (key in collection) {
         if (collection.hasOwnProperty(key)) {
-          if (index < childCount) {
-            // reuse existing child
-            childScope = childScopes[index];
-            childScope[valueIdent] = collection[key];
-            if (keyIdent) childScope[keyIdent] = key;
-            childScope.$position = index == 0
-                ? 'first'
-                : (index == collectionLength - 1 ? 'last' : 'middle');
-            childScope.$eval();
+          last = lastOrder.shift(value = collection[key]);
+          if (last) {
+            // if we have already seen this object, then we need to reuse the
+            // associated scope/element
+            childScope = last.scope;
+            nextOrder.push(value, last);
+
+            if (index === last.index) {
+              // do nothing
+              cursor = last.element;
+            } else {
+              // existing item which got moved
+              last.index = index;
+              // This may be a noop, if the element is next, but I don't know of a good way to
+              // figure this out,  since it would require extra DOM access, so let's just hope that
+              // the browsers realizes that it is noop, and treats it as such.
+              cursor.after(last.element);
+              cursor = last.element;
+            }
           } else {
-            // grow children
+            // new item which we don't know about
             childScope = parentScope.$new();
-            childScope[valueIdent] = collection[key];
-            if (keyIdent) childScope[keyIdent] = key;
-            childScope.$index = index;
-            childScope.$position = index == 0
-                ? 'first'
-                : (index == collectionLength - 1 ? 'last' : 'middle');
-            childScopes.push(childScope);
+          }
+
+          childScope[valueIdent] = collection[key];
+          if (keyIdent) childScope[keyIdent] = key;
+          childScope.$index = index;
+          childScope.$position = index == 0
+              ? 'first'
+              : (index == collectionLength - 1 ? 'last' : 'middle');
+
+          if (!last) {
             linker(childScope, function(clone){
-              clone.attr('ng:repeat-index', index);
-              fragment.appendChild(clone[0]);
-              // TODO(misko): Temporary hack - maybe think about it - removed after we add fragment after $digest()
-              // This causes double $digest for children
-              // The first flush will couse a lot of DOM access (initial)
-              // Second flush shuld be noop since nothing has change hence no DOM access.
-              childScope.$digest();
-              childElements[index + 1] = clone;
+              cursor.after(clone);
+              last = {
+                  scope: childScope,
+                  element: (cursor = clone),
+                  index: index
+                };
+              nextOrder.push(value, last);
             });
           }
+
           index ++;
         }
       }
 
-      //attach new nodes buffered in doc fragment
-      if (addFragmentTo) {
-        // TODO(misko): For performance reasons, we should do the addition after all other widgets
-        // have run. For this should happend after $digest() is done!
-        addFragmentTo.after(jqLite(fragment));
+      //shrink children
+      for (key in lastOrder) {
+        if (lastOrder.hasOwnProperty(key)) {
+          array = lastOrder[key];
+          while(array.length) {
+            value = array.pop();
+            value.element.remove();
+            value.scope.$destroy();
+          }
+        }
       }
 
-      // shrink children
-      while(childScopes.length > index) {
-        // can not use $destroy(true) since  there may be multiple iterators on same parent.
-        childScopes.pop().$destroy();
-        childElements.pop().remove();
-      }
+      lastOrder = nextOrder;
     });
   };
 });
@@ -1548,27 +818,36 @@ angularWidget('ng:view', function(element) {
  * @example
     <doc:example>
       <doc:source>
-        Person 1:<input type="text" name="person1" value="Igor" /><br/>
-        Person 2:<input type="text" name="person2" value="Misko" /><br/>
-        Number of People:<input type="text" name="personCount" value="1" /><br/>
+        <script>
+          function Cntl(){
+            this.person1 = 'Igor';
+            this.person2 = 'Misko';
+            this.personCount = 1;
+          }
+        </script>
+        <div ng:controller="Cntl">
+          Person 1:<input type="text" ng:model="person1" value="Igor" /><br/>
+          Person 2:<input type="text" ng:model="person2" value="Misko" /><br/>
+          Number of People:<input type="text" ng:model="personCount" value="1" /><br/>
 
-        <!--- Example with simple pluralization rules for en locale --->
-        Without Offset:
-        <ng:pluralize count="personCount"
-                      when="{'0': 'Nobody is viewing.',
-                             'one': '1 person is viewing.',
-                             'other': '{} people are viewing.'}">
-        </ng:pluralize><br>
+          <!--- Example with simple pluralization rules for en locale --->
+          Without Offset:
+          <ng:pluralize count="personCount"
+                        when="{'0': 'Nobody is viewing.',
+                               'one': '1 person is viewing.',
+                               'other': '{} people are viewing.'}">
+          </ng:pluralize><br>
 
-        <!--- Example with offset --->
-        With Offset(2):
-        <ng:pluralize count="personCount" offset=2
-                      when="{'0': 'Nobody is viewing.',
-                             '1': '{{person1}} is viewing.',
-                             '2': '{{person1}} and {{person2}} are viewing.',
-                             'one': '{{person1}}, {{person2}} and one other person are viewing.',
-                             'other': '{{person1}}, {{person2}} and {} other people are viewing.'}">
-        </ng:pluralize>
+          <!--- Example with offset --->
+          With Offset(2):
+          <ng:pluralize count="personCount" offset=2
+                        when="{'0': 'Nobody is viewing.',
+                               '1': '{{person1}} is viewing.',
+                               '2': '{{person1}} and {{person2}} are viewing.',
+                               'one': '{{person1}}, {{person2}} and one other person are viewing.',
+                               'other': '{{person1}}, {{person2}} and {} other people are viewing.'}">
+          </ng:pluralize>
+        </div>
       </doc:source>
       <doc:scenario>
         it('should show correct pluralized string', function(){

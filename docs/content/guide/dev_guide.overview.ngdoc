@@ -42,19 +42,27 @@ easier a web developer's life can if they're using angular:
 
 <doc:example>
 <doc:source>
- <b>Invoice:</b>
- <br />
- <br />
- <table>
-  <tr><td> </td><td> </td>
-  <tr><td>Quantity</td><td>Cost</td></tr>
-  <tr>
-    <td><input name="qty" value="1" ng:validate="integer:0" ng:required /></td>
-    <td><input name="cost" value="19.95" ng:validate="number" ng:required /></td>
-  </tr>
- </table>
- <hr />
- <b>Total:</b> {{qty * cost | currency}}
+ <script>
+   function InvoiceCntl(){
+     this.qty = 1;
+     this.cost = 19.95;
+   }
+ </script>
+ <div ng:controller="InvoiceCntl">
+   <b>Invoice:</b>
+   <br />
+   <br />
+   <table>
+    <tr><td> </td><td> </td>
+    <tr><td>Quantity</td><td>Cost</td></tr>
+    <tr>
+      <td><input type="integer" min="0" ng:model="qty" required ></td>
+      <td><input type="number" ng:model="cost" required ></td>
+    </tr>
+   </table>
+   <hr />
+   <b>Total:</b> {{qty * cost | currency}}
+ </div>
 </doc:source>
 <!--
 <doc:scenario>
@@ -89,18 +97,18 @@ In the `<script>` tag we do two angular setup tasks:
 From the `name` attribute of the `<input>` tags, angular automatically sets up two-way data
 binding, and we also demonstrate some easy input validation:
 
-        Quantity: <input name="qty" value="1" ng:validate="integer:0" ng:required/>
-        Cost: <input name="cost" value="199.95" ng:validate="number" ng:required/>
+        Quantity: <input type="integer" min="0" ng:model="qty" required >
+        Cost: <input type="number" ng:model="cost" required >
 
 These input widgets look normal enough, but consider these points:
 
 * When this page loaded, angular bound the names of the input widgets (`qty` and `cost`) to
 variables of the same name. Think of those variables as the "Model" component of the
 Model-View-Controller design pattern.
-* Note the angular directives, {@link api/angular.widget.@ng:validate ng:validate} and {@link
-api/angular.widget.@ng:required ng:required}. You may have noticed that when you enter invalid data
+* Note the angular/HTML widget, {@link api/angular.widget.input input}.
+You may have noticed that when you enter invalid data
 or leave the the input fields blank, the borders turn red color, and the display value disappears.
-These `ng:` directives make it easier to implement field validators than coding them in JavaScript,
+These widgets make it easier to implement field validation than coding them in JavaScript,
 no?  Yes.
 
 And finally, the mysterious `{{ double curly braces }}`:

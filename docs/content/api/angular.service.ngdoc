@@ -14,8 +14,6 @@ session cookies
 * {@link angular.service.$document $document } - Provides reference to `window.document` element
 * {@link angular.service.$exceptionHandler $exceptionHandler } - Receives uncaught angular
 exceptions
-* {@link angular.service.$hover $hover } -
-* {@link angular.service.$invalidWidgets $invalidWidgets } - Holds references to invalid widgets
 * {@link angular.service.$location $location } - Parses the browser location URL
 * {@link angular.service.$log $log } - Provides logging service
 * {@link angular.service.$resource $resource } - Creates objects for interacting with RESTful
