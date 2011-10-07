@@ -5,25 +5,25 @@ var OPERATORS = {
     'true':function(self){return true;},
     'false':function(self){return false;},
     $undefined:noop,
-    '+':function(self, a,b){return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
-    '-':function(self, a,b){return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
-    '*':function(self, a,b){return a*b;},
-    '/':function(self, a,b){return a/b;},
-    '%':function(self, a,b){return a%b;},
-    '^':function(self, a,b){return a^b;},
+    '+':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
+    '-':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
+    '*':function(self, a,b){return a(self)*b(self);},
+    '/':function(self, a,b){return a(self)/b(self);},
+    '%':function(self, a,b){return a(self)%b(self);},
+    '^':function(self, a,b){return a(self)^b(self);},
     '=':noop,
-    '==':function(self, a,b){return a==b;},
-    '!=':function(self, a,b){return a!=b;},
-    '<':function(self, a,b){return a<b;},
-    '>':function(self, a,b){return a>b;},
-    '<=':function(self, a,b){return a<=b;},
-    '>=':function(self, a,b){return a>=b;},
-    '&&':function(self, a,b){return a&&b;},
-    '||':function(self, a,b){return a||b;},
-    '&':function(self, a,b){return a&b;},
+    '==':function(self, a,b){return a(self)==b(self);},
+    '!=':function(self, a,b){return a(self)!=b(self);},
+    '<':function(self, a,b){return a(self)<b(self);},
+    '>':function(self, a,b){return a(self)>b(self);},
+    '<=':function(self, a,b){return a(self)<=b(self);},
+    '>=':function(self, a,b){return a(self)>=b(self);},
+    '&&':function(self, a,b){return a(self)&&b(self);},
+    '||':function(self, a,b){return a(self)||b(self);},
+    '&':function(self, a,b){return a(self)&b(self);},
 //    '|':function(self, a,b){return a|b;},
-    '|':function(self, a,b){return b(self, a);},
-    '!':function(self, a){return !a;}
+    '|':function(self, a,b){return b(self)(self, a(self));},
+    '!':function(self, a){return !a(self);}
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
@@ -308,13 +308,13 @@ function parser(text, json){
 
   function unaryFn(fn, right) {
     return function(self) {
-      return fn(self, right(self));
+      return fn(self, right);
     };
   }
 
   function binaryFn(left, fn, right) {
     return function(self) {
-      return fn(self, left(self), right(self));
+      return fn(self, left, right);
     };
   }
 
