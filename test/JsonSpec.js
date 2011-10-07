@@ -1,6 +1,6 @@
 'use strict';
 
-describe('json', function(){
+describe('json', function() {
   it('should serialize primitives', function() {
     expect(toJson(0/0)).toEqual('null');
     expect(toJson(null)).toEqual('null');
@@ -11,11 +11,11 @@ describe('json', function(){
     expect(toJson("a \t \n \r b \\")).toEqual('"a \\t \\n \\r b \\\\"');
   });
 
-  it('should not serialize $$properties', function(){
+  it('should not serialize $$properties', function() {
     expect(toJson({$$some:'value', 'this':1, '$parent':1}, false)).toEqual('{}');
   });
 
-  it('should not serialize this or $parent', function(){
+  it('should not serialize this or $parent', function() {
     expect(toJson({'this':'value', $parent:'abc'}, false)).toEqual('{}');
   });
 
@@ -46,8 +46,8 @@ describe('json', function(){
   });
 
   it('should ignore functions', function() {
-    expect(toJson([function(){},1])).toEqual('[null,1]');
-    expect(toJson({a:function(){}})).toEqual('{}');
+    expect(toJson([function() {},1])).toEqual('[null,1]');
+    expect(toJson({a:function() {}})).toEqual('{}');
   });
 
   it('should parse null', function() {
@@ -127,7 +127,7 @@ describe('json', function(){
     expect(fromJson("{exp:1.2e-10}")).toEqual({exp:1.2E-10});
   });
 
-  it('should ignore non-strings', function(){
+  it('should ignore non-strings', function() {
     expect(fromJson([])).toEqual([]);
     expect(fromJson({})).toEqual({});
     expect(fromJson(null)).toEqual(null);
@@ -170,51 +170,51 @@ describe('json', function(){
   }
 
 
-  describe('security', function(){
-    it('should not allow naked expressions', function(){
-      expect(function(){fromJson('1+2');}).
+  describe('security', function() {
+    it('should not allow naked expressions', function() {
+      expect(function() {fromJson('1+2');}).
         toThrow(new Error("Syntax Error: Token '+' is an unexpected token at column 2 of the expression [1+2] starting at [+2]."));
     });
 
-    it('should not allow naked expressions group', function(){
-      expect(function(){fromJson('(1+2)');}).
+    it('should not allow naked expressions group', function() {
+      expect(function() {fromJson('(1+2)');}).
         toThrow(new Error("Syntax Error: Token '(' is not valid json at column 1 of the expression [(1+2)] starting at [(1+2)]."));
     });
 
-    it('should not allow expressions in objects', function(){
-      expect(function(){fromJson('{a:abc()}');}).
+    it('should not allow expressions in objects', function() {
+      expect(function() {fromJson('{a:abc()}');}).
         toThrow(new Error("Syntax Error: Token 'abc' is not valid json at column 4 of the expression [{a:abc()}] starting at [abc()}]."));
     });
 
-    it('should not allow expressions in arrays', function(){
-      expect(function(){fromJson('[1+2]');}).
+    it('should not allow expressions in arrays', function() {
+      expect(function() {fromJson('[1+2]');}).
         toThrow(new Error("Syntax Error: Token '+' is not valid json at column 3 of the expression [[1+2]] starting at [+2]]."));
     });
 
-    it('should not allow vars', function(){
-      expect(function(){fromJson('[1, x]');}).
+    it('should not allow vars', function() {
+      expect(function() {fromJson('[1, x]');}).
         toThrow(new Error("Syntax Error: Token 'x' is not valid json at column 5 of the expression [[1, x]] starting at [x]]."));
     });
 
-    it('should not allow dereference', function(){
-      expect(function(){fromJson('["".constructor]');}).
+    it('should not allow dereference', function() {
+      expect(function() {fromJson('["".constructor]');}).
         toThrow(new Error("Syntax Error: Token '.' is not valid json at column 4 of the expression [[\"\".constructor]] starting at [.constructor]]."));
     });
 
-    it('should not allow expressions ofter valid json', function(){
-      expect(function(){fromJson('[].constructor');}).
+    it('should not allow expressions ofter valid json', function() {
+      expect(function() {fromJson('[].constructor');}).
         toThrow(new Error("Syntax Error: Token '.' is not valid json at column 3 of the expression [[].constructor] starting at [.constructor]."));
     });
 
-    it('should not allow object dereference', function(){
-      expect(function(){fromJson('{a:1, b: $location, c:1}');}).toThrow();
-      expect(function(){fromJson("{a:1, b:[1]['__parent__']['location'], c:1}");}).toThrow();
+    it('should not allow object dereference', function() {
+      expect(function() {fromJson('{a:1, b: $location, c:1}');}).toThrow();
+      expect(function() {fromJson("{a:1, b:[1]['__parent__']['location'], c:1}");}).toThrow();
     });
 
-    it('should not allow assignments', function(){
-      expect(function(){fromJson("{a:1, b:[1]=1, c:1}");}).toThrow();
-      expect(function(){fromJson("{a:1, b:=1, c:1}");}).toThrow();
-      expect(function(){fromJson("{a:1, b:x=1, c:1}");}).toThrow();
+    it('should not allow assignments', function() {
+      expect(function() {fromJson("{a:1, b:[1]=1, c:1}");}).toThrow();
+      expect(function() {fromJson("{a:1, b:=1, c:1}");}).toThrow();
+      expect(function() {fromJson("{a:1, b:x=1, c:1}");}).toThrow();
     });
 
   });

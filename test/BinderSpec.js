@@ -1,7 +1,7 @@
 'use strict';
 
-describe('Binder', function(){
-  beforeEach(function(){
+describe('Binder', function() {
+  beforeEach(function() {
     var self = this;
 
     this.compile = function(html, parent, logErrors) {
@@ -22,42 +22,42 @@ describe('Binder', function(){
     };
   });
 
-  afterEach(function(){
+  afterEach(function() {
     if (this.element && this.element.dealoc) {
       this.element.dealoc();
     }
   });
 
-  it('BindUpdate', function(){
+  it('BindUpdate', function() {
     var scope = this.compile('<div ng:init="a=123"/>');
     scope.$digest();
     assertEquals(123, scope.a);
   });
 
-  it('ExecuteInitialization', function(){
+  it('ExecuteInitialization', function() {
     var scope = this.compile('<div ng:init="a=123">');
     assertEquals(scope.a, 123);
   });
 
-  it('ExecuteInitializationStatements', function(){
+  it('ExecuteInitializationStatements', function() {
     var scope = this.compile('<div ng:init="a=123;b=345">');
     assertEquals(scope.a, 123);
     assertEquals(scope.b, 345);
   });
 
-  it('ApplyTextBindings', function(){
+  it('ApplyTextBindings', function() {
     var scope = this.compile('<div ng:bind="model.a">x</div>');
     scope.model = {a:123};
     scope.$apply();
     assertEquals('123', scope.$element.text());
   });
 
-  it('ReplaceBindingInTextWithSpan', function(){
+  it('ReplaceBindingInTextWithSpan', function() {
     assertEquals(this.compileToHtml("<b>a{{b}}c</b>"), '<b>a<span ng:bind="b"></span>c</b>');
     assertEquals(this.compileToHtml("<b>{{b}}</b>"), '<b><span ng:bind="b"></span></b>');
   });
 
-  it('BindingSpaceConfusesIE', function(){
+  it('BindingSpaceConfusesIE', function() {
     if (!msie) return;
     var span = document.createElement("span");
     span.innerHTML = '&nbsp;';
@@ -70,7 +70,7 @@ describe('Binder', function(){
         this.compileToHtml("<b>{{A}} x {{B}} ({{C}})</b>"));
   });
 
-  it('BindingOfAttributes', function(){
+  it('BindingOfAttributes', function() {
     var scope = this.compile("<a href='http://s/a{{b}}c' foo='x'></a>");
     var attrbinding = scope.$element.attr("ng:bind-attr");
     var bindings = fromJson(attrbinding);
@@ -78,7 +78,7 @@ describe('Binder', function(){
     assertTrue(!bindings.foo);
   });
 
-  it('MarkMultipleAttributes', function(){
+  it('MarkMultipleAttributes', function() {
     var scope = this.compile('<a href="http://s/a{{b}}c" foo="{{d}}"></a>');
     var attrbinding = scope.$element.attr("ng:bind-attr");
     var bindings = fromJson(attrbinding);
@@ -86,20 +86,20 @@ describe('Binder', function(){
     assertEquals(decodeURI(bindings.href), "http://s/a{{b}}c");
   });
 
-  it('AttributesNoneBound', function(){
+  it('AttributesNoneBound', function() {
     var scope = this.compile("<a href='abc' foo='def'></a>");
     var a = scope.$element;
     assertEquals(a[0].nodeName, "A");
     assertTrue(!a.attr("ng:bind-attr"));
   });
 
-  it('ExistingAttrbindingIsAppended', function(){
+  it('ExistingAttrbindingIsAppended', function() {
     var scope = this.compile("<a href='http://s/{{abc}}' ng:bind-attr='{\"b\":\"{{def}}\"}'></a>");
     var a = scope.$element;
     assertEquals('{"b":"{{def}}","href":"http://s/{{abc}}"}', a.attr('ng:bind-attr'));
   });
 
-  it('AttributesAreEvaluated', function(){
+  it('AttributesAreEvaluated', function() {
     var scope = this.compile('<a ng:bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>');
     scope.$eval('a=1;b=2');
     scope.$apply();
@@ -108,21 +108,21 @@ describe('Binder', function(){
     assertEquals(a.attr('b'), 'a+b=3');
   });
 
-  it('InputTypeButtonActionExecutesInScope', function(){
+  it('InputTypeButtonActionExecutesInScope', function() {
     var savedCalled = false;
     var scope = this.compile('<input type="button" ng:click="person.save()" value="Apply">');
     scope.person = {};
-    scope.person.save = function(){
+    scope.person.save = function() {
       savedCalled = true;
     };
     browserTrigger(scope.$element, 'click');
     assertTrue(savedCalled);
   });
 
-  it('InputTypeButtonActionExecutesInScope2', function(){
+  it('InputTypeButtonActionExecutesInScope2', function() {
     var log = "";
     var scope = this.compile('<input type="image" ng:click="action()">');
-    scope.action = function(){
+    scope.action = function() {
       log += 'click;';
     };
     expect(log).toEqual('');
@@ -130,18 +130,18 @@ describe('Binder', function(){
     expect(log).toEqual('click;');
   });
 
-  it('ButtonElementActionExecutesInScope', function(){
+  it('ButtonElementActionExecutesInScope', function() {
     var savedCalled = false;
     var scope = this.compile('<button ng:click="person.save()">Apply</button>');
     scope.person = {};
-    scope.person.save = function(){
+    scope.person.save = function() {
       savedCalled = true;
     };
     browserTrigger(scope.$element, 'click');
     assertTrue(savedCalled);
   });
 
-  it('RepeaterUpdateBindings', function(){
+  it('RepeaterUpdateBindings', function() {
     var scope = this.compile('<ul><LI ng:repeat="item in model.items" ng:bind="item.a"/></ul>');
     var form = scope.$element;
     var items = [{a:"A"}, {a:"B"}];
@@ -176,7 +176,7 @@ describe('Binder', function(){
     scope.$apply();
   });
 
-  it('RepeaterContentDoesNotBind', function(){
+  it('RepeaterContentDoesNotBind', function() {
     var scope = this.compile('<ul><LI ng:repeat="item in model.items"><span ng:bind="item.a"></span></li></ul>');
     scope.model = {items:[{a:"A"}]};
     scope.$apply();
@@ -186,12 +186,12 @@ describe('Binder', function(){
           '</ul>', sortedHtml(scope.$element));
   });
 
-  it('DoNotOverwriteCustomAction', function(){
+  it('DoNotOverwriteCustomAction', function() {
     var html = this.compileToHtml('<input type="submit" value="Save" action="foo();">');
     assertTrue(html.indexOf('action="foo();"') > 0 );
   });
 
-  it('RepeaterAdd', function(){
+  it('RepeaterAdd', function() {
     var scope = this.compile('<div><input type="text" ng:model="item.x" ng:repeat="item in items"></div>');
     scope.items = [{x:'a'}, {x:'b'}];
     scope.$apply();
@@ -206,7 +206,7 @@ describe('Binder', function(){
     expect(scope.items[0].x).toEqual('ABC');
   });
 
-  it('ItShouldRemoveExtraChildrenWhenIteratingOverHash', function(){
+  it('ItShouldRemoveExtraChildrenWhenIteratingOverHash', function() {
     var scope = this.compile('<div><div ng:repeat="i in items">{{i}}</div></div>');
     var items = {};
     scope.items = items;
@@ -223,44 +223,44 @@ describe('Binder', function(){
     expect(scope.$element[0].childNodes.length - 1).toEqual(0);
   });
 
-  it('IfTextBindingThrowsErrorDecorateTheSpan', function(){
+  it('IfTextBindingThrowsErrorDecorateTheSpan', function() {
     var scope = this.compile('<div>{{error.throw()}}</div>', null, true);
     var errorLogs = scope.$service('$exceptionHandler').errors;
 
     scope.error = {
-        'throw': function(){throw "ErrorMsg1";}
+        'throw': function() {throw "ErrorMsg1";}
     };
     scope.$apply();
 
-    scope.error['throw'] = function(){throw "MyError";};
+    scope.error['throw'] = function() {throw "MyError";};
     errorLogs.length = 0;
     scope.$apply();
     assertEquals(['MyError'], errorLogs.shift());
 
-    scope.error['throw'] = function(){return "ok";};
+    scope.error['throw'] = function() {return "ok";};
     scope.$apply();
     assertEquals(0, errorLogs.length);
   });
 
-  it('IfAttrBindingThrowsErrorDecorateTheAttribute', function(){
+  it('IfAttrBindingThrowsErrorDecorateTheAttribute', function() {
     var scope = this.compile('<div attr="before {{error.throw()}} after"></div>', null, true);
     var errorLogs = scope.$service('$exceptionHandler').errors;
     var count = 0;
 
     scope.error = {
-        'throw': function(){throw new Error("ErrorMsg" + (++count));}
+        'throw': function() {throw new Error("ErrorMsg" + (++count));}
     };
     scope.$apply();
     expect(errorLogs.length).not.toEqual(0);
     expect(errorLogs.shift()).toMatch(/ErrorMsg1/);
     errorLogs.length = 0;
 
-    scope.error['throw'] =  function(){ return 'X';};
+    scope.error['throw'] =  function() { return 'X';};
     scope.$apply();
     expect(errorLogs.length).toMatch(0);
   });
 
-  it('NestedRepeater', function(){
+  it('NestedRepeater', function() {
     var scope = this.compile('<div><div ng:repeat="m in model" name="{{m.name}}">' +
                      '<ul name="{{i}}" ng:repeat="i in m.item"></ul>' +
                    '</div></div>');
@@ -282,7 +282,7 @@ describe('Binder', function(){
         '</div></div>', sortedHtml(scope.$element));
   });
 
-  it('HideBindingExpression', function(){
+  it('HideBindingExpression', function() {
     var scope = this.compile('<div ng:hide="hidden == 3"/>');
 
     scope.hidden = 3;
@@ -296,7 +296,7 @@ describe('Binder', function(){
     assertVisible(scope.$element);
   });
 
-  it('HideBinding', function(){
+  it('HideBinding', function() {
     var scope = this.compile('<div ng:hide="hidden"/>');
 
     scope.hidden = 'true';
@@ -315,7 +315,7 @@ describe('Binder', function(){
     assertVisible(scope.$element);
   });
 
-  it('ShowBinding', function(){
+  it('ShowBinding', function() {
     var scope = this.compile('<div ng:show="show"/>');
 
     scope.show = 'true';
@@ -335,7 +335,7 @@ describe('Binder', function(){
   });
 
 
-  it('BindClass', function(){
+  it('BindClass', function() {
     var scope = this.compile('<div ng:class="clazz"/>');
 
     scope.clazz = 'testClass';
@@ -349,7 +349,7 @@ describe('Binder', function(){
     assertEquals('<div class="a b" ng:class="clazz"></div>', sortedHtml(scope.$element));
   });
 
-  it('BindClassEvenOdd', function(){
+  it('BindClassEvenOdd', function() {
     var scope = this.compile('<div><div ng:repeat="i in [0,1]" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div></div>');
     scope.$apply();
     var d1 = jqLite(scope.$element[0].childNodes[1]);
@@ -363,7 +363,7 @@ describe('Binder', function(){
         sortedHtml(scope.$element));
   });
 
-  it('BindStyle', function(){
+  it('BindStyle', function() {
     var scope = this.compile('<div ng:style="style"/>');
 
     scope.$eval('style={height: "10px"}');
@@ -375,9 +375,9 @@ describe('Binder', function(){
     scope.$apply();
   });
 
-  it('ActionOnAHrefThrowsError', function(){
+  it('ActionOnAHrefThrowsError', function() {
     var scope = this.compile('<a ng:click="action()">Add Phone</a>', null, true);
-    scope.action = function(){
+    scope.action = function() {
       throw new Error('MyError');
     };
     var input = scope.$element;
@@ -385,7 +385,7 @@ describe('Binder', function(){
     expect(scope.$service('$exceptionHandler').errors[0]).toMatch(/MyError/);
   });
 
-  it('ShoulIgnoreVbNonBindable', function(){
+  it('ShoulIgnoreVbNonBindable', function() {
     var scope = this.compile("<div>{{a}}" +
         "<div ng:non-bindable>{{a}}</div>" +
         "<div ng:non-bindable=''>{{b}}</div>" +
@@ -403,7 +403,7 @@ describe('Binder', function(){
     assertEquals('<pre ng:bind-template="Hello {{name}}!">Hello World!</pre>', sortedHtml(scope.$element));
   });
 
-  it('FillInOptionValueWhenMissing', function(){
+  it('FillInOptionValueWhenMissing', function() {
     var scope = this.compile(
         '<select ng:model="foo">' +
           '<option selected="true">{{a}}</option>' +
@@ -427,7 +427,7 @@ describe('Binder', function(){
     expect(optionC.text()).toEqual('C');
   });
 
-  it('DeleteAttributeIfEvaluatesFalse', function(){
+  it('DeleteAttributeIfEvaluatesFalse', function() {
     var scope = this.compile('<div>' +
         '<input ng:model="a0" ng:bind-attr="{disabled:\'{{true}}\'}">' +
         '<input ng:model="a1" ng:bind-attr="{disabled:\'{{false}}\'}">' +
@@ -449,7 +449,7 @@ describe('Binder', function(){
     assertChild(5, false);
   });
 
-  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', function(){
+  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', function() {
     var scope = this.compile('<div>' +
         '<input type="button" ng:click="greeting=\'ABC\'"/>' +
         '<input type="button" ng:click=":garbage:"/></div>', null, true);
@@ -466,7 +466,7 @@ describe('Binder', function(){
       toMatchError(/Syntax Error: Token ':' not a primary expression/);
   });
 
-  it('ItShouldSelectTheCorrectRadioBox', function(){
+  it('ItShouldSelectTheCorrectRadioBox', function() {
     var scope = this.compile('<div>' +
         '<input type="radio" ng:model="sex" value="female">' +
         '<input type="radio" ng:model="sex" value="male"></div>');
@@ -486,7 +486,7 @@ describe('Binder', function(){
     assertEquals("male", male.val());
   });
 
-  it('ItShouldRepeatOnHashes', function(){
+  it('ItShouldRepeatOnHashes', function() {
     var scope = this.compile('<ul><li ng:repeat="(k,v) in {a:0,b:1}" ng:bind=\"k + v\"></li></ul>');
     scope.$apply();
     assertEquals('<ul>' +
@@ -497,7 +497,7 @@ describe('Binder', function(){
         sortedHtml(scope.$element));
   });
 
-  it('ItShouldFireChangeListenersBeforeUpdate', function(){
+  it('ItShouldFireChangeListenersBeforeUpdate', function() {
     var scope = this.compile('<div ng:bind="name"></div>');
     scope.name = "";
     scope.$watch("watched", "name=123");
@@ -509,7 +509,7 @@ describe('Binder', function(){
         sortedHtml(scope.$element));
   });
 
-  it('ItShouldHandleMultilineBindings', function(){
+  it('ItShouldHandleMultilineBindings', function() {
     var scope = this.compile('<div>{{\n 1 \n + \n 2 \n}}</div>');
     scope.$apply();
     assertEquals("3", scope.$element.text());

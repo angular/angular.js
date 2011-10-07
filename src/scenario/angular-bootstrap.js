@@ -1,7 +1,7 @@
 'use strict';
 
 (function(previousOnLoad){
-  var prefix = (function(){
+  var prefix = (function() {
     var filename = /(.*\/)angular-bootstrap.js(#(.*))?/;
     var scripts = document.getElementsByTagName("script");
     for(var j = 0; j < scripts.length; j++) {
@@ -21,7 +21,7 @@
     document.write('<link rel="stylesheet" type="text/css" href="' + prefix + path + '"/>');
   }
 
-  window.onload = function(){
+  window.onload = function() {
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}

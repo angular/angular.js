@@ -18,7 +18,7 @@ exports.output = function(file, content) {
 };
 
 //recursively create directory
-exports.makeDir = function (path) {
+exports.makeDir = function(path) {
   var parts = path.split(/\//);
   var path = ".";
   //Sequentially create directories
@@ -99,7 +99,7 @@ function merge(srcs, to) {
   var contents = [];
   //Sequentially read file
   var done;
-  srcs.forEach(function (src) {
+  srcs.forEach(function(src) {
     done = Q.when(done, function(content) {
       if(content) contents.push(content);
       return qfs.read(src, 'b');
@@ -128,7 +128,7 @@ exports.toString = function toString(obj) {
     return obj;
   case 'object':
     if (obj instanceof Array) {
-      obj.forEach(function (value, key) {
+      obj.forEach(function(value, key) {
         obj[key] = toString(value);
       });
       return obj.join('');
@@ -140,4 +140,4 @@ exports.toString = function toString(obj) {
 };
 
 
-function noop(){};
+function noop() {};

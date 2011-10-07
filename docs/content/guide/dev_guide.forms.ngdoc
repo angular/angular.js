@@ -111,7 +111,7 @@ The following example demonstrates:
      .ng-form {display: block;}
    </style>
    <script>
-   function UserFormCntl(){
+   function UserFormCntl() {
      this.state = /^\w\w$/;
      this.zip = /^\d\d\d\d\d$/;
      this.master = {
@@ -127,11 +127,11 @@ The following example demonstrates:
    }
 
    UserFormCntl.prototype = {
-     cancel: function(){
+     cancel: function() {
        this.form = angular.copy(this.master);
      },
 
-     save: function(){
+     save: function() {
        this.master = this.form;
        this.cancel();
      }
@@ -187,7 +187,7 @@ The following example demonstrates:
    </div>
 </doc:source>
 <doc:scenario>
-  it('should enable save button', function(){
+  it('should enable save button', function() {
     expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
     input('form.customer').enter('');
     expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
@@ -196,7 +196,7 @@ The following example demonstrates:
     element(':button:contains(Save)').click();
     expect(element(':button:contains(Save)').attr('disabled')).toBeTruthy();
   });
-  it('should enable cancel button', function(){
+  it('should enable cancel button', function() {
     expect(element(':button:contains(Cancel)').attr('disabled')).toBeTruthy();
     input('form.customer').enter('change');
     expect(element(':button:contains(Cancel)').attr('disabled')).toBeFalsy();
@@ -274,7 +274,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
     <doc:example>
       <doc:source>
         <script>
-          function EditorCntl(){
+          function EditorCntl() {
             this.htmlContent = '<b>Hello</b> <i>World</i>!';
           }
 
@@ -282,7 +282,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
             var self = this;
             var htmlFilter = angular.filter('html');
 
-            this.$parseModel = function(){
+            this.$parseModel = function() {
               // need to protect for script injection
               try {
                 this.$viewValue = htmlFilter(
@@ -297,18 +297,18 @@ This example shows how to implement a custom HTML editor widget in Angular.
               }
             }
 
-            this.$render = function(){
+            this.$render = function() {
               element.html(this.$viewValue);
             }
 
-            element.bind('keyup', function(){
-              self.$apply(function(){
+            element.bind('keyup', function() {
+              self.$apply(function() {
                 self.$emit('$viewChange', element.html());
               });
             });
           }
 
-          angular.directive('ng:html-editor-model', function(){
+          angular.directive('ng:html-editor-model', function() {
             function linkFn($formFactory, element) {
               var exp = element.attr('ng:html-editor-model'),
                   form = $formFactory.forElement(element),
@@ -321,7 +321,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
                 controllerArgs: [element]});
               // if the element is destroyed, then we need to
               // notify the form.
-              element.bind('$destroy', function(){
+              element.bind('$destroy', function() {
                 widget.$destroy();
               });
             }
@@ -339,7 +339,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
         </form>
       </doc:source>
       <doc:scenario>
-        it('should enter invalid HTML', function(){
+        it('should enter invalid HTML', function() {
           expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
           input('htmlContent').enter('<');
           expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
@@ -358,7 +358,7 @@ validation.
 <doc:example>
   <doc:source>
      <script>
-       function Ctrl(){
+       function Ctrl() {
          this.input1 = '';
          this.input2 = '';
          this.input3 = 'A';
@@ -447,32 +447,32 @@ validation.
   </doc:source>
   <doc:scenario>
 
-    it('should exercise text', function(){
+    it('should exercise text', function() {
      input('input1').enter('Carlos');
      expect(binding('input1')).toEqual('"Carlos"');
     });
-    it('should exercise textarea', function(){
+    it('should exercise textarea', function() {
      input('input2').enter('Carlos');
      expect(binding('input2')).toEqual('"Carlos"');
     });
-    it('should exercise radio', function(){
+    it('should exercise radio', function() {
      expect(binding('input3')).toEqual('"A"');
      input('input3').select('B');
      expect(binding('input3')).toEqual('"B"');
      input('input3').select('A');
      expect(binding('input3')).toEqual('"A"');
     });
-    it('should exercise checkbox', function(){
+    it('should exercise checkbox', function() {
      expect(binding('input4')).toEqual('false');
      input('input4').check();
      expect(binding('input4')).toEqual('true');
     });
-    it('should exercise pulldown', function(){
+    it('should exercise pulldown', function() {
      expect(binding('input5')).toEqual('"c"');
      select('input5').option('d');
      expect(binding('input5')).toEqual('"d"');
     });
-    it('should exercise multiselect', function(){
+    it('should exercise multiselect', function() {
      expect(binding('input6')).toEqual('[]');
      select('input6').options('e');
      expect(binding('input6')).toEqual('["e"]');

@@ -67,7 +67,7 @@ ResourceFactory.prototype = {
 
     forEach(actions, function(action, name){
       var isPostOrPut = action.method == 'POST' || action.method == 'PUT';
-      Resource[name] = function (a1, a2, a3, a4) {
+      Resource[name] = function(a1, a2, a3, a4) {
         var params = {};
         var data;
         var success = noop;

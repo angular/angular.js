@@ -114,7 +114,7 @@ __`test/unit/controllerSpec.js`:__
 <pre>
 describe('PhoneCat controllers', function() {
 
-  describe('PhoneListCtrl', function(){
+  describe('PhoneListCtrl', function() {
     var scope, $browser, ctrl;
 
     beforeEach(function() {

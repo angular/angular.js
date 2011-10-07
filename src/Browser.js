@@ -3,7 +3,7 @@
 //////////////////////////////
 // Browser
 //////////////////////////////
-var XHR = window.XMLHttpRequest || function () {
+var XHR = window.XMLHttpRequest || function() {
   try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
@@ -56,7 +56,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
 
   /**
-   * Executes the `fn` function (supports currying) and decrements the `outstandingRequestCallbacks`
+   * Executes the `fn` function(supports currying) and decrements the `outstandingRequestCallbacks`
    * counter. If the counter reaches 0, all the `outstandingRequestCallbacks` are executed.
    */
   function completeOutstandingRequest(fn) {
@@ -322,7 +322,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    *
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = function (name, value) {
+  self.cookies = function(name, value) {
     var cookieLength, cookieArray, cookie, i, keyValue, index;
 
     if (name) {

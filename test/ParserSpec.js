@@ -191,7 +191,7 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', function(){
+  it('should parse filters', function() {
     angular.filter.substring = function(input, start, end) {
       return input.substring(start, end);
     };
@@ -416,8 +416,8 @@ describe('parser', function() {
   });
 
 
-  describe('assignable', function(){
-    it('should expose assignment function', function(){
+  describe('assignable', function() {
+    it('should expose assignment function', function() {
       var fn = parser('a').assignable();
       expect(fn.assign).toBeTruthy();
       var scope = {};

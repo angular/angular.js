@@ -87,7 +87,7 @@ angularServiceInject("$log", $logFactory = function($window){
     var console = $window.console || {};
     var logFn = console[type] || console.log || noop;
     if (logFn.apply) {
-      return function(){
+      return function() {
         var args = [];
         forEach(arguments, function(arg){
           args.push(formatError(arg));

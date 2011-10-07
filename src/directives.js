@@ -61,7 +61,7 @@
     </div>
      </doc:source>
      <doc:scenario>
-       it('should check greeting', function(){
+       it('should check greeting', function() {
          expect(binding('greeting')).toBe('Hello');
          expect(binding('person')).toBe('World');
        });
@@ -115,10 +115,10 @@ angularDirective("ng:init", function(expression){
             {type:'email', value:'john.smith@example.org'} ];
         }
         SettingsController.prototype = {
-         greet: function(){
+         greet: function() {
            alert(this.name);
          },
-         addContact: function(){
+         addContact: function() {
            this.contacts.push({type:'email', value:'yourname@example.org'});
          },
          removeContact: function(contactToRemove) {
@@ -149,7 +149,7 @@ angularDirective("ng:init", function(expression){
       </div>
      </doc:source>
      <doc:scenario>
-       it('should check controller', function(){
+       it('should check controller', function() {
          expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
          expect(element('.doc-example-live li:nth-child(1) input').val())
            .toBe('408 555 1212');
@@ -199,7 +199,7 @@ angularDirective("ng:controller", function(expression){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.name = 'Whirled';
          }
        </script>
@@ -209,7 +209,7 @@ angularDirective("ng:controller", function(expression){
        </div>
      </doc:source>
      <doc:scenario>
-       it('should check ng:bind', function(){
+       it('should check ng:bind', function() {
          expect(using('.doc-example-live').binding('name')).toBe('Whirled');
          using('.doc-example-live').input('name').enter('world');
          expect(using('.doc-example-live').binding('name')).toBe('world');
@@ -326,7 +326,7 @@ function compileBindTemplate(template){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.salutation = 'Hello';
            this.name = 'World';
          }
@@ -338,7 +338,7 @@ function compileBindTemplate(template){
        </div>
      </doc:source>
      <doc:scenario>
-       it('should check ng:bind', function(){
+       it('should check ng:bind', function() {
          expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
            toBe('Hello World!');
          using('.doc-example-live').input('salutation').enter('Greetings');
@@ -402,7 +402,7 @@ angularDirective("ng:bind-template", function(expression, element){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.query = 'AngularJS';
          }
        </script>
@@ -413,7 +413,7 @@ angularDirective("ng:bind-template", function(expression, element){
        </div>
      </doc:source>
      <doc:scenario>
-       it('should check ng:bind-attr', function(){
+       it('should check ng:bind-attr', function() {
          expect(using('.doc-example-live').element('a').attr('href')).
            toBe('http://www.google.com/search?q=AngularJS');
          using('.doc-example-live').input('query').enter('google');
@@ -471,7 +471,7 @@ angularDirective("ng:bind-attr", function(expression){
       count: {{count}}
      </doc:source>
      <doc:scenario>
-       it('should check ng:click', function(){
+       it('should check ng:click', function() {
          expect(binding('count')).toBe('0');
          element('.doc-example-live :button').click();
          expect(binding('count')).toBe('1');
@@ -516,10 +516,10 @@ angularDirective("ng:click", function(expression, element){
    <doc:example>
      <doc:source>
       <script>
-        function Ctrl(){
+        function Ctrl() {
           this.list = [];
           this.text = 'hello';
-          this.submit = function(){
+          this.submit = function() {
             this.list.push(this.text);
             this.text = '';
           };
@@ -533,7 +533,7 @@ angularDirective("ng:click", function(expression, element){
       </form>
      </doc:source>
      <doc:scenario>
-       it('should check ng:submit', function(){
+       it('should check ng:submit', function() {
          expect(binding('list')).toBe('list=[]');
          element('.doc-example-live #submit').click();
          expect(binding('list')).toBe('list=["hello"]');
@@ -592,7 +592,7 @@ function ngClass(selector) {
       <span ng:class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class', function(){
+       it('should check ng:class', function() {
          expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-input-indicator-wait/);
 
@@ -609,7 +609,7 @@ function ngClass(selector) {
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class", ngClass(function(){return true;}));
+angularDirective("ng:class", ngClass(function() {return true;}));
 
 /**
  * @workInProgress
@@ -641,7 +641,7 @@ angularDirective("ng:class", ngClass(function(){return true;}));
         </ol>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class-odd and ng:class-even', function(){
+       it('should check ng:class-odd and ng:class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
          expect(element('.doc-example-live li:last span').prop('className')).
@@ -682,7 +682,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
         </ol>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class-odd and ng:class-even', function(){
+       it('should check ng:class-odd and ng:class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
          expect(element('.doc-example-live li:last span').prop('className')).
@@ -714,7 +714,7 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
         Hide: <span ng:hide="checked">I hide when your checkbox is checked.</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:show / ng:hide', function(){
+       it('should check ng:show / ng:hide', function() {
          expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
          expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
 
@@ -755,7 +755,7 @@ angularDirective("ng:show", function(expression, element){
         Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:show / ng:hide', function(){
+       it('should check ng:show / ng:hide', function() {
          expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
          expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
 
@@ -798,7 +798,7 @@ angularDirective("ng:hide", function(expression, element){
         <pre>myStyle={{myStyle}}</pre>
      </doc:source>
      <doc:scenario>
-       it('should check ng:style', function(){
+       it('should check ng:style', function() {
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
          element('.doc-example-live :button[value=set]').click();
          expect(element('.doc-example-live span').css('color')).toBe('rgb(255, 0, 0)');

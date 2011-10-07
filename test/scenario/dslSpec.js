@@ -212,7 +212,7 @@ describe("angular.scenario.dsl", function() {
         expect(_jQuery('[ng\\:model="test"]').val()).toEqual('A');
       });
 
-      it('should select option by name', function(){
+      it('should select option by name', function() {
         doc.append(
             '<select ng:model="test">' +
             '  <option value=A>one</option>' +

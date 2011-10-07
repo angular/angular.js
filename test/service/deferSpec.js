@@ -3,7 +3,7 @@
 describe('$defer', function() {
   var scope, $browser, $defer, $exceptionHandler;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope(angular.service,
                           {'$exceptionHandler': jasmine.createSpy('$exceptionHandler')});
     $browser = scope.$service('$browser');
@@ -11,7 +11,7 @@ describe('$defer', function() {
     $exceptionHandler = scope.$service('$exceptionHandler');
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
@@ -69,7 +69,7 @@ describe('$defer', function() {
     expect(applySpy).toHaveBeenCalled();
   });
 
-  it('should allow you to specify the delay time', function(){
+  it('should allow you to specify the delay time', function() {
     var defer = this.spyOn($browser, 'defer');
     $defer(noop, 123);
     expect(defer.callCount).toEqual(1);

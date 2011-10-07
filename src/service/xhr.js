@@ -205,7 +205,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
             response = fromJson(response, true);
           }
         }
-        rootScope.$apply(function(){
+        rootScope.$apply(function() {
           if (200 <= code && code < 300) {
               success(code, response);
           } else if (isFunction(error)) {

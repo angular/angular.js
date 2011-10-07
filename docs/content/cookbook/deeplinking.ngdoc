@@ -56,7 +56,7 @@ The two partials are defined in the following URLs:
 
      function WelcomeCntl($route){}
      WelcomeCntl.prototype = {
-      greet: function(){
+      greet: function() {
        alert("Hello " + this.person.name);
       }
      };
@@ -67,11 +67,11 @@ The two partials are defined in the following URLs:
       this.cancel();
      }
      SettingsCntl.prototype = {
-      cancel: function(){
+      cancel: function() {
        this.form = angular.copy(this.person);
       },
 
-      save: function(){
+      save: function() {
        angular.copy(this.form, this.person);
        this.$location.path('/welcome');
       }
@@ -89,7 +89,7 @@ The two partials are defined in the following URLs:
     </div>
  </doc:source>
  <doc:scenario>
-   it('should navigate to URL', function(){
+   it('should navigate to URL', function() {
     element('a:contains(Welcome)').click();
     expect(element('ng\\:view').text()).toMatch(/Hello anonymous/);
     element('a:contains(Settings)').click();

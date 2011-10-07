@@ -2,8 +2,8 @@ var SiteMap = require('SiteMap.js').SiteMap;
 var Doc = require('ngdoc.js').Doc;
 
 
-describe('sitemap', function(){
-  it('should render empty sitemap', function(){
+describe('sitemap', function() {
+  it('should render empty sitemap', function() {
     var map = new SiteMap([]);
     expect(map.render()).toEqual([
       '<?xml version="1.0" encoding="UTF-8"?>',
@@ -11,7 +11,7 @@ describe('sitemap', function(){
       '</urlset>', ''].join('\n'));
   });
 
-  it('should render ngdoc url', function(){
+  it('should render ngdoc url', function() {
     var map = new SiteMap([new Doc({section: 'foo', id: 'a.b.c<>\'"&'})]);
     expect(map.render()).toContain([
       ' <url>',

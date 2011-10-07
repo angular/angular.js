@@ -1,11 +1,11 @@
 var ngdoc = require('ngdoc.js');
 var DOM = require('dom.js').DOM;
 
-describe('ngdoc', function(){
+describe('ngdoc', function() {
   var Doc = ngdoc.Doc;
   var dom;
 
-  beforeEach(function(){
+  beforeEach(function() {
     dom = new DOM();
     this.addMatchers({
       toContain: function(text) {
@@ -15,15 +15,15 @@ describe('ngdoc', function(){
     });
   });
 
-  describe('Doc', function(){
-    describe('metadata', function(){
+  describe('Doc', function() {
+    describe('metadata', function() {
 
-      it('should find keywords', function(){
+      it('should find keywords', function() {
         expect(new Doc('\nHello: World! @ignore. $abc').keywords()).toEqual('$abc hello world');
         expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
       });
 
-      it('should have shortName', function(){
+      it('should have shortName', function() {
         var d1 = new Doc('@name a.b.c').parse();
         var d2 = new Doc('@name a.b.ng:c').parse();
         var d3 = new Doc('@name some text: more text').parse();
@@ -32,7 +32,7 @@ describe('ngdoc', function(){
         expect(ngdoc.metadata([d3])[0].shortName).toEqual('more text');
       });
 
-      it('should have depth information', function(){
+      it('should have depth information', function() {
         var d1 = new Doc('@name a.b.c').parse();
         var d2 = new Doc('@name a.b.ng:c').parse();
         var d3 = new Doc('@name some text: more text').parse();
@@ -43,8 +43,8 @@ describe('ngdoc', function(){
 
     });
 
-    describe('parse', function(){
-      it('should convert @names into properties', function(){
+    describe('parse', function() {
+      it('should convert @names into properties', function() {
         var doc = new Doc('\n@name name\n@desc\ndesc\ndesc2\n@dep\n');
         doc.parse();
         expect(doc.name).toEqual('name');
@@ -52,7 +52,7 @@ describe('ngdoc', function(){
         expect(doc.dep).toEqual('');
       });
 
-      it('should parse parameters', function(){
+      it('should parse parameters', function() {
         var doc = new Doc(
             '@param {*} a short\n' +
             '@param {Type} b med\n' +
@@ -65,7 +65,7 @@ describe('ngdoc', function(){
          ]);
       });
 
-      it('should parse return', function(){
+      it('should parse return', function() {
         var doc = new Doc('@returns {Type} text *bold*.');
         doc.parse();
         expect(doc.returns).toEqual({
@@ -74,14 +74,14 @@ describe('ngdoc', function(){
         });
       });
 
-      it('should parse filename', function(){
+      it('should parse filename', function() {
         var doc = new Doc('@name friendly name', 'docs/a.b.ngdoc', 1);
         doc.parse(0);
         expect(doc.id).toEqual('a.b');
         expect(doc.name).toEqual('friendly name');
       });
 
-      it('should escape <doc:source> element', function(){
+      it('should escape <doc:source> element', function() {
         var doc = new Doc('@description before <doc:example>' +
             '<doc:source>\n<>\n</doc:source></doc:example> after');
         doc.parse();
@@ -89,7 +89,7 @@ describe('ngdoc', function(){
             '<pre class="doc-source">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
 
-      it('should preserve the jsfiddle attribute', function(){
+      it('should preserve the jsfiddle attribute', function() {
         var doc = new Doc('@description before <doc:example>' +
             '<doc:source jsfiddle="foo">lala</doc:source></doc:example> after');
         doc.parse();
@@ -97,7 +97,7 @@ describe('ngdoc', function(){
             '<pre class="doc-source" jsfiddle="foo">lala</pre></doc:example><p>after</p>');
       });
 
-      it('should escape <doc:scenario> element', function(){
+      it('should escape <doc:scenario> element', function() {
         var doc = new Doc('@description before <doc:example>' +
             '<doc:scenario>\n<>\n</doc:scenario></doc:example> after');
         doc.parse();
@@ -132,11 +132,11 @@ describe('ngdoc', function(){
         });
       });
 
-      describe('sorting', function(){
+      describe('sorting', function() {
         function property(name) {
           return function(obj) {return obj[name];};
         }
-        function noop(){}
+        function noop() {}
         function doc(type, name){
           return {
               id: name,
@@ -149,7 +149,7 @@ describe('ngdoc', function(){
         var angular_x = doc('function', 'angular.x');
         var angular_y = doc('property', 'angular.y');
 
-        it('should put angular.fn() in front of angular.widget, etc', function(){
+        it('should put angular.fn() in front of angular.widget, etc', function() {
           expect(ngdoc.metadata([angular_widget, angular_y, angular_x]).map(property('id')))
             .toEqual(['angular.x', 'angular.y', 'angular.widget' ]);
         });
@@ -157,13 +157,13 @@ describe('ngdoc', function(){
     });
   });
 
-  describe('markdown', function(){
-    it('should replace angular in markdown', function(){
+  describe('markdown', function() {
+    it('should replace angular in markdown', function() {
       expect(new Doc().markdown('<angular/>')).
         toEqual('<p><tt>&lt;angular/&gt;</tt></p>');
     });
 
-    it('should not replace anything in <pre>, but escape the html escape the content', function(){
+    it('should not replace anything in <pre>, but escape the html escape the content', function() {
       expect(new Doc().markdown('bah x\n<pre>\n<b>angular</b>.k\n</pre>\n asdf x')).
         toEqual(
             '<p>bah x</p>' +
@@ -234,19 +234,19 @@ describe('ngdoc', function(){
 
   });
 
-  describe('trim', function(){
+  describe('trim', function() {
     var trim = ngdoc.trim;
-    it('should remove leading/trailing space', function(){
+    it('should remove leading/trailing space', function() {
       expect(trim('  \nabc\n  ')).toEqual('abc');
     });
 
-    it('should remove leading space on every line', function(){
+    it('should remove leading space on every line', function() {
       expect(trim('\n 1\n  2\n   3\n')).toEqual('1\n 2\n  3');
     });
   });
 
-  describe('merge', function(){
-    it('should merge child with parent', function(){
+  describe('merge', function() {
+    it('should merge child with parent', function() {
       var parent = new Doc({id: 'angular.service.abc', name: 'angular.service.abc', section: 'api'});
       var methodA = new Doc({name: 'methodA', methodOf: 'angular.service.abc'});
       var methodB = new Doc({name: 'methodB', methodOf: 'angular.service.abc'});
@@ -294,9 +294,9 @@ describe('ngdoc', function(){
 
   ////////////////////////////////////////
 
-  describe('TAG', function(){
-    describe('@param', function(){
-      it('should parse with no default', function(){
+  describe('TAG', function() {
+    describe('@param', function() {
+      it('should parse with no default', function() {
         var doc = new Doc('@param {(number|string)} number Number \n to format.');
         doc.parse();
         expect(doc.param).toEqual([{
@@ -307,7 +307,7 @@ describe('ngdoc', function(){
           description : '<p>Number \nto format.</p>' }]);
       });
 
-      it('should parse with default and optional', function(){
+      it('should parse with default and optional', function() {
         var doc = new Doc('@param {(number|string)=} [fractionSize=2] desc');
         doc.parse();
         expect(doc.param).toEqual([{
@@ -397,8 +397,8 @@ describe('ngdoc', function(){
       });
     });
 
-    describe('@description', function(){
-      it('should support pre blocks', function(){
+    describe('@description', function() {
+      it('should support pre blocks', function() {
         var doc = new Doc("@description <pre><b>abc</b></pre>");
         doc.parse();
         expect(doc.description).
@@ -442,7 +442,7 @@ describe('ngdoc', function(){
           toContain('<a href="./static.html">./static.html</a>');
       });
 
-      it('should support line breaks in @link', function(){
+      it('should support line breaks in @link', function() {
         var doc = new Doc("@description " +
             '{@link\napi/angular.foo\na\nb}');
         doc.parse();
@@ -452,14 +452,14 @@ describe('ngdoc', function(){
 
     });
 
-    describe('@example', function(){
-      it('should not remove {{}}', function(){
+    describe('@example', function() {
+      it('should not remove {{}}', function() {
         var doc = new Doc('@example text {{ abc }}');
         doc.parse();
         expect(doc.example).toEqual('<p>text {{ abc }}</p>');
       });
 
-      it('should support doc:example', function(){
+      it('should support doc:example', function() {
         var doc = new Doc('@ngdoc overview\n@example \n' +
             '<doc:example>\n' +
             ' <doc:source><escapeme></doc:source>\n' +
@@ -480,7 +480,7 @@ describe('ngdoc', function(){
       });
     });
 
-    describe('@this', function(){
+    describe('@this', function() {
       it('should render @this', function() {
         var doc = new Doc('@this I am self.');
         doc.ngdoc = 'filter';
@@ -495,9 +495,9 @@ describe('ngdoc', function(){
     });
   });
 
-  describe('usage', function(){
-    describe('overview', function(){
-      it('should supress description heading', function(){
+  describe('usage', function() {
+    describe('overview', function() {
+      it('should supress description heading', function() {
         var doc = new Doc('@ngdoc overview\n@name angular\n@description\n#heading\ntext');
         doc.parse();
         expect(doc.html()).toContain('text');
@@ -507,8 +507,8 @@ describe('ngdoc', function(){
     });
 
 
-     describe('function', function(){
-      it('should format', function(){
+     describe('function', function() {
+      it('should format', function() {
         var doc = new Doc({
           ngdoc:'function',
           name:'some.name',
@@ -527,8 +527,8 @@ describe('ngdoc', function(){
       });
     });
 
-    describe('filter', function(){
-      it('should format', function(){
+    describe('filter', function() {
+      it('should format', function() {
         var doc = new Doc({
           ngdoc:'formatter',
           shortName:'myFilter',
@@ -543,8 +543,8 @@ describe('ngdoc', function(){
       });
     });
 
-    describe('property', function(){
-      it('should format', function(){
+    describe('property', function() {
+      it('should format', function() {
         var doc = new Doc({
           ngdoc:'property',
           name:'myProp',

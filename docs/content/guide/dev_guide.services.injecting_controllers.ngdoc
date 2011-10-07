@@ -59,7 +59,7 @@ myController.$inject = ['notify'];
 </div>
 </doc:source>
 <doc:scenario>
-it('should test service', function(){
+it('should test service', function() {
   expect(element(':input[ng\\:model="message"]').val()).toEqual('test');
 });
 </doc:scenario>

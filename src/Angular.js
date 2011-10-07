@@ -14,7 +14,7 @@ if (typeof document.getAttribute == $undefined)
  * @param {string} string String to be converted to lowercase.
  * @returns {string} Lowercased string.
  */
-var lowercase = function (string){ return isString(string) ? string.toLowerCase() : string; };
+var lowercase = function(string){ return isString(string) ? string.toLowerCase() : string; };
 
 
 /**
@@ -26,17 +26,17 @@ var lowercase = function (string){ return isString(string) ? string.toLowerCase(
  * @param {string} string String to be converted to uppercase.
  * @returns {string} Uppercased string.
  */
-var uppercase = function (string){ return isString(string) ? string.toUpperCase() : string; };
+var uppercase = function(string){ return isString(string) ? string.toUpperCase() : string; };
 
 
-var manualLowercase = function (s) {
+var manualLowercase = function(s) {
   return isString(s)
-      ? s.replace(/[A-Z]/g, function (ch) {return fromCharCode(ch.charCodeAt(0) | 32); })
+      ? s.replace(/[A-Z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) | 32); })
       : s;
 };
-var manualUppercase = function (s) {
+var manualUppercase = function(s) {
   return isString(s)
-      ? s.replace(/[a-z]/g, function (ch) {return fromCharCode(ch.charCodeAt(0) & ~32); })
+      ? s.replace(/[a-z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) & ~32); })
       : s;
 };
 
@@ -239,7 +239,7 @@ function extend(dst) {
 
 
 function inherit(parent, extra) {
-  return extend(new (extend(function(){}, {prototype:parent}))(), extra);
+  return extend(new (extend(function() {}, {prototype:parent}))(), extra);
 }
 
 
@@ -279,11 +279,11 @@ function noop() {}
 function identity($) {return $;}
 
 
-function valueFn(value) {return function(){ return value; };}
+function valueFn(value) {return function() { return value; };}
 
 function extensionMap(angular, name, transform) {
   var extPoint;
-  return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
+  return angular[name] || (extPoint = angular[name] = function(name, fn, prop){
     name = (transform || identity)(name);
     if (isDefined(fn)) {
       extPoint[name] = extend(fn, prop || {});
@@ -604,12 +604,12 @@ function isLeafNode (node) {
  * <doc:example>
  *  <doc:source>
      <script>
-       function Ctrl(){
+       function Ctrl() {
          this.master = {
            salutation: 'Hello',
            name: 'world'
          };
-         this.copy = function (){
+         this.copy = function() {
            this.form = angular.copy(this.master);
          }
        }
@@ -709,7 +709,7 @@ function copy(source, destination){
  * <doc:example>
  *  <doc:source>
      <script>
-       function Ctrl(){
+       function Ctrl() {
          this.master = {
            salutation: 'Hello',
            name: 'world'
@@ -969,7 +969,7 @@ function angularJsConfig(document) {
   return config;
 }
 
-function bindJQuery(){
+function bindJQuery() {
   // bind to jQuery if present;
   jQuery = window.jQuery;
   // reset to jQuery or default to us.

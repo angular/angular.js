@@ -49,7 +49,7 @@
     <doc:example>
       <doc:source jsfiddle="false">
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.templates =
              [ { name: 'template1.html', url: 'examples/ng-include/template1.html'}
              , { name: 'template2.html', url: 'examples/ng-include/template2.html'} ];
@@ -66,16 +66,16 @@
        </div>
       </doc:source>
       <doc:scenario>
-        it('should load template1.html', function(){
+        it('should load template1.html', function() {
          expect(element('.doc-example-live .ng-include').text()).
            toBe('Content of template1.html\n');
         });
-        it('should load template2.html', function(){
+        it('should load template2.html', function() {
          select('template').option('1');
          expect(element('.doc-example-live .ng-include').text()).
            toBe('Content of template2.html\n');
         });
-        it('should change to blank', function(){
+        it('should change to blank', function() {
          select('template').option('');
          expect(element('.doc-example-live .ng-include').text()).toEqual('');
         });
@@ -99,7 +99,7 @@ angularWidget('ng:include', function(element){
           childScope,
           oldScope;
 
-      function incrementChange(){ changeCounter++;}
+      function incrementChange() { changeCounter++;}
       this.$watch(srcExp, incrementChange);
       this.$watch(function(scope){
         var newScope = scope.$eval(scopeExp);
@@ -108,7 +108,7 @@ angularWidget('ng:include', function(element){
           incrementChange();
         }
       });
-      this.$watch(function(){return changeCounter;}, function(scope) {
+      this.$watch(function() {return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
             useScope = scope.$eval(scopeExp);
 
@@ -161,7 +161,7 @@ angularWidget('ng:include', function(element){
     <doc:example>
       <doc:source>
         <script>
-          function Ctrl(){
+          function Ctrl() {
             this.items = ['settings', 'home', 'other'];
             this.selection = this.items[0];
           }
@@ -179,21 +179,21 @@ angularWidget('ng:include', function(element){
         </div>
       </doc:source>
       <doc:scenario>
-        it('should start in settings', function(){
+        it('should start in settings', function() {
          expect(element('.doc-example-live ng\\:switch').text()).toEqual('Settings Div');
         });
-        it('should change to home', function(){
+        it('should change to home', function() {
          select('selection').option('home');
          expect(element('.doc-example-live ng\\:switch').text()).toEqual('Home Span');
         });
-        it('should select deafault', function(){
+        it('should select deafault', function() {
          select('selection').option('other');
          expect(element('.doc-example-live ng\\:switch').text()).toEqual('default');
         });
       </doc:scenario>
     </doc:example>
  */
-angularWidget('ng:switch', function (element) {
+angularWidget('ng:switch', function(element) {
   var compiler = this,
       watchExpr = element.attr("on"),
       changeExpr = element.attr('change'),
@@ -234,7 +234,7 @@ angularWidget('ng:switch', function (element) {
       }
     });
 
-    this.$watch(function(){return changeCounter;}, function() {
+    this.$watch(function() {return changeCounter;}, function() {
       element.html('');
       if (selectedTemplate) {
         selectedTemplate(childScope, function(caseElement) {
@@ -325,7 +325,7 @@ angularWidget('a', function() {
         </div>
       </doc:source>
       <doc:scenario>
-         it('should check ng:repeat', function(){
+         it('should check ng:repeat', function() {
            var r = using('.doc-example-live').repeater('ul li');
            expect(r.count()).toBe(2);
            expect(r.row(0)).toEqual(["1","John","25"]);
@@ -467,7 +467,7 @@ angularWidget('@ng:repeat', function(expression, element){
         <div ng:non-bindable>Ignored: {{1 + 2}}</div>
       </doc:source>
       <doc:scenario>
-       it('should check ng:non-bindable', function(){
+       it('should check ng:non-bindable', function() {
          expect(using('.doc-example-live').binding('1 + 2')).toBe('3');
          expect(using('.doc-example-live').element('div:last').text()).
            toMatch(/1 \+ 2/);
@@ -517,8 +517,8 @@ angularWidget("@ng:non-bindable", noop);
            };
            MyCtrl.$inject = ['$route'];
 
-           function BootstrapCtrl(){}
-           function OverviewCtrl(){}
+           function BootstrapCtrl() {}
+           function OverviewCtrl() {}
          </script>
          <div ng:controller="MyCtrl">
            <a href="overview">overview</a> |
@@ -533,7 +533,7 @@ angularWidget("@ng:non-bindable", noop);
          </div>
       </doc:source>
       <doc:scenario>
-        it('should load templates', function(){
+        it('should load templates', function() {
           element('.doc-example-live a:contains(overview)').click();
           expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Overview/);
 
@@ -552,11 +552,11 @@ angularWidget('ng:view', function(element) {
       var template;
       var changeCounter = 0;
 
-      this.$on('$afterRouteChange', function(){
+      this.$on('$afterRouteChange', function() {
         changeCounter++;
       });
 
-      this.$watch(function(){return changeCounter;}, function() {
+      this.$watch(function() {return changeCounter;}, function() {
         var template = $route.current && $route.current.template;
         if (template) {
           //xhr's callback must be async, see commit history for more info
@@ -669,7 +669,7 @@ angularWidget('ng:view', function(element) {
     <doc:example>
       <doc:source>
         <script>
-          function Ctrl(){
+          function Ctrl() {
             this.person1 = 'Igor';
             this.person2 = 'Misko';
             this.personCount = 1;
@@ -700,7 +700,7 @@ angularWidget('ng:view', function(element) {
         </div>
       </doc:source>
       <doc:scenario>
-        it('should show correct pluralized string', function(){
+        it('should show correct pluralized string', function() {
           expect(element('.doc-example-live .ng-pluralize:first').text()).
                                              toBe('1 person is viewing.');
           expect(element('.doc-example-live .ng-pluralize:last').text()).
@@ -731,7 +731,7 @@ angularWidget('ng:view', function(element) {
                               toBe('Igor, Misko and 2 other people are viewing.');
         });
 
-        it('should show data-binded names', function(){
+        it('should show data-binded names', function() {
           using('.doc-example-live').input('personCount').enter('4');
           expect(element('.doc-example-live .ng-pluralize:last').text()).
               toBe('Igor, Misko and 2 other people are viewing.');

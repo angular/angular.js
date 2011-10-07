@@ -46,11 +46,11 @@ function MockWindow() {
   };
 }
 
-describe('browser', function(){
+describe('browser', function() {
 
   var browser, fakeWindow, xhr, logs, scripts, removedScripts, sniffer;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scripts = [];
     removedScripts = [];
     xhr = null;
@@ -60,7 +60,7 @@ describe('browser', function(){
     var fakeBody = [{appendChild: function(node){scripts.push(node);},
                      removeChild: function(node){removedScripts.push(node);}}];
 
-    var FakeXhr = function(){
+    var FakeXhr = function() {
       xhr = this;
       this.open = function(method, url, async){
         xhr.method = method;
@@ -91,14 +91,14 @@ describe('browser', function(){
     expect(browser.cookies).toBeDefined();
   });
 
-  describe('outstading requests', function(){
-    it('should process callbacks immedietly with no outstanding requests', function(){
+  describe('outstading requests', function() {
+    it('should process callbacks immedietly with no outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.notifyWhenNoOutstandingRequests(callback);
       expect(callback).toHaveBeenCalled();
     });
 
-    it('should queue callbacks with outstanding requests', function(){
+    it('should queue callbacks with outstanding requests', function() {
       var callback = jasmine.createSpy('callback');
       browser.xhr('GET', '/url', null, noop);
       browser.notifyWhenNoOutstandingRequests(callback);
@@ -110,8 +110,8 @@ describe('browser', function(){
     });
   });
 
-  describe('xhr', function(){
-    describe('JSON', function(){
+  describe('xhr', function() {
+    describe('JSON', function() {
       var log;
 
       function callback(code, data) {
@@ -478,12 +478,12 @@ describe('browser', function(){
 
   });
 
-  describe('poller', function(){
+  describe('poller', function() {
 
-    it('should call functions in pollFns in regular intervals', function(){
+    it('should call functions in pollFns in regular intervals', function() {
       var log = '';
-      browser.addPollFn(function(){log+='a';});
-      browser.addPollFn(function(){log+='b';});
+      browser.addPollFn(function() {log+='a';});
+      browser.addPollFn(function() {log+='b';});
       expect(log).toEqual('');
       fakeWindow.setTimeout.flush();
       expect(log).toEqual('ab');
@@ -491,14 +491,14 @@ describe('browser', function(){
       expect(log).toEqual('abab');
     });
 
-    it('should startPoller', function(){
+    it('should startPoller', function() {
       expect(fakeWindow.timeouts.length).toEqual(0);
 
-      browser.addPollFn(function(){});
+      browser.addPollFn(function() {});
       expect(fakeWindow.timeouts.length).toEqual(1);
 
       //should remain 1 as it is the check fn
-      browser.addPollFn(function(){});
+      browser.addPollFn(function() {});
       expect(fakeWindow.timeouts.length).toEqual(1);
     });
 

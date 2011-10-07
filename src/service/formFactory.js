@@ -25,7 +25,7 @@
     <doc:example>
       <doc:source>
         <script>
-          function EditorCntl(){
+          function EditorCntl() {
             this.html = '<b>Hello</b> <i>World</i>!';
           }
 
@@ -33,7 +33,7 @@
             var self = this;
             var htmlFilter = angular.filter('html');
 
-            this.$parseModel = function(){
+            this.$parseModel = function() {
               // need to protect for script injection
               try {
                 this.$viewValue = htmlFilter(this.$modelValue || '').get();
@@ -47,18 +47,18 @@
               }
             }
 
-            this.$render = function(){
+            this.$render = function() {
               element.html(this.$viewValue);
             }
 
-            element.bind('keyup', function(){
-              self.$apply(function(){
+            element.bind('keyup', function() {
+              self.$apply(function() {
                 self.$emit('$viewChange', element.html());
               });
             });
           }
 
-          angular.directive('ng:contenteditable', function(){
+          angular.directive('ng:contenteditable', function() {
             function linkFn($formFactory, element) {
               var exp = element.attr('ng:contenteditable'),
                   form = $formFactory.forElement(element),
@@ -70,7 +70,7 @@
                 controller: HTMLEditorWidget,
                 controllerArgs: [element]});
               // if the element is destroyed, then we need to notify the form.
-              element.bind('$destroy', function(){
+              element.bind('$destroy', function() {
                 widget.$destroy();
               });
             }
@@ -88,7 +88,7 @@
         </form>
       </doc:source>
       <doc:scenario>
-        it('should enter invalid HTML', function(){
+        it('should enter invalid HTML', function() {
           expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
           input('html').enter('<');
           expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
@@ -96,7 +96,7 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$formFactory', function(){
+angularServiceInject('$formFactory', function() {
 
 
   /**
@@ -123,7 +123,7 @@ angularServiceInject('$formFactory', function(){
    * {@link angular.widget.form form} element.
    * @param {Element} element The element where the search for form should initiate.
    */
-  formFactory.forElement = function (element) {
+  formFactory.forElement = function(element) {
     return element.inheritedData('$form') || formFactory.rootForm;
   };
   return formFactory;
@@ -225,7 +225,7 @@ function propertiesUpdate(widget) {
  * @param {*} viewValue The new value for the view which will be assigned to `widget.$viewValue`.
  */
 
-function FormController(){
+function FormController() {
   var form = this,
       $error = form.$error = {};
 
@@ -361,7 +361,7 @@ FormController.prototype.$createWidget = function(params) {
   // Set the state to something we know will change to get the process going.
   widget.$modelValue = Number.NaN;
   // watch for scope changes and update the view appropriately
-  modelScope.$watch(scopeGet, function (scope, value) {
+  modelScope.$watch(scopeGet, function(scope, value) {
     if (!equals(widget.$modelValue, value)) {
       widget.$modelValue = value;
       widget.$parseModel ? widget.$parseModel() : (widget.$viewValue = value);
