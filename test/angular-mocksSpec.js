@@ -1,6 +1,6 @@
 'use strict';
 
-describe('mocks', function(){
+describe('mocks', function() {
   describe('TzDate', function() {
 
     function minutes(min) {
@@ -172,26 +172,26 @@ describe('mocks', function(){
     });
   });
 
-  describe('defer', function(){
+  describe('defer', function() {
     var browser, log;
-    beforeEach(function(){
+    beforeEach(function() {
       browser = new MockBrowser();
       log = '';
     });
 
-    function logFn(text){ return function(){
+    function logFn(text){ return function() {
         log += text +';';
       };
     }
 
-    it('should flush', function(){
+    it('should flush', function() {
       browser.defer(logFn('A'));
       expect(log).toEqual('');
       browser.defer.flush();
       expect(log).toEqual('A;');
     });
 
-    it('should flush delayed', function(){
+    it('should flush delayed', function() {
       browser.defer(logFn('A'));
       browser.defer(logFn('B'), 10);
       browser.defer(logFn('C'), 20);
@@ -205,7 +205,7 @@ describe('mocks', function(){
       expect(log).toEqual('A;B;C;');
     });
 
-    it('should defer and flush over time', function(){
+    it('should defer and flush over time', function() {
       browser.defer(logFn('A'), 1);
       browser.defer(logFn('B'), 2);
       browser.defer(logFn('C'), 3);

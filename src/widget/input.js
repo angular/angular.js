@@ -25,7 +25,7 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.text = 'guest';
            this.word = /^\w*$/;
          }
@@ -87,7 +87,7 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.text = 'me@example.com';
          }
        </script>
@@ -155,7 +155,7 @@ angularInputType('email', function() {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.text = 'http://google.com';
          }
        </script>
@@ -222,7 +222,7 @@ angularInputType('url', function() {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.names = ['igor', 'misko', 'vojta'];
          }
        </script>
@@ -295,7 +295,7 @@ angularInputType('list', function() {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.value = 12;
          }
        </script>
@@ -359,7 +359,7 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.value = 12;
          }
        </script>
@@ -418,7 +418,7 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.value1 = true;
            this.value2 = 'YES'
          }
@@ -446,7 +446,7 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
       </doc:scenario>
     </doc:example>
  */
-angularInputType('checkbox', function (inputElement) {
+angularInputType('checkbox', function(inputElement) {
   var widget = this,
       trueValue = inputElement.attr('true-value'),
       falseValue = inputElement.attr('false-value');
@@ -490,7 +490,7 @@ angularInputType('checkbox', function (inputElement) {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.color = 'blue';
          }
        </script>
@@ -604,7 +604,7 @@ var HTML5_INPUTS_TYPES =  makeMap(
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.text = 'guest';
          }
        </script>
@@ -635,7 +635,7 @@ var HTML5_INPUTS_TYPES =  makeMap(
       </doc:scenario>
     </doc:example>
  */
-angularWidget('input', function (inputElement){
+angularWidget('input', function(inputElement){
   this.directives(true);
   this.descend(true);
   var modelExp = inputElement.attr('ng:model');
@@ -715,7 +715,7 @@ angularWidget('input', function (inputElement){
         }
       });
 
-      forEach(['valid', 'invalid', 'pristine', 'dirty'], function (name) {
+      forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
         widget.$watch('$' + name, function(scope, value) {
             inputElement[value ? 'addClass' : 'removeClass']('ng-' + name);
           }

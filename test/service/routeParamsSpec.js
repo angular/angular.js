@@ -1,7 +1,7 @@
 'use strict';
 
-describe('$routeParams', function(){
-  it('should publish the params into a service', function(){
+describe('$routeParams', function() {
+  it('should publish the params into a service', function() {
     var scope = angular.scope(),
         $location = scope.$service('$location'),
         $route = scope.$service('$route'),
@@ -20,7 +20,7 @@ describe('$routeParams', function(){
   });
 
 
-  it('should preserve object identity during route reloads', function(){
+  it('should preserve object identity during route reloads', function() {
     var scope = angular.scope(),
         $location = scope.$service('$location'),
         $route = scope.$service('$route'),

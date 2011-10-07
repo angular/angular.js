@@ -481,7 +481,7 @@ describe('$location', function() {
     });
 
 
-    it('should parse file://', function(){
+    it('should parse file://', function() {
       var match = URL_MATCH.exec('file:///Users/Shared/misko/work/angular.js/scenario/widgets.html');
 
       expect(match[1]).toBe('file');
@@ -492,7 +492,7 @@ describe('$location', function() {
     });
 
 
-    it('should parse url with "-" in host', function(){
+    it('should parse url with "-" in host', function() {
       var match = URL_MATCH.exec('http://a-b1.c-d.09/path');
 
       expect(match[1]).toBe('http');

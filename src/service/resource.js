@@ -65,7 +65,7 @@
  *   update, delete) on server-side data like this:
  *   <pre>
         var User = $resource('/user/:userId', {userId:'@id'});
-        var user = User.get({userId:123}, function(){
+        var user = User.get({userId:123}, function() {
           user.abc = true;
           user.$save();
         });
@@ -136,7 +136,7 @@
 
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});
-     var user = User.get({userId:123}, function(){
+     var user = User.get({userId:123}, function() {
        user.abc = true;
        user.$save();
      });

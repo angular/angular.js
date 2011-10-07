@@ -11,7 +11,7 @@ _jQuery.event.special.change = undefined;
 
 if (window.jstestdriver) {
   window.jstd = jstestdriver;
-  window.dump = function dump(){
+  window.dump = function dump() {
     var args = [];
     forEach(arguments, function(arg){
       if (isElement(arg)) {
@@ -46,7 +46,7 @@ function dumpScope(scope, offset) {
   return log.join('\n' + offset);
 }
 
-beforeEach(function(){
+beforeEach(function() {
   // This is to reset parsers global cache of expressions.
   compileCache = {};
 
@@ -65,7 +65,7 @@ beforeEach(function(){
   jqLite(document.body).html('');
 
   function cssMatcher(presentClasses, absentClasses) {
-    return function(){
+    return function() {
       var element = jqLite(this.actual);
       var present = true;
       var absent = false;
@@ -78,7 +78,7 @@ beforeEach(function(){
         absent = absent || element.hasClass(className);
       });
 
-      this.message = function(){
+      this.message = function() {
         return "Expected to have " + presentClasses +
           (absentClasses ? (" and not have " + absentClasses + "" ) : "") +
           " but had " + element[0].className + ".";
@@ -98,7 +98,7 @@ beforeEach(function(){
     },
 
     toHaveClass: function(clazz) {
-      this.message = function(){
+      this.message = function() {
         return "Expected '" + sortedHtml(this.actual) + "' to have class '" + clazz + "'.";
       };
       return this.actual.hasClass ?
@@ -191,7 +191,7 @@ afterEach(function() {
   clearJqCache();
 });
 
-function clearJqCache(){
+function clearJqCache() {
   var count = 0;
   forEachSorted(jqCache, function(value, key){
     count ++;

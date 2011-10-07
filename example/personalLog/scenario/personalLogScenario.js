@@ -10,7 +10,7 @@ describe('personal log', function() {
   });
 
 
-  it('should create new logs and order them in reverse chronological order', function(){
+  it('should create new logs and order them in reverse chronological order', function() {
     //create first msg
     input('newMsg').enter('my first message');
     element('form input[type="submit"]').click();

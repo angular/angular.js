@@ -10,7 +10,7 @@ that angular's DI will use to create the service object when it is needed.
 The `angular.service` method accepts three parameters:
 
 - `{string} name` - Name of the service.
-- `{function()} factory` - Factory function (called just once by DI).
+- `{function()} factory` - Factory function(called just once by DI).
 - `{Object} config` -  Configuration object with the following properties:
   - `$inject` - {Array.<string>} - Array of service ids this service depends on. These services
 will be passed as arguments into the factory function in the same order specified in the `$inject`

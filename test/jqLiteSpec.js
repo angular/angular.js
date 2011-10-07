@@ -1,16 +1,16 @@
 'use strict';
 
-describe('jqLite', function(){
+describe('jqLite', function() {
   var scope, a, b, c;
 
-  beforeEach(function(){
+  beforeEach(function() {
     a = jqLite('<div>A</div>')[0];
     b = jqLite('<div>B</div>')[0];
     c = jqLite('<div>C</div>')[0];
   });
 
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope();
     this.addMatchers({
       toJqEqual: function(expected) {
@@ -32,7 +32,7 @@ describe('jqLite', function(){
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(a);
     dealoc(b);
     dealoc(c);
@@ -44,8 +44,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('construction', function(){
-    it('should allow construction with text node', function(){
+  describe('construction', function() {
+    it('should allow construction with text node', function() {
       var text = a.firstChild;
       var selected = jqLite(text);
       expect(selected.length).toEqual(1);
@@ -53,7 +53,7 @@ describe('jqLite', function(){
     });
 
 
-    it('should allow construction with html', function(){
+    it('should allow construction with html', function() {
       var nodes = jqLite('<div>1</div><span>2</span>');
       expect(nodes.length).toEqual(2);
       expect(nodes[0].innerHTML).toEqual('1');
@@ -138,8 +138,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('data', function(){
-    it('should set and get and remove data', function(){
+  describe('data', function() {
+    it('should set and get and remove data', function() {
       var selected = jqLite([a, b, c]);
 
       expect(selected.data('prop', 'value')).toEqual(selected);
@@ -160,18 +160,18 @@ describe('jqLite', function(){
       expect(jqLite(c).data('prop')).toEqual(undefined);
     });
 
-    it('should call $destroy function if element removed', function(){
+    it('should call $destroy function if element removed', function() {
       var log = '';
       var element = jqLite(a);
-      element.bind('$destroy', function(){log+= 'destroy;';});
+      element.bind('$destroy', function() {log+= 'destroy;';});
       element.remove();
       expect(log).toEqual('destroy;');
     });
   });
 
 
-  describe('attr', function(){
-    it('shoul read write and remove attr', function(){
+  describe('attr', function() {
+    it('shoul read write and remove attr', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.attr('prop', 'value')).toEqual(selector);
@@ -191,7 +191,7 @@ describe('jqLite', function(){
       expect(jqLite(b).attr('prop')).toBeFalsy();
     });
 
-    it('should read special attributes as strings', function(){
+    it('should read special attributes as strings', function() {
       var select = jqLite('<select>');
       expect(select.attr('multiple')).toBeUndefined();
       expect(jqLite('<select multiple>').attr('multiple')).toBe('multiple');
@@ -244,16 +244,16 @@ describe('jqLite', function(){
   });
 
 
-  describe('class', function(){
+  describe('class', function() {
 
-    describe('hasClass', function(){
-      it('should check class', function(){
+    describe('hasClass', function() {
+      it('should check class', function() {
         var selector = jqLite([a, b]);
         expect(selector.hasClass('abc')).toEqual(false);
       });
 
 
-      it('should make sure that partial class is not checked as a subset', function(){
+      it('should make sure that partial class is not checked as a subset', function() {
         var selector = jqLite([a, b]);
         selector.addClass('a');
         selector.addClass('b');
@@ -316,8 +316,8 @@ describe('jqLite', function(){
     });
 
 
-    describe('toggleClass', function(){
-      it('should allow toggling of class', function(){
+    describe('toggleClass', function() {
+      it('should allow toggling of class', function() {
         var selector = jqLite([a, b]);
         expect(selector.toggleClass('abc')).toEqual(selector);
         expect(jqLite(a).hasClass('abc')).toEqual(true);
@@ -339,8 +339,8 @@ describe('jqLite', function(){
     });
 
 
-    describe('removeClass', function(){
-      it('should allow removal of class', function(){
+    describe('removeClass', function() {
+      it('should allow removal of class', function() {
         var selector = jqLite([a, b]);
         expect(selector.addClass('abc')).toEqual(selector);
         expect(selector.removeClass('abc')).toEqual(selector);
@@ -372,8 +372,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('css', function(){
-    it('should set and read css', function(){
+  describe('css', function() {
+    it('should set and read css', function() {
       var selector = jqLite([a, b]);
 
       expect(selector.css('margin', '1px')).toEqual(selector);
@@ -439,14 +439,14 @@ describe('jqLite', function(){
   });
 
 
-  describe('text', function(){
-    it('should return null on empty', function(){
+  describe('text', function() {
+    it('should return null on empty', function() {
       expect(jqLite().length).toEqual(0);
       expect(jqLite().text()).toEqual('');
     });
 
 
-    it('should read/write value', function(){
+    it('should read/write value', function() {
       var element = jqLite('<div>abc</div>');
       expect(element.length).toEqual(1);
       expect(element[0].innerHTML).toEqual('abc');
@@ -457,8 +457,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('val', function(){
-    it('should read, write value', function(){
+  describe('val', function() {
+    it('should read, write value', function() {
       var input = jqLite('<input type="text"/>');
       expect(input.val('abc')).toEqual(input);
       expect(input[0].value).toEqual('abc');
@@ -467,14 +467,14 @@ describe('jqLite', function(){
   });
 
 
-  describe('html', function(){
-    it('should return null on empty', function(){
+  describe('html', function() {
+    it('should return null on empty', function() {
       expect(jqLite().length).toEqual(0);
       expect(jqLite().html()).toEqual(null);
     });
 
 
-    it('should read/write value', function(){
+    it('should read/write value', function() {
       var element = jqLite('<div>abc</div>');
       expect(element.length).toEqual(1);
       expect(element[0].innerHTML).toEqual('abc');
@@ -485,8 +485,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('bind', function(){
-    it('should bind to window on hashchange', function(){
+  describe('bind', function() {
+    it('should bind to window on hashchange', function() {
       if (jqLite.fn) return; // don't run in jQuery
       var eventFn;
       var window = {
@@ -507,7 +507,7 @@ describe('jqLite', function(){
           detachEvent: noop
       };
       var log;
-      var jWindow = jqLite(window).bind('hashchange', function(){
+      var jWindow = jqLite(window).bind('hashchange', function() {
         log = 'works!';
       });
       eventFn({});
@@ -516,10 +516,10 @@ describe('jqLite', function(){
     });
 
 
-    it('should bind to all elements and return functions', function(){
+    it('should bind to all elements and return functions', function() {
       var selected = jqLite([a, b]);
       var log = '';
-      expect(selected.bind('click', function(){
+      expect(selected.bind('click', function() {
         log += 'click on: ' + jqLite(this).text() + ';';
       })).toEqual(selected);
       browserTrigger(a, 'click');
@@ -664,8 +664,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('replaceWith', function(){
-    it('should replaceWith', function(){
+  describe('replaceWith', function() {
+    it('should replaceWith', function() {
       var root = jqLite('<div>').html('before-<div></div>after');
       var div = root.find('div');
       expect(div.replaceWith('<span>span-</span><b>bold-</b>')).toEqual(div);
@@ -673,7 +673,7 @@ describe('jqLite', function(){
     });
 
 
-    it('should replaceWith text', function(){
+    it('should replaceWith text', function() {
       var root = jqLite('<div>').html('before-<div></div>after');
       var div = root.find('div');
       expect(div.replaceWith('text-')).toEqual(div);
@@ -682,8 +682,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('children', function(){
-    it('should select non-text children', function(){
+  describe('children', function() {
+    it('should select non-text children', function() {
       var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
       var div = root.find('div');
       var span = root.find('span');
@@ -692,13 +692,13 @@ describe('jqLite', function(){
   });
 
 
-  describe('append', function(){
-    it('should append', function(){
+  describe('append', function() {
+    it('should append', function() {
       var root = jqLite('<div>');
       expect(root.append('<span>abc</span>')).toEqual(root);
       expect(root.html().toLowerCase()).toEqual('<span>abc</span>');
     });
-    it('should append text', function(){
+    it('should append text', function() {
       var root = jqLite('<div>');
       expect(root.append('text')).toEqual(root);
       expect(root.html()).toEqual('text');
@@ -710,18 +710,18 @@ describe('jqLite', function(){
     });
   });
 
-  describe('prepend', function(){
-    it('should prepend to empty', function(){
+  describe('prepend', function() {
+    it('should prepend to empty', function() {
       var root = jqLite('<div>');
       expect(root.prepend('<span>abc</span>')).toEqual(root);
       expect(root.html().toLowerCase()).toEqual('<span>abc</span>');
     });
-    it('should prepend to content', function(){
+    it('should prepend to content', function() {
       var root = jqLite('<div>text</div>');
       expect(root.prepend('<span>abc</span>')).toEqual(root);
       expect(root.html().toLowerCase()).toEqual('<span>abc</span>text');
     });
-    it('should prepend text to content', function(){
+    it('should prepend text to content', function() {
       var root = jqLite('<div>text</div>');
       expect(root.prepend('abc')).toEqual(root);
       expect(root.html().toLowerCase()).toEqual('abctext');
@@ -729,8 +729,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('remove', function(){
-    it('should remove', function(){
+  describe('remove', function() {
+    it('should remove', function() {
       var root = jqLite('<div><span>abc</span></div>');
       var span = root.find('span');
       expect(span.remove()).toEqual(span);
@@ -739,8 +739,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('after', function(){
-    it('should after', function(){
+  describe('after', function() {
+    it('should after', function() {
       var root = jqLite('<div><span></span></div>');
       var span = root.find('span');
       expect(span.after('<i></i><b></b>')).toEqual(span);
@@ -748,7 +748,7 @@ describe('jqLite', function(){
     });
 
 
-    it('should allow taking text', function(){
+    it('should allow taking text', function() {
       var root = jqLite('<div><span></span></div>');
       var span = root.find('span');
       span.after('abc');
@@ -757,8 +757,8 @@ describe('jqLite', function(){
   });
 
 
-  describe('parent', function(){
-    it('should return parent or an empty set when no parent', function(){
+  describe('parent', function() {
+    it('should return parent or an empty set when no parent', function() {
       var parent = jqLite('<div><p>abc</p></div>'),
           child = parent.find('p');
 
@@ -790,7 +790,7 @@ describe('jqLite', function(){
 
 
   describe('next', function() {
-    it('should return next sibling', function(){
+    it('should return next sibling', function() {
       var element = jqLite('<div><b>b</b><i>i</i></div>');
       var b = element.find('b');
       var i = element.find('i');
@@ -800,7 +800,7 @@ describe('jqLite', function(){
 
 
   describe('find', function() {
-    it('should find child by name', function(){
+    it('should find child by name', function() {
       var root = jqLite('<div><div>text</div></div>');
       var innerDiv = root.find('div');
       expect(innerDiv.length).toEqual(1);

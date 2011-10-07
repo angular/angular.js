@@ -7,7 +7,7 @@ var reader = require('reader.js'),
     appCache = require('appCache.js').appCache,
     Q = require('qq');
 
-process.on('uncaughtException', function (err) {
+process.on('uncaughtException', function(err) {
   console.error(err.stack || err);
 });
 
@@ -93,6 +93,6 @@ function writeTheRest(writesFuture) {
 }
 
 
-function now(){ return new Date().getTime(); }
+function now() { return new Date().getTime(); }
 
-function noop(){};
+function noop() {};

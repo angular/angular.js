@@ -1,4 +1,4 @@
-(function(){
+(function() {
 
   var angularJsUrl;
   var scripts = document.getElementsByTagName("script");

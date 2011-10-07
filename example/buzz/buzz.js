@@ -8,11 +8,11 @@ angular.service('myApplication', function($resource){
       });
 }, {inject:['$resource']});
 
-function BuzzController(){
+function BuzzController() {
   this.$watch('$location.hashPath', this.userChange);
 }
 BuzzController.prototype = {
-  userChange: function(){
+  userChange: function() {
     this.userId = this.$location.hashPath;
     this.activities = this.Activity.get({userId:this.userId});
   },
@@ -22,7 +22,7 @@ BuzzController.prototype = {
     if (activity.replies) {
       activity.replies.show = !activity.replies.show;
     } else {
-      activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id}, function(){
+      activity.replies = this.Activity.replies({userId:this.userId, activityId:activity.id}, function() {
         activity.replies.show = true;
       });
     }

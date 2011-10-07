@@ -42,7 +42,7 @@ describe('jstd-adapter', function() {
    */
   function buildTestConf(type) {
     return new jstestdriver.TestRunConfiguration(
-      new jstestdriver.TestCaseInfo('Fake test - ' + Math.random(), function(){}, type), null);
+      new jstestdriver.TestCaseInfo('Fake test - ' + Math.random(), function() {}, type), null);
   }
 
   /**

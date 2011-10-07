@@ -1,7 +1,7 @@
 'use strict';
 
 describe('widgets', function() {
-  it('should verify that basic widgets work', function(){
+  it('should verify that basic widgets work', function() {
     browser().navigateTo('widgets.html');
 
     using('#text-basic-box').input('text.basic').enter('Carlos');

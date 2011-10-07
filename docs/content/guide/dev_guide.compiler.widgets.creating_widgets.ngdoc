@@ -61,7 +61,7 @@ angular.widget('@my:watch', function(expression, compileElement) {
 angular.widget('my:time', function(compileElement){
   compileElement.css('display', 'block');
   return function(linkElement){
-    function update(){
+    function update() {
       linkElement.text('Current time is: ' + new Date());
       setTimeout(update, 1000);
     }

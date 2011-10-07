@@ -3,17 +3,17 @@
 describe('$exceptionHandler', function() {
   var scope;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope();
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
 
-  it('should log errors', function(){
+  it('should log errors', function() {
     var scope = createScope({$exceptionHandler: $exceptionHandlerFactory},
                             {$log: $logMock}),
         $log = scope.$service('$log'),

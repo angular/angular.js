@@ -49,7 +49,7 @@
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.amount = 1234.56;
          }
        </script>
@@ -60,11 +60,11 @@
        </div>
      </doc:source>
      <doc:scenario>
-       it('should init with 1234.56', function(){
+       it('should init with 1234.56', function() {
          expect(binding('amount | currency')).toBe('$1,234.56');
          expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
        });
-       it('should update', function(){
+       it('should update', function() {
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
@@ -101,7 +101,7 @@ angularFilter.currency = function(amount, currencySymbol){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.val = 1234.56789;
          }
        </script>
@@ -113,13 +113,13 @@ angularFilter.currency = function(amount, currencySymbol){
        </div>
      </doc:source>
      <doc:scenario>
-       it('should format numbers', function(){
+       it('should format numbers', function() {
          expect(binding('val | number')).toBe('1,234.568');
          expect(binding('val | number:0')).toBe('1,235');
          expect(binding('-val | number:4')).toBe('-1,234.5679');
        });
 
-       it('should update', function(){
+       it('should update', function() {
          input('val').enter('3374.333');
          expect(binding('val | number')).toBe('3,374.333');
          expect(binding('val | number:0')).toBe('3,374');
@@ -336,7 +336,7 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
           {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
      </doc:source>
      <doc:scenario>
-       it('should format date', function(){
+       it('should format date', function() {
          expect(binding("1288323623006 | date:'medium'")).
             toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
          expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
@@ -477,7 +477,7 @@ angularFilter.uppercase = uppercase;
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.snippet =
              '<p style="color:blue">an html\n' +
              '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
@@ -515,7 +515,7 @@ angularFilter.uppercase = uppercase;
          </div>
      </doc:source>
      <doc:scenario>
-       it('should sanitize the html snippet ', function(){
+       it('should sanitize the html snippet ', function() {
          expect(using('#html-filter').binding('snippet | html')).
            toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
        });
@@ -534,7 +534,7 @@ angularFilter.uppercase = uppercase;
                 "snippet</p>");
        });
 
-       it('should update', function(){
+       it('should update', function() {
          input('snippet').enter('new <b>text</b>');
          expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
          expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
@@ -565,7 +565,7 @@ angularFilter.html =  function(html, option){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.snippet =
              'Pretty text with some links:\n'+
              'http://angularjs.org/,\n'+
@@ -599,7 +599,7 @@ angularFilter.html =  function(html, option){
        </table>
      </doc:source>
      <doc:scenario>
-       it('should linkify the snippet with urls', function(){
+       it('should linkify the snippet with urls', function() {
          expect(using('#linky-filter').binding('snippet | linky')).
            toBe('Pretty text with some links:\n' +
                 '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
@@ -617,7 +617,7 @@ angularFilter.html =  function(html, option){
                 "and one more: ftp://127.0.0.1/.");
        });
 
-       it('should update', function(){
+       it('should update', function() {
          input('snippet').enter('new http://link.');
          expect(using('#linky-filter').binding('snippet | linky')).
            toBe('new <a href="http://link">http://link</a>.');

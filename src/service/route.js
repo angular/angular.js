@@ -188,7 +188,7 @@ angularServiceInject('$route', function($location, $routeParams) {
          * @description
          * Adds a new route definition to the `$route` service.
          */
-        when: function (path, route) {
+        when: function(path, route) {
           var routeDef = routes[path];
           if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
           if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?

@@ -459,7 +459,7 @@ forEach({
       if (!eventHandler) {
         bind[type] = eventHandler = function(event) {
           if (!event.preventDefault) {
-            event.preventDefault = function(){
+            event.preventDefault = function() {
               event.returnValue = false; //ie
             };
           }

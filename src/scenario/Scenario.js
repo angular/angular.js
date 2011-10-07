@@ -96,7 +96,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  *
  * @param {Object=} config Config options
  */
-angular.scenario.setUpAndRun = function (config) {
+angular.scenario.setUpAndRun = function(config) {
   var href = window.location.href;
   var body = _jQuery(document.body);
   var output = [];

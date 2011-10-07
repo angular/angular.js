@@ -1,6 +1,6 @@
 'use strict';
 
-describe('widget: input', function(){
+describe('widget: input', function() {
   var compile = null, element = null, scope = null, defer = null;
   var doc = null;
 
@@ -21,13 +21,13 @@ describe('widget: input', function(){
     };
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
     dealoc(doc);
   });
 
 
-  describe('text', function(){
+  describe('text', function() {
     var scope = null,
         form = null,
         formElement = null,
@@ -46,7 +46,7 @@ describe('widget: input', function(){
     };
 
 
-    it('should bind update scope from model', function(){
+    it('should bind update scope from model', function() {
       createInput();
       expect(scope.form.name.$required).toBe(false);
       scope.name = 'misko';
@@ -55,7 +55,7 @@ describe('widget: input', function(){
     });
 
 
-    it('should require', function(){
+    it('should require', function() {
       createInput({required:''});
       expect(scope.form.name.$required).toBe(true);
       scope.$digest();
@@ -66,10 +66,10 @@ describe('widget: input', function(){
     });
 
 
-    it('should call $destroy on element remove', function(){
+    it('should call $destroy on element remove', function() {
       createInput();
       var log = '';
-      form.$on('$destroy', function(){
+      form.$on('$destroy', function() {
         log += 'destroy;';
       });
       inputElement.remove();
@@ -77,10 +77,10 @@ describe('widget: input', function(){
     });
 
 
-    it('should update the model and trim input', function(){
+    it('should update the model and trim input', function() {
       createInput();
       var log = '';
-      scope.change = function(){
+      scope.change = function() {
         log += 'change();';
       };
       inputElement.val(' a ');
@@ -91,14 +91,14 @@ describe('widget: input', function(){
     });
 
 
-    it('should change non-html5 types to text', function(){
+    it('should change non-html5 types to text', function() {
       doc = angular.element('<form name="form"><input type="abc" ng:model="name"></form>');
       scope = angular.compile(doc)();
       expect(doc.find('input').attr('type')).toEqual('text');
     });
 
 
-    it('should not change html5 types to text', function(){
+    it('should not change html5 types to text', function() {
       doc = angular.element('<form name="form"><input type="number" ng:model="name"></form>');
       scope = angular.compile(doc)();
       expect(doc.find('input')[0].getAttribute('type')).toEqual('number');
@@ -106,10 +106,10 @@ describe('widget: input', function(){
   });
 
 
-  describe("input", function(){
+  describe("input", function() {
 
-    describe("text", function(){
-      it('should input-text auto init and handle keydown/change events', function(){
+    describe("text", function() {
+      it('should input-text auto init and handle keydown/change events', function() {
         compile('<input type="text" ng:model="name"/>');
 
         scope.name = 'Adam';
@@ -130,7 +130,7 @@ describe('widget: input', function(){
       });
 
 
-      it('should not trigger eval if value does not change', function(){
+      it('should not trigger eval if value does not change', function() {
         compile('<input type="text" ng:model="name" ng:change="count = count + 1" ng:init="count=0"/>');
         scope.name = 'Misko';
         scope.$digest();
@@ -143,7 +143,7 @@ describe('widget: input', function(){
       });
 
 
-      it('should allow complex reference binding', function(){
+      it('should allow complex reference binding', function() {
         compile('<div>'+
                   '<input type="text" ng:model="obj[\'abc\'].name"/>'+
                 '</div>');
@@ -153,8 +153,8 @@ describe('widget: input', function(){
       });
 
 
-      describe("ng:format", function(){
-        it("should format text", function(){
+      describe("ng:format", function() {
+        it("should format text", function() {
           compile('<input type="list" ng:model="list"/>');
 
           scope.list = ['x', 'y', 'z'];
@@ -168,14 +168,14 @@ describe('widget: input', function(){
         });
 
 
-        it("should render as blank if null", function(){
+        it("should render as blank if null", function() {
           compile('<input type="text" ng:model="age" ng:format="number" ng:init="age=null"/>');
           expect(scope.age).toBeNull();
           expect(scope.$element[0].value).toEqual('');
         });
 
 
-        it("should show incorrect text while number does not parse", function(){
+        it("should show incorrect text while number does not parse", function() {
           compile('<input type="number" ng:model="age"/>');
           scope.age = 123;
           scope.$digest();
@@ -195,7 +195,7 @@ describe('widget: input', function(){
         });
 
 
-        it("should not clobber text if model changes due to itself", function(){
+        it("should not clobber text if model changes due to itself", function() {
           // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
           // $parseModel function runs it will change to 'a', in essence preventing
           // the user from ever typying ','.
@@ -227,7 +227,7 @@ describe('widget: input', function(){
         });
 
 
-        it("should come up blank when no value specified", function(){
+        it("should come up blank when no value specified", function() {
           compile('<input type="number" ng:model="age"/>');
           scope.$digest();
           expect(scope.$element.val()).toEqual('');
@@ -236,15 +236,15 @@ describe('widget: input', function(){
       });
 
 
-      describe("checkbox", function(){
-        it("should format booleans", function(){
+      describe("checkbox", function() {
+        it("should format booleans", function() {
           compile('<input type="checkbox" ng:model="name" ng:init="name=false"/>');
           expect(scope.name).toBe(false);
           expect(scope.$element[0].checked).toBe(false);
         });
 
 
-        it('should support type="checkbox" with non-standard capitalization', function(){
+        it('should support type="checkbox" with non-standard capitalization', function() {
           compile('<input type="checkBox" ng:model="checkbox"/>');
 
           browserTrigger(element);
@@ -255,7 +255,7 @@ describe('widget: input', function(){
         });
 
 
-        it('should allow custom enumeration', function(){
+        it('should allow custom enumeration', function() {
           compile('<input type="checkbox" ng:model="name" true-value="ano" false-value="nie"/>');
 
           scope.name='ano';
@@ -280,7 +280,7 @@ describe('widget: input', function(){
     });
 
 
-    it("should process required", function(){
+    it("should process required", function() {
       compile('<input type="text" ng:model="price" name="p" required/>', jqLite(document.body));
       expect(scope.$service('$formFactory').rootForm.p.$required).toBe(true);
       expect(element.hasClass('ng-invalid')).toBeTruthy();
@@ -320,7 +320,7 @@ describe('widget: input', function(){
     });
 
 
-    describe('textarea', function(){
+    describe('textarea', function() {
       it("should process textarea", function() {
         compile('<textarea ng:model="name"></textarea>');
 
@@ -341,8 +341,8 @@ describe('widget: input', function(){
     });
 
 
-    describe('radio', function(){
-      it('should support type="radio"', function(){
+    describe('radio', function() {
+      it('should support type="radio"', function() {
         compile('<div>' +
             '<input type="radio" name="r" ng:model="chose" value="A"/>' +
             '<input type="radio" name="r" ng:model="chose" value="B"/>' +
@@ -366,7 +366,7 @@ describe('widget: input', function(){
       });
 
 
-      it('should honor model over html checked keyword after', function(){
+      it('should honor model over html checked keyword after', function() {
         compile('<div ng:init="choose=\'C\'">' +
             '<input type="radio" ng:model="choose" value="A""/>' +
             '<input type="radio" ng:model="choose" value="B" checked/>' +
@@ -380,7 +380,7 @@ describe('widget: input', function(){
       });
 
 
-      it('should honor model over html checked keyword before', function(){
+      it('should honor model over html checked keyword before', function() {
         compile('<div ng:init="choose=\'A\'">' +
             '<input type="radio" ng:model="choose" value="A""/>' +
             '<input type="radio" ng:model="choose" value="B" checked/>' +
@@ -395,22 +395,22 @@ describe('widget: input', function(){
     });
 
 
-    it('should ignore text widget which have no name', function(){
+    it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
       expect(scope.$element.attr('ng-exception')).toBeFalsy();
       expect(scope.$element.hasClass('ng-exception')).toBeFalsy();
     });
 
 
-    it('should ignore checkbox widget which have no name', function(){
+    it('should ignore checkbox widget which have no name', function() {
       compile('<input type="checkbox"/>');
       expect(scope.$element.attr('ng-exception')).toBeFalsy();
       expect(scope.$element.hasClass('ng-exception')).toBeFalsy();
     });
 
 
-    it('should report error on assignment error', function(){
-      expect(function(){
+    it('should report error on assignment error', function() {
+      expect(function() {
         compile('<input type="text" ng:model="throw \'\'">');
       }).toThrow("Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
       $logMock.error.logs.shift();
@@ -418,8 +418,8 @@ describe('widget: input', function(){
   });
 
 
-  describe('scope declaration', function(){
-    it('should read the declaration from scope', function(){
+  describe('scope declaration', function() {
+    it('should read the declaration from scope', function() {
       var input, $formFactory;
       element = angular.element('<input type="@MyType" ng:model="abc">');
       scope = angular.scope();
@@ -451,18 +451,18 @@ describe('widget: input', function(){
   });
 
 
-  describe('text subtypes', function(){
+  describe('text subtypes', function() {
 
     function itShouldVerify(type, validList, invalidList, params, fn) {
-      describe(type, function(){
+      describe(type, function() {
         forEach(validList, function(value){
-          it('should validate "' + value + '"', function(){
+          it('should validate "' + value + '"', function() {
             setup(value);
             expect(scope.$element).toBeValid();
           });
         });
         forEach(invalidList, function(value){
-          it('should NOT validate "' + value + '"', function(){
+          it('should NOT validate "' + value + '"', function() {
             setup(value);
             expect(scope.$element).toBeInvalid();
           });

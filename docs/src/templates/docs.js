@@ -44,7 +44,7 @@ function DocsController($location, $browser, $window, $cookies) {
     return page.section + '/' + page.id;
   };
 
-  this.getCurrentPartial = function(){
+  this.getCurrentPartial = function() {
     return this.partialId ? ('./partials/' + this.sectionId + '/' + this.partialId + '.html') : '';
   };
 

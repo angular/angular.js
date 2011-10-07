@@ -6,7 +6,7 @@ describe('filter', function() {
 
   it('should called the filter when evaluating expression', function() {
     var scope = createScope();
-    filter.fakeFilter = function(){};
+    filter.fakeFilter = function() {};
     spyOn(filter, 'fakeFilter');
 
     scope.$eval('10|fakeFilter');
@@ -205,7 +205,7 @@ describe('filter', function() {
     });
   });
 
-  describe('date', function(){
+  describe('date', function() {
 
     var morning  = new TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
     var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm

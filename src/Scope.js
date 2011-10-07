@@ -50,7 +50,7 @@ function createScope(providers, instanceCache) {
 
        expect(scope.greeting).toEqual(undefined);
 
-       scope.$watch('name', function(){
+       scope.$watch('name', function() {
          this.greeting = this.salutation + ' ' + this.name + '!';
        }); // initialize the watch
 
@@ -584,7 +584,7 @@ Scope.prototype = {
         event = {
           name: name,
           targetScope: scope,
-          cancel: function(){canceled = true;}
+          cancel: function() {canceled = true;}
         },
         listenerArgs = concat([event], arguments, 1),
         i, length;

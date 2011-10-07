@@ -66,7 +66,7 @@
     <doc:example>
       <doc:source>
         <script>
-        function MyCntrl(){
+        function MyCntrl() {
           this.colors = [
             {name:'black', shade:'dark'},
             {name:'white', shade:'light'},
@@ -112,7 +112,7 @@
         </div>
       </doc:source>
       <doc:scenario>
-         it('should check ng:options', function(){
+         it('should check ng:options', function() {
            expect(binding('color')).toMatch('red');
            select('color').option('0');
            expect(binding('color')).toMatch('black');
@@ -128,7 +128,7 @@
 var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
 
 
-angularWidget('select', function (element){
+angularWidget('select', function(element){
   this.directives(true);
   this.descend(true);
   return element.attr('ng:model') && annotate('$formFactory', function($formFactory, selectElement){
@@ -145,7 +145,7 @@ angularWidget('select', function (element){
           alias: selectElement.attr('name'),
           controller: optionsExp ? Options : (multiple ? Multiple : Single)});
 
-    selectElement.bind('$destroy', function(){ widget.$destroy(); });
+    selectElement.bind('$destroy', function() { widget.$destroy(); });
 
     widget.$pristine = !(widget.$dirty = false);
 
@@ -153,7 +153,7 @@ angularWidget('select', function (element){
     watchElementProperty(modelScope, widget, 'readonly', selectElement);
     watchElementProperty(modelScope, widget, 'disabled', selectElement);
 
-    widget.$on('$validate', function(){
+    widget.$on('$validate', function() {
       var valid = !widget.$required || !!widget.$modelValue;
       if (valid && multiple && widget.$required) valid = !!widget.$modelValue.length;
       if (valid !== !widget.$error.REQUIRED) {
@@ -161,11 +161,11 @@ angularWidget('select', function (element){
       }
     });
 
-    widget.$on('$viewChange', function(){
+    widget.$on('$viewChange', function() {
       widget.$pristine = !(widget.$dirty = true);
     });
 
-    forEach(['valid', 'invalid', 'pristine', 'dirty'], function (name) {
+    forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
       widget.$watch('$' + name, function(scope, value) {
         selectElement[value ? 'addClass' : 'removeClass']('ng-' + name);
       });
@@ -173,18 +173,18 @@ angularWidget('select', function (element){
 
     ////////////////////////////
 
-    function Multiple(){
+    function Multiple() {
       var widget = this;
 
-      this.$render = function(){
+      this.$render = function() {
         var items = new HashMap(this.$viewValue);
         forEach(selectElement.children(), function(option){
           option.selected = isDefined(items.get(option.value));
         });
       };
 
-      selectElement.bind('change', function (){
-        widget.$apply(function(){
+      selectElement.bind('change', function() {
+        widget.$apply(function() {
           var array = [];
           forEach(selectElement.children(), function(option){
             if (option.selected) {
@@ -197,15 +197,15 @@ angularWidget('select', function (element){
 
     }
 
-    function Single(){
+    function Single() {
       var widget = this;
 
-      widget.$render = function(){
+      widget.$render = function() {
         selectElement.val(widget.$viewValue);
       };
 
-      selectElement.bind('change', function(){
-        widget.$apply(function(){
+      selectElement.bind('change', function() {
+        widget.$apply(function() {
           widget.$emit('$viewChange', selectElement.val());
         });
       });
@@ -213,7 +213,7 @@ angularWidget('select', function (element){
       widget.$viewValue = selectElement.val();
     }
 
-    function Options(){
+    function Options() {
       var widget = this,
           match;
 
@@ -249,8 +249,8 @@ angularWidget('select', function (element){
       });
       selectElement.html(''); // clear contents
 
-      selectElement.bind('change', function(){
-        widgetScope.$apply(function(){
+      selectElement.bind('change', function() {
+        widgetScope.$apply(function() {
           var optionGroup,
               collection = valuesFn(modelScope) || [],
               key = selectElement.val(),

@@ -1,6 +1,6 @@
 'use strict';
 
-describe('Scope', function(){
+describe('Scope', function() {
   var root = null, mockHandler = null;
 
   beforeEach(function() {
@@ -302,7 +302,7 @@ describe('Scope', function(){
   });
 
 
-  describe('$destroy', function(){
+  describe('$destroy', function() {
     var first = null, middle = null, last = null, log = null;
 
     beforeEach(function() {
@@ -471,7 +471,7 @@ describe('Scope', function(){
             root = angular.scope(),
             child = root.$new();
 
-        function eventFn(){
+        function eventFn() {
           log += 'X';
         }
 
@@ -492,7 +492,7 @@ describe('Scope', function(){
             child = root.$new(),
             listenerRemove;
 
-        function eventFn(){
+        function eventFn() {
           log += 'X';
         }
 

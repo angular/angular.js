@@ -104,7 +104,7 @@ var angularArray = {
       <doc:example>
         <doc:source>
          <script>
-           function Ctrl(){
+           function Ctrl() {
              this.books = ['Moby Dick', 'Great Gatsby', 'Romeo and Juliet'];
              this.bookName = 'Romeo and Juliet';
            }
@@ -154,7 +154,7 @@ var angularArray = {
       <doc:example>
        <doc:source>
         <script>
-          function Ctrl(){
+          function Ctrl() {
             this.invoice = {
               items:[ {
                    qty:10,
@@ -400,7 +400,7 @@ var angularArray = {
       case "object":
         for (var key in expression) {
           if (key == '$') {
-            (function(){
+            (function() {
               var text = (''+expression[key]).toLowerCase();
               if (!text) return;
               predicates.push(function(value) {
@@ -408,7 +408,7 @@ var angularArray = {
               });
             })();
           } else {
-            (function(){
+            (function() {
               var path = key;
               var text = (''+expression[key]).toLowerCase();
               if (!text) return;
@@ -462,7 +462,7 @@ var angularArray = {
      <doc:example>
        <doc:source>
          <script>
-           function Ctrl(){
+           function Ctrl() {
              this.people = [];
            }
          </script>
@@ -612,7 +612,7 @@ var angularArray = {
      <doc:example>
        <doc:source>
          <script>
-           function Ctrl(){
+           function Ctrl() {
              this.friends =
                  [{name:'John', phone:'555-1212', age:10},
                   {name:'Mary', phone:'555-9876', age:19},
@@ -738,7 +738,7 @@ var angularArray = {
      <doc:example>
        <doc:source>
          <script>
-           function Ctrl(){
+           function Ctrl() {
              this.numbers = [1,2,3,4,5,6,7,8,9];
              this.limit = 3;
            }
@@ -939,7 +939,7 @@ HashMap.prototype = {
  * A map where multiple values can be added to the same key such that the form a queue.
  * @returns {HashQueueMap}
  */
-function HashQueueMap(){}
+function HashQueueMap() {}
 HashQueueMap.prototype = {
   /**
    * Same as array push, but using an array as the value for the hash

@@ -63,8 +63,8 @@ describe("directive", function() {
       expect(lowercase(element.html())).toEqual('<a>hello</a>');
     });
 
-    it('should have $element set to current bind element', function(){
-      angularFilter.myFilter = function(){
+    it('should have $element set to current bind element', function() {
+      angularFilter.myFilter = function() {
         this.$element.addClass("filter");
         return 'HELLO';
       };
@@ -80,7 +80,7 @@ describe("directive", function() {
       expect(scope.$element.text()).toEqual('-0false');
     });
 
-    it('should render object as JSON ignore $$', function(){
+    it('should render object as JSON ignore $$', function() {
       var scope = compile('<div>{{ {key:"value", $$key:"hide"}  }}</div>');
       scope.$digest();
       expect(fromJson(scope.$element.text())).toEqual({key:'value'});
@@ -108,7 +108,7 @@ describe("directive", function() {
       expect(innerText).toEqual('INNER');
     });
 
-    it('should render object as JSON ignore $$', function(){
+    it('should render object as JSON ignore $$', function() {
       var scope = compile('<pre>{{ {key:"value", $$key:"hide"}  }}</pre>');
       scope.$digest();
       expect(fromJson(scope.$element.text())).toEqual({key:'value'});
@@ -148,7 +148,7 @@ describe("directive", function() {
     expect(input.checked).toEqual(true);
   });
 
-  describe('ng:click', function(){
+  describe('ng:click', function() {
     it('should get called on a click', function() {
       var scope = compile('<div ng:click="clicked = true"></div>');
       scope.$digest();
@@ -208,7 +208,7 @@ describe("directive", function() {
     });
 
 
-    it('should support adding multiple classes via an array', function(){
+    it('should support adding multiple classes via an array', function() {
       var scope = compile('<div class="existing" ng:class="[\'A\', \'B\']"></div>');
       scope.$digest();
       expect(element.hasClass('existing')).toBeTruthy();
@@ -217,7 +217,7 @@ describe("directive", function() {
     });
 
 
-    it('should support adding multiple classes via a space delimited string', function(){
+    it('should support adding multiple classes via a space delimited string', function() {
       var scope = compile('<div class="existing" ng:class="\'A B\'"></div>');
       scope.$digest();
       expect(element.hasClass('existing')).toBeTruthy();
@@ -420,7 +420,7 @@ describe("directive", function() {
   });
 
   describe('ng:hide', function() {
-    it('should hide an element', function(){
+    it('should hide an element', function() {
       var element = jqLite('<div ng:hide="exp"></div>'),
           scope = compile(element);
 
@@ -480,7 +480,7 @@ describe("directive", function() {
       expect(scope.$element.text()).toEqual('hey dude!');
     });
 
-    it('should infer injection arguments', function(){
+    it('should infer injection arguments', function() {
       temp.MyController = function($xhr){
         this.$root.someService = $xhr;
       };

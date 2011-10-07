@@ -11,7 +11,7 @@ allow a user to enter data.
 <doc:example>
  <doc:source>
   <script>
-    function FormController(){
+    function FormController() {
       this.user = {
         name: 'John Smith',
         address:{line1: '123 Main St.', city:'Anytown', state:'AA', zip:'12345'},
@@ -53,22 +53,22 @@ allow a user to enter data.
 
  </doc:source>
  <doc:scenario>
-  it('should show debug', function(){
+  it('should show debug', function() {
     expect(binding('user')).toMatch(/John Smith/);
   });
-  it('should add contact', function(){
+  it('should add contact', function() {
     using('.example').element('a:contains(add)').click();
     using('.example div:last').input('contact.value').enter('you@example.org');
     expect(binding('user')).toMatch(/\(234\) 555\-1212/);
     expect(binding('user')).toMatch(/you@example.org/);
   });
 
-  it('should remove contact', function(){
+  it('should remove contact', function() {
     using('.example').element('a:contains(X)').click();
     expect(binding('user')).not().toMatch(/\(234\) 555\-1212/);
   });
 
-  it('should validate zip', function(){
+  it('should validate zip', function() {
     expect(using('.example').
       element(':input[ng\\:model="user.address.zip"]').
       prop('className')).not().toMatch(/ng-invalid/);
@@ -78,7 +78,7 @@ allow a user to enter data.
       prop('className')).toMatch(/ng-invalid/);
   });
 
-  it('should validate state', function(){
+  it('should validate state', function() {
     expect(using('.example').element(':input[ng\\:model="user.address.state"]').prop('className'))
       .not().toMatch(/ng-invalid/);
     using('.example').input('user.address.state').enter('XXX');
