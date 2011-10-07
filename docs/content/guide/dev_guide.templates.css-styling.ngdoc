@@ -47,6 +47,5 @@ as you normally would:
 ## Related Topics
 
 * {@link dev_guide.templates Angular Templates}
-* {@link dev_guide.templates.css Working With CSS in Angular}
 * {@link dev_guide.templates.formatters Angular Formatters}
 * {@link dev_guide.templates.formatters.creating_formatters Creating Angular Formatters}
