@@ -12,7 +12,7 @@ function htmlEscape(text){
 }
 
 
-function DOM(){
+function DOM() {
   this.out = [];
   this.headingDepth = 0;
 }
@@ -69,7 +69,7 @@ DOM.prototype = {
   },
 
   code: function(text) {
-    this.tag('div', {'ng:non-bindable':''}, function(){
+    this.tag('div', {'ng:non-bindable':''}, function() {
       this.tag('pre', {'class':"brush: js; html-script: true;"}, text);
     });
   },
@@ -84,7 +84,7 @@ DOM.prototype = {
     if (content instanceof Array) {
       this.ul(content, className, fn);
     } else if (fn) {
-      this.tag('div', className, function(){
+      this.tag('div', className, function() {
         fn.call(this, content);
       });
     } else {

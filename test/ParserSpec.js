@@ -191,7 +191,7 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', function(){
+  it('should parse filters', function() {
     angular.filter.substring = function(input, start, end) {
       return input.substring(start, end);
     };
@@ -391,7 +391,7 @@ describe('parser', function() {
     expect(scope.a).not.toBeDefined();
   });
 
-  it('should allow assignment after array dereference', function(){
+  it('should allow assignment after array dereference', function() {
     scope = angular.scope();
     scope.obj = [{}];
     scope.$eval('obj[0].name=1');
@@ -399,8 +399,8 @@ describe('parser', function() {
     expect(scope.obj[0].name).toEqual(1);
   });
 
-  describe('assignable', function(){
-    it('should expose assignment function', function(){
+  describe('assignable', function() {
+    it('should expose assignment function', function() {
       var fn = parser('a').assignable();
       expect(fn.assign).toBeTruthy();
       var scope = {};

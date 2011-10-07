@@ -1,6 +1,6 @@
 'use strict';
 
-describe("widget", function(){
+describe("widget", function() {
   var compile = null, element = null, scope = null;
 
   beforeEach(function() {
@@ -24,8 +24,8 @@ describe("widget", function(){
   });
 
 
-  describe('ng:switch', function(){
-    it('should switch on value change', function(){
+  describe('ng:switch', function() {
+    it('should switch on value change', function() {
       compile('<ng:switch on="select">' +
           '<div ng:switch-when="1">first:{{name}}</div>' +
           '<div ng:switch-when="2">second:{{name}}</div>' +

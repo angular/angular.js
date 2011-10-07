@@ -40,8 +40,8 @@ All `inputType` widgets support:
 <doc:example>
 <doc:source>
    <script>
-     angular.inputType('json', function(){
-       this.$parseView = function(){
+     angular.inputType('json', function() {
+       this.$parseView = function() {
          try {
            this.$modelValue = angular.fromJson(this.$viewValue);
            if (this.$error.JSON) {
@@ -52,12 +52,12 @@ All `inputType` widgets support:
          }
        }
 
-       this.$parseModel = function(){
+       this.$parseModel = function() {
          this.$viewValue = angular.toJson(this.$modelValue);
        }
      });
 
-     function Ctrl(){
+     function Ctrl() {
        this.data = {
          framework:'angular',
          codenames:'supper-powers'
@@ -81,7 +81,7 @@ All `inputType` widgets support:
    </div>
 </doc:source>
 <doc:scenario>
-  it('should invalidate on wrong input', function(){
+  it('should invalidate on wrong input', function() {
     expect(element('form[name=myForm]').prop('className')).toMatch('ng-valid');
     input('data').enter('{}');
     expect(binding('data')).toEqual('data={\n  }');

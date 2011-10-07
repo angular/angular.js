@@ -44,7 +44,7 @@ function createInjector(factoryScope, factories, instanceCache) {
   factoryScope = factoryScope || {};
   injector.invoke = invoke;
 
-  injector.eager = function(){
+  injector.eager = function() {
     forEach(factories, function(factory, name){
       if (factory.$eager)
         injector(name);

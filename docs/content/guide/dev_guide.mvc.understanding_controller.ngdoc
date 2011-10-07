@@ -3,7 +3,7 @@
 @name Developer Guide: About MVC in Angular: Understanding the Controller Component
 @description
 
-In angular, a controller is a JavaScript function (type/class) that is used to augment instances of
+In angular, a controller is a JavaScript function(type/class) that is used to augment instances of
 angular {@link dev_guide.scopes Scope}, excluding the root scope. When you or angular create a new
 child scope object via the {@link api/angular.scope.$new scope.$new} API        , there is an
 option to pass in a controller as a method argument. This will tell angular to associate the
@@ -128,7 +128,7 @@ starts with capital letter and ends with "Ctrl" or "Controller".
 controller augments.
 - Assigning a property to `this` creates or updates the model.
 - Controller methods can be created through direct assignment to scope (the `chiliSpicy` method) or
-as prototype methods of the controller constructor function (the `jalapenoSpicy` method)
+as prototype methods of the controller constructor function(the `jalapenoSpicy` method)
 - Both controller methods are available in the template (for the `body` element and and its
 children).
 
@@ -227,7 +227,7 @@ Controller Test:
 <pre>
 describe('myController function', function() {
 
-  describe('myController', function(){
+  describe('myController', function() {
     var ctrl;
 
     beforeEach(function() {

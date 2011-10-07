@@ -43,11 +43,11 @@ on a constructor permanently binds the call site to the type. For example lets s
 trying to instantiate an `XHR` so that we can get some data from the server.
 
 <pre>
-function MyClass(){
-  this.doWork = function(){
+function MyClass() {
+  this.doWork = function() {
     var xhr = new XHR();
     xhr.open(method, url, true);
-    xhr.onreadystatechange = function(){...}
+    xhr.onreadystatechange = function() {...}
     xhr.send();
   }
 }
@@ -61,7 +61,7 @@ patching, that is a bad idea for many reasons, which is outside the scope of thi
 The class above is hard to test since we have to resort to monkey patching:
 <pre>
 var oldXHR = XHR;
-XHR = function MockXHR(){};
+XHR = function MockXHR() {};
 var myClass = new MyClass();
 myClass.doWork();
 // assert that MockXHR got called with the right arguments
@@ -73,8 +73,8 @@ XHR = oldXHR; // if you forget this bad things will happen
 Another way to approach the problem is look for the service in a well known location.
 
 <pre>
-function MyClass(){
-  this.doWork = function(){
+function MyClass() {
+  this.doWork = function() {
     global.xhr({
       method:'...',
       url:'...',
@@ -94,7 +94,7 @@ State & Singletons}
 The class above is hard to test since we have to change global state:
 <pre>
 var oldXHR = glabal.xhr;
-glabal.xhr = function mockXHR(){};
+glabal.xhr = function mockXHR() {};
 var myClass = new MyClass();
 myClass.doWork();
 // assert that mockXHR got called with the right arguments
@@ -110,7 +110,7 @@ having the tests replace the services as needed.
 <pre>
 function MyClass() {
   var serviceRegistry = ????;
-  this.doWork = function(){
+  this.doWork = function() {
     var xhr = serviceRegistry.get('xhr');
     xhr({
       method:'...',
@@ -128,7 +128,7 @@ there is only one global variable to be reset).
 The class above is hard to test since we have to change global state:
 <pre>
 var oldServiceLocator = glabal.serviceLocator;
-glabal.serviceLocator.set('xhr', function mockXHR(){});
+glabal.serviceLocator.set('xhr', function mockXHR() {});
 var myClass = new MyClass();
 myClass.doWork();
 // assert that mockXHR got called with the right arguments
@@ -141,7 +141,7 @@ Lastly the dependency can be passed in.
 
 <pre>
 function MyClass(xhr) {
-  this.doWork = function(){
+  this.doWork = function() {
     xhr({
       method:'...',
       url:'...',
@@ -174,13 +174,13 @@ for your application is mixed in with DOM manipulation, it will be hard to test 
 below:
 
 <pre>
-function PasswordController(){
+function PasswordController() {
   // get references to DOM elements
   var msg = $('.ex1 span');
   var input = $('.ex1 input');
   var strength;
 
-  this.grade = function(){
+  this.grade = function() {
     msg.removeClass(strength);
     var pwd = input.val();
     password.text(pwd);
@@ -219,9 +219,9 @@ In angular the controllers are strictly separated from the DOM manipulation logi
 a much easier testability story as can be seen in this example:
 
 <pre>
-function PasswordCntrl(){
+function PasswordCntrl() {
   this.password = '';
-  this.grade = function(){
+  this.grade = function() {
     var size = this.password.length;
     if (size > 8) {
       this.strength = 'strong';

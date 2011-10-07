@@ -36,7 +36,7 @@ text upper-case and assigns color.
    return out;
  });
 
- function Ctrl(){
+ function Ctrl() {
    this.greeting = 'hello';
  }
 </script>
@@ -50,7 +50,7 @@ text upper-case and assigns color.
 </div>
 </doc:source>
 <doc:scenario>
-  it('should reverse greeting', function(){
+  it('should reverse greeting', function() {
     expect(binding('greeting|reverse')).toEqual('olleh');
     input('greeting').enter('ABC');
     expect(binding('greeting|reverse')).toEqual('CBA');

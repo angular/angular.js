@@ -1,5 +1,5 @@
 
-  jqLiteWrap(document).ready(function(){
+  jqLiteWrap(document).ready(function() {
     angularInit(angularJsConfig(document), document);
   });
 

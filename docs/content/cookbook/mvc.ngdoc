@@ -36,7 +36,7 @@ no connection between the controller and the view.
           this.setUrl();
         }
       },
-      reset: function(){
+      reset: function() {
         this.board = [
           ['', '', ''],
           ['', '', ''],
@@ -46,7 +46,7 @@ no connection between the controller and the view.
         this.winner = '';
         this.setUrl();
       },
-      grade: function(){
+      grade: function() {
         var b = this.board;
         this.winner =
           row(0) || row(1) || row(2) ||
@@ -57,7 +57,7 @@ no connection between the controller and the view.
         function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
         function same(a, b, c) { return (a==b && b==c) ? a : '';};
       },
-      setUrl: function(){
+      setUrl: function() {
         var rows = [];
         angular.forEach(this.board, function(row){
           rows.push(row.join(','));
@@ -91,7 +91,7 @@ no connection between the controller and the view.
     </div>
   </doc:source>
   <doc:scenario>
-    it('should play a game', function(){
+    it('should play a game', function() {
      piece(1, 1);
      expect(binding('nextMove')).toEqual('O');
      piece(3, 1);

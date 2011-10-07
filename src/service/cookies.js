@@ -45,7 +45,7 @@ angularServiceInject('$cookies', function($browser) {
   /**
    * Pushes all the cookies from the service to the browser and verifies if all cookies were stored.
    */
-  function push(){
+  function push() {
     var name,
         value,
         browserCookies,

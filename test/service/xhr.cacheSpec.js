@@ -12,7 +12,7 @@ describe('$xhr.cache', function() {
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
@@ -23,7 +23,7 @@ describe('$xhr.cache', function() {
   }
 
 
-  it('should cache requests', function(){
+  it('should cache requests', function() {
     $browserXhr.expectGET('/url').respond('first');
     cache('GET', '/url', null, callback);
     $browserXhr.flush();
@@ -39,7 +39,7 @@ describe('$xhr.cache', function() {
   });
 
 
-  it('should first return cache request, then return server request', function(){
+  it('should first return cache request, then return server request', function() {
     $browserXhr.expectGET('/url').respond('first');
     cache('GET', '/url', null, callback, true);
     $browserXhr.flush();
@@ -54,7 +54,7 @@ describe('$xhr.cache', function() {
   });
 
 
-  it('should serve requests from cache', function(){
+  it('should serve requests from cache', function() {
     cache.data.url = {value:'123'};
     cache('GET', 'url', null, callback);
     $browser.defer.flush();
@@ -66,7 +66,7 @@ describe('$xhr.cache', function() {
   });
 
 
-  it('should keep track of in flight requests and request only once', function(){
+  it('should keep track of in flight requests and request only once', function() {
     scope.$service('$xhr.bulk').urls['/bulk'] = {
       match:function(url){
         return url == '/url';
@@ -85,7 +85,7 @@ describe('$xhr.cache', function() {
   });
 
 
-  it('should clear cache on non GET', function(){
+  it('should clear cache on non GET', function() {
     $browserXhr.expectPOST('abc', {}).respond({});
     cache.data.url = {value:123};
     cache('POST', 'abc', {});

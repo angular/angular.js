@@ -24,7 +24,7 @@
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl(){
+         function Ctrl() {
            this.text = 'guest';
          }
        </script>
@@ -41,12 +41,12 @@
        </div>
       </doc:source>
       <doc:scenario>
-        it('should initialize to model', function(){
+        it('should initialize to model', function() {
          expect(binding('text')).toEqual('guest');
          expect(binding('myForm.input.$valid')).toEqual('true');
         });
 
-        it('should be invalid if empty', function(){
+        it('should be invalid if empty', function() {
          input('text').enter('');
          expect(binding('text')).toEqual('');
          expect(binding('myForm.input.$valid')).toEqual('false');

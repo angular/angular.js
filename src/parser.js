@@ -142,7 +142,7 @@ function lex(text, parseStringsForObjects){
     }
     number = 1 * number;
     tokens.push({index:start, text:number, json:true,
-      fn:function(){return number;}});
+      fn:function() {return number;}});
   }
   function readIdent() {
     var ident = "";
@@ -200,7 +200,7 @@ function lex(text, parseStringsForObjects){
       } else if (ch == quote) {
         index++;
         tokens.push({index:start, text:rawString, string:string, json:true,
-          fn:function(){
+          fn:function() {
             return (string.length == dateParseLength)
               ? angular['String']['toDate'](string)
               : string;
@@ -239,7 +239,7 @@ function parser(text, json){
       filterChain =
       functionIdent =
       pipeFunction =
-        function (){ throwError("is not valid json", {text:text, index:0}); };
+        function() { throwError("is not valid json", {text:text, index:0}); };
   }
   //TODO: Shouldn't all of the public methods have assertAllConsumed?
   //TODO: I think these should be public as part of the parser api instead of scope.$eval().
@@ -251,7 +251,7 @@ function parser(text, json){
   };
 
   function assertConsumed(fn) {
-    return function(){
+    return function() {
       var value = fn();
       if (tokens.length !== 0) {
         throwError("is an unexpected token", tokens[0]);
@@ -320,7 +320,7 @@ function parser(text, json){
     return tokens.length > 0;
   }
 
-  function statements(){
+  function statements() {
     var statements = [];
     while(true) {
       if (tokens.length > 0 && !peek('}', ')', ';', ']'))
@@ -330,7 +330,7 @@ function parser(text, json){
         // TODO(size): maybe we should not support multiple statements?
         return statements.length == 1
           ? statements[0]
-          : function (self){
+          : function(self){
             var value;
             for ( var i = 0; i < statements.length; i++) {
               var statement = statements[i];
@@ -343,7 +343,7 @@ function parser(text, json){
     }
   }
 
-  function _filterChain(){
+  function _filterChain() {
     var left = expression();
     var token;
     while(true) {
@@ -355,7 +355,7 @@ function parser(text, json){
     }
   }
 
-  function filter(){
+  function filter() {
     return pipeFunction(angularFilter);
   }
 
@@ -374,18 +374,18 @@ function parser(text, json){
           }
           return fn.apply(self, args);
         };
-        return function(){
+        return function() {
           return fnInvoke;
         };
       }
     }
   }
 
-  function expression(){
+  function expression() {
     return assignment();
   }
 
-  function _assignment(){
+  function _assignment() {
     var left = logicalOR();
     var right;
     var token;
@@ -403,7 +403,7 @@ function parser(text, json){
     }
   }
 
-  function logicalOR(){
+  function logicalOR() {
     var left = logicalAND();
     var token;
     while(true) {
@@ -415,7 +415,7 @@ function parser(text, json){
     }
   }
 
-  function logicalAND(){
+  function logicalAND() {
     var left = equality();
     var token;
     if ((token = expect('&&'))) {
@@ -424,7 +424,7 @@ function parser(text, json){
     return left;
   }
 
-  function equality(){
+  function equality() {
     var left = relational();
     var token;
     if ((token = expect('==','!='))) {
@@ -433,7 +433,7 @@ function parser(text, json){
     return left;
   }
 
-  function relational(){
+  function relational() {
     var left = additive();
     var token;
     if ((token = expect('<', '>', '<=', '>='))) {
@@ -442,7 +442,7 @@ function parser(text, json){
     return left;
   }
 
-  function additive(){
+  function additive() {
     var left = multiplicative();
     var token;
     while ((token = expect('+','-'))) {
@@ -451,7 +451,7 @@ function parser(text, json){
     return left;
   }
 
-  function multiplicative(){
+  function multiplicative() {
     var left = unary();
     var token;
     while ((token = expect('*','/','%'))) {
@@ -460,7 +460,7 @@ function parser(text, json){
     return left;
   }
 
-  function unary(){
+  function unary() {
     var token;
     if (expect('+')) {
       return primary();
@@ -524,7 +524,7 @@ function parser(text, json){
   function _fieldAccess(object) {
     var field = expect().text;
     var getter = getterFn(field);
-    return extend(function (self){
+    return extend(function(self){
       return getter(object(self));
     }, {
       assign:function(self, value){
@@ -537,7 +537,7 @@ function parser(text, json){
     var indexFn = expression();
     consume(']');
     return extend(
-      function (self){
+      function(self){
         var o = obj(self);
         var i = indexFn(self);
         return (o) ? o[i] : undefined;
@@ -556,7 +556,7 @@ function parser(text, json){
       } while (expect(','));
     }
     consume(')');
-    return function (self){
+    return function(self){
       var args = [];
       for ( var i = 0; i < argsFn.length; i++) {
         args.push(argsFn[i](self));
@@ -578,7 +578,7 @@ function parser(text, json){
       } while (expect(','));
     }
     consume(']');
-    return function (self){
+    return function(self){
       var array = [];
       for ( var i = 0; i < elementFns.length; i++) {
         array.push(elementFns[i](self));
@@ -599,7 +599,7 @@ function parser(text, json){
       } while (expect(','));
     }
     consume('}');
-    return function (self){
+    return function(self){
       var object = {};
       for ( var i = 0; i < keyValues.length; i++) {
         var keyValue = keyValues[i];
@@ -721,7 +721,7 @@ function getterFn(path) {
   });
   code += 'return s;';
   fn = Function('s', code);
-  fn["toString"] = function(){ return code; };
+  fn["toString"] = function() { return code; };
 
   return getterFnCache[path] = fn;
 }

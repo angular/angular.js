@@ -37,14 +37,14 @@ function Doc(text, file, line) {
   this.events = this.events || [];
   this.links = this.links || [];
 }
-Doc.METADATA_IGNORE = (function(){
+Doc.METADATA_IGNORE = (function() {
   var words = require('fs').readFileSync(__dirname + '/ignore.words', 'utf8');
   return words.toString().split(/[,\s\n\r]+/gm);
 })();
 
 
 Doc.prototype = {
-  keywords: function keywords(){
+  keywords: function keywords() {
     var keywords = {};
     Doc.METADATA_IGNORE.forEach(function(ignore){ keywords[ignore] = true; });
     var words = [];
@@ -83,7 +83,7 @@ Doc.prototype = {
     return this.section + '/' + url;
   },
 
-  markdown: function (text) {
+  markdown: function(text) {
     if (!text) return text;
 
     var self = this,
@@ -151,7 +151,7 @@ Doc.prototype = {
     return parts.join('');
   },
 
-  parse: function(){
+  parse: function() {
     var atName;
     var atText;
     var match;
@@ -180,7 +180,7 @@ Doc.prototype = {
     this['this'] = this.markdown(this['this']);
     return this;
 
-    function flush(){
+    function flush() {
       if (atName) {
         var text = trim(atText.join('\n'));
         if (atName == 'param') {
@@ -234,11 +234,11 @@ Doc.prototype = {
     }
   },
 
-  html: function(){
+  html: function() {
     var dom = new DOM(),
         self = this;
 
-    dom.h(this.name, function(){
+    dom.h(this.name, function() {
       notice('workInProgress', 'Work in Progress',
           'This page is currently being revised. It might be incomplete or contain inaccuracies.');
       notice('deprecated', 'Deprecated API', self.deprecated);
@@ -247,13 +247,13 @@ Doc.prototype = {
         dom.h('Description', self.description, dom.html);
       }
       dom.h('Dependencies', self.requires, function(require){
-        dom.tag('code', function(){
+        dom.tag('code', function() {
           dom.tag('a', {href: 'api/angular.service.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
 
-      (self['html_usage_' + self.ngdoc] || function(){
+      (self['html_usage_' + self.ngdoc] || function() {
         throw new Error("Don't know how to format @ngdoc: " + self.ngdoc);
       }).call(self, dom);
 
@@ -276,10 +276,10 @@ Doc.prototype = {
 
   html_usage_parameters: function(dom) {
     dom.h('Parameters', this.param, function(param){
-      dom.tag('code', function(){
+      dom.tag('code', function() {
         dom.text(param.name);
         if (param.optional) {
-          dom.tag('i', function(){
+          dom.tag('i', function() {
             dom.text('(optional');
             if(param['default']) {
               dom.text('=' + param['default']);
@@ -298,7 +298,7 @@ Doc.prototype = {
   html_usage_returns: function(dom) {
     var self = this;
     if (self.returns) {
-      dom.h('Returns', function(){
+      dom.h('Returns', function() {
         dom.tag('code', '{' + self.returns.type + '}');
         dom.text('– ');
         dom.html(self.returns.description);
@@ -319,8 +319,8 @@ Doc.prototype = {
 
   html_usage_function: function(dom){
     var self = this;
-    dom.h('Usage', function(){
-      dom.code(function(){
+    dom.h('Usage', function() {
+      dom.code(function() {
         dom.text(self.name.split('service.').pop());
         dom.text('(');
         self.parameters(dom, ', ');
@@ -335,8 +335,8 @@ Doc.prototype = {
 
   html_usage_property: function(dom){
     var self = this;
-    dom.h('Usage', function(){
-      dom.code(function(){
+    dom.h('Usage', function() {
+      dom.code(function() {
         dom.text(self.name);
       });
 
@@ -346,8 +346,8 @@ Doc.prototype = {
 
   html_usage_directive: function(dom){
     var self = this;
-    dom.h('Usage', function(){
-      dom.tag('pre', {'class':"brush: js; html-script: true;"}, function(){
+    dom.h('Usage', function() {
+      dom.tag('pre', {'class':"brush: js; html-script: true;"}, function() {
         dom.text('<' + self.element + ' ');
         dom.text(self.shortName);
         if (self.param.length) {
@@ -362,9 +362,9 @@ Doc.prototype = {
 
   html_usage_filter: function(dom){
     var self = this;
-    dom.h('Usage', function(){
-      dom.h('In HTML Template Binding', function(){
-        dom.tag('code', function(){
+    dom.h('Usage', function() {
+      dom.h('In HTML Template Binding', function() {
+        dom.tag('code', function() {
           dom.text('{{ ');
           dom.text(self.shortName);
           dom.text('_expression | ');
@@ -374,8 +374,8 @@ Doc.prototype = {
         });
       });
 
-      dom.h('In JavaScript', function(){
-        dom.tag('code', function(){
+      dom.h('In JavaScript', function() {
+        dom.tag('code', function() {
           dom.text('angular.filter.');
           dom.text(self.shortName);
           dom.text('(');
@@ -392,8 +392,8 @@ Doc.prototype = {
 
   html_usage_inputType: function(dom){
     var self = this;
-    dom.h('Usage', function(){
-      dom.code(function(){
+    dom.h('Usage', function() {
+      dom.code(function() {
         dom.text('<input type="' + self.shortName + '"');
         (self.param||[]).forEach(function(param){
           dom.text('\n      ');
@@ -410,9 +410,9 @@ Doc.prototype = {
 
   html_usage_widget: function(dom){
     var self = this;
-    dom.h('Usage', function(){
-      dom.h('In HTML Template Binding', function(){
-        dom.code(function(){
+    dom.h('Usage', function() {
+      dom.h('In HTML Template Binding', function() {
+        dom.code(function() {
           if (self.shortName.match(/^@/)) {
             dom.text('<');
             dom.text(self.element);
@@ -456,8 +456,8 @@ Doc.prototype = {
     var self = this;
 
     if (this.param.length) {
-      dom.h('Usage', function(){
-        dom.code(function(){
+      dom.h('Usage', function() {
+        dom.code(function() {
           dom.text(self.name.split('.').pop());
           dom.text('(');
           self.parameters(dom, ', ');
@@ -472,7 +472,7 @@ Doc.prototype = {
 
     dom.h('Methods', this.methods, function(method){
       var signature = (method.param || []).map(property('name'));
-      dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function(){
+      dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
         dom.html(method.description);
         method.html_usage_parameters(dom);
         self.html_usage_this(dom);
@@ -482,23 +482,23 @@ Doc.prototype = {
       });
     });
     dom.h('Properties', this.properties, function(property){
-      dom.h(property.name, function(){
+      dom.h(property.name, function() {
        dom.html(property.description);
        dom.h('Example', property.example, dom.html);
       });
     });
     dom.h('Events', this.events, function(event){
-    dom.h(event.shortName, event, function(){
+    dom.h(event.shortName, event, function() {
         dom.html(event.description);
         if (event.type == 'listen') {
-          dom.tag('div', {class:'inline'}, function(){
+          dom.tag('div', {class:'inline'}, function() {
             dom.h('Listen on:', event.target);
           });
         } else {
-          dom.tag('div', {class:'inline'}, function(){
+          dom.tag('div', {class:'inline'}, function() {
             dom.h('Type:', event.type);
           });
-          dom.tag('div', {class:'inline'}, function(){
+          dom.tag('div', {class:'inline'}, function() {
             dom.h('Target:', event.target);
           });
         }
@@ -547,8 +547,8 @@ function scenarios(docs){
 
   function appendSpecs(urlPrefix) {
     docs.forEach(function(doc){
-      specs.push('  describe("' + doc.section + '/' + doc.id + '", function(){');
-      specs.push('    beforeEach(function(){');
+      specs.push('  describe("' + doc.section + '/' + doc.id + '", function() {');
+      specs.push('    beforeEach(function() {');
       specs.push('      browser().navigateTo("' + urlPrefix + doc.section + '/' + doc.id + '");');
       specs.push('    });');
       specs.push('  ');
@@ -686,7 +686,7 @@ function indent(text, spaceCount) {
 function merge(docs){
   var byFullId = {};
 
-  docs.forEach(function (doc) {
+  docs.forEach(function(doc) {
     byFullId[doc.section + '/' + doc.id] = doc;
   });
 

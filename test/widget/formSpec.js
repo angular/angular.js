@@ -1,35 +1,35 @@
 'use strict';
 
-describe('form', function(){
+describe('form', function() {
   var doc;
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(doc);
   });
 
 
-  it('should attach form to DOM', function(){
+  it('should attach form to DOM', function() {
     doc = angular.element('<form>');
     var scope = angular.compile(doc)();
     expect(doc.data('$form')).toBeTruthy();
   });
 
 
-  it('should prevent form submission', function(){
+  it('should prevent form submission', function() {
     var startingUrl = '' + window.location;
     doc = angular.element('<form name="myForm"><input type=submit val=submit>');
     var scope = angular.compile(doc)();
     browserTrigger(doc.find('input'));
     waitsFor(
-        function(){ return true; },
+        function() { return true; },
         'let browser breath, so that the form submision can manifest itself', 10);
-    runs(function(){
+    runs(function() {
       expect('' + window.location).toEqual(startingUrl);
     });
   });
 
 
-  it('should publish form to scope', function(){
+  it('should publish form to scope', function() {
     doc = angular.element('<form name="myForm">');
     var scope = angular.compile(doc)();
     expect(scope.myForm).toBeTruthy();
@@ -38,7 +38,7 @@ describe('form', function(){
   });
 
 
-  it('should have ng-valide/ng-invalid style', function(){
+  it('should have ng-valide/ng-invalid style', function() {
     doc = angular.element('<form name="myForm"><input type=text ng:model=text required>');
     var scope = angular.compile(doc)();
     scope.text = 'misko';
@@ -54,7 +54,7 @@ describe('form', function(){
   });
 
 
-  it('should chain nested forms', function(){
+  it('should chain nested forms', function() {
     doc = angular.element('<ng:form name=parent><ng:form name=child><input type=text ng:model=text name=text>');
     var scope = angular.compile(doc)();
     var parent = scope.parent;
@@ -71,7 +71,7 @@ describe('form', function(){
   });
 
 
-  it('should chain nested forms in repeater', function(){
+  it('should chain nested forms in repeater', function() {
     doc = angular.element('<ng:form name=parent>' +
         '<ng:form ng:repeat="f in forms" name=child><input type=text ng:model=text name=text>');
     var scope = angular.compile(doc)();

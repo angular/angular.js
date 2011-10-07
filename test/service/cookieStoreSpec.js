@@ -9,7 +9,7 @@ describe('$cookieStore', function() {
     $browser = scope.$service('$browser');
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 

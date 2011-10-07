@@ -1,6 +1,6 @@
 'use strict';
 
-describe('select', function(){
+describe('select', function() {
   var compile = null, element = null, scope = null, $formFactory = null;
 
   beforeEach(function() {
@@ -20,12 +20,12 @@ describe('select', function(){
     };
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
 
-  describe('select-one', function(){
+  describe('select-one', function() {
 
     it('should compile children of a select without a name, but not create a model for it',
         function() {
@@ -41,7 +41,7 @@ describe('select', function(){
       expect(scope.$element.text()).toBe('foobarC');
     });
 
-    it('should require', function(){
+    it('should require', function() {
       compile('<select name="select" ng:model="selection" required ng:change="log=log+\'change;\'">' +
           '<option value=""></option>' +
           '<option value="c">C</option>' +
@@ -67,7 +67,7 @@ describe('select', function(){
       expect(scope.log).toEqual('change;');
     });
 
-    it('should not be invalid if no require', function(){
+    it('should not be invalid if no require', function() {
       compile('<select name="select" ng:model="selection">' +
           '<option value=""></option>' +
           '<option value="c">C</option>' +
@@ -80,8 +80,8 @@ describe('select', function(){
   });
 
 
-  describe('select-multiple', function(){
-    it('should support type="select-multiple"', function(){
+  describe('select-multiple', function() {
+    it('should support type="select-multiple"', function() {
       compile('<select ng:model="selection" multiple>' +
                 '<option>A</option>' +
                 '<option>B</option>' +
@@ -91,7 +91,7 @@ describe('select', function(){
       expect(element[0].childNodes[0].selected).toEqual(true);
     });
 
-    it('should require', function(){
+    it('should require', function() {
       compile('<select name="select" ng:model="selection" multiple required>' +
           '<option>A</option>' +
           '<option>B</option>' +
@@ -117,7 +117,7 @@ describe('select', function(){
   });
 
 
-  describe('ng:options', function(){
+  describe('ng:options', function() {
     var select, scope;
 
     function createSelect(attrs, blank, unknown){
@@ -152,19 +152,19 @@ describe('select', function(){
       }, blank, unknown);
     }
 
-    afterEach(function(){
+    afterEach(function() {
       dealoc(select);
       dealoc(scope);
     });
 
-    it('should throw when not formated "? for ? in ?"', function(){
-      expect(function(){
+    it('should throw when not formated "? for ? in ?"', function() {
+      expect(function() {
         compile('<select ng:model="selected" ng:options="i dont parse"></select>');
       }).toThrow("Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
                  " _collection_' but got 'i dont parse'.");
     });
 
-    it('should render a list', function(){
+    it('should render a list', function() {
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
@@ -176,7 +176,7 @@ describe('select', function(){
       expect(sortedHtml(options[2])).toEqual('<option value="2">C</option>');
     });
 
-    it('should render an object', function(){
+    it('should render an object', function() {
       createSelect({
         'ng:model':'selected',
         'ng:options': 'value as key for (key, value) in object'
@@ -197,7 +197,7 @@ describe('select', function(){
       expect(options[3].selected).toEqual(true);
     });
 
-    it('should grow list', function(){
+    it('should grow list', function() {
       createSingleSelect();
       scope.values = [];
       scope.$digest();
@@ -217,7 +217,7 @@ describe('select', function(){
       expect(sortedHtml(select.find('option')[1])).toEqual('<option value="1">B</option>');
     });
 
-    it('should shrink list', function(){
+    it('should shrink list', function() {
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
@@ -241,7 +241,7 @@ describe('select', function(){
       expect(select.find('option').length).toEqual(1); // we add back the special empty option
     });
 
-    it('should shrink and then grow list', function(){
+    it('should shrink and then grow list', function() {
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
@@ -259,7 +259,7 @@ describe('select', function(){
       expect(select.find('option').length).toEqual(3);
     });
 
-    it('should update list', function(){
+    it('should update list', function() {
       createSingleSelect();
       scope.values = [{name:'A'}, {name:'B'}, {name:'C'}];
       scope.selected = scope.values[0];
@@ -275,7 +275,7 @@ describe('select', function(){
       expect(sortedHtml(options[2])).toEqual('<option value="2">D</option>');
     });
 
-    it('should preserve existing options', function(){
+    it('should preserve existing options', function() {
       createSingleSelect(true);
 
       scope.values = [];
@@ -296,8 +296,8 @@ describe('select', function(){
       expect(jqLite(select.find('option')[0]).text()).toEqual('blank');
     });
 
-    describe('binding', function(){
-      it('should bind to scope value', function(){
+    describe('binding', function() {
+      it('should bind to scope value', function() {
         createSingleSelect();
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
@@ -309,7 +309,7 @@ describe('select', function(){
         expect(select.val()).toEqual('1');
       });
 
-      it('should bind to scope value and group', function(){
+      it('should bind to scope value and group', function() {
         createSelect({
           'ng:model':'selected',
           'ng:options':'item.name group by item.group for item in values'
@@ -342,7 +342,7 @@ describe('select', function(){
         expect(select.val()).toEqual('0');
       });
 
-      it('should bind to scope value through experession', function(){
+      it('should bind to scope value through experession', function() {
         createSelect({'ng:model':'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
         scope.selected = scope.values[0].id;
@@ -354,7 +354,7 @@ describe('select', function(){
         expect(select.val()).toEqual('1');
       });
 
-      it('should bind to object key', function(){
+      it('should bind to object key', function() {
         createSelect({
           'ng:model':'selected',
           'ng:options':'key as value for (key, value) in object'
@@ -369,7 +369,7 @@ describe('select', function(){
         expect(select.val()).toEqual('blue');
       });
 
-      it('should bind to object value', function(){
+      it('should bind to object value', function() {
         createSelect({
           'ng:model':'selected',
           'ng:options':'value as key for (key, value) in object'
@@ -384,7 +384,7 @@ describe('select', function(){
         expect(select.val()).toEqual('blue');
       });
 
-      it('should insert a blank option if bound to null', function(){
+      it('should insert a blank option if bound to null', function() {
         createSingleSelect();
         scope.values = [{name:'A'}];
         scope.selected = null;
@@ -399,7 +399,7 @@ describe('select', function(){
         expect(select.find('option').length).toEqual(1);
       });
 
-      it('should reuse blank option if bound to null', function(){
+      it('should reuse blank option if bound to null', function() {
         createSingleSelect(true);
         scope.values = [{name:'A'}];
         scope.selected = null;
@@ -414,7 +414,7 @@ describe('select', function(){
         expect(select.find('option').length).toEqual(2);
       });
 
-      it('should insert a unknown option if bound to something not in the list', function(){
+      it('should insert a unknown option if bound to something not in the list', function() {
         createSingleSelect();
         scope.values = [{name:'A'}];
         scope.selected = {};
@@ -430,8 +430,8 @@ describe('select', function(){
       });
     });
 
-    describe('on change', function(){
-      it('should update model on change', function(){
+    describe('on change', function() {
+      it('should update model on change', function() {
         createSingleSelect();
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
@@ -443,7 +443,7 @@ describe('select', function(){
         expect(scope.selected).toEqual(scope.values[1]);
       });
 
-      it('should update model on change through expression', function(){
+      it('should update model on change through expression', function() {
         createSelect({'ng:model':'selected', 'ng:options':'item.id as item.name for item in values'});
         scope.values = [{id:10, name:'A'}, {id:20, name:'B'}];
         scope.selected = scope.values[0].id;
@@ -455,7 +455,7 @@ describe('select', function(){
         expect(scope.selected).toEqual(scope.values[1].id);
       });
 
-      it('should update model to null on change', function(){
+      it('should update model to null on change', function() {
         createSingleSelect(true);
         scope.values = [{name:'A'}, {name:'B'}];
         scope.selected = scope.values[0];
@@ -468,8 +468,8 @@ describe('select', function(){
       });
     });
 
-    describe('select-many', function(){
-      it('should read multiple selection', function(){
+    describe('select-many', function() {
+      it('should read multiple selection', function() {
         createMultiSelect();
         scope.values = [{name:'A'}, {name:'B'}];
 
@@ -492,7 +492,7 @@ describe('select', function(){
         expect(select.find('option')[1].selected).toEqual(true);
       });
 
-      it('should update model on change', function(){
+      it('should update model on change', function() {
         createMultiSelect();
         scope.values = [{name:'A'}, {name:'B'}];
 

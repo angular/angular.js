@@ -1,6 +1,6 @@
 'use strict';
 
-describe("markups", function(){
+describe("markups", function() {
 
   var compile, element, scope;
 
@@ -13,11 +13,11 @@ describe("markups", function(){
     };
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(element);
   });
 
-  it('should translate {{}} in text', function(){
+  it('should translate {{}} in text', function() {
     compile('<div>hello {{name}}!</div>');
     expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name"></span>!</div>');
     scope.name = 'Misko';
@@ -25,7 +25,7 @@ describe("markups", function(){
     expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name">Misko</span>!</div>');
   });
 
-  it('should translate {{}} in terminal nodes', function(){
+  it('should translate {{}} in terminal nodes', function() {
     compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>');
     scope.$digest();
     expect(sortedHtml(element).replace(' selected="true"', '')).
@@ -40,7 +40,7 @@ describe("markups", function(){
               '</select>');
   });
 
-  it('should translate {{}} in attributes', function(){
+  it('should translate {{}} in attributes', function() {
     compile('<div src="http://server/{{path}}.png"/>');
     expect(element.attr('ng:bind-attr')).toEqual('{"src":"http://server/{{path}}.png"}');
     scope.path = 'a/b';
@@ -48,11 +48,11 @@ describe("markups", function(){
     expect(element.attr('src')).toEqual("http://server/a/b.png");
   });
 
-  describe('OPTION value', function(){
-    beforeEach(function(){
+  describe('OPTION value', function() {
+    beforeEach(function() {
       this.addMatchers({
         toHaveValue: function(expected){
-          this.message = function(){
+          this.message = function() {
             return 'Expected "' + this.actual.html() + '" to have value="' + expected + '".';
           };
 
@@ -74,22 +74,22 @@ describe("markups", function(){
     });
 
 
-    it('should populate value attribute on OPTION', function(){
+    it('should populate value attribute on OPTION', function() {
       compile('<select ng:model="x"><option>abc</option></select>');
       expect(element).toHaveValue('abc');
     });
 
-    it('should ignore value if already exists', function(){
+    it('should ignore value if already exists', function() {
       compile('<select ng:model="x"><option value="abc">xyz</option></select>');
       expect(element).toHaveValue('abc');
     });
 
-    it('should set value even if newlines present', function(){
+    it('should set value even if newlines present', function() {
       compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>');
       expect(element).toHaveValue('\nabc\n');
     });
 
-    it('should set value even if self closing HTML', function(){
+    it('should set value even if self closing HTML', function() {
       // IE removes the \n from option, which makes this test pointless
       if (msie) return;
       compile('<select ng:model="x"><option>\n</option></select>');
@@ -174,21 +174,21 @@ describe("markups", function(){
     });
   });
 
-  it('should Parse Text With No Bindings', function(){
+  it('should Parse Text With No Bindings', function() {
     var parts = parseBindings("a");
     assertEquals(parts.length, 1);
     assertEquals(parts[0], "a");
     assertTrue(!binding(parts[0]));
   });
 
-  it('should Parse Empty Text', function(){
+  it('should Parse Empty Text', function() {
     var parts = parseBindings("");
     assertEquals(parts.length, 1);
     assertEquals(parts[0], "");
     assertTrue(!binding(parts[0]));
   });
 
-  it('should Parse Inner Binding', function(){
+  it('should Parse Inner Binding', function() {
     var parts = parseBindings("a{{b}}C");
     assertEquals(parts.length, 3);
     assertEquals(parts[0], "a");
@@ -199,7 +199,7 @@ describe("markups", function(){
     assertTrue(!binding(parts[2]));
   });
 
-  it('should Parse Ending Binding', function(){
+  it('should Parse Ending Binding', function() {
     var parts = parseBindings("a{{b}}");
     assertEquals(parts.length, 2);
     assertEquals(parts[0], "a");
@@ -208,7 +208,7 @@ describe("markups", function(){
     assertEquals(binding(parts[1]), "b");
   });
 
-  it('should Parse Begging Binding', function(){
+  it('should Parse Begging Binding', function() {
     var parts = parseBindings("{{b}}c");
     assertEquals(parts.length, 2);
     assertEquals(parts[0], "{{b}}");
@@ -217,14 +217,14 @@ describe("markups", function(){
     assertTrue(!binding(parts[1]));
   });
 
-  it('should Parse Loan Binding', function(){
+  it('should Parse Loan Binding', function() {
     var parts = parseBindings("{{b}}");
     assertEquals(parts.length, 1);
     assertEquals(parts[0], "{{b}}");
     assertEquals(binding(parts[0]), "b");
   });
 
-  it('should Parse Two Bindings', function(){
+  it('should Parse Two Bindings', function() {
     var parts = parseBindings("{{b}}{{c}}");
     assertEquals(parts.length, 2);
     assertEquals(parts[0], "{{b}}");
@@ -233,7 +233,7 @@ describe("markups", function(){
     assertEquals(binding(parts[1]), "c");
   });
 
-  it('should Parse Two Bindings With Text In Middle', function(){
+  it('should Parse Two Bindings With Text In Middle', function() {
     var parts = parseBindings("{{b}}x{{c}}");
     assertEquals(parts.length, 3);
     assertEquals(parts[0], "{{b}}");
@@ -244,7 +244,7 @@ describe("markups", function(){
     assertEquals(binding(parts[2]), "c");
   });
 
-  it('should Parse Multiline', function(){
+  it('should Parse Multiline', function() {
     var parts = parseBindings('"X\nY{{A\nB}}C\nD"');
     assertTrue(!!binding('{{A\nB}}'));
     assertEquals(parts.length, 3);
@@ -253,7 +253,7 @@ describe("markups", function(){
     assertEquals(parts[2], 'C\nD"');
   });
 
-  it('should Has Binding', function(){
+  it('should Has Binding', function() {
     assertTrue(hasBindings(parseBindings("{{a}}")));
     assertTrue(!hasBindings(parseBindings("a")));
     assertTrue(hasBindings(parseBindings("{{b}}x{{c}}")));

@@ -6,7 +6,7 @@
 <doc:example>
  <doc:source>
   <script>
-    function HelloCntl(){
+    function HelloCntl() {
       this.name = 'World';
     }
   </script>
@@ -17,7 +17,7 @@
   </div>
  </doc:source>
  <doc:scenario>
-   it('should change the binding when user enters text', function(){
+   it('should change the binding when user enters text', function() {
      expect(binding('name')).toEqual('World');
      input('name').enter('angular');
      expect(binding('name')).toEqual('angular');

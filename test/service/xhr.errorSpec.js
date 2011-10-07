@@ -3,7 +3,7 @@
 describe('$xhr.error', function() {
   var scope, $browser, $browserXhr, $xhr, $xhrError, log;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope(angular.service, {
       '$xhr.error': $xhrError = jasmine.createSpy('$xhr.error')
     });
@@ -14,7 +14,7 @@ describe('$xhr.error', function() {
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
@@ -25,7 +25,7 @@ describe('$xhr.error', function() {
   }
 
 
-  it('should handle non 200 status codes by forwarding to error handler', function(){
+  it('should handle non 200 status codes by forwarding to error handler', function() {
     $browserXhr.expectPOST('/req', 'MyData').respond(500, 'MyError');
     $xhr('POST', '/req', 'MyData', callback);
     $browserXhr.flush();

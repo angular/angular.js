@@ -26,11 +26,11 @@ describe('angular.scenario.Describe', function() {
   });
 
   it('should handle basic nested case', function() {
-    root.describe('A', function(){
+    root.describe('A', function() {
       this.beforeEach(log.fn('{'));
       this.afterEach(log.fn('}'));
       this.it('1', log.fn('1'));
-      this.describe('B', function(){
+      this.describe('B', function() {
         this.beforeEach(log.fn('('));
         this.afterEach(log.fn(')'));
         this.it('2', log.fn('2'));
