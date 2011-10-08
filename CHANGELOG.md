@@ -1,8 +1,50 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.1">0.10.1 chicken-hands</a>
+- The Latest Unstable Release: <a href="#0.10.2">0.10.2 sneaky-seagull</a>
 
 <a name="0.10.2"><a/>
-# 0.10.2 sneaky-seagull (in-progress) #
+# 0.10.2 sneaky-seagull (2011-10-08) #
+
+## Features:
+
+- jQuery 1.6.4 support (Issue [#556](https://github.com/angular/angular.js/issues/556))
+- [jqLite](http://docs-next.angularjs.org/api/angular.element) improvements:
+  - Added support for `prop` method
+    ([commit](https://github.com/angular/angular.js/commit/3800d177030d20c5c3d04e3601f892c46e723dc2))
+  - Added support for `unbind` method
+    ([commit](https://github.com/angular/angular.js/commit/6b7ddf414de82720bbf547b2fa661bf5fcec7bb6))
+
+
+## Bug Fixes:
+
+- Added support for short-circuiting of && and || operators in in angular expressions
+  (Issue [#433](https://github.com/angular/angular.js/issues/433))
+- Fix for [$limitTo] to properly handle excessive limits (contributed by tehek)
+  (Issue [#571](https://github.com/angular/angular.js/issues/571))
+- [jqLite]'s css() method now converts dash-separated css property names to camelCase in order to
+  support dash-separated properties on Firefox
+  (Issue [#569](https://github.com/angular/angular.js/issues/569))
+- action defaults for [$resource]s now take precedence over resource defaults (contributed by
+  Marcello Nuccio)
+  ([commit](https://github.com/angular/angular.js/commit/bf5e5f7bc9ebc7dc6cf8fdf3c4923498b22a8654))
+- Fixed escaping issues in [$route] matcher
+  ([commit](https://github.com/angular/angular.js/commit/2bc39bb0b4f81b77597bb52f8572d231cf4f83e2))
+- Fixed two issues in $browser.defer.cancel mock
+  ([commit](https://github.com/angular/angular.js/commit/62ae7fccbc524ff498779564294ed6e1a7a3f51c),
+   [commit](https://github.com/angular/angular.js/commit/8336f3f0ba89b529057027711ab4babd6c2cb649))
+- Fix for ng:options, which under certain circumstances didn't select the right option element
+  ([commit](https://github.com/angular/angular.js/commit/555f4152909e1c0bd5400737a62dc5d63ecd32d3))
+
+
+## Docs:
+
+- migrated the docs app to use [$location]'s HTML5 mode (hashbang urls no more)
+  ([commit](https://github.com/angular/angular.js/commit/13f92de6246a0af8450fde84b209211a56397fda))
+
+
+## Breaking Changes
+
+- If Angular is being used with jQuery older than 1.6, some features might not work properly. Please
+  upgrade to jQuery version 1.6.4.
 
 
 
@@ -797,3 +839,5 @@ with the `$route` service
 [$on]: http://docs-next.angularjs.org/#!/api/angular.scope.$on
 [$emit]: http://docs-next.angularjs.org/#!/api/angular.scope.$emit
 [$broadcast]: http://docs-next.angularjs.org/#!/api/angular.scope.$broadcast
+[$limitTo]: http://docs-next.angularjs.org/api/angular.Array.limitTo
+[$location]: http://docs-next.angularjs.org/api/angular.service.$location
