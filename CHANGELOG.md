@@ -1,6 +1,12 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
 - The Latest Unstable Release: <a href="#0.10.2">0.10.2 sneaky-seagull</a>
 
+<a name="0.10.3"><a/>
+# 0.10.3 shattering-heartbeat (in-progress) #
+
+
+
+
 <a name="0.10.2"><a/>
 # 0.10.2 sneaky-seagull (2011-10-08) #
 
