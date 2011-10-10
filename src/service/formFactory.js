@@ -14,7 +14,7 @@
  * Keep in mind that both form and widget instances are {@link api/angular.scope scopes}.
  *
  * @param {Form=} parentForm The form which should be the parent form of the new form controller.
- *   If none specified default to the `root` form.
+ *   If none specified default to the `rootForm`.
  * @returns {Form} A new <a href="#form">form</a> instance.
  *
  * @example
@@ -101,7 +101,7 @@ angularServiceInject('$formFactory', function() {
 
   /**
    * @ngdoc proprety
-   * @name root
+   * @name rootForm
    * @propertyOf angular.service.$formFactory
    * @description
    * Static property on `$formFactory`
@@ -329,8 +329,8 @@ function FormController() {
  *     - `$invalid` - boolean - opposite of `$valid`.
  * @param {Object} params Named parameters:
  *
- *   - `model` - `{Scope}` -  The scope where the model scope for the widget is stored.
- *   - `bind` - `{String}` - The angular assignable expression to bind to on the model scope.
+ *   - `model` - `{Scope}` -  The scope to which the for the widget is attached.
+ *   - `bind` - `{string}` - The name of the model property on `model` scope.
  *   - `Ctrl` - {WidgetController} - The controller constructor function.
  *      The controller constructor should create these instance methods.
  *     - `$parseView()`: optional method responsible for copying `$viewVale` to `$modelValue`.
@@ -342,7 +342,8 @@ function FormController() {
  *
  *   - `CtrlArgs` - `{Array}`(Optional) -  Any extra arguments will be curried to the
  *     WidgetController constructor.
- *   - `onChange` - `{String}`(Optional) - Expression to execute when user changes the value.
+ *   - `onChange` - `{String}`(Optional) - An Angular expression to execute when user changes the
+ *     value.
  *   - `alias` - `{String}`(Optional) - The name of the form property under which the widget
  *        instance should be published. The name should be unique for each form.
  * @returns {Widget} Widget instance scope.
@@ -365,7 +366,7 @@ FormController.prototype.$createWidget = function(params) {
       widget.$modelValue = value;
       widget.$parseModel ? widget.$parseModel() : (widget.$viewValue = value);
       widget.$emit('$validate');
-      widget.$render();
+      widget.$render && widget.$render();
     }
   });
 

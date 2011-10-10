@@ -481,3 +481,130 @@ validation.
     });
   </doc:scenario>
 </doc:example>
+
+#Testing
+
+When unit-testing a controller it may be desirable to have a reference to form and to simulate
+different form validation states.
+
+This example demonstrates a login form, where the login button is enabled only when the form is
+properly filled out.
+<pre>
+  <div ng:controller="LoginController">
+    <form name="loginForm">
+      <input type="text" ng:model="username" required/>
+      <input type="password" ng:model="password" required/>
+      <button ng:disabled="{{!disableLogin()}}" ng:click="login()">Login</login>
+    </form>
+  </div>
+</pre>
+
+In the unit tests we do not have access to the DOM, and therefore the `loginForm` reference does
+not get set on the controller. This example shows how it can be unit-tested, by creating a mock
+form.
+<pre>
+function LoginController() {
+  this.disableLogin = function() {
+    return this.loginForm.$invalid;
+  };
+}
+
+describe('LoginController', function() {
+  it('should disable login button when form is invalid', function() {
+    var scope = angular.scope();
+    var loginController = scope.$new(LoginController);
+
+    // In production the 'loginForm' form instance gets set from the view,
+    // but in unit-test we have to set it manually.
+    loginController.loginForm = scope.$service('$formFactory')();
+
+    expect(loginController.disableLogin()).toBe(false);
+
+    // Now simulate an invalid form
+    loginController.loginForm.$emit('$invalid', 'MyReason');
+    expect(loginController.disableLogin()).toBe(true);
+
+    // Now simulate a valid form
+    loginController.loginForm.$emit('$valid', 'MyReason');
+    expect(loginController.disableLogin()).toBe(false);
+  });
+});
+</pre>
+
+## Custom widgets
+
+This example demonstrates a login form, where the password has custom validation rules.
+<pre>
+  <div ng:controller="LoginController">
+    <form name="loginForm">
+      <input type="text" ng:model="username" required/>
+      <input type="@StrongPassword" ng:model="password" required/>
+      <button ng:disabled="{{!disableLogin()}}" ng:click="login()">Login</login>
+    </form>
+  </div>
+</pre>
+
+In the unit tests we do not have access to the DOM, and therefore the `loginForm` and custom
+input type reference does not get set on the controller. This example shows how it can be
+unit-tested, by creating a mock form and a mock custom input type.
+<pre>
+function LoginController(){
+  this.disableLogin = function() {
+    return this.loginForm.$invalid;
+  };
+
+  this.StrongPassword = function(element) {
+    var widget = this;
+    element.attr('type', 'password'); // act as password.
+    this.$on('$validate', function(){
+      widget.$emit(widget.$viewValue.length > 5 ? '$valid' : '$invalid', 'PASSWORD');
+    });
+  };
+}
+
+describe('LoginController', function() {
+  it('should disable login button when form is invalid', function() {
+    var scope = angular.scope();
+    var loginController = scope.$new(LoginController);
+    var input = angular.element('<input>');
+
+    // In production the 'loginForm' form instance gets set from the view,
+    // but in unit-test we have to set it manually.
+    loginController.loginForm = scope.$service('$formFactory')();
+
+    // now instantiate a custom input type
+    loginController.loginForm.$createWidget({
+      model: loginController,
+      bind: 'password',
+      alias: 'password',
+      Ctrl: loginController.StrongPassword,
+      CtrlArgs: [input]
+    });
+
+    // Verify that the custom password input type sets the input type to password
+    expect(input.attr('type')).toEqual('password');
+
+    expect(loginController.disableLogin()).toBe(false);
+
+    // Now simulate an invalid form
+    loginController.loginForm.password.$emit('$invalid', 'PASSWORD');
+    expect(loginController.disableLogin()).toBe(true);
+
+    // Now simulate a valid form
+    loginController.loginForm.password.$emit('$valid', 'PASSWORD');
+    expect(loginController.disableLogin()).toBe(false);
+
+    // Changing model state, should also influence the form validity
+    loginController.password = 'abc'; // too short so it should be invalid
+    scope.$digest();
+    expect(loginController.loginForm.password.$invalid).toBe(true);
+
+    // Changing model state, should also influence the form validity
+    loginController.password = 'abcdef'; // should be valid
+    scope.$digest();
+    expect(loginController.loginForm.password.$valid).toBe(true);
+  });
+});
+</pre>
+
+
