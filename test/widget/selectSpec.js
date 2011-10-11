@@ -130,8 +130,8 @@ describe('select', function() {
         }
       });
       html += '>' +
-        (blank ? '<option value="">blank</option>' : '') +
-        (unknown ? '<option value="?">unknown</option>' : '') +
+        (blank ? (isString(blank) ? blank : '<option value="">blank</option>') : '') +
+        (unknown ? (isString(unknown) ? unknown : '<option value="?">unknown</option>') : '') +
       '</select>';
       select = jqLite(html);
       scope = compile(select);
@@ -444,6 +444,80 @@ describe('select', function() {
         expect(select.find('option').length).toEqual(2);
       });
     });
+
+
+    describe('blank option', function () {
+      it('should be compiled as template, be watched and updated', function () {
+        var option;
+
+        createSingleSelect('<option value="">blank is {{blankVal}}</option>');
+        scope.blankVal = 'so blank';
+        scope.values = [{name:'A'}];
+        scope.$digest();
+
+        // check blank option is first and is compiled
+        expect(select.find('option').length == 2);
+        option = jqLite(select.find('option')[0]);
+        expect(option.val()).toBe('');
+        expect(option.text()).toBe('blank is so blank');
+
+        // change blankVal and $digest
+        scope.blankVal = 'not so blank';
+        scope.$digest();
+
+        // check blank option is first and is compiled
+        expect(select.find('option').length == 2);
+        option = jqLite(select.find('option')[0]);
+        expect(option.val()).toBe('');
+        expect(option.text()).toBe('blank is not so blank');
+      });
+
+      it('should support binding via ng:bind-template attribute', function () {
+        var option;
+
+        createSingleSelect('<option value="" ng:bind-template="blank is {{blankVal}}"></option>');
+        scope.blankVal = 'so blank';
+        scope.values = [{name:'A'}];
+        scope.$digest();
+
+        // check blank option is first and is compiled
+        expect(select.find('option').length == 2);
+        option = jqLite(select.find('option')[0]);
+        expect(option.val()).toBe('');
+        expect(option.text()).toBe('blank is so blank');
+      });
+
+      it('should support biding via ng:bind attribute', function () {
+        var option;
+
+        createSingleSelect('<option value="" ng:bind="blankVal"></option>');
+        scope.blankVal = 'is blank';
+        scope.values = [{name:'A'}];
+        scope.$digest();
+
+        // check blank option is first and is compiled
+        expect(select.find('option').length == 2);
+        option = jqLite(select.find('option')[0]);
+        expect(option.val()).toBe('');
+        expect(option.text()).toBe('is blank');
+      });
+
+      it('should be rendered with the attributes preserved', function () {
+        var option;
+
+        createSingleSelect('<option value="" class="coyote" id="road-runner" ' +
+          'custom-attr="custom-attr">{{blankVal}}</option>');
+        scope.blankVal = 'is blank';
+        scope.$digest();
+
+        // check blank option is first and is compiled
+        option = jqLite(select.find('option')[0]);
+        expect(option.hasClass('coyote')).toBeTruthy();
+        expect(option.attr('id')).toBe('road-runner');
+        expect(option.attr('custom-attr')).toBe('custom-attr');
+      });
+    });
+
 
     describe('on change', function() {
       it('should update model on change', function() {
