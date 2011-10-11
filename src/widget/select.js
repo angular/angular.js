@@ -243,9 +243,12 @@ angularWidget('select', function(element){
 
       // find existing special options
       forEach(selectElement.children(), function(option){
-        if (option.value == '')
+        var opt;
+        if (option.value == '') {
+          opt = jqLite(option);
           // User is allowed to select the null.
-          nullOption = {label:jqLite(option).text(), id:''};
+          nullOption = {label:opt.text(), id:'', bindTemplate: opt.attr('ng:bind-template')};
+        }
       });
       selectElement.html(''); // clear contents
 
@@ -397,6 +400,14 @@ angularWidget('select', function(element){
                   .val(option.id)
                   .attr('selected', option.selected)
                   .text(option.label);
+
+              // if it's a nullOption, compile it
+              if (option.id === '') {
+                if (option.bindTemplate)
+                  element.attr('ng:bind-template', option.bindTemplate);
+                compile(element)(modelScope);
+              }
+
               existingOptions.push(existingOption = {
                   element: element,
                   label: option.label,
