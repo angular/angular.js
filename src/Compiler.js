@@ -33,7 +33,14 @@ Template.prototype = {
         paths = this.paths,
         length = paths.length;
     for (i = 0; i < length; i++) {
-      children[i].link(jqLite(childNodes[paths[i]]), childScope);
+      // sometimes `element` can be modified by one of the linker functions in `this.linkFns`
+      // and childNodes may be added or removed
+      // TODO: element structure needs to be re-evaluated if new children added
+      // if the childNode still exists
+      if (childNodes[paths[i]])
+        children[i].link(jqLite(childNodes[paths[i]]), childScope);
+      else
+        delete paths[i]; // if child no longer available, delete path
     }
   },
 

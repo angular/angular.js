@@ -241,10 +241,13 @@ angularWidget('select', function(element){
           inChangeEvent;
 
       // find existing special options
-      forEach(selectElement.children(), function(option){
-        if (option.value == '')
-          // User is allowed to select the null.
-          nullOption = {label:jqLite(option).text(), id:''};
+      forEach(selectElement.children(), function(option) {
+        if (option.value == '') {
+          // developer declared null option, so user should be able to select it
+          nullOption = jqLite(option).remove();
+          // compile the element since there might be bindings in it
+          compile(nullOption)(modelScope);
+        }
       });
       selectElement.html(''); // clear contents
 
@@ -314,7 +317,7 @@ angularWidget('select', function(element){
           selectedSet = new HashMap(modelValue);
         } else if (modelValue === null || nullOption) {
           // if we are not multiselect, and we are null then we have to add the nullOption
-          optionGroups[''].push(extend({selected:modelValue === null, id:'', label:''}, nullOption));
+          optionGroups[''].push({selected:modelValue === null, id:'', label:''});
           selectedSet = true;
         }
 
@@ -389,13 +392,21 @@ angularWidget('select', function(element){
               }
             } else {
               // grow elements
-              // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
-              // in this version of jQuery on some browser the .text() returns a string
-              // rather then the element.
-              (element = optionTemplate.clone())
-                  .val(option.id)
-                  .attr('selected', option.selected)
-                  .text(option.label);
+
+              // if it's a null option
+              if (option.id === '' && nullOption) {
+                // put back the pre-compiled element
+                element = nullOption;
+              } else {
+                // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
+                // in this version of jQuery on some browser the .text() returns a string
+                // rather then the element.
+                (element = optionTemplate.clone())
+                    .val(option.id)
+                    .attr('selected', option.selected)
+                    .text(option.label);
+              }
+
               existingOptions.push(existingOption = {
                   element: element,
                   label: option.label,
