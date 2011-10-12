@@ -290,7 +290,7 @@ var JQLitePrototype = JQLite.prototype = {
 // value on get.
 //////////////////////////////////////////
 var BOOLEAN_ATTR = {};
-forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value, key) {
+forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value) {
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
 
@@ -344,7 +344,7 @@ forEach({
       if (isDefined(value)) {
         if (!!value) {
           element[name] = true;
-          element.setAttribute(name, name);
+          element.setAttribute(name, lowercase(name));
         } else {
           element[name] = false;
           element.removeAttribute(name);
