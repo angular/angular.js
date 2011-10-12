@@ -276,6 +276,16 @@ describe('widget: input', function() {
           browserTrigger(element);
           expect(scope.name).toEqual('nie');
         });
+
+
+        it('should fire ng:change when the value changes', function() {
+          compile('<input type="checkbox" ng:model="foo" ng:change="changeFn()">');
+          scope.changeFn = jasmine.createSpy('changeFn');
+          scope.$digest();
+          expect(scope.changeFn).not.toHaveBeenCalledOnce();
+          browserTrigger(element);
+          expect(scope.changeFn).toHaveBeenCalledOnce();
+        });
       });
     });
 
