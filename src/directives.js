@@ -557,8 +557,8 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-          element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+          if (oldVal) element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
     };
