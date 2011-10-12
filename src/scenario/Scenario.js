@@ -227,10 +227,12 @@ function callerFile(offset) {
  * Triggers a browser event. Attempts to choose the right event if one is
  * not specified.
  *
- * @param {Object} Either a wrapped jQuery/jqLite node or a DOMElement
- * @param {string} Optional event type.
+ * @param {Object} element Either a wrapped jQuery/jqLite node or a DOMElement
+ * @param {string} type Optional event type.
+ * @param {Array.<string>=} keys Optional list of pressed keys
+ *        (valid values: 'alt', 'meta', 'shift', 'ctrl')
  */
-function browserTrigger(element, type) {
+function browserTrigger(element, type, keys) {
   if (element && !element.nodeName) element = element[0];
   if (!element) return;
   if (!type) {
@@ -254,6 +256,12 @@ function browserTrigger(element, type) {
     element = element.parentNode;
     type = 'change';
   }
+
+  keys = keys || [];
+  function pressed(key) {
+    return indexOf(keys, key) !== -1;
+  }
+
   if (msie < 9) {
     switch(element.type) {
       case 'radio':
@@ -267,6 +275,8 @@ function browserTrigger(element, type) {
     // forcing the browser to compute the element position (by reading its CSS)
     // puts the element in consistent state.
     element.style.posLeft;
+
+    // TODO(vojta): create event objects with pressed keys to get it working on IE<9
     var ret = element.fireEvent('on' + type);
     if (lowercase(element.type) == 'submit') {
       while(element) {
@@ -293,7 +303,8 @@ function browserTrigger(element, type) {
       return originalPreventDefault.apply(evnt, arguments);
     };
 
-    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, element);
+    evnt.initMouseEvent(type, true, true, window, 0, 0, 0, 0, 0, pressed('ctrl'), pressed('alt'),
+                        pressed('shift'), pressed('meta'), 0, element);
 
     element.dispatchEvent(evnt);
     finalProcessDefault = !(appWindow.angular['ff-684208-preventDefault'] || !fakeProcessDefault)
