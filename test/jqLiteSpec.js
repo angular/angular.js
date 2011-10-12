@@ -15,7 +15,7 @@ describe('jqLite', function() {
     this.addMatchers({
       toJqEqual: function(expected) {
         var msg = "Unequal length";
-        this.message = function() { return msg; };
+        this.message = function() {return msg;};
 
         var value = this.actual && expected && this.actual.length == expected.length;
         for (var i = 0; value && i < expected.length; i++) {
@@ -191,18 +191,44 @@ describe('jqLite', function() {
       expect(jqLite(b).attr('prop')).toBeFalsy();
     });
 
-    it('should read special attributes as strings', function() {
+    it('should read boolean attributes as strings', function() {
       var select = jqLite('<select>');
       expect(select.attr('multiple')).toBeUndefined();
       expect(jqLite('<select multiple>').attr('multiple')).toBe('multiple');
       expect(jqLite('<select multiple="">').attr('multiple')).toBe('multiple');
       expect(jqLite('<select multiple="x">').attr('multiple')).toBe('multiple');
+    });
 
+    it('should add/remove boolean attributes', function() {
+      var select = jqLite('<select>');
       select.attr('multiple', false);
       expect(select.attr('multiple')).toBeUndefined();
 
       select.attr('multiple', true);
       expect(select.attr('multiple')).toBe('multiple');
+    });
+
+    it('should normalize the case of boolean attributes', function() {
+      var input = jqLite('<input readonly>');
+      expect(input.attr('readonly')).toBe('readonly');
+      expect(input.attr('readOnly')).toBe('readonly');
+      expect(input.attr('READONLY')).toBe('readonly');
+
+      input.attr('readonly', false);
+
+      // attr('readonly') fails in jQuery 1.6.4, so we have to bypass it
+      //expect(input.attr('readOnly')).toBeUndefined();
+      //expect(input.attr('readonly')).toBeUndefined();
+      if (msie < 9) {
+        expect(input[0].getAttribute('readonly')).toBe('');
+      } else {
+        expect(input[0].getAttribute('readonly')).toBe(null);
+      }
+      //expect('readOnly' in input[0].attributes).toBe(false);
+
+      input.attr('readOnly', 'READonly');
+      expect(input.attr('readonly')).toBe('readonly');
+      expect(input.attr('readOnly')).toBe('readonly');
     });
 
     it('should return undefined for non-existing attributes', function() {
