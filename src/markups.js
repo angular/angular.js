@@ -134,7 +134,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:href
  *
@@ -215,7 +214,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  */
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:src
  *
@@ -241,7 +239,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  */
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:disabled
  *
@@ -280,7 +277,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:checked
  *
@@ -310,7 +306,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:multiple
  *
@@ -346,7 +341,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:readonly
  *
@@ -376,7 +370,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
-* @workInProgress
 * @ngdoc directive
 * @name angular.directive.ng:selected
 *

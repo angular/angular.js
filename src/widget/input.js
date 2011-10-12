@@ -7,7 +7,6 @@ var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.text
  *
@@ -70,7 +69,6 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
 
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.email
  *
@@ -138,7 +136,6 @@ angularInputType('email', function() {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.url
  *
@@ -208,7 +205,6 @@ angularInputType('url', function() {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.list
  *
@@ -280,7 +276,6 @@ angularInputType('list', function() {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.number
  *
@@ -346,7 +341,6 @@ angularInputType('list', function() {
 angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.integer
  *
@@ -412,7 +406,6 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
 angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.checkbox
  *
@@ -487,7 +480,6 @@ angularInputType('checkbox', function(inputElement) {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.radio
  *
@@ -591,7 +583,6 @@ var HTML5_INPUTS_TYPES =  makeMap(
 
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.input
  *

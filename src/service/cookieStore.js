@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$cookieStore
  * @requires $cookies
@@ -16,7 +15,6 @@ angularServiceInject('$cookieStore', function($store) {
 
   return {
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$cookieStore#get
      * @methodOf angular.service.$cookieStore
@@ -32,7 +30,6 @@ angularServiceInject('$cookieStore', function($store) {
     },
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$cookieStore#put
      * @methodOf angular.service.$cookieStore
@@ -48,7 +45,6 @@ angularServiceInject('$cookieStore', function($store) {
     },
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$cookieStore#remove
      * @methodOf angular.service.$cookieStore

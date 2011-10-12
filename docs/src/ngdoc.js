@@ -239,8 +239,6 @@ Doc.prototype = {
         self = this;
 
     dom.h(this.name, function() {
-      notice('workInProgress', 'Work in Progress',
-          'This page is currently being revised. It might be incomplete or contain inaccuracies.');
       notice('deprecated', 'Deprecated API', self.deprecated);
 
       if (self.ngdoc != 'overview') {
