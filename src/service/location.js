@@ -442,7 +442,8 @@ angularServiceInject('$location', function($browser, $sniffer, $config, $documen
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (uppercase(event.target.nodeName) != 'A' || event.ctrlKey || event.which == 2) return;
+      if (uppercase(event.target.nodeName) != 'A' || event.ctrlKey || event.metaKey ||
+          event.which == 2) return;
 
       var elm = jqLite(event.target),
           href = elm.attr('href');
