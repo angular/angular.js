@@ -384,7 +384,7 @@ angularWidget('select', function(element){
               if (existingOption.id !== option.id) {
                 lastElement.val(existingOption.id = option.id);
               }
-              if (existingOption.selected !== option.selected) {
+              if (existingOption.element.selected !== option.selected) {
                 lastElement.prop('selected', (existingOption.selected = option.selected));
               }
             } else {

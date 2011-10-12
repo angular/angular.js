@@ -428,6 +428,21 @@ describe('select', function() {
         expect(select.val()).toEqual('0');
         expect(select.find('option').length).toEqual(1);
       });
+
+      it('should select correct input if previously selected option was "?"', function() {
+        createSingleSelect();
+        scope.values = [{name:'A'},{name:'B'}];
+        scope.selected = {};
+        scope.$digest();
+        expect(select.find('option').length).toEqual(3);
+        expect(select.val()).toEqual('?');
+        expect(select.find('option').eq(0).val()).toEqual('?');
+
+        browserTrigger(select.find('option').eq(1));
+        expect(select.val()).toEqual('0');
+        expect(select.find('option').eq(0).prop('selected')).toBeTruthy();
+        expect(select.find('option').length).toEqual(2);
+      });
     });
 
     describe('on change', function() {
@@ -504,7 +519,5 @@ describe('select', function() {
         expect(scope.selected).toEqual([scope.values[0]]);
       });
     });
-
   });
-
 });
