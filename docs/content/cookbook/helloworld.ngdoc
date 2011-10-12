@@ -30,7 +30,7 @@
 Take a look through the source and note:
 
 * The script tag that {@link guide/dev_guide.bootstrap bootstraps} the angular environment.
-* The text {@link api/angular.widget.HTML input widget} which is bound to the greeting name text.
+* The text {@link api/angular.widget.input input widget} which is bound to the greeting name text.
 * No need for listener registration and event firing on change events.
 * The implicit presence of the `name` variable which is in the root {@link api/angular.scope scope}.
 * The double curly brace `{{markup}}`, which binds the name variable to the greeting text.

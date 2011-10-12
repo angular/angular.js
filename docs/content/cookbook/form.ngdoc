@@ -96,7 +96,7 @@ available in
   the {@link api/angular.scope scope} with the initial data.
 * For debugging purposes we have included a debug view of the model to better understand what
   is going on.
-* The {@link api/angular.widget.HTML input widgets} simply refer to the model and are auto bound.
+* The {@link api/angular.widget.input input widgets} simply refer to the model and are data-bound.
 * The inputs {@link guide/dev_guide.forms validate}. (Try leaving them blank or entering non digits
   in the zip field)
 * In your application you can simply read from or write to the model and the form will be updated.
