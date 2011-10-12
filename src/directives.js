@@ -429,19 +429,10 @@ angularDirective("ng:bind-attr", function(expression){
     this.$watch(function(scope){
       var values = scope.$eval(expression);
       for(var key in values) {
-        var value = compileBindTemplate(values[key])(scope, element),
-            specialName = BOOLEAN_ATTR[lowercase(key)];
+        var value = compileBindTemplate(values[key])(scope, element);
         if (lastValue[key] !== value) {
           lastValue[key] = value;
-          if (specialName) {
-            if (toBoolean(value)) {
-              element.attr(specialName, specialName);
-            } else {
-              element.removeAttr(specialName);
-            }
-          } else {
-            element.attr(key, value);
-          }
+          element.attr(key, BOOLEAN_ATTR[lowercase(key)] ? toBoolean(value) : value);
         }
       }
     });
@@ -557,8 +548,8 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-          element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+          if (oldVal) element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
     };

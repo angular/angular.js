@@ -107,15 +107,42 @@ describe('compiler', function() {
       };
     };
     scope = compile('before<span duplicate="expr">x</span>after');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+                'before<#comment></#comment>' +
+                '<span>x</span>' +
+                'after' +
+              '</div>');
     scope.value = 1;
     scope.$digest();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span>after</div>');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+          'before<#comment></#comment>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          'after' +
+        '</div>');
     scope.value = 2;
     scope.$digest();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span>after</div>');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+          'before<#comment></#comment>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          'after' +
+        '</div>');
     scope.value = 3;
     scope.$digest();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span><span>x</span>after</div>');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+          'before<#comment></#comment>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          'after' +
+        '</div>');
   });
 
 

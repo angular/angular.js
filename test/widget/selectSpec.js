@@ -476,8 +476,8 @@ describe('select', function() {
         scope.selected = [];
         scope.$digest();
         expect(select.find('option').length).toEqual(2);
-        expect(jqLite(select.find('option')[0]).attr('selected')).toBeFalsy();
-        expect(jqLite(select.find('option')[1]).attr('selected')).toBeFalsy();
+        expect(jqLite(select.find('option')[0]).prop('selected')).toBeFalsy();
+        expect(jqLite(select.find('option')[1]).prop('selected')).toBeFalsy();
 
         scope.selected.push(scope.values[1]);
         scope.$digest();

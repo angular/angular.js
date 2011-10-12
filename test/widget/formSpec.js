@@ -30,7 +30,7 @@ describe('form', function() {
 
 
   it('should publish form to scope', function() {
-    doc = angular.element('<form name="myForm">');
+    doc = angular.element('<form name="myForm"></form>');
     var scope = angular.compile(doc)();
     expect(scope.myForm).toBeTruthy();
     expect(doc.data('$form')).toBeTruthy();
@@ -55,7 +55,12 @@ describe('form', function() {
 
 
   it('should chain nested forms', function() {
-    doc = angular.element('<ng:form name=parent><ng:form name=child><input type=text ng:model=text name=text>');
+    doc = angular.element(
+        '<ng:form name=parent>' +
+          '<ng:form name=child>' +
+            '<input type=text ng:model=text name=text>' +
+          '</ng:form>' +
+        '</ng:form>');
     var scope = angular.compile(doc)();
     var parent = scope.parent;
     var child = scope.child;
@@ -72,8 +77,12 @@ describe('form', function() {
 
 
   it('should chain nested forms in repeater', function() {
-    doc = angular.element('<ng:form name=parent>' +
-        '<ng:form ng:repeat="f in forms" name=child><input type=text ng:model=text name=text>');
+    doc = angular.element(
+       '<ng:form name=parent>' +
+        '<ng:form ng:repeat="f in forms" name=child>' +
+          '<input type=text ng:model=text name=text>' +
+         '</ng:form>' +
+       '</ng:form>');
     var scope = angular.compile(doc)();
     scope.forms = [1];
     scope.$digest();
