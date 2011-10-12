@@ -243,11 +243,12 @@ angularWidget('select', function(element){
 
       // find existing special options
       forEach(selectElement.children(), function(option){
-        var opt;
         if (option.value == '') {
-          opt = jqLite(option);
           // User is allowed to select the null.
-          nullOption = {label:opt.text(), id:'', bindTemplate: opt.attr('ng:bind-template')};
+          // save <option> element 
+          nullOption = jqLite(option).remove();
+          // compile it in model scope
+          compile(nullOption)(modelScope);
         }
       });
       selectElement.html(''); // clear contents
@@ -318,7 +319,7 @@ angularWidget('select', function(element){
           selectedSet = new HashMap(modelValue);
         } else if (modelValue === null || nullOption) {
           // if we are not multiselect, and we are null then we have to add the nullOption
-          optionGroups[''].push(extend({selected:modelValue === null, id:'', label:''}, nullOption));
+          optionGroups[''].push({selected:modelValue === null, id:'', label:''});
           selectedSet = true;
         }
 
@@ -393,19 +394,19 @@ angularWidget('select', function(element){
               }
             } else {
               // grow elements
-              // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
-              // in this version of jQuery on some browser the .text() returns a string
-              // rather then the element.
-              (element = optionTemplate.clone())
-                  .val(option.id)
-                  .attr('selected', option.selected)
-                  .text(option.label);
-
-              // if it's a nullOption, compile it
-              if (option.id === '') {
-                if (option.bindTemplate)
-                  element.attr('ng:bind-template', option.bindTemplate);
-                compile(element)(modelScope);
+              
+              // if it's a null option 
+              if (option.id === '' && nullOption) {
+                // put back the pre-compiled element
+                element = nullOption;
+              } else {
+                // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
+                // in this version of jQuery on some browser the .text() returns a string
+                // rather then the element.
+                (element = optionTemplate.clone())
+                    .val(option.id)
+                    .attr('selected', option.selected)
+                    .text(option.label);
               }
 
               existingOptions.push(existingOption = {
