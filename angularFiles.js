@@ -128,6 +128,7 @@ angularFiles = {
     'test/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/service/*.js',
+    'test/widget/*.js',
     'example/personalLog/test/*.js'
   ],
 
