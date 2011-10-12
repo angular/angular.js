@@ -290,7 +290,7 @@ var JQLitePrototype = JQLite.prototype = {
 // value on get.
 //////////////////////////////////////////
 var BOOLEAN_ATTR = {};
-forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value, key) {
+forEach('multiple,selected,checked,disabled,readOnly,required'.split(','), function(value) {
   BOOLEAN_ATTR[lowercase(value)] = value;
 });
 
@@ -340,17 +340,22 @@ forEach({
   },
 
   attr: function(element, name, value){
-    if (BOOLEAN_ATTR[name]) {
+    var lowercasedName = lowercase(name);
+    if (BOOLEAN_ATTR[lowercasedName]) {
       if (isDefined(value)) {
         if (!!value) {
           element[name] = true;
-          element.setAttribute(name, name);
+          element.setAttribute(name, lowercasedName);
         } else {
           element[name] = false;
-          element.removeAttribute(name);
+          element.removeAttribute(lowercasedName);
         }
       } else {
-        return (element[name] || element.getAttribute(name)) ? name : undefined;
+        return (element[name] ||
+                 element.getAttribute(name) !== null &&
+                 (msie < 9 ? element.getAttribute(name) !== '' : true))
+               ? lowercasedName
+               : undefined;
       }
     } else if (isDefined(value)) {
       element.setAttribute(name, value);
