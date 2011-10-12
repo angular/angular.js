@@ -7,7 +7,6 @@ var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.text
  *
@@ -20,6 +19,8 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -68,7 +69,6 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
 
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.email
  *
@@ -136,7 +136,6 @@ angularInputType('email', function() {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.url
  *
@@ -150,6 +149,8 @@ angularInputType('email', function() {
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -204,7 +205,6 @@ angularInputType('url', function() {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.list
  *
@@ -217,6 +217,8 @@ angularInputType('url', function() {
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -274,7 +276,6 @@ angularInputType('list', function() {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.number
  *
@@ -290,6 +291,8 @@ angularInputType('list', function() {
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -338,7 +341,6 @@ angularInputType('list', function() {
 angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.integer
  *
@@ -354,6 +356,8 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -402,7 +406,6 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
 angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.checkbox
  *
@@ -411,8 +414,10 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
  *
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
- * @param {string=} true-value The value to which the expression should be set when selected.
- * @param {string=} false-value The value to which the expression should be set when not selected.
+ * @param {string=} ng:true-value The value to which the expression should be set when selected.
+ * @param {string=} ng:false-value The value to which the expression should be set when not selected.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -427,7 +432,7 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
          <form name="myForm">
            Value1: <input type="checkbox" ng:model="value1"> <br/>
            Value2: <input type="checkbox" ng:model="value2"
-                          true-value="YES" false-value="NO"> <br/>
+                          ng:true-value="YES" ng:false-value="NO"> <br/>
          </form>
          <tt>value1 = {{value1}}</tt><br/>
          <tt>value2 = {{value2}}</tt><br/>
@@ -448,8 +453,8 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
  */
 angularInputType('checkbox', function(inputElement) {
   var widget = this,
-      trueValue = inputElement.attr('true-value'),
-      falseValue = inputElement.attr('false-value');
+      trueValue = inputElement.attr('ng:true-value'),
+      falseValue = inputElement.attr('ng:false-value');
 
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;
@@ -475,16 +480,17 @@ angularInputType('checkbox', function(inputElement) {
 });
 
 /**
- * @workInProgress
  * @ngdoc inputType
  * @name angular.inputType.radio
  *
  * @description
- * HTML radio.
+ * HTML radio button.
  *
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string} value The value to which the expression should be set when selected.
  * @param {string=} name Property name of the form under which the widgets is published.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>
@@ -577,7 +583,6 @@ var HTML5_INPUTS_TYPES =  makeMap(
 
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.input
  *
@@ -585,8 +590,8 @@ var HTML5_INPUTS_TYPES =  makeMap(
  * HTML input element widget with angular data-binding. Input widget follows HTML5 input types
  * and polyfills the HTML5 validation behavior for older browsers.
  *
- * The {@link angular.inputType custom angular.inputType}s provides a short hand for declaring new
- * inputs. This is a shart hand for text-box based inputs, and there is no need to go through the
+ * The {@link angular.inputType custom angular.inputType}s provide a shorthand for declaring new
+ * inputs. This is a sharthand for text-box based inputs, and there is no need to go through the
  * full {@link angular.service.$formFactory $formFactory} widget lifecycle.
  *
  *
@@ -599,6 +604,8 @@ var HTML5_INPUTS_TYPES =  makeMap(
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
  *
  * @example
     <doc:example>

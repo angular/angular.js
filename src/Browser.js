@@ -77,7 +77,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   }
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#xhr
    * @methodOf angular.service.$browser
@@ -157,7 +156,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
       pollTimeout;
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addPollFn
    * @methodOf angular.service.$browser
@@ -198,7 +196,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   var lastBrowserUrl = location.href;
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#url
    * @methodOf angular.service.$browser
@@ -250,7 +247,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   }
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#onUrlChange
    * @methodOf angular.service.$browser
@@ -301,7 +297,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   var lastCookieString = '';
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#cookies
    * @methodOf angular.service.$browser
@@ -363,7 +358,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#defer
    * @methodOf angular.service.$browser
@@ -417,7 +411,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addCss
    * @methodOf angular.service.$browser
@@ -436,7 +429,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addJs
    * @methodOf angular.service.$browser

@@ -41,7 +41,6 @@
 
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.mock
  * @description
@@ -61,7 +60,6 @@ angular.mock = {};
 
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$browser
  *
@@ -365,7 +363,6 @@ angular.service('$browser', function() {
 
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$exceptionHandler
  *
@@ -382,7 +379,6 @@ angular.service('$exceptionHandler', function() {
 
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$log
  *

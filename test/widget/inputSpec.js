@@ -256,13 +256,13 @@ describe('widget: input', function() {
 
 
         it('should allow custom enumeration', function() {
-          compile('<input type="checkbox" ng:model="name" true-value="ano" false-value="nie"/>');
+          compile('<input type="checkbox" ng:model="name" ng:true-value="y" ng:false-value="n">');
 
-          scope.name='ano';
+          scope.name='y';
           scope.$digest();
           expect(scope.$element[0].checked).toBe(true);
 
-          scope.name='nie';
+          scope.name='n';
           scope.$digest();
           expect(scope.$element[0].checked).toBe(false);
 
@@ -271,10 +271,20 @@ describe('widget: input', function() {
           expect(scope.$element[0].checked).toBe(false);
 
           browserTrigger(element);
-          expect(scope.name).toEqual('ano');
+          expect(scope.name).toEqual('y');
 
           browserTrigger(element);
-          expect(scope.name).toEqual('nie');
+          expect(scope.name).toEqual('n');
+        });
+
+
+        it('should fire ng:change when the value changes', function() {
+          compile('<input type="checkbox" ng:model="foo" ng:change="changeFn()">');
+          scope.changeFn = jasmine.createSpy('changeFn');
+          scope.$digest();
+          expect(scope.changeFn).not.toHaveBeenCalledOnce();
+          browserTrigger(element);
+          expect(scope.changeFn).toHaveBeenCalledOnce();
         });
       });
     });

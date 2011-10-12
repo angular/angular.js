@@ -160,13 +160,13 @@ The following example demonstrates:
 
          <span class="error" ng:show="addressForm.$invalid">
            Incomplete address:
-           <div class="error" ng:show="addressForm.state.$error.REQUIRED">
+           <span class="error" ng:show="addressForm.state.$error.REQUIRED">
              Missing state!</span>
-           <div class="error" ng:show="addressForm.state.$error.PATTERN">
+           <span class="error" ng:show="addressForm.state.$error.PATTERN">
              Invalid state!</span>
-           <div class="error" ng:show="addressForm.zip.$error.REQUIRED">
+           <span class="error" ng:show="addressForm.zip.$error.REQUIRED">
              Missing zip!</span>
-           <div class="error" ng:show="addressForm.zip.$error.PATTERN">
+           <span class="error" ng:show="addressForm.zip.$error.PATTERN">
              Invalid zip!</span>
          </span>
        </ng:form>
