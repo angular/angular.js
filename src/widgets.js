@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.widget
  * @description
@@ -29,7 +28,6 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.ng:include
  *
@@ -136,7 +134,6 @@ angularWidget('ng:include', function(element){
 });
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.ng:switch
  *
@@ -277,7 +274,6 @@ angularWidget('a', function() {
 
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:repeat
  *
@@ -444,7 +440,6 @@ angularWidget('@ng:repeat', function(expression, element){
 
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:non-bindable
  *

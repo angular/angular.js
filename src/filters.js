@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.filter
  * @description
@@ -29,7 +28,6 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.currency
  * @function
@@ -83,7 +81,6 @@ angularFilter.currency = function(amount, currencySymbol){
 };
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.number
  * @function
@@ -269,7 +266,6 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
     NUMBER_STRING = /^\d+$/;
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.date
  * @function
@@ -391,7 +387,6 @@ angularFilter.date = function(date, format) {
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.json
  * @function
@@ -427,7 +422,6 @@ angularFilter.json = function(object) {
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.lowercase
  * @function
@@ -438,7 +432,6 @@ angularFilter.lowercase = lowercase;
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.uppercase
  * @function
@@ -449,7 +442,6 @@ angularFilter.uppercase = uppercase;
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.html
  * @function
@@ -549,7 +541,6 @@ angularFilter.html =  function(html, option){
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.linky
  * @function

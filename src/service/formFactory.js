@@ -152,7 +152,6 @@ function propertiesUpdate(widget) {
  */
 
 /**
- * @workInProgress
  * @ngdoc property
  * @name $invalid
  * @propertyOf angular.service.$formFactory
@@ -163,7 +162,6 @@ function propertiesUpdate(widget) {
  */
 
 /**
- * @workInProgress
  * @ngdoc property
  * @name $valid
  * @propertyOf angular.service.$formFactory

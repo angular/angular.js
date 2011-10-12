@@ -62,7 +62,6 @@ Template.prototype = {
 //////////////////////////////////
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.compile
  * @function
