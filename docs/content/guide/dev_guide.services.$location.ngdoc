@@ -126,16 +126,25 @@ All of the setter methods return the same `$location` object to allow chaining. 
 change multiple segments in one go, chain setters like this:
 <pre>$location.path('/newValue').search({key: value});</pre>
 
-All setter methods take an optional boolean flag parameter, which signifies whether current history
-record should be replaced or if a new record should be created (default). To change the current URL
-without creating a new browser history record you can call:
-<pre>$location.path('/newVal', true);</pre>
+There is a special `replace` method which can be used to tell the $location service that the next
+time the $location service is synced with the browser, the last history record should be replaced
+instead of creating a new one. This is useful when you want to implement redirection, which would
+otherwise break the back button (navigating back would retrigger the redirection). To change the
+current URL without creating a new browser history record you can call:
+<pre>
+  $location.path('/someNewPath');
+  $location.replace();
+  // or you can chain these as: $location.path('/someNewPath').replace();
+</pre>
 
 Note that the setters don't update `window.location` immediately. Instead, `$location` service is
 aware of the {@link api/angular.scope scope} life-cycle and coalesces multiple `$location`
-mutations into one "commit" to the `window.location` object during the scope `$flush` phase. Since
-any of the setters can take the replace flag, it's enough for one setter to use this flag in order
-to make the entire "commit" a replace operation rather than addition to the browser history.
+mutations into one "commit" to the `window.location` object during the scope `$digest` phase. Since
+multiple changes to the $location's state will be pushed to the browser as a single change, it's
+enough to call the `replace()` method just once to make the entire "commit" a replace operation
+rather than addition to the browser history. Once the browser is updated, the $location service
+resets the flag set by `replace()` method and future mutations will create new history records,
+unless `replace()` is called again.
 
 ### Setters and character encoding
 You can pass special characters to `$location` service and it will encode them according to rules
