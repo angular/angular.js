@@ -29,7 +29,7 @@ fs.readFile('angularFiles.js', function(err, data) {
   fs.writeFile('./jsTestDriver-coverage.conf', prefix +
       combine(angularFiles.jstd, angularFiles.jstdExclude) +
       '\n\nplugin:\n- name: "coverage"\n' +
-      'jar: "lib/jstestdriver/coverage.jar"\n' +
+      'jar: "lib/jstd-jasmine/jstestdriver/coverage.jar"\n' +
       'module: "com.google.jstestdriver.coverage.CoverageModule"');
 });
 

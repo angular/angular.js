@@ -1,0 +1,3 @@
+[submodule "lib/jstd-jasmine"]
+	path = lib/jstd-jasmine
+	url = git://github.com/angular/jstd-jasmine.git
