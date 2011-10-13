@@ -414,8 +414,8 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
  *
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
- * @param {string=} true-value The value to which the expression should be set when selected.
- * @param {string=} false-value The value to which the expression should be set when not selected.
+ * @param {string=} ng:true-value The value to which the expression should be set when selected.
+ * @param {string=} ng:false-value The value to which the expression should be set when not selected.
  * @param {string=} ng:change Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  *
@@ -432,7 +432,7 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
          <form name="myForm">
            Value1: <input type="checkbox" ng:model="value1"> <br/>
            Value2: <input type="checkbox" ng:model="value2"
-                          true-value="YES" false-value="NO"> <br/>
+                          ng:true-value="YES" ng:false-value="NO"> <br/>
          </form>
          <tt>value1 = {{value1}}</tt><br/>
          <tt>value2 = {{value2}}</tt><br/>
@@ -453,8 +453,8 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
  */
 angularInputType('checkbox', function(inputElement) {
   var widget = this,
-      trueValue = inputElement.attr('true-value'),
-      falseValue = inputElement.attr('false-value');
+      trueValue = inputElement.attr('ng:true-value'),
+      falseValue = inputElement.attr('ng:false-value');
 
   if (!isString(trueValue)) trueValue = true;
   if (!isString(falseValue)) falseValue = false;

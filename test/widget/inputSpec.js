@@ -256,7 +256,8 @@ describe('widget: input', function() {
 
 
         it('should allow custom enumeration', function() {
-          compile('<input type="checkbox" ng:model="name" true-value="ano" false-value="nie"/>');
+          compile('<input type="checkbox" ng:model="name" ' +
+                    'ng:true-value="ano" ng:false-value="nie">');
 
           scope.name='ano';
           scope.$digest();
