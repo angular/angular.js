@@ -57,7 +57,7 @@ angularFiles = {
   ],
 
   'jstd': [
-    'lib/jasmine-1.0.1/jasmine.js',
+    'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'lib/jquery/jquery.js',
     'test/jquery_remove.js',
@@ -94,7 +94,7 @@ angularFiles = {
   ],
 
   'jstdPerf': [
-   'lib/jasmine-1.0.1/jasmine.js',
+   'lib/jasmine/jasmine.js',
    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
    'angularSrc',
    'src/angular-mocks.js',
@@ -110,7 +110,7 @@ angularFiles = {
   ],
 
   'jstdJquery': [
-    'lib/jasmine-1.0.1/jasmine.js',
+    'lib/jasmine/jasmine.js',
     'lib/jasmine-jstd-adapter/JasmineAdapter.js',
     'lib/jquery/jquery.js',
     'test/jquery_alias.js',
