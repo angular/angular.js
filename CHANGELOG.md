@@ -1,13 +1,57 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.2">0.10.2 sneaky-seagull</a>
+- The Latest Unstable Release: <a href="#0.10.3">0.10.3 shattering-heartbeat</a>
 
-<a name="0.10.3"><a/>
-# 0.10.3 shattering-heartbeat (in-progress) #
+<a name="0.10.3"></a>
+# 0.10.3 shattering-heartbeat (2011-10-13) #
+
+## Features:
+
+- New forms, validation, support for HTML5 input widgets. Please check out:
+  - [Forms overview](http://docs-next.angularjs.org/guide/dev_guide.forms)
+  - [form widget](http://docs-next.angularjs.org/api/angular.widget.form)
+  - [input widget](http://docs-next.angularjs.org/api/angular.widget.input)
+  - [$formFactory service](http://docs-next.angularjs.org/api/angular.service.$formFactory)
+  - [angular.inputType](http://docs-next.angularjs.org/api/angular.inputType)
+  - [commit](https://github.com/angular/angular.js/commit/4f78fd692c0ec51241476e6be9a4df06cd62fdd6)
+
+- [ng:repeat] now has element-model affinity, which makes it more friendly to third-party code that
+  is not aware of angular's DOM manipulation. This is also the pre-requisite for supporting
+  animations.
+  ([commit](https://github.com/angular/angular.js/commit/75f11f1fc46c35a28c0905f7316ea6779145e2fb))
+
+
+## Bug Fixes:
+
+- The select widget with [ng:options] directive now correctly displays selected option (regression
+  from 0.10.2).
+- Fix for jqLite's removeClass, which under certain circumstances could clobber class names.
+  ([commit](https://github.com/angular/angular.js/commit/b96e978178a6acbf048aa6db466ed845e1395445))
+- Other small fixes and documentation improvements.
+
+
+## Breaking Changes:
+
+- Due to changes in how forms and validation works the following were replaced with new apis:
+  - `angular.formatter` - use `angular.inputType` or form's `$createWidget`
+  - `angular.validator` - use `angular.inputType` or form's `$createWidget`
+  - changes to `<input>` and `<select>` elements
+    - `ng:model` directive is now required for data-binding to kick in
+    - the `name` attribute is now optional and is used only as an alias when accessing the input
+      widget via the form object.
+    - view can't affect the model without a user interaction, so the `value` attribute of the
+      `<input>` element and `selected` attribute of the `<option>` element if specified in the
+      template is ignored.
+- Removed decoration of DOM elements when:
+  - an exception occurs - when an exception happens, it will be passed to the $exceptionHandler
+    service, which can decide what to do with it.
+  - an input widget contains invalid input - in this case the forms validation apis can be used to
+    display a customized error message.
+- The $hover service was removed (it was needed only for the DOM decoration described above).
 
 
 
 
-<a name="0.10.2"><a/>
+<a name="0.10.2"></a>
 # 0.10.2 sneaky-seagull (2011-10-08) #
 
 ## Features:
@@ -58,7 +102,7 @@
   ng:repeat-index property rendering it meaningless.
 
 
-<a name="0.10.1"><a/>
+<a name="0.10.1"></a>
 # 0.10.1 inexorable-juggernaut (2011-09-09) #
 
 ## Features
@@ -104,7 +148,7 @@
 
 
 
-<a name="0.10.0"><a/>
+<a name="0.10.0"></a>
 # 0.10.0 chicken-hands (2011-09-02) #
 
 ## Features
@@ -159,7 +203,7 @@
 
 
 
-<a name="0.9.19"><a/>
+<a name="0.9.19"></a>
 # 0.9.19 canine-psychokinesis (2011-08-20) #
 
 ## Features
@@ -195,7 +239,7 @@
   `css('display', 'block'/'inline'/..)` instead
 
 
-<a name="0.9.18"><a/>
+<a name="0.9.18"></a>
 # 0.9.18 jiggling-armfat (2011-07-29) #
 
 ### Features
@@ -228,7 +272,7 @@
 
 
 ### Bug Fixes
-- make injector compatible with Rhino (HtmlUnit) (contributed by Mårten Dolk)
+- make injector compatible with Rhino (HtmlUnit) (contributed by M√•rten Dolk)
   [commit](https://github.com/angular/angular.js/commit/77ba539f630c57b17d71dbf1e9c5667a7eb603b7)
 - `ie-compat.js` fixes and improvements related to fetching this file on the fly on legacy browsers
 - [jqLite]
@@ -265,7 +309,7 @@
 
 
 
-<a name="0.9.17"><a/>
+<a name="0.9.17"></a>
 # <angular/> 0.9.17 vegetable-reanimation (2011-06-30) #
 
 ### New Features
@@ -300,7 +344,7 @@
 
 
 
-<a name="0.9.16"><a/>
+<a name="0.9.16"></a>
 # <angular/> 0.9.16 weather-control (2011-06-07) #
 
 ### Features
@@ -331,7 +375,7 @@
 
 
 
-<a name="0.9.15"><a/>
+<a name="0.9.15"></a>
 # <angular/> 0.9.15 lethal-stutter (2011-04-11) #
 
 ### Features
@@ -350,7 +394,7 @@
 
 
 
-<a name="0.9.14"><a/>
+<a name="0.9.14"></a>
 # <angular/> 0.9.14 key-maker (2011-04-01) #
 
 ### Performance
@@ -371,12 +415,12 @@
 
 
 
-<a name="0.9.13"><a/>
+<a name="0.9.13"></a>
 # <angular/> 0.9.13 curdling-stare (2011-03-13) #
 
 ### New Features
 - Added XSRF protection for the [$xhr] service. (commit c578f8c3)
-- Targeted auto-bootstrap — [ng:autobind] now takes an optional value which specifies an element id
+- Targeted auto-bootstrap ‚Äî [ng:autobind] now takes an optional value which specifies an element id
   to be compiled instead of compiling the entire html document. (commit 9d5c5337)
 
 
@@ -398,7 +442,7 @@
 
 
 
-<a name="0.9.12"><a/>
+<a name="0.9.12"></a>
 # <angular/> 0.9.12 thought-implanter (2011-03-03) #
 
 ### API
@@ -455,7 +499,7 @@
 
 
 
-<a name="0.9.11"><a/>
+<a name="0.9.11"></a>
 # <angular/> 0.9.11 snow-maker  (2011-02-08) #
 
 ### Documentation
@@ -486,7 +530,7 @@
   request via the `$xhr` service or remove all unneeded `flush()` calls.
 
 
-<a name="0.9.10"><a/>
+<a name="0.9.10"></a>
 # <angular/> 0.9.10 flea-whisperer  (2011-01-26) #
 
 ### Features
@@ -510,7 +554,7 @@ with the `$route` service
 - lots of improvements related to formatting of the content of docs.anguarjs.org
 
 
-<a name="0.9.9"><a/>
+<a name="0.9.9"></a>
 # <angular/> 0.9.9 time-shift (2011-01-13) #
 
 ### Security
@@ -541,7 +585,7 @@ with the `$route` service
 - angular.filter.date now properly handles some corner-cases (issue #159 - fix contributed by Vojta)
 
 ### Breaking changes
-- API for accessing registered services — `scope.$inject` — was renamed to
+- API for accessing registered services ‚Äî `scope.$inject` ‚Äî was renamed to
   [`scope.$service`](http://docs.angularjs.org/#!/api/angular.scope.$service). (commit b2631f61)
 
 - Support for `eager-published` services was removed. This change was done to make explicit
@@ -586,7 +630,7 @@ with the `$route` service
 - The `toString` method of the `angular.service.$location` service was removed. (commit 23875cb3)
 
 
-<a name="0.9.8"><a/>
+<a name="0.9.8"></a>
 # <angular/> 0.9.8 astral-projection (2010-12-23) #
 
 ### Docs/Getting started
@@ -600,7 +644,7 @@ with the `$route` service
 - Ignore input widgets which have no name (issue #153)
 
 
-<a name="0.9.7"><a/>
+<a name="0.9.7"></a>
 # <angular/> 0.9.7 sonic-scream (2010-12-10) #
 
 ### Bug Fixes
@@ -619,7 +663,7 @@ with the `$route` service
   your controllers. (commit e5e69d9b90850eb653883f52c76e28dd870ee067)
 
 
-<a name="0.9.6"><a/>
+<a name="0.9.6"></a>
 # <angular/> 0.9.6 night-vision (2010-12-06) #
 
 ### Security
@@ -649,7 +693,7 @@ with the `$route` service
 - The HTML sanitizer is slightly more strinct now. Please see info in the "Security" section above.
 
 
-<a name="0.9.5"><a/>
+<a name="0.9.5"></a>
 # <angular/> 0.9.5 turkey-blast (2010-11-25) #
 
 ### Docs
@@ -659,7 +703,7 @@ with the `$route` service
 - added `angular.Array.limitTo` to make it easy to select first or last few items of an array
 
 
-<a name="0.9.4"><a/>
+<a name="0.9.4"></a>
 # <angular/> 0.9.4 total-recall (2010-11-18) #
 
 ### Docs
@@ -676,7 +720,7 @@ with the `$route` service
 - Better error handling - compilation exception now contain stack trace (commit b2d63ac4)
 
 
-<a name="0.9.3"><a/>
+<a name="0.9.3"></a>
 # <angular/> 0.9.3 cold-resistance (2010-11-10) #
 
 ### Docs
@@ -704,7 +748,7 @@ with the `$route` service
   simple RegExp validator.
 
 
-<a name="0.9.2"><a/>
+<a name="0.9.2"></a>
 # <angular/> 0.9.2 faunal-mimicry (2010-11-03) #
 
 ### Docs
@@ -742,7 +786,7 @@ with the `$route` service
   implements HEAD
 
 
-<a name="0.9.1"><a/>
+<a name="0.9.1"></a>
 # <angular/> 0.9.1 repulsion-field (2010-10-26) #
 
 ### Security
@@ -769,7 +813,7 @@ with the `$route` service
 - html filter now sanitizes html content for XSS attacks which may result in different behavior
 
 
-<a name="0.9.0"><a/>
+<a name="0.9.0"></a>
 # <angular/> 0.9.0 dragon-breath (2010-10-20) #
 
 ### Security
