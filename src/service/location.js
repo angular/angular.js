@@ -96,10 +96,10 @@ function convertToHashbangUrl(url, basePath, hashPrefix) {
 
 /**
  * LocationUrl represents an url
- * This object is exposed as $location service when html5 is enabled and supported
+ * This object is exposed as $location service when HTML5 mode is enabled and supported
  *
  * @constructor
- * @param {string} url Html5 url
+ * @param {string} url HTML5 url
  * @param {string} pathPrefix
  */
 function LocationUrl(url, pathPrefix) {
@@ -107,7 +107,7 @@ function LocationUrl(url, pathPrefix) {
 
   /**
    * Parse given html5 (regular) url string into properties
-   * @param {string} url Html5 url
+   * @param {string} url HTML5 url
    * @private
    */
   this.$$parse = function(url) {
