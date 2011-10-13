@@ -54,7 +54,7 @@ changes to $location are reflected into the browser address bar.
   </tr>
 
   <tr>
-    <td class="head">seamless integration with html5 API</td>
+    <td class="head">seamless integration with HTML5 API</td>
     <td>no</td>
     <td>yes (with a fallback for legacy browsers)</td>
   </tr>
@@ -92,7 +92,7 @@ To configure the `$location` service, you define the `$locationConfig` service w
 with configuration properties:
 
 - **html5Mode**: {boolean}<br />
-  `true` - see Html5 mode<br />
+  `true` - see HTML5 mode<br />
   `false` - see Hashbang mode<br />
   default: `false`
 
@@ -159,11 +159,11 @@ encoded.
 `/path?search=a&b=c#hash`. The segments are encoded as well.
 
 
-# Hashbang and Html5 Modes
+# Hashbang and HTML5 Modes
 
 `$location` service has two configuration modes which control the format of the URL in the browser
-address bar: **Hashbang mode** (the default) and the **Html5 mode** which is based on using the
-Html5 {@link http://www.w3.org/TR/html5/history.html History API}. Applications use the same API in
+address bar: **Hashbang mode** (the default) and the **HTML5 mode** which is based on using the
+HTML5 {@link http://www.w3.org/TR/html5/history.html History API}. Applications use the same API in
 both modes and the `$location` service will work with appropriate URL segments and browser APIs to
 facilitate the browser URL change and history management.
 
@@ -175,7 +175,7 @@ facilitate the browser URL change and history management.
   <tr>
     <td class="empty-corner-lt"></td>
     <td>Hashbang mode</td>
-    <td>Html5 mode</td>
+    <td>HTML5 mode</td>
   </tr>
 
 </thead>
@@ -269,7 +269,7 @@ angular.service('$locationConfig', function() {
   };
 });
 
-// in browser with html5 history support:
+// in browser with HTML5 history support:
 // open http://host.com/#!/a -> rewrite to http://host.com/a
 // (replacing the http://host.com/#!/a history record)
 $location.path() == '/a'
@@ -351,7 +351,7 @@ takes care of all relative link issues. **Otherwise you have to specify &lt;base
 
 ### Sending links among different browsers
 
-Because of rewriting capability in Html5 mode, your users will be able to open regular url links in
+Because of rewriting capability in HTML5 mode, your users will be able to open regular url links in
 legacy browsers and hashbang links in modern browser:
 
 - Modern browser will rewrite hashbang URLs to regular URLs.
