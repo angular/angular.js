@@ -428,6 +428,22 @@ describe('select', function() {
         expect(select.val()).toEqual('0');
         expect(select.find('option').length).toEqual(1);
       });
+
+      it('should select correct input if previously bound to something not in the list', function() {
+        createSingleSelect();
+        scope.values = [{name:'A'},{name:'B'}];
+        scope.selected = {};
+        scope.$digest();
+        expect(select.find('option').length).toEqual(3);
+        expect(select.val()).toEqual('?');
+        expect(jqLite(select.find('option')[0]).val()).toEqual('?');
+
+        select.find('option').eq(1).prop('selected', true);
+        browserTrigger(select, 'change');
+        expect(select.val()).toEqual('0');
+        expect(select.find('option').eq(0).prop('selected')).toBeTruthy();
+        expect(select.find('option').length).toEqual(2);
+      });
     });
 
     describe('on change', function() {
