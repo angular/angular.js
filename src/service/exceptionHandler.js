@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$exceptionHandler
  * @requires $log

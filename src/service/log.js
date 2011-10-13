@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$log
  * @requires $window
@@ -39,7 +38,6 @@ var $logFactory; //reference to be used only in tests
 angularServiceInject("$log", $logFactory = function($window){
   return {
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#log
      * @methodOf angular.service.$log
@@ -50,7 +48,6 @@ angularServiceInject("$log", $logFactory = function($window){
     log: consoleLog('log'),
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#warn
      * @methodOf angular.service.$log
@@ -61,7 +58,6 @@ angularServiceInject("$log", $logFactory = function($window){
     warn: consoleLog('warn'),
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#info
      * @methodOf angular.service.$log
@@ -72,7 +68,6 @@ angularServiceInject("$log", $logFactory = function($window){
     info: consoleLog('info'),
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#error
      * @methodOf angular.service.$log

@@ -42,7 +42,6 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:init
  *
@@ -75,7 +74,6 @@ angularDirective("ng:init", function(expression){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:controller
  *
@@ -306,7 +304,6 @@ function compileBindTemplate(template){
 }
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind-template
  *
@@ -429,19 +426,10 @@ angularDirective("ng:bind-attr", function(expression){
     this.$watch(function(scope){
       var values = scope.$eval(expression);
       for(var key in values) {
-        var value = compileBindTemplate(values[key])(scope, element),
-            specialName = BOOLEAN_ATTR[lowercase(key)];
+        var value = compileBindTemplate(values[key])(scope, element);
         if (lastValue[key] !== value) {
           lastValue[key] = value;
-          if (specialName) {
-            if (toBoolean(value)) {
-              element.attr(specialName, specialName);
-            } else {
-              element.removeAttr(specialName);
-            }
-          } else {
-            element.attr(key, value);
-          }
+          element.attr(key, BOOLEAN_ATTR[lowercase(key)] ? toBoolean(value) : value);
         }
       }
     });
@@ -450,7 +438,6 @@ angularDirective("ng:bind-attr", function(expression){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:click
  *
@@ -499,7 +486,6 @@ angularDirective("ng:click", function(expression, element){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:submit
  *
@@ -557,8 +543,8 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-          element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+          if (oldVal) element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
     };
@@ -566,7 +552,6 @@ function ngClass(selector) {
 }
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class
  *
@@ -612,7 +597,6 @@ function ngClass(selector) {
 angularDirective("ng:class", ngClass(function() {return true;}));
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class-odd
  *
@@ -653,7 +637,6 @@ angularDirective("ng:class", ngClass(function() {return true;}));
 angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class-even
  *
@@ -694,7 +677,6 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
 angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:show
  *
@@ -735,7 +717,6 @@ angularDirective("ng:show", function(expression, element){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:hide
  *
@@ -776,7 +757,6 @@ angularDirective("ng:hide", function(expression, element){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:style
  *

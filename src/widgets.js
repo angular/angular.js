@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.widget
  * @description
@@ -29,7 +28,6 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.ng:include
  *
@@ -136,7 +134,6 @@ angularWidget('ng:include', function(element){
 });
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.ng:switch
  *
@@ -277,7 +274,6 @@ angularWidget('a', function() {
 
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:repeat
  *
@@ -444,7 +440,6 @@ angularWidget('@ng:repeat', function(expression, element){
 
 
 /**
- * @workInProgress
  * @ngdoc widget
  * @name angular.widget.@ng:non-bindable
  *
@@ -538,7 +533,7 @@ angularWidget("@ng:non-bindable", noop);
           expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Overview/);
 
           element('.doc-example-live a:contains(bootstrap)').click();
-          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Initializing Angular: Automatic Initiialization/);
+          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Initializing Angular: Automatic Initialization/);
         });
       </doc:scenario>
     </doc:example>
