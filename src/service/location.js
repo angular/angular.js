@@ -400,7 +400,7 @@ function locationGetterSetter(property, preprocess) {
  *
  * @requires $browser
  * @requires $sniffer
- * @requires $config
+ * @requires $locationConfig
  * @requires $document
  *
  * @description
@@ -419,14 +419,14 @@ function locationGetterSetter(property, preprocess) {
  *
  * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
-angularServiceInject('$location', function($browser, $sniffer, $config, $document) {
+angularServiceInject('$location', function($browser, $sniffer, $locationConfig, $document) {
   var scope = this, currentUrl,
       basePath = $browser.baseHref() || '/',
       pathPrefix = pathPrefixFromBase(basePath),
-      hashPrefix = $config.hashPrefix || '',
+      hashPrefix = $locationConfig.hashPrefix || '',
       initUrl = $browser.url();
 
-  if ($config.html5Mode) {
+  if ($locationConfig.html5Mode) {
     if ($sniffer.history) {
       currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
     } else {
