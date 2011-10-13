@@ -88,8 +88,8 @@ setter methods that allow you to get or change the current URL in the browser.
 
 ## $location service configuration
 
-To configure the `$location` service, you define the `$config` service which is an object with
-configuration properties:
+To configure the `$location` service, you define the `$locationConfig` service which is an object
+with configuration properties:
 
 - **html5Mode**: {boolean}<br />
   `true` - see Html5 mode<br />
@@ -102,7 +102,7 @@ configuration properties:
 
 ### Example configuration
 <pre>
-angular.service('$config', function() {
+angular.service('$locationConfig', function() {
   return {
     html5mode: true,
     hashPrefix: '!'
@@ -205,7 +205,7 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 ### Example
 
 <pre>
-angular.service('$config', function() {
+angular.service('$locationConfig', function() {
   return {
     html5Mode: false,
     hashPrefix: '!'
@@ -253,7 +253,7 @@ having to worry about whether the browser displaying your app supports the histo
 ### Example
 
 <pre>
-angular.service('$config', function() {
+angular.service('$locationConfig', function() {
   return {
     html5Mode: true,
     hashPrefix: '!'
@@ -456,7 +456,7 @@ ng:ext-link>external</a>
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
     var scope = angular.scope(null, {
-      $config: {html5Mode: true, hashPrefix: '!'},
+      $locationConfig: {html5Mode: true, hashPrefix: '!'},
       $browser: browsers[name],
       $document: root,
       $sniffer: {history: name == 'html5'}
