@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Developer Guide: Angular Services: Using $location
 @description
@@ -612,7 +611,7 @@ https://github.com/angular/angular.js/issues/404 issue}).  If you should require
 you will need to specify an extra property that has two watchers. For example:
 <pre>
 <!-- html -->
-<input type="text" name="locationPath" />
+<input type="text" ng:model="locationPath" />
 </pre>
 <pre>
 // js - controller

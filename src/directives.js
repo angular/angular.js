@@ -19,8 +19,6 @@
  * to `ng:bind`, but uses JSON key / value pairs to do so.
  * * {@link angular.directive.ng:bind-template ng:bind-template} - Replaces the text value of an
  * element with a specified template.
- * * {@link angular.directive.ng:change ng:change} - Executes an expression when the value of an
- * input widget changes.
  * * {@link angular.directive.ng:class ng:class} - Conditionally set a CSS class on an element.
  * * {@link angular.directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
  * conjunction with {@link angular.widget.@ng:repeat} to affect even rows in a collection.
@@ -44,7 +42,6 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:init
  *
@@ -63,7 +60,7 @@
     </div>
      </doc:source>
      <doc:scenario>
-       it('should check greeting', function(){
+       it('should check greeting', function() {
          expect(binding('greeting')).toBe('Hello');
          expect(binding('person')).toBe('World');
        });
@@ -77,7 +74,6 @@ angularDirective("ng:init", function(expression){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:controller
  *
@@ -117,10 +113,10 @@ angularDirective("ng:init", function(expression){
             {type:'email', value:'john.smith@example.org'} ];
         }
         SettingsController.prototype = {
-         greet: function(){
+         greet: function() {
            alert(this.name);
          },
-         addContact: function(){
+         addContact: function() {
            this.contacts.push({type:'email', value:'yourname@example.org'});
          },
          removeContact: function(contactToRemove) {
@@ -133,16 +129,16 @@ angularDirective("ng:init", function(expression){
         };
       </script>
       <div ng:controller="SettingsController">
-        Name: <input type="text" name="name"/>
+        Name: <input type="text" ng:model="name"/>
         [ <a href="" ng:click="greet()">greet</a> ]<br/>
         Contact:
         <ul>
           <li ng:repeat="contact in contacts">
-            <select name="contact.type">
+            <select ng:model="contact.type">
                <option>phone</option>
                <option>email</option>
             </select>
-            <input type="text" name="contact.value"/>
+            <input type="text" ng:model="contact.value"/>
             [ <a href="" ng:click="clearContact(contact)">clear</a>
             | <a href="" ng:click="removeContact(contact)">X</a> ]
           </li>
@@ -151,18 +147,18 @@ angularDirective("ng:init", function(expression){
       </div>
      </doc:source>
      <doc:scenario>
-       it('should check controller', function(){
+       it('should check controller', function() {
          expect(element('.doc-example-live div>:input').val()).toBe('John Smith');
-         expect(element('.doc-example-live li[ng\\:repeat-index="0"] input').val())
+         expect(element('.doc-example-live li:nth-child(1) input').val())
            .toBe('408 555 1212');
-         expect(element('.doc-example-live li[ng\\:repeat-index="1"] input').val())
+         expect(element('.doc-example-live li:nth-child(2) input').val())
            .toBe('john.smith@example.org');
 
          element('.doc-example-live li:first a:contains("clear")').click();
          expect(element('.doc-example-live li:first input').val()).toBe('');
 
          element('.doc-example-live li:last a:contains("add")').click();
-         expect(element('.doc-example-live li[ng\\:repeat-index="2"] input').val())
+         expect(element('.doc-example-live li:nth-child(3) input').val())
            .toBe('yourname@example.org');
        });
      </doc:scenario>
@@ -174,6 +170,7 @@ angularDirective("ng:controller", function(expression){
       getter(scope, expression, true) ||
       getter(window, expression, true);
     assertArgFn(Controller, expression);
+    inferInjectionArgs(Controller);
     return Controller;
   });
   return noop;
@@ -199,11 +196,18 @@ angularDirective("ng:controller", function(expression){
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
    <doc:example>
      <doc:source>
-       Enter name: <input type="text" name="name" value="Whirled"> <br>
-       Hello <span ng:bind="name"></span>!
+       <script>
+         function Ctrl() {
+           this.name = 'Whirled';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+         Enter name: <input type="text" ng:model="name"> <br/>
+         Hello <span ng:bind="name"></span>!
+       </div>
      </doc:source>
      <doc:scenario>
-       it('should check ng:bind', function(){
+       it('should check ng:bind', function() {
          expect(using('.doc-example-live').binding('name')).toBe('Whirled');
          using('.doc-example-live').input('name').enter('world');
          expect(using('.doc-example-live').binding('name')).toBe('world');
@@ -215,48 +219,44 @@ angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   var exprFn = parser(expression).statements();
   return function(element) {
-    var lastValue = noop, lastError = noop;
+    var lastValue = Number.NaN;
     this.$watch(function(scope) {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
-      var error, value, html, isHtml, isDomElement,
+      var value, html, isHtml, isDomElement,
           hadOwnElement = scope.hasOwnProperty('$element'),
           oldElement = scope.$element;
       // TODO(misko): get rid of $element https://github.com/angular/angular.js/issues/348
       scope.$element = element;
       try {
         value = exprFn(scope);
+        // If we are HTML than save the raw HTML data so that we don't recompute sanitization since
+        // it is expensive.
+        // TODO(misko): turn this into a more generic way to compute this
+        if ((isHtml = (value instanceof HTML)))
+          value = (html = value).html;
+        if (lastValue === value) return;
+        isDomElement = isElement(value);
+        if (!isHtml && !isDomElement && isObject(value)) {
+          value = toJson(value, true);
+        }
+        if (value != lastValue) {
+          lastValue = value;
+          if (isHtml) {
+            element.html(html.get());
+          } else if (isDomElement) {
+            element.html('');
+            element.append(value);
+          } else {
+            element.text(value == undefined ? '' : value);
+          }
+        }
       } catch (e) {
         scope.$service('$exceptionHandler')(e);
-        error = formatError(e);
       } finally {
         if (hadOwnElement) {
           scope.$element = oldElement;
         } else {
           delete scope.$element;
-        }
-      }
-      // If we are HTML, then save the raw HTML data so that we don't
-      // recompute sanitization since that is expensive.
-      // TODO: turn this into a more generic way to compute this
-      if ((isHtml = (value instanceof HTML)))
-        value = (html = value).html;
-      if (lastValue === value && lastError == error) return;
-      isDomElement = isElement(value);
-      if (!isHtml && !isDomElement && isObject(value)) {
-        value = toJson(value, true);
-      }
-      if (value != lastValue || error != lastError) {
-        lastValue = value;
-        lastError = error;
-        elementError(element, NG_EXCEPTION, error);
-        if (error) value = error;
-        if (isHtml) {
-          element.html(html.get());
-        } else if (isDomElement) {
-          element.html('');
-          element.append(value);
-        } else {
-          element.text(value == undefined ? '' : value);
         }
       }
     });
@@ -271,20 +271,8 @@ function compileBindTemplate(template){
     forEach(parseBindings(template), function(text){
       var exp = binding(text);
       bindings.push(exp
-        ? function(scope, element) {
-            var error, value;
-            try {
-              value = scope.$eval(exp);
-            } catch(e) {
-              scope.$service('$exceptionHandler')(e);
-              error = toJson(e);
-            }
-            elementError(element, NG_EXCEPTION, error);
-            return error ? error : value;
-          }
-        : function() {
-            return text;
-          });
+        ? function(scope, element) { return scope.$eval(exp); }
+        : function() { return text; });
     });
     bindTemplateCache[template] = fn = function(scope, element, prettyPrintJson) {
       var parts = [],
@@ -316,7 +304,6 @@ function compileBindTemplate(template){
 }
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:bind-template
  *
@@ -335,12 +322,20 @@ function compileBindTemplate(template){
  * Try it here: enter text in text box and watch the greeting change.
    <doc:example>
      <doc:source>
-      Salutation: <input type="text" name="salutation" value="Hello"><br/>
-      Name: <input type="text" name="name" value="World"><br/>
-      <pre ng:bind-template="{{salutation}} {{name}}!"></pre>
+       <script>
+         function Ctrl() {
+           this.salutation = 'Hello';
+           this.name = 'World';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+        Salutation: <input type="text" ng:model="salutation"><br/>
+        Name: <input type="text" ng:model="name"><br/>
+        <pre ng:bind-template="{{salutation}} {{name}}!"></pre>
+       </div>
      </doc:source>
      <doc:scenario>
-       it('should check ng:bind', function(){
+       it('should check ng:bind', function() {
          expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
            toBe('Hello World!');
          using('.doc-example-live').input('salutation').enter('Greetings');
@@ -366,13 +361,6 @@ angularDirective("ng:bind-template", function(expression, element){
   };
 });
 
-var REMOVE_ATTRIBUTES = {
-  'disabled':'disabled',
-  'readonly':'readOnly',
-  'checked':'checked',
-  'selected':'selected',
-  'multiple':'multiple'
-};
 /**
  * @ngdoc directive
  * @name angular.directive.ng:bind-attr
@@ -410,12 +398,19 @@ var REMOVE_ATTRIBUTES = {
  * Enter a search string in the Live Preview text box and then click "Google". The search executes instantly.
    <doc:example>
      <doc:source>
-      Google for:
-      <input type="text" name="query" value="AngularJS"/>
-      <a href="http://www.google.com/search?q={{query}}">Google</a>
+       <script>
+         function Ctrl() {
+           this.query = 'AngularJS';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+        Google for:
+        <input type="text" ng:model="query"/>
+        <a href="http://www.google.com/search?q={{query}}">Google</a>
+       </div>
      </doc:source>
      <doc:scenario>
-       it('should check ng:bind-attr', function(){
+       it('should check ng:bind-attr', function() {
          expect(using('.doc-example-live').element('a').attr('href')).
            toBe('http://www.google.com/search?q=AngularJS');
          using('.doc-example-live').input('query').enter('google');
@@ -431,22 +426,10 @@ angularDirective("ng:bind-attr", function(expression){
     this.$watch(function(scope){
       var values = scope.$eval(expression);
       for(var key in values) {
-        var value = compileBindTemplate(values[key])(scope, element),
-            specialName = REMOVE_ATTRIBUTES[lowercase(key)];
+        var value = compileBindTemplate(values[key])(scope, element);
         if (lastValue[key] !== value) {
           lastValue[key] = value;
-          if (specialName) {
-            if (toBoolean(value)) {
-              element.attr(specialName, specialName);
-              element.attr('ng-' + specialName, value);
-            } else {
-              element.removeAttr(specialName);
-              element.removeAttr('ng-' + specialName);
-            }
-            (element.data($$validate)||noop)();
-          } else {
-            element.attr(key, value);
-          }
+          element.attr(key, BOOLEAN_ATTR[lowercase(key)] ? toBoolean(value) : value);
         }
       }
     });
@@ -455,7 +438,6 @@ angularDirective("ng:bind-attr", function(expression){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:click
  *
@@ -476,7 +458,7 @@ angularDirective("ng:bind-attr", function(expression){
       count: {{count}}
      </doc:source>
      <doc:scenario>
-       it('should check ng:click', function(){
+       it('should check ng:click', function() {
          expect(binding('count')).toBe('0');
          element('.doc-example-live :button').click();
          expect(binding('count')).toBe('1');
@@ -504,7 +486,6 @@ angularDirective("ng:click", function(expression, element){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:submit
  *
@@ -520,15 +501,25 @@ angularDirective("ng:click", function(expression, element){
  * @example
    <doc:example>
      <doc:source>
-      <form ng:submit="list.push(text);text='';" ng:init="list=[]">
+      <script>
+        function Ctrl() {
+          this.list = [];
+          this.text = 'hello';
+          this.submit = function() {
+            this.list.push(this.text);
+            this.text = '';
+          };
+        }
+      </script>
+      <form ng:submit="submit()" ng:controller="Ctrl">
         Enter text and hit enter:
-        <input type="text" name="text" value="hello"/>
+        <input type="text" ng:model="text"/>
         <input type="submit" id="submit" value="Submit" />
+        <pre>list={{list}}</pre>
       </form>
-      <pre>list={{list}}</pre>
      </doc:source>
      <doc:scenario>
-       it('should check ng:submit', function(){
+       it('should check ng:submit', function() {
          expect(binding('list')).toBe('list=[]');
          element('.doc-example-live #submit').click();
          expect(binding('list')).toBe('list=["hello"]');
@@ -552,8 +543,8 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal)
-          element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+          if (oldVal) element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
     };
@@ -561,7 +552,6 @@ function ngClass(selector) {
 }
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class
  *
@@ -587,7 +577,7 @@ function ngClass(selector) {
       <span ng:class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class', function(){
+       it('should check ng:class', function() {
          expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-input-indicator-wait/);
 
@@ -604,10 +594,9 @@ function ngClass(selector) {
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class", ngClass(function(){return true;}));
+angularDirective("ng:class", ngClass(function() {return true;}));
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class-odd
  *
@@ -636,7 +625,7 @@ angularDirective("ng:class", ngClass(function(){return true;}));
         </ol>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class-odd and ng:class-even', function(){
+       it('should check ng:class-odd and ng:class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
          expect(element('.doc-example-live li:last span').prop('className')).
@@ -648,7 +637,6 @@ angularDirective("ng:class", ngClass(function(){return true;}));
 angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:class-even
  *
@@ -677,7 +665,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
         </ol>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class-odd and ng:class-even', function(){
+       it('should check ng:class-odd and ng:class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
          expect(element('.doc-example-live li:last span').prop('className')).
@@ -689,7 +677,6 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
 angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:show
  *
@@ -704,12 +691,12 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
  * @example
    <doc:example>
      <doc:source>
-        Click me: <input type="checkbox" name="checked"><br/>
+        Click me: <input type="checkbox" ng:model="checked"><br/>
         Show: <span ng:show="checked">I show up when your checkbox is checked.</span> <br/>
         Hide: <span ng:hide="checked">I hide when your checkbox is checked.</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:show / ng:hide', function(){
+       it('should check ng:show / ng:hide', function() {
          expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
          expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
 
@@ -730,7 +717,6 @@ angularDirective("ng:show", function(expression, element){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:hide
  *
@@ -745,12 +731,12 @@ angularDirective("ng:show", function(expression, element){
  * @example
    <doc:example>
      <doc:source>
-        Click me: <input type="checkbox" name="checked"><br/>
+        Click me: <input type="checkbox" ng:model="checked"><br/>
         Show: <span ng:show="checked">I show up when you checkbox is checked?</span> <br/>
         Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:show / ng:hide', function(){
+       it('should check ng:show / ng:hide', function() {
          expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
          expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
 
@@ -771,7 +757,6 @@ angularDirective("ng:hide", function(expression, element){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:style
  *
@@ -793,7 +778,7 @@ angularDirective("ng:hide", function(expression, element){
         <pre>myStyle={{myStyle}}</pre>
      </doc:source>
      <doc:scenario>
-       it('should check ng:style', function(){
+       it('should check ng:style', function() {
          expect(element('.doc-example-live span').css('color')).toBe('rgb(0, 0, 0)');
          element('.doc-example-live :button[value=set]').click();
          expect(element('.doc-example-live span').css('color')).toBe('rgb(255, 0, 0)');

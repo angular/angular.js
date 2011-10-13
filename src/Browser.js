@@ -3,7 +3,7 @@
 //////////////////////////////
 // Browser
 //////////////////////////////
-var XHR = window.XMLHttpRequest || function () {
+var XHR = window.XMLHttpRequest || function() {
   try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
   try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
@@ -56,7 +56,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
 
   /**
-   * Executes the `fn` function (supports currying) and decrements the `outstandingRequestCallbacks`
+   * Executes the `fn` function(supports currying) and decrements the `outstandingRequestCallbacks`
    * counter. If the counter reaches 0, all the `outstandingRequestCallbacks` are executed.
    */
   function completeOutstandingRequest(fn) {
@@ -77,7 +77,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   }
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#xhr
    * @methodOf angular.service.$browser
@@ -105,7 +104,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
         window[callbackId].data = data;
       };
 
-      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), null, function() {
+      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), function() {
         if (window[callbackId].data) {
           completeOutstandingRequest(callback, 200, window[callbackId].data);
         } else {
@@ -157,7 +156,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
       pollTimeout;
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addPollFn
    * @methodOf angular.service.$browser
@@ -198,7 +196,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   var lastBrowserUrl = location.href;
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#url
    * @methodOf angular.service.$browser
@@ -250,7 +247,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   }
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#onUrlChange
    * @methodOf angular.service.$browser
@@ -301,7 +297,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   var lastCookieString = '';
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#cookies
    * @methodOf angular.service.$browser
@@ -322,7 +317,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    *
    * @returns {Object} Hash of all cookies (if called without any parameter)
    */
-  self.cookies = function (name, value) {
+  self.cookies = function(name, value) {
     var cookieLength, cookieArray, cookie, i, keyValue, index;
 
     if (name) {
@@ -363,7 +358,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#defer
    * @methodOf angular.service.$browser
@@ -415,45 +409,8 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   //////////////////////////////////////////////////////////////
   // Misc API
   //////////////////////////////////////////////////////////////
-  var hoverListener = noop;
 
   /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#hover
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Set hover listener.
-   *
-   * @param {function(Object, boolean)} listener Function that will be called when a hover event
-   *    occurs.
-   */
-  self.hover = function(listener) { hoverListener = listener; };
-
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$browser#bind
-   * @methodOf angular.service.$browser
-   *
-   * @description
-   * Register hover function to real browser
-   */
-  self.bind = function() {
-    document.bind("mouseover", function(event){
-      hoverListener(jqLite(msie ? event.srcElement : event.target), true);
-      return true;
-    });
-    document.bind("mouseleave mouseout click dblclick keypress keyup", function(event){
-      hoverListener(jqLite(event.target), false);
-      return true;
-    });
-  };
-
-
-  /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addCss
    * @methodOf angular.service.$browser
@@ -472,30 +429,23 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
 
   /**
-   * @workInProgress
    * @ngdoc method
    * @name angular.service.$browser#addJs
    * @methodOf angular.service.$browser
    *
    * @param {string} url Url to js file
-   * @param {string=} domId Optional id for the script tag
    *
    * @description
    * Adds a script tag to the head.
    */
-  self.addJs = function(url, domId, done) {
+  self.addJs = function(url, done) {
     // we can't use jQuery/jqLite here because jQuery does crazy shit with script elements, e.g.:
     // - fetches local scripts via XHR and evals them
     // - adds and immediately removes script elements from the document
-    //
-    // We need addJs to be able to add angular-ie-compat.js which is very special and must remain
-    // part of the DOM so that the embedded images can reference it. jQuery's append implementation
-    // (v1.4.2) fubars it.
     var script = rawDocument.createElement('script');
 
     script.type = 'text/javascript';
     script.src = url;
-    if (domId) script.id = domId;
 
     if (msie) {
       script.onreadystatechange = function() {

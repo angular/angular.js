@@ -11,7 +11,7 @@
   <body ng:class="status" ng:init="mute={}" ng:watch="$anchor.user: tweets = fetchTweets($anchor.user)">
     <div class="addressbook box">
       <h1>Address Book</h1>
-      [ Filter: <input type="text" name="userFilter"/>]
+      [ Filter: <input type="text" ng:model="userFilter"/>]
       <ul>
         <li ng:repeat="user in users.$filter(userFilter).$orderBy('screen_name')" ng:class-even="'even'" ng:class-odd="'odd'">
           <a href="" ng:click="$anchor.user=user.screen_name"><img src="{{user.profile_image_url}}"/></a>
@@ -29,13 +29,13 @@
       <div ng:show="$anchor.edituser" ng:eval="user = users.$find({:$.screen_name == $anchor.edituser})">
         <div class="editor">
           <label>Username:</label>
-          <input type="text" name="user.screen_name" disabled="disabled"/>
+          <input type="text" ng:model="user.screen_name" disabled="disabled"/>
           <label>Name:</label>
-          <input type="text" name="user.name"/>
+          <input type="text" ng:model="user.name"/>
           <label>Image:</label>
-          <input type="text" name="user.profile_image_url"/>
+          <input type="text" ng:model="user.profile_image_url"/>
           <label>Notes:</label>
-          <textarea type="text" name="user.notes"></textarea>
+          <textarea type="text" ng:model="user.notes"></textarea>
 
           <input type="button" ng:click="$anchor.edituser=undefined" value="Close"/>
         </div>
@@ -57,7 +57,7 @@ tweets={{tweets}}
     </div>
     <div class="tweeter box">
       <h1>Tweets: {{$anchor.user}}</h1>
-      [ Filter: <input type="text" name="tweetFilter"/>
+      [ Filter: <input type="text" ng:model="tweetFilter"/>
         <span ng:show="$anchor.user">| <a href="#user=">&lt;&lt; All</a></span>
       ]
       <div class="loading">Loading...</div>

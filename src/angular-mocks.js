@@ -41,7 +41,6 @@
 
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.mock
  * @description
@@ -61,7 +60,6 @@ angular.mock = {};
 
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$browser
  *
@@ -146,7 +144,7 @@ function MockBrowser() {
     if (!expectation) {
       throw new Error("Unexpected request for method '" + method + "' and url '" + url + "'.");
     }
-    requests.push(function(){
+    requests.push(function() {
       angular.forEach(expectation.headers, function(value, key){
         if (headers[key] !== value) {
           throw new Error("Missing HTTP request header: " + key + ": " + value);
@@ -317,7 +315,7 @@ MockBrowser.prototype = {
   * @description
   * run all fns in pollFns
   */
-  poll: function poll(){
+  poll: function poll() {
     angular.forEach(this.pollFns, function(pollFn){
       pollFn();
     });
@@ -326,9 +324,6 @@ MockBrowser.prototype = {
   addPollFn: function(pollFn) {
     this.pollFns.push(pollFn);
     return pollFn;
-  },
-
-  hover: function(onHover) {
   },
 
   url: function(url, replace) {
@@ -359,16 +354,15 @@ MockBrowser.prototype = {
     }
   },
 
-  addJs: function(){}
+  addJs: function() {}
 };
 
-angular.service('$browser', function(){
+angular.service('$browser', function() {
   return new MockBrowser();
 });
 
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$exceptionHandler
  *
@@ -385,7 +379,6 @@ angular.service('$exceptionHandler', function() {
 
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.mock.service.$log
  *
@@ -400,10 +393,10 @@ angular.service('$log', MockLogFactory);
 
 function MockLogFactory() {
   var $log = {
-    log: function(){ $log.log.logs.push(arguments); },
-    warn: function(){ $log.warn.logs.push(arguments); },
-    info: function(){ $log.info.logs.push(arguments); },
-    error: function(){ $log.error.logs.push(arguments); }
+    log: function() { $log.log.logs.push(arguments); },
+    warn: function() { $log.warn.logs.push(arguments); },
+    info: function() { $log.info.logs.push(arguments); },
+    error: function() { $log.error.logs.push(arguments); }
   };
 
   $log.log.logs = [];

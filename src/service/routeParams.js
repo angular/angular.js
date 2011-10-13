@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$routeParams
  * @requires $route
@@ -26,6 +25,6 @@
  *  $routeParams ==> {chapterId:1, sectionId:2, search:'moby'}
  * </pre>
  */
-angularService('$routeParams', function(){
+angularService('$routeParams', function() {
   return {};
 });

@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$log
  * @requires $window
@@ -18,12 +17,13 @@
          <script>
            function LogCtrl($log) {
              this.$log = $log;
+             this.message = 'Hello World!';
            }
          </script>
          <div ng:controller="LogCtrl">
            <p>Reload this page with open console, enter text and hit the log button...</p>
            Message:
-           <input type="text" name="message" value="Hello World!"/>
+           <input type="text" ng:model="message"/>
            <button ng:click="$log.log(message)">log</button>
            <button ng:click="$log.warn(message)">warn</button>
            <button ng:click="$log.info(message)">info</button>
@@ -38,7 +38,6 @@ var $logFactory; //reference to be used only in tests
 angularServiceInject("$log", $logFactory = function($window){
   return {
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#log
      * @methodOf angular.service.$log
@@ -49,7 +48,6 @@ angularServiceInject("$log", $logFactory = function($window){
     log: consoleLog('log'),
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#warn
      * @methodOf angular.service.$log
@@ -60,7 +58,6 @@ angularServiceInject("$log", $logFactory = function($window){
     warn: consoleLog('warn'),
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#info
      * @methodOf angular.service.$log
@@ -71,7 +68,6 @@ angularServiceInject("$log", $logFactory = function($window){
     info: consoleLog('info'),
 
     /**
-     * @workInProgress
      * @ngdoc method
      * @name angular.service.$log#error
      * @methodOf angular.service.$log
@@ -86,7 +82,7 @@ angularServiceInject("$log", $logFactory = function($window){
     var console = $window.console || {};
     var logFn = console[type] || console.log || noop;
     if (logFn.apply) {
-      return function(){
+      return function() {
         var args = [];
         forEach(arguments, function(arg){
           args.push(formatError(arg));

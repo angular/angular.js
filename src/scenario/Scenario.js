@@ -96,7 +96,7 @@ angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
  *
  * @param {Object=} config Config options
  */
-angular.scenario.setUpAndRun = function (config) {
+angular.scenario.setUpAndRun = function(config) {
   var href = window.location.href;
   var body = _jQuery(document.body);
   var output = [];
@@ -247,7 +247,7 @@ function browserTrigger(element, type) {
         'radio':           'click',
         'select-one':      'change',
         'select-multiple': 'change'
-    }[element.type] || 'click';
+    }[lowercase(element.type)] || 'click';
   }
   if (lowercase(nodeName_(element)) == 'option') {
     element.parentNode.value = element.value;

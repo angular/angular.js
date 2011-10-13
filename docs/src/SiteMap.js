@@ -7,7 +7,7 @@ exports.SiteMap = SiteMap;
  * @returns {SiteMap}
  */
 function SiteMap(docs){
-  this.render = function(){
+  this.render = function() {
     var map = [];
     map.push('<?xml version="1.0" encoding="UTF-8"?>');
     map.push('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">');

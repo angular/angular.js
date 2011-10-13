@@ -10,13 +10,13 @@ describe('$cookies', function() {
     scope.$cookies = scope.$service('$cookies');
   });
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
 
   it('should provide access to existing cookies via object properties and keep them in sync',
-      function(){
+      function() {
     expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});
 
     // access internal cookie storage of the browser mock directly to simulate behavior of
@@ -55,7 +55,7 @@ describe('$cookies', function() {
     scope.$cookies.nonString = [1, 2, 3];
     scope.$cookies.nullVal = null;
     scope.$cookies.undefVal = undefined;
-    scope.$cookies.preexisting = function(){};
+    scope.$cookies.preexisting = function() {};
     scope.$digest();
     expect($browser.cookies()).toEqual({'preexisting': 'oldCookie'});
     expect(scope.$cookies).toEqual({'preexisting': 'oldCookie'});

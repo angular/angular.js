@@ -40,8 +40,6 @@ Template.prototype = {
 
   addLinkFn:function(linkingFn) {
     if (linkingFn) {
-      if (!linkingFn.$inject)
-        linkingFn.$inject = [];
       this.linkFns.push(linkingFn);
     }
   },
@@ -64,7 +62,6 @@ Template.prototype = {
 //////////////////////////////////
 
 /**
- * @workInProgress
  * @ngdoc function
  * @name angular.compile
  * @function
@@ -205,6 +202,7 @@ Compiler.prototype = {
       scope.$element = element;
       (cloneConnectFn||noop)(element, scope);
       template.link(element, scope);
+      if (!scope.$$phase) scope.$digest();
       return scope;
     };
   },

@@ -1,9 +1,9 @@
 'use strict';
 
-describe('compiler', function(){
+describe('compiler', function() {
   var compiler, markup, attrMarkup, directives, widgets, compile, log, scope;
 
-  beforeEach(function(){
+  beforeEach(function() {
     log = "";
     directives = {
       hello: function(expression, element){
@@ -34,13 +34,13 @@ describe('compiler', function(){
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
 
-  it('should not allow compilation of multiple roots', function(){
-    expect(function(){
+  it('should not allow compilation of multiple roots', function() {
+    expect(function() {
       compiler.compile('<div>A</div><span></span>');
     }).toThrow("Cannot compile multiple element roots: " + ie("<div>A</div><span></span>"));
     function ie(text) {
@@ -49,7 +49,7 @@ describe('compiler', function(){
   });
 
 
-  it('should recognize a directive', function(){
+  it('should recognize a directive', function() {
     var e = jqLite('<div directive="expr" ignore="me"></div>');
     directives.directive = function(expression, element){
       log += "found";
@@ -67,13 +67,13 @@ describe('compiler', function(){
   });
 
 
-  it('should recurse to children', function(){
+  it('should recurse to children', function() {
     scope = compile('<div><span hello="misko"/></div>');
     expect(log).toEqual("hello misko");
   });
 
 
-  it('should observe scope', function(){
+  it('should observe scope', function() {
     scope = compile('<span observe="name"></span>');
     expect(log).toEqual("");
     scope.$digest();
@@ -87,14 +87,14 @@ describe('compiler', function(){
   });
 
 
-  it('should prevent descend', function(){
-    directives.stop = function(){ this.descend(false); };
+  it('should prevent descend', function() {
+    directives.stop = function() { this.descend(false); };
     scope = compile('<span hello="misko" stop="true"><span hello="adam"/></span>');
     expect(log).toEqual("hello misko");
   });
 
 
-  it('should allow creation of templates', function(){
+  it('should allow creation of templates', function() {
     directives.duplicate = function(expr, element){
       element.replaceWith(document.createComment("marker"));
       element.removeAttr("duplicate");
@@ -107,19 +107,46 @@ describe('compiler', function(){
       };
     };
     scope = compile('before<span duplicate="expr">x</span>after');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+                'before<#comment></#comment>' +
+                '<span>x</span>' +
+                'after' +
+              '</div>');
     scope.value = 1;
     scope.$digest();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span>after</div>');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+          'before<#comment></#comment>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          'after' +
+        '</div>');
     scope.value = 2;
     scope.$digest();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span>after</div>');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+          'before<#comment></#comment>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          'after' +
+        '</div>');
     scope.value = 3;
     scope.$digest();
-    expect(sortedHtml(scope.$element)).toEqual('<div>before<#comment></#comment><span>x</span><span>x</span><span>x</span>after</div>');
+    expect(sortedHtml(scope.$element)).
+      toEqual('<div>' +
+          'before<#comment></#comment>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          '<span>x</span>' +
+          'after' +
+        '</div>');
   });
 
 
-  it('should process markup before directives', function(){
+  it('should process markup before directives', function() {
     markup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
@@ -133,7 +160,7 @@ describe('compiler', function(){
   });
 
 
-  it('should replace widgets', function(){
+  it('should replace widgets', function() {
     widgets['NG:BUTTON'] = function(element) {
       expect(element.hasClass('ng-widget')).toEqual(true);
       element.replaceWith('<div>button</div>');
@@ -147,7 +174,7 @@ describe('compiler', function(){
   });
 
 
-  it('should use the replaced element after calling widget', function(){
+  it('should use the replaced element after calling widget', function() {
     widgets['H1'] = function(element) {
       // HTML elements which are augmented by acting as widgets, should not be marked as so
       expect(element.hasClass('ng-widget')).toEqual(false);
@@ -166,7 +193,7 @@ describe('compiler', function(){
   });
 
 
-  it('should allow multiple markups per text element', function(){
+  it('should allow multiple markups per text element', function() {
     markup.push(function(text, textNode, parent){
       var index = text.indexOf('---');
       if (index > -1) {
@@ -190,7 +217,7 @@ describe('compiler', function(){
   });
 
 
-  it('should add class for namespace elements', function(){
+  it('should add class for namespace elements', function() {
     scope = compile('<ng:space>abc</ng:space>');
     var space = jqLite(scope.$element[0].firstChild);
     expect(space.hasClass('ng-space')).toEqual(true);

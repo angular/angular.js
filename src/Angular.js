@@ -14,7 +14,7 @@ if (typeof document.getAttribute == $undefined)
  * @param {string} string String to be converted to lowercase.
  * @returns {string} Lowercased string.
  */
-var lowercase = function (string){ return isString(string) ? string.toLowerCase() : string; };
+var lowercase = function(string){ return isString(string) ? string.toLowerCase() : string; };
 
 
 /**
@@ -26,17 +26,17 @@ var lowercase = function (string){ return isString(string) ? string.toLowerCase(
  * @param {string} string String to be converted to uppercase.
  * @returns {string} Uppercased string.
  */
-var uppercase = function (string){ return isString(string) ? string.toUpperCase() : string; };
+var uppercase = function(string){ return isString(string) ? string.toUpperCase() : string; };
 
 
-var manualLowercase = function (s) {
+var manualLowercase = function(s) {
   return isString(s)
-      ? s.replace(/[A-Z]/g, function (ch) {return fromCharCode(ch.charCodeAt(0) | 32); })
+      ? s.replace(/[A-Z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) | 32); })
       : s;
 };
-var manualUppercase = function (s) {
+var manualUppercase = function(s) {
   return isString(s)
-      ? s.replace(/[a-z]/g, function (ch) {return fromCharCode(ch.charCodeAt(0) & ~32); })
+      ? s.replace(/[a-z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) & ~32); })
       : s;
 };
 
@@ -55,7 +55,6 @@ function fromCharCode(code) { return String.fromCharCode(code); }
 var _undefined        = undefined,
     _null             = null,
     $$scope           = '$scope',
-    $$validate        = '$validate',
     $angular          = 'angular',
     $array            = 'array',
     $boolean          = 'boolean',
@@ -71,8 +70,6 @@ var _undefined        = undefined,
     $value            = 'value',
     $selected         = 'selected',
     $undefined        = 'undefined',
-    NG_EXCEPTION      = 'ng-exception',
-    NG_VALIDATION_ERROR = 'ng-validation-error',
     NOOP              = 'noop',
     Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
@@ -95,12 +92,10 @@ var _undefined        = undefined,
     angularDirective  = extensionMap(angular, 'directive'),
     /** @name angular.widget */
     angularWidget     = extensionMap(angular, 'widget', lowercase),
-    /** @name angular.validator */
-    angularValidator  = extensionMap(angular, 'validator'),
-    /** @name angular.fileter */
+    /** @name angular.filter */
     angularFilter     = extensionMap(angular, 'filter'),
-    /** @name angular.formatter */
-    angularFormatter  = extensionMap(angular, 'formatter'),
+    /** @name angular.service */
+    angularInputType  = extensionMap(angular, 'inputType', lowercase),
     /** @name angular.service */
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
@@ -158,10 +153,18 @@ function forEach(obj, iterator, context) {
   return obj;
 }
 
-function forEachSorted(obj, iterator, context) {
+function sortedKeys(obj) {
   var keys = [];
-  for (var key in obj) keys.push(key);
-  keys.sort();
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      keys.push(key);
+    }
+  }
+  return keys.sort();
+}
+
+function forEachSorted(obj, iterator, context) {
+  var keys = sortedKeys(obj)
   for ( var i = 0; i < keys.length; i++) {
     iterator.call(context, obj[keys[i]], keys[i]);
   }
@@ -182,7 +185,6 @@ function formatError(arg) {
 }
 
 /**
- * @description
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
  * characters such as '012ABC'. The reason why we are not using simply a number counter is that
  * the number string gets longer over time, and it can also overflow, where as the the nextId
@@ -237,7 +239,7 @@ function extend(dst) {
 
 
 function inherit(parent, extra) {
-  return extend(new (extend(function(){}, {prototype:parent}))(), extra);
+  return extend(new (extend(function() {}, {prototype:parent}))(), extra);
 }
 
 
@@ -277,11 +279,11 @@ function noop() {}
 function identity($) {return $;}
 
 
-function valueFn(value) {return function(){ return value; };}
+function valueFn(value) {return function() { return value; };}
 
 function extensionMap(angular, name, transform) {
   var extPoint;
-  return angular[name] || (extPoint = angular[name] = function (name, fn, prop){
+  return angular[name] || (extPoint = angular[name] = function(name, fn, prop){
     name = (transform || identity)(name);
     if (isDefined(fn)) {
       extPoint[name] = extend(fn, prop || {});
@@ -601,20 +603,33 @@ function isLeafNode (node) {
  * @example
  * <doc:example>
  *  <doc:source>
-     Salutation: <input type="text" name="master.salutation" value="Hello" /><br/>
-     Name: <input type="text" name="master.name" value="world"/><br/>
-     <button ng:click="form = master.$copy()">copy</button>
-     <hr/>
+     <script>
+       function Ctrl() {
+         this.master = {
+           salutation: 'Hello',
+           name: 'world'
+         };
+         this.copy = function() {
+           this.form = angular.copy(this.master);
+         }
+       }
+     </script>
+     <div ng:controller="Ctrl">
+       Salutation: <input type="text" ng:model="master.salutation" ><br/>
+       Name: <input type="text" ng:model="master.name"><br/>
+       <button ng:click="copy()">copy</button>
+       <hr/>
 
-     The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
+       The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
 
-     <pre>master={{master}}</pre>
-     <pre>form={{form}}</pre>
+       <pre>master={{master}}</pre>
+       <pre>form={{form}}</pre>
+     </div>
  *  </doc:source>
  *  <doc:scenario>
    it('should print that initialy the form object is NOT equal to master', function() {
-     expect(element('.doc-example-live input[name="master.salutation"]').val()).toBe('Hello');
-     expect(element('.doc-example-live input[name="master.name"]').val()).toBe('world');
+     expect(element('.doc-example-live input[ng\\:model="master.salutation"]').val()).toBe('Hello');
+     expect(element('.doc-example-live input[ng\\:model="master.name"]').val()).toBe('world');
      expect(element('.doc-example-live span').css('display')).toBe('inline');
    });
 
@@ -693,20 +708,31 @@ function copy(source, destination){
  * @example
  * <doc:example>
  *  <doc:source>
-     Salutation: <input type="text" name="greeting.salutation" value="Hello" /><br/>
-     Name: <input type="text" name="greeting.name" value="world"/><br/>
-     <hr/>
+     <script>
+       function Ctrl() {
+         this.master = {
+           salutation: 'Hello',
+           name: 'world'
+         };
+         this.greeting = angular.copy(this.master);
+       }
+     </script>
+     <div ng:controller="Ctrl">
+       Salutation: <input type="text" ng:model="greeting.salutation"><br/>
+       Name: <input type="text" ng:model="greeting.name"><br/>
+       <hr/>
 
-     The <code>greeting</code> object is
-     <span ng:hide="greeting.$equals({salutation:'Hello', name:'world'})">NOT</span> equal to
-     <code>{salutation:'Hello', name:'world'}</code>.
+       The <code>greeting</code> object is
+       <span ng:hide="greeting.$equals(master)">NOT</span> equal to
+       <code>{salutation:'Hello', name:'world'}</code>.
 
-     <pre>greeting={{greeting}}</pre>
+       <pre>greeting={{greeting}}</pre>
+     </div>
  *  </doc:source>
  *  <doc:scenario>
      it('should print that initialy greeting is equal to the hardcoded value object', function() {
-       expect(element('.doc-example-live input[name="greeting.salutation"]').val()).toBe('Hello');
-       expect(element('.doc-example-live input[name="greeting.name"]').val()).toBe('world');
+       expect(element('.doc-example-live input[ng\\:model="greeting.salutation"]').val()).toBe('Hello');
+       expect(element('.doc-example-live input[ng\\:model="greeting.name"]').val()).toBe('world');
        expect(element('.doc-example-live span').css('display')).toBe('none');
      });
 
@@ -755,36 +781,6 @@ function setHtml(node, html) {
     }
   } else {
     node.innerHTML = html;
-  }
-}
-
-function isRenderableElement(element) {
-  var name = element && element[0] && element[0].nodeName;
-  return name && name.charAt(0) != '#' &&
-    !includes(['TR', 'COL', 'COLGROUP', 'TBODY', 'THEAD', 'TFOOT'], name);
-}
-
-function elementError(element, type, error) {
-  var parent;
-
-  while (!isRenderableElement(element)) {
-    parent = element.parent();
-    if (parent.length) {
-      element = element.parent();
-    } else {
-      return;
-    }
-  }
-
-  if (element[0]['$NG_ERROR'] !== error) {
-    element[0]['$NG_ERROR'] = error;
-    if (error) {
-      element.addClass(type);
-      element.attr(type, error.message || error);
-    } else {
-      element.removeClass(type);
-      element.removeAttr(type);
-    }
   }
 }
 
@@ -947,24 +943,19 @@ function angularInit(config, document){
 
     if (config.css)
       $browser.addCss(config.base_url + config.css);
-    else if(msie<8)
-      $browser.addJs(config.ie_compat, config.ie_compat_id);
     scope.$apply();
   }
 }
 
-function angularJsConfig(document, config) {
+function angularJsConfig(document) {
   bindJQuery();
   var scripts = document.getElementsByTagName("script"),
+      config = {},
       match;
-  config = extend({
-    ie_compat_id: 'ng-ie-compat'
-  }, config);
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(rngScript);
     if (match) {
       config.base_url = match[1];
-      config.ie_compat = match[1] + 'angular-ie-compat' + (match[2] || '') + '.js';
       extend(config, parseKeyValue(match[6]));
       eachAttribute(jqLite(scripts[j]), function(value, name){
         if (/^ng:/.exec(name)) {
@@ -978,15 +969,19 @@ function angularJsConfig(document, config) {
   return config;
 }
 
-function bindJQuery(){
+function bindJQuery() {
   // bind to jQuery if present;
   jQuery = window.jQuery;
   // reset to jQuery or default to us.
   if (jQuery) {
     jqLite = jQuery;
     extend(jQuery.fn, {
-      scope: JQLitePrototype.scope
+      scope: JQLitePrototype.scope,
+      inheritedData: JQLitePrototype.inheritedData
     });
+    JQLitePatchJQueryRemove('remove', true);
+    JQLitePatchJQueryRemove('empty');
+    JQLitePatchJQueryRemove('html');
   } else {
     jqLite = jqLiteWrap;
   }
@@ -1002,11 +997,13 @@ function assertArg(arg, name, reason) {
         (reason || "required"));
     throw error;
   }
+  return arg;
 }
 
 function assertArgFn(arg, name) {
-  assertArg(isFunction(arg), name, 'not a function, got  ' +
+  assertArg(isFunction(arg), name, 'not a function, got ' +
       (typeof arg == 'object' ? arg.constructor.name : typeof arg));
+  return arg;
 }
 
 

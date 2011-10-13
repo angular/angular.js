@@ -10,7 +10,7 @@ for(var key in jasmine) {
 }
 
 //Patch Jasmine for proper stack traces
-jasmine.Spec.prototype.fail = function (e) {
+jasmine.Spec.prototype.fail = function(e) {
   var expectationResult = new jasmine.ExpectationResult({
     passed: false,
     message: e ? jasmine.util.formatException(e) : 'Exception'

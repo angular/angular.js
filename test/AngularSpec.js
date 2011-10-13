@@ -1,8 +1,8 @@
 'use strict';
 
-describe('angular', function(){
-  describe('case', function(){
-    it('should change case', function(){
+describe('angular', function() {
+  describe('case', function() {
+    it('should change case', function() {
       expect(lowercase('ABC90')).toEqual('abc90');
       expect(manualLowercase('ABC90')).toEqual('abc90');
       expect(uppercase('abc90')).toEqual('ABC90');
@@ -10,22 +10,22 @@ describe('angular', function(){
     });
   });
 
-  describe("copy", function(){
-    it("should return same object", function (){
+  describe("copy", function() {
+    it("should return same object", function () {
       var obj = {};
       var arr = [];
       expect(copy({}, obj)).toBe(obj);
       expect(copy([], arr)).toBe(arr);
     });
 
-    it("should copy Date", function(){
+    it("should copy Date", function() {
       var date = new Date(123);
       expect(copy(date) instanceof Date).toBeTruthy();
       expect(copy(date).getTime()).toEqual(123);
       expect(copy(date) === date).toBeFalsy();
     });
 
-    it("should copy array", function(){
+    it("should copy array", function() {
       var src = [1, {name:"value"}];
       var dst = [{key:"v"}];
       expect(copy(src, dst)).toBe(dst);
@@ -41,7 +41,7 @@ describe('angular', function(){
       expect(dst).toEqual([]);
     });
 
-    it("should copy object", function(){
+    it("should copy object", function() {
       var src = {a:{name:"value"}};
       var dst = {b:{key:"v"}};
       expect(copy(src, dst)).toBe(dst);
@@ -50,7 +50,7 @@ describe('angular', function(){
       expect(dst.a).not.toBe(src.a);
     });
 
-    it("should copy primitives", function(){
+    it("should copy primitives", function() {
       expect(copy(null)).toEqual(null);
       expect(copy('')).toBe('');
       expect(copy('lala')).toBe('lala');
@@ -59,8 +59,8 @@ describe('angular', function(){
     });
   });
 
-  describe('equals', function(){
-    it('should return true if same object', function(){
+  describe('equals', function() {
+    it('should return true if same object', function() {
       var o = {};
       expect(equals(o, o)).toEqual(true);
       expect(equals(o, {})).toEqual(true);
@@ -68,7 +68,7 @@ describe('angular', function(){
       expect(equals(1, '2')).toEqual(false);
     });
 
-    it('should recurse into object', function(){
+    it('should recurse into object', function() {
       expect(equals({}, {})).toEqual(true);
       expect(equals({name:'misko'}, {name:'misko'})).toEqual(true);
       expect(equals({name:'misko', age:1}, {name:'misko'})).toEqual(false);
@@ -79,13 +79,13 @@ describe('angular', function(){
       expect(equals(['misko'], ['misko', 'adam'])).toEqual(false);
     });
 
-    it('should ignore $ member variables', function(){
+    it('should ignore $ member variables', function() {
       expect(equals({name:'misko', $id:1}, {name:'misko', $id:2})).toEqual(true);
       expect(equals({name:'misko'}, {name:'misko', $id:2})).toEqual(true);
       expect(equals({name:'misko', $id:1}, {name:'misko'})).toEqual(true);
     });
 
-    it('should ignore functions', function(){
+    it('should ignore functions', function() {
       expect(equals({func: function() {}}, {bar: function() {}})).toEqual(true);
     });
 
@@ -111,7 +111,6 @@ describe('angular', function(){
       expect(equals(undefined, undefined)).toBe(true);
     });
   });
-
 
   describe('size', function() {
     it('should return the number of items in an array', function() {
@@ -167,6 +166,12 @@ describe('angular', function(){
 
     it('should parse true values into flags', function() {
       expect(toKeyValue({flag1: true, key: 'value', flag2: true})).toEqual('flag1&key=value&flag2');
+    });
+  });
+
+  describe('sortedKeys', function() {
+    it('should collect keys from object', function() {
+      expect(sortedKeys({c:0, b:0, a:0})).toEqual(['a', 'b', 'c']);
     });
   });
 
@@ -322,9 +327,7 @@ describe('angular', function(){
       }
       };
 
-      expect(angularJsConfig(doc)).toEqual({base_url: '',
-        ie_compat: 'angular-ie-compat.js',
-        ie_compat_id: 'ng-ie-compat'});
+      expect(angularJsConfig(doc)).toEqual({base_url: ''});
     });
 
 
@@ -335,16 +338,12 @@ describe('angular', function(){
         return [{nodeName: 'SCRIPT',
           src: 'angularjs/angular.js',
           attributes: [{name: 'ng:autobind', value:'elementIdToCompile'},
-                       {name: 'ng:css', value: 'css/my_custom_angular.css'},
-                       {name: 'ng:ie-compat', value: 'myjs/angular-ie-compat.js'},
-                       {name: 'ng:ie-compat-id', value: 'ngcompat'}] }];
+                       {name: 'ng:css', value: 'css/my_custom_angular.css'}] }];
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
         autobind: 'elementIdToCompile',
-        css: 'css/my_custom_angular.css',
-        ie_compat: 'myjs/angular-ie-compat.js',
-        ie_compat_id: 'ngcompat'});
+        css: 'css/my_custom_angular.css'});
     });
 
 
@@ -357,9 +356,7 @@ describe('angular', function(){
       }};
 
       expect(angularJsConfig(doc)).toEqual({autobind: true,
-                                            base_url: 'angularjs/',
-                                            ie_compat_id: 'ng-ie-compat',
-                                            ie_compat: 'angularjs/angular-ie-compat.js'});
+                                            base_url: 'angularjs/'});
     });
 
 
@@ -371,9 +368,7 @@ describe('angular', function(){
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: true,
-        ie_compat: 'angularjs/angular-ie-compat.js',
-        ie_compat_id: 'ng-ie-compat'});
+        autobind: true});
     });
 
 
@@ -385,9 +380,7 @@ describe('angular', function(){
       }};
 
       expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: 'foo',
-        ie_compat: 'angularjs/angular-ie-compat.js',
-        ie_compat_id: 'ng-ie-compat'});
+        autobind: 'foo'});
     });
 
 
@@ -398,9 +391,7 @@ describe('angular', function(){
           src: 'js/angular-0.9.0.js'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'js/',
-        ie_compat: 'js/angular-ie-compat-0.9.0.js',
-        ie_compat_id: 'ng-ie-compat'});
+      expect(angularJsConfig(doc)).toEqual({base_url: 'js/'});
     });
 
 
@@ -411,9 +402,7 @@ describe('angular', function(){
           src: 'js/angular-0.9.0-cba23f00.min.js'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'js/',
-        ie_compat: 'js/angular-ie-compat-0.9.0-cba23f00.js',
-        ie_compat_id: 'ng-ie-compat'});
+      expect(angularJsConfig(doc)).toEqual({base_url: 'js/'});
     });
   });
 
@@ -514,12 +503,6 @@ describe('angular', function(){
       expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
     });
 
-    it('should inject infered dependencies when $inject is missing', function() {
-      angular.service('svc1', function() { return 'svc1'; });
-      angular.service('svc2', function(svc1) { return 'svc2-' + svc1; });
-      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
-    });
-
     it('should eagerly instantiate a service if $eager is true', function() {
       var log = [];
       angular.service('svc1', function() { log.push('svc1'); }, {$eager: true});
@@ -541,14 +524,14 @@ describe('angular', function(){
     });
   });
 
-  describe('compile', function(){
+  describe('compile', function() {
     var scope, template;
 
-    afterEach(function(){
+    afterEach(function() {
       dealoc(scope);
     });
 
-    it('should link to existing node and create scope', function(){
+    it('should link to existing node and create scope', function() {
       template = angular.element('<div>{{greeting = "hello world"}}</div>');
       scope = angular.compile(template)();
       scope.$digest();
@@ -556,7 +539,7 @@ describe('angular', function(){
       expect(scope.greeting).toEqual('hello world');
     });
 
-    it('should link to existing node and given scope', function(){
+    it('should link to existing node and given scope', function() {
       scope = angular.scope();
       template = angular.element('<div>{{greeting = "hello world"}}</div>');
       angular.compile(template)(scope);
@@ -565,7 +548,7 @@ describe('angular', function(){
       expect(scope).toEqual(scope);
     });
 
-    it('should link to new node and given scope', function(){
+    it('should link to new node and given scope', function() {
       scope = angular.scope();
       template = jqLite('<div>{{greeting = "hello world"}}</div>');
 
@@ -583,7 +566,7 @@ describe('angular', function(){
       expect(scope.greeting).toEqual('hello world');
     });
 
-    it('should link to cloned node and create scope', function(){
+    it('should link to cloned node and create scope', function() {
       scope = angular.scope();
       template = jqLite('<div>{{greeting = "hello world"}}</div>');
       angular.compile(template)(scope, noop).$digest();
@@ -615,8 +598,8 @@ describe('angular', function(){
   });
 
 
-  describe('nextUid()', function(){
-    it('should return new id per call', function(){
+  describe('nextUid()', function() {
+    it('should return new id per call', function() {
       var seen = {};
       var count = 100;
 

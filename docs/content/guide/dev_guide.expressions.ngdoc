@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Developer Guide: Understanding Angular Expressions
 @description
@@ -41,7 +40,7 @@ the `Scope:$eval()` method.
  1+2={{1+2}}
 </doc:source>
 <doc:scenario>
- it('should calculate expression in binding', function(){
+ it('should calculate expression in binding', function() {
    expect(binding('1+2')).toEqual('3');
  });
 </doc:scenario>
@@ -51,9 +50,15 @@ You can try evaluating different expressions here:
 
 <doc:example>
 <doc:source>
- <div ng:init="exprs=[]" class="expressions">
+ <script>
+   function Cntl2() {
+     this.exprs = [];
+     this.expr = '3*10|currency';
+   }
+ </script>
+ <div ng:controller="Cntl2" class="expressions">
    Expression:
-   <input type='text' name="expr" value="3*10|currency" size="80"/>
+   <input type='text' ng:model="expr" size="80"/>
    <button ng:click="exprs.$add(expr)">Evaluate</button>
    <ul>
     <li ng:repeat="expr in exprs">
@@ -64,7 +69,7 @@ You can try evaluating different expressions here:
  </div>
 </doc:source>
 <doc:scenario>
- it('should allow user expression testing', function(){
+ it('should allow user expression testing', function() {
     element('.expressions :button').click();
     var li = using('.expressions ul').repeater('li');
     expect(li.count()).toBe(1);
@@ -84,13 +89,22 @@ the global state (a common source of subtle bugs).
 
 <doc:example>
 <doc:source>
- <div class="example2" ng:init="$window = $service('$window')">
-   Name: <input name="name" type="text" value="World"/>
-   <button ng:click="($window.mockWindow || $window).alert('Hello ' + name)">Greet</button>
+ <script>
+   function Cntl1($window){
+     this.name = 'World';
+
+     this.greet = function() {
+       ($window.mockWindow || $window).alert('Hello ' + this.name);
+     }
+   }
+ </script>
+ <div class="example2" ng:controller="Cntl1">
+   Name: <input ng:model="name" type="text"/>
+   <button ng:click="greet()">Greet</button>
  </div>
 </doc:source>
 <doc:scenario>
- it('should calculate expression in binding', function(){
+ it('should calculate expression in binding', function() {
    var alertText;
    this.addFutureAction('set mock', function($window, $document, done) {
      $window.mockWindow = {
@@ -158,7 +172,7 @@ Extensions: You can further extend the expression vocabulary by adding new metho
    {name:'Mike', phone:'555-4321'},
    {name:'Adam', phone:'555-5678'},
    {name:'Julie', phone:'555-8765'}]"></div>
- Search: <input name="searchText"/>
+ Search: <input ng:model="searchText"/>
  <table class="example3">
    <tr><th>Name</th><th>Phone</th><tr>
    <tr ng:repeat="friend in friends.$filter(searchText)">
@@ -168,7 +182,7 @@ Extensions: You can further extend the expression vocabulary by adding new metho
  </table>
 </doc:source>
 <doc:scenario>
- it('should filter the list', function(){
+ it('should filter the list', function() {
     var tr = using('table.example3').repeater('tr.ng-attr-widget');
     expect(tr.count()).toBe(5);
     input('searchText').enter('a');

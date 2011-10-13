@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$route
  * @requires $location
@@ -65,7 +64,6 @@
  */
 angularServiceInject('$route', function($location, $routeParams) {
   /**
-   * @workInProgress
    * @ngdoc event
    * @name angular.service.$route#$beforeRouteChange
    * @eventOf angular.service.$route
@@ -84,7 +82,6 @@ angularServiceInject('$route', function($location, $routeParams) {
    */
 
   /**
-   * @workInProgress
    * @ngdoc event
    * @name angular.service.$route#$afterRouteChange
    * @eventOf angular.service.$route
@@ -103,7 +100,6 @@ angularServiceInject('$route', function($location, $routeParams) {
    */
 
   /**
-   * @workInProgress
    * @ngdoc event
    * @name angular.service.$route#$routeUpdate
    * @eventOf angular.service.$route
@@ -125,7 +121,6 @@ angularServiceInject('$route', function($location, $routeParams) {
         routes: routes,
 
         /**
-         * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#parent
          * @methodOf angular.service.$route
@@ -142,7 +137,6 @@ angularServiceInject('$route', function($location, $routeParams) {
         },
 
         /**
-         * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#when
          * @methodOf angular.service.$route
@@ -189,7 +183,7 @@ angularServiceInject('$route', function($location, $routeParams) {
          * @description
          * Adds a new route definition to the `$route` service.
          */
-        when: function (path, route) {
+        when: function(path, route) {
           var routeDef = routes[path];
           if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
           if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
@@ -198,7 +192,6 @@ angularServiceInject('$route', function($location, $routeParams) {
         },
 
         /**
-         * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#otherwise
          * @methodOf angular.service.$route
@@ -214,7 +207,6 @@ angularServiceInject('$route', function($location, $routeParams) {
         },
 
         /**
-         * @workInProgress
          * @ngdoc method
          * @name angular.service.$route#reload
          * @methodOf angular.service.$route
@@ -269,7 +261,8 @@ angularServiceInject('$route', function($location, $routeParams) {
 
   function updateRoute() {
     var next = parseRoute(),
-        last = $route.current;
+        last = $route.current,
+        Controller;
 
     if (next && last && next.$route === last.$route
         && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
@@ -296,7 +289,8 @@ angularServiceInject('$route', function($location, $routeParams) {
           }
         } else {
           copy(next.params, $routeParams);
-          next.scope = parentScope.$new(next.controller);
+          (Controller = next.controller) && inferInjectionArgs(Controller);
+          next.scope = parentScope.$new(Controller);
         }
       }
       rootScope.$broadcast('$afterRouteChange', next, last);

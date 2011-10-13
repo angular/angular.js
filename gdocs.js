@@ -36,7 +36,7 @@ if (flag == '--login') {
   help();
 }
 
-function help(){
+function help() {
   console.log('Synopsys');
   console.log('gdocs.js --login <username>');
   console.log('gdocs.js --fetch [<docs collection>]');
@@ -141,7 +141,7 @@ function login(username, password){
     );
 }
 
-function getAuthToken(){
+function getAuthToken() {
   var pwdFile = 'tmp/gdocs.auth';
   try {
     fs.statSync(pwdFile);
@@ -164,10 +164,10 @@ function request(method, url, options, response) {
       case 200:
         var data = [];
         res.setEncoding('utf8');
-        res.on('end', function (){ response(data.join('')); });
-        res.on('close', function (){ response(data.join('')); });  // https
+        res.on('end', function () { response(data.join('')); });
+        res.on('close', function () { response(data.join('')); });  // https
         res.on('data', function (chunk) { data.push(chunk); });
-        res.on('error', function (e){ console.log(e); });
+        res.on('error', function (e) { console.log(e); });
         break;
       case 401:
         console.log('Eror: Login credentials expired! Please login.');
@@ -190,7 +190,7 @@ function request(method, url, options, response) {
   }
   if (options.data)
     request.write(encodeData(options.data));
-  request.on('end', function(){
+  request.on('end', function() {
     console.log('end');
   });
   request.end();
@@ -212,7 +212,7 @@ function askPassword(callback) {
 
   console.log('Enter your password:');
   var password = "";
-  stdin.on("data", function (c) {
+  stdin.on("data", function(c) {
     c = c + "";
     switch (c) {
       case "\n": case "\r": case "\u0004":
@@ -236,7 +236,7 @@ function reflow(text, margin) {
   text.split(/\n/).forEach(function(line) {
     var col = 0;
     var reflowLine = '';
-    function flush(){
+    function flush() {
       reflowLine = reflowLine.replace(/\s*$/, '');
       lines.push(reflowLine);
       reflowLine = '';

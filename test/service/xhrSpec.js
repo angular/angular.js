@@ -3,7 +3,7 @@
 describe('$xhr', function() {
   var scope, $browser, $browserXhr, $log, $xhr, $xhrErr, log;
 
-  beforeEach(function(){
+  beforeEach(function() {
     var scope = angular.scope(angular.service, {
         '$xhr.error': $xhrErr = jasmine.createSpy('xhr.error')});
     $log = scope.$service('$log');
@@ -14,7 +14,7 @@ describe('$xhr', function() {
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
@@ -24,7 +24,7 @@ describe('$xhr', function() {
   }
 
 
-  it('should forward the request to $browser and decode JSON', function(){
+  it('should forward the request to $browser and decode JSON', function() {
     $browserXhr.expectGET('/reqGET').respond('first');
     $browserXhr.expectGET('/reqGETjson').respond('["second"]');
     $browserXhr.expectPOST('/reqPOST', {post:'data'}).respond('third');
@@ -41,7 +41,7 @@ describe('$xhr', function() {
         '{code=200; response="first"}');
   });
 
-  it('should allow all 2xx requests', function(){
+  it('should allow all 2xx requests', function() {
     $browserXhr.expectGET('/req1').respond(200, '1');
     $xhr('GET', '/req1', null, callback);
     $browserXhr.flush();
@@ -56,9 +56,9 @@ describe('$xhr', function() {
   });
 
 
-  it('should handle exceptions in callback', function(){
+  it('should handle exceptions in callback', function() {
     $browserXhr.expectGET('/reqGET').respond('first');
-    $xhr('GET', '/reqGET', null, function(){ throw "MyException"; });
+    $xhr('GET', '/reqGET', null, function() { throw "MyException"; });
     $browserXhr.flush();
 
     expect($log.error.logs.shift()).toContain('MyException');
@@ -140,7 +140,7 @@ describe('$xhr', function() {
 
     describe('default headers', function() {
 
-      it('should set default headers for GET request', function(){
+      it('should set default headers for GET request', function() {
         var callback = jasmine.createSpy('callback');
 
         $browserXhr.expectGET('URL', '', {'Accept': 'application/json, text/plain, */*',
@@ -153,7 +153,7 @@ describe('$xhr', function() {
       });
 
 
-      it('should set default headers for POST request', function(){
+      it('should set default headers for POST request', function() {
         var callback = jasmine.createSpy('callback');
 
         $browserXhr.expectPOST('URL', 'xx', {'Accept': 'application/json, text/plain, */*',
@@ -167,7 +167,7 @@ describe('$xhr', function() {
       });
 
 
-      it('should set default headers for custom HTTP method', function(){
+      it('should set default headers for custom HTTP method', function() {
         var callback = jasmine.createSpy('callback');
 
         $browserXhr.expect('FOO', 'URL', '', {'Accept': 'application/json, text/plain, */*',
@@ -260,8 +260,8 @@ describe('$xhr', function() {
     });
   });
 
-  describe('xsrf', function(){
-    it('should copy the XSRF cookie into a XSRF Header', function(){
+  describe('xsrf', function() {
+    it('should copy the XSRF cookie into a XSRF Header', function() {
       var code, response;
       $browserXhr
         .expectPOST('URL', 'DATA', {'X-XSRF-TOKEN': 'secret'})

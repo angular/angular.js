@@ -50,7 +50,7 @@ function createScope(providers, instanceCache) {
 
        expect(scope.greeting).toEqual(undefined);
 
-       scope.$watch('name', function(){
+       scope.$watch('name', function() {
          this.greeting = this.salutation + ' ' + this.name + '!';
        }); // initialize the watch
 
@@ -354,7 +354,8 @@ Scope.prototype = {
               // circuit it with === operator, only when === fails do we use .equals
               if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
                 dirty = true;
-                watch.fn(current, watch.last = copy(value), last);
+                watch.last = copy(value);
+                watch.fn(current, value, last);
               }
             } catch (e) {
               current.$service('$exceptionHandler')(e);
@@ -583,7 +584,7 @@ Scope.prototype = {
         event = {
           name: name,
           targetScope: scope,
-          cancel: function(){canceled = true;}
+          cancel: function() {canceled = true;}
         },
         listenerArgs = concat([event], arguments, 1),
         i, length;

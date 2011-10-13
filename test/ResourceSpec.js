@@ -16,7 +16,7 @@ describe("resource", function() {
     callback = jasmine.createSpy();
   });
 
-  it("should build resource", function(){
+  it("should build resource", function() {
     expect(typeof CreditCard).toBe('function');
     expect(typeof CreditCard.get).toBe('function');
     expect(typeof CreditCard.save).toBe('function');
@@ -25,12 +25,12 @@ describe("resource", function() {
     expect(typeof CreditCard.query).toBe('function');
   });
 
-  it('should default to empty parameters', function(){
+  it('should default to empty parameters', function() {
     xhr.expectGET('URL').respond({});
     resource.route('URL').query();
   });
 
-  it('should ignore slashes of undefinend parameters', function(){
+  it('should ignore slashes of undefinend parameters', function() {
     var R = resource.route('/Path/:a/:b/:c');
     xhr.expectGET('/Path').respond({});
     xhr.expectGET('/Path/1').respond({});
@@ -42,7 +42,7 @@ describe("resource", function() {
     R.get({a:4, b:5, c:6});
   });
 
-  it('should correctly encode url params', function(){
+  it('should correctly encode url params', function() {
     var R = resource.route('/Path/:a');
     xhr.expectGET('/Path/foo%231').respond({});
     xhr.expectGET('/Path/doh!@foo?bar=baz%231').respond({});
@@ -67,7 +67,7 @@ describe("resource", function() {
     R.get({a: 'doh&foo', bar: 'baz&1'});
   });
 
-  it("should build resource with default param", function(){
+  it("should build resource with default param", function() {
     xhr.expectGET('/Order/123/Line/456.visa?minimum=0.05').respond({id:'abc'});
     var LineItem = resource.route('/Order/:orderId/Line/:id:verb', {orderId: '123', id: '@id.key', verb:'.visa', minimum:0.05});
     var item = LineItem.get({id:456});
@@ -75,7 +75,7 @@ describe("resource", function() {
     nakedExpect(item).toEqual({id:'abc'});
   });
 
-  it("should build resource with action default param overriding default param", function(){
+  it("should build resource with action default param overriding default param", function() {
     xhr.expectGET('/Customer/123').respond({id:'abc'});
     var TypeItem = resource.route('/:type/:typeId', {type: 'Order'},
                                   {get: {method: 'GET', params: {type: 'Customer'}}});
@@ -84,7 +84,7 @@ describe("resource", function() {
     nakedExpect(item).toEqual({id:'abc'});
   });
 
-  it("should create resource", function(){
+  it("should create resource", function() {
     xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123, name:'misko'});
 
     var cc = CreditCard.save({name:'misko'}, callback);
@@ -95,7 +95,7 @@ describe("resource", function() {
     expect(callback).toHaveBeenCalledWith(cc);
   });
 
-  it("should read resource", function(){
+  it("should read resource", function() {
     xhr.expectGET("/CreditCard/123").respond({id:123, number:'9876'});
     var cc = CreditCard.get({id:123}, callback);
     expect(cc instanceof CreditCard).toBeTruthy();
@@ -106,7 +106,7 @@ describe("resource", function() {
     expect(callback).toHaveBeenCalledWith(cc);
   });
 
-  it("should read partial resource", function(){
+  it("should read partial resource", function() {
     xhr.expectGET("/CreditCard").respond([{id:{key:123}}]);
     xhr.expectGET("/CreditCard/123").respond({id:{key:123}, number:'9876'});
     var ccs = CreditCard.query();
@@ -121,7 +121,7 @@ describe("resource", function() {
     expect(cc.number).toEqual('9876');
   });
 
-  it("should update resource", function(){
+  it("should update resource", function() {
     xhr.expectPOST('/CreditCard/123', {id:{key:123}, name:'misko'}).respond({id:{key:123}, name:'rama'});
 
     var cc = CreditCard.save({id:{key:123}, name:'misko'}, callback);
@@ -130,7 +130,7 @@ describe("resource", function() {
     xhr.flush();
   });
 
-  it("should query resource", function(){
+  it("should query resource", function() {
     xhr.expectGET("/CreditCard?key=value").respond([{id:1}, {id:2}]);
 
     var ccs = CreditCard.query({key:'value'}, callback);
@@ -141,16 +141,16 @@ describe("resource", function() {
     expect(callback).toHaveBeenCalledWith(ccs);
   });
 
-  it("should have all arguments optional", function(){
+  it("should have all arguments optional", function() {
     xhr.expectGET('/CreditCard').respond([{id:1}]);
     var log = '';
-    var ccs = CreditCard.query(function(){ log += 'cb;'; });
+    var ccs = CreditCard.query(function() { log += 'cb;'; });
     xhr.flush();
     nakedExpect(ccs).toEqual([{id:1}]);
     expect(log).toEqual('cb;');
   });
 
-  it('should delete resource and call callback', function(){
+  it('should delete resource and call callback', function() {
     xhr.expectDELETE("/CreditCard/123").respond(200, {});
 
     CreditCard.remove({id:123}, callback);
@@ -166,20 +166,20 @@ describe("resource", function() {
     nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
   });
 
-  it('should post charge verb', function(){
+  it('should post charge verb', function() {
     xhr.expectPOST('/CreditCard/123!charge?amount=10', {auth:'abc'}).respond({success:'ok'});
 
     CreditCard.charge({id:123, amount:10},{auth:'abc'}, callback);
   });
 
-  it('should post charge verb on instance', function(){
+  it('should post charge verb on instance', function() {
     xhr.expectPOST('/CreditCard/123!charge?amount=10', {id:{key:123}, name:'misko'}).respond({success:'ok'});
 
     var card = new CreditCard({id:{key:123}, name:'misko'});
     card.$charge({amount:10}, callback);
   });
 
-  it('should create on save', function(){
+  it('should create on save', function() {
     xhr.expectPOST('/CreditCard', {name:'misko'}).respond({id:123});
     var cc = new CreditCard();
     expect(cc.$get).toBeDefined();
@@ -195,7 +195,7 @@ describe("resource", function() {
     expect(callback).toHaveBeenCalledWith(cc);
   });
 
-  it('should not mutate the resource object if response contains no body', function(){
+  it('should not mutate the resource object if response contains no body', function() {
     var data = {id:{key:123}, number:'9876'};
     xhr.expectGET("/CreditCard/123").respond(data);
     var cc = CreditCard.get({id:123});
@@ -209,7 +209,7 @@ describe("resource", function() {
     expect(idBefore).toEqual(cc.id);
   });
 
-  it('should bind default parameters', function(){
+  it('should bind default parameters', function() {
     xhr.expectGET('/CreditCard/123.visa?minimum=0.05').respond({id:123});
     var Visa = CreditCard.bind({verb:'.visa', minimum:0.05});
     var visa = Visa.get({id:123});
@@ -217,7 +217,7 @@ describe("resource", function() {
     nakedExpect(visa).toEqual({id:123});
   });
 
-  it('should excersize full stack', function(){
+  it('should excersize full stack', function() {
     var scope = angular.compile('<div></div>')();
     var $browser = scope.$service('$browser');
     var $resource = scope.$service('$resource');
@@ -229,7 +229,7 @@ describe("resource", function() {
     dealoc(scope);
   });
 
-  it('should return the same object when verifying the cache', function(){
+  it('should return the same object when verifying the cache', function() {
     var scope = angular.compile('<div></div>')();
     var $browser = scope.$service('$browser');
     var $resource = scope.$service('$resource');

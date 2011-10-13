@@ -1,7 +1,7 @@
-function noop(){}
-$(document).ready(function(){
+function noop() {}
+$(document).ready(function() {
   function xhr(method, url, data, callback){
-    jQuery.getJSON(url, function(){
+    jQuery.getJSON(url, function() {
       callback.apply(this, arguments);
       scope.updateView();
     });

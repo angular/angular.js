@@ -134,7 +134,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 });
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:href
  *
@@ -163,7 +162,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * This example uses `link` variable inside `href` attribute:
     <doc:example>
       <doc:source>
-        <input name="value" /><br />
+        <input ng:model="value" /><br />
         <a id="link-1" href ng:click="value = 1">link 1</a> (link, don't reload)<br />
         <a id="link-2" href="" ng:click="value = 2">link 2</a> (link, don't reload)<br />
         <a id="link-3" ng:href="/{{'123'}}" ng:ext-link>link 3</a> (link, reload!)<br />
@@ -215,7 +214,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  */
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:src
  *
@@ -241,7 +239,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  */
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:disabled
  *
@@ -262,8 +259,8 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @example
     <doc:example>
       <doc:source>
-        Click me to toggle: <input type="checkbox" name="checked"><br/>
-        <button name="button" ng:disabled="{{checked}}">Button</button>
+        Click me to toggle: <input type="checkbox" ng:model="checked"><br/>
+        <button ng:model="button" ng:disabled="{{checked}}">Button</button>
       </doc:source>
       <doc:scenario>
         it('should toggle button', function() {
@@ -280,7 +277,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:checked
  *
@@ -292,7 +288,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @example
     <doc:example>
       <doc:source>
-        Check me to check both: <input type="checkbox" name="master"><br/>
+        Check me to check both: <input type="checkbox" ng:model="master"><br/>
         <input id="checkSlave" type="checkbox" ng:checked="{{master}}">
       </doc:source>
       <doc:scenario>
@@ -310,7 +306,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:multiple
  *
@@ -323,7 +318,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @example
      <doc:example>
        <doc:source>
-         Check me check multiple: <input type="checkbox" name="checked"><br/>
+         Check me check multiple: <input type="checkbox" ng:model="checked"><br/>
          <select id="select" ng:multiple="{{checked}}">
            <option>Misko</option>
            <option>Igor</option>
@@ -346,7 +341,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
- * @workInProgress
  * @ngdoc directive
  * @name angular.directive.ng:readonly
  *
@@ -358,7 +352,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
  * @example
     <doc:example>
       <doc:source>
-        Check me to make text readonly: <input type="checkbox" name="checked"><br/>
+        Check me to make text readonly: <input type="checkbox" ng:model="checked"><br/>
         <input type="text" ng:readonly="{{checked}}" value="I'm Angular"/>
       </doc:source>
       <doc:scenario>
@@ -376,7 +370,6 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 /**
-* @workInProgress
 * @ngdoc directive
 * @name angular.directive.ng:selected
 *
@@ -388,7 +381,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 * @example
    <doc:example>
      <doc:source>
-       Check me to select: <input type="checkbox" name="checked"><br/>
+       Check me to select: <input type="checkbox" ng:model="checked"><br/>
        <select>
          <option>Hello!</option>
          <option id="greet" ng:selected="{{checked}}">Greetings!</option>
@@ -408,10 +401,10 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 
 
 var NG_BIND_ATTR = 'ng:bind-attr';
-var SPECIAL_ATTRS = {};
+var SIDE_EFFECT_ATTRS = {};
 
-forEach('src,href,checked,disabled,multiple,readonly,selected'.split(','), function(name) {
-  SPECIAL_ATTRS['ng:' + name] = name;
+forEach('src,href,multiple,selected,checked,disabled,readonly,required'.split(','), function(name) {
+  SIDE_EFFECT_ATTRS['ng:' + name] = name;
 });
 
 angularAttrMarkup('{{}}', function(value, name, element){
@@ -421,10 +414,10 @@ angularAttrMarkup('{{}}', function(value, name, element){
     value = decodeURI(value);
   var bindings = parseBindings(value),
       bindAttr;
-  if (hasBindings(bindings) || SPECIAL_ATTRS[name]) {
+  if (hasBindings(bindings) || SIDE_EFFECT_ATTRS[name]) {
     element.removeAttr(name);
     bindAttr = fromJson(element.attr(NG_BIND_ATTR) || "{}");
-    bindAttr[SPECIAL_ATTRS[name] || name] = value;
+    bindAttr[SIDE_EFFECT_ATTRS[name] || name] = value;
     element.attr(NG_BIND_ATTR, toJson(bindAttr));
   }
 });

@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc overview
  * @name angular.filter
  * @description
@@ -29,7 +28,6 @@
  */
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.currency
  * @function
@@ -48,16 +46,23 @@
  * @example
    <doc:example>
      <doc:source>
-       <input type="text" name="amount" value="1234.56"/> <br/>
-       default currency symbol ($): {{amount | currency}}<br/>
-       custom currency identifier (USD$): {{amount | currency:"USD$"}}
+       <script>
+         function Ctrl() {
+           this.amount = 1234.56;
+         }
+       </script>
+       <div ng:controller="Ctrl">
+         <input type="number" ng:model="amount"/> <br/>
+         default currency symbol ($): {{amount | currency}}<br/>
+         custom currency identifier (USD$): {{amount | currency:"USD$"}}
+       </div>
      </doc:source>
      <doc:scenario>
-       it('should init with 1234.56', function(){
+       it('should init with 1234.56', function() {
          expect(binding('amount | currency')).toBe('$1,234.56');
          expect(binding('amount | currency:"USD$"')).toBe('USD$1,234.56');
        });
-       it('should update', function(){
+       it('should update', function() {
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
@@ -76,7 +81,6 @@ angularFilter.currency = function(amount, currencySymbol){
 };
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.number
  * @function
@@ -93,19 +97,26 @@ angularFilter.currency = function(amount, currencySymbol){
  * @example
    <doc:example>
      <doc:source>
-       Enter number: <input name='val' value='1234.56789' /><br/>
-       Default formatting: {{val | number}}<br/>
-       No fractions: {{val | number:0}}<br/>
-       Negative number: {{-val | number:4}}
+       <script>
+         function Ctrl() {
+           this.val = 1234.56789;
+         }
+       </script>
+       <div ng:controller="Ctrl">
+         Enter number: <input ng:model='val'><br/>
+         Default formatting: {{val | number}}<br/>
+         No fractions: {{val | number:0}}<br/>
+         Negative number: {{-val | number:4}}
+       </div>
      </doc:source>
      <doc:scenario>
-       it('should format numbers', function(){
+       it('should format numbers', function() {
          expect(binding('val | number')).toBe('1,234.568');
          expect(binding('val | number:0')).toBe('1,235');
          expect(binding('-val | number:4')).toBe('-1,234.5679');
        });
 
-       it('should update', function(){
+       it('should update', function() {
          input('val').enter('3374.333');
          expect(binding('val | number')).toBe('3,374.333');
          expect(binding('val | number:0')).toBe('3,374');
@@ -254,9 +265,7 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
     OPERA_TOSTRING_PATTERN = /^[\d].*Z$/,
     NUMBER_STRING = /^\d+$/;
 
-
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.date
  * @function
@@ -323,7 +332,7 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
           {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
      </doc:source>
      <doc:scenario>
-       it('should format date', function(){
+       it('should format date', function() {
          expect(binding("1288323623006 | date:'medium'")).
             toMatch(/Oct 2\d, 2010 \d{1,2}:\d{2}:\d{2} (AM|PM)/);
          expect(binding("1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'")).
@@ -378,7 +387,6 @@ angularFilter.date = function(date, format) {
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.json
  * @function
@@ -409,12 +417,11 @@ angularFilter.date = function(date, format) {
  */
 angularFilter.json = function(object) {
   this.$element.addClass("ng-monospace");
-  return toJson(object, true);
+  return toJson(object, true, /^(\$|this$)/);
 };
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.lowercase
  * @function
@@ -425,7 +432,6 @@ angularFilter.lowercase = lowercase;
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.uppercase
  * @function
@@ -436,7 +442,6 @@ angularFilter.uppercase = uppercase;
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.html
  * @function
@@ -463,39 +468,46 @@ angularFilter.uppercase = uppercase;
  * @example
    <doc:example>
      <doc:source>
-      Snippet: <textarea name="snippet" cols="60" rows="3">
-     &lt;p style="color:blue"&gt;an html
-     &lt;em onmouseover="this.textContent='PWN3D!'"&gt;click here&lt;/em&gt;
-     snippet&lt;/p&gt;</textarea>
-       <table>
-         <tr>
-           <td>Filter</td>
-           <td>Source</td>
-           <td>Rendered</td>
-         </tr>
-         <tr id="html-filter">
-           <td>html filter</td>
-           <td>
-             <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
-           </td>
-           <td>
-             <div ng:bind="snippet | html"></div>
-           </td>
-         </tr>
-         <tr id="escaped-html">
-           <td>no filter</td>
-           <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-           <td><div ng:bind="snippet"></div></td>
-         </tr>
-         <tr id="html-unsafe-filter">
-           <td>unsafe html filter</td>
-           <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
-           <td><div ng:bind="snippet | html:'unsafe'"></div></td>
-         </tr>
-       </table>
+       <script>
+         function Ctrl() {
+           this.snippet =
+             '<p style="color:blue">an html\n' +
+             '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
+             'snippet</p>';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+          Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
+           <table>
+             <tr>
+               <td>Filter</td>
+               <td>Source</td>
+               <td>Rendered</td>
+             </tr>
+             <tr id="html-filter">
+               <td>html filter</td>
+               <td>
+                 <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
+               </td>
+               <td>
+                 <div ng:bind="snippet | html"></div>
+               </td>
+             </tr>
+             <tr id="escaped-html">
+               <td>no filter</td>
+               <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng:bind="snippet"></div></td>
+             </tr>
+             <tr id="html-unsafe-filter">
+               <td>unsafe html filter</td>
+               <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng:bind="snippet | html:'unsafe'"></div></td>
+             </tr>
+           </table>
+         </div>
      </doc:source>
      <doc:scenario>
-       it('should sanitize the html snippet ', function(){
+       it('should sanitize the html snippet ', function() {
          expect(using('#html-filter').binding('snippet | html')).
            toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
        });
@@ -514,7 +526,7 @@ angularFilter.uppercase = uppercase;
                 "snippet</p>");
        });
 
-       it('should update', function(){
+       it('should update', function() {
          input('snippet').enter('new <b>text</b>');
          expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
          expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
@@ -529,7 +541,6 @@ angularFilter.html =  function(html, option){
 
 
 /**
- * @workInProgress
  * @ngdoc filter
  * @name angular.filter.linky
  * @function
@@ -544,12 +555,18 @@ angularFilter.html =  function(html, option){
  * @example
    <doc:example>
      <doc:source>
-       Snippet: <textarea name="snippet" cols="60" rows="3">
-  Pretty text with some links:
-  http://angularjs.org/,
-  mailto:us@somewhere.org,
-  another@somewhere.org,
-  and one more: ftp://127.0.0.1/.</textarea>
+       <script>
+         function Ctrl() {
+           this.snippet =
+             'Pretty text with some links:\n'+
+             'http://angularjs.org/,\n'+
+             'mailto:us@somewhere.org,\n'+
+             'another@somewhere.org,\n'+
+             'and one more: ftp://127.0.0.1/.';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+       Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
        <table>
          <tr>
            <td>Filter</td>
@@ -573,7 +590,7 @@ angularFilter.html =  function(html, option){
        </table>
      </doc:source>
      <doc:scenario>
-       it('should linkify the snippet with urls', function(){
+       it('should linkify the snippet with urls', function() {
          expect(using('#linky-filter').binding('snippet | linky')).
            toBe('Pretty text with some links:\n' +
                 '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
@@ -591,7 +608,7 @@ angularFilter.html =  function(html, option){
                 "and one more: ftp://127.0.0.1/.");
        });
 
-       it('should update', function(){
+       it('should update', function() {
          input('snippet').enter('new http://link.');
          expect(using('#linky-filter').binding('snippet | linky')).
            toBe('new <a href="http://link">http://link</a>.');

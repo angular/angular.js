@@ -30,10 +30,10 @@
  * See {@link angular.mock} for more info on angular mocks.
  */
 var $logMock = {
-  log: function(){ $logMock.log.logs.push(concat([], arguments, 0)); },
-  warn: function(){ $logMock.warn.logs.push(concat([], arguments, 0)); },
-  info: function(){ $logMock.info.logs.push(concat([], arguments, 0)); },
-  error: function(){ $logMock.error.logs.push(concat([], arguments, 0)); }
+  log: function() { $logMock.log.logs.push(concat([], arguments, 0)); },
+  warn: function() { $logMock.warn.logs.push(concat([], arguments, 0)); },
+  info: function() { $logMock.info.logs.push(concat([], arguments, 0)); },
+  error: function() { $logMock.error.logs.push(concat([], arguments, 0)); }
 };
 $logMock.log.logs = [];
 $logMock.warn.logs = [];

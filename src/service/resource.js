@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$resource
  * @requires $xhr.cache
@@ -65,7 +64,7 @@
  *   update, delete) on server-side data like this:
  *   <pre>
         var User = $resource('/user/:userId', {userId:'@id'});
-        var user = User.get({userId:123}, function(){
+        var user = User.get({userId:123}, function() {
           user.abc = true;
           user.$save();
         });
@@ -136,7 +135,7 @@
 
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});
-     var user = User.get({userId:123}, function(){
+     var user = User.get({userId:123}, function() {
        user.abc = true;
        user.$save();
      });
@@ -160,6 +159,7 @@
       <doc:source jsfiddle="false">
        <script>
          function BuzzController($resource) {
+           this.userId = 'googlebuzz';
            this.Activity = $resource(
              'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
              {alt:'json', callback:'JSON_CALLBACK'},
@@ -179,7 +179,7 @@
        </script>
 
        <div ng:controller="BuzzController">
-         <input name="userId" value="googlebuzz"/>
+         <input ng:model="userId"/>
          <button ng:click="fetch()">fetch</button>
          <hr/>
          <div ng:repeat="item in activities.data.items">

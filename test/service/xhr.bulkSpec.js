@@ -3,7 +3,7 @@
 describe('$xhr.bulk', function() {
   var scope, $browser, $browserXhr, $log, $xhrBulk, $xhrError, log;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope(angular.service, {
       '$xhr.error': $xhrError = jasmine.createSpy('$xhr.error'),
       '$log': $log = {}
@@ -16,7 +16,7 @@ describe('$xhr.bulk', function() {
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
@@ -27,7 +27,7 @@ describe('$xhr.bulk', function() {
   }
 
 
-  it('should collect requests', function(){
+  it('should collect requests', function() {
     $xhrBulk.urls["/"] = {match:/.*/};
     $xhrBulk('GET', '/req1', null, callback);
     $xhrBulk('POST', '/req2', {post:'data'}, callback);
@@ -39,13 +39,13 @@ describe('$xhr.bulk', function() {
       {status:200, response:'first'},
       {status:200, response:'second'}
     ]);
-    $xhrBulk.flush(function(){ log += 'DONE';});
+    $xhrBulk.flush(function() { log += 'DONE';});
     $browserXhr.flush();
     expect(log).toEqual('"first";"second";DONE');
   });
 
 
-  it('should handle non 200 status code by forwarding to error handler', function(){
+  it('should handle non 200 status code by forwarding to error handler', function() {
     $xhrBulk.urls['/'] = {match:/.*/};
     $xhrBulk('GET', '/req1', null, callback);
     $xhrBulk('POST', '/req2', {post:'data'}, callback);
@@ -57,7 +57,7 @@ describe('$xhr.bulk', function() {
       {status:404, response:'NotFound'},
       {status:200, response:'second'}
     ]);
-    $xhrBulk.flush(function(){ log += 'DONE';});
+    $xhrBulk.flush(function() { log += 'DONE';});
     $browserXhr.flush();
 
     expect($xhrError).toHaveBeenCalled();

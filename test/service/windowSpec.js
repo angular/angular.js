@@ -3,17 +3,17 @@
 describe('$window', function() {
   var scope;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope();
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
 
-  it("should inject $window", function(){
+  it("should inject $window", function() {
     expect(scope.$service('$window')).toBe(window);
   });
 });

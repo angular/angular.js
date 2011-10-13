@@ -152,23 +152,31 @@ describe('$route', function() {
 
     $location.path('/foo');
     scope.$digest();
-    expect(scope.$$childHead).toBeTruthy();
-    expect(scope.$$childHead).toEqual(scope.$$childTail);
+    expect(scope.$$childHead.$id).toBeTruthy();
+    expect(scope.$$childHead.$id).toEqual(scope.$$childTail.$id);
 
     $location.path('/bar');
     scope.$digest();
-    expect(scope.$$childHead).toBeTruthy();
-    expect(scope.$$childHead).toEqual(scope.$$childTail);
+    expect(scope.$$childHead.$id).toBeTruthy();
+    expect(scope.$$childHead.$id).toEqual(scope.$$childTail.$id);
 
     $location.path('/baz');
     scope.$digest();
-    expect(scope.$$childHead).toBeTruthy();
-    expect(scope.$$childHead).toEqual(scope.$$childTail);
+    expect(scope.$$childHead.$id).toBeTruthy();
+    expect(scope.$$childHead.$id).toEqual(scope.$$childTail.$id);
 
     $location.path('/');
     scope.$digest();
     expect(scope.$$childHead).toEqual(null);
     expect(scope.$$childTail).toEqual(null);
+  });
+
+
+  it('should infer arguments in injection', function() {
+    $route.when('/test', {controller: function($route){ this.$route = $route; }});
+    $location.path('/test');
+    scope.$digest();
+    expect($route.current.scope.$route).toBe($route);
   });
 
 

@@ -67,7 +67,7 @@ var validAttrs = extend({}, uriAttrs, makeMap(
  */
 function htmlParser( html, handler ) {
   var index, chars, match, stack = [], last = html;
-  stack.last = function(){ return stack[ stack.length - 1 ]; };
+  stack.last = function() { return stack[ stack.length - 1 ]; };
 
   while ( html ) {
     chars = true;

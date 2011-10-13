@@ -3,22 +3,22 @@
 describe('$log', function() {
   var scope;
 
-  beforeEach(function(){
+  beforeEach(function() {
     scope = angular.scope();
   });
 
 
-  afterEach(function(){
+  afterEach(function() {
     dealoc(scope);
   });
 
 
-  it('should use console if present', function(){
+  it('should use console if present', function() {
     var logger = "";
-    function log(){ logger+= 'log;'; }
-    function warn(){ logger+= 'warn;'; }
-    function info(){ logger+= 'info;'; }
-    function error(){ logger+= 'error;'; }
+    function log() { logger+= 'log;'; }
+    function warn() { logger+= 'warn;'; }
+    function info() { logger+= 'info;'; }
+    function error() { logger+= 'error;'; }
     var scope = createScope({$log: $logFactory},
                             {$exceptionHandler: rethrow,
                              $window: {console: {log: log,
@@ -35,9 +35,9 @@ describe('$log', function() {
   });
 
 
-  it('should use console.log() if other not present', function(){
+  it('should use console.log() if other not present', function() {
     var logger = "";
-    function log(){ logger+= 'log;'; }
+    function log() { logger+= 'log;'; }
     var scope = createScope({$log: $logFactory},
                             {$window: {console:{log:log}},
                              $exceptionHandler: rethrow});
@@ -50,7 +50,7 @@ describe('$log', function() {
   });
 
 
-  it('should use noop if no console', function(){
+  it('should use noop if no console', function() {
     var scope = createScope({$log: $logFactory},
                             {$window: {},
                              $exceptionHandler: rethrow}),
@@ -62,36 +62,36 @@ describe('$log', function() {
   });
 
 
-  describe('$log.error', function(){
+  describe('$log.error', function() {
     var e, $log, errorArgs;
 
-    beforeEach(function(){
+    beforeEach(function() {
       e = new Error('');
       e.message = undefined;
       e.sourceURL = undefined;
       e.line = undefined;
       e.stack = undefined;
 
-      $log = $logFactory({console:{error:function(){
+      $log = $logFactory({console:{error:function() {
         errorArgs = arguments;
       }}});
     });
 
 
-    it('should pass error if does not have trace', function(){
+    it('should pass error if does not have trace', function() {
       $log.error('abc', e);
       expect(errorArgs).toEqual(['abc', e]);
     });
 
 
-    it('should print stack', function(){
+    it('should print stack', function() {
       e.stack = 'stack';
       $log.error('abc', e);
       expect(errorArgs).toEqual(['abc', 'stack']);
     });
 
 
-    it('should print line', function(){
+    it('should print line', function() {
       e.message = 'message';
       e.sourceURL = 'sourceURL';
       e.line = '123';

@@ -49,6 +49,10 @@ li {
   margin: 0.3em 0 0.3em 0;
 }
 
+.ng-invalid {
+  border: 1px solid red;
+}
+
 
 /*----- Upgrade IE Prompt -----*/
 
@@ -426,7 +430,7 @@ li {
 }
 
 table {
-	border-collapse: collapse;
+  border-collapse: collapse;
 }
 
 td {
@@ -448,7 +452,7 @@ td.empty-corner-lt {
 .html5-hashbang-example {
   height: 255px;
   margin-left: -40px;
-  padding-left: 30px; 
+  padding-left: 30px;
 }
 
 .html5-hashbang-example div {
@@ -458,4 +462,8 @@ td.empty-corner-lt {
 
 .html5-hashbang-example div input {
   width: 360px;
+}
+
+.error {
+   color: red;
 }

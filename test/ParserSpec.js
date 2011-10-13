@@ -191,7 +191,7 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', function(){
+  it('should parse filters', function() {
     angular.filter.substring = function(input, start, end) {
       return input.substring(start, end);
     };
@@ -415,27 +415,9 @@ describe('parser', function() {
     expect(scope.$eval('true || run()')).toBe(true);
   });
 
-  describe('formatter', function() {
-    it('should return no argument function', function() {
-      var noop = parser('noop').formatter()();
-      expect(noop.format(null, 'abc')).toEqual('abc');
-      expect(noop.parse(null, '123')).toEqual('123');
-    });
 
-    it('should delegate arguments', function() {
-      angularFormatter.myArgs = {
-        parse: function(a, b){ return [a, b]; },
-        format: function(a, b){ return [a, b]; }
-      };
-      var myArgs = parser('myArgs:objs').formatter()();
-      expect(myArgs.format({objs:'B'}, 'A')).toEqual(['A', 'B']);
-      expect(myArgs.parse({objs:'D'}, 'C')).toEqual(['C', 'D']);
-      delete angularFormatter.myArgs;
-    });
-  });
-
-  describe('assignable', function(){
-    it('should expose assignment function', function(){
+  describe('assignable', function() {
+    it('should expose assignment function', function() {
       var fn = parser('a').assignable();
       expect(fn.assign).toBeTruthy();
       var scope = {};
@@ -443,5 +425,4 @@ describe('parser', function() {
       expect(scope).toEqual({a:123});
     });
   });
-
 });

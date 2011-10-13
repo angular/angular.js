@@ -1,4 +1,3 @@
-@workInProgress
 @ngdoc overview
 @name Developer Guide: About MVC in Angular: Understanding the Model Component
 @description
@@ -41,7 +40,7 @@ when processing the following template constructs:
 
 * Form input, select, textarea and other form elements:
 
-         <input name="query" value="fluffy cloud">
+         <input ng:model="query" value="fluffy cloud">
 
    The code above creates a model called "query" on the current scope with the value set to "fluffy
 cloud".

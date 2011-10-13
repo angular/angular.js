@@ -1,7 +1,6 @@
 'use strict';
 
 /**
- * @workInProgress
  * @ngdoc service
  * @name angular.service.$xhr.bulk
  * @requires $xhr
@@ -83,6 +82,6 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
       }
     });
   };
-  this.$watch(function(){ bulkXHR.flush(); });
+  this.$watch(function() { bulkXHR.flush(); });
   return bulkXHR;
 }, ['$xhr', '$xhr.error', '$log']);
