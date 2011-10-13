@@ -533,7 +533,7 @@ angularWidget("@ng:non-bindable", noop);
           expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Overview/);
 
           element('.doc-example-live a:contains(bootstrap)').click();
-          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Initializing Angular: Automatic Initiialization/);
+          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Initializing Angular: Automatic Initialization/);
         });
       </doc:scenario>
     </doc:example>

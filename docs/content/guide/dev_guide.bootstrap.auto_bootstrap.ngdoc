@@ -1,5 +1,5 @@
 @ngdoc overview
-@name Developer Guide: Initializing Angular: Automatic Initiialization
+@name Developer Guide: Initializing Angular: Automatic Initialization
 @description
 
 Angular initializes automatically when you load the angular script into your page, specifying
