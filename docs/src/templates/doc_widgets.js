@@ -81,7 +81,7 @@
           fiddleSrc = fiddleSrc.replace(new RegExp('^\\s{' + stripIndent + '}', 'gm'), '');
 
           return '<form class="jsfiddle" method="post" action="' + fiddleUrl + '" target="_blank">' +
-                    '<textarea ng:model="css">' +
+                    '<textarea name="css">' +
                       '.ng-invalid { border: 1px solid red; } \n' +
                       'body { font-family: Arial,Helvetica,sans-serif; }\n' +
                       'body, td, th { font-size: 14px; margin: 0; }\n' +
@@ -89,8 +89,8 @@
                       'a:link, a:visited, a:hover { color: #5D6DB6; text-decoration: none; }\n' +
                       '.error { color: red; }\n' +
                     '</textarea>' +
-                    '<input type="text" ng:model="title" value="AngularJS Live Example">' +
-                    '<textarea ng:model="html">' +
+                    '<input type="text" name="title" value="AngularJS Live Example">' +
+                    '<textarea name="html">' +
                       '<script src="' + angularJsUrl + '" ng:autobind></script>\n\n' +
                       '<!-- AngularJS Example Code: -->\n\n' +
                       fiddleSrc +
