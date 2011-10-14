@@ -1,6 +1,12 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
 - The Latest Unstable Release: <a href="#0.10.3">0.10.3 shattering-heartbeat</a>
 
+<a name="0.10.4"></a>
+# 0.10.4 human-torch (in-progress) #
+
+
+
+
 <a name="0.10.3"></a>
 # 0.10.3 shattering-heartbeat (2011-10-13) #
 
