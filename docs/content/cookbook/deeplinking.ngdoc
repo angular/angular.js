@@ -37,7 +37,7 @@ The two partials are defined in the following URLs:
 * <a href="./examples/welcome.html" ng:ext-link>./examples/welcome.html</a>
 
 <doc:example>
- <doc:source>
+ <doc:source jsfiddle="false">
     <script>
      AppCntl.$inject = ['$route']
      function AppCntl($route) {
