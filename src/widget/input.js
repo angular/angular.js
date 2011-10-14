@@ -453,11 +453,9 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
  */
 angularInputType('checkbox', function(inputElement) {
   var widget = this,
-      trueValue = inputElement.attr('ng:true-value'),
-      falseValue = inputElement.attr('ng:false-value');
-
-  if (!isString(trueValue)) trueValue = true;
-  if (!isString(falseValue)) falseValue = false;
+      modelScope = inputElement.scope(),
+      trueExp = inputElement.attr('ng:true-value') || 'true',
+      falseExp = inputElement.attr('ng:false-value') || 'false';
 
   inputElement.bind('click', function() {
     widget.$apply(function() {
@@ -470,11 +468,11 @@ angularInputType('checkbox', function(inputElement) {
   };
 
   widget.$parseModel = function() {
-    widget.$viewValue = this.$modelValue === trueValue;
+    widget.$viewValue = (widget.$modelValue === modelScope.$eval(trueExp));
   };
 
   widget.$parseView = function() {
-    widget.$modelValue = widget.$viewValue ? trueValue : falseValue;
+    widget.$modelValue = widget.$viewValue ? modelScope.$eval(trueExp) : modelScope.$eval(falseExp);
   };
 
 });

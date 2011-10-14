@@ -258,11 +258,13 @@ describe('widget: input', function() {
         it('should allow custom enumeration', function() {
           compile('<input type="checkbox" ng:model="name" ng:true-value="y" ng:false-value="n">');
 
-          scope.name='y';
+          scope.y = 'YES';
+          scope.n = 'NO';
+          scope.name='YES';
           scope.$digest();
           expect(scope.$element[0].checked).toBe(true);
 
-          scope.name='n';
+          scope.name='NO';
           scope.$digest();
           expect(scope.$element[0].checked).toBe(false);
 
@@ -271,10 +273,18 @@ describe('widget: input', function() {
           expect(scope.$element[0].checked).toBe(false);
 
           browserTrigger(element);
-          expect(scope.name).toEqual('y');
+          expect(scope.name).toEqual('YES');
 
           browserTrigger(element);
-          expect(scope.name).toEqual('n');
+          expect(scope.name).toEqual('NO');
+
+          scope.y = 'YEEESS!!';
+          scope.n = 'NOOOOO!!';
+          scope.$digest();
+          expect(scope.name).toEqual('NOOOOO!!');
+
+          browserTrigger(element);
+          expect(scope.name).toEqual('YEEESS!!');
         });
 
 
