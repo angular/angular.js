@@ -635,14 +635,14 @@ function setter(obj, path, setValue) {
   var element = path.split('.');
   for (var i = 0; element.length > 1; i++) {
     var key = element.shift();
-    var propertyObj = obj[key];
+    var propertyObj = obj[symbol(key)];
     if (!propertyObj) {
       propertyObj = {};
-      obj[key] = propertyObj;
+      obj[symbol(key)] = propertyObj;
     }
     obj = propertyObj;
   }
-  obj[element.shift()] = setValue;
+  obj[symbol(element.shift())] = setValue;
   return setValue;
 }
 
@@ -663,7 +663,7 @@ function getter(obj, path, bindFnToScope) {
   for (var i = 0; i < len; i++) {
     key = keys[i];
     if (obj) {
-      obj = (lastInstance = obj)[key];
+      obj = (lastInstance = obj)[symbol(key)];
     }
     if (isUndefined(obj)  && key.charAt(0) == '$') {
       var type = angularGlobal.typeOf(lastInstance);
@@ -699,6 +699,7 @@ function getterFn(path) {
 
   var code = 'var l, fn, t;\n';
   forEach(path.split('.'), function(key) {
+    key = symbol(key);
     key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
     code += 'if(!s) return s;\n' +
             'l=s;\n' +

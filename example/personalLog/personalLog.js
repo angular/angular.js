@@ -12,14 +12,17 @@
  */
 
 
-/** @namespace the 'example' namespace */
-var example = example || {};
-/** @namespace namespace of the personal log app */
-example.personalLog = {};
 
 
 //name space isolating closure
 (function() {
+/** @namespace the 'example' namespace */
+var example = window['example'] || {};
+/** @namespace namespace of the personal log app */
+example.personalLog = {};
+window['example'] = example;
+
+
 
 var LOGS = 'logs';
 
@@ -54,7 +57,7 @@ function LogCtrl($cookieStore) {
    * @param {object} log The log to remove.
    */
   this.rmLog = function(log) {
-    angular.Array.remove(logs, log);
+    angular['Array']['remove'](logs, log);
     $cookieStore.put(LOGS, logs);
   };
 

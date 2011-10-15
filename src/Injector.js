@@ -68,7 +68,7 @@ function createInjector(factoryScope, factories, instanceCache) {
 
   function invoke(self, fn, args){
     args = args || [];
-    var injectNames = fn.$inject || [];
+    var injectNames = fn.$inject || fn[symbol('$inject')] || [];
     var i = injectNames.length;
     while(i--) {
       args.unshift(injector(injectNames[i]));
@@ -136,7 +136,7 @@ var FN_ARG = /^\s*(.+?)\s*$/;
 var STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/mg;
 function inferInjectionArgs(fn) {
   assertArgFn(fn);
-  if (!fn.$inject) {
+  if (!fn.$inject && !fn[symbol('$inject')]) {
     var args = fn.$inject = [];
     var fnText = fn.toString().replace(STRIP_COMMENTS, '');
     var argDecl = fnText.match(FN_ARGS);
