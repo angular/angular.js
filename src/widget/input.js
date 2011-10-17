@@ -579,7 +579,7 @@ function numericRegexpInputType(regexp, error) {
 
 var HTML5_INPUTS_TYPES =  makeMap(
         "search,tel,url,email,datetime,date,month,week,time,datetime-local,number,range,color," +
-        "radio,checkbox,text,button,submit,reset,hidden");
+        "radio,checkbox,text,button,submit,reset,hidden,password");
 
 
 /**
