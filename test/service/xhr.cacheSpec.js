@@ -1,20 +1,17 @@
 'use strict';
 
 describe('$xhr.cache', function() {
-  var scope, $browser, $browserXhr, $xhrErr, cache, log;
+  var log;
 
-  beforeEach(function() {
-    scope = angular.scope(angularService, {'$xhr.error': $xhrErr = jasmine.createSpy('$xhr.error')});
-    $browser = scope.$service('$browser');
-    $browserXhr = $browser.xhr;
-    cache = scope.$service('$xhr.cache');
+  beforeEach(inject(function(service) {
+    service('$xhr.error', function(){
+      return jasmine.createSpy('$xhr.error');
+    });
+    service.alias('$xhr.cache', '$xhrCache');
+    service.alias('$xhr.bulk', '$xhrBulk');
+    service.alias('$xhr.error', '$xhrError');
     log = '';
-  });
-
-
-  afterEach(function() {
-    dealoc(scope);
-  });
+  }));
 
 
   function callback(code, response) {
@@ -23,156 +20,158 @@ describe('$xhr.cache', function() {
   }
 
 
-  it('should cache requests', function() {
-    $browserXhr.expectGET('/url').respond('first');
-    cache('GET', '/url', null, callback);
-    $browserXhr.flush();
+  it('should cache requests', inject(function($browser, $xhrCache) {
+    $browser.xhr.expectGET('/url').respond('first');
+    $xhrCache('GET', '/url', null, callback);
+    $browser.xhr.flush();
 
-    $browserXhr.expectGET('/url').respond('ERROR');
-    cache('GET', '/url', null, callback);
+    $browser.xhr.expectGET('/url').respond('ERROR');
+    $xhrCache('GET', '/url', null, callback);
     $browser.defer.flush();
     expect(log).toEqual('"first";"first";');
 
-    cache('GET', '/url', null, callback, false);
+    $xhrCache('GET', '/url', null, callback, false);
     $browser.defer.flush();
     expect(log).toEqual('"first";"first";"first";');
-  });
+  }));
 
 
-  it('should first return cache request, then return server request', function() {
-    $browserXhr.expectGET('/url').respond('first');
-    cache('GET', '/url', null, callback, true);
-    $browserXhr.flush();
+  it('should first return cache request, then return server request', inject(function($browser, $xhrCache) {
+    $browser.xhr.expectGET('/url').respond('first');
+    $xhrCache('GET', '/url', null, callback, true);
+    $browser.xhr.flush();
 
-    $browserXhr.expectGET('/url').respond('ERROR');
-    cache('GET', '/url', null, callback, true);
+    $browser.xhr.expectGET('/url').respond('ERROR');
+    $xhrCache('GET', '/url', null, callback, true);
     $browser.defer.flush();
     expect(log).toEqual('"first";"first";');
 
-    $browserXhr.flush();
+    $browser.xhr.flush();
     expect(log).toEqual('"first";"first";"ERROR";');
-  });
+  }));
 
 
-  it('should serve requests from cache', function() {
-    cache.data.url = {value:'123'};
-    cache('GET', 'url', null, callback);
+  it('should serve requests from cache', inject(function($browser, $xhrCache) {
+    $xhrCache.data.url = {value:'123'};
+    $xhrCache('GET', 'url', null, callback);
     $browser.defer.flush();
     expect(log).toEqual('"123";');
 
-    cache('GET', 'url', null, callback, false);
+    $xhrCache('GET', 'url', null, callback, false);
     $browser.defer.flush();
     expect(log).toEqual('"123";"123";');
-  });
+  }));
 
 
-  it('should keep track of in flight requests and request only once', function() {
-    scope.$service('$xhr.bulk').urls['/bulk'] = {
+  it('should keep track of in flight requests and request only once', inject(function($browser, $xhrCache, $xhrBulk) {
+    $xhrBulk.urls['/bulk'] = {
       match:function(url){
         return url == '/url';
       }
     };
-    $browserXhr.expectPOST('/bulk', {
+    $browser.xhr.expectPOST('/bulk', {
       requests:[{method:'GET',  url:'/url', data: null}]
     }).respond([
       {status:200, response:'123'}
     ]);
-    cache('GET', '/url', null, callback);
-    cache('GET', '/url', null, callback);
-    cache.delegate.flush();
-    $browserXhr.flush();
+    $xhrCache('GET', '/url', null, callback);
+    $xhrCache('GET', '/url', null, callback);
+    $xhrCache.delegate.flush();
+    $browser.xhr.flush();
     expect(log).toEqual('"123";"123";');
-  });
+  }));
 
 
-  it('should clear cache on non GET', function() {
-    $browserXhr.expectPOST('abc', {}).respond({});
-    cache.data.url = {value:123};
-    cache('POST', 'abc', {});
-    expect(cache.data.url).toBeUndefined();
-  });
+  it('should clear cache on non GET', inject(function($browser, $xhrCache) {
+    $browser.xhr.expectPOST('abc', {}).respond({});
+    $xhrCache.data.url = {value:123};
+    $xhrCache('POST', 'abc', {});
+    expect($xhrCache.data.url).toBeUndefined();
+  }));
 
 
-  it('should call callback asynchronously for both cache hit and cache miss', function() {
-    $browserXhr.expectGET('/url').respond('+');
-    cache('GET', '/url', null, callback);
+  it('should call callback asynchronously for both cache hit and cache miss', inject(function($browser, $xhrCache) {
+    $browser.xhr.expectGET('/url').respond('+');
+    $xhrCache('GET', '/url', null, callback);
     expect(log).toEqual(''); //callback hasn't executed
 
-    $browserXhr.flush();
+    $browser.xhr.flush();
     expect(log).toEqual('"+";'); //callback has executed
 
-    cache('GET', '/url', null, callback);
+    $xhrCache('GET', '/url', null, callback);
     expect(log).toEqual('"+";'); //callback hasn't executed
 
     $browser.defer.flush();
     expect(log).toEqual('"+";"+";'); //callback has executed
-  });
+  }));
 
 
-  it('should call callback synchronously when sync flag is on', function() {
-    $browserXhr.expectGET('/url').respond('+');
-    cache('GET', '/url', null, callback, false, true);
+  it('should call callback synchronously when sync flag is on', inject(function($browser, $xhrCache) {
+    $browser.xhr.expectGET('/url').respond('+');
+    $xhrCache('GET', '/url', null, callback, false, true);
     expect(log).toEqual(''); //callback hasn't executed
 
-    $browserXhr.flush();
+    $browser.xhr.flush();
     expect(log).toEqual('"+";'); //callback has executed
 
-    cache('GET', '/url', null, callback, false, true);
+    $xhrCache('GET', '/url', null, callback, false, true);
     expect(log).toEqual('"+";"+";'); //callback has executed
 
     $browser.defer.flush();
     expect(log).toEqual('"+";"+";'); //callback was not called again any more
-  });
+  }));
 
 
-  it('should call eval after callbacks for both cache hit and cache miss execute', function() {
-    var flushSpy = this.spyOn(scope, '$digest').andCallThrough();
+  it('should call eval after callbacks for both cache hit and cache miss execute',
+      inject(function($browser, $xhrCache, $rootScope) {
+    var flushSpy = this.spyOn($rootScope, '$digest').andCallThrough();
 
-    $browserXhr.expectGET('/url').respond('+');
-    cache('GET', '/url', null, callback);
+    $browser.xhr.expectGET('/url').respond('+');
+    $xhrCache('GET', '/url', null, callback);
     expect(flushSpy).not.toHaveBeenCalled();
 
-    $browserXhr.flush();
+    $browser.xhr.flush();
     expect(flushSpy).toHaveBeenCalled();
 
     flushSpy.reset(); //reset the spy
 
-    cache('GET', '/url', null, callback);
+    $xhrCache('GET', '/url', null, callback);
     expect(flushSpy).not.toHaveBeenCalled();
 
     $browser.defer.flush();
     expect(flushSpy).toHaveBeenCalled();
-  });
+  }));
 
-  it('should call the error callback on error if provided', function() {
+  it('should call the error callback on error if provided', inject(function($browser, $xhrCache) {
     var errorSpy = jasmine.createSpy('error'),
         successSpy = jasmine.createSpy('success');
 
-    $browserXhr.expectGET('/url').respond(500, 'error');
+    $browser.xhr.expectGET('/url').respond(500, 'error');
 
-    cache('GET', '/url', null, successSpy, errorSpy, false, true);
-    $browserXhr.flush();
+    $xhrCache('GET', '/url', null, successSpy, errorSpy, false, true);
+    $browser.xhr.flush();
     expect(errorSpy).toHaveBeenCalledWith(500, 'error');
     expect(successSpy).not.toHaveBeenCalled();
 
     errorSpy.reset();
-    cache('GET', '/url', successSpy, errorSpy, false, true);
-    $browserXhr.flush();
+    $xhrCache('GET', '/url', successSpy, errorSpy, false, true);
+    $browser.xhr.flush();
     expect(errorSpy).toHaveBeenCalledWith(500, 'error');
     expect(successSpy).not.toHaveBeenCalled();
-  });
+  }));
 
-  it('should call the $xhr.error on error if error callback not provided', function() {
+  it('should call the $xhr.error on error if error callback not provided',
+      inject(function($browser, $xhrCache, $xhrError) {
     var errorSpy = jasmine.createSpy('error'),
         successSpy = jasmine.createSpy('success');
 
-    $browserXhr.expectGET('/url').respond(500, 'error');
-    cache('GET', '/url', null, successSpy, false, true);
-    $browserXhr.flush();
+    $browser.xhr.expectGET('/url').respond(500, 'error');
+    $xhrCache('GET', '/url', null, successSpy, false, true);
+    $browser.xhr.flush();
 
     expect(successSpy).not.toHaveBeenCalled();
-    expect($xhrErr).toHaveBeenCalledWith(
+    expect($xhrError).toHaveBeenCalledWith(
       {method: 'GET', url: '/url', data: null, success: successSpy},
       {status: 500, body: 'error'});
-  });
+  }));
 });

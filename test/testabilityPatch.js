@@ -17,7 +17,7 @@ if (window.jstestdriver) {
       if (isElement(arg)) {
         arg = sortedHtml(arg);
       } else if (isObject(arg)) {
-        if (arg.$eval == Scope.prototype.$eval) {
+        if (isFunction(arg.$eval) && isFunction(arg.$apply)) {
           arg = dumpScope(arg);
         } else {
           arg = toJson(arg, true);
@@ -79,9 +79,79 @@ beforeEach(function() {
   $logMock.warn.logs = [];
   $logMock.info.logs = [];
   $logMock.error.logs = [];
+
+  resetAngularPublic()
 });
 
-afterEach(function() {
+function inject(){
+  var blockFns = sliceArgs(arguments);
+  return function(){
+    var spec = this;
+    angular.forEach(blockFns, function(fn){
+      fn.$inject = inferInjectionArgs(fn);
+      if (equals(fn.$inject, [])) {
+        fn.apply(spec);
+      } else if (equals(fn.$inject, ['service'])) {
+        if (spec.$injector) {
+          throw Error('$injector already created for this test');
+        }
+        if (!spec.$service) {
+          spec.$service = function(name, fn) {
+            if (fn) { spec.$service[name] = fn; }
+            return spec.$service[name];
+          }
+          spec.$service.alias = function (name, alias) {
+            spec.$service(alias, extend(function(x){ return x; }, {$inject:[name]}));
+          };
+          forEach(angularService, function(value, key){
+            spec.$service(key, value);
+          });
+        }
+        fn.call(spec, spec.$service);
+      } else {
+        if (!spec.$injector) {
+          spec.$injector = angular.injector(spec.$service);
+        }
+        spec.$injector.invoke(spec, fn);
+      }
+    });
+  };
+}
+
+/**
+ * This method republishes the public angular API. It should probably be cleaned up somehow.
+ * //TODO: remove this method and merge it with the angularPublic.js class
+ */
+function resetAngularPublic() {
+  extend(angular, {
+    'element': jqLite,
+    'compile': compile,
+    'copy': copy,
+    'extend': extend,
+    'equals': equals,
+    'forEach': forEach,
+    'noop': noop,
+    'bind': bind,
+    'toJson': toJson,
+    'fromJson': fromJson,
+    'identity':identity,
+    'injector': createInjector,
+    'isUndefined': isUndefined,
+    'isDefined': isDefined,
+    'isString': isString,
+    'isFunction': isFunction,
+    'isObject': isObject,
+    'isNumber': isNumber,
+    'isArray': isArray
+  });
+}
+
+resetAngularPublic();
+
+afterEach(inject(function($rootScope) {
+  // release the injector
+  dealoc($rootScope);
+
   // check $log mock
   forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
     if ($logMock[logLevel].logs.length) {
@@ -104,7 +174,7 @@ afterEach(function() {
   });
 
   clearJqCache();
-});
+}));
 
 function clearJqCache() {
   var count = 0;
@@ -139,29 +209,6 @@ function dealoc(obj) {
     if (element.dealoc) element.dealoc();
   }
 }
-
-extend(angular, {
-  'element': jqLite,
-  'compile': compile,
-  'scope': createScope,
-  'copy': copy,
-  'extend': extend,
-  'equals': equals,
-  'forEach': forEach,
-  'noop':noop,
-  'bind':bind,
-  'toJson': toJson,
-  'fromJson': fromJson,
-  'identity':identity,
-  'injector': createInjector,
-  'isUndefined': isUndefined,
-  'isDefined': isDefined,
-  'isString': isString,
-  'isFunction': isFunction,
-  'isObject': isObject,
-  'isNumber': isNumber,
-  'isArray': isArray
-});
 
 
 function sortedHtml(element, showNgClass) {

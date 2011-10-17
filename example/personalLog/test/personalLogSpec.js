@@ -2,8 +2,9 @@ describe('example.personalLog.LogCtrl', function() {
   var logCtrl;
 
   function createNotesCtrl() {
-    var scope = angular.scope();
-    scope.$cookies = scope.$service('$cookies');
+    var injector = angular.injector();
+    var scope = injector('$rootScope');
+    scope.$cookies = injector('$cookies');
     return scope.$new(example.personalLog.LogCtrl);
   }
 

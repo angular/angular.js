@@ -952,8 +952,12 @@ function angularInit(config, document){
   var autobind = config.autobind;
 
   if (autobind) {
-    var element = isString(autobind) ? document.getElementById(autobind) : document;
-    compile(element)().$apply();
+    var element = isString(autobind) ? document.getElementById(autobind) : document,
+        injector = createInjector(),
+        scope = injector('$rootScope');
+
+    compile(element)(scope);
+    scope.$apply();
   }
 }
 

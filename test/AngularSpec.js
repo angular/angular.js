@@ -371,22 +371,16 @@ describe('angular', function() {
                                         '</div>' +
                                       '</div>');
     });
-
-
-    xit('should add custom css when specified via css', function() {
-      //TODO
-    });
   });
 
 
   describe('angular service', function() {
-    it('should override services', function() {
-      var scope = createScope();
-      angular.service('fake', function() { return 'old'; });
-      angular.service('fake', function() { return 'new'; });
-
-      expect(scope.$service('fake')).toEqual('new');
-    });
+    it('should override services', inject(function(service){
+      service('fake', function() { return 'old'; });
+      service('fake', function() { return 'new'; });
+    }, function(fake) {
+      expect(fake).toEqual('new');
+    }));
 
     it('should not preserve properties on override', function() {
       angular.service('fake', {$one: true}, {$two: true}, {three: true});
@@ -410,19 +404,19 @@ describe('angular', function() {
     it('should inject dependencies specified by $inject', function() {
       angular.service('svc1', function() { return 'svc1'; });
       angular.service('svc2', function(svc1) { return 'svc2-' + svc1; }, {$inject: ['svc1']});
-      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      expect(createInjector()('svc2')).toEqual('svc2-svc1');
     });
 
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
       angular.service('svc1', function() { return 'svc1'; });
       angular.service('svc2', function(foo) { return 'svc2-' + foo; }, {$inject: ['svc1']});
-      expect(angular.scope().$service('svc2')).toEqual('svc2-svc1');
+      expect(createInjector()('svc2')).toEqual('svc2-svc1');
     });
 
     it('should eagerly instantiate a service if $eager is true', function() {
       var log = [];
       angular.service('svc1', function() { log.push('svc1'); }, {$eager: true});
-      angular.scope();
+      createInjector();
       expect(log).toEqual(['svc1']);
     });
   });
@@ -464,55 +458,46 @@ describe('angular', function() {
   });
 
   describe('compile', function() {
-    var scope, template;
-
-    afterEach(function() {
-      dealoc(scope);
-    });
-
-    it('should link to existing node and create scope', function() {
-      template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      scope = angular.compile(template)();
-      scope.$digest();
+    it('should link to existing node and create scope', inject(function($rootScope) {
+      var template = angular.element('<div>{{greeting = "hello world"}}</div>');
+      angular.compile(template)($rootScope);
+      $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
-      expect(scope.greeting).toEqual('hello world');
-    });
+      expect($rootScope.greeting).toEqual('hello world');
+    }));
 
-    it('should link to existing node and given scope', function() {
-      scope = angular.scope();
-      template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)(scope);
-      scope.$digest();
+    it('should link to existing node and given scope', inject(function($rootScope) {
+      var template = angular.element('<div>{{greeting = "hello world"}}</div>');
+      angular.compile(template)($rootScope);
+      $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
-      expect(scope).toEqual(scope);
-    });
+    }));
 
-    it('should link to new node and given scope', function() {
-      scope = angular.scope();
-      template = jqLite('<div>{{greeting = "hello world"}}</div>');
+    it('should link to new node and given scope', inject(function($rootScope) {
+      var template = jqLite('<div>{{greeting = "hello world"}}</div>');
 
       var templateFn = angular.compile(template);
       var templateClone = template.clone();
 
-      templateFn(scope, function(clone){
+      var element = templateFn($rootScope, function(clone){
         templateClone = clone;
       });
-      scope.$digest();
+      $rootScope.$digest();
 
       expect(template.text()).toEqual('');
-      expect(scope.$element.text()).toEqual('hello world');
-      expect(scope.$element).toEqual(templateClone);
-      expect(scope.greeting).toEqual('hello world');
-    });
+      expect(element.text()).toEqual('hello world');
+      expect(element).toEqual(templateClone);
+      expect($rootScope.greeting).toEqual('hello world');
+    }));
 
-    it('should link to cloned node and create scope', function() {
-      scope = angular.scope();
-      template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)(scope, noop).$digest();
+    it('should link to cloned node and create scope', inject(function($rootScope) {
+      var template = jqLite('<div>{{greeting = "hello world"}}</div>');
+      var element = angular.compile(template)($rootScope, noop);
+      $rootScope.$digest();
       expect(template.text()).toEqual('');
-      expect(scope.$element.text()).toEqual('hello world');
-      expect(scope.greeting).toEqual('hello world');
-    });
+      expect(element.text()).toEqual('hello world');
+      expect($rootScope.greeting).toEqual('hello world');
+    }));
   });
 
 

@@ -3,7 +3,7 @@
 describe('compiler', function() {
   var compiler, markup, attrMarkup, directives, widgets, compile, log, scope;
 
-  beforeEach(function() {
+  beforeEach(inject(function($rootScope) {
     log = "";
     directives = {
       hello: function(expression, element){
@@ -29,14 +29,10 @@ describe('compiler', function() {
     compiler = new Compiler(markup, attrMarkup, directives, widgets);
     compile = function(html){
       var e = jqLite("<div>" + html + "</div>");
-      return scope = compiler.compile(e)();
+      compiler.compile(e)($rootScope);
+      return scope = $rootScope;
     };
-  });
-
-
-  afterEach(function() {
-    dealoc(scope);
-  });
+  }));
 
 
   it('should not allow compilation of multiple roots', function() {
@@ -49,7 +45,7 @@ describe('compiler', function() {
   });
 
 
-  it('should recognize a directive', function() {
+  it('should recognize a directive', inject(function($rootScope) {
     var e = jqLite('<div directive="expr" ignore="me"></div>');
     directives.directive = function(expression, element){
       log += "found";
@@ -61,10 +57,10 @@ describe('compiler', function() {
     };
     var template = compiler.compile(e);
     expect(log).toEqual("found");
-    scope = template(angular.scope());
+    scope = template($rootScope);
     expect(e.hasClass('ng-directive')).toEqual(true);
     expect(log).toEqual("found:init");
-  });
+  }));
 
 
   it('should recurse to children', function() {
@@ -94,14 +90,15 @@ describe('compiler', function() {
   });
 
 
-  it('should allow creation of templates', function() {
+  it('should allow creation of templates', inject(function($rootScope) {
     directives.duplicate = function(expr, element){
       element.replaceWith(document.createComment("marker"));
       element.removeAttr("duplicate");
       var linker = this.compile(element);
       return function(marker) {
         this.$watch('value', function() {
-          var scope = linker(angular.scope(), noop);
+          var scope = $rootScope.$new;
+          linker(scope, noop);
           marker.after(scope.$element);
         });
       };
@@ -139,7 +136,7 @@ describe('compiler', function() {
           '<span>x</span>' +
           'after' +
         '</div>');
-  });
+  }));
 
 
   it('should process markup before directives', function() {
