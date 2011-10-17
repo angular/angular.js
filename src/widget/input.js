@@ -16,6 +16,10 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -79,6 +83,10 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -146,6 +154,10 @@ angularInputType('email', function() {
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -288,6 +300,10 @@ angularInputType('list', function() {
  * @param {string=} min Sets the `MIN` validation error key if the value entered is less then `min`.
  * @param {string=} max Sets the `MAX` validation error key if the value entered is greater then `min`.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -353,6 +369,10 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
  * @param {string=} min Sets the `MIN` validation error key if the value entered is less then `min`.
  * @param {string=} max Sets the `MAX` validation error key if the value entered is greater then `min`.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -601,6 +621,10 @@ var HTML5_INPUTS_TYPES =  makeMap(
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -612,32 +636,69 @@ var HTML5_INPUTS_TYPES =  makeMap(
       <doc:source>
        <script>
          function Ctrl() {
-           this.text = 'guest';
+           this.user = {name: 'guest', last: 'visitor'};
          }
        </script>
        <div ng:controller="Ctrl">
          <form name="myForm">
-           text: <input type="text" name="input" ng:model="text" required>
-           <span class="error" ng:show="myForm.input.$error.REQUIRED">
-             Required!</span>
+           User name: <input type="text" name="userName" ng:model="user.name" required>
+           <span class="error" ng:show="myForm.userName.$error.REQUIRED">
+             Required!</span><br>
+           Last name: <input type="text" name="lastName" ng:model="user.last"
+             ng:minlength="3" ng:maxlength="10">
+           <span class="error" ng:show="myForm.lastName.$error.MINLENGTH">
+             Too short!</span>
+           <span class="error" ng:show="myForm.lastName.$error.MAXLENGTH">
+             Too long!</span><br>
          </form>
-         <tt>text = {{text}}</tt><br/>
-         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+         <hr>
+         <tt>user = {{user}}</tt><br/>
+         <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br>
+         <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br>
+         <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br>
+         <tt>myForm.userName.$error = {{myForm.lastName.$error}}</tt><br>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
+         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br>
+         <tt>myForm.$error.MINLENGTH = {{!!myForm.$error.MINLENGTH}}</tt><br>
+         <tt>myForm.$error.MAXLENGTH = {{!!myForm.$error.MAXLENGTH}}</tt><br>
        </div>
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
-          expect(binding('text')).toEqual('guest');
-          expect(binding('myForm.input.$valid')).toEqual('true');
+          expect(binding('user')).toEqual('{\n  \"last\":\"visitor",\n  \"name\":\"guest\"}');
+          expect(binding('myForm.userName.$valid')).toEqual('true');
+          expect(binding('myForm.$valid')).toEqual('true');
         });
 
-        it('should be invalid if empty', function() {
-          input('text').enter('');
-          expect(binding('text')).toEqual('');
-          expect(binding('myForm.input.$valid')).toEqual('false');
+        it('should be invalid if empty when required', function() {
+          input('user.name').enter('');
+          expect(binding('user')).toEqual('{\n  \"last\":\"visitor",\n  \"name\":\"\"}');
+          expect(binding('myForm.userName.$valid')).toEqual('false');
+          expect(binding('myForm.$valid')).toEqual('false');
+        });
+
+        it('should be valid if empty when min length is set', function() {
+          input('user.last').enter('');
+          expect(binding('user')).toEqual('{\n  \"last\":\"",\n  \"name\":\"guest\"}');
+          expect(binding('myForm.lastName.$valid')).toEqual('true');
+          expect(binding('myForm.$valid')).toEqual('true');
+        });
+
+        it('should be invalid if less than required min length', function() {
+          input('user.last').enter('xx');
+          expect(binding('user')).toEqual('{\n  \"last\":\"xx",\n  \"name\":\"guest\"}');
+          expect(binding('myForm.lastName.$valid')).toEqual('false');
+          expect(binding('myForm.lastName.$error')).toMatch(/MINLENGTH/);
+          expect(binding('myForm.$valid')).toEqual('false');
+        });
+
+        it('should be valid if longer than max length', function() {
+          input('user.last').enter('some ridiculously long name');
+          expect(binding('user'))
+            .toEqual('{\n  \"last\":\"some ridiculously long name",\n  \"name\":\"guest\"}');
+          expect(binding('myForm.lastName.$valid')).toEqual('false');
+          expect(binding('myForm.lastName.$error')).toMatch(/MAXLENGTH/);
+          expect(binding('myForm.$valid')).toEqual('false');
         });
       </doc:scenario>
     </doc:example>
@@ -656,6 +717,8 @@ angularWidget('input', function(inputElement){
           modelScope = this,
           patternMatch, widget,
           pattern = trim(inputElement.attr('ng:pattern')),
+          minlength = parseInt(inputElement.attr('ng:minlength'), 10),
+          maxlength = parseInt(inputElement.attr('ng:maxlength'), 10),
           loadFromScope = type.match(/^\s*\@\s*(.*)/);
 
 
@@ -711,14 +774,23 @@ angularWidget('input', function(inputElement){
       widget.$pristine = !(widget.$dirty = false);
 
       widget.$on('$validate', function(event) {
-        var $viewValue = trim(widget.$viewValue);
-        var inValid = widget.$required && !$viewValue;
-        var missMatch = $viewValue && !patternMatch($viewValue);
+        var $viewValue = trim(widget.$viewValue),
+            inValid = widget.$required && !$viewValue,
+            tooLong = maxlength && $viewValue && $viewValue.length > maxlength,
+            tooShort = minlength && $viewValue && $viewValue.length < minlength,
+            missMatch = $viewValue && !patternMatch($viewValue);
+
         if (widget.$error.REQUIRED != inValid){
           widget.$emit(inValid ? '$invalid' : '$valid', 'REQUIRED');
         }
         if (widget.$error.PATTERN != missMatch){
           widget.$emit(missMatch ? '$invalid' : '$valid', 'PATTERN');
+        }
+        if (widget.$error.MINLENGTH != tooShort){
+          widget.$emit(tooShort ? '$invalid' : '$valid', 'MINLENGTH');
+        }
+        if (widget.$error.MAXLENGTH != tooLong){
+          widget.$emit(tooLong ? '$invalid' : '$valid', 'MAXLENGTH');
         }
       });
 
