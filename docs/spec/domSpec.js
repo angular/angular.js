@@ -1,4 +1,4 @@
-var DOM = require('dom.js').DOM;
+var DOM = require('../src/dom.js').DOM;
 
 describe('dom', function() {
   var dom;

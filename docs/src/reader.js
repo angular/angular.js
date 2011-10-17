@@ -5,8 +5,7 @@
 
 exports.collect = collect;
 
-require.paths.push(__dirname);
-var ngdoc = require('ngdoc.js'),
+var ngdoc = require('./ngdoc.js'),
     Q = require('qq'),
     qfs = require('q-fs');
 

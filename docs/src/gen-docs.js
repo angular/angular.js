@@ -1,10 +1,8 @@
-require.paths.push(__dirname);
-require.paths.push('lib');
-var reader = require('reader.js'),
-    ngdoc = require('ngdoc.js'),
-    writer = require('writer.js'),
-    SiteMap = require('SiteMap.js').SiteMap,
-    appCache = require('appCache.js').appCache,
+var reader = require('./reader.js'),
+    ngdoc = require('./ngdoc.js'),
+    writer = require('./writer.js'),
+    SiteMap = require('./SiteMap.js').SiteMap,
+    appCache = require('./appCache.js').appCache,
     Q = require('qq');
 
 process.on('uncaughtException', function(err) {

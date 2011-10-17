@@ -1,4 +1,4 @@
-var writer = require('writer.js');
+var writer = require('../src/writer.js');
 describe('writer', function() {
   describe('toString', function() {
     var toString = writer.toString;
