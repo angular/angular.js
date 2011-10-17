@@ -1,5 +1,5 @@
-var SiteMap = require('SiteMap.js').SiteMap;
-var Doc = require('ngdoc.js').Doc;
+var SiteMap = require('../src/SiteMap.js').SiteMap;
+var Doc = require('../src/ngdoc.js').Doc;
 
 
 describe('sitemap', function() {

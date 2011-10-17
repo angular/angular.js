@@ -1,8 +1,6 @@
 if (global.jasmine) return;
 
-require.paths.push(__dirname + "/../../lib");
-require.paths.push(__dirname + '/../src');
-var jasmine = require('jasmine-1.0.1');
+var jasmine = require('../../lib/jasmine-1.0.1');
 var sys = require('util');
 
 for(var key in jasmine) {

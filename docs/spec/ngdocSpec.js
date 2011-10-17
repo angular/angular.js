@@ -1,5 +1,5 @@
-var ngdoc = require('ngdoc.js');
-var DOM = require('dom.js').DOM;
+var ngdoc = require('../src/ngdoc.js');
+var DOM = require('../src/dom.js').DOM;
 
 describe('ngdoc', function() {
   var Doc = ngdoc.Doc;

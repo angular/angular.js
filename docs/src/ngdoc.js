@@ -2,9 +2,9 @@
  * All parsing/transformation code goes here. All code here should be sync to ease testing.
  */
 
-var Showdown = require('showdown').Showdown;
-var DOM = require('dom.js').DOM;
-var htmlEscape = require('dom.js').htmlEscape;
+var Showdown = require('../../lib/showdown').Showdown;
+var DOM = require('./dom.js').DOM;
+var htmlEscape = require('./dom.js').htmlEscape;
 var NEW_LINE = /\n\r?/;
 
 exports.trim = trim;
