@@ -2,7 +2,6 @@
  * All writing related code here. This is so that we can separate the async code from sync code
  * for testability
  */
-require.paths.push(__dirname);
 var qfs = require('q-fs');
 var Q = require('qq');
 var OUTPUT_DIR = "build/docs/";
