@@ -405,6 +405,14 @@ describe('widget: input', function() {
     });
 
 
+    describe('password', function () {
+      it('should not change password type to text', function () {
+        compile('<input type="password" ng:model="name" >');
+        expect(element.attr('type')).toBe('password');
+      });
+    });
+
+
     it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
       expect(scope.$element.attr('ng-exception')).toBeFalsy();
