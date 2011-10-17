@@ -88,19 +88,19 @@ angular.scenario.dsl('browser', function() {
 
     api.search = function() {
       return this.addFutureAction('browser url search', function($window, $document, done) {
-        done(null, $window.angular.scope().$service('$location').search);
+        done(null, $window.angular.injector()('$location').search);
       });
     };
 
     api.hashSearch = function() {
       return this.addFutureAction('browser url hash search', function($window, $document, done) {
-        done(null, $window.angular.scope().$service('$location').hashSearch);
+        done(null, $window.angular.injector()('$location').hashSearch);
       });
     };
 
     api.hashPath = function() {
       return this.addFutureAction('browser url hash path', function($window, $document, done) {
-        done(null, $window.angular.scope().$service('$location').hashPath);
+        done(null, $window.angular.injector()('$location').hashPath);
       });
     };
 

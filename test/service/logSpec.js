@@ -1,65 +1,61 @@
 'use strict';
 
 describe('$log', function() {
-  var scope;
+  var $window;
+  var logger;
 
-  beforeEach(function() {
-    scope = angular.scope();
-  });
+  function log() { logger+= 'log;'; }
+  function warn() { logger+= 'warn;'; }
+  function info() { logger+= 'info;'; }
+  function error() { logger+= 'error;'; }
 
+  beforeEach(inject(function(service){
+    $window = {};
+    logger = '';
+    service('$log', $logFactory);
+    service('$exceptionHandler', valueFn(rethrow));
+    service('$window', valueFn($window));
+  }));
 
-  afterEach(function() {
-    dealoc(scope);
-  });
-
-
-  it('should use console if present', function() {
-    var logger = "";
-    function log() { logger+= 'log;'; }
-    function warn() { logger+= 'warn;'; }
-    function info() { logger+= 'info;'; }
-    function error() { logger+= 'error;'; }
-    var scope = createScope({$log: $logFactory},
-                            {$exceptionHandler: rethrow,
-                             $window: {console: {log: log,
-                                                 warn: warn,
-                                                 info: info,
-                                                 error: error}}}),
-        $log = scope.$service('$log');
-
-    $log.log();
-    $log.warn();
-    $log.info();
-    $log.error();
-    expect(logger).toEqual('log;warn;info;error;');
-  });
-
-
-  it('should use console.log() if other not present', function() {
-    var logger = "";
-    function log() { logger+= 'log;'; }
-    var scope = createScope({$log: $logFactory},
-                            {$window: {console:{log:log}},
-                             $exceptionHandler: rethrow});
-    var $log = scope.$service('$log');
-    $log.log();
-    $log.warn();
-    $log.info();
-    $log.error();
-    expect(logger).toEqual('log;log;log;log;');
-  });
+  it('should use console if present', inject(
+    function(){
+      $window.console = {log: log,
+                         warn: warn,
+                         info: info,
+                         error: error};
+    },
+    function($log) {
+      $log.log();
+      $log.warn();
+      $log.info();
+      $log.error();
+      expect(logger).toEqual('log;warn;info;error;');
+    }
+  ));
 
 
-  it('should use noop if no console', function() {
-    var scope = createScope({$log: $logFactory},
-                            {$window: {},
-                             $exceptionHandler: rethrow}),
-        $log = scope.$service('$log');
-    $log.log();
-    $log.warn();
-    $log.info();
-    $log.error();
-  });
+  it('should use console.log() if other not present', inject(
+    function(){
+      $window.console = {log: log};
+    },
+    function($log) {
+      $log.log();
+      $log.warn();
+      $log.info();
+      $log.error();
+      expect(logger).toEqual('log;log;log;log;');
+    }
+  ));
+
+
+  it('should use noop if no console', inject(
+    function($log) {
+      $log.log();
+      $log.warn();
+      $log.info();
+      $log.error();
+    }
+  ));
 
 
   describe('$log.error', function() {

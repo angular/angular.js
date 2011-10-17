@@ -29,7 +29,7 @@
  * @param {boolean=} [sync=false] in case of cache hit execute `success` synchronously.
  */
 angularServiceInject('$xhr.cache', function($xhr, $defer, $error, $log) {
-  var inflight = {}, self = this;
+  var inflight = {};
   function cache(method, url, post, success, error, verifyCache, sync) {
     if (isFunction(post)) {
       if (!isFunction(success)) {

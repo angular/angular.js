@@ -62,7 +62,7 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$route', function($location, $routeParams) {
+angularServiceInject('$route', function($rootScope, $location, $routeParams) {
   /**
    * @ngdoc event
    * @name angular.service.$route#$beforeRouteChange
@@ -112,8 +112,7 @@ angularServiceInject('$route', function($location, $routeParams) {
 
   var routes = {},
       matcher = switchRouteMatcher,
-      parentScope = this,
-      rootScope = this,
+      parentScope = $rootScope,
       dirty = 0,
       forceReload = false,
       $route = {
@@ -220,7 +219,7 @@ angularServiceInject('$route', function($location, $routeParams) {
         }
       };
 
-  this.$watch(function() { return dirty + $location.url(); }, updateRoute);
+  $rootScope.$watch(function() { return dirty + $location.url(); }, updateRoute);
 
   return $route;
 
@@ -262,7 +261,7 @@ angularServiceInject('$route', function($location, $routeParams) {
       last.scope && last.scope.$emit('$routeUpdate');
     } else {
       forceReload = false;
-      rootScope.$broadcast('$beforeRouteChange', next, last);
+      $rootScope.$broadcast('$beforeRouteChange', next, last);
       last && last.scope && last.scope.$destroy();
       $route.current = next;
       if (next) {
@@ -280,7 +279,7 @@ angularServiceInject('$route', function($location, $routeParams) {
           next.scope = parentScope.$new(Controller);
         }
       }
-      rootScope.$broadcast('$afterRouteChange', next, last);
+      $rootScope.$broadcast('$afterRouteChange', next, last);
     }
   }
 
@@ -323,4 +322,4 @@ angularServiceInject('$route', function($location, $routeParams) {
   }
 
 
-}, ['$location', '$routeParams']);
+}, ['$rootScope', '$location', '$routeParams']);

@@ -8,17 +8,17 @@ describe('form', function() {
   });
 
 
-  it('should attach form to DOM', function() {
+  it('should attach form to DOM', inject(function($rootScope) {
     doc = angular.element('<form>');
-    var scope = angular.compile(doc)();
+    angular.compile(doc)($rootScope);
     expect(doc.data('$form')).toBeTruthy();
-  });
+  }));
 
 
-  it('should prevent form submission', function() {
+  it('should prevent form submission', inject(function($rootScope) {
     var startingUrl = '' + window.location;
     doc = angular.element('<form name="myForm"><input type=submit val=submit>');
-    var scope = angular.compile(doc)();
+    angular.compile(doc)($rootScope);
     browserTrigger(doc.find('input'));
     waitsFor(
         function() { return true; },
@@ -26,44 +26,44 @@ describe('form', function() {
     runs(function() {
       expect('' + window.location).toEqual(startingUrl);
     });
-  });
+  }));
 
 
-  it('should publish form to scope', function() {
+  it('should publish form to scope', inject(function($rootScope) {
     doc = angular.element('<form name="myForm"></form>');
-    var scope = angular.compile(doc)();
-    expect(scope.myForm).toBeTruthy();
+    angular.compile(doc)($rootScope);
+    expect($rootScope.myForm).toBeTruthy();
     expect(doc.data('$form')).toBeTruthy();
-    expect(doc.data('$form')).toEqual(scope.myForm);
-  });
+    expect(doc.data('$form')).toEqual($rootScope.myForm);
+  }));
 
 
-  it('should have ng-valide/ng-invalid style', function() {
+  it('should have ng-valide/ng-invalid style', inject(function($rootScope) {
     doc = angular.element('<form name="myForm"><input type=text ng:model=text required>');
-    var scope = angular.compile(doc)();
-    scope.text = 'misko';
-    scope.$digest();
+    angular.compile(doc)($rootScope);
+    $rootScope.text = 'misko';
+    $rootScope.$digest();
 
     expect(doc.hasClass('ng-valid')).toBe(true);
     expect(doc.hasClass('ng-invalid')).toBe(false);
 
-    scope.text = '';
-    scope.$digest();
+    $rootScope.text = '';
+    $rootScope.$digest();
     expect(doc.hasClass('ng-valid')).toBe(false);
     expect(doc.hasClass('ng-invalid')).toBe(true);
-  });
+  }));
 
 
-  it('should chain nested forms', function() {
+  it('should chain nested forms', inject(function($rootScope) {
     doc = angular.element(
         '<ng:form name=parent>' +
           '<ng:form name=child>' +
             '<input type=text ng:model=text name=text>' +
           '</ng:form>' +
         '</ng:form>');
-    var scope = angular.compile(doc)();
-    var parent = scope.parent;
-    var child = scope.child;
+    angular.compile(doc)($rootScope);
+    var parent = $rootScope.parent;
+    var child = $rootScope.child;
     var input = child.text;
 
     input.$emit('$invalid', 'MyError');
@@ -73,21 +73,21 @@ describe('form', function() {
     input.$emit('$valid', 'MyError');
     expect(parent.$error.MyError).toBeUndefined();
     expect(child.$error.MyError).toBeUndefined();
-  });
+  }));
 
 
-  it('should chain nested forms in repeater', function() {
+  it('should chain nested forms in repeater', inject(function($rootScope) {
     doc = angular.element(
        '<ng:form name=parent>' +
         '<ng:form ng:repeat="f in forms" name=child>' +
           '<input type=text ng:model=text name=text>' +
          '</ng:form>' +
        '</ng:form>');
-    var scope = angular.compile(doc)();
-    scope.forms = [1];
-    scope.$digest();
+    angular.compile(doc)($rootScope);
+    $rootScope.forms = [1];
+    $rootScope.$digest();
 
-    var parent = scope.parent;
+    var parent = $rootScope.parent;
     var child = doc.find('input').scope().child;
     var input = child.text;
     expect(parent).toBeDefined();
@@ -102,5 +102,5 @@ describe('form', function() {
     input.$emit('$valid', 'myRule');
     expect(parent.$error.myRule).toBeUndefined();
     expect(child.$error.myRule).toBeUndefined();
-  });
+  }));
 });

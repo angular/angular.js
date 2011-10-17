@@ -11,9 +11,8 @@
  *
  * @example
  */
-angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
-  var requests = [],
-      scope = this;
+angularServiceInject('$xhr.bulk', function($rootScope, $xhr, $error, $log){
+  var requests = [];
   function bulkXHR(method, url, post, success, error) {
     if (isFunction(post)) {
       error = success;
@@ -82,6 +81,6 @@ angularServiceInject('$xhr.bulk', function($xhr, $error, $log){
       }
     });
   };
-  this.$watch(function() { bulkXHR.flush(); });
+  $rootScope.$watch(function() { bulkXHR.flush(); });
   return bulkXHR;
-}, ['$xhr', '$xhr.error', '$log']);
+}, ['$rootScope', '$xhr', '$xhr.error', '$log']);

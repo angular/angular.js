@@ -25,13 +25,13 @@ describe('angular.scenario.SpecRunner', function() {
     };
   }
 
-  beforeEach(function() {
+  beforeEach(inject(function($rootScope) {
     log = [];
     $window = {};
     $window.setTimeout = function(fn, timeout) {
       fn();
     };
-    $root = angular.scope();
+    $root = $rootScope;
     $root.emit = function(eventName) {
       log.push(eventName);
     };
@@ -41,7 +41,7 @@ describe('angular.scenario.SpecRunner', function() {
     $root.application = new ApplicationMock($window);
     $root.$window = $window;
     runner = $root.$new(angular.scenario.SpecRunner);
-  });
+  }));
 
   it('should bind futures to the spec', function() {
     runner.addFuture('test future', function(done) {
