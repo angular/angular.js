@@ -4,28 +4,26 @@ describe('filter', function() {
 
   var filter = angular.filter;
 
-  it('should called the filter when evaluating expression', function() {
-    var scope = createScope();
+  it('should called the filter when evaluating expression', inject(function($rootScope) {
     filter.fakeFilter = function() {};
     spyOn(filter, 'fakeFilter');
 
-    scope.$eval('10|fakeFilter');
+    $rootScope.$eval('10|fakeFilter');
     expect(filter.fakeFilter).toHaveBeenCalledWith(10);
     delete filter['fakeFilter'];
-  });
+  }));
 
-  it('should call filter on scope context', function() {
-    var scope = createScope();
-    scope.name = 'misko';
+  it('should call filter on scope context', inject(function($rootScope) {
+    $rootScope.name = 'misko';
     filter.fakeFilter = function() {
       expect(this.name).toEqual('misko');
     };
     spyOn(filter, 'fakeFilter').andCallThrough();
 
-    scope.$eval('10|fakeFilter');
+    $rootScope.$eval('10|fakeFilter');
     expect(filter.fakeFilter).toHaveBeenCalled();
     delete filter['fakeFilter'];
-  });
+  }));
 
   describe('formatNumber', function() {
     var pattern;
@@ -85,17 +83,12 @@ describe('filter', function() {
   describe('currency', function() {
     var currency, html, context;
 
-    beforeEach(function() {
+    beforeEach(inject(function($rootScope) {
       html = jqLite('<span></span>');
-      context = createScope();
+      context = $rootScope;
       context.$element = html;
       currency = bind(context, filter.currency);
-    });
-
-    afterEach(function() {
-      dealoc(context);
-    });
-
+    }));
 
     it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
@@ -119,10 +112,10 @@ describe('filter', function() {
   describe('number', function() {
     var context, number;
 
-    beforeEach(function() {
-      context = createScope();
+    beforeEach(inject(function($rootScope) {
+      context = $rootScope;
       number = bind(context, filter.number);
-    });
+    }));
 
 
     it('should do basic filter', function() {
@@ -214,10 +207,10 @@ describe('filter', function() {
 
     var context, date;
 
-    beforeEach(function() {
-      context = createScope();
+    beforeEach(inject(function($rootScope) {
+      context = $rootScope;
       date = bind(context, filter.date);
-    });
+    }));
 
     it('should ignore falsy inputs', function() {
       expect(date(null)).toBeNull();

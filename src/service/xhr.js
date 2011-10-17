@@ -171,8 +171,7 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject('$xhr', function($browser, $error, $log){
-  var rootScope = this;
+angularServiceInject('$xhr', function($rootScope, $browser, $error, $log){
   var xhrHeaderDefaults = {
     common: {
       "Accept": "application/json, text/plain, */*",
@@ -204,7 +203,7 @@ angularServiceInject('$xhr', function($browser, $error, $log){
             response = fromJson(response, true);
           }
         }
-        rootScope.$apply(function() {
+        $rootScope.$apply(function() {
           if (200 <= code && code < 300) {
               success(code, response);
           } else if (isFunction(error)) {
@@ -226,4 +225,4 @@ angularServiceInject('$xhr', function($browser, $error, $log){
   xhr.defaults = {headers: xhrHeaderDefaults};
 
   return xhr;
-}, ['$browser', '$xhr.error', '$log']);
+}, ['$rootScope', '$browser', '$xhr.error', '$log']);

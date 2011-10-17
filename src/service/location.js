@@ -419,8 +419,8 @@ function locationGetterSetter(property, preprocess) {
  *
  * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
-angularServiceInject('$location', function($browser, $sniffer, $locationConfig, $document) {
-  var scope = this, currentUrl,
+angularServiceInject('$location', function($rootScope, $browser, $sniffer, $locationConfig, $document) {
+  var currentUrl,
       basePath = $browser.baseHref() || '/',
       pathPrefix = pathPrefixFromBase(basePath),
       hashPrefix = $locationConfig.hashPrefix || '',
@@ -464,7 +464,7 @@ angularServiceInject('$location', function($browser, $sniffer, $locationConfig, 
       href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
 
       currentUrl.url(href);
-      scope.$apply();
+      $rootScope.$apply();
       event.preventDefault();
       // hack to work around FF6 bug 684208 when scenario runner clicks on links
       window.angular['ff-684208-preventDefault'] = true;
@@ -482,16 +482,16 @@ angularServiceInject('$location', function($browser, $sniffer, $locationConfig, 
   $browser.onUrlChange(function(newUrl) {
     if (currentUrl.absUrl() != newUrl) {
       currentUrl.$$parse(newUrl);
-      scope.$apply();
+      $rootScope.$apply();
     }
   });
 
   // update browser
   var changeCounter = 0;
-  scope.$watch(function() {
+  $rootScope.$watch(function() {
     if ($browser.url() != currentUrl.absUrl()) {
       changeCounter++;
-      scope.$evalAsync(function() {
+      $rootScope.$evalAsync(function() {
         $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
         currentUrl.$$replace = false;
       });
@@ -501,7 +501,7 @@ angularServiceInject('$location', function($browser, $sniffer, $locationConfig, 
   });
 
   return currentUrl;
-}, ['$browser', '$sniffer', '$locationConfig', '$document']);
+}, ['$rootScope', '$browser', '$sniffer', '$locationConfig', '$document']);
 
 
 angular.service('$locationConfig', function() {

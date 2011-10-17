@@ -9,17 +9,11 @@
  * Creates an injector function that can be used for retrieving services as well as for
  * dependency injection (see {@link guide/dev_guide.di dependency injection}).
  *
- * Angular creates an injector automatically for the root scope and it is available as the
- * {@link angular.scope.$service $service} property. Creating an injector doesn't automatically
- * create all of the `$eager` {@link angular.service services}. You have to call `injector.eager()`
- * to initialize them.
+ * Creating an injector doesn't automatically create all of the `$eager`
+ * {@link angular.service services}. You have to call `injector.eager()` to initialize them.
  *
- * @param {Object=} [factoryScope={}] The `this` for the service factory function.
  * @param {Object.<string, function()>=} [factories=angular.service] Map of the service factory
  *     functions.
- * @param {Object.<string, function()>=} [instanceCache={}] Place where instances of services are
- *     saved for reuse. Can also be used to override services specified by `serviceFactory`
- *     (useful in tests).
  * @returns {function()} Injector function:
  *
  *   * `injector(serviceName)`:
@@ -38,30 +32,24 @@
  *   * An `eager` property which is used to initialize the eager services.
  *     `injector.eager()`
  */
-function createInjector(factoryScope, factories, instanceCache) {
+function createInjector(factories) {
+  var instanceCache = {$injector: injector};
   factories = factories || angularService;
-  instanceCache = instanceCache || {};
-  factoryScope = factoryScope || {};
+
   injector.invoke = invoke;
 
-  injector.eager = function() {
-    forEach(factories, function(factory, name){
-      if (factory.$eager)
-        injector(name);
-
-      if (factory.$creation)
-        throw new Error("Failed to register service '" + name +
-        "': $creation property is unsupported. Use $eager:true or see release notes.");
-    });
-  };
+  forEach(factories, function(factory, name){
+    if (factory.$eager)
+      injector(name);
+  });
   return injector;
 
   function injector(value){
     if (!(value in instanceCache)) {
       var factory = factories[value];
-      if (!factory) throw Error("Unknown provider for '"+value+"'.");
+      if (!factory) throw Error("Unknown provider for '" + value + "'.");
       inferInjectionArgs(factory);
-      instanceCache[value] = invoke(factoryScope, factory);
+      instanceCache[value] = invoke(null, factory);
     }
     return instanceCache[value];
   }

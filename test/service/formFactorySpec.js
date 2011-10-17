@@ -2,19 +2,10 @@
 
 describe('$formFactory', function() {
 
-  var rootScope;
-  var formFactory;
-
-  beforeEach(function() {
-    rootScope = angular.scope();
-    formFactory = rootScope.$service('$formFactory');
-  });
-
-
-  it('should have global form', function() {
-    expect(formFactory.rootForm).toBeTruthy();
-    expect(formFactory.rootForm.$createWidget).toBeTruthy();
-  });
+  it('should have global form', inject(function($rootScope, $formFactory) {
+    expect($formFactory.rootForm).toBeTruthy();
+    expect($formFactory.rootForm.$createWidget).toBeTruthy();
+  }));
 
 
   describe('new form', function() {
@@ -41,11 +32,11 @@ describe('$formFactory', function() {
         }
     };
 
-    beforeEach(function() {
+    beforeEach(inject(function($rootScope, $formFactory) {
       log = '';
-      scope = rootScope.$new();
-      form = formFactory(scope);
-    });
+      scope = $rootScope.$new();
+      form = $formFactory(scope);
+    }));
 
     describe('$createWidget', function() {
       var widget;
@@ -61,14 +52,14 @@ describe('$formFactory', function() {
 
 
       describe('data flow', function() {
-        it('should have status properties', function() {
+        it('should have status properties', inject(function($rootScope, $formFactory) {
           expect(widget.$error).toEqual({});
           expect(widget.$valid).toBe(true);
           expect(widget.$invalid).toBe(false);
-        });
+        }));
 
 
-        it('should update view when model changes', function() {
+        it('should update view when model changes', inject(function($rootScope, $formFactory) {
           scope.text = 'abc';
           scope.$digest();
           expect(log).toEqual('<init>$validate();$render();');
@@ -78,17 +69,17 @@ describe('$formFactory', function() {
           scope.$digest();
           expect(widget.$modelValue).toEqual('xyz');
 
-        });
+        }));
 
 
-        it('should have controller prototype methods', function() {
-          expect(widget.getFormFactory()).toEqual(formFactory);
-        });
+        it('should have controller prototype methods', inject(function($rootScope, $formFactory) {
+          expect(widget.getFormFactory()).toEqual($formFactory);
+        }));
       });
 
 
       describe('validation', function() {
-        it('should update state on error', function() {
+        it('should update state on error', inject(function($rootScope, $formFactory) {
           widget.$emit('$invalid', 'E');
           expect(widget.$valid).toEqual(false);
           expect(widget.$invalid).toEqual(true);
@@ -96,21 +87,21 @@ describe('$formFactory', function() {
           widget.$emit('$valid', 'E');
           expect(widget.$valid).toEqual(true);
           expect(widget.$invalid).toEqual(false);
-        });
+        }));
 
 
-        it('should have called the model setter before the validation', function() {
+        it('should have called the model setter before the validation', inject(function($rootScope, $formFactory) {
           var modelValue;
           widget.$on('$validate', function() {
             modelValue = scope.text;
           });
           widget.$emit('$viewChange', 'abc');
           expect(modelValue).toEqual('abc');
-        });
+        }));
 
 
         describe('form', function() {
-          it('should invalidate form when widget is invalid', function() {
+          it('should invalidate form when widget is invalid', inject(function($rootScope, $formFactory) {
             expect(form.$error).toEqual({});
             expect(form.$valid).toEqual(true);
             expect(form.$invalid).toEqual(false);
@@ -143,18 +134,18 @@ describe('$formFactory', function() {
             expect(form.$error).toEqual({});
             expect(form.$valid).toEqual(true);
             expect(form.$invalid).toEqual(false);
-          });
+          }));
         });
 
       });
 
       describe('id assignment', function() {
-        it('should default to name expression', function() {
+        it('should default to name expression', inject(function($rootScope, $formFactory) {
           expect(form.text).toEqual(widget);
-        });
+        }));
 
 
-        it('should use ng:id', function() {
+        it('should use ng:id', inject(function($rootScope, $formFactory) {
           widget = form.$createWidget({
             scope:scope,
             model:'text',
@@ -162,10 +153,10 @@ describe('$formFactory', function() {
             controller:WidgetCtrl
           });
           expect(form['my.id']).toEqual(widget);
-        });
+        }));
 
 
-        it('should not override existing names', function() {
+        it('should not override existing names', inject(function($rootScope, $formFactory) {
           var widget2 = form.$createWidget({
             scope:scope,
             model:'text',
@@ -174,11 +165,11 @@ describe('$formFactory', function() {
           });
           expect(form.text).toEqual(widget);
           expect(widget2).not.toEqual(widget);
-        });
+        }));
       });
 
       describe('dealocation', function() {
-        it('should dealocate', function() {
+        it('should dealocate', inject(function($rootScope, $formFactory) {
           var widget2 = form.$createWidget({
             scope:scope,
             model:'text',
@@ -199,10 +190,10 @@ describe('$formFactory', function() {
 
           widget2.$destroy();
           expect(form.myId).toBeUndefined();
-        });
+        }));
 
 
-        it('should remove invalid fields from errors, when child widget removed', function() {
+        it('should remove invalid fields from errors, when child widget removed', inject(function($rootScope, $formFactory) {
           widget.$emit('$invalid', 'MyError');
 
           expect(form.$error.MyError).toEqual([widget]);
@@ -212,7 +203,7 @@ describe('$formFactory', function() {
 
           expect(form.$error.MyError).toBeUndefined();
           expect(form.$invalid).toEqual(false);
-        });
+        }));
       });
     });
   });

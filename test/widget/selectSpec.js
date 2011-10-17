@@ -1,10 +1,10 @@
 'use strict';
 
 describe('select', function() {
-  var compile = null, element = null, scope = null, $formFactory = null;
+  var compile = null, element = null, scope = null;
 
-  beforeEach(function() {
-    scope = null;
+  beforeEach(inject(function($rootScope) {
+    scope = $rootScope;
     element = null;
     compile = function(html, parent) {
       if (parent) {
@@ -13,12 +13,11 @@ describe('select', function() {
       } else {
         element = jqLite(html);
       }
-      scope = angular.compile(element)();
+      angular.compile(element)($rootScope);
       scope.$apply();
-      $formFactory = scope.$service('$formFactory');
       return scope;
     };
-  });
+  }));
 
   afterEach(function() {
     dealoc(element);
@@ -41,7 +40,7 @@ describe('select', function() {
       expect(scope.$element.text()).toBe('foobarC');
     });
 
-    it('should require', function() {
+    it('should require', inject(function($formFactory) {
       compile('<select name="select" ng:model="selection" required ng:change="log=log+\'change;\'">' +
           '<option value=""></option>' +
           '<option value="c">C</option>' +
@@ -65,7 +64,7 @@ describe('select', function() {
       expect(element).toBeValid();
       expect(element).toBeDirty();
       expect(scope.log).toEqual('change;');
-    });
+    }));
 
     it('should not be invalid if no require', function() {
       compile('<select name="select" ng:model="selection">' +
@@ -91,7 +90,7 @@ describe('select', function() {
       expect(element[0].childNodes[0].selected).toEqual(true);
     });
 
-    it('should require', function() {
+    it('should require', inject(function($formFactory) {
       compile('<select name="select" ng:model="selection" multiple required>' +
           '<option>A</option>' +
           '<option>B</option>' +
@@ -112,7 +111,7 @@ describe('select', function() {
       browserTrigger(element, 'change');
       expect(element).toBeValid();
       expect(element).toBeDirty();
-    });
+    }));
 
   });
 
@@ -157,12 +156,12 @@ describe('select', function() {
       dealoc(scope);
     });
 
-    it('should throw when not formated "? for ? in ?"', function() {
+    it('should throw when not formated "? for ? in ?"', inject(function($rootScope, $exceptionHandler) {
       expect(function() {
         compile('<select ng:model="selected" ng:options="i dont parse"></select>');
       }).toThrow("Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
                  " _collection_' but got 'i dont parse'.");
-    });
+    }));
 
     it('should render a list', function() {
       createSingleSelect();

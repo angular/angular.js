@@ -102,11 +102,10 @@ Template.prototype = {
  *
  *
  * @param {string|DOMElement} element Element or HTML to compile into a template function.
- * @returns {function([scope][, cloneAttachFn])} a template function which is used to bind template
+ * @returns {function(scope[, cloneAttachFn])} a template function which is used to bind template
  * (a DOM element/tree) to a scope. Where:
  *
- *  * `scope` - A {@link angular.scope Scope} to bind to. If none specified, then a new
- *               root scope is created.
+ *  * `scope` - A {@link angular.scope Scope} to bind to.
  *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
  *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
  *               cloned elements to the DOM document at the appropriate place. The `cloneAttachFn` is
@@ -115,9 +114,8 @@ Template.prototype = {
  *      * `clonedElement` - is a clone of the original `element` passed into the compiler.
  *      * `scope` - is the current scope with which the linking function is working with.
  *
- * Calling the template function returns the scope to which the element is bound to. It is either
- * the same scope as the one passed into the template function, or if none were provided it's the
- * newly create scope.
+ * Calling the template function returns the element of the template. It is either the original element
+ * passed in, or the clone of the element if the `cloneAttachFn` is provided.
  *
  * It is important to understand that the returned scope is "linked" to the view DOM, but no linking
  * (instance) functions registered by {@link angular.directive directives} or
@@ -133,8 +131,8 @@ Template.prototype = {
  * - If you are not asking the linking function to clone the template, create the DOM element(s)
  *   before you send them to the compiler and keep this reference around.
  *   <pre>
- *     var view = angular.element('<p>{{total}}</p>'),
- *         scope = angular.compile(view)();
+ *     var scope = angular.injector()('$rootScope');
+ *     var element = angular.compile('<p>{{total}}</p>')(scope);
  *   </pre>
  *
  * - if on the other hand, you need the element to be cloned, the view reference from the original
@@ -208,17 +206,17 @@ Compiler.prototype = {
     }
     template = this.templatize(templateElement, index) || new Template();
     return function(scope, cloneConnectFn){
+      assertArg(scope, 'scope');
       // important!!: we must call our jqLite.clone() since the jQuery one is trying to be smart
       // and sometimes changes the structure of the DOM.
       var element = cloneConnectFn
         ? JQLitePrototype.clone.call(templateElement) // IMPORTANT!!!
         : templateElement;
-        scope = scope || createScope();
       element.data($$scope, scope);
       scope.$element = element;
       (cloneConnectFn||noop)(element, scope);
       template.link(element, scope);
-      return scope;
+      return element;
     };
   },
 

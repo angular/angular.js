@@ -2,24 +2,20 @@
 
 describe('injector', function() {
   var providers;
-  var cache;
   var injector;
-  var scope;
 
   beforeEach(function() {
     providers = extensionMap({}, 'providers');
-    cache = {};
-    scope = {};
-    injector = createInjector(scope, providers, cache);
+    injector = createInjector(providers);
   });
 
   it("should return same instance from calling provider", function() {
-    providers('text', function() { return scope.name; });
-    scope.name = 'abc';
-    expect(injector('text')).toEqual('abc');
-    expect(cache.text).toEqual('abc');
-    scope.name = 'deleted';
-    expect(injector('text')).toEqual('abc');
+    var instance = {},
+        original = instance;
+    providers('instance', function() { return instance; });
+    expect(injector('instance')).toEqual(instance);
+    instance = 'deleted';
+    expect(injector('instance')).toEqual(original);
   });
 
   it("should call function", function() {
@@ -35,10 +31,9 @@ describe('injector', function() {
   });
 
   it('should inject providers', function() {
-    providers('a', function() {return this.mi = 'Mi';});
-    providers('b', function(mi){return this.name = mi+'sko';}, {$inject:['a']});
+    providers('a', function() {return 'Mi';});
+    providers('b', function(mi){return mi+'sko';}, {$inject:['a']});
     expect(injector('b')).toEqual('Misko');
-    expect(scope).toEqual({mi:'Mi', name:'Misko'});
   });
 
 
@@ -76,7 +71,7 @@ describe('injector', function() {
   it('should autostart eager services', function() {
     var log = '';
     providers('eager', function() {log += 'eager;'; return 'foo';}, {$eager: true});
-    injector.eager();
+    injector = createInjector(providers);
     expect(log).toEqual('eager;');
     expect(injector('eager')).toBe('foo');
   });
@@ -126,11 +121,11 @@ describe('injector', function() {
     });
 
     it('should infer injection on services', function() {
-      var scope = angular.scope({
+      var $injector = createInjector({
         a: function() { return 'a';},
         b: function(a){ return a + 'b';}
       });
-      expect(scope.$service('b')).toEqual('ab');
+      expect($injector('b')).toEqual('ab');
     });
   });
 
