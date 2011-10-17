@@ -79,6 +79,8 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} minlength Sets `MINLENGTH` validation error key if the value is shorter than minlength.
+ * @param {number=} maxlength Sets `MAXLENGTH` validation error key if the value is longer than maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -656,6 +658,8 @@ angularWidget('input', function(inputElement){
           modelScope = this,
           patternMatch, widget,
           pattern = trim(inputElement.attr('ng:pattern')),
+          minlength = parseInt(inputElement.attr('minlength'), 10),
+          maxlength = parseInt(inputElement.attr('maxlength'), 10),
           loadFromScope = type.match(/^\s*\@\s*(.*)/);
 
 
@@ -713,12 +717,20 @@ angularWidget('input', function(inputElement){
       widget.$on('$validate', function(event) {
         var $viewValue = trim(widget.$viewValue);
         var inValid = widget.$required && !$viewValue;
+        var tooLong = maxlength && $viewValue && $viewValue.length > maxlength,
+            tooShort = minlength && $viewValue && $viewValue.length < minlength;
         var missMatch = $viewValue && !patternMatch($viewValue);
         if (widget.$error.REQUIRED != inValid){
           widget.$emit(inValid ? '$invalid' : '$valid', 'REQUIRED');
         }
         if (widget.$error.PATTERN != missMatch){
           widget.$emit(missMatch ? '$invalid' : '$valid', 'PATTERN');
+        }
+        if (widget.$error.MINLENGTH != tooShort){
+          widget.$emit(tooShort ? '$invalid' : '$valid', 'MINLENGTH');
+        }
+        if (widget.$error.MAXLENGTH != tooLong){
+          widget.$emit(tooLong ? '$invalid' : '$valid', 'MAXLENGTH');
         }
       });
 
