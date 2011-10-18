@@ -90,15 +90,13 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$cacheFactory', '$autoScroll', '$element',
-    function($http, $cacheFactory,     $autoScroll,   element) {
+    return ['$http', '$templateCache', '$autoScroll', '$element',
+    function($http,   $templateCache,   $autoScroll,   element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
           childScope,
-          oldScope,
-          // TODO(vojta): configure the cache / extract into $tplCache service ?
-          cache = $cacheFactory.get('templates') || $cacheFactory('templates');
+          oldScope;
 
       function incrementChange() { changeCounter++;}
       this.$watch(srcExp, incrementChange);
@@ -135,14 +133,14 @@ angularWidget('ng:include', function(element){
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          if ((fromCache = cache.get(src))) {
+          if ((fromCache = $templateCache.get(src))) {
             scope.$evalAsync(function() {
               updateContent(fromCache);
             });
           } else {
             $http.get(src).on('success', function(response) {
               updateContent(response);
-              cache.put(src, response);
+              $templateCache.put(src, response);
             }).on('error', clearContent);
           }
         } else {
@@ -575,13 +573,10 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$cacheFactory', '$route', '$autoScroll', '$element',
-    function($http,   $cacheFactory,   $route,   $autoScroll,   element) {
+    return ['$http', '$templateCache', '$route', '$autoScroll', '$element',
+    function($http,   $templateCache,   $route,   $autoScroll,   element) {
       var template;
       var changeCounter = 0;
-
-      // TODO(vojta): configure the cache / extract into $tplCache service ?
-      var cache = $cacheFactory.get('templates') || $cacheFactory('templates');
 
       this.$on('$afterRouteChange', function() {
         changeCounter++;
@@ -601,7 +596,7 @@ angularWidget('ng:view', function(element) {
         }
 
         if (template) {
-          if ((fromCache = cache.get(template))) {
+          if ((fromCache = $templateCache.get(template))) {
             scope.$evalAsync(function() {
               updateContent(fromCache);
             });
@@ -611,7 +606,7 @@ angularWidget('ng:view', function(element) {
               // ignore callback if another route change occured since
               if (newChangeCounter == changeCounter)
                 updateContent(response);
-              cache.put(template, response);
+              $templateCache.put(template, response);
               $autoScroll();
             }).on('error', clearContent);
           }
