@@ -862,54 +862,54 @@ describe('$http', function() {
   });
 
 
-  describe('pendingCount', function() {
+  describe('pendingRequests', function() {
 
-    it('should return number of pending requests', function() {
+    it('should be an array of pending requests', function() {
       $httpBackend.when('GET').then(200);
-      expect($http.pendingCount()).toBe(0);
+      expect($http.pendingRequests.length).toBe(0);
 
       $http({method: 'get', url: '/some'});
-      expect($http.pendingCount()).toBe(1);
+      expect($http.pendingRequests.length).toBe(1);
 
       $httpBackend.flush();
-      expect($http.pendingCount()).toBe(0);
+      expect($http.pendingRequests.length).toBe(0);
     });
 
 
-    it('should decrement the counter when request aborted', function() {
+    it('should remove the request when aborted', function() {
       $httpBackend.when('GET').then(0);
       future = $http({method: 'get', url: '/x'});
-      expect($http.pendingCount()).toBe(1);
+      expect($http.pendingRequests.length).toBe(1);
 
       future.abort();
       $httpBackend.flush();
 
-      expect($http.pendingCount()).toBe(0);
+      expect($http.pendingRequests.length).toBe(0);
     });
 
 
-    it('should decrement the counter when served from cache', function() {
+    it('should remove the request when served from cache', function() {
       $httpBackend.when('GET').then(200);
 
       $http({method: 'get', url: '/cached', cache: true});
       $httpBackend.flush();
-      expect($http.pendingCount()).toBe(0);
+      expect($http.pendingRequests.length).toBe(0);
 
       $http({method: 'get', url: '/cached', cache: true});
-      expect($http.pendingCount()).toBe(1);
+      expect($http.pendingRequests.length).toBe(1);
 
       $browser.defer.flush();
-      expect($http.pendingCount()).toBe(0);
+      expect($http.pendingRequests.length).toBe(0);
     });
 
 
-    it('should decrement the counter before firing callbacks', function() {
+    it('should remove the request before firing callbacks', function() {
       $httpBackend.when('GET').then(200);
       $http({method: 'get', url: '/url'}).on('xxx', function() {
-        expect($http.pendingCount()).toBe(0);
+        expect($http.pendingRequests.length).toBe(0);
       });
 
-      expect($http.pendingCount()).toBe(1);
+      expect($http.pendingRequests.length).toBe(1);
       $httpBackend.flush();
     });
   });
