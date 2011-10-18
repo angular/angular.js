@@ -133,8 +133,8 @@ function JQLitePatchJQueryRemove(name, dispatchThis) {
         } else {
           fireEvent = !fireEvent;
         }
-        for(childIndex = 0, childLength = (children = element.children()).length; 
-            childIndex < childLength; 
+        for(childIndex = 0, childLength = (children = element.children()).length;
+            childIndex < childLength;
             childIndex++) {
           list.push(jQuery(children[childIndex]));
         }
