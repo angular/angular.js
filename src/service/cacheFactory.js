@@ -150,3 +150,10 @@ function $CacheFactoryProvider() {
     return cacheFactory;
   };
 }
+
+function $TemplateCacheProvider() {
+  this.$get = ['$cacheFactory', function($cacheFactory) {
+    return $cacheFactory('templates');
+  }];
+}
+

@@ -90,14 +90,12 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$cacheFactory', '$element', function($http, $cacheFactory, element) {
+    return ['$http', '$templateCache', '$element', function($http, $cache, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
           childScope,
-          oldScope,
-          // TODO(vojta): configure the cache / extract into $tplCache service ?
-          cache = $cacheFactory.get('templates') || $cacheFactory('templates');
+          oldScope;
 
       function incrementChange() { changeCounter++;}
       this.$watch(srcExp, incrementChange);
@@ -133,14 +131,14 @@ angularWidget('ng:include', function(element){
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          if ((fromCache = cache.get(src))) {
+          if ((fromCache = $cache.get(src))) {
             scope.$evalAsync(function() {
               updateContent(fromCache);
             });
           } else {
             $http.get(src).on('success', function(response) {
               updateContent(response);
-              cache.put(src, response);
+              $cache.put(src, response);
             }).on('error', clearContent);
           }
         } else {
@@ -573,12 +571,9 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$cacheFactory', '$route', '$element', function($http, $cacheFactory, $route, element) {
+    return ['$http', '$templateCache', '$route', '$element', function($http, $cache, $route, element) {
       var template;
       var changeCounter = 0;
-
-      // TODO(vojta): configure the cache / extract into $tplCache service ?
-      var cache = $cacheFactory.get('templates') || $cacheFactory('templates');
 
       this.$on('$afterRouteChange', function() {
         changeCounter++;
@@ -598,7 +593,7 @@ angularWidget('ng:view', function(element) {
         }
 
         if (template) {
-          if ((fromCache = cache.get(template))) {
+          if ((fromCache = $cache.get(template))) {
             scope.$evalAsync(function() {
               updateContent(fromCache);
             });
@@ -608,7 +603,7 @@ angularWidget('ng:view', function(element) {
               // ignore callback if another route change occured since
               if (newChangeCounter == changeCounter)
                 updateContent(response);
-              cache.put(template, response);
+              $cache.put(template, response);
             }).on('error', clearContent);
           }
         } else {
