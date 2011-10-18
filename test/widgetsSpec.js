@@ -290,6 +290,28 @@ describe("widget", function() {
       expect(element.text()).toEqual('misko:m:first|shyam:s:last|');
     });
 
+    it('should ignore $ and $$ properties', function() {
+      var scope = compile('<ul><li ng:repeat="i in items">{{i}}|</li></ul>');
+      scope.items = ['a', 'b', 'c'];
+      scope.items.$$hashkey = 'xxx';
+      scope.items.$root = 'yyy';
+      scope.$digest();
+
+      expect(element.text()).toEqual('a|b|c|');
+    });
+
+    it('should repeat over nested arrays', function() {
+      var scope = compile('<ul>' +
+                            '<li ng:repeat="subgroup in groups">' +
+                              '<div ng:repeat="group in subgroup">{{group}}|</div>X' +
+                            '</li>' +
+                           '</ul>');
+      scope.groups = [['a', 'b'], ['c','d']];
+      scope.$digest();
+
+      expect(element.text()).toEqual('a|b|Xc|d|X');
+    });
+
 
     describe('stability', function() {
       var a, b, c, d, scope, lis;
