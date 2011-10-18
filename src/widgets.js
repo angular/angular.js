@@ -373,7 +373,7 @@ angularWidget('@ng:repeat', function(expression, element){
           cursor = iterStartElement;     // current position of the node
 
       for (key in collection) {
-        if (collection.hasOwnProperty(key)) {
+        if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
           last = lastOrder.shift(value = collection[key]);
           if (last) {
             // if we have already seen this object, then we need to reuse the
