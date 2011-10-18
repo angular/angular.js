@@ -56,6 +56,8 @@ function transform(data, fns, param) {
  * @requires $exceptionHandler
  * @requires $cacheFactory
  *
+ * @property {Array.<XhrFuture>} pendingRequests Array of pending requests.
+ *
  * @description
  */
 function $HttpProvider() {
@@ -89,28 +91,14 @@ function $HttpProvider() {
   this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope',
       function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope) {
 
-  var cache = $cacheFactory('$http'),
-      pendingRequestsCount = 0;
+  var cache = $cacheFactory('$http');
 
   // the actual service
   function $http(config) {
     return new XhrFuture().retry(config);
   }
 
-  /**
-   * @workInProgress
-   * @ngdoc method
-   * @name angular.service.$http#pendingCount
-   * @methodOf angular.service.$http
-   *
-   * @description
-   * Return number of pending requests
-   *
-   * @returns {number} Number of pending requests
-   */
-  $http.pendingCount = function() {
-    return pendingRequestsCount;
-  };
+  $http.pendingRequests = [];
 
   /**
    * @ngdoc method
@@ -236,12 +224,14 @@ function $HttpProvider() {
   /**
    * Represents Request object, returned by $http()
    *
-   * !!! ACCESS CLOSURE VARS: $httpBackend, $browser, $config, $log, $rootScope, cache, pendingRequestsCount
+   * !!! ACCESS CLOSURE VARS:
+   * $httpBackend, $browser, $config, $log, $rootScope, cache, $http.pendingRequests
    */
   function XhrFuture() {
-    var rawRequest, cfg = {}, callbacks = [],
+    var rawRequest, parsedHeaders,
+        cfg = {}, callbacks = [],
         defHeaders = $config.headers,
-        parsedHeaders;
+        self = this;
 
     /**
      * Callback registered to $httpBackend():
@@ -281,9 +271,11 @@ function $HttpProvider() {
       response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
 
       var regexp = statusToRegexp(status),
-          pattern, callback;
+          pattern, callback, idx;
 
-      pendingRequestsCount--;
+      // remove from pending requests
+      if ((idx = indexOf($http.pendingRequests, self)) !== -1)
+        $http.pendingRequests.splice(idx, 1);
 
       // normalize internal statuses to 0
       status = Math.max(status, 0);
@@ -372,7 +364,7 @@ function $HttpProvider() {
         rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
-      pendingRequestsCount++;
+      $http.pendingRequests.push(self);
       return this;
     };
 
@@ -423,6 +415,11 @@ function $HttpProvider() {
 
       return this;
     };
+
+    /**
+     * Configuration object of the request
+     */
+    this.config = cfg;
   }
 }];
 }
