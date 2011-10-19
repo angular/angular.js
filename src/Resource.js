@@ -36,8 +36,8 @@ Route.prototype = {
   }
 };
 
-function ResourceFactory(xhr) {
-  this.xhr = xhr;
+function ResourceFactory($http) {
+  this.$http = $http;
 }
 
 ResourceFactory.DEFAULT_ACTIONS = {
@@ -107,11 +107,11 @@ ResourceFactory.prototype = {
         }
 
         var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-        self.xhr(
-          action.method,
-          route.url(extend({}, extractParams(data), action.params || {}, params)),
-          data,
-          function(status, response) {
+        var future = self.$http({
+          method: action.method,
+          url: route.url(extend({}, extractParams(data), action.params || {}, params)),
+          data: data
+        }).on('success', function(response, status) {
             if (response) {
               if (action.isArray) {
                 value.length = 0;
@@ -123,9 +123,10 @@ ResourceFactory.prototype = {
               }
             }
             (success||noop)(value);
-          },
-          error || action.verifyCache,
-          action.verifyCache);
+          });
+
+        if (error) future.on('error', error);
+
         return value;
       };
 
