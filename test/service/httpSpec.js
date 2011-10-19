@@ -743,6 +743,16 @@ describe('$http', function() {
           expect(callback).toHaveBeenCalledOnce();
           expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
         });
+
+
+        it('should deserialize json with security prefix ")]}\'"', function() {
+          $httpBackend.expect('GET', '/url').respond(')]}\'\n\n[1, "abc", {"foo":"bar"}]');
+          $http({method: 'GET', url: '/url'}).on('200', callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
+        });
       });
 
 

@@ -65,7 +65,8 @@ function $HttpProvider() {
     // transform in-coming reponse data
     transformResponse: function(data) {
       if (isString(data)) {
-        if (/^\)\]\}',\n/.test(data)) data = data.substr(6);
+        // strip json vulnerability protection prefix
+        data = data.replace(/^\)\]\}',?\n/, '');
         if (/^\s*[\[\{]/.test(data) && /[\}\]]\s*$/.test(data))
           data = fromJson(data, true);
       }
