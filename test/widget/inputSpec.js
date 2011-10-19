@@ -412,6 +412,13 @@ describe('widget: input', function() {
       });
     });
 
+    describe('password', function () {
+      it('should not change password type to text', function () {
+        doc = angular.element('<form name="form"><input type="password" ng:model="name" /></form>');
+        scope = angular.compile(doc)();
+        expect(doc.find('input')[0].getAttribute('type')).toEqual('password');
+      });
+    });
 
     it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
