@@ -225,13 +225,13 @@ describe('filter', function() {
     });
 
     it('should do basic filter', function() {
-      expect(date(noon)).toEqual(noon.toLocaleDateString());
-      expect(date(noon, '')).toEqual(noon.toLocaleDateString());
+      expect(date(noon)).toEqual(date(noon, 'fullDate'));
+      expect(date(noon, '')).toEqual(date(noon, 'fullDate'));
     });
 
     it('should accept number or number string representing milliseconds as input', function() {
-      expect(date(noon.getTime())).toEqual(noon.toLocaleDateString());
-      expect(date(noon.getTime() + "")).toEqual(noon.toLocaleDateString());
+      expect(date(noon.getTime())).toEqual(date(noon.getTime(), 'fullDate'));
+      expect(date(noon.getTime() + "")).toEqual(date(noon.getTime() + "", 'fullDate'));
     });
 
     it('should accept various format strings', function() {
@@ -297,7 +297,7 @@ describe('filter', function() {
     it('should be able to parse ISO 8601 dates/times using', function() {
       var isoString = '2010-09-03T05:05:08.872Z';
       expect(date(isoString)).
-          toEqual(angular.String.toDate(isoString).toLocaleDateString());
+          toEqual(date(isoString, 'fullDate'));
     });
 
     it('should parse format ending with non-replaced string', function() {
