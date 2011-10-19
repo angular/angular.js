@@ -79,8 +79,8 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
- * @param {number=} minlength Sets `MINLENGTH` validation error key if the value is shorter than minlength.
- * @param {number=} maxlength Sets `MAXLENGTH` validation error key if the value is longer than maxlength.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -658,8 +658,8 @@ angularWidget('input', function(inputElement){
           modelScope = this,
           patternMatch, widget,
           pattern = trim(inputElement.attr('ng:pattern')),
-          minlength = parseInt(inputElement.attr('minlength'), 10),
-          maxlength = parseInt(inputElement.attr('maxlength'), 10),
+          minlength = parseInt(inputElement.attr('ng:minlength'), 10),
+          maxlength = parseInt(inputElement.attr('ng:maxlength'), 10),
           loadFromScope = type.match(/^\s*\@\s*(.*)/);
 
 
