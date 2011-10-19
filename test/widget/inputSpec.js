@@ -412,6 +412,13 @@ describe('widget: input', function() {
       });
     });
 
+    describe('password', function () {
+      it('should not change password type to text', function () {
+        doc = angular.element('<form name="form"><input type="password" ng:model="name" /></form>');
+        scope = angular.compile(doc)();
+        expect(doc.find('input')[0].getAttribute('type')).toEqual('password');
+      });
+    });
 
     it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
@@ -549,6 +556,10 @@ describe('widget: input', function() {
           scope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
         });
 
+    itShouldVerify('text with length limits',
+        ['aaa', 'aaaaa', 'aaaaaaaaa'],
+        ['', 'a', 'aa', 'aaaaaaaaaa'],
+        {'ng:minlength': 3, 'ng:maxlength': 9});
 
     it('should throw an error when scope pattern can\'t be found', function() {
       var el = jqLite('<input ng:model="foo" ng:pattern="fooRegexp">'),

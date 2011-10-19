@@ -79,6 +79,8 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
  * @param {string} ng:model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than maxlength.
  * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
@@ -656,6 +658,8 @@ angularWidget('input', function(inputElement){
           modelScope = this,
           patternMatch, widget,
           pattern = trim(inputElement.attr('ng:pattern')),
+          minlength = parseInt(inputElement.attr('ng:minlength'), 10),
+          maxlength = parseInt(inputElement.attr('ng:maxlength'), 10),
           loadFromScope = type.match(/^\s*\@\s*(.*)/);
 
 
@@ -663,7 +667,7 @@ angularWidget('input', function(inputElement){
          patternMatch = valueFn(true);
        } else {
          if (pattern.match(/^\/(.*)\/$/)) {
-           pattern = new RegExp(pattern.substring(1, pattern.length - 2));
+           pattern = new RegExp(pattern.substring(1, pattern.length - 1));
            patternMatch = function(value) {
              return pattern.test(value);
            }
@@ -713,12 +717,20 @@ angularWidget('input', function(inputElement){
       widget.$on('$validate', function(event) {
         var $viewValue = trim(widget.$viewValue);
         var inValid = widget.$required && !$viewValue;
+        var tooLong = maxlength && $viewValue && $viewValue.length > maxlength,
+            tooShort = minlength && $viewValue && $viewValue.length < minlength;
         var missMatch = $viewValue && !patternMatch($viewValue);
         if (widget.$error.REQUIRED != inValid){
           widget.$emit(inValid ? '$invalid' : '$valid', 'REQUIRED');
         }
         if (widget.$error.PATTERN != missMatch){
           widget.$emit(missMatch ? '$invalid' : '$valid', 'PATTERN');
+        }
+        if (widget.$error.MINLENGTH != tooShort){
+          widget.$emit(tooShort ? '$invalid' : '$valid', 'MINLENGTH');
+        }
+        if (widget.$error.MAXLENGTH != tooLong){
+          widget.$emit(tooLong ? '$invalid' : '$valid', 'MAXLENGTH');
         }
       });
 
