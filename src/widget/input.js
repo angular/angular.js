@@ -6,6 +6,7 @@ var EMAIL_REGEXP = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,4}$/;
 var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
 
+
 /**
  * @ngdoc inputType
  * @name angular.inputType.text
@@ -143,6 +144,7 @@ angularInputType('email', function() {
   });
 });
 
+
 /**
  * @ngdoc inputType
  * @name angular.inputType.url
@@ -216,6 +218,7 @@ angularInputType('url', function() {
   });
 });
 
+
 /**
  * @ngdoc inputType
  * @name angular.inputType.list
@@ -287,6 +290,7 @@ angularInputType('list', function() {
   };
 });
 
+
 /**
  * @ngdoc inputType
  * @name angular.inputType.number
@@ -356,6 +360,7 @@ angularInputType('list', function() {
  */
 angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
 
+
 /**
  * @ngdoc inputType
  * @name angular.inputType.integer
@@ -424,6 +429,7 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
     </doc:example>
  */
 angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
+
 
 /**
  * @ngdoc inputType
@@ -496,8 +502,8 @@ angularInputType('checkbox', function(inputElement) {
   widget.$parseView = function() {
     widget.$modelValue = widget.$viewValue ? trueValue : falseValue;
   };
-
 });
+
 
 /**
  * @ngdoc inputType
@@ -765,15 +771,13 @@ angularWidget('input', function(inputElement){
           controller: TypeController,
           controllerArgs: [inputElement]});
 
-      widget.$pattern =
       watchElementProperty(this, widget, 'required', inputElement);
       watchElementProperty(this, widget, 'readonly', inputElement);
       watchElementProperty(this, widget, 'disabled', inputElement);
 
-
       widget.$pristine = !(widget.$dirty = false);
 
-      widget.$on('$validate', function(event) {
+      widget.$on('$validate', function() {
         var $viewValue = trim(widget.$viewValue),
             inValid = widget.$required && !$viewValue,
             tooLong = maxlength && $viewValue && $viewValue.length > maxlength,
@@ -796,9 +800,8 @@ angularWidget('input', function(inputElement){
 
       forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
         widget.$watch('$' + name, function(scope, value) {
-            inputElement[value ? 'addClass' : 'removeClass']('ng-' + name);
-          }
-        );
+          inputElement[value ? 'addClass' : 'removeClass']('ng-' + name);
+        });
       });
 
       inputElement.bind('$destroy', function() {
@@ -849,4 +852,3 @@ function watchElementProperty(modelScope, widget, name, element) {
     });
   }
 }
-
