@@ -831,9 +831,34 @@ angularWidget('input', function(inputElement){
         });
       }
     });
-
 });
 
+
+/**
+ * @ngdoc widget
+ * @name angular.widget.textarea
+ *
+ * @description
+ * HTML textarea element widget with angular data-binding. The data-binding and validation
+ * properties of this element are exactly the same as those of the
+ * {@link angular.widget.input input element}.
+ *
+ * @param {string} type Widget types as defined by {@link angular.inputType}. If the
+ *    type is in the format of `@ScopeType` then `ScopeType` is loaded from the
+ *    current scope, allowing quick definition of type.
+ * @param {string} ng:model Assignable angular expression to data-bind to.
+ * @param {string=} name Property name of the form under which the widgets is published.
+ * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
+ * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ *    minlength.
+ * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ *    maxlength.
+ * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+ *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
+ *    patterns defined as scope expressions.
+ * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ *    interaction with the input element.
+ */
 angularWidget('textarea', angularWidget('input'));
 
 
