@@ -550,6 +550,18 @@ describe('widget: input', function() {
         });
 
 
+    itShouldVerify('text with ng:minlength limit',
+        ['', 'aaa', 'aaaaa', 'aaaaaaaaa'],
+        ['a', 'aa'],
+        {'ng:minlength': 3});
+
+
+    itShouldVerify('text with ng:maxlength limit',
+        ['', 'a', 'aa', 'aaa'],
+        ['aaaa', 'aaaaa', 'aaaaaaaaa'],
+        {'ng:maxlength': 3});
+
+
     it('should throw an error when scope pattern can\'t be found', function() {
       var el = jqLite('<input ng:model="foo" ng:pattern="fooRegexp">'),
           scope = angular.compile(el)();
