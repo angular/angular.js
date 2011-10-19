@@ -318,7 +318,7 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
  *    number) or ISO 8601 extended datetime string (yyyy-MM-ddTHH:mm:ss.SSSZ).
  * @param {string=} format Formatting rules (see Description). If not specified,
- *    Date#toLocaleDateString is used.
+ *    `fullDate` is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
  * @example
@@ -344,7 +344,12 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
    </doc:example>
  */
 angularFilter.date = function(date, format) {
-  var $locale = this.$service('$locale');
+  var $locale = this.$service('$locale'),
+      text = '',
+      parts = [],
+      fn, match;
+
+  format = format || 'fullDate'
   format = $locale.DATETIME_FORMATS[format] || format;
   if (isString(date)) {
     if (NUMBER_STRING.test(date)) {
@@ -362,26 +367,23 @@ angularFilter.date = function(date, format) {
     return date;
   }
 
-  var text = date.toLocaleDateString(), fn;
-  if (format && isString(format)) {
-    text = '';
-    var parts = [], match;
-    while(format) {
-      match = DATE_FORMATS_SPLIT.exec(format);
-      if (match) {
-        parts = concat(parts, match, 1);
-        format = parts.pop();
-      } else {
-        parts.push(format);
-        format = null;
-      }
+  while(format) {
+    match = DATE_FORMATS_SPLIT.exec(format);
+    if (match) {
+      parts = concat(parts, match, 1);
+      format = parts.pop();
+    } else {
+      parts.push(format);
+      format = null;
     }
-    forEach(parts, function(value){
-      fn = DATE_FORMATS[value];
-      text += fn ? fn(date, $locale.DATETIME_FORMATS)
-                 : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
-    });
   }
+
+  forEach(parts, function(value){
+    fn = DATE_FORMATS[value];
+    text += fn ? fn(date, $locale.DATETIME_FORMATS)
+               : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
+  });
+
   return text;
 };
 
