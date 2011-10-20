@@ -442,12 +442,16 @@ angularServiceInject('$location', function($browser, $sniffer, $locationConfig, 
       // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
       // currently we open nice url link and redirect then
 
-      if (uppercase(event.target.nodeName) != 'A' || event.ctrlKey || event.metaKey ||
-          event.which == 2) return;
+      if (event.ctrlKey || event.metaKey || event.which == 2) return;
 
-      var elm = jqLite(event.target),
-          href = elm.attr('href');
+      var elm = jqLite(event.target);
 
+      // traverse the DOM up to find first A tag
+      while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
+        elm = elm.parent();
+      }
+
+      var href = elm.attr('href');
       if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
 
       // remove same domain from full url links (IE7 always returns full hrefs)
