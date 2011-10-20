@@ -536,9 +536,9 @@ describe('widget: input', function() {
         {min:0, max:1});
 
 
-    itShouldVerify('text with inlined pattern contraint',
+    itShouldVerify('text with inlined pattern constraint',
         ['', '000-00-0000', '123-45-6789'],
-        ['x000-00-0000x', 'x'],
+        ['x000-00-0000x', 'x000-00-0000', '000-00-0000x', 'x'],
         {'ng:pattern':'/^\\d\\d\\d-\\d\\d-\\d\\d\\d\\d$/'});
 
 
