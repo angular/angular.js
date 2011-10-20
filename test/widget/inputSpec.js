@@ -402,6 +402,24 @@ describe('widget: input', function() {
         expect(inputs[0].checked).toBe(true);
         expect(inputs[1].checked).toBe(false);
       });
+
+
+      it('it should work with value attribute that is data-bound', function(){
+        compile(
+            '<li>'+
+              '<input ng:repeat="item in [\'a\', \'b\']" ' +
+              '       type="radio" ng:model="choice" value="{{item}}" name="choice">'+
+            '</li>');
+
+        var inputs = scope.$element.find('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(false);
+
+        scope.choice = 'b';
+        scope.$digest();
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+      });
     });
 
 
