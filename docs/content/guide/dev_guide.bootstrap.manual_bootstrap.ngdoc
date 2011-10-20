@@ -17,7 +17,7 @@ explicitly.
   <script src="http://code.angularjs.org/angular.js"></script>
   <script>
      angular.element(document).ready(function() {
-       angular.compile(document)();
+       angular.compile(document)().$apply();
      });
   </script>
 </head>

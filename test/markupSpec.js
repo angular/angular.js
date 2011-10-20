@@ -167,20 +167,12 @@ describe("markups", function() {
   });
 
   it('should bind Text with no Bindings', function() {
-    forEach(['checked', 'disabled', 'multiple', 'readonly', 'selected'], function(name) {
+    forEach(['checked', 'disabled', 'multiple', 'readonly', 'selected', 'src', 'href'],
+        function(name) {
       compile('<div ng:' + name +'="some"></div>');
-      expect(element.attr('ng:bind-attr')).toBe('{"' + name +'":"some"}');
-      expect(element.attr(name)).toBe(name);
+      expect(sortedHtml(element)).toEqual('<div ng:bind-attr="{"' + name +'":"some"}"></div>');
       dealoc(element);
     });
-
-    compile('<div ng:src="some"></div>');
-    expect(sortedHtml(element)).toEqual('<div ng:bind-attr="{"src":"some"}" src="some"></div>');
-    dealoc(element);
-
-    compile('<div ng:href="some"></div>');
-    expect(sortedHtml(element)).toEqual('<div href="some" ng:bind-attr="{"href":"some"}"></div>');
-    dealoc(element);
   });
 
   it('should Parse Text With No Bindings', function() {
