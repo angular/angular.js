@@ -237,8 +237,7 @@ angularWidget('select', function(element){
           // This is an array of array of existing option groups in DOM. We try to reuse these if possible
           // optionGroupsCache[0] is the options with no option group
           // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-          optionGroupsCache = [[{element: selectElement, label:''}]],
-          inChangeEvent;
+          optionGroupsCache = [[{element: selectElement, label:''}]];
 
       // find existing special options
       forEach(selectElement.children(), function(option) {
@@ -358,12 +357,12 @@ angularWidget('select', function(element){
 
           if (optionGroupsCache.length <= groupIndex) {
             // we need to grow the optionGroups
-            optionGroupsCache.push(
-                existingOptions = [existingParent = {
-                                       element: optGroupTemplate.clone().attr('label', optionGroupName),
-                                       label: optionGroup.label
-                                   }]
-            );
+            existingParent = {
+              element: optGroupTemplate.clone().attr('label', optionGroupName),
+              label: optionGroup.label
+            };
+            existingOptions = [existingParent];
+            optionGroupsCache.push(existingOptions);
             selectElement.append(existingParent.element);
           } else {
             existingOptions = optionGroupsCache[groupIndex];
