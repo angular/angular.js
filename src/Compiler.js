@@ -119,6 +119,15 @@ Template.prototype = {
  * the same scope as the one passed into the template function, or if none were provided it's the
  * newly create scope.
  *
+ * It is important to understand that the returned scope is "linked" to the view DOM, but no linking
+ * (instance) functions registered by {@link angular.directive directives} or
+ * {@link angular.widget widgets} found in the template have been executed yet. This means that the
+ * view is likely empty and doesn't contain any values that result from evaluation on the scope. To
+ * bring the view to life, the scope needs to run through a $digest phase which typically is done by
+ * Angular automatically, except for the case when an application is being
+ * {@link guide/dev_guide.bootstrap.manual_bootstrap} manually bootstrapped, in which case the
+ * $digest phase must be invoked by calling {@link angular.scope.$apply}.
+ *
  * If you need access to the bound view, there are two ways to do it:
  *
  * - If you are not asking the linking function to clone the template, create the DOM element(s)
@@ -209,7 +218,6 @@ Compiler.prototype = {
       scope.$element = element;
       (cloneConnectFn||noop)(element, scope);
       template.link(element, scope);
-      if (!scope.$$phase) scope.$digest();
       return scope;
     };
   },
