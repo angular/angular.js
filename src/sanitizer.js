@@ -27,25 +27,39 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|#)/,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
 
-// Empty Elements - HTML 4.01
-var emptyElements = makeMap("area,br,col,hr,img");
 
-// Block Elements - HTML 4.01
-var blockElements = makeMap("address,blockquote,center,dd,del,dir,div,dl,dt,"+
-    "hr,ins,li,map,menu,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul");
+// Good source of info about elements and attributes
+// http://dev.w3.org/html5/spec/Overview.html#semantics
+// http://simon.html5.org/html-elements
 
-// Inline Elements - HTML 4.01
-var inlineElements = makeMap("a,abbr,acronym,b,bdo,big,br,cite,code,del,dfn,em,font,i,img,"+
-    "ins,kbd,label,map,q,s,samp,small,span,strike,strong,sub,sup,tt,u,var");
-// Elements that you can, intentionally, leave open
-// (and which close themselves)
-var closeSelfElements = makeMap("colgroup,dd,dt,li,p,td,tfoot,th,thead,tr");
+// Safe Void Elements - HTML5
+// http://dev.w3.org/html5/spec/Overview.html#void-elements
+var voidElements = makeMap("area,br,col,hr,img,wbr");
+
+// Elements that you can, intentionally, leave open (and which close themselves)
+// http://dev.w3.org/html5/spec/Overview.html#optional-tags
+var optionalEndTagBlockElements = makeMap("colgroup,dd,dt,li,p,tbody,td,tfoot,th,thead,tr"),
+    optionalEndTagInlineElements = makeMap("rp,rt"),
+    optionalEndTagElements = extend({}, optionalEndTagInlineElements, optionalEndTagBlockElements);
+
+// Safe Block Elements - HTML5
+var blockElements = extend({}, optionalEndTagBlockElements, makeMap("address,article,aside," +
+        "blockquote,caption,center,del,dir,div,dl,figure,figcaption,footer,h1,h2,h3,h4,h5,h6," +
+        "header,hgroup,hr,ins,map,menu,nav,ol,pre,script,section,table,ul"));
+
+// Inline Elements - HTML5
+var inlineElements = extend({}, optionalEndTagInlineElements, makeMap("a,abbr,acronym,b,bdi,bdo," +
+        "big,br,cite,code,del,dfn,em,font,i,img,ins,kbd,label,map,mark,q,ruby,rp,rt,s,samp,small," +
+        "span,strike,strong,sub,sup,time,tt,u,var"));
+
+
 // Special Elements (can contain anything)
 var specialElements = makeMap("script,style");
-var validElements = extend({}, emptyElements, blockElements, inlineElements, closeSelfElements);
+
+var validElements = extend({}, voidElements, blockElements, inlineElements, optionalEndTagElements);
 
 //Attributes that have href and hence need to be sanitized
-var uriAttrs = makeMap("background,href,longdesc,src,usemap");
+var uriAttrs = makeMap("background,cite,href,longdesc,src,usemap");
 var validAttrs = extend({}, uriAttrs, makeMap(
     'abbr,align,alt,axis,bgcolor,border,cellpadding,cellspacing,class,clear,'+
     'color,cols,colspan,compact,coords,dir,face,headers,height,hreflang,hspace,'+
@@ -146,11 +160,11 @@ function htmlParser( html, handler ) {
       }
     }
 
-    if ( closeSelfElements[ tagName ] && stack.last() == tagName ) {
+    if ( optionalEndTagElements[ tagName ] && stack.last() == tagName ) {
       parseEndTag( "", tagName );
     }
 
-    unary = emptyElements[ tagName ] || !!unary;
+    unary = voidElements[ tagName ] || !!unary;
 
     if ( !unary )
       stack.push( tagName );
