@@ -546,25 +546,24 @@ angularInputType('checkbox', function(inputElement) {
     </doc:example>
  */
 angularInputType('radio', function(inputElement) {
-  var widget = this,
-      value = inputElement.attr('value');
+  var widget = this;
 
   //correct the name
   inputElement.attr('name', widget.$id + '@' + inputElement.attr('name'));
   inputElement.bind('click', function() {
     widget.$apply(function() {
       if (inputElement[0].checked) {
-        widget.$emit('$viewChange', value);
+        widget.$emit('$viewChange', widget.$value);
       }
     });
   });
 
   widget.$render = function() {
-    inputElement[0].checked = value == widget.$viewValue;
+    inputElement[0].checked = isDefined(widget.$value) && (widget.$value == widget.$viewValue);
   };
 
   if (inputElement[0].checked) {
-    widget.$viewValue = value;
+    widget.$viewValue = widget.$value;
   }
 });
 
@@ -735,7 +734,7 @@ angularWidget('input', function(inputElement){
            pattern = new RegExp(pattern.substr(1, pattern.length - 2));
            patternMatch = function(value) {
              return pattern.test(value);
-           }
+           };
          } else {
            patternMatch = function(value) {
              var patternObj = modelScope.$eval(pattern);
@@ -743,7 +742,7 @@ angularWidget('input', function(inputElement){
                throw new Error('Expected ' + pattern + ' to be a RegExp but was ' + patternObj);
              }
              return patternObj.test(value);
-           }
+           };
          }
        }
 
@@ -771,6 +770,7 @@ angularWidget('input', function(inputElement){
           controller: TypeController,
           controllerArgs: [inputElement]});
 
+      watchElementProperty(this, widget, 'value', inputElement);
       watchElementProperty(this, widget, 'required', inputElement);
       watchElementProperty(this, widget, 'readonly', inputElement);
       watchElementProperty(this, widget, 'disabled', inputElement);
@@ -864,15 +864,17 @@ angularWidget('textarea', angularWidget('input'));
 
 function watchElementProperty(modelScope, widget, name, element) {
   var bindAttr = fromJson(element.attr('ng:bind-attr') || '{}'),
-      match = /\s*{{(.*)}}\s*/.exec(bindAttr[name]);
-  widget['$' + name] =
-    // some browsers return true some '' when required is set without value.
-    isString(element.prop(name)) || !!element.prop(name) ||
-    // this is needed for ie9, since it will treat boolean attributes as false
-    !!element[0].attributes[name];
+      match = /\s*{{(.*)}}\s*/.exec(bindAttr[name]),
+      isBoolean = BOOLEAN_ATTR[name];
+  widget['$' + name] = isBoolean
+    ? ( // some browsers return true some '' when required is set without value.
+        isString(element.prop(name)) || !!element.prop(name) ||
+        // this is needed for ie9, since it will treat boolean attributes as false
+        !!element[0].attributes[name])
+    : element.attr(name);
   if (bindAttr[name] && match) {
     modelScope.$watch(match[1], function(scope, value){
-      widget['$' + name] = !!value;
+      widget['$' + name] = isBoolean ? !!value : value;
       widget.$emit('$validate');
     });
   }
