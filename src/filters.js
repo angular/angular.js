@@ -318,7 +318,7 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
  * @param {(Date|number|string)} date Date to format either as Date object, milliseconds (string or
  *    number) or ISO 8601 extended datetime string (yyyy-MM-ddTHH:mm:ss.SSSZ).
  * @param {string=} format Formatting rules (see Description). If not specified,
- *    `fullDate` is used.
+ *    `mediumDate` is used.
  * @returns {string} Formatted string or the input if input is not recognized as date/millis.
  *
  * @example
@@ -349,7 +349,7 @@ angularFilter.date = function(date, format) {
       parts = [],
       fn, match;
 
-  format = format || 'fullDate'
+  format = format || 'mediumDate'
   format = $locale.DATETIME_FORMATS[format] || format;
   if (isString(date)) {
     if (NUMBER_STRING.test(date)) {
