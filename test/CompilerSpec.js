@@ -110,7 +110,6 @@ describe('compiler', function() {
     expect(sortedHtml(scope.$element)).
       toEqual('<div>' +
                 'before<#comment></#comment>' +
-                '<span>x</span>' +
                 'after' +
               '</div>');
     scope.value = 1;
@@ -118,7 +117,6 @@ describe('compiler', function() {
     expect(sortedHtml(scope.$element)).
       toEqual('<div>' +
           'before<#comment></#comment>' +
-          '<span>x</span>' +
           '<span>x</span>' +
           'after' +
         '</div>');
@@ -129,7 +127,6 @@ describe('compiler', function() {
           'before<#comment></#comment>' +
           '<span>x</span>' +
           '<span>x</span>' +
-          '<span>x</span>' +
           'after' +
         '</div>');
     scope.value = 3;
@@ -137,7 +134,6 @@ describe('compiler', function() {
     expect(sortedHtml(scope.$element)).
       toEqual('<div>' +
           'before<#comment></#comment>' +
-          '<span>x</span>' +
           '<span>x</span>' +
           '<span>x</span>' +
           '<span>x</span>' +
