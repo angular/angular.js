@@ -732,7 +732,7 @@ angularWidget('input', function(inputElement){
          patternMatch = valueFn(true);
        } else {
          if (pattern.match(/^\/(.*)\/$/)) {
-           pattern = new RegExp(pattern.substring(1, pattern.length - 2));
+           pattern = new RegExp(pattern.substr(1, pattern.length - 2));
            patternMatch = function(value) {
              return pattern.test(value);
            }
