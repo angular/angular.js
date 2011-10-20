@@ -27,16 +27,15 @@ var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:
   URI_REGEXP = /^((ftp|https?):\/\/|mailto:|#)/,
   NON_ALPHANUMERIC_REGEXP = /([^\#-~| |!])/g; // Match everything outside of normal chars and " (quote character)
 
-// Empty Elements - HTML 4.01
-var emptyElements = makeMap("area,br,col,hr,img");
+// Empty Elements - <=HTML5
+var empty = makeMap("area,base,basefont,br,col,frame,hr,img,input,isindex,keygen,link,meta,param,embed");
 
-// Block Elements - HTML 4.01
-var blockElements = makeMap("address,blockquote,center,dd,del,dir,div,dl,dt,"+
-    "hr,ins,li,map,menu,ol,p,pre,script,table,tbody,td,tfoot,th,thead,tr,ul");
+// Block Elements - <=HTML5
+var block = makeMap("address,article,aside,blockquote,body,br,button,canvas,caption,col,colgroup,dd,del,div,dl,dt,embed,fieldset,figcaption,figure,footer,form,h1,h2,h3,h4,h5,h6 ,head,header,hgroup,hr,html,iframe,ins,li,map,menu,noscript,object,ol,output,p,pre,progress,script,section,style,table,tbody,td,textarea,tfoot,th,thead,tr,ul,video,applet,center,dir,frame,frameset,isindex,noframes,xmp");
 
-// Inline Elements - HTML 4.01
-var inlineElements = makeMap("a,abbr,acronym,b,bdo,big,br,cite,code,del,dfn,em,font,i,img,"+
-    "ins,kbd,label,map,q,s,samp,small,span,strike,strong,sub,sup,tt,u,var");
+// Inline Elements - <=HTML5
+var inline = makeMap("a,abbr,address,area,audio,b,bdi,bdo,br,button,cite,code,command,datalist,del,details,dfn,em,i,iframe,img,input,ins,kbd,label,legend,link,map,mark,meter,nav,object,optgroup,option,q,rp,rt,ruby,s,samp,script,select,small,source,span,strong,style,sub,summary,sup,tbody,td,time,title,track,var,wbr,acronym,applet,basefont,big,center,font,strike,tt,u");
+
 // Elements that you can, intentionally, leave open
 // (and which close themselves)
 var closeSelfElements = makeMap("colgroup,dd,dt,li,p,td,tfoot,th,thead,tr");
