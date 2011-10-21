@@ -12,6 +12,7 @@ function DocsController($location, $browser, $window, $cookies) {
   scope.version = angular.version.full + "  " + angular.version.codeName;
   scope.subpage = false;
   scope.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
+  scope.futurePartialTitle = null;
 
   if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
@@ -28,7 +29,9 @@ function DocsController($location, $browser, $window, $cookies) {
       var i = scope.pages.length;
       while (i--) {
         if (scope.pages[i].id == scope.partialId) {
-          scope.partialTitle = scope.pages[i].name;
+          // TODO(i): this is not ideal but better than updating the title before a partial arrives,
+          //   which results in the old partial being displayed with the new title
+          scope.futurePartialTitle = scope.pages[i].name;
           break;
         }
       }
@@ -66,6 +69,7 @@ function DocsController($location, $browser, $window, $cookies) {
   };
 
   scope.afterPartialLoaded = function() {
+    scope.partialTitle = scope.futurePartialTitle;
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
     $window._gaq.push(['_trackPageview', $location.path()]);
