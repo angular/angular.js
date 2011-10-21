@@ -2,53 +2,52 @@ DocsController.$inject = ['$location', '$browser', '$window', '$cookies'];
 function DocsController($location, $browser, $window, $cookies) {
   window.$root = this.$root;
 
-  var self = this,
+  var scope = this,
       OFFLINE_COOKIE_NAME = 'ng-offline',
       DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/;
 
-  this.$location = $location;
-
-  self.versionNumber = angular.version.full;
-  self.version = angular.version.full + "  " + angular.version.codeName;
-  self.subpage = false;
-  self.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
+  scope.$location = $location;
+  scope.versionNumber = angular.version.full;
+  scope.version = angular.version.full + "  " + angular.version.codeName;
+  scope.subpage = false;
+  scope.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
 
   if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
   }
 
-  this.$watch('$location.path()', function(scope, path) {
+  scope.$watch('$location.path()', function(scope, path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
       var parts = path.split('/');
-      self.sectionId = parts[1];
-      self.partialId = parts[2] || 'index';
-      self.pages = angular.Array.filter(NG_PAGES, {section:self.sectionId});
+      scope.sectionId = parts[1];
+      scope.partialId = parts[2] || 'index';
+      scope.pages = angular.Array.filter(NG_PAGES, {section: scope.sectionId});
 
-      var i = self.pages.length;
+      var i = scope.pages.length;
       while (i--) {
-        if (self.pages[i].id == self.partialId) {
-          self.partialTitle = self.pages[i].name;
+        if (scope.pages[i].id == scope.partialId) {
+          scope.partialTitle = scope.pages[i].name;
           break;
         }
       }
       if (i<0) {
-        self.partialTitle = 'Error: Page Not Found!';
-        delete self.partialId;
+        scope.partialTitle = 'Error: Page Not Found!';
+        delete scope.partialId;
       }
     }
   });
 
-  this.getUrl = function(page){
+  scope.getUrl = function(page) {
     return page.section + '/' + page.id;
   };
 
-  this.getCurrentPartial = function() {
+  scope.getCurrentPartial = function() {
     return this.partialId ? ('./partials/' + this.sectionId + '/' + this.partialId + '.html') : '';
   };
 
-  this.getClass = function(page) {
+  scope.getClass = function(page) {
     var depth = page.depth,
         cssClass = 'level-' + depth + (page.name == this.partialId ? ' selected' : '');
 
@@ -58,28 +57,28 @@ function DocsController($location, $browser, $window, $cookies) {
     return cssClass;
   };
 
-  this.selectedSection = function(section) {
-    return section == self.sectionId ? 'current' : '';
+  scope.selectedSection = function(section) {
+    return section == scope.sectionId ? 'current' : '';
   };
 
-  this.selectedPartial = function(partial) {
-    return partial.id == self.partialId ? 'current' : '';
+  scope.selectedPartial = function(partial) {
+    return partial.id == scope.partialId ? 'current' : '';
   };
 
-  this.afterPartialLoaded = function() {
+  scope.afterPartialLoaded = function() {
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
     $window._gaq.push(['_trackPageview', $location.path()]);
   };
 
-  this.getFeedbackUrl = function() {
+  scope.getFeedbackUrl = function() {
     return "mailto:angular@googlegroups.com?" +
            "subject=" + escape("Feedback on " + $location.absUrl()) + "&" +
            "body=" + escape("Hi there,\n\nI read " + $location.absUrl() + " and wanted to ask ....");
   };
 
   /** stores a cookie that is used by apache to decide which manifest ot send */
-  this.enableOffline = function() {
+  scope.enableOffline = function() {
     //The cookie will be good for one year!
     var date = new Date();
     date.setTime(date.getTime()+(365*24*60*60*1000));
@@ -94,14 +93,14 @@ function DocsController($location, $browser, $window, $cookies) {
   // bind escape to hash reset callback
   angular.element(window).bind('keydown', function(e) {
     if (e.keyCode === 27) {
-      self.subpage = false;
-      self.$eval();
+      scope.subpage = false;
+      scope.$eval();
     }
   });
 }
 
 // prevent compilation of code
-angular.widget('code', function(element){
+angular.widget('code', function(element) {
   element.attr('ng:non-bindable', 'true');
 });
 
