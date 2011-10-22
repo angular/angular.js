@@ -283,6 +283,7 @@ function MockBrowser() {
 
     if (fnIndex !== undefined) {
       self.deferredFns.splice(fnIndex, 1);
+      return true;
     }
   };
 
