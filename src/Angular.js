@@ -51,6 +51,24 @@ if ('i' !== 'I'.toLowerCase()) {
 
 function fromCharCode(code) { return String.fromCharCode(code); }
 
+/**
+ * @ngdoc function
+ * @name angular.shivForIE
+ * @function
+ *
+ * @description 
+ * Creates the element for IE8 and below to allow styling of widgets
+ * (http://ejohn.org/blog/html5-shiv/)
+ *
+ * @param {string} element Name of the widget.
+ * @returns {string} Lowercased string.
+ */
+function shivForIE(element) {
+  element = lowercase(element);
+  if (msie < 9 && element.indexOf('@') == -1)
+    document.createElement(element);
+  return element;
+}
 
 var _undefined        = undefined,
     _null             = null,
@@ -91,7 +109,7 @@ var _undefined        = undefined,
     /** @name angular.directive */
     angularDirective  = extensionMap(angular, 'directive'),
     /** @name angular.widget */
-    angularWidget     = extensionMap(angular, 'widget', lowercase),
+    angularWidget     = extensionMap(angular, 'widget', shivForIE),
     /** @name angular.filter */
     angularFilter     = extensionMap(angular, 'filter'),
     /** @name angular.service */
