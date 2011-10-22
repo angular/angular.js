@@ -1,8 +1,54 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.3">0.10.3 shattering-heartbeat</a>
+- The Latest Unstable Release: <a href="#0.10.4">0.10.4 human-torch</a>
 
 <a name="0.10.4"></a>
-# 0.10.4 human-torch (in-progress) #
+# 0.10.4 human-torch (2011-10-22) #
+
+## Features:
+
+- New validation options for
+  [input widgets](http://docs-next.angularjs.org/api/angular.widget.input): `ng:minlength` and
+  `ng:maxlength`
+  ([commit](https://github.com/angular/angular.js/commit/78f394fd17be581c84ecd526bb786ed1681d35cb))
+  (contributed by Konstantin Stepanov)
+- HTML sanitizer was updated to recognize all safe HTML5 elements
+  (Issue [#89](https://github.com/angular/angular.js/issues/89))
+- [ng:options]' blank option is now compiled and data-bound as any other template
+  (Issue [#562](https://github.com/angular/angular.js/issues/562))
+  (contributed by tehek)
+- [$defer](http://docs-next.angularjs.org/api/angular.service.$defer) service now exposes `cancel`
+  method for task cancellation
+  ([commit](https://github.com/angular/angular.js/commit/ad90c3574f8365ee4a1a973d5e43c64fe9fcda2c))
+
+
+## Bug Fixes:
+
+- [ng:options] should select correct element when '?'-option (invalid value) was previously selected
+  (Issue [#599](https://github.com/angular/angular.js/issues/599)) (contributed by Tehek)
+- Fix data-binding of radio button's value property
+  (Issue [#316](https://github.com/angular/angular.js/issues/316))
+- Input with type `password` should no be turned into a readable text field
+  ([commit](https://github.com/angular/angular.js/commit/e82e64d57b65d9f3c4f2e8831f30b615a069b7f6))
+  (contributed by Konstantin Stepanov)
+- [ng:repeat] should ignore object properties starting with `$`
+  ([commit](https://github.com/angular/angular.js/commit/833eb3c84445110dc1dad238120573f08ed8d102))
+- Correctly parse out inlined regexp from the input field's `ng:pattern` attribute.
+  ([commit](https://github.com/angular/angular.js/commit/5d43439dbe764a4c7227f51b34a81b044f13901b))
+- $location service in html5 mode should correctly rewrite links that contain nested elements
+  ([commit](https://github.com/angular/angular.js/commit/9b85757102fbd44e88d0a3909fdf8b90f191b593))
+
+
+## Breaking Changes:
+
+- the [date] filter now uses 'mediumDate' format if none is specified. This was done to deal with
+  browser inconsistencies (each browser used to use different format)
+  (Issue [#605](https://github.com/angular/angular.js/issues/605),
+   [commit](https://github.com/angular/angular.js/commit/c6c3949b14f4003ecab291243edfca61262f2c3d),
+   [commit](https://github.com/angular/angular.js/commit/e175db37c6f52bba4080efeec22a7120a896099e))
+- calling the linker function returned by [angular.compile][compile] doesn't automatically run
+  `$digest` on the linked scope any more. This behavior was briefly introduced in 0.10.3 but was
+  causing issues and inefficiencies in production apps so we reverted it. See:
+  [commit](https://github.com/angular/angular.js/commit/f38010d3a2f457a53798212ef72418637dabe189)
 
 
 
