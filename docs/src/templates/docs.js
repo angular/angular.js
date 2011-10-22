@@ -100,8 +100,9 @@ function DocsController($location, $browser, $window, $cookies) {
   // bind escape to hash reset callback
   angular.element(window).bind('keydown', function(e) {
     if (e.keyCode === 27) {
-      scope.subpage = false;
-      scope.$eval();
+      scope.$apply(function() {
+        scope.subpage = false;
+      });
     }
   });
 }
