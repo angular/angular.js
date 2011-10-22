@@ -74,6 +74,31 @@ li {
 
 /*----- Global Layout -----*/
 
+#loading {
+  position: fixed;
+  left: 50%;
+  margin: 1.5em -40px;
+  width: 80px;
+  padding: 0.2em 0.2em;
+  text-align: center;
+  font-weight: bold;
+  font-size: 13px;
+  color: #FFFFFF;
+  border: 1px solid black;
+  background-color: #7989D6;
+
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px;
+  border-radius: 2px;
+
+  -webkit-box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  -moz-box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+
+  z-index: 2; /* just below #fader */
+}
+
+
 #container  {
     width: 1150px;
     margin: 0 auto;

@@ -13,6 +13,7 @@ function DocsController($location, $browser, $window, $cookies) {
   scope.subpage = false;
   scope.offlineEnabled = ($cookies[OFFLINE_COOKIE_NAME] == angular.version.full);
   scope.futurePartialTitle = null;
+  scope.loading = 0;
 
   if (!$location.path() || INDEX_PATH.test($location.path())) {
     $location.path('/api').replace();
@@ -25,6 +26,7 @@ function DocsController($location, $browser, $window, $cookies) {
       scope.sectionId = parts[1];
       scope.partialId = parts[2] || 'index';
       scope.pages = angular.Array.filter(NG_PAGES, {section: scope.sectionId});
+      scope.loading++;
 
       var i = scope.pages.length;
       while (i--) {
@@ -69,6 +71,7 @@ function DocsController($location, $browser, $window, $cookies) {
   };
 
   scope.afterPartialLoaded = function() {
+    scope.loading--;
     scope.partialTitle = scope.futurePartialTitle;
     SyntaxHighlighter.highlight();
     $window.scrollTo(0,0);
