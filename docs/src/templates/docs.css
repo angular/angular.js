@@ -269,6 +269,23 @@ li {
   height: 1em;
 }
 
+#disqus_thread {
+  float: right;
+  margin-top: 1em;
+  margin-right: 3em;
+  width: 57em;
+  padding: 0.5em 1em 1em 1em;
+  background: #fff;
+  overflow: hidden;
+
+  -moz-box-shadow: 4px 4px 6px #48577D;
+  -webkit-box-shadow: 4px 4px 6px #48577D;
+  box-shadow: 4px 4px 6px #48577D;
+
+  -moz-border-radius: 15px;
+  -webkit-border-radius: 15px;
+  border-radius: 15px;
+}
 
 #content {
   background-color: #fff;
