@@ -69,10 +69,53 @@ describe('$defer', function() {
     expect(applySpy).toHaveBeenCalled();
   });
 
+
   it('should allow you to specify the delay time', function() {
     var defer = this.spyOn($browser, 'defer');
     $defer(noop, 123);
     expect(defer.callCount).toEqual(1);
     expect(defer.mostRecentCall.args[1]).toEqual(123);
+  });
+
+
+  it('should return a cancelation token', function() {
+    var defer = this.spyOn($browser, 'defer').andReturn('xxx');
+    expect($defer(noop)).toEqual('xxx');
+  });
+
+
+  describe('cancel', function() {
+    it('should cancel tasks', function() {
+      var task1 = jasmine.createSpy('task1'),
+          task2 = jasmine.createSpy('task2'),
+          task3 = jasmine.createSpy('task3'),
+          token1, token3;
+
+      token1 = $defer(task1);
+      $defer(task2);
+      token3 = $defer(task3, 333);
+
+      $defer.cancel(token3);
+      $defer.cancel(token1);
+      $browser.defer.flush();
+
+      expect(task1).not.toHaveBeenCalled();
+      expect(task2).toHaveBeenCalledOnce();
+      expect(task3).not.toHaveBeenCalled();
+    });
+
+
+    it('should return true if a task was succesffuly canceled', function() {
+      var task1 = jasmine.createSpy('task1'),
+          task2 = jasmine.createSpy('task2'),
+          token1, token2;
+
+      token1 = $defer(task1);
+      $browser.defer.flush();
+      token2 = $defer(task2);
+
+      expect($defer.cancel(token1)).toBeFalsy();
+      expect($defer.cancel(token2)).toBe(true);
+    });
   });
 });

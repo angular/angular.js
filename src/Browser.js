@@ -390,12 +390,13 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
    *
    * @name angular.service.$browser#defer.cancel
    * @methodOf angular.service.$browser.defer
-   * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
    *
    * @description
    * Cancels a defered task identified with `deferId`.
+   *
+   * @param {*} deferId Token returned by the `$browser.defer` function.
+   * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
    */
-
   self.defer.cancel = function(deferId) {
     if (pendingDeferIds[deferId]) {
       delete pendingDeferIds[deferId];
