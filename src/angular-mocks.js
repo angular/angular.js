@@ -285,6 +285,8 @@ function MockBrowser() {
       self.deferredFns.splice(fnIndex, 1);
       return true;
     }
+
+    return false;
   };
 
 

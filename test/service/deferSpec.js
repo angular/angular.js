@@ -114,7 +114,7 @@ describe('$defer', function() {
       $browser.defer.flush();
       token2 = $defer(task2);
 
-      expect($defer.cancel(token1)).toBeFalsy();
+      expect($defer.cancel(token1)).toBe(false);
       expect($defer.cancel(token2)).toBe(true);
     });
   });
