@@ -266,10 +266,11 @@ describe('browser', function() {
             deferId3 = browser.defer(function() { log.push('cancel me, now!'); });
 
         expect(log).toEqual([]);
-        browser.defer.cancel(deferId1);
-        browser.defer.cancel(deferId3);
+        expect(browser.defer.cancel(deferId1)).toBe(true);
+        expect(browser.defer.cancel(deferId3)).toBe(true);
         fakeWindow.setTimeout.flush();
         expect(log).toEqual(['ok']);
+        expect(browser.defer.cancel(deferId2)).toBe(false);
       });
     });
   });

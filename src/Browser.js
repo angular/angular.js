@@ -404,6 +404,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
       completeOutstandingRequest(noop);
       return true;
     }
+    return false;
   };
 
 
