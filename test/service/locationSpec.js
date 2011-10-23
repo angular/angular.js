@@ -556,10 +556,11 @@ describe('$location', function() {
 
     var root, link, extLink, $browser, originalBrowser, lastEventPreventDefault;
 
-    function init(linkHref, html5Mode, supportHist, attrs) {
+    function init(linkHref, html5Mode, supportHist, attrs, content) {
       var jqRoot = jqLite('<div></div>');
       attrs = attrs ? ' ' + attrs + ' ' : '';
-      link = jqLite('<a href="' + linkHref + '"' + attrs + '>link</a>')[0];
+      content = content || 'link';
+      link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
       root = jqRoot.append(link)[0];
 
       jqLite(document.body).append(jqRoot);
@@ -667,6 +668,15 @@ describe('$location', function() {
       init('http://host.com/base/new', true);
       browserTrigger(link, 'click');
       expectRewriteTo('http://host.com/base/index.html#!/new');
+    });
+
+
+    it('should rewrite when clicked span inside link', function() {
+      init('some/link', true, true, '', '<span>link</span>');
+      var span = jqLite(link).find('span');
+
+      browserTrigger(span, 'click');
+      expectRewriteTo('http://host.com/base/some/link');
     });
 
 

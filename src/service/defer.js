@@ -14,12 +14,32 @@
  *
  * @param {function()} fn A function, who's execution should be deferred.
  * @param {number=} [delay=0] of milliseconds to defer the function execution.
+ * @returns {*} DeferId that can be used to cancel the task via `$defer.cancel()`.
+ */
+
+/**
+ * @ngdoc function
+ * @name angular.service.$defer#cancel
+ * @methodOf angular.service.$defer
+ *
+ * @description
+ * Cancels a defered task identified with `deferId`.
+ *
+ * @param {*} deferId Token returned by the `$defer` function.
+ * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
  */
 angularServiceInject('$defer', function($browser) {
   var scope = this;
-  return function(fn, delay) {
-    $browser.defer(function() {
+
+  function defer(fn, delay) {
+    return $browser.defer(function() {
       scope.$apply(fn);
     }, delay);
+  }
+
+  defer.cancel = function(deferId) {
+    return $browser.defer.cancel(deferId);
   };
+
+  return defer;
 }, ['$browser']);
