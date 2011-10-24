@@ -1,6 +1,13 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
 - The Latest Unstable Release: <a href="#0.10.4">0.10.4 human-torch</a>
 
+<a name="0.10.5"></a>
+# 0.10.5 steel-fist (in-progress) #
+
+
+
+
+
 <a name="0.10.4"></a>
 # 0.10.4 human-torch (2011-10-22) #
 
