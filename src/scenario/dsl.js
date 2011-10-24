@@ -34,11 +34,14 @@ angular.scenario.dsl('sleep', function() {
  *    browser().navigateTo(url) Loads the url into the frame
  *    browser().navigateTo(url, fn) where fn(url) is called and returns the URL to navigate to
  *    browser().reload() refresh the page (reload the same URL)
- *    browser().location().href() the full URL of the page
- *    browser().location().hash() the full hash in the url
- *    browser().location().path() the full path in the url
- *    browser().location().hashSearch() the hashSearch Object from angular
- *    browser().location().hashPath() the hashPath string from angular
+ *    browser().window.href() window.location.href
+ *    browser().window.path() window.location.pathname
+ *    browser().window.search() window.location.search
+ *    browser().window.hash() window.location.hash without # prefix
+ *    browser().location().url() see angular.service.$location#url
+ *    browser().location().path() see angular.service.$location#path
+ *    browser().location().search() see angular.service.$location#search
+ *    browser().location().hash() see angular.service.$location#hash
  */
 angular.scenario.dsl('browser', function() {
   var chain = {};
@@ -65,42 +68,60 @@ angular.scenario.dsl('browser', function() {
     });
   };
 
-  chain.location = function() {
+  chain.window = function() {
     var api = {};
 
     api.href = function() {
-      return this.addFutureAction('browser url', function($window, $document, done) {
+      return this.addFutureAction('window.location.href', function($window, $document, done) {
         done(null, $window.location.href);
       });
     };
 
-    api.hash = function() {
-      return this.addFutureAction('browser url hash', function($window, $document, done) {
-        done(null, $window.location.hash.replace('#', ''));
-      });
-    };
-
     api.path = function() {
-      return this.addFutureAction('browser url path', function($window, $document, done) {
+      return this.addFutureAction('window.location.path', function($window, $document, done) {
         done(null, $window.location.pathname);
       });
     };
 
     api.search = function() {
-      return this.addFutureAction('browser url search', function($window, $document, done) {
-        done(null, $window.angular.scope().$service('$location').search);
+      return this.addFutureAction('window.location.search', function($window, $document, done) {
+        done(null, $window.location.search);
       });
     };
 
-    api.hashSearch = function() {
-      return this.addFutureAction('browser url hash search', function($window, $document, done) {
-        done(null, $window.angular.scope().$service('$location').hashSearch);
+    api.hash = function() {
+      return this.addFutureAction('window.location.hash', function($window, $document, done) {
+        done(null, $window.location.hash.replace('#', ''));
       });
     };
 
-    api.hashPath = function() {
-      return this.addFutureAction('browser url hash path', function($window, $document, done) {
-        done(null, $window.angular.scope().$service('$location').hashPath);
+    return api;
+  };
+
+  chain.location = function() {
+    var api = {};
+
+    api.url = function() {
+      return this.addFutureAction('$location.url()', function($window, $document, done) {
+        done(null, $window.angular.scope().$service('$location').url());
+      });
+    };
+
+    api.path = function() {
+      return this.addFutureAction('$location.path()', function($window, $document, done) {
+        done(null, $window.angular.scope().$service('$location').path());
+      });
+    };
+
+    api.search = function() {
+      return this.addFutureAction('$location.search()', function($window, $document, done) {
+        done(null, $window.angular.scope().$service('$location').search());
+      });
+    };
+
+    api.hash = function() {
+      return this.addFutureAction('$location.hash()', function($window, $document, done) {
+        done(null, $window.angular.scope().$service('$location').hash());
       });
     };
 

@@ -123,7 +123,7 @@ describe("angular.scenario.dsl", function() {
       });
     });
 
-    describe('Location', function() {
+    describe('window', function() {
       beforeEach(function() {
         $window.location = {
           href: 'http://myurl/some/path?foo=10#/bar?x=2',
@@ -131,51 +131,66 @@ describe("angular.scenario.dsl", function() {
           search: '?foo=10',
           hash: '#bar?x=2'
         };
+      });
+
+      it('should return full URL for href', function() {
+        $root.dsl.browser().window().href();
+        expect($root.futureResult).toEqual($window.location.href);
+      });
+
+      it('should return the pathname', function() {
+        $root.dsl.browser().window().path();
+        expect($root.futureResult).toEqual($window.location.pathname);
+      });
+
+      it('should return the search part', function() {
+        $root.dsl.browser().window().search();
+        expect($root.futureResult).toEqual($window.location.search);
+      });
+
+      it('should return the hash without the #', function() {
+        $root.dsl.browser().window().hash();
+        expect($root.futureResult).toEqual('bar?x=2');
+      });
+    });
+
+    describe('location', function() {
+      beforeEach(function() {
         $window.angular.scope = function() {
           return {
             $service: function(serviceId) {
               if (serviceId == '$location') {
                 return {
-                  hashSearch: {x: 2},
-                  hashPath: '/bar',
-                  search: {foo: 10}
+                  url: function() {return '/path?search=a#hhh';},
+                  path: function() {return '/path';},
+                  search: function() {return {search: 'a'};},
+                  hash: function() {return 'hhh';}
                 };
-              } else {
-                throw new Error('unknown service id ' + serviceId);
               }
+              throw new Error('unknown service id ' + serviceId);
             }
           };
         };
       });
 
-      it('should return full URL for href', function() {
-        $root.dsl.browser().location().href();
-        expect($root.futureResult).toEqual($window.location.href);
+      it('should return full url', function() {
+        $root.dsl.browser().location().url();
+        expect($root.futureResult).toEqual('/path?search=a#hhh');
       });
 
       it('should return the pathname', function() {
         $root.dsl.browser().location().path();
-        expect($root.futureResult).toEqual($window.location.pathname);
-      });
-
-      it('should return the hash without the #', function() {
-        $root.dsl.browser().location().hash();
-        expect($root.futureResult).toEqual('bar?x=2');
+        expect($root.futureResult).toEqual('/path');
       });
 
       it('should return the query string as an object', function() {
         $root.dsl.browser().location().search();
-        expect($root.futureResult).toEqual({foo: 10});
+        expect($root.futureResult).toEqual({search: 'a'});
       });
 
-      it('should return the hashSearch as an object', function() {
-        $root.dsl.browser().location().hashSearch();
-        expect($root.futureResult).toEqual({x: 2});
-      });
-
-      it('should return the hashPath', function() {
-        $root.dsl.browser().location().hashPath();
-        expect($root.futureResult).toEqual('/bar');
+      it('should return the hash without the #', function() {
+        $root.dsl.browser().location().hash();
+        expect($root.futureResult).toEqual('hhh');
       });
     });
   });

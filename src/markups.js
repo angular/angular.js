@@ -187,7 +187,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
           expect(element('#link-3').attr('href')).toBe("/123");
 
           element('#link-3').click();
-          expect(browser().location().path()).toEqual('/123');
+          expect(browser().window().path()).toEqual('/123');
         });
 
         it('should execute ng:click but not reload when href empty string and name specified', function() {
@@ -207,7 +207,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
           expect(element('#link-6').attr('href')).toBe("/6");
 
           element('#link-6').click();
-          expect(browser().location().path()).toEqual('/6');
+          expect(browser().window().path()).toEqual('/6');
         });
       </doc:scenario>
     </doc:example>
