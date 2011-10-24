@@ -55,14 +55,14 @@ function fromCharCode(code) { return String.fromCharCode(code); }
  * Creates the element for IE8 and below to allow styling of widgets
  * (http://ejohn.org/blog/html5-shiv/). This hack works only if angular is 
  * included synchronously at the top of the document before IE sees any 
- * unknown elements. See regression/issue-352.html.
+ * unknown elements. See regression/issue-584.html.
  *
  * @param {string} element Name of the widget.
  * @returns {string} Lowercased string.
  */
 function shivForIE(elementName) {
   elementName = lowercase(elementName);
-  if (msie < 9)
+  if (msie < 9 && element.indexOf('@') == -1)
     document.createElement(elementName);
   return elementName;
 }
