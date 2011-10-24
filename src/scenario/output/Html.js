@@ -12,7 +12,7 @@ angular.scenario.output('html', function(context, runner, model) {
 
   context.append(
     '<div id="header">' +
-    '  <h1><span class="angular">&lt;angular/&gt;</span>: Scenario Test Runner</h1>' +
+    '  <h1><span class="angular">AngularJS</span>: Scenario Test Runner</h1>' +
     '  <ul id="status-legend" class="status-display">' +
     '    <li class="status-error">0 Errors</li>' +
     '    <li class="status-failure">0 Failures</li>' +
