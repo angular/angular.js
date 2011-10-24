@@ -254,7 +254,7 @@ describe("widget", function() {
                                   'ng:bind="key + \':\' + val + $index + \'|\'"></li></ul>');
       scope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
       scope.$digest();
-      expect(element.text()).toEqual('misko:m0|shyam:s1|frodo:f2|');
+      expect(element.text()).toEqual('frodo:f0|misko:m1|shyam:s2|');
     });
 
     it('should expose iterator position as $position when iterating over arrays', function() {
@@ -282,7 +282,7 @@ describe("widget", function() {
         '</ul>');
       scope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
       scope.$digest();
-      expect(element.text()).toEqual('misko:m:first|shyam:s:middle|doug:d:middle|frodo:f:last|');
+      expect(element.text()).toEqual('doug:d:first|frodo:f:middle|misko:m:middle|shyam:s:last|');
 
       delete scope.items.doug;
       delete scope.items.frodo;
@@ -310,6 +310,26 @@ describe("widget", function() {
       scope.$digest();
 
       expect(element.text()).toEqual('a|b|Xc|d|X');
+    });
+
+    it('should ignore non-array element properties when iterating over an array', function() {
+      var scope = compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>');
+      scope.array = ['a', 'b', 'c'];
+      scope.array.foo = '23';
+      scope.array.bar = function() {};
+      scope.$digest();
+
+      expect(element.text()).toBe('a|b|c|');
+    });
+
+    it('should iterate over non-existent elements of a sparse array', function() {
+      var scope = compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>');
+      scope.array = ['a', 'b'];
+      scope.array[4] = 'c';
+      scope.array[6] = 'd';
+      scope.$digest();
+
+      expect(element.text()).toBe('a|b|||c||d|');
     });
 
 
