@@ -1,6 +1,8 @@
 
+  var config = angularJsConfig(document);
+
   jqLiteWrap(document).ready(function() {
-    angularInit(angularJsConfig(document), document);
+    angularInit(config, document);
   });
 
 })(window, document);

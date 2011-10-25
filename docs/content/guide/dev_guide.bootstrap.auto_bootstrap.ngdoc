@@ -53,8 +53,7 @@ appending `#autobind` to the `<script src=...>` URL, like in this snippet:
   <!doctype html>
   <html>
    <head>
-    <script type="text/javascript"
-            src="http://code.angularjs.org/angular.js#autobind"></script>
+    <script src="http://code.angularjs.org/angular.js#autobind"></script>
    </head>
    <body>
      <div xmlns:ng="http://angularjs.org">
@@ -67,22 +66,24 @@ appending `#autobind` to the `<script src=...>` URL, like in this snippet:
 As with `ng:autobind`, you can specify an element id that should be exclusively targeted for
 compilation as the value of the `#autobind`, for example: `#autobind=angularContent`.
 
-## Filename Restrictions for Auto-bootstrap
+If angular.js file is being combined with other scripts into a single script file, then all of the
+config options above apply to this processed script as well. That means if the contents of
+`angular.js` were appended to `all-my-scripts.js`, then the app can be bootstrapped as:
 
-In order for us to find the auto-bootstrap from a script attribute or URL fragment, the value of
-the `script` `src` attribute that loads the angular script must match one of these naming
-conventions:
+<pre>
+  <!doctype html>
+  <html xmlns:ng="http://angularjs.org">
+   <head>
+    <script src="http://myapp.com/all-my-scripts.js" ng:autobind></script>
+   </head>
+   <body>
+     <div>
+       Hello {{'world'}}!
+     </div>
+   </body>
+  </html>
+</pre>
 
-- `angular.js`
-- `angular-min.js`
-- `angular-x.x.x.js`
-- `angular-x.x.x.min.js`
-- `angular-x.x.x-xxxxxxxx.js` (dev snapshot)
-- `angular-x.x.x-xxxxxxxx.min.js` (dev snapshot)
-- `angular-bootstrap.js` (used for development of angular)
-
-Optionally, any of the filename formats above can be prepended with a relative or absolute URL that
-ends with `/`.
 
 ## Global Angular Object
 

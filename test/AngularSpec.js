@@ -228,181 +228,97 @@ describe('angular', function() {
   });
 
 
-  describe ('rngScript', function() {
-    it('should match angular.js', function() {
-      expect('angular.js'.match(rngScript)).not.toBeNull();
-      expect('../angular.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular.js'.match(rngScript)).not.toBeNull();
-
-      expect('foo.js'.match(rngScript)).toBeNull();
-      expect('foo/foo.js'.match(rngScript)).toBeNull();
-      expect('my-angular-app.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular.min.js', function() {
-      expect('angular.min.js'.match(rngScript)).not.toBeNull();
-      expect('../angular.min.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular.min.js'.match(rngScript)).not.toBeNull();
-
-      expect('my-angular-app.min.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app.min.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular-bootstrap.js', function() {
-      expect('angular-bootstrap.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-bootstrap.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-bootstrap.js'.match(rngScript)).not.toBeNull();
-
-      expect('my-angular-app-bootstrap.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app-bootstrap.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular-0.9.0.js', function() {
-      expect('angular-0.9.0.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-0.9.0.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-0.9.0.js'.match(rngScript)).not.toBeNull();
-
-      expect('my-angular-app-0.9.0.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app-0.9.0.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular-0.9.0.min.js', function() {
-      expect('angular-0.9.0.min.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-0.9.0.min.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-0.9.0.min.js'.match(rngScript)).not.toBeNull();
-
-      expect('my-angular-app-0.9.0.min.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app-0.9.0.min.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular-0.9.0-de0a8612.js', function() {
-      expect('angular-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
-
-      expect('my-angular-app-0.9.0-de0a8612.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app-0.9.0-de0a8612.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular-0.9.0-de0a8612.min.js', function() {
-      expect('angular-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
-
-      expect('my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
-      expect('foo/../my-angular-app-0.9.0-de0a8612.min.js'.match(rngScript)).toBeNull();
-    });
-
-    it('should match angular-scenario.js', function() {
-      expect('angular-scenario.js'.match(rngScript)).not.toBeNull();
-      expect('angular-scenario.min.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-scenario.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-scenario.min.js'.match(rngScript)).not.toBeNull();
-    });
-
-    it('should match angular-scenario-0.9.0(.min).js', function() {
-      expect('angular-scenario-0.9.0.js'.match(rngScript)).not.toBeNull();
-      expect('angular-scenario-0.9.0.min.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-scenario-0.9.0.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-scenario-0.9.0.min.js'.match(rngScript)).not.toBeNull();
-    });
-
-    it('should match angular-scenario-0.9.0-de0a8612(.min).js', function() {
-      expect('angular-scenario-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
-      expect('angular-scenario-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
-      expect('../angular-scenario-0.9.0-de0a8612.js'.match(rngScript)).not.toBeNull();
-      expect('foo/angular-scenario-0.9.0-de0a8612.min.js'.match(rngScript)).not.toBeNull();
-    });
-  });
-
-
   describe('angularJsConfig', function() {
-    it('should find angular.js script tag and config', function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(tagName).toEqual('script');
-        return [{nodeName: 'SCRIPT', src: 'random.js'},
-                {nodeName: 'SCRIPT', src: 'angular.js'},
-                {nodeName: 'SCRIPT', src: 'my-angular-app.js'}];
-      }
+    it('should always consider angular.js script tag to be the last script tag', function() {
+      var doc = {
+        getElementsByTagName: function(tagName) {
+          expect(tagName).toEqual('script');
+          return [{nodeName: 'SCRIPT', src: 'random.js',
+                    attributes: [{name: 'ng:autobind', value: 'wrong'}]},
+                  {nodeName: 'SCRIPT', src: 'angular.js',
+                    attributes: [{name: 'ng:autobind', value: 'correct'}]}];
+        }
       };
 
-      expect(angularJsConfig(doc)).toEqual({base_url: ''});
+      expect(angularJsConfig(doc)).toEqual({autobind: 'correct'});
+
+      doc = {
+        getElementsByTagName: function(tagName) {
+          expect(tagName).toEqual('script');
+          return [{nodeName: 'SCRIPT', src: 'angular.js',
+                    attributes: [{name: 'ng:autobind', value: 'wrong'}]},
+                  {nodeName: 'SCRIPT', src: 'concatinatedAndObfuscadedScriptWithOurScript.js',
+                    attributes: [{name: 'ng:autobind', value: 'correct'}]}];
+        }
+      };
+
+      expect(angularJsConfig(doc)).toEqual({autobind: 'correct'});
     });
 
 
-    it('should extract angular config from the ng: attributes',
-        function() {
+    it('should extract angular config from the ng: attributes', function() {
       var doc = { getElementsByTagName: function(tagName) {
         expect(lowercase(tagName)).toEqual('script');
-        return [{nodeName: 'SCRIPT',
+        return [{
+          nodeName: 'SCRIPT',
           src: 'angularjs/angular.js',
           attributes: [{name: 'ng:autobind', value:'elementIdToCompile'},
                        {name: 'ng:css', value: 'css/my_custom_angular.css'}] }];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
+      expect(angularJsConfig(doc)).toEqual({
         autobind: 'elementIdToCompile',
-        css: 'css/my_custom_angular.css'});
+        css: 'css/my_custom_angular.css'
+      });
     });
 
 
     it('should extract angular config and default autobind value to true if present', function() {
       var doc = { getElementsByTagName: function(tagName) {
         expect(lowercase(tagName)).toEqual('script');
-        return [{nodeName: 'SCRIPT',
+        return [{
+          nodeName: 'SCRIPT',
           src: 'angularjs/angular.js',
           attributes: [{name: 'ng:autobind', value:undefined}]}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({autobind: true,
-                                            base_url: 'angularjs/'});
+      expect(angularJsConfig(doc)).toEqual({autobind: true});
     });
 
 
     it('should extract angular autobind config from the script hashpath attributes', function() {
       var doc = { getElementsByTagName: function(tagName) {
         expect(lowercase(tagName)).toEqual('script');
-        return [{nodeName: 'SCRIPT',
+        return [{
+          nodeName: 'SCRIPT',
           src: 'angularjs/angular.js#autobind'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: true});
+      expect(angularJsConfig(doc)).toEqual({autobind: true});
     });
 
 
     it('should extract autobind config with element id from the script hashpath', function() {
       var doc = { getElementsByTagName: function(tagName) {
         expect(lowercase(tagName)).toEqual('script');
-        return [{nodeName: 'SCRIPT',
+        return [{
+          nodeName: 'SCRIPT',
           src: 'angularjs/angular.js#autobind=foo'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'angularjs/',
-        autobind: 'foo'});
+      expect(angularJsConfig(doc)).toEqual({autobind: 'foo'});
     });
 
 
-    it("should default to versioned ie-compat file if angular file is versioned", function() {
+    it('should default to versioned ie-compat file if angular file is versioned', function() {
       var doc = { getElementsByTagName: function(tagName) {
         expect(lowercase(tagName)).toEqual('script');
-        return [{nodeName: 'SCRIPT',
+        return [{
+          nodeName: 'SCRIPT',
           src: 'js/angular-0.9.0.js'}];
       }};
 
-      expect(angularJsConfig(doc)).toEqual({base_url: 'js/'});
-    });
-
-
-    it("should default to versioned ie-compat file if angular file is versioned and minified", function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(lowercase(tagName)).toEqual('script');
-        return [{nodeName: 'SCRIPT',
-          src: 'js/angular-0.9.0-cba23f00.min.js'}];
-      }};
-
-      expect(angularJsConfig(doc)).toEqual({base_url: 'js/'});
+      expect(angularJsConfig(doc)).toEqual({});
     });
   });
 
