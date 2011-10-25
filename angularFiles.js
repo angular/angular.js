@@ -2,7 +2,6 @@ angularFiles = {
   'angularSrc': [
     'src/Angular.js',
     'src/JSON.js',
-    'src/Compiler.js',
     'src/Injector.js',
     'src/parser.js',
     'src/Resource.js',
@@ -11,6 +10,7 @@ angularFiles = {
     'src/jqLite.js',
     'src/apis.js',
     'src/filters.js',
+    'src/service/compiler.js',
     'src/service/cookieStore.js',
     'src/service/cookies.js',
     'src/service/defer.js',
