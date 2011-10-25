@@ -14,7 +14,7 @@ if (typeof document.getAttribute == $undefined)
  * @param {string} string String to be converted to lowercase.
  * @returns {string} Lowercased string.
  */
-var lowercase = function(string){ return isString(string) ? string.toLowerCase() : string; };
+var lowercase = function(string){return isString(string) ? string.toLowerCase() : string;};
 
 
 /**
@@ -26,17 +26,17 @@ var lowercase = function(string){ return isString(string) ? string.toLowerCase()
  * @param {string} string String to be converted to uppercase.
  * @returns {string} Uppercased string.
  */
-var uppercase = function(string){ return isString(string) ? string.toUpperCase() : string; };
+var uppercase = function(string){return isString(string) ? string.toUpperCase() : string;};
 
 
 var manualLowercase = function(s) {
   return isString(s)
-      ? s.replace(/[A-Z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) | 32); })
+      ? s.replace(/[A-Z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) | 32);})
       : s;
 };
 var manualUppercase = function(s) {
   return isString(s)
-      ? s.replace(/[a-z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) & ~32); })
+      ? s.replace(/[a-z]/g, function(ch) {return fromCharCode(ch.charCodeAt(0) & ~32);})
       : s;
 };
 
@@ -49,12 +49,12 @@ if ('i' !== 'I'.toLowerCase()) {
   uppercase = manualUppercase;
 }
 
-function fromCharCode(code) { return String.fromCharCode(code); }
+function fromCharCode(code) {return String.fromCharCode(code);}
 
 /**
  * Creates the element for IE8 and below to allow styling of widgets
- * (http://ejohn.org/blog/html5-shiv/). This hack works only if angular is 
- * included synchronously at the top of the document before IE sees any 
+ * (http://ejohn.org/blog/html5-shiv/). This hack works only if angular is
+ * included synchronously at the top of the document before IE sees any
  * unknown elements. See regression/issue-584.html.
  *
  * @param {string} elementName Name of the widget.
@@ -295,7 +295,7 @@ function noop() {}
 function identity($) {return $;}
 
 
-function valueFn(value) {return function() { return value; };}
+function valueFn(value) {return function() {return value;};}
 
 function extensionMap(angular, name, transform) {
   var extPoint;
@@ -319,7 +319,7 @@ function extensionMap(angular, name, transform) {
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is undefined.
  */
-function isUndefined(value){ return typeof value == $undefined; }
+function isUndefined(value){return typeof value == $undefined;}
 
 
 /**
@@ -333,7 +333,7 @@ function isUndefined(value){ return typeof value == $undefined; }
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is defined.
  */
-function isDefined(value){ return typeof value != $undefined; }
+function isDefined(value){return typeof value != $undefined;}
 
 
 /**
@@ -348,7 +348,7 @@ function isDefined(value){ return typeof value != $undefined; }
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Object` but not `null`.
  */
-function isObject(value){ return value!=null && typeof value == $object;}
+function isObject(value){return value!=null && typeof value == $object;}
 
 
 /**
@@ -362,7 +362,7 @@ function isObject(value){ return value!=null && typeof value == $object;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `String`.
  */
-function isString(value){ return typeof value == $string;}
+function isString(value){return typeof value == $string;}
 
 
 /**
@@ -376,7 +376,7 @@ function isString(value){ return typeof value == $string;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
  */
-function isNumber(value){ return typeof value == $number;}
+function isNumber(value){return typeof value == $number;}
 
 
 /**
@@ -390,7 +390,7 @@ function isNumber(value){ return typeof value == $number;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Date`.
  */
-function isDate(value){ return value instanceof Date; }
+function isDate(value){return value instanceof Date;}
 
 
 /**
@@ -404,7 +404,7 @@ function isDate(value){ return value instanceof Date; }
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
  */
-function isArray(value) { return value instanceof Array; }
+function isArray(value) {return value instanceof Array;}
 
 
 /**
@@ -418,7 +418,7 @@ function isArray(value) { return value instanceof Array; }
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Function`.
  */
-function isFunction(value){ return typeof value == 'function';}
+function isFunction(value){return typeof value == 'function';}
 
 
 /**
@@ -432,8 +432,8 @@ function isWindow(obj) {
   return obj && obj.document && obj.location && obj.alert && obj.setInterval;
 }
 
-function isBoolean(value) { return typeof value == $boolean; }
-function isTextNode(node) { return nodeName_(node) == '#text'; }
+function isBoolean(value) {return typeof value == $boolean;}
+function isTextNode(node) {return nodeName_(node) == '#text';}
 
 function trim(value) {
   return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
