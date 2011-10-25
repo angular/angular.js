@@ -24,9 +24,8 @@
 ## Angular Testing API
 
 * {@link angular.mock Testing Mocks API} - Mock objects for testing
-* {@link
-https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en_US
-Angular Scenario Runner} - Automated scenario testing documentation
+* {@link guide/dev_guide.e2e-testing Angular Scenario Runner} - Automated scenario testing
+documentation
 
 
 ## Angular Utility Functions

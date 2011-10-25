@@ -99,9 +99,8 @@ describe('PhoneCat App', function() {
 </pre>
 
 Even though the syntax of this test looks very much like our controller unit test written with
-Jasmine, the end-to-end test uses APIs of {@link
-https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en&pli=1#
-Angular's end-to-end test runner}.
+Jasmine, the end-to-end test uses APIs of {@link guide/dev_guide.e2e-testing Angular's end-to-end
+test runner}.
 
 To run the end-to-end test, open one of the following in a new browser tab:
 
