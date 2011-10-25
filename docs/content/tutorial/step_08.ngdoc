@@ -173,10 +173,8 @@ angular's server}.
 
 # Experiments
 
-* Using the {@link
-https://docs.google.com/document/d/11L8htLKrh6c92foV71ytYpiKkeKpM4_a5-9c3HywfIc/edit?hl=en&pli=1#
-end-to-end test runner API}, write a test that verifies that we display 4 thumbnail images on the
-Nexus S details page.
+* Using the {@link guide/dev_guide.e2e-testing Angular's end-to-end test runner API}, write a test
+that verifies that we display 4 thumbnail images on the Nexus S details page.
 
 
 # Summary
