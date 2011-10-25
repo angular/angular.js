@@ -936,7 +936,7 @@ HashMap.prototype = {
 };
 
 /**
- * A map where multiple values can be added to the same key such that the form a queue.
+ * A map where multiple values can be added to the same key such that they form a queue.
  * @returns {HashQueueMap}
  */
 function HashQueueMap() {}
