@@ -116,7 +116,6 @@ var _undefined        = undefined,
     angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
-    rngScript         = /^(|.*\/)angular(-.*?)?(\.min)?.js(\?[^#]*)?(#(.*))?$/,
     uid               = ['0', '0', '0'],
     DATE_ISOSTRING_LN = 24;
 
@@ -953,35 +952,30 @@ function angularInit(config, document){
   var autobind = config.autobind;
 
   if (autobind) {
-    var element = isString(autobind) ? document.getElementById(autobind) : document,
-        scope = compile(element)(createScope()),
-        $browser = scope.$service('$browser');
-
-    if (config.css)
-      $browser.addCss(config.base_url + config.css);
-    scope.$apply();
+    var element = isString(autobind) ? document.getElementById(autobind) : document;
+    compile(element)().$apply();
   }
 }
 
 function angularJsConfig(document) {
   bindJQuery();
-  var scripts = document.getElementsByTagName("script"),
+  var scripts = document.getElementsByTagName('script'),
+      script = scripts[scripts.length-1],
+      scriptSrc = script.src,
       config = {},
-      match;
-  for(var j = 0; j < scripts.length; j++) {
-    match = (scripts[j].src || "").match(rngScript);
-    if (match) {
-      config.base_url = match[1];
-      extend(config, parseKeyValue(match[6]));
-      eachAttribute(jqLite(scripts[j]), function(value, name){
-        if (/^ng:/.exec(name)) {
-          name = name.substring(3).replace(/-/g, '_');
-          value = value || true;
-          config[name] = value;
-        }
-      });
+      hashPos;
+
+  hashPos = scriptSrc.indexOf('#');
+  if (hashPos != -1) extend(config, parseKeyValue(scriptSrc.substr(hashPos+1)));
+
+  eachAttribute(jqLite(script), function(value, name){
+    if (/^ng:/.exec(name)) {
+      name = name.substring(3).replace(/-/g, '_');
+      value = value || true;
+      config[name] = value;
     }
-  }
+  });
+
   return config;
 }
 
