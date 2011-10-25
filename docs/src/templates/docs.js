@@ -1,5 +1,5 @@
-DocsController.$inject = ['$location', '$browser', '$window', '$cookies'];
-function DocsController($location, $browser, $window, $cookies) {
+DocsController.$inject = ['$location', '$window', '$cookies'];
+function DocsController($location, $window, $cookies) {
   window.$root = this.$root;
 
   var scope = this,
