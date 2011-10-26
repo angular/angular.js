@@ -26,20 +26,19 @@ function DocsController($location, $window, $cookies) {
       scope.sectionId = parts[1];
       scope.partialId = parts[2] || 'index';
       scope.pages = angular.Array.filter(NG_PAGES, {section: scope.sectionId});
-      scope.loading++;
 
       var i = scope.pages.length;
       while (i--) {
-        if (scope.pages[i].id == scope.partialId) {
-          // TODO(i): this is not ideal but better than updating the title before a partial arrives,
-          //   which results in the old partial being displayed with the new title
-          scope.futurePartialTitle = scope.pages[i].name;
-          break;
-        }
+        if (scope.pages[i].id == scope.partialId) break;
       }
       if (i<0) {
         scope.partialTitle = 'Error: Page Not Found!';
         delete scope.partialId;
+      } else {
+        // TODO(i): this is not ideal but better than updating the title before a partial arrives,
+        //   which results in the old partial being displayed with the new title
+        scope.futurePartialTitle = scope.pages[i].name;
+        scope.loading++;
       }
     }
   });
