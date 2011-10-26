@@ -539,6 +539,26 @@ describe("widget", function() {
 
       expect(rootScope.log).toEqual(['parent', 'init', 'child']);
     });
+
+    it('should discard pending xhr callbacks if a new route is requested before the current ' +
+        'finished loading', function() {
+      // this is a test for a bad race condition that affected feedback
+
+      $route.when('/foo', {template: 'myUrl1'});
+      $route.when('/bar', {template: 'myUrl2'});
+
+      expect(rootScope.$element.text()).toEqual('');
+
+      $location.path('/foo');
+      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      rootScope.$digest();
+      $location.path('/bar');
+      $browser.xhr.expectGET('myUrl2').respond('<div>{{1+1}}</div>');
+      rootScope.$digest();
+      $browser.xhr.flush(); // no that we have to requests pending, flush!
+
+      expect(rootScope.$element.text()).toEqual('2');
+    });
   });
 
 

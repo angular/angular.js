@@ -551,13 +551,16 @@ angularWidget('ng:view', function(element) {
         changeCounter++;
       });
 
-      this.$watch(function() {return changeCounter;}, function() {
+      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
         var template = $route.current && $route.current.template;
         if (template) {
           //xhr's callback must be async, see commit history for more info
           $xhr('GET', template, function(code, response) {
-            element.html(response);
-            compiler.compile(element)($route.current.scope);
+            // ignore callback if another route change occured since
+            if (newChangeCounter == changeCounter) {
+              element.html(response);
+              compiler.compile(element)($route.current.scope);
+            }
           });
         } else {
           element.html('');
