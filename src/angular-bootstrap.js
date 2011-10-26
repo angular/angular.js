@@ -99,9 +99,7 @@
     // empty the cache to prevent mem leaks
     globalVars = {};
 
-    var config = angularJsConfig(document);
-
-    angularInit(config, document);
+    angularInit({autobind:true}, document);
   }
 
   if (window.addEventListener) {
