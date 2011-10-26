@@ -163,7 +163,7 @@ angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
  */
 angular.scenario.Runner.prototype.run = function(application) {
   var self = this;
-  var $root = angular.scope();
+  var $root = angular.injector()('$rootScope');
   angular.extend($root, this);
   angular.forEach(angular.scenario.Runner.prototype, function(fn, name) {
     $root[name] = angular.bind(self, fn);

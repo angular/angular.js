@@ -115,22 +115,22 @@ describe('parser', function() {
       expect(tokens[0].text).toEqual(0.5);
     });
 
-    it('should tokenize negative number', function() {
-      var value = createScope().$eval("-0.5");
+    it('should tokenize negative number', inject(function($rootScope) {
+      var value = $rootScope.$eval("-0.5");
       expect(value).toEqual(-0.5);
 
-      value = createScope().$eval("{a:-0.5}");
+      value = $rootScope.$eval("{a:-0.5}");
       expect(value).toEqual({a:-0.5});
-    });
+    }));
 
-    it('should tokenize number with exponent', function() {
+    it('should tokenize number with exponent', inject(function($rootScope) {
       var tokens = lex("0.5E-10");
       expect(tokens[0].text).toEqual(0.5E-10);
-      expect(createScope().$eval("0.5E-10")).toEqual(0.5E-10);
+      expect($rootScope.$eval("0.5E-10")).toEqual(0.5E-10);
 
       tokens = lex("0.5E+10");
       expect(tokens[0].text).toEqual(0.5E+10);
-    });
+    }));
 
     it('should throws exception for invalid exponent', function() {
       expect(function() {
@@ -155,9 +155,9 @@ describe('parser', function() {
   });
 
   var scope;
-  beforeEach(function () {
-    scope = createScope();
-  });
+  beforeEach(inject(function ($rootScope) {
+    scope = $rootScope;
+  }));
 
   it('should parse expressions', function() {
     expect(scope.$eval("-1")).toEqual(-1);
@@ -226,7 +226,6 @@ describe('parser', function() {
     expect(scope.$eval("a=12")).toEqual(12);
     expect(scope.a).toEqual(12);
 
-    scope = createScope();
     expect(scope.$eval("x.y.z=123;")).toEqual(123);
     expect(scope.x.y.z).toEqual(123);
 
@@ -392,7 +391,6 @@ describe('parser', function() {
   });
 
   it('should allow assignment after array dereference', function() {
-    scope = angular.scope();
     scope.obj = [{}];
     scope.$eval('obj[0].name=1');
     expect(scope.obj.name).toBeUndefined();
@@ -400,7 +398,6 @@ describe('parser', function() {
   });
 
   it('should short-circuit AND operator', function() {
-    var scope = angular.scope();
     scope.run = function() {
       throw "IT SHOULD NOT HAVE RUN";
     };
@@ -408,7 +405,6 @@ describe('parser', function() {
   });
 
   it('should short-circuit OR operator', function() {
-    var scope = angular.scope();
     scope.run = function() {
       throw "IT SHOULD NOT HAVE RUN";
     };

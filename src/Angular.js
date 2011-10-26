@@ -855,11 +855,6 @@ function toBoolean(value) {
 }
 
 
-/** @name angular.compile */
-function compile(element) {
-  return new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget)
-    .compile(element);
-}
 /////////////////////////////////////////////////
 
 /**
@@ -954,11 +949,12 @@ function angularInit(config, document){
 
   if (autobind) {
     var element = isString(autobind) ? document.getElementById(autobind) : document,
-        scope = compile(element)(createScope()),
-        $browser = scope.$service('$browser');
+        injector = createInjector(),
+        scope = injector('$rootScope');
+    injector('$compile')(element)(scope);
 
     if (config.css)
-      $browser.addCss(config.base_url + config.css);
+      injector('$browser').addCss(config.base_url + config.css);
     scope.$apply();
   }
 }

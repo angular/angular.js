@@ -96,7 +96,7 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$formFactory', function() {
+angularServiceInject('$formFactory', function($rootScope) {
 
 
   /**
@@ -109,7 +109,7 @@ angularServiceInject('$formFactory', function() {
    * Each application ({@link guide/dev_guide.scopes.internals root scope}) gets a root form which
    * is the top-level parent of all forms.
    */
-  formFactory.rootForm = formFactory(this);
+  formFactory.rootForm = formFactory($rootScope);
 
 
   /**
@@ -132,7 +132,7 @@ angularServiceInject('$formFactory', function() {
     return (parent || formFactory.rootForm).$new(FormController);
   }
 
-});
+}, ['$rootScope']);
 
 function propertiesUpdate(widget) {
   widget.$valid = !(widget.$invalid =

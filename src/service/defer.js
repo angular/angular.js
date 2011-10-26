@@ -28,12 +28,10 @@
  * @param {*} deferId Token returned by the `$defer` function.
  * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
  */
-angularServiceInject('$defer', function($browser) {
-  var scope = this;
-
+angularServiceInject('$defer', function($rootScope, $browser) {
   function defer(fn, delay) {
     return $browser.defer(function() {
-      scope.$apply(fn);
+      $rootScope.$apply(fn);
     }, delay);
   }
 
@@ -42,4 +40,4 @@ angularServiceInject('$defer', function($browser) {
   };
 
   return defer;
-}, ['$browser']);
+}, ['$rootScope', '$browser']);

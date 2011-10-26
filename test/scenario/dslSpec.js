@@ -10,7 +10,7 @@ describe("angular.scenario.dsl", function() {
       document: _jQuery("<div></div>"),
       angular: new angular.scenario.testing.MockAngular()
     };
-    $root = angular.scope();
+    $root = angular.injector()('$rootScope');
     $root.emit = function(eventName) {
       eventLog.push(eventName);
     };
@@ -131,18 +131,16 @@ describe("angular.scenario.dsl", function() {
           search: '?foo=10',
           hash: '#bar?x=2'
         };
-        $window.angular.scope = function() {
-          return {
-            $service: function(serviceId) {
-              if (serviceId == '$location') {
-                return {
-                  hashSearch: {x: 2},
-                  hashPath: '/bar',
-                  search: {foo: 10}
-                };
-              } else {
-                throw new Error('unknown service id ' + serviceId);
-              }
+        $window.angular.injector = function() {
+          return function(serviceId) {
+            if (serviceId == '$location') {
+              return {
+                hashSearch: {x: 2},
+                hashPath: '/bar',
+                search: {foo: 10}
+              };
+            } else {
+              throw new Error('unknown service id ' + serviceId);
             }
           };
         };

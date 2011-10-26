@@ -13,9 +13,8 @@
  *
  * @example
  */
-angularServiceInject('$cookies', function($browser) {
-  var rootScope = this,
-      cookies = {},
+angularServiceInject('$cookies', function($rootScope, $browser) {
+  var cookies = {},
       lastCookies = {},
       lastBrowserCookies,
       runEval = false;
@@ -27,7 +26,7 @@ angularServiceInject('$cookies', function($browser) {
       lastBrowserCookies = currentCookies;
       copy(currentCookies, lastCookies);
       copy(currentCookies, cookies);
-      if (runEval) rootScope.$apply();
+      if (runEval) $rootScope.$apply();
     }
   })();
 
@@ -36,7 +35,7 @@ angularServiceInject('$cookies', function($browser) {
   //at the end of each eval, push cookies
   //TODO: this should happen before the "delayed" watches fire, because if some cookies are not
   //      strings or browser refuses to store some cookies, we update the model in the push fn.
-  this.$watch(push);
+  $rootScope.$watch(push);
 
   return cookies;
 
@@ -90,4 +89,4 @@ angularServiceInject('$cookies', function($browser) {
       }
     }
   }
-}, ['$browser']);
+}, ['$rootScope', '$browser']);
