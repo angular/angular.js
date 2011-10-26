@@ -854,11 +854,6 @@ function toBoolean(value) {
 }
 
 
-/** @name angular.compile */
-function compile(element) {
-  return new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget)
-    .compile(element);
-}
 /////////////////////////////////////////////////
 
 /**
@@ -956,7 +951,7 @@ function angularInit(config, document){
         injector = createInjector(),
         scope = injector('$rootScope');
 
-    compile(element)(scope);
+    injector('$compile')(element)(scope);
     scope.$apply();
   }
 }

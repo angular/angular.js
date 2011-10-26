@@ -2,10 +2,12 @@
 
 describe('widget: input', function() {
   var compile = null, element = null, scope = null, defer = null;
+  var $compile = null;
   var doc = null;
 
-  beforeEach(inject(function($rootScope) {
+  beforeEach(inject(function($rootScope, $compile) {
     scope = $rootScope;
+    set$compile($compile);
     element = null;
     compile = function(html, parent) {
       if (parent) {
@@ -14,12 +16,14 @@ describe('widget: input', function() {
       } else {
         element = jqLite(html);
       }
-      angular.compile(element)(scope);
+      $compile(element)(scope);
       scope.$apply();
       defer = scope.$service('$browser').defer;
       return scope;
     };
   }));
+
+  function set$compile(c) { $compile = c; }
 
   afterEach(function() {
     dealoc(element);
@@ -40,7 +44,7 @@ describe('widget: input', function() {
       formElement = doc = angular.element('<form name="form"><input ' + prefix +
           'type="text" ng:model="name" name="name" ng:change="change()"></form>');
       inputElement = formElement.find('input');
-      angular.compile(doc)(scope);
+      $compile(doc)(scope);
       form = formElement.inheritedData('$form');
     };
 
@@ -90,16 +94,16 @@ describe('widget: input', function() {
     });
 
 
-    it('should change non-html5 types to text', inject(function($rootScope) {
+    it('should change non-html5 types to text', inject(function($rootScope, $compile) {
       doc = angular.element('<form name="form"><input type="abc" ng:model="name"></form>');
-      angular.compile(doc)($rootScope);
+      $compile(doc)($rootScope);
       expect(doc.find('input').attr('type')).toEqual('text');
     }));
 
 
-    it('should not change html5 types to text', inject(function($rootScope) {
+    it('should not change html5 types to text', inject(function($rootScope, $compile) {
       doc = angular.element('<form name="form"><input type="number" ng:model="name"></form>');
-      angular.compile(doc)($rootScope);
+      $compile(doc)($rootScope);
       expect(doc.find('input')[0].getAttribute('type')).toEqual('number');
     }));
   });
@@ -454,7 +458,7 @@ describe('widget: input', function() {
 
 
   describe('scope declaration', function() {
-    it('should read the declaration from scope', inject(function($rootScope) {
+    it('should read the declaration from scope', inject(function($rootScope, $compile) {
       var input, $formFactory;
       element = angular.element('<input type="@MyType" ng:model="abc">');
       $rootScope.MyType = function($f, i) {
@@ -463,18 +467,18 @@ describe('widget: input', function() {
       };
       $rootScope.MyType.$inject = ['$formFactory'];
 
-      angular.compile(element)($rootScope);
+      $compile(element)($rootScope);
 
       expect($formFactory).toBe($rootScope.$service('$formFactory'));
       expect(input[0]).toBe(element[0]);
     }));
 
-    it('should throw an error of Controller not declared in scope', inject(function($rootScope) {
+    it('should throw an error of Controller not declared in scope', inject(function($rootScope, $compile) {
       var input, $formFactory;
       element = angular.element('<input type="@DontExist" ng:model="abc">');
       var error;
       try {
-        angular.compile(element)($rootScope);
+        $compile(element)($rootScope);
         error = 'no error thrown';
       } catch (e) {
         error = e;
@@ -577,9 +581,9 @@ describe('widget: input', function() {
         {'ng:maxlength': 3});
 
 
-    it('should throw an error when scope pattern can\'t be found', inject(function($rootScope) {
+    it('should throw an error when scope pattern can\'t be found', inject(function($rootScope, $compile) {
       var el = jqLite('<input ng:model="foo" ng:pattern="fooRegexp">');
-      angular.compile(el)($rootScope);
+      $compile(el)($rootScope);
 
       el.val('xx');
       browserTrigger(el, 'keydown');

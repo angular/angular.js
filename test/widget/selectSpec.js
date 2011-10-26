@@ -3,7 +3,7 @@
 describe('select', function() {
   var compile = null, element = null, scope = null;
 
-  beforeEach(inject(function($rootScope) {
+  beforeEach(inject(function($compile, $rootScope) {
     scope = $rootScope;
     element = null;
     compile = function(html, parent) {
@@ -13,7 +13,7 @@ describe('select', function() {
       } else {
         element = jqLite(html);
       }
-      angular.compile(element)($rootScope);
+      $compile(element)($rootScope);
       scope.$apply();
       return scope;
     };

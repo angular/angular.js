@@ -1,10 +1,12 @@
 'use strict';
 
 describe('compiler', function() {
-  var compiler, markup, attrMarkup, directives, widgets, compile, log, scope;
+  var compiler, textMmarkup, attrMarkup, directives, widgets, compile, log, $rootScope;
 
-  beforeEach(inject(function($rootScope) {
-    log = "";
+  beforeEach(inject(function(service){
+    textMmarkup = [];
+    attrMarkup = [];
+    widgets = extensionMap({}, 'widget');
     directives = {
       hello: function(expression, element){
         log += "hello ";
@@ -23,29 +25,25 @@ describe('compiler', function() {
       }
 
     };
-    markup = [];
-    attrMarkup = [];
-    widgets = extensionMap({}, 'widget');
-    compiler = new Compiler(markup, attrMarkup, directives, widgets);
-    compile = function(html){
-      var e = jqLite("<div>" + html + "</div>");
-      compiler.compile(e)($rootScope);
-      return scope = $rootScope;
-    };
+    log = "";
+    service('$textMarkup', valueFn(textMmarkup));
+    service('$attrMarkup', valueFn(attrMarkup));
+    service('$directive', valueFn(directives));
+    service('$widget', valueFn(widgets));
   }));
 
 
-  it('should not allow compilation of multiple roots', function() {
+  it('should not allow compilation of multiple roots', inject(function($rootScope, $compile) {
     expect(function() {
-      compiler.compile('<div>A</div><span></span>');
+      $compile('<div>A</div><span></span>');
     }).toThrow("Cannot compile multiple element roots: " + ie("<div>A</div><span></span>"));
     function ie(text) {
       return msie < 9 ? uppercase(text) : text;
     }
-  });
+  }));
 
 
-  it('should recognize a directive', inject(function($rootScope) {
+  it('should recognize a directive', inject(function($rootScope, $compile) {
     var e = jqLite('<div directive="expr" ignore="me"></div>');
     directives.directive = function(expression, element){
       log += "found";
@@ -55,42 +53,42 @@ describe('compiler', function() {
         log += ":init";
       };
     };
-    var template = compiler.compile(e);
+    var linkFn = $compile(e);
     expect(log).toEqual("found");
-    scope = template($rootScope);
+    linkFn($rootScope);
     expect(e.hasClass('ng-directive')).toEqual(true);
     expect(log).toEqual("found:init");
   }));
 
 
-  it('should recurse to children', function() {
-    scope = compile('<div><span hello="misko"/></div>');
+  it('should recurse to children', inject(function($rootScope, $compile) {
+    $compile('<div><span hello="misko"/></div>')($rootScope);
     expect(log).toEqual("hello misko");
-  });
+  }));
 
 
-  it('should observe scope', function() {
-    scope = compile('<span observe="name"></span>');
+  it('should observe scope', inject(function($rootScope, $compile) {
+    $compile('<span observe="name"></span>')($rootScope);
     expect(log).toEqual("");
-    scope.$digest();
-    scope.name = 'misko';
-    scope.$digest();
-    scope.$digest();
-    scope.name = 'adam';
-    scope.$digest();
-    scope.$digest();
+    $rootScope.$digest();
+    $rootScope.name = 'misko';
+    $rootScope.$digest();
+    $rootScope.$digest();
+    $rootScope.name = 'adam';
+    $rootScope.$digest();
+    $rootScope.$digest();
     expect(log).toEqual(":misko:adam");
-  });
+  }));
 
 
-  it('should prevent descend', function() {
+  it('should prevent descend', inject(function($rootScope, $compile) {
     directives.stop = function() { this.descend(false); };
-    scope = compile('<span hello="misko" stop="true"><span hello="adam"/></span>');
+    $compile('<span hello="misko" stop="true"><span hello="adam"/></span>')($rootScope);
     expect(log).toEqual("hello misko");
-  });
+  }));
 
 
-  it('should allow creation of templates', inject(function($rootScope) {
+  it('should allow creation of templates', inject(function($rootScope, $compile) {
     directives.duplicate = function(expr, element){
       element.replaceWith(document.createComment("marker"));
       element.removeAttr("duplicate");
@@ -103,32 +101,32 @@ describe('compiler', function() {
         });
       };
     };
-    scope = compile('before<span duplicate="expr">x</span>after');
-    expect(sortedHtml(scope.$element)).
+    $compile('<div>before<span duplicate="expr">x</span>after</div>')($rootScope);
+    expect(sortedHtml($rootScope.$element)).
       toEqual('<div>' +
                 'before<#comment></#comment>' +
                 'after' +
               '</div>');
-    scope.value = 1;
-    scope.$digest();
-    expect(sortedHtml(scope.$element)).
+    $rootScope.value = 1;
+    $rootScope.$digest();
+    expect(sortedHtml($rootScope.$element)).
       toEqual('<div>' +
           'before<#comment></#comment>' +
           '<span>x</span>' +
           'after' +
         '</div>');
-    scope.value = 2;
-    scope.$digest();
-    expect(sortedHtml(scope.$element)).
+    $rootScope.value = 2;
+    $rootScope.$digest();
+    expect(sortedHtml($rootScope.$element)).
       toEqual('<div>' +
           'before<#comment></#comment>' +
           '<span>x</span>' +
           '<span>x</span>' +
           'after' +
         '</div>');
-    scope.value = 3;
-    scope.$digest();
-    expect(sortedHtml(scope.$element)).
+    $rootScope.value = 3;
+    $rootScope.$digest();
+    expect(sortedHtml($rootScope.$element)).
       toEqual('<div>' +
           'before<#comment></#comment>' +
           '<span>x</span>' +
@@ -139,21 +137,22 @@ describe('compiler', function() {
   }));
 
 
-  it('should process markup before directives', function() {
-    markup.push(function(text, textNode, parentNode) {
+  it('should process markup before directives', inject(function($rootScope, $compile) {
+    textMmarkup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
         parentNode.attr('hello', text);
         textNode[0].nodeValue = 'replaced';
       }
     });
-    scope = compile('before<span>middle</span>after');
-    expect(sortedHtml(scope.$element[0], true)).toEqual('<div>before<span class="ng-directive" hello="middle">replaced</span>after</div>');
+    $compile('<div>before<span>middle</span>after</div>')($rootScope);
+    expect(sortedHtml($rootScope.$element[0], true)).
+      toEqual('<div>before<span class="ng-directive" hello="middle">replaced</span>after</div>');
     expect(log).toEqual("hello middle");
-  });
+  }));
 
 
-  it('should replace widgets', function() {
+  it('should replace widgets', inject(function($rootScope, $compile) {
     widgets['NG:BUTTON'] = function(element) {
       expect(element.hasClass('ng-widget')).toEqual(true);
       element.replaceWith('<div>button</div>');
@@ -161,13 +160,13 @@ describe('compiler', function() {
         log += 'init';
       };
     };
-    scope = compile('<ng:button>push me</ng:button>');
-    expect(lowercase(scope.$element[0].innerHTML)).toEqual('<div>button</div>');
+    $compile('<div><ng:button>push me</ng:button></div>')($rootScope);
+    expect(lowercase($rootScope.$element[0].innerHTML)).toEqual('<div>button</div>');
     expect(log).toEqual('init');
-  });
+  }));
 
 
-  it('should use the replaced element after calling widget', function() {
+  it('should use the replaced element after calling widget', inject(function($rootScope, $compile) {
     widgets['H1'] = function(element) {
       // HTML elements which are augmented by acting as widgets, should not be marked as so
       expect(element.hasClass('ng-widget')).toEqual(false);
@@ -177,17 +176,17 @@ describe('compiler', function() {
       this.directives(true);
       return noop;
     };
-    markup.push(function(text, textNode, parent){
+    textMmarkup.push(function(text, textNode, parent){
       if (text == '{{1+2}}')
         parent.text('3');
     });
-    scope = compile('<div><h1>ignore me</h1></div>');
-    expect(scope.$element.text()).toEqual('3');
-  });
+    $compile('<div><h1>ignore me</h1></div>')($rootScope);
+    expect($rootScope.$element.text()).toEqual('3');
+  }));
 
 
-  it('should allow multiple markups per text element', function() {
-    markup.push(function(text, textNode, parent){
+  it('should allow multiple markups per text element', inject(function($rootScope, $compile) {
+    textMmarkup.push(function(text, textNode, parent){
       var index = text.indexOf('---');
       if (index > -1) {
         textNode.after(text.substring(index + 3));
@@ -196,7 +195,7 @@ describe('compiler', function() {
         textNode.remove();
       }
     });
-    markup.push(function(text, textNode, parent){
+    textMmarkup.push(function(text, textNode, parent){
       var index = text.indexOf('===');
       if (index > -1) {
         textNode.after(text.substring(index + 3));
@@ -205,14 +204,13 @@ describe('compiler', function() {
         textNode.remove();
       }
     });
-    scope = compile('A---B---C===D');
-    expect(sortedHtml(scope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
-  });
+    $compile('<div>A---B---C===D</div>')($rootScope);
+    expect(sortedHtml($rootScope.$element)).toEqual('<div>A<hr></hr>B<hr></hr>C<p></p>D</div>');
+  }));
 
 
-  it('should add class for namespace elements', function() {
-    scope = compile('<ng:space>abc</ng:space>');
-    var space = jqLite(scope.$element[0].firstChild);
-    expect(space.hasClass('ng-space')).toEqual(true);
-  });
+  it('should add class for namespace elements', inject(function($rootScope, $compile) {
+    var element = $compile('<ng:space>abc</ng:space>')($rootScope);
+    expect(element.hasClass('ng-space')).toEqual(true);
+  }));
 });

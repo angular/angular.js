@@ -2,16 +2,16 @@
 
 describe("markups", function() {
 
-  it('should translate {{}} in text', inject(function($rootScope) {
-    var element = angular.compile('<div>hello {{name}}!</div>')($rootScope)
+  it('should translate {{}} in text', inject(function($rootScope, $compile) {
+    var element = $compile('<div>hello {{name}}!</div>')($rootScope)
     expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name"></span>!</div>');
     $rootScope.name = 'Misko';
     $rootScope.$digest();
     expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name">Misko</span>!</div>');
   }));
 
-  it('should translate {{}} in terminal nodes', inject(function($rootScope) {
-    var element = angular.compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope)
+  it('should translate {{}} in terminal nodes', inject(function($rootScope, $compile) {
+    var element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope)
     $rootScope.$digest();
     expect(sortedHtml(element).replace(' selected="true"', '')).
       toEqual('<select ng:model="x">' +
@@ -25,8 +25,8 @@ describe("markups", function() {
               '</select>');
   }));
 
-  it('should translate {{}} in attributes', inject(function($rootScope) {
-    var element = angular.compile('<div src="http://server/{{path}}.png"/>')($rootScope)
+  it('should translate {{}} in attributes', inject(function($rootScope, $compile) {
+    var element = $compile('<div src="http://server/{{path}}.png"/>')($rootScope)
     expect(element.attr('ng:bind-attr')).toEqual('{"src":"http://server/{{path}}.png"}');
     $rootScope.path = 'a/b';
     $rootScope.$digest();
@@ -55,37 +55,37 @@ describe("markups", function() {
     });
 
 
-    it('should populate value attribute on OPTION', inject(function($rootScope) {
-      var element = angular.compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
+    it('should populate value attribute on OPTION', inject(function($rootScope, $compile) {
+      var element = $compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
       expect(element).toHaveValue('abc');
     }));
 
-    it('should ignore value if already exists', inject(function($rootScope) {
-      var element = angular.compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
+    it('should ignore value if already exists', inject(function($rootScope, $compile) {
+      var element = $compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
       expect(element).toHaveValue('abc');
     }));
 
-    it('should set value even if newlines present', inject(function($rootScope) {
-      var element = angular.compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
+    it('should set value even if newlines present', inject(function($rootScope, $compile) {
+      var element = $compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
       expect(element).toHaveValue('\nabc\n');
     }));
 
-    it('should set value even if self closing HTML', inject(function($rootScope) {
+    it('should set value even if self closing HTML', inject(function($rootScope, $compile) {
       // IE removes the \n from option, which makes this test pointless
       if (msie) return;
-      var element = angular.compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
+      var element = $compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
       expect(element).toHaveValue('\n');
     }));
 
   });
 
-  it('should bind href', inject(function($rootScope) {
-    var element = angular.compile('<a ng:href="{{url}}"></a>')($rootScope)
+  it('should bind href', inject(function($rootScope, $compile) {
+    var element = $compile('<a ng:href="{{url}}"></a>')($rootScope)
     expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}"}"></a>');
   }));
 
-  it('should bind disabled', inject(function($rootScope) {
-    var element = angular.compile('<button ng:disabled="{{isDisabled}}">Button</button>')($rootScope)
+  it('should bind disabled', inject(function($rootScope, $compile) {
+    var element = $compile('<button ng:disabled="{{isDisabled}}">Button</button>')($rootScope)
     $rootScope.isDisabled = false;
     $rootScope.$digest();
     expect(element.attr('disabled')).toBeFalsy();
@@ -94,8 +94,8 @@ describe("markups", function() {
     expect(element.attr('disabled')).toBeTruthy();
   }));
 
-  it('should bind checked', inject(function($rootScope) {
-    var element = angular.compile('<input type="checkbox" ng:checked="{{isChecked}}" />')($rootScope)
+  it('should bind checked', inject(function($rootScope, $compile) {
+    var element = $compile('<input type="checkbox" ng:checked="{{isChecked}}" />')($rootScope)
     $rootScope.isChecked = false;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeFalsy();
@@ -104,8 +104,8 @@ describe("markups", function() {
     expect(element.attr('checked')).toBeTruthy();
   }));
 
-  it('should bind selected', inject(function($rootScope) {
-    var element = angular.compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>')($rootScope)
+  it('should bind selected', inject(function($rootScope, $compile) {
+    var element = $compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>')($rootScope)
     jqLite(document.body).append(element)
     $rootScope.isSelected=false;
     $rootScope.$digest();
@@ -115,8 +115,8 @@ describe("markups", function() {
     expect(element.children()[1].selected).toBeTruthy();
   }));
 
-  it('should bind readonly', inject(function($rootScope) {
-    var element = angular.compile('<input type="text" ng:readonly="{{isReadonly}}" />')($rootScope)
+  it('should bind readonly', inject(function($rootScope, $compile) {
+    var element = $compile('<input type="text" ng:readonly="{{isReadonly}}" />')($rootScope)
     $rootScope.isReadonly=false;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeFalsy();
@@ -125,8 +125,8 @@ describe("markups", function() {
     expect(element.attr('readOnly')).toBeTruthy();
   }));
 
-  it('should bind multiple', inject(function($rootScope) {
-    var element = angular.compile('<select ng:multiple="{{isMultiple}}"></select>')($rootScope)
+  it('should bind multiple', inject(function($rootScope, $compile) {
+    var element = $compile('<select ng:multiple="{{isMultiple}}"></select>')($rootScope)
     $rootScope.isMultiple=false;
     $rootScope.$digest();
     expect(element.attr('multiple')).toBeFalsy();
@@ -135,57 +135,57 @@ describe("markups", function() {
     expect(element.attr('multiple')).toBeTruthy();
   }));
 
-  it('should bind src', inject(function($rootScope) {
-    var element = angular.compile('<div ng:src="{{url}}" />')($rootScope)
+  it('should bind src', inject(function($rootScope, $compile) {
+    var element = $compile('<div ng:src="{{url}}" />')($rootScope)
     $rootScope.url = 'http://localhost/';
     $rootScope.$digest();
     expect(element.attr('src')).toEqual('http://localhost/');
   }));
 
-  it('should bind href and merge with other attrs', inject(function($rootScope) {
-    var element = angular.compile('<a ng:href="{{url}}" rel="{{rel}}"></a>')($rootScope)
+  it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
+    var element = $compile('<a ng:href="{{url}}" rel="{{rel}}"></a>')($rootScope)
     expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}","rel":"{{rel}}"}"></a>');
   }));
 
-  it('should bind Text with no Bindings', inject(function() {
+  it('should bind Text with no Bindings', inject(function($compile) {
     var $rootScope;
     function newScope (){
       return $rootScope = angular.injector()('$rootScope');
     }
     forEach(['checked', 'disabled', 'multiple', 'readonly', 'selected'], function(name) {
-      var element = angular.compile('<div ng:' + name + '="some"></div>')(newScope())
+      var element = $compile('<div ng:' + name + '="some"></div>')(newScope())
       expect(element.attr('ng:bind-attr')).toBe('{"' + name +'":"some"}');
       $rootScope.$digest();
       expect(element.attr(name)).toBe(name);
       dealoc(element);
     });
 
-    var element = angular.compile('<div ng:src="some"></div>')(newScope())
+    var element = $compile('<div ng:src="some"></div>')(newScope())
     $rootScope.$digest();
     expect(sortedHtml(element)).toEqual('<div ng:bind-attr="{"src":"some"}" src="some"></div>');
     dealoc(element);
 
-    var element = angular.compile('<div ng:href="some"></div>')(newScope())
+    var element = $compile('<div ng:href="some"></div>')(newScope())
     $rootScope.$digest();
     expect(sortedHtml(element)).toEqual('<div href="some" ng:bind-attr="{"href":"some"}"></div>');
     dealoc(element);
   }));
 
-  it('should Parse Text With No Bindings', inject(function($rootScope) {
+  it('should Parse Text With No Bindings', inject(function($rootScope, $compile) {
     var parts = parseBindings("a");
     assertEquals(parts.length, 1);
     assertEquals(parts[0], "a");
     assertTrue(!binding(parts[0]));
   }));
 
-  it('should Parse Empty Text', inject(function($rootScope) {
+  it('should Parse Empty Text', inject(function($rootScope, $compile) {
     var parts = parseBindings("");
     assertEquals(parts.length, 1);
     assertEquals(parts[0], "");
     assertTrue(!binding(parts[0]));
   }));
 
-  it('should Parse Inner Binding', inject(function($rootScope) {
+  it('should Parse Inner Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("a{{b}}C");
     assertEquals(parts.length, 3);
     assertEquals(parts[0], "a");
@@ -196,7 +196,7 @@ describe("markups", function() {
     assertTrue(!binding(parts[2]));
   }));
 
-  it('should Parse Ending Binding', inject(function($rootScope) {
+  it('should Parse Ending Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("a{{b}}");
     assertEquals(parts.length, 2);
     assertEquals(parts[0], "a");
@@ -205,7 +205,7 @@ describe("markups", function() {
     assertEquals(binding(parts[1]), "b");
   }));
 
-  it('should Parse Begging Binding', inject(function($rootScope) {
+  it('should Parse Begging Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}c");
     assertEquals(parts.length, 2);
     assertEquals(parts[0], "{{b}}");
@@ -214,14 +214,14 @@ describe("markups", function() {
     assertTrue(!binding(parts[1]));
   }));
 
-  it('should Parse Loan Binding', inject(function($rootScope) {
+  it('should Parse Loan Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}");
     assertEquals(parts.length, 1);
     assertEquals(parts[0], "{{b}}");
     assertEquals(binding(parts[0]), "b");
   }));
 
-  it('should Parse Two Bindings', inject(function($rootScope) {
+  it('should Parse Two Bindings', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}{{c}}");
     assertEquals(parts.length, 2);
     assertEquals(parts[0], "{{b}}");
@@ -230,7 +230,7 @@ describe("markups", function() {
     assertEquals(binding(parts[1]), "c");
   }));
 
-  it('should Parse Two Bindings With Text In Middle', inject(function($rootScope) {
+  it('should Parse Two Bindings With Text In Middle', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}x{{c}}");
     assertEquals(parts.length, 3);
     assertEquals(parts[0], "{{b}}");
@@ -241,7 +241,7 @@ describe("markups", function() {
     assertEquals(binding(parts[2]), "c");
   }));
 
-  it('should Parse Multiline', inject(function($rootScope) {
+  it('should Parse Multiline', inject(function($rootScope, $compile) {
     var parts = parseBindings('"X\nY{{A\nB}}C\nD"');
     assertTrue(!!binding('{{A\nB}}'));
     assertEquals(parts.length, 3);
@@ -250,7 +250,7 @@ describe("markups", function() {
     assertEquals(parts[2], 'C\nD"');
   }));
 
-  it('should Has Binding', inject(function($rootScope) {
+  it('should Has Binding', inject(function($rootScope, $compile) {
     assertTrue(hasBindings(parseBindings("{{a}}")));
     assertTrue(!hasBindings(parseBindings("a")));
     assertTrue(hasBindings(parseBindings("{{b}}x{{c}}")));

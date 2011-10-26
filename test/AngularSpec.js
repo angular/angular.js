@@ -423,7 +423,7 @@ describe('angular', function() {
 
 
   describe('directive', function() {
-    it('should register directives with case-insensitive id', function() {
+    it('should register directives with case-insensitive id', inject(function($compile) {
       angularDirective('ALLCAPS', function(val, el) {el.text('+' + val + '+')});
       angularDirective('lowercase', function(val, el) {el.text('-' + val + '-')});
 
@@ -433,14 +433,14 @@ describe('angular', function() {
                         '<span ALLCAPS="xx3"></span>' +
                         '<span lowerCASE="XX4">xx4</span>' +
                       '</div>');
-      compile(el);
+      $compile(el);
       expect(lowercase(sortedHtml(el))).toBe('<div>' +
                                                 '<span allcaps="xx1">+xx1+</span>' +
                                                 '<span allcaps="xx2">+xx2+</span>' +
                                                 '<span allcaps="xx3">+xx3+</span>' +
                                                 '<span lowercase="xx4">-xx4-</span>' +
                                               '</div>');
-    });
+    }));
   });
 
 
@@ -458,25 +458,25 @@ describe('angular', function() {
   });
 
   describe('compile', function() {
-    it('should link to existing node and create scope', inject(function($rootScope) {
+    it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)($rootScope);
+      $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
       expect($rootScope.greeting).toEqual('hello world');
     }));
 
-    it('should link to existing node and given scope', inject(function($rootScope) {
+    it('should link to existing node and given scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)($rootScope);
+      $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
     }));
 
-    it('should link to new node and given scope', inject(function($rootScope) {
+    it('should link to new node and given scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
 
-      var templateFn = angular.compile(template);
+      var templateFn = $compile(template);
       var templateClone = template.clone();
 
       var element = templateFn($rootScope, function(clone){
@@ -490,9 +490,9 @@ describe('angular', function() {
       expect($rootScope.greeting).toEqual('hello world');
     }));
 
-    it('should link to cloned node and create scope', inject(function($rootScope) {
+    it('should link to cloned node and create scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      var element = angular.compile(template)($rootScope, noop);
+      var element = $compile(template)($rootScope, noop);
       $rootScope.$digest();
       expect(template.text()).toEqual('');
       expect(element.text()).toEqual('hello world');
