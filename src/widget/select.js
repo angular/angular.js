@@ -130,7 +130,8 @@ var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+
 angularWidget('select', function(element){
   this.directives(true);
   this.descend(true);
-  return element.attr('ng:model') && annotate('$formFactory', function($formFactory, selectElement){
+  return element.attr('ng:model') &&
+      annotate('$formFactory', '$compile', function($formFactory, $compile, selectElement){
     var modelScope = this,
         match,
         form = $formFactory.forElement(selectElement),
@@ -245,7 +246,7 @@ angularWidget('select', function(element){
           // developer declared null option, so user should be able to select it
           nullOption = jqLite(option).remove();
           // compile the element since there might be bindings in it
-          compile(nullOption)(modelScope);
+          $compile(nullOption)(modelScope);
         }
       });
       selectElement.html(''); // clear contents

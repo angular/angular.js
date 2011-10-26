@@ -125,7 +125,6 @@ function inject(){
 function resetAngularPublic() {
   extend(angular, {
     'element': jqLite,
-    'compile': compile,
     'copy': copy,
     'extend': extend,
     'equals': equals,

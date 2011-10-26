@@ -221,8 +221,8 @@ describe("resource", function() {
     nakedExpect(visa).toEqual({id:123});
   }));
 
-  it('should excersize full stack', inject(function($rootScope, $browser, $resource) {
-    angular.compile('<div></div>')($rootScope);
+  it('should excersize full stack', inject(function($rootScope, $browser, $resource, $compile) {
+    $compile('<div></div>')($rootScope);
     var Person = $resource('/Person/:id');
     $browser.xhr.expectGET('/Person/123').respond('\n{\n"name":\n"misko"\n}\n');
     var person = Person.get({id:123});
@@ -230,8 +230,8 @@ describe("resource", function() {
     expect(person.name).toEqual('misko');
   }));
 
-  it('should return the same object when verifying the cache', inject(function($rootScope) {
-    angular.compile('<div></div>')($rootScope);
+  it('should return the same object when verifying the cache', inject(function($rootScope, $compile) {
+    $compile('<div></div>')($rootScope);
     var $browser = $rootScope.$service('$browser');
     var $resource = $rootScope.$service('$resource');
     var Person = $resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});

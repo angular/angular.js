@@ -14,7 +14,6 @@ angularService('$browser', function($log, $sniffer) {
 extend(angular, {
   // disabled for now until we agree on public name
   //'annotate': annotate,
-  'compile': compile,
   'copy': copy,
   'extend': extend,
   'equals': equals,
