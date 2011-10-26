@@ -62,10 +62,16 @@ describe('injector', function() {
   });
 
 
-  it('should provide usefull message if no provider', function() {
+  it('should provide useful message if no provider', function() {
     expect(function() {
       injector('idontexist');
     }).toThrow("Unknown provider for 'idontexist'.");
+  });
+
+  it('should proved path to the missing provider', function(){
+    expect(function() {
+      injector('idontexist', ['a', 'b']);
+    }).toThrow("Unknown provider for 'idontexist' <- 'a' <- 'b'.");
   });
 
   it('should autostart eager services', function() {

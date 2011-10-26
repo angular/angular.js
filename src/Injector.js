@@ -44,22 +44,25 @@ function createInjector(factories) {
   });
   return injector;
 
-  function injector(value){
-    if (!(value in instanceCache)) {
-      var factory = factories[value];
-      if (!factory) throw Error("Unknown provider for '" + value + "'.");
+  function injector(serviceId, path){
+    if (!(serviceId in instanceCache)) {
+      var factory = factories[serviceId];
+      path = path || [];
+      path.unshift(serviceId);
+      if (!factory) throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
       inferInjectionArgs(factory);
-      instanceCache[value] = invoke(null, factory);
+      instanceCache[serviceId] = invoke(null, factory, [], path);
+      path.shift();
     }
-    return instanceCache[value];
+    return instanceCache[serviceId];
   }
 
-  function invoke(self, fn, args){
+  function invoke(self, fn, args, path){
     args = args || [];
     var injectNames = fn.$inject || [];
     var i = injectNames.length;
     while(i--) {
-      args.unshift(injector(injectNames[i]));
+      args.unshift(injector(injectNames[i], path));
     }
     return fn.apply(self, args);
   }
