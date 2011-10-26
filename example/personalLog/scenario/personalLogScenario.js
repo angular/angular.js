@@ -16,7 +16,7 @@ describe('personal log', function() {
     element('form input[type="submit"]').click();
 
     expect(repeater('ul li').count()).toEqual(1);
-    expect(repeater('ul li').column('log.msg')).toEqual('my first message');
+    expect(repeater('ul li').column('log.msg')).toEqual(['my first message']);
 
     //create second msg
     input('newMsg').enter('my second message');
@@ -38,7 +38,7 @@ describe('personal log', function() {
 
     element('ul li a:eq(1)').click();
     expect(repeater('ul li').count()).toEqual(1);
-    expect(repeater('ul li').column('log.msg')).toEqual('my second message');
+    expect(repeater('ul li').column('log.msg')).toEqual(['my second message']);
 
     element('ul li a:eq(0)').click();
     expect(repeater('ul li').count()).toEqual(0);
@@ -66,7 +66,7 @@ describe('personal log', function() {
 
     browser().reload();
 
-    expect(repeater('ul li').column('log.msg')).toEqual('my persistent message');
+    expect(repeater('ul li').column('log.msg')).toEqual(['my persistent message']);
     expect(repeater('ul li').count()).toEqual(1);
   });
 });
@@ -85,10 +85,11 @@ angular.scenario.dsl('clearCookies', function() {
           $cookies = rootScope.$service('$cookies'),
           cookieName;
 
-      for (cookieName in $cookies) {
-        delete $cookies[cookieName];
-      }
-      rootScope.$eval();
+      rootScope.$apply(function() {
+        for (cookieName in $cookies) {
+          delete $cookies[cookieName];
+        }
+      });
 
       done();
     });
