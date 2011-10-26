@@ -8,17 +8,17 @@ describe('form', function() {
   });
 
 
-  it('should attach form to DOM', inject(function($rootScope) {
+  it('should attach form to DOM', inject(function($rootScope, $compile) {
     doc = angular.element('<form>');
-    angular.compile(doc)($rootScope);
+    $compile(doc)($rootScope);
     expect(doc.data('$form')).toBeTruthy();
   }));
 
 
-  it('should prevent form submission', inject(function($rootScope) {
+  it('should prevent form submission', inject(function($rootScope, $compile) {
     var startingUrl = '' + window.location;
     doc = angular.element('<form name="myForm"><input type=submit val=submit>');
-    angular.compile(doc)($rootScope);
+    $compile(doc)($rootScope);
     browserTrigger(doc.find('input'));
     waitsFor(
         function() { return true; },
@@ -29,18 +29,18 @@ describe('form', function() {
   }));
 
 
-  it('should publish form to scope', inject(function($rootScope) {
+  it('should publish form to scope', inject(function($rootScope, $compile) {
     doc = angular.element('<form name="myForm"></form>');
-    angular.compile(doc)($rootScope);
+    $compile(doc)($rootScope);
     expect($rootScope.myForm).toBeTruthy();
     expect(doc.data('$form')).toBeTruthy();
     expect(doc.data('$form')).toEqual($rootScope.myForm);
   }));
 
 
-  it('should have ng-valide/ng-invalid style', inject(function($rootScope) {
+  it('should have ng-valide/ng-invalid style', inject(function($rootScope, $compile) {
     doc = angular.element('<form name="myForm"><input type=text ng:model=text required>');
-    angular.compile(doc)($rootScope);
+    $compile(doc)($rootScope);
     $rootScope.text = 'misko';
     $rootScope.$digest();
 
@@ -54,14 +54,14 @@ describe('form', function() {
   }));
 
 
-  it('should chain nested forms', inject(function($rootScope) {
+  it('should chain nested forms', inject(function($rootScope, $compile) {
     doc = angular.element(
         '<ng:form name=parent>' +
           '<ng:form name=child>' +
             '<input type=text ng:model=text name=text>' +
           '</ng:form>' +
         '</ng:form>');
-    angular.compile(doc)($rootScope);
+    $compile(doc)($rootScope);
     var parent = $rootScope.parent;
     var child = $rootScope.child;
     var input = child.text;
@@ -76,14 +76,14 @@ describe('form', function() {
   }));
 
 
-  it('should chain nested forms in repeater', inject(function($rootScope) {
+  it('should chain nested forms in repeater', inject(function($rootScope, $compile) {
     doc = angular.element(
        '<ng:form name=parent>' +
         '<ng:form ng:repeat="f in forms" name=child>' +
           '<input type=text ng:model=text name=text>' +
          '</ng:form>' +
        '</ng:form>');
-    angular.compile(doc)($rootScope);
+    $compile(doc)($rootScope);
     $rootScope.forms = [1];
     $rootScope.$digest();
 

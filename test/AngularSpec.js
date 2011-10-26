@@ -519,25 +519,25 @@ describe('angular', function() {
   });
 
   describe('compile', function() {
-    it('should link to existing node and create scope', inject(function($rootScope) {
+    it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)($rootScope);
+      $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
       expect($rootScope.greeting).toEqual('hello world');
     }));
 
-    it('should link to existing node and given scope', inject(function($rootScope) {
+    it('should link to existing node and given scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      angular.compile(template)($rootScope);
+      $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
     }));
 
-    it('should link to new node and given scope', inject(function($rootScope) {
+    it('should link to new node and given scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
 
-      var templateFn = angular.compile(template);
+      var templateFn = $compile(template);
       var templateClone = template.clone();
 
       var element = templateFn($rootScope, function(clone){
@@ -551,9 +551,9 @@ describe('angular', function() {
       expect($rootScope.greeting).toEqual('hello world');
     }));
 
-    it('should link to cloned node and create scope', inject(function($rootScope) {
+    it('should link to cloned node and create scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      var element = angular.compile(template)($rootScope, noop);
+      var element = $compile(template)($rootScope, noop);
       $rootScope.$digest();
       expect(template.text()).toEqual('');
       expect(element.text()).toEqual('hello world');
