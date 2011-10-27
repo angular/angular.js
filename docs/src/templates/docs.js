@@ -79,12 +79,6 @@ function DocsController($location, $window, $cookies) {
     loadDisqus(currentPageId);
   };
 
-  scope.getFeedbackUrl = function() {
-    return "mailto:angular@googlegroups.com?" +
-           "subject=" + escape("Feedback on " + $location.absUrl()) + "&" +
-           "body=" + escape("Hi there,\n\nI read " + $location.absUrl() + " and wanted to ask ....");
-  };
-
   /** stores a cookie that is used by apache to decide which manifest ot send */
   scope.enableOffline = function() {
     //The cookie will be good for one year!
