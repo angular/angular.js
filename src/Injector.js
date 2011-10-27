@@ -59,8 +59,17 @@ function createInjector(factories) {
 
   function invoke(self, fn, args, path){
     args = args || [];
-    var injectNames = fn.$inject || [];
-    var i = injectNames.length;
+    var injectNames;
+    var i;
+    if (typeof fn == 'function') {
+      injectNames = fn.$inject || [];
+      i = injectNames.length;
+    } else if (fn instanceof Array) {
+      injectNames = fn;
+      i = injectNames.length;
+      fn = injectNames[--i];
+    }
+    assertArgFn(fn, 'fn');
     while(i--) {
       args.unshift(injector(injectNames[i], path));
     }
