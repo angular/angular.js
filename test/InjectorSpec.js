@@ -83,6 +83,7 @@ describe('injector', function() {
 
     function fn(a, b, c, d) {
       args = [this, a, b, c, d];
+      return a + b + c + d;
     }
 
 
@@ -96,6 +97,11 @@ describe('injector', function() {
     it('should treat array as annotations', function(){
       injector.invoke({name:"this"}, ['a', 'b', fn], [3, 4]);
       expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
+    });
+
+
+    it('should invoke the passed in function with all of the dependencies as arguments', function(){
+      expect(injector(['a', 'b', fn], [3, 4])).toEqual(10);
     });
 
 
