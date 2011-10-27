@@ -44,7 +44,7 @@ function DocsController($location, $window, $cookies) {
   });
 
   scope.getUrl = function(page) {
-    return page.section + '/' + page.id;
+    return page.section + (page.id == 'index' ? '' : '/' + page.id);
   };
 
   scope.getCurrentPartial = function() {
