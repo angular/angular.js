@@ -33,7 +33,9 @@
  *     `injector.eager()`
  */
 function createInjector(factories) {
-  var instanceCache = {$injector: injector};
+  var instanceCache = {
+    $injector: injector
+  };
   factories = factories || angularService;
 
   injector.invoke = invoke;
@@ -42,19 +44,23 @@ function createInjector(factories) {
     if (factory.$eager)
       injector(name);
   });
-  return injector;
+  return instanceCache.$injector;
 
   function injector(serviceId, path){
-    if (!(serviceId in instanceCache)) {
-      var factory = factories[serviceId];
-      path = path || [];
-      path.unshift(serviceId);
-      if (!factory) throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
-      inferInjectionArgs(factory);
-      instanceCache[serviceId] = invoke(null, factory, [], path);
-      path.shift();
+    if (typeof serviceId == 'string') {
+      if (!(serviceId in instanceCache)) {
+        var factory = factories[serviceId];
+        path = path || [];
+        path.unshift(serviceId);
+        if (!factory) throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
+        inferInjectionArgs(factory);
+        instanceCache[serviceId] = invoke(null, factory, [], path);
+        path.shift();
+      }
+      return instanceCache[serviceId];
+    } else {
+      return invoke(null, serviceId, path);
     }
-    return instanceCache[serviceId];
   }
 
   function invoke(self, fn, args, path){
