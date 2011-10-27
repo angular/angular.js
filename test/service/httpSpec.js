@@ -486,7 +486,7 @@ describe('$http', function() {
         $httpBackend.flush();
 
         if (match) expect(callback).toHaveBeenCalledOnce();
-        else expect(callback).not.toHaveBeenCalledOnce();
+        else expect(callback).not.toHaveBeenCalled();
       }
 
       beforeEach(function() {
@@ -620,11 +620,6 @@ describe('$http', function() {
       });
 
 
-      it('should call "xxx" when 0 status code', function() {
-        expectToMatch(0, 'xxx');
-      });
-
-
       it('should not call "2xx" when 0 status code', function() {
         expectToNotMatch(0, '2xx');
       });
@@ -634,9 +629,9 @@ describe('$http', function() {
           expect(status).toBe(0);
         });
 
-        $http({method: 'GET', url: '/0'}).on('xxx', callback);
-        $http({method: 'GET', url: '/-1'}).on('xxx', callback);
-        $http({method: 'GET', url: '/-2'}).on('xxx', callback);
+        $http({method: 'GET', url: '/0'}).on('always', callback);
+        $http({method: 'GET', url: '/-1'}).on('always', callback);
+        $http({method: 'GET', url: '/-2'}).on('always', callback);
 
         $httpBackend.flush();
         expect(callback).toHaveBeenCalled();
