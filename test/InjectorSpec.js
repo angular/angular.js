@@ -18,17 +18,6 @@ describe('injector', function() {
     expect(injector('instance')).toEqual(original);
   });
 
-  it("should call function", function() {
-    providers('a', function() {return 1;});
-    providers('b', function() {return 2;});
-    var args;
-    function fn(a, b, c, d) {
-      args = [this, a, b, c, d];
-    }
-    fn.$inject = ['a', 'b'];
-    injector.invoke({name:"this"}, fn, [3, 4]);
-    expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
-  });
 
   it('should inject providers', function() {
     providers('a', function() {return 'Mi';});
@@ -80,6 +69,44 @@ describe('injector', function() {
     injector = createInjector(providers);
     expect(log).toEqual('eager;');
     expect(injector('eager')).toBe('foo');
+  });
+
+  describe('invoke', function(){
+    var args;
+
+    beforeEach(function(){
+      args = null;
+      providers('a', function() {return 1;});
+      providers('b', function() {return 2;});
+    });
+
+
+    function fn(a, b, c, d) {
+      args = [this, a, b, c, d];
+    }
+
+
+    it('should call function', function() {
+      fn.$inject = ['a', 'b'];
+      injector.invoke({name:"this"}, fn, [3, 4]);
+      expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
+    });
+
+
+    it('should treat array as annotations', function(){
+      injector.invoke({name:"this"}, ['a', 'b', fn], [3, 4]);
+      expect(args).toEqual([{name:'this'}, 1, 2, 3, 4]);
+    });
+
+
+    it('should fail with errors if not function or array', function(){
+      expect(function(){
+        injector.invoke({}, {});
+      }).toThrow("Argument 'fn' is not a function, got Object");
+      expect(function(){
+        injector.invoke({}, ['a', 123]);
+      }).toThrow("Argument 'fn' is not a function, got number");
+    });
   });
 
   describe('annotation', function() {
