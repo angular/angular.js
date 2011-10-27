@@ -268,53 +268,31 @@ function $HttpProvider() {
      *  - clear parsed headers
      */
     function fireCallbacks(response, status) {
+      var strStatus = status + '';
+
       // transform the response
       response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
 
-      var regexp = statusToRegexp(status),
-          pattern, callback, idx;
-
-      // remove from pending requests
+      var idx; // remove from pending requests
       if ((idx = indexOf($http.pendingRequests, self)) !== -1)
         $http.pendingRequests.splice(idx, 1);
 
       // normalize internal statuses to 0
       status = Math.max(status, 0);
-      for (var i = 0; i < callbacks.length; i += 2) {
-        pattern = callbacks[i];
-        callback = callbacks[i + 1];
-        if (regexp.test(pattern)) {
+      forEach(callbacks, function(callback) {
+        if (callback.regexp.test(strStatus)) {
           try {
-            callback(response, status, headers);
+            // use local var to call it without context
+            var fn = callback.fn;
+            fn(response, status, headers);
           } catch(e) {
             $exceptionHandler(e);
           }
         }
-      }
+      });
 
       $rootScope.$apply();
       parsedHeaders = null;
-    }
-
-    /**
-     * Convert given status code number into regexp
-     *
-     * It would be much easier to convert registered statuses (e.g. "2xx") into regexps,
-     * but this has an advantage of creating just one regexp, instead of one regexp per
-     * registered callback. Anyway, probably not big deal.
-     *
-     * @param status
-     * @returns {RegExp}
-     */
-    function statusToRegexp(status) {
-      var strStatus = status + '',
-          regexp = '';
-
-      for (var i = Math.min(0, strStatus.length - 3); i < strStatus.length; i++) {
-        regexp += '(' + (strStatus.charAt(i) || 0) + '|x)';
-      }
-
-      return new RegExp(regexp);
     }
 
     /**
@@ -392,11 +370,12 @@ function $HttpProvider() {
      *   .on('2xx', function(){});
      *   .on('2x1', function(){});
      *   .on('404', function(){});
-     *   .on('xxx', function(){});
      *   .on('20x,3xx', function(){});
      *   .on('success', function(){});
      *   .on('error', function(){});
      *   .on('always', function(){});
+     *   .on('timeout', function(){});
+     *   .on('abort', function(){});
      *
      * @param {string} pattern Status code pattern with "x" for any number
      * @param {function(*, number, Object)} callback Function to be called when response arrives
@@ -405,14 +384,18 @@ function $HttpProvider() {
     this.on = function(pattern, callback) {
       var alias = {
         success: '2xx',
-        error: '0-2,0-1,000,4xx,5xx',
-        always: 'xxx',
-        timeout: '0-1',
-        abort: '000'
+        error: '-2,-1,0,4xx,5xx',
+        always: 'xxx,xx,x',
+        timeout: '-1',
+        abort: '0'
       };
 
-      callbacks.push(alias[pattern] || pattern);
-      callbacks.push(callback);
+      callbacks.push({
+        fn: callback,
+        // create regexp from given pattern
+        regexp: new RegExp('^(' + (alias[pattern] || pattern).replace(/,/g, '|').
+                                                              replace(/x/g, '.') + ')$')
+      });
 
       return this;
     };
