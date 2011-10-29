@@ -103,4 +103,11 @@ describe('form', function() {
     expect(parent.$error.myRule).toBeUndefined();
     expect(child.$error.myRule).toBeUndefined();
   });
+
+
+  it('should set the display style of ng:form element to "block"', function() {
+    doc = angular.element('<ng:form></ng:form>');
+    angular.compile(doc);
+    expect(doc.css('display')).toBe('block');
+  });
 });
