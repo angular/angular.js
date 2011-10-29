@@ -56,7 +56,6 @@
 angularWidget('form', function(form){
   this.descend(true);
   this.directives(true);
-  form.css('display', 'block');
   return annotate('$formFactory', function($formFactory, formElement) {
     var name = formElement.attr('name'),
         parentForm = $formFactory.forElement(formElement),
