@@ -218,14 +218,34 @@ describe('Scope', function() {
     });
 
 
-    it('should prevent infinite recursion', function() {
-      root.$watch('a', function(self, v){self.b++;});
-      root.$watch('b', function(self, v){self.a++;});
+    it('should prevent infinite recursion and print watcher expression', function() {
+      root.$watch('a', function(self){self.b++;});
+      root.$watch('b', function(self){self.a++;});
       root.a = root.b = 0;
 
       expect(function() {
         root.$digest();
-      }).toThrow('100 $digest() iterations reached. Aborting!');
+      }).toThrow('100 $digest() iterations reached. Aborting!\n'+
+          'Watchers fired in the last 5 iterations: ' +
+          '[["a","b"],["a","b"],["a","b"],["a","b"],["a","b"]]');
+    });
+
+
+    it('should prevent infinite recurcion and print print watcher function name or body',
+        function() {
+      root.$watch(function watcherA() {return root.a;}, function(self){self.b++;});
+      root.$watch(function() {return root.b;}, function(self){self.a++;});
+      root.a = root.b = 0;
+
+      expect(function() {
+        root.$digest();
+      }).toThrow('100 $digest() iterations reached. Aborting!\n'+
+          'Watchers fired in the last 5 iterations: ' +
+          '[["fn: watcherA","fn: function () {return root.b;}"],'+
+           '["fn: watcherA","fn: function () {return root.b;}"],'+
+           '["fn: watcherA","fn: function () {return root.b;}"],'+
+           '["fn: watcherA","fn: function () {return root.b;}"],'+
+           '["fn: watcherA","fn: function () {return root.b;}"]]');
     });
 
 

@@ -260,7 +260,8 @@ Scope.prototype = {
         watcher = {
           fn: listenFn,
           last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
-          get: get
+          get: get,
+          exp: watchExp
         };
 
     if (!array) {
@@ -325,7 +326,8 @@ Scope.prototype = {
         asyncQueue,
         length,
         dirty, ttl = 100,
-        next, current, target = this;
+        next, current, target = this,
+        watchLog = [];
 
     if (target.$$phase) {
       throw Error(target.$$phase + ' already in progress');
@@ -356,6 +358,14 @@ Scope.prototype = {
                 dirty = true;
                 watch.last = copy(value);
                 watch.fn(current, value, last);
+                if (ttl < 5) {
+                  if (!watchLog[4-ttl]) watchLog[4-ttl] = [];
+                  if (isFunction(watch.exp)) {
+                    watchLog[4-ttl].push('fn: ' + (watch.exp.name || watch.exp.toString()));
+                  } else {
+                    watchLog[4-ttl].push(watch.exp);
+                  }
+                }
               }
             } catch (e) {
               current.$service('$exceptionHandler')(e);
@@ -376,7 +386,8 @@ Scope.prototype = {
       } while ((current = next));
 
       if(!(ttl--)) {
-        throw Error('100 $digest() iterations reached. Aborting!');
+        throw Error('100 $digest() iterations reached. Aborting!\n' +
+            'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
       }
     } while (dirty);
   },
