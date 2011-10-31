@@ -686,6 +686,16 @@ describe('$http', function() {
   });
 
 
+  it('should broadcast $http.request', function() {
+    $httpBackend.when('GET').then(200);
+    scope.$on('$http.request', callback);
+    var xhrFuture = $http({method: 'GET', url: '/whatever'});
+
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback.mostRecentCall.args[1]).toBe(xhrFuture);
+  });
+
+
   describe('transform', function() {
 
     describe('request', function() {

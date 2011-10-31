@@ -343,6 +343,7 @@ function $HttpProvider() {
         rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
+      $rootScope.$broadcast('$http.request', self);
       $http.pendingRequests.push(self);
       return this;
     };
