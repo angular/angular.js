@@ -111,7 +111,7 @@ function inject(){
         fn.call(spec, spec.$service);
       } else {
         if (!spec.$injector) {
-          spec.$injector = angular.injector(spec.$service);
+          spec.$injector = angular.injector(spec.$service || angular.service);
         }
         spec.$injector.invoke(spec, fn);
       }
