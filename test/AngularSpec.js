@@ -416,7 +416,7 @@ describe('angular', function() {
     it('should eagerly instantiate a service if $eager is true', function() {
       var log = [];
       angular.service('svc1', function() { log.push('svc1'); }, {$eager: true});
-      createInjector();
+      createInjector(angularService);
       expect(log).toEqual(['svc1']);
     });
   });

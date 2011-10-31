@@ -948,7 +948,7 @@ function angularInit(config, document){
 
   if (autobind) {
     var element = isString(autobind) ? document.getElementById(autobind) : document,
-        injector = createInjector(),
+        injector = createInjector(angularService),
         scope = injector('$rootScope');
 
     injector('$compile')(element)(scope);
