@@ -591,12 +591,20 @@ angular.module.ngMock.$HttpBackendProvider = function() {
           expectation = expectations[0],
           wasExpected = false;
 
+      function prettyPrint(data) {
+        if (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
+          return data;
+        return angular.toJson(data);
+      }
+
       if (expectation && expectation.match(method, url)) {
         if (!expectation.matchData(data))
-          throw Error('Expected ' + method + ' ' + url + ' with different data');
+          throw Error('Expected ' + expectation + ' with different data\n' +
+              'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT: ' + data);
 
         if (!expectation.matchHeaders(headers))
-          throw Error('Expected ' + method + ' ' + url + ' with different headers');
+          throw Error('Expected ' + expectation + ' with different headers\n' +
+              'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT: ' + prettyPrint(headers));
 
         expectations.shift();
 
@@ -648,14 +656,13 @@ angular.module.ngMock.$HttpBackendProvider = function() {
     };
 
     $httpBackend.flush = function(count) {
+      if (!responses.length) throw Error('No pending request to flush !');
       count = count || responses.length;
       while (count--) {
-        if (!responses.length) throw Error('No more pending requests');
+        if (!responses.length) throw Error('No more pending request to flush !');
         responses.shift()();
       }
     };
-
-
 
     $httpBackend.verifyExpectations = function() {
       if (expectations.length) {
@@ -674,6 +681,9 @@ angular.module.ngMock.$HttpBackendProvider = function() {
 
 function MockHttpExpectation(method, url, data, headers) {
 
+  this.data = data;
+  this.headers = headers;
+
   this.match = function(m, u, d, h) {
     if (method != m) return false;
     if (!this.matchUrl(u)) return false;
@@ -684,29 +694,21 @@ function MockHttpExpectation(method, url, data, headers) {
 
   this.matchUrl = function(u) {
     if (!url) return true;
-    if (angular.isFunction(url.test)) {
-      if (!url.test(u)) return false;
-    } else if (url != u) return false;
-
-    return true;
+    if (angular.isFunction(url.test)) return url.test(u);
+    return url == u;
   };
 
   this.matchHeaders = function(h) {
     if (angular.isUndefined(headers)) return true;
-    if (angular.isFunction(headers)) {
-      if (!headers(h)) return false;
-    } else if (!angular.equals(headers, h)) return false;
-
-    return true;
+    if (angular.isFunction(headers)) return headers(h);
+    return angular.equals(headers, h);
   };
 
   this.matchData = function(d) {
     if (angular.isUndefined(data)) return true;
-    if (data && angular.isFunction(data.test)) {
-      if (!data.test(d)) return false;
-    } else if (data != d) return false;
-
-    return true;
+    if (data && angular.isFunction(data.test)) return data.test(d);
+    if (data && !angular.isString(data)) return angular.toJson(data) == d;
+    return data == d;
   };
 
   this.toString = function() {
