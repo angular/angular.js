@@ -531,7 +531,8 @@ describe('mocks', function() {
 
       expect(function() {
         hb('GET', '/match', null, noop, {});
-      }).toThrow('Expected GET /match with different headers');
+      }).toThrow('Expected GET /match with different headers\n' +
+                 'EXPECTED: {"Content-Type":"application/json"}\nGOT: {}');
     });
 
 
@@ -541,7 +542,8 @@ describe('mocks', function() {
 
       expect(function() {
         hb('GET', '/match', 'different', noop, {});
-      }).toThrow('Expected GET /match with different data');
+      }).toThrow('Expected GET /match with different data\n' +
+                 'EXPECTED: some-data\nGOT: different');
     });
 
 
@@ -589,8 +591,19 @@ describe('mocks', function() {
       hb.when('GET').then(200, '');
       hb('GET', '/url', null, callback);
 
-      expect(function() {hb.flush(2);}).toThrow('No more pending requests');
+      expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
       expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('(flush) should throw exception when no request to flush', function() {
+      expect(function() {hb.flush();}).toThrow('No pending request to flush !');
+
+      hb.when('GET').then(200, '');
+      hb('GET', '/some', null, callback);
+      hb.flush();
+
+      expect(function() {hb.flush();}).toThrow('No pending request to flush !');
     });
 
 
@@ -713,12 +726,18 @@ describe('mocks', function() {
 
 
       it('should remove all responses', function() {
-        hb.expect('GET', '/url').respond(200, '', {});
-        hb('GET', '/url', null, callback, {});
+        var cancelledClb = jasmine.createSpy('cancelled');
+
+        hb.expect('GET', '/url').respond(200, '');
+        hb('GET', '/url', null, cancelledClb);
         hb.resetExpectations();
+
+        hb.expect('GET', '/url').respond(300, '');
+        hb('GET', '/url', null, callback, {});
         hb.flush();
 
-        expect(callback).not.toHaveBeenCalled();
+        expect(callback).toHaveBeenCalledOnce();
+        expect(cancelledClb).not.toHaveBeenCalled();
       });
     });
 
