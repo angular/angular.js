@@ -575,7 +575,7 @@ describe("widget", function() {
       $location.path('/bar');
       $browser.xhr.expectGET('myUrl2').respond('<div>{{1+1}}</div>');
       rootScope.$digest();
-      $browser.xhr.flush(); // no that we have to requests pending, flush!
+      $browser.xhr.flush(); // now that we have to requests pending, flush!
 
       expect(rootScope.$element.text()).toEqual('2');
     });
