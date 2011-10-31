@@ -96,7 +96,7 @@ function $HttpProvider() {
 
   // the actual service
   function $http(config) {
-    return new XhrFuture().retry(config);
+    return new XhrFuture().send(config);
   }
 
   $http.pendingRequests = [];
@@ -346,6 +346,9 @@ function $HttpProvider() {
       $http.pendingRequests.push(self);
       return this;
     };
+
+    // just alias so that in stack trace we can see send() instead of retry()
+    this.send = this.retry;
 
     /**
      * Abort the request
