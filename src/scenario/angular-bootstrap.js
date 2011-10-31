@@ -25,8 +25,7 @@
     try {
       if (previousOnLoad) previousOnLoad();
     } catch(e) {}
-    var config = angularJsConfig(document);
-    if (config.autotest) angular.scenario.setUpAndRun(config);
+    angular.scenario.setUpAndRun({});
   };
 
   addCSS("../../css/angular-scenario.css");
