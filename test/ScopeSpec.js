@@ -237,15 +237,12 @@ describe('Scope', function() {
       root.$watch(function() {return root.b;}, function(self){self.a++;});
       root.a = root.b = 0;
 
-      expect(function() {
+      try {
         root.$digest();
-      }).toThrow('100 $digest() iterations reached. Aborting!\n'+
-          'Watchers fired in the last 5 iterations: ' +
-          '[["fn: watcherA","fn: function () {return root.b;}"],'+
-           '["fn: watcherA","fn: function () {return root.b;}"],'+
-           '["fn: watcherA","fn: function () {return root.b;}"],'+
-           '["fn: watcherA","fn: function () {return root.b;}"],'+
-           '["fn: watcherA","fn: function () {return root.b;}"]]');
+        throw Error('Should have thrown exception');
+      } catch(e) {
+        expect(e.message.match(/"fn: (watcherA|function)/g).length).toBe(10);
+      }
     });
 
 
