@@ -19,7 +19,7 @@ describe('$http', function() {
 
   afterEach(function() {
     if ($exceptionHandler.errors.length) throw $exceptionHandler.errors;
-    $httpBackend.verifyExpectations();
+    $httpBackend.verifyNoOutstandingExpectation();
   });
 
 

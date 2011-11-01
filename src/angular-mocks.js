@@ -664,9 +664,15 @@ angular.module.ngMock.$HttpBackendProvider = function() {
       }
     };
 
-    $httpBackend.verifyExpectations = function() {
+    $httpBackend.verifyNoOutstandingExpectation = function() {
       if (expectations.length) {
         throw Error('Unsatisfied requests: ' + expectations.join(', '));
+      }
+    };
+
+    $httpBackend.verifyNoOutstandingRequest = function() {
+      if (responses.length) {
+        throw Error('Unflushed requests: ' + responses.length);
       }
     };
 
