@@ -16,6 +16,8 @@ fs.readFile('angularFiles.js', function(err, data) {
   fs.writeFile('./jsTestDriver.conf', prefix + combine(angularFiles.jstd,
       angularFiles.jstdExclude));
 
+  fs.writeFile('./jsTestDriver-mocks.conf', prefix + combine(angularFiles.jstdMocks));
+
   fs.writeFile('./jsTestDriver-scenario.conf', prefixScenario +
       combine(angularFiles.jstdScenario) +
       '\n\nproxy:\n- {matcher: "*", server: "http://localhost:8000"}');

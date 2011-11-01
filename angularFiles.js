@@ -36,7 +36,7 @@ angularFiles = {
     'src/widget/form.js',
     'src/widget/input.js',
     'src/widget/select.js',
-    'src/AngularPublic.js',
+    'src/AngularPublic.js'
   ],
 
   'angularScenario': [
@@ -64,6 +64,7 @@ angularFiles = {
     '@angularSrc',
     'example/personalLog/*.js',
     'test/testabilityPatch.js',
+    'test/matchers.js',
     'src/scenario/Scenario.js',
     'src/scenario/output/*.js',
     'src/jstd-scenario-adapter/*.js',
@@ -93,6 +94,15 @@ angularFiles = {
     'build/docs/docs-scenario.js'
   ],
 
+  'jstdMocks': [
+    'lib/jasmine/jasmine.js',
+    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+    'build/angular.js',
+    'src/angular-mocks.js',
+    'test/matchers.js',
+    'test/angular-mocksSpec.js'
+  ],
+
   'jstdPerf': [
    'lib/jasmine/jasmine.js',
    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
@@ -117,6 +127,7 @@ angularFiles = {
     '@angularSrc',
     'example/personalLog/*.js',
     'test/testabilityPatch.js',
+    'test/matchers.js',
     'src/scenario/Scenario.js',
     'src/scenario/output/*.js',
     'src/jstd-scenario-adapter/*.js',
@@ -138,4 +149,4 @@ angularFiles = {
     'src/scenario/angular-bootstrap.js',
     'test/jquery_remove.js'
   ]
-}
+};
