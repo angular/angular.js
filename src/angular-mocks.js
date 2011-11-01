@@ -486,10 +486,15 @@ function createMockHttpBackend() {
 
   $httpBackend.flush = function(count) {
     if (!responses.length) throw Error('No pending request to flush !');
-    count = count || responses.length;
-    while (count--) {
-      if (!responses.length) throw Error('No more pending request to flush !');
-      responses.shift()();
+
+    if (angular.isDefined(count)) {
+      while (count--) {
+        if (!responses.length) throw Error('No more pending request to flush !');
+        responses.shift()();
+      }
+    } else {
+      while (responses.length)
+        responses.shift()();
     }
   };
 
