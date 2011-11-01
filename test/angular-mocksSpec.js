@@ -276,8 +276,8 @@ describe('mocks', function() {
 
 
     it('should respond with first matched definition', function() {
-      hb.when('GET', '/url1').then(200, 'content', {});
-      hb.when('GET', '/url1').then(201, 'another', {});
+      hb.when('GET', '/url1').respond(200, 'content', {});
+      hb.when('GET', '/url1').respond(201, 'another', {});
 
       callback.andCallFake(function(status, response) {
         expect(status).toBe(200);
@@ -292,7 +292,7 @@ describe('mocks', function() {
 
 
     it('should throw error when unexpected request', function() {
-      hb.when('GET', '/url1').then(200, 'content');
+      hb.when('GET', '/url1').respond(200, 'content');
       expect(function() {
         hb('GET', '/xxx');
       }).toThrow('Unexpected request: GET /xxx');
@@ -300,9 +300,9 @@ describe('mocks', function() {
 
 
     it('should match headers if specified', function() {
-      hb.when('GET', '/url', null, {'X': 'val1'}).then(201, 'content1');
-      hb.when('GET', '/url', null, {'X': 'val2'}).then(202, 'content2');
-      hb.when('GET', '/url').then(203, 'content3');
+      hb.when('GET', '/url', null, {'X': 'val1'}).respond(201, 'content1');
+      hb.when('GET', '/url', null, {'X': 'val2'}).respond(202, 'content2');
+      hb.when('GET', '/url').respond(203, 'content3');
 
       hb('GET', '/url', null, function(status, response) {
         expect(status).toBe(203);
@@ -324,8 +324,8 @@ describe('mocks', function() {
 
 
     it('should match data if specified', function() {
-      hb.when('GET', '/a/b', '{a: true}').then(201, 'content1');
-      hb.when('GET', '/a/b').then(202, 'content2');
+      hb.when('GET', '/a/b', '{a: true}').respond(201, 'content1');
+      hb.when('GET', '/a/b').respond(202, 'content2');
 
       hb('GET', '/a/b', '{a: true}', function(status, response) {
         expect(status).toBe(201);
@@ -342,7 +342,7 @@ describe('mocks', function() {
 
 
     it('should match only method', function() {
-      hb.when('GET').then(202, 'c');
+      hb.when('GET').respond(202, 'c');
       callback.andCallFake(function(status, response) {
         expect(status).toBe(202);
         expect(response).toBe('c');
@@ -358,7 +358,7 @@ describe('mocks', function() {
 
 
     it('should expose given headers', function() {
-      hb.when('GET', '/u1').then(200, null, {'X-Fake': 'Header', 'Content-Type': 'application/json'});
+      hb.when('GET', '/u1').respond(200, null, {'X-Fake': 'Header', 'Content-Type': 'application/json'});
       var xhr = hb('GET', '/u1', null, noop, {});
       hb.flush();
       expect(xhr.getResponseHeader('X-Fake')).toBe('Header');
@@ -367,8 +367,8 @@ describe('mocks', function() {
 
 
     it('should preserve the order of requests', function() {
-      hb.when('GET', '/url1').then(200, 'first');
-      hb.when('GET', '/url2').then(201, 'second');
+      hb.when('GET', '/url1').respond(200, 'first');
+      hb.when('GET', '/url2').respond(201, 'second');
 
       hb('GET', '/url2', null, callback);
       hb('GET', '/url1', null, callback);
@@ -381,8 +381,8 @@ describe('mocks', function() {
     });
 
 
-    it('then() should take function', function() {
-      hb.when('GET', '/some').then(function(m, u, d, h) {
+    it('respond() should take function', function() {
+      hb.when('GET', '/some').respond(function(m, u, d, h) {
         return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}];
       });
 
@@ -412,7 +412,7 @@ describe('mocks', function() {
         expect(response).toBe('expect');
       });
 
-      hb.when('GET', '/url').then(200, 'when');
+      hb.when('GET', '/url').respond(200, 'when');
       hb.expect('GET', '/url').respond(300, 'expect');
 
       hb('GET', '/url', null, callback, {});
@@ -422,7 +422,7 @@ describe('mocks', function() {
 
 
     it ('should throw exception when only headers differes from expectation', function() {
-      hb.when('GET').then(200, '', {});
+      hb.when('GET').respond(200, '', {});
       hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
 
       expect(function() {
@@ -433,7 +433,7 @@ describe('mocks', function() {
 
 
     it ('should throw exception when only data differes from expectation', function() {
-      hb.when('GET').then(200, '', {});
+      hb.when('GET').respond(200, '', {});
       hb.expect('GET', '/match', 'some-data');
 
       expect(function() {
@@ -443,13 +443,13 @@ describe('mocks', function() {
     });
 
 
-    it('expect() should without respond() and use then()', function() {
+    it('expect() should without respond() and use respond()', function() {
       callback.andCallFake(function(status, response) {
         expect(status).toBe(201);
         expect(response).toBe('data');
       });
 
-      hb.when('GET', '/some').then(201, 'data');
+      hb.when('GET', '/some').respond(201, 'data');
       hb.expect('GET', '/some');
       hb('GET', '/some', null, callback);
       hb.flush();
@@ -460,7 +460,7 @@ describe('mocks', function() {
 
 
     it('flush() should flush requests fired during callbacks', function() {
-      hb.when('GET').then(200, '');
+      hb.when('GET').respond(200, '');
       hb('GET', '/some', null, function() {
         hb('GET', '/other', null, callback);
       });
@@ -471,7 +471,7 @@ describe('mocks', function() {
 
 
     it('flush() should flush given number of pending requests', function() {
-      hb.when('GET').then(200, '');
+      hb.when('GET').respond(200, '');
       hb('GET', '/some', null, callback);
       hb('GET', '/some', null, callback);
       hb('GET', '/some', null, callback);
@@ -483,7 +483,7 @@ describe('mocks', function() {
 
 
     it('flush() should throw exception when flushing more requests than pending', function() {
-      hb.when('GET').then(200, '');
+      hb.when('GET').respond(200, '');
       hb('GET', '/url', null, callback);
 
       expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
@@ -494,7 +494,7 @@ describe('mocks', function() {
     it('(flush) should throw exception when no request to flush', function() {
       expect(function() {hb.flush();}).toThrow('No pending request to flush !');
 
-      hb.when('GET').then(200, '');
+      hb.when('GET').respond(200, '');
       hb('GET', '/some', null, callback);
       hb.flush();
 
@@ -518,14 +518,14 @@ describe('mocks', function() {
     });
 
 
-    it('then() should set default status 200 if not defined', function() {
+    it('respond() should set default status 200 if not defined', function() {
       callback.andCallFake(function(status, response) {
         expect(status).toBe(200);
         expect(response).toBe('some-data');
       });
 
-      hb.when('GET', '/url1').then('some-data');
-      hb.when('GET', '/url2').then('some-data', {'X-Header': 'true'});
+      hb.when('GET', '/url1').respond('some-data');
+      hb.when('GET', '/url2').respond('some-data', {'X-Header': 'true'});
       hb('GET', '/url1', null, callback);
       hb('GET', '/url2', null, callback);
       hb.flush();
@@ -540,7 +540,7 @@ describe('mocks', function() {
         expect(response).toBe('def-response');
       });
 
-      hb.when('GET').then(201, 'def-response');
+      hb.when('GET').respond(201, 'def-response');
       hb.expect('GET', '/some-url');
 
       hb('GET', '/some-url', null, callback);
@@ -567,7 +567,7 @@ describe('mocks', function() {
 
 
     it('should respond undefined when JSONP method', function() {
-      hb.when('JSONP', '/url1').then(200);
+      hb.when('JSONP', '/url1').respond(200);
       hb.expect('JSONP', '/url2').respond(200);
 
       expect(hb('JSONP', '/url1')).toBeUndefined();
@@ -590,7 +590,7 @@ describe('mocks', function() {
 
 
       it('should do nothing when no expectation', function() {
-        hb.when('DELETE', '/some').then(200, '');
+        hb.when('DELETE', '/some').respond(200, '');
 
         expect(function() {hb.verifyNoOutstandingExpectations();}).not.toThrow();
       });
@@ -599,7 +599,7 @@ describe('mocks', function() {
       it('should do nothing when all expectations satisfied', function() {
         hb.expect('GET', '/u2').respond(200, '', {});
         hb.expect('POST', '/u3').respond(201, '', {});
-        hb.when('DELETE', '/some').then(200, '');
+        hb.when('DELETE', '/some').respond(200, '');
 
         hb('GET', '/u2', noop);
         hb('POST', '/u3', noop);
@@ -611,7 +611,7 @@ describe('mocks', function() {
     describe('verifyRequests', function() {
 
       it('should throw exception if not all requests were flushed', function() {
-        hb.when('GET').then(200);
+        hb.when('GET').respond(200);
         hb('GET', '/some', null, noop, {});
 
         expect(function() {

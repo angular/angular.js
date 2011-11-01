@@ -409,7 +409,7 @@ describe('$http', function() {
       var future, rawXhrObject;
 
       beforeEach(function() {
-        $httpBackend.when('GET', '/url').then('');
+        $httpBackend.when('GET', '/url').respond('');
         future = $http({method: 'GET', url: '/url'});
         rawXhrObject = MockXhr.$$lastInstance;
         spyOn(rawXhrObject, 'abort');
@@ -488,7 +488,7 @@ describe('$http', function() {
       }
 
       beforeEach(function() {
-        $httpBackend.when('GET').then(function(m, url) {
+        $httpBackend.when('GET').respond(function(m, url) {
           return [parseInt(url.substr(1)), '', {}];
         });
       });
@@ -656,7 +656,7 @@ describe('$http', function() {
   describe('scope.$apply', function() {
 
     it('should $apply after success callback', function() {
-      $httpBackend.when('GET').then(200);
+      $httpBackend.when('GET').respond(200);
       $http({method: 'GET', url: '/some'});
       $httpBackend.flush();
       expect(scope.$apply).toHaveBeenCalledOnce();
@@ -664,7 +664,7 @@ describe('$http', function() {
 
 
     it('should $apply after error callback', function() {
-      $httpBackend.when('GET').then(404);
+      $httpBackend.when('GET').respond(404);
       $http({method: 'GET', url: '/some'});
       $httpBackend.flush();
       expect(scope.$apply).toHaveBeenCalledOnce();
@@ -672,7 +672,7 @@ describe('$http', function() {
 
 
     it('should $apply even if exception thrown during callback', function() {
-      $httpBackend.when('GET').then(200);
+      $httpBackend.when('GET').respond(200);
       callback.andThrow('error in callback');
 
       $http({method: 'GET', url: '/some'}).on('200', callback);
@@ -685,7 +685,7 @@ describe('$http', function() {
 
 
   it('should broadcast $http.request', function() {
-    $httpBackend.when('GET').then(200);
+    $httpBackend.when('GET').respond(200);
     scope.$on('$http.request', callback);
     var xhrFuture = $http({method: 'GET', url: '/whatever'});
 
@@ -878,7 +878,7 @@ describe('$http', function() {
   describe('pendingRequests', function() {
 
     it('should be an array of pending requests', function() {
-      $httpBackend.when('GET').then(200);
+      $httpBackend.when('GET').respond(200);
       expect($http.pendingRequests.length).toBe(0);
 
       $http({method: 'get', url: '/some'});
@@ -890,7 +890,7 @@ describe('$http', function() {
 
 
     it('should remove the request when aborted', function() {
-      $httpBackend.when('GET').then(0);
+      $httpBackend.when('GET').respond(0);
       future = $http({method: 'get', url: '/x'});
       expect($http.pendingRequests.length).toBe(1);
 
@@ -902,7 +902,7 @@ describe('$http', function() {
 
 
     it('should remove the request when served from cache', function() {
-      $httpBackend.when('GET').then(200);
+      $httpBackend.when('GET').respond(200);
 
       $http({method: 'get', url: '/cached', cache: true});
       $httpBackend.flush();
@@ -917,7 +917,7 @@ describe('$http', function() {
 
 
     it('should remove the request before firing callbacks', function() {
-      $httpBackend.when('GET').then(200);
+      $httpBackend.when('GET').respond(200);
       $http({method: 'get', url: '/url'}).on('xxx', function() {
         expect($http.pendingRequests.length).toBe(0);
       });

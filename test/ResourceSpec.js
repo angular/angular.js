@@ -37,7 +37,7 @@ describe("resource", function() {
   it('should ignore slashes of undefinend parameters', function() {
     var R = $resource.route('/Path/:a/:b/:c');
 
-    $httpBackend.when('GET').then('{}');
+    $httpBackend.when('GET').respond('{}');
     $httpBackend.expect('GET', '/Path');
     $httpBackend.expect('GET', '/Path/1');
     $httpBackend.expect('GET', '/Path/2/3');
