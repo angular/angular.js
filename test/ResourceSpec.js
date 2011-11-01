@@ -20,7 +20,7 @@ describe("resource", function() {
   );
 
   afterEach(inject(function($httpBackend) {
-    $httpBackend.verifyExpectations();
+    $httpBackend.verifyNoOutstandingExpectation();
   }));
 
   it("should build resource", function() {
