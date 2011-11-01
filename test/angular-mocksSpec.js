@@ -606,6 +606,15 @@ describe('mocks', function() {
     });
 
 
+    it('(flush) should throw exception if not all expectations satasfied', function() {
+      hb.expect('GET', '/url1').respond();
+      hb.expect('GET', '/url2').respond();
+
+      hb('GET', '/url1', null, angular.noop);
+      expect(function() {hb.flush();}).toThrow('Unsatisfied requests: GET /url2');
+    });
+
+
     it('respond() should set default status 200 if not defined', function() {
       callback.andCallFake(function(status, response) {
         expect(status).toBe(200);
