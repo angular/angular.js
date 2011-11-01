@@ -667,6 +667,7 @@ angular.module.ngMock.$HttpBackendProvider = function() {
         while (responses.length)
           responses.shift()();
       }
+      $httpBackend.verifyNoOutstandingExpectation();
     };
 
     $httpBackend.verifyNoOutstandingExpectation = function() {
