@@ -639,7 +639,7 @@ angular.module.ngMock.$HttpBackendProvider = function() {
       var definition = new MockHttpExpectation(method, url, data, headers);
       definitions.push(definition);
       return {
-        then: function(status, data, headers) {
+        respond: function(status, data, headers) {
           definition.response = angular.isFunction(status) ? status : createResponse(status, data, headers);
         }
       };
