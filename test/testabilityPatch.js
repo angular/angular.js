@@ -46,7 +46,9 @@ function dumpScope(scope, offset) {
   return log.join('\n' + offset);
 }
 
+publishExternalAPI(angular)
 beforeEach(function() {
+  publishExternalAPI(angular)
   // This is to reset parsers global cache of expressions.
   compileCache = {};
 
@@ -80,7 +82,6 @@ beforeEach(function() {
   $logMock.info.logs = [];
   $logMock.error.logs = [];
 
-  resetAngularPublic()
 });
 
 function inject(){
@@ -118,34 +119,6 @@ function inject(){
   };
 }
 
-/**
- * This method republishes the public angular API. It should probably be cleaned up somehow.
- * //TODO: remove this method and merge it with the angularPublic.js class
- */
-function resetAngularPublic() {
-  extend(angular, {
-    'element': jqLite,
-    'copy': copy,
-    'extend': extend,
-    'equals': equals,
-    'forEach': forEach,
-    'noop': noop,
-    'bind': bind,
-    'toJson': toJson,
-    'fromJson': fromJson,
-    'identity':identity,
-    'injector': createInjector,
-    'isUndefined': isUndefined,
-    'isDefined': isDefined,
-    'isString': isString,
-    'isFunction': isFunction,
-    'isObject': isObject,
-    'isNumber': isNumber,
-    'isArray': isArray
-  });
-}
-
-resetAngularPublic();
 
 afterEach(inject(function($rootScope) {
   // release the injector
