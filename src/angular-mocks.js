@@ -496,6 +496,7 @@ function createMockHttpBackend() {
       while (responses.length)
         responses.shift()();
     }
+    $httpBackend.verifyNoOutstandingExpectations();
   };
 
   $httpBackend.verifyNoOutstandingExpectations = function() {

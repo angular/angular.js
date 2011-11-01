@@ -122,8 +122,6 @@ describe("resource", function() {
 
   it("should read partial resource", function() {
     $httpBackend.expect('GET', '/CreditCard').respond([{id:{key:123}}]);
-    $httpBackend.expect('GET', '/CreditCard/123').respond({id: {key: 123}, number: '9876'});
-
     var ccs = CreditCard.query();
 
     $httpBackend.flush();
@@ -133,6 +131,7 @@ describe("resource", function() {
     expect(cc instanceof CreditCard).toBe(true);
     expect(cc.number).toBeUndefined();
 
+    $httpBackend.expect('GET', '/CreditCard/123').respond({id: {key: 123}, number: '9876'});
     cc.$get(callback);
     $httpBackend.flush();
     expect(callback).toHaveBeenCalledWith(cc);
@@ -174,8 +173,6 @@ describe("resource", function() {
 
   it('should delete resource and call callback', function() {
     $httpBackend.expect('DELETE', '/CreditCard/123').respond({});
-    $httpBackend.expect('DELETE', '/CreditCard/333').respond(204, null);
-
     CreditCard.remove({id:123}, callback);
     expect(callback).not.toHaveBeenCalled();
 
@@ -183,6 +180,7 @@ describe("resource", function() {
     nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
 
     callback.reset();
+    $httpBackend.expect('DELETE', '/CreditCard/333').respond(204, null);
     CreditCard.remove({id:333}, callback);
     expect(callback).not.toHaveBeenCalled();
 
@@ -224,13 +222,14 @@ describe("resource", function() {
   it('should not mutate the resource object if response contains no body', function() {
     var data = {id:{key:123}, number:'9876'};
     $httpBackend.expect('GET', '/CreditCard/123').respond(data);
-    $httpBackend.expect('POST', '/CreditCard/123', toJson(data)).respond('');
 
     var cc = CreditCard.get({id:123});
     $httpBackend.flush();
     expect(cc instanceof CreditCard).toBe(true);
 
+    $httpBackend.expect('POST', '/CreditCard/123', toJson(data)).respond('');
     var idBefore = cc.id;
+
     cc.$save();
     $httpBackend.flush();
     expect(idBefore).toEqual(cc.id);
