@@ -563,15 +563,14 @@ describe('mocks', function() {
     });
 
 
-    it('flush() should not flush requests fired during callbacks', function() {
-      // regression
+    it('flush() should flush requests fired during callbacks', function() {
       hb.when('GET').then(200, '');
       hb('GET', '/some', null, function() {
         hb('GET', '/other', null, callback);
       });
 
       hb.flush();
-      expect(callback).not.toHaveBeenCalled();
+      expect(callback).toHaveBeenCalled();
     });
 
 
