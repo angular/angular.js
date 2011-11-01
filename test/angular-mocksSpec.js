@@ -559,7 +559,7 @@ describe('mocks', function() {
       hb.flush();
 
       expect(callback).toHaveBeenCalled();
-      expect(function() { hb.verifyExpectations(); }).not.toThrow();
+      expect(function() { hb.verifyNoOutstandingExpectation(); }).not.toThrow();
     });
 
 
@@ -651,7 +651,7 @@ describe('mocks', function() {
       hb('GET', '/some-url', null, callback);
       hb.flush();
       expect(callback).toHaveBeenCalledOnce();
-      hb.verifyExpectations();
+      hb.verifyNoOutstandingExpectation();
     });
 
 
@@ -680,7 +680,7 @@ describe('mocks', function() {
     });
 
 
-    describe('verify', function() {
+    describe('verifyExpectations', function() {
 
       it('should throw exception if not all expectations were satisfied', function() {
         hb.expect('POST', '/u1', 'ddd').respond(201, '', {});
@@ -689,7 +689,7 @@ describe('mocks', function() {
 
         hb('POST', '/u1', 'ddd', noop, {});
 
-        expect(function() {hb.verifyExpectations();})
+        expect(function() {hb.verifyNoOutstandingExpectation();})
           .toThrow('Unsatisfied requests: GET /u2, POST /u3');
       });
 
@@ -697,7 +697,7 @@ describe('mocks', function() {
       it('should do nothing when no expectation', function() {
         hb.when('DELETE', '/some').then(200, '');
 
-        expect(function() {hb.verifyExpectations();}).not.toThrow();
+        expect(function() {hb.verifyNoOutstandingExpectation();}).not.toThrow();
       });
 
 
@@ -709,7 +709,19 @@ describe('mocks', function() {
         hb('GET', '/u2', noop);
         hb('POST', '/u3', noop);
 
-        expect(function() {hb.verifyExpectations();}).not.toThrow();
+        expect(function() {hb.verifyNoOutstandingExpectation();}).not.toThrow();
+      });
+    });
+
+    describe('verifyRequests', function() {
+
+      it('should throw exception if not all requests were flushed', function() {
+        hb.when('GET').then(200);
+        hb('GET', '/some', null, noop, {});
+
+        expect(function() {
+          hb.verifyNoOutstandingRequest();
+        }).toThrow('Unflushed requests: 1');
       });
     });
 
@@ -721,7 +733,7 @@ describe('mocks', function() {
         hb.expect('POST', '/u3').respond(201, '', {});
         hb.resetExpectations();
 
-        expect(function() {hb.verifyExpectations();}).not.toThrow();
+        expect(function() {hb.verifyNoOutstandingExpectation();}).not.toThrow();
       });
 
 
