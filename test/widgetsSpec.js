@@ -567,8 +567,6 @@ describe("widget", function() {
 
       $httpBackend.expect('GET', 'viewPartial.html').respond('content');
       $httpBackend.flush();
-      myApp.$digest();
-      $httpBackend.flush();
 
       expect(myApp.$element.text()).toEqual('include: view: content');
       expect($route.current.template).toEqual('viewPartial.html');
