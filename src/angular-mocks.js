@@ -493,11 +493,15 @@ function createMockHttpBackend() {
     }
   };
 
-
-
-  $httpBackend.verifyExpectations = function() {
+  $httpBackend.verifyNoOutstandingExpectations = function() {
     if (expectations.length) {
       throw Error('Unsatisfied requests: ' + expectations.join(', '));
+    }
+  };
+
+  $httpBackend.verifyRequestsHaveBeenFlushed = function() {
+    if (responses.length) {
+      throw Error('Unflushed requests: ' + responses.length);
     }
   };
 

@@ -17,7 +17,7 @@ describe("resource", function() {
   });
 
   afterEach(function() {
-    $httpBackend.verifyExpectations();
+    $httpBackend.verifyNoOutstandingExpectations();
   });
 
   it("should build resource", function() {

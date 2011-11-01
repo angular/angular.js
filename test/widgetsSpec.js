@@ -170,7 +170,7 @@ describe("widget", function() {
       scope.$digest();
       expect(element.text()).toEqual('my partial');
       dealoc(scope);
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
     });
 
     it('should clear content when error during xhr request', function() {
@@ -183,7 +183,7 @@ describe("widget", function() {
       $httpBackend.flush();
 
       expect(element.text()).toBe('');
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
     });
 
     it('should be async even if served from cache', function(){
@@ -510,14 +510,14 @@ describe("widget", function() {
       rootScope.$digest();
       $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('4');
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
 
       $location.path('/bar');
       $httpBackend.expect('GET', 'myUrl2').respond('angular is da best');
       rootScope.$digest();
       $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('angular is da best');
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
     });
 
     it('should remove all content when location changes to an unknown route', function() {
@@ -528,7 +528,7 @@ describe("widget", function() {
       rootScope.$digest();
       $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('4');
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
 
       $location.path('/unknown');
       rootScope.$digest();
@@ -544,7 +544,7 @@ describe("widget", function() {
       rootScope.$digest();
       $httpBackend.flush();
       expect(rootScope.$element.text()).toEqual('parent');
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
 
       rootScope.parentVar = 'new parent';
       rootScope.$digest();
@@ -578,7 +578,7 @@ describe("widget", function() {
       expect(rootScope.$element.text()).toEqual('include: view: content');
       expect($route.current.template).toEqual('viewPartial.html');
       dealoc($route.current.scope);
-      $httpBackend.verifyExpectations();
+      $httpBackend.verifyNoOutstandingExpectations();
     });
 
     it('should initialize view template after the view controller was initialized even when ' +
