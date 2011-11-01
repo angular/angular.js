@@ -94,6 +94,15 @@ angularFiles = {
     'build/docs/docs-scenario.js'
   ],
 
+  'jstdMocks': [
+    'lib/jasmine/jasmine.js',
+    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
+    'build/angular.js',
+    'src/angular-mocks.js',
+    'test/matchers.js',
+    'test/angular-mocksSpec.js'
+  ],
+
   'jstdPerf': [
    'lib/jasmine/jasmine.js',
    'lib/jasmine-jstd-adapter/JasmineAdapter.js',
