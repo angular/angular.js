@@ -36,7 +36,7 @@ angularFiles = {
     'src/widget/form.js',
     'src/widget/input.js',
     'src/widget/select.js',
-    'src/AngularPublic.js',
+    'src/AngularPublic.js'
   ],
 
   'angularScenario': [
@@ -149,4 +149,4 @@ angularFiles = {
     'src/scenario/angular-bootstrap.js',
     'test/jquery_remove.js'
   ]
-}
+};
