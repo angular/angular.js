@@ -2,8 +2,8 @@
 
 describe('Scope', function() {
 
-  beforeEach(inject(function(service) {
-    service('$exceptionHandler', $exceptionHandlerMockFactory);
+  beforeEach(inject(function($provide) {
+    $provide.factory('$exceptionHandler', $exceptionHandlerMockFactory);
   }));
 
 
@@ -66,7 +66,7 @@ describe('Scope', function() {
         this.callCount = 0;
         this.name = name;
       }
-      Cntl.$inject = ['$browser'];
+      Cntl.$inject = ['$browser', 'name'];
 
       Cntl.prototype = {
         myFn: function() {
@@ -75,7 +75,7 @@ describe('Scope', function() {
         }
       };
 
-      var cntl = $rootScope.$new(Cntl, ['misko']);
+      var cntl = $rootScope.$new(Cntl, {name:'misko'});
 
       expect($rootScope.$browser).toBeUndefined();
       expect($rootScope.myFn).toBeUndefined();
@@ -285,7 +285,7 @@ describe('Scope', function() {
 
 
     it('should return a function that allows listeners to be unregistered', inject(function($rootScope) {
-      var root = angular.injector()('$rootScope'),
+      var root = angular.injector('NG')('$rootScope'),
           listener = jasmine.createSpy('watch listener'),
           listenerRemove;
 
@@ -470,7 +470,7 @@ describe('Scope', function() {
 
       it('should add listener for both $emit and $broadcast events', inject(function($rootScope) {
         var log = '',
-            root = angular.injector()('$rootScope'),
+            root = angular.injector('NG')('$rootScope'),
             child = root.$new();
 
         function eventFn() {
@@ -490,7 +490,7 @@ describe('Scope', function() {
 
       it('should return a function that deregisters the listener', inject(function($rootScope) {
         var log = '',
-            root = angular.injector()('$rootScope'),
+            root = angular.injector('NG')('$rootScope'),
             child = root.$new(),
             listenerRemove;
 
@@ -669,7 +669,7 @@ describe('Scope', function() {
 
       describe('listener', function() {
         it('should receive event object', inject(function($rootScope) {
-          var scope = angular.injector()('$rootScope'),
+          var scope = angular.injector('NG')('$rootScope'),
               child = scope.$new(),
               event;
 
@@ -685,7 +685,7 @@ describe('Scope', function() {
 
 
         it('should support passing messages as varargs', inject(function($rootScope) {
-          var scope = angular.injector()('$rootScope'),
+          var scope = angular.injector('NG')('$rootScope'),
               child = scope.$new(),
               args;
 

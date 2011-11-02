@@ -460,12 +460,12 @@ describe('widget: input', function() {
   describe('scope declaration', function() {
     it('should read the declaration from scope', inject(function($rootScope, $compile) {
       var input, $formFactory;
-      element = angular.element('<input type="@MyType" ng:model="abc">');
+      var element = angular.element('<input type="@MyType" ng:model="abc">');
       $rootScope.MyType = function($f, i) {
         input = i;
         $formFactory = $f;
       };
-      $rootScope.MyType.$inject = ['$formFactory'];
+      $rootScope.MyType.$inject = ['$formFactory', '$element'];
 
       $compile(element)($rootScope);
 
@@ -475,7 +475,7 @@ describe('widget: input', function() {
 
     it('should throw an error of Controller not declared in scope', inject(function($rootScope, $compile) {
       var input, $formFactory;
-      element = angular.element('<input type="@DontExist" ng:model="abc">');
+      var element = angular.element('<input type="@DontExist" ng:model="abc">');
       var error;
       try {
         $compile(element)($rootScope);

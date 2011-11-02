@@ -308,13 +308,9 @@ describe('$location', function() {
 
 
   function initService(html5Mode, hashPrefix, supportHistory) {
-    return function(service){
-      service('$locationConfig', function(){
-        return {html5Mode: html5Mode, hashPrefix: hashPrefix};
-      });
-      service('$sniffer', function(){
-        return {history: supportHistory};
-      });
+    return function($provide){
+      $provide.value('$locationConfig', {html5Mode: html5Mode, hashPrefix: hashPrefix});
+      $provide.value('$sniffer', {history: supportHistory});
     };
   }
   function initBrowser(url, basePath) {
@@ -580,7 +576,7 @@ describe('$location', function() {
     var root, link, originalBrowser, lastEventPreventDefault;
 
     function configureService(linkHref, html5Mode, supportHist, attrs, content) {
-      return function(service){
+      return function($provide){
         var jqRoot = jqLite('<div></div>');
         attrs = attrs ? ' ' + attrs + ' ' : '';
         link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
@@ -588,9 +584,9 @@ describe('$location', function() {
 
         jqLite(document.body).append(jqRoot);
 
-        service('$document', function(){ return jqRoot; });
-        service('$sniffer', function(){ return {history: supportHist}; });
-        service('$locationConfig', function(){ return {html5Mode: html5Mode, hashPrefix: '!'}; });
+        $provide.value('$document', jqRoot);
+        $provide.value('$sniffer', {history: supportHist});
+        $provide.value('$locationConfig', {html5Mode: html5Mode, hashPrefix: '!'});
       };
     }
 

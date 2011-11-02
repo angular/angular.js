@@ -22,14 +22,15 @@ angularServiceInject('$compile', function($injector, $exceptionHandler, $textMar
 
   Template.prototype = {
     link: function(element, scope) {
-      var childScope = scope;
+      var childScope = scope,
+          locals = {$element: element};
       if (this.newScope) {
         childScope = isFunction(this.newScope) ? scope.$new(this.newScope(scope)) : scope.$new();
         element.data($$scope, childScope);
       }
       forEach(this.linkFns, function(fn) {
         try {
-          childScope.$service.invoke(childScope, fn, [element]);
+          $injector.invoke(childScope, fn, locals);
         } catch (e) {
           $exceptionHandler(e);
         }
@@ -54,6 +55,10 @@ angularServiceInject('$compile', function($injector, $exceptionHandler, $textMar
 
     addLinkFn:function(linkingFn) {
       if (linkingFn) {
+        //TODO(misko): temporary hack.
+        if (isFunction(linkingFn) && !linkingFn.$inject) {
+          linkingFn.$inject = ['$element'];
+        }
         this.linkFns.push(linkingFn);
       }
     },

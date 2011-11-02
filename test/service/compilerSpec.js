@@ -3,7 +3,7 @@
 describe('compiler', function() {
   var compiler, textMmarkup, attrMarkup, directives, widgets, compile, log, $rootScope;
 
-  beforeEach(inject(function(service){
+  beforeEach(inject(function($provide){
     textMmarkup = [];
     attrMarkup = [];
     widgets = extensionMap({}, 'widget');
@@ -26,10 +26,10 @@ describe('compiler', function() {
 
     };
     log = "";
-    service('$textMarkup', valueFn(textMmarkup));
-    service('$attrMarkup', valueFn(attrMarkup));
-    service('$directive', valueFn(directives));
-    service('$widget', valueFn(widgets));
+    $provide.value('$textMarkup', textMmarkup);
+    $provide.value('$attrMarkup', attrMarkup);
+    $provide.value('$directive', directives);
+    $provide.value('$widget', widgets);
   }));
 
 

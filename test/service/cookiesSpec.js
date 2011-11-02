@@ -1,8 +1,8 @@
 'use strict';
 
 describe('$cookies', function() {
-  beforeEach(inject(function(service) {
-    service('$browser', function(){ 
+  beforeEach(inject(function($provide) {
+    $provide.factory('$browser', function(){
       return angular.extend(new MockBrowser(), {cookieHash: {preexisting:'oldCookie'}}); 
     });
   }));

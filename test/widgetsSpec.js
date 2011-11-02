@@ -487,7 +487,7 @@ describe("widget", function() {
     }));
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
-      var injector = createInjector(angularService);
+      var injector = angular.injector('NG');
       var myApp = injector('$rootScope');
       var $browser = myApp.$service('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');

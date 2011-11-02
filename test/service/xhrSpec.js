@@ -4,12 +4,10 @@ describe('$xhr', function() {
 
   var log;
 
-  beforeEach(inject(function(service) {
+  beforeEach(inject(function($provide) {
     log = '';
-    service('$xhr.error', function(){
-      return jasmine.createSpy('xhr.error');
-    });
-    service.alias('$xhr.error', '$xhrError');
+    $provide.value('$xhr.error', jasmine.createSpy('xhr.error'));
+    $provide.factory('$xhrError', ['$xhr.error', identity]);
   }));
 
 

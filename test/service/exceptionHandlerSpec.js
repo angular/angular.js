@@ -4,9 +4,9 @@ describe('$exceptionHandler', function() {
 
 
   it('should log errors', inject(
-    function(service){
-      service('$exceptionHandler', $exceptionHandlerFactory);
-      service('$log', valueFn($logMock));
+    function($provide){
+      $provide.factory('$exceptionHandler', $exceptionHandlerFactory);
+      $provide.value('$log', $logMock);
     },
     function($log, $exceptionHandler) {
       $log.error.rethrow = false;

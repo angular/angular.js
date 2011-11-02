@@ -22,108 +22,16 @@
  * The injector function also has these properties:
  *
  *   * An `invoke` property which can be used to invoke methods with dependency-injected arguments.
- *    `injector.invoke(self, fn, curryArgs)`
+ *    `injector.invoke(self, fn, locals)`
  *     * `self` -  The "`this`" to be used when invoking the function.
  *     * `fn` - The function to be invoked. The function may have the `$inject` property that
  *        lists the set of arguments which should be auto-injected.
  *        (see {@link guide/dev_guide.di dependency injection}).
- *     * `curryArgs(array)` - Optional array of arguments to pass to the function
- *        invocation after the injection arguments (also known as curry arguments or currying).
+ *     * `locals(array)` - Optional array of arguments to pass to the function
+ *        invocation after the injection arguments.
  *   * An `eager` property which is used to initialize the eager services.
  *     `injector.eager()`
  */
-function createInjector(factories) {
-  var instanceCache = {
-    $injector: injector
-  };
-  factories = factories || angularService;
-
-  injector.invoke = invoke;
-
-  forEach(factories, function(factory, name){
-    if (factory.$eager)
-      injector(name);
-  });
-  return instanceCache.$injector;
-
-  function injector(serviceId, path){
-    if (typeof serviceId == 'string') {
-      if (!(serviceId in instanceCache)) {
-        var factory = factories[serviceId];
-        path = path || [];
-        path.unshift(serviceId);
-        if (!factory) throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
-        inferInjectionArgs(factory);
-        instanceCache[serviceId] = invoke(null, factory, [], path);
-        path.shift();
-      }
-      return instanceCache[serviceId];
-    } else {
-      return invoke(null, serviceId, path);
-    }
-  }
-
-  function invoke(self, fn, args, path){
-    args = args || [];
-    var injectNames;
-    var i;
-    if (typeof fn == 'function') {
-      injectNames = fn.$inject || [];
-      i = injectNames.length;
-    } else if (fn instanceof Array) {
-      injectNames = fn;
-      i = injectNames.length;
-      fn = injectNames[--i];
-    }
-    assertArgFn(fn, 'fn');
-    while(i--) {
-      args.unshift(injector(injectNames[i], path));
-    }
-    return fn.apply(self, args);
-  }
-}
-
-/**
- * THIS IS NOT PUBLIC DOC YET!
- *
- * @name angular.annotate
- * @function
- *
- * @description
- * Annotate the function with injection arguments. This is equivalent to setting the `$inject`
- * property as described in {@link guide.di dependency injection}.
- *
- * <pre>
- * var MyController = angular.annotate('$location', function($location){ ... });
- * </pre>
- *
- * is the same as
- *
- * <pre>
- * var MyController = function($location){ ... };
- * MyController.$inject = ['$location'];
- * </pre>
- *
- * @param {String|Array} serviceName... zero or more service names to inject into the
- *     `annotatedFunction`.
- * @param {function} annotatedFunction function to annotate with `$inject`
- *     functions.
- * @returns {function} `annotatedFunction`
- */
-function annotate(services, fn) {
-  if (services instanceof Array) {
-    fn.$inject = services;
-    return fn;
-  } else {
-    var i = 0,
-        length = arguments.length - 1, // last one is the destination function
-        $inject = arguments[length].$inject = [];
-    for (; i < length; i++) {
-      $inject.push(arguments[i]);
-    }
-    return arguments[length]; // return the last one
-  }
-}
 
 function angularServiceInject(name, fn, inject, eager) {
   angularService(name, fn, {$inject:inject, $eager:eager});
@@ -156,22 +64,16 @@ function inferInjectionArgs(fn) {
 }
 
 ///////////////////////////////////////
-function createInjector2(modulesToLoad, moduleRegistry) {
+function createInjector(modulesToLoad, moduleRegistry) {
   var cache = {},
       $injector = internalInjector(cache),
       providerSuffix = 'Provider',
       providerSuffixLength = providerSuffix.length;
 
-  function $provide(name) {
-    var provider = cache['#' + name + providerSuffix];
-    if (provider) {
-      return provider;
-    } else {
-      throw Error("No provider for: " + name);
-    }
-  }
+  value('$injector', $injector);
+  value('$provide', {service: service, factory: factory, value: value});
 
-  $provide.service = function(name, provider) {
+  function service(name, provider) {
     if (isFunction(provider)){
       provider = $injector.instantiate(provider);
     }
@@ -180,11 +82,8 @@ function createInjector2(modulesToLoad, moduleRegistry) {
     }
     cache['#' + name + providerSuffix] = provider;
   };
-  $provide.factory = function(name, factoryFn) { $provide.service(name, { $get:factoryFn }); };
-  $provide.value = function(name, value) { $provide.factory(name, valueFn(value)); };
-
-  $provide.value('$injector', $injector);
-  $provide.value('$provide', $provide);
+  function factory(name, factoryFn) { service(name, { $get:factoryFn }); };
+  function value(name, value) { factory(name, valueFn(value)); };
 
   function internalInjector(cache) {
     var path = [];
@@ -194,9 +93,10 @@ function createInjector2(modulesToLoad, moduleRegistry) {
         case 'function':
           return invoke(null, value);
         case 'string':
-          var instanceKey = '#' + value;
-          if (cache[instanceKey]) {
-            return cache[instanceKey];
+          var instanceKey = '#' + value,
+              instance = cache[instanceKey];
+          if (instance !== undefined || cache.hasOwnProperty(instanceKey)) {
+            return instance;
           }
           try {
             path.unshift(value);
@@ -219,28 +119,32 @@ function createInjector2(modulesToLoad, moduleRegistry) {
       }
     }
 
-    function invoke(self, fn){
+    function invoke(self, fn, locals){
       var args = [],
           $inject,
-          length;
 
-      switch(typeof fn){
-        case 'function':
-          $inject = inferInjectionArgs(fn);
+          length,
+          key;
+
+      if (fn instanceof Function) {
+        $inject = inferInjectionArgs(fn);
+        length = $inject.length;
+      } else {
+        if (fn instanceof Array) {
+          $inject = fn;
           length = $inject.length;
-          break;
-        case 'object':
-          if (typeof fn.length == 'number') {
-            $inject = fn;
-            length = $inject.length;
-            fn = $inject[--length];
-          }
-        default:
-          assertArgFn(fn, 'fn');
-      };
+          fn = $inject[--length];
+        }
+        assertArgFn(fn, 'fn');
+      }
 
       while(length--) {
-        args.unshift(injector($inject[length], path));
+        key = $inject[length];
+        args.unshift(
+          locals && locals.hasOwnProperty(key)
+          ? locals[key]
+          : injector($inject[length], path)
+        );
       }
 
       switch (self ? -1 : args.length) {
