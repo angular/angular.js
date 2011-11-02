@@ -223,12 +223,12 @@ describe("widget", function() {
       expect(element.text()).toEqual('name:value;');
     }));
 
-    it('should error on wrong parsing of ng:repeat', inject(function($rootScope, $compile) {
+    it('should error on wrong parsing of ng:repeat', inject(function($rootScope, $compile, $log) {
       expect(function() {
         var element = $compile('<ul><li ng:repeat="i dont parse"></li></ul>')($rootScope);
       }).toThrow("Expected ng:repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
 
-      $logMock.error.logs.shift();
+      $log.error.logs.shift();
     }));
 
     it('should expose iterator offset as $index when iterating over arrays', inject(function($rootScope, $compile) {
@@ -487,9 +487,9 @@ describe("widget", function() {
     }));
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
-      var injector = angular.injector('NG');
+      var injector = angular.injector('NG', 'NG_MOCK');
       var myApp = injector('$rootScope');
-      var $browser = myApp.$service('$browser');
+      var $browser = injector('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
       injector('$location').path('/foo');
 

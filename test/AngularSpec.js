@@ -382,25 +382,6 @@ describe('angular', function() {
       expect(fake).toEqual('new');
     }));
 
-    it('should not preserve properties on override', function() {
-      angular.service('fake', {$one: true}, {$two: true}, {three: true});
-      var result = angular.service('fake', {$four: true});
-
-      expect(result.$one).toBeUndefined();
-      expect(result.$two).toBeUndefined();
-      expect(result.three).toBeUndefined();
-      expect(result.$four).toBe(true);
-    });
-
-    it('should not preserve non-angular properties on override', function() {
-      angular.service('fake', {one: true}, {two: true});
-      var result = angular.service('fake', {third: true});
-
-      expect(result.one).not.toBeDefined();
-      expect(result.two).not.toBeDefined();
-      expect(result.third).toBeTruthy();
-    });
-
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
       expect(angular.injector(function($provide){
         $provide.factory('svc1', function() { return 'svc1'; });

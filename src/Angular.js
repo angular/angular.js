@@ -99,8 +99,8 @@ var _undefined        = undefined,
                            : noop,
 
     /** @name angular */
-    angular           = window[$angular] || (window[$angular] = {}),
-    angularModules    = angular.modules || (angular.modules = {}),
+    angular           = window.angular || (window.angular = {}),
+    angularModule     = angular.module || (angular.module  = {}),
     /** @name angular.markup */
     angularTextMarkup = extensionMap(angular, 'markup'),
     /** @name angular.attrMarkup */
@@ -114,7 +114,6 @@ var _undefined        = undefined,
     /** @name angular.service */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
     /** @name angular.service */
-    angularService    = extensionMap(angular, 'service'),
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
     uid               = ['0', '0', '0'],
@@ -187,18 +186,6 @@ function forEachSorted(obj, iterator, context) {
   return keys;
 }
 
-
-function formatError(arg) {
-  if (arg instanceof Error) {
-    if (arg.stack) {
-      arg = (arg.message && arg.stack.indexOf(arg.message) === -1) ?
-            'Error: ' + arg.message + '\n' + arg.stack : arg.stack;
-    } else if (arg.sourceURL) {
-      arg = arg.message + '\n' + arg.sourceURL + ':' + arg.line;
-    }
-  }
-  return arg;
-}
 
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
@@ -957,7 +944,7 @@ function angularInit(config, document){
         modules.push(module);
       }
     });
-    createInjector(modules, angularModules)(['$rootScope', '$compile', function(scope, compile){
+    createInjector(modules, angularModule)(['$rootScope', '$compile', '$injector', function(scope, compile, injector){
       scope.$apply(function(){
         compile(isString(autobind) ? document.getElementById(autobind) : document)(scope);
       });
@@ -1030,7 +1017,7 @@ function publishExternalAPI(angular){
     'extend': extend,
     'equals': equals,
     'forEach': forEach,
-    'injector': function(){ return createInjector(arguments, angularModules); },
+    'injector': function(){ return createInjector(arguments, angularModule); },
     'noop':noop,
     'bind':bind,
     'toJson': toJson,
@@ -1049,14 +1036,39 @@ function publishExternalAPI(angular){
     'uppercase': uppercase
   });
   
-  angularModules.NG = ngModule;
+  angularModule.NG = ngModule;
 }
 
-ngModule.$inject = ['$provide'];
-function ngModule($provide) {
-  forEach(angularService, function(factory, name){
-    $provide.factory(name, factory);
-  });
+ngModule.$inject = ['$provide', '$injector'];
+function ngModule($provide, $injector) {
+// TODO(misko): temporary services to get the compiler working;
+  $provide.value('$textMarkup', angularTextMarkup);
+  $provide.value('$attrMarkup', angularAttrMarkup);
+  $provide.value('$directive', angularDirective);
+  $provide.value('$widget', angularWidget);
+
+  $provide.service('$browser', $BrowserProvider);
+  $provide.service('$compile', $CompileProvider);
+  $provide.service('$cookies', $CookiesProvider);
+  $provide.service('$cookieStore', $CookieStoreProvider);
+  $provide.service('$defer', $DeferProvider);
+  $provide.service('$document', $DocumentProvider);
+  $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
+  $provide.service('$formFactory', $FormFactoryProvider);
+  $provide.service('$locale', $LocaleProvider);
+  $provide.service('$location', $LocationProvider);
+  $provide.service('$locationConfig', $LocationConfigProvider);
+  $provide.service('$log', $LogProvider);
+  $provide.service('$resource', $ResourceProvider);
+  $provide.service('$route', $RouteProvider);
+  $provide.service('$routeParams', $RouteParamsProvider);
+  $provide.service('$rootScope', $RootScopeProvider);
+  $provide.service('$sniffer', $SnifferProvider);
+  $provide.service('$window', $WindowProvider);
+  $provide.service('$xhr.bulk', $XhrBulkProvider);
+  $provide.service('$xhr.cache', $XhrCacheProvider);
+  $provide.service('$xhr.error', $XhrErrorProvider);
+  $provide.service('$xhr', $XhrProvider);
 }
 
 

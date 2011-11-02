@@ -448,12 +448,12 @@ describe('widget: input', function() {
     });
 
 
-    it('should report error on assignment error', function() {
+    it('should report error on assignment error', inject(function($log) {
       expect(function() {
         compile('<input type="text" ng:model="throw \'\'">');
       }).toThrow("Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
-      $logMock.error.logs.shift();
-    });
+      $log.error.logs.shift();
+    }));
   });
 
 

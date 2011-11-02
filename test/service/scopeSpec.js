@@ -2,8 +2,8 @@
 
 describe('Scope', function() {
 
-  beforeEach(inject(function($provide) {
-    $provide.factory('$exceptionHandler', $exceptionHandlerMockFactory);
+  beforeEach(inject(function($exceptionHandlerProvider) {
+    $exceptionHandlerProvider.mode('log');
   }));
 
 
@@ -121,12 +121,12 @@ describe('Scope', function() {
       expect(spy).wasCalled();
     }));
 
-    it('should delegate exceptions', inject(function($rootScope, $exceptionHandler) {
+    it('should delegate exceptions', inject(function($rootScope, $exceptionHandler, $log) {
       $rootScope.$watch('a', function() {throw new Error('abc');});
       $rootScope.a = 1;
       $rootScope.$digest();
       expect($exceptionHandler.errors[0].message).toEqual('abc');
-      $logMock.error.logs.length = 0;
+      $log.assertEmpty();
     }));
 
 
@@ -422,7 +422,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should catch exceptions', inject(function($rootScope, $exceptionHandler) {
+    it('should catch exceptions', inject(function($rootScope, $exceptionHandler, $log) {
       var log = '';
       var child = $rootScope.$new();
       $rootScope.$watch('a', function(scope, a){ log += '1'; });
@@ -430,7 +430,7 @@ describe('Scope', function() {
       child.$apply(function() { throw new Error('MyError'); });
       expect(log).toEqual('1');
       expect($exceptionHandler.errors[0].message).toEqual('MyError');
-      $logMock.error.logs.shift();
+      $log.error.logs.shift();
     }));
 
 

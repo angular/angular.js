@@ -9,6 +9,8 @@
  * A {@link angular.element jQuery (lite)}-wrapped reference to the browser's `window.document`
  * element.
  */
-angularServiceInject("$document", function(window){
-  return jqLite(window.document);
-}, ['$window']);
+function $DocumentProvider(){
+  this.$get = ['$window', function(window){
+    return jqLite(window.document);
+  }];
+}

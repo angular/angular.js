@@ -35,8 +35,10 @@
       </doc:source>
     </doc:example>
  */
-angularServiceInject('$xhr.error', function($log){
-  return function(request, response){
-    $log.error('ERROR: XHR: ' + request.url, request, response);
-  };
-}, ['$log']);
+function $XhrErrorProvider() {
+  this.$get = ['$log', function($log) {
+    return function(request, response){
+      $log.error('ERROR: XHR: ' + request.url, request, response);
+    };
+  }];
+}

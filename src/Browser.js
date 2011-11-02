@@ -473,3 +473,10 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
     return href ? href.replace(/^https?\:\/\/[^\/]*/, '') : href;
   };
 }
+
+function $BrowserProvider(){
+  this.$get = ['$window', '$log', '$sniffer', '$document',
+      function( $window,   $log,   $sniffer,   $document){
+        return new Browser($window, $document, $document.find('body'), XHR, $log, $sniffer);
+      }];
+}

@@ -2,7 +2,7 @@
 
 describe('$locale', function() {
 
-  var $locale = angular.service('$locale')();
+  var $locale = new $LocaleProvider().$get();
 
   it('should have locale id set to en-us', function() {
     expect($locale.id).toBe('en-us');

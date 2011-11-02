@@ -25,6 +25,6 @@
  *  $routeParams ==> {chapterId:1, sectionId:2, search:'moby'}
  * </pre>
  */
-angularService('$routeParams', function() {
-  return {};
-});
+function $RouteParamsProvider() {
+  this.$get = valueFn({});
+}

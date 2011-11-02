@@ -222,8 +222,8 @@ describe('Binder', function() {
   }));
 
   it('IfTextBindingThrowsErrorDecorateTheSpan', inject(
-    function($provide){
-      $provide.factory('$exceptionHandler', $exceptionHandlerMockFactory);
+    function($exceptionHandlerProvider){
+      $exceptionHandlerProvider.mode('log');
     },
     function($rootScope, $exceptionHandler, $compile) {
       $compile('<div>{{error.throw()}}</div>', null, true)($rootScope);
@@ -245,8 +245,8 @@ describe('Binder', function() {
     })
   );
 
-  it('IfAttrBindingThrowsErrorDecorateTheAttribute', inject(function($provide){
-    $provide.factory('$exceptionHandler', $exceptionHandlerMockFactory);
+  it('IfAttrBindingThrowsErrorDecorateTheAttribute', inject(function($exceptionHandlerProvider){
+    $exceptionHandlerProvider.mode('log');
   }, function($rootScope, $exceptionHandler, $compile) {
     $compile('<div attr="before {{error.throw()}} after"></div>', null, true)($rootScope);
     var errorLogs = $exceptionHandler.errors;
@@ -387,8 +387,8 @@ describe('Binder', function() {
   }));
 
   it('ActionOnAHrefThrowsError', inject(
-    function($provide){
-      $provide.factory('$exceptionHandler', $exceptionHandlerMockFactory);
+    function($exceptionHandlerProvider){
+      $exceptionHandlerProvider.mode('log');
     },
     function($rootScope, $exceptionHandler, $compile) {
       var input = $compile('<a ng:click="action()">Add Phone</a>')($rootScope);
@@ -471,8 +471,8 @@ describe('Binder', function() {
   }));
 
   it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', inject(
-    function($provide){
-      $provide.factory('$exceptionHandler', $exceptionHandlerMockFactory);
+    function($exceptionHandlerProvider){
+      $exceptionHandlerProvider.mode('log');
     },
     function($rootScope, $exceptionHandler, $log, $compile) {
       var element = $compile(

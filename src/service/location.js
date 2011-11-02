@@ -419,94 +419,99 @@ function locationGetterSetter(property, preprocess) {
  *
  * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
-angularServiceInject('$location', function($rootScope, $browser, $sniffer, $locationConfig, $document) {
-  var currentUrl,
-      basePath = $browser.baseHref() || '/',
-      pathPrefix = pathPrefixFromBase(basePath),
-      hashPrefix = $locationConfig.hashPrefix || '',
-      initUrl = $browser.url();
+function $LocationProvider(){
+  this.$get = ['$rootScope', '$browser', '$sniffer', '$locationConfig', '$document',
+      function( $rootScope,   $browser,   $sniffer,   $locationConfig,   $document) {
+    var currentUrl,
+        basePath = $browser.baseHref() || '/',
+        pathPrefix = pathPrefixFromBase(basePath),
+        hashPrefix = $locationConfig.hashPrefix || '',
+        initUrl = $browser.url();
 
-  if ($locationConfig.html5Mode) {
-    if ($sniffer.history) {
-      currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
-    } else {
-      currentUrl = new LocationHashbangUrl(convertToHashbangUrl(initUrl, basePath, hashPrefix),
-                                           hashPrefix);
-    }
-
-    // link rewriting
-    var u = currentUrl,
-        absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
-
-    $document.bind('click', function(event) {
-      // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
-      // currently we open nice url link and redirect then
-
-      if (event.ctrlKey || event.metaKey || event.which == 2) return;
-
-      var elm = jqLite(event.target);
-
-      // traverse the DOM up to find first A tag
-      while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
-        elm = elm.parent();
+    if ($locationConfig.html5Mode) {
+      if ($sniffer.history) {
+        currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
+      } else {
+        currentUrl = new LocationHashbangUrl(convertToHashbangUrl(initUrl, basePath, hashPrefix),
+                                             hashPrefix);
       }
 
-      var href = elm.attr('href');
-      if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
+      // link rewriting
+      var u = currentUrl,
+          absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
 
-      // remove same domain from full url links (IE7 always returns full hrefs)
-      href = href.replace(absUrlPrefix, '');
+      $document.bind('click', function(event) {
+        // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
+        // currently we open nice url link and redirect then
 
-      // link to different domain (or base path)
-      if (href.substr(0, 4) == 'http') return;
+        if (event.ctrlKey || event.metaKey || event.which == 2) return;
 
-      // remove pathPrefix from absolute links
-      href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
+        var elm = jqLite(event.target);
 
-      currentUrl.url(href);
-      $rootScope.$apply();
-      event.preventDefault();
-      // hack to work around FF6 bug 684208 when scenario runner clicks on links
-      window.angular['ff-684208-preventDefault'] = true;
-    });
-  } else {
-    currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
-  }
+        // traverse the DOM up to find first A tag
+        while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
+          elm = elm.parent();
+        }
 
-  // rewrite hashbang url <> html5 url
-  if (currentUrl.absUrl() != initUrl) {
-    $browser.url(currentUrl.absUrl(), true);
-  }
+        var href = elm.attr('href');
+        if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
 
-  // update $location when $browser url changes
-  $browser.onUrlChange(function(newUrl) {
-    if (currentUrl.absUrl() != newUrl) {
-      currentUrl.$$parse(newUrl);
-      $rootScope.$apply();
-    }
-  });
+        // remove same domain from full url links (IE7 always returns full hrefs)
+        href = href.replace(absUrlPrefix, '');
 
-  // update browser
-  var changeCounter = 0;
-  $rootScope.$watch(function() {
-    if ($browser.url() != currentUrl.absUrl()) {
-      changeCounter++;
-      $rootScope.$evalAsync(function() {
-        $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
-        currentUrl.$$replace = false;
+        // link to different domain (or base path)
+        if (href.substr(0, 4) == 'http') return;
+
+        // remove pathPrefix from absolute links
+        href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
+
+        currentUrl.url(href);
+        $rootScope.$apply();
+        event.preventDefault();
+        // hack to work around FF6 bug 684208 when scenario runner clicks on links
+        window.angular['ff-684208-preventDefault'] = true;
       });
+    } else {
+      currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
     }
 
-    return changeCounter;
-  });
+    // rewrite hashbang url <> html5 url
+    if (currentUrl.absUrl() != initUrl) {
+      $browser.url(currentUrl.absUrl(), true);
+    }
 
-  return currentUrl;
-}, ['$rootScope', '$browser', '$sniffer', '$locationConfig', '$document']);
+    // update $location when $browser url changes
+    $browser.onUrlChange(function(newUrl) {
+      if (currentUrl.absUrl() != newUrl) {
+        currentUrl.$$parse(newUrl);
+        $rootScope.$apply();
+      }
+    });
 
+    // update browser
+    var changeCounter = 0;
+    $rootScope.$watch(function() {
+      if ($browser.url() != currentUrl.absUrl()) {
+        changeCounter++;
+        $rootScope.$evalAsync(function() {
+          $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
+          currentUrl.$$replace = false;
+        });
+      }
 
-angular.service('$locationConfig', function() {
-  return {
-    html5Mode: false,
-    hashPrefix: ''
+      return changeCounter;
+    });
+
+    return currentUrl;
+}];
+}
+
+//TODO(misko): refactor to service
+function $LocationConfigProvider(){
+  this.$get = function() {
+    return {
+      html5Mode: false,
+      hashPrefix: ''
+    };
   };
-});
+}

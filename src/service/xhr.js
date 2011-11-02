@@ -171,58 +171,61 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject('$xhr', function($rootScope, $browser, $error, $log){
-  var xhrHeaderDefaults = {
-    common: {
-      "Accept": "application/json, text/plain, */*",
-      "X-Requested-With": "XMLHttpRequest"
-    },
-    post: {'Content-Type': 'application/x-www-form-urlencoded'},
-    get: {},      // all these empty properties are needed so that client apps can just do:
-    head: {},     // $xhr.defaults.headers.head.foo="bar" without having to create head object
-    put: {},      // it also means that if we add a header for these methods in the future, it
-    'delete': {}, // won't be easily silently lost due to an object assignment.
-    patch: {}
-  };
+function $XhrProvider() {
+  this.$get = ['$rootScope', '$browser', '$xhr.error', '$log',
+      function( $rootScope,   $browser,   $error,       $log){
+    var xhrHeaderDefaults = {
+      common: {
+        "Accept": "application/json, text/plain, */*",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      post: {'Content-Type': 'application/x-www-form-urlencoded'},
+      get: {},      // all these empty properties are needed so that client apps can just do:
+      head: {},     // $xhr.defaults.headers.head.foo="bar" without having to create head object
+      put: {},      // it also means that if we add a header for these methods in the future, it
+      'delete': {}, // won't be easily silently lost due to an object assignment.
+      patch: {}
+    };
 
-  function xhr(method, url, post, success, error) {
-    if (isFunction(post)) {
-      error = success;
-      success = post;
-      post = null;
-    }
-    if (post && isObject(post)) {
-      post = toJson(post);
-    }
-
-    $browser.xhr(method, url, post, function(code, response){
-      try {
-        if (isString(response)) {
-          if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
-          if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
-            response = fromJson(response, true);
-          }
-        }
-        $rootScope.$apply(function() {
-          if (200 <= code && code < 300) {
-              success(code, response);
-          } else if (isFunction(error)) {
-            error(code, response);
-          } else {
-            $error(
-              {method: method, url: url, data: post, success: success},
-              {status: code, body: response});
-          }
-        });
-      } catch (e) {
-        $log.error(e);
+    function xhr(method, url, post, success, error) {
+      if (isFunction(post)) {
+        error = success;
+        success = post;
+        post = null;
       }
-    }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
-              xhrHeaderDefaults.common,
-              xhrHeaderDefaults[lowercase(method)]));
-  }
+      if (post && isObject(post)) {
+        post = toJson(post);
+      }
 
-  xhr.defaults = {headers: xhrHeaderDefaults};
+      $browser.xhr(method, url, post, function(code, response){
+        try {
+          if (isString(response)) {
+            if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
+            if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
+              response = fromJson(response, true);
+            }
+          }
+          $rootScope.$apply(function() {
+            if (200 <= code && code < 300) {
+                success(code, response);
+            } else if (isFunction(error)) {
+              error(code, response);
+            } else {
+              $error(
+                {method: method, url: url, data: post, success: success},
+                {status: code, body: response});
+            }
+          });
+        } catch (e) {
+          $log.error(e);
+        }
+      }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
+                xhrHeaderDefaults.common,
+                xhrHeaderDefaults[lowercase(method)]));
+    }
 
-  return xhr;
-}, ['$rootScope', '$browser', '$xhr.error', '$log']);
+    xhr.defaults = {headers: xhrHeaderDefaults};
+
+    return xhr;
+  }];
+}

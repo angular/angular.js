@@ -239,6 +239,12 @@ describe('injector', function() {
       expect($injector('a')).toEqual('abc');
     });
 
+    it('should error on invalid madule name', function(){
+      expect(function(){
+        createInjector(['IDontExist'], {});
+      }).toThrow("Module 'IDontExist' is not defined!");
+    });
+
 
     describe('$provide', function() {
       describe('value', function(){

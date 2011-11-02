@@ -34,64 +34,78 @@
       </doc:scenario>
     </doc:example>
  */
-var $logFactory; //reference to be used only in tests
-angularServiceInject("$log", $logFactory = function($window){
-  return {
-    /**
-     * @ngdoc method
-     * @name angular.service.$log#log
-     * @methodOf angular.service.$log
-     *
-     * @description
-     * Write a log message
-     */
-    log: consoleLog('log'),
 
-    /**
-     * @ngdoc method
-     * @name angular.service.$log#warn
-     * @methodOf angular.service.$log
-     *
-     * @description
-     * Write a warning message
-     */
-    warn: consoleLog('warn'),
+function $LogProvider(){
+  this.$get = ['$window', function($window){
+    return {
+      /**
+       * @ngdoc method
+       * @name angular.service.$log#log
+       * @methodOf angular.service.$log
+       *
+       * @description
+       * Write a log message
+       */
+      log: consoleLog('log'),
 
-    /**
-     * @ngdoc method
-     * @name angular.service.$log#info
-     * @methodOf angular.service.$log
-     *
-     * @description
-     * Write an information message
-     */
-    info: consoleLog('info'),
+      /**
+       * @ngdoc method
+       * @name angular.service.$log#warn
+       * @methodOf angular.service.$log
+       *
+       * @description
+       * Write a warning message
+       */
+      warn: consoleLog('warn'),
 
-    /**
-     * @ngdoc method
-     * @name angular.service.$log#error
-     * @methodOf angular.service.$log
-     *
-     * @description
-     * Write an error message
-     */
-    error: consoleLog('error')
-  };
+      /**
+       * @ngdoc method
+       * @name angular.service.$log#info
+       * @methodOf angular.service.$log
+       *
+       * @description
+       * Write an information message
+       */
+      info: consoleLog('info'),
 
-  function consoleLog(type) {
-    var console = $window.console || {};
-    var logFn = console[type] || console.log || noop;
-    if (logFn.apply) {
-      return function() {
-        var args = [];
-        forEach(arguments, function(arg){
-          args.push(formatError(arg));
-        });
-        return logFn.apply(console, args);
-      };
-    } else {
-      // we are IE, in which case there is nothing we can do
-      return logFn;
+      /**
+       * @ngdoc method
+       * @name angular.service.$log#error
+       * @methodOf angular.service.$log
+       *
+       * @description
+       * Write an error message
+       */
+      error: consoleLog('error')
+    };
+
+    function formatError(arg) {
+      if (arg instanceof Error) {
+        if (arg.stack) {
+          arg = (arg.message && arg.stack.indexOf(arg.message) === -1) ?
+                'Error: ' + arg.message + '\n' + arg.stack : arg.stack;
+        } else if (arg.sourceURL) {
+          arg = arg.message + '\n' + arg.sourceURL + ':' + arg.line;
+        }
+      }
+      return arg;
     }
-  }
-}, ['$window']);
+
+    function consoleLog(type) {
+      var console = $window.console || {};
+      var logFn = console[type] || console.log || noop;
+      if (logFn.apply) {
+        return function() {
+          var args = [];
+          forEach(arguments, function(arg){
+            args.push(formatError(arg));
+          });
+          return logFn.apply(console, args);
+        };
+      } else {
+        // we are IE, in which case there is nothing we can do
+        return logFn;
+      }
+    }
+  }];
+}

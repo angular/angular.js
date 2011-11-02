@@ -200,10 +200,10 @@ describe('filter', function() {
 
   describe('date', function() {
 
-    var morning  = new TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
-    var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
-    var midnight = new TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
-    var earlyDate = new TzDate(+5, '0001-09-03T05:05:08.000Z');
+    var morning  = new angular.mock.TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
+    var noon =     new angular.mock.TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
+    var midnight = new angular.mock.TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
+    var earlyDate = new angular.mock.TzDate(+5, '0001-09-03T05:05:08.000Z');
 
     var context, date;
 
