@@ -148,9 +148,12 @@ function TutorialInstructionsCtrl($cookieStore) {
   };
 }
 
-angular.service('$locationConfig', function() {
-  return {
+window.angular = window.angular || {};
+angular.module = angular.module || {};
+
+angular.module.ngdocs = function($provide) {
+  $provide.value('$locationConfig', {
     html5Mode: true,
     hashPrefix: '!'
-  };
-});
+  });
+};

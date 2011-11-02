@@ -23,4 +23,6 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject("$window", bind(window, identity, window));
+function $WindowProvider(){
+  this.$get = valueFn(window);
+}

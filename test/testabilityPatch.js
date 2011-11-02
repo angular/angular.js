@@ -77,18 +77,13 @@ beforeEach(function() {
     }
   });
 
-  $logMock.log.logs = [];
-  $logMock.warn.logs = [];
-  $logMock.info.logs = [];
-  $logMock.error.logs = [];
-
 });
 
 function inject(){
   var blockFns = sliceArgs(arguments);
   return function(){
     var spec = this;
-    spec.$injector = spec.$injector || angular.injector('NG');
+    spec.$injector = spec.$injector || angular.injector('NG', 'NG_MOCK');
     angular.forEach(blockFns, function(fn){
       spec.$injector.invoke(spec, fn);
     });
@@ -96,30 +91,12 @@ function inject(){
 }
 
 
-afterEach(inject(function($rootScope) {
+afterEach(inject(function($rootScope, $log) {
   // release the injector
   dealoc($rootScope);
 
   // check $log mock
-  forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
-    if ($logMock[logLevel].logs.length) {
-      forEach($logMock[logLevel].logs, function(log) {
-        forEach(log, function deleteStack(logItem) {
-          if (logItem instanceof Error) {
-            dump(logItem.stack);
-            delete logItem.stack;
-            delete logItem.arguments;
-          } else {
-            dump(logItem);
-          }
-        });
-      });
-
-      throw new Error("Exprected $log." + logLevel + ".logs array to be empty. " +
-        "Either a message was logged unexpectedly, or an expected log message was not checked " +
-        "and removed. Array contents: " + toJson($logMock[logLevel].logs));
-    }
-  });
+  $log.assertEmpty && $log.assertEmpty();
 
   clearJqCache();
 }));

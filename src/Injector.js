@@ -33,10 +33,6 @@
  *     `injector.eager()`
  */
 
-function angularServiceInject(name, fn, inject, eager) {
-  angularService(name, fn, {$inject:inject, $eager:eager});
-}
-
 
 /**
  * @returns the $inject property of function. If not found the
@@ -177,7 +173,11 @@ function createInjector(modulesToLoad, moduleRegistry) {
 
   forEach(modulesToLoad, function(module){
     if (isString(module)) {
-      module = moduleRegistry[module];
+      if (moduleRegistry[module]) {
+        module = moduleRegistry[module];
+      } else {
+        throw Error("Module '" + module + "' is not defined!");
+      }
     }
     if (isFunction(module) || isArray(module)) {
       $injector(module);

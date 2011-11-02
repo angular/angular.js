@@ -3,7 +3,7 @@
 describe('$cookies', function() {
   beforeEach(inject(function($provide) {
     $provide.factory('$browser', function(){
-      return angular.extend(new MockBrowser(), {cookieHash: {preexisting:'oldCookie'}}); 
+      return angular.extend(new angular.mock.$Browser(), {cookieHash: {preexisting:'oldCookie'}});
     });
   }));
 

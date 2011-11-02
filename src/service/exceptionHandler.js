@@ -15,9 +15,10 @@
  *
  * @example
  */
-var $exceptionHandlerFactory; //reference to be used only in tests
-angularServiceInject('$exceptionHandler', $exceptionHandlerFactory = function($log){
-  return function(e) {
-    $log.error(e);
-  };
-}, ['$log']);
+function $ExceptionHandlerProvider(){
+  this.$get = ['$log', function($log){
+    return function(e) {
+      $log.error(e);
+    };
+  }];
+}

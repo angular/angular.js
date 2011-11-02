@@ -200,7 +200,9 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$resource', function($xhr){
-  var resource = new ResourceFactory($xhr);
-  return bind(resource, resource.route);
-}, ['$xhr.cache']);
+function $ResourceProvider() {
+  this.$get = ['$xhr.cache', function($xhr){
+    var resource = new ResourceFactory($xhr);
+    return bind(resource, resource.route);
+  }];
+}

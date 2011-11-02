@@ -1,4 +1,3 @@
-'use strict';
 
 /**
  * @license AngularJS v"NG_VERSION_FULL"
@@ -8,30 +7,6 @@
 
 
 /*
-
- NUGGGGGH MUST TONGUE WANGS
-                           \
-                                .....
-                               C C  /
-                              /<   /
-               ___ __________/_#__=o
-              /(- /(\_\________   \
-              \ ) \ )_      \o     \
-              /|\ /|\       |'     |
-                            |     _|
-                            /o   __\
-                           / '     |
-                          / /      |
-                         /_/\______|
-                        (   _(    <
-                         \    \    \
-                          \    \    |
-                           \____\____\
-                           ____\_\__\_\
-                         /`   /`     o\
-                         |___ |_______|.. . b'ger
-
-
  IN THE FINAL BUILD THIS FILE DOESN'T HAVE DIRECT ACCESS TO GLOBAL FUNCTIONS
  DEFINED IN Angular.js YOU *MUST* REFER TO THEM VIA angular OBJECT
  (e.g. angular.forEach(...)) AND MAKE SURE THAT THE GIVEN FUNCTION IS EXPORTED
@@ -56,8 +31,15 @@
  *   the angular service exception handler.
  * * {@link angular.mock.service.$log $log } - A mock implementation of the angular service log.
  */
-angular.mock = {};
+window.angular = window.angular || {};
+angular.module = angular.module || {};
+angular.mock = angular.mock || {};
 
+angular.module.NG_MOCK = ['$provide', function($provide){
+  $provide.service('$browser', angular.mock.$BrowserProvider);
+  $provide.service('$exceptionHandler', angular.mock.$ExceptionHandlerProvider);
+  $provide.service('$log', angular.mock.$LogProvider);
+}];
 
 /**
  * @ngdoc service
@@ -81,7 +63,12 @@ angular.mock = {};
  * - $browser.defer — enables testing of code that uses
  *   {@link angular.service.$defer $defer service} for executing functions via the `setTimeout` api.
  */
-function MockBrowser() {
+angular.mock.$BrowserProvider = function(){
+  this.$get = function(){
+    return new angular.mock.$Browser();
+  };
+};
+angular.mock.$Browser = function() {
   var self = this,
       expectations = {},
       requests = [];
@@ -309,7 +296,7 @@ function MockBrowser() {
     return this.$$baseHref;
   };
 }
-MockBrowser.prototype = {
+angular.mock.$Browser.prototype = {
 
 /**
   * @name angular.mock.service.$browser#poll
@@ -360,10 +347,6 @@ MockBrowser.prototype = {
   addJs: function() {}
 };
 
-angular.service('$browser', function() {
-  return new MockBrowser();
-});
-
 
 /**
  * @ngdoc service
@@ -376,9 +359,29 @@ angular.service('$browser', function() {
  *
  * See {@link angular.mock} for more info on angular mocks.
  */
-angular.service('$exceptionHandler', function() {
-  return function(e) { throw e; };
-});
+angular.mock.$ExceptionHandlerProvider = function(){
+  var handler;
+
+  this.mode = function(mode){
+    handler = {
+     rethrow: function(e) {
+      throw e;
+     },
+     log: angular.extend(function log(e) {
+       log.errors.push(e);
+     }, {errors:[]})
+    }[mode];
+    if (!handler) {
+      throw Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
+    }
+  };
+
+  this.$get = function(){
+    return handler;
+  };
+
+  this.mode('rethrow');
+};
 
 
 /**
@@ -392,23 +395,43 @@ angular.service('$exceptionHandler', function() {
  *
  * See {@link angular.mock} for more info on angular mocks.
  */
-angular.service('$log', MockLogFactory);
+angular.mock.$LogProvider = function(){
+  this.$get = function () {
+    var $log = {
+      log: function() { $log.log.logs.push(concat([], arguments, 0)); },
+      warn: function() { $log.warn.logs.push(concat([], arguments, 0)); },
+      info: function() { $log.info.logs.push(concat([], arguments, 0)); },
+      error: function() { $log.error.logs.push(concat([], arguments, 0)); }
+    };
 
-function MockLogFactory() {
-  var $log = {
-    log: function() { $log.log.logs.push(arguments); },
-    warn: function() { $log.warn.logs.push(arguments); },
-    info: function() { $log.info.logs.push(arguments); },
-    error: function() { $log.error.logs.push(arguments); }
+    $log.reset = function (){
+      $log.log.logs = [];
+      $log.warn.logs = [];
+      $log.info.logs = [];
+      $log.error.logs = [];
+    };
+
+    $log.assertEmpty = function(){
+      var errors = [];
+      angular.forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
+        angular.forEach($log[logLevel].logs, function(log) {
+          angular.forEach(log, function (logItem) {
+            errors.push('MOCK $log (' + logLevel + '): ' + (logItem.stack || logItem));
+          });
+        });
+      });
+      if (errors.length) {
+        errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or an expected " +
+          "log message was not checked and removed:");
+        errors.push('')
+        throw new Error(errors.join('\n---------\n'));
+      }
+    };
+
+    $log.reset();
+    return $log;
   };
-
-  $log.log.logs = [];
-  $log.warn.logs = [];
-  $log.info.logs = [];
-  $log.error.logs = [];
-
-  return $log;
-}
+};
 
 
 /**
@@ -441,7 +464,7 @@ function MockLogFactory() {
  * </pre>
  *
  */
-function TzDate(offset, timestamp) {
+angular.mock.TzDate = function (offset, timestamp) {
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
 
@@ -545,4 +568,4 @@ function TzDate(offset, timestamp) {
 }
 
 //make "tzDateInstance instanceof Date" return true
-TzDate.prototype = Date.prototype;
+angular.mock.TzDate.prototype = Date.prototype;

@@ -12,7 +12,7 @@ describe('$log', function() {
   beforeEach(inject(function($provide){
     $window = {};
     logger = '';
-    $provide.factory('$log', $logFactory);
+    $provide.service('$log', $LogProvider);
     $provide.value('$exceptionHandler', rethrow);
     $provide.value('$window', $window);
   }));
@@ -68,7 +68,7 @@ describe('$log', function() {
       e.line = undefined;
       e.stack = undefined;
 
-      $log = $logFactory({console:{error:function() {
+      $log = new $LogProvider().$get[1]({console:{error:function() {
         errorArgs = arguments;
       }}});
     });

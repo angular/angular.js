@@ -11,13 +11,15 @@
  * @description
  * This is very simple implementation of testing browser's features.
  */
-angularServiceInject('$sniffer', function($window) {
-  if ($window.Modernizr) return $window.Modernizr;
+function $SnifferProvider(){
+  this.$get = ['$window', function($window){
+    if ($window.Modernizr) return $window.Modernizr;
 
-  return {
-    history: !!($window.history && $window.history.pushState),
-    hashchange: 'onhashchange' in $window &&
-                // IE8 compatible mode lies
-                (!$window.document.documentMode || $window.document.documentMode > 7)
-  };
-}, ['$window']);
+    return {
+      history: !!($window.history && $window.history.pushState),
+      hashchange: 'onhashchange' in $window &&
+                  // IE8 compatible mode lies
+                  (!$window.document.documentMode || $window.document.documentMode > 7)
+    };
+  }];
+}

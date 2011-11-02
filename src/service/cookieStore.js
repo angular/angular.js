@@ -11,52 +11,54 @@
  * deserialized by angular's toJson/fromJson.
  * @example
  */
-angularServiceInject('$cookieStore', function($store) {
+function $CookieStoreProvider(){
+  this.$get = ['$cookies', function($cookies) {
 
-  return {
-    /**
-     * @ngdoc method
-     * @name angular.service.$cookieStore#get
-     * @methodOf angular.service.$cookieStore
-     *
-     * @description
-     * Returns the value of given cookie key
-     *
-     * @param {string} key Id to use for lookup.
-     * @returns {Object} Deserialized cookie value.
-     */
-    get: function(key) {
-      return fromJson($store[key]);
-    },
+    return {
+      /**
+       * @ngdoc method
+       * @name angular.service.$cookieStore#get
+       * @methodOf angular.service.$cookieStore
+       *
+       * @description
+       * Returns the value of given cookie key
+       *
+       * @param {string} key Id to use for lookup.
+       * @returns {Object} Deserialized cookie value.
+       */
+      get: function(key) {
+        return fromJson($cookies[key]);
+      },
 
-    /**
-     * @ngdoc method
-     * @name angular.service.$cookieStore#put
-     * @methodOf angular.service.$cookieStore
-     *
-     * @description
-     * Sets a value for given cookie key
-     *
-     * @param {string} key Id for the `value`.
-     * @param {Object} value Value to be stored.
-     */
-    put: function(key, value) {
-      $store[key] = toJson(value);
-    },
+      /**
+       * @ngdoc method
+       * @name angular.service.$cookieStore#put
+       * @methodOf angular.service.$cookieStore
+       *
+       * @description
+       * Sets a value for given cookie key
+       *
+       * @param {string} key Id for the `value`.
+       * @param {Object} value Value to be stored.
+       */
+      put: function(key, value) {
+        $cookies[key] = toJson(value);
+      },
 
-    /**
-     * @ngdoc method
-     * @name angular.service.$cookieStore#remove
-     * @methodOf angular.service.$cookieStore
-     *
-     * @description
-     * Remove given cookie
-     *
-     * @param {string} key Id of the key-value pair to delete.
-     */
-    remove: function(key) {
-      delete $store[key];
-    }
-  };
+      /**
+       * @ngdoc method
+       * @name angular.service.$cookieStore#remove
+       * @methodOf angular.service.$cookieStore
+       *
+       * @description
+       * Remove given cookie
+       *
+       * @param {string} key Id of the key-value pair to delete.
+       */
+      remove: function(key) {
+        delete $cookies[key];
+      }
+    };
 
-}, ['$cookies']);
+  }];
+}
