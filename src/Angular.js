@@ -100,6 +100,7 @@ var _undefined        = undefined,
 
     /** @name angular */
     angular           = window[$angular] || (window[$angular] = {}),
+    angularModules    = angular.modules || (angular.modules = {}),
     /** @name angular.markup */
     angularTextMarkup = extensionMap(angular, 'markup'),
     /** @name angular.attrMarkup */
@@ -274,6 +275,7 @@ function inherit(parent, extra) {
    </pre>
  */
 function noop() {}
+noop.$inject = [];
 
 
 /**
@@ -292,6 +294,7 @@ function noop() {}
    </pre>
  */
 function identity($) {return $;}
+identity.$inject = [];
 
 
 function valueFn(value) {return function() {return value;};}
@@ -945,14 +948,20 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  */
 function angularInit(config, document){
   var autobind = config.autobind;
-
+  
   if (autobind) {
-    var element = isString(autobind) ? document.getElementById(autobind) : document,
-        injector = createInjector(angularService),
-        scope = injector('$rootScope');
-
-    injector('$compile')(element)(scope);
-    scope.$apply();
+    var modules = [ngModule];
+    forEach((config.modules || '').split(','), function(module){
+      module = trim(module);
+      if (module) {
+        modules.push(module);
+      }
+    });
+    createInjector(modules, angularModules)(['$rootScope', '$compile', function(scope, compile){
+      scope.$apply(function(){
+        compile(isString(autobind) ? document.getElementById(autobind) : document)(scope);
+      });
+    }]);
   }
 }
 
@@ -1017,13 +1026,11 @@ function assertArgFn(arg, name) {
 
 function publishExternalAPI(angular){
   extend(angular, {
-    // disabled for now until we agree on public name
-    //'annotate': annotate,
     'copy': copy,
     'extend': extend,
     'equals': equals,
     'forEach': forEach,
-    'injector': createInjector,
+    'injector': function(){ return createInjector(arguments, angularModules); },
     'noop':noop,
     'bind':bind,
     'toJson': toJson,
@@ -1040,6 +1047,15 @@ function publishExternalAPI(angular){
     'isDate': isDate,
     'lowercase': lowercase,
     'uppercase': uppercase
+  });
+  
+  angularModules.NG = ngModule;
+}
+
+ngModule.$inject = ['$provide'];
+function ngModule($provide) {
+  forEach(angularService, function(factory, name){
+    $provide.factory(name, factory);
   });
 }
 

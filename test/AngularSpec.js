@@ -375,9 +375,9 @@ describe('angular', function() {
 
 
   describe('angular service', function() {
-    it('should override services', inject(function(service){
-      service('fake', function() { return 'old'; });
-      service('fake', function() { return 'new'; });
+    it('should override services', inject(function($provide){
+      $provide.value('fake', 'old');
+      $provide.value('fake', 'new');
     }, function(fake) {
       expect(fake).toEqual('new');
     }));
@@ -401,22 +401,23 @@ describe('angular', function() {
       expect(result.third).toBeTruthy();
     });
 
-    it('should inject dependencies specified by $inject', function() {
-      angular.service('svc1', function() { return 'svc1'; });
-      angular.service('svc2', function(svc1) { return 'svc2-' + svc1; }, {$inject: ['svc1']});
-      expect(createInjector()('svc2')).toEqual('svc2-svc1');
-    });
-
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
-      angular.service('svc1', function() { return 'svc1'; });
-      angular.service('svc2', function(foo) { return 'svc2-' + foo; }, {$inject: ['svc1']});
-      expect(createInjector()('svc2')).toEqual('svc2-svc1');
+      expect(angular.injector(function($provide){
+        $provide.factory('svc1', function() { return 'svc1'; });
+        $provide.factory('svc2', ['svc1', function(s) { return 'svc2-' + s; }]);
+      })('svc2')).toEqual('svc2-svc1');
     });
 
     it('should eagerly instantiate a service if $eager is true', function() {
       var log = [];
-      angular.service('svc1', function() { log.push('svc1'); }, {$eager: true});
-      createInjector(angularService);
+      angular.injector(function($provide){
+        $provide.service('svc1', function() {
+          this.$get = function(){
+            log.push('svc1');
+          }
+          this.$eager = true;
+        });
+      });
       expect(log).toEqual(['svc1']);
     });
   });

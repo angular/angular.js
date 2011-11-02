@@ -131,7 +131,7 @@ angularWidget('select', function(element){
   this.directives(true);
   this.descend(true);
   return element.attr('ng:model') &&
-      annotate('$formFactory', '$compile', function($formFactory, $compile, selectElement){
+      ['$formFactory', '$compile', '$element', function($formFactory, $compile, selectElement){
     var modelScope = this,
         match,
         form = $formFactory.forElement(selectElement),
@@ -433,5 +433,5 @@ angularWidget('select', function(element){
         }
       };
     }
-  });
+  }];
 });

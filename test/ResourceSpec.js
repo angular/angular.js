@@ -4,9 +4,9 @@ describe("resource", function() {
   var resource, CreditCard, callback;
 
   beforeEach(inject(
-    function(service) {
-      service('$xhr.error', function(){return jasmine.createSpy('xhr.error')});
-      service.alias('$xhr.error', '$xhrError');
+    function($provide) {
+      $provide.value('$xhr.error', jasmine.createSpy('xhr.error'));
+      $provide.factory('$xhrError', ['$xhr.error', identity]);
     },
     function($xhr) {
       resource = new ResourceFactory($xhr);

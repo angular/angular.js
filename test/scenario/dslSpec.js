@@ -10,7 +10,7 @@ describe("angular.scenario.dsl", function() {
       document: _jQuery("<div></div>"),
       angular: new angular.scenario.testing.MockAngular()
     };
-    $root = angular.injector()('$rootScope');
+    $root = angular.injector('NG')('$rootScope');
     $root.emit = function(eventName) {
       eventLog.push(eventName);
     };

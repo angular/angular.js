@@ -3,13 +3,11 @@
 describe('$xhr.cache', function() {
   var log;
 
-  beforeEach(inject(function(service) {
-    service('$xhr.error', function(){
-      return jasmine.createSpy('$xhr.error');
-    });
-    service.alias('$xhr.cache', '$xhrCache');
-    service.alias('$xhr.bulk', '$xhrBulk');
-    service.alias('$xhr.error', '$xhrError');
+  beforeEach(inject(function($provide) {
+    $provide.value('$xhr.error', jasmine.createSpy('$xhr.error'));
+    $provide.factory('$xhrError', ['$xhr.error', identity]);
+    $provide.factory('$xhrBulk', ['$xhr.bulk', identity]);
+    $provide.factory('$xhrCache', ['$xhr.cache', identity]);
     log = '';
   }));
 

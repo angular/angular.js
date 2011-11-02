@@ -56,7 +56,7 @@
 angularWidget('form', function(form){
   this.descend(true);
   this.directives(true);
-  return annotate('$formFactory', function($formFactory, formElement) {
+  return ['$formFactory', '$element', function($formFactory, formElement) {
     var name = formElement.attr('name'),
         parentForm = $formFactory.forElement(formElement),
         form = $formFactory(parentForm);
@@ -74,7 +74,7 @@ angularWidget('form', function(form){
         formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
       });
     }
-  });
+  }];
 });
 
 angularWidget('ng:form', angularWidget('form'));

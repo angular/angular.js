@@ -90,7 +90,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return extend(function(xhr, element){
+    return ['$xhr.cache', '$element', function(xhr, element){
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -129,7 +129,7 @@ angularWidget('ng:include', function(element){
           element.html('');
         }
       });
-    }, {$inject:['$xhr.cache']});
+    }];
   }
 });
 
@@ -555,7 +555,7 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return annotate('$xhr.cache', '$route', function($xhr, $route, element){
+    return ['$xhr.cache', '$route', '$element', function($xhr, $route, element){
       var template;
       var changeCounter = 0;
 
@@ -578,7 +578,7 @@ angularWidget('ng:view', function(element) {
           element.html('');
         }
       });
-    });
+    }];
   } else {
     compiler.descend(true);
     compiler.directives(true);
@@ -759,7 +759,7 @@ angularWidget('ng:pluralize', function(element) {
       whenExp = element.attr('when'),
       offset = element.attr('offset') || 0;
 
-  return annotate('$locale', function($locale, element) {
+  return ['$locale', '$element', function($locale, element) {
     var scope = this,
         whens = scope.$eval(whenExp),
         whensExpFns = {};
@@ -783,5 +783,5 @@ angularWidget('ng:pluralize', function(element) {
     }, function(scope, newVal) {
       element.text(newVal);
     });
-  });
+  }];
 });

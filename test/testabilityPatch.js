@@ -88,33 +88,9 @@ function inject(){
   var blockFns = sliceArgs(arguments);
   return function(){
     var spec = this;
+    spec.$injector = spec.$injector || angular.injector('NG');
     angular.forEach(blockFns, function(fn){
-      fn.$inject = inferInjectionArgs(fn);
-      if (equals(fn.$inject, [])) {
-        fn.apply(spec);
-      } else if (equals(fn.$inject, ['service'])) {
-        if (spec.$injector) {
-          throw Error('$injector already created for this test');
-        }
-        if (!spec.$service) {
-          spec.$service = function(name, fn) {
-            if (fn) { spec.$service[name] = fn; }
-            return spec.$service[name];
-          }
-          spec.$service.alias = function (name, alias) {
-            spec.$service(alias, extend(function(x){ return x; }, {$inject:[name]}));
-          };
-          forEach(angularService, function(value, key){
-            spec.$service(key, value);
-          });
-        }
-        fn.call(spec, spec.$service);
-      } else {
-        if (!spec.$injector) {
-          spec.$injector = angular.injector(spec.$service || angular.service);
-        }
-        spec.$injector.invoke(spec, fn);
-      }
+      spec.$injector.invoke(spec, fn);
     });
   };
 }

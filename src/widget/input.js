@@ -569,7 +569,7 @@ angularInputType('radio', function(inputElement) {
 
 
 function numericRegexpInputType(regexp, error) {
-  return function(inputElement) {
+  return ['$element', function(inputElement) {
     var widget = this,
         min = 1 * (inputElement.attr('min') || Number.MIN_VALUE),
         max = 1 * (inputElement.attr('max') || Number.MAX_VALUE);
@@ -598,7 +598,7 @@ function numericRegexpInputType(regexp, error) {
         widget.$viewValue = '' + widget.$modelValue;
       }
     };
-  };
+  }];
 }
 
 
@@ -713,7 +713,7 @@ angularWidget('input', function(inputElement){
   this.descend(true);
   var modelExp = inputElement.attr('ng:model');
   return modelExp &&
-    annotate('$defer', '$formFactory', function($defer, $formFactory, inputElement){
+    ['$defer', '$formFactory', '$element', function($defer, $formFactory, inputElement){
       var form = $formFactory.forElement(inputElement),
           // We have to use .getAttribute, since jQuery tries to be smart and use the
           // type property. Trouble is some browser change unknown to text.
@@ -761,14 +761,16 @@ angularWidget('input', function(inputElement){
         }
       }
 
-      !TypeController.$inject && (TypeController.$inject = []);
+      //TODO(misko): setting $inject is a hack
+      !TypeController.$inject && (TypeController.$inject = ['$element']);
       widget = form.$createWidget({
           scope: modelScope,
           model: modelExp,
           onChange: inputElement.attr('ng:change'),
           alias: inputElement.attr('name'),
           controller: TypeController,
-          controllerArgs: [inputElement]});
+          controllerArgs: {$element: inputElement}
+      });
 
       watchElementProperty(this, widget, 'value', inputElement);
       watchElementProperty(this, widget, 'required', inputElement);
@@ -830,7 +832,7 @@ angularWidget('input', function(inputElement){
           }
         });
       }
-    });
+    }];
 });
 
 

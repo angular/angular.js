@@ -9,12 +9,12 @@ describe('$log', function() {
   function info() { logger+= 'info;'; }
   function error() { logger+= 'error;'; }
 
-  beforeEach(inject(function(service){
+  beforeEach(inject(function($provide){
     $window = {};
     logger = '';
-    service('$log', $logFactory);
-    service('$exceptionHandler', valueFn(rethrow));
-    service('$window', valueFn($window));
+    $provide.factory('$log', $logFactory);
+    $provide.value('$exceptionHandler', rethrow);
+    $provide.value('$window', $window);
   }));
 
   it('should use console if present', inject(
