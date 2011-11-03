@@ -41,23 +41,13 @@ describe("directive", function() {
       expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
     }));
 
-    it('should set element element', inject(function($rootScope, $compile) {
-      angularFilter.myElement = function() {
+    it('should set element element', inject(function($rootScope, $compile, $provide) {
+      $provide.filter('myElement', valueFn(function() {
         return jqLite('<a>hello</a>');
-      };
+      }));
       var element = $compile('<div ng:bind="0|myElement"></div>')($rootScope);
       $rootScope.$digest();
       expect(lowercase(element.html())).toEqual('<a>hello</a>');
-    }));
-
-    it('should have $element set to current bind element', inject(function($rootScope, $compile) {
-      angularFilter.myFilter = function() {
-        this.$element.addClass("filter");
-        return 'HELLO';
-      };
-      var element = $compile('<div>before<div ng:bind="0|myFilter"></div>after</div>')($rootScope);
-      $rootScope.$digest();
-      expect(sortedHtml(element)).toEqual('<div>before<div class="filter" ng:bind="0|myFilter">HELLO</div>after</div>');
     }));
 
 
@@ -83,12 +73,12 @@ describe("directive", function() {
       expect(element.text()).toEqual('Hello Misko!');
     }));
 
-    it('should have $element set to current bind element', inject(function($rootScope, $compile) {
+    it('should have $element set to current bind element', inject(function($rootScope, $compile, $provide) {
       var innerText;
-      angularFilter.myFilter = function(text) {
+      $provide.filter('myFilter', valueFn(function(text) {
         innerText = innerText || this.$element.text();
         return text;
-      };
+      }));
       var element = $compile('<div>before<span ng:bind-template="{{\'HELLO\'|myFilter}}">INNER</span>after</div>')($rootScope);
       $rootScope.$digest();
       expect(element.text()).toEqual("beforeHELLOafter");

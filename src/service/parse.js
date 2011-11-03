@@ -217,7 +217,7 @@ function lex(text){
 
 /////////////////////////////////////////
 
-function parser(text, json){
+function parser(text, json, $filter){
   var ZERO = valueFn(0),
       value,
       tokens = lex(text),
@@ -227,8 +227,7 @@ function parser(text, json){
       fieldAccess = _fieldAccess,
       objectIndex = _objectIndex,
       filterChain = _filterChain,
-      functionIdent = _functionIdent,
-      pipeFunction = _pipeFunction;
+      functionIdent = _functionIdent;
   if(json){
     // The extra level of aliasing is here, just in case the lexer misses something, so that
     // we prevent any accidental execution in JSON.
@@ -239,7 +238,6 @@ function parser(text, json){
       assignable =
       filterChain =
       functionIdent =
-      pipeFunction =
         function() { throwError("is not valid json", {text:text, index:0}); };
     value = primary();
   } else {
@@ -346,13 +344,9 @@ function parser(text, json){
   }
 
   function filter() {
-    return pipeFunction(angularFilter);
-  }
-
-  function _pipeFunction(fnScope){
-    var fn = functionIdent(fnScope);
+    var token = expect();
+    var fn = $filter(token.text);
     var argsFn = [];
-    var token;
     while(true) {
       if ((token = expect(':'))) {
         argsFn.push(expression());
@@ -719,13 +713,13 @@ function getterFn(path) {
 
 function $ParseProvider() {
   var cache = {};
-  this.$get = ['$injector', function($injector) {
+  this.$get = ['$filter', function($filter) {
     return function(exp) {
       switch(typeof exp) {
         case 'string':
           return cache.hasOwnProperty(exp)
             ? cache[exp]
-            : cache[exp] =  parser(exp);
+            : cache[exp] =  parser(exp, false, $filter);
         case 'function':
           return exp;
         default:
@@ -735,10 +729,14 @@ function $ParseProvider() {
   }];
 }
 
+function noFilters(){
+  throw Error('Filters not supported!');
+}
+
 // This is a special access for JSON parser which bypasses the injector
 var parseJson = function(json) {
-  return parser(json, true);
+  return parser(json, true, noFilters);
 };
 
 // TODO(misko): temporary hack, until we get rid of the type augmentation
-var expressionCompile = new $ParseProvider().$get[1](null);
+var expressionCompile = new $ParseProvider().$get[1](noFilters);

@@ -236,7 +236,7 @@ angularDirective("ng:controller", function(expression){
 angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   return ['$exceptionHandler', '$parse', '$element', function($exceptionHandler, $parse, element) {
-    var exprFn = parser(expression),
+    var exprFn = $parse(expression),
         lastValue = Number.NaN;
 
     this.$watch(function(scope) {
