@@ -25,8 +25,8 @@
  * are expensive to construct.
  */
 function $RootScopeProvider(){
-  this.$get = ['$injector', '$exceptionHandler',
-      function( $injector,  $exceptionHandler){
+  this.$get = ['$injector', '$exceptionHandler', '$parse',
+      function( $injector,   $exceptionHandler,   $parse){
     /**
      * @ngdoc function
      * @name angular.scope
@@ -416,10 +416,7 @@ function $RootScopeProvider(){
        * @returns {*} The result of evaluating the expression.
        */
       $eval: function(expr) {
-        var fn = isString(expr)
-          ? expressionCompile(expr)
-          : expr || noop;
-        return fn(this);
+        return $parse(expr)(this);
       },
 
       /**

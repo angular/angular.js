@@ -219,6 +219,7 @@ function lex(text){
 
 function parser(text, json){
   var ZERO = valueFn(0),
+      value,
       tokens = lex(text),
       assignment = _assignment,
       assignable = logicalOR,
@@ -240,24 +241,14 @@ function parser(text, json){
       functionIdent =
       pipeFunction =
         function() { throwError("is not valid json", {text:text, index:0}); };
+    value = primary();
+  } else {
+    value = statements();
   }
-  //TODO: Shouldn't all of the public methods have assertAllConsumed?
-  //TODO: I think these should be public as part of the parser api instead of scope.$eval().
-  return {
-      assignable: assertConsumed(assignable),
-      primary: assertConsumed(primary),
-      statements: assertConsumed(statements)
-  };
-
-  function assertConsumed(fn) {
-    return function() {
-      var value = fn();
-      if (tokens.length !== 0) {
-        throwError("is an unexpected token", tokens[0]);
-      }
-      return value;
-    };
+  if (tokens.length !== 0) {
+    throwError("is an unexpected token", tokens[0]);
   }
+  return value;
 
   ///////////////////////////////////
   function throwError(msg, token) {
@@ -680,7 +671,6 @@ function getter(obj, path, bindFnToScope) {
 }
 
 var getterFnCache = {},
-    compileCache = {},
     JS_KEYWORDS = {};
 
 forEach(
@@ -727,13 +717,28 @@ function getterFn(path) {
 
 ///////////////////////////////////
 
-// TODO(misko): Deprecate? Remove!
-// I think that compilation should be a service.
-function expressionCompile(exp) {
-  if (isFunction(exp)) return exp;
-  var fn = compileCache[exp];
-  if (!fn) {
-    fn = compileCache[exp] =  parser(exp).statements();
-  }
-  return fn;
+function $ParseProvider() {
+  var cache = {};
+  this.$get = ['$injector', function($injector) {
+    return function(exp) {
+      switch(typeof exp) {
+        case 'string':
+          return cache.hasOwnProperty(exp)
+            ? cache[exp]
+            : cache[exp] =  parser(exp);
+        case 'function':
+          return exp;
+        default:
+          return noop;
+      }
+    };
+  }];
 }
+
+// This is a special access for JSON parser which bypasses the injector
+var parseJson = function(json) {
+  return parser(json, true);
+};
+
+// TODO(misko): temporary hack, until we get rid of the type augmentation
+var expressionCompile = new $ParseProvider().$get[1](null);

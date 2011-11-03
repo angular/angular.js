@@ -98,8 +98,9 @@
  */
 
 function $FormFactoryProvider() {
-  this.$get = ['$rootScope', function($rootScope) {
-
+  var $parse;
+  this.$get = ['$rootScope', '$parse',  function($rootScope, $parse_) {
+    $parse = $parse_;
     /**
      * @ngdoc proprety
      * @name rootForm
@@ -352,9 +353,13 @@ function $FormFactoryProvider() {
         modelScope = params.scope,
         onChange = params.onChange,
         alias = params.alias,
-        scopeGet = parser(params.model).assignable(),
+        scopeGet = $parse(params.model),
         scopeSet = scopeGet.assign,
         widget = this.$new(params.controller, params.controllerArgs);
+
+    if (!scopeSet) {
+      throw Error("Expression '" + params.model + "' is not assignable!");
+    };
 
     widget.$error = {};
     // Set the state to something we know will change to get the process going.

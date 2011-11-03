@@ -49,8 +49,6 @@ function dumpScope(scope, offset) {
 publishExternalAPI(angular)
 beforeEach(function() {
   publishExternalAPI(angular)
-  // This is to reset parsers global cache of expressions.
-  compileCache = {};
 
   // workaround for IE bug https://plus.google.com/104744871076396904202/posts/Kqjuj6RSbbT
   // IE overwrite window.jQuery with undefined because of empty jQuery var statement, so we have to

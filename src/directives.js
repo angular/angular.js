@@ -235,9 +235,10 @@ angularDirective("ng:controller", function(expression){
  */
 angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
-  var exprFn = parser(expression).statements();
-  return ['$exceptionHandler', '$element', function($exceptionHandler, element) {
-    var lastValue = Number.NaN;
+  return ['$exceptionHandler', '$parse', '$element', function($exceptionHandler, $parse, element) {
+    var exprFn = parser(expression),
+        lastValue = Number.NaN;
+
     this.$watch(function(scope) {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
       var value, html, isHtml, isDomElement,
