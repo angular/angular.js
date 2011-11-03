@@ -41,7 +41,7 @@ function fromJson(json, useNative) {
     if (useNative && window.JSON && window.JSON.parse) {
       obj = JSON.parse(json);
     } else {
-      obj = parser(json, true).primary()();
+      obj = parseJson(json, true)();
     }
     return transformDates(obj);
   } catch (e) {

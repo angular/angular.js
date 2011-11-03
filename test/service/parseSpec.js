@@ -413,12 +413,12 @@ describe('parser', function() {
 
 
   describe('assignable', function() {
-    it('should expose assignment function', function() {
-      var fn = parser('a').assignable();
+    it('should expose assignment function', inject(function($parse) {
+      var fn = $parse('a');
       expect(fn.assign).toBeTruthy();
       var scope = {};
       fn.assign(scope, 123);
       expect(scope).toEqual({a:123});
-    });
+    }));
   });
 });

@@ -19,7 +19,7 @@ angularFiles = {
     'src/service/location.js',
     'src/service/log.js',
     'src/service/resource.js',
-    'src/service/parser.js',
+    'src/service/parse.js',
     'src/service/route.js',
     'src/service/routeParams.js',
     'src/service/scope.js',
