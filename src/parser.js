@@ -727,11 +727,6 @@ function getterFn(path) {
 
 ///////////////////////////////////
 
-// TODO(misko): Should this function be public?
-function compileExpr(expr) {
-  return parser(expr).statements();
-}
-
 // TODO(misko): Deprecate? Remove!
 // I think that compilation should be a service.
 function expressionCompile(exp) {
