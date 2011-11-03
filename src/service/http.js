@@ -261,7 +261,9 @@ angularServiceInject('$http', function($httpBackend, $browser, $exceptionHandler
       forEach(callbacks, function(callback) {
         if (callback.regexp.test(strStatus)) {
           try {
-            callback.fn.call(null, response, status, headers);
+            // use local var to call it without context
+            var fn = callback.fn;
+            fn(response, status, headers);
           } catch(e) {
             $exceptionHandler(e);
           }
