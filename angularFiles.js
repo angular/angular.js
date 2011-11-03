@@ -28,6 +28,7 @@ angularFiles = {
     'src/service/window.js',
     'src/service/http.js',
     'src/service/httpBackend.js',
+    'src/service/httpBulk.js',
     'src/service/locale.js',
     'src/directives.js',
     'src/markups.js',
