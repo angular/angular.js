@@ -312,7 +312,7 @@ function $RootScopeProvider(){
               try {
                 current.$eval(asyncQueue.shift());
               } catch (e) {
-                current.$service('$exceptionHandler')(e);
+                $exceptionHandler(e);
               }
             }
             if ((watchers = current.$$watchers)) {

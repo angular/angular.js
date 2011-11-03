@@ -236,7 +236,7 @@ angularDirective("ng:controller", function(expression){
 angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   var exprFn = parser(expression).statements();
-  return function(element) {
+  return ['$exceptionHandler', '$element', function($exceptionHandler, element) {
     var lastValue = Number.NaN;
     this.$watch(function(scope) {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
@@ -269,7 +269,7 @@ angularDirective("ng:bind", function(expression, element){
           }
         }
       } catch (e) {
-        scope.$service('$exceptionHandler')(e);
+        $exceptionHandler(e);
       } finally {
         if (hadOwnElement) {
           scope.$element = oldElement;
@@ -278,7 +278,7 @@ angularDirective("ng:bind", function(expression, element){
         }
       }
     });
-  };
+  }];
 });
 
 var bindTemplateCache = {};
