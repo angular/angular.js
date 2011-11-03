@@ -107,7 +107,7 @@ ResourceFactory.prototype = {
         }
 
         var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-        self.$http({
+        var future = self.$http({
           method: action.method,
           url: route.url(extend({}, extractParams(data), action.params || {}, params)),
           data: data
@@ -123,7 +123,9 @@ ResourceFactory.prototype = {
               }
             }
             (success||noop)(value);
-          }).on('error', error || action.verifyCache);
+          });
+
+        if (error) future.on('error', error);
 
         return value;
       };
