@@ -27,9 +27,8 @@ var OPERATORS = {
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-function lex(text, parseStringsForObjects){
-  var dateParseLength = parseStringsForObjects ? DATE_ISOSTRING_LN : -1,
-      tokens = [],
+function lex(text){
+  var tokens = [],
       token,
       index = 0,
       json = [],
@@ -199,12 +198,13 @@ function lex(text, parseStringsForObjects){
         escape = true;
       } else if (ch == quote) {
         index++;
-        tokens.push({index:start, text:rawString, string:string, json:true,
-          fn:function() {
-            return (string.length == dateParseLength)
-              ? angular['String']['toDate'](string)
-              : string;
-          }});
+        tokens.push({
+          index:start,
+          text:rawString,
+          string:string,
+          json:true,
+          fn:function() { return string; }
+        });
         return;
       } else {
         string += ch;
@@ -219,7 +219,7 @@ function lex(text, parseStringsForObjects){
 
 function parser(text, json){
   var ZERO = valueFn(0),
-      tokens = lex(text, json),
+      tokens = lex(text),
       assignment = _assignment,
       assignable = logicalOR,
       functionCall = _functionCall,

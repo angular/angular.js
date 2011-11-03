@@ -40,15 +40,17 @@ function fromJson(json, useNative) {
   try {
     if (useNative && window.JSON && window.JSON.parse) {
       obj = JSON.parse(json);
-      return transformDates(obj);
+    } else {
+      obj = parser(json, true).primary()();
     }
-    return parser(json, true).primary()();
+    return transformDates(obj);
   } catch (e) {
     error("fromJson error: ", json, e);
     throw e;
   }
 
   // TODO make forEach optionally recursive and remove this function
+  // TODO(misko): remove this once the $http service is checked in.
   function transformDates(obj) {
     if (isString(obj) && obj.length === DATE_ISOSTRING_LN) {
       return angularString.toDate(obj);
