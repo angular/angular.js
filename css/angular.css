@@ -4,10 +4,6 @@
   display: none;
 }
 
-.ng-format-negative {
-  color: red;
-}
-
 ng\:form {
   display: block;
 }

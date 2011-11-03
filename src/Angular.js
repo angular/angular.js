@@ -109,8 +109,6 @@ var _undefined        = undefined,
     angularDirective  = extensionMap(angular, 'directive', lowercase),
     /** @name angular.widget */
     angularWidget     = extensionMap(angular, 'widget', shivForIE),
-    /** @name angular.filter */
-    angularFilter     = extensionMap(angular, 'filter'),
     /** @name angular.service */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
     /** @name angular.service */
@@ -1054,6 +1052,7 @@ function ngModule($provide, $injector) {
   $provide.service('$defer', $DeferProvider);
   $provide.service('$document', $DocumentProvider);
   $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
+  $provide.service('$filter', $FilterProvider);
   $provide.service('$formFactory', $FormFactoryProvider);
   $provide.service('$locale', $LocaleProvider);
   $provide.service('$location', $LocationProvider);

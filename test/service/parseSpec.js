@@ -191,24 +191,19 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', function() {
-    angular.filter.substring = function(input, start, end) {
+  it('should parse filters', inject(function($provide) {
+    $provide.filter('substring', valueFn(function(input, start, end) {
       return input.substring(start, end);
-    };
-
-    angular.filter.upper = {_case: function(input) {
-      return input.toUpperCase();
-    }};
+    }));
 
     expect(function() {
-      scope.$eval("1|nonExistant");
-    }).toThrow(new Error("Syntax Error: Token 'nonExistant' should be a function at column 3 of the expression [1|nonExistant] starting at [nonExistant]."));
+      scope.$eval("1|nonexistent");
+    }).toThrow(new Error("Unknown provider for 'nonexistent$Filter'."));
 
     scope.offset =  3;
-    expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
     expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
-    expect(scope.$eval("'abcd'|substring:1:3|upper._case")).toEqual("BC");
-  });
+    expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
+  }));
 
   it('should access scope', function() {
     scope.a =  123;
