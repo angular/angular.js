@@ -246,8 +246,7 @@ function parser(text, json){
   return {
       assignable: assertConsumed(assignable),
       primary: assertConsumed(primary),
-      statements: assertConsumed(statements),
-      filter: assertConsumed(filter)
+      statements: assertConsumed(statements)
   };
 
   function assertConsumed(fn) {
