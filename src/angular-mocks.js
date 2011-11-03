@@ -631,8 +631,10 @@ angular.module.ngMock.$HttpBackendProvider = function() {
           return method == 'JSONP' ? undefined : xhr;
         }
       }
-      throw wasExpected ? Error('No response defined !') :
-                          Error('Unexpected request: ' + method + ' ' + url);
+      throw wasExpected ?
+          Error('No response defined !') :
+          Error('Unexpected request: ' + method + ' ' + url + '\n' +
+                (expectation ? 'Expected ' + expectation : 'No more request expected'));
     }
 
     $httpBackend.when = function(method, url, data, headers) {

@@ -399,7 +399,7 @@ describe('mocks', function() {
       hb.when('GET', '/url1').respond(200, 'content');
       expect(function() {
         hb('GET', '/xxx');
-      }).toThrow('Unexpected request: GET /xxx');
+      }).toThrow('Unexpected request: GET /xxx\nNo more request expected');
     });
 
 
@@ -506,7 +506,7 @@ describe('mocks', function() {
 
       expect(function() {
         hb('GET', '/url2', null, noop, {});
-      }).toThrow('Unexpected request: GET /url2');
+      }).toThrow('Unexpected request: GET /url2\nExpected GET /url1');
     });
 
 
