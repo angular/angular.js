@@ -5,8 +5,9 @@ describe('widget: input', function() {
   var $compile = null;
   var doc = null;
 
-  beforeEach(inject(function($rootScope, $compile) {
+  beforeEach(inject(function($rootScope, $compile, $browser) {
     scope = $rootScope;
+    defer = $browser.defer;
     set$compile($compile);
     element = null;
     compile = function(html, parent) {
@@ -18,7 +19,6 @@ describe('widget: input', function() {
       }
       $compile(element)(scope);
       scope.$apply();
-      defer = scope.$service('$browser').defer;
       return scope;
     };
   }));
@@ -88,7 +88,7 @@ describe('widget: input', function() {
       };
       inputElement.val(' a ');
       browserTrigger(inputElement);
-      scope.$service('$browser').defer.flush();
+      defer.flush();
       expect(scope.name).toEqual('a');
       expect(log).toEqual('change();');
     });
@@ -128,7 +128,7 @@ describe('widget: input', function() {
 
         element.val('Kai');
         browserTrigger(element, 'change');
-        scope.$service('$browser').defer.flush();
+        defer.flush();
         expect(scope.name).toEqual('Kai');
       });
 
@@ -140,7 +140,7 @@ describe('widget: input', function() {
         expect(scope.name).toEqual("Misko");
         expect(scope.count).toEqual(0);
         browserTrigger(element, 'keydown');
-        scope.$service('$browser').defer.flush();
+        defer.flush();
         expect(scope.name).toEqual("Misko");
         expect(scope.count).toEqual(0);
       });
@@ -166,7 +166,7 @@ describe('widget: input', function() {
 
           element.val('1, 2, 3');
           browserTrigger(element);
-          scope.$service('$browser').defer.flush();
+          defer.flush();
           expect(scope.list).toEqual(['1', '2', '3']);
         });
 
@@ -191,7 +191,7 @@ describe('widget: input', function() {
           } catch (e){}
           scope.$element.val('123X');
           browserTrigger(scope.$element, 'change');
-          scope.$service('$browser').defer.flush();
+          defer.flush();
           expect(scope.$element.val()).toEqual('123X');
           expect(scope.age).toEqual(123);
           expect(scope.$element).toBeInvalid();
@@ -206,25 +206,25 @@ describe('widget: input', function() {
 
           scope.$element.val('a ');
           browserTrigger(scope.$element, 'change');
-          scope.$service('$browser').defer.flush();
+          defer.flush();
           expect(scope.$element.val()).toEqual('a ');
           expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a ,');
           browserTrigger(scope.$element, 'change');
-          scope.$service('$browser').defer.flush();
+          defer.flush();
           expect(scope.$element.val()).toEqual('a ,');
           expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a , ');
           browserTrigger(scope.$element, 'change');
-          scope.$service('$browser').defer.flush();
+          defer.flush();
           expect(scope.$element.val()).toEqual('a , ');
           expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a , b');
           browserTrigger(scope.$element, 'change');
-          scope.$service('$browser').defer.flush();
+          defer.flush();
           expect(scope.$element.val()).toEqual('a , b');
           expect(scope.list).toEqual(['a', 'b']);
         });
@@ -293,9 +293,9 @@ describe('widget: input', function() {
     });
 
 
-    it("should process required", function() {
+    it("should process required", inject(function($formFactory) {
       compile('<input type="text" ng:model="price" name="p" required/>', jqLite(document.body));
-      expect(scope.$service('$formFactory').rootForm.p.$required).toBe(true);
+      expect($formFactory.rootForm.p.$required).toBe(true);
       expect(element.hasClass('ng-invalid')).toBeTruthy();
 
       scope.price = 'xxx';
@@ -304,9 +304,9 @@ describe('widget: input', function() {
 
       element.val('');
       browserTrigger(element);
-      scope.$service('$browser').defer.flush();
+      defer.flush();
       expect(element.hasClass('ng-invalid')).toBeTruthy();
-    });
+    }));
 
 
     it('should allow bindings on ng:required', function() {
@@ -328,7 +328,7 @@ describe('widget: input', function() {
 
       element.val('abc');
       browserTrigger(element);
-      scope.$service('$browser').defer.flush();
+      defer.flush();
       expect(element).toBeValid();
     });
 
@@ -458,18 +458,18 @@ describe('widget: input', function() {
 
 
   describe('scope declaration', function() {
-    it('should read the declaration from scope', inject(function($rootScope, $compile) {
-      var input, $formFactory;
+    it('should read the declaration from scope', inject(function($rootScope, $compile, $formFactory) {
+      var input, formFactory;
       var element = angular.element('<input type="@MyType" ng:model="abc">');
       $rootScope.MyType = function($f, i) {
         input = i;
-        $formFactory = $f;
+        formFactory = $f;
       };
       $rootScope.MyType.$inject = ['$formFactory', '$element'];
 
       $compile(element)($rootScope);
 
-      expect($formFactory).toBe($rootScope.$service('$formFactory'));
+      expect(formFactory).toBe($formFactory);
       expect(input[0]).toBe(element[0]);
     }));
 
@@ -523,7 +523,7 @@ describe('widget: input', function() {
           if (value != undefined) {
             scope.$element.val(value);
             browserTrigger(element, 'keydown');
-            scope.$service('$browser').defer.flush();
+            defer.flush();
           }
           scope.$digest();
         }
@@ -587,7 +587,7 @@ describe('widget: input', function() {
 
       el.val('xx');
       browserTrigger(el, 'keydown');
-      expect(function() { $rootScope.$service('$browser').defer.flush(); }).
+      expect(function() { defer.flush(); }).
         toThrow('Expected fooRegexp to be a RegExp but was undefined');
 
       dealoc(el);

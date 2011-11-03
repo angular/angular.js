@@ -10,7 +10,8 @@ describe('$route', function() {
       log += '<init>;';
     }
 
-    $route.when('/Book/:book/Chapter/:chapter', {controller: BookChapter, template: 'Chapter.html'});
+    $route.when('/Book/:book/Chapter/:chapter',
+      {controller: BookChapter, template: 'Chapter.html'});
     $route.when('/Blank');
     $rootScope.$on('$beforeRouteChange', function(event, next, current) {
       log += 'before();';
@@ -50,7 +51,8 @@ describe('$route', function() {
   }));
 
 
-  it('should match a route that contains special chars in the path', inject(function($route, $location, $rootScope) {
+  it('should match a route that contains special chars in the path',
+      inject(function($route, $location, $rootScope) {
     $route.when('/$test.23/foo(bar)/:baz', {template: 'test.html'});
 
     $location.path('/test');
@@ -71,7 +73,8 @@ describe('$route', function() {
   }));
 
 
-  it('should change route even when only search param changes', inject(function($route, $location, $rootScope) {
+  it('should change route even when only search param changes',
+      inject(function($route, $location, $rootScope) {
     var callback = jasmine.createSpy('onRouteChange');
 
     $route.when('/test', {template: 'test.html'});
@@ -105,7 +108,8 @@ describe('$route', function() {
   }));
 
 
-  it('should handle unknown routes with "otherwise" route definition', inject(function($route, $location, $rootScope) {
+  it('should handle unknown routes with "otherwise" route definition',
+      inject(function($route, $location, $rootScope) {
     var onChangeSpy = jasmine.createSpy('onChange');
 
     function NotFoundCtrl() {this.notFoundProp = 'not found!';}
@@ -229,7 +233,8 @@ describe('$route', function() {
     }));
 
 
-    it('should allow custom redirectTo function to be used', inject(function($route, $location, $rootScope) {
+    it('should allow custom redirectTo function to be used',
+        inject(function($route, $location, $rootScope) {
       $route.when('/bar/:id/:subid/:subsubid', {template: 'bar.html'});
       $route.when('/foo/:id', {redirectTo: customRedirectFn});
 
@@ -267,9 +272,8 @@ describe('$route', function() {
 
   describe('reloadOnSearch', function() {
     it('should reload a route when reloadOnSearch is enabled and .search() changes',
-        inject(function($route, $location, $rootScope) {
-      var $routeParams = $rootScope.$service('$routeParams'),
-          reloaded = jasmine.createSpy('route reload');
+        inject(function($route, $location, $rootScope, $routeParams) {
+      var reloaded = jasmine.createSpy('route reload');
 
       $route.when('/foo', {controller: FooCtrl});
       $rootScope.$on('$beforeRouteChange', reloaded);
@@ -399,9 +403,9 @@ describe('$route', function() {
 
     describe('reload', function() {
 
-      it('should reload even if reloadOnSearch is false', inject(function($route, $location, $rootScope) {
-        var $routeParams = $rootScope.$service('$routeParams'),
-            count = 0;
+      it('should reload even if reloadOnSearch is false',
+          inject(function($route, $location, $rootScope, $routeParams) {
+        var count = 0;
 
         $route.when('/bar/:barId', {controller: FooCtrl, reloadOnSearch: false});
 

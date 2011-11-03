@@ -189,7 +189,7 @@ describe('Binder', function() {
     assertTrue(html.indexOf('action="foo();"') > 0 );
   });
 
-  it('RepeaterAdd', inject(function($rootScope, $compile) {
+  it('RepeaterAdd', inject(function($rootScope, $compile, $browser) {
     var element = $compile('<div><input type="text" ng:model="item.x" ng:repeat="item in items"></div>')($rootScope);
     $rootScope.items = [{x:'a'}, {x:'b'}];
     $rootScope.$apply();
@@ -200,7 +200,7 @@ describe('Binder', function() {
 
     first.val('ABC');
     browserTrigger(first, 'keydown');
-    $rootScope.$service('$browser').defer.flush();
+    $browser.defer.flush();
     expect($rootScope.items[0].x).toEqual('ABC');
   }));
 

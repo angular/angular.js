@@ -561,7 +561,7 @@ angular.mock.TzDate = function (offset, timestamp) {
     self[methodName] = function() {
       throw {
         name: "MethodNotImplemented",
-        message: "Method '" + methodName + "' is not implemented in the TzDate mock"
+          message: "Method '" + methodName + "' is not implemented in the TzDate mock"
       };
     };
   });

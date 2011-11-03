@@ -230,10 +230,9 @@ describe("resource", function() {
     expect(person.name).toEqual('misko');
   }));
 
-  it('should return the same object when verifying the cache', inject(function($rootScope, $compile) {
+  it('should return the same object when verifying the cache',
+      inject(function($rootScope, $compile, $browser, $resource) {
     $compile('<div></div>')($rootScope);
-    var $browser = $rootScope.$service('$browser');
-    var $resource = $rootScope.$service('$resource');
     var Person = $resource('/Person/:id', null, {query: {method:'GET', isArray: true, verifyCache: true}});
     $browser.xhr.expectGET('/Person/123').respond('[\n{\n"name":\n"misko"\n}\n]');
     var person = Person.query({id:123});
