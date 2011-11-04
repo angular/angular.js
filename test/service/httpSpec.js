@@ -779,16 +779,22 @@ describe('$http', function() {
 
   describe('cache', function() {
 
+    var cache;
+
+    beforeEach(inject(function($cacheFactory) {
+      cache = $cacheFactory('testCache');
+    }));
+
     function doFirstCacheRequest(method, respStatus, headers) {
       $httpBackend.expect(method || 'GET', '/url').respond(respStatus || 200, 'content', headers);
-      $http({method: method || 'GET', url: '/url', cache: true});
+      $http({method: method || 'GET', url: '/url', cache: cache});
       $httpBackend.flush();
     }
 
-    it('should cache GET request', function() {
+    it('should cache GET request when cache is provided', function() {
       doFirstCacheRequest();
 
-      $http({method: 'get', url: '/url', cache: true}).on('200', callback);
+      $http({method: 'get', url: '/url', cache: cache}).on('200', callback);
       $browser.defer.flush();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -796,11 +802,28 @@ describe('$http', function() {
     });
 
 
+    it('should not cache when cache is not provided', function() {
+      doFirstCacheRequest();
+
+      $httpBackend.expect('GET', '/url').respond();
+      $http({method: 'GET', url: '/url'});
+    });
+
+
+    it('should perform request when cache cleared', function() {
+      doFirstCacheRequest();
+
+      cache.removeAll();
+      $httpBackend.expect('GET', '/url').respond();
+      $http({method: 'GET', url: '/url', cache: cache});
+    });
+
+
     it('should always call callback asynchronously', function() {
       doFirstCacheRequest();
-      $http({method: 'get', url: '/url', cache: true}).on('200', callback);
+      $http({method: 'get', url: '/url', cache: cache}).on('200', callback);
 
-      expect(callback).not.toHaveBeenCalledOnce();
+      expect(callback).not.toHaveBeenCalled();
     });
 
 
@@ -808,7 +831,7 @@ describe('$http', function() {
       doFirstCacheRequest('POST');
 
       $httpBackend.expect('POST', '/url').respond('content2');
-      $http({method: 'POST', url: '/url', cache: true}).on('200', callback);
+      $http({method: 'POST', url: '/url', cache: cache}).on('200', callback);
       $httpBackend.flush();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -820,7 +843,7 @@ describe('$http', function() {
       doFirstCacheRequest('PUT');
 
       $httpBackend.expect('PUT', '/url').respond('content2');
-      $http({method: 'PUT', url: '/url', cache: true}).on('200', callback);
+      $http({method: 'PUT', url: '/url', cache: cache}).on('200', callback);
       $httpBackend.flush();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -832,7 +855,7 @@ describe('$http', function() {
       doFirstCacheRequest('DELETE');
 
       $httpBackend.expect('DELETE', '/url').respond(206);
-      $http({method: 'DELETE', url: '/url', cache: true}).on('206', callback);
+      $http({method: 'DELETE', url: '/url', cache: cache}).on('206', callback);
       $httpBackend.flush();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -843,7 +866,7 @@ describe('$http', function() {
       doFirstCacheRequest('GET', 404);
 
       $httpBackend.expect('GET', '/url').respond('content2');
-      $http({method: 'GET', url: '/url', cache: true}).on('200', callback);
+      $http({method: 'GET', url: '/url', cache: cache}).on('200', callback);
       $httpBackend.flush();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -858,7 +881,7 @@ describe('$http', function() {
         expect(headers('server')).toBe('Apache');
       });
 
-      $http({method: 'GET', url: '/url', cache: true}).on('200', callback);
+      $http({method: 'GET', url: '/url', cache: cache}).on('200', callback);
       $browser.defer.flush();
       expect(callback).toHaveBeenCalledOnce();
     });
@@ -870,9 +893,26 @@ describe('$http', function() {
         expect(status).toBe(201);
       });
 
-      $http({method: 'get', url: '/url', cache: true}).on('2xx', callback);
+      $http({method: 'get', url: '/url', cache: cache}).on('2xx', callback);
       $browser.defer.flush();
       expect(callback).toHaveBeenCalledOnce();
+    });
+
+
+    it('should use cache even if request fired before first response is back', function() {
+      $httpBackend.expect('GET', '/url').respond(201, 'fake-response');
+
+      callback.andCallFake(function(response, status, headers) {
+        expect(response).toBe('fake-response');
+        expect(status).toBe(201);
+      });
+
+      $http({method: 'GET', url: '/url', cache: cache}).on('always', callback);
+      $http({method: 'GET', url: '/url', cache: cache}).on('always', callback);
+
+      $httpBackend.flush();
+      expect(callback).toHaveBeenCalled();
+      expect(callback.callCount).toBe(2);
     });
   });
 
@@ -903,10 +943,13 @@ describe('$http', function() {
     });
 
 
-    it('should remove the request when served from cache', function() {
+    it('should update pending requests even when served from cache', function() {
       $httpBackend.when('GET').respond(200);
 
       $http({method: 'get', url: '/cached', cache: true});
+      $http({method: 'get', url: '/cached', cache: true});
+      expect($http.pendingRequests.length).toBe(2);
+
       $httpBackend.flush();
       expect($http.pendingRequests.length).toBe(0);
 
