@@ -468,7 +468,7 @@ angular.mock.TzDate = function (offset, timestamp) {
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
 
-    this.origDate = angular.String.toDate(timestamp);
+    this.origDate = angular.fromJson(angular.toJson({date:timestamp})).date;
 
     timestamp = this.origDate.getTime();
     if (isNaN(timestamp))

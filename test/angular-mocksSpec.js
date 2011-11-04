@@ -113,7 +113,7 @@ describe('mocks', function() {
 
 
       //from when created from millis
-      var date2 = new angular.mock.TzDate(-1, angular.String.toDate('2009-12-31T23:00:00.000Z').getTime());
+      var date2 = new angular.mock.TzDate(-1, date1.getTime());
       expect(date2.getUTCFullYear()).toBe(2009);
       expect(date2.getUTCMonth()).toBe(11);
       expect(date2.getUTCDate()).toBe(31);

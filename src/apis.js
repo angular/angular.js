@@ -797,7 +797,6 @@ var angularArray = {
   }
 };
 
-var R_ISO8061_STR = /^(\d{4})-(\d\d)-(\d\d)(?:T(\d\d)(?:\:(\d\d)(?:\:(\d\d)(?:\.(\d{3}))?)?)?Z)?$/;
 
 var angularString = {
   'quote':function(string) {
@@ -809,57 +808,10 @@ var angularString = {
                         replace(/\t/g, '\\t').
                         replace(/\v/g, '\\v') +
              '"';
-  },
-  'quoteUnicode':function(string) {
-    var str = angular['String']['quote'](string);
-    var chars = [];
-    for ( var i = 0; i < str.length; i++) {
-      var ch = str.charCodeAt(i);
-      if (ch < 128) {
-        chars.push(str.charAt(i));
-      } else {
-        var encode = "000" + ch.toString(16);
-        chars.push("\\u" + encode.substring(encode.length - 4));
-      }
-    }
-    return chars.join('');
-  },
-
-  /**
-   * Tries to convert input to date and if successful returns the date, otherwise returns the
-   * input.
-   *
-   * @param {string} string
-   * @return {(Date|string)}
-   */
-  'toDate':function(string){
-    var match;
-    if (isString(string) && (match = string.match(R_ISO8061_STR))){
-      var date = new Date(0);
-      date.setUTCFullYear(match[1], match[2] - 1, match[3]);
-      date.setUTCHours(match[4]||0, match[5]||0, match[6]||0, match[7]||0);
-      return date;
-    }
-    return string;
   }
 };
 
 var angularDate = {
-    'toString':function(date){
-       if (!date) return date;
-
-       var isoString = date.toISOString ? date.toISOString() : '';
-
-       return (isoString.length==24) ?
-                isoString :
-                padNumber(date.getUTCFullYear(), 4) + '-' +
-                  padNumber(date.getUTCMonth() + 1, 2) + '-' +
-                  padNumber(date.getUTCDate(), 2) + 'T' +
-                  padNumber(date.getUTCHours(), 2) + ':' +
-                  padNumber(date.getUTCMinutes(), 2) + ':' +
-                  padNumber(date.getUTCSeconds(), 2) + '.' +
-                  padNumber(date.getUTCMilliseconds(), 3) + 'Z';
-    }
   };
 
 var angularFunction = {

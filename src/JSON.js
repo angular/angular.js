@@ -53,7 +53,7 @@ function fromJson(json, useNative) {
   // TODO(misko): remove this once the $http service is checked in.
   function transformDates(obj) {
     if (isString(obj) && obj.length === DATE_ISOSTRING_LN) {
-      return angularString.toDate(obj);
+      return jsonStringToDate(obj);
     } else if (isArray(obj) || isObject(obj)) {
       forEach(obj, function(val, name) {
         obj[name] = transformDates(val);
@@ -63,8 +63,57 @@ function fromJson(json, useNative) {
   }
 }
 
-angular.toJson = toJson;
-angular.fromJson = fromJson;
+var R_ISO8061_STR = /^(\d{4})-(\d\d)-(\d\d)(?:T(\d\d)(?:\:(\d\d)(?:\:(\d\d)(?:\.(\d{3}))?)?)?Z)?$/;
+function jsonStringToDate(string){
+  var match;
+  if (isString(string) && (match = string.match(R_ISO8061_STR))){
+    var date = new Date(0);
+    date.setUTCFullYear(match[1], match[2] - 1, match[3]);
+    date.setUTCHours(match[4]||0, match[5]||0, match[6]||0, match[7]||0);
+    return date;
+  }
+  return string;
+}
+
+function jsonDateToString(date){
+  if (!date) return date;
+  var isoString = date.toISOString ? date.toISOString() : '';
+  return (isoString.length==24)
+    ? isoString
+    : padNumber(date.getUTCFullYear(), 4) + '-' +
+      padNumber(date.getUTCMonth() + 1, 2) + '-' +
+      padNumber(date.getUTCDate(), 2) + 'T' +
+      padNumber(date.getUTCHours(), 2) + ':' +
+      padNumber(date.getUTCMinutes(), 2) + ':' +
+      padNumber(date.getUTCSeconds(), 2) + '.' +
+      padNumber(date.getUTCMilliseconds(), 3) + 'Z';
+}
+
+function quoteUnicode(string) {
+    var chars = ['"'];
+    for ( var i = 0; i < string.length; i++) {
+      var code = string.charCodeAt(i);
+      var ch = string.charAt(i);
+      switch(ch) {
+        case '"': chars.push('\\"'); break;
+        case '\\': chars.push('\\\\'); break;
+        case '\n': chars.push('\\n'); break;
+        case '\f': chars.push('\\f'); break;
+        case '\r': chars.push(ch = '\\r'); break;
+        case '\t': chars.push(ch = '\\t'); break;
+        default:
+          if (32 <= code && code <= 126) {
+            chars.push(ch);
+          } else {
+            var encode = "000" + code.toString(16);
+            chars.push("\\u" + encode.substring(encode.length - 4));
+          }
+      }
+    }
+    chars.push('"');
+    return chars.join('');
+  }
+
 
 function toJsonArray(buf, obj, pretty, stack) {
   if (isObject(obj)) {
@@ -87,7 +136,7 @@ function toJsonArray(buf, obj, pretty, stack) {
   if (obj === null) {
     buf.push($null);
   } else if (obj instanceof RegExp) {
-    buf.push(angularString.quoteUnicode(obj.toString()));
+    buf.push(quoteUnicode(obj.toString()));
   } else if (isFunction(obj)) {
     return;
   } else if (isBoolean(obj)) {
@@ -99,7 +148,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       buf.push('' + obj);
     }
   } else if (isString(obj)) {
-    return buf.push(angularString.quoteUnicode(obj));
+    return buf.push(quoteUnicode(obj));
   } else if (isObject(obj)) {
     if (isArray(obj)) {
       buf.push("[");
@@ -120,7 +169,7 @@ function toJsonArray(buf, obj, pretty, stack) {
       // TODO(misko): maybe in dev mode have a better error reporting?
       buf.push('DOM_ELEMENT');
     } else if (isDate(obj)) {
-      buf.push(angularString.quoteUnicode(angular.Date.toString(obj)));
+      buf.push(quoteUnicode(jsonDateToString(obj)));
     } else {
       buf.push("{");
       if (pretty) buf.push(pretty);
@@ -141,7 +190,7 @@ function toJsonArray(buf, obj, pretty, stack) {
             buf.push(",");
             if (pretty) buf.push(pretty);
           }
-          buf.push(angularString.quote(key));
+          buf.push(quoteUnicode(key));
           buf.push(":");
           toJsonArray(buf, value, childPretty, stack);
           comma = true;
