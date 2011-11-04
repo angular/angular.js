@@ -92,7 +92,7 @@ describe('httpBulk', function() {
     $httpBackend.expect('POST', '/b2Receiver', angular.toJson(
       {"requests":[
         {"method":"GET","url":"/bar"},
-        {"method":"PUT","url":"/bar","data":"yyy"},
+        {"method":"PUT","url":"/bar","data":"yyy"}
       ]})).respond('');
 
     httpBulk.bucket('b1', /\/foo\/.*/, '/b1Receiver');
