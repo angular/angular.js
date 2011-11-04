@@ -17,18 +17,13 @@ var XHR = window.XMLHttpRequest || function() {
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, XHR, $browser.defer, $window, $document[0].body);
+    return createHttpBackend($browser, XHR, $browser.defer, $window, $document[0].body,
+        $window.location.href.replace(':', ''));
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, $window, body) {
+function createHttpBackend($browser, XHR, $browserDefer, $window, body, locationProtocol) {
   var idCounter = 0;
-
-  function completeRequest(callback, status, response) {
-    // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-    callback(status == 1223 ? 204 : status, response);
-    $browser.$$completeOutstandingRequest(noop);
-  }
 
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout) {
@@ -80,6 +75,20 @@ function createHttpBackend($browser, XHR, $browserDefer, $window, body) {
       }
 
       return xhr;
+    }
+
+    function completeRequest(callback, status, response) {
+      // URL_MATCH is defined in src/service/location.js
+      var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1];
+
+      // fix status code for file protocol (it's always 0)
+      status = protocol == 'file' ? (response ? 200 : 404) : status;
+
+      // normalize IE bug (http://bugs.jquery.com/ticket/1450)
+      status = status == 1223 ? 204 : status;
+
+      callback(status, response);
+      $browser.$$completeOutstandingRequest(noop);
     }
   };
 }
