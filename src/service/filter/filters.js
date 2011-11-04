@@ -359,7 +359,7 @@ function dateFilter($locale) {
       if (NUMBER_STRING.test(date)) {
         date = parseInt(date, 10);
       } else {
-        date = angularString.toDate(date);
+        date = jsonStringToDate(date);
       }
     }
 

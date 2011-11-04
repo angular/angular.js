@@ -72,7 +72,7 @@ describe('json', function() {
   });
 
   it('should serialize UTC dates', function() {
-    var date = angular.String.toDate("2009-10-09T01:02:03.027Z");
+    var date = jsonStringToDate("2009-10-09T01:02:03.027Z");
     expect(toJson(date)).toEqual('"2009-10-09T01:02:03.027Z"');
     expect(fromJson('"2009-10-09T01:02:03.027Z"').getTime()).toEqual(date.getTime());
   });
@@ -219,4 +219,61 @@ describe('json', function() {
 
   });
 
+  
+  it('should read/write to date', function() {
+    var date = new Date("Sep 10 2003 13:02:03 GMT");
+    assertEquals("2003-09-10T13:02:03.000Z", jsonDateToString(date));
+    assertEquals(date.getTime(), jsonStringToDate(jsonDateToString(date)).getTime());
+  });
+  
+  
+  it('should convert to date', function() {
+    //full ISO8061
+    expect(jsonStringToDate("2003-09-10T13:02:03.000Z")).
+      toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+
+    //no millis
+    expect(jsonStringToDate("2003-09-10T13:02:03Z")).
+      toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+
+    //no seconds
+    expect(jsonStringToDate("2003-09-10T13:02Z")).
+      toEqual(new Date("Sep 10 2003 13:02:00 GMT"));
+
+    //no minutes
+    expect(jsonStringToDate("2003-09-10T13Z")).
+      toEqual(new Date("Sep 10 2003 13:00:00 GMT"));
+
+    //no time
+    expect(jsonStringToDate("2003-09-10")).
+      toEqual(new Date("Sep 10 2003 00:00:00 GMT"));
+  });
+
+  
+  it('should parse date', function() {
+    var date = jsonStringToDate("2003-09-10T13:02:03.000Z");
+    assertEquals("2003-09-10T13:02:03.000Z", jsonDateToString(date));
+    assertEquals("str", jsonStringToDate("str"));
+  });
+
+
+  describe('string', function() {
+    it('should quote', function() {
+      assertEquals(quoteUnicode('a'), '"a"');
+      assertEquals(quoteUnicode('\\'), '"\\\\"');
+      assertEquals(quoteUnicode("'a'"), '"\'a\'"');
+      assertEquals(quoteUnicode('"a"'), '"\\"a\\""');
+      assertEquals(quoteUnicode('\n\f\r\t'), '"\\n\\f\\r\\t"');
+    });
+
+    it('should quote slashes', function() {
+      assertEquals('"7\\\\\\\"7"', quoteUnicode("7\\\"7"));
+    });
+
+    it('should quote unicode', function() {
+      assertEquals('"abc\\u00a0def"', quoteUnicode('abc\u00A0def'));
+    });
+
+  });
+  
 });

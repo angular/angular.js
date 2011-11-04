@@ -270,59 +270,5 @@ describe('api', function() {
 
   });
 
-
-  describe('string', function() {
-    it('should quote', function() {
-      assertEquals(angular.String.quote('a'), '"a"');
-      assertEquals(angular.String.quote('\\'), '"\\\\"');
-      assertEquals(angular.String.quote("'a'"), '"\'a\'"');
-      assertEquals(angular.String.quote('"a"'), '"\\"a\\""');
-      assertEquals(angular.String.quote('\n\f\r\t'), '"\\n\\f\\r\\t"');
-    });
-
-    it('should quote slashes', function() {
-      assertEquals('"7\\\\\\\"7"', angular.String.quote("7\\\"7"));
-    });
-
-    it('should quote unicode', function() {
-      assertEquals('"abc\\u00a0def"', angular.String.quoteUnicode('abc\u00A0def'));
-    });
-
-    it('should read/write to date', function() {
-      var date = new Date("Sep 10 2003 13:02:03 GMT");
-      assertEquals("date", angular.Object.typeOf(date));
-      assertEquals("2003-09-10T13:02:03.000Z", angular.Date.toString(date));
-      assertEquals(date.getTime(), angular.String.toDate(angular.Date.toString(date)).getTime());
-    });
-
-    it('should convert to date', function() {
-      //full ISO8061
-      expect(angular.String.toDate("2003-09-10T13:02:03.000Z")).
-        toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
-
-      //no millis
-      expect(angular.String.toDate("2003-09-10T13:02:03Z")).
-        toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
-
-      //no seconds
-      expect(angular.String.toDate("2003-09-10T13:02Z")).
-        toEqual(new Date("Sep 10 2003 13:02:00 GMT"));
-
-      //no minutes
-      expect(angular.String.toDate("2003-09-10T13Z")).
-        toEqual(new Date("Sep 10 2003 13:00:00 GMT"));
-
-      //no time
-      expect(angular.String.toDate("2003-09-10")).
-        toEqual(new Date("Sep 10 2003 00:00:00 GMT"));
-    });
-
-    it('should parse date', function() {
-      var date = angular.String.toDate("2003-09-10T13:02:03.000Z");
-      assertEquals("date", angular.Object.typeOf(date));
-      assertEquals("2003-09-10T13:02:03.000Z", angular.Date.toString(date));
-      assertEquals("str", angular.String.toDate("str"));
-    });
-  });
 });
 
