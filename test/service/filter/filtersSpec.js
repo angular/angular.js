@@ -1,6 +1,6 @@
 'use strict';
 
-describe('filter', function() {
+describe('filters', function() {
 
   var filter;
 

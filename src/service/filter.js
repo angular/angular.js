@@ -17,11 +17,14 @@ function $FilterProvider($provide) {
   ////////////////////////////////////////
 
   $provide.filter('currency', currencyFilter);
-  $provide.filter('number', numberFilter);
   $provide.filter('date', dateFilter);
-  $provide.filter('json', jsonFilter);
-  $provide.filter('lowercase', lowercaseFilter);
-  $provide.filter('uppercase', uppercaseFilter);
+  $provide.filter('filter', filterFilter);
   $provide.filter('html', htmlFilter);
+  $provide.filter('json', jsonFilter);
+  $provide.filter('limitTo', limitToFilter);
   $provide.filter('linky', linkyFilter);
+  $provide.filter('lowercase', lowercaseFilter);
+  $provide.filter('number', numberFilter);
+  $provide.filter('orderBy', orderByFilter);
+  $provide.filter('uppercase', uppercaseFilter);
 }
