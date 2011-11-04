@@ -1,6 +1,11 @@
 'use strict';
 
 describe('Binder', function() {
+
+  function childNode(element, index) {
+    return jqLite(element[0].childNodes[index]);
+  }
+
   beforeEach(function() {
     this.compileToHtml = function (content) {
       var html;

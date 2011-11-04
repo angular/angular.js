@@ -363,16 +363,21 @@ angular.mock.$ExceptionHandlerProvider = function(){
   var handler;
 
   this.mode = function(mode){
-    handler = {
-     rethrow: function(e) {
-      throw e;
-     },
-     log: angular.extend(function log(e) {
-       log.errors.push(e);
-     }, {errors:[]})
-    }[mode];
-    if (!handler) {
-      throw Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
+    switch(mode) {
+      case 'rethrow':
+        handler = function(e) {
+          throw e;
+        }
+        break;
+      case 'log':
+        var errors = [];
+        handler = function(e) {
+          errors.push(e);
+        }
+        handler.errors = errors;
+        break;
+      default:
+        throw Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
     }
   };
 
@@ -396,6 +401,12 @@ angular.mock.$ExceptionHandlerProvider = function(){
  * See {@link angular.mock} for more info on angular mocks.
  */
 angular.mock.$LogProvider = function(){
+
+  function concat(array1, array2, index) {
+    return array1.concat(Array.prototype.slice.call(array2, index));
+  }
+
+
   this.$get = function () {
     var $log = {
       log: function() { $log.log.logs.push(concat([], arguments, 0)); },
@@ -416,7 +427,7 @@ angular.mock.$LogProvider = function(){
       angular.forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
         angular.forEach($log[logLevel].logs, function(log) {
           angular.forEach(log, function (logItem) {
-            errors.push('MOCK $log (' + logLevel + '): ' + (logItem.stack || logItem));
+            errors.push('MOCK $log (' + logLevel + '): ' + String(logItem) + '\n' + (logItem.stack || ''));
           });
         });
       });
@@ -569,3 +580,76 @@ angular.mock.TzDate = function (offset, timestamp) {
 
 //make "tzDateInstance instanceof Date" return true
 angular.mock.TzDate.prototype = Date.prototype;
+
+
+/**
+ * Method for serializing common objects into strings, useful for debugging.
+ * @param {*} object - any object to turn into string.
+ * @return a serialized string of the argument
+ */
+angular.mock.dump = function(object){
+  var out;
+  if (angular.isElement(object)) {
+    object = angular.element(object);
+    out = angular.element('<div></div>')
+    angular.forEach(object, function(element){
+      out.append(angular.element(element).clone());
+    });
+    out = out.html();
+  } else if (angular.isObject(object)) {
+    if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
+      out = serializeScope(object);
+    } else {
+      out = angular.toJson(object, true);
+    }
+  } else {
+    out = String(object);
+  }
+  return out;
+
+  function serializeScope(scope, offset) {
+    offset = offset ||  '  ';
+    var log = [offset + 'Scope(' + scope.$id + '): {'];
+    for ( var key in scope ) {
+      if (scope.hasOwnProperty(key) && !key.match(/^(\$|this)/)) {
+        log.push('  ' + key + ': ' + angular.toJson(scope[key]));
+      }
+    }
+    var child = scope.$$childHead;
+    while(child) {
+      log.push(serializeScope(child, offset + '  '));
+      child = child.$$nextSibling;
+    }
+    log.push('}');
+    return log.join('\n' + offset);
+  }
+};
+
+window.jstestdriver && (function(window){
+  /**
+   * Global method to output any number of objects into JSTD console. Useful for debugging.
+   */
+  window.dump = function() {
+    var args = [];
+    angular.forEach(arguments, function(arg){
+      args.push(angular.mock.dump(arg));
+    });
+    jstestdriver.console.log.apply(jstestdriver.console, args);
+  };
+})(window);
+
+
+window.jasmine && (function(window){
+  window.inject = function (){
+    var blockFns = Array.prototype.slice.call(arguments, 0);
+    return function(){
+      var injector = this.$injector;
+      if (!injector) {
+        injector = this.$injector =  angular.injector('NG', 'NG_MOCK');
+      }
+      for(var i = 0, ii = blockFns.length; i < ii; i++) {
+        injector.invoke(this, blockFns[i]);
+      }
+    };
+  }
+})(window);

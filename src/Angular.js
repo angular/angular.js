@@ -426,6 +426,17 @@ function trim(value) {
   return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
 }
 
+/**
+ * @ngdoc function
+ * @name angular.isElement
+ * @function
+ *
+ * @description
+ * Determines if a reference is a DOM element (or wrapped jQuery element).
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
+ */
 function isElement(node) {
   return node &&
     (node.nodeName  // we are a direct element
@@ -1012,7 +1023,7 @@ function assertArg(arg, name, reason) {
 
 function assertArgFn(arg, name) {
   assertArg(isFunction(arg), name, 'not a function, got ' +
-      (typeof arg == 'object' ? arg.constructor.name : typeof arg));
+      (typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
   return arg;
 }
 
@@ -1034,6 +1045,7 @@ function publishExternalAPI(angular){
     'isFunction': isFunction,
     'isObject': isObject,
     'isNumber': isNumber,
+    'isElement': isElement,
     'isArray': isArray,
     'version': version,
     'isDate': isDate,

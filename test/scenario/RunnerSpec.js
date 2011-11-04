@@ -46,8 +46,8 @@ describe('angular.scenario.Runner', function() {
     runner.createSpecRunner_ = function(scope) {
       return scope.$new(MockSpecRunner);
     };
-    runner.on('SpecError', rethrow);
-    runner.on('StepError', rethrow);
+    runner.on('SpecError', angular.mock.rethrow);
+    runner.on('StepError', angular.mock.rethrow);
   });
 
   afterEach(function() {

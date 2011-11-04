@@ -12,18 +12,15 @@ describe('Filter: orderBy', function() {
   });
 
   it('shouldSortArrayInReverse', function() {
-    assertJsonEquals([{a:15},{a:2}], orderBy([{a:15},{a:2}], 'a', true));
-    assertJsonEquals([{a:15},{a:2}], orderBy([{a:15},{a:2}], 'a', "T"));
-    assertJsonEquals([{a:15},{a:2}], orderBy([{a:15},{a:2}], 'a', "reverse"));
+    expect(orderBy([{a:15}, {a:2}], 'a', true)).toEqualData([{a:15}, {a:2}]);
+    expect(orderBy([{a:15}, {a:2}], 'a', "T")).toEqualData([{a:15}, {a:2}]);
+    expect(orderBy([{a:15}, {a:2}], 'a', "reverse")).toEqualData([{a:15}, {a:2}]);
   });
 
   it('should sort array by predicate', function() {
-    assertJsonEquals([{a:2, b:1},{a:15, b:1}],
-        orderBy([{a:15, b:1},{a:2, b:1}], ['a', 'b']));
-    assertJsonEquals([{a:2, b:1},{a:15, b:1}],
-        orderBy([{a:15, b:1},{a:2, b:1}], ['b', 'a']));
-    assertJsonEquals([{a:15, b:1},{a:2, b:1}],
-        orderBy([{a:15, b:1},{a:2, b:1}], ['+b', '-a']));
+    expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['a', 'b'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
+    expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['b', 'a'])).toEqualData([{a:2, b:1}, {a:15, b:1}]);
+    expect(orderBy([{a:15, b:1}, {a:2, b:1}], ['+b', '-a'])).toEqualData([{a:15, b:1}, {a:2, b:1}]);
   });
 
   it('should use function', function() {
