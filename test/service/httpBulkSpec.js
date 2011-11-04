@@ -82,18 +82,18 @@ describe('httpBulk', function() {
 
 
   it('should serialize requests in buckets', function() {
-    $httpBackend.expect('POST', '/b1Receiver', angular.toJson(
-      {"requests":[
-        {"method":"GET","url":"/foo/1"},
-        {"method":"POST","url":"/foo/2","data":"xxx"},
-        {"method":"GET","url":"/foo/3"}
-      ]})).respond('');
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests": [
+        {"method": "GET", "url": "/foo/1"},
+        {"method": "POST", "url": "/foo/2", "data": "xxx"},
+        {"method": "GET", "url": "/foo/3"}
+      ]}).respond('');
 
-    $httpBackend.expect('POST', '/b2Receiver', angular.toJson(
-      {"requests":[
-        {"method":"GET","url":"/bar"},
-        {"method":"PUT","url":"/bar","data":"yyy"}
-      ]})).respond('');
+    $httpBackend.expect('POST', '/b2Receiver', {
+      "requests": [
+        {"method": "GET", "url": "/bar"},
+        {"method": "PUT", "url": "/bar", "data": "yyy"}
+      ]}).respond('');
 
     httpBulk.bucket('b1', /\/foo\/.*/, '/b1Receiver');
     httpBulk.bucket('b2', /\/bar/, '/b2Receiver');
@@ -120,16 +120,16 @@ describe('httpBulk', function() {
       log.push(['e', body.error, status]);
     }
 
-    $httpBackend.expect('POST', '/b1Receiver', angular.toJson(
-      {"requests":[
-        {"method":"GET","url":"/foo/1"},
-        {"method":"POST","url":"/foo/2","data":"xxx"},
-        {"method":"GET","url":"/foo/3"}
-      ]})).respond(angular.toJson([
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests": [
+        {"method": "GET","url": "/foo/1"},
+        {"method": "POST","url": "/foo/2","data": "xxx"},
+        {"method": "GET","url": "/foo/3"}
+      ]}).respond([
         {response: {id: '1'}, status: 200},
         {response: {id: '2'}, status: 201},
-        {response: {error: 'not found'}, status:404}
-      ]));
+        {response: {error: 'not found'}, status: 404}
+      ]);
 
     httpBulk.bucket('b1', /\/foo\/.*/, '/b1Receiver');
 
@@ -167,14 +167,14 @@ describe('httpBulk', function() {
       log.push(['e', body.error, status]);
     }
 
-    $httpBackend.expect('POST', '/b1Receiver', angular.toJson(
-      {"requests":[
-        {"method":"GET","url":"/foo/1"},
-        {"method":"GET","url":"/foo/3"}
-      ]})).respond(angular.toJson([
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests":[
+        {"method": "GET","url": "/foo/1"},
+        {"method": "GET","url": "/foo/3"}
+      ]}).respond([
         {response: {id: '1'}, status: 200},
-        {response: {error: 'not found'}, status:404}
-      ]));
+        {response: {error: 'not found'}, status: 404}
+      ]);
 
     httpBulk.bucket('b1', /\/foo\/.*/, '/b1Receiver');
 
@@ -196,14 +196,14 @@ describe('httpBulk', function() {
 
     log = [];
 
-    $httpBackend.expect('POST', '/b1Receiver', angular.toJson(
-      {"requests":[
-        {"method":"GET","url":"/foo/1"},
-        {"method":"POST","url":"/foo/2","data":"xxx"}
-      ]})).respond(angular.toJson([
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests":[
+        {"method": "GET","url": "/foo/1"},
+        {"method": "POST","url": "/foo/2","data": "xxx"}
+      ]}).respond([
         {response: {id: '1'}, status: 200},
         {response: {id: '2'}, status: 201}
-      ]));
+      ]);
 
     httpBulk({method: 'GET', url: '/foo/1'}).
       on('success', success).
@@ -234,16 +234,16 @@ describe('httpBulk', function() {
       log.push(['e', body.error, status]);
     }
 
-    $httpBackend.expect('POST', '/b1Receiver', angular.toJson(
-      {"requests":[
-        {"method":"GET","url":"/foo/1"},
-        {"method":"POST","url":"/foo/2","data":"xxx"},
-        {"method":"GET","url":"/foo/3"}
-      ]})).respond(angular.toJson([
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests":[
+        {"method": "GET","url": "/foo/1"},
+        {"method": "POST","url": "/foo/2","data": "xxx"},
+        {"method": "GET","url": "/foo/3"}
+      ]}).respond([
         {response: {id: '1'}, status: 200},
         {response: {id: '2'}, status: 201},
-        {response: {error: 'not found'}, status:404}
-      ]));
+        {response: {error: 'not found'}, status: 404}
+      ]);
 
     httpBulk.bucket('b1', /\/foo\/.*/, '/b1Receiver');
 
@@ -268,5 +268,73 @@ describe('httpBulk', function() {
     ]);
 
     expect(scope.$service('$log').error.logs.shift()).toEqual(["I'm a misbehaving callback"]);
+  });
+
+
+  it('should properly handle multiple inflight bulking requests for a bucket', function() {
+    // this tests verifies that we are not leaking any state between two flushes
+    var log = [];
+
+    function success(body, status) {
+      log.push(['s', body.id, status]);
+    }
+
+    function error(body, status) {
+      log.push(['e', body.error, status]);
+    }
+
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests":[
+        {"method": "GET","url": "/foo/1"},
+        {"method": "GET","url": "/foo/3"}
+      ]}).respond([
+        {response: {id: '1'}, status: 200},
+        {response: {error: 'not found'}, status: 404}
+      ]);
+
+    httpBulk.bucket('b1', /\/foo\/.*/, '/b1Receiver');
+
+    httpBulk({method: 'GET', url: '/foo/1'}).
+      on('success', success).
+      on('error', error);
+
+    httpBulk({method: 'GET', url: '/foo/3'}).
+      on('success', success).
+      on('error', error);
+
+    scope.$digest(); // request
+
+    $httpBackend.expect('POST', '/b1Receiver', {
+      "requests":[
+        {"method": "GET","url": "/foo/5"},
+        {"method": "GET","url": "/foo/6"}
+      ]}).respond([
+        {response: {id: '5'}, status: 200},
+        {response: {id: '6'}, status: 200}
+      ]);
+
+    httpBulk({method: 'GET', url: '/foo/5'}).
+      on('success', success).
+      on('error', error);
+
+    httpBulk({method: 'GET', url: '/foo/6'}).
+      on('success', success).
+      on('error', error);
+
+    scope.$digest(); // request
+    $httpBackend.flush(1); // respond to the first
+
+    expect(log).toEqual([
+      ['s', '1', 200],
+      ['e', 'not found', 404]
+    ]);
+
+    log = [];
+    $httpBackend.flush(1); // respond to the second
+
+    expect(log).toEqual([
+      ['s', '5', 200],
+      ['s', '6', 200]
+    ]);
   });
 });

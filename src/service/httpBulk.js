@@ -67,6 +67,8 @@ angular.service('httpBulk', function($http, $log) {
    * @param {object} bucket
    */
   function flush(bucket) {
+    if (!bucket.queue.length) return;
+
     var requests = [],
         callbacks = [];
 
@@ -75,25 +77,24 @@ angular.service('httpBulk', function($http, $log) {
       callbacks.push(request.callbacks);
     });
 
-    if (bucket.queue.length) {
-      bucket.queue = [];
-      $http.post(bucket.receiver, {requests:requests}).
-        on('success', function(responses) {
-          var i,n,response, status, callback;
+    bucket.queue = [];
+    $http.post(bucket.receiver, {requests: requests}).
+      on('success', function(responses) {
+        var i, n, response, status, callback;
 
-          for (i=0, n=responses.length; i<n; i++) {
-            response = responses[i];
-            status = response.status;
-            callback = (200 <= status && status < 300) ? callbacks[i].success : callbacks[i].error;
+        for (i = 0, n = responses.length; i < n; i++) {
+          response = responses[i];
+          status = response.status;
+          callback = (200 <= status && status < 300) ? callbacks[i].success : callbacks[i].error;
 
-            try {
-              callback(response.response, status);
-            } catch(e) {
-              $log.error(e);
-            }
+          try {
+            callback(response.response, status);
+          } catch(e) {
+            $log.error(e);
           }
-        });
-    }
+        }
+      }
+    );
   }
 
   // register the flush method
