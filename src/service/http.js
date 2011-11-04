@@ -92,7 +92,7 @@ function $HttpProvider() {
   this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope',
       function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope) {
 
-  var cache = $cacheFactory('$http');
+  var defaultCache = $cacheFactory('$http');
 
   // the actual service
   function $http(config) {
@@ -226,7 +226,7 @@ function $HttpProvider() {
    * Represents Request object, returned by $http()
    *
    * !!! ACCESS CLOSURE VARS:
-   * $httpBackend, $browser, $config, $log, $rootScope, cache, $http.pendingRequests
+   * $httpBackend, $browser, $config, $log, $rootScope, defaultCache, $http.pendingRequests
    */
   function XhrFuture() {
     var rawRequest, parsedHeaders,
@@ -244,9 +244,15 @@ function $HttpProvider() {
       // aborted request or jsonp
       if (!rawRequest) parsedHeaders = {};
 
-      if (cfg.cache && cfg.method == 'GET' && 200 <= status && status < 300) {
-        parsedHeaders = parsedHeaders || parseHeaders(rawRequest.getAllResponseHeaders());
-        cache.put(cfg.url, [status, response, parsedHeaders]);
+      if (cfg.cache && cfg.method == 'GET') {
+        var cache = isObject(cfg.cache) && cfg.cache || defaultCache;
+        if (200 <= status && status < 300) {
+          parsedHeaders = parsedHeaders || parseHeaders(rawRequest.getAllResponseHeaders());
+          cache.put(cfg.url, [status, response, parsedHeaders]);
+        } else {
+          // remove future object from cache
+          cache.remove(cfg.url);
+        }
       }
 
       fireCallbacks(response, status);
@@ -333,19 +339,43 @@ function $HttpProvider() {
           headers = extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
                            defHeaders.common, defHeaders[lowercase(cfg.method)], cfg.headers);
 
-      var fromCache;
-      if (cfg.cache && cfg.method == 'GET' && (fromCache = cache.get(cfg.url))) {
-        $browser.defer(function() {
-          parsedHeaders = fromCache[2];
-          fireCallbacks(fromCache[1], fromCache[0]);
-        });
-      } else {
+      var cache = isObject(cfg.cache) && cfg.cache || defaultCache,
+          fromCache;
+
+      if (cfg.cache && cfg.method == 'GET') {
+        fromCache = cache.get(cfg.url);
+        if (fromCache) {
+          if (fromCache instanceof XhrFuture) {
+            // cached request has already been sent, but there is no reponse yet,
+            // we need to register callback and fire callbacks when the request is back
+            // note, we have to get the values from cache and perform transformations on them,
+            // as the configurations don't have to be same
+            fromCache.on('always', function() {
+              var requestFromCache = cache.get(cfg.url);
+              parsedHeaders = requestFromCache[2];
+              fireCallbacks(requestFromCache[1], requestFromCache[0]);
+            });
+          } else {
+            // serving from cache - still needs to be async
+            $browser.defer(function() {
+              parsedHeaders = fromCache[2];
+              fireCallbacks(fromCache[1], fromCache[0]);
+            });
+          }
+        } else {
+          // put future object into cache
+          cache.put(cfg.url, self);
+        }
+      }
+
+      // really send the request
+      if (!cfg.cache || cfg.method !== 'GET' || !fromCache) {
         rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
       $rootScope.$broadcast('$http.request', self);
       $http.pendingRequests.push(self);
-      return this;
+      return self;
     };
 
     // just alias so that in stack trace we can see send() instead of retry()
