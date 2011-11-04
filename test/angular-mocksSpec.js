@@ -283,4 +283,58 @@ describe('mocks', function() {
       }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
     }));
   });
+
+
+  describe('angular.mock.debug', function(){
+    var d = angular.mock.dump;
+
+
+    it('should serialize primitive types', function(){
+      expect(d(undefined)).toEqual('undefined');
+      expect(d(1)).toEqual('1');
+      expect(d(null)).toEqual('null');
+      expect(d('abc')).toEqual('abc');
+    });
+
+
+    it('should serialize element', function(){
+      var e = angular.element('<div>abc</div><span>xyz</span>');
+      expect(d(e).toLowerCase()).toEqual('<div>abc</div><span>xyz</span>');
+      expect(d(e[0]).toLowerCase()).toEqual('<div>abc</div>');
+    });
+
+    it('should serialize scope', inject(function($rootScope){
+      $rootScope.obj = {abc:'123'};
+      expect(d($rootScope)).toMatch(/Scope\(.*\): \{/);
+      expect(d($rootScope)).toMatch(/{"abc":"123"}/);
+    }));
+
+
+    it('should be published on window', function(){
+      expect(window.dump instanceof Function).toBe(true);
+    });
+  });
+
+  describe('jasmine inject', function(){
+    it('should call invoke', function(){
+      var count = 0;
+      function fn1(){
+        expect(this).toBe(self);
+        count++;
+      }
+      function fn2(){
+        expect(this).toBe(self);
+        count++;
+      }
+      var fn = inject(fn1, fn2);
+      var self = {
+        $injector: {
+          invoke: function(self, fn) { fn.call(self); }
+        }
+      };
+
+      fn.call(self);
+      expect(count).toBe(2);
+    });
+  });
 });

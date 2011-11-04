@@ -3,6 +3,10 @@
 describe("resource", function() {
   var resource, CreditCard, callback;
 
+  function nakedExpect(obj) {
+    return expect(angular.fromJson(angular.toJson(obj)));
+  }
+
   beforeEach(inject(
     function($provide) {
       $provide.value('$xhr.error', jasmine.createSpy('xhr.error'));
