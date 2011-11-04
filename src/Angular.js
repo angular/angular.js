@@ -560,6 +560,13 @@ function indexOf(array, obj) {
   return -1;
 }
 
+function arrayRemove(array, value) {
+    var index = indexOf(array, value);
+    if (index >=0)
+      array.splice(index, 1);
+    return value;
+  }
+
 function isLeafNode (node) {
   if (node) {
     switch (node.nodeName) {

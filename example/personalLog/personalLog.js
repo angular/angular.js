@@ -54,7 +54,13 @@ function LogCtrl($cookieStore) {
    * @param {object} log The log to remove.
    */
   this.rmLog = function(log) {
-    angular.Array.remove(logs, log);
+    for ( var i = 0; i < logs.length; i++) {
+      if (log === logs[i]) {
+        logs.splice(i, 1);
+        break;
+      }
+    }
+
     $cookieStore.put(LOGS, logs);
   };
 

@@ -241,7 +241,7 @@ function $RootScopeProvider(){
         array.unshift(watcher);
 
         return function() {
-          angularArray.remove(array, watcher);
+          arrayRemove(array, watcher);
         };
       },
 
@@ -528,7 +528,7 @@ function $RootScopeProvider(){
         namedListeners.push(listener);
 
         return function() {
-          angularArray.remove(namedListeners, listener);
+          arrayRemove(namedListeners, listener);
         };
       },
 
@@ -641,9 +641,7 @@ function $RootScopeProvider(){
     return scope;
 
     function compileToFn(exp, name) {
-      var fn = isString(exp)
-        ? expressionCompile(exp)
-        : exp;
+      var fn = $parse(exp);
       assertArgFn(fn, name);
       return fn;
     }

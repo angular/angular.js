@@ -637,6 +637,7 @@ function setter(obj, path, setValue) {
  * @param {boolean=true} bindFnToScope
  * @returns value as accesbile by path
  */
+//TODO(misko): this function needs to be removed
 function getter(obj, path, bindFnToScope) {
   if (!path) return obj;
   var keys = path.split('.');
@@ -648,14 +649,6 @@ function getter(obj, path, bindFnToScope) {
     key = keys[i];
     if (obj) {
       obj = (lastInstance = obj)[key];
-    }
-    if (isUndefined(obj)  && key.charAt(0) == '$') {
-      var type = angularGlobal.typeOf(lastInstance);
-      type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
-      var fn = type ? type[[key.substring(1)]] : _undefined;
-      if (fn) {
-        return obj = bind(lastInstance, fn, lastInstance);
-      }
     }
   }
   if (!bindFnToScope && isFunction(obj)) {
@@ -691,16 +684,6 @@ function getterFn(path) {
               ' fn.$unboundFn=s;\n' +
               ' s=fn;\n' +
             '}\n';
-    if (key.charAt(1) == '$') {
-      // special code for super-imposed functions
-      var name = key.substr(2);
-      code += 'if(!s) {\n' +
-              ' t = angular.Global.typeOf(l);\n' +
-              ' fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n' +
-              ' if (fn) ' +
-                 's = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0))); };\n' +
-              '}\n';
-    }
   });
   code += 'return s;';
   fn = Function('s', code);
@@ -729,14 +712,8 @@ function $ParseProvider() {
   }];
 }
 
-function noFilters(){
-  throw Error('Filters not supported!');
-}
 
 // This is a special access for JSON parser which bypasses the injector
 var parseJson = function(json) {
-  return parser(json, true, noFilters);
+  return parser(json, true);
 };
-
-// TODO(misko): temporary hack, until we get rid of the type augmentation
-var expressionCompile = new $ParseProvider().$get[1](noFilters);

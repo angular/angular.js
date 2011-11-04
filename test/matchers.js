@@ -83,7 +83,7 @@ beforeEach(function() {
 
 
     toBeOneOf: function() {
-      return angular.Array.indexOf(arguments, this.actual) !== -1;
+      return indexOf(arguments, this.actual) !== -1;
     }
   });
 });
