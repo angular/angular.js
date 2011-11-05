@@ -61,7 +61,7 @@ function transform(data, fns, param) {
  * @description
  */
 function $HttpProvider() {
-  var JSON_START = /^\s*[\[\{]/,
+  var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
       PROTECTION_PREFIX = /^\)\]\}',?\n/;
 
