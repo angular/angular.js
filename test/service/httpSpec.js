@@ -758,6 +758,16 @@ describe('$http', function() {
           expect(callback).toHaveBeenCalledOnce();
           expect(callback.mostRecentCall.args[0]).toEqual([1, 'abc', {foo:'bar'}]);
         });
+
+
+        it('should not deserialize tpl beginning with ng expression', function() {
+          $httpBackend.expect('GET', '/url').respond('{{some}}');
+          $http.get('/url').on('200', callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toEqual('{{some}}');
+        });
       });
 
 
