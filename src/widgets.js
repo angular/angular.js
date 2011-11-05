@@ -434,9 +434,9 @@ angularWidget('@ng:repeat', function(expression, element){
         childScope[valueIdent] = value;
         if (keyIdent) childScope[keyIdent] = key;
         childScope.$index = index;
-        childScope.$position = index == 0
-            ? 'first'
-            : (index == collectionLength - 1 ? 'last' : 'middle');
+        childScope.$position = index === 0 ?
+            'first' :
+            (index == collectionLength - 1 ? 'last' : 'middle');
 
         if (!last) {
           linker(childScope, function(clone){

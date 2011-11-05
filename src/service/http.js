@@ -61,13 +61,17 @@ function transform(data, fns, param) {
  * @description
  */
 function $HttpProvider() {
+  var JSON_START = /^\s*[\[\{]/,
+      JSON_END = /[\}\]]\s*$/,
+      PROTECTION_PREFIX = /^\)\]\}',?\n/;
+
   var $config = this.defaults = {
     // transform in-coming reponse data
     transformResponse: function(data) {
       if (isString(data)) {
         // strip json vulnerability protection prefix
-        data = data.replace(/^\)\]\}',?\n/, '');
-        if (/^\s*[\[\{]/.test(data) && /[\}\]]\s*$/.test(data))
+        data = data.replace(PROTECTION_PREFIX, '');
+        if (JSON_START.test(data) && JSON_END.test(data))
           data = fromJson(data, true);
       }
       return data;
@@ -313,9 +317,9 @@ function $HttpProvider() {
      */
     function headers(name) {
       if (name) {
-        return parsedHeaders
-          ? parsedHeaders[lowercase(name)] || null
-          : rawRequest.getResponseHeader(name);
+        return parsedHeaders ?
+          parsedHeaders[lowercase(name)] || null :
+          rawRequest.getResponseHeader(name);
       }
 
       parsedHeaders = parsedHeaders || parseHeaders(rawRequest.getAllResponseHeaders());
