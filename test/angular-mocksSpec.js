@@ -697,8 +697,8 @@ describe('mocks', function() {
 
         hb('POST', '/u1', 'ddd', noop, {});
 
-        expect(function() {hb.verifyNoOutstandingExpectation();})
-          .toThrow('Unsatisfied requests: GET /u2, POST /u3');
+        expect(function() {hb.verifyNoOutstandingExpectation();}).
+          toThrow('Unsatisfied requests: GET /u2, POST /u3');
       });
 
 
