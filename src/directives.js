@@ -789,19 +789,18 @@ angularDirective("ng:hide", function(expression, element){
    </doc:example>
  */
 angularDirective("ng:style", function(expression, element){
-  // TODO(i): this is inefficient (runs on every $digest) and obtrusive (overrides 3rd part css)
-  //   we should change it in a similar way as I changed ng:class
   return function(element){
-    var resetStyle = getStyle(element);
-    this.$watch(function(scope){
-      var style = scope.$eval(expression) || {}, key, mergedStyle = {};
-      for(key in style) {
-        if (resetStyle[key] === undefined) resetStyle[key] = '';
-        mergedStyle[key] = style[key];
+    this.$watch(expression, function(scope, newVal, oldVal){
+      var styleToAdd = newVal || {},
+          styleToRemove = oldVal || {},
+          key,
+          mergedStyle = {};         
+      for(key in styleToAdd) {
+        if (styleToAdd[key] !== undefined)
+          mergedStyle[key] = styleToAdd[key];
       }
-      for(key in resetStyle) {
-        mergedStyle[key] = mergedStyle[key] || resetStyle[key];
-      }
+      for(key in styleToRemove)
+          delete mergedStyle[key];
       element.css(mergedStyle);
     });
   };
