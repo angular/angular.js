@@ -25,12 +25,12 @@ function encodePath(path) {
 
 
 function matchUrl(url, obj) {
-  var match = URL_MATCH.exec(url),
+  var match = URL_MATCH.exec(url);
 
   match = {
       protocol: match[1],
       host: match[3],
-      port: parseInt(match[5]) || DEFAULT_PORTS[match[1]] || null,
+      port: parseInt(match[5], 10) || DEFAULT_PORTS[match[1]] || null,
       path: match[6] || '/',
       search: match[8],
       hash: match[10]
@@ -61,7 +61,7 @@ function convertToHtml5Url(url, basePath, hashPrefix) {
 
   // already html5 url
   if (decodeURIComponent(match.path) != basePath || isUndefined(match.hash) ||
-      match.hash.indexOf(hashPrefix) != 0) {
+      match.hash.indexOf(hashPrefix) !== 0) {
     return url;
   // convert hashbang url -> html5 url
   } else {
@@ -84,7 +84,7 @@ function convertToHashbangUrl(url, basePath, hashPrefix) {
         pathPrefix = pathPrefixFromBase(basePath),
         path = match.path.substr(pathPrefix.length);
 
-    if (match.path.indexOf(pathPrefix) != 0) {
+    if (match.path.indexOf(pathPrefix) !== 0) {
       throw 'Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !';
     }
 
@@ -113,7 +113,7 @@ function LocationUrl(url, pathPrefix) {
   this.$$parse = function(url) {
     var match = matchUrl(url, this);
 
-    if (match.path.indexOf(pathPrefix) != 0) {
+    if (match.path.indexOf(pathPrefix) !== 0) {
       throw 'Invalid url "' + url + '", missing path prefix "' + pathPrefix + '" !';
     }
 
@@ -122,7 +122,7 @@ function LocationUrl(url, pathPrefix) {
     this.$$hash = match.hash && decodeURIComponent(match.hash) || '';
 
     this.$$compose();
-  },
+  };
 
   /**
    * Compose url and update `absUrl` property
@@ -160,7 +160,7 @@ function LocationHashbangUrl(url, hashPrefix) {
   this.$$parse = function(url) {
     var match = matchUrl(url, this);
 
-    if (match.hash && match.hash.indexOf(hashPrefix) != 0) {
+    if (match.hash && match.hash.indexOf(hashPrefix) !== 0) {
       throw 'Invalid url "' + url + '", missing hash prefix "' + hashPrefix + '" !';
     }
 

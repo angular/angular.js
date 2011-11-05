@@ -61,9 +61,9 @@ describe('$http', function() {
 
     it('should log more exceptions', function() {
       $httpBackend.expect('GET', '/url').respond(500, '');
-      $http({url: '/url', method: 'GET'})
-        .on('500', throwing('exception in error callback'))
-        .on('5xx', throwing('exception in error callback'));
+      $http({url: '/url', method: 'GET'}).
+        on('500', throwing('exception in error callback')).
+        on('5xx', throwing('exception in error callback'));
       $httpBackend.flush();
 
       expect($exceptionHandler.errors.length).toBe(2);
@@ -491,7 +491,7 @@ describe('$http', function() {
 
       beforeEach(function() {
         $httpBackend.when('GET').respond(function(m, url) {
-          return [parseInt(url.substr(1)), '', {}];
+          return [parseInt(url.substr(1), 10), '', {}];
         });
       });
 
@@ -550,13 +550,13 @@ describe('$http', function() {
 
       it('should call all matched callbacks', function() {
         var no = jasmine.createSpy('wrong');
-        $http({method: 'GET', url: '/205'})
-          .on('xxx', callback)
-          .on('2xx', callback)
-          .on('205', callback)
-          .on('3xx', no)
-          .on('2x1', no)
-          .on('4xx', no);
+        $http({method: 'GET', url: '/205'}).
+          on('xxx', callback).
+          on('2xx', callback).
+          on('205', callback).
+          on('3xx', no).
+          on('2x1', no).
+          on('4xx', no);
 
         $httpBackend.flush();
 
@@ -576,10 +576,10 @@ describe('$http', function() {
       it('should preserve the order of listeners', function() {
         var log = '';
 
-        $http({method: 'GET', url: '/201'})
-          .on('2xx', function() {log += '1';})
-          .on('201', function() {log += '2';})
-          .on('2xx', function() {log += '3';});
+        $http({method: 'GET', url: '/201'}).
+          on('2xx', function() {log += '1';}).
+          on('201', function() {log += '2';}).
+          on('2xx', function() {log += '3';});
 
         $httpBackend.flush();
         expect(log).toBe('123');
@@ -766,8 +766,8 @@ describe('$http', function() {
         function second(d) {return d + '2';}
 
         $httpBackend.expect('POST', '/url').respond('0');
-        $http({method: 'POST', url: '/url', transformResponse: [first, second]})
-          .on('200', callback);
+        $http({method: 'POST', url: '/url', transformResponse: [first, second]}).
+          on('200', callback);
         $httpBackend.flush();
 
         expect(callback).toHaveBeenCalledOnce();
