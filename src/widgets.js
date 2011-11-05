@@ -111,17 +111,6 @@ angularWidget('ng:include', function(element){
             useScope = scope.$eval(scopeExp),
             fromCache;
 
-        function updateContent(content) {
-          element.html(content);
-          if (useScope) {
-            childScope = useScope;
-          } else {
-            releaseScopes.push(childScope = scope.$new());
-          }
-          compiler.compile(element)(childScope);
-          scope.$eval(onloadExp);
-        }
-
         function clearContent() {
           childScope = null;
           element.html('');
@@ -131,16 +120,16 @@ angularWidget('ng:include', function(element){
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          if ((fromCache = $cache.get(src))) {
-            scope.$evalAsync(function() {
-              updateContent(fromCache);
-            });
-          } else {
-            $http.get(src).on('success', function(response) {
-              updateContent(response);
-              $cache.put(src, response);
-            }).on('error', clearContent);
-          }
+          $http.get(src, {cache: $cache}).on('success', function(response) {
+            element.html(response);
+            if (useScope) {
+              childScope = useScope;
+            } else {
+              releaseScopes.push(childScope = scope.$new());
+            }
+            compiler.compile(element)(childScope);
+            scope.$eval(onloadExp);
+          }).on('error', clearContent);
         } else {
           clearContent();
         }
@@ -583,29 +572,19 @@ angularWidget('ng:view', function(element) {
         var template = $route.current && $route.current.template,
             fromCache;
 
-        function updateContent(content) {
-          element.html(content);
-          compiler.compile(element)($route.current.scope);
-        }
-
         function clearContent() {
           element.html('');
         }
 
         if (template) {
-          if ((fromCache = $cache.get(template))) {
-            scope.$evalAsync(function() {
-              updateContent(fromCache);
-            });
-          } else {
-            // xhr's callback must be async, see commit history for more info
-            $http.get(template).on('success', function(response) {
-              // ignore callback if another route change occured since
-              if (newChangeCounter == changeCounter)
-                updateContent(response);
-              $cache.put(template, response);
-            }).on('error', clearContent);
-          }
+          // xhr's callback must be async, see commit history for more info
+          $http.get(template, {cache: $cache}).on('success', function(response) {
+            // ignore callback if another route change occured since
+            if (newChangeCounter == changeCounter) {
+              element.html(response);
+              compiler.compile(element)($route.current.scope);
+            }
+          }).on('error', clearContent);
         } else {
           clearContent();
         }
