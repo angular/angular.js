@@ -363,11 +363,13 @@ describe("directive", function() {
 
 
   describe('ng:style', function() {
+
     it('should set', function() {
       var scope = compile('<div ng:style="{height: \'40px\'}"></div>');
       scope.$digest();
       expect(element.css('height')).toEqual('40px');
     });
+
 
     it('should silently ignore undefined style', function() {
       var scope = compile('<div ng:style="myStyle"></div>');
@@ -375,23 +377,68 @@ describe("directive", function() {
       expect(element.hasClass('ng-exception')).toBeFalsy();
     });
 
-    it('should preserve and remove previous style', function() {
-      var scope = compile('<div style="height: 10px;" ng:style="myStyle"></div>');
-      scope.$digest();
-      expect(getStyle(element)).toEqual({height: '10px'});
-      scope.myStyle = {height: '20px', width: '10px'};
-      scope.$digest();
-      expect(getStyle(element)).toEqual({height: '20px', width: '10px'});
-      scope.myStyle = {};
-      scope.$digest();
-      expect(getStyle(element)).toEqual({height: '10px'});
-    });
-  });
 
-  it('should silently ignore undefined ng:style', function() {
-    var scope = compile('<div ng:style="myStyle"></div>');
-    scope.$digest();
-    expect(element.hasClass('ng-exception')).toBeFalsy();
+    describe('preserving styles set before and after compilation', function() {
+      var scope, preCompStyle, preCompVal, postCompStyle, postCompVal;
+
+      beforeEach(function() {
+        preCompStyle = 'width';
+        preCompVal = '300px';
+        postCompStyle = 'height';
+        postCompVal = '100px';
+        element = jqLite('<div ng:style="styleObj"></div>');
+        element.css(preCompStyle, preCompVal);
+        jqLite(document.body).append(element);
+        scope = compile(element);
+        scope.styleObj = {'margin-top': '44px'};
+        scope.$apply();
+        element.css(postCompStyle, postCompVal);
+      });
+
+      afterEach(function() {
+        element.remove();
+      });
+
+
+      it('should not mess up stuff after compilation', function() {
+        element.css('margin', '44px');
+        expect(element.css(preCompStyle)).toBe(preCompVal);
+        expect(element.css('margin-top')).toBe('44px');
+        expect(element.css(postCompStyle)).toBe(postCompVal);
+      });
+
+
+      it('should not mess up stuff after $apply with no model changes', function() {
+        element.css('padding-top', '33px');
+        scope.$apply();
+        expect(element.css(preCompStyle)).toBe(preCompVal);
+        expect(element.css('margin-top')).toBe('44px');
+        expect(element.css(postCompStyle)).toBe(postCompVal);
+        expect(element.css('padding-top')).toBe('33px');
+      });
+
+
+      it('should not mess up stuff after $apply with non-colliding model changes', function() {
+        scope.styleObj = {'padding-top': '99px'};
+        scope.$apply();
+        expect(element.css(preCompStyle)).toBe(preCompVal);
+        expect(element.css('margin-top')).not.toBe('44px');
+        expect(element.css('padding-top')).toBe('99px');
+        expect(element.css(postCompStyle)).toBe(postCompVal);
+      });
+
+
+      it('should overwrite original styles after a colliding model change', function() {
+        scope.styleObj = {'height': '99px', 'width': '88px'};
+        scope.$apply();
+        expect(element.css(preCompStyle)).toBe('88px');
+        expect(element.css(postCompStyle)).toBe('99px');
+        scope.styleObj = {};
+        scope.$apply();
+        expect(element.css(preCompStyle)).not.toBe('88px');
+        expect(element.css(postCompStyle)).not.toBe('99px');
+      }); 
+    });
   });
 
 
