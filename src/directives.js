@@ -796,7 +796,7 @@ angularDirective("ng:style", function(expression, element){
           key;
       for(key in styleToRemove)
           element.css(key, '');
-      element.css(styleToAdd)
+      element.css(styleToAdd);
     });
   };
 });
