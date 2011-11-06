@@ -362,7 +362,7 @@ describe("directive", function() {
   });
 
 
-  ddescribe('ng:style', function() {
+  describe('ng:style', function() {
 
     it('should set', function() {
       var scope = compile('<div ng:style="{height: \'40px\'}"></div>');
@@ -422,15 +422,15 @@ describe("directive", function() {
         expect(element.css(postCompStyle)).toBe(postCompVal);
       }); 
 
-      iit('should overwrite original styles after a colliding model change', function() {
+      it('should overwrite original styles after a colliding model change', function() {
         scope.styleObj = {'height': '99px', 'width': '88px'};
         scope.$apply();
         expect(element.css(preCompStyle)).toBe('88px');
         expect(element.css(postCompStyle)).toBe('99px');
         scope.styleObj = {};
         scope.$apply();
-        expect(element.css(preCompStyle)).toBe('auto'); // likely will need to go to the DOM because jquery makes shit up
-        expect(element.css(postCompStyle)).toBe('0px');
+        expect(element.css(preCompStyle)).toBe('');
+        expect(element.css(postCompStyle)).toBe('');
       });
     });
   });

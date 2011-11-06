@@ -793,15 +793,10 @@ angularDirective("ng:style", function(expression, element){
     this.$watch(expression, function(scope, newVal, oldVal){
       var styleToAdd = newVal || {},
           styleToRemove = oldVal || {},
-          key,
-          mergedStyle = {};         
-      for(key in styleToAdd) {
-        if (styleToAdd[key] !== undefined)
-          mergedStyle[key] = styleToAdd[key];
-      }
+          key;
       for(key in styleToRemove)
-          delete mergedStyle[key];
-      element.css(mergedStyle);
+          element.css(key, '');
+      element.css(styleToAdd)
     });
   };
 });
