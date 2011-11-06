@@ -269,9 +269,9 @@ li {
 /*----- content styles -----*/
 
 .content-panel {
-  float: left;
+  float: right;
   margin-top: 4em;
-  margin-left: 3em;
+  margin-right: 3em;
   width: 57em;
   padding: 0.5em 1em 1em 1em;
   background: #7989D6;
