@@ -396,7 +396,7 @@ describe("directive", function() {
       afterEach(function() {
         element.remove();
       });
-      
+
       it('should not mess up stuff after compilation', function() {
         element.css('margin', '44px');
         expect(element.css(preCompStyle)).toBe(preCompVal);
@@ -417,10 +417,10 @@ describe("directive", function() {
         scope.styleObj = {'padding-top': '99px'};
         scope.$apply();
         expect(element.css(preCompStyle)).toBe(preCompVal);
-        expect(element[0].style['margin-top']).toBe(''); // jquery doesn't return the dom value, so we go to dom
+        expect(element.css('margin-top')).toBe('');
         expect(element.css('padding-top')).toBe('99px');
         expect(element.css(postCompStyle)).toBe(postCompVal);
-      }); 
+      });
 
       it('should overwrite original styles after a colliding model change', function() {
         scope.styleObj = {'height': '99px', 'width': '88px'};
