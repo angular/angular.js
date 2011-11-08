@@ -1064,6 +1064,11 @@ function ngModule($provide, $injector) {
   $provide.value('$directive', angularDirective);
   $provide.value('$widget', angularWidget);
 
+  // load the LOCALE if present
+  $injector.invoke(null, angularModule.NG_LOCALE || function(){
+    $provide.service('$locale', $LocaleProvider);
+  });
+
   $provide.service('$browser', $BrowserProvider);
   $provide.service('$compile', $CompileProvider);
   $provide.service('$cookies', $CookiesProvider);
@@ -1073,7 +1078,6 @@ function ngModule($provide, $injector) {
   $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
   $provide.service('$filter', $FilterProvider);
   $provide.service('$formFactory', $FormFactoryProvider);
-  $provide.service('$locale', $LocaleProvider);
   $provide.service('$location', $LocationProvider);
   $provide.service('$locationConfig', $LocationConfigProvider);
   $provide.service('$log', $LogProvider);
