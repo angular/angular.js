@@ -100,13 +100,16 @@ createFolder('../locale/').then(function() {
     var correctedLocaleId = localeID.replace(/_/g, '-').toLowerCase();
     localeObj.id = correctedLocaleId;
 
-    var prefix = 'angular.service("$locale", function() {\n' +
-                 'var PLURAL_CATEGORY = {' +
-                   'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
-                 '};\n' +
-                 'return ';
+    var prefix =
+      'window.angular = window.angular || {};\n' +
+      'angular.module = angular.module || {};\n' +
+      'angular.module.NG_LOCALE = ["$provide", function($provide) {\n' +
+         'var PLURAL_CATEGORY = {' +
+           'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
+         '};\n' +
+         '$provide.value("$locale", ';
 
-    var suffix = ';\n});';
+    var suffix = ');\n}];';
 
     var content = JSON.stringify(localeInfo[localeID]).replace(/\¤/g,'\\u00A4').
                       replace(/"@@|@@"/g, '');
