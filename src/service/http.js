@@ -229,7 +229,7 @@ function $HttpProvider() {
   /**
    * Represents Request object, returned by $http()
    *
-   * !!! ACCESS CLOSURE VARS:
+   * !!! ACCESSES CLOSURE VARS:
    * $httpBackend, $browser, $config, $log, $rootScope, defaultCache, $http.pendingRequests
    */
   function XhrFuture() {

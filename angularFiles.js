@@ -9,6 +9,7 @@ angularFiles = {
     'src/jqLite.js',
     'src/apis.js',
     'src/service/autoScroll.js',
+    'src/Deferred.js',
     'src/service/browser.js',
     'src/service/cacheFactory.js',
     'src/service/compiler.js',

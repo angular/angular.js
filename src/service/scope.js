@@ -381,11 +381,11 @@ function $RootScopeProvider(){
             }
           } while ((current = next));
 
-          if(!(ttl--)) {
+          if(dirty && !(ttl--)) {
             throw Error('100 $digest() iterations reached. Aborting!\n' +
                 'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
           }
-        } while (dirty);
+        } while (dirty || asyncQueue.length);
       },
 
       /**
