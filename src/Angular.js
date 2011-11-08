@@ -68,24 +68,14 @@ function shivForIE(elementName) {
   return elementName;
 }
 
-var _undefined        = undefined,
-    _null             = null,
-    $$scope           = '$scope',
-    $angular          = 'angular',
-    $array            = 'array',
+var $$scope           = '$scope',
     $boolean          = 'boolean',
     $console          = 'console',
-    $date             = 'date',
     $length           = 'length',
     $name             = 'name',
-    $noop             = 'noop',
-    $null             = 'null',
     $object           = 'object',
     $string           = 'string',
-    $value            = 'value',
-    $selected         = 'selected',
     $undefined        = 'undefined',
-    NOOP              = 'noop',
     Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
     msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),

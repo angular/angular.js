@@ -134,7 +134,7 @@ function toJsonArray(buf, obj, pretty, stack) {
     stack.push(obj);
   }
   if (obj === null) {
-    buf.push($null);
+    buf.push('null');
   } else if (obj instanceof RegExp) {
     buf.push(quoteUnicode(obj.toString()));
   } else if (isFunction(obj)) {
@@ -143,7 +143,7 @@ function toJsonArray(buf, obj, pretty, stack) {
     buf.push('' + obj);
   } else if (isNumber(obj)) {
     if (isNaN(obj)) {
-      buf.push($null);
+      buf.push('null');
     } else {
       buf.push('' + obj);
     }
@@ -158,7 +158,7 @@ function toJsonArray(buf, obj, pretty, stack) {
         var item = obj[i];
         if (sep) buf.push(",");
         if (!(item instanceof RegExp) && (isFunction(item) || isUndefined(item))) {
-          buf.push($null);
+          buf.push('null');
         } else {
           toJsonArray(buf, item, pretty, stack);
         }
