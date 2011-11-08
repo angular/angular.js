@@ -956,7 +956,9 @@ function angularInit(config, document){
     });
     createInjector(modules, angularModule)(['$rootScope', '$compile', '$injector', function(scope, compile, injector){
       scope.$apply(function(){
-        compile(isString(autobind) ? document.getElementById(autobind) : document)(scope);
+        var element = jqLite(isString(autobind) ? document.getElementById(autobind) : document);
+        element.data('$injector', injector);
+        compile(element)(scope);
       });
     }]);
   }
