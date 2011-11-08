@@ -801,7 +801,6 @@ angularDirective("ng:style", function(expression, element){
   };
 });
 
-
 /**
  * @ngdoc directive
  * @name angular.directive.ng:cloak

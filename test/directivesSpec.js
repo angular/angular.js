@@ -370,6 +370,7 @@ describe("directive", function() {
       expect(element.css('height')).toEqual('40px');
     });
 
+
     it('should silently ignore undefined style', function() {
       var scope = compile('<div ng:style="myStyle"></div>');
       scope.$digest();
@@ -397,12 +398,14 @@ describe("directive", function() {
         element.remove();
       });
 
+
       it('should not mess up stuff after compilation', function() {
         element.css('margin', '44px');
         expect(element.css(preCompStyle)).toBe(preCompVal);
         expect(element.css('margin-top')).toBe('44px');
         expect(element.css(postCompStyle)).toBe(postCompVal);
       });
+
 
       it('should not mess up stuff after $apply with no model changes', function() {
         element.css('padding-top', '33px');
@@ -413,14 +416,16 @@ describe("directive", function() {
         expect(element.css('padding-top')).toBe('33px');
       });
 
+
       it('should not mess up stuff after $apply with non-colliding model changes', function() {
         scope.styleObj = {'padding-top': '99px'};
         scope.$apply();
         expect(element.css(preCompStyle)).toBe(preCompVal);
-        expect(element.css('margin-top')).toBe('');
+        expect(element.css('margin-top')).not.toBe('44px');
         expect(element.css('padding-top')).toBe('99px');
         expect(element.css(postCompStyle)).toBe(postCompVal);
       });
+
 
       it('should overwrite original styles after a colliding model change', function() {
         scope.styleObj = {'height': '99px', 'width': '88px'};
@@ -429,11 +434,12 @@ describe("directive", function() {
         expect(element.css(postCompStyle)).toBe('99px');
         scope.styleObj = {};
         scope.$apply();
-        expect(element.css(preCompStyle)).toBe('');
-        expect(element.css(postCompStyle)).toBe('');
-      });
+        expect(element.css(preCompStyle)).not.toBe('88px');
+        expect(element.css(postCompStyle)).not.toBe('99px');
+      }); 
     });
   });
+
 
   describe('ng:show', function() {
     it('should show and hide an element', function() {
