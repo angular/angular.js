@@ -1,11 +1,41 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.4">0.10.4 human-torch</a>
+- The Latest Unstable Release: <a href="#0.10.5">0.10.5 steel-fist</a>
 
 <a name="0.10.5"></a>
-# 0.10.5 steel-fist (in-progress) #
+# 0.10.5 steel-fist (11-11-08) #
+
+## Features:
+
+- [ng:autobind]: drop angular.js file name restrictions
+  ([commit](https://github.com/angular/angular.js/commit/d7ba5bc83ba9a8937384ea677331c5156ed6772d))
+- [Scope]: better logging of infinite digest error
+  ([commit](https://github.com/angular/angular.js/commit/ef875ad0cf4349144cb4674e050dd160564f6dd9),
+  issue [#621](https://github.com/angular/angular.js/issues/621))
+- enable [widget] styling in IE8 and below using
+  [html5shiv](http://code.google.com/p/html5shiv/)-like approach
+  ([commit](https://github.com/angular/angular.js/commit/163c799effd5cfadc57990f4d4127651bae3fbdb),
+  issue [#584](https://github.com/angular/angular.js/issues/584))
+- [ng:style]: compatibility + perf improvements
+  ([commit](https://github.com/angular/angular.js/commit/e2663f62b0fbb8b9ce2e706b821a135e0bc7e885))
 
 
+## Bug Fixes:
+- [ng:view]: ignore stale xhr callbacks - fixes issues caused by race-conditions which occured when
+  user navigated to a new route before the current route finished loading
+  (issue [#619](https://github.com/angular/angular.js/issues/619))
+- [ng:form] should always be a block level (css) element
+  ([commit](https://github.com/angular/angular.js/commit/02dc81bae0011b7ae4190363be5fdd5db420aca9))
+- Fixes for [e2e test runner]'s `$location` dsl
+  ([commit](https://github.com/angular/angular.js/commit/dc8ffa51b7ebe5fb9bc1c89087c8b3c9e65d1006))
+- [ng:repeat] when iterating over arrays ignore non-array properties + when iterating over objects
+  sort keys alphabetically
+  ([commit](https://github.com/angular/angular.js/commit/3945f884c5777e629b57c9ab0e93b9d02b9840d0))
 
+## Docs:
+- experimental [disqus.com](http://disqus.com/) integration for all docs-next.angularjs.org pages
+  ([commit](https://github.com/angular/angular.js/commit/28ed5ba46595a371bd734b92a6e4bb40d1013741),
+  contributed by Dan Doyon)
+- [e2e test runner] docs were moved to the dev guide
 
 
 <a name="0.10.4"></a>
@@ -927,6 +957,7 @@ with the `$route` service
 [ng:class]: http://docs.angularjs.org/#!/api/angular.directive.ng:class
 [ng:src]: http://docs.angularjs.org/#!/api/angular.directive.ng:src
 [ng:href]: http://docs.angularjs.org/#!/api/angular.directive.ng:href
+[ng:style]: http://docs.angularjs.org/#!/api/angular.directive.ng:style
 [$defer]: http://docs.angularjs.org/#!/api/angular.service.$defer
 [$cookies]: http://docs.angularjs.org/#!/api/angular.service.$cookies
 [$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
@@ -947,9 +978,11 @@ with the `$route` service
 [Jstd Scenario Adapter]: https://github.com/angular/angular.js/blob/master/src/jstd-scenario-adapter/Adapter.js
 [i18n]: http://docs-next.angularjs.org/#!/guide/dev_guide.i18n
 [ng:pluralize]: http://docs-next.angularjs.org/#!/api/angular.widget.ng:pluralize
+[ng:form]: http://docs-next.angularjs.org/api/angular.widget.form
 [ng:cloak]: http://docs-next.angularjs.org/#!/api/angular.directive.ng:cloak
 [$on]: http://docs-next.angularjs.org/#!/api/angular.scope.$on
 [$emit]: http://docs-next.angularjs.org/#!/api/angular.scope.$emit
 [$broadcast]: http://docs-next.angularjs.org/#!/api/angular.scope.$broadcast
 [$limitTo]: http://docs-next.angularjs.org/api/angular.Array.limitTo
 [$location]: http://docs-next.angularjs.org/api/angular.service.$location
+[e2e test runner]: http://docs-next.angularjs.org/guide/dev_guide.e2e-testing
