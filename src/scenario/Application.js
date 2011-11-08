@@ -90,8 +90,11 @@ angular.scenario.Application.prototype.executeAction = function(action) {
   if (!$window.angular) {
     return action.call(this, $window, _jQuery($window.document));
   }
-  var $browser = $window.angular.service.$browser();
-  $browser.notifyWhenNoOutstandingRequests(function() {
-    action.call(self, $window, _jQuery($window.document));
+  var element = $window.angular.element($window.document.body);
+  var $injector = element.inheritedData('$injector');
+  $injector(function($browser){
+    $browser.notifyWhenNoOutstandingRequests(function() {
+      action.call(self, $window, _jQuery($window.document));
+    });
   });
 };
