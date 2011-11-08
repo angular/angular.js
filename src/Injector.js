@@ -107,7 +107,7 @@ function createInjector(modulesToLoad, moduleRegistry) {
             path.shift();
           }
         case 'object':
-          if (value instanceof Array) {
+          if (isArray(value)) {
             return invoke(null, value);
           }
         default:
@@ -122,11 +122,11 @@ function createInjector(modulesToLoad, moduleRegistry) {
           length,
           key;
 
-      if (fn instanceof Function) {
+      if (typeof fn == 'function') {
         $inject = inferInjectionArgs(fn);
         length = $inject.length;
       } else {
-        if (fn instanceof Array) {
+        if (isArray(fn)) {
           $inject = fn;
           length = $inject.length;
           fn = $inject[--length];

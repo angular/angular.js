@@ -7,6 +7,11 @@ describe('mocks', function() {
       return min*60*1000;
     }
 
+    it('should look like a Date', function() {
+      var date = new angular.mock.TzDate(0,0);
+      expect(angular.isDate(date)).toBe(true);
+    });
+
     it('should take millis as constructor argument', function() {
       expect(new angular.mock.TzDate(0, 0).getTime()).toBe(0);
       expect(new angular.mock.TzDate(0, 1283555108000).getTime()).toBe(1283555108000);

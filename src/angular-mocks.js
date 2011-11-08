@@ -476,92 +476,92 @@ angular.mock.$LogProvider = function(){
  *
  */
 angular.mock.TzDate = function (offset, timestamp) {
+  var self = new Date(0);
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
 
-    this.origDate = angular.fromJson(angular.toJson({date:timestamp})).date;
+    self.origDate = angular.fromJson(angular.toJson({date:timestamp})).date;
 
-    timestamp = this.origDate.getTime();
+    timestamp = self.origDate.getTime();
     if (isNaN(timestamp))
       throw {
         name: "Illegal Argument",
         message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
       };
   } else {
-    this.origDate = new Date(timestamp);
+    self.origDate = new Date(timestamp);
   }
 
   var localOffset = new Date(timestamp).getTimezoneOffset();
-  this.offsetDiff = localOffset*60*1000 - offset*1000*60*60;
-  this.date = new Date(timestamp + this.offsetDiff);
+  self.offsetDiff = localOffset*60*1000 - offset*1000*60*60;
+  self.date = new Date(timestamp + self.offsetDiff);
 
-  this.getTime = function() {
-    return this.date.getTime() - this.offsetDiff;
+  self.getTime = function() {
+    return self.date.getTime() - self.offsetDiff;
   };
 
-  this.toLocaleDateString = function() {
-    return this.date.toLocaleDateString();
+  self.toLocaleDateString = function() {
+    return self.date.toLocaleDateString();
   };
 
-  this.getFullYear = function() {
-    return this.date.getFullYear();
+  self.getFullYear = function() {
+    return self.date.getFullYear();
   };
 
-  this.getMonth = function() {
-    return this.date.getMonth();
+  self.getMonth = function() {
+    return self.date.getMonth();
   };
 
-  this.getDate = function() {
-    return this.date.getDate();
+  self.getDate = function() {
+    return self.date.getDate();
   };
 
-  this.getHours = function() {
-    return this.date.getHours();
+  self.getHours = function() {
+    return self.date.getHours();
   };
 
-  this.getMinutes = function() {
-    return this.date.getMinutes();
+  self.getMinutes = function() {
+    return self.date.getMinutes();
   };
 
-  this.getSeconds = function() {
-    return this.date.getSeconds();
+  self.getSeconds = function() {
+    return self.date.getSeconds();
   };
 
-  this.getTimezoneOffset = function() {
+  self.getTimezoneOffset = function() {
     return offset * 60;
   };
 
-  this.getUTCFullYear = function() {
-    return this.origDate.getUTCFullYear();
+  self.getUTCFullYear = function() {
+    return self.origDate.getUTCFullYear();
   };
 
-  this.getUTCMonth = function() {
-    return this.origDate.getUTCMonth();
+  self.getUTCMonth = function() {
+    return self.origDate.getUTCMonth();
   };
 
-  this.getUTCDate = function() {
-    return this.origDate.getUTCDate();
+  self.getUTCDate = function() {
+    return self.origDate.getUTCDate();
   };
 
-  this.getUTCHours = function() {
-    return this.origDate.getUTCHours();
+  self.getUTCHours = function() {
+    return self.origDate.getUTCHours();
   };
 
-  this.getUTCMinutes = function() {
-    return this.origDate.getUTCMinutes();
+  self.getUTCMinutes = function() {
+    return self.origDate.getUTCMinutes();
   };
 
-  this.getUTCSeconds = function() {
-    return this.origDate.getUTCSeconds();
+  self.getUTCSeconds = function() {
+    return self.origDate.getUTCSeconds();
   };
 
-  this.getDay = function() {
-    return this.origDate.getDay();
+  self.getDay = function() {
+    return self.origDate.getDay();
   };
 
   //hide all methods not implemented in this mock that the Date prototype exposes
-  var self = this,
-      unimplementedMethods = ['getMilliseconds', 'getUTCDay',
+  var unimplementedMethods = ['getMilliseconds', 'getUTCDay',
       'getUTCMilliseconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
       'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
       'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
@@ -570,12 +570,11 @@ angular.mock.TzDate = function (offset, timestamp) {
 
   angular.forEach(unimplementedMethods, function(methodName) {
     self[methodName] = function() {
-      throw {
-        name: "MethodNotImplemented",
-          message: "Method '" + methodName + "' is not implemented in the TzDate mock"
-      };
+      throw Error("Method '" + methodName + "' is not implemented in the TzDate mock");
     };
   });
+
+  return self;
 }
 
 //make "tzDateInstance instanceof Date" return true

@@ -80,7 +80,6 @@ var _undefined        = undefined,
     $name             = 'name',
     $noop             = 'noop',
     $null             = 'null',
-    $number           = 'number',
     $object           = 'object',
     $string           = 'string',
     $value            = 'value',
@@ -94,6 +93,7 @@ var _undefined        = undefined,
     jQuery,           // delay binding
     slice             = [].slice,
     push              = [].push,
+    toString          = Object.prototype.toString,
     error             = window[$console]
                            ? bind(window[$console], window[$console]['error'] || noop)
                            : noop,
@@ -363,7 +363,7 @@ function isString(value){return typeof value == $string;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
  */
-function isNumber(value){return typeof value == $number;}
+function isNumber(value){return typeof value == 'number';}
 
 
 /**
@@ -377,7 +377,9 @@ function isNumber(value){return typeof value == $number;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Date`.
  */
-function isDate(value){return value instanceof Date;}
+function isDate(value){
+  return toString.apply(value) == '[object Date]';
+}
 
 
 /**
@@ -391,7 +393,9 @@ function isDate(value){return value instanceof Date;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
  */
-function isArray(value) {return value instanceof Array;}
+function isArray(value) {
+  return toString.apply(value) == '[object Array]';
+}
 
 
 /**
@@ -769,7 +773,7 @@ function equals(o1, o2) {
   if (o1 === null || o2 === null) return false;
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2 && t1 == 'object') {
-    if (o1 instanceof Array) {
+    if (isArray(o1)) {
       if ((length = o1.length) == o2.length) {
         for(key=0; key<length; key++) {
           if (!equals(o1[key], o2[key])) return false;
