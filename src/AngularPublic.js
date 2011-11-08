@@ -86,6 +86,7 @@ function ngModule($provide, $injector) {
   $provide.service('$route', $RouteProvider);
   $provide.service('$routeParams', $RouteParamsProvider);
   $provide.service('$rootScope', $RootScopeProvider);
+  $provide.service('$q', $QProvider);
   $provide.service('$sniffer', $SnifferProvider);
   $provide.service('$templateCache', $TemplateCacheProvider);
   $provide.service('$window', $WindowProvider);
