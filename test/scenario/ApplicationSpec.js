@@ -112,22 +112,20 @@ describe('angular.scenario.Application', function() {
     expect(called).toBeTruthy();
   });
 
-  it('should wait for pending requests in executeAction', function() {
+  it('should wait for pending requests in executeAction', inject(function($injector, $browser) {
     var called, polled;
     var handlers = [];
     var testWindow = {
-      document: _jQuery('<div class="test-foo"></div>'),
+      document: jqLite('<div class="test-foo"></div>'),
       angular: {
+        element: jqLite,
         service: {}
       }
     };
-    testWindow.angular.service.$browser = function() {
-      return {
-        notifyWhenNoOutstandingRequests: function(fn) {
-          handlers.push(fn);
-        }
-      };
+    $browser.notifyWhenNoOutstandingRequests = function(fn) {
+      handlers.push(fn);
     };
+    testWindow.document.data('$injector', $injector);
     app.getWindow_ = function() {
       return testWindow;
     };
@@ -138,5 +136,6 @@ describe('angular.scenario.Application', function() {
     });
     expect(handlers.length).toEqual(1);
     handlers[0]();
-  });
+    dealoc(testWindow.document);
+  }));
 });

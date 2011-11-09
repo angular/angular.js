@@ -4,30 +4,16 @@ angular.scenario.testing = angular.scenario.testing || {};
 
 angular.scenario.testing.MockAngular = function() {
   this.reset();
-  this.service = this;
+  this.element = jqLite;
 };
 
 angular.scenario.testing.MockAngular.prototype.reset = function() {
   this.log = [];
 };
 
-angular.scenario.testing.MockAngular.prototype.element = function(e) {
-  return jqLite(e);
-};
-
-angular.scenario.testing.MockAngular.prototype.$browser = function() {
-  this.log.push('$brower()');
-  return this;
-};
-
 angular.scenario.testing.MockAngular.prototype.poll = function() {
   this.log.push('$brower.poll()');
   return this;
-};
-
-angular.scenario.testing.MockAngular.prototype.notifyWhenNoOutstandingRequests = function(fn) {
-  this.log.push('$brower.notifyWhenNoOutstandingRequests()');
-  fn();
 };
 
 angular.scenario.testing.MockRunner = function() {

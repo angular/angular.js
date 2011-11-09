@@ -29,9 +29,9 @@
             this.html = '<b>Hello</b> <i>World</i>!';
           }
 
-          function HTMLEditorWidget(element) {
+          HTMLEditorWidget.$inject = ['$element', 'html$Filter'];
+          function HTMLEditorWidget(element, htmlFilter) {
             var self = this;
-            var htmlFilter = angular.filter('html');
 
             this.$parseModel = function() {
               // need to protect for script injection
@@ -59,7 +59,7 @@
           }
 
           angular.directive('ng:contenteditable', function() {
-            function linkFn($formFactory, element) {
+            return ['$formFactory', '$element', function ($formFactory, element) {
               var exp = element.attr('ng:contenteditable'),
                   form = $formFactory.forElement(element),
                   widget;
@@ -68,14 +68,12 @@
                 scope: this,
                 model: exp,
                 controller: HTMLEditorWidget,
-                controllerArgs: [element]});
+                controllerArgs: {$element: element}});
               // if the element is destroyed, then we need to notify the form.
               element.bind('$destroy', function() {
                 widget.$destroy();
               });
-            }
-            linkFn.$inject = ['$formFactory'];
-            return linkFn;
+            }];
           });
         </script>
         <form name='editorForm' ng:controller="EditorCntl">

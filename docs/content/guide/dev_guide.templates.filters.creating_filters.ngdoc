@@ -19,28 +19,32 @@ text upper-case and assigns color.
 <doc:example>
 <doc:source>
 <script type="text/javascript">
- angular.filter('reverse', function(input, uppercase, color) {
-   var out = "";
-   for (var i = 0; i < input.length; i++) {
-     out = input.charAt(i) + out;
+angular.module.MyReverseModule = function MyModule($provide) {
+ $provide.filter('reverse', function() {
+   return function(input, uppercase, color) {
+     var out = "";
+     for (var i = 0; i < input.length; i++) {
+       out = input.charAt(i) + out;
+     }
+     // conditional based on optional argument
+     if (uppercase) {
+       out = out.toUpperCase();
+     }
+     // DOM manipulation using $element
+     if (color) {
+       this.$element.css('color', color);
+     }
+     return out;
    }
-   // conditional based on optional argument
-   if (uppercase) {
-     out = out.toUpperCase();
-   }
-   // DOM manipulation using $element
-   if (color) {
-     this.$element.css('color', color);
-   }
-   return out;
  });
+}
 
  function Ctrl() {
    this.greeting = 'hello';
  }
 </script>
 
-<div ng:controller="Ctrl">
+<div ng:controller="Ctrl" ng:module="MyReverseModule">
   <input ng:model="greeting" type="greeting"><br>
   No filter: {{greeting}}<br>
   Reverse: {{greeting|reverse}}<br>

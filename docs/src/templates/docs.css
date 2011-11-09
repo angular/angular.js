@@ -474,3 +474,11 @@ td.empty-corner-lt {
 .error {
    color: red;
 }
+
+.odd {
+  background-color: #808080;
+}
+
+.even {
+  background-color: #d3d3d3;
+}

@@ -31,16 +31,18 @@ myController.$inject = ['$location', '$log'];
 <doc:example>
 <doc:source>
 <script type="text/javascript">
-angular.service('notify', function(win) {
-  var msgs = [];
-  return function(msg) {
-    msgs.push(msg);
-    if (msgs.length == 3) {
-      win.alert(msgs.join("\n"));
-      msgs = [];
-    }
-  };
-}, {$inject: ['$window']});
+angular.module.MyServiceModule = ['$provide', function($provide){
+  $provide.factory('notify', ['$window', function(win) {
+    var msgs = [];
+    return function(msg) {
+      msgs.push(msg);
+      if (msgs.length == 3) {
+        win.alert(msgs.join("\n"));
+        msgs = [];
+      }
+    };
+  }]);
+}];
 
 function myController(notifyService) {
   this.callNotify = function(msg) {
@@ -51,7 +53,7 @@ function myController(notifyService) {
 myController.$inject = ['notify'];
 </script>
 
-<div ng:controller="myController">
+<div ng:controller="myController" ng:module="MyServiceModule">
 <p>Let's try this simple notify service, injected into the controller...</p>
 <input ng:init="message='test'" type="text" ng:model="message" />
 <button ng:click="callNotify(message);">NOTIFY</button>

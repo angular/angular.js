@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.Array.filter
+ * @name angular.service.filter.filter
  * @function
  *
  * @description
@@ -44,7 +44,7 @@
        Search: <input ng:model="searchText"/>
        <table id="searchTextResults">
          <tr><th>Name</th><th>Phone</th><tr>
-         <tr ng:repeat="friend in friends.$filter(searchText)">
+         <tr ng:repeat="friend in friends | filter:searchText">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
          <tr>
@@ -55,7 +55,7 @@
        Phone only <input ng:model="search.phone"/><br>
        <table id="searchObjResults">
          <tr><th>Name</th><th>Phone</th><tr>
-         <tr ng:repeat="friend in friends.$filter(search)">
+         <tr ng:repeat="friend in friends | filter:search">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
          <tr>
