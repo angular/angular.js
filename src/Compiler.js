@@ -287,6 +287,7 @@ Compiler.prototype = {
         });
       });
       eachAttribute(element, function(value, name){
+        name = lowercase(name);
         fn = directiveFns[name];
         if (fn) {
           element.addClass('ng-directive');
