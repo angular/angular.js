@@ -27,7 +27,11 @@ function $CompileProvider(){
           }
           forEach(this.linkFns, function(fn) {
             try {
-              $injector.invoke(childScope, fn, locals);
+              if (isArray(fn) || fn.$inject) {
+                $injector.invoke(childScope, fn, locals);
+              } else {
+                fn.call(childScope, element);
+              }
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -52,10 +56,6 @@ function $CompileProvider(){
 
         addLinkFn:function(linkingFn) {
           if (linkingFn) {
-            //TODO(misko): temporary hack.
-            if (isFunction(linkingFn) && !linkingFn.$inject) {
-              linkingFn.$inject = ['$element'];
-            }
             this.linkFns.push(linkingFn);
           }
         },
@@ -298,7 +298,9 @@ function $CompileProvider(){
               fn = directiveFns[name];
               if (fn) {
                 element.addClass('ng-directive');
-                template.addLinkFn((directiveFns[name]).call(selfApi, value, element));
+                template.addLinkFn((isArray(fn) || fn.$inject)
+                  ? $injector.invoke(selfApi, fn, {$value:value, $element: element})
+                  : fn.call(selfApi, value, element));
               }
             });
           }
