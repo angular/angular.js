@@ -105,7 +105,7 @@ var _undefined        = undefined,
     /** @name angular.attrMarkup */
     angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
     /** @name angular.directive */
-    angularDirective  = extensionMap(angular, 'directive'),
+    angularDirective  = extensionMap(angular, 'directive', lowercase),
     /** @name angular.widget */
     angularWidget     = extensionMap(angular, 'widget', shivForIE),
     /** @name angular.filter */
