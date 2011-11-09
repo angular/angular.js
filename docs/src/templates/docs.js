@@ -152,9 +152,6 @@ function TutorialInstructionsCtrl($cookieStore) {
 window.angular = window.angular || {};
 angular.module = angular.module || {};
 
-angular.module.ngdocs = function($provide) {
-  $provide.value('$locationConfig', {
-    html5Mode: true,
-    hashPrefix: '!'
-  });
+angular.module.ngdocs = function($locationProvider) {
+  $locationProvider.html5Mode(true).hashPrefix('!');
 };

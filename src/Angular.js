@@ -954,7 +954,6 @@ function ngModule($provide, $injector) {
   $provide.service('$filter', $FilterProvider);
   $provide.service('$formFactory', $FormFactoryProvider);
   $provide.service('$location', $LocationProvider);
-  $provide.service('$locationConfig', $LocationConfigProvider);
   $provide.service('$log', $LogProvider);
   $provide.service('$parse', $ParseProvider);
   $provide.service('$resource', $ResourceProvider);
