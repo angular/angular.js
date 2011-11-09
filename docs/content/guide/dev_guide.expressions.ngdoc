@@ -54,15 +54,26 @@ You can try evaluating different expressions here:
    function Cntl2() {
      this.exprs = [];
      this.expr = '3*10|currency';
+     this.addExp = function(expr) {
+        this.exprs.push(expr);
+     };
+
+     this.removeExp = function(contact) {
+       for ( var i = 0, ii = this.exprs.length; i < ii; i++) {
+         if (contact === this.exprs[i]) {
+           this.exprs.splice(i, 1);
+         }
+       }
+     };
    }
  </script>
  <div ng:controller="Cntl2" class="expressions">
    Expression:
    <input type='text' ng:model="expr" size="80"/>
-   <button ng:click="exprs.$add(expr)">Evaluate</button>
+   <button ng:click="addExp(expr)">Evaluate</button>
    <ul>
     <li ng:repeat="expr in exprs">
-      [ <a href="" ng:click="exprs.$remove(expr)">X</a> ]
+      [ <a href="" ng:click="removeExp(expr)">X</a> ]
       <tt>{{expr}}</tt> => <span ng:bind="$parent.$eval(expr)"></span>
      </li>
    </ul>
@@ -175,7 +186,7 @@ Extensions: You can further extend the expression vocabulary by adding new metho
  Search: <input ng:model="searchText"/>
  <table class="example3">
    <tr><th>Name</th><th>Phone</th><tr>
-   <tr ng:repeat="friend in friends.$filter(searchText)">
+   <tr ng:repeat="friend in friends | filter:searchText">
      <td>{{friend.name}}</td>
      <td>{{friend.phone}}</td>
    </tr>

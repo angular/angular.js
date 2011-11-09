@@ -53,7 +53,7 @@
              <th><a href="" ng:click="predicate = 'phone'; reverse=!reverse">Phone Number</a></th>
              <th><a href="" ng:click="predicate = 'age'; reverse=!reverse">Age</a></th>
            <tr>
-           <tr ng:repeat="friend in friends.$orderBy(predicate, reverse)">
+           <tr ng:repeat="friend in friends | orderBy:predicate:reverse">
              <td>{{friend.name}}</td>
              <td>{{friend.phone}}</td>
              <td>{{friend.age}}</td>

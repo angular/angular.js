@@ -344,7 +344,9 @@ angular.mock.$Browser.prototype = {
     }
   },
 
-  addJs: function() {}
+  notifyWhenNoOutstandingRequests: function(fn) {
+    fn();
+  }
 };
 
 

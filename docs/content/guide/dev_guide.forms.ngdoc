@@ -134,7 +134,16 @@ The following example demonstrates:
      save: function() {
        this.master = this.form;
        this.cancel();
+     },
+
+     isCancelDisabled: function() {
+       return angular.equals(this.master, this.form);
+     },
+
+     isSaveDisabled: function() {
+       return this.userForm.$invalid || angular.equals(this.master, this.form);
      }
+
    };
    </script>
    <div ng:controller="UserFormCntl">
@@ -172,10 +181,9 @@ The following example demonstrates:
        </ng:form>
 
        <button ng:click="cancel()"
-               ng:disabled="{{master.$equals(form)}}">Cancel</button>
+               ng:disabled="{{isCancelDisabled()}}">Cancel</button>
        <button ng:click="save()"
-               ng:disabled="{{userForm.$invalid || master.$equals(form)}}">
-          Save</button>
+               ng:disabled="{{isSaveDisabled()}}">Save</button>
      </form>
 
      <hr/>
@@ -278,9 +286,9 @@ This example shows how to implement a custom HTML editor widget in Angular.
             this.htmlContent = '<b>Hello</b> <i>World</i>!';
           }
 
-          function HTMLEditorWidget(element) {
+          HTMLEditorWidget.$inject = ['$element', 'html$Filter'];
+          function HTMLEditorWidget(element, htmlFilter) {
             var self = this;
-            var htmlFilter = angular.filter('html');
 
             this.$parseModel = function() {
               // need to protect for script injection
@@ -309,7 +317,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
           }
 
           angular.directive('ng:html-editor-model', function() {
-            function linkFn($formFactory, element) {
+            return ['$formFactory', '$element', function ($formFactory, element) {
               var exp = element.attr('ng:html-editor-model'),
                   form = $formFactory.forElement(element),
                   widget;
@@ -318,15 +326,13 @@ This example shows how to implement a custom HTML editor widget in Angular.
                 scope: this,
                 model: exp,
                 controller: HTMLEditorWidget,
-                controllerArgs: [element]});
+                controllerArgs: {$element: element}});
               // if the element is destroyed, then we need to
               // notify the form.
               element.bind('$destroy', function() {
                 widget.$destroy();
               });
-            }
-            linkFn.$inject = ['$formFactory'];
-            return linkFn;
+            }];
           });
         </script>
         <form name='editorForm' ng:controller="EditorCntl">

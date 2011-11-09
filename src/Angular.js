@@ -498,10 +498,6 @@ function map(obj, iterator, context) {
 
 
 /**
- * @ngdoc function
- * @name angular.Object.size
- * @function
- *
  * @description
  * Determines the number of elements in an array, the number of properties an object has, or
  * the length of a string.
@@ -512,29 +508,6 @@ function map(obj, iterator, context) {
  * @param {Object|Array|string} obj Object, array, or string to inspect.
  * @param {boolean} [ownPropsOnly=false] Count only "own" properties in an object
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *   <script>
- *     function SizeCtrl() {
- *       this.fooStringLength = angular.Object.size('foo');
- *     }
- *   </script>
- *   <div ng:controller="SizeCtrl">
- *     Number of items in array: {{ [1,2].$size() }}<br/>
- *     Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
- *     String length: {{fooStringLength}}
- *   </div>
- *  </doc:source>
- *  <doc:scenario>
- *   it('should print correct sizes for an array and an object', function() {
- *     expect(binding('[1,2].$size()')).toBe('2');
- *     expect(binding('{a:1, b:2, c:3}.$size()')).toBe('3');
- *     expect(binding('fooStringLength')).toBe('3');
- *   });
- *  </doc:scenario>
- * </doc:example>
  */
 function size(obj, ownPropsOnly) {
   var size = 0, key;
@@ -566,11 +539,11 @@ function indexOf(array, obj) {
 }
 
 function arrayRemove(array, value) {
-    var index = indexOf(array, value);
-    if (index >=0)
-      array.splice(index, 1);
-    return value;
-  }
+  var index = indexOf(array, value);
+  if (index >=0)
+    array.splice(index, 1);
+  return value;
+}
 
 function isLeafNode (node) {
   if (node) {
@@ -590,15 +563,6 @@ function isLeafNode (node) {
  * @function
  *
  * @description
- * Alias for {@link angular.Object.copy}
- */
-
-/**
- * @ngdoc function
- * @name angular.Object.copy
- * @function
- *
- * @description
  * Creates a deep copy of `source`, which should be an object or an array.
  *
  * * If no destination is supplied, a copy of the object or array is created.
@@ -614,46 +578,6 @@ function isLeafNode (node) {
  * @param {(Object|Array)=} destination Destination into which the source is copied. If
  *     provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
- *
- * @example
- * <doc:example>
- *  <doc:source>
-     <script>
-       function Ctrl() {
-         this.master = {
-           salutation: 'Hello',
-           name: 'world'
-         };
-         this.copy = function() {
-           this.form = angular.copy(this.master);
-         }
-       }
-     </script>
-     <div ng:controller="Ctrl">
-       Salutation: <input type="text" ng:model="master.salutation" ><br/>
-       Name: <input type="text" ng:model="master.name"><br/>
-       <button ng:click="copy()">copy</button>
-       <hr/>
-
-       The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
-
-       <pre>master={{master}}</pre>
-       <pre>form={{form}}</pre>
-     </div>
- *  </doc:source>
- *  <doc:scenario>
-   it('should print that initialy the form object is NOT equal to master', function() {
-     expect(element('.doc-example-live input[ng\\:model="master.salutation"]').val()).toBe('Hello');
-     expect(element('.doc-example-live input[ng\\:model="master.name"]').val()).toBe('world');
-     expect(element('.doc-example-live span').css('display')).toBe('inline');
-   });
-
-   it('should make form and master equal when the copy button is clicked', function() {
-     element('.doc-example-live button').click();
-     expect(element('.doc-example-live span').css('display')).toBe('none');
-   });
- *  </doc:scenario>
- * </doc:example>
  */
 function copy(source, destination){
   if (!destination) {
@@ -693,15 +617,6 @@ function copy(source, destination){
  * @function
  *
  * @description
- * Alias for {@link angular.Object.equals}
- */
-
-/**
- * @ngdoc function
- * @name angular.Object.equals
- * @function
- *
- * @description
  * Determines if two objects or two values are equivalent. Supports value types, arrays and
  * objects.
  *
@@ -720,43 +635,6 @@ function copy(source, destination){
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  *
- * @example
- * <doc:example>
- *  <doc:source>
-     <script>
-       function Ctrl() {
-         this.master = {
-           salutation: 'Hello',
-           name: 'world'
-         };
-         this.greeting = angular.copy(this.master);
-       }
-     </script>
-     <div ng:controller="Ctrl">
-       Salutation: <input type="text" ng:model="greeting.salutation"><br/>
-       Name: <input type="text" ng:model="greeting.name"><br/>
-       <hr/>
-
-       The <code>greeting</code> object is
-       <span ng:hide="greeting.$equals(master)">NOT</span> equal to
-       <code>{salutation:'Hello', name:'world'}</code>.
-
-       <pre>greeting={{greeting}}</pre>
-     </div>
- *  </doc:source>
- *  <doc:scenario>
-     it('should print that initialy greeting is equal to the hardcoded value object', function() {
-       expect(element('.doc-example-live input[ng\\:model="greeting.salutation"]').val()).toBe('Hello');
-       expect(element('.doc-example-live input[ng\\:model="greeting.name"]').val()).toBe('world');
-       expect(element('.doc-example-live span').css('display')).toBe('none');
-     });
-
-     it('should say that the objects are not equal when the form is modified', function() {
-       input('greeting.name').enter('kitty');
-       expect(element('.doc-example-live span').css('display')).toBe('inline');
-     });
- *  </doc:scenario>
- * </doc:example>
  */
 function equals(o1, o2) {
   if (o1 === o2) return true;

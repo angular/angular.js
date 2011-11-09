@@ -90,7 +90,7 @@ angular.scenario.Application.prototype.executeAction = function(action) {
   if (!$window.angular) {
     return action.call(this, $window, _jQuery($window.document));
   }
-  var element = $window.angular.element($window.document.body);
+  var element = $window.angular.element($window.document);
   var $injector = element.inheritedData('$injector');
   $injector(function($browser){
     $browser.notifyWhenNoOutstandingRequests(function() {

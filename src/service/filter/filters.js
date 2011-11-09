@@ -40,8 +40,6 @@
  * @param {string=} symbol Currency symbol or identifier to be displayed.
  * @returns {string} Formatted number.
  *
- * @css ng-format-negative
- *   When the value is negative, this css class is applied to the binding making it (by default) red.
  *
  * @example
    <doc:example>
@@ -66,8 +64,6 @@
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
-         expect(element('.doc-example-live .ng-binding').prop('className')).
-           toMatch(/ng-format-negative/);
        });
      </doc:scenario>
    </doc:example>
