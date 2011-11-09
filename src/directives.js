@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @ngdoc overview
+ * @ngdoc function
  * @name angular.directive
  * @description
  *
@@ -39,6 +39,24 @@
  * For more information about how Angular directives work, and to learn how to create your own
  * directives, see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in
  * the Angular Developer Guide.
+ *
+ * @param {string} name Directive identifier (case insensitive).
+ * @param {function(string, Element)} compileFn Also called "template function" is a function called
+ *    during compilation of the template when the compiler comes across the directive being
+ *    registered. The string value of the element attribute representing the directive and
+ *    jQuery/jqLite wrapped DOM element are passed as arguments to this function.
+ *
+ *    The `compileFn` function may return a linking function also called an instance function.
+ *    This function is called during the linking phase when a Scope is being associated with the
+ *    template or template clone (see repeater notes below). The signature of the linking function
+ *    is: `function(Element)` where Element is jQuery/jqLite wrapped DOM Element that is being
+ *    linked.
+ *
+ * The biggest differenciator between the compile and linking functions is how they are being called
+ * when a directive is present within an {@link angular.widget.@ng:repeat ng:repeat}. In this case,
+ * the compile function gets called once per occurence of the directive in the template. On the
+ * other hand the linking function gets called once for each repeated clone of the template (times
+ * number of occurences of the directive in the repeated template).
  */
 
 /**
