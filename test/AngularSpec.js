@@ -427,6 +427,29 @@ describe('angular', function() {
     });
   });
 
+
+  describe('directive', function() {
+    it('should register directives with case-insensitive id', function() {
+      angularDirective('ALLCAPS', function(val, el) {el.text('+' + val + '+')});
+      angularDirective('lowercase', function(val, el) {el.text('-' + val + '-')});
+
+      var el = jqLite('<div>' +
+                        '<span allcaps="xx1"></span>' +
+                        '<span ALLcaps="xx2"></span>' +
+                        '<span ALLCAPS="xx3"></span>' +
+                        '<span lowerCASE="XX4">xx4</span>' +
+                      '</div>');
+      compile(el);
+      expect(lowercase(sortedHtml(el))).toBe('<div>' +
+                                                '<span allcaps="xx1">+xx1+</span>' +
+                                                '<span allcaps="xx2">+xx2+</span>' +
+                                                '<span allcaps="xx3">+xx3+</span>' +
+                                                '<span lowercase="xx4">-xx4-</span>' +
+                                              '</div>');
+    });
+  });
+
+
   describe('isDate', function() {
     it('should return true for Date object', function() {
       expect(isDate(new Date())).toBe(true);
