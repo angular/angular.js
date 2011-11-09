@@ -635,10 +635,7 @@ function $RootScopeProvider(){
       }
     };
 
-    // TODO(misko): remove this;
-    var scope = new Scope();
-    scope.$service = $injector;
-    return scope;
+    return new Scope();
 
     function compileToFn(exp, name) {
       var fn = $parse(exp);
