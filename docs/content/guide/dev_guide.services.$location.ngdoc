@@ -88,26 +88,22 @@ setter methods that allow you to get or change the current URL in the browser.
 
 ## $location service configuration
 
-To configure the `$location` service, you define the `$locationConfig` service which is an object
-with configuration properties:
+To configure the `$location` service, you get a hold of
+{@link angular.module.ng.$locationProvider $locationProvider} service and configure it with these
+methods:
 
-- **html5Mode**: {boolean}<br />
+- **html5Mode(mode)**: {boolean}<br />
   `true` - see HTML5 mode<br />
   `false` - see Hashbang mode<br />
   default: `false`
 
-- **hashPrefix**: {string}<br />
+- **hashPrefix(prefix)**: {string}<br />
   prefix used for Hashbang URLs (used in Hashbang mode or in legacy browser in Html5 mode)<br />
   default: `'!'`
 
 ### Example configuration
 <pre>
-angular.service('$locationConfig', function() {
-  return {
-    html5mode: true,
-    hashPrefix: '!'
-  };
-});
+$locationProvider.html5Mode(true).hashPrefix('!');
 </pre>
 
 ## Getter and setter methods

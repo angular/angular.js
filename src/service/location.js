@@ -420,15 +420,35 @@ function locationGetterSetter(property, preprocess) {
  * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
 function $LocationProvider(){
-  this.$get = ['$rootScope', '$browser', '$sniffer', '$locationConfig', '$document',
-      function( $rootScope,   $browser,   $sniffer,   $locationConfig,   $document) {
+  var hashPrefix = '',
+      html5Mode = false;
+
+  this.hashPrefix = function(prefix) {
+    if (isDefined(prefix)) {
+      hashPrefix = prefix;
+      return this;
+    } else {
+      return html5Mode;
+    }
+  }
+
+  this.html5Mode = function(mode) {
+    if (isDefined(mode)) {
+      html5Mode = mode;
+      return this;
+    } else {
+      return html5Mode;
+    }
+  };
+
+  this.$get = ['$rootScope', '$browser', '$sniffer', '$document',
+      function( $rootScope,   $browser,   $sniffer,   $document) {
     var currentUrl,
         basePath = $browser.baseHref() || '/',
         pathPrefix = pathPrefixFromBase(basePath),
-        hashPrefix = $locationConfig.hashPrefix || '',
         initUrl = $browser.url();
 
-    if ($locationConfig.html5Mode) {
+    if (html5Mode) {
       if ($sniffer.history) {
         currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
       } else {
@@ -504,14 +524,4 @@ function $LocationProvider(){
 
     return currentUrl;
 }];
-}
-
-//TODO(misko): refactor to service
-function $LocationConfigProvider(){
-  this.$get = function() {
-    return {
-      html5Mode: false,
-      hashPrefix: ''
-    };
-  };
 }
