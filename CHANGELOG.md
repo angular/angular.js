@@ -1,6 +1,11 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
 - The Latest Unstable Release: <a href="#0.10.5">0.10.5 steel-fist</a>
 
+<a name="0.10.6"></a>
+# 0.10.6 bubblewrap-cape (in-progress) #
+
+
+
 <a name="0.10.5"></a>
 # 0.10.5 steel-fist (11-11-08) #
 
@@ -36,6 +41,7 @@
   ([commit](https://github.com/angular/angular.js/commit/28ed5ba46595a371bd734b92a6e4bb40d1013741),
   contributed by Dan Doyon)
 - [e2e test runner] docs were moved to the dev guide
+
 
 
 <a name="0.10.4"></a>
