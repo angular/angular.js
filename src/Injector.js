@@ -167,24 +167,29 @@ function createInjector(modulesToLoad, moduleRegistry) {
       instance = new Constructor();
       return invoke(instance, Type, locals) || instance;
     };
+    injector.loadModule = loadModule;
     return injector;
   }
 
-
-  forEach(modulesToLoad, function(module){
-    if (isString(module)) {
-      if (moduleRegistry[module]) {
-        module = moduleRegistry[module];
-      } else {
-        throw Error("Module '" + module + "' is not defined!");
+  function loadModule(modulesToLoad){
+    forEach(isString(modulesToLoad) ? modulesToLoad.split(',') : modulesToLoad, function(module) {
+      if (isString(module)) {
+        if (moduleRegistry[module = trim(module)]) {
+          module = moduleRegistry[module];
+        } else {
+          throw Error("Module '" + module + "' is not defined!");
+        }
       }
-    }
-    if (isFunction(module) || isArray(module)) {
-      $injector(module);
-    } else {
-      assertArgFn(module, 'module');
-    }
-  });
+      if (isFunction(module) || isArray(module)) {
+        $injector(module);
+      } else {
+        assertArgFn(module, 'module');
+      }
+    });
+  }
+
+
+  loadModule(modulesToLoad);
 
   // instantiate $eager providers
   // for perf we can't do forEach

@@ -535,4 +535,17 @@ describe("directive", function() {
       expect(element.hasClass('bar')).toBe(true);
     }));
   });
+
+  describe('ng:module', function() {
+    it('should install the modules', inject(function($injector, $compile, $rootScope) {
+      var log = '';
+      var injector = $injector;
+      angular.module.a = function($injector){ log += ($injector == injector) + ';';};
+      angular.module.b = function($injector){ log += ($injector == injector); }
+      $compile('<div ng:module="   a, ,,, b "></div>')($rootScope);
+      expect(log).toEqual('true;true');
+      delete angular.module.a;
+      delete angular.module.b;
+    }));
+  });
 });

@@ -11,6 +11,10 @@ angular.scenario.testing.MockAngular.prototype.reset = function() {
   this.log = [];
 };
 
+angular.scenario.testing.MockAngular.prototype.element = function(e) {
+  return jqLite(e);
+};
+
 angular.scenario.testing.MockAngular.prototype.$browser = function() {
   this.log.push('$brower()');
   return this;

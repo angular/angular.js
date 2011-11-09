@@ -690,8 +690,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      <doc:source>
         <ol ng:init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng:repeat="name in names">
-           <span ng:class-odd="'ng-format-negative'"
-                 ng:class-even="'ng-input-indicator-wait'">
+           <span ng:class-odd="'odd'" ng:class-even="'even'">
              {{name}} &nbsp; &nbsp; &nbsp;
            </span>
           </li>
@@ -700,9 +699,9 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      <doc:scenario>
        it('should check ng:class-odd and ng:class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
-           toMatch(/ng-format-negative/);
+           toMatch(/odd/);
          expect(element('.doc-example-live li:last span').prop('className')).
-           toMatch(/ng-input-indicator-wait/);
+           toMatch(/even/);
        });
      </doc:scenario>
    </doc:example>
@@ -888,3 +887,12 @@ angularDirective("ng:cloak", function(expression, element) {
   element.removeAttr('ng:cloak');
   element.removeClass('ng-cloak');
 });
+
+angularDirective('ng:module', ['$value', '$injector',
+                       function(modules,  $injector) {
+  forEach(modules.split(','), function(module){
+    if (module = trim(module)) {
+      $injector.loadModule(module);
+    }
+  });
+}]);
