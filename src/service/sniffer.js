@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$sniffer
+ * @ngdoc object
+ * @name angular.module.NG.$sniffer
  * @requires $window
  *
  * @property {boolean} history Does the browser support html5 history api ?

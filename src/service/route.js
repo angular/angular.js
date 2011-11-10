@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$route
+ * @ngdoc object
+ * @name angular.module.NG.$route
  * @requires $location
  * @requires $routeParams
  *
@@ -14,7 +14,7 @@
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  *
  * The `$route` service is typically used in conjunction with {@link angular.widget.ng:view ng:view}
- * widget and the {@link angular.service.$routeParams $routeParams} service.
+ * widget and the {@link angular.module.NG.$routeParams $routeParams} service.
  *
  * @example
    This example shows how changing the URL hash causes the <tt>$route</tt>
@@ -67,8 +67,8 @@ function $RouteProvider(){
       function( $rootScope,  $location,  $routeParams) {
     /**
      * @ngdoc event
-     * @name angular.service.$route#$beforeRouteChange
-     * @eventOf angular.service.$route
+     * @name angular.module.NG.$route#$beforeRouteChange
+     * @eventOf angular.module.NG.$route
      * @eventType broadcast on root scope
      * @description
      * Broadcasted before a route change.
@@ -79,14 +79,14 @@ function $RouteProvider(){
      * The `Route` object extends the route definition with the following properties.
      *
      *    * `scope` - The instance of the route controller.
-     *    * `params` - The current {@link angular.service.$routeParams params}.
+     *    * `params` - The current {@link angular.module.NG.$routeParams params}.
      *
      */
 
     /**
      * @ngdoc event
-     * @name angular.service.$route#$afterRouteChange
-     * @eventOf angular.service.$route
+     * @name angular.module.NG.$route#$afterRouteChange
+     * @eventOf angular.module.NG.$route
      * @eventType broadcast on root scope
      * @description
      * Broadcasted after a route change.
@@ -97,14 +97,14 @@ function $RouteProvider(){
      * The `Route` object extends the route definition with the following properties.
      *
      *    * `scope` - The instance of the route controller.
-     *    * `params` - The current {@link angular.service.$routeParams params}.
+     *    * `params` - The current {@link angular.module.NG.$routeParams params}.
      *
      */
 
     /**
      * @ngdoc event
-     * @name angular.service.$route#$routeUpdate
-     * @eventOf angular.service.$route
+     * @name angular.module.NG.$route#$routeUpdate
+     * @eventOf angular.module.NG.$route
      * @eventType emit on the current route scope
      * @description
      *
@@ -122,8 +122,8 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name angular.service.$route#parent
-           * @methodOf angular.service.$route
+           * @name angular.module.NG.$route#parent
+           * @methodOf angular.module.NG.$route
            *
            * @param {Scope} [scope=rootScope] Scope to be used as parent for newly created
            *    `$route.current.scope` scopes.
@@ -138,8 +138,8 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name angular.service.$route#when
-           * @methodOf angular.service.$route
+           * @name angular.module.NG.$route#when
+           * @methodOf angular.module.NG.$route
            *
            * @param {string} path Route path (matched against `$location.hash`)
            * @param {Object} route Mapping information to be assigned to `$route.current` on route
@@ -153,7 +153,7 @@ function $RouteProvider(){
            *      {@link angular.widget.ng:view ng:view} or
            *      {@link angular.widget.ng:include ng:include} widgets.
            *    - `redirectTo` – {(string|function())=} – value to update
-           *      {@link angular.service.$location $location} path with and trigger route redirection.
+           *      {@link angular.module.NG.$location $location} path with and trigger route redirection.
            *
            *      If `redirectTo` is a function, it will be called with the following parameters:
            *
@@ -170,7 +170,7 @@ function $RouteProvider(){
            *
            *      If the option is set to false and url in the browser changes, then
            *      $routeUpdate event is emited on the current route scope. You can use this event to
-           *      react to {@link angular.service.$routeParams} changes:
+           *      react to {@link angular.module.NG.$routeParams} changes:
            *
            *            function MyCtrl($route, $routeParams) {
            *              this.$on('$routeUpdate', function() {
@@ -193,8 +193,8 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name angular.service.$route#otherwise
-           * @methodOf angular.service.$route
+           * @name angular.module.NG.$route#otherwise
+           * @methodOf angular.module.NG.$route
            *
            * @description
            * Sets route definition that will be used on route change when no other route definition
@@ -208,12 +208,12 @@ function $RouteProvider(){
 
           /**
            * @ngdoc method
-           * @name angular.service.$route#reload
-           * @methodOf angular.service.$route
+           * @name angular.module.NG.$route#reload
+           * @methodOf angular.module.NG.$route
            *
            * @description
            * Causes `$route` service to reload (and recreate the `$route.current` scope) upon the next
-           * eval even if {@link angular.service.$location $location} hasn't changed.
+           * eval even if {@link angular.module.NG.$location $location} hasn't changed.
            */
           reload: function() {
             dirty++;

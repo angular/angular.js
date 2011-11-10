@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$cookieStore
+ * @ngdoc object
+ * @name angular.module.NG.$cookieStore
  * @requires $cookies
  *
  * @description
@@ -17,8 +17,8 @@ function $CookieStoreProvider(){
     return {
       /**
        * @ngdoc method
-       * @name angular.service.$cookieStore#get
-       * @methodOf angular.service.$cookieStore
+       * @name angular.module.NG.$cookieStore#get
+       * @methodOf angular.module.NG.$cookieStore
        *
        * @description
        * Returns the value of given cookie key
@@ -32,8 +32,8 @@ function $CookieStoreProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.service.$cookieStore#put
-       * @methodOf angular.service.$cookieStore
+       * @name angular.module.NG.$cookieStore#put
+       * @methodOf angular.module.NG.$cookieStore
        *
        * @description
        * Sets a value for given cookie key
@@ -47,8 +47,8 @@ function $CookieStoreProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.service.$cookieStore#remove
-       * @methodOf angular.service.$cookieStore
+       * @name angular.module.NG.$cookieStore#remove
+       * @methodOf angular.module.NG.$cookieStore
        *
        * @description
        * Remove given cookie

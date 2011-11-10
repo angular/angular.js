@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$defer
+ * @ngdoc function
+ * @name angular.module.NG.$defer
  * @requires $browser
  *
  * @description
- * Delegates to {@link angular.service.$browser $browser.defer}, but wraps the `fn` function
+ * Delegates to {@link angular.module.NG.$browser#defer $browser.defer}, but wraps the `fn` function
  * into a try/catch block and delegates any exceptions to
- * {@link angular.service.$exceptionHandler $exceptionHandler} service.
+ * {@link angular.module.NG.$exceptionHandler $exceptionHandler} service.
  *
  * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
  *
@@ -19,8 +19,8 @@
 
 /**
  * @ngdoc function
- * @name angular.service.$defer#cancel
- * @methodOf angular.service.$defer
+ * @name angular.module.NG.$defer#cancel
+ * @methodOf angular.module.NG.$defer
  *
  * @description
  * Cancels a defered task identified with `deferId`.

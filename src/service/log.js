@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$log
+ * @ngdoc object
+ * @name angular.module.NG.$log
  * @requires $window
  *
  * @description
@@ -40,8 +40,8 @@ function $LogProvider(){
     return {
       /**
        * @ngdoc method
-       * @name angular.service.$log#log
-       * @methodOf angular.service.$log
+       * @name angular.module.NG.$log#log
+       * @methodOf angular.module.NG.$log
        *
        * @description
        * Write a log message
@@ -50,8 +50,8 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.service.$log#warn
-       * @methodOf angular.service.$log
+       * @name angular.module.NG.$log#warn
+       * @methodOf angular.module.NG.$log
        *
        * @description
        * Write a warning message
@@ -60,8 +60,8 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.service.$log#info
-       * @methodOf angular.service.$log
+       * @name angular.module.NG.$log#info
+       * @methodOf angular.module.NG.$log
        *
        * @description
        * Write an information message
@@ -70,8 +70,8 @@ function $LogProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.service.$log#error
-       * @methodOf angular.service.$log
+       * @name angular.module.NG.$log#error
+       * @methodOf angular.module.NG.$log
        *
        * @description
        * Write an error message

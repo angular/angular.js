@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$routeParams
+ * @ngdoc object
+ * @name angular.module.NG.$routeParams
  * @requires $route
  *
  * @description
  * Current set of route parameters. The route parameters are a combination of the
- * {@link angular.service.$location $location} `search()`, and `path()`. The `path` parameters
- * are extracted when the {@link angular.service.$route $route} path is matched.
+ * {@link angular.module.NG.$location $location} `search()`, and `path()`. The `path` parameters
+ * are extracted when the {@link angular.module.NG.$route $route} path is matched.
  *
  * In case of parameter name collision, `path` params take precedence over `search` params.
  *
