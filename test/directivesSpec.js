@@ -41,8 +41,8 @@ describe("directive", function() {
       expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
     }));
 
-    it('should set element element', inject(function($rootScope, $compile, $provide) {
-      $provide.filter('myElement', valueFn(function() {
+    it('should set element element', inject(function($rootScope, $compile, $filterProvider) {
+      $filterProvider.register('myElement', valueFn(function() {
         return jqLite('<a>hello</a>');
       }));
       var element = $compile('<div ng:bind="0|myElement"></div>')($rootScope);
@@ -73,9 +73,9 @@ describe("directive", function() {
       expect(element.text()).toEqual('Hello Misko!');
     }));
 
-    it('should have $element set to current bind element', inject(function($rootScope, $compile, $provide) {
+    it('should have $element set to current bind element', inject(function($rootScope, $compile, $filterProvider) {
       var innerText;
-      $provide.filter('myFilter', valueFn(function(text) {
+      $filterProvider.register('myFilter', valueFn(function(text) {
         innerText = innerText || this.$element.text();
         return text;
       }));

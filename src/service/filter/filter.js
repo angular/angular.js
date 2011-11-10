@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name angular.service.filter.filter
+ * @ngdoc filter
+ * @name angular.module.NG.$filter.filter
  * @function
  *
  * @description

@@ -1,35 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc overview
- * @name angular.filter
- * @description
- *
- * Filters are used for formatting data displayed to the user.
- *
- * The general syntax in templates is as follows:
- *
- *         {{ expression | [ filter_name ] }}
- *
- * Following is the list of built-in angular filters:
- *
- * * {@link angular.filter.currency currency}
- * * {@link angular.filter.date date}
- * * {@link angular.filter.html html}
- * * {@link angular.filter.json json}
- * * {@link angular.filter.linky linky}
- * * {@link angular.filter.lowercase lowercase}
- * * {@link angular.filter.number number}
- * * {@link angular.filter.uppercase uppercase}
- *
- * For more information about how angular filters work, and how to create your own filters, see
- * {@link guide/dev_guide.templates.filters Understanding Angular Filters} in the angular Developer
- * Guide.
- */
-
-/**
  * @ngdoc filter
- * @name angular.filter.currency
+ * @name angular.module.NG.$filter.currency
  * @function
  *
  * @description
@@ -80,7 +53,7 @@ function currencyFilter($locale) {
 
 /**
  * @ngdoc filter
- * @name angular.filter.number
+ * @name angular.module.NG.$filter.number
  * @function
  *
  * @description
@@ -266,7 +239,7 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
 
 /**
  * @ngdoc filter
- * @name angular.filter.date
+ * @name angular.module.NG.$filter.date
  * @function
  *
  * @description
@@ -391,7 +364,7 @@ function dateFilter($locale) {
 
 /**
  * @ngdoc filter
- * @name angular.filter.json
+ * @name angular.module.NG.$filter.json
  * @function
  *
  * @description
@@ -427,9 +400,10 @@ function jsonFilter() {
 
 /**
  * @ngdoc filter
- * @name angular.filter.lowercase
+ * @name angular.module.NG.$filter.lowercase
  * @function
- *
+ * @description
+ * Converts string to lowercase.
  * @see angular.lowercase
  */
 var lowercaseFilter = valueFn(lowercase);
@@ -437,9 +411,10 @@ var lowercaseFilter = valueFn(lowercase);
 
 /**
  * @ngdoc filter
- * @name angular.filter.uppercase
+ * @name angular.module.NG.$filter.uppercase
  * @function
- *
+ * @description
+ * Converts string to uppercase.
  * @see angular.uppercase
  */
 var uppercaseFilter = valueFn(uppercase);
@@ -447,7 +422,7 @@ var uppercaseFilter = valueFn(uppercase);
 
 /**
  * @ngdoc filter
- * @name angular.filter.html
+ * @name angular.module.NG.$filter.html
  * @function
  *
  * @description
@@ -539,6 +514,7 @@ var uppercaseFilter = valueFn(uppercase);
      </doc:scenario>
    </doc:example>
  */
+//TODO(misko): turn sensitization into injectable service
 function htmlFilter() {
   return function(html, option){
     return new HTML(html, option);
@@ -548,7 +524,7 @@ function htmlFilter() {
 
 /**
  * @ngdoc filter
- * @name angular.filter.linky
+ * @name angular.module.NG.$filter.linky
  * @function
  *
  * @description
