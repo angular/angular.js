@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$locale
+ * @ngdoc object
+ * @name angular.module.NG.$locale
  *
  * @description
  * $locale service provides localization rules for various Angular components. As of right now the
