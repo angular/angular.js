@@ -22,7 +22,6 @@ function collect() {
     files.forEach(function(file) {
       var work;
       if(/\.js$/.test(file)) {
-        console.log("reading " + file + ".......");
         work = Q.when(qfs.read(file, 'b'), function(content) {
           processJsFile(content, file).forEach (function(doc) {
             allDocs.push(doc);
@@ -43,7 +42,6 @@ function collect() {
      files.forEach(function(file) {
        var work2;
        if (file.match(/\.ngdoc$/)) {
-         console.log("reading " + file + ".......");
          work2 = Q.when(qfs.read(file, 'b'), function(content){
             var section = '@section ' + file.split('/')[2] + '\n';
             allDocs.push(new ngdoc.Doc(section + content.toString(),file, 1).parse());
