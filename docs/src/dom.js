@@ -74,6 +74,10 @@ DOM.prototype = {
     });
   },
 
+  div: function(attr, text) {
+    this.tag('div', attr, text);
+  },
+
   h: function(heading, content, fn){
     if (content==undefined || (content instanceof Array && content.length == 0)) return;
     this.headingDepth++;

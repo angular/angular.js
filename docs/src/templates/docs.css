@@ -53,6 +53,42 @@ li {
   border: 1px solid red;
 }
 
+.member {
+  border: 1px solid gray;
+  margin: 2em 0;
+}
+
+.member p {
+  padding: 0;
+}
+
+.member>h2 {
+  background-color: lightgray;
+  padding: .2em .4em;
+  margin: 0;
+  border-bottom: 1px solid gray;
+}
+
+.member>ul {
+  list-style: none;
+  padding: 0;
+}
+
+.member>ul>li {
+  border: 1px solid lightgray;
+  margin: 1em;
+
+}
+.member>ul>li>h3 {
+  background-color: #EEE;
+  padding: .2em .4em;
+  margin: 0;
+  font-family: monospace;
+  border-bottom: 1px solid lightgray;
+}
+.member>ul>li>div {
+  padding: 1em;
+}
 
 /*----- Upgrade IE Prompt -----*/
 

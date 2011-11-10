@@ -222,11 +222,12 @@ Doc.prototype = {
           if (!match) {
             throw new Error("Not a valid 'property' format: " + text);
           }
-          var property = {
+          var property = new Doc({
               type: match[1],
               name: match[2],
+              shortName: match[2],
               description: self.markdown(text.replace(match[0], match[4]))
-            };
+            });
           self.properties.push(property);
         } else if(atName == 'eventType') {
           match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
@@ -482,44 +483,60 @@ Doc.prototype = {
 
   method_properties_events: function(dom) {
     var self = this;
-    dom.h('Methods', this.methods, function(method){
-      var signature = (method.param || []).map(property('name'));
-      dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
-        dom.html(method.description);
-        method.html_usage_parameters(dom);
-        self.html_usage_this(dom);
-        method.html_usage_returns(dom);
+    if (self.methods.length) {
+      dom.div({class:'member method'}, function(){
+        dom.h('Methods', self.methods, function(method){
+          var signature = (method.param || []).map(property('name'));
+          dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
+            dom.html(method.description);
+            method.html_usage_parameters(dom);
+            self.html_usage_this(dom);
+            method.html_usage_returns(dom);
 
-        dom.h('Example', method.example, dom.html);
+            dom.h('Example', method.example, dom.html);
+          });
+        });
       });
-    });
-    dom.h('Properties', this.properties, function(property){
-      dom.h(property.shortName, function() {
-       dom.html(property.description);
-       dom.h('Example', property.example, dom.html);
+    }
+    if (self.properties.length) {
+      dom.div({class:'member property'}, function(){
+        dom.h('Properties', self.properties, function(property){
+          dom.h(property.shortName, function() {
+           dom.html(property.description);
+           if (!property.html_usage_returns) {
+             console.log(property);
+           }
+           property.html_usage_returns(dom);
+           dom.h('Example', property.example, dom.html);
+          });
+        });
       });
-    });
-    dom.h('Events', this.events, function(event){
-    dom.h(event.shortName, event, function() {
-        dom.html(event.description);
-        if (event.type == 'listen') {
-          dom.tag('div', {class:'inline'}, function() {
-            dom.h('Listen on:', event.target);
-          });
-        } else {
-          dom.tag('div', {class:'inline'}, function() {
-            dom.h('Type:', event.type);
-          });
-          dom.tag('div', {class:'inline'}, function() {
-            dom.h('Target:', event.target);
-          });
-        }
-        event.html_usage_parameters(dom);
-        self.html_usage_this(dom);
+    }
+    if (self.events.length) {
+      dom.div({class:'member event'}, function(){
+        dom.h('Events', self.events, function(event){
+          dom.h(event.shortName, event, function() {
+            dom.html(event.description);
+            if (event.type == 'listen') {
+              dom.tag('div', {class:'inline'}, function() {
+                dom.h('Listen on:', event.target);
+              });
+            } else {
+              dom.tag('div', {class:'inline'}, function() {
+                dom.h('Type:', event.type);
+              });
+              dom.tag('div', {class:'inline'}, function() {
+                dom.h('Target:', event.target);
+              });
+            }
+            event.html_usage_parameters(dom);
+            self.html_usage_this(dom);
 
-        dom.h('Example', event.example, dom.html);
+            dom.h('Example', event.example, dom.html);
+          });
+        });
       });
-    });
+    }
   },
 
   parameters: function(dom, separator, skipFirst, prefix) {
