@@ -6,7 +6,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
   <meta name="fragment" content="!">
-  <title ng:bind-template="AngularJS: {{partialTitle}}">AngularJS</title>
+  <title ng:bind-template="AngularJS: {{partialTitle | title}}">AngularJS</title>
   <script type="text/javascript">
     // dynamically add base tag as well as css and javascript files.
     // we can't add css/js the usual way, because some browsers (FF) eagerly prefetch resources
@@ -115,7 +115,7 @@
 
 
     <div class="content-panel">
-      <h2 ng:bind="partialTitle"></h2>
+      <h2 ng:bind="partialTitle | title"></h2>
       <ng:include id="content"
                   class="content-panel-content"
                   src="getCurrentPartial()"

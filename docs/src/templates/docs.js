@@ -152,6 +152,14 @@ function TutorialInstructionsCtrl($cookieStore) {
 window.angular = window.angular || {};
 angular.module = angular.module || {};
 
-angular.module.ngdocs = function($locationProvider) {
+angular.module.ngdocs = function($locationProvider, $filterProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
+
+  $filterProvider.register('title', function(){
+    return function(text) {
+      return text && text.replace(/^angular\.module\.([^\.]+)(\.(.*))?$/, function(_, module, _0, name){
+        return 'Module ' + module + (name ? ' - ' + name : '');
+      });
+    }
+  });
 };
