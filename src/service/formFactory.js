@@ -180,7 +180,7 @@ function $FormFactoryProvider() {
    * Upon receiving the `$valid` event from the widget update the `$error`, `$valid` and `$invalid`
    * properties of both the widget as well as the from.
    *
-   * @param {String} validationKey The validation key to be used when updating the `$error` object.
+   * @param {string} validationKey The validation key to be used when updating the `$error` object.
    *    The validation key is what will allow the template to bind to a specific validation error
    *    such as `<div ng:show="form.$error.KEY">error for key</div>`.
    */
@@ -194,7 +194,7 @@ function $FormFactoryProvider() {
    * Upon receiving the `$invalid` event from the widget update the `$error`, `$valid` and `$invalid`
    * properties of both the widget as well as the from.
    *
-   * @param {String} validationKey The validation key to be used when updating the `$error` object.
+   * @param {string} validationKey The validation key to be used when updating the `$error` object.
    *    The validation key is what will allow the template to bind to a specific validation error
    *    such as `<div ng:show="form.$error.KEY">error for key</div>`.
    */

@@ -44,8 +44,8 @@ angular.scenario.Application.prototype.getWindow_ = function() {
  *
  * @param {string} url The URL. If it begins with a # then only the
  *   hash of the page is changed.
- * @param {Function} loadFn function($window, $document) Called when frame loads.
- * @param {Function} errorFn function(error) Called if any error when loading.
+ * @param {function()} loadFn function($window, $document) Called when frame loads.
+ * @param {function()} errorFn function(error) Called if any error when loading.
  */
 angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorFn) {
   var self = this;
@@ -78,7 +78,7 @@ angular.scenario.Application.prototype.navigateTo = function(url, loadFn, errorF
  * Executes a function in the context of the tested application. Will wait
  * for all pending angular xhr requests before executing.
  *
- * @param {Function} action The callback to execute. function($window, $document)
+ * @param {function()} action The callback to execute. function($window, $document)
  *  $document is a jQuery wrapped document.
  */
 angular.scenario.Application.prototype.executeAction = function(action) {

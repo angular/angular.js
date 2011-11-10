@@ -4,8 +4,8 @@
  * A future action in a spec.
  *
  * @param {string} name of the future action
- * @param {Function} future callback(error, result)
- * @param {Function} Optional. function that returns the file/line number.
+ * @param {function()} future callback(error, result)
+ * @param {function()} Optional. function that returns the file/line number.
  */
 angular.scenario.Future = function(name, behavior, line) {
   this.name = name;
@@ -19,7 +19,7 @@ angular.scenario.Future = function(name, behavior, line) {
 /**
  * Executes the behavior of the closure.
  *
- * @param {Function} doneFn Callback function(error, result)
+ * @param {function()} doneFn Callback function(error, result)
  */
 angular.scenario.Future.prototype.execute = function(doneFn) {
   var self = this;
@@ -40,7 +40,7 @@ angular.scenario.Future.prototype.execute = function(doneFn) {
 /**
  * Configures the future to convert it's final with a function fn(value)
  *
- * @param {Function} fn function(value) that returns the parsed value
+ * @param {function()} fn function(value) that returns the parsed value
  */
 angular.scenario.Future.prototype.parsedWith = function(fn) {
   this.parser = fn;

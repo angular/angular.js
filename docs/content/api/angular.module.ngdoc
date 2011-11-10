@@ -1,0 +1,54 @@
+@ngdoc overview
+@name angular.module
+@description
+
+The angular.module namespace is a global place for registering angular modules. All modules
+(angular core or 3rd party) that should be available to an application must be registered in this
+namespace.
+
+# Module
+
+A module is a function that is used to register new service providers and configure existing
+providers. Once a provider is registered, {@link angular.module.AUTO.$injector $injector} will use
+it to ask for a service instance when it is resolving a dependency for the first time.
+
+<pre>
+// Declare the module configuration function.
+// The function arguments are fully injectable so that the module function
+// can create new providers or configure existing ones.
+function MyModule($provide, $locationProvider){
+  // see $provide for more information.
+  $provide.value('appName', 'MyCoolApp');
+
+  // Configure existing providers
+  $locationProvider.hashPrefix = '!';
+};
+</pre>
+
+See: {@link angular.module.NG.$provide $provide}, {@link angular.module.NG.$locationProvider $locationProvider}.
+
+# Registering Module Function
+
+In your JavaScript file:
+<pre>
+// Create the angular.module namespace if one does not exist
+// This allows the module code to be loaded before angular.js code.
+if (!window.angular) window.angular = {};
+if (!angular.module) angular.module = {};
+
+angular.module.MyModule = function(){
+  // add configuration code here.
+};
+</pre>
+
+Then you can refer to your module like this:
+
+<pre>
+var injector = angular.injector('NG', 'MyModule')
+</pre>
+
+Or
+
+<pre>
+var injector = angular.injector('NG', angular.module.MyModule)
+</pre>

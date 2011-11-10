@@ -77,10 +77,18 @@ DOM.prototype = {
   h: function(heading, content, fn){
     if (content==undefined || (content instanceof Array && content.length == 0)) return;
     this.headingDepth++;
-    this.tag('h' + this.headingDepth, heading);
-    var className = typeof heading == 'string'
-      ? {'class': heading.toLowerCase().replace(/[^\d\w_]/mg, '-').replace(/-+/gm, '-')}
-      : null;
+    var className = null,
+        anchor = null;
+    if (typeof heading == 'string') {
+      var id = heading.
+          replace(/\(.*\)/mg, '').
+          replace(/[^\d\w]/mg, '.').
+          replace(/-+/gm, '-').
+          replace(/-*$/gm, '');
+      anchor = {'id': id};
+      className = {'class': id.toLowerCase().replace(/[._]/mg, '-')};
+    }
+    this.tag('h' + this.headingDepth, anchor, heading);
     if (content instanceof Array) {
       this.ul(content, className, fn);
     } else if (fn) {

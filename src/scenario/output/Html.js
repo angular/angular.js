@@ -160,7 +160,7 @@ angular.scenario.output('html', function(context, runner, model) {
    * Add an error to a step.
    *
    * @param {Object} The JQuery wrapped context
-   * @param {Function} fn() that should return the file/line number of the error
+   * @param {function()} fn() that should return the file/line number of the error
    * @param {Object} the error.
    */
   function addError(context, line, error) {

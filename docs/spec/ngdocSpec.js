@@ -528,7 +528,7 @@ describe('ngdoc', function() {
           returns: {type: 'number', description: 'return desc'}
         });
         doc.html_usage_function(dom);
-        expect(dom).toContain('some.name([a][, b], c)'); //TODO(i) the comma position here is lame
+        expect(dom).toContain('name([a][, b], c)'); //TODO(i) the comma position here is lame
         expect(dom).toContain('param desc');
         expect(dom).toContain('(optional="xxx")');
         expect(dom).toContain('return desc');

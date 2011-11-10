@@ -174,10 +174,12 @@ function isCssVisible(node) {
 }
 
 function assertHidden(node) {
-  assertFalse("Node should be hidden but vas visible: " + angular.mock.dump(node), isCssVisible(node));
+  assertFalse("Node should be hidden but vas visible: " +
+    angular.module.NG_MOCK.dump(node), isCssVisible(node));
 }
 
 function assertVisible(node) {
-  assertTrue("Node should be visible but vas hidden: " + angular.mock.dump(node), isCssVisible(node));
+  assertTrue("Node should be visible but vas hidden: " +
+    angular.module.NG_MOCK.dump(node), isCssVisible(node));
 }
 
