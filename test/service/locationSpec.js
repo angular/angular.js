@@ -95,6 +95,33 @@ describe('$location', function() {
     });
 
 
+    it('url() should change only hash when no search and path specified', function() {
+      url.url('#some-hash');
+
+      expect(url.hash()).toBe('some-hash');
+      expect(url.url()).toBe('/path/b?search=a&b=c&d#some-hash');
+      expect(url.absUrl()).toBe('http://www.domain.com:9877/path/b?search=a&b=c&d#some-hash');
+    });
+
+
+    it('url() should change only search and hash when no path specified', function() {
+      url.url('?a=b');
+
+      expect(url.search()).toEqual({a: 'b'});
+      expect(url.hash()).toBe('');
+      expect(url.path()).toBe('/path/b');
+    });
+
+
+    it('url() should reset search and hash when only path specified', function() {
+      url.url('/new/path');
+
+      expect(url.path()).toBe('/new/path');
+      expect(url.search()).toEqual({});
+      expect(url.hash()).toBe('');
+    });
+
+
     it('replace should set $$replace flag and return itself', function() {
       expect(url.$$replace).toBe(false);
 

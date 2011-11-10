@@ -238,8 +238,9 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
       return this.$$url;
 
     var match = PATH_MATCH.exec(url);
-    this.path(decodeURIComponent(match[1] || '')).search(match[3] || '')
-        .hash(match[5] || '', replace);
+    if (match[1]) this.path(decodeURIComponent(match[1]));
+    if (match[2] || match[1]) this.search(match[3] || '');
+    this.hash(match[5] || '', replace);
 
     return this;
   },
