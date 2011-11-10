@@ -1,11 +1,11 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$formFactory
+ * @ngdoc object
+ * @name angular.module.NG.$formFactory
  *
  * @description
- * Use `$formFactory` to create a new instance of a {@link guide/dev_guide.forms form}
+ * Use `$formFactory` to create a new instance of a {@link angular.module.NG.$formFactory.Form Form}
  * controller or to find the nearest form instance for a given DOM element.
  *
  * The form instance is a collection of widgets, and is responsible for life cycle and validation
@@ -15,7 +15,7 @@
  *
  * @param {Form=} parentForm The form which should be the parent form of the new form controller.
  *   If none specified default to the `rootForm`.
- * @returns {Form} A new <a href="#form">form</a> instance.
+ * @returns {Form} A new {@link angular.module.NG.$formFactory.Form Form} instance.
  *
  * @example
  *
@@ -95,6 +95,13 @@
     </doc:example>
  */
 
+/**
+ * @ngdoc object
+ * @name angular.module.NG.$formFactory.Form
+ * @description
+ * The `Form` is a controller which keeps track of the validity of the widgets contained within it.
+ */
+
 function $FormFactoryProvider() {
   var $parse;
   this.$get = ['$rootScope', '$parse',  function($rootScope, $parse_) {
@@ -102,7 +109,7 @@ function $FormFactoryProvider() {
     /**
      * @ngdoc proprety
      * @name rootForm
-     * @propertyOf angular.service.$formFactory
+     * @propertyOf angular.module.NG.$formFactory
      * @description
      * Static property on `$formFactory`
      *
@@ -115,7 +122,7 @@ function $FormFactoryProvider() {
     /**
      * @ngdoc method
      * @name forElement
-     * @methodOf angular.service.$formFactory
+     * @methodOf angular.module.NG.$formFactory
      * @description
      * Static method on `$formFactory` service.
      *
@@ -142,7 +149,7 @@ function $FormFactoryProvider() {
   /**
    * @ngdoc property
    * @name $error
-   * @propertyOf angular.service.$formFactory
+   * @propertyOf angular.module.NG.$formFactory.Form
    * @description
    * Property of the form and widget instance.
    *
@@ -154,7 +161,7 @@ function $FormFactoryProvider() {
   /**
    * @ngdoc property
    * @name $invalid
-   * @propertyOf angular.service.$formFactory
+   * @propertyOf angular.module.NG.$formFactory.Form
    * @description
    * Property of the form and widget instance.
    *
@@ -164,7 +171,7 @@ function $FormFactoryProvider() {
   /**
    * @ngdoc property
    * @name $valid
-   * @propertyOf angular.service.$formFactory
+   * @propertyOf angular.module.NG.$formFactory.Form
    * @description
    * Property of the form and widget instance.
    *
@@ -173,8 +180,8 @@ function $FormFactoryProvider() {
 
   /**
    * @ngdoc event
-   * @name angular.service.$formFactory#$valid
-   * @eventOf angular.service.$formFactory
+   * @name angular.module.NG.$formFactory.Form#$valid
+   * @eventOf angular.module.NG.$formFactory.Form
    * @eventType listen on form
    * @description
    * Upon receiving the `$valid` event from the widget update the `$error`, `$valid` and `$invalid`
@@ -187,8 +194,8 @@ function $FormFactoryProvider() {
 
   /**
    * @ngdoc event
-   * @name angular.service.$formFactory#$invalid
-   * @eventOf angular.service.$formFactory
+   * @name angular.module.NG.$formFactory.Form#$invalid
+   * @eventOf angular.module.NG.$formFactory.Form
    * @eventType listen on form
    * @description
    * Upon receiving the `$invalid` event from the widget update the `$error`, `$valid` and `$invalid`
@@ -201,8 +208,8 @@ function $FormFactoryProvider() {
 
   /**
    * @ngdoc event
-   * @name angular.service.$formFactory#$validate
-   * @eventOf angular.service.$formFactory
+   * @name angular.module.NG.$formFactory.Form#$validate
+   * @eventOf angular.module.NG.$formFactory.Form
    * @eventType emit on widget
    * @description
    * Emit the `$validate` event on the widget, giving a widget a chance to emit a
@@ -212,8 +219,8 @@ function $FormFactoryProvider() {
 
   /**
    * @ngdoc event
-   * @name angular.service.$formFactory#$viewChange
-   * @eventOf angular.service.$formFactory
+   * @name angular.module.NG.$formFactory.Form#$viewChange
+   * @eventOf angular.module.NG.$formFactory.Form
    * @eventType listen on widget
    * @description
    * A widget is responsible for emitting this event whenever the view changes do to user interaction.
@@ -286,7 +293,7 @@ function $FormFactoryProvider() {
   /**
    * @ngdoc method
    * @name $createWidget
-   * @methodOf angular.service.$formFactory
+   * @methodOf angular.module.NG.$formFactory.Form
    * @description
    *
    * Use form's `$createWidget` instance method to create new widgets. The widgets can be created
