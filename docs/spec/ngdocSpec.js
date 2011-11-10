@@ -547,7 +547,7 @@ describe('ngdoc', function() {
         });
         doc.html_usage_filter(dom);
         expect(dom).toContain('myFilter_expression | myFilter:b');
-        expect(dom).toContain('angular.filter.myFilter(a, b)');
+        expect(dom).toContain('$filter(\'myFilter\')(a, b)');
       });
     });
 

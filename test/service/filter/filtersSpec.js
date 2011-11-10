@@ -8,9 +8,9 @@ describe('filters', function() {
     filter = $filter;
   }));
 
-  it('should called the filter when evaluating expression', inject(function($rootScope, $provide) {
+  it('should called the filter when evaluating expression', inject(function($rootScope, $filterProvider) {
     var filter = jasmine.createSpy('myFilter');
-    $provide.filter('myFilter', valueFn(filter));
+    $filterProvider.register('myFilter', valueFn(filter));
 
     $rootScope.$eval('10|myFilter');
     expect(filter).toHaveBeenCalledWith(10);

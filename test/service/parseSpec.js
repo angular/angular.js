@@ -191,8 +191,8 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', inject(function($provide) {
-    $provide.filter('substring', valueFn(function(input, start, end) {
+  it('should parse filters', inject(function($filterProvider) {
+    $filterProvider.register('substring', valueFn(function(input, start, end) {
       return input.substring(start, end);
     }));
 

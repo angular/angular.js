@@ -380,9 +380,9 @@ Doc.prototype = {
 
       dom.h('In JavaScript', function() {
         dom.tag('code', function() {
-          dom.text('angular.filter.');
+          dom.text('$filter(\'');
           dom.text(self.shortName);
-          dom.text('(');
+          dom.text('\')(');
           self.parameters(dom, ', ');
           dom.text(')');
         });

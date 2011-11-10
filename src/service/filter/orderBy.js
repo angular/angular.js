@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.Array.orderBy
+ * @name angular.module.NG.$filter.orderBy
  * @function
  *
  * @description

@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.service.filter.limitTo
+ * @name angular.module.NG.$filter.limitTo
  * @function
  *
  * @description
