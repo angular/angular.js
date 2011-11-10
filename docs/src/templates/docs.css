@@ -240,21 +240,23 @@ li {
 }
 
 #content-list .level-1 {
-  font-size: 1.1em;
-  font-weight: bold;
+  margin-left: 0em;
 }
 
-#content-list .level-2,
-#content-list .level-3 {
+#content-list .level-2 {
   margin-left: 1em;
 }
 
-#content-list .level-4 {
+#content-list .level-3 {
   margin-left: 2em;
 }
 
-#content-list .level-5 {
+#content-list .level-4 {
   margin-left: 3em;
+}
+
+#content-list .level-5 {
+  margin-left: 4em;
 }
 
 

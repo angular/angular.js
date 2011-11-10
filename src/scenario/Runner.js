@@ -61,7 +61,7 @@ angular.scenario.Runner.prototype.on = function(eventName, listener) {
  * @see Describe.js
  *
  * @param {string} name Name of the block
- * @param {Function} body Body of the block
+ * @param {function()} body Body of the block
  */
 angular.scenario.Runner.prototype.describe = function(name, body) {
   var self = this;
@@ -82,7 +82,7 @@ angular.scenario.Runner.prototype.describe = function(name, body) {
  * @see Describe.js
  *
  * @param {string} name Name of the block
- * @param {Function} body Body of the block
+ * @param {function()} body Body of the block
  */
 angular.scenario.Runner.prototype.ddescribe = function(name, body) {
   var self = this;
@@ -103,7 +103,7 @@ angular.scenario.Runner.prototype.ddescribe = function(name, body) {
  * @see Describe.js
  *
  * @param {string} name Name of the block
- * @param {Function} body Body of the block
+ * @param {function()} body Body of the block
  */
 angular.scenario.Runner.prototype.it = function(name, body) {
   this.currentDescribe.it(name, body);
@@ -115,7 +115,7 @@ angular.scenario.Runner.prototype.it = function(name, body) {
  * @see Describe.js
  *
  * @param {string} name Name of the block
- * @param {Function} body Body of the block
+ * @param {function()} body Body of the block
  */
 angular.scenario.Runner.prototype.iit = function(name, body) {
   this.currentDescribe.iit(name, body);
@@ -127,7 +127,7 @@ angular.scenario.Runner.prototype.iit = function(name, body) {
  *
  * @see Describe.js
  *
- * @param {Function} Callback to execute
+ * @param {function()} Callback to execute
  */
 angular.scenario.Runner.prototype.beforeEach = function(body) {
   this.currentDescribe.beforeEach(body);
@@ -139,7 +139,7 @@ angular.scenario.Runner.prototype.beforeEach = function(body) {
  *
  * @see Describe.js
  *
- * @param {Function} Callback to execute
+ * @param {function()} Callback to execute
  */
 angular.scenario.Runner.prototype.afterEach = function(body) {
   this.currentDescribe.afterEach(body);

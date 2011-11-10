@@ -95,7 +95,7 @@ beforeEach(function() {
 
     toHaveClass: function(clazz) {
       this.message = function() {
-        return "Expected '" + angular.mock.dump(this.actual) + "' to have class '" + clazz + "'.";
+        return "Expected '" + angular.module.NG_MOCK.dump(this.actual) + "' to have class '" + clazz + "'.";
       };
       return this.actual.hasClass ?
               this.actual.hasClass(clazz) :

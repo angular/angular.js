@@ -89,6 +89,7 @@ Doc.prototype = {
     var self = this,
         IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
         IS_ANGULAR = /^(api\/)?angular\./,
+        IS_HASH = /^#/,
         parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:(\S*).*?>[\s\S]*?<\/doc:\2>)/);
 
     parts.forEach(function(text, i) {
@@ -134,13 +135,16 @@ Doc.prototype = {
           function(_all, url, title){
             var isFullUrl = url.match(IS_URL),
                 isAngular = url.match(IS_ANGULAR),
-                absUrl = isFullUrl ? url : self.convertUrlToAbsolute(url);
+                isHash = url.match(IS_HASH),
+                absUrl = isHash
+                  ? url
+                  : (isFullUrl ? url : self.convertUrlToAbsolute(url));
 
             if (!isFullUrl) self.links.push(absUrl);
 
             return '<a href="' + absUrl + '">' +
               (isAngular ? '<code>' : '') +
-              (title || url).replace(/\n/g, ' ') +
+              (title || url.replace(/^#/g, '')).replace(/\n/g, ' ') +
               (isAngular ? '</code>' : '') +
               '</a>';
           });
@@ -171,7 +175,8 @@ Doc.prototype = {
       }
     });
     flush();
-    this.shortName = (this.name || '').split(/[\.#]/).pop();
+    this.name = this.name || '';
+    this.shortName = this.name.split(this.name.match(/#/) ? /#/ : /\./ ).pop();
     this.id = this.id || // if we have an id just use it
       (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
       this.name; // default to name
@@ -319,7 +324,7 @@ Doc.prototype = {
     var self = this;
     dom.h('Usage', function() {
       dom.code(function() {
-        dom.text(self.name.split('service.').pop());
+        dom.text(self.name.split(/\./).pop());
         dom.text('(');
         self.parameters(dom, ', ');
         dom.text(');');
@@ -329,6 +334,7 @@ Doc.prototype = {
       self.html_usage_this(dom);
       self.html_usage_returns(dom);
     });
+    this.method_properties_events(dom);
   },
 
   html_usage_property: function(dom){
@@ -450,7 +456,7 @@ Doc.prototype = {
     dom.html(this.description);
   },
 
-  html_usage_service: function(dom){
+  html_usage_object: function(dom){
     var self = this;
 
     if (this.param.length) {
@@ -467,7 +473,15 @@ Doc.prototype = {
         self.html_usage_returns(dom);
       });
     }
+    this.method_properties_events(dom);
+  },
 
+  html_usage_service: function(dom) {
+    this.html_usage_object(dom)
+  },
+
+  method_properties_events: function(dom) {
+    var self = this;
     dom.h('Methods', this.methods, function(method){
       var signature = (method.param || []).map(property('name'));
       dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
@@ -480,7 +494,7 @@ Doc.prototype = {
       });
     });
     dom.h('Properties', this.properties, function(property){
-      dom.h(property.name, function() {
+      dom.h(property.shortName, function() {
        dom.html(property.description);
        dom.h('Example', property.example, dom.html);
       });

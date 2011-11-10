@@ -11,7 +11,7 @@
  * the browser console.
  *
  * In unit tests, if `angular-mocks.js` is loaded, this service is overriden by
- * {@link angular.mock.service.$exceptionHandler mock $exceptionHandler}
+ * {@link angular.module.NG_MOCK.$exceptionHandler mock $exceptionHandler}
  *
  * @example
  */

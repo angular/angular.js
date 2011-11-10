@@ -10,7 +10,7 @@
  *         that is also assigned to the $$hashKey property of the object.
  *
  * @param obj
- * @returns {String} hash string such that the same input will have the same hash string.
+ * @returns {string} hash string such that the same input will have the same hash string.
  *         The resulting string key is in 'type:hashKey' format.
  */
 function hashKey(obj) {

@@ -24,7 +24,7 @@ var XHR = window.XMLHttpRequest || function() {
  * - hide all the global state in the browser caused by the window object
  * - abstract away all the browser specific features and inconsistencies
  *
- * For tests we provide {@link angular.mock.service.$browser mock implementation} of the `$browser`
+ * For tests we provide {@link angular.module.NG_MOCK.$browser mock implementation} of the `$browser`
  * service, which can be used for convenient testing of the application without the interaction with
  * the real browser apis.
  */
