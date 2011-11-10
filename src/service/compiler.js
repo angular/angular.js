@@ -79,7 +79,7 @@ function $CompileProvider(){
 
       /**
        * @ngdoc function
-       * @name angular.compile
+       * @name angular.module.NG.$compile
        * @function
        *
        * @description
@@ -97,16 +97,19 @@ function $CompileProvider(){
        * that is a DOM clone of the original template.
        *
          <pre>
-          // compile the entire window.document and give me the scope bound to this template.
-          var rootScope = angular.compile(window.document)();
+          angular.injector('ng').invoke(null, function($rootScope, $compile) {
+            // Chose one:
 
-          // compile a piece of html
-          var rootScope2 = angular.compile('<div ng:click="clicked = true">click me</div>')();
+            // A: compile the entire window.document.
+            var element = $compile(window.document)($rootScope);
 
-          // compile a piece of html and retain reference to both the dom and scope
-          var template = angular.element('<div ng:click="clicked = true">click me</div>'),
-              scope = angular.compile(template)();
-          // at this point template was transformed into a view
+            // B: compile a piece of html
+            var element = $compile('<div ng:click="clicked = true">click me</div>')($rootScope);
+
+            // C: compile a piece of html and retain reference to both the dom and scope
+            var element = $compile('<div ng:click="clicked = true">click me</div>')(scope);
+            // at this point template was transformed into a view
+          });
          </pre>
        *
        *
@@ -140,8 +143,9 @@ function $CompileProvider(){
        * - If you are not asking the linking function to clone the template, create the DOM element(s)
        *   before you send them to the compiler and keep this reference around.
        *   <pre>
-       *     var scope = angular.injector()('$rootScope');
-       *     var element = angular.compile('<p>{{total}}</p>')(scope);
+       *     var scope = angular.injector('NG')(function($rootScope, $compile){
+       *       var element = $compile('<p>{{total}}</p>')($rootScope);
+       *     });
        *   </pre>
        *
        * - if on the other hand, you need the element to be cloned, the view reference from the original
@@ -152,7 +156,7 @@ function $CompileProvider(){
        *         scope = someParentScope.$new(),
        *         clone;
        *
-       *     angular.compile(original)(scope, function(clonedElement, scope) {
+       *     $compile(original)(scope, function(clonedElement, scope) {
        *       clone = clonedElement;
        *       //attach the clone to DOM document at the right place
        *     });

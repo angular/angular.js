@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$xhr.bulk
+ * @ngdoc object
+ * @name angular.module.NG.$xhr.bulk
  * @requires $xhr
  * @requires $xhr.error
  * @requires $log

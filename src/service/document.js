@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$document
+ * @ngdoc object
+ * @name angular.module.NG.$document
  * @requires $window
  *
  * @description

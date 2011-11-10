@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$cookies
+ * @ngdoc object
+ * @name angular.module.NG.$cookies
  * @requires $browser
  *
  * @description

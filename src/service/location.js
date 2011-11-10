@@ -205,8 +205,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#absUrl
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#absUrl
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter only.
@@ -220,8 +220,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#url
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#url
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter / setter.
@@ -246,8 +246,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#protocol
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#protocol
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter only.
@@ -260,8 +260,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#host
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#host
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter only.
@@ -274,8 +274,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#port
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#port
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter only.
@@ -288,8 +288,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#path
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#path
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter / setter.
@@ -310,8 +310,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#search
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#search
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter / setter.
@@ -343,8 +343,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#hash
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#hash
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * This method is getter / setter.
@@ -360,8 +360,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#replace
-   * @methodOf angular.service.$location
+   * @name angular.module.NG.$location#replace
+   * @methodOf angular.module.NG.$location
    *
    * @description
    * If called, all changes to $location during current `$digest` will be replacing current history
@@ -395,8 +395,8 @@ function locationGetterSetter(property, preprocess) {
 
 
 /**
- * @ngdoc service
- * @name angular.service.$location
+ * @ngdoc object
+ * @name angular.module.NG.$location
  *
  * @requires $browser
  * @requires $sniffer

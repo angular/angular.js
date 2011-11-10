@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$window
+ * @ngdoc object
+ * @name angular.module.NG.$window
  *
  * @description
  * A reference to the browser's `window` object. While `window`

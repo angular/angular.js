@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$xhr
+ * @ngdoc object
+ * @name angular.module.NG.$xhr
  * @function
  * @requires $browser $xhr delegates all XHR requests to the `$browser.xhr()`. A mock version
  *                    of the $browser exists which allows setting expectations on XHR requests
@@ -12,14 +12,14 @@
  *
  * @description
  * Generates an XHR request. The $xhr service delegates all requests to
- * {@link angular.service.$browser $browser.xhr()} and adds error handling and security features.
+ * {@link angular.module.NG.$browser $browser.xhr()} and adds error handling and security features.
  * While $xhr service provides nicer api than raw XmlHttpRequest, it is still considered a lower
  * level api in angular. For a higher level abstraction that utilizes `$xhr`, please check out the
- * {@link angular.service.$resource $resource} service.
+ * {@link angular.module.NG.$resource $resource} service.
  *
  * # Error handling
  * If no `error callback` is specified, XHR response with response code other then `2xx` will be
- * delegated to {@link angular.service.$xhr.error $xhr.error}. The `$xhr.error` can intercept the
+ * delegated to {@link angular.module.NG.$xhr.error $xhr.error}. The `$xhr.error` can intercept the
  * request and process it in application specific way, or resume normal execution by calling the
  * request `success` method.
  *
@@ -98,7 +98,7 @@
  *
  *   - {number} code [HTTP status code](http://en.wikipedia.org/wiki/List_of_HTTP_status_codes) of
  *     the response. This will currently always be 200, since all non-200 responses are routed to
- *     {@link angular.service.$xhr.error} service (or custom error callback).
+ *     {@link angular.module.NG.$xhr.error} service (or custom error callback).
  *   - {string|Object} response Response object as string or an Object if the response was in JSON
  *     format.
  * @param {function(number, (string|Object))} error A function to be called if the response code is

@@ -1,15 +1,15 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$xhr.error
+ * @ngdoc object
+ * @name angular.module.NG.$xhr.error
  * @function
  * @requires $log
  *
  * @description
- * Error handler for {@link angular.service.$xhr $xhr service}. An application can replaces this
+ * Error handler for {@link angular.module.NG.$xhr $xhr service}. An application can replaces this
  * service with one specific for the application. The default implementation logs the error to
- * {@link angular.service.$log $log.error}.
+ * {@link angular.module.NG.$log $log.error}.
  *
  * @param {Object} request Request object.
  *
