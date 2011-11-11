@@ -25,7 +25,7 @@ function MyModule($provide, $locationProvider){
 };
 </pre>
 
-See: {@link angular.module.NG.$provide $provide}, {@link angular.module.NG.$locationProvider $locationProvider}.
+See: {@link angular.module.AUTO.$provide $provide}, {@link angular.module.NG.$locationProvider $locationProvider}.
 
 # Registering Module Function
 

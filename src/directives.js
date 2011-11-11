@@ -106,7 +106,7 @@ angularDirective("ng:init", function(expression){
  * * Controller — The `ng:controller` directive specifies a Controller class; the class has
  *   methods that typically express the business logic behind the application.
  *
- * Note that an alternative way to define controllers is via the `{@link angular.service.$route}`
+ * Note that an alternative way to define controllers is via the `{@link angular.module.NG.$route}`
  * service.
  *
  * @element ANY
@@ -138,7 +138,7 @@ angularDirective("ng:init", function(expression){
            this.contacts.push({type:'email', value:'yourname@example.org'});
          },
          removeContact: function(contactToRemove) {
-           angular.Array.remove(this.contacts, contactToRemove);
+           angular.module.NG.$filter.remove(this.contacts, contactToRemove);
          },
          clearContact: function(contact) {
            contact.type = 'phone';

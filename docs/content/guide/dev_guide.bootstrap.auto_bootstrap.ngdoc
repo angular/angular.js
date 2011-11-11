@@ -98,4 +98,4 @@ APIs are bound to fields of this global object.
 
 ## Related API
 
-{@link api/angular.compile Compiler API}
+{@link api/angular.module.NG.$compile Compiler API}

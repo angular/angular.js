@@ -9,7 +9,7 @@
  * Orders a specified `array` by the `expression` predicate.
  *
  * Note: this function is used to augment the `Array` type in Angular expressions. See
- * {@link angular.Array} for more informaton about Angular arrays.
+ * {@link angular.module.NG.$filter} for more informaton about Angular arrays.
  *
  * @param {Array} array The array to sort.
  * @param {function(*)|string|Array.<(function(*)|string)>} expression A predicate to be

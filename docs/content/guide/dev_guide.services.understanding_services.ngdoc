@@ -3,7 +3,7 @@
 @description
 
 Angular services are singletons that carry out specific tasks common to web apps, such as the
-{@link api/angular.service.$xhr $xhr service} that provides low level access to the browser's
+{@link api/angular.module.NG.$xhr $xhr service} that provides low level access to the browser's
 `XMLHttpRequest` object.
 
 To use an angular service, you identify it as a dependency for the dependent (a controller, or
@@ -33,5 +33,5 @@ above). You can also create your own custom services.
 
 ## Related API
 
-* {@link api/angular.service Angular Service API}
+* {@link api/angular.module.NG Angular Service API}
 * {@link api/angular.injector Injector API}

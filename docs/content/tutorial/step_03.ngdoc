@@ -43,7 +43,7 @@ __`app/index.html`:__
 ...
 </pre>
 
-We added a standard HTML `<input>` tag and used angular's {@link api/angular.Array.filter $filter}
+We added a standard HTML `<input>` tag and used angular's {@link api/angular.module.NG.$filter.filter $filter}
 function to process the input for the `ng:repeater`.
 
 This lets a user enter search criteria and immediately see the effects of their search on the phone
@@ -59,7 +59,7 @@ the DOM to reflect the current state of the model.
 
       <img src="img/tutorial/tutorial_03_final.png">
 
-* Use of `$filter`. The {@link api/angular.Array.filter $filter} method uses the `query` value to
+* Use of `$filter`. The {@link api/angular.module.NG.$filter.filter $filter} method uses the `query` value to
 create a new array that contains only those records that match the `query`.
 
   `ng:repeat` automatically updates the view in response to the changing number of phones returned

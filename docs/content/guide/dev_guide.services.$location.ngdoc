@@ -134,7 +134,7 @@ current URL without creating a new browser history record you can call:
 </pre>
 
 Note that the setters don't update `window.location` immediately. Instead, `$location` service is
-aware of the {@link api/angular.scope scope} life-cycle and coalesces multiple `$location`
+aware of the {@link api/angular.module.NG.$rootScope.Scope scope} life-cycle and coalesces multiple `$location`
 mutations into one "commit" to the `window.location` object during the scope `$digest` phase. Since
 multiple changes to the $location's state will be pushed to the browser as a single change, it's
 enough to call the `replace()` method just once to make the entire "commit" a replace operation
@@ -210,7 +210,7 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 ### Example
 
 <pre>
-angular.service('$locationConfig', function() {
+angular.module.NG('$locationConfig', function() {
   return {
     html5Mode: false,
     hashPrefix: '!'
@@ -258,7 +258,7 @@ having to worry about whether the browser displaying your app supports the histo
 ### Example
 
 <pre>
-angular.service('$locationConfig', function() {
+angular.module.NG('$locationConfig', function() {
   return {
     html5Mode: true,
     hashPrefix: '!'
@@ -461,7 +461,7 @@ In this examples we use `<base href="/base/index.html" />`
 
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
-    var scope = angular.scope(null, {
+    var scope = angular.module.NG.$rootScope.Scope(null, {
       $locationConfig: {html5Mode: true, hashPrefix: '!'},
       $browser: browsers[name],
       $document: root,
@@ -488,11 +488,11 @@ In this examples we use `<base href="/base/index.html" />`
 
 The `$location` service allows you to change only the URL; it does not allow you to reload the
 page. When you need to change the URL and reload the page or navigate to a different page, please
-use a lower level API, {@link api/angular.service.$window $window.location.href}.
+use a lower level API, {@link api/angular.module.NG.$window $window.location.href}.
 
 ## Using $location outside of the scope life-cycle
 
-`$location` knows about Angular's {@link api/angular.scope scope} life-cycle. When a URL changes in
+`$location` knows about Angular's {@link api/angular.module.NG.$rootScope.Scope scope} life-cycle. When a URL changes in
 the browser it updates the `$location` and calls `$apply` so that all $watchers / $observers are
 notified.
 When you change the `$location` inside the `$digest` phase everything is ok; `$location` will
@@ -512,10 +512,10 @@ hashPrefix.
 # Testing with the $location service
 
 When using `$location` service during testing, you are outside of the angular's {@link
-api/angular.scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
+api/angular.module.NG.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
 
 <pre>
-angular.service('$serviceUnderTest', function($location) {
+angular.module.NG('$serviceUnderTest', function($location) {
   // whatever it does...
 };
 
@@ -523,7 +523,7 @@ describe('$serviceUnderTest', function() {
   var scope, $location, $sut;
 
   beforeEach(function() {
-    scope = angular.scope();
+    scope = angular.module.NG.$rootScope.Scope();
     $location = scope.$service('$location');
     $sut = scope.$service('$serviceUnderTest');
   });
@@ -636,7 +636,7 @@ this.$watch('$location.path()', function(scope, path) {
 
 # Related API
 
-* {@link api/angular.service.$location $location API}
+* {@link api/angular.module.NG.$location $location API}
 
 
 

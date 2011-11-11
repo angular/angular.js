@@ -77,4 +77,4 @@ it('should test service', function() {
 
 ## Related API
 
-{@link api/angular.service Angular Service API}
+{@link api/angular.module.NG Angular Service API}

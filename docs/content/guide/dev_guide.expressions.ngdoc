@@ -165,15 +165,15 @@ JavaScript method instead.
 Built-in types have methods like `[].push()`, but the richness of these methods is limited.
 Consider the example below, which allows you to do a simple search over a canned set of contacts.
 The example would be much more complicated if we did not have the `Array:$filter()`. There is no
-built-in method on `Array` called {@link api/angular.Array.filter $filter} and angular doesn't add
+built-in method on `Array` called {@link api/angular.module.NG.$filter.filter $filter} and angular doesn't add
 it to `Array.prototype` because that could collide with other JavaScript frameworks.
 
 For this reason the scope expression evaluator augments the built-in types to make them act like
-they have extra methods. The actual method for `$filter()` is `angular.Array.filter()`. You can
+they have extra methods. The actual method for `$filter()` is `angular.module.NG.$filter.filter()`. You can
 call it from JavaScript.
 
 Extensions: You can further extend the expression vocabulary by adding new methods to
-`angular.Array` or `angular.String`, etc.
+`angular.module.NG.$filter` or `angular.String`, etc.
 
 <doc:example>
 <doc:source>
@@ -212,7 +212,7 @@ of filters like this:
 
        name | uppercase
 
-The expression evaluator simply passes the value of name to angular.filter.uppercase.
+The expression evaluator simply passes the value of name to angular.module.NG.$filter.uppercase.
 
 Chain filters using this syntax:
 

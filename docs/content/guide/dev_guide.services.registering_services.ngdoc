@@ -3,11 +3,11 @@
 @description
 
 To register a service, register a factory function that creates the service with angular's
-Injector. The Injector is exposed as {@link api/angular.scope.$service scope.$service}. The
+Injector. The Injector is exposed as {@link api/angular.module.NG.$rootScope.Scope#$service scope.$service}. The
 following pseudo-code shows a simple service registration:
 
 <pre>
-angular.service('service id', function() {
+angular.module.NG('service id', function() {
   var shinyNewServiceInstance;
   //factory function body that constructs shinyNewServiceInstance
   return shinyNewServiceInstance;
@@ -30,7 +30,7 @@ which happens when the angular {@link dev_guide.bootstrap application initialize
 To override the default, you can request that a service is eagerly instantiated as follows:
 
 <pre>
-angular.service('service id', function() {
+angular.module.NG('service id', function() {
   var shinyNewServiceInstance;
   //factory function body that constructs shinyNewServiceInstance
   return shinyNewServiceInstance;
@@ -66,4 +66,4 @@ important.
 
 ## Related API
 
-* {@link api/angular.service Angular Service API}
+* {@link api/angular.module.NG Angular Service API}

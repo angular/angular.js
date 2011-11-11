@@ -54,9 +54,9 @@ two provided sorting options.
 
       <img src="img/tutorial/tutorial_04-06_final.png">
 
-* We then chained the `$filter` method with {@link api/angular.Array.orderBy `$orderBy`} method to
+* We then chained the `$filter` method with {@link api/angular.module.NG.$filter.orderBy `$orderBy`} method to
 further process the input into the repeater. `$orderBy` is a utility method similar to {@link
-api/angular.Array.filter `$filter`}, but instead of filtering an array, it reorders it.
+api/angular.module.NG.$filter.filter `$filter`}, but instead of filtering an array, it reorders it.
 
 Angular creates a two way data-binding between the select element and the `orderProp` model.
 `orderProp` is then used as the input for the `$orderBy` method.

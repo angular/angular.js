@@ -247,16 +247,16 @@ that such a test tells a story, rather then asserting random bits which don't se
 
 
 ## Filters
-{@link api/angular.filter Filters} are functions which transform the data into user readable
+{@link api/angular.module.NG.$filter Filters} are functions which transform the data into user readable
 format. They are important because they remove the formatting responsibility from the application
 logic, further simplifying the application logic.
 
 <pre>
-angular.filter('length', function(text){
+angular.module.NG.$filter('length', function(text){
   return (''+(text||'')).length;
 });
 
-var length = angular.filter('length');
+var length = angular.module.NG.$filter('length');
 expect(length(null)).toEqual(0);
 expect(length('abc')).toEqual(3);
 </pre>

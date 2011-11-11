@@ -252,7 +252,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function() {
-          dom.tag('a', {href: 'api/angular.service.' + require.name}, require.name);
+          dom.tag('a', {href: 'api/angular.module.NG.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
@@ -620,12 +620,12 @@ var KEYWORD_PRIORITY = {
   '.index': 1,
   '.guide': 2,
   '.angular': 7,
-  '.angular.Array': 7,
+  '.angular.module.NG.$filter': 7,
   '.angular.Object': 7,
   '.angular.directive': 7,
-  '.angular.filter': 7,
-  '.angular.scope': 7,
-  '.angular.service': 7,
+  '.angular.module.NG.$filter': 7,
+  '.angular.module.NG.$rootScope.Scope': 7,
+  '.angular.module.NG': 7,
   '.angular.inputType': 7,
   '.angular.widget': 7,
   '.angular.mock': 8,
@@ -724,7 +724,13 @@ function merge(docs){
 
     // check links - do they exist ?
     doc.links.forEach(function(link) {
-      if (!byFullId[link]) console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
+      // convert #id to path#id
+      if (link[0] == '#') {
+        link = doc.section + '/' + doc.id.split('#').shift() + link;
+      }
+      if (!byFullId[link]) {
+        console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
+      }
     });
 
     // merge into parents

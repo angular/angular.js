@@ -4,7 +4,7 @@
   <script type="text/javascript" src="../src/angular-bootstrap.js" ng:autobind></script>
   </script>
   <script type="text/javascript">
-    angular.service('myService', function($resource){
+    angular.module.NG('myService', function($resource){
       this.myData = $resource('resource_json_date.json');
     }, {$inject:['$resource'], $creation:'eager'});
 
