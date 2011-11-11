@@ -23,9 +23,7 @@ available as `this` within the given context. (Note: This api will change before
 
 ### Root scope
 
-Every application has a root scope, which is the ancestor of all other scopes. The root scope is
-responsible for creating the injector which is assigned to the {@link api/angular.module.NG.$rootScope.Scope#$service
-$service} property, and initializing the services.
+Every application has a root scope, which is the ancestor of all other scopes.
 
 ### What is scope used for?
 
@@ -75,7 +73,7 @@ expect(root.name).toEqual('angular');
 ### Scope life cycle
 1. **Creation**
 
-   * You can create the root scope via {@link api/angular.module.NG.$rootScope.Scope angular.module.NG.$rootScope.Scope()}.
+   * The root scope is created by the  {@link api/angular.module.NG.$rootScope $rootScope} service.
    * To create a child scopes, you should call {@link api/angular.module.NG.$rootScope.Scope#$new parentScope.$new()}.
 
 2. **Watcher registration**
@@ -116,9 +114,6 @@ scopes come into play throughout and get a sense of their interactions.
 
 1. At application compile time, a root scope is created and is attached to the root `<HTML>` DOM
 element.
-   1. The root scope creates an {@link api/angular.injector injector} which is assigned to the
-{@link api/angular.module.NG.$rootScope.Scope#$service $service} property of the root scope.
-   2. Any eager {@link api/angular.module.NG.$rootScope.Scope#$service services} are initialized at this point.
 2. During the compilation phase, the {@link dev_guide.compiler compiler} matches {@link
 api/angular.directive directives} against the DOM template. The directives usually fall into one of
 two categories:
@@ -209,9 +204,14 @@ When you find it necessary to inject your own mocks in your tests, use a scope t
 service instances, as shown in the following example.
 
 <pre>
-var myLocation = {};
-var scope = angular.module.NG.$rootScope.Scope(angular.module.NG, {$location: myLocation});
-expect(scope.$service('$location')).toEqual(myLocation);
+it('should allow override of providers', inject(
+  function($provide) {
+    $provide.value('$location', {mode:'I am a mock'});
+  },
+  function($location){
+    expect($location.mode).toBe('I am a mock');
+  }
+)};
 </pre>
 
 ## Related Topics
