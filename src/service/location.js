@@ -401,7 +401,6 @@ function locationGetterSetter(property, preprocess) {
  *
  * @requires $browser
  * @requires $sniffer
- * @requires $locationConfig
  * @requires $document
  *
  * @description
@@ -420,10 +419,25 @@ function locationGetterSetter(property, preprocess) {
  *
  * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
+
+/**
+ * @ngdoc object
+ * @name angular.module.NG.$locationProvider
+ * @description
+ * Use the `$locationPrvoder` to configure how the application deep linking paths are stored.
+ */
 function $LocationProvider(){
   var hashPrefix = '',
       html5Mode = false;
 
+  /**
+   * @ngdoc property
+   * @name angular.module.NG.$locationProvider#hashPrefix
+   * @methodOf angular.module.NG.$locationProvider
+   * @description
+   * @param {string=} prefix Prefix for hash part (containing path and search)
+   * @returns current value if used as getter or itself (chaining) if used as setter
+   */
   this.hashPrefix = function(prefix) {
     if (isDefined(prefix)) {
       hashPrefix = prefix;
@@ -433,6 +447,14 @@ function $LocationProvider(){
     }
   }
 
+  /**
+   * @ngdoc property
+   * @name angular.module.NG.$locationProvider#hashPrefix
+   * @propertyOf angular.module.NG.$locationProvider
+   * @description
+   * @param mode= Use HTML5 strategy if available.
+   * @returns current value if used as getter or itself (chaining) if used as setter
+   */
   this.html5Mode = function(mode) {
     if (isDefined(mode)) {
       html5Mode = mode;

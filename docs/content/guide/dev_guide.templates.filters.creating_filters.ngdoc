@@ -2,7 +2,7 @@
 @name Developer Guide: Templates: Filters: Creating Angular Filters
 @description
 
-Writing your own filter is very easy: just define a JavaScript function on the `angular.filter`
+Writing your own filter is very easy: just define a JavaScript function on the `angular.module.NG.$filter`
 object.
 The framework passes in the input value as the first argument to your function. Any filter
 arguments are passed in as additional function arguments.
@@ -19,9 +19,9 @@ text upper-case and assigns color.
 <doc:example>
 <doc:source>
 <script type="text/javascript">
-angular.module.MyReverseModule = function MyModule($provide) {
- $provide.filter('reverse', function() {
-   return function(input, uppercase, color) {
+angular.module.MyReverseModule = function MyModule($filterProvider) {
+ $filterProvider.register('reverse', function() {
+   return function(input, uppercase) {
      var out = "";
      for (var i = 0; i < input.length; i++) {
        out = input.charAt(i) + out;
@@ -29,10 +29,6 @@ angular.module.MyReverseModule = function MyModule($provide) {
      // conditional based on optional argument
      if (uppercase) {
        out = out.toUpperCase();
-     }
-     // DOM manipulation using $element
-     if (color) {
-       this.$element.css('color', color);
      }
      return out;
    }
@@ -49,7 +45,6 @@ angular.module.MyReverseModule = function MyModule($provide) {
   No filter: {{greeting}}<br>
   Reverse: {{greeting|reverse}}<br>
   Reverse + uppercase: {{greeting|reverse:true}}<br>
-  Reverse + uppercase + blue:  {{greeting|reverse:true:"blue"}}
 </div>
 </doc:source>
 <doc:scenario>
@@ -69,4 +64,4 @@ angular.module.MyReverseModule = function MyModule($provide) {
 
 ## Related API
 
-* {@link api/angular.filter Angular Filter API}
+* {@link api/angular.module.NG.$filter Angular Filter API}

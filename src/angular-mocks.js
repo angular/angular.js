@@ -149,7 +149,7 @@ angular.module.NG_MOCK.$Browser = function() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.module.NG_MOCK.$browser.xhr.flush flushed}.
+    *   {@link angular.module.NG_MOCK.$browser#xhr.flush flushed}.
     */
   self.xhr.expectGET    = angular.bind(self, self.xhr.expect, 'GET');
 
@@ -164,7 +164,7 @@ angular.module.NG_MOCK.$Browser = function() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.module.NG_MOCK.$browser.xhr.flush flushed}.
+    *   {@link angular.module.NG_MOCK.$browser#xhr.flush flushed}.
     */
   self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
 
@@ -179,7 +179,7 @@ angular.module.NG_MOCK.$Browser = function() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.module.NG_MOCK.$browser.xhr.flush flushed}.
+    *   {@link angular.module.NG_MOCK.$browser#xhr.flush flushed}.
     */
   self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
 
@@ -194,7 +194,7 @@ angular.module.NG_MOCK.$Browser = function() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.module.NG_MOCK.$browser.xhr.flush flushed}.
+    *   {@link angular.module.NG_MOCK.$browser#xhr.flush flushed}.
     */
   self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
 
@@ -209,7 +209,7 @@ angular.module.NG_MOCK.$Browser = function() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.module.NG_MOCK.$browser.xhr.flush flushed}.
+    *   {@link angular.module.NG_MOCK.$browser#xhr.flush flushed}.
     */
   self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
 

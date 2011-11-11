@@ -11,7 +11,7 @@
  * The form instance is a collection of widgets, and is responsible for life cycle and validation
  * of widget.
  *
- * Keep in mind that both form and widget instances are {@link api/angular.scope scopes}.
+ * Keep in mind that both form and widget instances are {@link api/angular.module.NG.$rootScope.Scope scopes}.
  *
  * @param {Form=} parentForm The form which should be the parent form of the new form controller.
  *   If none specified default to the `rootForm`.

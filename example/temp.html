@@ -4,7 +4,7 @@
     <title>angular dev sandbox</title>
     <script src="../src/angular-bootstrap.js" ng:autobind></script>
     <script>
-    angular.service('routeConfig', function($route) {
+    angular.module.NG('routeConfig', function($route) {
           $route.when('/view1', {controller: MyCtrl, template: 'view1.html'});
           $route.when('/view2', {controller: MyCtrl, template: 'view2.html'});
 

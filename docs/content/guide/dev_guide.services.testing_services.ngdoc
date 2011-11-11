@@ -11,7 +11,7 @@ var mock, notify;
 
 beforeEach(function() {
   mock = {alert: jasmine.createSpy()};
-  notify = angular.service('notify')(mock);
+  notify = angular.module.NG('notify')(mock);
 });
 
 it('should not alert first two notifications', function() {
@@ -53,6 +53,6 @@ it('should clear messages after alert', function() {
 
 ## Related API
 
-* {@link api/angular.service Angular Service API}
+* {@link api/angular.module.NG Angular Service API}
 
 

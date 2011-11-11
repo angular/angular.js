@@ -6,8 +6,8 @@
 
 
 Enough of building an app with three phones in a hard-coded dataset! Let's fetch a larger dataset
-from our server using one of angular's built-in {@link api/angular.service services} called {@link
-api/angular.service.$xhr $xhr}. We will use angular's {@link guide/dev_guide.di dependency
+from our server using one of angular's built-in {@link api/angular.module.NG services} called {@link
+api/angular.module.NG.$xhr $xhr}. We will use angular's {@link guide/dev_guide.di dependency
 injection (DI)} to provide the service to the `PhoneListCtrl` controller.
 
 
@@ -42,9 +42,9 @@ Following is a sample of the file:
 
 ## Controller
 
-We'll use angular's {@link api/angular.service.$xhr $xhr} service in our controller to make an HTTP
+We'll use angular's {@link api/angular.module.NG.$xhr $xhr} service in our controller to make an HTTP
 request to your web server to fetch the data in the `app/phones/phones.json` file. `$xhr` is just
-one of several built-in {@link api/angular.service angular services} that handle common operations
+one of several built-in {@link api/angular.module.NG angular services} that handle common operations
 in web apps. Angular injects these services for you where you need them.
 
 Services are managed by angular's {@link guide/dev_guide.di DI subsystem}. Dependency injection
@@ -127,7 +127,7 @@ describe('PhoneCat controllers', function() {
     var scope, $browser, ctrl;
 
     beforeEach(function() {
-      scope = angular.scope();
+      scope = angular.module.NG.$rootScope.Scope();
       $browser = scope.$service('$browser');
 
       $browser.xhr.expectGET('phones/phones.json')
@@ -140,7 +140,7 @@ describe('PhoneCat controllers', function() {
 
 We created the controller in the test environment, as follows:
 
-* We created a root scope object by calling `angular.scope()`
+* We created a root scope object by calling `angular.module.NG.$rootScope.Scope()`
 
 * We called `scope.$new(PhoneListCtrl)` to get angular to create the child scope associated with
 the `PhoneListCtrl` controller
@@ -149,7 +149,7 @@ Because our code now uses the `$xhr` service to fetch the phone list data in our
 we create the `PhoneListCtrl` child scope, we need to tell the testing harness to expect an
 incoming request from the controller. To do this we:
 
-* Use the {@link api/angular.scope.$service `$service`} method to retrieve the `$browser` service,
+* Use the {@link api/angular.module.NG.$rootScope.Scope#$service `$service`} method to retrieve the `$browser` service,
 a service that angular uses to represent various browser APIs. In tests, angular automatically uses
 a mock version of this service that allows you to write tests without having to deal with these
 native APIs and the global state associated with them.

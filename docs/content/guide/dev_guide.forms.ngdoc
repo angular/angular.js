@@ -18,14 +18,14 @@ Forms consist of all of the following:
 
 A form groups a set of widgets together into a single logical data-set. A form is created using
 the {@link api/angular.widget.form &lt;form&gt;} element that calls the
-{@link api/angular.service.$formFactory $formFactory} service. The form is responsible for managing
+{@link api/angular.module.NG.$formFactory $formFactory} service. The form is responsible for managing
 the widgets and for tracking validation information.
 
 A form is:
 
 - The collection which contains widgets or other forms.
 - Responsible for marshaling data from the model into a widget. This is
-  triggered by {@link api/angular.scope.$watch $watch} of the model expression.
+  triggered by {@link api/angular.module.NG.$rootScope.Scope#$watch $watch} of the model expression.
 - Responsible for marshaling data from the widget into the model. This is
   triggered by the widget emitting the `$viewChange` event.
 - Responsible for updating the validation state of the widget, when the widget emits
@@ -57,7 +57,7 @@ In Angular, a widget is the term used for the UI with which the user input. Exam
 bult-in Angular widgets are {@link api/angular.widget.input input} and
 {@link api/angular.widget.select select}. Widgets provide the rendering and the user
 interaction logic. Widgets should be declared inside a form, if no form is provided an implicit
-form {@link api/angular.service.$formFactory $formFactory.rootForm} form is used.
+form {@link api/angular.module.NG.$formFactory $formFactory.rootForm} form is used.
 
 Widgets are implemented as Angular controllers. A widget controller:
 
@@ -218,7 +218,7 @@ The following example demonstrates:
 # Life-cycle
 
 - The `<form>` element triggers creation of a new form {@link dev_guide.scopes scope} using the
-  {@link api/angular.service.$formFactory $formfactory}. The new form scope is added to the
+  {@link api/angular.module.NG.$formFactory $formfactory}. The new form scope is added to the
   `<form>` element using the jQuery `.data()` method for later retrieval under the key `$form`.
   The form also sets up these listeners:
 
@@ -227,8 +227,8 @@ The following example demonstrates:
   - `$valid` / `$invalid` - This event is emitted by the widget on validation state change.
 
 - `<input>` element triggers the creation of the widget using the
-  {@link api/angular.service.$formFactory $formfactory.$createWidget()} method. The `$createWidget()`
-  creates new widget instance by calling the current scope {@link api/angular.scope.$new .$new()} and
+  {@link api/angular.module.NG.$formFactory $formfactory.$createWidget()} method. The `$createWidget()`
+  creates new widget instance by calling the current scope {@link api/angular.module.NG.$rootScope.Scope#$new .$new()} and
   registers these listeners:
 
   - `$watch` on the model scope.
@@ -244,7 +244,7 @@ The following example demonstrates:
   1. The DOM element fires the `change` event which the widget intercepts. Widget then emits
      a `$viewChange` event which includes the new user-entered value. (Remember that the DOM events
      are outside of the Angular environment so the widget must emit its event within the
-     {@link api/angular.scope.$apply $apply} method).
+     {@link api/angular.module.NG.$rootScope.Scope#$apply $apply} method).
   2. The form's `$viewChange` listener copies the user-entered value to the widget's `$viewValue`
      property. Since the `$viewValue` is the raw value as entered by user, it may need to be
      translated to a different format/type (for example, translating a string to a number).
@@ -517,7 +517,7 @@ function LoginController() {
 
 describe('LoginController', function() {
   it('should disable login button when form is invalid', function() {
-    var scope = angular.scope();
+    var scope = angular.module.NG.$rootScope.Scope();
     var loginController = scope.$new(LoginController);
 
     // In production the 'loginForm' form instance gets set from the view,
@@ -570,7 +570,7 @@ function LoginController(){
 
 describe('LoginController', function() {
   it('should disable login button when form is invalid', function() {
-    var scope = angular.scope();
+    var scope = angular.module.NG.$rootScope.Scope();
     var loginController = scope.$new(LoginController);
     var input = angular.element('<input>');
 

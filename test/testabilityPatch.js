@@ -164,7 +164,7 @@ function sortedHtml(element, showNgClass) {
 
 
 // TODO(vojta): migrate these helpers into jasmine matchers
-/**
+/**a
  * This method is a cheap way of testing if css for a given node is not set to 'none'. It doesn't
  * actually test if an element is displayed by the browser. Be aware!!!
  */
