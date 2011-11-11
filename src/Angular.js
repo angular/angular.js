@@ -819,27 +819,42 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * `ng:autobind="[root element ID]"` tells Angular to compile and manage part of the document,
  * starting at "root element ID".
  *
-
  */
 function angularInit(config, document){
   var autobind = config.autobind;
   
   if (autobind) {
-    var modules = [ngModule];
+    var modules = [];
     forEach((config.modules || '').split(','), function(module){
       module = trim(module);
       if (module) {
         modules.push(module);
       }
     });
-    createInjector(modules, angularModule)(['$rootScope', '$compile', '$injector', function(scope, compile, injector){
-      scope.$apply(function(){
-        var element = jqLite(isString(autobind) ? document.getElementById(autobind) : document);
-        element.data('$injector', injector);
-        compile(element)(scope);
-      });
-    }]);
+    bootstrap(jqLite(isString(autobind) ? document.getElementById(autobind) : document), modules);
   }
+}
+
+/**
+ * @ngdoc function
+ * @name angular.bootstrap
+ * @description
+ * Use this function to manually start up angular application.
+ *
+ * See: {@link guide/dev_guide.bootstrap.manual_bootstrap Bootstrap}
+ *
+ * @param {Element} element DOM element which is the root of angular application.
+ * @param {Array<String,function>=} modules an array of module declarations. See: {@link angular.module modules}
+ */
+function bootstrap(element, modules) {
+  modules = modules || [];
+  modules.unshift(ngModule);
+  createInjector(modules, angularModule)(['$rootScope', '$compile', '$injector', function(scope, compile, injector){
+    scope.$apply(function() {
+      element.data('$injector', injector);
+      compile(element)(scope);
+    });
+  }]);
 }
 
 function angularJsConfig(document) {
@@ -903,6 +918,7 @@ function assertArgFn(arg, name) {
 
 function publishExternalAPI(angular){
   extend(angular, {
+    'bootstrap': bootstrap,
     'copy': copy,
     'extend': extend,
     'equals': equals,

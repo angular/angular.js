@@ -529,4 +529,15 @@ describe('angular', function() {
       expect(version.codeName).toBe('"NG_VERSION_CODENAME"');
     });
   });
+
+  describe('bootstrap', function() {
+    it('should bootstrap app', function(){
+      var element = jqLite('<div>{{1+2}}</div>');
+      var injector;
+      angular.bootstrap(element, [function($injector){ injector = $injector; }]);
+      expect(injector).toBeDefined();
+      expect(element.data('$injector')).toBe(injector);
+      dealoc(element);
+    });
+  });
 });
