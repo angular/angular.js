@@ -31,7 +31,7 @@ This is the sequence that your code should follow if you bootstrap angular on yo
 
 1. After the page is loaded, find the root of the HTML template, which is typically the root of
 the document.
-2. Run angular's {@link dev_guide.compiler Angular HTML compiler}, which converts a template into
+2. Call {@link api/angular.bootstrap} to  {@link dev_guide.compiler compile} the template into
 an executable, bi-directionally bound application.
 
 
@@ -43,4 +43,4 @@ an executable, bi-directionally bound application.
 
 ## Related API
 
-{@link api/angular.compile Compiler API}
+{@link api/angular.module.NG.$compile Compiler API}

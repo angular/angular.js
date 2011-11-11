@@ -88,9 +88,8 @@ setter methods that allow you to get or change the current URL in the browser.
 
 ## $location service configuration
 
-To configure the `$location` service, you get a hold of
-{@link angular.module.ng.$locationProvider $locationProvider} service and configure it with these
-methods:
+To configure the `$location` service, retrieve the
+{@link api/angular.module.NG.$locationProvider $locationProvider} and set the parameters as follows:
 
 - **html5Mode(mode)**: {boolean}<br />
   `true` - see HTML5 mode<br />
@@ -210,26 +209,27 @@ In this mode, `$location` uses Hashbang URLs in all browsers.
 ### Example
 
 <pre>
-angular.module.NG('$locationConfig', function() {
-  return {
-    html5Mode: false,
-    hashPrefix: '!'
-  };
-});
+it('should show example', inject(
+  function($locationProvider) {
+    $locationProvider.html5mode = false;
+    $locationProvider.hashPrefix = '!';
+  },
+  function($location) {
+    // open http://host.com/base/index.html#!/a
+    $location.absUrl() == 'http://host.com/base/index.html#!/a'
+    $location.path() == '/a'
 
-// open http://host.com/base/index.html#!/a
-$location.absUrl() == 'http://host.com/base/index.html#!/a'
-$location.path() == '/a'
+    $location.path('/foo')
+    $location.absUrl() == 'http://host.com/base/index.html#!/foo'
 
-$location.path('/foo')
-$location.absUrl() == 'http://host.com/base/index.html#!/foo'
+    $location.search() == {}
+    $location.search({a: 'b', c: true});
+    $location.absUrl() == 'http://host.com/base/index.html#!/foo?a=b&c'
 
-$location.search() == {}
-$location.search({a: 'b', c: true});
-$location.absUrl() == 'http://host.com/base/index.html#!/foo?a=b&c'
-
-$location.path('/new').search('x=y');
-$location.absUrl() == 'http://host.com/base/index.html#!/new?x=y'
+    $location.path('/new').search('x=y');
+    $location.absUrl() == 'http://host.com/base/index.html#!/new?x=y'
+  }
+));
 </pre>
 
 ### Crawling your app
@@ -258,39 +258,40 @@ having to worry about whether the browser displaying your app supports the histo
 ### Example
 
 <pre>
-angular.module.NG('$locationConfig', function() {
-  return {
-    html5Mode: true,
-    hashPrefix: '!'
-  };
-});
+it('should show example', inject(
+  function($locationProvider) {
+    $locationProvider.html5mode = true;
+    $locationProvider.hashPrefix = '!';
+  },
+  function($location) {
+    // in browser with HTML5 history support:
+    // open http://host.com/#!/a -> rewrite to http://host.com/a
+    // (replacing the http://host.com/#!/a history record)
+    $location.path() == '/a'
 
-// in browser with HTML5 history support:
-// open http://host.com/#!/a -> rewrite to http://host.com/a
-// (replacing the http://host.com/#!/a history record)
-$location.path() == '/a'
+    $location.path('/foo');
+    $location.absUrl() == 'http://host.com/foo'
 
-$location.path('/foo');
-$location.absUrl() == 'http://host.com/foo'
+    $location.search() == {}
+    $location.search({a: 'b', c: true});
+    $location.absUrl() == 'http://host.com/foo?a=b&c'
 
-$location.search() == {}
-$location.search({a: 'b', c: true});
-$location.absUrl() == 'http://host.com/foo?a=b&c'
+    $location.path('/new').search('x=y');
+    $location.url() == 'new?x=y'
+    $location.absUrl() == 'http://host.com/new?x=y'
 
-$location.path('/new').search('x=y');
-$location.url() == 'new?x=y'
-$location.absUrl() == 'http://host.com/new?x=y'
+    // in browser without html5 history support:
+    // open http://host.com/new?x=y -> redirect to http://host.com/#!/new?x=y
+    // (again replacing the http://host.com/new?x=y history item)
+    $location.path() == '/new'
+    $location.search() == {x: 'y'}
 
-// in browser without html5 history support:
-// open http://host.com/new?x=y -> redirect to http://host.com/#!/new?x=y
-// (again replacing the http://host.com/new?x=y history item)
-$location.path() == '/new'
-$location.search() == {x: 'y'}
-
-$location.path('/foo/bar');
-$location.path() == '/foo/bar'
-$location.url() == '/foo/bar?x=y'
-$location.absUrl() == 'http://host.com/#!/foo/bar?x=y'
+    $location.path('/foo/bar');
+    $location.path() == '/foo/bar'
+    $location.url() == '/foo/bar?x=y'
+    $location.absUrl() == 'http://host.com/#!/foo/bar?x=y'
+  }
+));
 </pre>
 
 ### Fallback for legacy browsers
@@ -364,7 +365,6 @@ redirect to regular / hashbang url, as this conversion happens only during parsi
 = on page reload.
 
 In this examples we use `<base href="/base/index.html" />`
-
 <doc:example>
 <doc:source source="false">
 
@@ -422,8 +422,7 @@ In this examples we use `<base href="/base/index.html" />`
 
   var browsers = {
     html5: new FakeBrowser('http://www.host.com/base/path?a=b#h', '/base/index.html'),
-    hashbang: new FakeBrowser('http://www.host.com/base/index.html#!/path?a=b#h',
-'/base/index.html')
+    hashbang: new FakeBrowser('http://www.host.com/base/index.html#!/path?a=b#h', '/base/index.html')
   };
 
   function Html5Cntl($location) {
@@ -461,14 +460,14 @@ In this examples we use `<base href="/base/index.html" />`
 
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
-    var scope = angular.module.NG.$rootScope.Scope(null, {
-      $locationConfig: {html5Mode: true, hashPrefix: '!'},
-      $browser: browsers[name],
-      $document: root,
-      $sniffer: {history: name == 'html5'}
-    });
-
-    angular.compile(root)(scope).$apply();
+    angular.bootstrap(root, [function($locationProvider, $provide){
+      $locationProvider.html5Mode = true;
+      $locationProvider.hashPrefix = '!';
+      
+      $provide.value('$browser', browsers[name]);
+      $provide.value('$document', root);
+      $provide.value('$sniffer', {history: name == 'html5'});
+    }]);
     root.bind('click', function(e) {
       e.stopPropagation();
     });
@@ -515,26 +514,20 @@ When using `$location` service during testing, you are outside of the angular's 
 api/angular.module.NG.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
 
 <pre>
-angular.module.NG('$serviceUnderTest', function($location) {
-  // whatever it does...
-};
-
-describe('$serviceUnderTest', function() {
-  var scope, $location, $sut;
-
-  beforeEach(function() {
-    scope = angular.module.NG.$rootScope.Scope();
-    $location = scope.$service('$location');
-    $sut = scope.$service('$serviceUnderTest');
+describe('serviceUnderTest', function() {
+  beforeEach(inject(function($provide) {
+    $provide.factory('serviceUnderTest', function($location){
+      // whatever it does...
+    });
   });
 
-  it('should...', function() {
+  it('should...', inject(function($location, $rootScope, serviceUnderTest) {
     $location.path('/new/path');
-    scope.$apply();
+    $rootScope.$apply();
 
     // test whatever the service should do...
 
-  });
+  }));
 });
 </pre>
 

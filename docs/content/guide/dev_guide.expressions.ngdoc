@@ -243,4 +243,4 @@ so that angular developers and developers who use angular can develop in harmony
 
 ## Related API
 
-* {@link api/angular.compile Angular Compiler API}
+* {@link api/angular.module.NG.$compile Angular Compiler API}

@@ -23,7 +23,7 @@ angular.directive('ng:bind', function(expression, compiledElement) {
 The angular compiler exposes methods that you may need to use when writing your own widgets and
 directives.  For example, the `descend()` method lets you control whether the compiler ignores or
 processes child elements of the element it is compiling.  For information on this and other
-compiler methods, see the {@link api/angular.compile Compiler API doc}.
+compiler methods, see the {@link api/angular.module.NG.$compile Compiler API doc}.
 
 
 ## Related Docs

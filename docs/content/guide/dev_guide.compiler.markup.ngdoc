@@ -89,4 +89,4 @@ angular.attrMarkup('extraClass', function(attrValue, attrName, element){
 
 ## Related API
 
-* {@link api/angular.compile Compiler API Reference}
+* {@link api/angular.module.NG.$compile Compiler API Reference}

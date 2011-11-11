@@ -32,4 +32,4 @@ dev_guide.compiler.widgets.creating_widgets Creating Custom Widgets}.
 
 ## Related API
 
-* {@link api/angular.compile Compiler API}
+* {@link api/angular.module.NG.$compile Compiler API}
