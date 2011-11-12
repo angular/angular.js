@@ -28,19 +28,28 @@
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
     var example = element.find('pre').eq(0),  //doc-source
         exampleSrc = example.text(),
+        showSource = example.attr('source') !== 'false',
         jsfiddle = example.attr('jsfiddle') || true,
         scenario = element.find('pre').eq(1); //doc-scenario
 
     var code = indent(exampleSrc);
     var tabHtml =
-      '<ul class="doc-example">' +
+      '<ul class="doc-example">';
+
+    // show source tab, if not disabled
+    if (showSource) {
+      tabHtml +=
         '<li class="doc-example-heading"><h3>Source</h3></li>' +
         '<li class="doc-example-source" ng:non-bindable>' +
         jsFiddleButton(jsfiddle) + // may or may not have value
         '<pre class="brush: js; html-script: true; highlight: [' +
-          code.hilite + ']; toolbar: false;"></pre></li>' +
+          code.hilite + ']; toolbar: false;"></pre></li>';
+    }
+    // show live preview tab
+    tabHtml +=
         '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
         '<li class="doc-example-live">' + exampleSrc +'</li>';
+    // show scenario tab, if present
     if (scenario.text()) {
       tabHtml +=
         '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
