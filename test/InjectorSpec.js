@@ -67,20 +67,6 @@ describe('injector', function() {
     }).toThrow("Unknown provider for 'idontexist' <- 'a' <- 'b'.");
   });
 
-  it('should autostart eager services', function() {
-    var log = '';
-    injector = createInjector([function($provide){
-      $provide.service('eager', function() {
-        this.$eager = true;
-        this.$get = function(){
-          log += 'eager;';
-          return 'foo';
-        };
-      });
-    }]);
-    expect(log).toEqual('eager;');
-    expect(injector('eager')).toBe('foo');
-  });
 
   describe('invoke', function() {
     var args;
@@ -440,20 +426,4 @@ describe('injector', function() {
       }).toThrow('MyError');
     });
   });
-
-  describe('$eager', function(){
-    it('should eagerly instantiate a service if $eager is true', function() {
-      var log = [];
-      createInjector([function($provide){
-        $provide.service('svc1', function() {
-          this.$get = function(){
-            log.push('svc1');
-          }
-          this.$eager = true;
-        });
-      }]);
-      expect(log).toEqual(['svc1']);
-    });
-  });
-
 });

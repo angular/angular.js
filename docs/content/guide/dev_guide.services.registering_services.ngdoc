@@ -33,12 +33,8 @@ angular.module.ng('service id', function() {
   var shinyNewServiceInstance;
   //factory function body that constructs shinyNewServiceInstance
   return shinyNewServiceInstance;
-}, {$eager: true});
+});
 </pre>
-
-While it is tempting to declare services as eager, only in few cases it is actually useful. If you
-are unsure whether to make a service eager, it likely doesn't need to be. To be more specific, a
-service should be declared as eager only if it fits one of these scenarios:
 
 * Nothing in your application declares this service as its dependency, and this service affects the
 state or configuration of the application (e.g. a service that configures `$route` or `$resource`

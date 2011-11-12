@@ -9,7 +9,7 @@
           $route.when('/view2', {controller: MyCtrl, template: 'view2.html'});
 
           function MyCtrl() {};
-        }, {$inject: ['$route'], $eager: true});
+        }, {$inject: ['$route']});
     </script>
   </head>
   <body ng:init="$service('$window').$root = this">

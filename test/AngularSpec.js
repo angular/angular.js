@@ -389,18 +389,6 @@ describe('angular', function() {
       })('svc2')).toEqual('svc2-svc1');
     });
 
-    it('should eagerly instantiate a service if $eager is true', function() {
-      var log = [];
-      angular.injector(function($provide){
-        $provide.service('svc1', function() {
-          this.$get = function(){
-            log.push('svc1');
-          }
-          this.$eager = true;
-        });
-      });
-      expect(log).toEqual(['svc1']);
-    });
   });
 
 

@@ -390,14 +390,5 @@ function createInjector(modulesToLoad, moduleRegistry) {
 
   loadModule(modulesToLoad);
 
-  // instantiate $eager providers
-  // for perf we can't do forEach
-  for(var name in cache) {
-    var index = name.indexOf(providerSuffix);
-    if (index  == name.length - providerSuffixLength  && cache[name].$eager) {
-      $injector(name.substring(1, index));
-    }
-  }
-
   return $injector;
 }
