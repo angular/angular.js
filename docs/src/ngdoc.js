@@ -138,11 +138,11 @@ Doc.prototype = {
 
             if (!isFullUrl) self.links.push(absUrl);
 
-            return '<a href="' + absUrl + '">'
-              + (isAngular ? '<code>' : '')
-              + (title || url).replace(/\n/g, ' ')
-              + (isAngular ? '</code>' : '')
-              + '</a>';
+            return '<a href="' + absUrl + '">' +
+              (isAngular ? '<code>' : '') +
+              (title || url).replace(/\n/g, ' ') +
+              (isAngular ? '</code>' : '') +
+              '</a>';
           });
         text = new Showdown.converter().makeHtml(text);
       }
@@ -157,7 +157,7 @@ Doc.prototype = {
     var match;
     var self = this;
     self.text.split(NEW_LINE).forEach(function(line){
-      if (match = line.match(/^\s*@(\w+)(\s+(.*))?/)) {
+      if ((match = line.match(/^\s*@(\w+)(\s+(.*))?/))) {
         // we found @name ...
         // if we have existing name
         flush();
@@ -172,9 +172,9 @@ Doc.prototype = {
     });
     flush();
     this.shortName = (this.name || '').split(/[\.#]/).pop();
-    this.id = this.id // if we have an id just use it
-      || (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) // try to extract it from file name
-      || this.name; // default to name
+    this.id = this.id || // if we have an id just use it
+      (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
+      this.name; // default to name
     this.description = this.markdown(this.description);
     this.example = this.markdown(this.example);
     this['this'] = this.markdown(this['this']);
@@ -182,9 +182,9 @@ Doc.prototype = {
 
     function flush() {
       if (atName) {
-        var text = trim(atText.join('\n'));
+        var text = trim(atText.join('\n')), match;
         if (atName == 'param') {
-          var match = text.match(/^{([^}=]+)(=)?}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
+          match = text.match(/^\{([^}=]+)(=)?\}\s+(([^\s=]+)|\[(\S+)=([^\]]+)\])\s+(.*)/);
                                 //  1      12 2     34       4   5   5 6      6  3   7  7
           if (!match) {
             throw new Error("Not a valid 'param' format: " + text);
@@ -198,7 +198,7 @@ Doc.prototype = {
           };
           self.param.push(param);
         } else if (atName == 'returns') {
-          var match = text.match(/^{([^}=]+)}\s+(.*)/);
+          match = text.match(/^\{([^}=]+)\}\s+(.*)/);
           if (!match) {
             throw new Error("Not a valid 'returns' format: " + text);
           }
@@ -207,13 +207,13 @@ Doc.prototype = {
             description: self.markdown(text.replace(match[0], match[2]))
           };
         } else if(atName == 'requires') {
-          var match = text.match(/^([^\s]*)\s*([\S\s]*)/);
+          match = text.match(/^([^\s]*)\s*([\S\s]*)/);
           self.requires.push({
             name: match[1],
             text: self.markdown(match[2])
           });
         } else if(atName == 'property') {
-          var match = text.match(/^{(\S+)}\s+(\S+)(\s+(.*))?/);
+          match = text.match(/^\{(\S+)\}\s+(\S+)(\s+(.*))?/);
           if (!match) {
             throw new Error("Not a valid 'property' format: " + text);
           }
@@ -224,7 +224,7 @@ Doc.prototype = {
             };
           self.properties.push(property);
         } else if(atName == 'eventType') {
-          var match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
+          match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
           self.type = match[1];
           self.target = match[2];
         } else {
