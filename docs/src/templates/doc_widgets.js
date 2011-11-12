@@ -78,14 +78,14 @@
 
     function jsFiddleButton(jsfiddle) {
       if (jsfiddle !== 'false') {
-        if(jsfiddle == true) {
+        if(jsfiddle === true) {
           //dynamically generate a fiddle
           var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/',
               fiddleSrc =  exampleSrc,
               stripIndent = fiddleSrc.match(/^(\s*)/)[1].length;
 
           //escape closing textarea
-          fiddleSrc = fiddleSrc.replace(/<\/textarea>/gi,'&lt;/textarea&gt;')
+          fiddleSrc = fiddleSrc.replace(/<\/textarea>/gi,'&lt;/textarea&gt;');
           //strip extra indentation
           fiddleSrc = fiddleSrc.replace(new RegExp('^\\s{' + stripIndent + '}', 'gm'), '');
 
@@ -122,12 +122,14 @@
     if (!text) return text;
     var lines = text.split(/\r?\n/);
     var lineNo = [];
+    var i;
+
     // remove any leading blank lines
     while (lines[0].match(/^\s*$/)) lines.shift();
     // remove any trailing blank lines
     while (lines[lines.length - 1].match(/^\s*$/)) lines.pop();
     var minIndent = 999;
-    for ( var i = 0; i < lines.length; i++) {
+    for (i = 0; i < lines.length; i++) {
       var line = lines[0];
       var indent = line.match(/^\s*/)[0];
       if (indent !== line && indent.length < minIndent) {
@@ -135,12 +137,12 @@
       }
     }
 
-    for ( var i = 0; i < lines.length; i++) {
+    for (i = 0; i < lines.length; i++) {
       lines[i] = '  ' + lines[i].substring(minIndent);
       lineNo.push(5 + i);
     }
     return {html: lines.join('\n'), hilite: lineNo.join(',') };
-  };
+  }
 
   var HTML_TPL =
       '<p><a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Workspace Reset Instructions &nbsp;&#x27A4;</a></p>' +
@@ -208,8 +210,8 @@
     if (children.length) {
       // load custom content
       angular.forEach(element.children(), function(elm) {
-        var elm = angular.element(elm),
-            id = elm.attr('id');
+        elm = angular.element(elm);
+        var id = elm.attr('id');
 
         nav.append(HTML_NAV.replace('{title}', elm.attr('title')).replace(/\{id\}/g, id));
         content.append(HTML_CONTENT.replace('{id}', id).replace('{content}', elm.html()));
