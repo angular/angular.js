@@ -14,9 +14,6 @@ The `angular.module.ng` method accepts three parameters:
   - `$inject` - {Array.<string>} - Array of service ids this service depends on. These services
 will be passed as arguments into the factory function in the same order specified in the `$inject`
 array. Defaults to `[]`.
-  - `$eager` - {boolean} - If true, the service factory will be called and the service will be
-instantiated when angular boots. If false, the service will be lazily instantiated when it is first
-requested during instantiation of a dependant. Defaults to `false`.
 
 The `this` of the factory function is bound to the root scope of the angular application.
 
