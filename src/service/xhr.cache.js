@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$xhr.cache
+ * @name angular.module.ng.$xhr.cache
  * @function
  *
  * @requires $xhr.bulk
@@ -11,11 +11,11 @@
  * @requires $log
  *
  * @description
- * Acts just like the {@link angular.module.NG.$xhr $xhr} service but caches responses for `GET`
+ * Acts just like the {@link angular.module.ng.$xhr $xhr} service but caches responses for `GET`
  * requests. All cache misses are delegated to the $xhr service.
  *
  * @property {function()} delegate Function to delegate all the cache misses to. Defaults to
- *   the {@link angular.module.NG.$xhr $xhr} service.
+ *   the {@link angular.module.ng.$xhr $xhr} service.
  * @property {object} data The hashmap where all cached entries are stored.
  *
  * @param {string} method HTTP method.

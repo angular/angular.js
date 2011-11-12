@@ -38,10 +38,10 @@ angular.scenario.dsl('sleep', function() {
  *    browser().window.path() window.location.pathname
  *    browser().window.search() window.location.search
  *    browser().window.hash() window.location.hash without # prefix
- *    browser().location().url() see angular.module.NG.$location#url
- *    browser().location().path() see angular.module.NG.$location#path
- *    browser().location().search() see angular.module.NG.$location#search
- *    browser().location().hash() see angular.module.NG.$location#hash
+ *    browser().location().url() see angular.module.ng.$location#url
+ *    browser().location().path() see angular.module.ng.$location#path
+ *    browser().location().search() see angular.module.ng.$location#search
+ *    browser().location().hash() see angular.module.ng.$location#hash
  */
 angular.scenario.dsl('browser', function() {
   var chain = {};
@@ -103,25 +103,25 @@ angular.scenario.dsl('browser', function() {
 
     api.url = function() {
       return this.addFutureAction('$location.url()', function($window, $document, done) {
-        done(null, $window.angular.injector('NG')('$location').url());
+        done(null, $window.angular.injector('ng')('$location').url());
       });
     };
 
     api.path = function() {
       return this.addFutureAction('$location.path()', function($window, $document, done) {
-        done(null, $window.angular.injector('NG')('$location').path());
+        done(null, $window.angular.injector('ng')('$location').path());
       });
     };
 
     api.search = function() {
       return this.addFutureAction('$location.search()', function($window, $document, done) {
-        done(null, $window.angular.injector('NG')('$location').search());
+        done(null, $window.angular.injector('ng')('$location').search());
       });
     };
 
     api.hash = function() {
       return this.addFutureAction('$location.hash()', function($window, $document, done) {
-        done(null, $window.angular.injector('NG')('$location').hash());
+        done(null, $window.angular.injector('ng')('$location').hash());
       });
     };
 

@@ -99,9 +99,9 @@ var $$scope           = '$scope',
     angularDirective  = extensionMap(angular, 'directive', lowercase),
     /** @name angular.widget */
     angularWidget     = extensionMap(angular, 'widget', shivForIE),
-    /** @name angular.module.NG */
+    /** @name angular.module.ng */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
-    /** @name angular.module.NG */
+    /** @name angular.module.ng */
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
     uid               = ['0', '0', '0'],
@@ -571,7 +571,7 @@ function isLeafNode (node) {
  * * If  `source` is not an object or array, `source` is returned.
  *
  * Note: this function is used to augment the Object type in Angular expressions. See
- * {@link angular.module.NG.$filter} for more information about Angular arrays.
+ * {@link angular.module.ng.$filter} for more information about Angular arrays.
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
@@ -629,7 +629,7 @@ function copy(source, destination){
  * that begin with `$` are ignored.
  *
  * Note: This function is used to augment the Object type in Angular expressions. See
- * {@link angular.module.NG.$filter} for more information about Angular arrays.
+ * {@link angular.module.ng.$filter} for more information about Angular arrays.
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
@@ -944,7 +944,7 @@ function publishExternalAPI(angular){
     'uppercase': uppercase
   });
   
-  angularModule.NG = ngModule;
+  angularModule.ng = ngModule;
 }
 
 ngModule.$inject = ['$provide', '$injector'];

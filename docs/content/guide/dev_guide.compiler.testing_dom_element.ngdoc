@@ -14,4 +14,4 @@
 
 ## Related API
 
-* {@link api/angular.module.NG.$compile $compile()}
+* {@link api/angular.module.ng.$compile $compile()}

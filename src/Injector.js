@@ -11,14 +11,14 @@
  *
 
  * @param {<string, function()>} modules... A list of module functions or their aliases. See
- *        {@link angular.module}. The `NG` module must be explicitly added.
+ *        {@link angular.module}. The `ng` module must be explicitly added.
  * @returns {function()} Injector function. See {@link angular.module.AUTO.$injector $injector}.
  *
  * @example
  * Typical usage
  * <pre>
  *   // create an injector
- *   var $injector = angular.injector('NG');
+ *   var $injector = angular.injector('ng');
  *
  *   // use the injector to kick of your application
  *   // use the type inference to auto inject arguments, or use implicit injection

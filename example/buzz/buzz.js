@@ -1,4 +1,4 @@
-angular.module.NG('myApplication', function($resource){
+angular.module.ng('myApplication', function($resource){
   this.Activity = $resource(
       'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
       {alt:'json', callback:'JSON_CALLBACK'},

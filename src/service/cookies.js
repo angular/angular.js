@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$cookies
+ * @name angular.module.ng.$cookies
  * @requires $browser
  *
  * @description

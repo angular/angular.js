@@ -25,7 +25,7 @@ function MyModule($provide, $locationProvider){
 };
 </pre>
 
-See: {@link angular.module.AUTO.$provide $provide}, {@link angular.module.NG.$locationProvider $locationProvider}.
+See: {@link angular.module.AUTO.$provide $provide}, {@link angular.module.ng.$locationProvider $locationProvider}.
 
 # Registering Module Function
 
@@ -44,11 +44,11 @@ angular.module.MyModule = function(){
 Then you can refer to your module like this:
 
 <pre>
-var injector = angular.injector('NG', 'MyModule')
+var injector = angular.injector('ng', 'MyModule')
 </pre>
 
 Or
 
 <pre>
-var injector = angular.injector('NG', angular.module.MyModule)
+var injector = angular.injector('ng', angular.module.MyModule)
 </pre>

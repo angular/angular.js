@@ -7,15 +7,15 @@ While DI is widely used in statically typed languages such as Java or C++, it ha
 used in JavaScript. Angular brings the benefits of DI into JavaScript apps.
 
 In angular, DI is implemented as a subsystem that manages dependencies between services,
-controllers, widgets, and filters. The most important of these are {@link api/angular.module.NG
+controllers, widgets, and filters. The most important of these are {@link api/angular.module.ng
 services}.
 
 Services are objects that handle common tasks in web applications. Angular provides several{@link
-api/angular.module.NG built-in services}, and you can create your own custom services.
+api/angular.module.ng built-in services}, and you can create your own custom services.
 
 The main job of angular's DI subsystem is to provide services to angular components that depend on
 them. The way the DI subsystem provides services is as follows: all services are registered with
-angular's {@link api/angular.module.NG service API}, and all components that depend on services
+angular's {@link api/angular.module.ng service API}, and all components that depend on services
 define those dependencies as a property (`$inject`). With this information, the DI subsystem
 manages the creation of service objects and the provision of those objects to the components that
 need them, at the time they need them. The following illustration steps through the sequence of
@@ -49,7 +49,7 @@ achieve the necessary isolation by having each test create its own separate root
 
 <pre>
 // create a root scope
-var rootScope = angular.module.NG.$rootScope.Scope();
+var rootScope = angular.module.ng.$rootScope.Scope();
 // access the service locator
 var myService = rootScope.$service('myService');
 </pre>
@@ -74,7 +74,7 @@ equivalent:
 
 <pre>
 // given a user defined service
-angular.module.NG('serviceA', ...);
+angular.module.ng('serviceA', ...);
 
 // inject '$window', 'serviceA', curry 'name';
 function fnA($window, serviceA, name){};
@@ -102,4 +102,4 @@ code and insert the `$inject` into the source code so that it can be minified/ob
 
 ## Related API
 
-* {@link api/angular.module.NG Services API}
+* {@link api/angular.module.ng Services API}

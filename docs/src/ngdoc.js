@@ -144,7 +144,7 @@ Doc.prototype = {
 
             return '<a href="' + absUrl + '">' +
               (isAngular ? '<code>' : '') +
-              (title || url.replace(/^#/g, '')).replace(/\n/g, ' ') +
+              (title || url).replace(/^#/g, '').replace(/\n/g, ' ') +
               (isAngular ? '</code>' : '') +
               '</a>';
           });
@@ -175,7 +175,6 @@ Doc.prototype = {
       }
     });
     flush();
-    this.name = this.name || '';
     this.shortName = this.name.split(this.name.match(/#/) ? /#/ : /\./ ).pop();
     this.id = this.id || // if we have an id just use it
       (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
@@ -252,7 +251,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function() {
-          dom.tag('a', {href: 'api/angular.module.NG.' + require.name}, require.name);
+          dom.tag('a', {href: 'api/angular.module.ng.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
@@ -620,12 +619,12 @@ var KEYWORD_PRIORITY = {
   '.index': 1,
   '.guide': 2,
   '.angular': 7,
-  '.angular.module.NG.$filter': 7,
+  '.angular.module.ng.$filter': 7,
   '.angular.Object': 7,
   '.angular.directive': 7,
-  '.angular.module.NG.$filter': 7,
-  '.angular.module.NG.$rootScope.Scope': 7,
-  '.angular.module.NG': 7,
+  '.angular.module.ng.$filter': 7,
+  '.angular.module.ng.$rootScope.Scope': 7,
+  '.angular.module.ng': 7,
   '.angular.inputType': 7,
   '.angular.widget': 7,
   '.angular.mock': 8,

@@ -11,8 +11,8 @@ pattern, a scope's properties comprise both the model and the controller methods
 
 
 ### Scope characteristics
-- Scopes provide APIs ({@link api/angular.module.NG.$rootScope.Scope#$watch $watch}) to observe model mutations.
-- Scopes provide APIs ({@link api/angular.module.NG.$rootScope.Scope#$apply $apply}) to propagate any model changes
+- Scopes provide APIs ({@link api/angular.module.ng.$rootScope.Scope#$watch $watch}) to observe model mutations.
+- Scopes provide APIs ({@link api/angular.module.ng.$rootScope.Scope#$apply $apply}) to propagate any model changes
 through the system into the view from outside of the "Angular realm" (controllers, services,
 Angular event handlers).
 - Scopes can be nested to isolate application components while providing access to shared model
@@ -27,14 +27,14 @@ Every application has a root scope, which is the ancestor of all other scopes.
 
 ### What is scope used for?
 
-{@link dev_guide.expressions Expressions} in the view are {@link api/angular.module.NG.$rootScope.Scope#$eval evaluated}
+{@link dev_guide.expressions Expressions} in the view are {@link api/angular.module.ng.$rootScope.Scope#$eval evaluated}
 against the current scope. When HTML DOM elements are attached to a scope, expressions in those
 elements are evaluated against the attached scope.
 
 There are two kinds of expressions:
 
 - Binding expressions, which are observations of property changes. Property changes are reflected
-in the view during the {@link api/angular.module.NG.$rootScope.Scope#$digest digest cycle}.
+in the view during the {@link api/angular.module.ng.$rootScope.Scope#$digest digest cycle}.
 - Action expressions, which are expressions with side effects. Typically, the side effects cause
 execution of a method in a controller in response to a user action, such as clicking on a button.
 
@@ -57,7 +57,7 @@ A property write will always write to the current scope. This means that a write
 property within the scope it writes to, as shown in the following example.
 
 <pre>
-var root = angular.module.NG.$rootScope.Scope();
+var root = angular.module.ng.$rootScope.Scope();
 var child = root.$new();
 
 root.name = 'angular';
@@ -73,25 +73,25 @@ expect(root.name).toEqual('angular');
 ### Scope life cycle
 1. **Creation**
 
-   * The root scope is created by the  {@link api/angular.module.NG.$rootScope $rootScope} service.
-   * To create a child scopes, you should call {@link api/angular.module.NG.$rootScope.Scope#$new parentScope.$new()}.
+   * The root scope is created by the  {@link api/angular.module.ng.$rootScope $rootScope} service.
+   * To create a child scopes, you should call {@link api/angular.module.ng.$rootScope.Scope#$new parentScope.$new()}.
 
 2. **Watcher registration**
 
    Watcher registration can happen at any time and on any scope (root or child) via {@link
-api/angular.module.NG.$rootScope.Scope#$watch scope.$watch()} API.
+api/angular.module.ng.$rootScope.Scope#$watch scope.$watch()} API.
 
 3. **Model mutation**
 
    For mutations to be properly observed, you should make them only within the execution of the
-function passed into {@link api/angular.module.NG.$rootScope.Scope#$apply scope.$apply()} call. (Angular apis do this
+function passed into {@link api/angular.module.ng.$rootScope.Scope#$apply scope.$apply()} call. (Angular apis do this
 implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers, or
-asynchronous work with {@link api/angular.module.NG.$xhr $xhr} or {@link api/angular.module.NG.$defer
+asynchronous work with {@link api/angular.module.ng.$xhr $xhr} or {@link api/angular.module.ng.$defer
 $defer} services.
 
 4. **Mutation observation**
 
-   At the end of each `$apply` call {@link api/angular.module.NG.$rootScope.Scope#$digest $digest} cycle is started on
+   At the end of each `$apply` call {@link api/angular.module.ng.$rootScope.Scope#$digest $digest} cycle is started on
 the root scope, which then propagates throughout all child scopes.
 
    During the `$digest` cycle, all `$watch-ers` expressions or functions are checked for model
@@ -100,7 +100,7 @@ mutation and if a mutation is detected, the `$watch-er` listener is called.
 5. **Scope destruction**
 
    When child scopes are no longer needed, it is the responsibility of the child scope creator to
-destroy them via {@link api/angular.module.NG.$rootScope.Scope#$destroy scope.$destroy()} API. This will stop
+destroy them via {@link api/angular.module.ng.$rootScope.Scope#$destroy scope.$destroy()} API. This will stop
 propagation of `$digest` calls into the child scope and allow for memory used by the child scope
 models to be reclaimed by the garbage collector.
 
@@ -118,22 +118,22 @@ element.
 api/angular.directive directives} against the DOM template. The directives usually fall into one of
 two categories:
    - Observing {@link api/angular.directive directives}, such as double-curly expressions
-`{{expression}}`, register listeners using the {@link api/angular.module.NG.$rootScope.Scope#$watch $watch()} method.
+`{{expression}}`, register listeners using the {@link api/angular.module.ng.$rootScope.Scope#$watch $watch()} method.
 This type of directive needs to be notified whenever the expression changes so that it can update
 the view.
    -  Listener directives, such as {@link api/angular.directive.ng:click ng:click}, register a
 listener with the DOM. When the DOM listener fires, the directive executes the associated
-expression and updates the view using  the {@link api/angular.module.NG.$rootScope.Scope#$apply $apply()} method.
+expression and updates the view using  the {@link api/angular.module.ng.$rootScope.Scope#$apply $apply()} method.
 3. When an external event (such as a user action, timer or XHR) is received, the associated {@link
 dev_guide.expressions expression} must be applied to the scope through the {@link
-api/angular.module.NG.$rootScope.Scope#$apply $apply()} method so that all listeners are updated correctly.
+api/angular.module.ng.$rootScope.Scope#$apply $apply()} method so that all listeners are updated correctly.
 
 
 ### Directives that create scopes
 In most cases, {@link api/angular.directive directives} and scopes interact but do not create new
 instances of scope. However, some directives, such as {@link api/angular.directive.ng:controller
 ng:controller} and {@link api/angular.widget.@ng:repeat ng:repeat}, create new child scopes using
-the {@link api/angular.module.NG.$rootScope.Scope#$new $new()} method and then attach the child scope to the
+the {@link api/angular.module.ng.$rootScope.Scope#$new $new()} method and then attach the child scope to the
 corresponding DOM element. You can retrieve a scope for any DOM element by using an
 `angular.element(aDomElement).scope()` method call.)
 
@@ -143,13 +143,13 @@ Scopes and controllers interact with each other in the following situations:
    - Controllers use scopes to expose controller methods to templates (see {@link
 api/angular.directive.ng:controller ng:controller}).
    - Controllers define methods (behavior) that can mutate the model (properties on the scope).
-   - Controllers may register {@link api/angular.module.NG.$rootScope.Scope#$watch watches} on the model. These watches
+   - Controllers may register {@link api/angular.module.ng.$rootScope.Scope#$watch watches} on the model. These watches
 execute immediately after the controller behavior executes, but before the DOM gets updated.
 
 See the {@link dev_guide.mvc.understanding_controller controller docs} for more information.
 
 ### Updating scope properties
-You can update a scope by calling its {@link api/angular.module.NG.$rootScope.Scope#$apply $apply()} method with an
+You can update a scope by calling its {@link api/angular.module.ng.$rootScope.Scope#$apply $apply()} method with an
 expression or a function as the function argument. However it is typically not necessary to do this
 explicitly. In most cases, angular intercepts all external events (such as user interactions, XHRs,
 and timers) and wraps their callbacks into the `$apply()` method call on the scope object for you
@@ -172,8 +172,8 @@ doesn't need to worry about propagating the `$digest` call from the parent scope
 This happens automatically.
 
 ## Scopes in unit-testing
-You can create scopes, including the root scope, in tests using the {@link api/angular.module.NG.$rootScope.Scope
-angular.module.NG.$rootScope.Scope()} API. This allows you to mimic the run-time environment and have full control over
+You can create scopes, including the root scope, in tests using the {@link api/angular.module.ng.$rootScope.Scope
+angular.module.ng.$rootScope.Scope()} API. This allows you to mimic the run-time environment and have full control over
 the life cycle of the scope so that you can assert correct model transitions. Since these scopes
 are created outside the normal compilation process, their life cycles must be managed by the test.
 
@@ -183,7 +183,7 @@ within the unit-tests.
 
 <pre>
   // example of a test
-  var scope = angular.module.NG.$rootScope.Scope();
+  var scope = angular.module.ng.$rootScope.Scope();
   scope.$watch('name', function(scope, name){
    scope.greeting = 'Hello ' + name + '!';
   });
@@ -221,5 +221,5 @@ it('should allow override of providers', inject(
 
 ## Related API
 
-* {@link api/angular.module.NG.$rootScope.Scope Angular Scope API}
+* {@link api/angular.module.ng.$rootScope.Scope Angular Scope API}
 

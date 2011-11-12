@@ -205,8 +205,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#absUrl
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#absUrl
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -220,8 +220,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#url
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#url
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -247,8 +247,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#protocol
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#protocol
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -261,8 +261,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#host
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#host
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -275,8 +275,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#port
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#port
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -289,8 +289,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#path
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#path
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -311,8 +311,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#search
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#search
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -344,8 +344,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#hash
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#hash
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -361,8 +361,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.module.NG.$location#replace
-   * @methodOf angular.module.NG.$location
+   * @name angular.module.ng.$location#replace
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * If called, all changes to $location during current `$digest` will be replacing current history
@@ -397,7 +397,7 @@ function locationGetterSetter(property, preprocess) {
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$location
+ * @name angular.module.ng.$location
  *
  * @requires $browser
  * @requires $sniffer
@@ -422,9 +422,9 @@ function locationGetterSetter(property, preprocess) {
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$locationProvider
+ * @name angular.module.ng.$locationProvider
  * @description
- * Use the `$locationPrvoder` to configure how the application deep linking paths are stored.
+ * Use the `$locationProvider` to configure how the application deep linking paths are stored.
  */
 function $LocationProvider(){
   var hashPrefix = '',
@@ -432,11 +432,11 @@ function $LocationProvider(){
 
   /**
    * @ngdoc property
-   * @name angular.module.NG.$locationProvider#hashPrefix
-   * @methodOf angular.module.NG.$locationProvider
+   * @name angular.module.ng.$locationProvider#hashPrefix
+   * @methodOf angular.module.ng.$locationProvider
    * @description
    * @param {string=} prefix Prefix for hash part (containing path and search)
-   * @returns current value if used as getter or itself (chaining) if used as setter
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.hashPrefix = function(prefix) {
     if (isDefined(prefix)) {
@@ -449,11 +449,11 @@ function $LocationProvider(){
 
   /**
    * @ngdoc property
-   * @name angular.module.NG.$locationProvider#hashPrefix
-   * @propertyOf angular.module.NG.$locationProvider
+   * @name angular.module.ng.$locationProvider#hashPrefix
+   * @methodOf angular.module.ng.$locationProvider
    * @description
-   * @param mode= Use HTML5 strategy if available.
-   * @returns current value if used as getter or itself (chaining) if used as setter
+   * @param {string=} mode Use HTML5 strategy if available.
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
    */
   this.html5Mode = function(mode) {
     if (isDefined(mode)) {

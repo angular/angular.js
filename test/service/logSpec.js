@@ -13,7 +13,7 @@ describe('$log', function() {
     $window = {};
     logger = '';
     $provide.service('$log', $LogProvider);
-    $provide.value('$exceptionHandler', angular.module.NG_MOCK.rethrow);
+    $provide.value('$exceptionHandler', angular.module.ngMock.rethrow);
     $provide.value('$window', $window);
   }));
 

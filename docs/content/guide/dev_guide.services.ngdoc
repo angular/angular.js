@@ -19,4 +19,4 @@ most often used with {@link dev_guide.di dependency injection}, also a key featu
 
 ## Related API
 
-* {@link api/angular.module.NG Angular Service API}
+* {@link api/angular.module.ng Angular Service API}

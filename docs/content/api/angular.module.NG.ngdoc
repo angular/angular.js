@@ -1,5 +1,0 @@
-@ngdoc overview
-@name angular.module.NG
-@description
-
-The `NG` is an angular module which contains all of the core angular services.

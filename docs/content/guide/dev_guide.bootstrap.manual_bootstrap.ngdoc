@@ -43,4 +43,4 @@ an executable, bi-directionally bound application.
 
 ## Related API
 
-{@link api/angular.module.NG.$compile Compiler API}
+{@link api/angular.module.ng.$compile Compiler API}

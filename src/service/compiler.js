@@ -79,12 +79,12 @@ function $CompileProvider(){
 
       /**
        * @ngdoc function
-       * @name angular.module.NG.$compile
+       * @name angular.module.ng.$compile
        * @function
        *
        * @description
        * Compiles a piece of HTML string or DOM into a template and produces a template function, which
-       * can then be used to link {@link angular.module.NG.$rootScope.Scope scope} and the template together.
+       * can then be used to link {@link angular.module.ng.$rootScope.Scope scope} and the template together.
        *
        * The compilation is a process of walking the DOM tree and trying to match DOM elements to
        * {@link angular.markup markup}, {@link angular.attrMarkup attrMarkup},
@@ -117,7 +117,7 @@ function $CompileProvider(){
        * @returns {function(scope[, cloneAttachFn])} a template function which is used to bind template
        * (a DOM element/tree) to a scope. Where:
        *
-       *  * `scope` - A {@link angular.module.NG.$rootScope.Scope Scope} to bind to.
+       *  * `scope` - A {@link angular.module.ng.$rootScope.Scope Scope} to bind to.
        *  * `cloneAttachFn` - If `cloneAttachFn` is provided, then the link function will clone the
        *               `template` and call the `cloneAttachFn` function allowing the caller to attach the
        *               cloned elements to the DOM document at the appropriate place. The `cloneAttachFn` is
@@ -136,14 +136,14 @@ function $CompileProvider(){
        * bring the view to life, the scope needs to run through a $digest phase which typically is done by
        * Angular automatically, except for the case when an application is being
        * {@link guide/dev_guide.bootstrap.manual_bootstrap} manually bootstrapped, in which case the
-       * $digest phase must be invoked by calling {@link angular.module.NG.$rootScope.Scope#$apply}.
+       * $digest phase must be invoked by calling {@link angular.module.ng.$rootScope.Scope#$apply}.
        *
        * If you need access to the bound view, there are two ways to do it:
        *
        * - If you are not asking the linking function to clone the template, create the DOM element(s)
        *   before you send them to the compiler and keep this reference around.
        *   <pre>
-       *     var scope = angular.injector('NG')(function($rootScope, $compile){
+       *     var scope = angular.injector('ng')(function($rootScope, $compile){
        *       var element = $compile('<p>{{total}}</p>')($rootScope);
        *     });
        *   </pre>
