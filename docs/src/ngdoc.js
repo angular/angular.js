@@ -117,9 +117,9 @@ Doc.prototype = {
                  '</pre></div>';
         });
       } else if (isDocWidget('example')) {
-        text = text.replace(/<doc:source(\s+jsfiddle="[^"]+")?>([\s\S]*)<\/doc:source>/mi,
-          function(_, jsfiddle, content){
-            return '<pre class="doc-source"' + (jsfiddle || '') +'>' +
+        text = text.replace(/<doc:source(\s+[^>]*)?>([\s\S]*)<\/doc:source>/mi,
+          function(_, attrs, content){
+            return '<pre class="doc-source"' + (attrs || '') +'>' +
                       htmlEscape(content) +
                    '</pre>';
           });

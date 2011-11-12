@@ -89,6 +89,14 @@ describe('ngdoc', function() {
             '<pre class="doc-source">\n&lt;&gt;\n</pre></doc:example><p>after</p>');
       });
 
+      it('should preserve the source attribute', function() {
+        var doc = new Doc('@description before <doc:example>' +
+            '<doc:source source="false">lala</doc:source></doc:example> after');
+        doc.parse();
+        expect(doc.description).toContain('<p>before </p><doc:example>' +
+            '<pre class="doc-source" source="false">lala</pre></doc:example><p>after</p>');
+      });
+
       it('should preserve the jsfiddle attribute', function() {
         var doc = new Doc('@description before <doc:example>' +
             '<doc:source jsfiddle="foo">lala</doc:source></doc:example> after');
