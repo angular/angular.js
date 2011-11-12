@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$xhr.bulk
+ * @name angular.module.ng.$xhr.bulk
  * @requires $xhr
  * @requires $xhr.error
  * @requires $log

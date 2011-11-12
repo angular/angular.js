@@ -14,7 +14,7 @@ MyController.$inject = ['$route'];
 </pre>
 
 In this example, the `MyController` constructor function takes one argument, the {@link
-api/angular.module.NG.$route $route} service. Angular is then responsible for supplying the instance
+api/angular.module.ng.$route $route} service. Angular is then responsible for supplying the instance
 of `$route` to the controller when the constructor is instantiated. There are two ways to cause
 controller instantiation – by configuring routes with the `$route` service, or by referencing the
 controller from the HTML template, as follows:

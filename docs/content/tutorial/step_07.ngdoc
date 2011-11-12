@@ -34,7 +34,7 @@ template into what we call a "layout template". This is a template that is commo
 our application. Other "partial templates" are then included into this layout template depending on
 the current "route" — the view that is currently displayed to the user.
 
-Application routes in angular are declared via the {@link api/angular.module.NG.$route $route}
+Application routes in angular are declared via the {@link api/angular.module.ng.$route $route}
 service. This service makes it easy to wire together controllers, view templates, and the current
 URL location in the browser. Using this feature we can implement {@link
 http://en.wikipedia.org/wiki/Deep_linking deep linking}, which lets us utilize the browser's
@@ -91,7 +91,7 @@ Note the use of the `:phoneId` parameter in the second route declaration. The `$
 the route declaration — `'/phones/:phoneId'` — as a template that is matched against the current
 URL. All variables defined with the `:` notation are extracted into the `$route.current.params` map.
 
-The `params` alias created in the {@link api/angular.module.NG.$route `$route.onChange`} callback
+The `params` alias created in the {@link api/angular.module.ng.$route `$route.onChange`} callback
 allows us to use the `phoneId` property of this map in the `phone-details.html` template.
 
 

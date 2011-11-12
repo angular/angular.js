@@ -63,4 +63,4 @@ The following illustration shows the DOM and angular scopes for the example abov
 
 ## Related API
 
-* {@link api/angular.module.NG.$rootScope.Scope Angular Scope API}
+* {@link api/angular.module.ng.$rootScope.Scope Angular Scope API}

@@ -35,7 +35,7 @@ function collect() {
     return done;
   });
 
-   //collect all NG Docs in Content Folder
+   //collect all ng Docs in Content Folder
    var path2 = 'docs/content';
    var promiseB = Q.when(qfs.listTree(path2), function(files){
      var done2;

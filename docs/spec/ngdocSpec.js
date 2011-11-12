@@ -54,6 +54,7 @@ describe('ngdoc', function() {
 
       it('should parse parameters', function() {
         var doc = new Doc(
+            '@name a\n' +
             '@param {*} a short\n' +
             '@param {Type} b med\n' +
             '@param {Class=} [c=2] long\nline');
@@ -66,7 +67,7 @@ describe('ngdoc', function() {
       });
 
       it('should parse return', function() {
-        var doc = new Doc('@returns {Type} text *bold*.');
+        var doc = new Doc('@name a\n@returns {Type} text *bold*.');
         doc.parse();
         expect(doc.returns).toEqual({
           type: 'Type',
@@ -82,7 +83,7 @@ describe('ngdoc', function() {
       });
 
       it('should escape <doc:source> element', function() {
-        var doc = new Doc('@description before <doc:example>' +
+        var doc = new Doc('@name a\n@description before <doc:example>' +
             '<doc:source>\n<>\n</doc:source></doc:example> after');
         doc.parse();
         expect(doc.description).toContain('<p>before </p><doc:example>' +
@@ -90,7 +91,7 @@ describe('ngdoc', function() {
       });
 
       it('should preserve the source attribute', function() {
-        var doc = new Doc('@description before <doc:example>' +
+        var doc = new Doc('@name a\n@description before <doc:example>' +
             '<doc:source source="false">lala</doc:source></doc:example> after');
         doc.parse();
         expect(doc.description).toContain('<p>before </p><doc:example>' +
@@ -98,7 +99,7 @@ describe('ngdoc', function() {
       });
 
       it('should preserve the jsfiddle attribute', function() {
-        var doc = new Doc('@description before <doc:example>' +
+        var doc = new Doc('@name a\n@description before <doc:example>' +
             '<doc:source jsfiddle="foo">lala</doc:source></doc:example> after');
         doc.parse();
         expect(doc.description).toContain('<p>before </p><doc:example>' +
@@ -106,7 +107,7 @@ describe('ngdoc', function() {
       });
 
       it('should escape <doc:scenario> element', function() {
-        var doc = new Doc('@description before <doc:example>' +
+        var doc = new Doc('@name a\n@description before <doc:example>' +
             '<doc:scenario>\n<>\n</doc:scenario></doc:example> after');
         doc.parse();
         expect(doc.description).toContain('<p>before </p><doc:example>' +
@@ -114,7 +115,7 @@ describe('ngdoc', function() {
       });
 
       it('should store all links', function() {
-        var doc = new Doc('@description {@link api/angular.link}');
+        var doc = new Doc('@name a\n@description {@link api/angular.link}');
         doc.parse();
 
         expect(doc.links).toContain('api/angular.link');
@@ -255,17 +256,17 @@ describe('ngdoc', function() {
 
   describe('merge', function() {
     it('should merge child with parent', function() {
-      var parent = new Doc({id: 'angular.module.NG.abc', name: 'angular.module.NG.abc', section: 'api'});
-      var methodA = new Doc({name: 'methodA', methodOf: 'angular.module.NG.abc'});
-      var methodB = new Doc({name: 'methodB', methodOf: 'angular.module.NG.abc'});
-      var propA = new Doc({name: 'propA', propertyOf: 'angular.module.NG.abc'});
-      var propB = new Doc({name: 'propB', propertyOf: 'angular.module.NG.abc'});
-      var eventA = new Doc({name: 'eventA', eventOf: 'angular.module.NG.abc'});
-      var eventB = new Doc({name: 'eventB', eventOf: 'angular.module.NG.abc'});
+      var parent = new Doc({id: 'angular.module.ng.abc', name: 'angular.module.ng.abc', section: 'api'});
+      var methodA = new Doc({name: 'methodA', methodOf: 'angular.module.ng.abc'});
+      var methodB = new Doc({name: 'methodB', methodOf: 'angular.module.ng.abc'});
+      var propA = new Doc({name: 'propA', propertyOf: 'angular.module.ng.abc'});
+      var propB = new Doc({name: 'propB', propertyOf: 'angular.module.ng.abc'});
+      var eventA = new Doc({name: 'eventA', eventOf: 'angular.module.ng.abc'});
+      var eventB = new Doc({name: 'eventB', eventOf: 'angular.module.ng.abc'});
       var docs = [methodB, methodA, eventB, eventA, propA, propB, parent]; // keep wrong order;
       ngdoc.merge(docs);
       expect(docs.length).toEqual(1);
-      expect(docs[0].id).toEqual('angular.module.NG.abc');
+      expect(docs[0].id).toEqual('angular.module.ng.abc');
       expect(docs[0].methods).toEqual([methodA, methodB]);
       expect(docs[0].events).toEqual([eventA, eventB]);
       expect(docs[0].properties).toEqual([propA, propB]);
@@ -305,7 +306,7 @@ describe('ngdoc', function() {
   describe('TAG', function() {
     describe('@param', function() {
       it('should parse with no default', function() {
-        var doc = new Doc('@param {(number|string)} number Number \n to format.');
+        var doc = new Doc('@name a\n@param {(number|string)} number Number \n to format.');
         doc.parse();
         expect(doc.param).toEqual([{
           type : '(number|string)',
@@ -316,7 +317,7 @@ describe('ngdoc', function() {
       });
 
       it('should parse with default and optional', function() {
-        var doc = new Doc('@param {(number|string)=} [fractionSize=2] desc');
+        var doc = new Doc('@name a\n@param {(number|string)=} [fractionSize=2] desc');
         doc.parse();
         expect(doc.param).toEqual([{
           type : '(number|string)',
@@ -329,14 +330,14 @@ describe('ngdoc', function() {
 
     describe('@requires', function() {
       it('should parse more @requires tag into array', function() {
-        var doc = new Doc('@requires $service for \n`A`\n@requires $another for `B`');
+        var doc = new Doc('@name a\n@requires $service for \n`A`\n@requires $another for `B`');
         doc.ngdoc = 'service';
         doc.parse();
         expect(doc.requires).toEqual([
           {name:'$service', text:'<p>for \n<code>A</code></p>'},
           {name:'$another', text:'<p>for <code>B</code></p>'}]);
-        expect(doc.html()).toContain('<a href="api/angular.module.NG.$service">$service</a>');
-        expect(doc.html()).toContain('<a href="api/angular.module.NG.$another">$another</a>');
+        expect(doc.html()).toContain('<a href="api/angular.module.ng.$service">$service</a>');
+        expect(doc.html()).toContain('<a href="api/angular.module.ng.$another">$another</a>');
         expect(doc.html()).toContain('<p>for \n<code>A</code></p>');
         expect(doc.html()).toContain('<p>for <code>B</code></p>');
       });
@@ -344,7 +345,7 @@ describe('ngdoc', function() {
 
     describe('@property', function() {
       it('should parse @property tags into array', function() {
-        var doc = new Doc("@property {type} name1 desc\n@property {type} name2 desc");
+        var doc = new Doc("@name a\n@property {type} name1 desc\n@property {type} name2 desc");
         doc.parse();
         expect(doc.properties.length).toEqual(2);
       });
@@ -356,21 +357,21 @@ describe('ngdoc', function() {
       });
 
       it('should parse @property with type', function() {
-        var doc = new Doc("@property {string} name");
+        var doc = new Doc("@name a\n@property {string} name");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
         expect(doc.properties[0].type).toEqual('string');
       });
 
       it('should parse @property with optional description', function() {
-        var doc = new Doc("@property {string} name desc rip tion");
+        var doc = new Doc("@name a\n@property {string} name desc rip tion");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
         expect(doc.properties[0].description).toEqual('<p>desc rip tion</p>');
       });
 
       it('should parse @property with type and description both', function() {
-        var doc = new Doc("@property {bool} name desc rip tion");
+        var doc = new Doc("@name a\n@property {bool} name desc rip tion");
         doc.parse();
         expect(doc.properties[0].name).toEqual('name');
         expect(doc.properties[0].type).toEqual('bool');
@@ -386,19 +387,19 @@ describe('ngdoc', function() {
       });
 
       it('should parse @returns with type and description', function() {
-        var doc = new Doc("@returns {string} descrip tion");
+        var doc = new Doc("@name a\n@returns {string} descrip tion");
         doc.parse();
         expect(doc.returns).toEqual({type: 'string', description: '<p>descrip tion</p>'});
       });
 
       it('should transform description of @returns with markdown', function() {
-        var doc = new Doc("@returns {string} descrip *tion*");
+        var doc = new Doc("@name a\n@returns {string} descrip *tion*");
         doc.parse();
         expect(doc.returns).toEqual({type: 'string', description: '<p>descrip <em>tion</em></p>'});
       });
 
       it('should support multiline content', function() {
-        var doc = new Doc("@returns {string} description\n new line\n another line");
+        var doc = new Doc("@name a\n@returns {string} description\n new line\n another line");
         doc.parse();
         expect(doc.returns).
           toEqual({type: 'string', description: '<p>description\nnew line\nanother line</p>'});
@@ -407,14 +408,14 @@ describe('ngdoc', function() {
 
     describe('@description', function() {
       it('should support pre blocks', function() {
-        var doc = new Doc("@description <pre><b>abc</b></pre>");
+        var doc = new Doc("@name a\n@description <pre><b>abc</b></pre>");
         doc.parse();
         expect(doc.description).
           toBe('<div ng:non-bindable><pre class="brush: js; html-script: true;">&lt;b&gt;abc&lt;/b&gt;</pre></div>');
       });
 
       it('should support multiple pre blocks', function() {
-        var doc = new Doc("@description foo \n<pre>abc</pre>\n#bah\nfoo \n<pre>cba</pre>");
+        var doc = new Doc("@name a\n@description foo \n<pre>abc</pre>\n#bah\nfoo \n<pre>cba</pre>");
         doc.parse();
         expect(doc.description).
           toBe('<p>foo </p>' +
@@ -426,7 +427,7 @@ describe('ngdoc', function() {
       });
 
       it('should support nested @link annotations with or without description', function() {
-        var doc = new Doc("@description " +
+        var doc = new Doc("@name a\n@description " +
             'foo {@link angular.foo}\n\n da {@link angular.foo bar foo bar } \n\n' +
             'dad{@link angular.foo}\n\n' +
             'external{@link http://angularjs.org}\n\n' +
@@ -451,7 +452,7 @@ describe('ngdoc', function() {
       });
 
       it('should support line breaks in @link', function() {
-        var doc = new Doc("@description " +
+        var doc = new Doc("@name a\n@description " +
             '{@link\napi/angular.foo\na\nb}');
         doc.parse();
         expect(doc.description).
@@ -462,13 +463,13 @@ describe('ngdoc', function() {
 
     describe('@example', function() {
       it('should not remove {{}}', function() {
-        var doc = new Doc('@example text {{ abc }}');
+        var doc = new Doc('@name a\n@example text {{ abc }}');
         doc.parse();
         expect(doc.example).toEqual('<p>text {{ abc }}</p>');
       });
 
       it('should support doc:example', function() {
-        var doc = new Doc('@ngdoc overview\n@example \n' +
+        var doc = new Doc('@name a\n@ngdoc overview\n@example \n' +
             '<doc:example>\n' +
             ' <doc:source><escapeme></doc:source>\n' +
             ' <doc:scenario><scenario></doc:scenario>\n' +
@@ -482,7 +483,7 @@ describe('ngdoc', function() {
 
     describe('@deprecated', function() {
       it('should parse @deprecated', function() {
-        var doc = new Doc('@deprecated Replaced with foo.');
+        var doc = new Doc('@name a\n@deprecated Replaced with foo.');
         doc.parse();
         expect(doc.deprecated).toBe('Replaced with foo.');
       });
@@ -490,7 +491,7 @@ describe('ngdoc', function() {
 
     describe('@this', function() {
       it('should render @this', function() {
-        var doc = new Doc('@this I am self.');
+        var doc = new Doc('@name a\n@this I am self.');
         doc.ngdoc = 'filter';
         doc.parse();
         expect(doc.html()).toContain('<h3>Method\'s <code>this</code></h3>\n' +

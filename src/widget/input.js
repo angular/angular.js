@@ -617,7 +617,7 @@ var HTML5_INPUTS_TYPES =  makeMap(
  *
  * The {@link angular.inputType custom angular.inputType}s provide a shorthand for declaring new
  * inputs. This is a sharthand for text-box based inputs, and there is no need to go through the
- * full {@link angular.module.NG.$formFactory $formFactory} widget lifecycle.
+ * full {@link angular.module.ng.$formFactory $formFactory} widget lifecycle.
  *
  *
  * @param {string} type Widget types as defined by {@link angular.inputType}. If the

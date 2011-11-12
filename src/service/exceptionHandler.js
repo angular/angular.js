@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc function
- * @name angular.module.NG.$exceptionHandler
+ * @name angular.module.ng.$exceptionHandler
  * @requires $log
  *
  * @description
@@ -11,7 +11,7 @@
  * the browser console.
  *
  * In unit tests, if `angular-mocks.js` is loaded, this service is overriden by
- * {@link angular.module.NG_MOCK.$exceptionHandler mock $exceptionHandler}
+ * {@link angular.module.ngMock.$exceptionHandler mock $exceptionHandler}
  */
 function $ExceptionHandlerProvider(){
   this.$get = ['$log', function($log){

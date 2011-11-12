@@ -6,7 +6,7 @@ While angular offers several useful services, for any nontrivial application you
 to write your own custom services. To do this you begin by registering a service factory function
 that angular's DI will use to create the service object when it is needed.
 
-The `angular.module.NG` method accepts three parameters:
+The `angular.module.ng` method accepts three parameters:
 
 - `{string} name` - Name of the service.
 - `{function()} factory` - Factory function(called just once by DI).
@@ -32,7 +32,7 @@ stores all notifications; after the third one, the service displays all of the n
 window alert.
 
 <pre>
-    angular.module.NG('notify', function(win) {
+    angular.module.ng('notify', function(win) {
       var msgs = [];
       return function(msg) {
         msgs.push(msg);
@@ -55,4 +55,4 @@ window alert.
 
 ## Related API
 
-* {@link api/angular.module.NG Angular Service API}
+* {@link api/angular.module.ng Angular Service API}

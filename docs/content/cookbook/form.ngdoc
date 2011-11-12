@@ -104,7 +104,7 @@ allow a user to enter data.
 
 * The user data model is initialized {@link api/angular.directive.ng:controller controller} and is
 available in
-  the {@link api/angular.module.NG.$rootScope.Scope scope} with the initial data.
+  the {@link api/angular.module.ng.$rootScope.Scope scope} with the initial data.
 * For debugging purposes we have included a debug view of the model to better understand what
   is going on.
 * The {@link api/angular.widget.input input widgets} simply refer to the model and are data-bound.

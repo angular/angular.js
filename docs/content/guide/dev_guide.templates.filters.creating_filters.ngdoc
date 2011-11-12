@@ -2,7 +2,7 @@
 @name Developer Guide: Templates: Filters: Creating Angular Filters
 @description
 
-Writing your own filter is very easy: just define a JavaScript function on the `angular.module.NG.$filter`
+Writing your own filter is very easy: just define a JavaScript function on the `angular.module.ng.$filter`
 object.
 The framework passes in the input value as the first argument to your function. Any filter
 arguments are passed in as additional function arguments.
@@ -64,4 +64,4 @@ angular.module.MyReverseModule = function MyModule($filterProvider) {
 
 ## Related API
 
-* {@link api/angular.module.NG.$filter Angular Filter API}
+* {@link api/angular.module.ng.$filter Angular Filter API}

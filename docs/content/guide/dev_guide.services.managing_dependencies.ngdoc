@@ -19,7 +19,7 @@ provided by angular's web framework:
 *
 * @param {*} message Message to be logged.
 */
-angular.module.NG('batchLog', function($defer, $log) {
+angular.module.ng('batchLog', function($defer, $log) {
   var messageQueue = [];
 
   function log() {
@@ -43,7 +43,7 @@ angular.module.NG('batchLog', function($defer, $log) {
 * routeTemplateMonitor monitors each $route change and logs the current
 * template via the batchLog service.
 */
-angular.module.NG('routeTemplateMonitor', function($route, batchLog) {
+angular.module.ng('routeTemplateMonitor', function($route, batchLog) {
   this.$on('$afterRouteChange', function() {
     batchLog($route.current ? $route.current.template : null);
   });
@@ -52,10 +52,10 @@ angular.module.NG('routeTemplateMonitor', function($route, batchLog) {
 
 Things to notice in this example:
 
-* The `batchLog` service depends on the built-in {@link api/angular.module.NG.$defer $defer} and
-{@link api/angular.module.NG.$log $log} services, and allows messages to be logged into the
+* The `batchLog` service depends on the built-in {@link api/angular.module.ng.$defer $defer} and
+{@link api/angular.module.ng.$log $log} services, and allows messages to be logged into the
 `console.log` in batches.
-* The `routeTemplateMonitor` service depends on the built-in {@link api/angular.module.NG.$route
+* The `routeTemplateMonitor` service depends on the built-in {@link api/angular.module.ng.$route
 $route} service as well as our custom `batchLog` service.
 * The `routeTemplateMonitor` service is declared to be eager, so that it is started as soon as the
 application starts.
@@ -80,5 +80,5 @@ order to inject.
 
 ## Related API
 
-* {@link api/angular.module.NG Angular Service API}
+* {@link api/angular.module.ng Angular Service API}
 * {@link api/angular.injector Angular Injector API}

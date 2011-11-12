@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$xhr.error
+ * @name angular.module.ng.$xhr.error
  * @function
  * @requires $log
  *
  * @description
- * Error handler for {@link angular.module.NG.$xhr $xhr service}. An application can replaces this
+ * Error handler for {@link angular.module.ng.$xhr $xhr service}. An application can replaces this
  * service with one specific for the application. The default implementation logs the error to
- * {@link angular.module.NG.$log $log.error}.
+ * {@link angular.module.ng.$log $log.error}.
  *
  * @param {Object} request Request object.
  *

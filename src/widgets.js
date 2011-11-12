@@ -40,7 +40,7 @@
  * @param {string} src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an
- *                 instance of angular.module.NG.$rootScope.Scope to set the HTML fragment to.
+ *                 instance of angular.module.ng.$rootScope.Scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @example
@@ -491,7 +491,7 @@ angularWidget("@ng:non-bindable", noop);
  *
  * @description
  * # Overview
- * `ng:view` is a widget that complements the {@link angular.module.NG.$route $route} service by
+ * `ng:view` is a widget that complements the {@link angular.module.ng.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.

@@ -28,5 +28,5 @@ book.
 
 ## Related API
 
-* {@link api/angular.module.NG Service API}
+* {@link api/angular.module.ng Service API}
 * {@link api/angular.injector Angular Injector API}

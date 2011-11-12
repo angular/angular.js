@@ -25,11 +25,11 @@ GitHub}:
 ## Custom Filter
 
 In order to create a new filter, simply register your custom filter function with the {@link
-api/angular.module.NG.$filter `angular.module.NG.$filter`} API.
+api/angular.module.ng.$filter `angular.module.ng.$filter`} API.
 
 __`app/js/filters.js`:__
 <pre>
-angular.module.NG.$filter('checkmark', function(input) {
+angular.module.ng.$filter('checkmark', function(input) {
   return input ? '\u2713' : '\u2718';
 });
 </pre>
@@ -82,8 +82,8 @@ __`test/unit/filtersSpec.js`:__
 describe('checkmark filter', function() {
 
   it('should convert boolean values to unicode checkmark or cross', function() {
-    expect(angular.module.NG.$filter.checkmark(true)).toBe('\u2713');
-    expect(angular.module.NG.$filter.checkmark(false)).toBe('\u2718');
+    expect(angular.module.ng.$filter.checkmark(true)).toBe('\u2713');
+    expect(angular.module.ng.$filter.checkmark(false)).toBe('\u2718');
   });
 })
 </pre>
@@ -99,7 +99,7 @@ output.
 
 # Experiments
 
-* Let's experiment with some of the {@link api/angular.module.NG.$filter built-in angular filters} and add the
+* Let's experiment with some of the {@link api/angular.module.ng.$filter built-in angular filters} and add the
 following bindings to `index.html`:
   * `{{ "lower cap string" | uppercase }}`
   * `{{ {foo: "bar", baz: 23} | json }}`

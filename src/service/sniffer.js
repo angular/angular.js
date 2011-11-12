@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$sniffer
+ * @name angular.module.ng.$sniffer
  * @requires $window
  *
  * @property {boolean} history Does the browser support html5 history api ?

@@ -4,7 +4,7 @@
 
 In angular, a controller is a JavaScript function(type/class) that is used to augment instances of
 angular {@link dev_guide.scopes Scope}, excluding the root scope. When you or angular create a new
-child scope object via the {@link api/angular.module.NG.$rootScope.Scope#$new scope.$new} API        , there is an
+child scope object via the {@link api/angular.module.ng.$rootScope.Scope#$new scope.$new} API        , there is an
 option to pass in a controller as a method argument. This will tell angular to associate the
 controller with the new scope and to augment its behavior.
 
@@ -77,9 +77,9 @@ instances).
 
 # Associating Controllers with Angular Scope Objects
 
-You can associate controllers with scope objects explicitly via the {@link api/angular.module.NG.$rootScope.Scope#$new
+You can associate controllers with scope objects explicitly via the {@link api/angular.module.ng.$rootScope.Scope#$new
 scope.$new} api or implicitly via the {@link api/angular.directive.ng:controller ng:controller
-directive} or {@link api/angular.module.NG.$route $route service}.
+directive} or {@link api/angular.module.ng.$route $route service}.
 
 
 ## Controller Constructor and Methods Example
@@ -160,7 +160,7 @@ input box) in the second button.
 
 ## Controller Inheritance Example
 
-Controller inheritance in angular is based on {@link api/angular.module.NG.$rootScope.Scope Scope} inheritance. Let's
+Controller inheritance in angular is based on {@link api/angular.module.ng.$rootScope.Scope Scope} inheritance. Let's
 have a look at an example:
 
 <pre>

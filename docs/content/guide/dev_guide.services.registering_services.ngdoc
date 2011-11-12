@@ -29,7 +29,7 @@ which happens when the angular {@link dev_guide.bootstrap application initialize
 To override the default, you can request that a service is eagerly instantiated as follows:
 
 <pre>
-angular.module.NG('service id', function() {
+angular.module.ng('service id', function() {
   var shinyNewServiceInstance;
   //factory function body that constructs shinyNewServiceInstance
   return shinyNewServiceInstance;
@@ -65,4 +65,4 @@ important.
 
 ## Related API
 
-* {@link api/angular.module.NG Angular Service API}
+* {@link api/angular.module.ng Angular Service API}

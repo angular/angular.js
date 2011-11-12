@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc object
- * @name angular.module.NG.$cookieStore
+ * @name angular.module.ng.$cookieStore
  * @requires $cookies
  *
  * @description
@@ -17,8 +17,8 @@ function $CookieStoreProvider(){
     return {
       /**
        * @ngdoc method
-       * @name angular.module.NG.$cookieStore#get
-       * @methodOf angular.module.NG.$cookieStore
+       * @name angular.module.ng.$cookieStore#get
+       * @methodOf angular.module.ng.$cookieStore
        *
        * @description
        * Returns the value of given cookie key
@@ -32,8 +32,8 @@ function $CookieStoreProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.module.NG.$cookieStore#put
-       * @methodOf angular.module.NG.$cookieStore
+       * @name angular.module.ng.$cookieStore#put
+       * @methodOf angular.module.ng.$cookieStore
        *
        * @description
        * Sets a value for given cookie key
@@ -47,8 +47,8 @@ function $CookieStoreProvider(){
 
       /**
        * @ngdoc method
-       * @name angular.module.NG.$cookieStore#remove
-       * @methodOf angular.module.NG.$cookieStore
+       * @name angular.module.ng.$cookieStore#remove
+       * @methodOf angular.module.ng.$cookieStore
        *
        * @description
        * Remove given cookie

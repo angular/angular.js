@@ -2,13 +2,13 @@
 
 /**
  * @ngdoc function
- * @name angular.module.NG.$defer
+ * @name angular.module.ng.$defer
  * @requires $browser
  *
  * @description
- * Delegates to {@link angular.module.NG.$browser#defer $browser.defer}, but wraps the `fn` function
+ * Delegates to {@link angular.module.ng.$browser#defer $browser.defer}, but wraps the `fn` function
  * into a try/catch block and delegates any exceptions to
- * {@link angular.module.NG.$exceptionHandler $exceptionHandler} service.
+ * {@link angular.module.ng.$exceptionHandler $exceptionHandler} service.
  *
  * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
  *
@@ -19,8 +19,8 @@
 
 /**
  * @ngdoc function
- * @name angular.module.NG.$defer#cancel
- * @methodOf angular.module.NG.$defer
+ * @name angular.module.ng.$defer#cancel
+ * @methodOf angular.module.ng.$defer
  *
  * @description
  * Cancels a defered task identified with `deferId`.

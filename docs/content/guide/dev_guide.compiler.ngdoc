@@ -23,4 +23,4 @@ All compilation takes place in the web browser; no server is involved.
 
 ## Related API
 
-* {@link api/angular.module.NG.$compile Angular Compiler API}
+* {@link api/angular.module.ng.$compile Angular Compiler API}

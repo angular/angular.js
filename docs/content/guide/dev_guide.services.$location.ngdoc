@@ -89,7 +89,8 @@ setter methods that allow you to get or change the current URL in the browser.
 ## $location service configuration
 
 To configure the `$location` service, retrieve the
-{@link api/angular.module.NG.$locationProvider $locationProvider} and set the parameters as follows:
+{@link api/angular.module.ng.$locationProvider $locationProvider} and set the parameters as follows:
+
 
 - **html5Mode(mode)**: {boolean}<br />
   `true` - see HTML5 mode<br />
@@ -133,7 +134,7 @@ current URL without creating a new browser history record you can call:
 </pre>
 
 Note that the setters don't update `window.location` immediately. Instead, `$location` service is
-aware of the {@link api/angular.module.NG.$rootScope.Scope scope} life-cycle and coalesces multiple `$location`
+aware of the {@link api/angular.module.ng.$rootScope.Scope scope} life-cycle and coalesces multiple `$location`
 mutations into one "commit" to the `window.location` object during the scope `$digest` phase. Since
 multiple changes to the $location's state will be pushed to the browser as a single change, it's
 enough to call the `replace()` method just once to make the entire "commit" a replace operation
@@ -487,11 +488,11 @@ In this examples we use `<base href="/base/index.html" />`
 
 The `$location` service allows you to change only the URL; it does not allow you to reload the
 page. When you need to change the URL and reload the page or navigate to a different page, please
-use a lower level API, {@link api/angular.module.NG.$window $window.location.href}.
+use a lower level API, {@link api/angular.module.ng.$window $window.location.href}.
 
 ## Using $location outside of the scope life-cycle
 
-`$location` knows about Angular's {@link api/angular.module.NG.$rootScope.Scope scope} life-cycle. When a URL changes in
+`$location` knows about Angular's {@link api/angular.module.ng.$rootScope.Scope scope} life-cycle. When a URL changes in
 the browser it updates the `$location` and calls `$apply` so that all $watchers / $observers are
 notified.
 When you change the `$location` inside the `$digest` phase everything is ok; `$location` will
@@ -511,7 +512,7 @@ hashPrefix.
 # Testing with the $location service
 
 When using `$location` service during testing, you are outside of the angular's {@link
-api/angular.module.NG.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
+api/angular.module.ng.$rootScope.Scope scope} life-cycle. This means it's your responsibility to call `scope.$apply()`.
 
 <pre>
 describe('serviceUnderTest', function() {
@@ -629,7 +630,7 @@ this.$watch('$location.path()', function(scope, path) {
 
 # Related API
 
-* {@link api/angular.module.NG.$location $location API}
+* {@link api/angular.module.ng.$location $location API}
 
 
 
