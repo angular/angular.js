@@ -507,15 +507,15 @@ describe("widget", function() {
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
       var injector = angular.injector('ng', 'ngMock');
-      var myApp = injector('$rootScope');
-      var $browser = injector('$browser');
+      var myApp = injector.get('$rootScope');
+      var $browser = injector.get('$browser');
       $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
-      injector('$location').path('/foo');
+      injector.get('$location').path('/foo');
 
-      var $route = injector('$route');
+      var $route = injector.get('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
 
-      var element = injector('$compile')(
+      var element = injector.get('$compile')(
           '<div>' +
             'include: <ng:include src="\'includePartial.html\'"> </ng:include>' +
           '</div>')(myApp);

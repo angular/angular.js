@@ -143,7 +143,8 @@ function $CompileProvider(){
        * - If you are not asking the linking function to clone the template, create the DOM element(s)
        *   before you send them to the compiler and keep this reference around.
        *   <pre>
-       *     var scope = angular.injector('ng')(function($rootScope, $compile){
+       *     var $injector = angular.injector('ng');
+       *     var scope = $injector.invoke(null, function($rootScope, $compile){
        *       var element = $compile('<p>{{total}}</p>')($rootScope);
        *     });
        *   </pre>
