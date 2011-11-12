@@ -386,7 +386,7 @@ describe('angular', function() {
       expect(angular.injector(function($provide){
         $provide.factory('svc1', function() { return 'svc1'; });
         $provide.factory('svc2', ['svc1', function(s) { return 'svc2-' + s; }]);
-      })('svc2')).toEqual('svc2-svc1');
+      }).get('svc2')).toEqual('svc2-svc1');
     });
 
   });

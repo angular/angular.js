@@ -31,8 +31,8 @@ beforeEach(function() {
 
 afterEach(function() {
   if (this.$injector) {
-    var $rootScope = this.$injector('$rootScope');
-    var $log = this.$injector('$log');
+    var $rootScope = this.$injector.get('$rootScope');
+    var $log = this.$injector.get('$log');
     // release the injector
     dealoc($rootScope);
 

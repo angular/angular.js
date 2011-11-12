@@ -150,7 +150,7 @@ describe("markups", function() {
   it('should bind Text with no Bindings', inject(function($compile) {
     var $rootScope;
     function newScope (){
-      return $rootScope = angular.injector('ng')('$rootScope');
+      return $rootScope = angular.injector('ng').get('$rootScope');
     }
     forEach(['checked', 'disabled', 'multiple', 'readonly', 'selected'], function(name) {
       var element = $compile('<div ng:' + name + '="some"></div>')(newScope())

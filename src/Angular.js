@@ -849,12 +849,14 @@ function angularInit(config, document){
 function bootstrap(element, modules) {
   modules = modules || [];
   modules.unshift(ngModule);
-  createInjector(modules, angularModule)(['$rootScope', '$compile', '$injector', function(scope, compile, injector){
-    scope.$apply(function() {
-      element.data('$injector', injector);
-      compile(element)(scope);
-    });
-  }]);
+  createInjector(modules, angularModule).invoke(null,
+    ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
+      scope.$apply(function() {
+        element.data('$injector', injector);
+        compile(element)(scope);
+      });
+    }]
+  );
 }
 
 function angularJsConfig(document) {

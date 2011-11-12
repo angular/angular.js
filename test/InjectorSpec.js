@@ -15,16 +15,16 @@ describe('injector', function() {
     var instance = {},
         original = instance;
     providers('instance', function() { return instance; });
-    expect(injector('instance')).toEqual(instance);
+    expect(injector.get('instance')).toEqual(instance);
     instance = 'deleted';
-    expect(injector('instance')).toEqual(original);
+    expect(injector.get('instance')).toEqual(original);
   });
 
 
   it('should inject providers', function() {
     providers('a', function() {return 'Mi';});
     providers('b', function(mi) {return mi+'sko';}, {$inject:['a']});
-    expect(injector('b')).toEqual('Misko');
+    expect(injector.get('b')).toEqual('Misko');
   });
 
 
@@ -47,7 +47,7 @@ describe('injector', function() {
     providers('s5', function() { log.push('s5'); });
     providers('s6', function() { log.push('s6'); });
 
-    injector('s1');
+    injector.get('s1');
 
     expect(log).toEqual(['s6', 's5', 's3', 's4', 's2', 's1']);
   });
@@ -55,7 +55,7 @@ describe('injector', function() {
 
   it('should provide useful message if no provider', function() {
     expect(function() {
-      injector('idontexist');
+      injector.get('idontexist');
     }).toThrow("Unknown provider for 'idontexist'.");
   });
 
@@ -63,7 +63,7 @@ describe('injector', function() {
     providers('a', function(idontexist) {return 1;});
     providers('b', function(a) {return 2;});
     expect(function() {
-      injector('b');
+      injector.get('b');
     }).toThrow("Unknown provider for 'idontexist' <- 'a' <- 'b'.");
   });
 
@@ -100,7 +100,7 @@ describe('injector', function() {
     it('should invoke the passed in function with all of the dependencies as arguments', function(){
       providers('c', function() {return 3;});
       providers('d', function() {return 4;});
-      expect(injector(['a', 'b', 'c', 'd', fn])).toEqual(10);
+      expect(injector.invoke(null, ['a', 'b', 'c', 'd', fn])).toEqual(10);
     });
 
 
@@ -163,7 +163,7 @@ describe('injector', function() {
 
   it('should have $injector', function() {
     var $injector = createInjector();
-    expect($injector('$injector')).toBe($injector);
+    expect($injector.get('$injector')).toBe($injector);
   });
 
   it('should define module', function() {
@@ -176,7 +176,7 @@ describe('injector', function() {
       });
     }, function(valueProvider, fnProvider, serviceProvider) {
       log += valueProvider.$get() + fnProvider.$get() + serviceProvider.$get();
-    }])(function(value, fn, service) {
+    }]).invoke(null, function(value, fn, service) {
       log += '->' + value + fn + service;
     });
     expect(log).toEqual('value;function;service;->value;function;service;');
@@ -189,8 +189,8 @@ describe('injector', function() {
           $injector = createInjector([
             angular.extend(function(p) { $provide = p; }, {$inject: ['$provide']})
           ]);
-      expect($injector('$injector')).toBe($injector);
-      expect($injector('$provide')).toBe($provide);
+      expect($injector.get('$injector')).toBe($injector);
+      expect($injector.get('$provide')).toBe($provide);
     });
 
 
@@ -210,9 +210,9 @@ describe('injector', function() {
           p.value('c', serviceB.$get() + 'C');
         }]
       ]);
-      expect($injector('a')).toEqual('A');
-      expect($injector('b')).toEqual('AB');
-      expect($injector('c')).toEqual('ABC');
+      expect($injector.get('a')).toEqual('A');
+      expect($injector.get('b')).toEqual('AB');
+      expect($injector.get('c')).toEqual('ABC');
     });
 
 
@@ -222,7 +222,7 @@ describe('injector', function() {
           provide.value('a', 'abc');
         }]
       });
-      expect($injector('a')).toEqual('abc');
+      expect($injector.get('a')).toEqual('abc');
     });
 
     it('should error on invalid madule name', function(){
@@ -237,7 +237,7 @@ describe('injector', function() {
         it('should configure $provide values', function() {
           expect(createInjector([function($provide) {
             $provide.value('value', 'abc');
-          }])('value')).toEqual('abc');
+          }]).get('value')).toEqual('abc');
         });
       });
 
@@ -246,7 +246,7 @@ describe('injector', function() {
         it('should configure $provide factory function', function() {
           expect(createInjector([function($provide) {
             $provide.factory('value', valueFn('abc'));
-          }])('value')).toEqual('abc');
+          }]).get('value')).toEqual('abc');
         });
       });
 
@@ -257,7 +257,7 @@ describe('injector', function() {
             $provide.service('value', {
               $get: valueFn('abc')
             });
-          }])('value')).toEqual('abc');
+          }]).get('value')).toEqual('abc');
         });
 
 
@@ -269,7 +269,7 @@ describe('injector', function() {
           };
           expect(createInjector([function($provide) {
             $provide.service('value', Type);
-          }])('value')).toEqual('abc');
+          }]).get('value')).toEqual('abc');
         });
       });
     });
@@ -318,14 +318,14 @@ describe('injector', function() {
 
     it('should retrieve by name and cache instance', function() {
       expect(instance).toEqual({name: 'angular'});
-      expect($injector('instance')).toBe(instance);
-      expect($injector('instance')).toBe(instance);
+      expect($injector.get('instance')).toBe(instance);
+      expect($injector.get('instance')).toBe(instance);
     });
     
     
     it('should call functions and infer arguments', function() {
-      expect($injector(function(instance) { return instance; })).toBe(instance);
-      expect($injector(function(instance) { return instance; })).toBe(instance);
+      expect($injector.invoke(null, function(instance) { return instance; })).toBe(instance);
+      expect($injector.invoke(null, function(instance) { return instance; })).toBe(instance);
     });
   });
 
@@ -342,7 +342,9 @@ describe('injector', function() {
 
 
     it('should invoke method', function() {
-      expect($injector(function(book, author) { return author + ':' + book;})).toEqual('melville:moby');
+      expect($injector.invoke(null, function(book, author) {
+        return author + ':' + book;
+      })).toEqual('melville:moby');
       expect($injector.invoke($injector, function(book, author) {
         expect(this).toEqual($injector);
         return author + ':' + book;})).toEqual('melville:moby');
@@ -350,7 +352,9 @@ describe('injector', function() {
 
 
     it('should invoke method with locals', function() {
-      expect($injector(function(book, author) { return author + ':' + book;})).toEqual('melville:moby');
+      expect($injector.invoke(null, function(book, author) {
+        return author + ':' + book;
+      })).toEqual('melville:moby');
       expect($injector.invoke($injector,
         function(book, author, chapter) {
           expect(this).toEqual($injector);
@@ -360,8 +364,9 @@ describe('injector', function() {
 
 
     it('should invoke method which is annotated', function() {
-      expect($injector(extend(function(b, a) { return a + ':' + b}, {$inject:['book', 'author']}))).
-        toEqual('melville:moby');
+      expect($injector.invoke(null, extend(function(b, a) {
+        return a + ':' + b
+      }, {$inject:['book', 'author']}))).toEqual('melville:moby');
       expect($injector.invoke($injector, extend(function(b, a) {
         expect(this).toEqual($injector);
         return a + ':' + b;
@@ -370,7 +375,9 @@ describe('injector', function() {
 
 
     it('should invoke method which is an array of annotation', function() {
-      expect($injector(function(book, author) { return author + ':' + book;})).toEqual('melville:moby');
+      expect($injector.invoke(null, function(book, author) {
+        return author + ':' + book;
+      })).toEqual('melville:moby');
       expect($injector.invoke($injector, function(book, author) {
         expect(this).toEqual($injector);
         return author + ':' + book;

@@ -22,7 +22,7 @@
  *
  *   // use the injector to kick of your application
  *   // use the type inference to auto inject arguments, or use implicit injection
- *   $injector(function($rootScope, $compile, $document){
+ *   $injector.invoke(null, function($rootScope, $compile, $document){
  *     $compile($document)($rootScope);
  *     $rootScope.$digest();
  *   });
@@ -60,21 +60,22 @@ function inferInjectionArgs(fn) {
 ///////////////////////////////////////
 
 /**
- * @ngdoc function
+ * @ngdoc object
  * @name angular.module.AUTO.$injector
  * @function
  *
  * @description
  *
- * `$injector` function is used to retrieve object instances. Object instances are defined by
- * {@link angular.module.AUTO.$provide provider}.
+ * `$injector` is used to retrieve object instances as defined by
+ * {@link angular.module.AUTO.$provide provider}, instantiate types, invoke methods,
+ * and load modules.
  *
  * The following always holds true:
  *
  * <pre>
  *   var $injector = angular.injector();
- *   expect($injector('$injector')).toBe($injector);
- *   expect($injector(function($injector){
+ *   expect($injector.get('$injector')).toBe($injector);
+ *   expect($injector.invoke(null, function($injector){
  *     return $injector;
  *   }).toBe($injector);
  * </pre>
@@ -108,14 +109,6 @@ function inferInjectionArgs(fn) {
  *
  * ## Inline
  * As an array of injection names, where the last item in the array is the function to call.
- *
- * @param {string, function()} argument  If the `argument` is:
- *
- *    - `string`: Retrieve an instance of a named object. If object does not exist, use the provider to create
- *                a new instance. Calling the method repeatedly with the same name will always return the same
- *                instance.
- *    - `function`: Invoke the function. This is a short hand for `$injector.`{@link #invoke invoke(null, argument)}.
- * @return the object instance or the return value of the invoked function.
  */
 
 /**
@@ -261,113 +254,116 @@ function inferInjectionArgs(fn) {
 
 function createInjector(modulesToLoad, moduleRegistry) {
   var cache = {},
-      $injector = internalInjector(cache),
       providerSuffix = 'Provider',
-      providerSuffixLength = providerSuffix.length;
+      providerSuffixLength = providerSuffix.length,
+      path = [],
+      $injector;
 
-  value('$injector', $injector);
-  value('$provide', {service: service, factory: factory, value: value});
+  value('$injector', $injector = {
+    get: getService,
+    invoke: invoke,
+    instantiate: instantiate,
+    loadModule: loadModule
+  });
+  value('$provide', {
+    service: service,
+    factory: factory,
+    value: value
+  });
+
+  loadModule(modulesToLoad);
+
+  return $injector;
+
+  ////////////////////////////////////
 
   function service(name, provider) {
     if (isFunction(provider)){
-      provider = $injector.instantiate(provider);
+      provider = instantiate(provider);
     }
     if (!provider.$get) {
       throw Error('Providers must define $get factory method.');
     }
     cache['#' + name + providerSuffix] = provider;
-  };
-  function factory(name, factoryFn) { service(name, { $get:factoryFn }); };
-  function value(name, value) { factory(name, valueFn(value)); };
+  }
 
-  function internalInjector(cache) {
-    var path = [];
+  function factory(name, factoryFn) { service(name, { $get:factoryFn }); }
 
-    function injector(value) {
-      switch(typeof value) {
-        case 'function':
-          return invoke(null, value);
-        case 'string':
-          var instanceKey = '#' + value,
-              instance = cache[instanceKey];
-          if (instance !== undefined || cache.hasOwnProperty(instanceKey)) {
-            return instance;
-          }
-          try {
-            path.unshift(value);
-            var providerKey = instanceKey + providerSuffix,
-                provider = cache[providerKey];
-            if (provider) {
-              return cache[instanceKey] = invoke(provider, provider.$get);
-            } else {
-              throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
-            }
-          } finally {
-            path.shift();
-          }
-        case 'object':
-          if (isArray(value)) {
-            return invoke(null, value);
-          }
-        default:
-          throw Error('Injector expects name or function.');
+  function value(name, value) { factory(name, valueFn(value)); }
+
+  function getService(value) {
+    if (typeof value !== 'string') {
+      throw Error('Service name expected');
+    }
+    var instanceKey = '#' + value,
+        instance = cache[instanceKey];
+    if (instance !== undefined || cache.hasOwnProperty(instanceKey)) {
+      return instance;
+    }
+    try {
+      path.unshift(value);
+      var providerKey = instanceKey + providerSuffix,
+          provider = cache[providerKey];
+      if (provider) {
+        return cache[instanceKey] = invoke(provider, provider.$get);
+      } else {
+        throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
       }
+    } finally {
+      path.shift();
+    }
+  }
+
+  function invoke(self, fn, locals){
+    var args = [],
+        $inject,
+        length,
+        key;
+
+    if (typeof fn == 'function') {
+      $inject = inferInjectionArgs(fn);
+      length = $inject.length;
+    } else {
+      if (isArray(fn)) {
+        $inject = fn;
+        length = $inject.length;
+        fn = $inject[--length];
+      }
+      assertArgFn(fn, 'fn');
     }
 
-    function invoke(self, fn, locals){
-      var args = [],
-          $inject,
+    while(length--) {
+      key = $inject[length];
+      args.unshift(
+        locals && locals.hasOwnProperty(key)
+        ? locals[key]
+        : getService($inject[length], path)
+      );
+    }
 
-          length,
-          key;
+    // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
+    switch (self ? -1 : args.length) {
+      case  0: return fn();
+      case  1: return fn(args[0]);
+      case  2: return fn(args[0], args[1]);
+      case  3: return fn(args[0], args[1], args[2]);
+      case  4: return fn(args[0], args[1], args[2], args[3]);
+      case  5: return fn(args[0], args[1], args[2], args[3], args[4]);
+      case  6: return fn(args[0], args[1], args[2], args[3], args[4], args[5]);
+      case  7: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+      case  8: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+      case  9: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+      case 10: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+      default: return fn.apply(self, args);
+    }
+  }
 
-      if (typeof fn == 'function') {
-        $inject = inferInjectionArgs(fn);
-        length = $inject.length;
-      } else {
-        if (isArray(fn)) {
-          $inject = fn;
-          length = $inject.length;
-          fn = $inject[--length];
-        }
-        assertArgFn(fn, 'fn');
-      }
-
-      while(length--) {
-        key = $inject[length];
-        args.unshift(
-          locals && locals.hasOwnProperty(key)
-          ? locals[key]
-          : injector($inject[length], path)
-        );
-      }
-
-      switch (self ? -1 : args.length) {
-        case  0: return fn();
-        case  1: return fn(args[0]);
-        case  2: return fn(args[0], args[1]);
-        case  3: return fn(args[0], args[1], args[2]);
-        case  4: return fn(args[0], args[1], args[2], args[3]);
-        case  5: return fn(args[0], args[1], args[2], args[3], args[4]);
-        case  6: return fn(args[0], args[1], args[2], args[3], args[4], args[5]);
-        case  7: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-        case  8: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-        case  9: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
-        case 10: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
-        default: return fn.apply(self, args);
-      }
-    };
-
-    injector.invoke = invoke;
-    injector.instantiate = function(Type, locals){
-      var Constructor = function(){},
-          instance;
-      Constructor.prototype = Type.prototype;
-      instance = new Constructor();
-      return invoke(instance, Type, locals) || instance;
-    };
-    injector.loadModule = loadModule;
-    return injector;
+  function instantiate(Type, locals){
+    var Constructor = function(){},
+        instance;
+    Constructor.prototype = Type.prototype;
+    instance = new Constructor();
+    return invoke(instance, Type, locals) || instance;
   }
 
   function loadModule(modulesToLoad){
@@ -380,15 +376,10 @@ function createInjector(modulesToLoad, moduleRegistry) {
         }
       }
       if (isFunction(module) || isArray(module)) {
-        $injector(module);
+        invoke(null, module);
       } else {
         assertArgFn(module, 'module');
       }
     });
   }
-
-
-  loadModule(modulesToLoad);
-
-  return $injector;
 }

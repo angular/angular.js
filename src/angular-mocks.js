@@ -783,7 +783,7 @@ window.jasmine && (function(window){
     return function(){
       var injector = this.$injector;
       if (!injector) {
-        injector = this.$injector =  angular.injector('ng', 'ngMock');
+        injector = this.$injector = angular.injector('ng', 'ngMock');
       }
       for(var i = 0, ii = blockFns.length; i < ii; i++) {
         injector.invoke(this, blockFns[i]);

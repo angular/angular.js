@@ -285,7 +285,7 @@ describe('Scope', function() {
 
 
     it('should return a function that allows listeners to be unregistered', inject(function($rootScope) {
-      var root = angular.injector('ng')('$rootScope'),
+      var root = angular.injector('ng').get('$rootScope'),
           listener = jasmine.createSpy('watch listener'),
           listenerRemove;
 
@@ -470,7 +470,7 @@ describe('Scope', function() {
 
       it('should add listener for both $emit and $broadcast events', inject(function($rootScope) {
         var log = '',
-            root = angular.injector('ng')('$rootScope'),
+            root = angular.injector('ng').get('$rootScope'),
             child = root.$new();
 
         function eventFn() {
@@ -490,7 +490,7 @@ describe('Scope', function() {
 
       it('should return a function that deregisters the listener', inject(function($rootScope) {
         var log = '',
-            root = angular.injector('ng')('$rootScope'),
+            root = angular.injector('ng').get('$rootScope'),
             child = root.$new(),
             listenerRemove;
 
@@ -669,7 +669,7 @@ describe('Scope', function() {
 
       describe('listener', function() {
         it('should receive event object', inject(function($rootScope) {
-          var scope = angular.injector('ng')('$rootScope'),
+          var scope = angular.injector('ng').get('$rootScope'),
               child = scope.$new(),
               event;
 
@@ -685,7 +685,7 @@ describe('Scope', function() {
 
 
         it('should support passing messages as varargs', inject(function($rootScope) {
-          var scope = angular.injector('ng')('$rootScope'),
+          var scope = angular.injector('ng').get('$rootScope'),
               child = scope.$new(),
               args;
 
