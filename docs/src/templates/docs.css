@@ -467,17 +467,6 @@ td.empty-corner-lt {
 }
 
 /* service.$location Html5 mode example */
-.html5-hashbang-example {
-  height: 255px;
-  margin-left: -40px;
-  padding-left: 30px;
-}
-
-.html5-hashbang-example div {
-  float: left;
-  width: 375px;
-}
-
 .html5-hashbang-example div input {
   width: 360px;
 }

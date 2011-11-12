@@ -369,8 +369,10 @@ redirect to regular / hashbang url, as this conversion happens only during parsi
 
 In this examples we use `<base href="/base/index.html" />`
 
-<ul class="doc-example">
-<li ng:non-bindable class="html5-hashbang-example">
+<doc:example>
+<doc:source source="false">
+
+<div ng:non-bindable class="html5-hashbang-example">
   <div id="html5-mode" ng:controller="Html5Cntl">
     <h3>Browser with History API</h3>
     <ng:address-bar browser="html5"></ng:address-bar><br /><br />
@@ -380,9 +382,9 @@ In this examples we use `<base href="/base/index.html" />`
     $location.path() = {{$location.path()}}<br />
     $location.search() = {{$location.search()}}<br />
     $location.hash() = {{$location.hash()}}<br />
-    <a href="/base/first?a=b">/base/first?a=b</a> | <a
-href="sec/ond?flag#hash">sec/ond?flag#hash</a> | <a href="/base/another?search"
-ng:ext-link>external</a>
+    <a href="/base/first?a=b">/base/first?a=b</a> |
+    <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="/base/another?search" ng:ext-link>external</a>
   </div>
 
   <div id="hashbang-mode" ng:controller="HashbangCntl">
@@ -394,12 +396,11 @@ ng:ext-link>external</a>
     $location.path() = {{$location.path()}}<br />
     $location.search() = {{$location.search()}}<br />
     $location.hash() = {{$location.hash()}}<br />
-    <a href="/base/first?a=b">/base/first?a=b</a> | <a
-href="sec/ond?flag#hash">sec/ond?flag#hash</a> | <a href="/base/another?search"
-ng:ext-link>external</a>
+    <a href="/base/first?a=b">/base/first?a=b</a> |
+    <a href="sec/ond?flag#hash">sec/ond?flag#hash</a> |
+    <a href="/base/another?search" ng:ext-link>external</a>
   </div>
-</li>
-</ul>
+</div>
 
 <script type="text/javascript">
   function FakeBrowser(initUrl, baseHref) {
@@ -480,6 +481,9 @@ ng:ext-link>external</a>
   initEnv('html5');
   initEnv('hashbang');
 </script>
+
+</doc:source>
+</doc:example>
 
 
 # Caveats
