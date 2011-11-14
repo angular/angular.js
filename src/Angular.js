@@ -958,7 +958,7 @@ function ngModule($provide, $injector) {
   $provide.value('$widget', angularWidget);
 
   // load the LOCALE if present
-  $injector.invoke(null, angularModule.NG_LOCALE || function(){
+  $injector.invoke(null, angularModule.ngLocale || function(){
     $provide.service('$locale', $LocaleProvider);
   });
 

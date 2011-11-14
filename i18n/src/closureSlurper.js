@@ -103,7 +103,7 @@ createFolder('../locale/').then(function() {
     var prefix =
       'window.angular = window.angular || {};\n' +
       'angular.module = angular.module || {};\n' +
-      'angular.module.NG_LOCALE = ["$provide", function($provide) {\n' +
+      'angular.module.ngLocale = ["$provide", function($provide) {\n' +
          'var PLURAL_CATEGORY = {' +
            'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
          '};\n' +
