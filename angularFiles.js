@@ -1,6 +1,7 @@
 angularFiles = {
   'angularSrc': [
     'src/Angular.js',
+    'src/AngularPublic.js',
     'src/JSON.js',
     'src/Injector.js',
     'src/Resource.js',
@@ -39,8 +40,7 @@ angularFiles = {
     'src/widgets.js',
     'src/widget/form.js',
     'src/widget/input.js',
-    'src/widget/select.js',
-    'src/AngularPublic.js'
+    'src/widget/select.js'
   ],
 
   'angularScenario': [
@@ -87,8 +87,7 @@ angularFiles = {
   'jstdExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js',
-    'src/AngularPublic.js'
+    'src/scenario/angular-bootstrap.js'
   ],
 
   'jstdScenario': [
@@ -119,8 +118,7 @@ angularFiles = {
 
   'jstdPerfExclude': [
     'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js',
-    'src/AngularPublic.js'
+    'src/scenario/angular-bootstrap.js'
   ],
 
   'jstdJquery': [
@@ -148,7 +146,6 @@ angularFiles = {
 
   'jstdJqueryExclude': [
     'src/angular-bootstrap.js',
-    'src/AngularPublic.js',
     'src/scenario/angular-bootstrap.js',
     'test/jquery_remove.js'
   ]
