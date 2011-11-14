@@ -110,7 +110,7 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
         } else {
           completeOutstandingRequest(callback);
         }
-        delete window[callbackId];
+        window[callbackId] = null;//IE7 IE8 don't like delete window[callbackId];
         body[0].removeChild(script);
       });
     } else {
