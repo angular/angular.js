@@ -15,14 +15,15 @@
   var HTML_TEMPLATE =
   '<!doctype html>\n' +
   '<html xmlns:ng="http://angularjs.org">\n' +
-  ' <script src="' + angularJsUrl + '" ng:autobind></script>\n' +
+  ' <script src="' + angularJsUrl + '" ng:autobind_MODULE_></script>\n' +
   ' <body>\n' +
   '_HTML_SOURCE_\n' +
   ' </body>\n' +
   '</html>';
 
-  angular.widget('doc:example', function(element){
+  angular.widget('doc:example', ['$injector', '$element', function($injector, element){
     this.descend(true); //compile the example code
+    var module = element.attr('module');
 
     //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
@@ -59,7 +60,10 @@
       '</ul>';
     var tabs = angular.element(tabHtml);
 
-    tabs.find('li').eq(1).find('pre').text(HTML_TEMPLATE.replace('_HTML_SOURCE_', code.html));
+    tabs.find('li').eq(1).find('pre').text(
+      HTML_TEMPLATE.
+        replace('_HTML_SOURCE_', code.html).
+        replace('_MODULE_', (module ? (' ng:module="' + module + '"') : '')));
 
     element.html('');
     element.append(tabs);
@@ -75,6 +79,11 @@
     } catch (e) {
       alert(e);
     }
+
+    if (module) {
+      $injector.invoke(null, angular.module[module]);
+    }
+
 
     function jsFiddleButton(jsfiddle) {
       if (jsfiddle !== 'false') {
@@ -100,7 +109,7 @@
                     '</textarea>' +
                     '<input type="text" name="title" value="AngularJS Live Example">' +
                     '<textarea name="html">' +
-                      '<script src="' + angularJsUrl + '" ng:autobind></script>\n\n' +
+                      '<script src="' + angularJsUrl + '" ng:autobind' + (module ? (' ng:module="' + module + '"') : '') + '></script>\n\n' +
                       '<!-- AngularJS Example Code: -->\n\n' +
                       fiddleSrc +
                     '</textarea>' +
@@ -116,7 +125,7 @@
       }
       return '';
     }
-  });
+  }]);
 
   function indent(text) {
     if (!text) return text;

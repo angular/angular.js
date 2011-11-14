@@ -244,6 +244,7 @@ function $CompileProvider(){
               elementName = nodeName_(element),
               elementNamespace = elementName.indexOf(':') > 0 ? lowercase(elementName).replace(':', '-') : '',
               template,
+              locals = {$element: element},
               selfApi = {
                 compile: bind(self, self.compile),
                 descend: function(value){ if(isDefined(value)) descend = value; return descend;},
@@ -256,7 +257,10 @@ function $CompileProvider(){
             if (!widget) {
               if ((widget = self.widgets('@' + name))) {
                 element.addClass('ng-attr-widget');
-                widget = bind(selfApi, widget, value, element);
+                if (isFunction(widget) && !widget.$inject) {
+                  widget.$inject = ['$value', '$element'];
+                }
+                locals.$value = value;
               }
             }
           });
@@ -264,14 +268,16 @@ function $CompileProvider(){
             if ((widget = self.widgets(elementName))) {
               if (elementNamespace)
                 element.addClass('ng-widget');
-              widget = bind(selfApi, widget, element);
+              if (isFunction(widget) && !widget.$inject) {
+                widget.$inject = ['$element'];
+              }
             }
           }
           if (widget) {
             descend = false;
             directives = false;
             var parent = element.parent();
-            template.addLinkFn(widget.call(selfApi, element));
+            template.addLinkFn($injector.invoke(selfApi, widget, locals));
             if (parent && parent[0]) {
               element = jqLite(parent[0].childNodes[elementIndex]);
             }

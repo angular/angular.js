@@ -887,12 +887,3 @@ angularDirective("ng:cloak", function(expression, element) {
   element.removeAttr('ng:cloak');
   element.removeClass('ng-cloak');
 });
-
-angularDirective('ng:module', ['$value', '$injector',
-                       function(modules,  $injector) {
-  forEach(modules.split(','), function(module){
-    if (module = trim(module)) {
-      $injector.loadModule(module);
-    }
-  });
-}]);
