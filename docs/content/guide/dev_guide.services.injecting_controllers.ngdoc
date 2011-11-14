@@ -28,7 +28,7 @@ this.secondMethod = function() {
 myController.$inject = ['$location', '$log'];
 </pre>
 
-<doc:example>
+<doc:example module="MyServiceModule">
 <doc:source>
 <script type="text/javascript">
 angular.module.MyServiceModule = ['$provide', function($provide){
@@ -53,7 +53,7 @@ function myController(notifyService) {
 myController.$inject = ['notify'];
 </script>
 
-<div ng:controller="myController" ng:module="MyServiceModule">
+<div ng:controller="myController">
 <p>Let's try this simple notify service, injected into the controller...</p>
 <input ng:init="message='test'" type="text" ng:model="message" />
 <button ng:click="callNotify(message);">NOTIFY</button>

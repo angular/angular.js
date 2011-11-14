@@ -16,31 +16,31 @@ filter to manipulate the DOM.
 The following sample filter reverses a text string. In addition, it conditionally makes the
 text upper-case and assigns color.
 
-<doc:example>
+<doc:example module="MyReverseModule">
 <doc:source>
 <script type="text/javascript">
-angular.module.MyReverseModule = function MyModule($filterProvider) {
- $filterProvider.register('reverse', function() {
-   return function(input, uppercase) {
-     var out = "";
-     for (var i = 0; i < input.length; i++) {
-       out = input.charAt(i) + out;
-     }
-     // conditional based on optional argument
-     if (uppercase) {
-       out = out.toUpperCase();
-     }
-     return out;
-   }
- });
-}
+  angular.module.MyReverseModule = function ($filterProvider) {
+    $filterProvider.register('reverse', function() {
+      return function(input, uppercase) {
+        var out = "";
+        for (var i = 0; i < input.length; i++) {
+          out = input.charAt(i) + out;
+        }
+        // conditional based on optional argument
+        if (uppercase) {
+          out = out.toUpperCase();
+        }
+        return out;
+      }
+    });
+  }
 
- function Ctrl() {
-   this.greeting = 'hello';
- }
+  function Ctrl() {
+    this.greeting = 'hello';
+  }
 </script>
 
-<div ng:controller="Ctrl" ng:module="MyReverseModule">
+<div ng:controller="Ctrl">
   <input ng:model="greeting" type="greeting"><br>
   No filter: {{greeting}}<br>
   Reverse: {{greeting|reverse}}<br>

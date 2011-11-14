@@ -140,21 +140,6 @@ function inferInjectionArgs(fn) {
  * @return new instance of `Type`.
  */
 
-/**
- * @ngdoc method
- * @name angular.module.AUTO.$injector#loadModule
- * @methodOf angular.module.AUTO.$injector
- * @description
- * Load additional modules into the current injector configuration
- *
- * @param {Array} modules An array of modules, where module is a:
- *
- *   - `string`: look up the module function from {@link angular.module} and then treat as `function`.
- *   - `function`: execute the module configuration function using
- *      {@link angular.module.AUTO.$injector#invoke $injector.invoke()}
- */
-
-
 
 /**
  * @ngdoc object
@@ -255,15 +240,13 @@ function inferInjectionArgs(fn) {
 function createInjector(modulesToLoad, moduleRegistry) {
   var cache = {},
       providerSuffix = 'Provider',
-      providerSuffixLength = providerSuffix.length,
       path = [],
       $injector;
 
   value('$injector', $injector = {
     get: getService,
     invoke: invoke,
-    instantiate: instantiate,
-    loadModule: loadModule
+    instantiate: instantiate
   });
   value('$provide', {
     service: service,
