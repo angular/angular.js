@@ -594,9 +594,9 @@ function numericRegexpInputType(regexp, error) {
     };
 
     widget.$parseModel = function() {
-      if (isNumber(widget.$modelValue)) {
-        widget.$viewValue = '' + widget.$modelValue;
-      }
+      widget.$viewValue = isNumber(widget.$modelValue)
+        ? '' + widget.$modelValue
+        : '';
     };
   }];
 }
