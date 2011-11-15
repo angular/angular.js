@@ -195,7 +195,7 @@ function LocationHashbangUrl(url, hashPrefix) {
 }
 
 
-LocationUrl.prototype = LocationHashbangUrl.prototype = {
+LocationUrl.prototype = {
 
   /**
    * Has any change been replacing ?
@@ -374,6 +374,7 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
   }
 };
 
+LocationHashbangUrl.prototype = inherit(LocationUrl.prototype);
 
 function locationGetter(property) {
   return function() {
