@@ -42,4 +42,10 @@ describe('angular.scenario.matchers', function () {
     expectMatcher(3, function() { matchers.toBeLessThan(10); });
     expectMatcher(3, function() { matchers.toBeGreaterThan(-5); });
   });
+
+  it('should have toHaveClass matcher', function(){
+    var e = angular.element('<div class="abc">');
+    expect(e).not.toHaveClass('none');
+    expect(e).toHaveClass('abc');
+  });
 });

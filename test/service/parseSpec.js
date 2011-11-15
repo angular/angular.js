@@ -115,22 +115,22 @@ describe('parser', function() {
       expect(tokens[0].text).toEqual(0.5);
     });
 
-    it('should tokenize negative number', function() {
-      var value = createScope().$eval("-0.5");
+    it('should tokenize negative number', inject(function($rootScope) {
+      var value = $rootScope.$eval("-0.5");
       expect(value).toEqual(-0.5);
 
-      value = createScope().$eval("{a:-0.5}");
+      value = $rootScope.$eval("{a:-0.5}");
       expect(value).toEqual({a:-0.5});
-    });
+    }));
 
-    it('should tokenize number with exponent', function() {
+    it('should tokenize number with exponent', inject(function($rootScope) {
       var tokens = lex("0.5E-10");
       expect(tokens[0].text).toEqual(0.5E-10);
-      expect(createScope().$eval("0.5E-10")).toEqual(0.5E-10);
+      expect($rootScope.$eval("0.5E-10")).toEqual(0.5E-10);
 
       tokens = lex("0.5E+10");
       expect(tokens[0].text).toEqual(0.5E+10);
-    });
+    }));
 
     it('should throws exception for invalid exponent', function() {
       expect(function() {
@@ -155,9 +155,9 @@ describe('parser', function() {
   });
 
   var scope;
-  beforeEach(function () {
-    scope = createScope();
-  });
+  beforeEach(inject(function ($rootScope) {
+    scope = $rootScope;
+  }));
 
   it('should parse expressions', function() {
     expect(scope.$eval("-1")).toEqual(-1);
@@ -191,24 +191,19 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', function() {
-    angular.filter.substring = function(input, start, end) {
+  it('should parse filters', inject(function($filterProvider) {
+    $filterProvider.register('substring', valueFn(function(input, start, end) {
       return input.substring(start, end);
-    };
-
-    angular.filter.upper = {_case: function(input) {
-      return input.toUpperCase();
-    }};
+    }));
 
     expect(function() {
-      scope.$eval("1|nonExistant");
-    }).toThrow(new Error("Syntax Error: Token 'nonExistant' should be a function at column 3 of the expression [1|nonExistant] starting at [nonExistant]."));
+      scope.$eval("1|nonexistent");
+    }).toThrow(new Error("Unknown provider for 'nonexistent$Filter'."));
 
     scope.offset =  3;
-    expect(scope.$eval("'abcd'|upper._case")).toEqual("ABCD");
     expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
-    expect(scope.$eval("'abcd'|substring:1:3|upper._case")).toEqual("BC");
-  });
+    expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
+  }));
 
   it('should access scope', function() {
     scope.a =  123;
@@ -226,7 +221,6 @@ describe('parser', function() {
     expect(scope.$eval("a=12")).toEqual(12);
     expect(scope.a).toEqual(12);
 
-    scope = createScope();
     expect(scope.$eval("x.y.z=123;")).toEqual(123);
     expect(scope.x.y.z).toEqual(123);
 
@@ -392,7 +386,6 @@ describe('parser', function() {
   });
 
   it('should allow assignment after array dereference', function() {
-    scope = angular.scope();
     scope.obj = [{}];
     scope.$eval('obj[0].name=1');
     expect(scope.obj.name).toBeUndefined();
@@ -400,7 +393,6 @@ describe('parser', function() {
   });
 
   it('should short-circuit AND operator', function() {
-    var scope = angular.scope();
     scope.run = function() {
       throw "IT SHOULD NOT HAVE RUN";
     };
@@ -408,7 +400,6 @@ describe('parser', function() {
   });
 
   it('should short-circuit OR operator', function() {
-    var scope = angular.scope();
     scope.run = function() {
       throw "IT SHOULD NOT HAVE RUN";
     };
@@ -417,12 +408,12 @@ describe('parser', function() {
 
 
   describe('assignable', function() {
-    it('should expose assignment function', function() {
-      var fn = parser('a').assignable();
+    it('should expose assignment function', inject(function($parse) {
+      var fn = $parse('a');
       expect(fn.assign).toBeTruthy();
       var scope = {};
       fn.assign(scope, 123);
       expect(scope).toEqual({a:123});
-    });
+    }));
   });
 });

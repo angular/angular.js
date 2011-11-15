@@ -106,7 +106,7 @@ angularDirective("ng:init", function(expression){
  * * Controller — The `ng:controller` directive specifies a Controller class; the class has
  *   methods that typically express the business logic behind the application.
  *
- * Note that an alternative way to define controllers is via the `{@link angular.service.$route}`
+ * Note that an alternative way to define controllers is via the `{@link angular.module.ng.$route}`
  * service.
  *
  * @element ANY
@@ -138,7 +138,7 @@ angularDirective("ng:init", function(expression){
            this.contacts.push({type:'email', value:'yourname@example.org'});
          },
          removeContact: function(contactToRemove) {
-           angular.Array.remove(this.contacts, contactToRemove);
+           angular.module.ng.$filter.remove(this.contacts, contactToRemove);
          },
          clearContact: function(contact) {
            contact.type = 'phone';
@@ -235,9 +235,10 @@ angularDirective("ng:controller", function(expression){
  */
 angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
-  var exprFn = parser(expression).statements();
-  return function(element) {
-    var lastValue = Number.NaN;
+  return ['$exceptionHandler', '$parse', '$element', function($exceptionHandler, $parse, element) {
+    var exprFn = $parse(expression),
+        lastValue = Number.NaN;
+
     this.$watch(function(scope) {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
       var value, html, isHtml, isDomElement,
@@ -269,7 +270,7 @@ angularDirective("ng:bind", function(expression, element){
           }
         }
       } catch (e) {
-        scope.$service('$exceptionHandler')(e);
+        $exceptionHandler(e);
       } finally {
         if (hadOwnElement) {
           scope.$element = oldElement;
@@ -278,7 +279,7 @@ angularDirective("ng:bind", function(expression, element){
         }
       }
     });
-  };
+  }];
 });
 
 var bindTemplateCache = {};
@@ -689,8 +690,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      <doc:source>
         <ol ng:init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng:repeat="name in names">
-           <span ng:class-odd="'ng-format-negative'"
-                 ng:class-even="'ng-input-indicator-wait'">
+           <span ng:class-odd="'odd'" ng:class-even="'even'">
              {{name}} &nbsp; &nbsp; &nbsp;
            </span>
           </li>
@@ -699,9 +699,9 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      <doc:scenario>
        it('should check ng:class-odd and ng:class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
-           toMatch(/ng-format-negative/);
+           toMatch(/odd/);
          expect(element('.doc-example-live li:last span').prop('className')).
-           toMatch(/ng-input-indicator-wait/);
+           toMatch(/even/);
        });
      </doc:scenario>
    </doc:example>

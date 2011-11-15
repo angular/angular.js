@@ -1,35 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc overview
- * @name angular.filter
- * @description
- *
- * Filters are used for formatting data displayed to the user.
- *
- * The general syntax in templates is as follows:
- *
- *         {{ expression | [ filter_name ] }}
- *
- * Following is the list of built-in angular filters:
- *
- * * {@link angular.filter.currency currency}
- * * {@link angular.filter.date date}
- * * {@link angular.filter.html html}
- * * {@link angular.filter.json json}
- * * {@link angular.filter.linky linky}
- * * {@link angular.filter.lowercase lowercase}
- * * {@link angular.filter.number number}
- * * {@link angular.filter.uppercase uppercase}
- *
- * For more information about how angular filters work, and how to create your own filters, see
- * {@link guide/dev_guide.templates.filters Understanding Angular Filters} in the angular Developer
- * Guide.
- */
-
-/**
  * @ngdoc filter
- * @name angular.filter.currency
+ * @name angular.module.ng.$filter.currency
  * @function
  *
  * @description
@@ -40,8 +13,6 @@
  * @param {string=} symbol Currency symbol or identifier to be displayed.
  * @returns {string} Formatted number.
  *
- * @css ng-format-negative
- *   When the value is negative, this css class is applied to the binding making it (by default) red.
  *
  * @example
    <doc:example>
@@ -66,23 +37,23 @@
          input('amount').enter('-1234');
          expect(binding('amount | currency')).toBe('($1,234.00)');
          expect(binding('amount | currency:"USD$"')).toBe('(USD$1,234.00)');
-         expect(element('.doc-example-live .ng-binding').prop('className')).
-           toMatch(/ng-format-negative/);
        });
      </doc:scenario>
    </doc:example>
  */
-angularFilter.currency = function(amount, currencySymbol){
-  var formats = this.$service('$locale').NUMBER_FORMATS;
-  this.$element.toggleClass('ng-format-negative', amount < 0);
-  if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
-  return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
-              replace(/\u00A4/g, currencySymbol);
-};
+currencyFilter.$inject = ['$locale'];
+function currencyFilter($locale) {
+  var formats = $locale.NUMBER_FORMATS;
+  return function(amount, currencySymbol){
+    if (isUndefined(currencySymbol)) currencySymbol = formats.CURRENCY_SYM;
+    return formatNumber(amount, formats.PATTERNS[1], formats.GROUP_SEP, formats.DECIMAL_SEP, 2).
+                replace(/\u00A4/g, currencySymbol);
+  };
+}
 
 /**
  * @ngdoc filter
- * @name angular.filter.number
+ * @name angular.module.ng.$filter.number
  * @function
  *
  * @description
@@ -126,14 +97,17 @@ angularFilter.currency = function(amount, currencySymbol){
    </doc:example>
  */
 
+
+numberFilter.$inject = ['$locale'];
+function numberFilter($locale) {
+  var formats = $locale.NUMBER_FORMATS;
+  return function(number, fractionSize) {
+    return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP, formats.DECIMAL_SEP,
+      fractionSize);
+  };
+}
+
 var DECIMAL_SEP = '.';
-
-angularFilter.number = function(number, fractionSize) {
-  var formats = this.$service('$locale').NUMBER_FORMATS;
-  return formatNumber(number, formats.PATTERNS[0], formats.GROUP_SEP,
-                                                  formats.DECIMAL_SEP, fractionSize);
-};
-
 function formatNumber(number, pattern, groupSep, decimalSep, fractionSize) {
   if (isNaN(number) || !isFinite(number)) return '';
 
@@ -260,14 +234,12 @@ var DATE_FORMATS = {
      Z: timeZoneGetter
 };
 
-var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
-    DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
-    OPERA_TOSTRING_PATTERN = /^[\d].*Z$/,
+var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+|H+|h+|m+|s+|a|Z))(.*)/,
     NUMBER_STRING = /^\d+$/;
 
 /**
  * @ngdoc filter
- * @name angular.filter.date
+ * @name angular.module.ng.$filter.date
  * @function
  *
  * @description
@@ -343,54 +315,56 @@ var GET_TIME_ZONE = /[A-Z]{3}(?![+\-])/,
      </doc:scenario>
    </doc:example>
  */
-angularFilter.date = function(date, format) {
-  var $locale = this.$service('$locale'),
-      text = '',
-      parts = [],
-      fn, match;
+dateFilter.$inject = ['$locale'];
+function dateFilter($locale) {
+  return function(date, format) {
+    var text = '',
+        parts = [],
+        fn, match;
 
-  format = format || 'mediumDate'
-  format = $locale.DATETIME_FORMATS[format] || format;
-  if (isString(date)) {
-    if (NUMBER_STRING.test(date)) {
-      date = parseInt(date, 10);
-    } else {
-      date = angularString.toDate(date);
+    format = format || 'mediumDate'
+    format = $locale.DATETIME_FORMATS[format] || format;
+    if (isString(date)) {
+      if (NUMBER_STRING.test(date)) {
+        date = parseInt(date, 10);
+      } else {
+        date = jsonStringToDate(date);
+      }
     }
-  }
 
-  if (isNumber(date)) {
-    date = new Date(date);
-  }
-
-  if (!isDate(date)) {
-    return date;
-  }
-
-  while(format) {
-    match = DATE_FORMATS_SPLIT.exec(format);
-    if (match) {
-      parts = concat(parts, match, 1);
-      format = parts.pop();
-    } else {
-      parts.push(format);
-      format = null;
+    if (isNumber(date)) {
+      date = new Date(date);
     }
-  }
 
-  forEach(parts, function(value){
-    fn = DATE_FORMATS[value];
-    text += fn ? fn(date, $locale.DATETIME_FORMATS)
-               : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
-  });
+    if (!isDate(date)) {
+      return date;
+    }
 
-  return text;
-};
+    while(format) {
+      match = DATE_FORMATS_SPLIT.exec(format);
+      if (match) {
+        parts = concat(parts, match, 1);
+        format = parts.pop();
+      } else {
+        parts.push(format);
+        format = null;
+      }
+    }
+
+    forEach(parts, function(value){
+      fn = DATE_FORMATS[value];
+      text += fn ? fn(date, $locale.DATETIME_FORMATS)
+                 : value.replace(/(^'|'$)/g, '').replace(/''/g, "'");
+    });
+
+    return text;
+  };
+}
 
 
 /**
  * @ngdoc filter
- * @name angular.filter.json
+ * @name angular.module.ng.$filter.json
  * @function
  *
  * @description
@@ -417,35 +391,38 @@ angularFilter.date = function(date, format) {
    </doc:example>
  *
  */
-angularFilter.json = function(object) {
-  this.$element.addClass("ng-monospace");
-  return toJson(object, true, /^(\$|this$)/);
-};
+function jsonFilter() {
+  return function(object) {
+    return toJson(object, true);
+  };
+}
 
 
 /**
  * @ngdoc filter
- * @name angular.filter.lowercase
+ * @name angular.module.ng.$filter.lowercase
  * @function
- *
+ * @description
+ * Converts string to lowercase.
  * @see angular.lowercase
  */
-angularFilter.lowercase = lowercase;
+var lowercaseFilter = valueFn(lowercase);
 
 
 /**
  * @ngdoc filter
- * @name angular.filter.uppercase
+ * @name angular.module.ng.$filter.uppercase
  * @function
- *
+ * @description
+ * Converts string to uppercase.
  * @see angular.uppercase
  */
-angularFilter.uppercase = uppercase;
+var uppercaseFilter = valueFn(uppercase);
 
 
 /**
  * @ngdoc filter
- * @name angular.filter.html
+ * @name angular.module.ng.$filter.html
  * @function
  *
  * @description
@@ -537,14 +514,17 @@ angularFilter.uppercase = uppercase;
      </doc:scenario>
    </doc:example>
  */
-angularFilter.html =  function(html, option){
-  return new HTML(html, option);
-};
+//TODO(misko): turn sensitization into injectable service
+function htmlFilter() {
+  return function(html, option){
+    return new HTML(html, option);
+  };
+}
 
 
 /**
  * @ngdoc filter
- * @name angular.filter.linky
+ * @name angular.module.ng.$filter.linky
  * @function
  *
  * @description
@@ -619,29 +599,31 @@ angularFilter.html =  function(html, option){
      </doc:scenario>
    </doc:example>
  */
-var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/,
-    MAILTO_REGEXP = /^mailto:/;
+function linkyFilter() {
+  var LINKY_URL_REGEXP = /((ftp|https?):\/\/|(mailto:)?[A-Za-z0-9._%+-]+@)\S*[^\s\.\;\,\(\)\{\}\<\>]/,
+      MAILTO_REGEXP = /^mailto:/;
 
-angularFilter.linky = function(text) {
-  if (!text) return text;
-  var match;
-  var raw = text;
-  var html = [];
-  var writer = htmlSanitizeWriter(html);
-  var url;
-  var i;
-  while ((match = raw.match(LINKY_URL_REGEXP))) {
-    // We can not end in these as they are sometimes found at the end of the sentence
-    url = match[0];
-    // if we did not match ftp/http/mailto then assume mailto
-    if (match[2] == match[3]) url = 'mailto:' + url;
-    i = match.index;
-    writer.chars(raw.substr(0, i));
-    writer.start('a', {href:url});
-    writer.chars(match[0].replace(MAILTO_REGEXP, ''));
-    writer.end('a');
-    raw = raw.substring(i + match[0].length);
-  }
-  writer.chars(raw);
-  return new HTML(html.join(''));
+  return function(text) {
+    if (!text) return text;
+    var match;
+    var raw = text;
+    var html = [];
+    var writer = htmlSanitizeWriter(html);
+    var url;
+    var i;
+    while ((match = raw.match(LINKY_URL_REGEXP))) {
+      // We can not end in these as they are sometimes found at the end of the sentence
+      url = match[0];
+      // if we did not match ftp/http/mailto then assume mailto
+      if (match[2] == match[3]) url = 'mailto:' + url;
+      i = match.index;
+      writer.chars(raw.substr(0, i));
+      writer.start('a', {href:url});
+      writer.chars(match[0].replace(MAILTO_REGEXP, ''));
+      writer.end('a');
+      raw = raw.substring(i + match[0].length);
+    }
+    writer.chars(raw);
+    return new HTML(html.join(''));
+  };
 };

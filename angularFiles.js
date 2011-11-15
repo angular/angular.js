@@ -1,28 +1,33 @@
 angularFiles = {
   'angularSrc': [
     'src/Angular.js',
+    'src/AngularPublic.js',
     'src/JSON.js',
-    'src/Compiler.js',
-    'src/Scope.js',
     'src/Injector.js',
-    'src/parser.js',
     'src/Resource.js',
-    'src/Browser.js',
     'src/sanitizer.js',
     'src/jqLite.js',
     'src/apis.js',
-    'src/filters.js',
+    'src/service/browser.js',
+    'src/service/compiler.js',
     'src/service/cookieStore.js',
     'src/service/cookies.js',
     'src/service/defer.js',
     'src/service/document.js',
     'src/service/exceptionHandler.js',
+    'src/service/filter.js',
+    'src/service/filter/filter.js',
+    'src/service/filter/filters.js',
+    'src/service/filter/limitTo.js',
+    'src/service/filter/orderBy.js',
     'src/service/formFactory.js',
     'src/service/location.js',
     'src/service/log.js',
     'src/service/resource.js',
+    'src/service/parse.js',
     'src/service/route.js',
     'src/service/routeParams.js',
+    'src/service/scope.js',
     'src/service/sniffer.js',
     'src/service/window.js',
     'src/service/xhr.bulk.js',
@@ -35,8 +40,7 @@ angularFiles = {
     'src/widgets.js',
     'src/widget/form.js',
     'src/widget/input.js',
-    'src/widget/select.js',
-    'src/AngularPublic.js'
+    'src/widget/select.js'
   ],
 
   'angularScenario': [
@@ -70,12 +74,12 @@ angularFiles = {
     'src/jstd-scenario-adapter/*.js',
     'src/scenario/*.js',
     'src/angular-mocks.js',
-    'test/mocks.js',
     'test/scenario/*.js',
     'test/scenario/output/*.js',
     'test/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/service/*.js',
+    'test/service/filter/*.js',
     'test/widget/*.js',
     'example/personalLog/test/*.js'
   ],
@@ -83,8 +87,7 @@ angularFiles = {
   'jstdExclude': [
     'test/jquery_alias.js',
     'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js',
-    'src/AngularPublic.js'
+    'src/scenario/angular-bootstrap.js'
   ],
 
   'jstdScenario': [
@@ -115,8 +118,7 @@ angularFiles = {
 
   'jstdPerfExclude': [
     'src/angular-bootstrap.js',
-    'src/scenario/angular-bootstrap.js',
-    'src/AngularPublic.js'
+    'src/scenario/angular-bootstrap.js'
   ],
 
   'jstdJquery': [
@@ -133,7 +135,6 @@ angularFiles = {
     'src/jstd-scenario-adapter/*.js',
     'src/scenario/*.js',
     'src/angular-mocks.js',
-    'test/mocks.js',
     'test/scenario/*.js',
     'test/scenario/output/*.js',
     'test/jstd-scenario-adapter/*.js',
@@ -145,7 +146,6 @@ angularFiles = {
 
   'jstdJqueryExclude': [
     'src/angular-bootstrap.js',
-    'src/AngularPublic.js',
     'src/scenario/angular-bootstrap.js',
     'test/jquery_remove.js'
   ]

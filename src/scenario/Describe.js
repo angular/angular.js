@@ -45,7 +45,7 @@ angular.scenario.Describe.specId = 0;
 /**
  * Defines a block to execute before each it or nested describe.
  *
- * @param {Function} body Body of the block.
+ * @param {function()} body Body of the block.
  */
 angular.scenario.Describe.prototype.beforeEach = function(body) {
   this.beforeEachFns.push(body);
@@ -54,7 +54,7 @@ angular.scenario.Describe.prototype.beforeEach = function(body) {
 /**
  * Defines a block to execute after each it or nested describe.
  *
- * @param {Function} body Body of the block.
+ * @param {function()} body Body of the block.
  */
 angular.scenario.Describe.prototype.afterEach = function(body) {
   this.afterEachFns.push(body);
@@ -64,7 +64,7 @@ angular.scenario.Describe.prototype.afterEach = function(body) {
  * Creates a new describe block that's a child of this one.
  *
  * @param {string} name Name of the block. Appended to the parent block's name.
- * @param {Function} body Body of the block.
+ * @param {function()} body Body of the block.
  */
 angular.scenario.Describe.prototype.describe = function(name, body) {
   var child = new angular.scenario.Describe(name, this);
@@ -76,7 +76,7 @@ angular.scenario.Describe.prototype.describe = function(name, body) {
  * Same as describe() but makes ddescribe blocks the only to run.
  *
  * @param {string} name Name of the test.
- * @param {Function} body Body of the block.
+ * @param {function()} body Body of the block.
  */
 angular.scenario.Describe.prototype.ddescribe = function(name, body) {
   var child = new angular.scenario.Describe(name, this);
@@ -94,7 +94,7 @@ angular.scenario.Describe.prototype.xdescribe = angular.noop;
  * Defines a test.
  *
  * @param {string} name Name of the test.
- * @param {Function} vody Body of the block.
+ * @param {function()} vody Body of the block.
  */
 angular.scenario.Describe.prototype.it = function(name, body) {
   this.its.push({
@@ -112,7 +112,7 @@ angular.scenario.Describe.prototype.it = function(name, body) {
  * Same as it() but makes iit tests the only test to run.
  *
  * @param {string} name Name of the test.
- * @param {Function} body Body of the block.
+ * @param {function()} body Body of the block.
  */
 angular.scenario.Describe.prototype.iit = function(name, body) {
   this.it.apply(this, arguments);

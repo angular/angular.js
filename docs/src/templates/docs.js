@@ -1,11 +1,12 @@
-DocsController.$inject = ['$location', '$window', '$cookies'];
-function DocsController($location, $window, $cookies) {
+DocsController.$inject = ['$location', '$window', '$cookies', '$filter'];
+function DocsController($location, $window, $cookies, $filter) {
   window.$root = this.$root;
 
   var scope = this,
       OFFLINE_COOKIE_NAME = 'ng-offline',
       DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
-      INDEX_PATH = /^(\/|\/index[^\.]*.html)$/;
+      INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
+      filter = $filter('filter');
 
   scope.$location = $location;
   scope.versionNumber = angular.version.full;
@@ -25,7 +26,7 @@ function DocsController($location, $window, $cookies) {
       var parts = path.split('/');
       scope.sectionId = parts[1];
       scope.partialId = parts[2] || 'index';
-      scope.pages = angular.Array.filter(NG_PAGES, {section: scope.sectionId});
+      scope.pages = filter(NG_PAGES, {section: scope.sectionId});
 
       var i = scope.pages.length;
       while (i--) {
@@ -148,9 +149,17 @@ function TutorialInstructionsCtrl($cookieStore) {
   };
 }
 
-angular.service('$locationConfig', function() {
-  return {
-    html5Mode: true,
-    hashPrefix: '!'
-  };
-});
+window.angular = window.angular || {};
+angular.module = angular.module || {};
+
+angular.module.ngdocs = function($locationProvider, $filterProvider) {
+  $locationProvider.html5Mode(true).hashPrefix('!');
+
+  $filterProvider.register('title', function(){
+    return function(text) {
+      return text && text.replace(/^angular\.module\.([^\.]+)(\.(.*))?$/, function(_, module, _0, name){
+        return 'Module ' + module + (name ? ' - ' + name : '');
+      });
+    }
+  });
+};

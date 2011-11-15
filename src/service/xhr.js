@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$xhr
+ * @ngdoc object
+ * @name angular.module.ng.$xhr
  * @function
  * @requires $browser $xhr delegates all XHR requests to the `$browser.xhr()`. A mock version
  *                    of the $browser exists which allows setting expectations on XHR requests
@@ -12,14 +12,14 @@
  *
  * @description
  * Generates an XHR request. The $xhr service delegates all requests to
- * {@link angular.service.$browser $browser.xhr()} and adds error handling and security features.
+ * {@link angular.module.ng.$browser $browser.xhr()} and adds error handling and security features.
  * While $xhr service provides nicer api than raw XmlHttpRequest, it is still considered a lower
  * level api in angular. For a higher level abstraction that utilizes `$xhr`, please check out the
- * {@link angular.service.$resource $resource} service.
+ * {@link angular.module.ng.$resource $resource} service.
  *
  * # Error handling
  * If no `error callback` is specified, XHR response with response code other then `2xx` will be
- * delegated to {@link angular.service.$xhr.error $xhr.error}. The `$xhr.error` can intercept the
+ * delegated to {@link angular.module.ng.$xhr.error $xhr.error}. The `$xhr.error` can intercept the
  * request and process it in application specific way, or resume normal execution by calling the
  * request `success` method.
  *
@@ -98,7 +98,7 @@
  *
  *   - {number} code [HTTP status code](http://en.wikipedia.org/wiki/List_of_HTTP_status_codes) of
  *     the response. This will currently always be 200, since all non-200 responses are routed to
- *     {@link angular.service.$xhr.error} service (or custom error callback).
+ *     {@link angular.module.ng.$xhr.error} service (or custom error callback).
  *   - {string|Object} response Response object as string or an Object if the response was in JSON
  *     format.
  * @param {function(number, (string|Object))} error A function to be called if the response code is
@@ -171,59 +171,61 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject('$xhr', function($browser, $error, $log){
-  var rootScope = this;
-  var xhrHeaderDefaults = {
-    common: {
-      "Accept": "application/json, text/plain, */*",
-      "X-Requested-With": "XMLHttpRequest"
-    },
-    post: {'Content-Type': 'application/x-www-form-urlencoded'},
-    get: {},      // all these empty properties are needed so that client apps can just do:
-    head: {},     // $xhr.defaults.headers.head.foo="bar" without having to create head object
-    put: {},      // it also means that if we add a header for these methods in the future, it
-    'delete': {}, // won't be easily silently lost due to an object assignment.
-    patch: {}
-  };
+function $XhrProvider() {
+  this.$get = ['$rootScope', '$browser', '$xhr.error', '$log',
+      function( $rootScope,   $browser,   $error,       $log){
+    var xhrHeaderDefaults = {
+      common: {
+        "Accept": "application/json, text/plain, */*",
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      post: {'Content-Type': 'application/x-www-form-urlencoded'},
+      get: {},      // all these empty properties are needed so that client apps can just do:
+      head: {},     // $xhr.defaults.headers.head.foo="bar" without having to create head object
+      put: {},      // it also means that if we add a header for these methods in the future, it
+      'delete': {}, // won't be easily silently lost due to an object assignment.
+      patch: {}
+    };
 
-  function xhr(method, url, post, success, error) {
-    if (isFunction(post)) {
-      error = success;
-      success = post;
-      post = null;
-    }
-    if (post && isObject(post)) {
-      post = toJson(post);
-    }
-
-    $browser.xhr(method, url, post, function(code, response){
-      try {
-        if (isString(response)) {
-          if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
-          if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
-            response = fromJson(response, true);
-          }
-        }
-        rootScope.$apply(function() {
-          if (200 <= code && code < 300) {
-              success(code, response);
-          } else if (isFunction(error)) {
-            error(code, response);
-          } else {
-            $error(
-              {method: method, url: url, data: post, success: success},
-              {status: code, body: response});
-          }
-        });
-      } catch (e) {
-        $log.error(e);
+    function xhr(method, url, post, success, error) {
+      if (isFunction(post)) {
+        error = success;
+        success = post;
+        post = null;
       }
-    }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
-              xhrHeaderDefaults.common,
-              xhrHeaderDefaults[lowercase(method)]));
-  }
+      if (post && isObject(post)) {
+        post = toJson(post);
+      }
 
-  xhr.defaults = {headers: xhrHeaderDefaults};
+      $browser.xhr(method, url, post, function(code, response){
+        try {
+          if (isString(response)) {
+            if (response.match(/^\)\]\}',\n/)) response=response.substr(6);
+            if (/^\s*[\[\{]/.exec(response) && /[\}\]]\s*$/.exec(response)) {
+              response = fromJson(response, true);
+            }
+          }
+          $rootScope.$apply(function() {
+            if (200 <= code && code < 300) {
+                success(code, response);
+            } else if (isFunction(error)) {
+              error(code, response);
+            } else {
+              $error(
+                {method: method, url: url, data: post, success: success},
+                {status: code, body: response});
+            }
+          });
+        } catch (e) {
+          $log.error(e);
+        }
+      }, extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
+                xhrHeaderDefaults.common,
+                xhrHeaderDefaults[lowercase(method)]));
+    }
 
-  return xhr;
-}, ['$browser', '$xhr.error', '$log']);
+    xhr.defaults = {headers: xhrHeaderDefaults};
+
+    return xhr;
+  }];
+}

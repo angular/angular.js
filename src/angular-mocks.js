@@ -1,4 +1,3 @@
-'use strict';
 
 /**
  * @license AngularJS v"NG_VERSION_FULL"
@@ -7,81 +6,49 @@
  */
 
 
-/*
-
- NUGGGGGH MUST TONGUE WANGS
-                           \
-                                .....
-                               C C  /
-                              /<   /
-               ___ __________/_#__=o
-              /(- /(\_\________   \
-              \ ) \ )_      \o     \
-              /|\ /|\       |'     |
-                            |     _|
-                            /o   __\
-                           / '     |
-                          / /      |
-                         /_/\______|
-                        (   _(    <
-                         \    \    \
-                          \    \    |
-                           \____\____\
-                           ____\_\__\_\
-                         /`   /`     o\
-                         |___ |_______|.. . b'ger
-
-
- IN THE FINAL BUILD THIS FILE DOESN'T HAVE DIRECT ACCESS TO GLOBAL FUNCTIONS
- DEFINED IN Angular.js YOU *MUST* REFER TO THEM VIA angular OBJECT
- (e.g. angular.forEach(...)) AND MAKE SURE THAT THE GIVEN FUNCTION IS EXPORTED
- TO THE angular NAMESPACE in AngularPublic.js
-
- */
-
+window.angular = window.angular || {};
+angular.module = angular.module || {};
 
 /**
  * @ngdoc overview
- * @name angular.mock
+ * @name angular.module.ngMock
  * @description
  *
- * The `angular.mock` object is a namespace for all built-in mock services that ship with angular.
- * It automatically replaces real services if the `angular-mocks.js` file is loaded after
- * `angular.js` and before any tests.
- *
- * Built-in mocks:
- *
- * * {@link angular.mock.service.$browser $browser } - A mock implementation of the browser.
- * * {@link angular.mock.service.$exceptionHandler $exceptionHandler } - A mock implementation of
- *   the angular service exception handler.
- * * {@link angular.mock.service.$log $log } - A mock implementation of the angular service log.
+ * The `ngMock` is an angular module which is used with `ng` module and adds unit-test configuration as well as useful
+ * mocks to the {@link angular.module.AUTO.$injector $injector}.
  */
-angular.mock = {};
-
+angular.module.ngMock = function($provide){
+  $provide.service('$browser', angular.module.ngMock.$BrowserProvider);
+  $provide.service('$exceptionHandler', angular.module.ngMock.$ExceptionHandlerProvider);
+  $provide.service('$log', angular.module.ngMock.$LogProvider);
+};
+angular.module.ngMock.$inject = ['$provide'];
 
 /**
- * @ngdoc service
- * @name angular.mock.service.$browser
+ * @ngdoc object
+ * @name angular.module.ngMock.$browser
  *
  * @description
- * This service is a mock implementation of {@link angular.service.$browser}. It provides fake
+ * This service is a mock implementation of {@link angular.module.ng.$browser}. It provides fake
  * implementation for commonly used browser apis that are hard to test, e.g. setTimeout, xhr,
- * cookies.
+ * cookies, etc...
  *
- * This implementation is automatically available and replaces regular `$browser` service in tests
- * when `angular-mocks.js` is loaded.
- *
- * The api of this service is the same as the real {@link angular.service.$browser $browser}, except
+ * The api of this service is the same as that of the real {@link angular.module.ng.$browser $browser}, except
  * that there are several helper methods available which can be used in tests.
  *
  * The following apis can be used in tests:
  *
- * - {@link angular.mock.service.$browser.xhr $browser.xhr} — enables testing of code that uses
- *   the {@link angular.service.$xhr $xhr service} to make XmlHttpRequests.
+ * - {@link #xhr} — enables testing of code that uses
+ *   the {@link angular.module.ng.$xhr $xhr service} to make XmlHttpRequests.
  * - $browser.defer — enables testing of code that uses
- *   {@link angular.service.$defer $defer service} for executing functions via the `setTimeout` api.
+ *   {@link angular.module.ng.$defer $defer} for executing functions via the `setTimeout` api.
  */
-function MockBrowser() {
+angular.module.ngMock.$BrowserProvider = function(){
+  this.$get = function(){
+    return new angular.module.ngMock.$Browser();
+  };
+};
+angular.module.ngMock.$Browser = function() {
   var self = this,
       expectations = {},
       requests = [];
@@ -109,22 +76,23 @@ function MockBrowser() {
 
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr
+    * @ngdoc method
+    * @name angular.module.ngMock.$browser#xhr
+    * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Generic method for training browser to expect a request in a test and respond to it.
     *
     * See also convenience methods for browser training:
     *
-    * - {@link angular.mock.service.$browser.xhr.expectGET $browser.xhr.expectGET}
-    * - {@link angular.mock.service.$browser.xhr.expectPOST $browser.xhr.expectPOST}
-    * - {@link angular.mock.service.$browser.xhr.expectPUT $browser.xhr.expectPUT}
-    * - {@link angular.mock.service.$browser.xhr.expectDELETE $browser.xhr.expectDELETE}
-    * - {@link angular.mock.service.$browser.xhr.expectJSON $browser.xhr.expectJSON}
+    * - {@link #xhr.expectGET}
+    * - {@link #xhr.expectPOST}
+    * - {@link #xhr.expectPUT}
+    * - {@link #xhr.expectDELETE}
+    * - {@link #xhr.expectJSON}
     *
     * To flush pending requests in tests use
-    * {@link angular.mock.service.$browser.xhr.flush $browser.xhr.flush}.
+    * {@link #xhr.flush}.
     *
     * @param {string} method Expected HTTP method.
     * @param {string} url Url path for which a request is expected.
@@ -133,7 +101,7 @@ function MockBrowser() {
     * @param {object} headers Key-value pairs of expected headers.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.mock.service.$browser.xhr.flush flushed}.
+    *   {@link #xhr.flush flushed}.
     */
   self.xhr = function(method, url, data, callback, headers) {
     headers = headers || {};
@@ -171,8 +139,9 @@ function MockBrowser() {
   };
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr.expectGET
+    * @ngdoc method
+    * @name angular.module.ngMock.$browser#xhr.expectGET
+    * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Trains browser to expect a `GET` request and respond to it.
@@ -180,13 +149,14 @@ function MockBrowser() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.mock.service.$browser.xhr.flush flushed}.
+    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
     */
   self.xhr.expectGET    = angular.bind(self, self.xhr.expect, 'GET');
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr.expectPOST
+   * @ngdoc method
+   * @name angular.module.ngMock.$browser#xhr.expectPOST
+   * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Trains browser to expect a `POST` request and respond to it.
@@ -194,13 +164,14 @@ function MockBrowser() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.mock.service.$browser.xhr.flush flushed}.
+    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
     */
   self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr.expectDELETE
+   * @ngdoc method
+   * @name angular.module.ngMock.$browser#xhr.expectDELETE
+   * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Trains browser to expect a `DELETE` request and respond to it.
@@ -208,13 +179,14 @@ function MockBrowser() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.mock.service.$browser.xhr.flush flushed}.
+    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
     */
   self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr.expectPUT
+   * @ngdoc method
+   * @name angular.module.ngMock.$browser#xhr.expectPUT
+   * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Trains browser to expect a `PUT` request and respond to it.
@@ -222,13 +194,14 @@ function MockBrowser() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.mock.service.$browser.xhr.flush flushed}.
+    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
     */
   self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr.expectJSON
+   * @ngdoc method
+   * @name angular.module.ngMock.$browser#xhr.expectJSON
+   * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Trains browser to expect a `JSON` request and respond to it.
@@ -236,13 +209,14 @@ function MockBrowser() {
     * @param {string} url Url path for which a request is expected.
     * @returns {object} Response configuration object. You can call its `respond()` method to
     *   configure what should the browser mock return when the response is
-    *   {@link angular.mock.service.$browser.xhr.flush flushed}.
+    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
     */
   self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
 
   /**
-    * @ngdoc function
-    * @name angular.mock.service.$browser.xhr.flush
+   * @ngdoc method
+   * @name angular.module.ngMock.$browser#xhr.flush
+   * @methodOf angular.module.ngMock.$browser
     *
     * @description
     * Flushes all pending requests and executes xhr callbacks with the trained response as the
@@ -290,6 +264,16 @@ function MockBrowser() {
   };
 
 
+  /**
+   * @ngdoc method
+   * @name angular.module.ngMock.$browser#defer.flush
+   * @methodOf angular.module.ngMock.$browser
+   *
+   * @description
+   * Flushes all pending requests and executes the defer callbacks.
+   *
+   * @param {number=} number of miliseconds to flush. See {@link #defer.now}
+   */
   self.defer.flush = function(delay) {
     if (angular.isDefined(delay)) {
       self.defer.now += delay;
@@ -303,17 +287,25 @@ function MockBrowser() {
       self.deferredFns.shift().fn();
     }
   };
+  /**
+   * @ngdoc property
+   * @name angular.module.ngMock.$browser#defer.now
+   * @propertyOf angular.module.ngMock.$browser
+   *
+   * @description
+   * Current milliseconds mock time.
+   */
 
   self.$$baseHref = '';
   self.baseHref = function() {
     return this.$$baseHref;
   };
 }
-MockBrowser.prototype = {
+angular.module.ngMock.$Browser.prototype = {
 
 /**
-  * @name angular.mock.service.$browser#poll
-  * @methodOf angular.mock.service.$browser
+  * @name angular.module.ngMock.$browser#poll
+  * @methodOf angular.module.ngMock.$browser
   *
   * @description
   * run all fns in pollFns
@@ -357,61 +349,189 @@ MockBrowser.prototype = {
     }
   },
 
-  addJs: function() {}
+  notifyWhenNoOutstandingRequests: function(fn) {
+    fn();
+  }
 };
 
-angular.service('$browser', function() {
-  return new MockBrowser();
-});
-
 
 /**
- * @ngdoc service
- * @name angular.mock.service.$exceptionHandler
+ * @ngdoc object
+ * @name angular.module.ngMock.$exceptionHandlerProvider
  *
  * @description
- * Mock implementation of {@link angular.service.$exceptionHandler} that rethrows any error passed
- * into `$exceptionHandler`. If any errors are are passed into the handler in tests, it typically
- * means that there is a bug in the application or test, so this mock will make these tests fail.
- *
- * See {@link angular.mock} for more info on angular mocks.
+ * Configures the mock implementation of {@link angular.module.ng.$exceptionHandler} to rethrow or to log errors passed
+ * into the `$exceptionHandler`.
  */
-angular.service('$exceptionHandler', function() {
-  return function(e) { throw e; };
-});
+
+/**
+ * @ngdoc object
+ * @name angular.module.ngMock.$exceptionHandler
+ *
+ * @description
+ * Mock implementation of {@link angular.module.ng.$exceptionHandler} that rethrows or logs errors passed
+ * into it. See {@link angular.module.ngMock.$exceptionHandlerProvider $exceptionHandlerProvider} for configuration
+ * information.
+ */
+
+angular.module.ngMock.$ExceptionHandlerProvider = function(){
+  var handler;
+
+  /**
+   * @ngdoc method
+   * @name angular.module.ngMock.$exceptionHandlerProvider#mode
+   * @methodOf angular.module.ngMock.$exceptionHandlerProvider
+   *
+   * @description
+   * Sets the logging mode.
+   *
+   * @param {string} mode Mode of operation, defaults to `rethrow`.
+   *
+   *   - `rethrow`: If any errors are are passed into the handler in tests, it typically
+   *                means that there is a bug in the application or test, so this mock will
+   *                make these tests fail.
+   *   - `log`: Sometimes it is desirable to test that an error is throw, for this case the `log` mode stores the
+   *            error and allows later assertion of it.
+   *            See {@link angular.module.ngMock.$log#assertEmpty assertEmpty()} and
+   *             {@link angular.module.ngMock.$log#reset reset()}
+   */
+  this.mode = function(mode){
+    switch(mode) {
+      case 'rethrow':
+        handler = function(e) {
+          throw e;
+        }
+        break;
+      case 'log':
+        var errors = [];
+        handler = function(e) {
+          errors.push(e);
+        }
+        handler.errors = errors;
+        break;
+      default:
+        throw Error("Unknown mode '" + mode + "', only 'log'/'rethrow' modes are allowed!");
+    }
+  };
+
+  this.$get = function(){
+    return handler;
+  };
+
+  this.mode('rethrow');
+};
 
 
 /**
  * @ngdoc service
- * @name angular.mock.service.$log
+ * @name angular.module.ngMock.$log
  *
  * @description
- * Mock implementation of {@link angular.service.$log} that gathers all logged messages in arrays
+ * Mock implementation of {@link angular.module.ng.$log} that gathers all logged messages in arrays
  * (one array per logging level). These arrays are exposed as `logs` property of each of the
  * level-specific log function, e.g. for level `error` the array is exposed as `$log.error.logs`.
  *
- * See {@link angular.mock} for more info on angular mocks.
  */
-angular.service('$log', MockLogFactory);
+angular.module.ngMock.$LogProvider = function(){
 
-function MockLogFactory() {
-  var $log = {
-    log: function() { $log.log.logs.push(arguments); },
-    warn: function() { $log.warn.logs.push(arguments); },
-    info: function() { $log.info.logs.push(arguments); },
-    error: function() { $log.error.logs.push(arguments); }
+  function concat(array1, array2, index) {
+    return array1.concat(Array.prototype.slice.call(array2, index));
+  }
+
+
+  this.$get = function () {
+    var $log = {
+      log: function() { $log.log.logs.push(concat([], arguments, 0)); },
+      warn: function() { $log.warn.logs.push(concat([], arguments, 0)); },
+      info: function() { $log.info.logs.push(concat([], arguments, 0)); },
+      error: function() { $log.error.logs.push(concat([], arguments, 0)); }
+    };
+
+    /**
+     * @ngdoc method
+     * @name angular.module.ngMock.$log#reset
+     * @methodOf angular.module.ngMock.$log
+     *
+     * @description
+     * Reset all of the logging arrays to empty.
+     */
+    $log.reset = function (){
+      /**
+       * @ngdoc property
+       * @name angular.module.ngMock.$log#log.logs
+       * @propertyOf angular.module.ngMock.$log
+       *
+       * @description
+       * Array of logged messages.
+       */
+      $log.log.logs = [];
+      /**
+       * @ngdoc property
+       * @name angular.module.ngMock.$log#warn.logs
+       * @propertyOf angular.module.ngMock.$log
+       *
+       * @description
+       * Array of logged messages.
+       */
+      $log.warn.logs = [];
+      /**
+       * @ngdoc property
+       * @name angular.module.ngMock.$log#info.logs
+       * @propertyOf angular.module.ngMock.$log
+       *
+       * @description
+       * Array of logged messages.
+       */
+      $log.info.logs = [];
+      /**
+       * @ngdoc property
+       * @name angular.module.ngMock.$log#error.logs
+       * @propertyOf angular.module.ngMock.$log
+       *
+       * @description
+       * Array of logged messages.
+       */
+      $log.error.logs = [];
+    };
+
+    /**
+     * @ngdoc method
+     * @name angular.module.ngMock.$log#assertEmpty
+     * @methodOf angular.module.ngMock.$log
+     *
+     * @description
+     * Assert that the all of the logging methods have no logged messages. If messages present, an exception is thrown.
+     */
+    $log.assertEmpty = function() {
+      var errors = [];
+      angular.forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
+        angular.forEach($log[logLevel].logs, function(log) {
+          angular.forEach(log, function (logItem) {
+            errors.push('MOCK $log (' + logLevel + '): ' + String(logItem) + '\n' + (logItem.stack || ''));
+          });
+        });
+      });
+      if (errors.length) {
+        errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or an expected " +
+          "log message was not checked and removed:");
+        errors.push('')
+        throw new Error(errors.join('\n---------\n'));
+      }
+    };
+
+    $log.reset();
+    return $log;
   };
-
-  $log.log.logs = [];
-  $log.warn.logs = [];
-  $log.info.logs = [];
-  $log.error.logs = [];
-
-  return $log;
-}
+};
 
 
 /**
+ * @ngdoc object
+ * @name angular.module.ngMock.TzDate
+ * @description
+ *
+ * *NOTE*: this is not an injectable instance, just a globally available mock class of `Date`.
+ *
  * Mock of the Date type which has its timezone specified via constroctor arg.
  *
  * The main purpose is to create Date-like instances with timezone fixed to the specified timezone
@@ -441,93 +561,93 @@ function MockLogFactory() {
  * </pre>
  *
  */
-function TzDate(offset, timestamp) {
+angular.module.ngMock.TzDate = function (offset, timestamp) {
+  var self = new Date(0);
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
 
-    this.origDate = angular.String.toDate(timestamp);
+    self.origDate = angular.fromJson(angular.toJson({date:timestamp})).date;
 
-    timestamp = this.origDate.getTime();
+    timestamp = self.origDate.getTime();
     if (isNaN(timestamp))
       throw {
         name: "Illegal Argument",
         message: "Arg '" + tsStr + "' passed into TzDate constructor is not a valid date string"
       };
   } else {
-    this.origDate = new Date(timestamp);
+    self.origDate = new Date(timestamp);
   }
 
   var localOffset = new Date(timestamp).getTimezoneOffset();
-  this.offsetDiff = localOffset*60*1000 - offset*1000*60*60;
-  this.date = new Date(timestamp + this.offsetDiff);
+  self.offsetDiff = localOffset*60*1000 - offset*1000*60*60;
+  self.date = new Date(timestamp + self.offsetDiff);
 
-  this.getTime = function() {
-    return this.date.getTime() - this.offsetDiff;
+  self.getTime = function() {
+    return self.date.getTime() - self.offsetDiff;
   };
 
-  this.toLocaleDateString = function() {
-    return this.date.toLocaleDateString();
+  self.toLocaleDateString = function() {
+    return self.date.toLocaleDateString();
   };
 
-  this.getFullYear = function() {
-    return this.date.getFullYear();
+  self.getFullYear = function() {
+    return self.date.getFullYear();
   };
 
-  this.getMonth = function() {
-    return this.date.getMonth();
+  self.getMonth = function() {
+    return self.date.getMonth();
   };
 
-  this.getDate = function() {
-    return this.date.getDate();
+  self.getDate = function() {
+    return self.date.getDate();
   };
 
-  this.getHours = function() {
-    return this.date.getHours();
+  self.getHours = function() {
+    return self.date.getHours();
   };
 
-  this.getMinutes = function() {
-    return this.date.getMinutes();
+  self.getMinutes = function() {
+    return self.date.getMinutes();
   };
 
-  this.getSeconds = function() {
-    return this.date.getSeconds();
+  self.getSeconds = function() {
+    return self.date.getSeconds();
   };
 
-  this.getTimezoneOffset = function() {
+  self.getTimezoneOffset = function() {
     return offset * 60;
   };
 
-  this.getUTCFullYear = function() {
-    return this.origDate.getUTCFullYear();
+  self.getUTCFullYear = function() {
+    return self.origDate.getUTCFullYear();
   };
 
-  this.getUTCMonth = function() {
-    return this.origDate.getUTCMonth();
+  self.getUTCMonth = function() {
+    return self.origDate.getUTCMonth();
   };
 
-  this.getUTCDate = function() {
-    return this.origDate.getUTCDate();
+  self.getUTCDate = function() {
+    return self.origDate.getUTCDate();
   };
 
-  this.getUTCHours = function() {
-    return this.origDate.getUTCHours();
+  self.getUTCHours = function() {
+    return self.origDate.getUTCHours();
   };
 
-  this.getUTCMinutes = function() {
-    return this.origDate.getUTCMinutes();
+  self.getUTCMinutes = function() {
+    return self.origDate.getUTCMinutes();
   };
 
-  this.getUTCSeconds = function() {
-    return this.origDate.getUTCSeconds();
+  self.getUTCSeconds = function() {
+    return self.origDate.getUTCSeconds();
   };
 
-  this.getDay = function() {
-    return this.origDate.getDay();
+  self.getDay = function() {
+    return self.origDate.getDay();
   };
 
   //hide all methods not implemented in this mock that the Date prototype exposes
-  var self = this,
-      unimplementedMethods = ['getMilliseconds', 'getUTCDay',
+  var unimplementedMethods = ['getMilliseconds', 'getUTCDay',
       'getUTCMilliseconds', 'getYear', 'setDate', 'setFullYear', 'setHours', 'setMilliseconds',
       'setMinutes', 'setMonth', 'setSeconds', 'setTime', 'setUTCDate', 'setUTCFullYear',
       'setUTCHours', 'setUTCMilliseconds', 'setUTCMinutes', 'setUTCMonth', 'setUTCSeconds',
@@ -536,13 +656,138 @@ function TzDate(offset, timestamp) {
 
   angular.forEach(unimplementedMethods, function(methodName) {
     self[methodName] = function() {
-      throw {
-        name: "MethodNotImplemented",
-        message: "Method '" + methodName + "' is not implemented in the TzDate mock"
-      };
+      throw Error("Method '" + methodName + "' is not implemented in the TzDate mock");
     };
   });
+
+  return self;
 }
 
 //make "tzDateInstance instanceof Date" return true
-TzDate.prototype = Date.prototype;
+angular.module.ngMock.TzDate.prototype = Date.prototype;
+
+
+/**
+ * @ngdoc function
+ * @name angular.module.ngMock.debug
+ * @description
+ *
+ * *NOTE*: this is not an injectable instance, just a globally available function.
+ *
+ * Method for serializing common angular objects (scope, elements, etc..) into strings, useful for debugging.
+ *
+ * This method is also available on window, where it can be used to display objects on debug console.
+ *
+ * @param {*} object - any object to turn into string.
+ * @return a serialized string of the argument
+ */
+angular.module.ngMock.dump = function(object){
+  var out;
+  if (angular.isElement(object)) {
+    object = angular.element(object);
+    out = angular.element('<div></div>')
+    angular.forEach(object, function(element){
+      out.append(angular.element(element).clone());
+    });
+    out = out.html();
+  } else if (angular.isObject(object)) {
+    if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
+      out = serializeScope(object);
+    } else {
+      out = angular.toJson(object, true);
+    }
+  } else {
+    out = String(object);
+  }
+  return out;
+
+  function serializeScope(scope, offset) {
+    offset = offset ||  '  ';
+    var log = [offset + 'Scope(' + scope.$id + '): {'];
+    for ( var key in scope ) {
+      if (scope.hasOwnProperty(key) && !key.match(/^(\$|this)/)) {
+        log.push('  ' + key + ': ' + angular.toJson(scope[key]));
+      }
+    }
+    var child = scope.$$childHead;
+    while(child) {
+      log.push(serializeScope(child, offset + '  '));
+      child = child.$$nextSibling;
+    }
+    log.push('}');
+    return log.join('\n' + offset);
+  }
+};
+
+window.jstestdriver && (function(window){
+  /**
+   * Global method to output any number of objects into JSTD console. Useful for debugging.
+   */
+  window.dump = function() {
+    var args = [];
+    angular.forEach(arguments, function(arg){
+      args.push(angular.module.ngMock.dump(arg));
+    });
+    jstestdriver.console.log.apply(jstestdriver.console, args);
+  };
+})(window);
+
+
+/**
+ * @ngdoc function
+ * @name angular.module.ngMock.inject
+ * @description
+ *
+ * *NOTE*: this is not an injectable instance, just a globally available function on window.
+ *
+ * This function wraps a test method into an injectable method. It create one
+ * {@link angular.module.AUTO.$injector $injector} per test, which is then used for testing.
+ *
+ * Here is an example of what a typical jasmine tests looks like with the inject method.
+ * <pre>
+ *   describe('MyApp', function() {
+ *
+ *     // Argument inference is used to inject the $provide service
+ *     beforeEach(inject(function($provide, $rootScope) {
+ *       // $provide service is configured as needed
+ *       $provide.value('version', 'v1.0.1');
+ *       $rootScope.value = 123;
+ *     });
+ *
+ *     // Argument inference is used to inject the $rootScope as well as the version
+ *     it('should provide a version', inject(function($rootScope, version){
+ *       expect(version).toEqual('v1.0.1');
+ *       expect($rootScope.value).toEqual(123);
+ *     });
+ *
+ *     // The inject can also chain the methods
+ *     it('should override a version and test the new version is injected', inject(
+ *       function($provide) {
+ *         $provide.value('version', 'overridden'); // override version here
+ *       },
+ *       function(version) {
+ *         expect(version).toEqual('overridden');
+ *       }
+ *     ));
+ *
+ *   });
+ *
+ * </pre>
+ *
+ * @param {*} fns... any number of functions which will be injected using the injector.
+ * @return a method
+ */
+window.jasmine && (function(window){
+  window.inject = function (){
+    var blockFns = Array.prototype.slice.call(arguments, 0);
+    return function(){
+      var injector = this.$injector;
+      if (!injector) {
+        injector = this.$injector = angular.injector('ng', 'ngMock');
+      }
+      for(var i = 0, ii = blockFns.length; i < ii; i++) {
+        injector.invoke(this, blockFns[i]);
+      }
+    };
+  }
+})(window);

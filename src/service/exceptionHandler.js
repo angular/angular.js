@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$exceptionHandler
+ * @ngdoc function
+ * @name angular.module.ng.$exceptionHandler
  * @requires $log
  *
  * @description
@@ -11,13 +11,12 @@
  * the browser console.
  *
  * In unit tests, if `angular-mocks.js` is loaded, this service is overriden by
- * {@link angular.mock.service.$exceptionHandler mock $exceptionHandler}
- *
- * @example
+ * {@link angular.module.ngMock.$exceptionHandler mock $exceptionHandler}
  */
-var $exceptionHandlerFactory; //reference to be used only in tests
-angularServiceInject('$exceptionHandler', $exceptionHandlerFactory = function($log){
-  return function(e) {
-    $log.error(e);
-  };
-}, ['$log']);
+function $ExceptionHandlerProvider(){
+  this.$get = ['$log', function($log){
+    return function(e) {
+      $log.error(e);
+    };
+  }];
+}

@@ -40,7 +40,7 @@
  * @param {string} src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an
- *                 instance of angular.scope to set the HTML fragment to.
+ *                 instance of angular.module.ng.$rootScope.Scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
  * @example
@@ -90,7 +90,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return extend(function(xhr, element){
+    return ['$xhr.cache', '$element', function(xhr, element){
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -129,7 +129,7 @@ angularWidget('ng:include', function(element){
           element.html('');
         }
       });
-    }, {$inject:['$xhr.cache']});
+    }];
   }
 });
 
@@ -491,7 +491,7 @@ angularWidget("@ng:non-bindable", noop);
  *
  * @description
  * # Overview
- * `ng:view` is a widget that complements the {@link angular.service.$route $route} service by
+ * `ng:view` is a widget that complements the {@link angular.module.ng.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
@@ -555,7 +555,7 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return annotate('$xhr.cache', '$route', function($xhr, $route, element){
+    return ['$xhr.cache', '$route', '$element', function($xhr, $route, element){
       var template;
       var changeCounter = 0;
 
@@ -578,7 +578,7 @@ angularWidget('ng:view', function(element) {
           element.html('');
         }
       });
-    });
+    }];
   } else {
     compiler.descend(true);
     compiler.directives(true);
@@ -759,7 +759,7 @@ angularWidget('ng:pluralize', function(element) {
       whenExp = element.attr('when'),
       offset = element.attr('offset') || 0;
 
-  return annotate('$locale', function($locale, element) {
+  return ['$locale', '$element', function($locale, element) {
     var scope = this,
         whens = scope.$eval(whenExp),
         whensExpFns = {};
@@ -783,5 +783,5 @@ angularWidget('ng:pluralize', function(element) {
     }, function(scope, newVal) {
       element.text(newVal);
     });
-  });
+  }];
 });

@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$window
+ * @ngdoc object
+ * @name angular.module.ng.$window
  *
  * @description
  * A reference to the browser's `window` object. While `window`
@@ -23,4 +23,6 @@
      </doc:scenario>
    </doc:example>
  */
-angularServiceInject("$window", bind(window, identity, window));
+function $WindowProvider(){
+  this.$get = valueFn(window);
+}

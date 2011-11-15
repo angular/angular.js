@@ -205,8 +205,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#absUrl
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#absUrl
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -220,8 +220,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#url
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#url
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -238,16 +238,17 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
       return this.$$url;
 
     var match = PATH_MATCH.exec(url);
-    this.path(decodeURIComponent(match[1] || '')).search(match[3] || '')
-        .hash(match[5] || '', replace);
+    if (match[1]) this.path(decodeURIComponent(match[1]));
+    if (match[2] || match[1]) this.search(match[3] || '');
+    this.hash(match[5] || '', replace);
 
     return this;
   },
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#protocol
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#protocol
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -260,8 +261,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#host
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#host
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -274,8 +275,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#port
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#port
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter only.
@@ -288,8 +289,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#path
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#path
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -310,8 +311,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#search
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#search
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -343,8 +344,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#hash
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#hash
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * This method is getter / setter.
@@ -360,8 +361,8 @@ LocationUrl.prototype = LocationHashbangUrl.prototype = {
 
   /**
    * @ngdoc method
-   * @name angular.service.$location#replace
-   * @methodOf angular.service.$location
+   * @name angular.module.ng.$location#replace
+   * @methodOf angular.module.ng.$location
    *
    * @description
    * If called, all changes to $location during current `$digest` will be replacing current history
@@ -395,12 +396,11 @@ function locationGetterSetter(property, preprocess) {
 
 
 /**
- * @ngdoc service
- * @name angular.service.$location
+ * @ngdoc object
+ * @name angular.module.ng.$location
  *
  * @requires $browser
  * @requires $sniffer
- * @requires $locationConfig
  * @requires $document
  *
  * @description
@@ -419,94 +419,132 @@ function locationGetterSetter(property, preprocess) {
  *
  * For more information see {@link guide/dev_guide.services.$location Developer Guide: Angular Services: Using $location}
  */
-angularServiceInject('$location', function($browser, $sniffer, $locationConfig, $document) {
-  var scope = this, currentUrl,
-      basePath = $browser.baseHref() || '/',
-      pathPrefix = pathPrefixFromBase(basePath),
-      hashPrefix = $locationConfig.hashPrefix || '',
-      initUrl = $browser.url();
 
-  if ($locationConfig.html5Mode) {
-    if ($sniffer.history) {
-      currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
+/**
+ * @ngdoc object
+ * @name angular.module.ng.$locationProvider
+ * @description
+ * Use the `$locationProvider` to configure how the application deep linking paths are stored.
+ */
+function $LocationProvider(){
+  var hashPrefix = '',
+      html5Mode = false;
+
+  /**
+   * @ngdoc property
+   * @name angular.module.ng.$locationProvider#hashPrefix
+   * @methodOf angular.module.ng.$locationProvider
+   * @description
+   * @param {string=} prefix Prefix for hash part (containing path and search)
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.hashPrefix = function(prefix) {
+    if (isDefined(prefix)) {
+      hashPrefix = prefix;
+      return this;
     } else {
-      currentUrl = new LocationHashbangUrl(convertToHashbangUrl(initUrl, basePath, hashPrefix),
-                                           hashPrefix);
+      return html5Mode;
     }
+  }
 
-    // link rewriting
-    var u = currentUrl,
-        absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
+  /**
+   * @ngdoc property
+   * @name angular.module.ng.$locationProvider#hashPrefix
+   * @methodOf angular.module.ng.$locationProvider
+   * @description
+   * @param {string=} mode Use HTML5 strategy if available.
+   * @returns {*} current value if used as getter or itself (chaining) if used as setter
+   */
+  this.html5Mode = function(mode) {
+    if (isDefined(mode)) {
+      html5Mode = mode;
+      return this;
+    } else {
+      return html5Mode;
+    }
+  };
 
-    $document.bind('click', function(event) {
-      // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
-      // currently we open nice url link and redirect then
+  this.$get = ['$rootScope', '$browser', '$sniffer', '$document',
+      function( $rootScope,   $browser,   $sniffer,   $document) {
+    var currentUrl,
+        basePath = $browser.baseHref() || '/',
+        pathPrefix = pathPrefixFromBase(basePath),
+        initUrl = $browser.url();
 
-      if (event.ctrlKey || event.metaKey || event.which == 2) return;
-
-      var elm = jqLite(event.target);
-
-      // traverse the DOM up to find first A tag
-      while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
-        elm = elm.parent();
+    if (html5Mode) {
+      if ($sniffer.history) {
+        currentUrl = new LocationUrl(convertToHtml5Url(initUrl, basePath, hashPrefix), pathPrefix);
+      } else {
+        currentUrl = new LocationHashbangUrl(convertToHashbangUrl(initUrl, basePath, hashPrefix),
+                                             hashPrefix);
       }
 
-      var href = elm.attr('href');
-      if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
+      // link rewriting
+      var u = currentUrl,
+          absUrlPrefix = composeProtocolHostPort(u.protocol(), u.host(), u.port()) + pathPrefix;
 
-      // remove same domain from full url links (IE7 always returns full hrefs)
-      href = href.replace(absUrlPrefix, '');
+      $document.bind('click', function(event) {
+        // TODO(vojta): rewrite link when opening in new tab/window (in legacy browser)
+        // currently we open nice url link and redirect then
 
-      // link to different domain (or base path)
-      if (href.substr(0, 4) == 'http') return;
+        if (event.ctrlKey || event.metaKey || event.which == 2) return;
 
-      // remove pathPrefix from absolute links
-      href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
+        var elm = jqLite(event.target);
 
-      currentUrl.url(href);
-      scope.$apply();
-      event.preventDefault();
-      // hack to work around FF6 bug 684208 when scenario runner clicks on links
-      window.angular['ff-684208-preventDefault'] = true;
-    });
-  } else {
-    currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
-  }
+        // traverse the DOM up to find first A tag
+        while (elm.length && lowercase(elm[0].nodeName) !== 'a') {
+          elm = elm.parent();
+        }
 
-  // rewrite hashbang url <> html5 url
-  if (currentUrl.absUrl() != initUrl) {
-    $browser.url(currentUrl.absUrl(), true);
-  }
+        var href = elm.attr('href');
+        if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
 
-  // update $location when $browser url changes
-  $browser.onUrlChange(function(newUrl) {
-    if (currentUrl.absUrl() != newUrl) {
-      currentUrl.$$parse(newUrl);
-      scope.$apply();
-    }
-  });
+        // remove same domain from full url links (IE7 always returns full hrefs)
+        href = href.replace(absUrlPrefix, '');
 
-  // update browser
-  var changeCounter = 0;
-  scope.$watch(function() {
-    if ($browser.url() != currentUrl.absUrl()) {
-      changeCounter++;
-      scope.$evalAsync(function() {
-        $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
-        currentUrl.$$replace = false;
+        // link to different domain (or base path)
+        if (href.substr(0, 4) == 'http') return;
+
+        // remove pathPrefix from absolute links
+        href = href.indexOf(pathPrefix) === 0 ? href.substr(pathPrefix.length) : href;
+
+        currentUrl.url(href);
+        $rootScope.$apply();
+        event.preventDefault();
+        // hack to work around FF6 bug 684208 when scenario runner clicks on links
+        window.angular['ff-684208-preventDefault'] = true;
       });
+    } else {
+      currentUrl = new LocationHashbangUrl(initUrl, hashPrefix);
     }
 
-    return changeCounter;
-  });
+    // rewrite hashbang url <> html5 url
+    if (currentUrl.absUrl() != initUrl) {
+      $browser.url(currentUrl.absUrl(), true);
+    }
 
-  return currentUrl;
-}, ['$browser', '$sniffer', '$locationConfig', '$document']);
+    // update $location when $browser url changes
+    $browser.onUrlChange(function(newUrl) {
+      if (currentUrl.absUrl() != newUrl) {
+        currentUrl.$$parse(newUrl);
+        $rootScope.$apply();
+      }
+    });
 
+    // update browser
+    var changeCounter = 0;
+    $rootScope.$watch(function() {
+      if ($browser.url() != currentUrl.absUrl()) {
+        changeCounter++;
+        $rootScope.$evalAsync(function() {
+          $browser.url(currentUrl.absUrl(), currentUrl.$$replace);
+          currentUrl.$$replace = false;
+        });
+      }
 
-angular.service('$locationConfig', function() {
-  return {
-    html5Mode: false,
-    hashPrefix: ''
-  };
-});
+      return changeCounter;
+    });
+
+    return currentUrl;
+}];
+}

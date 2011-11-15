@@ -89,6 +89,7 @@ Doc.prototype = {
     var self = this,
         IS_URL = /^(https?:\/\/|ftps?:\/\/|mailto:|\.|\/)/,
         IS_ANGULAR = /^(api\/)?angular\./,
+        IS_HASH = /^#/,
         parts = trim(text).split(/(<pre>[\s\S]*?<\/pre>|<doc:(\S*).*?>[\s\S]*?<\/doc:\2>)/);
 
     parts.forEach(function(text, i) {
@@ -134,13 +135,16 @@ Doc.prototype = {
           function(_all, url, title){
             var isFullUrl = url.match(IS_URL),
                 isAngular = url.match(IS_ANGULAR),
-                absUrl = isFullUrl ? url : self.convertUrlToAbsolute(url);
+                isHash = url.match(IS_HASH),
+                absUrl = isHash
+                  ? url
+                  : (isFullUrl ? url : self.convertUrlToAbsolute(url));
 
             if (!isFullUrl) self.links.push(absUrl);
 
             return '<a href="' + absUrl + '">' +
               (isAngular ? '<code>' : '') +
-              (title || url).replace(/\n/g, ' ') +
+              (title || url).replace(/^#/g, '').replace(/\n/g, ' ') +
               (isAngular ? '</code>' : '') +
               '</a>';
           });
@@ -171,7 +175,7 @@ Doc.prototype = {
       }
     });
     flush();
-    this.shortName = (this.name || '').split(/[\.#]/).pop();
+    this.shortName = this.name.split(this.name.match(/#/) ? /#/ : /\./ ).pop();
     this.id = this.id || // if we have an id just use it
       (((this.file||'').match(/.*\/([^\/]*)\.ngdoc/)||{})[1]) || // try to extract it from file name
       this.name; // default to name
@@ -217,11 +221,12 @@ Doc.prototype = {
           if (!match) {
             throw new Error("Not a valid 'property' format: " + text);
           }
-          var property = {
+          var property = new Doc({
               type: match[1],
               name: match[2],
+              shortName: match[2],
               description: self.markdown(text.replace(match[0], match[4]))
-            };
+            });
           self.properties.push(property);
         } else if(atName == 'eventType') {
           match = text.match(/^([^\s]*)\s+on\s+([\S\s]*)/);
@@ -246,7 +251,7 @@ Doc.prototype = {
       }
       dom.h('Dependencies', self.requires, function(require){
         dom.tag('code', function() {
-          dom.tag('a', {href: 'api/angular.service.' + require.name}, require.name);
+          dom.tag('a', {href: 'api/angular.module.ng.' + require.name}, require.name);
         });
         dom.html(require.text);
       });
@@ -319,7 +324,7 @@ Doc.prototype = {
     var self = this;
     dom.h('Usage', function() {
       dom.code(function() {
-        dom.text(self.name.split('service.').pop());
+        dom.text(self.name.split(/\./).pop());
         dom.text('(');
         self.parameters(dom, ', ');
         dom.text(');');
@@ -329,6 +334,7 @@ Doc.prototype = {
       self.html_usage_this(dom);
       self.html_usage_returns(dom);
     });
+    this.method_properties_events(dom);
   },
 
   html_usage_property: function(dom){
@@ -374,9 +380,9 @@ Doc.prototype = {
 
       dom.h('In JavaScript', function() {
         dom.tag('code', function() {
-          dom.text('angular.filter.');
+          dom.text('$filter(\'');
           dom.text(self.shortName);
-          dom.text('(');
+          dom.text('\')(');
           self.parameters(dom, ', ');
           dom.text(')');
         });
@@ -450,7 +456,7 @@ Doc.prototype = {
     dom.html(this.description);
   },
 
-  html_usage_service: function(dom){
+  html_usage_object: function(dom){
     var self = this;
 
     if (this.param.length) {
@@ -467,45 +473,69 @@ Doc.prototype = {
         self.html_usage_returns(dom);
       });
     }
+    this.method_properties_events(dom);
+  },
 
-    dom.h('Methods', this.methods, function(method){
-      var signature = (method.param || []).map(property('name'));
-      dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
-        dom.html(method.description);
-        method.html_usage_parameters(dom);
-        self.html_usage_this(dom);
-        method.html_usage_returns(dom);
+  html_usage_service: function(dom) {
+    this.html_usage_object(dom)
+  },
 
-        dom.h('Example', method.example, dom.html);
-      });
-    });
-    dom.h('Properties', this.properties, function(property){
-      dom.h(property.name, function() {
-       dom.html(property.description);
-       dom.h('Example', property.example, dom.html);
-      });
-    });
-    dom.h('Events', this.events, function(event){
-    dom.h(event.shortName, event, function() {
-        dom.html(event.description);
-        if (event.type == 'listen') {
-          dom.tag('div', {class:'inline'}, function() {
-            dom.h('Listen on:', event.target);
-          });
-        } else {
-          dom.tag('div', {class:'inline'}, function() {
-            dom.h('Type:', event.type);
-          });
-          dom.tag('div', {class:'inline'}, function() {
-            dom.h('Target:', event.target);
-          });
-        }
-        event.html_usage_parameters(dom);
-        self.html_usage_this(dom);
+  method_properties_events: function(dom) {
+    var self = this;
+    if (self.methods.length) {
+      dom.div({class:'member method'}, function(){
+        dom.h('Methods', self.methods, function(method){
+          var signature = (method.param || []).map(property('name'));
+          dom.h(method.shortName + '(' + signature.join(', ') + ')', method, function() {
+            dom.html(method.description);
+            method.html_usage_parameters(dom);
+            self.html_usage_this(dom);
+            method.html_usage_returns(dom);
 
-        dom.h('Example', event.example, dom.html);
+            dom.h('Example', method.example, dom.html);
+          });
+        });
       });
-    });
+    }
+    if (self.properties.length) {
+      dom.div({class:'member property'}, function(){
+        dom.h('Properties', self.properties, function(property){
+          dom.h(property.shortName, function() {
+           dom.html(property.description);
+           if (!property.html_usage_returns) {
+             console.log(property);
+           }
+           property.html_usage_returns(dom);
+           dom.h('Example', property.example, dom.html);
+          });
+        });
+      });
+    }
+    if (self.events.length) {
+      dom.div({class:'member event'}, function(){
+        dom.h('Events', self.events, function(event){
+          dom.h(event.shortName, event, function() {
+            dom.html(event.description);
+            if (event.type == 'listen') {
+              dom.tag('div', {class:'inline'}, function() {
+                dom.h('Listen on:', event.target);
+              });
+            } else {
+              dom.tag('div', {class:'inline'}, function() {
+                dom.h('Type:', event.type);
+              });
+              dom.tag('div', {class:'inline'}, function() {
+                dom.h('Target:', event.target);
+              });
+            }
+            event.html_usage_parameters(dom);
+            self.html_usage_this(dom);
+
+            dom.h('Example', event.example, dom.html);
+          });
+        });
+      });
+    }
   },
 
   parameters: function(dom, separator, skipFirst, prefix) {
@@ -589,12 +619,12 @@ var KEYWORD_PRIORITY = {
   '.index': 1,
   '.guide': 2,
   '.angular': 7,
-  '.angular.Array': 7,
+  '.angular.module.ng.$filter': 7,
   '.angular.Object': 7,
   '.angular.directive': 7,
-  '.angular.filter': 7,
-  '.angular.scope': 7,
-  '.angular.service': 7,
+  '.angular.module.ng.$filter': 7,
+  '.angular.module.ng.$rootScope.Scope': 7,
+  '.angular.module.ng': 7,
   '.angular.inputType': 7,
   '.angular.widget': 7,
   '.angular.mock': 8,
@@ -693,7 +723,13 @@ function merge(docs){
 
     // check links - do they exist ?
     doc.links.forEach(function(link) {
-      if (!byFullId[link]) console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
+      // convert #id to path#id
+      if (link[0] == '#') {
+        link = doc.section + '/' + doc.id.split('#').shift() + link;
+      }
+      if (!byFullId[link]) {
+        console.log('WARNING: In ' + doc.section + '/' + doc.id + ', non existing link: "' + link + '"');
+      }
     });
 
     // merge into parents

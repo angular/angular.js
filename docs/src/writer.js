@@ -8,7 +8,6 @@ var OUTPUT_DIR = "build/docs/";
 var fs = require('fs');
 
 exports.output = function(file, content) {
-  console.log('writing ', file);
   var fullPath = OUTPUT_DIR + file;
   var dir = parent(fullPath);
   return Q.when(exports.makeDir(dir), function(error) {

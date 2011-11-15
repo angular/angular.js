@@ -1,31 +1,20 @@
 'use strict';
 
-describe('filter', function() {
+describe('filters', function() {
 
-  var filter = angular.filter;
+  var filter;
 
-  it('should called the filter when evaluating expression', function() {
-    var scope = createScope();
-    filter.fakeFilter = function() {};
-    spyOn(filter, 'fakeFilter');
+  beforeEach(inject(function($filter){
+    filter = $filter;
+  }));
 
-    scope.$eval('10|fakeFilter');
-    expect(filter.fakeFilter).toHaveBeenCalledWith(10);
-    delete filter['fakeFilter'];
-  });
+  it('should called the filter when evaluating expression', inject(function($rootScope, $filterProvider) {
+    var filter = jasmine.createSpy('myFilter');
+    $filterProvider.register('myFilter', valueFn(filter));
 
-  it('should call filter on scope context', function() {
-    var scope = createScope();
-    scope.name = 'misko';
-    filter.fakeFilter = function() {
-      expect(this.name).toEqual('misko');
-    };
-    spyOn(filter, 'fakeFilter').andCallThrough();
-
-    scope.$eval('10|fakeFilter');
-    expect(filter.fakeFilter).toHaveBeenCalled();
-    delete filter['fakeFilter'];
-  });
+    $rootScope.$eval('10|myFilter');
+    expect(filter).toHaveBeenCalledWith(10);
+  }));
 
   describe('formatNumber', function() {
     var pattern;
@@ -83,46 +72,32 @@ describe('filter', function() {
   });
 
   describe('currency', function() {
-    var currency, html, context;
+    var currency;
 
     beforeEach(function() {
-      html = jqLite('<span></span>');
-      context = createScope();
-      context.$element = html;
-      currency = bind(context, filter.currency);
+      currency = filter('currency');
     });
-
-    afterEach(function() {
-      dealoc(context);
-    });
-
 
     it('should do basic currency filtering', function() {
       expect(currency(0)).toEqual('$0.00');
-      expect(html.hasClass('ng-format-negative')).toBeFalsy();
       expect(currency(-999)).toEqual('($999.00)');
-      expect(html.hasClass('ng-format-negative')).toBeTruthy();
       expect(currency(1234.5678, "USD$")).toEqual('USD$1,234.57');
-      expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
 
 
     it('should return empty string for non-numbers', function() {
       expect(currency()).toBe('');
-      expect(html.hasClass('ng-format-negative')).toBeFalsy();
       expect(currency('abc')).toBe('');
-      expect(html.hasClass('ng-format-negative')).toBeFalsy();
     });
   });
 
 
   describe('number', function() {
-    var context, number;
+    var number;
 
-    beforeEach(function() {
-      context = createScope();
-      number = bind(context, filter.number);
-    });
+    beforeEach(inject(function($rootScope) {
+      number = filter('number');
+    }));
 
 
     it('should do basic filter', function() {
@@ -158,34 +133,39 @@ describe('filter', function() {
 
   describe('json', function () {
     it('should do basic filter', function() {
-      expect(filter.json.call({$element:jqLite('<div></div>')}, {a:"b"})).toEqual(toJson({a:"b"}, true));
+      expect(filter('json')({a:"b"})).toEqual(toJson({a:"b"}, true));
     });
   });
 
   describe('lowercase', function() {
     it('should do basic filter', function() {
-      expect(filter.lowercase('AbC')).toEqual('abc');
-      expect(filter.lowercase(null)).toBeNull();
+      expect(filter('lowercase')('AbC')).toEqual('abc');
+      expect(filter('lowercase')(null)).toBeNull();
     });
   });
 
   describe('uppercase', function() {
     it('should do basic filter', function() {
-      expect(filter.uppercase('AbC')).toEqual('ABC');
-      expect(filter.uppercase(null)).toBeNull();
+      expect(filter('uppercase')('AbC')).toEqual('ABC');
+      expect(filter('uppercase')(null)).toBeNull();
     });
   });
 
   describe('html', function() {
     it('should do basic filter', function() {
-      var html = filter.html("a<b>c</b>d");
+      var html = filter('html')("a<b>c</b>d");
       expect(html instanceof HTML).toBeTruthy();
       expect(html.html).toEqual("a<b>c</b>d");
     });
   });
 
   describe('linky', function() {
-    var linky = filter.linky;
+    var linky;
+
+    beforeEach(inject(function($filter){
+      linky = $filter('linky')
+    }));
+
     it('should do basic filter', function() {
       expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c").html).
         toEqual('<a href="http://ab/">http://ab/</a> ' +
@@ -207,17 +187,16 @@ describe('filter', function() {
 
   describe('date', function() {
 
-    var morning  = new TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
-    var noon =     new TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
-    var midnight = new TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
-    var earlyDate = new TzDate(+5, '0001-09-03T05:05:08.000Z');
+    var morning  = new angular.module.ngMock.TzDate(+5, '2010-09-03T12:05:08.000Z'); //7am
+    var noon =     new angular.module.ngMock.TzDate(+5, '2010-09-03T17:05:08.000Z'); //12pm
+    var midnight = new angular.module.ngMock.TzDate(+5, '2010-09-03T05:05:08.000Z'); //12am
+    var earlyDate = new angular.module.ngMock.TzDate(+5, '0001-09-03T05:05:08.000Z');
 
-    var context, date;
+    var date;
 
-    beforeEach(function() {
-      context = createScope();
-      date = bind(context, filter.date);
-    });
+    beforeEach(inject(function($filter) {
+      date = $filter('date');
+    }));
 
     it('should ignore falsy inputs', function() {
       expect(date(null)).toBeNull();

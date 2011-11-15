@@ -1,14 +1,16 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$document
+ * @ngdoc object
+ * @name angular.module.ng.$document
  * @requires $window
  *
  * @description
  * A {@link angular.element jQuery (lite)}-wrapped reference to the browser's `window.document`
  * element.
  */
-angularServiceInject("$document", function(window){
-  return jqLite(window.document);
-}, ['$window']);
+function $DocumentProvider(){
+  this.$get = ['$window', function(window){
+    return jqLite(window.document);
+  }];
+}

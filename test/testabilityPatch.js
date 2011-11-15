@@ -9,46 +9,10 @@
 _jQuery.event.special.change = undefined;
 
 
-if (window.jstestdriver) {
-  window.jstd = jstestdriver;
-  window.dump = function dump() {
-    var args = [];
-    forEach(arguments, function(arg){
-      if (isElement(arg)) {
-        arg = sortedHtml(arg);
-      } else if (isObject(arg)) {
-        if (arg.$eval == Scope.prototype.$eval) {
-          arg = dumpScope(arg);
-        } else {
-          arg = toJson(arg, true);
-        }
-      }
-      args.push(arg);
-    });
-    jstd.console.log.apply(jstd.console, args);
-  };
-}
-
-function dumpScope(scope, offset) {
-  offset = offset ||  '  ';
-  var log = [offset + 'Scope(' + scope.$id + '): {'];
-  for ( var key in scope ) {
-    if (scope.hasOwnProperty(key) && !key.match(/^(\$|this)/)) {
-      log.push('  ' + key + ': ' + toJson(scope[key]));
-    }
-  }
-  var child = scope.$$childHead;
-  while(child) {
-    log.push(dumpScope(child, offset + '  '));
-    child = child.$$nextSibling;
-  }
-  log.push('}');
-  return log.join('\n' + offset);
-}
-
+publishExternalAPI(angular);
+bindJQuery();
 beforeEach(function() {
-  // This is to reset parsers global cache of expressions.
-  compileCache = {};
+  publishExternalAPI(angular);
 
   // workaround for IE bug https://plus.google.com/104744871076396904202/posts/Kqjuj6RSbbT
   // IE overwrite window.jQuery with undefined because of empty jQuery var statement, so we have to
@@ -63,50 +27,20 @@ beforeEach(function() {
   // reset to jQuery or default to us.
   bindJQuery();
   jqLite(document.body).html('');
-
-  this.addMatchers({
-    toHaveClass: function(clazz) {
-      this.message = function() {
-        return "Expected '" + sortedHtml(this.actual) + "' to have class '" + clazz + "'.";
-      };
-      return this.actual.hasClass ?
-              this.actual.hasClass(clazz) :
-              jqLite(this.actual).hasClass(clazz);
-    }
-  });
-
-  $logMock.log.logs = [];
-  $logMock.warn.logs = [];
-  $logMock.info.logs = [];
-  $logMock.error.logs = [];
 });
 
 afterEach(function() {
-  // check $log mock
-  forEach(['error', 'warn', 'info', 'log'], function(logLevel) {
-    if ($logMock[logLevel].logs.length) {
-      forEach($logMock[logLevel].logs, function(log) {
-        forEach(log, function deleteStack(logItem) {
-          if (logItem instanceof Error) {
-            dump(logItem.stack);
-            delete logItem.stack;
-            delete logItem.arguments;
-          } else {
-            dump(logItem);
-          }
-        });
-      });
+  if (this.$injector) {
+    var $rootScope = this.$injector.get('$rootScope');
+    var $log = this.$injector.get('$log');
+    // release the injector
+    dealoc($rootScope);
 
-      throw new Error("Exprected $log." + logLevel + ".logs array to be empty. " +
-        "Either a message was logged unexpectedly, or an expected log message was not checked " +
-        "and removed. Array contents: " + toJson($logMock[logLevel].logs));
-    }
-  });
+    // check $log mock
+    $log.assertEmpty && $log.assertEmpty();
+  }
 
-  clearJqCache();
-});
-
-function clearJqCache() {
+  // complain about uncleared jqCache references
   var count = 0;
   forEachSorted(jqCache, function(value, key){
     count ++;
@@ -122,15 +56,8 @@ function clearJqCache() {
   if (count) {
     fail('Found jqCache references that were not deallocated!');
   }
-}
+});
 
-function nakedExpect(obj) {
-  return expect(angular.fromJson(angular.toJson(obj)));
-}
-
-function childNode(element, index) {
-  return jqLite(element[0].childNodes[index]);
-}
 
 function dealoc(obj) {
   if (obj) {
@@ -139,29 +66,6 @@ function dealoc(obj) {
     if (element.dealoc) element.dealoc();
   }
 }
-
-extend(angular, {
-  'element': jqLite,
-  'compile': compile,
-  'scope': createScope,
-  'copy': copy,
-  'extend': extend,
-  'equals': equals,
-  'forEach': forEach,
-  'noop':noop,
-  'bind':bind,
-  'toJson': toJson,
-  'fromJson': fromJson,
-  'identity':identity,
-  'injector': createInjector,
-  'isUndefined': isUndefined,
-  'isDefined': isDefined,
-  'isString': isString,
-  'isFunction': isFunction,
-  'isObject': isObject,
-  'isNumber': isNumber,
-  'isArray': isArray
-});
 
 
 function sortedHtml(element, showNgClass) {
@@ -260,7 +164,7 @@ function sortedHtml(element, showNgClass) {
 
 
 // TODO(vojta): migrate these helpers into jasmine matchers
-/**
+/**a
  * This method is a cheap way of testing if css for a given node is not set to 'none'. It doesn't
  * actually test if an element is displayed by the browser. Be aware!!!
  */
@@ -270,43 +174,12 @@ function isCssVisible(node) {
 }
 
 function assertHidden(node) {
-  assertFalse("Node should be hidden but vas visible: " + sortedHtml(node), isCssVisible(node));
+  assertFalse("Node should be hidden but vas visible: " +
+    angular.module.ngMock.dump(node), isCssVisible(node));
 }
 
 function assertVisible(node) {
-  assertTrue("Node should be visible but vas hidden: " + sortedHtml(node), isCssVisible(node));
+  assertTrue("Node should be visible but vas hidden: " +
+    angular.module.ngMock.dump(node), isCssVisible(node));
 }
 
-function assertJsonEquals(expected, actual) {
-  assertEquals(toJson(expected), toJson(actual));
-}
-
-function assertUndefined(value) {
-  assertEquals('undefined', typeof value);
-}
-
-function assertDefined(value) {
-  assertTrue(toJson(value), !!value);
-}
-
-function assertThrows(error, fn){
-  var exception = null;
-  try {
-    fn();
-  } catch(e) {
-    exception = e;
-  }
-  if (!exception) {
-    fail("Expecting exception, none thrown");
-  }
-  assertEquals(error, exception);
-}
-
-window.log = noop;
-window.error = noop;
-
-function rethrow(e) {
-  if(e) {
-    throw e;
-  }
-}

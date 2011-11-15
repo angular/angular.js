@@ -3,7 +3,7 @@
 describe('$sniffer', function() {
 
   function sniffer($window) {
-    return angular.service('$sniffer')($window);
+    return new $SnifferProvider().$get[1]($window);
   }
 
   describe('history', function() {

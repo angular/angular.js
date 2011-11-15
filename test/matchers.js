@@ -23,6 +23,13 @@ beforeEach(function() {
     };
   }
 
+  function indexOf(array, obj) {
+    for ( var i = 0; i < array.length; i++) {
+      if (obj === array[i]) return i;
+    }
+    return -1;
+  }
+
   this.addMatchers({
     toBeInvalid: cssMatcher('ng-invalid', 'ng-valid'),
     toBeValid: cssMatcher('ng-valid', 'ng-invalid'),
@@ -83,7 +90,17 @@ beforeEach(function() {
 
 
     toBeOneOf: function() {
-      return angular.Array.indexOf(arguments, this.actual) !== -1;
+      return indexOf(arguments, this.actual) !== -1;
+    },
+
+    toHaveClass: function(clazz) {
+      this.message = function() {
+        return "Expected '" + angular.module.ngMock.dump(this.actual) + "' to have class '" + clazz + "'.";
+      };
+      return this.actual.hasClass ?
+              this.actual.hasClass(clazz) :
+              angular.element(this.actual).hasClass(clazz);
     }
+
   });
 });

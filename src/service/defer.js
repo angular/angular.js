@@ -1,14 +1,14 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$defer
+ * @ngdoc function
+ * @name angular.module.ng.$defer
  * @requires $browser
  *
  * @description
- * Delegates to {@link angular.service.$browser $browser.defer}, but wraps the `fn` function
+ * Delegates to {@link angular.module.ng.$browser#defer $browser.defer}, but wraps the `fn` function
  * into a try/catch block and delegates any exceptions to
- * {@link angular.service.$exceptionHandler $exceptionHandler} service.
+ * {@link angular.module.ng.$exceptionHandler $exceptionHandler} service.
  *
  * In tests you can use `$browser.defer.flush()` to flush the queue of deferred functions.
  *
@@ -19,8 +19,8 @@
 
 /**
  * @ngdoc function
- * @name angular.service.$defer#cancel
- * @methodOf angular.service.$defer
+ * @name angular.module.ng.$defer#cancel
+ * @methodOf angular.module.ng.$defer
  *
  * @description
  * Cancels a defered task identified with `deferId`.
@@ -28,18 +28,18 @@
  * @param {*} deferId Token returned by the `$defer` function.
  * @returns {boolean} Returns `true` if the task hasn't executed yet and was successfuly canceled.
  */
-angularServiceInject('$defer', function($browser) {
-  var scope = this;
+function $DeferProvider(){
+  this.$get = ['$rootScope', '$browser', function($rootScope, $browser) {
+    function defer(fn, delay) {
+      return $browser.defer(function() {
+        $rootScope.$apply(fn);
+      }, delay);
+    }
 
-  function defer(fn, delay) {
-    return $browser.defer(function() {
-      scope.$apply(fn);
-    }, delay);
-  }
+    defer.cancel = function(deferId) {
+      return $browser.defer.cancel(deferId);
+    };
 
-  defer.cancel = function(deferId) {
-    return $browser.defer.cancel(deferId);
-  };
-
-  return defer;
-}, ['$browser']);
+    return defer;
+  }];
+}

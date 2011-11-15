@@ -10,8 +10,8 @@ describe('jqLite', function() {
   });
 
 
-  beforeEach(function() {
-    scope = angular.scope();
+  beforeEach(inject(function($rootScope) {
+    scope = $rootScope;
     this.addMatchers({
       toJqEqual: function(expected) {
         var msg = "Unequal length";
@@ -29,7 +29,7 @@ describe('jqLite', function() {
         return value;
       }
     });
-  });
+  }));
 
 
   afterEach(function() {

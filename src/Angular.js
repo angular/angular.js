@@ -68,25 +68,14 @@ function shivForIE(elementName) {
   return elementName;
 }
 
-var _undefined        = undefined,
-    _null             = null,
-    $$scope           = '$scope',
-    $angular          = 'angular',
-    $array            = 'array',
+var $$scope           = '$scope',
     $boolean          = 'boolean',
     $console          = 'console',
-    $date             = 'date',
     $length           = 'length',
     $name             = 'name',
-    $noop             = 'noop',
-    $null             = 'null',
-    $number           = 'number',
     $object           = 'object',
     $string           = 'string',
-    $value            = 'value',
-    $selected         = 'selected',
     $undefined        = 'undefined',
-    NOOP              = 'noop',
     Error             = window.Error,
     /** holds major version number for IE or NaN for real browsers */
     msie              = parseInt((/msie (\d+)/.exec(lowercase(navigator.userAgent)) || [])[1], 10),
@@ -94,12 +83,14 @@ var _undefined        = undefined,
     jQuery,           // delay binding
     slice             = [].slice,
     push              = [].push,
+    toString          = Object.prototype.toString,
     error             = window[$console]
                            ? bind(window[$console], window[$console]['error'] || noop)
                            : noop,
 
     /** @name angular */
-    angular           = window[$angular] || (window[$angular] = {}),
+    angular           = window.angular || (window.angular = {}),
+    angularModule     = angular.module || (angular.module  = {}),
     /** @name angular.markup */
     angularTextMarkup = extensionMap(angular, 'markup'),
     /** @name angular.attrMarkup */
@@ -108,12 +99,9 @@ var _undefined        = undefined,
     angularDirective  = extensionMap(angular, 'directive', lowercase),
     /** @name angular.widget */
     angularWidget     = extensionMap(angular, 'widget', shivForIE),
-    /** @name angular.filter */
-    angularFilter     = extensionMap(angular, 'filter'),
-    /** @name angular.service */
+    /** @name angular.module.ng */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
-    /** @name angular.service */
-    angularService    = extensionMap(angular, 'service'),
+    /** @name angular.module.ng */
     angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
     uid               = ['0', '0', '0'],
@@ -186,18 +174,6 @@ function forEachSorted(obj, iterator, context) {
   return keys;
 }
 
-
-function formatError(arg) {
-  if (arg instanceof Error) {
-    if (arg.stack) {
-      arg = (arg.message && arg.stack.indexOf(arg.message) === -1) ?
-            'Error: ' + arg.message + '\n' + arg.stack : arg.stack;
-    } else if (arg.sourceURL) {
-      arg = arg.message + '\n' + arg.sourceURL + ':' + arg.line;
-    }
-  }
-  return arg;
-}
 
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
@@ -274,6 +250,7 @@ function inherit(parent, extra) {
    </pre>
  */
 function noop() {}
+noop.$inject = [];
 
 
 /**
@@ -292,6 +269,7 @@ function noop() {}
    </pre>
  */
 function identity($) {return $;}
+identity.$inject = [];
 
 
 function valueFn(value) {return function() {return value;};}
@@ -375,7 +353,7 @@ function isString(value){return typeof value == $string;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Number`.
  */
-function isNumber(value){return typeof value == $number;}
+function isNumber(value){return typeof value == 'number';}
 
 
 /**
@@ -389,7 +367,9 @@ function isNumber(value){return typeof value == $number;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is a `Date`.
  */
-function isDate(value){return value instanceof Date;}
+function isDate(value){
+  return toString.apply(value) == '[object Date]';
+}
 
 
 /**
@@ -403,7 +383,9 @@ function isDate(value){return value instanceof Date;}
  * @param {*} value Reference to check.
  * @returns {boolean} True if `value` is an `Array`.
  */
-function isArray(value) {return value instanceof Array;}
+function isArray(value) {
+  return toString.apply(value) == '[object Array]';
+}
 
 
 /**
@@ -438,6 +420,17 @@ function trim(value) {
   return isString(value) ? value.replace(/^\s*/, '').replace(/\s*$/, '') : value;
 }
 
+/**
+ * @ngdoc function
+ * @name angular.isElement
+ * @function
+ *
+ * @description
+ * Determines if a reference is a DOM element (or wrapped jQuery element).
+ *
+ * @param {*} value Reference to check.
+ * @returns {boolean} True if `value` is a DOM element (or wrapped jQuery element).
+ */
 function isElement(node) {
   return node &&
     (node.nodeName  // we are a direct element
@@ -505,10 +498,6 @@ function map(obj, iterator, context) {
 
 
 /**
- * @ngdoc function
- * @name angular.Object.size
- * @function
- *
  * @description
  * Determines the number of elements in an array, the number of properties an object has, or
  * the length of a string.
@@ -519,29 +508,6 @@ function map(obj, iterator, context) {
  * @param {Object|Array|string} obj Object, array, or string to inspect.
  * @param {boolean} [ownPropsOnly=false] Count only "own" properties in an object
  * @returns {number} The size of `obj` or `0` if `obj` is neither an object nor an array.
- *
- * @example
- * <doc:example>
- *  <doc:source>
- *   <script>
- *     function SizeCtrl() {
- *       this.fooStringLength = angular.Object.size('foo');
- *     }
- *   </script>
- *   <div ng:controller="SizeCtrl">
- *     Number of items in array: {{ [1,2].$size() }}<br/>
- *     Number of items in object: {{ {a:1, b:2, c:3}.$size() }}<br/>
- *     String length: {{fooStringLength}}
- *   </div>
- *  </doc:source>
- *  <doc:scenario>
- *   it('should print correct sizes for an array and an object', function() {
- *     expect(binding('[1,2].$size()')).toBe('2');
- *     expect(binding('{a:1, b:2, c:3}.$size()')).toBe('3');
- *     expect(binding('fooStringLength')).toBe('3');
- *   });
- *  </doc:scenario>
- * </doc:example>
  */
 function size(obj, ownPropsOnly) {
   var size = 0, key;
@@ -572,6 +538,13 @@ function indexOf(array, obj) {
   return -1;
 }
 
+function arrayRemove(array, value) {
+  var index = indexOf(array, value);
+  if (index >=0)
+    array.splice(index, 1);
+  return value;
+}
+
 function isLeafNode (node) {
   if (node) {
     switch (node.nodeName) {
@@ -590,15 +563,6 @@ function isLeafNode (node) {
  * @function
  *
  * @description
- * Alias for {@link angular.Object.copy}
- */
-
-/**
- * @ngdoc function
- * @name angular.Object.copy
- * @function
- *
- * @description
  * Creates a deep copy of `source`, which should be an object or an array.
  *
  * * If no destination is supplied, a copy of the object or array is created.
@@ -607,53 +571,13 @@ function isLeafNode (node) {
  * * If  `source` is not an object or array, `source` is returned.
  *
  * Note: this function is used to augment the Object type in Angular expressions. See
- * {@link angular.Array} for more information about Angular arrays.
+ * {@link angular.module.ng.$filter} for more information about Angular arrays.
  *
  * @param {*} source The source that will be used to make a copy.
  *                   Can be any type, including primitives, `null`, and `undefined`.
  * @param {(Object|Array)=} destination Destination into which the source is copied. If
  *     provided, must be of the same type as `source`.
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
- *
- * @example
- * <doc:example>
- *  <doc:source>
-     <script>
-       function Ctrl() {
-         this.master = {
-           salutation: 'Hello',
-           name: 'world'
-         };
-         this.copy = function() {
-           this.form = angular.copy(this.master);
-         }
-       }
-     </script>
-     <div ng:controller="Ctrl">
-       Salutation: <input type="text" ng:model="master.salutation" ><br/>
-       Name: <input type="text" ng:model="master.name"><br/>
-       <button ng:click="copy()">copy</button>
-       <hr/>
-
-       The master object is <span ng:hide="master.$equals(form)">NOT</span> equal to the form object.
-
-       <pre>master={{master}}</pre>
-       <pre>form={{form}}</pre>
-     </div>
- *  </doc:source>
- *  <doc:scenario>
-   it('should print that initialy the form object is NOT equal to master', function() {
-     expect(element('.doc-example-live input[ng\\:model="master.salutation"]').val()).toBe('Hello');
-     expect(element('.doc-example-live input[ng\\:model="master.name"]').val()).toBe('world');
-     expect(element('.doc-example-live span').css('display')).toBe('inline');
-   });
-
-   it('should make form and master equal when the copy button is clicked', function() {
-     element('.doc-example-live button').click();
-     expect(element('.doc-example-live span').css('display')).toBe('none');
-   });
- *  </doc:scenario>
- * </doc:example>
  */
 function copy(source, destination){
   if (!destination) {
@@ -693,15 +617,6 @@ function copy(source, destination){
  * @function
  *
  * @description
- * Alias for {@link angular.Object.equals}
- */
-
-/**
- * @ngdoc function
- * @name angular.Object.equals
- * @function
- *
- * @description
  * Determines if two objects or two values are equivalent. Supports value types, arrays and
  * objects.
  *
@@ -714,56 +629,19 @@ function copy(source, destination){
  * that begin with `$` are ignored.
  *
  * Note: This function is used to augment the Object type in Angular expressions. See
- * {@link angular.Array} for more information about Angular arrays.
+ * {@link angular.module.ng.$filter} for more information about Angular arrays.
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
  * @returns {boolean} True if arguments are equal.
  *
- * @example
- * <doc:example>
- *  <doc:source>
-     <script>
-       function Ctrl() {
-         this.master = {
-           salutation: 'Hello',
-           name: 'world'
-         };
-         this.greeting = angular.copy(this.master);
-       }
-     </script>
-     <div ng:controller="Ctrl">
-       Salutation: <input type="text" ng:model="greeting.salutation"><br/>
-       Name: <input type="text" ng:model="greeting.name"><br/>
-       <hr/>
-
-       The <code>greeting</code> object is
-       <span ng:hide="greeting.$equals(master)">NOT</span> equal to
-       <code>{salutation:'Hello', name:'world'}</code>.
-
-       <pre>greeting={{greeting}}</pre>
-     </div>
- *  </doc:source>
- *  <doc:scenario>
-     it('should print that initialy greeting is equal to the hardcoded value object', function() {
-       expect(element('.doc-example-live input[ng\\:model="greeting.salutation"]').val()).toBe('Hello');
-       expect(element('.doc-example-live input[ng\\:model="greeting.name"]').val()).toBe('world');
-       expect(element('.doc-example-live span').css('display')).toBe('none');
-     });
-
-     it('should say that the objects are not equal when the form is modified', function() {
-       input('greeting.name').enter('kitty');
-       expect(element('.doc-example-live span').css('display')).toBe('inline');
-     });
- *  </doc:scenario>
- * </doc:example>
  */
 function equals(o1, o2) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
   if (t1 == t2 && t1 == 'object') {
-    if (o1 instanceof Array) {
+    if (isArray(o1)) {
       if ((length = o1.length) == o2.length) {
         for(key=0; key<length; key++) {
           if (!equals(o1[key], o2[key])) return false;
@@ -854,11 +732,6 @@ function toBoolean(value) {
 }
 
 
-/** @name angular.compile */
-function compile(element) {
-  return new Compiler(angularTextMarkup, angularAttrMarkup, angularDirective, angularWidget)
-    .compile(element);
-}
 /////////////////////////////////////////////////
 
 /**
@@ -946,15 +819,44 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * `ng:autobind="[root element ID]"` tells Angular to compile and manage part of the document,
  * starting at "root element ID".
  *
-
  */
 function angularInit(config, document){
   var autobind = config.autobind;
-
+  
   if (autobind) {
-    var element = isString(autobind) ? document.getElementById(autobind) : document;
-    compile(element)().$apply();
+    var modules = [];
+    forEach((config.modules || '').split(','), function(module){
+      module = trim(module);
+      if (module) {
+        modules.push(module);
+      }
+    });
+    bootstrap(jqLite(isString(autobind) ? document.getElementById(autobind) : document), modules);
   }
+}
+
+/**
+ * @ngdoc function
+ * @name angular.bootstrap
+ * @description
+ * Use this function to manually start up angular application.
+ *
+ * See: {@link guide/dev_guide.bootstrap.manual_bootstrap Bootstrap}
+ *
+ * @param {Element} element DOM element which is the root of angular application.
+ * @param {Array<String,function>=} modules an array of module declarations. See: {@link angular.module modules}
+ */
+function bootstrap(element, modules) {
+  modules = modules || [];
+  modules.unshift(ngModule);
+  createInjector(modules, angularModule).invoke(null,
+    ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
+      scope.$apply(function() {
+        element.data('$injector', injector);
+        compile(element)(scope);
+      });
+    }]
+  );
 }
 
 function angularJsConfig(document) {
@@ -1012,28 +914,6 @@ function assertArg(arg, name, reason) {
 
 function assertArgFn(arg, name) {
   assertArg(isFunction(arg), name, 'not a function, got ' +
-      (typeof arg == 'object' ? arg.constructor.name : typeof arg));
+      (typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
   return arg;
 }
-
-
-/**
- * @ngdoc property
- * @name angular.version
- * @description
- * An object that contains information about the current AngularJS version. This object has the
- * following properties:
- *
- * - `full` – `{string}` – Full version string, such as "0.9.18".
- * - `major` – `{number}` – Major version number, such as "0".
- * - `minor` – `{number}` – Minor version number, such as "9".
- * - `dot` – `{number}` – Dot version number, such as "18".
- * - `codeName` – `{string}` – Code name of the release, such as "jiggling-armfat".
- */
-var version = {
-  full: '"NG_VERSION_FULL"',    // all of these placeholder strings will be replaced by rake's
-  major: "NG_VERSION_MAJOR",    // compile task
-  minor: "NG_VERSION_MINOR",
-  dot: "NG_VERSION_DOT",
-  codeName: '"NG_VERSION_CODENAME"'
-};

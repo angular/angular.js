@@ -4,12 +4,12 @@
     <title>angular dev sandbox</title>
     <script src="../src/angular-bootstrap.js" ng:autobind></script>
     <script>
-    angular.service('routeConfig', function($route) {
+    angular.module.ng('routeConfig', function($route) {
           $route.when('/view1', {controller: MyCtrl, template: 'view1.html'});
           $route.when('/view2', {controller: MyCtrl, template: 'view2.html'});
 
           function MyCtrl() {};
-        }, {$inject: ['$route'], $eager: true});
+        }, {$inject: ['$route']});
     </script>
   </head>
   <body ng:init="$service('$window').$root = this">

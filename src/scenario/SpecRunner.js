@@ -18,7 +18,7 @@ angular.scenario.SpecRunner = function() {
  * based on the describe nesting.
  *
  * @param {Object} spec A spec object
- * @param {Function} specDone function that is called when the spec finshes. Function(error, index)
+ * @param {function()} specDone function that is called when the spec finshes. Function(error, index)
  */
 angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
   var self = this;
@@ -85,8 +85,8 @@ angular.scenario.SpecRunner.prototype.run = function(spec, specDone) {
  * Note: Do not pass line manually. It happens automatically.
  *
  * @param {string} name Name of the future
- * @param {Function} behavior Behavior of the future
- * @param {Function} line fn() that returns file/line number
+ * @param {function()} behavior Behavior of the future
+ * @param {function()} line fn() that returns file/line number
  */
 angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line) {
   var future = new angular.scenario.Future(name, angular.bind(this, behavior), line);
@@ -100,8 +100,8 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
  * Note: Do not pass line manually. It happens automatically.
  *
  * @param {string} name Name of the future
- * @param {Function} behavior Behavior of the future
- * @param {Function} line fn() that returns file/line number
+ * @param {function()} behavior Behavior of the future
+ * @param {function()} line fn() that returns file/line number
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;

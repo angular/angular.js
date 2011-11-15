@@ -27,9 +27,8 @@ var OPERATORS = {
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
-function lex(text, parseStringsForObjects){
-  var dateParseLength = parseStringsForObjects ? DATE_ISOSTRING_LN : -1,
-      tokens = [],
+function lex(text){
+  var tokens = [],
       token,
       index = 0,
       json = [],
@@ -199,12 +198,13 @@ function lex(text, parseStringsForObjects){
         escape = true;
       } else if (ch == quote) {
         index++;
-        tokens.push({index:start, text:rawString, string:string, json:true,
-          fn:function() {
-            return (string.length == dateParseLength)
-              ? angular['String']['toDate'](string)
-              : string;
-          }});
+        tokens.push({
+          index:start,
+          text:rawString,
+          string:string,
+          json:true,
+          fn:function() { return string; }
+        });
         return;
       } else {
         string += ch;
@@ -217,17 +217,17 @@ function lex(text, parseStringsForObjects){
 
 /////////////////////////////////////////
 
-function parser(text, json){
+function parser(text, json, $filter){
   var ZERO = valueFn(0),
-      tokens = lex(text, json),
+      value,
+      tokens = lex(text),
       assignment = _assignment,
       assignable = logicalOR,
       functionCall = _functionCall,
       fieldAccess = _fieldAccess,
       objectIndex = _objectIndex,
       filterChain = _filterChain,
-      functionIdent = _functionIdent,
-      pipeFunction = _pipeFunction;
+      functionIdent = _functionIdent;
   if(json){
     // The extra level of aliasing is here, just in case the lexer misses something, so that
     // we prevent any accidental execution in JSON.
@@ -238,26 +238,15 @@ function parser(text, json){
       assignable =
       filterChain =
       functionIdent =
-      pipeFunction =
         function() { throwError("is not valid json", {text:text, index:0}); };
+    value = primary();
+  } else {
+    value = statements();
   }
-  //TODO: Shouldn't all of the public methods have assertAllConsumed?
-  //TODO: I think these should be public as part of the parser api instead of scope.$eval().
-  return {
-      assignable: assertConsumed(assignable),
-      primary: assertConsumed(primary),
-      statements: assertConsumed(statements)
-  };
-
-  function assertConsumed(fn) {
-    return function() {
-      var value = fn();
-      if (tokens.length !== 0) {
-        throwError("is an unexpected token", tokens[0]);
-      }
-      return value;
-    };
+  if (tokens.length !== 0) {
+    throwError("is an unexpected token", tokens[0]);
   }
+  return value;
 
   ///////////////////////////////////
   function throwError(msg, token) {
@@ -355,13 +344,9 @@ function parser(text, json){
   }
 
   function filter() {
-    return pipeFunction(angularFilter);
-  }
-
-  function _pipeFunction(fnScope){
-    var fn = functionIdent(fnScope);
+    var token = expect();
+    var fn = $filter(token.text);
     var argsFn = [];
-    var token;
     while(true) {
       if ((token = expect(':'))) {
         argsFn.push(expression());
@@ -652,6 +637,7 @@ function setter(obj, path, setValue) {
  * @param {boolean=true} bindFnToScope
  * @returns value as accesbile by path
  */
+//TODO(misko): this function needs to be removed
 function getter(obj, path, bindFnToScope) {
   if (!path) return obj;
   var keys = path.split('.');
@@ -664,14 +650,6 @@ function getter(obj, path, bindFnToScope) {
     if (obj) {
       obj = (lastInstance = obj)[key];
     }
-    if (isUndefined(obj)  && key.charAt(0) == '$') {
-      var type = angularGlobal.typeOf(lastInstance);
-      type = angular[type.charAt(0).toUpperCase()+type.substring(1)];
-      var fn = type ? type[[key.substring(1)]] : _undefined;
-      if (fn) {
-        return obj = bind(lastInstance, fn, lastInstance);
-      }
-    }
   }
   if (!bindFnToScope && isFunction(obj)) {
     return bind(lastInstance, obj);
@@ -680,7 +658,6 @@ function getter(obj, path, bindFnToScope) {
 }
 
 var getterFnCache = {},
-    compileCache = {},
     JS_KEYWORDS = {};
 
 forEach(
@@ -707,16 +684,6 @@ function getterFn(path) {
               ' fn.$unboundFn=s;\n' +
               ' s=fn;\n' +
             '}\n';
-    if (key.charAt(1) == '$') {
-      // special code for super-imposed functions
-      var name = key.substr(2);
-      code += 'if(!s) {\n' +
-              ' t = angular.Global.typeOf(l);\n' +
-              ' fn = (angular[t.charAt(0).toUpperCase() + t.substring(1)]||{})["' + name + '"];\n' +
-              ' if (fn) ' +
-                 's = function(){ return fn.apply(l, [l].concat(Array.prototype.slice.call(arguments, 0))); };\n' +
-              '}\n';
-    }
   });
   code += 'return s;';
   fn = Function('s', code);
@@ -727,18 +694,26 @@ function getterFn(path) {
 
 ///////////////////////////////////
 
-// TODO(misko): Should this function be public?
-function compileExpr(expr) {
-  return parser(expr).statements();
+function $ParseProvider() {
+  var cache = {};
+  this.$get = ['$filter', function($filter) {
+    return function(exp) {
+      switch(typeof exp) {
+        case 'string':
+          return cache.hasOwnProperty(exp)
+            ? cache[exp]
+            : cache[exp] =  parser(exp, false, $filter);
+        case 'function':
+          return exp;
+        default:
+          return noop;
+      }
+    };
+  }];
 }
 
-// TODO(misko): Deprecate? Remove!
-// I think that compilation should be a service.
-function expressionCompile(exp) {
-  if (isFunction(exp)) return exp;
-  var fn = compileCache[exp];
-  if (!fn) {
-    fn = compileCache[exp] =  parser(exp).statements();
-  }
-  return fn;
-}
+
+// This is a special access for JSON parser which bypasses the injector
+var parseJson = function(json) {
+  return parser(json, true);
+};

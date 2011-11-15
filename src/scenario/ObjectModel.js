@@ -121,7 +121,7 @@ angular.scenario.ObjectModel = function(runner) {
  * Adds a listener for an event.
  *
  * @param {string} eventName Name of the event to add a handler for
- * @param {Function} listener Function that will be called when event is fired
+ * @param {function()} listener Function that will be called when event is fired
  */
 angular.scenario.ObjectModel.prototype.on = function(eventName, listener) {
   eventName = eventName.toLowerCase();

@@ -34,7 +34,28 @@ detection, and preventing invalid form submission.
      save: function() {
        this.master = this.form;
        this.cancel();
+     },
+
+     addContact: function() {
+       this.form.contacts.push({type:'', value:''});
+     },
+
+     removeContact: function(contact) {
+       for ( var i = 0, ii = this.form.contacts.length; i < ii; i++) {
+         if (contact === this.form.contacts[i]) {
+           this.form.contacts.splice(i, 1);
+         }
+       }
+     },
+
+     isCancelDisabled: function() {
+       return angular.equals(this.master, this.form);
+     },
+
+     isSaveDisabled: function() {
+       return this.myForm.$invalid || angular.equals(this.master, this.form);
      }
+
    };
    </script>
    <div ng:controller="UserForm">
@@ -53,7 +74,7 @@ detection, and preventing invalid form submission.
               ng:pattern="zip" required/><br/><br/>
 
        <label>Contacts:</label>
-       [ <a href="" ng:click="form.contacts.$add()">add</a> ]
+       [ <a href="" ng:click="addContact()">add</a> ]
        <div ng:repeat="contact in form.contacts">
          <select ng:model="contact.type">
            <option>email</option>
@@ -62,10 +83,10 @@ detection, and preventing invalid form submission.
            <option>IM</option>
          </select>
          <input type="text" ng:model="contact.value" required/>
-          [ <a href="" ng:click="form.contacts.$remove(contact)">X</a> ]
+          [ <a href="" ng:click="removeContact(contact)">X</a> ]
        </div>
-     <button ng:click="cancel()" ng:disabled="{{master.$equals(form)}}">Cancel</button>
-     <button ng:click="save()" ng:disabled="{{myForm.$invalid || master.$equals(form)}}">Save</button>
+     <button ng:click="cancel()" ng:disabled="{{isCancelDisabled()}}">Cancel</button>
+     <button ng:click="save()" ng:disabled="{{isSaveDisabled()}}">Save</button>
    </form>
 
    <hr/>

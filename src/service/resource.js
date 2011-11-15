@@ -1,8 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc service
- * @name angular.service.$resource
+ * @ngdoc object
+ * @name angular.module.ng.$resource
  * @requires $xhr.cache
  *
  * @description
@@ -10,7 +10,7 @@
  * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
  *
  * The returned resource object has action methods which provide high-level behaviors without
- * the need to interact with the low level {@link angular.service.$xhr $xhr} service or
+ * the need to interact with the low level {@link angular.module.ng.$xhr $xhr} service or
  * raw XMLHttpRequest.
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
@@ -57,7 +57,7 @@
  *         'remove': {method:'DELETE'},
  *         'delete': {method:'DELETE'} };
  *
- *   Calling these methods invoke an {@link angular.service.$xhr} with the specified http method,
+ *   Calling these methods invoke an {@link angular.module.ng.$xhr} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
  *   instance of the resource class `save`, `remove` and `delete` actions are available on it as
  *   methods with the `$` prefix. This allows you to easily perform CRUD operations (create, read,
@@ -200,7 +200,9 @@
       </doc:scenario>
     </doc:example>
  */
-angularServiceInject('$resource', function($xhr){
-  var resource = new ResourceFactory($xhr);
-  return bind(resource, resource.route);
-}, ['$xhr.cache']);
+function $ResourceProvider() {
+  this.$get = ['$xhr.cache', function($xhr){
+    var resource = new ResourceFactory($xhr);
+    return bind(resource, resource.route);
+  }];
+}

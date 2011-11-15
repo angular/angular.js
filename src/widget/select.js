@@ -130,7 +130,9 @@ var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+
 angularWidget('select', function(element){
   this.directives(true);
   this.descend(true);
-  return element.attr('ng:model') && annotate('$formFactory', function($formFactory, selectElement){
+  return element.attr('ng:model') &&
+               ['$formFactory', '$compile', '$parse', '$element',
+        function($formFactory,   $compile,   $parse,   selectElement){
     var modelScope = this,
         match,
         form = $formFactory.forElement(selectElement),
@@ -223,12 +225,12 @@ angularWidget('select', function(element){
       }
 
       var widgetScope = this,
-          displayFn = expressionCompile(match[2] || match[1]),
+          displayFn = $parse(match[2] || match[1]),
           valueName = match[4] || match[6],
           keyName = match[5],
-          groupByFn = expressionCompile(match[3] || ''),
-          valueFn = expressionCompile(match[2] ? match[1] : valueName),
-          valuesFn = expressionCompile(match[7]),
+          groupByFn = $parse(match[3] || ''),
+          valueFn = $parse(match[2] ? match[1] : valueName),
+          valuesFn = $parse(match[7]),
           // we can't just jqLite('<option>') since jqLite is not smart enough
           // to create it in <select> and IE barfs otherwise.
           optionTemplate = jqLite(document.createElement('option')),
@@ -245,7 +247,7 @@ angularWidget('select', function(element){
           // developer declared null option, so user should be able to select it
           nullOption = jqLite(option).remove();
           // compile the element since there might be bindings in it
-          compile(nullOption)(modelScope);
+          $compile(nullOption)(modelScope);
         }
       });
       selectElement.html(''); // clear contents
@@ -432,5 +434,5 @@ angularWidget('select', function(element){
         }
       };
     }
-  });
+  }];
 });

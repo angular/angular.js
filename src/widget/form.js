@@ -6,7 +6,7 @@
  *
  * @description
  * Angular widget that creates a form scope using the
- * {@link angular.service.$formFactory $formFactory} API. The resulting form scope instance is
+ * {@link angular.module.ng.$formFactory $formFactory} API. The resulting form scope instance is
  * attached to the DOM element using the jQuery `.data()` method under the `$form` key.
  * See {@link guide/dev_guide.forms forms} on detailed discussion of forms and widgets.
  *
@@ -56,7 +56,7 @@
 angularWidget('form', function(form){
   this.descend(true);
   this.directives(true);
-  return annotate('$formFactory', function($formFactory, formElement) {
+  return ['$formFactory', '$element', function($formFactory, formElement) {
     var name = formElement.attr('name'),
         parentForm = $formFactory.forElement(formElement),
         form = $formFactory(parentForm);
@@ -74,7 +74,7 @@ angularWidget('form', function(form){
         formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
       });
     }
-  });
+  }];
 });
 
 angularWidget('ng:form', angularWidget('form'));

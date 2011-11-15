@@ -523,7 +523,7 @@ forEach({
         removeEventListenerFn(element, type, bind[type]);
         delete bind[type];
       } else {
-        angularArray.remove(bind[type].fns, fn);
+        arrayRemove(bind[type].fns, fn);
       }
     }
   },

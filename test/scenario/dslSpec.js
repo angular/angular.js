@@ -4,13 +4,14 @@ describe("angular.scenario.dsl", function() {
   var $window, $root;
   var application, eventLog;
 
-  beforeEach(function() {
+  beforeEach(inject(function($injector) {
     eventLog = [];
     $window = {
-      document: _jQuery("<div></div>"),
+      document: jqLite('<div class="document"></div>'),
       angular: new angular.scenario.testing.MockAngular()
     };
-    $root = angular.scope();
+    $window.document.data('$injector', $injector);
+    $root = $injector.get('$rootScope');
     $root.emit = function(eventName) {
       eventLog.push(eventName);
     };
@@ -45,6 +46,10 @@ describe("angular.scenario.dsl", function() {
     // Just use the real one since it delegates to this.addFuture
     $root.addFutureAction = angular.scenario.
       SpecRunner.prototype.addFutureAction;
+  }));
+
+  afterEach(function(){
+    jqLite($window.document).removeData('$injector');
   });
 
   describe('Pause', function() {
@@ -156,9 +161,9 @@ describe("angular.scenario.dsl", function() {
 
     describe('location', function() {
       beforeEach(function() {
-        $window.angular.scope = function() {
+        $window.angular.injector = function() {
           return {
-            $service: function(serviceId) {
+            get: function(serviceId) {
               if (serviceId == '$location') {
                 return {
                   url: function() {return '/path?search=a#hhh';},
@@ -203,11 +208,14 @@ describe("angular.scenario.dsl", function() {
     //  ex. jQuery('#foo').find('[name="bar"]') // fails
     //  ex. jQuery('#foo [name="bar"]') // works, wtf?
     //
-    beforeEach(function() {
+    beforeEach(inject(function($injector) {
       doc = _jQuery('<div id="angular-scenario-binding"></div>');
       _jQuery(document.body).html('').append(doc);
-     $window.document = window.document;
-    });
+
+      dealoc($window.document); // we are about to override it
+      $window.document = window.document;
+      jqLite($window.document).data('$injector', $injector);
+    }));
 
     afterEach(function() {
       _jQuery(document.body).

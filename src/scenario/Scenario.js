@@ -13,7 +13,7 @@ angular.scenario = angular.scenario || {};
  * Defines a new output format.
  *
  * @param {string} name the name of the new output format
- * @param {Function} fn function(context, runner) that generates the output
+ * @param {function()} fn function(context, runner) that generates the output
  */
 angular.scenario.output = angular.scenario.output || function(name, fn) {
   angular.scenario.output[name] = fn;
@@ -29,7 +29,7 @@ angular.scenario.output = angular.scenario.output || function(name, fn) {
  *   functions.
  *
  * @param {string} name The name of the statement
- * @param {Function} fn Factory function(), return a function for
+ * @param {function()} fn Factory function(), return a function for
  *  the statement.
  */
 angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
@@ -65,7 +65,7 @@ angular.scenario.dsl = angular.scenario.dsl || function(name, fn) {
  * created for you.
  *
  * @param {string} name The name of the matcher
- * @param {Function} fn The matching function(expected).
+ * @param {function()} fn The matching function(expected).
  */
 angular.scenario.matcher = angular.scenario.matcher || function(name, fn) {
   angular.scenario.matcher[name] = function(expected) {
@@ -148,8 +148,8 @@ angular.scenario.setUpAndRun = function(config) {
  * continueFunction to continute iterating.
  *
  * @param {Array} list list to iterate over
- * @param {Function} iterator Callback function(value, continueFunction)
- * @param {Function} done Callback function(error, result) called when
+ * @param {function()} iterator Callback function(value, continueFunction)
+ * @param {function()} done Callback function(error, result) called when
  *   iteration finishes or an error occurs.
  */
 function asyncForEach(list, iterator, done) {

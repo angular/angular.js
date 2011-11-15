@@ -24,7 +24,7 @@ describe('dom', function() {
       dom.h('heading', function() {
         this.html('<h1>sub-heading</h1>');
       });
-      expect(dom.toString()).toContain('<h1>heading</h1>');
+      expect(dom.toString()).toContain('<h1 id="heading">heading</h1>');
       expect(dom.toString()).toContain('<h2>sub-heading</h2>');
     });
 
