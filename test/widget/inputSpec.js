@@ -423,6 +423,22 @@ describe('widget: input', function() {
         expect(inputs[0].checked).toBe(false);
         expect(inputs[1].checked).toBe(true);
       });
+
+      it('should data-bind the value attribute on initialization', inject(
+          function($rootScope, $compile){
+        $rootScope.choice = 'b';
+        $rootScope.items = ['a', 'b'];
+        var element = $compile(
+            '<li>'+
+              '<input ng:repeat="item in items" ' +
+              '       type="radio" ng:model="choice" value="{{item}}" name="choice">'+
+            '</li>')($rootScope);
+
+        $rootScope.$digest();
+        var inputs = element.find('input');
+        expect(inputs[0].checked).toBe(false);
+        expect(inputs[1].checked).toBe(true);
+      }));
     });
 
 

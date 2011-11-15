@@ -878,6 +878,7 @@ function watchElementProperty(modelScope, widget, name, element) {
     modelScope.$watch(match[1], function(scope, value){
       widget['$' + name] = isBoolean ? !!value : value;
       widget.$emit('$validate');
+      widget.$render && widget.$render();
     });
   }
 }
