@@ -66,6 +66,7 @@ function ngModule($provide, $injector) {
     $provide.service('$locale', $LocaleProvider);
   });
 
+  $provide.service('$autoScroll', $AutoScrollProvider);
   $provide.service('$browser', $BrowserProvider);
   $provide.service('$compile', $CompileProvider);
   $provide.service('$cookies', $CookiesProvider);
