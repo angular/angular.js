@@ -449,6 +449,18 @@ describe('widget: input', function() {
       });
     });
 
+    describe('number', function(){
+      it('should clear number on non-number', inject(function($compile, $rootScope){
+        $rootScope.value = 123;
+        var element = $compile('<input type="number" ng:model="value" >')($rootScope);
+        $rootScope.$digest();
+        expect(element.val()).toEqual('123');
+        $rootScope.value = undefined;
+        $rootScope.$digest();
+        expect(element.val()).toEqual('');
+      }));
+    });
+
 
     it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
