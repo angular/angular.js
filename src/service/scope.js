@@ -187,7 +187,8 @@ function $RootScopeProvider(){
        *   reruns when it detects changes the `watchExpression` can execute multiple times per
        *   {@link angular.module.ng.$rootScope.Scope#$digest $digest()} and should be idempotent.)
        * - The `listener` is called only when the value from the current `watchExpression` and the
-       *   previous call to `watchExpression' are not equal. The inequality is determined according to
+       *   previous call to `watchExpression' are not equal (with the exception of the initial run
+       *   see below). The inequality is determined according to
        *   {@link angular.equals} function. To save the value of the object for later comparison
        *   {@link angular.copy} function is used. It also means that watching complex options will
        *   have adverse memory and performance implications.
@@ -200,6 +201,13 @@ function $RootScopeProvider(){
        * you can register an `watchExpression` function with no `listener`. (Since `watchExpression`,
        * can execute multiple times per {@link angular.module.ng.$rootScope.Scope#$digest $digest} cycle when a change is
        * detected, be prepared for multiple calls to your listener.)
+       *
+       * After a watcher is registered with the scope, the `listener` fn is called asynchronously
+       * (via {@link angular.module.ng.$rootScope.Scope#$evalAsync $evalAsync}) to initialize the
+       * watcher. In rare cases, this is undesirable because the listener is called when the result
+       * of `watchExpression` didn't change. To detect this scenario within the `listener` fn, you
+       * can compare the `newVal` and `oldVal`. If these two values are identical (`===`) then the
+       * listener was called due to initialization.
        *
        *
        * # Example
@@ -244,7 +252,7 @@ function $RootScopeProvider(){
             array = scope.$$watchers,
             watcher = {
               fn: listenFn,
-              last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
+              last: initWatchVal,
               get: get,
               exp: watchExp
             };
@@ -345,7 +353,7 @@ function $RootScopeProvider(){
                   if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
                     dirty = true;
                     watch.last = copy(value);
-                    watch.fn(current, value, last);
+                    watch.fn(current, value, ((last === initWatchVal) ? value : last));
                     if (ttl < 5) {
                       if (!watchLog[4-ttl]) watchLog[4-ttl] = [];
                       if (isFunction(watch.exp)) {
@@ -669,6 +677,10 @@ function $RootScopeProvider(){
       return fn;
     }
 
-
+    /**
+     * function used as an initial value for watchers.
+     * because it's uniqueue we can easily tell it apart from other values
+     */
+    function initWatchVal() {}
   }];
 }
