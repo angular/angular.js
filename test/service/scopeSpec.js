@@ -305,6 +305,39 @@ describe('Scope', function() {
       root.$digest(); //trigger
       expect(listener).not.toHaveBeenCalled();
     }));
+
+
+    it('should not infinitely digest when current value is NaN', inject(function($rootScope) {
+      $rootScope.$watch(function() { return NaN;});
+
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+    }));
+
+
+    it('should always call the watchr with newVal and oldVal equal on the first run',
+        inject(function($rootScope) {
+      var log = [];
+      function logger(scope, newVal, oldVal) {
+        var val = (newVal === oldVal || (newVal !== oldVal && oldVal !== newVal)) ? newVal : 'xxx';
+        log.push(val);
+      };
+
+      $rootScope.$watch(function() { return NaN;}, logger);
+      $rootScope.$watch(function() { return undefined;}, logger);
+      $rootScope.$watch(function() { return '';}, logger);
+      $rootScope.$watch(function() { return false;}, logger);
+      $rootScope.$watch(function() { return {};}, logger);
+      $rootScope.$watch(function() { return 23;}, logger);
+
+      $rootScope.$digest();
+      expect(isNaN(log.shift())).toBe(true); //jasmine's toBe and toEqual don't work well with NaNs
+      expect(log).toEqual([undefined, '', false, {}, 23]);
+      log = []
+      $rootScope.$digest();
+      expect(log).toEqual([]);
+    }));
   });
 
 

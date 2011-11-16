@@ -576,7 +576,9 @@ function ngClass(selector) {
     return function(element) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
-          if (oldVal) element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          if (oldVal && (newVal !== oldVal)) {
+            element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+          }
           if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
@@ -823,7 +825,9 @@ angularDirective("ng:hide", function(expression, element){
 angularDirective("ng:style", function(expression, element) {
   return function(element) {
     this.$watch(expression, function(scope, newStyles, oldStyles) {
-      if (oldStyles) forEach(oldStyles, function(val, style) { element.css(style, '');});
+      if (oldStyles && (newStyles !== oldStyles)) {
+        forEach(oldStyles, function(val, style) { element.css(style, '');});
+      }
       if (newStyles) element.css(newStyles);
     });
   };

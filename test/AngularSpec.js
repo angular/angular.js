@@ -110,6 +110,10 @@ describe('angular', function() {
 
       expect(equals(undefined, undefined)).toBe(true);
     });
+
+    it('should treat two NaNs as equal', function() {
+      expect(equals(NaN, NaN)).toBe(true);
+    });
   });
 
   describe('size', function() {
