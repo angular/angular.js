@@ -246,7 +246,8 @@ function $RootScopeProvider(){
               fn: listenFn,
               last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
               get: get,
-              exp: watchExp
+              exp: watchExp,
+              firstRun: true
             };
 
         if (!array) {
@@ -342,7 +343,8 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
+                  if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last, !watch.firstRun)) {
+                    delete watch.firstRun;
                     dirty = true;
                     watch.last = copy(value);
                     watch.fn(current, value, last);
