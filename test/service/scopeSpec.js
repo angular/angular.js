@@ -318,10 +318,10 @@ describe('Scope', function() {
       var spy = jasmine.createSpy();
       $rootScope.$watch(function() { return NaN;}, spy);
       $rootScope.$digest();
-      expect(spy).wasCalled();
+      expect(spy).toHaveBeenCalledOnce();
       spy.reset();
       $rootScope.$digest();
-      expect(spy).not.wasCalled();
+      expect(spy).not.toHaveBeenCalled();
     }));
   });
 
