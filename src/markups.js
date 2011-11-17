@@ -51,34 +51,6 @@
  * Understanding Angular Markup} in the Angular Developer Guide.
  */
 
-function parseBindings(string) {
-  var results = [];
-  var lastIndex = 0;
-  var index;
-  while((index = string.indexOf('{{', lastIndex)) > -1) {
-    if (lastIndex < index)
-      results.push(string.substr(lastIndex, index - lastIndex));
-    lastIndex = index;
-
-    index = string.indexOf('}}', index);
-    index = index < 0 ? string.length : index + 2;
-
-    results.push(string.substr(lastIndex, index - lastIndex));
-    lastIndex = index;
-  }
-  if (lastIndex != string.length)
-    results.push(string.substr(lastIndex, string.length - lastIndex));
-  return results.length === 0 ? [ string ] : results;
-}
-
-function binding(string) {
-  var binding = string.replace(/\n/gm, ' ').match(/^\{\{(.*)\}\}$/);
-  return binding ? binding[1] : null;
-}
-
-function hasBindings(bindings) {
-  return bindings.length > 1 || binding(bindings[0]) !== null;
-}
 
 angularTextMarkup('{{}}', function(text, textNode, parentElement) {
   var bindings = parseBindings(text),

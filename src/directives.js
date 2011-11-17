@@ -282,45 +282,6 @@ angularDirective("ng:bind", function(expression, element){
   }];
 });
 
-var bindTemplateCache = {};
-function compileBindTemplate(template){
-  var fn = bindTemplateCache[template];
-  if (!fn) {
-    var bindings = [];
-    forEach(parseBindings(template), function(text){
-      var exp = binding(text);
-      bindings.push(exp
-        ? function(scope, element) { return scope.$eval(exp); }
-        : function() { return text; });
-    });
-    bindTemplateCache[template] = fn = function(scope, element, prettyPrintJson) {
-      var parts = [],
-          hadOwnElement = scope.hasOwnProperty('$element'),
-          oldElement = scope.$element;
-
-      // TODO(misko): get rid of $element
-      scope.$element = element;
-      try {
-        for (var i = 0; i < bindings.length; i++) {
-          var value = bindings[i](scope, element);
-          if (isElement(value))
-            value = '';
-          else if (isObject(value))
-            value = toJson(value, prettyPrintJson);
-          parts.push(value);
-        }
-        return parts.join('');
-      } finally {
-        if (hadOwnElement) {
-          scope.$element = oldElement;
-        } else {
-          delete scope.$element;
-        }
-      }
-    };
-  }
-  return fn;
-}
 
 /**
  * @ngdoc directive
