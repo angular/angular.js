@@ -624,6 +624,7 @@ function copy(source, destination){
  *
  * * Both objects or values pass `===` comparison.
  * * Both objects or values are of the same type and all of their properties pass `===` comparison.
+ * * Both values are NaN. (In JavasScript, NaN == NaN => false. But we consider two NaN as equal)
  *
  * During a property comparision, properties of `function` type and properties with names
  * that begin with `$` are ignored.
@@ -633,15 +634,13 @@ function copy(source, destination){
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
- * @param {boolean=} NaNEqual If set to true, this function will treat two NaN as equal.
- * @returns {boolean} True if arguments are equal.
  *
  */
-function equals(o1, o2, NaNEqual) {
+function equals(o1, o2) {
   if (o1 === o2) return true;
   if (o1 === null || o2 === null) return false;
+  if (o1 !== o1 && o2 !== o2) return true; // NaN === NaN
   var t1 = typeof o1, t2 = typeof o2, length, key, keySet;
-  if (NaNEqual && t1 === t2 && t1 === 'number' && isNaN(o1) && isNaN(o2)) return true;
   if (t1 == t2 && t1 == 'object') {
     if (isArray(o1)) {
       if ((length = o1.length) == o2.length) {
