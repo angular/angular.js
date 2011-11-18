@@ -130,6 +130,11 @@ describe('widget: input', function() {
         browserTrigger(element, 'change');
         defer.flush();
         expect(scope.name).toEqual('Kai');
+
+        element.val('Lunar');
+        browserTrigger(element, 'input');
+        defer.flush();
+        expect(scope.name).toEqual('Lunar');
       });
 
 
