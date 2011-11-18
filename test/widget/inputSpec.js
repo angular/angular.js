@@ -112,7 +112,7 @@ describe('widget: input', function() {
   describe("input", function() {
 
     describe("text", function() {
-      it('should input-text auto init and handle keydown/change events', function() {
+      it('should input-text auto init and listen on keydown/change/input events', function() {
         compile('<input type="text" ng:model="name"/>');
 
         scope.name = 'Adam';
@@ -130,6 +130,13 @@ describe('widget: input', function() {
         browserTrigger(element, 'change');
         defer.flush();
         expect(scope.name).toEqual('Kai');
+
+        if (!(msie<=8)) {
+          element.val('Lunar');
+          browserTrigger(element, 'input');
+          defer.flush();
+          expect(scope.name).toEqual('Lunar');
+        }
       });
 
 
