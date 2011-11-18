@@ -371,12 +371,10 @@ function $FormFactoryProvider() {
     widget.$modelValue = Number.NaN;
     // watch for scope changes and update the view appropriately
     modelScope.$watch(scopeGet, function(scope, value) {
-      if (!equals(widget.$modelValue, value)) {
-        widget.$modelValue = value;
-        widget.$parseModel ? widget.$parseModel() : (widget.$viewValue = value);
-        widget.$emit('$validate');
-        widget.$render && widget.$render();
-      }
+      widget.$modelValue = value;
+      widget.$parseModel ? widget.$parseModel() : (widget.$viewValue = value);
+      widget.$emit('$validate');
+      widget.$render && widget.$render();
     });
 
     widget.$on('$viewChange', function(event, viewValue){

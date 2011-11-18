@@ -30,6 +30,35 @@ describe('widget: input', function() {
     dealoc(doc);
   });
 
+  describe('custom input', function() {
+    beforeEach(function() {
+      angular.inputType('custom', function() {
+        var widget = this;
+        widget.$parseModel = function() {
+          widget.$viewValue = widget.$modelValue && widget.$modelValue.length;
+        };
+      });
+    })
+
+    it('should properly update view when binded data is not primitive data type and it is binded to more then one element', function() {
+      var formElement = angular.element('<form><input type="custom" id="input1" ng:model="names" /><input type="custom" id="input2" ng:model="names"></form>');
+      var inputElement1 = formElement.find("input")[0];
+      var inputElement2 = formElement.find("input")[1];
+      $compile(formElement)(scope);
+      expect(inputElement1.id).toEqual('input1');
+      expect(inputElement2.id).toEqual('input2');
+      //should update inputs  by changing to different array
+      scope.names = ['First', 'Second'];
+      scope.$digest();
+      expect(inputElement1.value).toEqual('2');
+      expect(inputElement2.value).toEqual('2');
+      //should update inputs values by extending/changing existing array
+      scope.names.push('Third');
+      scope.$digest();
+      expect(inputElement1.value).toEqual('3');
+      expect(inputElement2.value).toEqual('3');
+    });
+  });
 
   describe('text', function() {
     var form = null,
@@ -48,7 +77,6 @@ describe('widget: input', function() {
       form = formElement.inheritedData('$form');
     };
 
-
     it('should bind update scope from model', function() {
       createInput();
       expect(scope.form.name.$required).toBe(false);
@@ -56,7 +84,6 @@ describe('widget: input', function() {
       scope.$digest();
       expect(inputElement.val()).toEqual('misko');
     });
-
 
     it('should require', function() {
       createInput({required:''});
@@ -106,6 +133,7 @@ describe('widget: input', function() {
       $compile(doc)($rootScope);
       expect(doc.find('input')[0].getAttribute('type')).toEqual('number');
     }));
+
   });
 
 
@@ -203,6 +231,12 @@ describe('widget: input', function() {
           // $parseModel function runs it will change to 'a', in essence preventing
           // the user from ever typying ','.
           compile('<input type="list" ng:model="list"/>');
+
+          scope.$element.val('a');
+          browserTrigger(scope.$element, 'change');
+          defer.flush();
+          expect(scope.$element.val()).toEqual('a');
+          expect(scope.list).toEqual(['a']);
 
           scope.$element.val('a ');
           browserTrigger(scope.$element, 'change');
