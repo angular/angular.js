@@ -117,6 +117,7 @@ function $RouteProvider(){
         parentScope = $rootScope,
         dirty = 0,
         forceReload = false,
+        stopUpdate = false,
         $route = {
           routes: routes,
 
@@ -251,6 +252,14 @@ function $RouteProvider(){
       return match ? dst : null;
     }
 
+    function disableUpdate() {
+      stopUpdate = true;
+    }
+
+    function enableUpdate() {
+      stopUpdate = true;
+    }
+
     function updateRoute() {
       var next = parseRoute(),
           last = $route.current,
@@ -263,7 +272,11 @@ function $RouteProvider(){
         last.scope && last.scope.$emit('$routeUpdate');
       } else {
         forceReload = false;
-        $rootScope.$broadcast('$beforeRouteChange', next, last);
+        $rootScope.$broadcast('$beforeRouteChange', next, last, disableUpdate);
+        if(stopUpdate) {
+          enableUpdate();
+          return;
+        }
         last && last.scope && last.scope.$destroy();
         $route.current = next;
         if (next) {

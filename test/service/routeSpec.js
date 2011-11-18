@@ -48,6 +48,15 @@ describe('$route', function() {
     $route.when('/NONE', {template:'instant update'});
     $rootScope.$digest();
     expect($route.current.template).toEqual('instant update');
+
+    log = '';
+    $rootScope.$on('$beforeRouteChange', function(event, next, current, stopCallback) {
+      log += 'stop();';
+      stopCallback();
+    });
+    $location.path('/Blank').search('ignore');
+    $rootScope.$digest();
+    expect(log).toEqual('before();stop();');
   }));
 
 
