@@ -817,7 +817,7 @@ angularWidget('input', function(inputElement){
           inputElement.val(widget.$viewValue || '');
         };
 
-        inputElement.bind('keydown change', function(event){
+        inputElement.bind('keydown change input', function(event) {
           var key = event.keyCode;
           if (/*command*/   key != 91 &&
               /*modifiers*/ !(15 < key && key < 19) &&
