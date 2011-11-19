@@ -106,6 +106,7 @@ function DocsController($location, $window, $cookies, $filter) {
     // http://docs.disqus.com/help/2/
     window.disqus_shortname = 'angularjs';
     window.disqus_identifier = currentPageId;
+    window.disqus_url = 'http://docs-next.angularjs.org' + currentPageId;
 
     if ($location.host() == 'localhost') {
       window.disqus_developer = 1;
