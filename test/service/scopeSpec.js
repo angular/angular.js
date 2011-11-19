@@ -305,6 +305,24 @@ describe('Scope', function() {
       root.$digest(); //trigger
       expect(listener).not.toHaveBeenCalled();
     }));
+
+    it('should digest only once when current and last values are both NaN', inject(function($rootScope) {
+      $rootScope.$watch(function() { return NaN;});
+
+      expect(function() {
+        $rootScope.$digest();
+      }).not.toThrow();
+    }));
+
+    it('should have watch always fire on first run', inject(function($rootScope) {
+      var spy = jasmine.createSpy();
+      $rootScope.$watch(function() { return NaN;}, spy);
+      $rootScope.$digest();
+      expect(spy).toHaveBeenCalledOnce();
+      spy.reset();
+      $rootScope.$digest();
+      expect(spy).not.toHaveBeenCalled();
+    }));
   });
 
 

@@ -244,7 +244,7 @@ function $RootScopeProvider(){
             array = scope.$$watchers,
             watcher = {
               fn: listenFn,
-              last: Number.NaN, // NaN !== NaN. We used this to force $watch to fire on first run.
+              last: function() {}, //We used this to force $watch to fire on first run.
               get: get,
               exp: watchExp
             };
