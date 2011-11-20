@@ -44,6 +44,8 @@ function MockWindow() {
     replaceState: noop,
     pushState: noop
   };
+
+  this.angular = angular;
 }
 
 describe('browser', function() {
@@ -135,15 +137,16 @@ describe('browser', function() {
           expect(scripts.length).toEqual(1);
           var script = scripts[0];
           var url = script.src.split('?cb=');
+          expect(url[1]).toMatch(/angular\.callbacks\._\d+_\d+/);
+          var callbackId = url[1].split('\.')[2];
           expect(url[0]).toEqual('http://example.org/path');
-          expect(typeof fakeWindow[url[1]]).toEqual('function');
-          fakeWindow[url[1]]('data');
+          expect(typeof fakeWindow.angular.callbacks[callbackId]).toEqual('function');
+          fakeWindow.angular.callbacks[callbackId]('data');
           script.onload();
-
           expect(notify).toHaveBeenCalled();
           expect(log).toEqual('200:data;');
           expect(scripts).toEqual(removedScripts);
-          expect(fakeWindow[url[1]]).toBeUndefined();
+          expect(fakeWindow.angular.callbacks[callbackId]).toBeUndefined();
         });
 
 
@@ -166,7 +169,8 @@ describe('browser', function() {
 
           var script = scripts[0];
           var url = script.src.split('?cb=');
-          fakeWindow[url[1]]('data');
+          var callbackId = url[1].split('\.')[2];
+          fakeWindow.angular.callbacks[callbackId]('data');
           script.onload();
 
           expect(notify).toHaveBeenCalled();

@@ -96,18 +96,19 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
-      var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      window[callbackId] = function(data) {
-        window[callbackId].data = data;
+      window.angular.callbacks = window.angular.callbacks || {};
+      var callbacks = window.angular.callbacks;
+      var callbackId = ('_' + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
+      callbacks[callbackId] = function(data) {
+        callbacks[callbackId].data = data;
       };
-
-      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), function() {
-        if (window[callbackId].data) {
-          completeOutstandingRequest(callback, 200, window[callbackId].data);
+      var script = self.addJs(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId), function() {
+        if (callbacks[callbackId].data) {
+          completeOutstandingRequest(callback, 200, callbacks[callbackId].data);
         } else {
           completeOutstandingRequest(callback);
         }
-        delete window[callbackId];
+        delete callbacks[callbackId];
         body[0].removeChild(script);
       });
     } else {
