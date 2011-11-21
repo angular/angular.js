@@ -306,7 +306,8 @@ describe('Scope', function() {
       expect(listener).not.toHaveBeenCalled();
     }));
 
-    it('should digest only once when current and last values are both NaN', inject(function($rootScope) {
+
+    it('should not infinitely digest when current value is NaN', inject(function($rootScope) {
       $rootScope.$watch(function() { return NaN;});
 
       expect(function() {
@@ -314,14 +315,28 @@ describe('Scope', function() {
       }).not.toThrow();
     }));
 
-    it('should have watch always fire on first run', inject(function($rootScope) {
-      var spy = jasmine.createSpy();
-      $rootScope.$watch(function() { return NaN;}, spy);
+
+    it('should always call the watchr with newVal and oldVal equal on the first run',
+        inject(function($rootScope) {
+      var log = [];
+      function logger(scope, newVal, oldVal) {
+        var val = (newVal === oldVal || (newVal !== oldVal && oldVal !== newVal)) ? newVal : 'xxx';
+        log.push(val);
+      };
+
+      $rootScope.$watch(function() { return NaN;}, logger);
+      $rootScope.$watch(function() { return undefined;}, logger);
+      $rootScope.$watch(function() { return '';}, logger);
+      $rootScope.$watch(function() { return false;}, logger);
+      $rootScope.$watch(function() { return {};}, logger);
+      $rootScope.$watch(function() { return 23;}, logger);
+
       $rootScope.$digest();
-      expect(spy).toHaveBeenCalledOnce();
-      spy.reset();
+      expect(isNaN(log.shift())).toBe(true); //jasmine's toBe and toEqual don't work well with NaNs
+      expect(log).toEqual([undefined, '', false, {}, 23]);
+      log = []
       $rootScope.$digest();
-      expect(spy).not.toHaveBeenCalled();
+      expect(log).toEqual([]);
     }));
   });
 

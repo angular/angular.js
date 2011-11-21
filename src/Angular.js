@@ -634,7 +634,7 @@ function copy(source, destination){
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
- *
+ * @returns {boolean} True if arguments are equal.
  */
 function equals(o1, o2) {
   if (o1 === o2) return true;

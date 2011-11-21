@@ -227,7 +227,7 @@ function JQLiteHasClass(element, selector, _) {
 }
 
 function JQLiteRemoveClass(element, selector) {
-  if (selector && typeof selector !== 'function') {
+  if (selector) {
     forEach(selector.split(' '), function(cssClass) {
       element.className = trim(
           (" " + element.className + " ")
