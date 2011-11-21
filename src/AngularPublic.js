@@ -90,6 +90,7 @@ function ngModule($provide, $injector) {
   $provide.service('$rootScope', $RootScopeProvider);
   $provide.service('$q', $QProvider);
   $provide.service('$sniffer', $SnifferProvider);
+  $provide.service('$sanitize', $SanitizeProvider);
   $provide.service('$templateCache', $TemplateCacheProvider);
   $provide.service('$window', $WindowProvider);
 }
