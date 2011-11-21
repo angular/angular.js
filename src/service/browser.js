@@ -1,16 +1,5 @@
 'use strict';
 
-//////////////////////////////
-// Browser
-//////////////////////////////
-var XHR = window.XMLHttpRequest || function() {
-  try { return new ActiveXObject("Msxml2.XMLHTTP.6.0"); } catch (e1) {}
-  try { return new ActiveXObject("Msxml2.XMLHTTP.3.0"); } catch (e2) {}
-  try { return new ActiveXObject("Msxml2.XMLHTTP"); } catch (e3) {}
-  throw new Error("This browser does not support XMLHttpRequest.");
-};
-
-
 /**
  * @ngdoc object
  * @name angular.module.ng.$browser
@@ -33,7 +22,7 @@ var XHR = window.XMLHttpRequest || function() {
  * @param {object} $log console.log or an object with the same interface.
  * @param {object} $sniffer $sniffer service
  */
-function Browser(window, document, body, XHR, $log, $sniffer) {
+function Browser(window, document, body, $log, $sniffer) {
   var self = this,
       rawDocument = document[0],
       location = window.location,
@@ -44,13 +33,12 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
 
   self.isMock = false;
 
-  //////////////////////////////////////////////////////////////
-  // XHR API
-  //////////////////////////////////////////////////////////////
-  var idCounter = 0;
   var outstandingRequestCount = 0;
   var outstandingRequestCallbacks = [];
 
+  // TODO(vojta): remove this temporary api
+  self.$$completeOutstandingRequest = completeOutstandingRequest;
+  self.$$incOutstandingRequestCount = function() { outstandingRequestCount++; };
 
   /**
    * Executes the `fn` function(supports currying) and decrements the `outstandingRequestCallbacks`
@@ -72,60 +60,6 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
       }
     }
   }
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ng.$browser#xhr
-   * @methodOf angular.module.ng.$browser
-   *
-   * @param {string} method Requested method (get|post|put|delete|head|json)
-   * @param {string} url Requested url
-   * @param {?string} post Post data to send (null if nothing to post)
-   * @param {function(number, string)} callback Function that will be called on response
-   * @param {object=} header additional HTTP headers to send with XHR.
-   *   Standard headers are:
-   *   <ul>
-   *     <li><tt>Content-Type</tt>: <tt>application/x-www-form-urlencoded</tt></li>
-   *     <li><tt>Accept</tt>: <tt>application/json, text/plain, &#42;/&#42;</tt></li>
-   *     <li><tt>X-Requested-With</tt>: <tt>XMLHttpRequest</tt></li>
-   *   </ul>
-   *
-   * @description
-   * Send ajax request
-   */
-  self.xhr = function(method, url, post, callback, headers) {
-    outstandingRequestCount ++;
-    if (lowercase(method) == 'json') {
-      var callbackId = ("angular_" + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      window[callbackId] = function(data) {
-        window[callbackId].data = data;
-      };
-
-      var script = self.addJs(url.replace('JSON_CALLBACK', callbackId), function() {
-        if (window[callbackId].data) {
-          completeOutstandingRequest(callback, 200, window[callbackId].data);
-        } else {
-          completeOutstandingRequest(callback);
-        }
-        delete window[callbackId];
-        body[0].removeChild(script);
-      });
-    } else {
-      var xhr = new XHR();
-      xhr.open(method, url, true);
-      forEach(headers, function(value, key) {
-          if (value) xhr.setRequestHeader(key, value);
-      });
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState == 4) {
-          // normalize IE bug (http://bugs.jquery.com/ticket/1450)
-          var status = xhr.status == 1223 ? 204 : xhr.status;
-          completeOutstandingRequest(callback, status, xhr.responseText);
-        }
-      };
-      xhr.send(post || '');
-    }
-  };
 
   /**
    * @private

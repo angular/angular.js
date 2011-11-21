@@ -90,7 +90,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$xhr.cache', '$element', function(xhr, element){
+    return ['$http', '$templateCache', '$element', function($http, $cache, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -108,13 +108,19 @@ angularWidget('ng:include', function(element){
       });
       this.$watch(function() {return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
-            useScope = scope.$eval(scopeExp);
+            useScope = scope.$eval(scopeExp),
+            fromCache;
+
+        function clearContent() {
+          childScope = null;
+          element.html('');
+        }
 
         while(releaseScopes.length) {
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          xhr('GET', src, null, function(code, response){
+          $http.get(src, {cache: $cache}).on('success', function(response) {
             element.html(response);
             if (useScope) {
               childScope = useScope;
@@ -123,10 +129,9 @@ angularWidget('ng:include', function(element){
             }
             compiler.compile(element)(childScope);
             scope.$eval(onloadExp);
-          }, false, true);
+          }).on('error', clearContent);
         } else {
-          childScope = null;
-          element.html('');
+          clearContent();
         }
       });
     }];
@@ -416,9 +421,9 @@ angularWidget('@ng:repeat', function(expression, element){
         childScope[valueIdent] = value;
         if (keyIdent) childScope[keyIdent] = key;
         childScope.$index = index;
-        childScope.$position = index == 0
-            ? 'first'
-            : (index == collectionLength - 1 ? 'last' : 'middle');
+        childScope.$position = index === 0 ?
+            'first' :
+            (index == collectionLength - 1 ? 'last' : 'middle');
 
         if (!last) {
           linker(childScope, function(clone){
@@ -555,7 +560,7 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$xhr.cache', '$route', '$element', function($xhr, $route, element){
+    return ['$http', '$templateCache', '$route', '$element', function($http, $cache, $route, element) {
       var template;
       var changeCounter = 0;
 
@@ -564,18 +569,24 @@ angularWidget('ng:view', function(element) {
       });
 
       this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
-        var template = $route.current && $route.current.template;
+        var template = $route.current && $route.current.template,
+            fromCache;
+
+        function clearContent() {
+          element.html('');
+        }
+
         if (template) {
-          //xhr's callback must be async, see commit history for more info
-          $xhr('GET', template, function(code, response) {
+          // xhr's callback must be async, see commit history for more info
+          $http.get(template, {cache: $cache}).on('success', function(response) {
             // ignore callback if another route change occured since
             if (newChangeCounter == changeCounter) {
               element.html(response);
               compiler.compile(element)($route.current.scope);
             }
-          });
+          }).on('error', clearContent);
         } else {
-          element.html('');
+          clearContent();
         }
       });
     }];

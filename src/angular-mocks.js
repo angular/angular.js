@@ -21,6 +21,7 @@ angular.module.ngMock = function($provide){
   $provide.service('$browser', angular.module.ngMock.$BrowserProvider);
   $provide.service('$exceptionHandler', angular.module.ngMock.$ExceptionHandlerProvider);
   $provide.service('$log', angular.module.ngMock.$LogProvider);
+  $provide.service('$httpBackend', angular.module.ngMock.$HttpBackendProvider);
 };
 angular.module.ngMock.$inject = ['$provide'];
 
@@ -38,8 +39,6 @@ angular.module.ngMock.$inject = ['$provide'];
  *
  * The following apis can be used in tests:
  *
- * - {@link #xhr} — enables testing of code that uses
- *   the {@link angular.module.ng.$xhr $xhr service} to make XmlHttpRequests.
  * - $browser.defer — enables testing of code that uses
  *   {@link angular.module.ng.$defer $defer} for executing functions via the `setTimeout` api.
  */
@@ -58,6 +57,10 @@ angular.module.ngMock.$Browser = function() {
   self.$$lastUrl = self.$$url; // used by url polling fn
   self.pollFns = [];
 
+  // TODO(vojta): remove this temporary api
+  self.$$completeOutstandingRequest = noop;
+  self.$$incOutstandingRequestCount = noop;
+
 
   // register url polling fn
 
@@ -72,164 +75,6 @@ angular.module.ngMock.$Browser = function() {
     );
 
     return listener;
-  };
-
-
-  /**
-    * @ngdoc method
-    * @name angular.module.ngMock.$browser#xhr
-    * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Generic method for training browser to expect a request in a test and respond to it.
-    *
-    * See also convenience methods for browser training:
-    *
-    * - {@link #xhr.expectGET}
-    * - {@link #xhr.expectPOST}
-    * - {@link #xhr.expectPUT}
-    * - {@link #xhr.expectDELETE}
-    * - {@link #xhr.expectJSON}
-    *
-    * To flush pending requests in tests use
-    * {@link #xhr.flush}.
-    *
-    * @param {string} method Expected HTTP method.
-    * @param {string} url Url path for which a request is expected.
-    * @param {(object|string)=} data Expected body of the (POST) HTTP request.
-    * @param {function(number, *)} callback Callback to call when response is flushed.
-    * @param {object} headers Key-value pairs of expected headers.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link #xhr.flush flushed}.
-    */
-  self.xhr = function(method, url, data, callback, headers) {
-    headers = headers || {};
-    if (data && angular.isObject(data)) data = angular.toJson(data);
-    if (data && angular.isString(data)) url += "|" + data;
-    var expect = expectations[method] || {};
-    var expectation = expect[url];
-    if (!expectation) {
-      throw new Error("Unexpected request for method '" + method + "' and url '" + url + "'.");
-    }
-    requests.push(function() {
-      angular.forEach(expectation.headers, function(value, key){
-        if (headers[key] !== value) {
-          throw new Error("Missing HTTP request header: " + key + ": " + value);
-        }
-      });
-      callback(expectation.code, expectation.response);
-    });
-  };
-  self.xhr.expectations = expectations;
-  self.xhr.requests = requests;
-  self.xhr.expect = function(method, url, data, headers) {
-    if (data && angular.isObject(data)) data = angular.toJson(data);
-    if (data && angular.isString(data)) url += "|" + data;
-    var expect = expectations[method] || (expectations[method] = {});
-    return {
-      respond: function(code, response) {
-        if (!angular.isNumber(code)) {
-          response = code;
-          code = 200;
-        }
-        expect[url] = {code:code, response:response, headers: headers || {}};
-      }
-    };
-  };
-
-  /**
-    * @ngdoc method
-    * @name angular.module.ngMock.$browser#xhr.expectGET
-    * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `GET` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectGET    = angular.bind(self, self.xhr.expect, 'GET');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectPOST
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `POST` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectPOST   = angular.bind(self, self.xhr.expect, 'POST');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectDELETE
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `DELETE` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectDELETE = angular.bind(self, self.xhr.expect, 'DELETE');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectPUT
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `PUT` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectPUT    = angular.bind(self, self.xhr.expect, 'PUT');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.expectJSON
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Trains browser to expect a `JSON` request and respond to it.
-    *
-    * @param {string} url Url path for which a request is expected.
-    * @returns {object} Response configuration object. You can call its `respond()` method to
-    *   configure what should the browser mock return when the response is
-    *   {@link angular.module.ngMock.$browser#xhr.flush flushed}.
-    */
-  self.xhr.expectJSON   = angular.bind(self, self.xhr.expect, 'JSON');
-
-  /**
-   * @ngdoc method
-   * @name angular.module.ngMock.$browser#xhr.flush
-   * @methodOf angular.module.ngMock.$browser
-    *
-    * @description
-    * Flushes all pending requests and executes xhr callbacks with the trained response as the
-    * argument.
-    */
-  self.xhr.flush = function() {
-    if (requests.length == 0) {
-      throw new Error("No xhr requests to be flushed!");
-    }
-
-    while(requests.length) {
-      requests.pop()();
-    }
   };
 
   self.cookieHash = {};
@@ -299,6 +144,13 @@ angular.module.ngMock.$Browser = function() {
   self.$$baseHref = '';
   self.baseHref = function() {
     return this.$$baseHref;
+  };
+
+  self.$$scripts = [];
+  self.addJs = function(url, domId, done) {
+    var script = {url: url, id: domId, done: done};
+    self.$$scripts.push(script);
+    return script;
   };
 }
 angular.module.ngMock.$Browser.prototype = {
@@ -718,6 +570,201 @@ angular.module.ngMock.dump = function(object){
     return log.join('\n' + offset);
   }
 };
+
+/**
+ * @ngdoc object
+ * @name angular.module.ngMock.$httpBackend
+ */
+angular.module.ngMock.$HttpBackendProvider = function() {
+  this.$get = function() {
+    var definitions = [],
+        expectations = [],
+        responses = [];
+
+    function createResponse(status, data, headers) {
+      return angular.isNumber(status) ? [status, data, headers] : [200, status, data];
+    }
+
+    // TODO(vojta): change params to: method, url, data, headers, callback
+    function $httpBackend(method, url, data, callback, headers) {
+      var xhr = new MockXhr(),
+          expectation = expectations[0],
+          wasExpected = false;
+
+      function prettyPrint(data) {
+        if (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
+          return data;
+        return angular.toJson(data);
+      }
+
+      if (expectation && expectation.match(method, url)) {
+        if (!expectation.matchData(data))
+          throw Error('Expected ' + expectation + ' with different data\n' +
+              'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT: ' + data);
+
+        if (!expectation.matchHeaders(headers))
+          throw Error('Expected ' + expectation + ' with different headers\n' +
+              'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT: ' + prettyPrint(headers));
+
+        expectations.shift();
+
+        if (expectation.response) {
+          responses.push(function() {
+            xhr.$$headers = expectation.response[2];
+            callback(expectation.response[0], expectation.response[1]);
+          });
+          return method == 'JSONP' ? undefined : xhr;
+        }
+        wasExpected = true;
+      }
+
+      var i = -1, definition;
+      while ((definition = definitions[++i])) {
+        if (definition.match(method, url, data, headers || {})) {
+          if (!definition.response) throw Error('No response defined !');
+          responses.push(function() {
+            var response = angular.isFunction(definition.response) ?
+                           definition.response(method, url, data, headers) : definition.response;
+            xhr.$$headers = response[2];
+            callback(response[0], response[1]);
+          });
+          return method == 'JSONP' ? undefined : xhr;
+        }
+      }
+      throw wasExpected ?
+          Error('No response defined !') :
+          Error('Unexpected request: ' + method + ' ' + url + '\n' +
+                (expectation ? 'Expected ' + expectation : 'No more request expected'));
+    }
+
+    $httpBackend.when = function(method, url, data, headers) {
+      var definition = new MockHttpExpectation(method, url, data, headers);
+      definitions.push(definition);
+      return {
+        respond: function(status, data, headers) {
+          definition.response = angular.isFunction(status) ? status : createResponse(status, data, headers);
+        }
+      };
+    };
+
+    $httpBackend.expect = function(method, url, data, headers) {
+      var expectation = new MockHttpExpectation(method, url, data, headers);
+      expectations.push(expectation);
+      return {
+        respond: function(status, data, headers) {
+          expectation.response = createResponse(status, data, headers);
+        }
+      };
+    };
+
+    $httpBackend.flush = function(count) {
+      if (!responses.length) throw Error('No pending request to flush !');
+
+      if (angular.isDefined(count)) {
+        while (count--) {
+          if (!responses.length) throw Error('No more pending request to flush !');
+          responses.shift()();
+        }
+      } else {
+        while (responses.length)
+          responses.shift()();
+      }
+      $httpBackend.verifyNoOutstandingExpectation();
+    };
+
+    $httpBackend.verifyNoOutstandingExpectation = function() {
+      if (expectations.length) {
+        throw Error('Unsatisfied requests: ' + expectations.join(', '));
+      }
+    };
+
+    $httpBackend.verifyNoOutstandingRequest = function() {
+      if (responses.length) {
+        throw Error('Unflushed requests: ' + responses.length);
+      }
+    };
+
+    $httpBackend.resetExpectations = function() {
+      expectations = [];
+      responses = [];
+    };
+
+    return $httpBackend;
+  };
+};
+
+function MockHttpExpectation(method, url, data, headers) {
+
+  this.data = data;
+  this.headers = headers;
+
+  this.match = function(m, u, d, h) {
+    if (method != m) return false;
+    if (!this.matchUrl(u)) return false;
+    if (angular.isDefined(d) && !this.matchData(d)) return false;
+    if (angular.isDefined(h) && !this.matchHeaders(h)) return false;
+    return true;
+  };
+
+  this.matchUrl = function(u) {
+    if (!url) return true;
+    if (angular.isFunction(url.test)) return url.test(u);
+    return url == u;
+  };
+
+  this.matchHeaders = function(h) {
+    if (angular.isUndefined(headers)) return true;
+    if (angular.isFunction(headers)) return headers(h);
+    return angular.equals(headers, h);
+  };
+
+  this.matchData = function(d) {
+    if (angular.isUndefined(data)) return true;
+    if (data && angular.isFunction(data.test)) return data.test(d);
+    if (data && !angular.isString(data)) return angular.toJson(data) == d;
+    return data == d;
+  };
+
+  this.toString = function() {
+    return method + ' ' + url;
+  };
+}
+
+function MockXhr() {
+
+  // hack for testing $http, $httpBackend
+  MockXhr.$$lastInstance = this;
+
+  this.open = function(method, url, async) {
+    this.$$method = method;
+    this.$$url = url;
+    this.$$async = async;
+    this.$$headers = {};
+  };
+
+  this.send = function(data) {
+    this.$$data = data;
+  };
+
+  this.setRequestHeader = function(key, value) {
+    this.$$headers[key] = value;
+  };
+
+  this.getResponseHeader = function(name) {
+    return this.$$headers[name];
+  };
+
+  this.getAllResponseHeaders = function() {
+    var lines = [];
+
+    angular.forEach(this.$$headers, function(value, key) {
+      lines.push(key + ': ' + value);
+    });
+    return lines.join('\n');
+  };
+
+  this.abort = noop;
+}
 
 window.jstestdriver && (function(window){
   /**

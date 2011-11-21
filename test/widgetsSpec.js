@@ -1,10 +1,6 @@
 'use strict';
 
 describe("widget", function() {
-  beforeEach(inject(function($provide){
-    $provide.factory('$xhrCache', ['$xhr.cache', identity]);
-  }));
-
   describe('ng:switch', inject(function($rootScope, $compile) {
     it('should switch on value change', inject(function($rootScope, $compile) {
       var element = $compile(
@@ -60,27 +56,37 @@ describe("widget", function() {
 
 
   describe('ng:include', inject(function($rootScope, $compile) {
-    it('should include on external file', inject(function($rootScope, $compile, $xhrCache) {
+
+    function putIntoCache(url, content) {
+      return function($templateCache) {
+        $templateCache.put(url, [200, content, {}]);
+      };
+    }
+
+
+    it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
+        function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
       var element = $compile(element)($rootScope);
       $rootScope.childScope = $rootScope.$new();
       $rootScope.childScope.name = 'misko';
       $rootScope.url = 'myUrl';
-      $xhrCache.data.myUrl = {value:'{{name}}'};
       $rootScope.$digest();
+      $browser.defer.flush();
       expect(element.text()).toEqual('misko');
     }));
 
-    
-    it('should remove previously included text if a falsy value is bound to src',
-        inject(function($rootScope, $compile, $xhrCache) {
+
+    it('should remove previously included text if a falsy value is bound to src', inject(
+          putIntoCache('myUrl', '{{name}}'),
+          function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
       var element = $compile(element)($rootScope);
       $rootScope.childScope = $rootScope.$new();
       $rootScope.childScope.name = 'igor';
       $rootScope.url = 'myUrl';
-      $xhrCache.data.myUrl = {value:'{{name}}'};
       $rootScope.$digest();
+      $browser.defer.flush();
 
       expect(element.text()).toEqual('igor');
 
@@ -90,13 +96,15 @@ describe("widget", function() {
       expect(element.text()).toEqual('');
     }));
 
-    
-    it('should allow this for scope', inject(function($rootScope, $compile, $xhrCache) {
+
+    it('should allow this for scope', inject(putIntoCache('myUrl', '{{"abc"}}'),
+          function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
       var element = $compile(element)($rootScope);
       $rootScope.url = 'myUrl';
-      $xhrCache.data.myUrl = {value:'{{"abc"}}'};
       $rootScope.$digest();
+      $browser.defer.flush();
+
       // TODO(misko): because we are using scope==this, the eval gets registered
       // during the flush phase and hence does not get called.
       // I don't think passing 'this' makes sense. Does having scope on ng:include makes sense?
@@ -106,36 +114,90 @@ describe("widget", function() {
       expect(element.text()).toEqual('abc');
     }));
 
-    
-    it('should evaluate onload expression when a partial is loaded',
-        inject(function($rootScope, $compile, $xhrCache) {
+
+    it('should evaluate onload expression when a partial is loaded', inject(
+        putIntoCache('myUrl', 'my partial'),
+        function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
       var element = $compile(element)($rootScope);
 
       expect($rootScope.loaded).not.toBeDefined();
 
       $rootScope.url = 'myUrl';
-      $xhrCache.data.myUrl = {value:'my partial'};
       $rootScope.$digest();
+      $browser.defer.flush();
+
       expect(element.text()).toEqual('my partial');
       expect($rootScope.loaded).toBe(true);
     }));
 
-    
-    it('should destroy old scope', inject(function($rootScope, $compile, $xhrCache) {
+
+    it('should destroy old scope', inject(putIntoCache('myUrl', 'my partial'),
+          function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url"></ng:include>');
       var element = $compile(element)($rootScope);
 
       expect($rootScope.$$childHead).toBeFalsy();
 
       $rootScope.url = 'myUrl';
-      $xhrCache.data.myUrl = {value:'my partial'};
       $rootScope.$digest();
+      $browser.defer.flush();
       expect($rootScope.$$childHead).toBeTruthy();
 
       $rootScope.url = null;
       $rootScope.$digest();
       expect($rootScope.$$childHead).toBeFalsy();
+    }));
+
+    it('should do xhr request and cache it',
+        inject(function($rootScope, $httpBackend, $compile, $browser) {
+      var element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+      $httpBackend.expect('GET', 'myUrl').respond('my partial');
+
+      $rootScope.url = 'myUrl';
+      $rootScope.$digest();
+      $httpBackend.flush();
+      expect(element.text()).toEqual('my partial');
+
+      $rootScope.url = null;
+      $rootScope.$digest();
+      expect(element.text()).toEqual('');
+
+      $rootScope.url = 'myUrl';
+      $rootScope.$digest();
+      $browser.defer.flush();
+      expect(element.text()).toEqual('my partial');
+      dealoc($rootScope);
+    }));
+
+    it('should clear content when error during xhr request',
+        inject(function($httpBackend, $compile, $rootScope) {
+      var element = $compile('<ng:include src="url">content</ng:include>')($rootScope);
+      $httpBackend.expect('GET', 'myUrl').respond(404, '');
+
+      $rootScope.url = 'myUrl';
+      $rootScope.$digest();
+      $httpBackend.flush();
+
+      expect(element.text()).toBe('');
+    }));
+
+    it('should be async even if served from cache', inject(
+          putIntoCache('myUrl', 'my partial'),
+          function($rootScope, $compile, $browser) {
+      var element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+
+      $rootScope.url = 'myUrl';
+
+      var called = 0;
+      // we want to assert only during first watch
+      $rootScope.$watch(function() {
+        if (!called++) expect(element.text()).toBe('');
+      });
+
+      $rootScope.$digest();
+      $browser.defer.flush();
+      expect(element.text()).toBe('my partial');
     }));
   }));
 
@@ -455,33 +517,33 @@ describe("widget", function() {
 
 
     it('should load content via xhr when route changes',
-        inject(function($rootScope, $compile, $browser, $location, $route) {
+        inject(function($rootScope, $compile, $httpBackend, $location, $route) {
       $route.when('/foo', {template: 'myUrl1'});
       $route.when('/bar', {template: 'myUrl2'});
 
       expect(element.text()).toEqual('');
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('4');
 
       $location.path('/bar');
-      $browser.xhr.expectGET('myUrl2').respond('angular is da best');
+      $httpBackend.expect('GET', 'myUrl2').respond('angular is da best');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('angular is da best');
     }));
 
     it('should remove all content when location changes to an unknown route',
-        inject(function($rootScope, $compile, $location, $browser, $route) {
+        inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       $route.when('/foo', {template: 'myUrl1'});
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('4');
 
       $location.path('/unknown');
@@ -490,14 +552,14 @@ describe("widget", function() {
     }));
 
     it('should chain scopes and propagate evals to the child scope',
-        inject(function($rootScope, $compile, $location, $browser, $route) {
+        inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       $route.when('/foo', {template: 'myUrl1'});
       $rootScope.parentVar = 'parent';
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{parentVar}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{parentVar}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush();
+      $httpBackend.flush();
       expect(element.text()).toEqual('parent');
 
       $rootScope.parentVar = 'new parent';
@@ -506,10 +568,11 @@ describe("widget", function() {
     }));
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
+      // TODO(vojta): refactor this test
       var injector = angular.injector('ng', 'ngMock');
       var myApp = injector.get('$rootScope');
-      var $browser = injector.get('$browser');
-      $browser.xhr.expectGET('includePartial.html').respond('view: <ng:view></ng:view>');
+      var $httpBackend = injector.get('$httpBackend');
+      $httpBackend.expect('GET', 'includePartial.html').respond('view: <ng:view></ng:view>');
       injector.get('$location').path('/foo');
 
       var $route = injector.get('$route');
@@ -521,9 +584,8 @@ describe("widget", function() {
           '</div>')(myApp);
       myApp.$apply();
 
-      $browser.xhr.expectGET('viewPartial.html').respond('content');
-      myApp.$digest();
-      $browser.xhr.flush();
+      $httpBackend.expect('GET', 'viewPartial.html').respond('content');
+      $httpBackend.flush();
 
       expect(myApp.$element.text()).toEqual('include: view: content');
       expect($route.current.template).toEqual('viewPartial.html');
@@ -531,11 +593,11 @@ describe("widget", function() {
     }));
 
     it('should initialize view template after the view controller was initialized even when ' +
-       'templates were cached', inject(function($rootScope, $compile, $location, $browser, $route) {
+       'templates were cached',
+       inject(function($rootScope, $compile, $location, $httpBackend, $route, $browser) {
       //this is a test for a regression that was introduced by making the ng:view cache sync
 
       $route.when('/foo', {controller: ParentCtrl, template: 'viewPartial.html'});
-
       $rootScope.log = [];
 
       function ParentCtrl() {
@@ -547,12 +609,12 @@ describe("widget", function() {
       };
 
       $location.path('/foo');
-      $browser.xhr.expectGET('viewPartial.html').
+      $httpBackend.expect('GET', 'viewPartial.html').
           respond('<div ng:init="log.push(\'init\')">' +
                     '<div ng:controller="ChildCtrl"></div>' +
                   '</div>');
       $rootScope.$apply();
-      $browser.xhr.flush();
+      $httpBackend.flush();
 
       expect($rootScope.log).toEqual(['parent', 'init', 'child']);
 
@@ -569,7 +631,7 @@ describe("widget", function() {
     }));
 
     it('should discard pending xhr callbacks if a new route is requested before the current ' +
-        'finished loading', inject(function($route, $rootScope, $location, $browser) {
+        'finished loading', inject(function($route, $rootScope, $location, $httpBackend) {
       // this is a test for a bad race condition that affected feedback
 
       $route.when('/foo', {template: 'myUrl1'});
@@ -578,14 +640,45 @@ describe("widget", function() {
       expect($rootScope.$element.text()).toEqual('');
 
       $location.path('/foo');
-      $browser.xhr.expectGET('myUrl1').respond('<div>{{1+3}}</div>');
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
       $rootScope.$digest();
       $location.path('/bar');
-      $browser.xhr.expectGET('myUrl2').respond('<div>{{1+1}}</div>');
+      $httpBackend.expect('GET', 'myUrl2').respond('<div>{{1+1}}</div>');
       $rootScope.$digest();
-      $browser.xhr.flush(); // now that we have to requests pending, flush!
+      $httpBackend.flush(); // now that we have to requests pending, flush!
 
       expect($rootScope.$element.text()).toEqual('2');
+    }));
+
+    it('should clear the content when error during xhr request',
+        inject(function($route, $location, $rootScope, $httpBackend) {
+      $route.when('/foo', {controller: noop, template: 'myUrl1'});
+
+      $location.path('/foo');
+      $httpBackend.expect('GET', 'myUrl1').respond(404, '');
+      $rootScope.$element.text('content');
+
+      $rootScope.$digest();
+      $httpBackend.flush();
+
+      expect($rootScope.$element.text()).toBe('');
+    }));
+
+    it('should be async even if served from cache',
+        inject(function($route, $rootScope, $location, $templateCache, $browser) {
+      $templateCache.put('myUrl1', [200, 'my partial', {}]);
+      $route.when('/foo', {controller: noop, template: 'myUrl1'});
+      $location.path('/foo');
+
+      var called = 0;
+      // we want to assert only during first watch
+      $rootScope.$watch(function() {
+        if (!called++) expect(element.text()).toBe('');
+      });
+
+      $rootScope.$digest();
+      $browser.defer.flush();
+      expect(element.text()).toBe('my partial');
     }));
   });
 

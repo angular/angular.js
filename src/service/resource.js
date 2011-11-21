@@ -3,15 +3,14 @@
 /**
  * @ngdoc object
  * @name angular.module.ng.$resource
- * @requires $xhr.cache
+ * @requires $http
  *
  * @description
  * A factory which creates a resource object that lets you interact with
  * [RESTful](http://en.wikipedia.org/wiki/Representational_State_Transfer) server-side data sources.
  *
  * The returned resource object has action methods which provide high-level behaviors without
- * the need to interact with the low level {@link angular.module.ng.$xhr $xhr} service or
- * raw XMLHttpRequest.
+ * the need to interact with the low level {@link angular.module.ng.$http $http} service.
  *
  * @param {string} url A parameterized URL template with parameters prefixed by `:` as in
  *   `/user/:username`.
@@ -40,7 +39,7 @@
  *   - `action` – {string} – The name of action. This name becomes the name of the method on your
  *     resource object.
  *   - `method` – {string} – HTTP request method. Valid methods are: `GET`, `POST`, `PUT`, `DELETE`,
- *     and `JSON` (also known as JSONP).
+ *     and `JSONP`
  *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
  *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
@@ -57,7 +56,7 @@
  *         'remove': {method:'DELETE'},
  *         'delete': {method:'DELETE'} };
  *
- *   Calling these methods invoke an {@link angular.module.ng.$xhr} with the specified http method,
+ *   Calling these methods invoke an {@link angular.module.ng.$http} with the specified http method,
  *   destination and parameters. When the data is returned from the server then the object is an
  *   instance of the resource class `save`, `remove` and `delete` actions are available on it as
  *   methods with the `$` prefix. This allows you to easily perform CRUD operations (create, read,
@@ -128,7 +127,7 @@
  * The object returned from this function execution is a resource "class" which has "static" method
  * for each action in the definition.
  *
- * Calling these methods invoke `$xhr` on the `url` template with the given `method` and `params`.
+ * Calling these methods invoke `$http` on the `url` template with the given `method` and `params`.
  * When the data is returned from the server then the object is an instance of the resource type and
  * all of the non-GET methods are available with `$` prefix. This allows you to easily support CRUD
  * operations (create, read, update, delete) on server-side data.
@@ -163,7 +162,7 @@
            this.Activity = $resource(
              'https://www.googleapis.com/buzz/v1/activities/:userId/:visibility/:activityId/:comments',
              {alt:'json', callback:'JSON_CALLBACK'},
-             {get:{method:'JSON', params:{visibility:'@self'}}, replies: {method:'JSON', params:{visibility:'@self', comments:'@comments'}}}
+             {get:{method:'JSONP', params:{visibility:'@self'}}, replies: {method:'JSONP', params:{visibility:'@self', comments:'@comments'}}}
            );
          }
 
@@ -201,8 +200,8 @@
     </doc:example>
  */
 function $ResourceProvider() {
-  this.$get = ['$xhr.cache', function($xhr){
-    var resource = new ResourceFactory($xhr);
+  this.$get = ['$http', function($http) {
+    var resource = new ResourceFactory($http);
     return bind(resource, resource.route);
   }];
 }
