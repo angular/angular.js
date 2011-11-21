@@ -16,6 +16,102 @@
  *
  */
 
+
+
+/**
+ * @ngdoc service
+ * @name angular.module.ng.$sanitize
+ * @function
+ *
+ * @description
+ *   The input is sanitized by parsing the html into tokens. All safe tokens (from a whitelist) are
+ *   then serialized back to properly escaped html string. This means that no unsafe input can make
+ *   it into the returned string, however, since our parser is more strict than a typical browser
+ *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
+ *   browser, won't make it through the sanitizer.
+ *
+ * @param {string} html Html input.
+ * @returns {string} Sanitized html.
+ *
+ * @example
+   <doc:example>
+     <doc:source>
+       <script>
+         function Ctrl() {
+           this.snippet =
+             '<p style="color:blue">an html\n' +
+             '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
+             'snippet</p>';
+         }
+       </script>
+       <div ng:controller="Ctrl">
+          Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
+           <table>
+             <tr>
+               <td>Filter</td>
+               <td>Source</td>
+               <td>Rendered</td>
+             </tr>
+             <tr id="html-filter">
+               <td>html filter</td>
+               <td>
+                 <pre>&lt;div ng:bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre>
+               </td>
+               <td>
+                 <div ng:bind-html="snippet"></div>
+               </td>
+             </tr>
+             <tr id="escaped-html">
+               <td>no filter</td>
+               <td><pre>&lt;div ng:bind-="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng:bind="snippet"></div></td>
+             </tr>
+             <tr id="html-unsafe-filter">
+               <td>unsafe html filter</td>
+               <td><pre>&lt;div ng:bind-html-unsafe="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng:bind-html-unsafe="snippet"></div></td>
+             </tr>
+           </table>
+         </div>
+     </doc:source>
+     <doc:scenario>
+       it('should sanitize the html snippet ', function() {
+         expect(using('#html-filter').element('div').html()).
+           toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
+       });
+
+       it('should escape snippet without any filter', function() {
+         expect(using('#escaped-html').element('div').html()).
+           toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
+                "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
+                "snippet&lt;/p&gt;");
+       });
+
+       it('should inline raw snippet if filtered as unsafe', function() {
+         expect(using('#html-unsafe-filter').element("div").html()).
+           toBe("<p style=\"color:blue\">an html\n" +
+                "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
+                "snippet</p>");
+       });
+
+       it('should update', function() {
+         input('snippet').enter('new <b>text</b>');
+         expect(using('#html-filter').binding('snippet')).toBe('new <b>text</b>');
+         expect(using('#escaped-html').element('div').html()).toBe("new &lt;b&gt;text&lt;/b&gt;");
+         expect(using('#html-unsafe-filter').binding("snippet")).toBe('new <b>text</b>');
+       });
+     </doc:scenario>
+   </doc:example>
+ */
+
+function $SanitizeProvider() {
+  this.$get = valueFn(function(html) {
+    var buf = [];
+    htmlParser(html, htmlSanitizeWriter(buf));
+    return buf.join('');
+  });
+};
+
 // Regular Expressions for parsing tags and attributes
 var START_TAG_REGEXP = /^<\s*([\w:-]+)((?:\s+[\w:-]+(?:\s*=\s*(?:(?:"[^"]*")|(?:'[^']*')|[^>\s]+))?)*)\s*(\/?)\s*>/,
   END_TAG_REGEXP = /^<\s*\/\s*([\w:-]+)[^>]*>/,
