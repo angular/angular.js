@@ -90,7 +90,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$xhr.cache', '$element', function(xhr, element){
+    return ['$xhr.cache', '$autoScroll', '$element', function($xhr, $autoScroll, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -114,7 +114,7 @@ angularWidget('ng:include', function(element){
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          xhr('GET', src, null, function(code, response){
+          $xhr('GET', src, null, function(code, response) {
             element.html(response);
             if (useScope) {
               childScope = useScope;
@@ -122,6 +122,7 @@ angularWidget('ng:include', function(element){
               releaseScopes.push(childScope = scope.$new());
             }
             compiler.compile(element)(childScope);
+            $autoScroll();
             scope.$eval(onloadExp);
           }, false, true);
         } else {
@@ -555,7 +556,7 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$xhr.cache', '$route', '$element', function($xhr, $route, element){
+    return ['$xhr.cache', '$route', '$autoScroll', '$element', function($xhr, $route, $autoScroll, element) {
       var template;
       var changeCounter = 0;
 
@@ -572,6 +573,7 @@ angularWidget('ng:view', function(element) {
             if (newChangeCounter == changeCounter) {
               element.html(response);
               compiler.compile(element)($route.current.scope);
+              $autoScroll();
             }
           });
         } else {

@@ -75,7 +75,6 @@ function DocsController($location, $window, $cookies, $filter) {
     scope.loading--;
     scope.partialTitle = scope.futurePartialTitle;
     SyntaxHighlighter.highlight();
-    $window.scrollTo(0,0);
     $window._gaq.push(['_trackPageview', currentPageId]);
     loadDisqus(currentPageId);
   };
