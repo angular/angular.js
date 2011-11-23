@@ -522,9 +522,21 @@ function parser(text, json, $filter){
     consume(']');
     return extend(
       function(self){
-        var o = obj(self);
-        var i = indexFn(self);
-        return (o) ? o[i] : undefined;
+        var o = obj(self),
+            i = indexFn(self),
+            v, p;
+
+        if (!o) return undefined;
+        v = o[i];
+        if (v && v.then) {
+          p = v;
+          if (!('$$v' in v)) {
+            p.$$v = undefined;
+            p.then(function(val) { p.$$v = val; });
+          }
+          v = v.$$v;
+        }
+        return v;
       }, {
         assign:function(self, value){
           return obj(self)[indexFn(self)] = value;
@@ -673,7 +685,7 @@ function getterFn(path) {
   var fn = getterFnCache[path];
   if (fn) return fn;
 
-  var code = 'var l, fn, t;\n';
+  var code = 'var l, fn, p;\n';
   forEach(path.split('.'), function(key) {
     key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
     code += 'if(!s) return s;\n' +
@@ -683,11 +695,18 @@ function getterFn(path) {
               ' fn=function(){ return l' + key + '.apply(l, arguments); };\n' +
               ' fn.$unboundFn=s;\n' +
               ' s=fn;\n' +
+            '} else if (s && s.then) {\n' +
+              ' if (!("$$v" in s)) {\n' +
+                ' p=s;\n' +
+                ' p.$$v = undefined;\n' +
+                ' p.then(function(v) {p.$$v=v;});\n' +
+                '}\n' +
+              ' s=s.$$v\n' +
             '}\n';
   });
   code += 'return s;';
   fn = Function('s', code);
-  fn["toString"] = function() { return code; };
+  fn.toString = function() { return code; };
 
   return getterFnCache[path] = fn;
 }
