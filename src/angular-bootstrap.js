@@ -107,6 +107,8 @@
     // empty the cache to prevent mem leaks
     globalVars = {};
 
+    bindJQuery();
+
     angularInit(config, document);
   }
 
