@@ -33,7 +33,7 @@
                  // watch the 'compile' expression for changes
                 return scope.$eval(attrs.compile);
               },
-              function(scope, value) {
+              function(value) {
                 // when the 'compile' expression changes
                 // assign it into the current DOM
                 element.html(value);
@@ -631,7 +631,7 @@ function $CompileProvider($provide) {
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
             parent.data('$binding', bindings).addClass('ng-binding');
-            scope.$watch(interpolateFn, function(scope, value) {
+            scope.$watch(interpolateFn, function(value) {
               node[0].nodeValue = value;
             });
           })
@@ -656,7 +656,7 @@ function $CompileProvider($provide) {
         compile: function(element, attr) {
           if (interpolateFn) {
             return function(scope, element, attr) {
-              scope.$watch(interpolateFn, function(scope, value){
+              scope.$watch(interpolateFn, function(value) {
                 attr.$set(name, value);
               });
             };

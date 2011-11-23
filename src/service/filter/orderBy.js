@@ -63,7 +63,7 @@
      </doc:source>
      <doc:scenario>
        it('should be reverse ordered by aged', function() {
-         expect(binding('predicate')).toBe('Sorting predicate = -age; reverse = ');
+         expect(binding('predicate')).toBe('-age');
          expect(repeater('table.friend', 'friend in friends').column('friend.age')).
            toEqual(['35', '29', '21', '19', '10']);
          expect(repeater('table.friend', 'friend in friends').column('friend.name')).

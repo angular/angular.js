@@ -277,20 +277,20 @@ The following example demonstrates:
 
 This example shows how to implement a custom HTML editor widget in Angular.
 
-    <doc:example>
+    <doc:example module="formModule">
       <doc:source>
         <script>
           function EditorCntl($scope) {
             $scope.htmlContent = '<b>Hello</b> <i>World</i>!';
           }
 
-          HTMLEditorWidget.$inject = ['$element', '$scope', 'htmlFilter'];
-          function HTMLEditorWidget(element, scope, htmlFilter) {
+          HTMLEditorWidget.$inject = ['$scope', '$element', '$sanitize'];
+          function HTMLEditorWidget(scope, element, $sanitize) {
             scope.$parseModel = function() {
               // need to protect for script injection
               try {
-                this.$viewValue = htmlFilter(
-                  this.$modelValue || '').get();
+                this.$viewValue = $sanitize(
+                  this.$modelValue || '');
                 if (this.$error.HTML) {
                   // we were invalid, but now we are OK.
                   this.$emit('$valid', 'HTML');
@@ -312,24 +312,25 @@ This example shows how to implement a custom HTML editor widget in Angular.
             });
           }
 
-          angular.directive('ng:html-editor-model', function() {
-            return ['$formFactory', '$element', function ($formFactory, element) {
-              var exp = element.attr('ng:html-editor-model'),
-                  form = $formFactory.forElement(element),
-                  widget;
-              element.attr('contentEditable', true);
-              widget = form.$createWidget({
-                scope: this,
-                model: exp,
-                controller: HTMLEditorWidget,
-                controllerArgs: {$element: element}});
-              // if the element is destroyed, then we need to
-              // notify the form.
-              element.bind('$destroy', function() {
-                widget.$destroy();
-              });
-            }];
-          });
+          angular.module.formModule = function($compileProvider){
+            $compileProvider.directive('ngHtmlEditorModel', function ($formFactory) {
+              return function(scope, element, attr) {
+                var form = $formFactory.forElement(element),
+                    widget;
+                element.attr('contentEditable', true);
+                widget = form.$createWidget({
+                  scope: scope,
+                  model: attr.ngHtmlEditorModel,
+                  controller: HTMLEditorWidget,
+                  controllerArgs: {$element: element}});
+                // if the element is destroyed, then we need to
+                // notify the form.
+                element.bind('$destroy', function() {
+                  widget.$destroy();
+                });
+              };
+            });
+          };
         </script>
         <form name='editorForm' ng:controller="EditorCntl">
           <div ng:html-editor-model="htmlContent"></div>
@@ -337,7 +338,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
           HTML: <br/>
           <textarea ng:model="htmlContent" cols="80"></textarea>
           <hr/>
-          <pre>editorForm = {{editorForm}}</pre>
+          <pre>editorForm = {{editorForm|json}}</pre>
         </form>
       </doc:source>
       <doc:scenario>

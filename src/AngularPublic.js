@@ -60,16 +60,43 @@ function publishExternalAPI(angular){
 
   angularModule('ng', ['ngLocale'], ['$provide',
     function ngModule($provide) {
-    // TODO(misko): temporary services to get the compiler working;
-      $provide.value('$textMarkup', angularTextMarkup);
-      $provide.value('$attrMarkup', angularAttrMarkup);
-      $provide.value('$directive', angularDirective);
-      $provide.value('$widget', angularWidget);
-
       $provide.service('$anchorScroll', $AnchorScrollProvider);
       $provide.service('$browser', $BrowserProvider);
       $provide.service('$cacheFactory', $CacheFactoryProvider);
-      $provide.service('$compile', $CompileProvider);
+      $provide.service('$compile', $CompileProvider).
+        directive({
+            a: htmlAnchorDirective,
+            input: inputDirective,
+            textarea: inputDirective,
+            form: ngFormDirective,
+            select: selectDirective,
+            option: optionDirective,
+            ngBind: ngBindDirective,
+            ngBindHtml: ngBindHtmlDirective,
+            ngBindHtmlUnsafe: ngBindHtmlUnsafeDirective,
+            ngBindTemplate: ngBindTemplateDirective,
+            ngBindAttr: ngBindAttrDirective,
+            ngClass: ngClassDirective,
+            ngClassEven: ngClassEvenDirective,
+            ngClassOdd: ngClassOddDirective,
+            ngCloak: ngCloakDirective,
+            ngController: ngControllerDirective,
+            ngForm: ngFormDirective,
+            ngHide: ngHideDirective,
+            ngInclude: ngIncludeDirective,
+            ngInit: ngInitDirective,
+            ngNonBindable: ngNonBindableDirective,
+            ngPluralize: ngPluralizeDirective,
+            ngRepeat: ngRepeatDirective,
+            ngShow: ngShowDirective,
+            ngSubmit: ngSubmitDirective,
+            ngStyle: ngStyleDirective,
+            ngSwitch: ngSwitchDirective,
+            ngOptions: ngOptionsDirective,
+            ngView: ngViewDirective
+          }).
+        directive(ngEventDirectives).
+        directive(ngAttributeAliasDirectives);
       $provide.service('$controller', $ControllerProvider);
       $provide.service('$cookies', $CookiesProvider);
       $provide.service('$cookieStore', $CookieStoreProvider);
@@ -89,9 +116,9 @@ function publishExternalAPI(angular){
       $provide.service('$routeParams', $RouteParamsProvider);
       $provide.service('$rootScope', $RootScopeProvider);
       $provide.service('$q', $QProvider);
+      $provide.service('$sanitize', $SanitizeProvider);
       $provide.service('$sniffer', $SnifferProvider);
       $provide.service('$templateCache', $TemplateCacheProvider);
       $provide.service('$window', $WindowProvider);
     }]);
-}
-
+};

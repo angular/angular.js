@@ -82,28 +82,31 @@
       </doc:scenario>
     </doc:example>
  */
-angularWidget('form', function(form){
-  this.descend(true);
-  this.directives(true);
-  return ['$formFactory', '$element', function($formFactory, formElement) {
-    var name = formElement.attr('name'),
-        parentForm = $formFactory.forElement(formElement),
-        form = $formFactory(parentForm);
-    formElement.data('$form', form);
-    formElement.bind('submit', function(event) {
-      if (!formElement.attr('action')) event.preventDefault();
-    });
-    if (name) {
-      this[name] = form;
+var ngFormDirective = ['$formFactory', function($formFactory) {
+  return {
+    restrict: 'E',
+    compile: function() {
+      return {
+        pre: function(scope, formElement, attr) {
+          var name = attr.name,
+            parentForm = $formFactory.forElement(formElement),
+            form = $formFactory(parentForm);
+          formElement.data('$form', form);
+          formElement.bind('submit', function(event){
+            if (!attr.action) event.preventDefault();
+          });
+          if (name) {
+            scope[name] = form;
+          }
+          watch('valid');
+          watch('invalid');
+          function watch(name) {
+            form.$watch('$' + name, function(value) {
+              formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
+            });
+          }
+        }
+      };
     }
-    watch('valid');
-    watch('invalid');
-    function watch(name) {
-      form.$watch('$' + name, function(value) {
-        formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
-      });
-    }
-  }];
-});
-
-angularWidget('ng:form', angularWidget('form'));
+  };
+}];

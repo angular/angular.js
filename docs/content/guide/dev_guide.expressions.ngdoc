@@ -185,16 +185,20 @@ Extensions: You can further extend the expression vocabulary by adding new metho
    {name:'Julie', phone:'555-8765'}]"></div>
  Search: <input ng:model="searchText"/>
  <table class="example3">
-   <tr><th>Name</th><th>Phone</th><tr>
-   <tr ng:repeat="friend in friends | filter:searchText">
-     <td>{{friend.name}}</td>
-     <td>{{friend.phone}}</td>
-   </tr>
+   <thead>
+     <tr><th>Name</th><th>Phone</th><tr>
+   </thead>
+   <tbody>
+     <tr ng:repeat="friend in friends | filter:searchText">
+       <td>{{friend.name}}</td>
+       <td>{{friend.phone}}</td>
+     </tr>
+    </tbody>
  </table>
 </doc:source>
 <doc:scenario>
  it('should filter the list', function() {
-    var tr = using('table.example3').repeater('tr.ng-attr-widget');
+    var tr = using('table.example3 tbody').repeater('tr');
     expect(tr.count()).toBe(5);
     input('searchText').enter('a');
     expect(tr.count()).toBe(2);

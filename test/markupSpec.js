@@ -1,33 +1,38 @@
 'use strict';
 
 describe("markups", function() {
+  var element;
+
+  afterEach(function() {
+    dealoc(element);
+  });
 
   it('should translate {{}} in text', inject(function($rootScope, $compile) {
-    var element = $compile('<div>hello {{name}}!</div>')($rootScope)
-    expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name"></span>!</div>');
+    element = $compile('<div>hello {{name}}!</div>')($rootScope)
+    $rootScope.$digest();
+    expect(sortedHtml(element)).toEqual('<div>hello !</div>');
     $rootScope.name = 'Misko';
     $rootScope.$digest();
-    expect(sortedHtml(element)).toEqual('<div>hello <span ng:bind="name">Misko</span>!</div>');
+    expect(sortedHtml(element)).toEqual('<div>hello Misko!</div>');
   }));
 
   it('should translate {{}} in terminal nodes', inject(function($rootScope, $compile) {
-    var element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope)
+    element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope)
     $rootScope.$digest();
     expect(sortedHtml(element).replace(' selected="true"', '')).
       toEqual('<select ng:model="x">' +
-                '<option ng:bind-template="Greet {{name}}!">Greet !</option>' +
+                '<option>Greet !</option>' +
               '</select>');
     $rootScope.name = 'Misko';
     $rootScope.$digest();
     expect(sortedHtml(element).replace(' selected="true"', '')).
       toEqual('<select ng:model="x">' +
-                '<option ng:bind-template="Greet {{name}}!">Greet Misko!</option>' +
+                '<option>Greet Misko!</option>' +
               '</select>');
   }));
 
   it('should translate {{}} in attributes', inject(function($rootScope, $compile) {
-    var element = $compile('<div src="http://server/{{path}}.png"/>')($rootScope)
-    expect(element.attr('ng:bind-attr')).toEqual('{"src":"http://server/{{path}}.png"}');
+    element = $compile('<div src="http://server/{{path}}.png"/>')($rootScope)
     $rootScope.path = 'a/b';
     $rootScope.$digest();
     expect(element.attr('src')).toEqual("http://server/a/b.png");
@@ -56,36 +61,38 @@ describe("markups", function() {
 
 
     it('should populate value attribute on OPTION', inject(function($rootScope, $compile) {
-      var element = $compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
+      element = $compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
       expect(element).toHaveValue('abc');
     }));
 
     it('should ignore value if already exists', inject(function($rootScope, $compile) {
-      var element = $compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
+      element = $compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
       expect(element).toHaveValue('abc');
     }));
 
     it('should set value even if newlines present', inject(function($rootScope, $compile) {
-      var element = $compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
+      element = $compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
       expect(element).toHaveValue('\nabc\n');
     }));
 
     it('should set value even if self closing HTML', inject(function($rootScope, $compile) {
       // IE removes the \n from option, which makes this test pointless
       if (msie) return;
-      var element = $compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
+      element = $compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
       expect(element).toHaveValue('\n');
     }));
 
   });
 
   it('should bind href', inject(function($rootScope, $compile) {
-    var element = $compile('<a ng:href="{{url}}"></a>')($rootScope)
-    expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}"}"></a>');
+    element = $compile('<a ng:href="{{url}}"></a>')($rootScope)
+    $rootScope.url = 'http://server'
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('http://server');
   }));
 
   it('should bind disabled', inject(function($rootScope, $compile) {
-    var element = $compile('<button ng:disabled="{{isDisabled}}">Button</button>')($rootScope)
+    element = $compile('<button ng:disabled="{{isDisabled}}">Button</button>')($rootScope)
     $rootScope.isDisabled = false;
     $rootScope.$digest();
     expect(element.attr('disabled')).toBeFalsy();
@@ -95,7 +102,7 @@ describe("markups", function() {
   }));
 
   it('should bind checked', inject(function($rootScope, $compile) {
-    var element = $compile('<input type="checkbox" ng:checked="{{isChecked}}" />')($rootScope)
+    element = $compile('<input type="checkbox" ng:checked="{{isChecked}}" />')($rootScope)
     $rootScope.isChecked = false;
     $rootScope.$digest();
     expect(element.attr('checked')).toBeFalsy();
@@ -105,7 +112,7 @@ describe("markups", function() {
   }));
 
   it('should bind selected', inject(function($rootScope, $compile) {
-    var element = $compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>')($rootScope)
+    element = $compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>')($rootScope)
     jqLite(document.body).append(element)
     $rootScope.isSelected=false;
     $rootScope.$digest();
@@ -116,7 +123,7 @@ describe("markups", function() {
   }));
 
   it('should bind readonly', inject(function($rootScope, $compile) {
-    var element = $compile('<input type="text" ng:readonly="{{isReadonly}}" />')($rootScope)
+    element = $compile('<input type="text" ng:readonly="{{isReadonly}}" />')($rootScope)
     $rootScope.isReadonly=false;
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeFalsy();
@@ -126,7 +133,7 @@ describe("markups", function() {
   }));
 
   it('should bind multiple', inject(function($rootScope, $compile) {
-    var element = $compile('<select ng:multiple="{{isMultiple}}"></select>')($rootScope)
+    element = $compile('<select ng:multiple="{{isMultiple}}"></select>')($rootScope)
     $rootScope.isMultiple=false;
     $rootScope.$digest();
     expect(element.attr('multiple')).toBeFalsy();
@@ -136,38 +143,37 @@ describe("markups", function() {
   }));
 
   it('should bind src', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:src="{{url}}" />')($rootScope)
+    element = $compile('<div ng:src="{{url}}" />')($rootScope)
     $rootScope.url = 'http://localhost/';
     $rootScope.$digest();
     expect(element.attr('src')).toEqual('http://localhost/');
   }));
 
   it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
-    var element = $compile('<a ng:href="{{url}}" rel="{{rel}}"></a>')($rootScope)
-    expect(sortedHtml(element)).toEqual('<a ng:bind-attr="{"href":"{{url}}","rel":"{{rel}}"}"></a>');
+    element = $compile('<a ng:href="{{url}}" rel="{{rel}}"></a>')($rootScope);
+    $rootScope.url = 'http://server';
+    $rootScope.rel = 'REL';
+    $rootScope.$digest();
+    expect(element.attr('href')).toEqual('http://server');
+    expect(element.attr('rel')).toEqual('REL');
   }));
 
-  it('should bind Text with no Bindings', inject(function($compile) {
-    var $rootScope;
-    function newScope (){
-      return $rootScope = angular.injector(['ng']).get('$rootScope');
-    }
+  it('should bind Text with no Bindings', inject(function($compile, $rootScope) {
     forEach(['checked', 'disabled', 'multiple', 'readonly', 'selected'], function(name) {
-      var element = $compile('<div ng:' + name + '="some"></div>')(newScope())
-      expect(element.attr('ng:bind-attr')).toBe('{"' + name +'":"some"}');
+      element = $compile('<div ng:' + name + '="some"></div>')($rootScope)
       $rootScope.$digest();
       expect(element.attr(name)).toBe(name);
       dealoc(element);
     });
 
-    var element = $compile('<div ng:src="some"></div>')(newScope())
+    element = $compile('<div ng:src="some"></div>')($rootScope)
     $rootScope.$digest();
-    expect(sortedHtml(element)).toEqual('<div ng:bind-attr="{"src":"some"}" src="some"></div>');
+    expect(element.attr('src')).toEqual('some');
     dealoc(element);
 
-    var element = $compile('<div ng:href="some"></div>')(newScope())
+    element = $compile('<div ng:href="some"></div>')($rootScope)
     $rootScope.$digest();
-    expect(sortedHtml(element)).toEqual('<div href="some" ng:bind-attr="{"href":"some"}"></div>');
+    expect(element.attr('href')).toEqual('some');
     dealoc(element);
   }));
 });

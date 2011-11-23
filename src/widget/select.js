@@ -112,321 +112,335 @@
       </doc:source>
       <doc:scenario>
          it('should check ng:options', function() {
-           expect(binding('color')).toMatch('red');
+           expect(binding('{selected_color:color}')).toMatch('red');
            select('color').option('0');
-           expect(binding('color')).toMatch('black');
+           expect(binding('{selected_color:color}')).toMatch('black');
            using('.nullable').select('color').option('');
-           expect(binding('color')).toMatch('null');
+           expect(binding('{selected_color:color}')).toMatch('null');
          });
       </doc:scenario>
     </doc:example>
  */
 
+var ngOptionsDirective = valueFn({ terminal: true });
+var selectDirective = ['$formFactory', '$compile', '$parse',
+               function($formFactory,   $compile,   $parse){
+                         //00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
+  var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
 
-                       //00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
-var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
+  return {
+    restrict: 'E',
+    link: function(modelScope, selectElement, attr) {
+      if (!attr.ngModel) return;
+      var form = $formFactory.forElement(selectElement),
+          multiple = attr.multiple,
+          optionsExp = attr.ngOptions,
+          modelExp = attr.ngModel,
+          widget = form.$createWidget({
+            scope: modelScope,
+            model: modelExp,
+            onChange: attr.ngChange,
+            alias: attr.name,
+            controller: ['$scope', optionsExp ? Options : (multiple ? Multiple : Single)]});
 
+      selectElement.bind('$destroy', function() { widget.$destroy(); });
 
-angularWidget('select', function(element){
-  this.directives(true);
-  this.descend(true);
-  return element.attr('ng:model') &&
-               ['$formFactory', '$compile', '$parse', '$element',
-        function($formFactory,   $compile,   $parse,   selectElement){
-    var modelScope = this,
-        match,
-        form = $formFactory.forElement(selectElement),
-        multiple = selectElement.attr('multiple'),
-        optionsExp = selectElement.attr('ng:options'),
-        modelExp = selectElement.attr('ng:model'),
-        widget = form.$createWidget({
-          scope: modelScope,
-          model: modelExp,
-          onChange: selectElement.attr('ng:change'),
-          alias: selectElement.attr('name'),
-          controller: ['$scope', optionsExp ? Options : (multiple ? Multiple : Single)]});
+      widget.$pristine = !(widget.$dirty = false);
 
-    selectElement.bind('$destroy', function() { widget.$destroy(); });
-
-    widget.$pristine = !(widget.$dirty = false);
-
-    watchElementProperty(modelScope, widget, 'required', selectElement);
-    watchElementProperty(modelScope, widget, 'readonly', selectElement);
-    watchElementProperty(modelScope, widget, 'disabled', selectElement);
-
-    widget.$on('$validate', function() {
-      var valid = !widget.$required || !!widget.$modelValue;
-      if (valid && multiple && widget.$required) valid = !!widget.$modelValue.length;
-      if (valid !== !widget.$error.REQUIRED) {
-        widget.$emit(valid ? '$valid' : '$invalid', 'REQUIRED');
-      }
-    });
-
-    widget.$on('$viewChange', function() {
-      widget.$pristine = !(widget.$dirty = true);
-    });
-
-    forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
-      widget.$watch('$' + name, function(value) {
-        selectElement[value ? 'addClass' : 'removeClass']('ng-' + name);
-      });
-    });
-
-    ////////////////////////////
-
-    function Multiple(widget) {
-      widget.$render = function() {
-        var items = new HashMap(widget.$viewValue);
-        forEach(selectElement.children(), function(option){
-          option.selected = isDefined(items.get(option.value));
-        });
-      };
-
-      selectElement.bind('change', function() {
-        widget.$apply(function() {
-          var array = [];
-          forEach(selectElement.children(), function(option){
-            if (option.selected) {
-              array.push(option.value);
-            }
-          });
-          widget.$emit('$viewChange', array);
-        });
-      });
-
-    }
-
-    function Single(widget) {
-      widget.$render = function() {
-        selectElement.val(widget.$viewValue);
-      };
-
-      selectElement.bind('change', function() {
-        widget.$apply(function() {
-          widget.$emit('$viewChange', selectElement.val());
-        });
-      });
-
-      widget.$viewValue = selectElement.val();
-    }
-
-    function Options(widget) {
-      var match;
-
-      if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
-        throw Error(
-          "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
-          " but got '" + optionsExp + "'.");
-      }
-
-      var displayFn = $parse(match[2] || match[1]),
-          valueName = match[4] || match[6],
-          keyName = match[5],
-          groupByFn = $parse(match[3] || ''),
-          valueFn = $parse(match[2] ? match[1] : valueName),
-          valuesFn = $parse(match[7]),
-          // we can't just jqLite('<option>') since jqLite is not smart enough
-          // to create it in <select> and IE barfs otherwise.
-          optionTemplate = jqLite(document.createElement('option')),
-          optGroupTemplate = jqLite(document.createElement('optgroup')),
-          nullOption = false, // if false then user will not be able to select it
-          // This is an array of array of existing option groups in DOM. We try to reuse these if possible
-          // optionGroupsCache[0] is the options with no option group
-          // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
-          optionGroupsCache = [[{element: selectElement, label:''}]];
-
-      // find existing special options
-      forEach(selectElement.children(), function(option) {
-        if (option.value == '') {
-          // developer declared null option, so user should be able to select it
-          nullOption = jqLite(option).remove();
-          // compile the element since there might be bindings in it
-          $compile(nullOption)(modelScope);
+      widget.$on('$validate', function() {
+        var valid = !attr.required || !!widget.$modelValue;
+        if (valid && multiple && attr.required) valid = !!widget.$modelValue.length;
+        if (valid !== !widget.$error.REQUIRED) {
+          widget.$emit(valid ? '$valid' : '$invalid', 'REQUIRED');
         }
       });
-      selectElement.html(''); // clear contents
 
-      selectElement.bind('change', function() {
-        widget.$apply(function() {
-          var optionGroup,
-              collection = valuesFn(modelScope) || [],
-              key = selectElement.val(),
-              tempScope = inherit(modelScope),
-              value, optionElement, index, groupIndex, length, groupLength;
+      widget.$on('$viewChange', function() {
+        widget.$pristine = !(widget.$dirty = true);
+      });
 
-          if (multiple) {
-            value = [];
-            for (groupIndex = 0, groupLength = optionGroupsCache.length;
-            groupIndex < groupLength;
-            groupIndex++) {
-              // list of options for that group. (first item has the parent)
-              optionGroup = optionGroupsCache[groupIndex];
+      forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
+        widget.$watch('$' + name, function(value) {
+          selectElement[value ? 'addClass' : 'removeClass']('ng-' + name);
+        });
+      });
 
-              for(index = 1, length = optionGroup.length; index < length; index++) {
-                if ((optionElement = optionGroup[index].element)[0].selected) {
-                  if (keyName) tempScope[keyName] = key;
-                  tempScope[valueName] = collection[optionElement.val()];
-                  value.push(valueFn(tempScope));
+      ////////////////////////////
+
+      function Multiple(widget) {
+        widget.$render = function() {
+          var items = new HashMap(this.$viewValue);
+          forEach(selectElement.children(), function(option){
+            option.selected = isDefined(items.get(option.value));
+          });
+        };
+
+        selectElement.bind('change', function() {
+          widget.$apply(function() {
+            var array = [];
+            forEach(selectElement.children(), function(option){
+              if (option.selected) {
+                array.push(option.value);
+              }
+            });
+            widget.$emit('$viewChange', array);
+          });
+        });
+
+      }
+
+      function Single(widget) {
+        widget.$render = function() {
+          selectElement.val(widget.$viewValue);
+        };
+
+        selectElement.bind('change', function() {
+          widget.$apply(function() {
+            widget.$emit('$viewChange', selectElement.val());
+          });
+        });
+
+        widget.$viewValue = selectElement.val();
+      }
+
+      function Options(widget) {
+        var match;
+
+        if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
+          throw Error(
+            "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            " but got '" + optionsExp + "'.");
+        }
+
+        var displayFn = $parse(match[2] || match[1]),
+            valueName = match[4] || match[6],
+            keyName = match[5],
+            groupByFn = $parse(match[3] || ''),
+            valueFn = $parse(match[2] ? match[1] : valueName),
+            valuesFn = $parse(match[7]),
+            // we can't just jqLite('<option>') since jqLite is not smart enough
+            // to create it in <select> and IE barfs otherwise.
+            optionTemplate = jqLite(document.createElement('option')),
+            optGroupTemplate = jqLite(document.createElement('optgroup')),
+            nullOption = false, // if false then user will not be able to select it
+            // This is an array of array of existing option groups in DOM. We try to reuse these if possible
+            // optionGroupsCache[0] is the options with no option group
+            // optionGroupsCache[?][0] is the parent: either the SELECT or OPTGROUP element
+            optionGroupsCache = [[{element: selectElement, label:''}]];
+
+        // find existing special options
+        forEach(selectElement.children(), function(option) {
+          if (option.value == '') {
+            // developer declared null option, so user should be able to select it
+            nullOption = jqLite(option).remove();
+            // compile the element since there might be bindings in it
+            $compile(nullOption)(modelScope);
+          }
+        });
+        selectElement.html(''); // clear contents
+
+        selectElement.bind('change', function() {
+          widget.$apply(function() {
+            var optionGroup,
+                collection = valuesFn(modelScope) || [],
+                key = selectElement.val(),
+                tempScope = inherit(modelScope),
+                value, optionElement, index, groupIndex, length, groupLength;
+
+            if (multiple) {
+              value = [];
+              for (groupIndex = 0, groupLength = optionGroupsCache.length;
+              groupIndex < groupLength;
+              groupIndex++) {
+                // list of options for that group. (first item has the parent)
+                optionGroup = optionGroupsCache[groupIndex];
+
+                for(index = 1, length = optionGroup.length; index < length; index++) {
+                  if ((optionElement = optionGroup[index].element)[0].selected) {
+                    if (keyName) tempScope[keyName] = key;
+                    tempScope[valueName] = collection[optionElement.val()];
+                    value.push(valueFn(tempScope));
+                  }
                 }
               }
-            }
-          } else {
-            if (key == '?') {
-              value = undefined;
-            } else if (key == ''){
-              value = null;
             } else {
-              tempScope[valueName] = collection[key];
-              if (keyName) tempScope[keyName] = key;
-              value = valueFn(tempScope);
+              if (key == '?') {
+                value = undefined;
+              } else if (key == ''){
+                value = null;
+              } else {
+                tempScope[valueName] = collection[key];
+                if (keyName) tempScope[keyName] = key;
+                value = valueFn(tempScope);
+              }
             }
-          }
-          if (isDefined(value) && modelScope.$viewVal !== value) {
-            widget.$emit('$viewChange', value);
-          }
-        });
-      });
-
-      widget.$watch(render);
-      widget.$render = render;
-
-      function render() {
-        var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
-            optionGroupNames = [''],
-            optionGroupName,
-            optionGroup,
-            option,
-            existingParent, existingOptions, existingOption,
-            modelValue = widget.$modelValue,
-            values = valuesFn(modelScope) || [],
-            keys = keyName ? sortedKeys(values) : values,
-            groupLength, length,
-            groupIndex, index,
-            optionScope = inherit(modelScope),
-            selected,
-            selectedSet = false, // nothing is selected yet
-            lastElement,
-            element;
-
-        if (multiple) {
-          selectedSet = new HashMap(modelValue);
-        } else if (modelValue === null || nullOption) {
-          // if we are not multiselect, and we are null then we have to add the nullOption
-          optionGroups[''].push({selected:modelValue === null, id:'', label:''});
-          selectedSet = true;
-        }
-
-        // We now build up the list of options we need (we merge later)
-        for (index = 0; length = keys.length, index < length; index++) {
-             optionScope[valueName] = values[keyName ? optionScope[keyName]=keys[index]:index];
-             optionGroupName = groupByFn(optionScope) || '';
-          if (!(optionGroup = optionGroups[optionGroupName])) {
-            optionGroup = optionGroups[optionGroupName] = [];
-            optionGroupNames.push(optionGroupName);
-          }
-          if (multiple) {
-            selected = selectedSet.remove(valueFn(optionScope)) != undefined;
-          } else {
-            selected = modelValue === valueFn(optionScope);
-            selectedSet = selectedSet || selected; // see if at least one item is selected
-          }
-          optionGroup.push({
-            id: keyName ? keys[index] : index,   // either the index into array or key from object
-            label: displayFn(optionScope) || '', // what will be seen by the user
-            selected: selected                   // determine if we should be selected
+            if (isDefined(value) && modelScope.$viewVal !== value) {
+              widget.$emit('$viewChange', value);
+            }
           });
-        }
-        if (!multiple && !selectedSet) {
-          // nothing was selected, we have to insert the undefined item
-          optionGroups[''].unshift({id:'?', label:'', selected:true});
-        }
+        });
 
-        // Now we need to update the list of DOM nodes to match the optionGroups we computed above
-        for (groupIndex = 0, groupLength = optionGroupNames.length;
-             groupIndex < groupLength;
-             groupIndex++) {
-          // current option group name or '' if no group
-          optionGroupName = optionGroupNames[groupIndex];
+        widget.$watch(render);
+        widget.$render = render;
 
-          // list of options for that group. (first item has the parent)
-          optionGroup = optionGroups[optionGroupName];
+        function render() {
+          var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
+              optionGroupNames = [''],
+              optionGroupName,
+              optionGroup,
+              option,
+              existingParent, existingOptions, existingOption,
+              modelValue = widget.$modelValue,
+              values = valuesFn(modelScope) || [],
+              keys = keyName ? sortedKeys(values) : values,
+              groupLength, length,
+              groupIndex, index,
+              optionScope = inherit(modelScope),
+              selected,
+              selectedSet = false, // nothing is selected yet
+              lastElement,
+              element;
 
-          if (optionGroupsCache.length <= groupIndex) {
-            // we need to grow the optionGroups
-            existingParent = {
-              element: optGroupTemplate.clone().attr('label', optionGroupName),
-              label: optionGroup.label
-            };
-            existingOptions = [existingParent];
-            optionGroupsCache.push(existingOptions);
-            selectElement.append(existingParent.element);
-          } else {
-            existingOptions = optionGroupsCache[groupIndex];
-            existingParent = existingOptions[0];  // either SELECT (no group) or OPTGROUP element
-
-            // update the OPTGROUP label if not the same.
-            if (existingParent.label != optionGroupName) {
-              existingParent.element.attr('label', existingParent.label = optionGroupName);
-            }
+          if (multiple) {
+            selectedSet = new HashMap(modelValue);
+          } else if (modelValue === null || nullOption) {
+            // if we are not multiselect, and we are null then we have to add the nullOption
+            optionGroups[''].push({selected:modelValue === null, id:'', label:''});
+            selectedSet = true;
           }
 
-          lastElement = null;  // start at the begining
-          for(index = 0, length = optionGroup.length; index < length; index++) {
-            option = optionGroup[index];
-            if ((existingOption = existingOptions[index+1])) {
-              // reuse elements
-              lastElement = existingOption.element;
-              if (existingOption.label !== option.label) {
-                lastElement.text(existingOption.label = option.label);
-              }
-              if (existingOption.id !== option.id) {
-                lastElement.val(existingOption.id = option.id);
-              }
-              if (existingOption.element.selected !== option.selected) {
-                lastElement.prop('selected', (existingOption.selected = option.selected));
-              }
+          // We now build up the list of options we need (we merge later)
+          for (index = 0; length = keys.length, index < length; index++) {
+               optionScope[valueName] = values[keyName ? optionScope[keyName]=keys[index]:index];
+               optionGroupName = groupByFn(optionScope) || '';
+            if (!(optionGroup = optionGroups[optionGroupName])) {
+              optionGroup = optionGroups[optionGroupName] = [];
+              optionGroupNames.push(optionGroupName);
+            }
+            if (multiple) {
+              selected = selectedSet.remove(valueFn(optionScope)) != undefined;
             } else {
-              // grow elements
+              selected = modelValue === valueFn(optionScope);
+              selectedSet = selectedSet || selected; // see if at least one item is selected
+            }
+            optionGroup.push({
+              id: keyName ? keys[index] : index,   // either the index into array or key from object
+              label: displayFn(optionScope) || '', // what will be seen by the user
+              selected: selected                   // determine if we should be selected
+            });
+          }
+          if (!multiple && !selectedSet) {
+            // nothing was selected, we have to insert the undefined item
+            optionGroups[''].unshift({id:'?', label:'', selected:true});
+          }
 
-              // if it's a null option
-              if (option.id === '' && nullOption) {
-                // put back the pre-compiled element
-                element = nullOption;
-              } else {
-                // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
-                // in this version of jQuery on some browser the .text() returns a string
-                // rather then the element.
-                (element = optionTemplate.clone())
-                    .val(option.id)
-                    .attr('selected', option.selected)
-                    .text(option.label);
-              }
+          // Now we need to update the list of DOM nodes to match the optionGroups we computed above
+          for (groupIndex = 0, groupLength = optionGroupNames.length;
+               groupIndex < groupLength;
+               groupIndex++) {
+            // current option group name or '' if no group
+            optionGroupName = optionGroupNames[groupIndex];
 
-              existingOptions.push(existingOption = {
-                  element: element,
-                  label: option.label,
-                  id: option.id,
-                  selected: option.selected
-              });
-              if (lastElement) {
-                lastElement.after(element);
-              } else {
-                existingParent.element.append(element);
+            // list of options for that group. (first item has the parent)
+            optionGroup = optionGroups[optionGroupName];
+
+            if (optionGroupsCache.length <= groupIndex) {
+              // we need to grow the optionGroups
+              existingParent = {
+                element: optGroupTemplate.clone().attr('label', optionGroupName),
+                label: optionGroup.label
+              };
+              existingOptions = [existingParent];
+              optionGroupsCache.push(existingOptions);
+              selectElement.append(existingParent.element);
+            } else {
+              existingOptions = optionGroupsCache[groupIndex];
+              existingParent = existingOptions[0];  // either SELECT (no group) or OPTGROUP element
+
+              // update the OPTGROUP label if not the same.
+              if (existingParent.label != optionGroupName) {
+                existingParent.element.attr('label', existingParent.label = optionGroupName);
               }
-              lastElement = element;
+            }
+
+            lastElement = null;  // start at the begining
+            for(index = 0, length = optionGroup.length; index < length; index++) {
+              option = optionGroup[index];
+              if ((existingOption = existingOptions[index+1])) {
+                // reuse elements
+                lastElement = existingOption.element;
+                if (existingOption.label !== option.label) {
+                  lastElement.text(existingOption.label = option.label);
+                }
+                if (existingOption.id !== option.id) {
+                  lastElement.val(existingOption.id = option.id);
+                }
+                if (existingOption.element.selected !== option.selected) {
+                  lastElement.prop('selected', (existingOption.selected = option.selected));
+                }
+              } else {
+                // grow elements
+
+                // if it's a null option
+                if (option.id === '' && nullOption) {
+                  // put back the pre-compiled element
+                  element = nullOption;
+                } else {
+                  // jQuery(v1.4.2) Bug: We should be able to chain the method calls, but
+                  // in this version of jQuery on some browser the .text() returns a string
+                  // rather then the element.
+                  (element = optionTemplate.clone())
+                      .val(option.id)
+                      .attr('selected', option.selected)
+                      .text(option.label);
+                }
+
+                existingOptions.push(existingOption = {
+                    element: element,
+                    label: option.label,
+                    id: option.id,
+                    selected: option.selected
+                });
+                if (lastElement) {
+                  lastElement.after(element);
+                } else {
+                  existingParent.element.append(element);
+                }
+                lastElement = element;
+              }
+            }
+            // remove any excessive OPTIONs in a group
+            index++; // increment since the existingOptions[0] is parent element not OPTION
+            while(existingOptions.length > index) {
+              existingOptions.pop().element.remove();
             }
           }
-          // remove any excessive OPTIONs in a group
-          index++; // increment since the existingOptions[0] is parent element not OPTION
-          while(existingOptions.length > index) {
-            existingOptions.pop().element.remove();
+          // remove any excessive OPTGROUPs from select
+          while(optionGroupsCache.length > groupIndex) {
+            optionGroupsCache.pop()[0].element.remove();
           }
-        }
-        // remove any excessive OPTGROUPs from select
-        while(optionGroupsCache.length > groupIndex) {
-          optionGroupsCache.pop()[0].element.remove();
-        }
-      };
+        };
+      }
     }
-  }];
-});
+  }
+}];
+
+var optionDirective = ['$interpolate', function($interpolate) {
+  return {
+    priority: 100,
+    compile: function(element, attr) {
+      if (isUndefined(attr.value)) {
+        var interpolateFn = $interpolate(element.text(), true);
+        if (interpolateFn) {
+          return function (scope, element, attr) {
+            scope.$watch(interpolateFn, function(value) {
+              attr.$set('value', value);
+            });
+          }
+        } else {
+          attr.$set('value', element.text());
+        }
+      }
+    }
+  }
+}];

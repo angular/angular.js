@@ -90,15 +90,7 @@ var $$scope           = '$scope',
 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
-    angularModule     = null,
-    /** @name angular.markup */
-    angularTextMarkup = extensionMap(angular, 'markup'),
-    /** @name angular.attrMarkup */
-    angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
-    /** @name angular.directive */
-    angularDirective  = extensionMap(angular, 'directive', lowercase),
-    /** @name angular.widget */
-    angularWidget     = extensionMap(angular, 'widget', shivForIE),
+    angularModule,
     /** @name angular.module.ng */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
     nodeName_,
@@ -988,8 +980,7 @@ function assertArg(arg, name, reason) {
 }
 
 function assertArgFn(arg, name) {
-  assertArg(arg, name);
   assertArg(isFunction(arg), name, 'not a function, got ' +
-      (typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
+      (arg && typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
   return arg;
 }
