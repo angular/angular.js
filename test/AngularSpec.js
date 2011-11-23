@@ -1,6 +1,12 @@
 'use strict';
 
 describe('angular', function() {
+  var element;
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
   describe('case', function() {
     it('should change case', function() {
       expect(lowercase('ABC90')).toEqual('abc90');
@@ -277,9 +283,9 @@ describe('angular', function() {
       var doc = {
         getElementsByTagName: function(tagName) {
           expect(tagName).toEqual('script');
-          return [{nodeName: 'SCRIPT', src: 'random.js',
+          return [{nodeName: 'SCRIPT', src: 'random.js', nodeType: 1,
                     attributes: [{name: 'ng:autobind', value: 'wrong'}]},
-                  {nodeName: 'SCRIPT', src: 'angular.js',
+                  {nodeName: 'SCRIPT', src: 'angular.js', nodeType: 1,
                     attributes: [{name: 'ng:autobind', value: 'correct'}]}];
         }
       };
@@ -289,10 +295,10 @@ describe('angular', function() {
       doc = {
         getElementsByTagName: function(tagName) {
           expect(tagName).toEqual('script');
-          return [{nodeName: 'SCRIPT', src: 'angular.js',
+          return [{nodeName: 'SCRIPT', src: 'angular.js', nodeType: 1,
                     attributes: [{name: 'ng:autobind', value: 'wrong'}]},
                   {nodeName: 'SCRIPT', src: 'concatinatedAndObfuscadedScriptWithOurScript.js',
-                    attributes: [{name: 'ng:autobind', value: 'correct'}]}];
+                    attributes: [{name: 'ng:autobind', value: 'correct', nodeType: 1}]}];
         }
       };
 
@@ -367,57 +373,6 @@ describe('angular', function() {
   });
 
 
-  describe('angularInit', function() {
-    var dom;
-
-    beforeEach(function() {
-      dom = jqLite('<div foo="{{1+2}}">{{2+3}}' +
-                     '<div id="child" bar="{{3+4}}">{{4+5}}</div>' +
-                   '</div>')[0];
-    });
-
-
-    afterEach(function() {
-      dealoc(dom);
-    });
-
-
-    it('should not compile anything if autobind is missing or false', function() {
-      angularInit({}, dom);
-      expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
-                                        '<div bar="{{3+4}}" id="child">{{4+5}}</div>' +
-                                      '</div>');
-    });
-
-
-    it('should compile the document if autobind is true', function() {
-      angularInit({autobind: true}, dom);
-      expect(sortedHtml(dom)).toEqual('<div foo="3" ng:bind-attr="{"foo":"{{1+2}}"}">' +
-                                        '<span ng:bind="2+3">5</span>' +
-                                        '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
-                                          '<span ng:bind="4+5">9</span>' +
-                                        '</div>' +
-                                      '</div>');
-    });
-
-
-    it('should compile only the element specified via autobind', function() {
-      dom.getElementById = function() {
-        return this.childNodes[1];
-      };
-
-
-      angularInit({autobind: 'child'}, dom);
-
-      expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
-                                        '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
-                                          '<span ng:bind="4+5">9</span>' +
-                                        '</div>' +
-                                      '</div>');
-    });
-  });
-
-
   describe('angular service', function() {
     it('should override services', inject(function($provide){
       $provide.value('fake', 'old');
@@ -433,28 +388,6 @@ describe('angular', function() {
       }).get('svc2')).toEqual('svc2-svc1');
     });
 
-  });
-
-
-  describe('directive', function() {
-    it('should register directives with case-insensitive id', inject(function($compile) {
-      angularDirective('ALLCAPS', function(val, el) {el.text('+' + val + '+')});
-      angularDirective('lowercase', function(val, el) {el.text('-' + val + '-')});
-
-      var el = jqLite('<div>' +
-                        '<span allcaps="xx1"></span>' +
-                        '<span ALLcaps="xx2"></span>' +
-                        '<span ALLCAPS="xx3"></span>' +
-                        '<span lowerCASE="XX4">xx4</span>' +
-                      '</div>');
-      $compile(el);
-      expect(lowercase(sortedHtml(el))).toBe('<div>' +
-                                                '<span allcaps="xx1">+xx1+</span>' +
-                                                '<span allcaps="xx2">+xx2+</span>' +
-                                                '<span allcaps="xx3">+xx3+</span>' +
-                                                '<span lowercase="xx4">-xx4-</span>' +
-                                              '</div>');
-    }));
   });
 
 
@@ -474,7 +407,7 @@ describe('angular', function() {
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      $compile(template)($rootScope);
+      element = $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
       expect($rootScope.greeting).toEqual('hello world');
@@ -482,7 +415,7 @@ describe('angular', function() {
 
     it('should link to existing node and given scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      $compile(template)($rootScope);
+      element = $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
     }));
@@ -493,12 +426,12 @@ describe('angular', function() {
       var templateFn = $compile(template);
       var templateClone = template.clone();
 
-      var element = templateFn($rootScope, function(clone){
+      element = templateFn($rootScope, function(clone){
         templateClone = clone;
       });
       $rootScope.$digest();
 
-      expect(template.text()).toEqual('');
+      expect(template.text()).toEqual('{{greeting = "hello world"}}');
       expect(element.text()).toEqual('hello world');
       expect(element).toEqual(templateClone);
       expect($rootScope.greeting).toEqual('hello world');
@@ -506,9 +439,9 @@ describe('angular', function() {
 
     it('should link to cloned node and create scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      var element = $compile(template)($rootScope, noop);
+      element = $compile(template)($rootScope, noop);
       $rootScope.$digest();
-      expect(template.text()).toEqual('');
+      expect(template.text()).toEqual('{{greeting = "hello world"}}');
       expect(element.text()).toEqual('hello world');
       expect($rootScope.greeting).toEqual('hello world');
     }));
@@ -564,7 +497,7 @@ describe('angular', function() {
 
   describe('bootstrap', function() {
     it('should bootstrap app', function(){
-      var element = jqLite('<div>{{1+2}}</div>');
+      element = jqLite('<div>{{1+2}}</div>');
       var injector;
       angular.bootstrap(element, [function($injector){ injector = $injector; }]);
       expect(injector).toBeDefined();
@@ -577,6 +510,13 @@ describe('angular', function() {
   describe('startingElementHtml', function(){
     it('should show starting element tag only', function(){
       expect(startingTag('<ng:abc x="2"><div>text</div></ng:abc>')).toEqual('<ng:abc x="2">');
+    });
+  });
+
+  describe('snake_case', function(){
+    it('should convert to snake_case', function() {
+      expect(snake_case('ABC')).toEqual('a_b_c');
+      expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');
     });
   });
 });

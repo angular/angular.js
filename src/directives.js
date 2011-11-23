@@ -85,10 +85,14 @@
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:init", function(expression){
-  return function(element){
-    this.$eval(expression);
-  };
+var ngInitDirective = valueFn({
+  templateFn: function() {
+    return {
+      pre: function(scope, element, attrs) {
+        scope.$eval(attrs.ngInit);
+      }
+    }
+  }
 });
 
 /**
@@ -182,17 +186,29 @@ angularDirective("ng:init", function(expression){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:controller", function(expression){
-  this.scope(function(scope){
-    var Controller =
-      getter(scope, expression, true) ||
-      getter(window, expression, true);
-    assertArgFn(Controller, expression);
-    inferInjectionArgs(Controller);
-    return Controller;
-  });
-  return noop;
-});
+var ngControllerDirective = ['$injector', '$window', function($injector, $window) {
+  return {
+    scope: true,
+    templateFn: function() {
+      return {
+        pre: function(scope, element, attr) {
+          var expression = attr.ngController,
+               Controller =
+                  getter(scope, expression, true) ||
+                  getter($window, expression, true),
+               ControllerPrototype;
+          assertArgFn(Controller, expression);
+          ControllerPrototype = Controller.prototype;
+          for(var key in ControllerPrototype) {
+            scope[key] = bind(scope, ControllerPrototype[key]);
+          }
+          $injector.invoke(scope, Controller);
+        }
+      };
+    }
+  }
+}];
+
 
 /**
  * @ngdoc directive
@@ -233,54 +249,30 @@ angularDirective("ng:controller", function(expression){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:bind", function(expression, element){
-  element.addClass('ng-binding');
-  return ['$exceptionHandler', '$parse', '$element', function($exceptionHandler, $parse, element) {
-    var exprFn = $parse(expression),
-        lastValue = Number.NaN;
+var ngBindDirective = valueFn(function(scope, element, attr) {
+  element.addClass('ng-binding').data('$binding', attr.ngBind);
+  scope.$watch(attr.ngBind, function(scope, value) {
+    element.text(value == undefined ? '' : value);
+  });
+});
 
-    this.$watch(function(scope) {
-      // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
-      var value, html, isHtml, isDomElement,
-          hadOwnElement = scope.hasOwnProperty('$element'),
-          oldElement = scope.$element;
-      // TODO(misko): get rid of $element https://github.com/angular/angular.js/issues/348
-      scope.$element = element;
-      try {
-        value = exprFn(scope);
-        // If we are HTML than save the raw HTML data so that we don't recompute sanitization since
-        // it is expensive.
-        // TODO(misko): turn this into a more generic way to compute this
-        if ((isHtml = (value instanceof HTML)))
-          value = (html = value).html;
-        if (lastValue === value) return;
-        isDomElement = isElement(value);
-        if (!isHtml && !isDomElement && isObject(value)) {
-          value = toJson(value, true);
-        }
-        if (value != lastValue) {
-          lastValue = value;
-          if (isHtml) {
-            element.html(html.get());
-          } else if (isDomElement) {
-            element.html('');
-            element.append(value);
-          } else {
-            element.text(value == undefined ? '' : value);
-          }
-        }
-      } catch (e) {
-        $exceptionHandler(e);
-      } finally {
-        if (hadOwnElement) {
-          scope.$element = oldElement;
-        } else {
-          delete scope.$element;
-        }
+var ngBindHtmlUnsafeDirective = valueFn(function(scope, element, attr) {
+  element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
+  scope.$watch(attr.ngBindHtmlUnsafe, function(scope, value) {
+    element.html(value == undefined ? '' : value);
+  });
+});
+
+var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
+  return function(scope, element, attr) {
+    element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
+    scope.$watch(attr.ngBindHtml, function(scope, value) {
+      if (value = $sanitize(value)) {
+        element.html(value);
       }
     });
-  }];
-});
+  }
+}];
 
 
 /**
@@ -316,30 +308,29 @@ angularDirective("ng:bind", function(expression, element){
      </doc:source>
      <doc:scenario>
        it('should check ng:bind', function() {
-         expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
-           toBe('Hello World!');
+         expect(using('.doc-example-live').binding('salutation')).
+           toBe('Hello');
+         expect(using('.doc-example-live').binding('name')).
+           toBe('World');
          using('.doc-example-live').input('salutation').enter('Greetings');
          using('.doc-example-live').input('name').enter('user');
-         expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
-           toBe('Greetings user!');
+         expect(using('.doc-example-live').binding('salutation')).
+           toBe('Greetings');
+         expect(using('.doc-example-live').binding('name')).
+           toBe('user');
        });
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:bind-template", function(expression, element){
-  element.addClass('ng-binding');
-  var templateFn = compileBindTemplate(expression);
-  return function(element) {
-    var lastValue;
-    this.$watch(function(scope) {
-      var value = templateFn(scope, element, true);
-      if (value != lastValue) {
-        element.text(value);
-        lastValue = value;
-      }
+var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
+  return function(scope, element, attr) {
+    var interpolateFn = $interpolate(attr.ngBindTemplate);
+    element.addClass('ng-binding').data('$binding', interpolateFn);
+    scope.$watch(interpolateFn, function(scope, value) {
+      element.text(value);
     });
-  };
-});
+  }
+}];
 
 /**
  * @ngdoc directive
@@ -414,21 +405,25 @@ angularDirective("ng:bind-template", function(expression, element){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:bind-attr", function(expression){
-  return function(element){
+
+var ngBindAttrDirective = ['$interpolate', function($interpolate) {
+  return function(scope, element, attr) {
     var lastValue = {};
-    this.$watch(function(scope){
-      var values = scope.$eval(expression);
+    var interpolateFns = {};
+    scope.$watch(function(scope){
+      var values = scope.$eval(attr.ngBindAttr);
       for(var key in values) {
-        var value = compileBindTemplate(values[key])(scope, element);
+        var exp = values[key],
+            fn = (interpolateFns[exp] ||
+              (interpolateFns[values[key]] = $interpolate(exp))),
+            value = fn(scope);
         if (lastValue[key] !== value) {
-          lastValue[key] = value;
-          element.attr(key, BOOLEAN_ATTR[lowercase(key)] ? toBoolean(value) : value);
+          attr.$set(key, lastValue[key] = value);
         }
       }
     });
-  };
-});
+  }
+}];
 
 
 /**
@@ -468,14 +463,15 @@ angularDirective("ng:bind-attr", function(expression){
  *
  * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
-angularDirective("ng:click", function(expression, element){
-  return function(element){
-    var self = this;
-    element.bind('click', function(event){
-      self.$apply(expression);
+var ngEventDirectives = {};
+forEach('click mousedown mouseup wouseover mousemove submit'.split(' '), function(name) {
+  var directiveName = camelCase('ng-' + name);
+  ngEventDirectives[directiveName] = valueFn(function(scope, element, attr) {
+    element.bind(lowercase(name), function(event) {
+      scope.$apply(attr[directiveName]);
       event.stopPropagation();
     });
-  };
+  });
 });
 
 
@@ -516,43 +512,39 @@ angularDirective("ng:click", function(expression, element){
      </doc:source>
      <doc:scenario>
        it('should check ng:submit', function() {
-         expect(binding('list')).toBe('list=[]');
+         expect(binding('list')).toBe('[]');
          element('.doc-example-live #submit').click();
-         expect(binding('list')).toBe('list=["hello"]');
+         expect(binding('list')).toBe('["hello"]');
          expect(input('text').val()).toBe('');
        });
        it('should ignore empty strings', function() {
-         expect(binding('list')).toBe('list=[]');
+         expect(binding('list')).toBe('[]');
          element('.doc-example-live #submit').click();
          element('.doc-example-live #submit').click();
-         expect(binding('list')).toBe('list=["hello"]');
+         expect(binding('list')).toBe('["hello"]');
        });
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:submit", function(expression, element) {
-  return function(element) {
-    var self = this;
-    element.bind('submit', function() {
-      self.$apply(expression);
-    });
-  };
+var ngSubmitDirective = valueFn(function(scope, element, attrs) {
+  element.bind('submit', function() {
+    scope.$apply(attrs.ngSubmit);
+  });
 });
 
 
-function ngClass(selector) {
-  return function(expression, element) {
-    return function(element) {
-      this.$watch(expression, function(scope, newVal, oldVal) {
-        if (selector(scope.$index)) {
-          if (oldVal && (newVal !== oldVal)) {
-            element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-          }
-          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+function classDirective(name, selector) {
+  name = 'ngClass' + name;
+  return valueFn(function(scope, element, attr) {
+    scope.$watch(attr[name], function(scope, newVal, oldVal) {
+      if (selector === true || scope.$index % 2 === selector) {
+        if (oldVal && (newVal !== oldVal)) {
+          element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
         }
-      });
-    };
-  };
+        if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
+      }
+    });
+  });
 }
 
 /**
@@ -598,7 +590,7 @@ function ngClass(selector) {
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class", ngClass(function() {return true;}));
+var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
@@ -638,7 +630,7 @@ angularDirective("ng:class", ngClass(function() {return true;}));
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
+var ngClassOddDirective = classDirective('Odd', 0);
 
 /**
  * @ngdoc directive
@@ -677,7 +669,7 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
+var ngClassEvenDirective = classDirective('Even', 1);
 
 /**
  * @ngdoc directive
@@ -711,12 +703,11 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:show", function(expression, element){
-  return function(element){
-    this.$watch(expression, function(scope, value){
-      element.css('display', toBoolean(value) ? '' : 'none');
-    });
-  };
+//TODO(misko): refactor to remove element from the DOM
+var ngShowDirective = valueFn(function(scope, element, attr){
+  scope.$watch(attr.ngShow, function(scope, value){
+    element.css('display', toBoolean(value) ? '' : 'none');
+  });
 });
 
 /**
@@ -751,12 +742,11 @@ angularDirective("ng:show", function(expression, element){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:hide", function(expression, element){
-  return function(element){
-    this.$watch(expression, function(scope, value){
-      element.css('display', toBoolean(value) ? 'none' : '');
-    });
-  };
+//TODO(misko): refactor to remove element from the DOM
+var ngHideDirective = valueFn(function(scope, element, attr){
+  scope.$watch(attr.ngHide, function(scope, value){
+    element.css('display', toBoolean(value) ? 'none' : '');
+  });
 });
 
 /**
@@ -791,15 +781,13 @@ angularDirective("ng:hide", function(expression, element){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:style", function(expression, element) {
-  return function(element) {
-    this.$watch(expression, function(scope, newStyles, oldStyles) {
-      if (oldStyles && (newStyles !== oldStyles)) {
-        forEach(oldStyles, function(val, style) { element.css(style, '');});
-      }
-      if (newStyles) element.css(newStyles);
-    });
-  };
+var ngStyleDirective = valueFn(function(scope, element, attr) {
+  scope.$watch(attr.ngStyle, function(scope, newStyles, oldStyles) {
+    if (oldStyles && (newStyles !== oldStyles)) {
+      forEach(oldStyles, function(val, style) { element.css(style, '');});
+    }
+    if (newStyles) element.css(newStyles);
+  });
 });
 
 
@@ -856,7 +844,22 @@ angularDirective("ng:style", function(expression, element) {
    </doc:example>
  *
  */
-angularDirective("ng:cloak", function(expression, element) {
-  element.removeAttr('ng:cloak');
-  element.removeClass('ng-cloak');
+var ngCloakDirective = valueFn({
+  templateFn: function(element, attr) {
+    attr.$set(attr.$attr.ngCloak, undefined);
+    element.removeClass('ng-cloak');
+  }
 });
+
+function ngAttributeAliasDirecvite(propName, attrName) {
+  ngAttributeAliasDirectives[camelCase('ng-' + attrName)] = ['$interpolate', function($interpolate) {
+    return function(scope, element, attr) {
+      scope.$watch($interpolate(attr[camelCase('ng-' + attrName)]), function(scope, value) {
+        attr.$set(attrName, value);
+      });
+    }
+  }];
+}
+var ngAttributeAliasDirectives = {};
+forEach(BOOLEAN_ATTR, ngAttributeAliasDirecvite);
+ngAttributeAliasDirecvite(null, 'src');

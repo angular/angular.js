@@ -56,12 +56,6 @@ function publishExternalAPI(angular){
 
 ngModule.$inject = ['$provide', '$injector'];
 function ngModule($provide, $injector) {
-// TODO(misko): temporary services to get the compiler working;
-  $provide.value('$textMarkup', angularTextMarkup);
-  $provide.value('$attrMarkup', angularAttrMarkup);
-  $provide.value('$directive', angularDirective);
-  $provide.value('$widget', angularWidget);
-
   // load the LOCALE if present
   $injector.invoke(null, angularModule.ngLocale || function(){
     $provide.service('$locale', $LocaleProvider);
@@ -70,7 +64,40 @@ function ngModule($provide, $injector) {
   $provide.service('$autoScroll', $AutoScrollProvider);
   $provide.service('$browser', $BrowserProvider);
   $provide.service('$cacheFactory', $CacheFactoryProvider);
-  $provide.service('$compile', $CompileProvider);
+  $provide.service('$compile', $CompileProvider).
+    directive({
+      ngInit: ngInitDirective,
+      ngBind: ngBindDirective,
+      ngBindHtml: ngBindHtmlDirective,
+      ngBindHtmlUnsafe: ngBindHtmlUnsafeDirective,
+      ngBindTemplate: ngBindTemplateDirective,
+      ngBindAttr: ngBindAttrDirective,
+      ngClass: ngClassDirective,
+      ngClassEven: ngClassEvenDirective,
+      ngClassOdd: ngClassOddDirective,
+      ngStyle: ngStyleDirective,
+      ngShow: ngShowDirective,
+      ngHide: ngHideDirective,
+      ngController: ngControllerDirective,
+      ngCloak: ngCloakDirective,
+      ngRepeat: ngRepeatDirective,
+      ngSwitch: ngSwitchDirective,
+      ngInclude: ngIncludeDirective,
+      a: htmlAnchorDirective,
+      ngNonBindable: ngNonBindableDirective,
+      ngView: ngViewDirective,
+      ngPluralize: ngPluralizeDirective,
+      input: inputDirective,
+      textarea: inputDirective,
+      form: ngFormDirective,
+      ngForm: ngFormDirective,
+      select: selectDirective,
+      ngOptions: ngOptionsDirective,
+      option: optionDirective,
+      ngSubmit: ngSubmitDirective
+    }).
+    directive(ngEventDirectives).
+    directive(ngAttributeAliasDirectives);
   $provide.service('$cookies', $CookiesProvider);
   $provide.service('$cookieStore', $CookieStoreProvider);
   $provide.service('$defer', $DeferProvider);

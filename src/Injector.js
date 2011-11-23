@@ -207,6 +207,7 @@ function inferInjectionArgs(fn) {
  *   - `Constructor`: a new instance of the provider will be created using
  *               {@link angular.module.AUTO.$injector#instantiate $injector.instantiate()}, then treated as `object`.
  *
+ * @returns {Object} registered provider instance
  */
 
 /**
@@ -220,6 +221,7 @@ function inferInjectionArgs(fn) {
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
  * @param {function()} $getFn The $getFn for the instance creation. Internally this is a short hand for
  * `$provide.service(name, {$get:$getFn})`.
+ * @returns {Object} registered provider instance
  */
 
 
@@ -234,6 +236,7 @@ function inferInjectionArgs(fn) {
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
  * @param {function()} value The $getFn for the instance creation. Internally this is a short hand for
  * `$provide.service(name, {$get:function(){ return value; }})`.
+ * @returns {Object} registered provider instance
  */
 
 
@@ -269,11 +272,12 @@ function createInjector(modulesToLoad, moduleRegistry) {
       throw Error('Providers must define $get factory method.');
     }
     cache['#' + name + providerSuffix] = provider;
+    return provider;
   }
 
-  function factory(name, factoryFn) { service(name, { $get:factoryFn }); }
+  function factory(name, factoryFn) { return service(name, { $get:factoryFn }); }
 
-  function value(name, value) { factory(name, valueFn(value)); }
+  function value(name, value) { return factory(name, valueFn(value)); }
 
   function decorator(name, decorFn) {
     var origProvider = cache['#' + name + providerSuffix];

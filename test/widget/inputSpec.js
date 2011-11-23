@@ -51,7 +51,6 @@ describe('widget: input', function() {
 
     it('should bind update scope from model', function() {
       createInput();
-      expect(scope.form.name.$required).toBe(false);
       scope.name = 'misko';
       scope.$digest();
       expect(inputElement.val()).toEqual('misko');
@@ -60,7 +59,6 @@ describe('widget: input', function() {
 
     it('should require', function() {
       createInput({required:''});
-      expect(scope.form.name.$required).toBe(true);
       scope.$digest();
       expect(scope.form.name.$valid).toBe(false);
       scope.name = 'misko';
@@ -159,7 +157,7 @@ describe('widget: input', function() {
                 '</div>');
         scope.obj = { abc: { name: 'Misko'} };
         scope.$digest();
-        expect(scope.$element.find('input').val()).toEqual('Misko');
+        expect(element.find('input').val()).toEqual('Misko');
       });
 
 
@@ -181,7 +179,7 @@ describe('widget: input', function() {
         it("should render as blank if null", function() {
           compile('<input type="text" ng:model="age" ng:format="number" ng:init="age=null"/>');
           expect(scope.age).toBeNull();
-          expect(scope.$element[0].value).toEqual('');
+          expect(element[0].value).toEqual('');
         });
 
 
@@ -189,19 +187,19 @@ describe('widget: input', function() {
           compile('<input type="number" ng:model="age"/>');
           scope.age = 123;
           scope.$digest();
-          expect(scope.$element.val()).toEqual('123');
+          expect(element.val()).toEqual('123');
           try {
             // to allow non-number values, we have to change type so that
             // the browser which have number validation will not interfere with
             // this test. IE8 won't allow it hence the catch.
-            scope.$element[0].setAttribute('type', 'text');
+            element[0].setAttribute('type', 'text');
           } catch (e){}
-          scope.$element.val('123X');
-          browserTrigger(scope.$element, 'change');
+          element.val('123X');
+          browserTrigger(element, 'change');
           defer.flush();
-          expect(scope.$element.val()).toEqual('123X');
+          expect(element.val()).toEqual('123X');
           expect(scope.age).toEqual(123);
-          expect(scope.$element).toBeInvalid();
+          expect(element).toBeInvalid();
         });
 
 
@@ -211,28 +209,28 @@ describe('widget: input', function() {
           // the user from ever typying ','.
           compile('<input type="list" ng:model="list"/>');
 
-          scope.$element.val('a ');
-          browserTrigger(scope.$element, 'change');
+          element.val('a ');
+          browserTrigger(element, 'change');
           defer.flush();
-          expect(scope.$element.val()).toEqual('a ');
+          expect(element.val()).toEqual('a ');
           expect(scope.list).toEqual(['a']);
 
-          scope.$element.val('a ,');
-          browserTrigger(scope.$element, 'change');
+          element.val('a ,');
+          browserTrigger(element, 'change');
           defer.flush();
-          expect(scope.$element.val()).toEqual('a ,');
+          expect(element.val()).toEqual('a ,');
           expect(scope.list).toEqual(['a']);
 
-          scope.$element.val('a , ');
-          browserTrigger(scope.$element, 'change');
+          element.val('a , ');
+          browserTrigger(element, 'change');
           defer.flush();
-          expect(scope.$element.val()).toEqual('a , ');
+          expect(element.val()).toEqual('a , ');
           expect(scope.list).toEqual(['a']);
 
-          scope.$element.val('a , b');
-          browserTrigger(scope.$element, 'change');
+          element.val('a , b');
+          browserTrigger(element, 'change');
           defer.flush();
-          expect(scope.$element.val()).toEqual('a , b');
+          expect(element.val()).toEqual('a , b');
           expect(scope.list).toEqual(['a', 'b']);
         });
 
@@ -240,7 +238,7 @@ describe('widget: input', function() {
         it("should come up blank when no value specified", function() {
           compile('<input type="number" ng:model="age"/>');
           scope.$digest();
-          expect(scope.$element.val()).toEqual('');
+          expect(element.val()).toEqual('');
           expect(scope.age).toEqual(null);
         });
       });
@@ -250,7 +248,7 @@ describe('widget: input', function() {
         it("should format booleans", function() {
           compile('<input type="checkbox" ng:model="name" ng:init="name=false"/>');
           expect(scope.name).toBe(false);
-          expect(scope.$element[0].checked).toBe(false);
+          expect(element[0].checked).toBe(false);
         });
 
 
@@ -270,15 +268,15 @@ describe('widget: input', function() {
 
           scope.name='y';
           scope.$digest();
-          expect(scope.$element[0].checked).toBe(true);
+          expect(element[0].checked).toBe(true);
 
           scope.name='n';
           scope.$digest();
-          expect(scope.$element[0].checked).toBe(false);
+          expect(element[0].checked).toBe(false);
 
           scope.name='abc';
           scope.$digest();
-          expect(scope.$element[0].checked).toBe(false);
+          expect(element[0].checked).toBe(false);
 
           browserTrigger(element);
           expect(scope.name).toEqual('y');
@@ -302,7 +300,6 @@ describe('widget: input', function() {
 
     it("should process required", inject(function($formFactory) {
       compile('<input type="text" ng:model="price" name="p" required/>', jqLite(document.body));
-      expect($formFactory.rootForm.p.$required).toBe(true);
       expect(element.hasClass('ng-invalid')).toBeTruthy();
 
       scope.price = 'xxx';
@@ -394,7 +391,7 @@ describe('widget: input', function() {
         '</div>');
 
         expect(scope.choose).toEqual('C');
-        var inputs = scope.$element.find('input');
+        var inputs = element.find('input');
         expect(inputs[1].checked).toBe(false);
         expect(inputs[2].checked).toBe(true);
       });
@@ -408,7 +405,7 @@ describe('widget: input', function() {
         '</div>');
 
         expect(scope.choose).toEqual('A');
-        var inputs = scope.$element.find('input');
+        var inputs = element.find('input');
         expect(inputs[0].checked).toBe(true);
         expect(inputs[1].checked).toBe(false);
       });
@@ -421,7 +418,7 @@ describe('widget: input', function() {
               '       type="radio" ng:model="choice" value="{{item}}" name="choice">'+
             '</li>');
 
-        var inputs = scope.$element.find('input');
+        var inputs = element.find('input');
         expect(inputs[0].checked).toBe(false);
         expect(inputs[1].checked).toBe(false);
 
@@ -435,7 +432,7 @@ describe('widget: input', function() {
           function($rootScope, $compile){
         $rootScope.choice = 'b';
         $rootScope.items = ['a', 'b'];
-        var element = $compile(
+        element = $compile(
             '<li>'+
               '<input ng:repeat="item in items" ' +
               '       type="radio" ng:model="choice" value="{{item}}" name="choice">'+
@@ -465,21 +462,22 @@ describe('widget: input', function() {
         $rootScope.value = undefined;
         $rootScope.$digest();
         expect(element.val()).toEqual('');
+        dealoc(element);
       }));
     });
 
 
     it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
-      expect(scope.$element.attr('ng-exception')).toBeFalsy();
-      expect(scope.$element.hasClass('ng-exception')).toBeFalsy();
+      expect(element.attr('ng-exception')).toBeFalsy();
+      expect(element.hasClass('ng-exception')).toBeFalsy();
     });
 
 
     it('should ignore checkbox widget which have no name', function() {
       compile('<input type="checkbox"/>');
-      expect(scope.$element.attr('ng-exception')).toBeFalsy();
-      expect(scope.$element.hasClass('ng-exception')).toBeFalsy();
+      expect(element.attr('ng-exception')).toBeFalsy();
+      expect(element.hasClass('ng-exception')).toBeFalsy();
     });
 
 
@@ -506,6 +504,7 @@ describe('widget: input', function() {
 
       expect(formFactory).toBe($formFactory);
       expect(input[0]).toBe(element[0]);
+      dealoc(element);
     }));
 
     it('should throw an error of Controller not declared in scope', inject(function($rootScope, $compile) {
@@ -530,13 +529,13 @@ describe('widget: input', function() {
         forEach(validList, function(value){
           it('should validate "' + value + '"', function() {
             setup(value);
-            expect(scope.$element).toBeValid();
+            expect(element).toBeValid();
           });
         });
         forEach(invalidList, function(value){
           it('should NOT validate "' + value + '"', function() {
             setup(value);
-            expect(scope.$element).toBeInvalid();
+            expect(element).toBeInvalid();
           });
         });
 
@@ -553,10 +552,10 @@ describe('widget: input', function() {
             // to allow non-number values, we have to change type so that
             // the browser which have number validation will not interfere with
             // this test. IE8 won't allow it hence the catch.
-            scope.$element[0].setAttribute('type', 'text');
+            element[0].setAttribute('type', 'text');
           } catch (e){}
           if (value != undefined) {
-            scope.$element.val(value);
+            element.val(value);
             browserTrigger(element, 'keydown');
             defer.flush();
           }

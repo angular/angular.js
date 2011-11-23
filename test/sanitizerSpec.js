@@ -2,9 +2,13 @@
 
 describe('HTML', function() {
 
-  function expectHTML(html) {
-    return expect(new HTML(html).get());
-  }
+  var expectHTML;
+
+  beforeEach(inject(function($sanitize) {
+    expectHTML = function(html){
+      return expect($sanitize(html));
+    };
+  }));
 
   describe('htmlParser', function() {
     var handler, start, text;

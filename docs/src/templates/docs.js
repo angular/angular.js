@@ -123,11 +123,6 @@ function DocsController($location, $window, $cookies, $filter) {
   }
 }
 
-// prevent compilation of code
-angular.widget('code', function(element) {
-  element.attr('ng:non-bindable', 'true');
-});
-
 SyntaxHighlighter['defaults'].toolbar = false;
 SyntaxHighlighter['defaults'].gutter = true;
 
@@ -152,7 +147,7 @@ function TutorialInstructionsCtrl($cookieStore) {
 window.angular = window.angular || {};
 angular.module = angular.module || {};
 
-angular.module.ngdocs = function($locationProvider, $filterProvider) {
+angular.module.ngDocs = function($locationProvider, $filterProvider, $compileProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
 
   $filterProvider.register('title', function(){
@@ -161,5 +156,9 @@ angular.module.ngdocs = function($locationProvider, $filterProvider) {
         return 'Module ' + module + (name ? ' - ' + name : '');
       });
     }
+  });
+
+  $compileProvider.directive('code', function() {
+    return { terminal: true };
   });
 };
