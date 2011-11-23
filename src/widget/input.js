@@ -542,23 +542,23 @@ angularInputType('checkbox', function(inputElement, widget) {
       </doc:scenario>
     </doc:example>
  */
-angularInputType('radio', function(inputElement, widget) {
+angularInputType('radio', function(inputElement, widget, attr) {
   //correct the name
-  inputElement.attr('name', widget.$id + '@' + inputElement.attr('name'));
+  attr.$set('name', widget.$id + '@' + attr.name);
   inputElement.bind('click', function() {
     widget.$apply(function() {
       if (inputElement[0].checked) {
-        widget.$emit('$viewChange', widget.$value);
+        widget.$emit('$viewChange', attr.value);
       }
     });
   });
 
   widget.$render = function() {
-    inputElement[0].checked = isDefined(widget.$value) && (widget.$value == widget.$viewValue);
+    inputElement[0].checked = isDefined(attr.value) && (attr.value == widget.$viewValue);
   };
 
   if (inputElement[0].checked) {
-    widget.$viewValue = widget.$value;
+    widget.$viewValue = attr.value;
   }
 });
 
@@ -664,28 +664,28 @@ var HTML5_INPUTS_TYPES =  makeMap(
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
-          expect(binding('user')).toEqual('{\n  \"last\":\"visitor",\n  \"name\":\"guest\"}');
+          expect(binding('user')).toEqual('{"last":"visitor","name":"guest"}');
           expect(binding('myForm.userName.$valid')).toEqual('true');
           expect(binding('myForm.$valid')).toEqual('true');
         });
 
         it('should be invalid if empty when required', function() {
           input('user.name').enter('');
-          expect(binding('user')).toEqual('{\n  \"last\":\"visitor",\n  \"name\":\"\"}');
+          expect(binding('user')).toEqual('{"last":"visitor","name":""}');
           expect(binding('myForm.userName.$valid')).toEqual('false');
           expect(binding('myForm.$valid')).toEqual('false');
         });
 
         it('should be valid if empty when min length is set', function() {
           input('user.last').enter('');
-          expect(binding('user')).toEqual('{\n  \"last\":\"",\n  \"name\":\"guest\"}');
+          expect(binding('user')).toEqual('{"last":"","name":"guest"}');
           expect(binding('myForm.lastName.$valid')).toEqual('true');
           expect(binding('myForm.$valid')).toEqual('true');
         });
 
         it('should be invalid if less than required min length', function() {
           input('user.last').enter('xx');
-          expect(binding('user')).toEqual('{\n  \"last\":\"xx",\n  \"name\":\"guest\"}');
+          expect(binding('user')).toEqual('{"last":"xx","name":"guest"}');
           expect(binding('myForm.lastName.$valid')).toEqual('false');
           expect(binding('myForm.lastName.$error')).toMatch(/MINLENGTH/);
           expect(binding('myForm.$valid')).toEqual('false');
@@ -694,7 +694,7 @@ var HTML5_INPUTS_TYPES =  makeMap(
         it('should be valid if longer than max length', function() {
           input('user.last').enter('some ridiculously long name');
           expect(binding('user'))
-            .toEqual('{\n  \"last\":\"some ridiculously long name",\n  \"name\":\"guest\"}');
+            .toEqual('{"last":"some ridiculously long name","name":"guest"}');
           expect(binding('myForm.lastName.$valid')).toEqual('false');
           expect(binding('myForm.lastName.$error')).toMatch(/MAXLENGTH/);
           expect(binding('myForm.$valid')).toEqual('false');
@@ -702,25 +702,23 @@ var HTML5_INPUTS_TYPES =  makeMap(
       </doc:scenario>
     </doc:example>
  */
-angularWidget('input', function(inputElement){
-  this.directives(true);
-  this.descend(true);
-  var modelExp = inputElement.attr('ng:model');
-  return modelExp &&
-    ['$defer', '$formFactory', '$element',
-        function($defer, $formFactory, inputElement) {
+var inputDirective = ['$defer', '$formFactory', function($defer, $formFactory) {
+  return {
+    restrict: 'E',
+    link: function(modelScope, inputElement, attr) {
+      if (!attr.ngModel) return;
+
       var form = $formFactory.forElement(inputElement),
           // We have to use .getAttribute, since jQuery tries to be smart and use the
           // type property. Trouble is some browser change unknown to text.
-          type = inputElement[0].getAttribute('type') || 'text',
+          type = attr.type || 'text',
           TypeController,
-          modelScope = this,
           patternMatch, widget,
-          pattern = trim(inputElement.attr('ng:pattern')),
-          minlength = parseInt(inputElement.attr('ng:minlength'), 10),
-          maxlength = parseInt(inputElement.attr('ng:maxlength'), 10),
+          pattern = attr.ngPattern,
+          modelExp = attr.ngModel,
+          minlength = parseInt(attr.ngMinlength, 10),
+          maxlength = parseInt(attr.ngMaxlength, 10),
           loadFromScope = type.match(/^\s*\@\s*(.*)/);
-
 
        if (!pattern) {
          patternMatch = valueFn(true);
@@ -743,7 +741,7 @@ angularWidget('input', function(inputElement){
 
       type = lowercase(type);
       TypeController = (loadFromScope
-              ? (assertArgFn(this.$eval(loadFromScope[1]), loadFromScope[1])).$unboundFn
+              ? (assertArgFn(modelScope.$eval(loadFromScope[1]), loadFromScope[1])).$unboundFn
               : angularInputType(type)) || noop;
 
       if (!HTML5_INPUTS_TYPES[type]) {
@@ -757,26 +755,21 @@ angularWidget('input', function(inputElement){
       }
 
       //TODO(misko): setting $inject is a hack
-      !TypeController.$inject && (TypeController.$inject = ['$element', '$scope']);
+      !TypeController.$inject && (TypeController.$inject = ['$element', '$scope', '$attr']);
       widget = form.$createWidget({
           scope: modelScope,
           model: modelExp,
-          onChange: inputElement.attr('ng:change'),
-          alias: inputElement.attr('name'),
+          onChange: attr.ngChange,
+          alias: attr.name,
           controller: TypeController,
-          controllerArgs: {$element: inputElement}
+          controllerArgs: {$element: inputElement, $attr: attr}
       });
-
-      watchElementProperty(this, widget, 'value', inputElement);
-      watchElementProperty(this, widget, 'required', inputElement);
-      watchElementProperty(this, widget, 'readonly', inputElement);
-      watchElementProperty(this, widget, 'disabled', inputElement);
 
       widget.$pristine = !(widget.$dirty = false);
 
       widget.$on('$validate', function() {
         var $viewValue = trim(widget.$viewValue),
-            inValid = widget.$required && !$viewValue,
+            inValid = attr.required && !$viewValue,
             tooLong = maxlength && $viewValue && $viewValue.length > maxlength,
             tooShort = minlength && $viewValue && $viewValue.length < minlength,
             missMatch = $viewValue && !patternMatch($viewValue);
@@ -812,7 +805,7 @@ angularWidget('input', function(inputElement){
           inputElement.val(widget.$viewValue || '');
         };
 
-        inputElement.bind('keydown change input', function(event) {
+        inputElement.bind('keydown change input', function(event){
           var key = event.keyCode;
           if (/*command*/   key != 91 &&
               /*modifiers*/ !(15 < key && key < 19) &&
@@ -827,8 +820,9 @@ angularWidget('input', function(inputElement){
           }
         });
       }
-    }];
-});
+    }
+  };
+}];
 
 
 /**
@@ -856,24 +850,3 @@ angularWidget('input', function(inputElement){
  * @param {string=} ng:change Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  */
-angularWidget('textarea', angularWidget('input'));
-
-
-function watchElementProperty(modelScope, widget, name, element) {
-  var bindAttr = fromJson(element.attr('ng:bind-attr') || '{}'),
-      match = /\s*\{\{(.*)\}\}\s*/.exec(bindAttr[name]),
-      isBoolean = BOOLEAN_ATTR[name];
-  widget['$' + name] = isBoolean
-    ? ( // some browsers return true some '' when required is set without value.
-        isString(element.prop(name)) || !!element.prop(name) ||
-        // this is needed for ie9, since it will treat boolean attributes as false
-        !!element[0].attributes[name])
-    : element.attr(name);
-  if (bindAttr[name] && match) {
-    modelScope.$watch(match[1], function(value) {
-      widget['$' + name] = isBoolean ? !!value : value;
-      widget.$emit('$validate');
-      widget.$render && widget.$render();
-    });
-  }
-}

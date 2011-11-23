@@ -1,9 +1,15 @@
 'use strict';
 
 describe('widget', function() {
-  describe('ng:switch', function() {
+  var element;
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
+  describe('ng:switch', inject(function($rootScope, $compile) {
     it('should switch on value change', inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ng:switch on="select">' +
           '<div ng:switch-when="1">first:{{name}}</div>' +
           '<div ng:switch-when="2">second:{{name}}</div>' +
@@ -29,7 +35,7 @@ describe('widget', function() {
 
 
     it('should switch on switch-when-default', inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ng:switch on="select">' +
           '<div ng:switch-when="1">one</div>' +
           '<div ng:switch-default>other</div>' +
@@ -43,7 +49,7 @@ describe('widget', function() {
 
 
     it('should call change on switch', inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ng:switch on="url" change="name=\'works\'">' +
           '<div ng:switch-when="a">{{name}}</div>' +
         '</ng:switch>')($rootScope);
@@ -52,7 +58,7 @@ describe('widget', function() {
       expect($rootScope.name).toEqual(undefined);
       expect(element.text()).toEqual('works');
     }));
-  });
+  }));
 
 
   describe('ng:include', function() {
@@ -66,7 +72,7 @@ describe('widget', function() {
 
     it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
         function($rootScope, $compile, $browser) {
-      var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+      element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
       element = $compile(element)($rootScope);
       $rootScope.childScope = $rootScope.$new();
       $rootScope.childScope.name = 'misko';
@@ -79,7 +85,7 @@ describe('widget', function() {
     it('should remove previously included text if a falsy value is bound to src', inject(
           putIntoCache('myUrl', '{{name}}'),
           function($rootScope, $compile, $browser) {
-      var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+      element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
       element = $compile(element)($rootScope);
       $rootScope.childScope = $rootScope.$new();
       $rootScope.childScope.name = 'igor';
@@ -97,7 +103,7 @@ describe('widget', function() {
 
     it('should allow this for scope', inject(putIntoCache('myUrl', '{{"abc"}}'),
           function($rootScope, $compile, $browser) {
-      var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
+      element = jqLite('<ng:include src="url" scope="this"></ng:include>');
       element = $compile(element)($rootScope);
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
@@ -115,7 +121,7 @@ describe('widget', function() {
     it('should evaluate onload expression when a partial is loaded', inject(
         putIntoCache('myUrl', 'my partial'),
         function($rootScope, $compile, $browser) {
-      var element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
+      element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
       element = $compile(element)($rootScope);
 
       expect($rootScope.loaded).not.toBeDefined();
@@ -130,7 +136,7 @@ describe('widget', function() {
 
     it('should destroy old scope', inject(putIntoCache('myUrl', 'my partial'),
           function($rootScope, $compile, $browser) {
-      var element = jqLite('<ng:include src="url"></ng:include>');
+      element = jqLite('<ng:include src="url"></ng:include>');
       element = $compile(element)($rootScope);
 
       expect($rootScope.$$childHead).toBeFalsy();
@@ -147,7 +153,7 @@ describe('widget', function() {
 
     it('should do xhr request and cache it',
         inject(function($rootScope, $httpBackend, $compile, $browser) {
-      var element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+      element = $compile('<ng:include src="url"></ng:include>')($rootScope);
       $httpBackend.expect('GET', 'myUrl').respond('my partial');
 
       $rootScope.url = 'myUrl';
@@ -168,7 +174,7 @@ describe('widget', function() {
 
     it('should clear content when error during xhr request',
         inject(function($httpBackend, $compile, $rootScope) {
-      var element = $compile('<ng:include src="url">content</ng:include>')($rootScope);
+      element = $compile('<ng:include src="url">content</ng:include>')($rootScope);
       $httpBackend.expect('GET', 'myUrl').respond(404, '');
 
       $rootScope.url = 'myUrl';
@@ -182,7 +188,7 @@ describe('widget', function() {
     it('should be async even if served from cache', inject(
           putIntoCache('myUrl', 'my partial'),
           function($rootScope, $compile, $browser) {
-      var element = $compile('<ng:include src="url"></ng:include>')($rootScope);
+      element = $compile('<ng:include src="url"></ng:include>')($rootScope);
 
       $rootScope.url = 'myUrl';
 
@@ -199,8 +205,8 @@ describe('widget', function() {
 
     it('should discard pending xhr callbacks if a new template is requested before the current ' +
         'finished loading', inject(function($rootScope, $compile, $httpBackend) {
-      var element = jqLite("<ng:include src='templateUrl'></ng:include>"),
-          log = [];
+      element = jqLite("<ng:include src='templateUrl'></ng:include>");
+      var log = [];
 
       $rootScope.templateUrl = 'myUrl1';
       $rootScope.logger = function(msg) {
@@ -234,7 +240,7 @@ describe('widget', function() {
 
       function compileAndLink(tpl) {
         return function($compile, $rootScope) {
-          $compile(tpl)($rootScope);
+          element = $compile(tpl)($rootScope);
         };
       }
 
@@ -294,7 +300,7 @@ describe('widget', function() {
           preventDefaultCalled = false,
           event;
 
-      var element = $compile('<a href="">empty link</a>')($rootScope);
+      element = $compile('<a href="">empty link</a>')($rootScope);
 
       if (msie < 9) {
 
@@ -327,7 +333,7 @@ describe('widget', function() {
 
   describe('@ng:repeat', function() {
     it('should ng:repeat over array', inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="item in items" ng:init="suffix = \';\'" ng:bind="item + suffix"></li>' +
         '</ul>')($rootScope);
@@ -355,7 +361,7 @@ describe('widget', function() {
 
 
     it('should ng:repeat over object', inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li>' +
         '</ul>')($rootScope);
@@ -370,7 +376,7 @@ describe('widget', function() {
       Class.prototype.abc = function() {};
       Class.prototype.value = 'abc';
 
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li>' +
         '</ul>')($rootScope);
@@ -383,7 +389,7 @@ describe('widget', function() {
 
     it('should error on wrong parsing of ng:repeat', inject(function($rootScope, $compile, $log) {
       expect(function() {
-        var element = $compile('<ul><li ng:repeat="i dont parse"></li></ul>')($rootScope);
+        element = $compile('<ul><li ng:repeat="i dont parse"></li></ul>')($rootScope);
       }).toThrow("Expected ng:repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
 
       $log.error.logs.shift();
@@ -392,7 +398,7 @@ describe('widget', function() {
 
     it('should expose iterator offset as $index when iterating over arrays',
         inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="item in items" ng:bind="item + $index + \'|\'"></li>' +
         '</ul>')($rootScope);
@@ -404,7 +410,7 @@ describe('widget', function() {
 
     it('should expose iterator offset as $index when iterating over objects',
         inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="(key, val) in items" ng:bind="key + \':\' + val + $index + \'|\'"></li>' +
         '</ul>')($rootScope);
@@ -416,7 +422,7 @@ describe('widget', function() {
 
     it('should expose iterator position as $position when iterating over arrays',
         inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="item in items" ng:bind="item + \':\' + $position + \'|\'"></li>' +
         '</ul>')($rootScope);
@@ -437,7 +443,7 @@ describe('widget', function() {
 
     it('should expose iterator position as $position when iterating over objects',
         inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="(key, val) in items" ng:bind="key + \':\' + val + \':\' + $position + \'|\'">' +
           '</li>' +
@@ -454,7 +460,7 @@ describe('widget', function() {
 
 
     it('should ignore $ and $$ properties', inject(function($rootScope, $compile) {
-      var element = $compile('<ul><li ng:repeat="i in items">{{i}}|</li></ul>')($rootScope);
+      element = $compile('<ul><li ng:repeat="i in items">{{i}}|</li></ul>')($rootScope);
       $rootScope.items = ['a', 'b', 'c'];
       $rootScope.items.$$hashkey = 'xxx';
       $rootScope.items.$root = 'yyy';
@@ -465,7 +471,7 @@ describe('widget', function() {
 
 
     it('should repeat over nested arrays', inject(function($rootScope, $compile) {
-      var element = $compile(
+      element = $compile(
         '<ul>' +
           '<li ng:repeat="subgroup in groups">' +
             '<div ng:repeat="group in subgroup">{{group}}|</div>X' +
@@ -480,7 +486,7 @@ describe('widget', function() {
 
     it('should ignore non-array element properties when iterating over an array',
         inject(function($rootScope, $compile) {
-      var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
+      element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
       $rootScope.array = ['a', 'b', 'c'];
       $rootScope.array.foo = '23';
       $rootScope.array.bar = function() {};
@@ -492,7 +498,7 @@ describe('widget', function() {
 
     it('should iterate over non-existent elements of a sparse array',
         inject(function($rootScope, $compile) {
-      var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
+      element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
       $rootScope.array = ['a', 'b'];
       $rootScope.array[4] = 'c';
       $rootScope.array[6] = 'd';
@@ -503,7 +509,7 @@ describe('widget', function() {
 
 
     it('should iterate over all kinds of types', inject(function($rootScope, $compile) {
-      var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
+      element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
       $rootScope.array = ['a', 1, null, undefined, {}];
       $rootScope.$digest();
 
@@ -512,7 +518,7 @@ describe('widget', function() {
 
 
     describe('stability', function() {
-      var a, b, c, d, lis, element;
+      var a, b, c, d, lis;
 
       beforeEach(inject(function($rootScope, $compile) {
         element = $compile(
@@ -602,7 +608,7 @@ describe('widget', function() {
   describe('@ng:non-bindable', function() {
     it('should prevent compilation of the owning element and its children',
         inject(function($rootScope, $compile) {
-      var element = $compile('<div ng:non-bindable><span ng:bind="name"></span></div>')($rootScope);
+      element = $compile('<div ng:non-bindable><span ng:bind="name"></span></div>')($rootScope);
       $rootScope.name =  'misko';
       $rootScope.$digest();
       expect(element.text()).toEqual('');
@@ -611,7 +617,6 @@ describe('widget', function() {
 
 
   describe('ng:view', function() {
-    var element;
     beforeEach(inject(function($rootScope, $compile) {
       element = $compile('<ng:view></ng:view>')($rootScope);
     }));
@@ -658,7 +663,7 @@ describe('widget', function() {
 
       $location.path('/unknown');
       $rootScope.$digest();
-      expect($rootScope.$element.text()).toEqual('');
+      expect(element.text()).toEqual('');
     }));
 
 
@@ -675,12 +680,13 @@ describe('widget', function() {
 
       $rootScope.parentVar = 'new parent';
       $rootScope.$digest();
-      expect($rootScope.$element.text()).toEqual('new parent');
+      expect(element.text()).toEqual('new parent');
     }));
 
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
       // TODO(vojta): refactor this test
+      dealoc(element);
       var injector = angular.injector(['ng', 'ngMock']);
       var myApp = injector.get('$rootScope');
       var $httpBackend = injector.get('$httpBackend');
@@ -690,7 +696,7 @@ describe('widget', function() {
       var $route = injector.get('$route');
       $route.when('/foo', {controller: angular.noop, template: 'viewPartial.html'});
 
-      var element = injector.get('$compile')(
+      element = injector.get('$compile')(
           '<div>' +
             'include: <ng:include src="\'includePartial.html\'"> </ng:include>' +
           '</div>')(myApp);
@@ -699,15 +705,16 @@ describe('widget', function() {
       $httpBackend.expect('GET', 'viewPartial.html').respond('content');
       $httpBackend.flush();
 
-      expect(myApp.$element.text()).toEqual('include: view: content');
+      expect(element.text()).toEqual('include: view: content');
       expect($route.current.template).toEqual('viewPartial.html');
       dealoc(myApp);
+      dealoc(element);
     }));
 
 
     it('should initialize view template after the view controller was initialized even when ' +
        'templates were cached',
-       inject(function($rootScope, $compile, $location, $httpBackend, $route, $browser) {
+       inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       //this is a test for a regression that was introduced by making the ng:view cache sync
 
       $route.when('/foo', {controller: ParentCtrl, template: 'viewPartial.html'});
@@ -750,7 +757,7 @@ describe('widget', function() {
       $route.when('/foo', {template: 'myUrl1'});
       $route.when('/bar', {template: 'myUrl2'});
 
-      expect($rootScope.$element.text()).toEqual('');
+      expect(element.text()).toEqual('');
 
       $location.path('/foo');
       $httpBackend.expect('GET', 'myUrl1').respond('<div>{{1+3}}</div>');
@@ -760,7 +767,7 @@ describe('widget', function() {
       $rootScope.$digest();
       $httpBackend.flush(); // now that we have two requests pending, flush!
 
-      expect($rootScope.$element.text()).toEqual('2');
+      expect(element.text()).toEqual('2');
     }));
 
 
@@ -770,12 +777,12 @@ describe('widget', function() {
 
       $location.path('/foo');
       $httpBackend.expect('GET', 'myUrl1').respond(404, '');
-      $rootScope.$element.text('content');
+      element.text('content');
 
       $rootScope.$digest();
       $httpBackend.flush();
 
-      expect($rootScope.$element.text()).toBe('');
+      expect(element.text()).toBe('');
     }));
 
 
@@ -800,7 +807,6 @@ describe('widget', function() {
   describe('ng:pluralize', function() {
 
     describe('deal with pluralized strings without offset', function() {
-       var element;
        beforeEach(inject(function($rootScope, $compile) {
           element = $compile(
             '<ng:pluralize count="email"' +
@@ -892,7 +898,7 @@ describe('widget', function() {
 
     describe('deal with pluralized strings with offset', function() {
       it('should show single/plural strings with offset', inject(function($rootScope, $compile) {
-        var element = $compile(
+        element = $compile(
           "<ng:pluralize count=\"viewCount\"  offset=2 " +
               "when=\"{'0': 'Nobody is viewing.'," +
                       "'1': '{{p1}} is viewing.'," +

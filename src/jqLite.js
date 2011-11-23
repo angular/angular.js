@@ -405,15 +405,14 @@ forEach({
 
   text: extend((msie < 9)
       ? function(element, value) {
-        // NodeType == 3 is text node
-        if (element.nodeType == 3) {
-          if (isUndefined(value))
-            return element.nodeValue;
-          element.nodeValue = value;
-        } else {
+        if (element.nodeType == 1 /** Element */) {
           if (isUndefined(value))
             return element.innerText;
           element.innerText = value;
+        } else {
+          if (isUndefined(value))
+            return element.nodeValue;
+          element.nodeValue = value;
         }
       }
       : function(element, value) {

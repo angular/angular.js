@@ -1,4 +1,4 @@
-(function() {
+angular.module('ngdocs.directives', [], function($compileProvider) {
 
   var angularJsUrl;
   var scripts = document.getElementsByTagName("script");
@@ -22,119 +22,122 @@
     ' </body>\n' +
     '</html>';
 
-  angular.widget('doc:example', ['$injector', '$browser', '$location', '$element',
-                        function($injector,    $browser,   $location,   element){
-    this.descend(false); // do not compile the example code
-    var module = element.attr('module') || '';
+  $compileProvider.directive('docExample', ['$injector', '$log', '$browser', '$location',
+                                    function($injector,   $log,   $browser,   $location) {
+    return {
+      terminal: true,
+      compile: function(element, attrs) {
+        var module = element.attr('module') || '';
 
-    //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
-    //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
-    var example = element.find('pre').eq(0),  //doc-source
-        scriptSrc = '',
-        htmlSrc = example.text().replace(/<script[^\>]*>([\s\S]+)<\/script>/im, function(_, script) {
-            scriptSrc = script;
-            return '';
-          }),
-        showSource = example.attr('source') !== 'false',
-        jsfiddle = example.attr('jsfiddle') || true,
-        scenario = element.find('pre').eq(1); //doc-scenario
+        //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
+        //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
+        var example = element.find('pre').eq(0),  //doc-source
+            scriptSrc = '',
+            htmlSrc = example.text().replace(/<script[^\>]*>([\s\S]+)<\/script>/im, function(_, script) {
+                scriptSrc = script;
+                return '';
+              }),
+            showSource = example.attr('source') !== 'false',
+            jsfiddle = example.attr('jsfiddle') || true,
+            scenario = element.find('pre').eq(1); //doc-scenario
 
-    var tabs = angular.element('<ul class="doc-example">');
+        var tabs = angular.element('<ul class="doc-example">');
 
-    // show source tab, if not disabled
-    if (showSource) {
-      tabs.append(
-        '<li class="doc-example-heading"><h3>Source</h3></li>' +
-        '<li class="doc-example-source" ng:non-bindable>' +
-        jsFiddleButton(jsfiddle) + // may or may not have value
-        '<pre class="brush: js; html-script: true; toolbar: false;"></pre></li>');
-    }
-    // show live preview tab
-    var livePreviewTab;
-    tabs.append('<li class="doc-example-heading"><h3>Live Preview</h3></li>');
-    tabs.append(livePreviewTab = angular.element('<li class="doc-example-live">' + htmlSrc +'</li>'));
-    // show scenario tab, if present
-    if (scenario.text()) {
-      tabs.append(
-        '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
-        '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>');
-    }
-
-    tabs.find('li').eq(1).find('pre').text(
-      HTML_TEMPLATE.
-        replace('_SCRIPT_SOURCE_', scriptSrc ? ' <script>\n' + indent(scriptSrc, '  ') + '\n </script>\n'  : '').
-        replace('_HTML_SOURCE_', indent(htmlSrc, '  ')).
-        replace('_MODULE_', module ? '="' + module + '"' : ''));
-
-    element.html('');
-    element.append(tabs);
-
-    try {
-      if (window.execScript) { // IE
-        window.execScript(scriptSrc || '"stupid IE!"'); // IE complains when evaling empty string
-      } else {
-        window.eval(scriptSrc);
-      }
-    } catch (e) {
-      alert(e);
-    }
-
-    return function() {
-      var scope = this;
-      var modules = [
-        'ng',
-        function($provide) {
-          $provide.value('$browser', $browser);
-          $provide.value('$location', $location);
+        // show source tab, if not disabled
+        if (showSource) {
+          tabs.append(
+            '<li class="doc-example-heading"><h3>Source</h3></li>' +
+            '<li class="doc-example-source" ng:non-bindable>' +
+            jsFiddleButton(jsfiddle) + // may or may not have value
+            '<pre class="brush: js; html-script: true; toolbar: false;"></pre></li>');
         }
-      ];
-      module && modules.push(module);
+        // show live preview tab
+        var livePreviewTab;
+        tabs.append('<li class="doc-example-heading"><h3>Live Preview</h3></li>');
+        tabs.append(livePreviewTab = angular.element('<li class="doc-example-live">' + htmlSrc +'</li>'));
+        // show scenario tab, if present
+        if (scenario.text()) {
+          tabs.append(
+            '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
+            '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>');
+        }
 
-      angular.bootstrap(livePreviewTab, modules).invoke(function($rootScope) {
-        element.bind('$destroy', scope.$root.$watch(function() {
-          $rootScope.$digest();
-        }));
-      });
-    };
+        tabs.find('li').eq(1).find('pre').text(
+          HTML_TEMPLATE.
+            replace('_SCRIPT_SOURCE_', scriptSrc ? ' <script>\n' + indent(scriptSrc, '  ') + '\n </script>\n'  : '').
+            replace('_HTML_SOURCE_', indent(htmlSrc, '  ')).
+            replace('_MODULE_', module ? '="' + module + '"' : ''));
 
-    function jsFiddleButton(jsfiddle) {
-      var fixJsFiddleIssue132 = true;
-      if (jsfiddle !== 'false') {
-        if(jsfiddle === true) {
-          //dynamically generate a fiddle
-          var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/';
+        element.html('');
+        element.append(tabs);
 
-          function jsFiddleEscape(text, prefix) {
-            return indent(text.replace(/<\/textarea>/gi,'&lt;/textarea&gt;'), prefix);
+        try {
+          if (window.execScript) { // IE
+            window.execScript(scriptSrc || '"stupid IE!"'); // IE complains when evaling empty string
+          } else {
+            window.eval(scriptSrc);
           }
-
-          return '<form class="jsfiddle" method="post" action="' + fiddleUrl + '" target="_blank">' +
-                    (fixJsFiddleIssue132 ? '' : '<textarea name="resources">' + angularJsUrl + '</textarea>') +
-                    '<textarea name="css">\n' +
-                      (fixJsFiddleIssue132 ? '</style>\n<script src="' + angularJsUrl + '"></script>\n<style>\n' : '') +
-                      '.ng-invalid { border: 1px solid red; } \n' +
-                      'body { font-family: Arial,Helvetica,sans-serif; }\n' +
-                      'body, td, th { font-size: 14px; margin: 0; }\n' +
-                      'table { border-collapse: separate; border-spacing: 2px; display: table; margin-bottom: 0; margin-top: 0; -moz-box-sizing: border-box; text-indent: 0; }\n' +
-                      'a:link, a:visited, a:hover { color: #5D6DB6; text-decoration: none; }\n' +
-                      '.error { color: red; }\n' +
-                    '</textarea>' +
-                    '<input type="text" name="title" value="AngularJS Live Example">' +
-                    '<textarea name="html">' +
-                      '<div ng:app' + (module ? '="' + module + '"' : '') + '>\n' + jsFiddleEscape(htmlSrc, ' ') + '\n</div>' +
-                    '</textarea>' +
-                    '<textarea name="js">' + jsFiddleEscape(scriptSrc) + '</textarea>' +
-                    '<button>edit at jsFiddle</button>' +
-                  '</form>';
-        } else {
-          //use existing fiddle
-          fiddleUrl = "http://jsfiddle.net" + jsfiddle;
-          return '<form class="jsfiddle" method="get" action="' + fiddleUrl + '" target="_blank">' +
-                   '<button>edit at jsFiddle</button>' +
-                 '</form>';
+        } catch (e) {
+          alert(e);
         }
+
+        return function(docsAppScope) {
+          var modules = [
+            function($provide) {
+              $provide.value('$browser', $browser);
+              $provide.value('$location', $location);
+            }
+          ];
+          module && modules.push(module);
+
+          angular.bootstrap(livePreviewTab, modules).
+              invoke(['$rootScope', function(example$rootScope) {
+                element.bind('$destroy', docsAppScope.$root.$watch(function() {
+                  // this propagates the $watch from the docs app to the example app
+                  example$rootScope.$digest();
+                }));
+              }]);
+        };
+
+        function jsFiddleButton(jsfiddle) {
+          var fixJsFiddleIssue132 = true;
+          if (jsfiddle !== 'false') {
+            if(jsfiddle === true) {
+              //dynamically generate a fiddle
+              var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/';
+
+              function jsFiddleEscape(text, prefix) {
+                return indent(text.replace(/<\/textarea>/gi,'&lt;/textarea&gt;'), prefix);
+              }
+
+              return '<form class="jsfiddle" method="post" action="' + fiddleUrl + '" target="_blank">' +
+                        (fixJsFiddleIssue132 ? '' : '<textarea name="resources">' + angularJsUrl + '</textarea>') +
+                        '<textarea name="css">\n' +
+                          (fixJsFiddleIssue132 ? '</style>\n<script src="' + angularJsUrl + '"></script>\n<style>\n' : '') +
+                          '.ng-invalid { border: 1px solid red; } \n' +
+                          'body { font-family: Arial,Helvetica,sans-serif; }\n' +
+                          'body, td, th { font-size: 14px; margin: 0; }\n' +
+                          'table { border-collapse: separate; border-spacing: 2px; display: table; margin-bottom: 0; margin-top: 0; -moz-box-sizing: border-box; text-indent: 0; }\n' +
+                          'a:link, a:visited, a:hover { color: #5D6DB6; text-decoration: none; }\n' +
+                          '.error { color: red; }\n' +
+                        '</textarea>' +
+                        '<input type="text" name="title" value="AngularJS Live Example">' +
+                        '<textarea name="html">' +
+                          '<div ng:app' + (module ? '="' + module + '"' : '') + '>\n' + jsFiddleEscape(htmlSrc, ' ') + '\n</div>' +
+                        '</textarea>' +
+                        '<textarea name="js">' + jsFiddleEscape(scriptSrc) + '</textarea>' +
+                        '<button>edit at jsFiddle</button>' +
+                      '</form>';
+            } else {
+              //use existing fiddle
+              fiddleUrl = "http://jsfiddle.net" + jsfiddle;
+              return '<form class="jsfiddle" method="get" action="' + fiddleUrl + '" target="_blank">' +
+                       '<button>edit at jsFiddle</button>' +
+                     '</form>';
+            }
+          }
+        };
       }
-      return '';
     }
   }]);
 
@@ -163,93 +166,95 @@
     return lines.join('\n');
   }
 
-  var HTML_TPL =
-      '<p><a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Workspace Reset Instructions &nbsp;&#x27A4;</a></p>' +
-      '<div ng:controller="TutorialInstructionsCtrl" ng:show="showInstructions">' +
-        '<div class="tabs-nav">' +
-          '<ul>' +
-          '</ul>' +
-        '</div>' +
-        '<div class="tabs-content"><div class="tabs-content-inner">' +
+  $compileProvider.directive('docTutorialInstructions', function() {
+    var HTML_NAV = '<li ng:class="currentCls(\'{id}\')"><a ng:click="select(\'{id}\')" href>{title}</a></li>';
+    var HTML_CONTENT = '<div ng:show="selected==\'{id}\'">{content}</div>';
 
-        '</div></div>' +
+    var HTML_TPL =
+        '<p><a ng:init="showInstructions = {show}" ng:show="!showInstructions" ng:click="showInstructions = true" href>Workspace Reset Instructions &nbsp;&#x27A4;</a></p>' +
+        '<div ng:controller="TutorialInstructionsCtrl" ng:show="showInstructions">' +
+          '<div class="tabs-nav">' +
+            '<ul>' +
+            '</ul>' +
+          '</div>' +
+          '<div class="tabs-content"><div class="tabs-content-inner">' +
+
+          '</div></div>' +
+        '</div>';
+
+    var DEFAULT_NAV =
+      '<li ng:class="currentCls(\'git-mac\')"><a ng:click="select(\'git-mac\')" href>Git on Mac/Linux</a></li>' +
+      '<li ng:class="currentCls(\'git-win\')"><a ng:click="select(\'git-win\')" href>Git on Windows</a></li>' +
+      '<li ng:class="currentCls(\'ss-mac\')"><a ng:click="select(\'ss-mac\')" href>Snapshots on Mac/Linux</a></li>' +
+      '<li ng:class="currentCls(\'ss-win\')"><a ng:click="select(\'ss-win\')" href>Snapshots on Windows</a></li>';
+
+    var DEFAULT_CONTENT =
+      '<div ng:show="selected==\'git-mac\'">' +
+        '<ol>' +
+        '<li><p>Reset the workspace to step {step}.</p>' +
+        '<pre><code> git checkout -f step-{step}</code></pre></li>' +
+        '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
+        '</ol>' +
+      '</div>' +
+
+      '<div ng:show="selected==\'git-win\'">' +
+        '<ol>' +
+        '<li><p>Reset the workspace to step {step}.</p>' +
+        '<pre><code> git checkout -f step-{step}</code></pre></li>' +
+        '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
+        '</ol>' +
+      '</div>' +
+
+      '<div ng:show="selected==\'ss-mac\'">' +
+        '<ol>' +
+        '<li><p>Reset the workspace to step {step}.</p>' +
+        '<pre><code> ./goto_step.sh {step}</code></pre></li>' +
+        '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
+        '</ol>' +
+      '</div>' +
+
+      '<div ng:show="selected==\'ss-win\'">' +
+        '<ol>' +
+        '<li><p>Reset the workspace to step {step}.</p>' +
+        '<pre><code> ./goto_step.bat {step}</code></pre></li>' +
+        '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
+        '</ol>' +
       '</div>';
 
-  var HTML_NAV = '<li ng:class="currentCls(\'{id}\')"><a ng:click="select(\'{id}\')" href>{title}</a></li>';
-  var HTML_CONTENT = '<div ng:show="selected==\'{id}\'">{content}</div>';
+    return {
+      compile: function(element, attrs) {
+        var tabs = angular.element(HTML_TPL.replace('{show}', attrs.show || 'false')),
+            nav = tabs.find('ul'),
+            // use simple selectors because jqLite find() supports getElementsByTagName only
+            content = tabs.find('div').find('div'),
+            children = element.children();
 
-  var DEFAULT_NAV =
-    '<li ng:class="currentCls(\'git-mac\')"><a ng:click="select(\'git-mac\')" href>Git on Mac/Linux</a></li>' +
-    '<li ng:class="currentCls(\'git-win\')"><a ng:click="select(\'git-win\')" href>Git on Windows</a></li>' +
-    '<li ng:class="currentCls(\'ss-mac\')"><a ng:click="select(\'ss-mac\')" href>Snapshots on Mac/Linux</a></li>' +
-    '<li ng:class="currentCls(\'ss-win\')"><a ng:click="select(\'ss-win\')" href>Snapshots on Windows</a></li>';
+        if (children.length) {
+          // load custom content
+          angular.forEach(element.children(), function(elm) {
+            elm = angular.element(elm);
+            var id = elm.attr('id');
 
-  var DEFAULT_CONTENT =
-    '<div ng:show="selected==\'git-mac\'">' +
-      '<ol>' +
-      '<li><p>Reset the workspace to step {step}.</p>' +
-      '<pre><code> git checkout -f step-{step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
-      '</ol>' +
-    '</div>' +
+            nav.append(HTML_NAV.replace('{title}', elm.attr('title')).replace(/\{id\}/g, id));
+            content.append(HTML_CONTENT.replace('{id}', id).replace('{content}', elm.html()));
+          });
+        } else {
+          // default
+          nav.append(DEFAULT_NAV);
+          content.append(DEFAULT_CONTENT.replace(/\{step\}/g, element.attr('step')));
+        }
 
-    '<div ng:show="selected==\'git-win\'">' +
-      '<ol>' +
-      '<li><p>Reset the workspace to step {step}.</p>' +
-      '<pre><code> git checkout -f step-{step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
-      '</ol>' +
-    '</div>' +
-
-    '<div ng:show="selected==\'ss-mac\'">' +
-      '<ol>' +
-      '<li><p>Reset the workspace to step {step}.</p>' +
-      '<pre><code> ./goto_step.sh {step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
-      '</ol>' +
-    '</div>' +
-
-    '<div ng:show="selected==\'ss-win\'">' +
-      '<ol>' +
-      '<li><p>Reset the workspace to step {step}.</p>' +
-      '<pre><code> ./goto_step.bat {step}</code></pre></li>' +
-      '<li><p>Refresh your browser or check the app out on <a href="http://angular.github.com/angular-phonecat/step-{step}/app">angular\'s server</a>.</p></li>' +
-      '</ol>' +
-    '</div>';
-
-  angular.widget('doc:tutorial-instructions', function(element) {
-    this.descend(true);
-
-    var tabs = angular.element(HTML_TPL.replace('{show}', element.attr('show') || 'false')),
-        nav = tabs.find('ul'),
-        // use simple selectors because jqLite find() supports getElementsByTagName only
-        content = tabs.find('div').find('div'),
-        children = element.children();
-
-    if (children.length) {
-      // load custom content
-      angular.forEach(element.children(), function(elm) {
-        elm = angular.element(elm);
-        var id = elm.attr('id');
-
-        nav.append(HTML_NAV.replace('{title}', elm.attr('title')).replace(/\{id\}/g, id));
-        content.append(HTML_CONTENT.replace('{id}', id).replace('{content}', elm.html()));
-      });
-    } else {
-      // default
-      nav.append(DEFAULT_NAV);
-      content.append(DEFAULT_CONTENT.replace(/\{step\}/g, element.attr('step')));
+        element.html('');
+        element.append(tabs);
+      }
     }
-
-    element.html('');
-    element.append(tabs);
   });
 
 
-  angular.directive('doc:tutorial-nav', function(step) {
-    return function(element) {
+  $compileProvider.directive('docTutorialNav', function() {
+    return function(scope, element, attrs) {
       var prevStep, codeDiff, nextStep,
-          content;
+          content, step = attrs.docTutorialNav;
 
       step = parseInt(step, 10);
 
@@ -282,4 +287,4 @@
       return (step < 10) ? ('0' + step) : step;
     }
   });
-})();
+});

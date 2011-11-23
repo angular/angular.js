@@ -1,109 +1,5 @@
 'use strict';
 
-/**
- * @ngdoc overview
- * @name angular.markup
- * @description
- *
- * Angular markup transforms the content of DOM elements or portions of the content into other
- * text or DOM elements for further compilation.
- *
- * Markup extensions do not themselves produce linking functions. Think of markup as a way to
- * produce shorthand for a {@link angular.widget widget} or a {@link angular.directive directive}.
- *
- * The most prominent example of a markup in Angular is the built-in, double curly markup
- * `{{expression}}`, which is shorthand for `<span ng:bind="expression"></span>`.
- *
- * Create custom markup like this:
- *
- * <pre>
- *   angular.markup('newMarkup', function(text, textNode, parentElement){
- *     //tranformation code
- *   });
- * </pre>
- *
- * For more information, see {@link guide/dev_guide.compiler.markup Understanding Angular Markup}
- * in the Angular Developer Guide.
- */
-
-/**
- * @ngdoc overview
- * @name angular.attrMarkup
- * @description
- *
- * Attribute markup allows you to modify the state of an attribute's text.
- *
- * Attribute markup extends the Angular complier in a way similar to {@link angular.markup},
- * which allows you to modify the content of a node.
- *
- * The most prominent example of an attribute markup in Angular is the built-in double curly markup
- * which is a shorthand for {@link angular.directive.ng:bind-attr ng:bind-attr}.
- *
- * ## Example
- *
- * <pre>
- *   angular.attrMarkup('newAttrMarkup', function(attrValue, attrName, element){
- *     //tranformation code
- *   });
- * </pre>
- *
- * For more information about Angular attribute markup, see {@link guide/dev_guide.compiler.markup
- * Understanding Angular Markup} in the Angular Developer Guide.
- */
-
-
-angularTextMarkup('{{}}', function(text, textNode, parentElement) {
-  var bindings = parseBindings(text),
-      self = this;
-  if (hasBindings(bindings)) {
-    if (isLeafNode(parentElement[0])) {
-      parentElement.attr('ng:bind-template', text);
-    } else {
-      var cursor = textNode, newElement;
-      forEach(parseBindings(text), function(text){
-        var exp = binding(text);
-        if (exp) {
-          newElement = jqLite('<span>');
-          newElement.attr('ng:bind', exp);
-        } else {
-          newElement = jqLite(document.createTextNode(text));
-        }
-        if (msie && text.charAt(0) == ' ') {
-          newElement = jqLite('<span>&nbsp;</span>');
-          var nbsp = newElement.html();
-          newElement.text(text.substr(1));
-          newElement.html(nbsp + newElement.html());
-        }
-        cursor.after(newElement);
-        cursor = newElement;
-      });
-      textNode.remove();
-    }
-  }
-});
-
-/**
- * This tries to normalize the behavior of value attribute across browsers. If value attribute is
- * not specified, then specify it to be that of the text.
- */
-angularTextMarkup('option', function(text, textNode, parentElement){
-  if (lowercase(nodeName_(parentElement)) == 'option') {
-    if (msie <= 7) {
-      // In IE7 The issue is that there is no way to see if the value was specified hence
-      // we have to resort to parsing HTML;
-      htmlParser(parentElement[0].outerHTML, {
-        start: function(tag, attrs) {
-          if (isUndefined(attrs.value)) {
-            parentElement.attr('value', text);
-          }
-        }
-      });
-    } else if (parentElement[0].getAttribute('value') == null) {
-      // jQuery does normalization on 'value' so we have to bypass it.
-      parentElement.attr('value', text);
-    }
-  }
-});
 
 /**
  * @ngdoc directive
@@ -171,7 +67,7 @@ angularTextMarkup('option', function(text, textNode, parentElement){
         it('should execute ng:click but not reload when no href but name specified', function() {
           element('#link-5').click();
           expect(input('value').val()).toEqual('5');
-          expect(element('#link-5').attr('href')).toBe(undefined);
+          expect(element('#link-5').attr('href')).toBe("");
         });
 
         it('should only change url when only ng:href', function() {
@@ -371,25 +267,3 @@ angularTextMarkup('option', function(text, textNode, parentElement){
 * @param {template} template any string which can contain '{{}}' markup.
 */
 
-
-var NG_BIND_ATTR = 'ng:bind-attr';
-var SIDE_EFFECT_ATTRS = {};
-
-forEach('src,href,multiple,selected,checked,disabled,readonly,required'.split(','), function(name) {
-  SIDE_EFFECT_ATTRS['ng:' + name] = name;
-});
-
-angularAttrMarkup('{{}}', function(value, name, element){
-  // don't process existing attribute markup
-  if (angularDirective(name) || angularDirective("@" + name)) return;
-  if (msie && name == 'src')
-    value = decodeURI(value);
-  var bindings = parseBindings(value),
-      bindAttr;
-  if (hasBindings(bindings) || SIDE_EFFECT_ATTRS[name]) {
-    element.removeAttr(name);
-    bindAttr = fromJson(element.attr(NG_BIND_ATTR) || "{}");
-    bindAttr[SIDE_EFFECT_ATTRS[name] || name] = value;
-    element.attr(NG_BIND_ATTR, toJson(bindAttr));
-  }
-});

@@ -64,17 +64,17 @@
      <doc:scenario>
        it('should search across all fields when filtering with a string', function() {
          input('searchText').enter('m');
-         expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
+         expect(repeater('#searchTextResults tr', 'friend in friends').column('friend.name')).
            toEqual(['Mary', 'Mike', 'Adam']);
 
          input('searchText').enter('76');
-         expect(repeater('#searchTextResults tr', 'friend in friends').column('name')).
+         expect(repeater('#searchTextResults tr', 'friend in friends').column('friend.name')).
            toEqual(['John', 'Julie']);
        });
 
        it('should search in specific fields when filtering with a predicate object', function() {
          input('search.$').enter('i');
-         expect(repeater('#searchObjResults tr', 'friend in friends').column('name')).
+         expect(repeater('#searchObjResults tr', 'friend in friends').column('friend.name')).
            toEqual(['Mary', 'Mike', 'Julie']);
        });
      </doc:scenario>

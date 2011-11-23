@@ -385,7 +385,7 @@ function dateFilter($locale) {
      </doc:source>
      <doc:scenario>
        it('should jsonify filtered objects', function() {
-         expect(binding('| json')).toBe('{\n  "name":"value"}');
+         expect(binding("{'name':'value'}")).toBe('{\n  "name":"value"}');
        });
      </doc:scenario>
    </doc:example>
@@ -418,108 +418,6 @@ var lowercaseFilter = valueFn(lowercase);
  * @see angular.uppercase
  */
 var uppercaseFilter = valueFn(uppercase);
-
-
-/**
- * @ngdoc filter
- * @name angular.module.ng.$filter.html
- * @function
- *
- * @description
- *   Prevents the input from getting escaped by angular. By default the input is sanitized and
- *   inserted into the DOM as is.
- *
- *   The input is sanitized by parsing the html into tokens. All safe tokens (from a whitelist) are
- *   then serialized back to properly escaped html string. This means that no unsafe input can make
- *   it into the returned string, however, since our parser is more strict than a typical browser
- *   parser, it's possible that some obscure input, which would be recognized as valid HTML by a
- *   browser, won't make it through the sanitizer.
- *
- *   If you hate your users, you may call the filter with optional 'unsafe' argument, which bypasses
- *   the html sanitizer, but makes your application vulnerable to XSS and other attacks. Using this
- *   option is strongly discouraged and should be used only if you absolutely trust the input being
- *   filtered and you can't get the content through the sanitizer.
- *
- * @param {string} html Html input.
- * @param {string=} option If 'unsafe' then do not sanitize the HTML input.
- * @returns {string} Sanitized or raw html.
- *
- * @example
-   <doc:example>
-     <doc:source>
-       <script>
-         function Ctrl($scope) {
-           $scope.snippet =
-             '<p style="color:blue">an html\n' +
-             '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
-             'snippet</p>';
-         }
-       </script>
-       <div ng:controller="Ctrl">
-          Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
-           <table>
-             <tr>
-               <td>Filter</td>
-               <td>Source</td>
-               <td>Rendered</td>
-             </tr>
-             <tr id="html-filter">
-               <td>html filter</td>
-               <td>
-                 <pre>&lt;div ng:bind="snippet | html"&gt;<br/>&lt;/div&gt;</pre>
-               </td>
-               <td>
-                 <div ng:bind="snippet | html"></div>
-               </td>
-             </tr>
-             <tr id="escaped-html">
-               <td>no filter</td>
-               <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng:bind="snippet"></div></td>
-             </tr>
-             <tr id="html-unsafe-filter">
-               <td>unsafe html filter</td>
-               <td><pre>&lt;div ng:bind="snippet | html:'unsafe'"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng:bind="snippet | html:'unsafe'"></div></td>
-             </tr>
-           </table>
-         </div>
-     </doc:source>
-     <doc:scenario>
-       it('should sanitize the html snippet ', function() {
-         expect(using('#html-filter').binding('snippet | html')).
-           toBe('<p>an html\n<em>click here</em>\nsnippet</p>');
-       });
-
-       it('should escape snippet without any filter', function() {
-         expect(using('#escaped-html').binding('snippet')).
-           toBe("&lt;p style=\"color:blue\"&gt;an html\n" +
-                "&lt;em onmouseover=\"this.textContent='PWN3D!'\"&gt;click here&lt;/em&gt;\n" +
-                "snippet&lt;/p&gt;");
-       });
-
-       it('should inline raw snippet if filtered as unsafe', function() {
-         expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).
-           toBe("<p style=\"color:blue\">an html\n" +
-                "<em onmouseover=\"this.textContent='PWN3D!'\">click here</em>\n" +
-                "snippet</p>");
-       });
-
-       it('should update', function() {
-         input('snippet').enter('new <b>text</b>');
-         expect(using('#html-filter').binding('snippet | html')).toBe('new <b>text</b>');
-         expect(using('#escaped-html').binding('snippet')).toBe("new &lt;b&gt;text&lt;/b&gt;");
-         expect(using('#html-unsafe-filter').binding("snippet | html:'unsafe'")).toBe('new <b>text</b>');
-       });
-     </doc:scenario>
-   </doc:example>
- */
-//TODO(misko): turn sensitization into injectable service
-function htmlFilter() {
-  return function(html, option){
-    return new HTML(html, option);
-  };
-}
 
 
 /**
@@ -558,10 +456,10 @@ function htmlFilter() {
          <tr id="linky-filter">
            <td>linky filter</td>
            <td>
-             <pre>&lt;div ng:bind="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
+             <pre>&lt;div ng:bind-html="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
            </td>
            <td>
-             <div ng:bind="snippet | linky"></div>
+             <div ng:bind-html="snippet | linky"></div>
            </td>
          </tr>
          <tr id="escaped-html">
@@ -574,10 +472,10 @@ function htmlFilter() {
      <doc:scenario>
        it('should linkify the snippet with urls', function() {
          expect(using('#linky-filter').binding('snippet | linky')).
-           toBe('Pretty text with some links:\n' +
-                '<a href="http://angularjs.org/">http://angularjs.org/</a>,\n' +
-                '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,\n' +
-                '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,\n' +
+           toBe('Pretty text with some links:&#10;' +
+                '<a href="http://angularjs.org/">http://angularjs.org/</a>,&#10;' +
+                '<a href="mailto:us@somewhere.org">us@somewhere.org</a>,&#10;' +
+                '<a href="mailto:another@somewhere.org">another@somewhere.org</a>,&#10;' +
                 'and one more: <a href="ftp://127.0.0.1/">ftp://127.0.0.1/</a>.');
        });
 
@@ -624,6 +522,6 @@ function linkyFilter() {
       raw = raw.substring(i + match[0].length);
     }
     writer.chars(raw);
-    return new HTML(html.join(''));
+    return html.join('');
   };
 };

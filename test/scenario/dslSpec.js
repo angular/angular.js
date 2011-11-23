@@ -1,8 +1,13 @@
 'use strict';
 
 describe("angular.scenario.dsl", function() {
+  var element;
   var $window, $root;
-  var application, eventLog;
+  var eventLog;
+
+  afterEach(function() {
+    dealoc(element);
+  });
 
   beforeEach(inject(function($injector) {
     eventLog = [];
@@ -393,28 +398,26 @@ describe("angular.scenario.dsl", function() {
 
     describe('Repeater', function() {
       var chain;
-      beforeEach(function() {
-        doc.append(
-          '<ul>' +
-          '  <li><span ng:bind="name" class="ng-binding">misko</span>' +
-          '    <span ng:bind="test && gender" class="ng-binding">male</span></li>' +
-          '  <li><span ng:bind="name" class="ng-binding">felisa</span>' +
-          '    <span ng:bind="gender | uppercase" class="ng-binding">female</span></li>' +
-          '</ul>'
-        );
+      beforeEach(inject(function($compile, $rootScope) {
+        element = $compile(
+          '<ul><li ng-repeat="i in items">{{i.name}}  {{i.gender}}</li></ul>')($rootScope);
+        $rootScope.items = [{name:'misko', gender:'male'}, {name:'felisa', gender:'female'}];
+        $rootScope.$apply();
+        doc.append(element);
         chain = $root.dsl.repeater('ul li');
-      });
+      }));
 
       it('should get the row count', function() {
         chain.count();
         expect($root.futureResult).toEqual(2);
       });
 
-      it('should return 0 if repeater doesnt match', function() {
-        doc.find('ul').html('');
+      it('should return 0 if repeater doesnt match', inject(function($rootScope) {
+        $rootScope.items = [];
+        $rootScope.$apply();
         chain.count();
         expect($root.futureResult).toEqual(0);
-      });
+      }));
 
       it('should get a row of bindings', function() {
         chain.row(1);
@@ -422,7 +425,7 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should get a column of bindings', function() {
-        chain.column('gender');
+        chain.column('i.gender');
         expect($root.futureResult).toEqual(['male', 'female']);
       });
 
@@ -437,45 +440,60 @@ describe("angular.scenario.dsl", function() {
     });
 
     describe('Binding', function() {
+      var compile;
+
+      beforeEach(inject(function($compile, $rootScope) {
+        compile = function(html, value) {
+          element = $compile(html)($rootScope);
+          doc.append(element);
+          $rootScope.foo = {bar: value || 'some value'};
+          $rootScope.$apply();
+        };
+      }));
+
+
+      it('should select binding in interpolation', function() {
+        compile('<span>{{ foo.bar }}</span>');
+        $root.dsl.binding('foo.bar');
+        expect($root.futureResult).toEqual('some value');
+      });
+
+      it('should select binding in multiple interpolations', function() {
+        compile('<span>{{ foo.bar }}<hr/> {{ true }}</span>');
+        $root.dsl.binding('foo.bar');
+        expect($root.futureResult).toEqual('some value');
+
+        $root.dsl.binding('true');
+        expect($root.futureResult).toEqual('true');
+      });
+
       it('should select binding by name', function() {
-        doc.append('<span class="ng-binding" ng:bind="foo.bar">some value</span>');
+        compile('<span ng:bind=" foo.bar "></span>');
         $root.dsl.binding('foo.bar');
         expect($root.futureResult).toEqual('some value');
       });
 
       it('should select binding by regexp', function() {
-        doc.append('<span class="ng-binding" ng:bind="foo.bar">some value</span>');
+        compile('<span ng:bind="foo.bar">some value</span>');
         $root.dsl.binding(/^foo\..+/);
         expect($root.futureResult).toEqual('some value');
       });
 
-      it('should return value for input elements', function() {
-        doc.append('<input type="text" class="ng-binding" ng:bind="foo.bar" value="some value"/>');
-        $root.dsl.binding('foo.bar');
-        expect($root.futureResult).toEqual('some value');
-      });
-
-      it('should return value for textarea elements', function() {
-        doc.append('<textarea class="ng-binding" ng:bind="foo.bar">some value</textarea>');
-        $root.dsl.binding('foo.bar');
-        expect($root.futureResult).toEqual('some value');
-      });
-
       it('should return innerHTML for all the other elements', function() {
-        doc.append('<div class="ng-binding" ng:bind="foo.bar">some <b>value</b></div>');
+        compile('<div ng-bind-html="foo.bar"></div>', 'some <b>value</b>');
         $root.dsl.binding('foo.bar');
         expect($root.futureResult.toLowerCase()).toEqual('some <b>value</b>');
       });
 
       it('should select binding in template by name', function() {
-        doc.append('<pre class="ng-binding" ng:bind-template="foo {{bar}} baz">foo some baz</pre>');
-        $root.dsl.binding('bar');
-        expect($root.futureResult).toEqual('foo some baz');
+        compile('<pre ng:bind-template="foo {{foo.bar}} baz"></pre>', 'bar');
+        $root.dsl.binding('foo.bar');
+        expect($root.futureResult).toEqual('bar');
       });
 
       it('should match bindings by substring match', function() {
-        doc.append('<pre class="ng-binding" ng:bind="foo.bar() && test.baz() | filter">binding value</pre>');
-        $root.dsl.binding('test.baz');
+        compile('<pre ng:bind="foo.bar | filter"></pre>', 'binding value');
+        $root.dsl.binding('foo . bar');
         expect($root.futureResult).toEqual('binding value');
       });
 
@@ -485,7 +503,7 @@ describe("angular.scenario.dsl", function() {
       });
 
       it('should return error if no binding matches', function() {
-        doc.append('<span class="ng-binding" ng:bind="foo">some value</span>');
+        compile('<span ng:bind="foo">some value</span>');
         $root.dsl.binding('foo.bar');
         expect($root.futureError).toMatch(/did not match/);
       });

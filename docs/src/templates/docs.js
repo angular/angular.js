@@ -125,11 +125,6 @@ function DocsController(scope, $location, $window, $cookies, $filter) {
   }
 }
 
-// prevent compilation of code
-angular.widget('code', function(element) {
-  element.attr('ng:non-bindable', 'true');
-});
-
 SyntaxHighlighter['defaults'].toolbar = false;
 SyntaxHighlighter['defaults'].gutter = true;
 
@@ -151,7 +146,7 @@ function TutorialInstructionsCtrl($cookieStore) {
   };
 }
 
-angular.module('ngdocs', [], function($locationProvider, $filterProvider) {
+angular.module('ngdocs', ['ngdocs.directives'], function($locationProvider, $filterProvider, $compileProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
 
   $filterProvider.register('title', function(){
@@ -160,5 +155,9 @@ angular.module('ngdocs', [], function($locationProvider, $filterProvider) {
         return 'Module ' + module + (name ? ' - ' + name : '');
       });
     };
+  });
+
+  $compileProvider.directive('code', function() {
+    return { terminal: true };
   });
 });

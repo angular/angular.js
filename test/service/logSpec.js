@@ -69,7 +69,7 @@ describe('$log', function() {
       e.stack = undefined;
 
       $log = new $LogProvider().$get[1]({console:{error:function() {
-        errorArgs = arguments;
+        errorArgs = [].slice.call(arguments, 0);
       }}});
     });
 
