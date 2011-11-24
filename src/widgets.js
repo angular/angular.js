@@ -109,8 +109,7 @@ angularWidget('ng:include', function(element){
       });
       this.$watch(function() {return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
-            useScope = scope.$eval(scopeExp),
-            fromCache;
+            useScope = scope.$eval(scopeExp);
 
         function clearContent() {
           childScope = null;
@@ -121,7 +120,7 @@ angularWidget('ng:include', function(element){
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          $http.get(src, {cache: $templateCache}).on('success', function(response) {
+          $http.get(src, {cache: $templateCache}).success(function(response) {
             element.html(response);
             if (useScope) {
               childScope = useScope;
@@ -131,7 +130,7 @@ angularWidget('ng:include', function(element){
             compiler.compile(element)(childScope);
             $autoScroll();
             scope.$eval(onloadExp);
-          }).on('error', clearContent);
+          }).error(clearContent);
         } else {
           clearContent();
         }
@@ -572,23 +571,21 @@ angularWidget('ng:view', function(element) {
       });
 
       this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
-        var template = $route.current && $route.current.template,
-            fromCache;
+        var template = $route.current && $route.current.template;
 
         function clearContent() {
           element.html('');
         }
 
         if (template) {
-          // xhr's callback must be async, see commit history for more info
-          $http.get(template, {cache: $templateCache}).on('success', function(response) {
+          $http.get(template, {cache: $templateCache}).success(function(response) {
             // ignore callback if another route change occured since
             if (newChangeCounter == changeCounter) {
               element.html(response);
               compiler.compile(element)($route.current.scope);
               $autoScroll();
             }
-          }).on('error', clearContent);
+          }).error(clearContent);
         } else {
           clearContent();
         }
