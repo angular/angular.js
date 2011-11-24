@@ -1,6 +1,6 @@
 'use strict';
 
-describe("widget", function() {
+describe('widget', function() {
   describe('ng:switch', inject(function($rootScope, $compile) {
     it('should switch on value change', inject(function($rootScope, $compile) {
       var element = $compile(
