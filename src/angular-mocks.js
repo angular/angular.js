@@ -534,24 +534,38 @@ angular.module.ngMock.TzDate.prototype = Date.prototype;
  * @return a serialized string of the argument
  */
 angular.module.ngMock.dump = function(object){
-  var out;
-  if (angular.isElement(object)) {
-    object = angular.element(object);
-    out = angular.element('<div></div>')
-    angular.forEach(object, function(element){
-      out.append(angular.element(element).clone());
-    });
-    out = out.html();
-  } else if (angular.isObject(object)) {
-    if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
-      out = serializeScope(object);
+  return serialize(object);
+
+  function serialize(object) {
+    var out;
+
+    if (angular.isElement(object)) {
+      object = angular.element(object);
+      out = angular.element('<div></div>')
+      angular.forEach(object, function(element){
+        out.append(angular.element(element).clone());
+      });
+      out = out.html();
+    } else if (angular.isArray(object)) {
+      out = [];
+      angular.forEach(object, function(o) {
+        out.push(serialize(o));
+      });
+      out = '[ ' + out.join(', ') + ' ]';
+    } else if (angular.isObject(object)) {
+      if (angular.isFunction(object.$eval) && angular.isFunction(object.$apply)) {
+        out = serializeScope(object);
+      } else if (object instanceof Error) {
+        out = object.stack || ('' + object.name + ': ' + object.message);
+      } else {
+        out = angular.toJson(object, true);
+      }
     } else {
-      out = angular.toJson(object, true);
+      out = String(object);
     }
-  } else {
-    out = String(object);
+
+    return out;
   }
-  return out;
 
   function serializeScope(scope, offset) {
     offset = offset ||  '  ';
@@ -666,8 +680,9 @@ angular.module.ngMock.$HttpBackendProvider = function() {
           responses.shift()();
         }
       } else {
-        while (responses.length)
+        while (responses.length) {
           responses.shift()();
+        }
       }
       $httpBackend.verifyNoOutstandingExpectation();
     };
