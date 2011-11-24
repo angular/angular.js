@@ -90,7 +90,7 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$templateCache', '$element', function($http, $cache, element) {
+    return ['$http', '$templateCache', '$element', function($http, $templateCache, element) {
       var scope = this,
           changeCounter = 0,
           releaseScopes = [],
@@ -108,8 +108,7 @@ angularWidget('ng:include', function(element){
       });
       this.$watch(function() {return changeCounter;}, function(scope) {
         var src = scope.$eval(srcExp),
-            useScope = scope.$eval(scopeExp),
-            fromCache;
+            useScope = scope.$eval(scopeExp);
 
         function clearContent() {
           childScope = null;
@@ -120,7 +119,7 @@ angularWidget('ng:include', function(element){
           releaseScopes.pop().$destroy();
         }
         if (src) {
-          $http.get(src, {cache: $cache}).on('success', function(response) {
+          $http.get(src, {cache: $templateCache}).success(function(response) {
             element.html(response);
             if (useScope) {
               childScope = useScope;
@@ -129,7 +128,7 @@ angularWidget('ng:include', function(element){
             }
             compiler.compile(element)(childScope);
             scope.$eval(onloadExp);
-          }).on('error', clearContent);
+          }).error(clearContent);
         } else {
           clearContent();
         }
@@ -560,8 +559,8 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$templateCache', '$route', '$element', function($http, $cache, $route, element) {
-      var template;
+    return ['$http', '$templateCache', '$route', '$element', function($http, $templateCache, $route,
+        element) {
       var changeCounter = 0;
 
       this.$on('$afterRouteChange', function() {
@@ -569,22 +568,20 @@ angularWidget('ng:view', function(element) {
       });
 
       this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
-        var template = $route.current && $route.current.template,
-            fromCache;
+        var template = $route.current && $route.current.template;
 
         function clearContent() {
           element.html('');
         }
 
         if (template) {
-          // xhr's callback must be async, see commit history for more info
-          $http.get(template, {cache: $cache}).on('success', function(response) {
+          $http.get(template, {cache: $templateCache}).success(function(response) {
             // ignore callback if another route change occured since
             if (newChangeCounter == changeCounter) {
               element.html(response);
               compiler.compile(element)($route.current.scope);
             }
-          }).on('error', clearContent);
+          }).error(clearContent);
         } else {
           clearContent();
         }
