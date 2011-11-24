@@ -48,18 +48,6 @@ function transform(data, fns, param) {
 }
 
 
-/**
- * @ngdoc object
- * @name angular.module.ng.$http
- * @requires $httpBacked
- * @requires $browser
- * @requires $exceptionHandler
- * @requires $cacheFactory
- *
- * @property {Array.<XhrFuture>} pendingRequests Array of pending requests.
- *
- * @description
- */
 function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
@@ -93,14 +81,75 @@ function $HttpProvider() {
     }
   };
 
-  this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope',
-      function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope) {
+  this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope', '$q',
+      function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope, $q) {
 
   var defaultCache = $cacheFactory('$http');
 
-  // the actual service
+  /**
+   * @ngdoc function
+   * @name angular.module.ng.$http
+   * @requires $httpBacked
+   * @requires $browser
+   * @requires $exceptionHandler
+   * @requires $cacheFactory
+   *
+   * @param {object} config Object describing the request to be made and how it should be processed.
+   *    The object has following properties:
+   *
+   *    - **method** – `{string}` – HTTP method (e.g. 'GET', 'POST', etc)
+   *    - **url** – `{string}` – Absolute or relative URL of the resource that is being requested.
+   *    - **data** – `{string|Object}` – Data to be sent as the request message data.
+   *    - **headers** – `{Object}` – Map of strings representing HTTP headers to send to the server.
+   *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
+   *      GET request, otherwise if a cache instance built with $cacheFactory, this cache will be
+   *      used for caching.
+   *
+   * @returns {HttpPromise} Returns a promise object with the standard `then` method and two http
+   *   specific methods: `success` and `error`. The `then` method takes two arguments a success and
+   *   an error callback which will be called with a response object. The `success` and `error`
+   *   methods take a single argument - a function that will be called when the request succeeds or
+   *   fails respectively. The arguments passed into these functions are destructured representation
+   *   of the response object passed into the `then` method. The response object has these
+   *   properties:
+   *
+   *   - **data** – `{string|Object}` – The response body transformed with the transform functions.
+   *   - **status** – `{number}` – HTTP status code of the response.
+   *   - **headers** – `{function([headerName])}` – Header getter function.
+   *   - **config** – `{Object}` – The configuration object that was used to generate the request.
+   *
+   * @property {Array.<Object>} pendingRequests Array of config objects for pending requests.
+   *   This is primarily meant to be used for debugging purposes.
+   *
+   * @description
+   * $http is a service through which XHR and JSONP requests can be made.
+   */
   function $http(config) {
-    return new XhrFuture().send(config);
+    var req = new XhrFuture().send(config),
+        deferredResp = $q.defer(),
+        promise = deferredResp.promise;
+
+    promise.success = function(fn) {
+      promise.then(function(response) {
+        fn(response.data, response.status, response.headers, config);
+      });
+      return promise;
+    };
+
+    promise.error = function(fn) {
+      promise.then(null, function(response) {
+        fn(response.data, response.status, response.headers, config);
+      });
+      return promise;
+    };
+
+    req.on('success', function(data, status, headers) {
+      deferredResp.resolve({data: data, status: status, headers: headers, config: config});
+    }).on('error', function(data, status, headers) {
+      deferredResp.reject({data: data, status: status, headers: headers, config: config});
+    });
+
+    return promise;
   }
 
   $http.pendingRequests = [];
@@ -115,7 +164,7 @@ function $HttpProvider() {
    *
    * @param {string} url Relative or absolute URL specifying the destination of the request
    * @param {Object=} config Optional configuration object
-   * @returns {XhrFuture} Future object
+   * @returns {HttpPromise} Future object
    */
 
   /**
@@ -128,7 +177,7 @@ function $HttpProvider() {
    *
    * @param {string} url Relative or absolute URL specifying the destination of the request
    * @param {Object=} config Optional configuration object
-   * @returns {XhrFuture} Future object
+   * @returns {HttpPromise} Future object
    */
 
   /**
@@ -154,7 +203,7 @@ function $HttpProvider() {
    *
    * @param {string} url Relative or absolute URL specifying the destination of the request
    * @param {Object=} config Optional configuration object
-   * @returns {XhrFuture} Future object
+   * @returns {HttpPromise} Future object
    */
 
   /**
@@ -183,7 +232,7 @@ function $HttpProvider() {
    * @param {string} url Relative or absolute URL specifying the destination of the request
    * @param {*} data Request content
    * @param {Object=} config Optional configuration object
-   * @returns {XhrFuture} Future object
+   * @returns {HttpPromise} Future object
    */
 
   /**
@@ -260,7 +309,9 @@ function $HttpProvider() {
       }
 
       fireCallbacks(response, status);
-      rawRequest = null;
+      // TODO(i): we can't null the rawRequest because we might need to be able to call
+      // rawRequest.getAllResponseHeaders from a promise
+      // rawRequest = null;
     }
 
     /**
@@ -284,7 +335,7 @@ function $HttpProvider() {
       response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
 
       var idx; // remove from pending requests
-      if ((idx = indexOf($http.pendingRequests, self)) !== -1)
+      if ((idx = indexOf($http.pendingRequests, cfg)) !== -1)
         $http.pendingRequests.splice(idx, 1);
 
       // normalize internal statuses to 0
@@ -331,7 +382,7 @@ function $HttpProvider() {
      * Retry the request
      *
      * @param {Object=} config Optional config object to extend the original configuration
-     * @returns {XhrFuture}
+     * @returns {HttpPromise}
      */
     this.retry = function(config) {
       if (rawRequest) throw 'Can not retry request. Abort pending request first.';
@@ -377,8 +428,7 @@ function $HttpProvider() {
         rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
-      $rootScope.$broadcast('$http.request', self);
-      $http.pendingRequests.push(self);
+      $http.pendingRequests.push(cfg);
       return self;
     };
 
@@ -416,7 +466,7 @@ function $HttpProvider() {
      *   .on('abort', function(){});
      *
      * @param {string} pattern Status code pattern with "x" for any number
-     * @param {function(*, number, Object)} callback Function to be called when response arrives
+     * @param {function(*, number, function)} callback Function to be called when response arrives
      * @returns {XhrFuture}
      */
     this.on = function(pattern, callback) {

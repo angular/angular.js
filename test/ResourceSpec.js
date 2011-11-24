@@ -261,13 +261,14 @@ describe("resource", function() {
         errorCB;
 
     beforeEach(function() {
-      errorCB = jasmine.createSpy('error').andCallFake(function(response, status) {
-        expect(response).toBe(ERROR_RESPONSE);
-        expect(status).toBe(ERROR_CODE);
+      errorCB = jasmine.createSpy('error').andCallFake(function(response) {
+        expect(response.data).toBe(ERROR_RESPONSE);
+        expect(response.status).toBe(ERROR_CODE);
       });
     });
 
-    it('should call the error callback if provided on non 2xx response', inject(function($httpBackend) {
+    it('should call the error callback if provided on non 2xx response',
+        inject(function($httpBackend, $rootScope) {
       $httpBackend.expect('GET', '/CreditCard/123').respond(ERROR_CODE, ERROR_RESPONSE);
 
       CreditCard.get({id:123}, callback, errorCB);

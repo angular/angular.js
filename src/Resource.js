@@ -111,7 +111,8 @@ ResourceFactory.prototype = {
           method: action.method,
           url: route.url(extend({}, extractParams(data), action.params || {}, params)),
           data: data
-        }).on('success', function(response, status) {
+        }).then(function(response) {
+            response = response.data;
             if (response) {
               if (action.isArray) {
                 value.length = 0;
@@ -123,9 +124,7 @@ ResourceFactory.prototype = {
               }
             }
             (success||noop)(value);
-          });
-
-        if (error) future.on('error', error);
+          }, error);
 
         return value;
       };
