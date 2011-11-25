@@ -29,6 +29,22 @@ describe('form', function() {
   }));
 
 
+  it('should not prevent form submission if action attribute present',
+      inject(function($compile, $rootScope) {
+    var callback = jasmine.createSpy('submit').andCallFake(function(event) {
+      expect(event.isDefaultPrevented()).toBe(false);
+      event.preventDefault();
+    });
+
+    doc = angular.element('<form name="x" action="some.py" />');
+    $compile(doc)($rootScope);
+    doc.bind('submit', callback);
+
+    browserTrigger(doc, 'submit');
+    expect(callback).toHaveBeenCalledOnce();
+  }));
+
+
   it('should publish form to scope', inject(function($rootScope, $compile) {
     doc = angular.element('<form name="myForm"></form>');
     $compile(doc)($rootScope);
