@@ -524,9 +524,8 @@ angularDirective("ng:click", function(expression, element){
 angularDirective("ng:submit", function(expression, element) {
   return function(element) {
     var self = this;
-    element.bind('submit', function(event) {
+    element.bind('submit', function() {
       self.$apply(expression);
-      event.preventDefault();
     });
   };
 });

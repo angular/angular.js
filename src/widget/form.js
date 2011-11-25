@@ -61,8 +61,8 @@ angularWidget('form', function(form){
         parentForm = $formFactory.forElement(formElement),
         form = $formFactory(parentForm);
     formElement.data('$form', form);
-    formElement.bind('submit', function(event){
-      event.preventDefault();
+    formElement.bind('submit', function(event) {
+      if (!formElement.attr('action')) event.preventDefault();
     });
     if (name) {
       this[name] = form;
