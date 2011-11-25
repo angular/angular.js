@@ -500,14 +500,16 @@ angularDirective("ng:click", function(expression, element){
           this.list = [];
           this.text = 'hello';
           this.submit = function() {
-            this.list.push(this.text);
-            this.text = '';
+            if (this.text) {
+              this.list.push(this.text);
+              this.text = '';
+            }
           };
         }
       </script>
       <form ng:submit="submit()" ng:controller="Ctrl">
         Enter text and hit enter:
-        <input type="text" ng:model="text"/>
+        <input type="text" ng:model="text" name="text" />
         <input type="submit" id="submit" value="Submit" />
         <pre>list={{list}}</pre>
       </form>
@@ -515,6 +517,13 @@ angularDirective("ng:click", function(expression, element){
      <doc:scenario>
        it('should check ng:submit', function() {
          expect(binding('list')).toBe('list=[]');
+         element('.doc-example-live #submit').click();
+         expect(binding('list')).toBe('list=["hello"]');
+         expect(input('text').val()).toBe('');
+       });
+       it('should ignore empty strings', function() {
+         expect(binding('list')).toBe('list=[]');
+         element('.doc-example-live #submit').click();
          element('.doc-example-live #submit').click();
          expect(binding('list')).toBe('list=["hello"]');
        });
