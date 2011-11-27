@@ -461,6 +461,12 @@ describe('widget: input', function() {
       }));
     });
 
+    it('should attach input to DOM', inject(function($rootScope, $compile) {
+      $rootScope.value = 123;
+      doc = angular.element('<input type="text" ng:model="value" />');
+      $compile(doc)($rootScope);
+      expect(doc.data('$input')).toBeTruthy();
+    }));
 
     it('should ignore text widget which have no name', function() {
       compile('<input type="text"/>');
