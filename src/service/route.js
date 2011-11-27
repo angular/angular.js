@@ -75,6 +75,7 @@ function $RouteProvider(){
      *
      * @param {Route} next Future route information.
      * @param {Route} current Current route information.
+     * @param {Function} function which stops route change and reverts location to previous state.
      *
      * The `Route` object extends the route definition with the following properties.
      *
