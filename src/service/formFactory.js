@@ -366,6 +366,7 @@ function $FormFactoryProvider() {
       throw Error("Expression '" + params.model + "' is not assignable!");
     };
 
+    widget.$element = modelScope.$element;
     widget.$error = {};
     // Set the state to something we know will change to get the process going.
     widget.$modelValue = Number.NaN;

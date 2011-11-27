@@ -778,7 +778,6 @@ angularWidget('input', function(inputElement){
       watchElementProperty(this, widget, 'disabled', inputElement);
 
       widget.$pristine = !(widget.$dirty = false);
-      widget.$element = inputElement;
 
       widget.$on('$validate', function() {
         var $viewValue = trim(widget.$viewValue),
