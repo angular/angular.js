@@ -810,7 +810,7 @@ angularWidget('input', function(inputElement){
         widget.$destroy();
       });
 
-      inputElement.data('$input', this);
+      inputElement.data('$input', widget);
 
       if (type != 'checkbox' && type != 'radio') {
         // TODO (misko): checkbox / radio does not really belong here, but until we can do
