@@ -49,14 +49,19 @@ describe('$route', function() {
     $rootScope.$digest();
     expect($route.current.template).toEqual('instant update');
 
+    var lastPath = $location.path();
+    var lastSearch = $location.search();
+
     log = '';
     $rootScope.$on('$beforeRouteChange', function(event, next, current, stopCallback) {
       log += 'stop();';
       stopCallback();
     });
-    $location.path('/Blank').search('ignore');
+    $location.path('/Book/Moby2/Chapter/Intro2').search('p=1234');
     $rootScope.$digest();
     expect(log).toEqual('before();stop();');
+    expect($location.path()).toEqual(lastPath);
+    expect($location.search()).toEqual(lastSearch);
   }));
 
 
