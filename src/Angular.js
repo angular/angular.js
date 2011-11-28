@@ -101,8 +101,6 @@ var $$scope           = '$scope',
     angularWidget     = extensionMap(angular, 'widget', shivForIE),
     /** @name angular.module.ng */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
-    /** @name angular.module.ng */
-    angularCallbacks  = extensionMap(angular, 'callbacks'),
     nodeName_,
     uid               = ['0', '0', '0'],
     DATE_ISOSTRING_LN = 24;
