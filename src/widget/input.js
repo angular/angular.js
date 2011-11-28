@@ -571,18 +571,31 @@ angularInputType('radio', function(inputElement) {
 function numericRegexpInputType(regexp, error) {
   return ['$element', function(inputElement) {
     var widget = this;
+    var modelScope = inputElement.scope();
+
+    watchElementProperty(modelScope, widget, 'min', inputElement);
+    watchElementProperty(modelScope, widget, 'max', inputElement);
 
     widget.$on('$validate', function(event){
       var value = widget.$viewValue,
           filled = value && trim(value) != '',
-          min = inputElement.attr('min'),
-          max = inputElement.attr('max'),
-          valid = isString(value) && value.match(regexp);
+          valid = !!(isString(value) && value.match(regexp)),
+          isInvalid = filled && !valid;
+      if (widget.$error[error] != isInvalid){
+        widget.$emit(isInvalid ? '$invalid' : '$valid', error);
+      }
 
-      widget.$emit(!filled || valid ? "$valid" : "$invalid", error);
       filled && (value = 1 * value);
-      widget.$emit(filled && valid && isDefined(min) && (min !== "") && value < (1 * min) ? "$invalid" : "$valid", "MIN");
-      widget.$emit(filled && valid && isDefined(max) && (max !== "") && value > (1 * max) ? "$invalid" : "$valid", "MAX");
+
+      var isToLow = filled && valid && widget.$min && trim(widget.$min) != '' && value < (1 * widget.$min),
+          isToHigh = filled && valid && widget.$max && trim(widget.$max) != '' && value > (1 * widget.$max);
+
+      if (widget.$error.MIN != isToLow){
+        widget.$emit(isToLow ? '$invalid' : '$valid', 'MIN');
+      }
+      if (widget.$error.MAX != isToHigh){
+        widget.$emit(isToHigh ? '$invalid' : '$valid', 'MAX');
+      }
     });
 
     widget.$parseView = function() {
