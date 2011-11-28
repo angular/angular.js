@@ -15,11 +15,11 @@ directives per element.
 You add angular directives to a standard HTML tag as in the following example, in which we have
 added the {@link api/angular.directive.ng:click ng:click} directive to a button tag:
 
-        <button ng:model="button1" ng:click="foo()">Click This</button>
+        <button ng:click="foo()">Click This</button>
 
-In the example above, `name` is the standard HTML attribute, and `ng:click` is the angular
-directive. The `ng:click` directive lets you implement custom behavior in an associated controller
-function.
+The `ng:click` directive lets you specify click event handlers directly in the template. Unlike the
+evil `onclick` attribute, the expression associated with the `ng:click` directive is always executed
+in the context of the current angular scope.
 
 In the next example, we add the {@link api/angular.directive.ng:bind ng:bind} directive to a
 `<span>` tag:
@@ -30,8 +30,9 @@ The `ng:bind` directive tells angular to set up {@link dev_guide.templates.datab
 binding} between the data model and the view for the specified expression.  When the angular {@link
 dev_guide.compiler compiler} encounters an `ng:bind` directive in a template, it passes the
 attribute value to the `ng:bind` function, which in turn sets up the data binding. On any change to
-the expression in the model, the view is updated to display the span text with the changed
-expression value.
+the model that would change the result of the expression, the view is updated and the text of the
+span element will reflect the new value. In the example above, the model is represented by two
+constants, so nothing will ever change - Sorry!
 
 
 ## Related Topics
