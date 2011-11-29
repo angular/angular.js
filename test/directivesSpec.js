@@ -2,14 +2,18 @@
 
 describe("directive", function() {
 
-  var $filterProvider;
+  var $filterProvider, element;
 
   beforeEach(module(['$filterProvider', function(provider){
     $filterProvider = provider;
   }]));
 
+  afterEach(function() {
+    dealoc(element);
+  });
+
   it("should ng:init", inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:init="a=123"></div>')($rootScope);
+    element = $compile('<div ng:init="a=123"></div>')($rootScope);
     expect($rootScope.a).toEqual(123);
   }));
 

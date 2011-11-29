@@ -75,6 +75,22 @@ describe('angular', function() {
     });
   });
 
+  describe('shallow copy', function() {
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+  });
+
+  describe('elementHTML', function() {
+    it('should dump element', function() {
+      expect(lowercase(startingTag('<div attr="123">something<span></span></div>'))).
+        toEqual('<div attr="123">');
+    });
+  });
+
   describe('equals', function() {
     it('should return true if same object', function() {
       var o = {};
@@ -499,6 +515,13 @@ describe('angular', function() {
       expect(injector).toBeDefined();
       expect(element.data('$injector')).toBe(injector);
       dealoc(element);
+    });
+  });
+
+
+  describe('startingElementHtml', function(){
+    it('should show starting element tag only', function(){
+      expect(startingTag('<ng:abc x="2"><div>text</div></ng:abc>')).toEqual('<ng:abc x="2">');
     });
   });
 });

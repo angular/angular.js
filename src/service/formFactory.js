@@ -56,41 +56,43 @@
             });
           }
 
-          angular.directive('ng:contenteditable', function() {
-            return ['$formFactory', '$element', function ($formFactory, element) {
-              var exp = element.attr('ng:contenteditable'),
-                  form = $formFactory.forElement(element),
-                  widget;
-              element.attr('contentEditable', true);
-              widget = form.$createWidget({
-                scope: this,
-                model: exp,
-                controller: HTMLEditorWidget,
-                controllerArgs: {$element: element}});
-              // if the element is destroyed, then we need to notify the form.
-              element.bind('$destroy', function() {
-                widget.$destroy();
-              });
-            }];
-          });
-        </script>
-        <form name='editorForm' ng:controller="EditorCntl">
-          <div ng:contenteditable="html"></div>
-          <hr/>
-          HTML: <br/>
-          <textarea ng:model="html" cols=80></textarea>
-          <hr/>
-          <pre>editorForm = {{editorForm}}</pre>
-        </form>
-      </doc:source>
-      <doc:scenario>
-        it('should enter invalid HTML', function() {
-          expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
-          input('html').enter('<');
-          expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
-        });
-      </doc:scenario>
-    </doc:example>
+       angular.module('formModule', [], function($compileProvider){
+         $compileProvider.directive('ngHtmlEditorModel', function ($formFactory) {
+           return function(scope, element, attr) {
+             var form = $formFactory.forElement(element),
+                 widget;
+             element.attr('contentEditable', true);
+             widget = form.$createWidget({
+               scope: scope,
+               model: attr.ngHtmlEditorModel,
+               controller: HTMLEditorWidget,
+               controllerArgs: {$element: element}});
+             // if the element is destroyed, then we need to
+             // notify the form.
+             element.bind('$destroy', function() {
+               widget.$destroy();
+             });
+           };
+         });
+       });
+     </script>
+     <form name='editorForm' ng:controller="EditorCntl">
+       <div ng:html-editor-model="htmlContent"></div>
+       <hr/>
+       HTML: <br/>
+       <textarea ng:model="htmlContent" cols="80"></textarea>
+       <hr/>
+       <pre>editorForm = {{editorForm|json}}</pre>
+     </form>
+   </doc:source>
+   <doc:scenario>
+     it('should enter invalid HTML', function() {
+       expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
+       input('htmlContent').enter('<');
+       expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
+     });
+   </doc:scenario>
+ </doc:example>
  */
 
 /**
