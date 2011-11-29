@@ -1,4 +1,3 @@
-'use strict';
 
 describe('jqLite', function() {
   var scope, a, b, c;
@@ -867,6 +866,7 @@ describe('jqLite', function() {
    it('should covert dash-separated strings to camelCase', function() {
      expect(camelCase('foo-bar')).toBe('fooBar');
      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
+     expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
    });
 
 

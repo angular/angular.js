@@ -617,6 +617,22 @@ function copy(source, destination){
 }
 
 /**
+ * Create a shallow copy of an object
+ * @param src
+ */
+function shallowCopy(src) {
+  var dst = {},
+      key;
+  for(key in src) {
+    if (src.hasOwnProperty(key)) {
+      dst[key] = src[key];
+    }
+  }
+  return dst;
+}
+
+
+/**
  * @ngdoc function
  * @name angular.equals
  * @function
@@ -735,6 +751,19 @@ function toBoolean(value) {
     value = false;
   }
   return value;
+}
+
+/**
+ * @returns {string} Returns the string representation of the element.
+ */
+function startingTag(element) {
+  element = jqLite(element).clone();
+  try {
+    // turns out IE does not let you set .html() on elements which
+    // are not allowed to have children. So we just ignore it.
+    element.html('');
+  } catch(e) {};
+  return jqLite('<div>').append(element).html().replace(/\<\/[\w\:\-]+\>$/, '');
 }
 
 
@@ -864,6 +893,15 @@ function bootstrap(element, modules) {
     }]
   );
 }
+
+var SNAKE_CASE_REGEXP = /[A-Z]/g;
+function snake_case(name, separator){
+  separator = separator || '_';
+  return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
+    return (pos ? separator : '') + letter.toLowerCase();
+  });
+};
+
 
 function angularJsConfig(document) {
   bindJQuery();
