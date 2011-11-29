@@ -219,9 +219,7 @@ function JQLiteData(element, key, value) {
   }
 }
 
-function JQLiteHasClass(element, selector, _) {
-  // the argument '_' is important, since it makes the function have 3 arguments, which
-  // is needed for delegate function to realize the this is a getter.
+function JQLiteHasClass(element, selector) {
   return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
 }
@@ -427,7 +425,9 @@ forEach({
   JQLite.prototype[name] = function(arg1, arg2) {
     var i, key;
 
-    if ((fn.length == 2 ? arg1 : arg2) === undefined) {
+    // JQLiteHasClass has only two arguments, but is a getter-only fn, so we need to special-case it
+    // in a way that survives minification.
+    if (((fn.length == 2 && fn !== JQLiteHasClass) ? arg1 : arg2) === undefined) {
       if (isObject(arg1)) {
         // we are a write, but the object properties are the key/values
         for(i=0; i < this.length; i++) {
