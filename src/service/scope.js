@@ -323,7 +323,8 @@ function $RootScopeProvider(){
             length,
             dirty, ttl = 100,
             next, current, target = this,
-            watchLog = [];
+            watchLog = [],
+            logIdx, logMsg;
 
         if (target.$$phase) {
           throw Error(target.$$phase + ' already in progress');
@@ -355,12 +356,13 @@ function $RootScopeProvider(){
                     watch.last = copy(value);
                     watch.fn(current, value, ((last === initWatchVal) ? value : last));
                     if (ttl < 5) {
-                      if (!watchLog[4-ttl]) watchLog[4-ttl] = [];
-                      if (isFunction(watch.exp)) {
-                        watchLog[4-ttl].push('fn: ' + (watch.exp.name || watch.exp.toString()));
-                      } else {
-                        watchLog[4-ttl].push(watch.exp);
-                      }
+                      logIdx = 4-ttl;
+                      if (!watchLog[logIdx]) watchLog[logIdx] = [];
+                      logMsg = (isFunction(watch.exp))
+                          ? 'fn: ' + (watch.exp.name || watch.exp.toString())
+                          : watch.exp;
+                      logMsg += '; newVal: ' + toJson(value) + '; oldVal: ' + toJson(last);
+                      watchLog[logIdx].push(logMsg);
                     }
                   }
                 } catch (e) {
