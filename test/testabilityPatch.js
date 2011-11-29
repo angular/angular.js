@@ -67,7 +67,10 @@ function dealoc(obj) {
   }
 }
 
-
+/**
+ * @param {DOMElement} element
+ * @param {boolean=} showNgClass
+ */
 function sortedHtml(element, showNgClass) {
   var html = "";
   forEach(jqLite(element), function toString(node) {
