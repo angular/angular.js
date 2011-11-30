@@ -120,7 +120,8 @@ function $HttpProvider() {
    *   - **headers** – `{function([headerName])}` – Header getter function.
    *   - **config** – `{Object}` – The configuration object that was used to generate the request.
    *
-   * @property {Array.<HttpPromise>} pendingRequests Array of pending requests.
+   * @property {Array.<HttpPromise>} pendingRequests Array of config objects for pending requests.
+   *   This is primarily meant to be used for debugging purposes.
    *
    * @description
    * $http is a service through which XHR and JSONP requests can be made.
@@ -340,7 +341,7 @@ function $HttpProvider() {
       response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
 
       var idx; // remove from pending requests
-      if ((idx = indexOf($http.pendingRequests, self)) !== -1)
+      if ((idx = indexOf($http.pendingRequests, cfg)) !== -1)
         $http.pendingRequests.splice(idx, 1);
 
       // normalize internal statuses to 0
@@ -433,7 +434,7 @@ function $HttpProvider() {
         rawRequest = $httpBackend(cfg.method, cfg.url, data, done, headers, cfg.timeout);
       }
 
-      $http.pendingRequests.push(self);
+      $http.pendingRequests.push(cfg);
       return self;
     };
 
