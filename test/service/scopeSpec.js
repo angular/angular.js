@@ -68,7 +68,7 @@ describe('Scope', function() {
       expect(spy).not.wasCalled();
       $rootScope.name = 'misko';
       $rootScope.$digest();
-      expect(spy).wasCalledWith($rootScope, 'misko', undefined);
+      expect(spy).wasCalledWith('misko', undefined, $rootScope);
     }));
 
 
@@ -156,9 +156,9 @@ describe('Scope', function() {
 
     it('should repeat watch cycle while model changes are identified', inject(function($rootScope) {
       var log = '';
-      $rootScope.$watch('c', function(self, v) {self.d = v; log+='c'; });
-      $rootScope.$watch('b', function(self, v) {self.c = v; log+='b'; });
-      $rootScope.$watch('a', function(self, v) {self.b = v; log+='a'; });
+      $rootScope.$watch('c', function(v) {$rootScope.d = v; log+='c'; });
+      $rootScope.$watch('b', function(v) {$rootScope.c = v; log+='b'; });
+      $rootScope.$watch('a', function(v) {$rootScope.b = v; log+='a'; });
       $rootScope.$digest();
       log = '';
       $rootScope.a = 1;
@@ -182,8 +182,8 @@ describe('Scope', function() {
 
     it('should prevent infinite recursion and print watcher expression',inject(
         function($rootScope) {
-      $rootScope.$watch('a', function(self) {self.b++;});
-      $rootScope.$watch('b', function(self) {self.a++;});
+      $rootScope.$watch('a', function() {$rootScope.b++;});
+      $rootScope.$watch('b', function() {$rootScope.a++;});
       $rootScope.a = $rootScope.b = 0;
 
       expect(function() {
@@ -200,8 +200,8 @@ describe('Scope', function() {
 
     it('should prevent infinite recursion and print print watcher function name or body',
         inject(function($rootScope) {
-      $rootScope.$watch(function watcherA() {return $rootScope.a;}, function(self) {self.b++;});
-      $rootScope.$watch(function() {return $rootScope.b;}, function(self) {self.a++;});
+      $rootScope.$watch(function watcherA() {return $rootScope.a;}, function() {$rootScope.b++;});
+      $rootScope.$watch(function() {return $rootScope.b;}, function() {$rootScope.a++;});
       $rootScope.a = $rootScope.b = 0;
 
       try {
@@ -229,11 +229,11 @@ describe('Scope', function() {
       var log = '';
       $rootScope.a = [];
       $rootScope.b = {};
-      $rootScope.$watch('a', function(scope, value) {
+      $rootScope.$watch('a', function(value) {
         log +='.';
         expect(value).toBe($rootScope.a);
       });
-      $rootScope.$watch('b', function(scope, value) {
+      $rootScope.$watch('b', function(value) {
         log +='!';
         expect(value).toBe($rootScope.b);
       });
@@ -427,7 +427,7 @@ describe('Scope', function() {
     it('should apply expression with full lifecycle', inject(function($rootScope) {
       var log = '';
       var child = $rootScope.$new();
-      $rootScope.$watch('a', function(scope, a) { log += '1'; });
+      $rootScope.$watch('a', function(a) { log += '1'; });
       child.$apply('$parent.a=0');
       expect(log).toEqual('1');
     }));
@@ -440,7 +440,7 @@ describe('Scope', function() {
       inject(function($rootScope, $exceptionHandler, $log) {
         var log = '';
         var child = $rootScope.$new();
-        $rootScope.$watch('a', function(scope, a) { log += '1'; });
+        $rootScope.$watch('a', function(a) { log += '1'; });
         $rootScope.a = 0;
         child.$apply(function() { throw new Error('MyError'); });
         expect(log).toEqual('1');
@@ -520,7 +520,7 @@ describe('Scope', function() {
           function($rootScope) {
         var childScope2 = $rootScope.$new();
         childScope2.$apply(function() {
-          childScope2.$watch('x', function(scope, newVal, oldVal) {
+          childScope2.$watch('x', function(newVal, oldVal) {
             if (newVal !== oldVal) {
               childScope2.$apply();
             }

@@ -796,7 +796,7 @@ angularWidget('input', function(inputElement){
       });
 
       forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
-        widget.$watch('$' + name, function(scope, value) {
+        widget.$watch('$' + name, function(value) {
           inputElement[value ? 'addClass' : 'removeClass']('ng-' + name);
         });
       });
@@ -870,7 +870,7 @@ function watchElementProperty(modelScope, widget, name, element) {
         !!element[0].attributes[name])
     : element.attr(name);
   if (bindAttr[name] && match) {
-    modelScope.$watch(match[1], function(scope, value){
+    modelScope.$watch(match[1], function(value) {
       widget['$' + name] = isBoolean ? !!value : value;
       widget.$emit('$validate');
       widget.$render && widget.$render();

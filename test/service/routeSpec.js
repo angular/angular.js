@@ -372,7 +372,7 @@ describe('$route', function() {
       function FooCtrl($scope) {
         $scope.$watch(function() {
           return $route.current.params;
-        }, function(scope, value) {
+        }, function(value) {
           routeParams(value);
         });
       }

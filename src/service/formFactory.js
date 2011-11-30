@@ -377,7 +377,7 @@ function $FormFactoryProvider() {
     // Set the state to something we know will change to get the process going.
     widget.$modelValue = Number.NaN;
     // watch for scope changes and update the view appropriately
-    modelScope.$watch(scopeGet, function(scope, value) {
+    modelScope.$watch(scopeGet, function(value) {
       if (!equals(widget.$modelValue, value)) {
         widget.$modelValue = value;
         widget.$parseModel ? widget.$parseModel() : (widget.$viewValue = value);

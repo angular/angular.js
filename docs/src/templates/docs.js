@@ -19,7 +19,7 @@ function DocsController(scope, $location, $window, $cookies, $filter) {
     $location.path('/api').replace();
   }
 
-  scope.$watch('$location.path()', function(scope, path) {
+  scope.$watch('$location.path()', function(path) {
     // ignore non-doc links which are used in examples
     if (DOCS_PATH.test(path)) {
       var parts = path.split('/');

@@ -99,7 +99,7 @@ angularWidget('form', function(form){
     watch('valid');
     watch('invalid');
     function watch(name) {
-      form.$watch('$' + name, function(scope, value) {
+      form.$watch('$' + name, function(value) {
         formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
       });
     }
