@@ -321,7 +321,10 @@ LocationUrl.prototype = {
    *
    * Change search part when called with parameter and return `$location`.
    *
-   * @param {string|object<string,string>=} search New search part - string or hash object
+   * @param {string|object<string,string>=} search New search params - string or hash object
+   * @param {string=} paramValue If `search` is a string, then `paramValue` will override only a
+   *    single search parameter. If the value is `null`, the parameter will be deleted.
+   *
    * @return {string}
    */
   search: function(search, paramValue) {
