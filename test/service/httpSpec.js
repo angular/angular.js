@@ -1,23 +1,7 @@
 'use strict';
 
-(function() {
-  var jasmineDescribe = describe,
-      jasmineDdescribe = ddescribe,
-      jasmineIt = it,
-      jasmineIit = iit;
-
-
 describe('$http', function() {
   var $rootScope, $http, $httpBackend, callback;
-
-  // TODO(i): experiment!
-  // must be exported into window so that JasmineAdapter can do its itt and ddescribe magic
-  window.it = function(desc, fn) { jasmineIt(desc, inject(fn)); },
-  window.iit = function(desc, fn) { jasmineIit(desc, inject(fn)) };
-  window.describe = function(desc, fn) { jasmineDescribe(desc, inject(fn)) };
-  window.ddescribe = function(desc, fn) { jasmineDdescribe(desc, inject(fn)) };
-  try {
-
 
   beforeEach(inject(
     function($exceptionHandlerProvider) {
@@ -45,6 +29,28 @@ describe('$http', function() {
 
     $httpBackend.verifyNoOutstandingExpectation();
   }));
+
+
+  describe('$httpProvider', function() {
+
+    describe('interceptors', function() {
+
+      it('should default to an empty array', inject(function($httpProvider) {
+        expect($httpProvider.interceptors).toEqual([]);
+      }));
+
+
+      xit('should pass the responses through interceptors', inject(function($httpProvider) {
+        $httpProvider.interceptors.push(function(httpPromise) {
+          return httpPromise.then(function(response) {
+            response.data
+          });
+        })
+      }, function($http) {
+
+      }));
+    });
+  });
 
 
   it('should do basic request', function() {
@@ -343,7 +349,7 @@ describe('$http', function() {
     });
 
 
-    it('should set the XSRF cookie into a XSRF header', function($browser) {
+    it('should set the XSRF cookie into a XSRF header', inject(function($browser) {
       function checkXSRF(secret) {
         return function(headers) {
           return headers['X-XSRF-TOKEN'] == secret;
@@ -362,7 +368,7 @@ describe('$http', function() {
       $http({url: '/url', method: 'DELETE', headers: {}});
 
       $httpBackend.flush();
-    });
+    }));
   });
 
 
@@ -477,7 +483,7 @@ describe('$http', function() {
     });
 
 
-    it('should $apply even if exception thrown during callback', function($exceptionHandler) {
+    it('should $apply even if exception thrown during callback', inject(function($exceptionHandler){
       $httpBackend.when('GET').respond(200);
       callback.andThrow('error in callback');
 
@@ -486,7 +492,7 @@ describe('$http', function() {
       expect($rootScope.$apply).toHaveBeenCalledOnce();
 
       $exceptionHandler.errors = [];
-    });
+    }));
   });
 
 
@@ -594,7 +600,7 @@ describe('$http', function() {
       $httpBackend.flush();
     }
 
-    it('should cache GET request when cache is provided', function($browser) {
+    it('should cache GET request when cache is provided', inject(function($browser) {
       doFirstCacheRequest();
 
       $http({method: 'get', url: '/url', cache: cache}).success(callback);
@@ -602,7 +608,7 @@ describe('$http', function() {
 
       expect(callback).toHaveBeenCalledOnce();
       expect(callback.mostRecentCall.args[0]).toBe('content');
-    });
+    }));
 
 
     it('should not cache when cache is not provided', function() {
@@ -677,7 +683,7 @@ describe('$http', function() {
     });
 
 
-    it('should cache the headers as well', function($browser) {
+    it('should cache the headers as well', inject(function($browser) {
       doFirstCacheRequest('GET', 200, {'content-encoding': 'gzip', 'server': 'Apache'});
       callback.andCallFake(function(r, s, headers) {
         expect(headers()).toEqual({'content-encoding': 'gzip', 'server': 'Apache'});
@@ -687,10 +693,10 @@ describe('$http', function() {
       $http({method: 'GET', url: '/url', cache: cache}).success(callback);
       $browser.defer.flush();
       expect(callback).toHaveBeenCalledOnce();
-    });
+    }));
 
 
-    it('should cache status code as well', function($browser) {
+    it('should cache status code as well', inject(function($browser) {
       doFirstCacheRequest('GET', 201);
       callback.andCallFake(function(r, status, h) {
         expect(status).toBe(201);
@@ -699,7 +705,7 @@ describe('$http', function() {
       $http({method: 'get', url: '/url', cache: cache}).success(callback);
       $browser.defer.flush();
       expect(callback).toHaveBeenCalledOnce();
-    });
+    }));
 
 
     it('should use cache even if request fired before first response is back', function() {
@@ -734,7 +740,7 @@ describe('$http', function() {
     });
 
 
-    it('should update pending requests even when served from cache', function($browser) {
+    it('should update pending requests even when served from cache', inject(function($browser) {
       $httpBackend.when('GET').respond(200);
 
       $http({method: 'get', url: '/cached', cache: true});
@@ -749,7 +755,7 @@ describe('$http', function() {
 
       $browser.defer.flush();
       expect($http.pendingRequests.length).toBe(0);
-    });
+    }));
 
 
     it('should remove the request before firing callbacks', function() {
@@ -762,13 +768,4 @@ describe('$http', function() {
       $httpBackend.flush();
     });
   });
-
-
-  } finally {
-    window.it = jasmineIt;
-    window.itt = jasmineIit;
-    window.describe = jasmineDescribe;
-    window.ddescribe = jasmineDdescribe;
-  }
 });
-})();
