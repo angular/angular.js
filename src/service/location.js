@@ -534,7 +534,7 @@ function $LocationProvider(){
 
     // update browser
     var changeCounter = 0;
-    $rootScope.$watch(function() {
+    $rootScope.$watch(function $locationWatch() {
       if ($browser.url() != currentUrl.absUrl()) {
         changeCounter++;
         $rootScope.$evalAsync(function() {
