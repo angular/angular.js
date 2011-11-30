@@ -116,7 +116,21 @@ ResourceFactory.prototype = {
             if (response) {
               if (action.isArray) {
                 value.length = 0;
-                forEach(response, function(item) {
+                var actualArray;
+                if (isArray(response)) {
+                  // the response is a top-level json array
+                  actualArray = response;
+                } else {
+                  // the response may be a top-level json object
+                  // which contains an array
+                  for (var key in response) {
+                    if(isArray(response[key])) {
+                      actualArray = response[key];
+                      break;
+                    }
+                  }
+                }
+                forEach(actualArray, function(item) {
                   value.push(new Resource(item));
                 });
               } else {
