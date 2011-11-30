@@ -48,18 +48,6 @@ function transform(data, fns, param) {
 }
 
 
-/**
- * @ngdoc object
- * @name angular.module.ng.$http
- * @requires $httpBacked
- * @requires $browser
- * @requires $exceptionHandler
- * @requires $cacheFactory
- *
- * @property {Array.<HttpPromise>} pendingRequests Array of pending requests.
- *
- * @description
- */
 function $HttpProvider() {
   var JSON_START = /^\s*(\[|\{[^\{])/,
       JSON_END = /[\}\]]\s*$/,
@@ -98,7 +86,43 @@ function $HttpProvider() {
 
   var defaultCache = $cacheFactory('$http');
 
-  // the actual service
+  /**
+   * @ngdoc function
+   * @name angular.module.ng.$http
+   * @requires $httpBacked
+   * @requires $browser
+   * @requires $exceptionHandler
+   * @requires $cacheFactory
+   *
+   * @param {object} config Object describing the request to be made and how it should be processed.
+   *    The object has following properties:
+   *
+   *    - **method** – `{string}` – HTTP method (e.g. 'GET', 'POST', etc)
+   *    - **url** – `{string}` – Absolute or relative URL of the resource that is being requested.
+   *    - **data** – `{string|Object}` – Data to be sent as the request message data.
+   *    - **headers** – `{Object}` – Map of strings representing HTTP headers to send to the server.
+   *    - **cache** – `{boolean|Cache}` – If true, a default $http cache will be used to cache the
+   *      GET request, otherwise if a cache instance built with $cacheFactory, this cache will be
+   *      used for caching.
+   *
+   * @returns {HttpPromise} Returns a promise object with the standard `then` method and two http
+   *   specific methods: `success` and `error`. The `then` method takes two arguments a success and
+   *   an error callback which will be called with a response object. The `success` and `error`
+   *   methods take a single argument - a function that will be called when the request succeeds or
+   *   fails respectively. The arguments passed into these functions are destructured representation
+   *   of the response object passed into the `then` method. The response object has these
+   *   properties:
+   *
+   *   - **data** – `{string|Object}` – The response body transformed with the transform functions.
+   *   - **status** – `{number}` – HTTP status code of the response.
+   *   - **headers** – `{function([headerName])}` – Header getter function.
+   *   - **config** – `{Object}` – The configuration object that was used to generate the request.
+   *
+   * @property {Array.<HttpPromise>} pendingRequests Array of pending requests.
+   *
+   * @description
+   * $http is a service through which XHR and JSONP requests can be made.
+   */
   function $http(config) {
     var req = new XhrFuture().send(config),
         deferredResp = $q.defer(),
@@ -106,30 +130,23 @@ function $HttpProvider() {
 
     promise.success = function(fn) {
       promise.then(function(response) {
-        fn(response.body, response.status, response.headers, config);
+        fn(response.data, response.status, response.headers, config);
       });
       return promise;
     };
 
     promise.error = function(fn) {
       promise.then(null, function(response) {
-        fn(response.body, response.status, response.headers, config);
+        fn(response.data, response.status, response.headers, config);
       });
       return promise;
     };
 
-    // TODO(i):
-    // - body vs ???
-    // - status vs code
-    // - headers vs header
-    req.on('success', function(body, status, headers) {
-      deferredResp.resolve({body: body, status: status, headers: headers, config: config});
-    }).on('error', function(body, status, headers) {
-      deferredResp.reject({body: body, status: status, headers: headers, config: config});
+    req.on('success', function(data, status, headers) {
+      deferredResp.resolve({data: data, status: status, headers: headers, config: config});
+    }).on('error', function(data, status, headers) {
+      deferredResp.reject({data: data, status: status, headers: headers, config: config});
     });
-
-    // TODO(i): remove?!?
-    $rootScope.$broadcast('$http.request', promise);
 
     return promise;
   }

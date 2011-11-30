@@ -67,7 +67,7 @@ describe('$http', function() {
     it('should pass in the response object when a request is successful', function() {
       $httpBackend.expect('GET', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
       $http({url: '/url', method: 'GET'}).then(function(response) {
-        expect(response.body).toBe('my content');
+        expect(response.data).toBe('my content');
         expect(response.status).toBe(207);
         expect(response.headers()).toEqual({'content-encoding': 'smurf'});
         expect(response.config.url).toBe('/url');
@@ -82,7 +82,7 @@ describe('$http', function() {
     it('should pass in the response object when a request failed', function() {
       $httpBackend.expect('GET', '/url').respond(543, 'bad error', {'request-id': '123'});
       $http({url: '/url', method: 'GET'}).then(null, function(response) {
-        expect(response.body).toBe('bad error');
+        expect(response.data).toBe('bad error');
         expect(response.status).toBe(543);
         expect(response.headers()).toEqual({'request-id': '123'});
         expect(response.config.url).toBe('/url');
@@ -97,8 +97,8 @@ describe('$http', function() {
     describe('success', function() {
       it('should allow http specific callbacks to be registered via "success"', function() {
         $httpBackend.expect('GET', '/url').respond(207, 'my content', {'content-encoding': 'smurf'});
-        $http({url: '/url', method: 'GET'}).success(function(body, status, headers, config) {
-          expect(body).toBe('my content');
+        $http({url: '/url', method: 'GET'}).success(function(data, status, headers, config) {
+          expect(data).toBe('my content');
           expect(status).toBe(207);
           expect(headers()).toEqual({'content-encoding': 'smurf'});
           expect(config.url).toBe('/url');
@@ -121,8 +121,8 @@ describe('$http', function() {
     describe('error', function() {
       it('should allow http specific callbacks to be registered via "error"', function() {
         $httpBackend.expect('GET', '/url').respond(543, 'bad error', {'request-id': '123'});
-        $http({url: '/url', method: 'GET'}).error(function(body, status, headers, config) {
-          expect(body).toBe('bad error');
+        $http({url: '/url', method: 'GET'}).error(function(data, status, headers, config) {
+          expect(data).toBe('bad error');
           expect(status).toBe(543);
           expect(headers()).toEqual({'request-id': '123'});
           expect(config.url).toBe('/url');
@@ -487,16 +487,6 @@ describe('$http', function() {
 
       $exceptionHandler.errors = [];
     });
-  });
-
-
-  it('should broadcast $http.request', function() {
-    $httpBackend.when('GET').respond(200);
-    $rootScope.$on('$http.request', callback);
-    var httpPromise = $http({method: 'GET', url: '/whatever'});
-
-    expect(callback).toHaveBeenCalledOnce();
-    expect(callback.mostRecentCall.args[1]).toBe(httpPromise);
   });
 
 

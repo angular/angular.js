@@ -112,7 +112,7 @@ ResourceFactory.prototype = {
           url: route.url(extend({}, extractParams(data), action.params || {}, params)),
           data: data
         }).then(function(response) {
-            response = response.body;
+            response = response.data;
             if (response) {
               if (action.isArray) {
                 value.length = 0;

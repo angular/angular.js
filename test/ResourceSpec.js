@@ -262,7 +262,7 @@ describe("resource", function() {
 
     beforeEach(function() {
       errorCB = jasmine.createSpy('error').andCallFake(function(response) {
-        expect(response.body).toBe(ERROR_RESPONSE);
+        expect(response.data).toBe(ERROR_RESPONSE);
         expect(response.status).toBe(ERROR_CODE);
       });
     });
