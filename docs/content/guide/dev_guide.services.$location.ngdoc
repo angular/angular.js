@@ -618,11 +618,11 @@ you will need to specify an extra property that has two watchers. For example:
 </pre>
 <pre>
 // js - controller
-this.$watch('locationPath', function(scope, path) {
+this.$watch('locationPath', function(path) {
   $location.path(path);
 });
 
-this.$watch('$location.path()', function(scope, path) {
+this.$watch('$location.path()', function(path) {
   scope.locationPath = path;
 });
 </pre>

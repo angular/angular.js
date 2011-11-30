@@ -111,7 +111,7 @@ angularWidget('ng:include', function(element){
         var includeScope = scope.$eval(scopeExp);
         if (includeScope) return includeScope.$id;
       }, incrementChange);
-      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
+      this.$watch(function() {return changeCounter;}, function(newChangeCounter) {
         var src = scope.$eval(srcExp),
             useScope = scope.$eval(scopeExp);
 
@@ -233,8 +233,9 @@ angularWidget('ng:switch', function(element) {
     var changeCounter = 0;
     var childScope;
     var selectedTemplate;
+    var scope = this;
 
-    this.$watch(watchExpr, function(scope, value) {
+    this.$watch(watchExpr, function(value) {
       element.html('');
       if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
         changeCounter++;
@@ -577,7 +578,7 @@ angularWidget('ng:view', function(element) {
         changeCounter++;
       });
 
-      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
+      this.$watch(function() {return changeCounter;}, function(newChangeCounter) {
         var template = $route.current && $route.current.template;
 
         function clearContent() {
@@ -802,7 +803,7 @@ angularWidget('ng:pluralize', function(element) {
       } else {
         return '';
       }
-    }, function(scope, newVal) {
+    }, function(newVal) {
       element.text(newVal);
     });
   }];

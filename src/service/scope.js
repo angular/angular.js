@@ -207,7 +207,7 @@ function $RootScopeProvider(){
            scope.counter = 0;
 
            expect(scope.counter).toEqual(0);
-           scope.$watch('name', function(scope, newValue, oldValue) { counter = counter + 1; });
+           scope.$watch('name', function(newValue, oldValue) { counter = counter + 1; });
            expect(scope.counter).toEqual(0);
 
            scope.$digest();
@@ -231,21 +231,25 @@ function $RootScopeProvider(){
        *   the `watchExpression` changes.
        *
        *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
-       *    - `function(scope, newValue, oldValue)`: called with current `scope` an previous and
-       *       current values as parameters.
+       *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
        * @returns {function()} Returns a deregistration function for this listener.
        */
       $watch: function(watchExp, listener) {
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
-            listenFn = compileToFn(listener || noop, 'listener'),
             array = scope.$$watchers,
             watcher = {
-              fn: listenFn,
+              fn: listener,
               last: initWatchVal,
               get: get,
               exp: watchExp
             };
+
+        // in the case user pass string, we need to compile it, do we really need this ?
+        if (!isFunction(listener)) {
+          var listenFn = compileToFn(listener || noop, 'listener');
+          watcher.fn = function(newVal, oldVal, scope) {listenFn(scope);};
+        }
 
         if (!array) {
           array = scope.$$watchers = [];
@@ -341,7 +345,7 @@ function $RootScopeProvider(){
                   if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
                     dirty = true;
                     watch.last = copy(value);
-                    watch.fn(current, value, ((last === initWatchVal) ? value : last));
+                    watch.fn(value, ((last === initWatchVal) ? value : last), current);
                     if (ttl < 5) {
                       logIdx = 4 - ttl;
                       if (!watchLog[logIdx]) watchLog[logIdx] = [];

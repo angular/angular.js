@@ -167,7 +167,7 @@ angularWidget('select', function(element){
     });
 
     forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
-      widget.$watch('$' + name, function(scope, value) {
+      widget.$watch('$' + name, function(value) {
         selectElement[value ? 'addClass' : 'removeClass']('ng-' + name);
       });
     });
