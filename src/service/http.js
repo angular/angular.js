@@ -81,6 +81,8 @@ function $HttpProvider() {
     }
   };
 
+  var responseInterceptors = this.responseInterceptors = [];
+
   this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope', '$q',
       function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope, $q) {
 
@@ -128,6 +130,10 @@ function $HttpProvider() {
     var req = new XhrFuture().send(config),
         deferredResp = $q.defer(),
         promise = deferredResp.promise;
+
+    forEach(responseInterceptors, function(interceptor) {
+      promise = interceptor(promise);
+    });
 
     promise.success = function(fn) {
       promise.then(function(response) {
