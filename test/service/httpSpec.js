@@ -40,14 +40,37 @@ describe('$http', function() {
       }));
 
 
-      xit('should pass the responses through interceptors', inject(function($httpProvider) {
+      it('should pass the responses through interceptors', inject(function($httpProvider, $q) {
+        // just change the response data and pass the response object along
         $httpProvider.interceptors.push(function(httpPromise) {
           return httpPromise.then(function(response) {
-            response.data
+            response.data += '!';
+            return response;
           });
-        })
-      }, function($http) {
+        });
 
+        // return a new resolved promise representing modified response object
+        $httpProvider.interceptors.push(function(httpPromise) {
+          return httpPromise.then(function(response) {
+            var deferred = $q.defer();
+            deferred.resolve({
+              data: response.data + '?',
+              status: 209,
+              headers: response.headers,
+              config: response.config
+            });
+            return deferred.promise;
+          });
+        });
+      }, function($http, $httpBackend) {
+        $httpBackend.expect('GET', '/foo').respond(201, 'Hello');
+        $http.get('/foo').success(function(data, status) {
+          expect(data).toBe('Hello!?');
+          expect(status).toBe(209);
+          callback();
+        })
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
       }));
     });
   });
