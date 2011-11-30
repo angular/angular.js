@@ -94,42 +94,38 @@ angularWidget('ng:include', function(element){
     function($http,   $templateCache,   $autoScroll,   element) {
       var scope = this,
           changeCounter = 0,
-          releaseScopes = [],
-          childScope,
-          oldScope;
+          childScope;
 
       function incrementChange() { changeCounter++;}
       this.$watch(srcExp, incrementChange);
-      this.$watch(function(scope){
-        var newScope = scope.$eval(scopeExp);
-        if (newScope !== oldScope) {
-          oldScope = newScope;
-          incrementChange();
-        }
-      });
-      this.$watch(function() {return changeCounter;}, function(scope) {
+      this.$watch(function() {
+        var includeScope = scope.$eval(scopeExp);
+        if (includeScope) return includeScope.$id;
+      }, incrementChange);
+      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
         var src = scope.$eval(srcExp),
             useScope = scope.$eval(scopeExp);
 
         function clearContent() {
-          childScope = null;
-          element.html('');
+          // if this callback is still desired
+          if (newChangeCounter === changeCounter) {
+            if (childScope) childScope.$destroy();
+            childScope = null;
+            element.html('');
+          }
         }
 
-        while(releaseScopes.length) {
-          releaseScopes.pop().$destroy();
-        }
         if (src) {
           $http.get(src, {cache: $templateCache}).success(function(response) {
-            element.html(response);
-            if (useScope) {
-              childScope = useScope;
-            } else {
-              releaseScopes.push(childScope = scope.$new());
+            // if this callback is still desired
+            if (newChangeCounter === changeCounter) {
+              element.html(response);
+              if (childScope) childScope.$destroy();
+              childScope = useScope ? useScope : scope.$new();
+              compiler.compile(element)(childScope);
+              $autoScroll();
+              scope.$eval(onloadExp);
             }
-            compiler.compile(element)(childScope);
-            $autoScroll();
-            scope.$eval(onloadExp);
           }).error(clearContent);
         } else {
           clearContent();
@@ -574,7 +570,10 @@ angularWidget('ng:view', function(element) {
         var template = $route.current && $route.current.template;
 
         function clearContent() {
-          element.html('');
+          // ignore callback if another route change occured since
+          if (newChangeCounter == changeCounter) {
+            element.html('');
+          }
         }
 
         if (template) {

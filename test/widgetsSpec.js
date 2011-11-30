@@ -67,7 +67,7 @@ describe('widget', function() {
     it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
         function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
-      var element = $compile(element)($rootScope);
+      element = $compile(element)($rootScope);
       $rootScope.childScope = $rootScope.$new();
       $rootScope.childScope.name = 'misko';
       $rootScope.url = 'myUrl';
@@ -81,7 +81,7 @@ describe('widget', function() {
           putIntoCache('myUrl', '{{name}}'),
           function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
-      var element = $compile(element)($rootScope);
+      element = $compile(element)($rootScope);
       $rootScope.childScope = $rootScope.$new();
       $rootScope.childScope.name = 'igor';
       $rootScope.url = 'myUrl';
@@ -100,7 +100,7 @@ describe('widget', function() {
     it('should allow this for scope', inject(putIntoCache('myUrl', '{{"abc"}}'),
           function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" scope="this"></ng:include>');
-      var element = $compile(element)($rootScope);
+      element = $compile(element)($rootScope);
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
       $browser.defer.flush();
@@ -119,7 +119,7 @@ describe('widget', function() {
         putIntoCache('myUrl', 'my partial'),
         function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
-      var element = $compile(element)($rootScope);
+      element = $compile(element)($rootScope);
 
       expect($rootScope.loaded).not.toBeDefined();
 
@@ -135,7 +135,7 @@ describe('widget', function() {
     it('should destroy old scope', inject(putIntoCache('myUrl', 'my partial'),
           function($rootScope, $compile, $browser) {
       var element = jqLite('<ng:include src="url"></ng:include>');
-      var element = $compile(element)($rootScope);
+      element = $compile(element)($rootScope);
 
       expect($rootScope.$$childHead).toBeFalsy();
 
@@ -198,6 +198,30 @@ describe('widget', function() {
       $rootScope.$digest();
       $browser.defer.flush();
       expect(element.text()).toBe('my partial');
+    }));
+
+    it('should discard pending xhr callbacks if a new template is requested before the current ' +
+        'finished loading', inject(function($rootScope, $compile, $httpBackend) {
+      var element = jqLite("<ng:include src='templateUrl'></ng:include>"),
+          log = [];
+
+      $rootScope.templateUrl = 'myUrl1';
+      $rootScope.logger = function(msg) {
+        log.push(msg);
+      }
+      $compile(element)($rootScope);
+      expect(log.join('; ')).toEqual('');
+
+      $httpBackend.expect('GET', 'myUrl1').respond('<div>{{logger("url1")}}</div>');
+      $rootScope.$digest();
+      expect(log.join('; ')).toEqual('');
+      $rootScope.templateUrl = 'myUrl2';
+      $httpBackend.expect('GET', 'myUrl2').respond('<div>{{logger("url2")}}</div>');
+      $rootScope.$digest();
+      $httpBackend.flush(); // now that we have two requests pending, flush!
+
+      expect(log.join('; ')).toEqual('url2; url2'); // it's here twice because we go through at
+                                                    // least two digest cycles
     }));
   }));
 
@@ -645,7 +669,7 @@ describe('widget', function() {
       $location.path('/bar');
       $httpBackend.expect('GET', 'myUrl2').respond('<div>{{1+1}}</div>');
       $rootScope.$digest();
-      $httpBackend.flush(); // now that we have to requests pending, flush!
+      $httpBackend.flush(); // now that we have two requests pending, flush!
 
       expect($rootScope.$element.text()).toEqual('2');
     }));
