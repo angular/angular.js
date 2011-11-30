@@ -25,9 +25,9 @@
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.numbers = [1,2,3,4,5,6,7,8,9];
-           this.limit = 3;
+         function Ctrl($scope) {
+           $scope.numbers = [1,2,3,4,5,6,7,8,9];
+           $scope.limit = 3;
          }
        </script>
        <div ng:controller="Ctrl">

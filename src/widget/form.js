@@ -52,8 +52,8 @@
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.text = 'guest';
+         function Ctrl($scope) {
+           $scope.text = 'guest';
          }
        </script>
        <div ng:controller="Ctrl">

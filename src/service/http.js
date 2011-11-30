@@ -395,29 +395,28 @@ function $HttpProvider() {
         <doc:example>
           <doc:source jsfiddle="false">
             <script>
-              function FetchCtrl($http) {
-                var self = this;
-                this.method = 'GET';
-                this.url = 'examples/http-hello.html';
+              function FetchCtrl($scope, $http) {
+                $scope.method = 'GET';
+                $scope.url = 'examples/http-hello.html';
 
-                this.fetch = function() {
-                  self.code = null;
-                  self.response = null;
+                $scope.fetch = function() {
+                  $scope.code = null;
+                  $scope.response = null;
 
-                  $http({method: self.method, url: self.url}).
+                  $http({method: $scope.method, url: $scope.url}).
                     success(function(data, status) {
-                      self.status = status;
-                      self.data = data;
+                      $scope.status = status;
+                      $scope.data = data;
                     }).
                     error(function(data, status) {
-                      self.data = data || "Request failed";
-                      self.status = status;
+                      $scope.data = data || "Request failed";
+                      $scope.status = status;
                   });
                 };
 
-                this.updateModel = function(method, url) {
-                  self.method = method;
-                  self.url = url;
+                $scope.updateModel = function(method, url) {
+                  $scope.method = method;
+                  $scope.url = url;
                 };
               }
             </script>

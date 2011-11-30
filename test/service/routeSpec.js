@@ -112,7 +112,7 @@ describe('$route', function() {
       inject(function($route, $location, $rootScope) {
     var onChangeSpy = jasmine.createSpy('onChange');
 
-    function NotFoundCtrl() {this.notFoundProp = 'not found!';}
+    function NotFoundCtrl($scope) {$scope.notFoundProp = 'not found!';}
 
     $route.when('/foo', {template: 'foo.html'});
     $route.otherwise({template: '404.html', controller: NotFoundCtrl});
@@ -169,10 +169,11 @@ describe('$route', function() {
 
 
   it('should infer arguments in injection', inject(function($route, $location, $rootScope) {
-    $route.when('/test', {controller: function($route){ this.$route = $route; }});
+    var injectedRoute;
+    $route.when('/test', {controller: function($route) {injectedRoute = $route;}});
     $location.path('/test');
     $rootScope.$digest();
-    expect($route.current.scope.$route).toBe($route);
+    expect(injectedRoute).toBe($route);
   }));
 
 
@@ -304,9 +305,9 @@ describe('$route', function() {
       $route.when('/foo', {controller: FooCtrl, reloadOnSearch: false});
       $rootScope.$on('$beforeRouteChange', reloaded);
 
-      function FooCtrl() {
+      function FooCtrl($scope) {
         reloaded();
-        this.$on('$routeUpdate', routeUpdateEvent);
+        $scope.$on('$routeUpdate', routeUpdateEvent);
       }
 
       expect(reloaded).not.toHaveBeenCalled();
@@ -368,8 +369,8 @@ describe('$route', function() {
       $route.when('/foo', {controller: FooCtrl});
       $route.when('/bar/:barId', {controller: FooCtrl, reloadOnSearch: false});
 
-      function FooCtrl() {
-        this.$watch(function() {
+      function FooCtrl($scope) {
+        $scope.$watch(function() {
           return $route.current.params;
         }, function(scope, value) {
           routeParams(value);
@@ -414,10 +415,10 @@ describe('$route', function() {
       }
 
       function createController(name) {
-        return function() {
+        return function($scope) {
           log.push('init-' + name);
-          this.$on('$destroy', logger('destroy-' + name));
-          this.$on('$routeUpdate', logger('route-update'));
+          $scope.$on('$destroy', logger('destroy-' + name));
+          $scope.$on('$routeUpdate', logger('route-update'));
         };
       }
 

@@ -14,9 +14,8 @@ no connection between the controller and the view.
 <doc:example>
   <doc:source>
     <script>
-    function TicTacToeCntl($location){
-      this.$location = $location;
-      this.cellStyle= {
+    function TicTacToeCntl($scope, $location) {
+      $scope.cellStyle= {
         'height': '20px',
         'width': '20px',
         'border': '1px solid black',
@@ -24,30 +23,40 @@ no connection between the controller and the view.
         'vertical-align': 'middle',
         'cursor': 'pointer'
       };
-      this.reset();
-      this.$watch('$location.search().board', this.readUrl);
-    }
-    TicTacToeCntl.prototype = {
-      dropPiece: function(row, col) {
-        if (!this.winner && !this.board[row][col]) {
-          this.board[row][col] = this.nextMove;
-          this.nextMove = this.nextMove == 'X' ? 'O' : 'X';
-          this.setUrl();
-        }
-      },
-      reset: function() {
-        this.board = [
+
+      $scope.reset = function() {
+        $scope.board = [
           ['', '', ''],
           ['', '', ''],
           ['', '', '']
         ];
-        this.nextMove = 'X';
-        this.winner = '';
-        this.setUrl();
-      },
-      grade: function() {
-        var b = this.board;
-        this.winner =
+        $scope.nextMove = 'X';
+        $scope.winner = '';
+        setUrl();
+      };
+
+      $scope.dropPiece = function(row, col) {
+        if (!$scope.winner && !$scope.board[row][col]) {
+          $scope.board[row][col] = $scope.nextMove;
+          $scope.nextMove = $scope.nextMove == 'X' ? 'O' : 'X';
+          setUrl();
+        }
+      };
+
+      $scope.reset();
+      $scope.$watch(function() { return $location.search().board;}, readUrl);
+
+      function setUrl() {
+        var rows = [];
+        angular.forEach($scope.board, function(row) {
+          rows.push(row.join(','));
+        });
+        $location.search({board: rows.join(';') + '/' + $scope.nextMove});
+      }
+
+      function grade() {
+        var b = $scope.board;
+        $scope.winner =
           row(0) || row(1) || row(2) ||
           col(0) || col(1) || col(2) ||
           diagonal(-1) || diagonal(1);
@@ -55,25 +64,19 @@ no connection between the controller and the view.
         function col(col) { return same(b[0][col], b[1][col], b[2][col]);}
         function diagonal(i) { return same(b[0][1-i], b[1][1], b[2][1+i]);}
         function same(a, b, c) { return (a==b && b==c) ? a : '';};
-      },
-      setUrl: function() {
-        var rows = [];
-        angular.forEach(this.board, function(row){
-          rows.push(row.join(','));
-        });
-        this.$location.search({board: rows.join(';') + '/' + this.nextMove});
-      },
-      readUrl: function(scope, value) {
+      }
+
+      function readUrl(scope, value) {
         if (value) {
           value = value.split('/');
-          this.nextMove = value[1];
+          $scope.nextMove = value[1];
           angular.forEach(value[0].split(';'), function(row, col){
-            this.board[col] = row.split(',');
-          }, this);
-          this.grade();
+            $scope.board[col] = row.split(',');
+          });
+          grade();
         }
       }
-    };
+    }
     </script>
 
     <h3>Tic-Tac-Toe</h3>

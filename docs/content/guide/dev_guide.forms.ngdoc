@@ -111,10 +111,10 @@ The following example demonstrates:
      .ng-form {display: block;}
    </style>
    <script>
-   function UserFormCntl() {
-     this.state = /^\w\w$/;
-     this.zip = /^\d\d\d\d\d$/;
-     this.master = {
+   function UserFormCntl($scope) {
+     $scope.state = /^\w\w$/;
+     $scope.zip = /^\d\d\d\d\d$/;
+     $scope.master = {
        customer: 'John Smith',
        address:{
          line1: '123 Main St.',
@@ -123,28 +123,26 @@ The following example demonstrates:
          zip:'12345'
        }
      };
-     this.cancel();
+
+     $scope.cancel = function() {
+       $scope.form = angular.copy($scope.master);
+     };
+
+     $scope.save = function() {
+       $scope.master = $scope.form;
+       $scope.cancel();
+     };
+
+     $scope.isCancelDisabled = function() {
+       return angular.equals($scope.master, $scope.form);
+     };
+
+     $scope.isSaveDisabled = function() {
+       return $scope.userForm.$invalid || angular.equals($scope.master, $scope.form);
+     };
+
+     $scope.cancel();
    }
-
-   UserFormCntl.prototype = {
-     cancel: function() {
-       this.form = angular.copy(this.master);
-     },
-
-     save: function() {
-       this.master = this.form;
-       this.cancel();
-     },
-
-     isCancelDisabled: function() {
-       return angular.equals(this.master, this.form);
-     },
-
-     isSaveDisabled: function() {
-       return this.userForm.$invalid || angular.equals(this.master, this.form);
-     }
-
-   };
    </script>
    <div ng:controller="UserFormCntl">
 
@@ -282,15 +280,13 @@ This example shows how to implement a custom HTML editor widget in Angular.
     <doc:example>
       <doc:source>
         <script>
-          function EditorCntl() {
-            this.htmlContent = '<b>Hello</b> <i>World</i>!';
+          function EditorCntl($scope) {
+            $scope.htmlContent = '<b>Hello</b> <i>World</i>!';
           }
 
-          HTMLEditorWidget.$inject = ['$element', 'htmlFilter'];
-          function HTMLEditorWidget(element, htmlFilter) {
-            var self = this;
-
-            this.$parseModel = function() {
+          HTMLEditorWidget.$inject = ['$element', '$scope', 'htmlFilter'];
+          function HTMLEditorWidget(element, scope, htmlFilter) {
+            scope.$parseModel = function() {
               // need to protect for script injection
               try {
                 this.$viewValue = htmlFilter(
@@ -305,13 +301,13 @@ This example shows how to implement a custom HTML editor widget in Angular.
               }
             }
 
-            this.$render = function() {
+            scope.$render = function() {
               element.html(this.$viewValue);
             }
 
             element.bind('keyup', function() {
-              self.$apply(function() {
-                self.$emit('$viewChange', element.html());
+              scope.$apply(function() {
+                scope.$emit('$viewChange', element.html());
               });
             });
           }
@@ -364,13 +360,13 @@ validation.
 <doc:example>
   <doc:source>
      <script>
-       function Ctrl() {
-         this.input1 = '';
-         this.input2 = '';
-         this.input3 = 'A';
-         this.input4 = false;
-         this.input5 = 'c';
-         this.input6 = [];
+       function Ctrl($scope) {
+         $scope.input1 = '';
+         $scope.input2 = '';
+         $scope.input3 = 'A';
+         $scope.input4 = false;
+         $scope.input5 = 'c';
+         $scope.input6 = [];
        }
      </script>
     <table style="font-size:.9em;" ng:controller="Ctrl">

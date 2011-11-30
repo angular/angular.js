@@ -8,10 +8,8 @@ detection, and preventing invalid form submission.
 <doc:example>
 <doc:source>
    <script>
-   function UserForm() {
-     this.state = /^\w\w$/;
-     this.zip = /^\d\d\d\d\d$/;
-     this.master = {
+   function UserForm($scope) {
+     var master = {
        name: 'John Smith',
        address:{
          line1: '123 Main St.',
@@ -23,40 +21,42 @@ detection, and preventing invalid form submission.
          {type:'phone', value:'1(234) 555-1212'}
        ]
      };
-     this.cancel();
-   }
 
-   UserForm.prototype = {
-     cancel: function() {
-       this.form = angular.copy(this.master);
-     },
+     $scope.state = /^\w\w$/;
+     $scope.zip = /^\d\d\d\d\d$/;
 
-     save: function() {
-       this.master = this.form;
-       this.cancel();
-     },
+     $scope.cancel = function() {
+       $scope.form = angular.copy(master);
+     };
 
-     addContact: function() {
-       this.form.contacts.push({type:'', value:''});
-     },
+     $scope.save = function() {
+       master = $scope.form;
+       $scope.cancel();
+     };
 
-     removeContact: function(contact) {
-       for ( var i = 0, ii = this.form.contacts.length; i < ii; i++) {
-         if (contact === this.form.contacts[i]) {
-           this.form.contacts.splice(i, 1);
+     $scope.addContact = function() {
+       $scope.form.contacts.push({type:'', value:''});
+     };
+
+     $scope.removeContact = function(contact) {
+       var contacts = $scope.form.contacts;
+       for (var i = 0, ii = contacts.length; i < ii; i++) {
+         if (contact === contacts[i]) {
+           contacts.splice(i, 1);
          }
        }
-     },
+     };
 
-     isCancelDisabled: function() {
-       return angular.equals(this.master, this.form);
-     },
+     $scope.isCancelDisabled = function() {
+       return angular.equals(master, $scope.form);
+     };
 
-     isSaveDisabled: function() {
-       return this.myForm.$invalid || angular.equals(this.master, this.form);
-     }
+     $scope.isSaveDisabled = function() {
+       return $scope.myForm.$invalid || angular.equals(master, $scope.form);
+     };
 
-   };
+     $scope.cancel();
+   }
    </script>
    <div ng:controller="UserForm">
 
@@ -91,8 +91,7 @@ detection, and preventing invalid form submission.
 
    <hr/>
    Debug View:
-   <pre>form={{form}}
-   master={{master}}</pre>
+   <pre>form={{form}}</pre>
    </div>
 </doc:source>
 <doc:scenario>

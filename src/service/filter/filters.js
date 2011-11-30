@@ -18,8 +18,8 @@
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.amount = 1234.56;
+         function Ctrl($scope) {
+           $scope.amount = 1234.56;
          }
        </script>
        <div ng:controller="Ctrl">
@@ -69,8 +69,8 @@ function currencyFilter($locale) {
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.val = 1234.56789;
+         function Ctrl($scope) {
+           $scope.val = 1234.56789;
          }
        </script>
        <div ng:controller="Ctrl">
@@ -448,8 +448,8 @@ var uppercaseFilter = valueFn(uppercase);
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.snippet =
+         function Ctrl($scope) {
+           $scope.snippet =
              '<p style="color:blue">an html\n' +
              '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
              'snippet</p>';
@@ -538,8 +538,8 @@ function htmlFilter() {
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.snippet =
+         function Ctrl($scope) {
+           $scope.snippet =
              'Pretty text with some links:\n'+
              'http://angularjs.org/,\n'+
              'mailto:us@somewhere.org,\n'+

@@ -34,8 +34,8 @@ text upper-case and assigns color.
       }
     });
 
-  function Ctrl() {
-    this.greeting = 'hello';
+  function Ctrl($scope) {
+    $scope.greeting = 'hello';
   }
 </script>
 

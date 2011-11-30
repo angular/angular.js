@@ -43,9 +43,9 @@ easier a web developer's life can if they're using angular:
 <doc:example>
 <doc:source>
  <script>
-   function InvoiceCntl() {
-     this.qty = 1;
-     this.cost = 19.95;
+   function InvoiceCntl($scope) {
+     $scope.qty = 1;
+     $scope.cost = 19.95;
    }
  </script>
  <div ng:controller="InvoiceCntl">

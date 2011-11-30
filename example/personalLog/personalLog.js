@@ -26,26 +26,26 @@ var LOGS = 'logs';
 /**
  * The controller for the personal log app.
  */
-function LogCtrl($cookieStore) {
-  var self = this,
-      logs = self.logs = $cookieStore.get(LOGS) || []; //main model
+function LogCtrl($cookieStore, $scope) {
+
+  var logs = $scope.logs = $cookieStore.get(LOGS) || []; //main model
 
 
   /**
    * Adds newMsg to the logs array as a log, persists it and clears newMsg.
    * @param {string} msg Message to add (message is passed as parameter to make testing easier).
    */
-  this.addLog = function(msg) {
-    var newMsg = msg || self.newMsg;
+  $scope.addLog = function(msg) {
+    var newMsg = msg || $scope.newMsg;
     if (!newMsg) return;
     var log = {
       at: new Date().getTime(),
       msg: newMsg
-    }
+    };
 
     logs.push(log);
     $cookieStore.put(LOGS, logs);
-    self.newMsg = '';
+    $scope.newMsg = '';
   };
 
 
@@ -53,7 +53,7 @@ function LogCtrl($cookieStore) {
    * Persistently removes a log from logs.
    * @param {object} log The log to remove.
    */
-  this.rmLog = function(log) {
+  $scope.rmLog = function(log) {
     for ( var i = 0; i < logs.length; i++) {
       if (log === logs[i]) {
         logs.splice(i, 1);
@@ -68,14 +68,14 @@ function LogCtrl($cookieStore) {
   /**
    * Persistently removes all logs.
    */
-  this.rmLogs = function() {
+  $scope.rmLogs = function() {
     logs.splice(0, logs.length);
     $cookieStore.remove(LOGS);
   };
 }
 
 //inject
-LogCtrl.$inject = ['$cookieStore'];
+LogCtrl.$inject = ['$cookieStore', '$scope'];
 
 //export
 example.personalLog.LogCtrl = LogCtrl;
