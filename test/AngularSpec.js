@@ -57,6 +57,14 @@ describe('angular', function() {
       expect(copy(123)).toEqual(123);
       expect(copy([{key:null}])).toEqual([{key:null}]);
     });
+
+    it('should throw an exception if a Scope is being copied', inject(function($rootScope) {
+      expect(function() { copy($rootScope.$new()); }).toThrow("Can't copy Window or Scope");
+    }));
+
+    it('should throw an exception if a Window is being copied', function() {
+      expect(function() { copy(window); }).toThrow("Can't copy Window or Scope");
+    });
   });
 
   describe('equals', function() {
@@ -113,6 +121,22 @@ describe('angular', function() {
 
     it('should treat two NaNs as equal', function() {
       expect(equals(NaN, NaN)).toBe(true);
+    });
+
+    it('should compare Scope instances only by identity', inject(function($rootScope) {
+      var scope1 = $rootScope.$new(),
+          scope2 = $rootScope.$new();
+
+      expect(equals(scope1, scope1)).toBe(true);
+      expect(equals(scope1, scope2)).toBe(false);
+      expect(equals($rootScope, scope1)).toBe(false);
+      expect(equals(undefined, scope1)).toBe(false);
+    }));
+
+    it('should compare Window instances only by identity', function() {
+      expect(equals(window, window)).toBe(true);
+      expect(equals(window, window.parent)).toBe(false);
+      expect(equals(window, undefined)).toBe(false);
     });
   });
 

@@ -413,6 +413,12 @@ function isWindow(obj) {
   return obj && obj.document && obj.location && obj.alert && obj.setInterval;
 }
 
+
+function isScope(obj) {
+  return obj && obj.$evalAsync && obj.$watch;
+}
+
+
 function isBoolean(value) {return typeof value == $boolean;}
 function isTextNode(node) {return nodeName_(node) == '#text';}
 
@@ -580,6 +586,7 @@ function isLeafNode (node) {
  * @returns {*} The copy or updated `destination`, if `destination` was specified.
  */
 function copy(source, destination){
+  if (isWindow(source) || isScope(source)) throw Error("Can't copy Window or Scope");
   if (!destination) {
     destination = source;
     if (source) {
@@ -629,8 +636,7 @@ function copy(source, destination){
  * During a property comparision, properties of `function` type and properties with names
  * that begin with `$` are ignored.
  *
- * Note: This function is used to augment the Object type in Angular expressions. See
- * {@link angular.module.ng.$filter} for more information about Angular arrays.
+ * Scope and DOMWindow objects are being compared only be identify (`===`).
  *
  * @param {*} o1 Object or value to compare.
  * @param {*} o2 Object or value to compare.
@@ -650,6 +656,7 @@ function equals(o1, o2) {
         return true;
       }
     } else {
+      if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
       keySet = {};
       for(key in o1) {
         if (key.charAt(0) !== '$' && !isFunction(o1[key]) && !equals(o1[key], o2[key])) {
