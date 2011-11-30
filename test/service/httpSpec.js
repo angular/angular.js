@@ -31,6 +31,51 @@ describe('$http', function() {
   }));
 
 
+  describe('$httpProvider', function() {
+
+    describe('interceptors', function() {
+
+      it('should default to an empty array', inject(function($httpProvider) {
+        expect($httpProvider.responseInterceptors).toEqual([]);
+      }));
+
+
+      it('should pass the responses through interceptors', inject(function($httpProvider, $q) {
+        // just change the response data and pass the response object along
+        $httpProvider.responseInterceptors.push(function(httpPromise) {
+          return httpPromise.then(function(response) {
+            response.data += '!';
+            return response;
+          });
+        });
+
+        // return a new resolved promise representing modified response object
+        $httpProvider.responseInterceptors.push(function(httpPromise) {
+          return httpPromise.then(function(response) {
+            var deferred = $q.defer();
+            deferred.resolve({
+              data: response.data + '?',
+              status: 209,
+              headers: response.headers,
+              config: response.config
+            });
+            return deferred.promise;
+          });
+        });
+      }, function($http, $httpBackend) {
+        $httpBackend.expect('GET', '/foo').respond(201, 'Hello');
+        $http.get('/foo').success(function(data, status) {
+          expect(data).toBe('Hello!?');
+          expect(status).toBe(209);
+          callback();
+        })
+        $httpBackend.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      }));
+    });
+  });
+
+
   it('should do basic request', function() {
     $httpBackend.expect('GET', '/url').respond('');
     $http({url: '/url', method: 'GET'});
