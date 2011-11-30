@@ -97,28 +97,30 @@ angularDirective("ng:init", function(expression){
    <doc:example>
      <doc:source>
       <script type="text/javascript">
-        function SettingsController() {
-          this.name = "John Smith";
-          this.contacts = [
+        function SettingsController($scope) {
+          $scope.name = "John Smith";
+          $scope.contacts = [
             {type:'phone', value:'408 555 1212'},
             {type:'email', value:'john.smith@example.org'} ];
-        }
-        SettingsController.prototype = {
-         greet: function() {
+
+          $scope.greet = function() {
            alert(this.name);
-         },
-         addContact: function() {
+          };
+
+          $scope.addContact = function() {
            this.contacts.push({type:'email', value:'yourname@example.org'});
-         },
-         removeContact: function(contactToRemove) {
+          };
+
+          $scope.removeContact = function(contactToRemove) {
            var index = this.contacts.indexOf(contactToRemove);
            this.contacts.splice(index, 1);
-         },
-         clearContact: function(contact) {
+          };
+
+          $scope.clearContact = function(contact) {
            contact.type = 'phone';
            contact.value = '';
-         }
-        };
+          };
+        }
       </script>
       <div ng:controller="SettingsController">
         Name: <input type="text" ng:model="name"/>
@@ -156,16 +158,15 @@ angularDirective("ng:init", function(expression){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:controller", function(expression){
-  this.scope(function(scope){
-    var Controller =
-      getter(scope, expression, true) ||
-      getter(window, expression, true);
+angularDirective("ng:controller", function(expression) {
+  this.scope(true);
+  return ['$injector', '$window', function($injector, $window) {
+    var scope = this,
+        Controller = getter(scope, expression, true) || getter($window, expression, true);
+
     assertArgFn(Controller, expression);
-    inferInjectionArgs(Controller);
-    return Controller;
-  });
-  return noop;
+    $injector.instantiate(Controller, {$scope: scope});
+  }];
 });
 
 /**
@@ -189,8 +190,8 @@ angularDirective("ng:controller", function(expression){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.name = 'Whirled';
+         function Ctrl($scope) {
+           $scope.name = 'Whirled';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -277,9 +278,9 @@ angularDirective("ng:bind", function(expression, element){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.salutation = 'Hello';
-           this.name = 'World';
+         function Ctrl($scope) {
+           $scope.salutation = 'Hello';
+           $scope.name = 'World';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -363,8 +364,8 @@ angularDirective("ng:bind-template", function(expression, element){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.query = 'AngularJS';
+         function Ctrl($scope) {
+           $scope.query = 'AngularJS';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -470,10 +471,10 @@ angularDirective("ng:click", function(expression, element){
    <doc:example>
      <doc:source>
       <script>
-        function Ctrl() {
-          this.list = [];
-          this.text = 'hello';
-          this.submit = function() {
+        function Ctrl($scope) {
+          $scope.list = [];
+          $scope.text = 'hello';
+          $scope.submit = function() {
             if (this.text) {
               this.list.push(this.text);
               this.text = '';

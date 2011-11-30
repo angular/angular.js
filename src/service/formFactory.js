@@ -25,15 +25,13 @@
     <doc:example>
       <doc:source>
         <script>
-          function EditorCntl() {
-            this.html = '<b>Hello</b> <i>World</i>!';
+          function EditorCntl($scope) {
+            $scope.html = '<b>Hello</b> <i>World</i>!';
           }
 
-          HTMLEditorWidget.$inject = ['$element', 'htmlFilter'];
-          function HTMLEditorWidget(element, htmlFilter) {
-            var self = this;
-
-            this.$parseModel = function() {
+          HTMLEditorWidget.$inject = ['$element', '$scope', 'htmlFilter'];
+          function HTMLEditorWidget(element, scope, htmlFilter) {
+            scope.$parseModel = function() {
               // need to protect for script injection
               try {
                 this.$viewValue = htmlFilter(this.$modelValue || '').get();
@@ -47,13 +45,13 @@
               }
             }
 
-            this.$render = function() {
+            scope.$render = function() {
               element.html(this.$viewValue);
             }
 
             element.bind('keyup', function() {
-              self.$apply(function() {
-                self.$emit('$viewChange', element.html());
+              scope.$apply(function() {
+                scope.$emit('$viewChange', element.html());
               });
             });
           }
@@ -104,7 +102,8 @@
 
 function $FormFactoryProvider() {
   var $parse;
-  this.$get = ['$rootScope', '$parse',  function($rootScope, $parse_) {
+  this.$get = ['$rootScope', '$parse', '$injector',
+      function($rootScope, $parse_, $injector) {
     $parse = $parse_;
     /**
      * @ngdoc proprety
@@ -136,7 +135,9 @@ function $FormFactoryProvider() {
     return formFactory;
 
     function formFactory(parent) {
-      return (parent || formFactory.rootForm).$new(FormController);
+      var scope = (parent || formFactory.rootForm).$new();
+      $injector.instantiate(FormController, {$scope: scope});
+      return scope;
     }
 
   }];
@@ -230,8 +231,11 @@ function $FormFactoryProvider() {
    * @param {*} viewValue The new value for the view which will be assigned to `widget.$viewValue`.
    */
 
-  function FormController() {
-    var form = this,
+  FormController.$inject = ['$scope', '$injector'];
+  function FormController($scope, $injector) {
+    this.$injector = $injector;
+
+    var form = this.form = $scope,
         $error = form.$error = {};
 
     form.$on('$destroy', function(event){
@@ -257,6 +261,7 @@ function $FormFactoryProvider() {
     });
 
     propertiesUpdate(form);
+    form.$createWidget = bind(this, this.$createWidget);
 
     function removeWidget(queue, errorKey, widget) {
       if (queue) {
@@ -354,17 +359,19 @@ function $FormFactoryProvider() {
    * @returns {Widget} Instance of a widget scope.
    */
   FormController.prototype.$createWidget = function(params) {
-    var form = this,
+    var form = this.form,
         modelScope = params.scope,
         onChange = params.onChange,
         alias = params.alias,
         scopeGet = $parse(params.model),
         scopeSet = scopeGet.assign,
-        widget = this.$new(params.controller, params.controllerArgs);
+        widget = form.$new();
+
+    this.$injector.instantiate(params.controller, extend({$scope: widget}, params.controllerArgs));
 
     if (!scopeSet) {
       throw Error("Expression '" + params.model + "' is not assignable!");
-    };
+    }
 
     widget.$error = {};
     // Set the state to something we know will change to get the process going.

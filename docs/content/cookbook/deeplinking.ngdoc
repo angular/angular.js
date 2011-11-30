@@ -39,42 +39,38 @@ The two partials are defined in the following URLs:
 <doc:example>
  <doc:source jsfiddle="false">
     <script>
-     AppCntl.$inject = ['$route']
-     function AppCntl($route) {
+     AppCntl.$inject = ['$scope', '$route']
+     function AppCntl($scope, $route) {
       // define routes
       $route.when("/welcome",  {template:'./examples/welcome.html',  controller:WelcomeCntl});
       $route.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
-      $route.parent(this);
+      $route.parent($scope);
 
       // initialize the model to something useful
-      this.person = {
+      $scope.person = {
        name:'anonymous',
        contacts:[{type:'email', url:'anonymous@example.com'}]
       };
      }
 
-     function WelcomeCntl($route){}
-     WelcomeCntl.prototype = {
-      greet: function() {
-       alert("Hello " + this.person.name);
-      }
-     };
-
-     SettingsCntl.$inject = ['$location'];
-     function SettingsCntl($location){
-      this.$location = $location;
-      this.cancel();
+     function WelcomeCntl($scope) {
+      $scope.greet = function() {
+       alert("Hello " + $scope.person.name);
+      };
      }
-     SettingsCntl.prototype = {
-      cancel: function() {
-       this.form = angular.copy(this.person);
-      },
 
-      save: function() {
-       angular.copy(this.form, this.person);
-       this.$location.path('/welcome');
-      }
-     };
+     function SettingsCntl($scope, $location) {
+      $scope.cancel = function() {
+       $scope.form = angular.copy($scope.person);
+      };
+
+      $scope.save = function() {
+       angular.copy($scope.form, $scope.person);
+       $location.path('/welcome');
+      };
+
+      $scope.cancel();
+     }
     </script>
     <div ng:controller="AppCntl">
       <h1>Your App Chrome</h1>

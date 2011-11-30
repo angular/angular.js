@@ -1,9 +1,8 @@
-DocsController.$inject = ['$location', '$window', '$cookies', '$filter'];
-function DocsController($location, $window, $cookies, $filter) {
-  window.$root = this.$root;
+DocsController.$inject = ['$scope', '$location', '$window', '$cookies', '$filter'];
+function DocsController(scope, $location, $window, $cookies, $filter) {
+  window.$root = scope.$root;
 
-  var scope = this,
-      OFFLINE_COOKIE_NAME = 'ng-offline',
+  var OFFLINE_COOKIE_NAME = 'ng-offline',
       DOCS_PATH = /^\/(api)|(guide)|(cookbook)|(misc)|(tutorial)/,
       INDEX_PATH = /^(\/|\/index[^\.]*.html)$/,
       filter = $filter('filter');
@@ -160,6 +159,6 @@ angular.module('ngdocs', [], function($locationProvider, $filterProvider) {
       return text && text.replace(/^angular\.module\.([^\.]+)(\.(.*))?$/, function(_, module, _0, name){
         return 'Module ' + module + (name ? ' - ' + name : '');
       });
-    }
+    };
   });
 });

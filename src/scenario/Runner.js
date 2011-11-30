@@ -152,7 +152,16 @@ angular.scenario.Runner.prototype.afterEach = function(body) {
  * @param {Object} scope parent scope
  */
 angular.scenario.Runner.prototype.createSpecRunner_ = function(scope) {
-  return scope.$new(angular.scenario.SpecRunner);
+  var child = scope.$new();
+  var Cls = angular.scenario.SpecRunner;
+
+  // Export all the methods to child scope manually as now we don't mess controllers with scopes
+  // TODO(vojta): refactor scenario runner so that these objects are not tightly coupled as current
+  for (var name in Cls.prototype)
+    child[name] = angular.bind(child, Cls.prototype[name]);
+
+  Cls.call(child);
+  return child;
 };
 
 /**

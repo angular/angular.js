@@ -31,9 +31,9 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.text = 'guest';
-           this.word = /^\w*$/;
+         function Ctrl($scope) {
+           $scope.text = 'guest';
+           $scope.word = /^\w*$/;
          }
        </script>
        <div ng:controller="Ctrl">
@@ -96,8 +96,8 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.text = 'me@example.com';
+         function Ctrl($scope) {
+           $scope.text = 'me@example.com';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -136,9 +136,8 @@ var INTEGER_REGEXP = /^\s*(\-|\+)?\d+\s*$/;
       </doc:scenario>
     </doc:example>
  */
-angularInputType('email', function() {
-  var widget = this;
-  this.$on('$validate', function(event){
+angularInputType('email', function(element, widget) {
+  widget.$on('$validate', function(event) {
     var value = widget.$viewValue;
     widget.$emit(!value || value.match(EMAIL_REGEXP) ? "$valid" : "$invalid", "EMAIL");
   });
@@ -170,8 +169,8 @@ angularInputType('email', function() {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.text = 'http://google.com';
+         function Ctrl($scope) {
+           $scope.text = 'http://google.com';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -210,9 +209,8 @@ angularInputType('email', function() {
       </doc:scenario>
     </doc:example>
  */
-angularInputType('url', function() {
-  var widget = this;
-  this.$on('$validate', function(event){
+angularInputType('url', function(element, widget) {
+  widget.$on('$validate', function(event) {
     var value = widget.$viewValue;
     widget.$emit(!value || value.match(URL_REGEXP) ? "$valid" : "$invalid", "URL");
   });
@@ -239,8 +237,8 @@ angularInputType('url', function() {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.names = ['igor', 'misko', 'vojta'];
+         function Ctrl($scope) {
+           $scope.names = ['igor', 'misko', 'vojta'];
          }
        </script>
        <div ng:controller="Ctrl">
@@ -270,7 +268,7 @@ angularInputType('url', function() {
       </doc:scenario>
     </doc:example>
  */
-angularInputType('list', function() {
+angularInputType('list', function(element, widget) {
   function parse(viewValue) {
     var list = [];
     forEach(viewValue.split(/\s*,\s*/), function(value){
@@ -278,14 +276,14 @@ angularInputType('list', function() {
     });
     return list;
   }
-  this.$parseView = function() {
-    isString(this.$viewValue) && (this.$modelValue = parse(this.$viewValue));
+  widget.$parseView = function() {
+    isString(widget.$viewValue) && (widget.$modelValue = parse(widget.$viewValue));
   };
-  this.$parseModel = function() {
-    var modelValue = this.$modelValue;
+  widget.$parseModel = function() {
+    var modelValue = widget.$modelValue;
     if (isArray(modelValue)
-        && (!isString(this.$viewValue) || !equals(parse(this.$viewValue), modelValue))) {
-      this.$viewValue =  modelValue.join(', ');
+        && (!isString(widget.$viewValue) || !equals(parse(widget.$viewValue), modelValue))) {
+      widget.$viewValue =  modelValue.join(', ');
     }
   };
 });
@@ -318,8 +316,8 @@ angularInputType('list', function() {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.value = 12;
+         function Ctrl($scope) {
+           $scope.value = 12;
          }
        </script>
        <div ng:controller="Ctrl">
@@ -388,8 +386,8 @@ angularInputType('number', numericRegexpInputType(NUMBER_REGEXP, 'NUMBER'));
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.value = 12;
+         function Ctrl($scope) {
+           $scope.value = 12;
          }
        </script>
        <div ng:controller="Ctrl">
@@ -449,9 +447,9 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.value1 = true;
-           this.value2 = 'YES'
+         function Ctrl($scope) {
+           $scope.value1 = true;
+           $scope.value2 = 'YES'
          }
        </script>
        <div ng:controller="Ctrl">
@@ -477,9 +475,8 @@ angularInputType('integer', numericRegexpInputType(INTEGER_REGEXP, 'INTEGER'));
       </doc:scenario>
     </doc:example>
  */
-angularInputType('checkbox', function(inputElement) {
-  var widget = this,
-      trueValue = inputElement.attr('ng:true-value'),
+angularInputType('checkbox', function(inputElement, widget) {
+  var trueValue = inputElement.attr('ng:true-value'),
       falseValue = inputElement.attr('ng:false-value');
 
   if (!isString(trueValue)) trueValue = true;
@@ -496,7 +493,7 @@ angularInputType('checkbox', function(inputElement) {
   };
 
   widget.$parseModel = function() {
-    widget.$viewValue = this.$modelValue === trueValue;
+    widget.$viewValue = widget.$modelValue === trueValue;
   };
 
   widget.$parseView = function() {
@@ -522,8 +519,8 @@ angularInputType('checkbox', function(inputElement) {
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.color = 'blue';
+         function Ctrl($scope) {
+           $scope.color = 'blue';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -545,9 +542,7 @@ angularInputType('checkbox', function(inputElement) {
       </doc:scenario>
     </doc:example>
  */
-angularInputType('radio', function(inputElement) {
-  var widget = this;
-
+angularInputType('radio', function(inputElement, widget) {
   //correct the name
   inputElement.attr('name', widget.$id + '@' + inputElement.attr('name'));
   inputElement.bind('click', function() {
@@ -569,9 +564,8 @@ angularInputType('radio', function(inputElement) {
 
 
 function numericRegexpInputType(regexp, error) {
-  return ['$element', function(inputElement) {
-    var widget = this,
-        min = 1 * (inputElement.attr('min') || Number.MIN_VALUE),
+  return function(inputElement, widget) {
+    var min = 1 * (inputElement.attr('min') || Number.MIN_VALUE),
         max = 1 * (inputElement.attr('max') || Number.MAX_VALUE);
 
     widget.$on('$validate', function(event){
@@ -598,7 +592,7 @@ function numericRegexpInputType(regexp, error) {
         ? '' + widget.$modelValue
         : '';
     };
-  }];
+  };
 }
 
 
@@ -640,8 +634,8 @@ var HTML5_INPUTS_TYPES =  makeMap(
     <doc:example>
       <doc:source>
        <script>
-         function Ctrl() {
-           this.user = {name: 'guest', last: 'visitor'};
+         function Ctrl($scope) {
+           $scope.user = {name: 'guest', last: 'visitor'};
          }
        </script>
        <div ng:controller="Ctrl">
@@ -713,7 +707,8 @@ angularWidget('input', function(inputElement){
   this.descend(true);
   var modelExp = inputElement.attr('ng:model');
   return modelExp &&
-    ['$defer', '$formFactory', '$element', function($defer, $formFactory, inputElement){
+    ['$defer', '$formFactory', '$element',
+        function($defer, $formFactory, inputElement) {
       var form = $formFactory.forElement(inputElement),
           // We have to use .getAttribute, since jQuery tries to be smart and use the
           // type property. Trouble is some browser change unknown to text.
@@ -762,7 +757,7 @@ angularWidget('input', function(inputElement){
       }
 
       //TODO(misko): setting $inject is a hack
-      !TypeController.$inject && (TypeController.$inject = ['$element']);
+      !TypeController.$inject && (TypeController.$inject = ['$element', '$scope']);
       widget = form.$createWidget({
           scope: modelScope,
           model: modelExp,
@@ -866,7 +861,7 @@ angularWidget('textarea', angularWidget('input'));
 
 function watchElementProperty(modelScope, widget, name, element) {
   var bindAttr = fromJson(element.attr('ng:bind-attr') || '{}'),
-      match = /\s*{{(.*)}}\s*/.exec(bindAttr[name]),
+      match = /\s*\{\{(.*)\}\}\s*/.exec(bindAttr[name]),
       isBoolean = BOOLEAN_ATTR[name];
   widget['$' + name] = isBoolean
     ? ( // some browsers return true some '' when required is set without value.

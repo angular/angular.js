@@ -65,15 +65,15 @@
     <doc:example>
       <doc:source>
         <script>
-        function MyCntrl() {
-          this.colors = [
+        function MyCntrl($scope) {
+          $scope.colors = [
             {name:'black', shade:'dark'},
             {name:'white', shade:'light'},
             {name:'red', shade:'dark'},
             {name:'blue', shade:'dark'},
             {name:'yellow', shade:'light'}
           ];
-          this.color = this.colors[2]; // red
+          $scope.color = $scope.colors[2]; // red
         }
         </script>
         <div ng:controller="MyCntrl">
@@ -140,11 +140,11 @@ angularWidget('select', function(element){
         optionsExp = selectElement.attr('ng:options'),
         modelExp = selectElement.attr('ng:model'),
         widget = form.$createWidget({
-          scope: this,
+          scope: modelScope,
           model: modelExp,
           onChange: selectElement.attr('ng:change'),
           alias: selectElement.attr('name'),
-          controller: optionsExp ? Options : (multiple ? Multiple : Single)});
+          controller: ['$scope', optionsExp ? Options : (multiple ? Multiple : Single)]});
 
     selectElement.bind('$destroy', function() { widget.$destroy(); });
 
@@ -174,11 +174,9 @@ angularWidget('select', function(element){
 
     ////////////////////////////
 
-    function Multiple() {
-      var widget = this;
-
-      this.$render = function() {
-        var items = new HashMap(this.$viewValue);
+    function Multiple(widget) {
+      widget.$render = function() {
+        var items = new HashMap(widget.$viewValue);
         forEach(selectElement.children(), function(option){
           option.selected = isDefined(items.get(option.value));
         });
@@ -198,9 +196,7 @@ angularWidget('select', function(element){
 
     }
 
-    function Single() {
-      var widget = this;
-
+    function Single(widget) {
       widget.$render = function() {
         selectElement.val(widget.$viewValue);
       };
@@ -214,9 +210,8 @@ angularWidget('select', function(element){
       widget.$viewValue = selectElement.val();
     }
 
-    function Options() {
-      var widget = this,
-          match;
+    function Options(widget) {
+      var match;
 
       if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
         throw Error(
@@ -224,8 +219,7 @@ angularWidget('select', function(element){
           " but got '" + optionsExp + "'.");
       }
 
-      var widgetScope = this,
-          displayFn = $parse(match[2] || match[1]),
+      var displayFn = $parse(match[2] || match[1]),
           valueName = match[4] || match[6],
           keyName = match[5],
           groupByFn = $parse(match[3] || ''),
@@ -253,7 +247,7 @@ angularWidget('select', function(element){
       selectElement.html(''); // clear contents
 
       selectElement.bind('change', function() {
-        widgetScope.$apply(function() {
+        widget.$apply(function() {
           var optionGroup,
               collection = valuesFn(modelScope) || [],
               key = selectElement.val(),
@@ -288,13 +282,13 @@ angularWidget('select', function(element){
             }
           }
           if (isDefined(value) && modelScope.$viewVal !== value) {
-            widgetScope.$emit('$viewChange', value);
+            widget.$emit('$viewChange', value);
           }
         });
       });
 
-      widgetScope.$watch(render);
-      widgetScope.$render = render;
+      widget.$watch(render);
+      widget.$render = render;
 
       function render() {
         var optionGroups = {'':[]}, // Temporary location for the option groups before we render them

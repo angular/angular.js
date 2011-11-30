@@ -460,60 +460,66 @@ describe("directive", function() {
   });
 
   describe('ng:controller', function() {
+    var element;
 
-    var temp;
+    beforeEach(inject(function($window) {
+      $window.Greeter = function($scope) {
+        // private stuff (not exported to scope)
+        this.prefix = 'Hello ';
 
-    beforeEach(function() {
-      temp = window.temp = {};
-      temp.Greeter = function() {
-        this.$root.greeter = this;
-        this.greeting = 'hello';
-        this.suffix = '!';
+        // public stuff (exported to scope)
+        var ctrl = this;
+        $scope.name = 'Misko';
+        $scope.greet = function(name) {
+          return ctrl.prefix + name + ctrl.suffix;
+        };
+
+        $scope.protoGreet = bind(this, this.protoGreet);
       };
-      temp.Greeter.prototype = {
-        greet: function(name) {
-          return this.greeting + ' ' + name + this.suffix;
+      $window.Greeter.prototype = {
+        suffix: '!',
+        protoGreet: function(name) {
+          return this.prefix + name + this.suffix;
         }
       };
-    });
+
+      $window.Child = function($scope) {
+        $scope.name = 'Adam';
+      };
+    }));
 
     afterEach(function() {
-      window.temp = undefined;
+      dealoc(element);
     });
 
-    it('should bind', inject(function($rootScope, $compile) {
-      var element = $compile('<div ng:controller="temp.Greeter"></div>')($rootScope);
-      expect($rootScope.greeter.greeting).toEqual('hello');
-      expect($rootScope.greeter.greet('misko')).toEqual('hello misko!');
-    }));
 
-    it('should support nested controllers', inject(function($rootScope, $compile) {
-      temp.ChildGreeter = function() {
-        this.greeting = 'hey';
-        this.$root.childGreeter = this;
-      };
-      temp.ChildGreeter.prototype = {
-        greet: function() {
-          return this.greeting + ' dude' + this.suffix;
-        }
-      };
-      var element = $compile('<div ng:controller="temp.Greeter"><div ng:controller="temp.ChildGreeter">{{greet("misko")}}</div></div>')($rootScope);
-      expect($rootScope.greeting).not.toBeDefined();
-      expect($rootScope.greeter.greeting).toEqual('hello');
-      expect($rootScope.greeter.greet('misko')).toEqual('hello misko!');
-      expect($rootScope.greeter.greeting).toEqual('hello');
-      expect($rootScope.childGreeter.greeting).toEqual('hey');
-      expect($rootScope.childGreeter.$parent.greeting).toEqual('hello');
+    it('should instantiate controller and bind methods', inject(function($compile, $rootScope) {
+      element = $compile('<div ng:controller="Greeter">{{greet(name)}}</div>')($rootScope);
       $rootScope.$digest();
-      expect(element.text()).toEqual('hey dude!');
+      expect(element.text()).toBe('Hello Misko!');
     }));
 
-    it('should infer injection arguments', inject(function($rootScope, $compile, $http) {
-      temp.MyController = function($http) {
-        this.$root.someService = $http;
+
+    it('should allow nested controllers', inject(function($compile, $rootScope) {
+      element = $compile('<div ng:controller="Greeter"><div ng:controller="Child">{{greet(name)}}</div></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe('Hello Adam!');
+      dealoc(element);
+
+      element = $compile('<div ng:controller="Greeter"><div ng:controller="Child">{{protoGreet(name)}}</div></div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe('Hello Adam!');
+    }));
+
+
+    it('should instantiate controller defined on scope', inject(function($compile, $rootScope) {
+      $rootScope.Greeter = function($scope) {
+        $scope.name = 'Vojta';
       };
-      var element = $compile('<div ng:controller="temp.MyController"></div>')($rootScope);
-      expect($rootScope.someService).toBe($http);
+
+      element = $compile('<div ng:controller="Greeter">{{name}}</div>')($rootScope);
+      $rootScope.$digest();
+      expect(element.text()).toBe('Vojta');
     }));
   });
 

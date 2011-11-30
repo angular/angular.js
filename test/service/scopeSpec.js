@@ -53,35 +53,6 @@ describe('Scope', function() {
       $rootScope.a = 123;
       expect(child.a).toEqual(123);
     }));
-
-
-    it('should instantiate controller and bind functions', inject(function($rootScope) {
-      function Cntl($browser, name) {
-        this.$browser = $browser;
-        this.callCount = 0;
-        this.name = name;
-      }
-      Cntl.$inject = ['$browser', 'name'];
-
-      Cntl.prototype = {
-        myFn: function() {
-          expect(this).toEqual(cntl);
-          this.callCount++;
-        }
-      };
-
-      var cntl = $rootScope.$new(Cntl, {name:'misko'});
-
-      expect($rootScope.$browser).toBeUndefined();
-      expect($rootScope.myFn).toBeUndefined();
-
-      expect(cntl.$browser).toBeDefined();
-      expect(cntl.name).toEqual('misko');
-
-      cntl.myFn();
-      cntl.$new().myFn();
-      expect(cntl.callCount).toEqual(2);
-    }));
   });
 
 
@@ -341,7 +312,7 @@ describe('Scope', function() {
       $rootScope.$digest();
       expect(isNaN(log.shift())).toBe(true); //jasmine's toBe and toEqual don't work well with NaNs
       expect(log).toEqual([undefined, '', false, {}, 23]);
-      log = []
+      log = [];
       $rootScope.$digest();
       expect(log).toEqual([]);
     }));

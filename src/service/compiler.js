@@ -22,7 +22,7 @@ function $CompileProvider(){
           var childScope = scope,
               locals = {$element: element};
           if (this.newScope) {
-            childScope = isFunction(this.newScope) ? scope.$new(this.newScope(scope)) : scope.$new();
+            childScope = scope.$new();
             element.data($$scope, childScope);
           }
           forEach(this.linkFns, function(fn) {

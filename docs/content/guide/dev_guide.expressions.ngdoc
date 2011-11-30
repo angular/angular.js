@@ -51,14 +51,14 @@ You can try evaluating different expressions here:
 <doc:example>
 <doc:source>
  <script>
-   function Cntl2() {
-     this.exprs = [];
-     this.expr = '3*10|currency';
-     this.addExp = function(expr) {
+   function Cntl2($scope) {
+     $scope.exprs = [];
+     $scope.expr = '3*10|currency';
+     $scope.addExp = function(expr) {
         this.exprs.push(expr);
      };
 
-     this.removeExp = function(contact) {
+     $scope.removeExp = function(contact) {
        for ( var i = 0, ii = this.exprs.length; i < ii; i++) {
          if (contact === this.exprs[i]) {
            this.exprs.splice(i, 1);
@@ -101,10 +101,10 @@ the global state (a common source of subtle bugs).
 <doc:example>
 <doc:source>
  <script>
-   function Cntl1($window){
-     this.name = 'World';
+   function Cntl1($window, $scope){
+     $scope.name = 'World';
 
-     this.greet = function() {
+     $scope.greet = function() {
        ($window.mockWindow || $window).alert('Hello ' + this.name);
      }
    }
