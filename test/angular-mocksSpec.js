@@ -470,6 +470,30 @@ describe('mocks', function() {
     });
 
 
+    it('should normalize when header name case when accessed via getResponseHeader', function() {
+      hb.when('GET', '/u1').respond(200, null, {'X-Fake': 'Header',
+                                                'Content-Type': 'application/json',
+                                                'Location': '/foo'});
+      var xhr = hb('GET', '/u1', null, noop, {});
+      hb.flush();
+      expect(xhr.getResponseHeader('x-fAKE')).toBe('Header');
+      expect(xhr.getResponseHeader('content-type')).toBe('application/json');
+      expect(xhr.getResponseHeader('Location')).toBe('/foo');
+    });
+
+
+    it('should normalize expect header name case when accessed via getResponseHeader', function() {
+      hb.expect('GET', '/u1').respond(200, null, {'X-Fake': 'Header',
+                                                'Content-Type': 'application/json',
+                                                'Location': '/foo'});
+      var xhr = hb('GET', '/u1', null, noop, {});
+      hb.flush();
+      expect(xhr.getResponseHeader('x-fAKE')).toBe('Header');
+      expect(xhr.getResponseHeader('content-type')).toBe('application/json');
+      expect(xhr.getResponseHeader('Location')).toBe('/foo');
+    });
+
+
     it('should preserve the order of requests', function() {
       hb.when('GET', '/url1').respond(200, 'first');
       hb.when('GET', '/url2').respond(201, 'second');
