@@ -141,13 +141,17 @@
    </pre>
  *
  *     It's worth noting that the success callback for `get`, `query` and other method gets passed
- *     in the response that came from the server, so one could rewrite the above example as:
+ *     in the response that came from the server as well as $http header getter function, so one
+ *     could rewrite the above example and get access to http headers as:
  *
    <pre>
      var User = $resource('/user/:userId', {userId:'@id'});
-     User.get({userId:123}, function(u){
+     User.get({userId:123}, function(u, getResponseHeaders){
        u.abc = true;
-       u.$save();
+       u.$save(function(u, putResponseHeaders) {
+         //u => saved user object
+         //putResponseHeaders => $http header getter
+       });
      });
    </pre>
 

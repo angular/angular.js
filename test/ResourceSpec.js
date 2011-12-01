@@ -107,7 +107,9 @@ describe("resource", function() {
 
     $httpBackend.flush();
     nakedExpect(cc).toEqual({id: 123, name: 'misko'});
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback).toHaveBeenCalledOnce();
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   }));
 
   it("should read resource", inject(function($httpBackend) {
@@ -120,7 +122,8 @@ describe("resource", function() {
 
     $httpBackend.flush();
     nakedExpect(cc).toEqual({id: 123, number: '9876'});
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   }));
 
   it("should read partial resource", inject(function($httpBackend) {
@@ -137,7 +140,8 @@ describe("resource", function() {
     $httpBackend.expect('GET', '/CreditCard/123').respond({id: {key: 123}, number: '9876'});
     cc.$get(callback);
     $httpBackend.flush();
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
     expect(cc.number).toEqual('9876');
   }));
 
@@ -160,7 +164,8 @@ describe("resource", function() {
 
     $httpBackend.flush();
     nakedExpect(ccs).toEqual([{id:1}, {id:2}]);
-    expect(callback).toHaveBeenCalledWith(ccs);
+    expect(callback.mostRecentCall.args[0]).toEqual(ccs);
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   }));
 
   it("should have all arguments optional", inject(function($httpBackend) {
@@ -180,7 +185,8 @@ describe("resource", function() {
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
-    nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
+    nakedExpect(callback.mostRecentCall.args[0]).toEqual({});
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
 
     callback.reset();
     $httpBackend.expect('DELETE', '/CreditCard/333').respond(204, null);
@@ -188,7 +194,8 @@ describe("resource", function() {
     expect(callback).not.toHaveBeenCalled();
 
     $httpBackend.flush();
-    nakedExpect(callback.mostRecentCall.args).toEqual([{}]);
+    nakedExpect(callback.mostRecentCall.args[0]).toEqual({});
+    expect(callback.mostRecentCall.args[1]()).toEqual({});
   }));
 
   it('should post charge verb', inject(function($httpBackend) {
@@ -205,7 +212,7 @@ describe("resource", function() {
   }));
 
   it('should create on save', inject(function($httpBackend) {
-    $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123});
+    $httpBackend.expect('POST', '/CreditCard', '{"name":"misko"}').respond({id: 123}, {header1: 'a'});
 
     var cc = new CreditCard();
     expect(cc.$get).toBeDefined();
@@ -219,7 +226,8 @@ describe("resource", function() {
 
     $httpBackend.flush();
     nakedExpect(cc).toEqual({id:123});
-    expect(callback).toHaveBeenCalledWith(cc);
+    expect(callback.mostRecentCall.args[0]).toEqual(cc);
+    expect(callback.mostRecentCall.args[1]()).toEqual({header1: 'a'});
   }));
 
   it('should not mutate the resource object if response contains no body', inject(function($httpBackend) {
