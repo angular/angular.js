@@ -401,6 +401,43 @@ describe('$route', function() {
     }));
 
 
+    it('should $destroy scope after update and reload',
+        inject(function($route, $location, $rootScope) {
+      // this is a regression of bug, where $route doesn't copy scope when only updating
+
+      var log = [];
+
+      function logger(msg) {
+        return function() {
+          log.push(msg);
+        };
+      }
+
+      function createController(name) {
+        return function() {
+          log.push('init-' + name);
+          this.$on('$destroy', logger('destroy-' + name));
+          this.$on('$routeUpdate', logger('route-update'));
+        };
+      }
+
+      $route.when('/foo', {controller: createController('foo'), reloadOnSearch: false});
+      $route.when('/bar', {controller: createController('bar')});
+
+      $location.url('/foo');
+      $rootScope.$digest();
+      expect(log).toEqual(['init-foo']);
+
+      $location.search({q: 'some'});
+      $rootScope.$digest();
+      expect(log).toEqual(['init-foo', 'route-update']);
+
+      $location.url('/bar');
+      $rootScope.$digest();
+      expect(log).toEqual(['init-foo', 'route-update', 'destroy-foo', 'init-bar']);
+    }));
+
+
     describe('reload', function() {
 
       it('should reload even if reloadOnSearch is false',
