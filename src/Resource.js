@@ -107,23 +107,24 @@ ResourceFactory.prototype = {
         }
 
         var value = this instanceof Resource ? this : (action.isArray ? [] : new Resource(data));
-        var future = self.$http({
+        self.$http({
           method: action.method,
           url: route.url(extend({}, extractParams(data), action.params || {}, params)),
           data: data
         }).then(function(response) {
-            response = response.data;
-            if (response) {
+            var data = response.data;
+
+            if (data) {
               if (action.isArray) {
                 value.length = 0;
-                forEach(response, function(item) {
+                forEach(data, function(item) {
                   value.push(new Resource(item));
                 });
               } else {
-                copy(response, value);
+                copy(data, value);
               }
             }
-            (success||noop)(value);
+            (success||noop)(value, response.headers);
           }, error);
 
         return value;
