@@ -766,7 +766,19 @@ function MockXhr() {
   };
 
   this.getResponseHeader = function(name) {
-    return this.$$headers[name];
+    // the lookup must be case insensitive, that's why we try two quick lookups and full scan at last
+    var header = this.$$headers[name];
+    if (header) return header;
+
+    name = angular.lowercase(name);
+    header = this.$$headers[name];
+    if (header) return header;
+
+    header = undefined;
+    angular.forEach(this.$$headers, function(headerVal, headerName) {
+      if (!header && angular.lowercase(headerName) == name) header = headerVal;
+    });
+    return header;
   };
 
   this.getAllResponseHeaders = function() {
