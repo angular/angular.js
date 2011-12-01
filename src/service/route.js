@@ -258,6 +258,7 @@ function $RouteProvider(){
 
       if (next && last && next.$route === last.$route
           && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
+        next.scope = last.scope;
         $route.current = next;
         copy(next.params, $routeParams);
         last.scope && last.scope.$emit('$routeUpdate');
