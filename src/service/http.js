@@ -83,10 +83,17 @@ function $HttpProvider() {
 
   var responseInterceptors = this.responseInterceptors = [];
 
-  this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope', '$q',
-      function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope, $q) {
+  this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope, $q, $injector) {
 
   var defaultCache = $cacheFactory('$http');
+
+  forEach(responseInterceptors, function(interceptor, index) {
+    if (isString(interceptor)) {
+      responseInterceptors[index] = $injector.get(interceptor);
+    }
+  });
+
 
   /**
    * @ngdoc function
