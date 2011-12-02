@@ -5,11 +5,12 @@ describe('injector', function() {
   var injector;
 
   beforeEach(inject(function($injector, $provide) {
-    providers = function(name, factory, decoration){
-      $provide.factory(name, extend(factory, decoration||{}));
+    providers = function(name, factory, annotations) {
+      $provide.factory(name, extend(factory, annotations||{}));
     };
     injector = $injector;
   }));
+
 
   it("should return same instance from calling provider", function() {
     var instance = {},
@@ -59,6 +60,7 @@ describe('injector', function() {
     }).toThrow("Unknown provider for 'idontexist'.");
   });
 
+
   it('should proved path to the missing provider', function() {
     providers('a', function(idontexist) {return 1;});
     providers('b', function(a) {return 2;});
@@ -97,7 +99,7 @@ describe('injector', function() {
     });
 
 
-    it('should invoke the passed in function with all of the dependencies as arguments', function(){
+    it('should invoke the passed-in fn with all of the dependencies as arguments', function() {
       providers('c', function() {return 3;});
       providers('d', function() {return 4;});
       expect(injector.invoke(null, ['a', 'b', 'c', 'd', fn])).toEqual(10);
@@ -114,6 +116,7 @@ describe('injector', function() {
     });
   });
 
+
   describe('annotation', function() {
     it('should return $inject', function() {
       function fn() {}
@@ -124,6 +127,7 @@ describe('injector', function() {
       expect(inferInjectionArgs(function  () {})).toEqual([]);
       expect(inferInjectionArgs(function /* */ () {})).toEqual([]);
     });
+
 
     it('should create $inject', function() {
       // keep the multi-line to make sure we can handle it
@@ -140,11 +144,13 @@ describe('injector', function() {
       expect($f_n0.$inject).toEqual(['$a', 'b_', '_c',  'd']);
     });
 
+
     it('should handle no arg functions', function() {
       function $f_n0() {}
       expect(inferInjectionArgs($f_n0)).toEqual([]);
       expect($f_n0.$inject).toEqual([]);
     });
+
 
     it('should handle args with both $ and _', function() {
       function $f_n0($a_) {}
@@ -152,12 +158,12 @@ describe('injector', function() {
       expect($f_n0.$inject).toEqual(['$a_']);
     });
 
+
     it('should throw on non function arg', function() {
       expect(function() {
         inferInjectionArgs({});
       }).toThrow();
     });
-
   });
 
 
@@ -165,6 +171,7 @@ describe('injector', function() {
     var $injector = createInjector();
     expect($injector.get('$injector')).toBe($injector);
   });
+
 
   it('should define module', function() {
     var log = '';
@@ -225,15 +232,16 @@ describe('injector', function() {
       expect($injector.get('a')).toEqual('abc');
     });
 
-    it('should error on invalid madule name', function(){
-      expect(function(){
+
+    it('should error on invalid madule name', function() {
+      expect(function() {
         createInjector(['IDontExist'], {});
       }).toThrow("Module 'IDontExist' is not defined!");
     });
 
 
     describe('$provide', function() {
-      describe('value', function(){
+      describe('value', function() {
         it('should configure $provide values', function() {
           expect(createInjector([function($provide) {
             $provide.value('value', 'abc');
@@ -242,7 +250,7 @@ describe('injector', function() {
       });
 
 
-      describe('factory', function(){
+      describe('factory', function() {
         it('should configure $provide factory function', function() {
           expect(createInjector([function($provide) {
             $provide.factory('value', valueFn('abc'));
@@ -251,7 +259,7 @@ describe('injector', function() {
       });
 
 
-      describe('service', function(){
+      describe('service', function() {
         it('should configure $provide service object', function() {
           expect(createInjector([function($provide) {
             $provide.service('value', {
@@ -308,7 +316,7 @@ describe('injector', function() {
     var instance,
         $injector,
         $provide;
-    
+
     beforeEach(function() {
       $injector = createInjector([ ['$provide', function(provide) {
         ($provide = provide).value('instance', instance = {name:'angular'});
@@ -321,8 +329,8 @@ describe('injector', function() {
       expect($injector.get('instance')).toBe(instance);
       expect($injector.get('instance')).toBe(instance);
     });
-    
-    
+
+
     it('should call functions and infer arguments', function() {
       expect($injector.invoke(null, function(instance) { return instance; })).toBe(instance);
       expect($injector.invoke(null, function(instance) { return instance; })).toBe(instance);
@@ -384,13 +392,14 @@ describe('injector', function() {
       })).toEqual('melville:moby');
     });
 
-    
+
     it('should throw usefull error on wrong argument type]', function() {
-      expect(function(){
+      expect(function() {
         $injector.invoke(null, {});
       }).toThrow("Argument 'fn' is not a function, got Object");
     });
   });
+
 
   describe('service instantiation', function() {
     var $injector;
