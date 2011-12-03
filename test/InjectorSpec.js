@@ -280,6 +280,147 @@ describe('injector', function() {
           }]).get('value')).toEqual('abc');
         });
       });
+
+
+      describe('decorator', function() {
+        var log, injector;
+
+        beforeEach(function() {
+          log = [];
+        });
+
+
+        it('should be called with the original instance', function() {
+          injector = createInjector([function($provide) {
+            $provide.value('myService', function(val) {
+              log.push('myService:' + val);
+              return 'origReturn';
+            });
+
+            $provide.decorator('myService', function($delegate) {
+              return function(val) {
+                log.push('myDecoratedService:' + val);
+                var origVal = $delegate('decInput');
+                return 'dec+' + origVal;
+              };
+            });
+          }]);
+
+          var out = injector.get('myService')('input');
+          log.push(out);
+          expect(log.join('; ')).
+            toBe('myDecoratedService:input; myService:decInput; dec+origReturn');
+        });
+
+
+        it('should allow multiple decorators to be applied to a service', function() {
+          injector = createInjector([function($provide) {
+            $provide.value('myService', function(val) {
+              log.push('myService:' + val);
+              return 'origReturn';
+            });
+
+            $provide.decorator('myService', function($delegate) {
+              return function(val) {
+                log.push('myDecoratedService1:' + val);
+                var origVal = $delegate('decInput1');
+                return 'dec1+' + origVal;
+              };
+            });
+
+            $provide.decorator('myService', function($delegate) {
+              return function(val) {
+                log.push('myDecoratedService2:' + val);
+                var origVal = $delegate('decInput2');
+                return 'dec2+' + origVal;
+              };
+            });
+          }]);
+
+          var out = injector.get('myService')('input');
+          log.push(out);
+          expect(log).toEqual(['myDecoratedService2:input',
+                               'myDecoratedService1:decInput2',
+                               'myService:decInput1',
+                               'dec2+dec1+origReturn']);
+        });
+
+
+        it('should decorate services with dependencies', function() {
+          injector = createInjector([function($provide) {
+            $provide.value('dep1', 'dependency1');
+
+            $provide.factory('myService', ['dep1', function(dep1) {
+              return function(val) {
+                log.push('myService:' + val + ',' + dep1);
+                return 'origReturn';
+              }
+            }]);
+
+            $provide.decorator('myService', function($delegate) {
+              return function(val) {
+                log.push('myDecoratedService:' + val);
+                var origVal = $delegate('decInput');
+                return 'dec+' + origVal;
+              };
+            });
+          }]);
+
+          var out = injector.get('myService')('input');
+          log.push(out);
+          expect(log.join('; ')).
+            toBe('myDecoratedService:input; myService:decInput,dependency1; dec+origReturn');
+        });
+
+
+        it('should allow for decorators to be injectable', function() {
+          injector = createInjector([function($provide) {
+            $provide.value('dep1', 'dependency1');
+
+            $provide.factory('myService', function() {
+              return function(val) {
+                log.push('myService:' + val);
+                return 'origReturn';
+              }
+            });
+
+            $provide.decorator('myService', function($delegate, dep1) {
+              return function(val) {
+                log.push('myDecoratedService:' + val + ',' + dep1);
+                var origVal = $delegate('decInput');
+                return 'dec+' + origVal;
+              };
+            });
+          }]);
+
+          var out = injector.get('myService')('input');
+          log.push(out);
+          expect(log.join('; ')).
+            toBe('myDecoratedService:input,dependency1; myService:decInput; dec+origReturn');
+        });
+
+
+        it('should complain if the service to be decorated was already instantiated', function() {
+          injector = createInjector([function($provide, $injector) {
+            $provide.value('myService', function(val) {
+              log.push('myService:' + val);
+              return 'origReturn';
+            });
+
+            $injector.get('myService');
+
+            expect(function() {
+              $provide.decorator('myService', function($delegate) {
+                return function(val) {
+                  log.push('myDecoratedService:' + val);
+                  var origVal = $delegate('decInput');
+                  return 'dec+' + origVal;
+                };
+              });
+            }).toThrow("Service myService already instantiated, can't decorate!");
+          }]);
+        });
+      });
     });
 
 

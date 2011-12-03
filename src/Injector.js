@@ -251,7 +251,8 @@ function createInjector(modulesToLoad, moduleRegistry) {
   value('$provide', {
     service: service,
     factory: factory,
-    value: value
+    value: value,
+    decorator: decorator
   });
 
   loadModule(modulesToLoad);
@@ -273,6 +274,18 @@ function createInjector(modulesToLoad, moduleRegistry) {
   function factory(name, factoryFn) { service(name, { $get:factoryFn }); }
 
   function value(name, value) { factory(name, valueFn(value)); }
+
+  function decorator(name, decorFn) {
+    var origProvider = cache['#' + name + providerSuffix];
+    if (!origProvider) throw Error("Can't find provider for: " + name);
+    if (cache['#' + name]) throw Error("Service " + name + " already instantiated, can't decorate!");
+    var orig$get = origProvider.$get;
+    origProvider.$get = function() {
+      var origInstance = $injector.invoke(origProvider, orig$get);
+      return $injector.invoke(null, decorFn, {$delegate: origInstance});
+    };
+  }
+
 
   function getService(value) {
     if (typeof value !== 'string') {
