@@ -29,7 +29,7 @@
             this.html = '<b>Hello</b> <i>World</i>!';
           }
 
-          HTMLEditorWidget.$inject = ['$element', 'html$Filter'];
+          HTMLEditorWidget.$inject = ['$element', 'htmlFilter'];
           function HTMLEditorWidget(element, htmlFilter) {
             var self = this;
 
