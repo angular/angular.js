@@ -30,7 +30,7 @@
  *   }
  * </pre>
  *
- * The filter function is registered with the `$injector` under the filter name suffixe with `$Filter`.
+ * The filter function is registered with the `$injector` under the filter name suffixe with `Filter`.
  * <pre>
  *   it('should be the same instance', inject(
  *     function($filterProvider) {
@@ -38,8 +38,8 @@
  *         return ...;
  *       });
  *     },
- *     function($filter, revers$Filter) {
- *       expect($filter('reverse')).toBe(reverse$Filter);
+ *     function($filter, reverseFilter) {
+ *       expect($filter('reverse')).toBe(reverseFilter);
  *     });
  * </pre>
  *
@@ -76,11 +76,11 @@
  */
 $FilterProvider.$inject = ['$provide'];
 function $FilterProvider($provide) {
-  var suffix = '$Filter';
+  var suffix = 'Filter';
 
   function register(name, factory) {
     return $provide.factory(name + suffix, factory);
-  };
+  }
   this.register = register;
 
   this.$get = ['$injector', function($injector) {
