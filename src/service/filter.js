@@ -76,11 +76,11 @@
  */
 $FilterProvider.$inject = ['$provide'];
 function $FilterProvider($provide) {
-  var suffix = '$Filter';
+  var suffix = 'Filter';
 
   function register(name, factory) {
     return $provide.factory(name + suffix, factory);
-  };
+  }
   this.register = register;
 
   this.$get = ['$injector', function($injector) {
