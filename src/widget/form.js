@@ -19,6 +19,35 @@
  * element nesting.
  *
  *
+ * # Submitting a form and preventing default action
+ *
+ * Since the role of forms in client-side Angular applications is different than in old-school
+ * roundtrip apps, it is desirable for the browser not to translate the form submission into a full
+ * page reload that sends the data to the server. Instead some javascript logic should be triggered
+ * to handle the form submission in application specific way.
+ *
+ * For this reason, Angular prevents the default action (form submission to the server) unless the
+ * `<form>` element has an `action` attribute specified.
+ *
+ * You can use one of the following two ways to specify what javascript method should be called when
+ * a form is submitted:
+ *
+ * - ng:submit on the form element (add link to ng:submit)
+ * - ng:click on the first button or input field of type submit (input[type=submit])
+ *
+ * To prevent double execution of the handler, use only one of ng:submit or ng:click. This is
+ * because of the following form submission rules coming from the html spec:
+ *
+ * - If a form has only one input field then hitting enter in this field triggers form submit
+ * (`ng:submit`)
+ * - if a form has has 2+ input fields and no buttons or input[type=submit] then hitting enter
+ * doesn't trigger submit
+ * - if a form has one or more input fields and one or more buttons or input[type=submit] then
+ * hitting enter in any of the input fields will trigger the click handler on the *first* button or
+ * input[type=submit] (`ng:click`) *and* a submit handler on the enclosing form (`ng:submit`)
+ *
+ * @param {string=} name Name of the form.
+ *
  * @example
     <doc:example>
       <doc:source>
