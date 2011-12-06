@@ -137,7 +137,7 @@ describe('browser', function() {
           expect(scripts.length).toEqual(1);
           var script = scripts[0];
           var url = script.src.split('?cb=');
-          expect(url[1]).toMatch(/angular\.callbacks\._\d+_\d+/);
+          expect(url[1]).toMatch(/angular\.callbacks\._\d+/);
           var callbackId = url[1].split('\.')[2];
           expect(url[0]).toEqual('http://example.org/path');
           expect(typeof fakeWindow.angular.callbacks[callbackId]).toEqual('function');

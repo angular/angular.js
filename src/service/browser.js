@@ -96,9 +96,8 @@ function Browser(window, document, body, XHR, $log, $sniffer) {
   self.xhr = function(method, url, post, callback, headers) {
     outstandingRequestCount ++;
     if (lowercase(method) == 'json') {
-      window.angular.callbacks = window.angular.callbacks || {};
       var callbacks = window.angular.callbacks;
-      var callbackId = ('_' + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
+      var callbackId = '_' + (callbacks.counter++).toString(36);
       callbacks[callbackId] = function(data) {
         callbacks[callbackId].data = data;
       };
