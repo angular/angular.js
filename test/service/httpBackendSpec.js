@@ -1,6 +1,6 @@
 describe('$httpBackend', function() {
 
-  var $backend, $browser, $window,
+  var $backend, $browser, callbacks,
       xhr, fakeBody, callback;
 
   // TODO(vojta): should be replaced by $defer mock
@@ -19,10 +19,10 @@ describe('$httpBackend', function() {
 
 
   beforeEach(inject(function($injector) {
-    $window = {};
+    callbacks = {};
     $browser = $injector.get('$browser');
     fakeBody = {removeChild: jasmine.createSpy('body.removeChild')};
-    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, $window, fakeBody);
+    $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeBody);
     callback = jasmine.createSpy('done');
   }));
 
@@ -135,7 +135,7 @@ describe('$httpBackend', function() {
           url = script.url.split('?cb=');
 
       expect(url[0]).toBe('http://example.org/path');
-      $window[url[1]]('some-data');
+      callbacks[url[1]]('some-data');
       script.done();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -149,10 +149,10 @@ describe('$httpBackend', function() {
       var script = $browser.$$scripts.shift(),
           callbackId = script.url.split('?cb=')[1];
 
-      $window[callbackId]('some-data');
+      callbacks[callbackId]('some-data');
       script.done();
 
-      expect($window[callbackId]).toBeUndefined();
+      expect(callbacks[callbackId]).toBeUndefined();
       expect(fakeBody.removeChild).toHaveBeenCalledOnce();
       expect(fakeBody.removeChild).toHaveBeenCalledWith(script);
     });

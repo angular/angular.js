@@ -17,31 +17,29 @@ var XHR = window.XMLHttpRequest || function() {
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
-    return createHttpBackend($browser, XHR, $browser.defer, $window, $document[0].body,
-        $window.location.href.replace(':', ''));
+    return createHttpBackend($browser, XHR, $browser.defer, $window.angular.callbacks,
+        $document[0].body, $window.location.href.replace(':', ''));
   }];
 }
 
-function createHttpBackend($browser, XHR, $browserDefer, $window, body, locationProtocol) {
-  var idCounter = 0;
-
+function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locationProtocol) {
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout) {
     $browser.$$incOutstandingRequestCount();
 
     if (lowercase(method) == 'jsonp') {
-      var callbackId = ('angular_' + Math.random() + '_' + (idCounter++)).replace(/\d\./, '');
-      $window[callbackId] = function(data) {
-        $window[callbackId].data = data;
+      var callbackId = '_' + (callbacks.counter++).toString(36);
+      callbacks[callbackId] = function(data) {
+        callbacks[callbackId].data = data;
       };
 
       var script = $browser.addJs(url.replace('JSON_CALLBACK', callbackId), null, function() {
-        if ($window[callbackId].data) {
-          completeRequest(callback, 200, $window[callbackId].data);
+        if (callbacks[callbackId].data) {
+          completeRequest(callback, 200, callbacks[callbackId].data);
         } else {
           completeRequest(callback, -2);
         }
-        delete $window[callbackId];
+        delete callbacks[callbackId];
         body.removeChild(script);
       });
     } else {
