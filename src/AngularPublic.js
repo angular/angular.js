@@ -61,9 +61,34 @@ function ngModule($provide, $injector) {
     $provide.service('$locale', $LocaleProvider);
   });
 
-  $provide.service('$autoScroll', $AutoScrollProvider);
-  $provide.service('$browser', $BrowserProvider);
-  $provide.service('$cacheFactory', $CacheFactoryProvider);
+  forEach({
+    $autoScroll: $AutoScrollProvider,
+    $browser: $BrowserProvider,
+    $cacheFactory: $CacheFactoryProvider,
+    $cookies: $CookiesProvider,
+    $cookieStore: $CookieStoreProvider,
+    $defer: $DeferProvider,
+    $document: $DocumentProvider,
+    $exceptionHandler: $ExceptionHandlerProvider,
+    $filter: $FilterProvider,
+    $interpolate: $InterpolateProvider,
+    $formFactory: $FormFactoryProvider,
+    $http: $HttpProvider,
+    $httpBackend: $HttpBackendProvider,
+    $location: $LocationProvider,
+    $log: $LogProvider,
+    $parse: $ParseProvider,
+    $resource: $ResourceProvider,
+    $route: $RouteProvider,
+    $routeParams: $RouteParamsProvider,
+    $rootScope: $RootScopeProvider,
+    $q: $QProvider,
+    $sniffer: $SnifferProvider,
+    $sanitize: $SanitizeProvider,
+    $templateCache: $TemplateCacheProvider,
+    $window: $WindowProvider
+  }, function(service, name) { $provide.service(name, service); });
+  
   $provide.service('$compile', $CompileProvider).
     directive({
       ngInit: ngInitDirective,
@@ -98,27 +123,5 @@ function ngModule($provide, $injector) {
     }).
     directive(ngEventDirectives).
     directive(ngAttributeAliasDirectives);
-  $provide.service('$cookies', $CookiesProvider);
-  $provide.service('$cookieStore', $CookieStoreProvider);
-  $provide.service('$defer', $DeferProvider);
-  $provide.service('$document', $DocumentProvider);
-  $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
-  $provide.service('$filter', $FilterProvider);
-  $provide.service('$interpolate', $InterpolateProvider);
-  $provide.service('$formFactory', $FormFactoryProvider);
-  $provide.service('$http', $HttpProvider);
-  $provide.service('$httpBackend', $HttpBackendProvider);
-  $provide.service('$location', $LocationProvider);
-  $provide.service('$log', $LogProvider);
-  $provide.service('$parse', $ParseProvider);
-  $provide.service('$resource', $ResourceProvider);
-  $provide.service('$route', $RouteProvider);
-  $provide.service('$routeParams', $RouteParamsProvider);
-  $provide.service('$rootScope', $RootScopeProvider);
-  $provide.service('$q', $QProvider);
-  $provide.service('$sniffer', $SnifferProvider);
-  $provide.service('$sanitize', $SanitizeProvider);
-  $provide.service('$templateCache', $TemplateCacheProvider);
-  $provide.service('$window', $WindowProvider);
 }
 
