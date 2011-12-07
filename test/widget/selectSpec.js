@@ -591,6 +591,13 @@ describe('select', function() {
         browserTrigger(select, 'change');
         expect(scope.selected).toEqual([scope.values[0]]);
       });
+
+      it('should attach select to DOM', inject(function($rootScope, $compile) {
+        var selectElement = angular.element('<select ng:model="values" ></select>');
+        $compile(selectElement)($rootScope)
+        expect(selectElement.data('$input')).toBeTruthy();
+      }));
+
     });
   });
 });

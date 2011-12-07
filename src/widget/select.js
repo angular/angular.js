@@ -147,6 +147,7 @@ angularWidget('select', function(element){
           controller: optionsExp ? Options : (multiple ? Multiple : Single)});
 
     selectElement.bind('$destroy', function() { widget.$destroy(); });
+    selectElement.data('$input', widget);
 
     widget.$pristine = !(widget.$dirty = false);
 
