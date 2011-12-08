@@ -86,7 +86,7 @@ api/angular.module.ng.$rootScope.Scope#$watch scope.$watch()} API.
    For mutations to be properly observed, you should make them only within the execution of the
 function passed into {@link api/angular.module.ng.$rootScope.Scope#$apply scope.$apply()} call. (Angular apis do this
 implicitly, so no extra `$apply` call is needed when doing synchronous work in controllers, or
-asynchronous work with {@link api/angular.module.ng.$xhr $xhr} or {@link api/angular.module.ng.$defer
+asynchronous work with {@link api/angular.module.ng.$http $http} or {@link api/angular.module.ng.$defer
 $defer} services.
 
 4. **Mutation observation**
