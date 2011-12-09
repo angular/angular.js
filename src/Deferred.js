@@ -200,7 +200,15 @@ function $QProvider() {
 
   this.$get = ['$rootScope', '$exceptionHandler', function($rootScope, $exceptionHandler) {
     return qFactory(function(callback) {
-      $rootScope.$evalAsync(callback);
+      if ($rootScope.$$phase !== '$predigest' && $rootScope.$$phase !== '$digest') {
+        $rootScope.$apply(function() {
+          $rootScope.$evalAsync(function() {
+            callback();
+          });
+        });
+      } else {
+        $rootScope.$evalAsync(callback);
+      }
     }, $exceptionHandler);
   }];
 }

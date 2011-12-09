@@ -342,30 +342,31 @@ function $HttpProvider() {
      *  - clear parsed headers
      */
     function fireCallbacks(response, status) {
-      var strStatus = status + '';
+      $rootScope.$apply(function() {
+        var strStatus = status + '';
 
-      // transform the response
-      response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
+        // transform the response
+        response = transform(response, cfg.transformResponse || $config.transformResponse, rawRequest);
 
-      var idx; // remove from pending requests
-      if ((idx = indexOf($http.pendingRequests, cfg)) !== -1)
-        $http.pendingRequests.splice(idx, 1);
+        var idx; // remove from pending requests
+        if ((idx = indexOf($http.pendingRequests, cfg)) !== -1)
+          $http.pendingRequests.splice(idx, 1);
 
-      // normalize internal statuses to 0
-      status = Math.max(status, 0);
-      forEach(callbacks, function(callback) {
-        if (callback.regexp.test(strStatus)) {
-          try {
-            // use local var to call it without context
-            var fn = callback.fn;
-            fn(response, status, headers);
-          } catch(e) {
-            $exceptionHandler(e);
+        // normalize internal statuses to 0
+        status = Math.max(status, 0);
+        forEach(callbacks, function(callback) {
+          if (callback.regexp.test(strStatus)) {
+            try {
+              // use local var to call it without context
+              var fn = callback.fn;
+              fn(response, status, headers);
+            } catch(e) {
+              $exceptionHandler(e);
+            }
           }
-        }
+        });
       });
 
-      $rootScope.$apply();
       parsedHeaders = null;
     }
 

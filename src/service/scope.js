@@ -326,7 +326,7 @@ function $RootScopeProvider(){
             watchLog = [],
             logIdx, logMsg;
 
-        if (target.$$phase) {
+        if (target.$$phase && target.$$phase !== '$predigest') {
           throw Error(target.$$phase + ' already in progress');
         }
         do {
@@ -524,6 +524,7 @@ function $RootScopeProvider(){
        */
       $apply: function(expr) {
         try {
+          this.$$phase = '$predigest';
           return this.$eval(expr);
         } catch (e) {
           $exceptionHandler(e);
