@@ -1,16 +1,15 @@
 'use strict';
 
-
-
 function Route(template, defaults) {
   this.template = template = template + '#';
   this.defaults = defaults || {};
   var urlParams = this.urlParams = {};
   forEach(template.split(/\W/), function(param){
-    if (param && template.match(new RegExp(":" + param + "\\W"))) {
+    if (param && template.match(new RegExp("[^\\\\]:" + param + "\\W"))) {
       urlParams[param] = true;
     }
   });
+  this.template = template.replace(/\\:/g, ':');
 }
 
 Route.prototype = {
