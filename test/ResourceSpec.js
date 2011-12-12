@@ -52,6 +52,13 @@ describe("resource", function() {
     R.get({a:4, b:5, c:6});
   }));
 
+  it('should support escaping collons in url template', inject(function($httpBackend) {
+    var R = resource.route('http://localhost\\:8080/Path/:a/\\:stillPath/:b');
+
+    $httpBackend.expect('GET', 'http://localhost:8080/Path/foo/:stillPath/bar').respond();
+    R.get({a: 'foo', b: 'bar'});
+  }));
+
   it('should correctly encode url params', inject(function($httpBackend) {
     var R = resource.route('/Path/:a');
 
