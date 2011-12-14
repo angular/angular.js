@@ -509,7 +509,7 @@ describe('widget: input', function() {
     }));
 
     it('should throw an error of Controller not declared in scope', inject(function($rootScope, $compile) {
-      var input, $formFactory;
+      var input;
       var element = angular.element('<input type="@DontExist" ng:model="abc">');
       var error;
       try {
