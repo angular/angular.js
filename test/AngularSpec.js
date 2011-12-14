@@ -423,10 +423,10 @@ describe('angular', function() {
     it('should link to new node and given scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
 
-      var templateFn = $compile(template);
+      var compile = $compile(template);
       var templateClone = template.clone();
 
-      element = templateFn($rootScope, function(clone){
+      element = compile($rootScope, function(clone){
         templateClone = clone;
       });
       $rootScope.$digest();

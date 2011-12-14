@@ -828,7 +828,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:autobind
+ * @name angular.module.ng.$compileProvider.directive.ng:autobind
  * @element script
  *
  * @TODO ng:autobind is not a directive!! it should be documented as bootstrap parameter in a

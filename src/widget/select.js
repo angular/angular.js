@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc widget
- * @name angular.widget.select
+ * @name angular.module.ng.$compileProvider.directive.select
  *
  * @description
  * HTML `SELECT` element with angular data-binding.
@@ -12,7 +12,7 @@
  * Optionally `ng:options` attribute can be used to dynamically generate a list of `<option>`
  * elements for a `<select>` element using an array or an object obtained by evaluating the
  * `ng:options` expression.
- *
+ *˝˝
  * When an item in the select menu is select, the value of array element or object property
  * represented by the selected option will be bound to the model identified by the `name` attribute
  * of the parent select element.
@@ -22,13 +22,13 @@
  * option. See example below for demonstration.
  *
  * Note: `ng:options` provides iterator facility for `<option>` element which must be used instead
- * of {@link angular.widget.@ng:repeat ng:repeat}. `ng:repeat` is not suitable for use with
+ * of {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}. `ng:repeat` is not suitable for use with
  * `<option>` element because of the following reasons:
  *
  *   * value attribute of the option element that we need to bind to requires a string, but the
  *     source of data for the iteration might be in a form of array containing objects instead of
  *     strings
- *   * {@link angular.widget.@ng:repeat ng:repeat} unrolls after the select binds causing
+ *   * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat} unrolls after the select binds causing
  *     incorect rendering on most browsers.
  *   * binding to a value not in list confuses most browsers.
  *
@@ -130,7 +130,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
 
   return {
     restrict: 'E',
-    templateFn: valueFn(function(modelScope, selectElement, attr) {
+    compile: valueFn(function(modelScope, selectElement, attr) {
       if (!attr.ngModel) return;
       var form = $formFactory.forElement(selectElement),
           multiple = attr.multiple,
@@ -434,7 +434,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
 var optionDirective = ['$interpolate', function($interpolate) {
   return {
     priority: 100,
-    templateFn: function(element, attr) {
+    compile: function(element, attr) {
       if (isUndefined(attr.value)) {
         var interpolateFn = $interpolate(element.text(), true);
         if (interpolateFn) {

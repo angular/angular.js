@@ -1,35 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc overview
- * @name angular.widget
- * @description
- *
- * An angular widget can be either a custom attribute that modifies an existing DOM element or an
- * entirely new DOM element.
- *
- * During html compilation, widgets are processed after {@link angular.markup markup}, but before
- * {@link angular.directive directives}.
- *
- * Following is the list of built-in angular widgets:
- *
- * * {@link angular.widget.@ng:non-bindable ng:non-bindable} - Blocks angular from processing an
- *   HTML element.
- * * {@link angular.widget.@ng:repeat ng:repeat} - Creates and manages a collection of cloned HTML
- *   elements.
- * * {@link angular.inputType HTML input elements} - Standard HTML input elements data-bound by
- *   angular.
- * * {@link angular.widget.ng:view ng:view} - Works with $route to "include" partial templates
- * * {@link angular.widget.ng:switch ng:switch} - Conditionally changes DOM structure
- * * {@link angular.widget.ng:include ng:include} - Includes an external HTML fragment
- *
- * For more information about angular widgets, see {@link guide/dev_guide.compiler.widgets
- * Understanding Angular Widgets} in the angular Developer Guide.
- */
-
-/**
  * @ngdoc widget
- * @name angular.widget.ng:include
+ * @name angular.module.ng.$compileProvider.directive.ng:include
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
@@ -83,7 +56,7 @@
 var ngIncludeDirective = ['$http', '$templateCache', '$autoScroll', '$compile',
                   function($http,   $templateCache,   $autoScroll,   $compile) {
   return {
-    templateFn: function(element, attr) {
+    compile: function(element, attr) {
       var srcExp = attr.src,
           scopeExp = attr.scope || '',
           onloadExp = attr.onload || '';
@@ -136,7 +109,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$autoScroll', '$compile',
 
 /**
  * @ngdoc widget
- * @name angular.widget.ng:switch
+ * @name angular.module.ng.$compileProvider.directive.ng:switch
  *
  * @description
  * Conditionally change the DOM structure.
@@ -193,7 +166,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$autoScroll', '$compile',
  */
 var ngSwitchDirective = ['$compile', function($compile){
   return {
-    templateFn: function(element, attr) {
+    compile: function(element, attr) {
       var watchExpr = attr.on,
         changeExpr = attr.change,
         casesTemplate = {},
@@ -259,7 +232,7 @@ var ngSwitchDirective = ['$compile', function($compile){
  */
 var htmlAnchorDirective = valueFn({
   restrict: 'E',
-  templateFn: function(element, attr) {
+  compile: function(element, attr) {
     // turn <a href ng:click="..">link</a> into a link in IE
     // but only if it doesn't have name attribute, in which case it's an anchor
     if (!attr.href) {
@@ -280,7 +253,7 @@ var htmlAnchorDirective = valueFn({
 
 /**
  * @ngdoc widget
- * @name angular.widget.@ng:repeat
+ * @name angular.module.ng.$compileProvider.directive.ng:repeat
  *
  * @description
  * The `ng:repeat` widget instantiates a template once per item from a collection. Each template
@@ -339,7 +312,7 @@ var ngRepeatDirective = ['$compile', function($compile) {
   return {
     priority: 1000,
     terminal: true,
-    templateFn: function(element, attr) {
+    compile: function(element, attr) {
       var expression = attr.ngRepeat;
       attr.$set(attr.$attr.ngRepeat);
       element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' -->'));
@@ -464,7 +437,7 @@ var ngRepeatDirective = ['$compile', function($compile) {
 
 /**
  * @ngdoc widget
- * @name angular.widget.@ng:non-bindable
+ * @name angular.module.ng.$compileProvider.directive.ng:non-bindable
  *
  * @description
  * Sometimes it is necessary to write code which looks like bindings but which should be left alone
@@ -498,7 +471,7 @@ var ngNonBindableDirective = valueFn({ terminal: true });
 
 /**
  * @ngdoc widget
- * @name angular.widget.ng:view
+ * @name angular.module.ng.$compileProvider.directive.ng:view
  *
  * @description
  * # Overview
@@ -507,7 +480,7 @@ var ngNonBindableDirective = valueFn({ terminal: true });
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * This widget provides functionality similar to {@link angular.widget.ng:include ng:include} when
+ * This widget provides functionality similar to {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} when
  * used like this:
  *
  *     <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
@@ -564,7 +537,7 @@ var ngNonBindableDirective = valueFn({ terminal: true });
 var ngViewDirective = ['$http', '$templateCache', '$route', '$autoScroll', '$compile',
                function($http,   $templateCache,   $route,   $autoScroll,   $compile) {
   return {
-    templateFn: function(element, attr) {
+    compile: function(element, attr) {
       if (!element[0]['ng:compiled']) {
         element[0]['ng:compiled'] = true;
 
@@ -607,7 +580,7 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$autoScroll', '$com
 
 /**
  * @ngdoc widget
- * @name angular.widget.ng:pluralize
+ * @name angular.module.ng.$compileProvider.directive.ng:pluralize
  *
  * @description
  * # Overview

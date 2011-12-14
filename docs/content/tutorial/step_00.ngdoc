@@ -184,7 +184,7 @@ using XHTML or HTML).
 
   The code downloads the `angular.js` script and registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
-looks for the {@link api/angular.directive.ng:autobind ng:autobind} attribute. If Angular finds
+looks for the {@link api/angular.module.ng.$compileProvider.directive.ng:autobind ng:autobind} attribute. If Angular finds
 `ng:autobind`, it creates a root scope for the application and associates it with the `<html>`
 element of the template:
 

@@ -65,7 +65,7 @@ __`app/partials/phone-detail.html`:__
 
 We bound the `ng:src` attribute of the large image to the `mainImageUrl` property.
 
-We also registered an {@link api/angular.directive.ng:click `ng:click`} handler with thumbnail
+We also registered an {@link api/angular.module.ng.$compileProvider.directive.ng:click `ng:click`} handler with thumbnail
 images. When a user clicks on one of the thumbnail images, the handler will use the `setImage`
 controller method to change the value of the `mainImageUrl` property to the url of the thumbnail
 image.

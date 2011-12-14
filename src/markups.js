@@ -3,7 +3,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:href
+ * @name angular.module.ng.$compileProvider.directive.ng:href
  *
  * @description
  * Using <angular/> markup like {{hash}} in an href attribute makes
@@ -83,7 +83,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:src
+ * @name angular.module.ng.$compileProvider.directive.ng:src
  *
  * @description
  * Using <angular/> markup like `{{hash}}` in a `src` attribute doesn't
@@ -108,7 +108,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:disabled
+ * @name angular.module.ng.$compileProvider.directive.ng:disabled
  *
  * @description
  *
@@ -146,7 +146,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:checked
+ * @name angular.module.ng.$compileProvider.directive.ng:checked
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as checked.
@@ -175,7 +175,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:multiple
+ * @name angular.module.ng.$compileProvider.directive.ng:multiple
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as multiple.
@@ -210,7 +210,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:readonly
+ * @name angular.module.ng.$compileProvider.directive.ng:readonly
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as readonly.
@@ -239,7 +239,7 @@
 
 /**
 * @ngdoc directive
-* @name angular.directive.ng:selected
+* @name angular.module.ng.$compileProvider.directive.ng:selected
 *
 * @description
 * The HTML specs do not require browsers to preserve the special attributes such as selected.

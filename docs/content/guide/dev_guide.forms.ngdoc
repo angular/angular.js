@@ -17,7 +17,7 @@ Forms consist of all of the following:
 # Form
 
 A form groups a set of widgets together into a single logical data-set. A form is created using
-the {@link api/angular.widget.form &lt;form&gt;} element that calls the
+the {@link api/angular.module.ng.$compileProvider.directive.form &lt;form&gt;} element that calls the
 {@link api/angular.module.ng.$formFactory $formFactory} service. The form is responsible for managing
 the widgets and for tracking validation information.
 
@@ -54,8 +54,8 @@ A form is:
 # Widgets
 
 In Angular, a widget is the term used for the UI with which the user input. Examples of
-bult-in Angular widgets are {@link api/angular.widget.input input} and
-{@link api/angular.widget.select select}. Widgets provide the rendering and the user
+bult-in Angular widgets are {@link api/angular.module.ng.$compileProvider.directive.input input} and
+{@link api/angular.module.ng.$compileProvider.directive.select select}. Widgets provide the rendering and the user
 interaction logic. Widgets should be declared inside a form, if no form is provided an implicit
 form {@link api/angular.module.ng.$formFactory $formFactory.rootForm} form is used.
 

@@ -97,7 +97,7 @@ allows us to use the `phoneId` property of this map in the `phone-details.html` 
 
 ## Template
 
-The `$route` service is usually used in conjunction with the {@link api/angular.widget.ng:view
+The `$route` service is usually used in conjunction with the {@link api/angular.module.ng.$compileProvider.directive.ng:view
 ng:view} widget. The role of the `ng:view` widget is to include the view template for the current
 route into the layout template, which makes it a perfect fit for our `index.html` template.
 

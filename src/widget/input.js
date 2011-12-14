@@ -609,7 +609,7 @@ var HTML5_INPUTS_TYPES =  makeMap(
 
 /**
  * @ngdoc widget
- * @name angular.widget.input
+ * @name angular.module.ng.$compileProvider.directive.input
  *
  * @description
  * HTML input element widget with angular data-binding. Input widget follows HTML5 input types
@@ -711,7 +711,7 @@ var HTML5_INPUTS_TYPES =  makeMap(
 var inputDirective = ['$defer', '$formFactory', function($defer, $formFactory) {
   return {
     restrict: 'E',
-    templateFn: valueFn(function(modelScope, inputElement, attr) {
+    compile: valueFn(function(modelScope, inputElement, attr) {
       if (!attr.ngModel) return;
 
       var form = $formFactory.forElement(inputElement),
@@ -834,12 +834,12 @@ var inputDirective = ['$defer', '$formFactory', function($defer, $formFactory) {
 
 /**
  * @ngdoc widget
- * @name angular.widget.textarea
+ * @name angular.module.ng.$compileProvider.directive.textarea
  *
  * @description
  * HTML textarea element widget with angular data-binding. The data-binding and validation
  * properties of this element are exactly the same as those of the
- * {@link angular.widget.input input element}.
+ * {@link angular.module.ng.$compileProvider.directive.input input element}.
  *
  * @param {string} type Widget types as defined by {@link angular.inputType}. If the
  *    type is in the format of `@ScopeType` then `ScopeType` is loaded from the

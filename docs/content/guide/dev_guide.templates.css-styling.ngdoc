@@ -9,24 +9,13 @@ Angular sets these CSS classes. It is up to your application to provide useful s
 
 * `ng-invalid`, `ng-valid`
   - **Usage:** angular applies this class to an input widget element if that element's input does
-    notpass validation. (see {@link api/angular.widget.input input} widget).
+    notpass validation. (see {@link api/angular.module.ng.$compileProvider.directive.input input} widget).
 
 * `ng-pristine`, `ng-dirty`
-  - **Usage:** angular {@link api/angular.widget.input input} widget applies `ng-pristine` class
+  - **Usage:** angular {@link api/angular.module.ng.$compileProvider.directive.input input} widget applies `ng-pristine` class
     to a new input widget element which did not have user interaction. Once the user interacts with
     the input widget the class is changed to `ng-dirty`.
 
-# Marking CSS classes
-
-* `ng-widget`, `ng-directive`
-  -  **Usage:** angular sets these class on elements where {@link api/angular.widget widget} or
-     {@link api/angular.directive directive} has bound to.
-
-
-* Old browser support
-  - Pre v9, IE browsers could not select `ng:include` elements in CSS, because of the `:`
-    character. For this reason angular also sets `ng-include` class on any element which has `:`
-    character in the name by replacing `:` with `-`.
 
 ## Related Topics
 

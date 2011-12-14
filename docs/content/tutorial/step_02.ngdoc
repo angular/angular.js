@@ -45,8 +45,9 @@ __`app/index.html`:__
 </html>
 </pre>
 
-We replaced the hard-coded phone list with the {@link api/angular.widget.@ng:repeat ng:repeat
-widget} and two {@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
+We replaced the hard-coded phone list with the
+{@link api/angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat widget} and two
+{@link guide/dev_guide.expressions Angular expressions} enclosed in curly braces:
 `{{phone.name}}` and `{{phone.snippet}}`:
 
 * The `ng:repeat="phone in phones"` statement in the `<li>` tag is an Angular repeater. The
@@ -57,7 +58,7 @@ tag as the template.
 
 * The curly braces around `phone.name` and `phone.snippet` are examples of {@link
 guide/dev_guide.compiler.markup Angular markup}. The curly markup is shorthand for the Angular
-directive {@link api/angular.directive.ng:bind ng:bind}. An `ng:bind` directive indicates a
+directive {@link api/angular.module.ng.$compileProvider.directive.ng:bind ng:bind}. An `ng:bind` directive indicates a
 template binding point to Angular. Binding points are locations in a template where Angular creates
 data-binding between the view and the model.
 
@@ -92,7 +93,7 @@ the model and the view. We connected the dots between the presentation, data, an
 as follows:
 
 * The name of our controller function(in the JavaScript file `controllers.js`) matches the {@link
-api/angular.directive.ng:controller ng:controller} directive in the `<body>` tag (`PhoneListCtrl`).
+api/angular.module.ng.$compileProvider.directive.ng:controller ng:controller} directive in the `<body>` tag (`PhoneListCtrl`).
 * The data is instantiated within the *scope* of our controller function; our template binding
 points are located within the block bounded by the `<body ng:controller="PhoneListCtrl">` tag.
 

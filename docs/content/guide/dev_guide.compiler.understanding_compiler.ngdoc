@@ -2,8 +2,8 @@
 @name Developer Guide: Angular HTML Compiler: Understanding How the Compiler Works
 @description
 
-Every {@link api/angular.widget widget}, {@link api/angular.directive directive} and {@link
-dev_guide.compiler.markup markup} is defined with a compile function, which the angular compiler
+Every {@link api/angular.module.ng.$compileProvider.directive directive} is defined with a compile
+function, which the angular compiler
 executes on each widget or directive it encounters. The compile function optionally returns a link
 function.  This compilation process happens automatically when the page is loaded when you specify
 `ng:autobind` in the script tag from which you load the angular script file.  (See {@link
@@ -15,7 +15,7 @@ The compile and link functions are related as follows:
 compiler calls this function exactly once.
 * **link function** — Sets up the listener registered by the compile function. This function can be
 called multiple times, once per cloned DOM element. For example, in the case of the {@link
-api/angular.widget.@ng:repeat repeater widget} used in a list element (`<li ng:repeat="[item in
+api/angular.module.ng.$compileProvider.directive.@ng:repeat repeater widget} used in a list element (`<li ng:repeat="[item in
 dataset]"`), the link function gets called to set up a listener on each element in the list.
 
 Note that angular's built-in widgets, directives, and markup have predefined compile and link

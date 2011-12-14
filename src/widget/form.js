@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc widget
- * @name angular.widget.form
+ * @name angular.module.ng.$compileProvider.directive.form
  *
  * @description
  * Angular widget that creates a form scope using the
@@ -85,7 +85,7 @@
 var ngFormDirective = ['$formFactory', function($formFactory) {
   return {
     restrict: 'E',
-    templateFn: function() {
+    compile: function() {
       return {
         pre: function(scope, formElement, attr) {
           var name = attr.name,

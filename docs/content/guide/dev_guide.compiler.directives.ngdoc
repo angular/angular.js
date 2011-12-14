@@ -13,7 +13,7 @@ existing HTML element type or a custom DOM element type that you created. You ca
 directives per element.
 
 You add angular directives to a standard HTML tag as in the following example, in which we have
-added the {@link api/angular.directive.ng:click ng:click} directive to a button tag:
+added the {@link api/angular.module.ng.$compileProvider.directive.ng:click ng:click} directive to a button tag:
 
         <button ng:click="foo()">Click This</button>
 
@@ -21,7 +21,7 @@ The `ng:click` directive lets you specify click event handlers directly in the t
 evil `onclick` attribute, the expression associated with the `ng:click` directive is always executed
 in the context of the current angular scope.
 
-In the next example, we add the {@link api/angular.directive.ng:bind ng:bind} directive to a
+In the next example, we add the {@link api/angular.module.ng.$compileProvider.directive.ng:bind ng:bind} directive to a
 `<span>` tag:
 
         <span ng:bind="1+2"></span>
@@ -43,5 +43,4 @@ constants, so nothing will ever change - Sorry!
 
 ## Related API:
 
-* {@link api/angular.directive Directive API}
-* {@link api/angular.widget Widget API}
+* {@link api/angular.module.ng.$compileProvider.directive Directive API}

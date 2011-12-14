@@ -26,7 +26,7 @@ angular.module.ngDocDirectives = function($compileProvider) {
 
     return {
       terminal: true, 
-      templateFn: function(element, attrs) {
+      compile: function(element, attrs) {
         var module = attrs.module;
 
         //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
@@ -225,7 +225,7 @@ angular.module.ngDocDirectives = function($compileProvider) {
       '</div>';
 
     return {
-      templateFn: function(element, attrs) {
+      compile: function(element, attrs) {
         var tabs = angular.element(HTML_TPL.replace('{show}', attrs.show || 'false')),
             nav = tabs.find('ul'),
             // use simple selectors because jqLite find() supports getElementsByTagName only
