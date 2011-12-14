@@ -305,10 +305,13 @@ describe('mocks', function() {
       var $exceptionHandler = $exceptionHandlerProvider.$get();
       $exceptionHandler('MyError');
       expect($exceptionHandler.errors).toEqual(['MyError']);
+
+      $exceptionHandler('MyError', 'comment');
+      expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
     }));
 
 
-    it('should thorw on wrong argument', inject(function($exceptionHandlerProvider) {
+    it('should throw on wrong argument', inject(function($exceptionHandlerProvider) {
       expect(function() {
         $exceptionHandlerProvider.mode('XXX');
       }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");

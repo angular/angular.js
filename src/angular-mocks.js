@@ -257,7 +257,11 @@ angular.module.ngMock.$ExceptionHandlerProvider = function(){
       case 'log':
         var errors = [];
         handler = function(e) {
-          errors.push(e);
+          if (arguments.length == 1) {
+            errors.push(e);
+          } else {
+            errors.push([].slice.call(arguments, 0));
+          }
         }
         handler.errors = errors;
         break;
