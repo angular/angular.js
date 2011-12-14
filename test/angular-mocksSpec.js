@@ -307,6 +307,9 @@ describe('ngMock', function() {
       var $exceptionHandler = $exceptionHandlerProvider.$get();
       $exceptionHandler('MyError');
       expect($exceptionHandler.errors).toEqual(['MyError']);
+
+      $exceptionHandler('MyError', 'comment');
+      expect($exceptionHandler.errors[1]).toEqual(['MyError', 'comment']);
     }));
 
 
