@@ -35,6 +35,7 @@
  * - [bind()](http://api.jquery.com/bind/)
  * - [children()](http://api.jquery.com/children/)
  * - [clone()](http://api.jquery.com/clone/)
+ * - [contents()](http://api.jquery.com/contents/)
  * - [css()](http://api.jquery.com/css/)
  * - [data()](http://api.jquery.com/data/)
  * - [eq()](http://api.jquery.com/eq/)
@@ -554,6 +555,10 @@ forEach({
         children.push(element);
     });
     return children;
+  },
+
+  contents: function(element) {
+    return element.childNodes;
   },
 
   append: function(element, node) {
