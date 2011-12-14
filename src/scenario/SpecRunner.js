@@ -105,6 +105,7 @@ angular.scenario.SpecRunner.prototype.addFuture = function(name, behavior, line)
  */
 angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior, line) {
   var self = this;
+  var NG = /\[ng\\\:/;
   return this.addFuture(name, function(done) {
     this.application.executeAction(function($window, $document) {
 
@@ -117,6 +118,9 @@ angular.scenario.SpecRunner.prototype.addFutureAction = function(name, behavior,
           selector = selector.replace('$' + (index + 1), value);
         });
         var result = $document.find(selector);
+        if (selector.match(NG)) {
+          result = result.add(selector.replace(NG, '[ng-'), $document);
+        }
         if (!result.length) {
           throw {
             type: 'selector',

@@ -143,12 +143,24 @@ function setupModuleLoader(window) {
            * @ngdoc method
            * @name angular.Module#filter
            * @methodOf angular.Module
-           * @param {string} name filterr name
+           * @param {string} name filter name
            * @param {Function} filterFactory Factory function for creating new instance of filter.
            * @description
            * See {@link angular.module.ng.$filterProvider#register $filterProvider.register()}.
            */
           filter: invokeLater('$filterProvider', 'register'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#directive
+           * @methodOf angular.Module
+           * @param {string} name directive name
+           * @param {Function} directiveFactory Factory function for creating new instance of
+           * directives.
+           * @description
+           * See {@link angular.module.ng.$compileProvider#directive $compileProvider.directive()}.
+           */
+          directive: invokeLater('$compileProvider', 'directive'),
 
           /**
            * @ngdoc method

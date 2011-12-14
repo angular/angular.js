@@ -543,6 +543,13 @@ describe("angular.scenario.dsl", function() {
         expect(_jQuery('input[ng\\:model="test.input"]').val()).toEqual('foo');
       });
 
+      it('should change value in text input in dash form', function() {
+        doc.append('<input ng-model="test.input" value="something">');
+        var chain = $root.dsl.input('test.input');
+        chain.enter('foo');
+        expect(_jQuery('input[ng-model="test.input"]').val()).toEqual('foo');
+      });
+
       it('should return error if no input exists', function() {
         var chain = $root.dsl.input('test.input');
         chain.enter('foo');

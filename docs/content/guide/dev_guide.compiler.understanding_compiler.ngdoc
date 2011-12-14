@@ -2,59 +2,27 @@
 @name Developer Guide: Angular HTML Compiler: Understanding How the Compiler Works
 @description
 
-Every {@link api/angular.widget widget}, {@link api/angular.directive directive} and {@link
-dev_guide.compiler.markup markup} is defined with a compile function, which the angular compiler
-executes on each widget or directive it encounters. The compile function optionally returns a link
-function.  This compilation process happens automatically when the page is loaded when you specify
-`ng:app` on the root element of the application.  (See {@link dev_guide.bootstrap Initializing Angular}.)
+The {@link angular.module.ng.$compile compiler} is responsible for applying
+{@link angular.module.ng.$compileProvider.directive directives} to the HTML. The directives
+extend the behavior of HTML elements and can effect the DOM structure, presentation, and behavior.
+This allows Angular to teach the browser new tricks.
 
-The compile and link functions are related as follows:
+The compilation starts at the root element and proceeds in a depth-first order. As the compiler
+visits each node it collects the directives, orders them by priority and executes their compile
+function. The result of the compilation process is a linking function. The linking function
+can be used on the template clones to quickly bind the directives with the scope.
 
-* **compile function** — Registers a listener for the widget, directive, or markup expression. The
-compiler calls this function exactly once.
-* **link function** — Sets up the listener registered by the compile function. This function can be
-called multiple times, once per cloned DOM element. For example, in the case of the {@link
-api/angular.widget.@ng:repeat repeater widget} used in a list element (`<li ng:repeat="[item in
-dataset]"`), the link function gets called to set up a listener on each element in the list.
+The result of the compilation process is a live view. We say 'live' since any changes to the
+model attached to the {@link angular.module.ng.$rootScope.Scope scope} are reflected in the view,
+and any changes in the view are reflected in the scope. This makes the scope the 'single source of
+truth'.
 
-Note that angular's built-in widgets, directives, and markup have predefined compile and link
-functions that you don't need to modify. When you create your own widgets, directives, or markup,
-you must write compile and link functions for them. Refer to the {@link api/angular.module.ng.$compile
-Compiler API} for details.
+Since directives allow attachment of behavior to the HTML, the angular philosophy is to use the
+HTML as Domain Specific Language (DSL) when building an application. For example it may be useful
+to declare `TabPanel` directive, or `KeyboardShortcut` directive when for an application.
 
-When the angular compiler compiles a page, it proceeds through 3 phases: Compile, Create Root
-Scope, and Link:
-
-1. Compile Phase
-
-   1. Recursively traverse the DOM, depth-first.
-   2. Look for a matching compile function of type widget, then markup, then directive.
-   3. If a compile function is found then execute it.
-   4. When the compile function completes, it should return a link function. Aggregate this link
-function with all link functions returned previously by step 3.
-   5. Repeat steps 3 and 4 for all compile functions found.
-
-The result of the compilation phase is an aggregate link function, which comprises all of the
-individual link functions.
-
-2. Create Root Scope Phase
-
-* Inject all services into the root scope.
-
-3. Link Phase
-
-   1. Execute the aggregate link function with the root scope. The aggregate link function calls
-all of the individual link functions that were generated in the compile phase.
-   2. If there are any clones of the DOM caused by repeating elements, call the link function
-multiple times, one for each repeating item.
-
-Note that while the compile function is executed exactly once, the link function can be executed
-multiple times, for example, once for each iteration in a repeater.
-
-The angular compiler exposes methods that you will need to make use of when writing your own
-widgets and directives.  For information on these methods, see the {@link api/angular.module.ng.$compile
-Compiler API doc}.
-
+For details on how directives are created see {@link angular.module.ng.$compileProvider.directive
+directives}
 
 ## Related Topics
 

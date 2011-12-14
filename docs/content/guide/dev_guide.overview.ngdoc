@@ -101,7 +101,7 @@ These input widgets look normal enough, but consider these points:
 * When this page loaded, angular bound the names of the input widgets (`qty` and `cost`) to
 variables of the same name. Think of those variables as the "Model" component of the
 Model-View-Controller design pattern.
-* Note the angular/HTML widget, {@link api/angular.widget.input input}.
+* Note the angular/HTML widget, {@link api/angular.module.ng.$compileProvider.directive.input input}.
 You may have noticed that when you enter invalid data
 or leave the the input fields blank, the borders turn red color, and the display value disappears.
 These widgets make it easier to implement field validation than coding them in JavaScript,
@@ -113,7 +113,7 @@ And finally, the mysterious `{{ double curly braces }}`:
 
 This notation, `{{ _expression_ }}`, is a bit of built-in angular {@link dev_guide.compiler.markup
 markup}, a shortcut for displaying data to the user. The expression within curly braces gets
-transformed by the angular compiler into an angular directive ({@link api/angular.directive.ng:bind
+transformed by the angular compiler into an angular directive ({@link api/angular.module.ng.$compileProvider.directive.ng:bind
 ng:bind}). The expression itself can be a combination of both an expression and a {@link
 dev_guide.templates.filters filter}: `{{ expression | filter }}`. Angular provides filters for
 formatting display data.

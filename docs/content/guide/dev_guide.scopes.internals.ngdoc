@@ -46,11 +46,11 @@ reside on a child scope, if a property read does not find the property on a scop
 recursively check the parent scope, grandparent scope, etc. all the way to the root scope before
 defaulting to undefined.
 
-{@link api/angular.directive Directives}  associated with elements (ng:controller, ng:repeat,
-ng:include, etc.) create new child scopes that inherit properties from the current parent scope.
-Any code in Angular is free to create a new scope. Whether or not your code does so is an
-implementation detail of the directive, that is, you can decide when or if this happens.
-Inheritance typically mimics HTML DOM element nesting, but does not do so with the same
+{@link angular.module.ng.$compileProvider.directive directives} associated with elements
+(ng:controller, ng:repeat, ng:include, etc.) create new child scopes that inherit properties from
+the current parent scope. Any code in Angular is free to create a new scope. Whether or not your
+code does so is an implementation detail of the directive, that is, you can decide when or if this
+happens. Inheritance typically mimics HTML DOM element nesting, but does not do so with the same
 granularity.
 
 A property write will always write to the current scope. This means that a write can hide a parent
@@ -117,24 +117,25 @@ scopes come into play throughout and get a sense of their interactions.
 1. At application compile time, a root scope is created and is attached to the root `<HTML>` DOM
 element.
 2. During the compilation phase, the {@link dev_guide.compiler compiler} matches {@link
-api/angular.directive directives} against the DOM template. The directives usually fall into one of
-two categories:
-   - Observing {@link api/angular.directive directives}, such as double-curly expressions
-`{{expression}}`, register listeners using the {@link api/angular.module.ng.$rootScope.Scope#$watch $watch()} method.
-This type of directive needs to be notified whenever the expression changes so that it can update
-the view.
-   -  Listener directives, such as {@link api/angular.directive.ng:click ng:click}, register a
-listener with the DOM. When the DOM listener fires, the directive executes the associated
-expression and updates the view using  the {@link api/angular.module.ng.$rootScope.Scope#$apply $apply()} method.
+angular.module.ng.$compileProvider.directive directives} against the DOM template. The directives
+usually fall into one of two categories:
+   - Observing {@link angular.module.ng.$compileProvider.directive directives}, such as double-curly
+    expressions `{{expression}}`, register listeners using the {@link
+    api/angular.module.ng.$rootScope.Scope#$watch $watch()} method. This type of directive needs to
+    be notified whenever the expression changes so that it can update the view.
+   -  Listener directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng:click
+   ng:click}, register a listener with the DOM. When the DOM listener fires, the directive executes
+   the associated expression and updates the view using  the {@link
+   api/angular.module.ng.$rootScope.Scope#$apply $apply()} method.
 3. When an external event (such as a user action, timer or XHR) is received, the associated {@link
 dev_guide.expressions expression} must be applied to the scope through the {@link
 api/angular.module.ng.$rootScope.Scope#$apply $apply()} method so that all listeners are updated correctly.
 
 
 ### Directives that create scopes
-In most cases, {@link api/angular.directive directives} and scopes interact but do not create new
-instances of scope. However, some directives, such as {@link api/angular.directive.ng:controller
-ng:controller} and {@link api/angular.widget.@ng:repeat ng:repeat}, create new child scopes using
+In most cases, {@link angular.module.ng.$compileProvider.directive directives} and scopes interact but do not create new
+instances of scope. However, some directives, such as {@link api/angular.module.ng.$compileProvider.directive.ng:controller
+ng:controller} and {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeat}, create new child scopes using
 the {@link api/angular.module.ng.$rootScope.Scope#$new $new()} method and then attach the child scope to the
 corresponding DOM element. You can retrieve a scope for any DOM element by using an
 `angular.element(aDomElement).scope()` method call.)
@@ -143,7 +144,7 @@ corresponding DOM element. You can retrieve a scope for any DOM element by using
 ### Controllers and scopes
 Scopes and controllers interact with each other in the following situations:
    - Controllers use scopes to expose controller methods to templates (see {@link
-api/angular.directive.ng:controller ng:controller}).
+api/angular.module.ng.$compileProvider.directive.ng:controller ng:controller}).
    - Controllers define methods (behavior) that can mutate the model (properties on the scope).
    - Controllers may register {@link api/angular.module.ng.$rootScope.Scope#$watch watches} on the model. These watches
 execute immediately after the controller behavior executes, but before the DOM gets updated.
@@ -169,7 +170,7 @@ $watch-ers firing and view getting updated. Similarly, when a request to fetch d
 is made and the response comes back, the data is written into the model (scope) within an $apply,
 which then pushes updates through to the view and any other dependents.
 
-A widget that creates scopes (such as {@link api/angular.widget.@ng:repeat ng:repeat}) via `$new`,
+A widget that creates scopes (such as {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeat}) via `$new`,
 doesn't need to worry about propagating the `$digest` call from the parent scope to child scopes.
 This happens automatically.
 

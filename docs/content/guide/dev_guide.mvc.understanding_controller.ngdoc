@@ -24,8 +24,8 @@ constructor). Constructors are always applied to an existing scope object.
 
 You set up the initial state of a scope by creating model properties. For example:
 
-function GreetingCtrl() {
- this.greeting = 'Hola!';
+function GreetingCtrl($scope) {
+ $scope.greeting = 'Hola!';
 }
 
 The `GreetingCtrl` controller creates a `greeting` model which can be referred to in a template.
@@ -43,7 +43,7 @@ As discussed in the {@link dev_guide.mvc.understanding_model Model} section of t
 objects (or primitives) assigned to the scope become model properties. Any functions assigned to
 the scope, along with any prototype methods of the controller type, become functions available in
 the template/view, and can be invoked via angular expressions and `ng:` event handlers (e.g. {@link
-api/angular.directive.ng:click ng:click}). These controller methods are always evaluated within the
+api/angular.module.ng.$compileProvider.directive.ng:click ng:click}). These controller methods are always evaluated within the
 context of the angular scope object that the controller function was applied to (which means that
 the `this` keyword of any controller method is always bound to the scope that the controller
 augments). This is how the second task of adding behavior to the scope is accomplished.
@@ -78,7 +78,7 @@ instances).
 # Associating Controllers with Angular Scope Objects
 
 You can associate controllers with scope objects explicitly via the {@link api/angular.module.ng.$rootScope.Scope#$new
-scope.$new} api or implicitly via the {@link api/angular.directive.ng:controller ng:controller
+scope.$new} api or implicitly via the {@link api/angular.module.ng.$compileProvider.directive.ng:controller ng:controller
 directive} or {@link api/angular.module.ng.$route $route service}.
 
 
@@ -105,9 +105,9 @@ string "very". Depending on which button is clicked, the `spice` model is set to
  <p>The food is {{spice}} spicy!</p>
 </body>
 
-function SpicyCtrl() {
- this.spice = 'very';
- this.chiliSpicy = function() {
+function SpicyCtrl($scope) {
+ $scope.spice = 'very';
+ $scope.chiliSpicy = function() {
    this.spice = 'chili';
  }
 }
@@ -144,9 +144,9 @@ previous example.
  <p>The food is {{spice}} spicy!</p>
 </body>
 
-function SpicyCtrl() {
- this.spice = 'very';
- this.spicy = function(spice) {
+function SpicyCtrl($scope) {
+ $scope.spice = 'very';
+ $scope.spicy = function(spice) {
    this.spice = spice;
  }
 }
@@ -171,18 +171,18 @@ have a look at an example:
    <p ng:controller="BabyCtrl">Good {{timeOfDay}}, {{name}}!</p>
 </body>
 
-function MainCtrl() {
- this.timeOfDay = 'morning';
- this.name = 'Nikki';
+function MainCtrl($scope) {
+ $scope.timeOfDay = 'morning';
+ $scope.name = 'Nikki';
 }
 
-function ChildCtrl() {
- this.name = 'Mattie';
+function ChildCtrl($scope) {
+ $scope.name = 'Mattie';
 }
 
-function BabyCtrl() {
- this.timeOfDay = 'evening';
- this.name = 'Gingerbreak Baby';
+function BabyCtrl($scope) {
+ $scope.timeOfDay = 'evening';
+ $scope.name = 'Gingerbreak Baby';
 }
 </pre>
 
