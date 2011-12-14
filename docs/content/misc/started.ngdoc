@@ -78,8 +78,8 @@ After the refresh, the page should look something like this:
 
 These are some of the important points to note from this example:
 
-* The text input {@link api/angular.widget widget} called `yourname` is bound to a model variable
-called `yourname`.
+* The text input {@link api/angular.module.ng.$compileProvider.directive directive}
+  is bound to a model variable called `yourname`.
 * The double curly braces notation binds the `yourname` model to the greeting text.
 
 * You did not need to explicitly register an event listener or define an event handler for events!

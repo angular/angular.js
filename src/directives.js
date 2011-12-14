@@ -1,40 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name angular.directive
- * @description
- *
- * Angular directives create custom attributes for DOM elements. A directive can modify the
- * behavior of the element in which it is specified. Do not use directives to add elements to the
- * DOM; instead, use {@link angular.widget widgets} to add DOM elements.
- *
- * For more information about how Angular directives work, and to learn how to create your own
- * directives, see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in
- * the Angular Developer Guide.
- *
- * @param {string} name Directive identifier (case insensitive).
- * @param {function(string, Element)} compileFn Also called "template function" is a function called
- *    during compilation of the template when the compiler comes across the directive being
- *    registered. The string value of the element attribute representing the directive and
- *    jQuery/jqLite wrapped DOM element are passed as arguments to this function.
- *
- *    The `compileFn` function may return a linking function also called an instance function.
- *    This function is called during the linking phase when a Scope is being associated with the
- *    template or template clone (see repeater notes below). The signature of the linking function
- *    is: `function(Element)` where Element is jQuery/jqLite wrapped DOM Element that is being
- *    linked.
- *
- * The biggest differenciator between the compile and linking functions is how they are being called
- * when a directive is present within an {@link angular.widget.@ng:repeat ng:repeat}. In this case,
- * the compile function gets called once per occurence of the directive in the template. On the
- * other hand the linking function gets called once for each repeated clone of the template (times
- * number of occurences of the directive in the repeated template).
- */
-
-/**
  * @ngdoc directive
- * @name angular.directive.ng:init
+ * @name angular.module.ng.$compileProvider.directive.ng:init
  *
  * @description
  * The `ng:init` attribute specifies initialization tasks to be executed
@@ -70,7 +38,7 @@ var ngInitDirective = valueFn({
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:controller
+ * @name angular.module.ng.$compileProvider.directive.ng:controller
  *
  * @description
  * The `ng:controller` directive assigns behavior to a scope. This is a key aspect of how angular
@@ -183,7 +151,7 @@ var ngControllerDirective = ['$controller', '$window', function($controller, $wi
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:bind
+ * @name angular.module.ng.$compileProvider.directive.ng:bind
  *
  * @description
  * The `ng:bind` attribute tells Angular to replace the text content of the specified HTML element
@@ -248,7 +216,7 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:bind-template
+ * @name angular.module.ng.$compileProvider.directive.ng:bind-template
  *
  * @description
  * The `ng:bind-template` attribute specifies that the element
@@ -305,7 +273,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:bind-attr
+ * @name angular.module.ng.$compileProvider.directive.ng:bind-attr
  *
  * @description
  * The `ng:bind-attr` attribute specifies that a
@@ -333,7 +301,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  * During compilation, the template with attribute markup gets translated to the ng:bind-attr form
  * mentioned above.
  *
- * _Note_: You might want to consider using {@link angular.directive.ng:href ng:href} instead of
+ * _Note_: You might want to consider using {@link angular.module.ng.$compileProvider.directive.ng:href ng:href} instead of
  * `href` if the binding is present in the main application template (`index.html`) and you want to
  * make sure that a user is not capable of clicking on raw/uncompiled link.
  *
@@ -399,7 +367,7 @@ var ngBindAttrDirective = ['$interpolate', function($interpolate) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:click
+ * @name angular.module.ng.$compileProvider.directive.ng:click
  *
  * @description
  * The ng:click allows you to specify custom behavior when
@@ -435,33 +403,133 @@ var ngBindAttrDirective = ['$interpolate', function($interpolate) {
  * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 var ngEventDirectives = {};
-forEach('click dblclick mousedown mouseup mouseover mousemove'.split(' '), function(name) {
-  var directiveName = camelCase('ng-' + name);
-  ngEventDirectives[directiveName] = valueFn(function(scope, element, attr) {
-    element.bind(lowercase(name), function(event) {
-      scope.$apply(attr[directiveName]);
-      event.stopPropagation();
+forEach(
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave'.split(' '),
+  function(name) {
+    var directiveName = directiveNormalize('ng-' + name);
+    ngEventDirectives[directiveName] = valueFn(function(scope, element, attr) {
+      element.bind(lowercase(name), function(event) {
+        scope.$apply(attr[directiveName]);
+        event.stopPropagation();
+      });
     });
-  });
-});
+  }
+);
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:dblclick
+ *
+ * @description
+ * The ng:dblclick allows you to specify custom behavior on dblclick event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * dblclick.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
 
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:dblclick
+ * @name angular.module.ng.$compileProvider.directive.ng:mousedown
  *
  * @description
- * The ng:dblclick allows you to specify custom behavior when
- * element is double-clicked.
+ * The ng:mousedown allows you to specify custom behavior on mousedown event.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * double-click.
+ * mousedown.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseup
+ *
+ * @description
+ * Specify custom behavior on mouseup event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseup.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
  */
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:submit
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseover
+ *
+ * @description
+ * Specify custom behavior on mouseover event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseover.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseenter
+ *
+ * @description
+ * Specify custom behavior on mouseenter event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseenter.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseleave
+ *
+ * @description
+ * Specify custom behavior on mouseleave event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseleave.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mousemove
+ *
+ * @description
+ * Specify custom behavior on mousemove event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mousemove.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:submit
  *
  * @description
  * Enables binding angular expressions to onsubmit events.
@@ -536,7 +604,7 @@ function classDirective(name, selector) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:class
+ * @name angular.module.ng.$compileProvider.directive.ng:class
  *
  * @description
  * The `ng:class` allows you to set CSS class on HTML element dynamically by databinding an
@@ -582,15 +650,15 @@ var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:class-odd
+ * @name angular.module.ng.$compileProvider.directive.ng:class-odd
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * {@link angular.module.ng.$compileProvider.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
  * takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.widget.@ng:repeat ng:repeat}.
+ * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
@@ -622,15 +690,15 @@ var ngClassOddDirective = classDirective('Odd', 0);
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:class-even
+ * @name angular.module.ng.$compileProvider.directive.ng:class-even
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * {@link angular.module.ng.$compileProvider.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
  * takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.widget.@ng:repeat ng:repeat}.
+ * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
@@ -661,7 +729,7 @@ var ngClassEvenDirective = classDirective('Even', 1);
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:show
+ * @name angular.module.ng.$compileProvider.directive.ng:show
  *
  * @description
  * The `ng:show` and `ng:hide` directives show or hide a portion of the DOM tree (HTML)
@@ -700,7 +768,7 @@ var ngShowDirective = valueFn(function(scope, element, attr){
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:hide
+ * @name angular.module.ng.$compileProvider.directive.ng:hide
  *
  * @description
  * The `ng:hide` and `ng:show` directives hide or show a portion
@@ -739,7 +807,7 @@ var ngHideDirective = valueFn(function(scope, element, attr){
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:style
+ * @name angular.module.ng.$compileProvider.directive.ng:style
  *
  * @description
  * The ng:style allows you to set CSS style on an HTML element conditionally.
@@ -781,7 +849,7 @@ var ngStyleDirective = valueFn(function(scope, element, attr) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:cloak
+ * @name angular.module.ng.$compileProvider.directive.ng:cloak
  *
  * @description
  * The `ng:cloak` directive is used to prevent the Angular html template from being briefly
@@ -840,9 +908,9 @@ var ngCloakDirective = valueFn({
 });
 
 function ngAttributeAliasDirective(propName, attrName) {
-  ngAttributeAliasDirectives[camelCase('ng-' + attrName)] = ['$interpolate', function($interpolate) {
+  ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = ['$interpolate', function($interpolate) {
     return function(scope, element, attr) {
-      scope.$watch($interpolate(attr[camelCase('ng-' + attrName)]), function(value) {
+      scope.$watch($interpolate(attr[directiveNormalize('ng-' + attrName)]), function(value) {
         attr.$set(attrName, value);
       });
     }

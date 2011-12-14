@@ -277,9 +277,10 @@ function $RootScopeProvider(){
        * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 100.
        *
        * Usually you don't call `$digest()` directly in
-       * {@link angular.directive.ng:controller controllers} or in {@link angular.directive directives}.
+       * {@link angular.module.ng.$compileProvider.directive.ng:controller controllers} or in 
+       * {@link angular.module.ng.$compileProvider.directive directives}.
        * Instead a call to {@link angular.module.ng.$rootScope.Scope#$apply $apply()} (typically from within a
-       * {@link angular.directive directive}) will force a `$digest()`.
+       * {@link angular.module.ng.$compileProvider.directive directives}) will force a `$digest()`.
        *
        * If you want to be notified whenever `$digest()` is called,
        * you can register a `watchExpression` function  with {@link angular.module.ng.$rootScope.Scope#$watch $watch()}
@@ -396,7 +397,7 @@ function $RootScopeProvider(){
        * The destructing scope emits an `$destroy` {@link angular.module.ng.$rootScope.Scope#$emit event}.
        *
        * The `$destroy()` is usually used by directives such as
-       * {@link angular.widget.@ng:repeat ng:repeat} for managing the unrolling of the loop.
+       * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat} for managing the unrolling of the loop.
        *
        */
       $destroy: function() {

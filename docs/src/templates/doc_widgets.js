@@ -27,7 +27,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
     return {
       terminal: true,
       compile: function(element, attrs) {
-        var module = element.attr('module') || '';
+        var module = attrs.module;
 
         //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
         //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
@@ -86,6 +86,17 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
             function($provide) {
               $provide.value('$browser', $browser);
               $provide.value('$location', $location);
+              $provide.decorator('$defer', function($rootScope, $delegate) {
+                return angular.extend(function(fn, delay) {
+                  if (delay && delay > 500) {
+                    return setTimeout(function() {
+                      $rootScope.$apply(fn);
+                    }, delay);
+                  } else {
+                    return $delegate.apply(this, arguments);
+                  }
+                }, $delegate);
+              });
             }
           ];
           module && modules.push(module);

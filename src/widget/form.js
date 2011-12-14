@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc widget
- * @name angular.widget.form
+ * @name angular.module.ng.$compileProvider.directive.form
  *
  * @description
  * Angular widget that creates a form scope using the

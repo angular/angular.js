@@ -37,8 +37,8 @@
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.snippet =
+         function Ctrl($scope) {
+           $scope.snippet =
              '<p style="color:blue">an html\n' +
              '<em onmouseover="this.textContent=\'PWN3D!\'">click here</em>\n' +
              'snippet</p>';

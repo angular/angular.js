@@ -49,9 +49,9 @@
         })
       });
 
-      function Ctrl() {
-        this.name = 'Angular';
-        this.html = 'Hello {{name}}';
+      function Ctrl($scope) {
+        $scope.name = 'Angular';
+        $scope.html = 'Hello {{name}}';
       }
     </script>
     <div ng-controller="Ctrl">
