@@ -36,6 +36,15 @@ beforeEach(function() {
     toBeDirty: cssMatcher('ng-dirty', 'ng-pristine'),
     toBePristine: cssMatcher('ng-pristine', 'ng-dirty'),
 
+    toEqual: function(expected) {
+      if (this.actual && this.actual.$$log) {
+        this.actual = (typeof expected === 'string')
+            ? this.actual.toString()
+            : this.actual.toArray();
+      }
+      return jasmine.Matchers.prototype.toEqual.call(this, expected);
+    },
+
     toEqualData: function(expected) {
       return angular.equals(this.actual, expected);
     },
