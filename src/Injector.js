@@ -384,25 +384,29 @@ function createInjector(modulesToLoad) {
 
     function invoke(fn, self, locals){
       var args = [],
-          $injectAnnotation,
-          $injectAnnotationIndex,
+          $inject,
+          length,
           key;
 
       if (typeof fn == 'function') {
-        $injectAnnotation = inferInjectionArgs(fn);
-        $injectAnnotationIndex = $injectAnnotation.length;
+        $inject = inferInjectionArgs(fn);
+        length = $inject.length;
       } else {
         if (isArray(fn)) {
-          $injectAnnotation = fn;
-          $injectAnnotationIndex = $injectAnnotation.length;
-          fn = $injectAnnotation[--$injectAnnotationIndex];
+          $inject = fn;
+          length = $inject.length - 1;
+          fn = $inject[length];
         }
         assertArgFn(fn, 'fn');
       }
 
-      while($injectAnnotationIndex--) {
-        key = $injectAnnotation[$injectAnnotationIndex];
-        args.unshift(locals && locals.hasOwnProperty(key) ? locals[key] : getService(key));
+      for(var i = 0; i < length; i++) {
+        key = $inject[i];
+        args.push(
+          locals && locals.hasOwnProperty(key)
+          ? locals[key]
+          : getService(key, path)
+        );
       }
 
       // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke

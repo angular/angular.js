@@ -52,7 +52,7 @@ describe('injector', function() {
 
     injector.get('s1');
 
-    expect(log).toEqual(['s6', 's5', 's3', 's4', 's2', 's1']);
+    expect(log).toEqual(['s6', 's3', 's5', 's4', 's2', 's1']);
   });
 
 
