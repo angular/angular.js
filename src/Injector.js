@@ -326,18 +326,18 @@ function createInjector(modulesToLoad, moduleRegistry) {
     } else {
       if (isArray(fn)) {
         $inject = fn;
-        length = $inject.length;
-        fn = $inject[--length];
+        length = $inject.length - 1;
+        fn = $inject[length];
       }
       assertArgFn(fn, 'fn');
     }
 
-    while(length--) {
-      key = $inject[length];
-      args.unshift(
+    for(var i = 0; i < length; i++) {
+      key = $inject[i];
+      args.push(
         locals && locals.hasOwnProperty(key)
         ? locals[key]
-        : getService($inject[length], path)
+        : getService(key, path)
       );
     }
 
