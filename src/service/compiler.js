@@ -285,14 +285,14 @@ function $CompileProvider($injector) {
           }
 
           if ((template = directive.html)) {
-            element.html(template.replace(CONTENT_REGEXP, element.html()));
-            templateAttrs.$element = template = jqLite(element.children()[0]);
+            template = jqLite(template.replace(CONTENT_REGEXP, element.html()));
             // replace the element with the new element
-            element.replaceWith(element = template);
-            templateNode = template[0];
+            element.replaceWith(template);
+            templateAttrs.$element = element = template;
+            templateNode = element[0];
 
             newTemplateAttrs = {$attr: {}};
-            templateDirectives = collectDirectives(template[0], newTemplateAttrs);
+            templateDirectives = collectDirectives(templateNode, newTemplateAttrs);
             mergeTemplateAttributes(templateAttrs, newTemplateAttrs);
 
             // take the remaining directives of old element and append them to the new directives
@@ -486,8 +486,7 @@ function $CompileProvider($injector) {
      */
     function compileNodes(nodeList) {
       var linkingFns = [],
-          haveLinkingFn = null,
-          directiveLinkingFn, childLinkingFn, directives, attrs;
+          directiveLinkingFn, childLinkingFn, directives, attrs, linkingFnFound;
 
       for(var i = 0, ii = nodeList.length; i < ii; i++) {
         attrs = {
@@ -507,31 +506,32 @@ function $CompileProvider($injector) {
 
         linkingFns.push(directiveLinkingFn);
         linkingFns.push(childLinkingFn);
-        haveLinkingFn = (haveLinkingFn || directiveLinkingFn || childLinkingFn);
+        linkingFnFound = (linkingFnFound || directiveLinkingFn || childLinkingFn);
       }
 
       // return a linking function if we have found anything, null otherwise
-      return haveLinkingFn &&
-        function(scope, nodeList, rootElement) {
-          if (linkingFns.length != nodeList.length * 2) {
-            throw Error('Template changed structure!');
-          }
-          for(var childLinkingFn, directiveLinkingFn, node,
-                  i=0, n=0, ii=linkingFns.length; i<ii; n++) {
-            node = nodeList[n];
-            directiveLinkingFn = linkingFns[i++];
-            childLinkingFn = linkingFns[i++];
+      return linkingFnFound ? linkingFn : null;
 
-            if (directiveLinkingFn) {
-              if (directiveLinkingFn.scope && !rootElement) {
-                jqLite(node).data('$scope', scope = scope.$new());
-              }
-              directiveLinkingFn(childLinkingFn, scope, node);
-            } else if (childLinkingFn) {
-              childLinkingFn(scope, node.childNodes);
+      function linkingFn(scope, nodeList, rootElement) {
+        if (linkingFns.length != nodeList.length * 2) {
+          throw Error('Template changed structure!');
+        }
+        for(var childLinkingFn, directiveLinkingFn, node,
+                i=0, n=0, ii=linkingFns.length; i<ii; n++) {
+          node = nodeList[n];
+          directiveLinkingFn = linkingFns[i++];
+          childLinkingFn = linkingFns[i++];
+
+          if (directiveLinkingFn) {
+            if (directiveLinkingFn.scope && !rootElement) {
+              jqLite(node).data('$scope', scope = scope.$new());
             }
+            directiveLinkingFn(childLinkingFn, scope, node);
+          } else if (childLinkingFn) {
+            childLinkingFn(scope, node.childNodes);
           }
         }
+      }
     }
   }];
 
