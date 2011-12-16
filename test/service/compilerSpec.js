@@ -40,7 +40,7 @@ describe('$compile', function() {
     });
 
     $compileProvider.directive('mediumStop', valueFn({
-      priority: 2, // even with negative priority we still should be able to stop descend
+      priority: 2,
       terminal: true
     }));
 
@@ -282,7 +282,6 @@ describe('$compile', function() {
 
       describe('html', function() {
 
-
         beforeEach(inject(function($compileProvider) {
           $compileProvider.directive('replace', valueFn({
             html: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
@@ -293,11 +292,13 @@ describe('$compile', function() {
           }));
         }));
 
+
         it('should replace element with template', inject(function($compile, $rootScope) {
           element = $compile('<div><div replace>content</div><div>')($rootScope);
           expect(element.text()).toEqual('Hello: content');
           expect(element.find('div').attr('compiled')).toEqual('COMPILED');
         }));
+
 
         it('should compile replace template', inject(function($compile, $rootScope) {
           element = $compile('<div><div replace medium-log>{{ "angular"  }}</div><div>')
@@ -307,6 +308,7 @@ describe('$compile', function() {
           // HIGH goes after MEDIUM since it executes as part of replaced template
           expect(log).toEqual('MEDIUM; HIGH; LOG');
         }));
+
 
         it('should merge attributes', inject(function($compile, $rootScope) {
           element = $compile(
