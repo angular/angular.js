@@ -155,6 +155,7 @@ function $CompileProvider($injector) {
         directive.priority = directive.priority || 0;
         directive.name = name;
         directive.restrict = directive.restrict || 'EACM';
+        if (directive.templateUrl) directive.terminal = true;
         return directiveCache[name] = directive;
       }
     } else {
@@ -166,8 +167,8 @@ function $CompileProvider($injector) {
   };
 
 
-  this.$get = ['$interpolate', '$exceptionHandler',
-       function($interpolate,   $exceptionHandler) {
+  this.$get = ['$interpolate', '$exceptionHandler', '$http', '$templateCache',
+       function($interpolate,   $exceptionHandler, $http, $templateCache) {
 
     return function(templateElement) {
       templateElement = jqLite(templateElement);
@@ -308,6 +309,9 @@ function $CompileProvider($injector) {
             break; // prevent further processing of directives
           }
 
+          if (directive.templateUrl) {
+            directive.compile = fetchTemplateFn(directive.compile);
+          }
           if (directive.compile) {
             linkingFns.push(directive.compile(element, templateAttrs));
           }
@@ -367,6 +371,27 @@ function $CompileProvider($injector) {
             } catch (e) {
               $exceptionHandler(e, startingTag(element));
             }
+          }
+        }
+      }
+
+
+      function fetchTemplateFn(origCompileFn, element) {
+        return function(element, templateAttrs) {
+          var origLinkingFn = origLinkingFn ? origCompileFn(element, templateAttrs) : noop;
+          return function(scope, element, attrs) {
+            if (origLinkingFn) origLinkingFn(scope, element, attrs);
+            $http.get(directive.templateUrl, {cache: $templateCache}).
+                success(function(content) {
+                  element.html(content);
+                  content = element[0].childNodes;
+                  var linkingFn = compileNodes(content);
+                  if (linkingFn) linkingFn(scope, content);
+                }).
+                error(function(response, code, headers, config) {
+                  element.html('');
+                  throw Error('Failed to load template: ' + config.url);
+                });
           }
         }
       }

@@ -325,6 +325,92 @@ describe('$compile', function() {
       });
 
 
+      describe('async templates', function() {
+
+        beforeEach(inject(
+          function($compileProvider) {
+            $compileProvider.directive('hello', valueFn({
+              templateUrl: 'hello.html'
+            }));
+            $compileProvider.directive('cau', valueFn({
+              templateUrl: 'cau.html'
+            }));
+          }
+        ));
+
+
+        it('should fetch template via $http and cache it in $templateCache', inject(
+            function($compile, $httpBackend, $templateCache, $rootScope, $browser) {
+              $httpBackend.expect('GET', 'hello.html').respond('Hello!');
+              $templateCache.put('cau.html', 'Cau!');
+              element = $compile('<div><hello>loading</hello><cau>loading</cau></div>')($rootScope);
+              expect(sortedHtml(element)).
+                  toEqual('<div><hello>loading</hello><cau>loading</cau></div>');
+
+              // TODO(i): remove defer.flush from here and all the tests below once $http is cleaned
+              //   up and uses promises only instead of $browser.defer
+              $browser.defer.flush();
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).
+                  toEqual('<div><hello>loading</hello><cau>Cau!</cau></div>');
+
+              $httpBackend.flush();
+              expect(sortedHtml(element)).
+                  toEqual('<div><hello>Hello!</hello><cau>Cau!</cau></div>');
+            }
+        ));
+
+
+        it('should compile and link the template', inject(
+            function($compile, $templateCache, $rootScope, $browser) {
+              $templateCache.put('hello.html', 'Hello, {{name}}!');
+              $rootScope.name = 'Elvis';
+              element = $compile('<div><hello>loading</hello></div>')($rootScope);
+
+              $browser.defer.flush();
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).
+                  toEqual('<div><hello>Hello, Elvis!</hello></div>');
+            }
+        ));
+
+
+        it('should be implicitly terminal and not compile placeholder content', inject(
+            function($compile, $templateCache, $rootScope, $browser) {
+              // we can't compile the contents because that would result in a memory leak
+
+              $templateCache.put('hello.html', 'Hello!');
+              element = $compile('<div><hello>{{"x"}}</hello></div>')($rootScope);
+              $rootScope.$digest();
+
+              expect(sortedHtml(element)).
+                  toEqual('<div><hello>{{"x"}}</hello></div>');
+            }
+        ));
+
+
+        it('should throw an error and clear element content if the template fails to load', inject(
+            function($compile, $httpBackend, $rootScope) {
+              $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
+              element = $compile('<div><hello>loading</hello></div>')($rootScope);
+
+              expect(function() {
+                $httpBackend.flush();
+              }).toThrow('Failed to load template: hello.html');
+              expect(sortedHtml(element)).toBe('<div><hello></hello></div>');
+            }
+        ));
+
+
+        // TODO(i): consider implementing these features
+        it('should call templateReady directive fn when the template is downloaded and compiled');
+        it('should not compile the template if templateCompile is set to false');
+        it('should inline the body of the directive element into the template');
+      });
+
+
       describe('scope', function() {
 
         beforeEach(inject(function($compileProvider, log) {
