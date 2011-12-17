@@ -777,6 +777,22 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalled();
         expect(callback.callCount).toBe(2);
       });
+
+
+      it('should default to status code 200 and empty headers if cache contains a non-array element',
+          inject(function($browser) {
+            cache.put('/myurl', 'simple response');
+            $http.get('/myurl', {cache: cache}).success(function(data, status, headers) {
+              expect(data).toBe('simple response');
+              expect(status).toBe(200);
+              expect(headers()).toEqual({});
+              callback();
+            });
+
+            $browser.defer.flush();
+            expect(callback).toHaveBeenCalledOnce();
+          })
+      );
     });
 
 

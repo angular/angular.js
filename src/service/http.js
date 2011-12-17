@@ -426,8 +426,13 @@ function $HttpProvider() {
           } else {
             // serving from cache - still needs to be async
             $browser.defer(function() {
-              parsedHeaders = fromCache[2];
-              fireCallbacks(fromCache[1], fromCache[0]);
+              if (isArray(fromCache)) {
+                parsedHeaders = fromCache[2];
+                fireCallbacks(fromCache[1], fromCache[0]);
+              } else {
+                parsedHeaders = {};
+                fireCallbacks(fromCache, 200);
+              }
             });
           }
         } else {
