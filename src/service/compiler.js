@@ -276,6 +276,11 @@ function $CompileProvider($injector) {
       for(var i = 0, ii = directives.length; i < ii; i++) {
         try {
           directive = directives[i];
+
+          if (terminalPriority > directive.priority) {
+            break; // prevent further processing of directives
+          }
+
           if (directive.scope) {
             if (newScopeDirective) {
               throw Error('Multiple directives [' + newScopeDirective.name + ', ' +
@@ -305,14 +310,12 @@ function $CompileProvider($injector) {
             ii = directives.length;
           }
 
-          if (terminalPriority > directive.priority) {
-            break; // prevent further processing of directives
-          }
-
           if (directive.templateUrl) {
-            directive.compile = fetchTemplateFn(directive.compile);
-          }
-          if (directive.compile) {
+            linkingFns.push(compileTemplateUrl(directive.compile, element, templateAttrs));
+
+            linkFn.terminal = true;
+            break;
+          } else if (directive.compile) {
             linkingFns.push(directive.compile(element, templateAttrs));
           }
         } catch (e) {
@@ -376,24 +379,54 @@ function $CompileProvider($injector) {
       }
 
 
-      function fetchTemplateFn(origCompileFn, element) {
-        return function(element, templateAttrs) {
-          var origLinkingFn = origLinkingFn ? origCompileFn(element, templateAttrs) : noop;
-          return function(scope, element, attrs) {
-            if (origLinkingFn) origLinkingFn(scope, element, attrs);
-            $http.get(directive.templateUrl, {cache: $templateCache}).
-                success(function(content) {
-                  element.html(content);
-                  content = element[0].childNodes;
-                  var linkingFn = compileNodes(content);
-                  if (linkingFn) linkingFn(scope, content);
-                }).
-                error(function(response, code, headers, config) {
-                  element.html('');
-                  throw Error('Failed to load template: ' + config.url);
-                });
+      function compileTemplateUrl(origCompileFn, tElement, tAttrs) {
+        var link,
+            linkQueue = [],
+            childrenLinkFn,
+            directiveLinkFn,
+            html = tElement.html();
+
+        tElement.html('');
+        function link(scope, cElement, cAttrs) {
+          childrenLinkFn && childrenLinkFn(scope, cElement[0].childNodes);
+          try {
+            directiveLinkFn && directiveLinkFn(scope, cElement, cAttrs);
+          } catch (e) {
+            $exceptionHandler(e, startingTag(cElement));
           }
         }
+
+        $http.get(directive.templateUrl, {cache: $templateCache}).
+          success(function(content) {
+            html = content.replace(CONTENT_REGEXP, html);
+            tElement.html(html);
+            childrenLinkFn = compileNodes(tElement.contents());
+            try {
+              directiveLinkFn = origCompileFn && origCompileFn(tElement, tAttrs);
+            } catch (e) {
+              $exceptionHandler(e, startingTag(tElement));
+            }
+
+            while(linkQueue.length) {
+              var cElement = linkQueue.pop()
+              cElement.html(html);
+              link(linkQueue.pop(), cElement, linkQueue.pop());
+            }
+            linkQueue = null;
+          }).
+          error(function(response, code, headers, config) {
+            throw Error('Failed to load template: ' + config.url);
+          });
+
+        return function(scope, cElement, cAttrs) {
+          if (linkQueue) {
+            linkQueue.push(cAttrs);
+            linkQueue.push(scope);
+            linkQueue.push(cElement);
+          } else {
+            link(scope, cElement, cAttrs);
+          }
+        };
       }
     }
 
