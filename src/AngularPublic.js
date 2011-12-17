@@ -119,7 +119,8 @@ function ngModule($provide, $injector) {
       select: selectDirective,
       ngOptions: ngOptionsDirective,
       option: optionDirective,
-      ngSubmit: ngSubmitDirective
+      ngSubmit: ngSubmitDirective,
+      script: scriptTemplateLoader
     }).
     directive(ngEventDirectives).
     directive(ngAttributeAliasDirectives);
