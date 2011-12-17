@@ -369,7 +369,6 @@ function $CompileProvider($injector) {
             }
           }
         }
-        return scope;
       }
     }
 
