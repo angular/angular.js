@@ -65,6 +65,14 @@ describe('angular', function() {
     it('should throw an exception if a Window is being copied', function() {
       expect(function() { copy(window); }).toThrow("Can't copy Window or Scope");
     });
+
+    it('should throw an exception when source and destination are equivalent', function() {
+      var src, dst;
+	    src = dst = {key: 'value'};
+      expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
+      src = dst = [2, 4];
+      expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
+    });
   });
 
   describe('equals', function() {

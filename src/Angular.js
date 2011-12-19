@@ -597,6 +597,7 @@ function copy(source, destination){
       }
     }
   } else {
+    if (source === destination) throw Error("Can't copy equivalent objects or arrays");
     if (isArray(source)) {
       while(destination.length) {
         destination.pop();
