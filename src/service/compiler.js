@@ -380,8 +380,7 @@ function $CompileProvider($injector) {
 
 
       function compileTemplateUrl(origCompileFn, tElement, tAttrs) {
-        var link,
-            linkQueue = [],
+        var linkQueue = [],
             childrenLinkFn,
             directiveLinkFn,
             html = tElement.html();

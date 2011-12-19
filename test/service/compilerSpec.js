@@ -406,6 +406,7 @@ describe('$compile', function() {
             }
         ));
 
+
         it('should resolve widgets after cloning', inject(
           function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');
@@ -427,14 +428,14 @@ describe('$compile', function() {
             var e1;
             var e2;
 
-            e1 = template($rootScope.$new(), noop);
+            e1 = template($rootScope.$new(), noop); // clone
             $rootScope.$digest();
             expect(e1.text()).toEqual('');
 
             $browser.defer.flush();
             $httpBackend.flush();
 
-            e2 = template($rootScope.$new(), noop);
+            e2 = template($rootScope.$new(), noop); // clone
             $rootScope.$digest();
             expect(e1.text()).toEqual('Hello Elvis');
             expect(e2.text()).toEqual('Hello Elvis');
@@ -465,7 +466,7 @@ describe('$compile', function() {
         it('should throw an error and clear element content if the template fails to load', inject(
             function($compile, $httpBackend, $rootScope) {
               $httpBackend.expect('GET', 'hello.html').respond(404, 'Not Found!');
-              element = $compile('<div><hello>loading</hello></div>')($rootScope);
+              element = $compile('<div><hello>content</hello></div>')($rootScope);
 
               expect(function() {
                 $httpBackend.flush();
