@@ -1,7 +1,7 @@
 'use strict';
 
 describe('$compile', function() {
-  var element, log, $compile, $rootScope;
+  var element, log;
 
   beforeEach(inject(provideLog, function($provide, $compileProvider){
     element = null;
@@ -474,12 +474,6 @@ describe('$compile', function() {
               expect(sortedHtml(element)).toBe('<div><hello></hello></div>');
             }
         ));
-
-
-        // TODO(i): consider implementing these features
-        it('should call templateReady directive fn when the template is downloaded and compiled');
-        it('should not compile the template if templateCompile is set to false');
-        it('should inline the body of the directive element into the template');
       });
 
 
