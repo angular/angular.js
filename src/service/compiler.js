@@ -267,13 +267,16 @@ function $CompileProvider($injector) {
     function applyDirectivesToNode(directives, templateNode, templateAttrs) {
       directives.sort(byPriority);
       var terminalPriority = -Number.MAX_VALUE,
+          prelinkingFns = [],
           linkingFns = [],
           newScopeDirective = null,
           element = templateAttrs.$element = jqLite(templateNode),
-          directive, templateDirectives, template, newTemplateAttrs;
+          directive, templateDirectives, template, newTemplateAttrs, linkingFn;
 
       // executes all directives on the current element
       for(var i = 0, ii = directives.length; i < ii; i++) {
+        // TODO(i): should the try block be just around the developer-provided compile fn?
+        //   we are catching our own exceptions and double logging the startingTag.
         try {
           directive = directives[i];
 
@@ -312,31 +315,36 @@ function $CompileProvider($injector) {
 
           if (directive.templateUrl) {
             linkingFns.push(compileTemplateUrl(directive.compile, element, templateAttrs));
-
-            linkFn.terminal = true;
+            compositeLinkFn.terminal = true;
             break;
           } else if (directive.compile) {
-            linkingFns.push(directive.compile(element, templateAttrs));
+            linkingFn = directive.compile(element, templateAttrs);
+            if (isFunction(linkingFn)) {
+              linkingFns.push(linkingFn);
+            } else if (linkingFn) {
+              if (linkingFn.pre) prelinkingFns.push(linkingFn.pre);
+              if (linkingFn.post) linkingFns.push(linkingFn.post);
+            }
           }
         } catch (e) {
           $exceptionHandler(e, startingTag(element));
         }
         
         if (directive.terminal) {
-          linkFn.terminal = true;
+          compositeLinkFn.terminal = true;
           terminalPriority = Math.max(terminalPriority, directive.priority);
         }
       }
-      linkFn.scope = !!newScopeDirective;
+      compositeLinkFn.scope = !!newScopeDirective;
       
-      return linkFn;
+      return compositeLinkFn;
       
       ////////////////////
 
-      
-      function linkFn(childLinkingFn, scope, linkNode) {
-        var attrs, element, ii = linkingFns.length, linkingFn, i;
-        
+
+      function compositeLinkFn(childLinkingFn, scope, linkNode) {
+        var attrs, element, i, ii;
+
         if (templateNode === linkNode) {
           attrs = templateAttrs;
         } else {
@@ -346,34 +354,23 @@ function $CompileProvider($injector) {
         element = attrs.$element;
 
         // PRELINKING
-        for(i = 0; i < ii; i++) {
-          linkingFn = linkingFns[i];
-          if (linkingFn) {
-            linkingFn = linkingFn.pre;
-            if (linkingFn) {
-              try {
-                linkingFn(scope, element, attrs);
-              } catch (e) {
-                $exceptionHandler(e, startingTag(element));
-              }
-            }
+        for(i = 0, ii = prelinkingFns.length; i < ii; i++) {
+          try {
+            prelinkingFns[i](scope, element, attrs);
+          } catch (e) {
+            $exceptionHandler(e, startingTag(element));
           }
         }
 
+        // RECURSION
         childLinkingFn && childLinkingFn(scope, linkNode.childNodes);
 
         // POSTLINKING
-        for(i = 0; i < ii; i++) {
-          linkingFn = linkingFns[i];
-          if (typeof linkingFn == 'object') {
-            linkingFn = linkingFn.post;
-          }
-          if (linkingFn) {
-            try {
-              linkingFn(scope, element, attrs);
-            } catch (e) {
-              $exceptionHandler(e, startingTag(element));
-            }
+        for(i = 0, ii = linkingFns.length; i < ii; i++) {
+          try {
+            linkingFns[i](scope, element, attrs);
+          } catch (e) {
+            $exceptionHandler(e, startingTag(element));
           }
         }
       }
