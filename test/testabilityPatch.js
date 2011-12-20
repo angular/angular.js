@@ -217,3 +217,7 @@ function provideLog($provide) {
       return log;
     });
 }
+
+function pending() {
+  dump('PENDING');
+};
