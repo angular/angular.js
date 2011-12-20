@@ -314,7 +314,8 @@ function $CompileProvider($injector) {
           }
 
           if (directive.templateUrl) {
-            linkingFns.push(compileTemplateUrl(directive.compile, element, templateAttrs));
+            linkingFns.push(compileTemplateUrl(directive.templateUrl, directive.compile, element,
+                templateAttrs));
             compositeLinkFn.terminal = true;
             break;
           } else if (directive.compile) {
@@ -373,56 +374,6 @@ function $CompileProvider($injector) {
             $exceptionHandler(e, startingTag(element));
           }
         }
-      }
-
-
-      function compileTemplateUrl(origCompileFn, tElement, tAttrs) {
-        var linkQueue = [],
-            childrenLinkFn,
-            directiveLinkFn,
-            html = tElement.html();
-
-        tElement.html('');
-        function link(scope, cElement, cAttrs) {
-          childrenLinkFn && childrenLinkFn(scope, cElement[0].childNodes);
-          try {
-            directiveLinkFn && directiveLinkFn(scope, cElement, cAttrs);
-          } catch (e) {
-            $exceptionHandler(e, startingTag(cElement));
-          }
-        }
-
-        $http.get(directive.templateUrl, {cache: $templateCache}).
-          success(function(content) {
-            html = content.replace(CONTENT_REGEXP, html);
-            tElement.html(html);
-            childrenLinkFn = compileNodes(tElement.contents());
-            try {
-              directiveLinkFn = origCompileFn && origCompileFn(tElement, tAttrs);
-            } catch (e) {
-              $exceptionHandler(e, startingTag(tElement));
-            }
-
-            while(linkQueue.length) {
-              var cElement = linkQueue.pop()
-              cElement.html(html);
-              link(linkQueue.pop(), cElement, linkQueue.pop());
-            }
-            linkQueue = null;
-          }).
-          error(function(response, code, headers, config) {
-            throw Error('Failed to load template: ' + config.url);
-          });
-
-        return function(scope, cElement, cAttrs) {
-          if (linkQueue) {
-            linkQueue.push(cAttrs);
-            linkQueue.push(scope);
-            linkQueue.push(cElement);
-          } else {
-            link(scope, cElement, cAttrs);
-          }
-        };
       }
     }
 
@@ -585,6 +536,56 @@ function $CompileProvider($injector) {
           }
         }
       }
+    }
+
+
+    function compileTemplateUrl(templateUrl, origCompileFn, tElement, tAttrs) {
+      var linkQueue = [],
+          childrenLinkFn,
+          directiveLinkFn,
+          html = tElement.html();
+
+      tElement.html('');
+      function link(scope, cElement, cAttrs) {
+        childrenLinkFn && childrenLinkFn(scope, cElement[0].childNodes);
+        try {
+          directiveLinkFn && directiveLinkFn(scope, cElement, cAttrs);
+        } catch (e) {
+          $exceptionHandler(e, startingTag(cElement));
+        }
+      }
+
+      $http.get(templateUrl, {cache: $templateCache}).
+        success(function(content) {
+          html = content.replace(CONTENT_REGEXP, html);
+          tElement.html(html);
+          childrenLinkFn = compileNodes(tElement.contents());
+          try {
+            directiveLinkFn = origCompileFn && origCompileFn(tElement, tAttrs);
+          } catch (e) {
+            $exceptionHandler(e, startingTag(tElement));
+          }
+
+          while(linkQueue.length) {
+            var cElement = linkQueue.pop()
+            cElement.html(html);
+            link(linkQueue.pop(), cElement, linkQueue.pop());
+          }
+          linkQueue = null;
+        }).
+        error(function(response, code, headers, config) {
+          throw Error('Failed to load template: ' + config.url);
+        });
+
+      return function(scope, cElement, cAttrs) {
+        if (linkQueue) {
+          linkQueue.push(cAttrs);
+          linkQueue.push(scope);
+          linkQueue.push(cElement);
+        } else {
+          link(scope, cElement, cAttrs);
+        }
+      };
     }
   }];
 
