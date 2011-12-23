@@ -186,10 +186,10 @@ The following example demonstrates:
 
      <hr/>
      Debug View:
-     <pre>form={{form}}</pre>
-     <pre>master={{master}}</pre>
-     <pre>userForm={{userForm}}</pre>
-     <pre>addressForm={{addressForm}}</pre>
+     <pre>form={{form|json}}</pre>
+     <pre>master={{master}|json}</pre>
+     <pre>userForm={{userForm|json}}</pre>
+     <pre>addressForm={{addressForm|json}}</pre>
    </div>
 </doc:source>
 <doc:scenario>
