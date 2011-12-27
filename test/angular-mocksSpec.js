@@ -291,6 +291,10 @@ describe('mocks', function() {
       expect(browser.defer.now).toEqual(3);
       expect(log).toEqual('A;B;C;');
     });
+
+    it('should throw an exception if there is nothing to be flushed', function() {
+      expect(function() {browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
+    });
   });
 
 
