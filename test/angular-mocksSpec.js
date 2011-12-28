@@ -465,39 +465,6 @@ describe('mocks', function() {
     });
 
 
-    it('should expose given headers', function() {
-      hb.when('GET', '/u1').respond(200, null, {'X-Fake': 'Header', 'Content-Type': 'application/json'});
-      var xhr = hb('GET', '/u1', null, noop, {});
-      hb.flush();
-      expect(xhr.getResponseHeader('X-Fake')).toBe('Header');
-      expect(xhr.getAllResponseHeaders()).toBe('X-Fake: Header\nContent-Type: application/json');
-    });
-
-
-    it('should normalize when header name case when accessed via getResponseHeader', function() {
-      hb.when('GET', '/u1').respond(200, null, {'X-Fake': 'Header',
-                                                'Content-Type': 'application/json',
-                                                'Location': '/foo'});
-      var xhr = hb('GET', '/u1', null, noop, {});
-      hb.flush();
-      expect(xhr.getResponseHeader('x-fAKE')).toBe('Header');
-      expect(xhr.getResponseHeader('content-type')).toBe('application/json');
-      expect(xhr.getResponseHeader('Location')).toBe('/foo');
-    });
-
-
-    it('should normalize expect header name case when accessed via getResponseHeader', function() {
-      hb.expect('GET', '/u1').respond(200, null, {'X-Fake': 'Header',
-                                                'Content-Type': 'application/json',
-                                                'Location': '/foo'});
-      var xhr = hb('GET', '/u1', null, noop, {});
-      hb.flush();
-      expect(xhr.getResponseHeader('x-fAKE')).toBe('Header');
-      expect(xhr.getResponseHeader('content-type')).toBe('application/json');
-      expect(xhr.getResponseHeader('Location')).toBe('/foo');
-    });
-
-
     it('should preserve the order of requests', function() {
       hb.when('GET', '/url1').respond(200, 'first');
       hb.when('GET', '/url2').respond(201, 'second');
@@ -508,186 +475,179 @@ describe('mocks', function() {
       hb.flush();
 
       expect(callback.callCount).toBe(2);
-      expect(callback.argsForCall[0]).toEqual([201, 'second']);
-      expect(callback.argsForCall[1]).toEqual([200, 'first']);
+      expect(callback.argsForCall[0]).toEqual([201, 'second', '']);
+      expect(callback.argsForCall[1]).toEqual([200, 'first', '']);
     });
 
 
-    it('respond() should take function', function() {
-      hb.when('GET', '/some').respond(function(m, u, d, h) {
-        return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}];
+    describe('respond()', function() {
+      it('should take values', function() {
+        hb.expect('GET', '/url1').respond(200, 'first', {'header': 'val'});
+        hb('GET', '/url1', undefined, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnceWith(200, 'first', 'header: val');
       });
 
-      var xhr = hb('GET', '/some', 'data', callback, {a: 'b'});
-      hb.flush();
+      it('should take function', function() {
+        hb.expect('GET', '/some').respond(function(m, u, d, h) {
+          return [301, m + u + ';' + d + ';a=' + h.a, {'Connection': 'keep-alive'}];
+        });
 
-      expect(callback).toHaveBeenCalledOnce();
-      expect(callback.mostRecentCall.args[0]).toBe(301);
-      expect(callback.mostRecentCall.args[1]).toBe('GET/some;data;a=b');
-      expect(xhr.getResponseHeader('Connection')).toBe('keep-alive');
-    });
+        hb('GET', '/some', 'data', callback, {a: 'b'});
+        hb.flush();
 
-
-    it('expect() should require specified order', function() {
-      hb.expect('GET', '/url1').respond(200, '');
-      hb.expect('GET', '/url2').respond(200, '');
-
-      expect(function() {
-        hb('GET', '/url2', null, noop, {});
-      }).toThrow('Unexpected request: GET /url2\nExpected GET /url1');
-    });
-
-
-    it('expect() should have precendence over when()', function() {
-      callback.andCallFake(function(status, response) {
-        expect(status).toBe(300);
-        expect(response).toBe('expect');
+        expect(callback).toHaveBeenCalledOnceWith(301, 'GET/some;data;a=b', 'Connection: keep-alive');
       });
 
-      hb.when('GET', '/url').respond(200, 'when');
-      hb.expect('GET', '/url').respond(300, 'expect');
+      it('should default status code to 200', function() {
+        callback.andCallFake(function(status, response) {
+          expect(status).toBe(200);
+          expect(response).toBe('some-data');
+        });
 
-      hb('GET', '/url', null, callback, {});
-      hb.flush();
-      expect(callback).toHaveBeenCalledOnce();
-    });
-
-
-    it ('should throw exception when only headers differes from expectation', function() {
-      hb.when('GET').respond(200, '', {});
-      hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
-
-      expect(function() {
-        hb('GET', '/match', null, noop, {});
-      }).toThrow('Expected GET /match with different headers\n' +
-                 'EXPECTED: {"Content-Type":"application/json"}\nGOT: {}');
-    });
-
-
-    it ('should throw exception when only data differes from expectation', function() {
-      hb.when('GET').respond(200, '', {});
-      hb.expect('GET', '/match', 'some-data');
-
-      expect(function() {
-        hb('GET', '/match', 'different', noop, {});
-      }).toThrow('Expected GET /match with different data\n' +
-                 'EXPECTED: some-data\nGOT: different');
-    });
-
-
-    it('expect() should without respond() and use respond()', function() {
-      callback.andCallFake(function(status, response) {
-        expect(status).toBe(201);
-        expect(response).toBe('data');
+        hb.expect('GET', '/url1').respond('some-data');
+        hb.expect('GET', '/url2').respond('some-data', {'X-Header': 'true'});
+        hb('GET', '/url1', null, callback);
+        hb('GET', '/url2', null, callback);
+        hb.flush();
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(2);
       });
 
-      hb.when('GET', '/some').respond(201, 'data');
-      hb.expect('GET', '/some');
-      hb('GET', '/some', null, callback);
-      hb.flush();
 
-      expect(callback).toHaveBeenCalled();
-      expect(function() { hb.verifyNoOutstandingExpectation(); }).not.toThrow();
+      it('should default response headers to ""', function() {
+        hb.expect('GET', '/url1').respond(200, 'first');
+        hb.expect('GET', '/url2').respond('second');
+
+        hb('GET', '/url1', null, callback);
+        hb('GET', '/url2', null, callback);
+
+        hb.flush();
+
+        expect(callback.callCount).toBe(2);
+        expect(callback.argsForCall[0]).toEqual([200, 'first', '']);
+        expect(callback.argsForCall[1]).toEqual([200, 'second', '']);
+      });
     });
 
 
-    it('flush() should flush requests fired during callbacks', function() {
-      hb.when('GET').respond(200, '');
-      hb('GET', '/some', null, function() {
-        hb('GET', '/other', null, callback);
+    describe('expect()', function() {
+      it('should require specified order', function() {
+        hb.expect('GET', '/url1').respond(200, '');
+        hb.expect('GET', '/url2').respond(200, '');
+
+        expect(function() {
+          hb('GET', '/url2', null, noop, {});
+        }).toThrow('Unexpected request: GET /url2\nExpected GET /url1');
       });
 
-      hb.flush();
-      expect(callback).toHaveBeenCalled();
-    });
 
+      it('should have precedence over when()', function() {
+        callback.andCallFake(function(status, response) {
+          expect(status).toBe(300);
+          expect(response).toBe('expect');
+        });
 
-    it('flush() should flush given number of pending requests', function() {
-      hb.when('GET').respond(200, '');
-      hb('GET', '/some', null, callback);
-      hb('GET', '/some', null, callback);
-      hb('GET', '/some', null, callback);
+        hb.when('GET', '/url').respond(200, 'when');
+        hb.expect('GET', '/url').respond(300, 'expect');
 
-      hb.flush(2);
-      expect(callback).toHaveBeenCalled();
-      expect(callback.callCount).toBe(2);
-    });
-
-
-    it('flush() should throw exception when flushing more requests than pending', function() {
-      hb.when('GET').respond(200, '');
-      hb('GET', '/url', null, callback);
-
-      expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
-      expect(callback).toHaveBeenCalledOnce();
-    });
-
-
-    it('(flush) should throw exception when no request to flush', function() {
-      expect(function() {hb.flush();}).toThrow('No pending request to flush !');
-
-      hb.when('GET').respond(200, '');
-      hb('GET', '/some', null, callback);
-      hb.flush();
-
-      expect(function() {hb.flush();}).toThrow('No pending request to flush !');
-    });
-
-
-    it('(flush) should throw exception if not all expectations satasfied', function() {
-      hb.expect('GET', '/url1').respond();
-      hb.expect('GET', '/url2').respond();
-
-      hb('GET', '/url1', null, angular.noop);
-      expect(function() {hb.flush();}).toThrow('Unsatisfied requests: GET /url2');
-    });
-
-
-    it('respond() should set default status 200 if not defined', function() {
-      callback.andCallFake(function(status, response) {
-        expect(status).toBe(200);
-        expect(response).toBe('some-data');
+        hb('GET', '/url', null, callback, {});
+        hb.flush();
+        expect(callback).toHaveBeenCalledOnce();
       });
 
-      hb.expect('GET', '/url1').respond('some-data');
-      hb.expect('GET', '/url2').respond('some-data', {'X-Header': 'true'});
-      hb('GET', '/url1', null, callback);
-      hb('GET', '/url2', null, callback);
-      hb.flush();
-      expect(callback).toHaveBeenCalled();
-      expect(callback.callCount).toBe(2);
+
+      it ('should throw exception when only headers differs from expectation', function() {
+        hb.when('GET').respond(200, '', {});
+        hb.expect('GET', '/match', undefined, {'Content-Type': 'application/json'});
+
+        expect(function() {
+          hb('GET', '/match', null, noop, {});
+        }).toThrow('Expected GET /match with different headers\n' +
+                   'EXPECTED: {"Content-Type":"application/json"}\nGOT:      {}');
+      });
+
+
+      it ('should throw exception when only data differs from expectation', function() {
+        hb.when('GET').respond(200, '', {});
+        hb.expect('GET', '/match', 'some-data');
+
+        expect(function() {
+          hb('GET', '/match', 'different', noop, {});
+        }).toThrow('Expected GET /match with different data\n' +
+                   'EXPECTED: some-data\nGOT:      different');
+      });
+
+
+      it("should use when's respond() when no expect() respond is defined", function() {
+        callback.andCallFake(function(status, response) {
+          expect(status).toBe(201);
+          expect(response).toBe('data');
+        });
+
+        hb.when('GET', '/some').respond(201, 'data');
+        hb.expect('GET', '/some');
+        hb('GET', '/some', null, callback);
+        hb.flush();
+
+        expect(callback).toHaveBeenCalled();
+        expect(function() { hb.verifyNoOutstandingExpectation(); }).not.toThrow();
+      });
     });
 
 
-    it('respond() should set default status 200 if not defined', function() {
-      callback.andCallFake(function(status, response) {
-        expect(status).toBe(200);
-        expect(response).toBe('some-data');
+    describe('flush()', function() {
+      it('flush() should flush requests fired during callbacks', function() {
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, function() {
+          hb('GET', '/other', null, callback);
+        });
+
+        hb.flush();
+        expect(callback).toHaveBeenCalled();
       });
 
-      hb.when('GET', '/url1').respond('some-data');
-      hb.when('GET', '/url2').respond('some-data', {'X-Header': 'true'});
-      hb('GET', '/url1', null, callback);
-      hb('GET', '/url2', null, callback);
-      hb.flush();
-      expect(callback).toHaveBeenCalled();
-      expect(callback.callCount).toBe(2);
-    });
 
+      it('should flush given number of pending requests', function() {
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback);
+        hb('GET', '/some', null, callback);
 
-    it('should respond with definition if no response for expectation', function() {
-      callback.andCallFake(function(status, response) {
-        expect(status).toBe(201);
-        expect(response).toBe('def-response');
+        hb.flush(2);
+        expect(callback).toHaveBeenCalled();
+        expect(callback.callCount).toBe(2);
       });
 
-      hb.when('GET').respond(201, 'def-response');
-      hb.expect('GET', '/some-url');
 
-      hb('GET', '/some-url', null, callback);
-      hb.flush();
-      expect(callback).toHaveBeenCalledOnce();
-      hb.verifyNoOutstandingExpectation();
+      it('should throw exception when flushing more requests than pending', function() {
+        hb.when('GET').respond(200, '');
+        hb('GET', '/url', null, callback);
+
+        expect(function() {hb.flush(2);}).toThrow('No more pending request to flush !');
+        expect(callback).toHaveBeenCalledOnce();
+      });
+
+
+      it('should throw exception when no request to flush', function() {
+        expect(function() {hb.flush();}).toThrow('No pending request to flush !');
+
+        hb.when('GET').respond(200, '');
+        hb('GET', '/some', null, callback);
+        hb.flush();
+
+        expect(function() {hb.flush();}).toThrow('No pending request to flush !');
+      });
+
+
+      it('should throw exception if not all expectations satisfied', function() {
+        hb.expect('GET', '/url1').respond();
+        hb.expect('GET', '/url2').respond();
+
+        hb('GET', '/url1', null, angular.noop);
+        expect(function() {hb.flush();}).toThrow('Unsatisfied requests: GET /url2');
+      });
     });
 
 
@@ -699,7 +659,7 @@ describe('mocks', function() {
     });
 
 
-    it('should throw an exception if no response for expection and no definition', function() {
+    it('should throw an exception if no response for exception and no definition', function() {
       hb.expect('GET', '/url');
       expect(function() {
         hb('GET', '/url', null, callback);
@@ -762,7 +722,7 @@ describe('mocks', function() {
     });
 
 
-    describe('reset', function() {
+    describe('resetExpectations', function() {
 
       it('should remove all expectations', function() {
         hb.expect('GET', '/u2').respond(200, '', {});
@@ -773,7 +733,7 @@ describe('mocks', function() {
       });
 
 
-      it('should remove all responses', function() {
+      it('should remove all pending responses', function() {
         var cancelledClb = jasmine.createSpy('cancelled');
 
         hb.expect('GET', '/url').respond(200, '');

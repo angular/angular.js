@@ -48,9 +48,7 @@ angular.module.ngMock.$BrowserProvider = function(){
   };
 };
 angular.module.ngMock.$Browser = function() {
-  var self = this,
-      expectations = {},
-      requests = [];
+  var self = this;
 
   this.isMock = true;
   self.$$url = "http://server";
@@ -590,6 +588,10 @@ angular.module.ngMock.dump = function(object){
 /**
  * @ngdoc object
  * @name angular.module.ngMock.$httpBackend
+ * @describe
+ * Fake HTTP backend used by the $http service during testing. This implementation can be used to
+ * respond with static or dynamic responses via the `expect` and `when` apis and their shortcuts
+ * (`expectGET`, `whenPOST`, etc).
  */
 angular.module.ngMock.$HttpBackendProvider = function() {
   this.$get = function() {
@@ -598,7 +600,13 @@ angular.module.ngMock.$HttpBackendProvider = function() {
         responses = [];
 
     function createResponse(status, data, headers) {
-      return angular.isNumber(status) ? [status, data, headers] : [200, status, data];
+      if (isFunction(status)) return status;
+
+      return function() {
+        return angular.isNumber(status)
+            ? [status, data, headers]
+            : [200, status, data];
+      }
     }
 
     // TODO(vojta): change params to: method, url, data, headers, callback
@@ -608,28 +616,29 @@ angular.module.ngMock.$HttpBackendProvider = function() {
           wasExpected = false;
 
       function prettyPrint(data) {
-        if (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
-          return data;
-        return angular.toJson(data);
+        return (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
+            ? data
+            : angular.toJson(data);
       }
 
       if (expectation && expectation.match(method, url)) {
         if (!expectation.matchData(data))
           throw Error('Expected ' + expectation + ' with different data\n' +
-              'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT: ' + data);
+              'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
 
         if (!expectation.matchHeaders(headers))
           throw Error('Expected ' + expectation + ' with different headers\n' +
-              'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT: ' + prettyPrint(headers));
+              'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
 
         expectations.shift();
 
         if (expectation.response) {
           responses.push(function() {
-            xhr.$$headers = expectation.response[2];
-            callback(expectation.response[0], expectation.response[1]);
+            var response = expectation.response(method, url, data, headers);
+            xhr.$$respHeaders = response[2];
+            callback(response[0], response[1], xhr.getAllResponseHeaders());
           });
-          return method == 'JSONP' ? undefined : xhr;
+          return;
         }
         wasExpected = true;
       }
@@ -639,12 +648,11 @@ angular.module.ngMock.$HttpBackendProvider = function() {
         if (definition.match(method, url, data, headers || {})) {
           if (!definition.response) throw Error('No response defined !');
           responses.push(function() {
-            var response = angular.isFunction(definition.response) ?
-                           definition.response(method, url, data, headers) : definition.response;
-            xhr.$$headers = response[2];
-            callback(response[0], response[1]);
+            var response = definition.response(method, url, data, headers);
+            xhr.$$respHeaders = response[2];
+            callback(response[0], response[1], xhr.getAllResponseHeaders());
           });
-          return method == 'JSONP' ? undefined : xhr;
+          return;
         }
       }
       throw wasExpected ?
@@ -658,7 +666,7 @@ angular.module.ngMock.$HttpBackendProvider = function() {
       definitions.push(definition);
       return {
         respond: function(status, data, headers) {
-          definition.response = angular.isFunction(status) ? status : createResponse(status, data, headers);
+          definition.response = createResponse(status, data, headers);
         }
       };
     };
@@ -756,7 +764,8 @@ function MockXhr() {
     this.$$method = method;
     this.$$url = url;
     this.$$async = async;
-    this.$$headers = {};
+    this.$$reqHeaders = {};
+    this.$$respHeaders = {};
   };
 
   this.send = function(data) {
@@ -764,20 +773,20 @@ function MockXhr() {
   };
 
   this.setRequestHeader = function(key, value) {
-    this.$$headers[key] = value;
+    this.$$reqHeaders[key] = value;
   };
 
   this.getResponseHeader = function(name) {
     // the lookup must be case insensitive, that's why we try two quick lookups and full scan at last
-    var header = this.$$headers[name];
+    var header = this.$$respHeaders[name];
     if (header) return header;
 
     name = angular.lowercase(name);
-    header = this.$$headers[name];
+    header = this.$$respHeaders[name];
     if (header) return header;
 
     header = undefined;
-    angular.forEach(this.$$headers, function(headerVal, headerName) {
+    angular.forEach(this.$$respHeaders, function(headerVal, headerName) {
       if (!header && angular.lowercase(headerName) == name) header = headerVal;
     });
     return header;
@@ -786,7 +795,7 @@ function MockXhr() {
   this.getAllResponseHeaders = function() {
     var lines = [];
 
-    angular.forEach(this.$$headers, function(value, key) {
+    angular.forEach(this.$$respHeaders, function(value, key) {
       lines.push(key + ': ' + value);
     });
     return lines.join('\n');
