@@ -753,6 +753,21 @@ describe('mocks', function() {
     });
 
 
+    describe('expect/when shorcuts', function() {
+      forEach(['expect', 'when'], function(prefix) {
+        forEach(['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'JSONP'], function(method) {
+          var shortcut = prefix + method;
+          it('should provide ' + shortcut + ' shortcut method', function() {
+            hb[shortcut]('/foo').respond('bar');
+            hb(method, '/foo', undefined, callback);
+            hb.flush();
+            expect(callback).toHaveBeenCalledOnceWith(200, 'bar', '');
+          });
+        });
+      });
+    });
+
+
     describe('MockHttpExpectation', function() {
 
       it('should accept url as regexp', function() {
