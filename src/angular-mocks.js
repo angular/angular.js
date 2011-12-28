@@ -671,6 +671,9 @@ angular.module.ngMock.$HttpBackendProvider = function() {
       };
     };
 
+    createShortMethods('when');
+
+
     $httpBackend.expect = function(method, url, data, headers) {
       var expectation = new MockHttpExpectation(method, url, data, headers);
       expectations.push(expectation);
@@ -680,6 +683,9 @@ angular.module.ngMock.$HttpBackendProvider = function() {
         }
       };
     };
+
+    createShortMethods('expect');
+
 
     $httpBackend.flush = function(count) {
       if (!responses.length) throw Error('No pending request to flush !');
@@ -715,6 +721,15 @@ angular.module.ngMock.$HttpBackendProvider = function() {
     };
 
     return $httpBackend;
+
+
+    function createShortMethods(prefix) {
+      angular.forEach(['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'JSONP'], function(method) {
+       $httpBackend[prefix + method] = function(url, data, headers) {
+         return $httpBackend[prefix](method, url, data, headers)
+       }
+      });
+    }
   };
 };
 
