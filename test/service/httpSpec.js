@@ -66,7 +66,7 @@ describe('$http', function() {
           expect(data).toBe('Hello!?');
           expect(status).toBe(209);
           callback();
-        })
+        });
         $httpBackend.flush();
         expect(callback).toHaveBeenCalledOnce();
       }));
@@ -550,7 +550,7 @@ describe('$http', function() {
     });
 
 
-    describe('transform', function() {
+    describe('transformData', function() {
 
       describe('request', function() {
 
@@ -648,17 +648,19 @@ describe('$http', function() {
         cache = $cacheFactory('testCache');
       }));
 
+
       function doFirstCacheRequest(method, respStatus, headers) {
         $httpBackend.expect(method || 'GET', '/url').respond(respStatus || 200, 'content', headers);
         $http({method: method || 'GET', url: '/url', cache: cache});
         $httpBackend.flush();
       }
 
-      it('should cache GET request when cache is provided', inject(function($browser) {
+
+      it('should cache GET request when cache is provided', inject(function($rootScope) {
         doFirstCacheRequest();
 
         $http({method: 'get', url: '/url', cache: cache}).success(callback);
-        $browser.defer.flush();
+        $rootScope.$digest();
 
         expect(callback).toHaveBeenCalledOnce();
         expect(callback.mostRecentCall.args[0]).toBe('content');
@@ -737,7 +739,7 @@ describe('$http', function() {
       });
 
 
-      it('should cache the headers as well', inject(function($browser) {
+      it('should cache the headers as well', inject(function($rootScope) {
         doFirstCacheRequest('GET', 200, {'content-encoding': 'gzip', 'server': 'Apache'});
         callback.andCallFake(function(r, s, headers) {
           expect(headers()).toEqual({'content-encoding': 'gzip', 'server': 'Apache'});
@@ -745,24 +747,37 @@ describe('$http', function() {
         });
 
         $http({method: 'GET', url: '/url', cache: cache}).success(callback);
-        $browser.defer.flush();
+        $rootScope.$digest();
         expect(callback).toHaveBeenCalledOnce();
       }));
 
 
-      it('should cache status code as well', inject(function($browser) {
+      it('should not share the cached headers object instance', inject(function($rootScope) {
+        doFirstCacheRequest('GET', 200, {'content-encoding': 'gzip', 'server': 'Apache'});
+        callback.andCallFake(function(r, s, headers) {
+          expect(headers()).toEqual(cache.get('/url')[2]);
+          expect(headers()).not.toBe(cache.get('/url')[2]);
+        });
+
+        $http({method: 'GET', url: '/url', cache: cache}).success(callback);
+        $rootScope.$digest();
+        expect(callback).toHaveBeenCalledOnce();
+      }));
+
+
+      it('should cache status code as well', inject(function($rootScope) {
         doFirstCacheRequest('GET', 201);
         callback.andCallFake(function(r, status, h) {
           expect(status).toBe(201);
         });
 
         $http({method: 'get', url: '/url', cache: cache}).success(callback);
-        $browser.defer.flush();
+        $rootScope.$digest();
         expect(callback).toHaveBeenCalledOnce();
       }));
 
 
-      it('should use cache even if request fired before first response is back', function() {
+      it('should use cache even if second request was made before the first returned', function() {
         $httpBackend.expect('GET', '/url').respond(201, 'fake-response');
 
         callback.andCallFake(function(response, status, headers) {
@@ -777,6 +792,22 @@ describe('$http', function() {
         expect(callback).toHaveBeenCalled();
         expect(callback.callCount).toBe(2);
       });
+
+
+      it('should default to status code 200 and empty headers if cache contains a non-array element',
+          inject(function($rootScope) {
+            cache.put('/myurl', 'simple response');
+            $http.get('/myurl', {cache: cache}).success(function(data, status, headers) {
+              expect(data).toBe('simple response');
+              expect(status).toBe(200);
+              expect(headers()).toEqual({});
+              callback();
+            });
+
+            $rootScope.$digest();
+            expect(callback).toHaveBeenCalledOnce();
+          })
+      );
     });
 
 
@@ -794,7 +825,7 @@ describe('$http', function() {
       });
 
 
-      it('should update pending requests even when served from cache', inject(function($browser) {
+      it('should update pending requests even when served from cache', inject(function($rootScope) {
         $httpBackend.when('GET').respond(200);
 
         $http({method: 'get', url: '/cached', cache: true});
@@ -807,7 +838,7 @@ describe('$http', function() {
         $http({method: 'get', url: '/cached', cache: true});
         expect($http.pendingRequests.length).toBe(1);
 
-        $browser.defer.flush();
+        $rootScope.$apply();
         expect($http.pendingRequests.length).toBe(0);
       }));
 

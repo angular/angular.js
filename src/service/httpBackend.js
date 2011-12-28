@@ -14,6 +14,11 @@ var XHR = window.XMLHttpRequest || function() {
  * @requires $document
  *
  * @description
+ * HTTP backend used by the {@link angular.module.ng.$http service} that delegates to
+ * XMLHttpRequest object.
+ *
+ * During testing this implementation is swapped with {@link angular.module.ngMock.$httpBackend mock
+ * $httpBackend} which can be trained with responses.
  */
 function $HttpBackendProvider() {
   this.$get = ['$browser', '$window', '$document', function($browser, $window, $document) {
@@ -46,24 +51,21 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
       var xhr = new XHR();
       xhr.open(method, url, true);
       forEach(headers, function(value, key) {
-          if (value) xhr.setRequestHeader(key, value);
+        if (value) xhr.setRequestHeader(key, value);
       });
 
       var status;
-      xhr.send(post || '');
 
-      // IE6, IE7 bug - does sync when serving from cache
-      if (xhr.readyState == 4) {
-        $browserDefer(function() {
-          completeRequest(callback, status || xhr.status, xhr.responseText);
-        }, 0);
-      } else {
-        xhr.onreadystatechange = function() {
-          if (xhr.readyState == 4) {
-            completeRequest(callback, status || xhr.status, xhr.responseText);
-          }
-        };
-      }
+      // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
+      // response is in the cache
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState == 4) {
+          completeRequest(
+              callback, status || xhr.status, xhr.responseText, xhr.getAllResponseHeaders());
+        }
+      };
+
+      xhr.send(post || '');
 
       if (timeout > 0) {
         $browserDefer(function() {
@@ -71,23 +73,21 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
           xhr.abort();
         }, timeout);
       }
-
-      return xhr;
     }
 
-    function completeRequest(callback, status, response) {
+
+    function completeRequest(callback, status, response, headersString) {
       // URL_MATCH is defined in src/service/location.js
       var protocol = (url.match(URL_MATCH) || ['', locationProtocol])[1];
 
       // fix status code for file protocol (it's always 0)
-      status = protocol == 'file' ? (response ? 200 : 404) : status;
+      status = (protocol == 'file') ? (response ? 200 : 404) : status;
 
       // normalize IE bug (http://bugs.jquery.com/ticket/1450)
       status = status == 1223 ? 204 : status;
 
-      callback(status, response);
+      callback(status, response, headersString);
       $browser.$$completeOutstandingRequest(noop);
     }
   };
 }
-
