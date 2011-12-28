@@ -17,7 +17,7 @@ describe('$defer', function() {
     $browser.defer.flush();
     expect(counter).toBe(1);
 
-    $browser.defer.flush(); //does nothing
+    expect(function() {$browser.defer.flush();}).toThrow('No deferred tasks to be flushed');
     expect(counter).toBe(1);
 
     expect($exceptionHandler).not.toHaveBeenCalled();

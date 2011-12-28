@@ -13,7 +13,7 @@ describe('select', function() {
       } else {
         element = jqLite(html);
       }
-      $compile(element)($rootScope);
+      element = $compile(element)($rootScope);
       scope.$apply();
       return scope;
     };
@@ -37,7 +37,7 @@ describe('select', function() {
       scope.b = 'bar';
       scope.$digest();
 
-      expect(scope.$element.text()).toBe('foobarC');
+      expect(element.text()).toBe('foobarC');
     });
 
     it('should require', inject(function($formFactory) {

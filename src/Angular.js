@@ -91,14 +91,6 @@ var $$scope           = '$scope',
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
     angularModule     = angular.module || (angular.module  = {}),
-    /** @name angular.markup */
-    angularTextMarkup = extensionMap(angular, 'markup'),
-    /** @name angular.attrMarkup */
-    angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
-    /** @name angular.directive */
-    angularDirective  = extensionMap(angular, 'directive', lowercase),
-    /** @name angular.widget */
-    angularWidget     = extensionMap(angular, 'widget', shivForIE),
     /** @name angular.module.ng */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
     nodeName_,
@@ -617,6 +609,22 @@ function copy(source, destination){
 }
 
 /**
+ * Create a shallow copy of an object
+ * @param src
+ */
+function shallowCopy(src) {
+  var dst = {},
+      key;
+  for(key in src) {
+    if (src.hasOwnProperty(key)) {
+      dst[key] = src[key];
+    }
+  }
+  return dst;
+}
+
+
+/**
  * @ngdoc function
  * @name angular.equals
  * @function
@@ -737,6 +745,19 @@ function toBoolean(value) {
   return value;
 }
 
+/**
+ * @returns {string} Returns the string representation of the element.
+ */
+function startingTag(element) {
+  element = jqLite(element).clone();
+  try {
+    // turns out IE does not let you set .html() on elements which
+    // are not allowed to have children. So we just ignore it.
+    element.html('');
+  } catch(e) {};
+  return jqLite('<div>').append(element).html().replace(/\<\/[\w\:\-]+\>$/, '');
+}
+
 
 /////////////////////////////////////////////////
 
@@ -807,7 +828,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:autobind
+ * @name angular.module.ng.$compileProvider.directive.ng:autobind
  * @element script
  *
  * @TODO ng:autobind is not a directive!! it should be documented as bootstrap parameter in a
@@ -865,6 +886,15 @@ function bootstrap(element, modules) {
   );
 }
 
+var SNAKE_CASE_REGEXP = /[A-Z]/g;
+function snake_case(name, separator){
+  separator = separator || '_';
+  return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
+    return (pos ? separator : '') + letter.toLowerCase();
+  });
+};
+
+
 function angularJsConfig(document) {
   bindJQuery();
   var scripts = document.getElementsByTagName('script'),
@@ -876,9 +906,11 @@ function angularJsConfig(document) {
   hashPos = scriptSrc.indexOf('#');
   if (hashPos != -1) extend(config, parseKeyValue(scriptSrc.substr(hashPos+1)));
 
-  eachAttribute(jqLite(script), function(value, name){
-    if (/^ng:/.exec(name)) {
-      name = name.substring(3).replace(/-/g, '_');
+  forEach(script.attributes, function(attr){
+    var name = snake_case(camelCase(attr.name)),
+        value = attr.value;
+    if (name.substr(0,3) == 'ng_') {
+      name = camelCase(name.substring(3));
       value = value || true;
       config[name] = value;
     }

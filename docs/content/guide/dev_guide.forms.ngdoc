@@ -17,7 +17,7 @@ Forms consist of all of the following:
 # Form
 
 A form groups a set of widgets together into a single logical data-set. A form is created using
-the {@link api/angular.widget.form &lt;form&gt;} element that calls the
+the {@link api/angular.module.ng.$compileProvider.directive.form &lt;form&gt;} element that calls the
 {@link api/angular.module.ng.$formFactory $formFactory} service. The form is responsible for managing
 the widgets and for tracking validation information.
 
@@ -54,8 +54,8 @@ A form is:
 # Widgets
 
 In Angular, a widget is the term used for the UI with which the user input. Examples of
-bult-in Angular widgets are {@link api/angular.widget.input input} and
-{@link api/angular.widget.select select}. Widgets provide the rendering and the user
+bult-in Angular widgets are {@link api/angular.module.ng.$compileProvider.directive.input input} and
+{@link api/angular.module.ng.$compileProvider.directive.select select}. Widgets provide the rendering and the user
 interaction logic. Widgets should be declared inside a form, if no form is provided an implicit
 form {@link api/angular.module.ng.$formFactory $formFactory.rootForm} form is used.
 
@@ -279,22 +279,22 @@ The following example demonstrates:
 
 This example shows how to implement a custom HTML editor widget in Angular.
 
-    <doc:example>
+    <doc:example module="formModule">
       <doc:source>
         <script>
           function EditorCntl() {
             this.htmlContent = '<b>Hello</b> <i>World</i>!';
           }
 
-          HTMLEditorWidget.$inject = ['$element', 'htmlFilter'];
-          function HTMLEditorWidget(element, htmlFilter) {
+          HTMLEditorWidget.$inject = ['$element', '$sanitize'];
+          function HTMLEditorWidget(element, $sanitize) {
             var self = this;
 
             this.$parseModel = function() {
               // need to protect for script injection
               try {
-                this.$viewValue = htmlFilter(
-                  this.$modelValue || '').get();
+                this.$viewValue = $sanitize(
+                  this.$modelValue || '');
                 if (this.$error.HTML) {
                   // we were invalid, but now we are OK.
                   this.$emit('$valid', 'HTML');
@@ -316,24 +316,25 @@ This example shows how to implement a custom HTML editor widget in Angular.
             });
           }
 
-          angular.directive('ng:html-editor-model', function() {
-            return ['$formFactory', '$element', function ($formFactory, element) {
-              var exp = element.attr('ng:html-editor-model'),
-                  form = $formFactory.forElement(element),
-                  widget;
-              element.attr('contentEditable', true);
-              widget = form.$createWidget({
-                scope: this,
-                model: exp,
-                controller: HTMLEditorWidget,
-                controllerArgs: {$element: element}});
-              // if the element is destroyed, then we need to
-              // notify the form.
-              element.bind('$destroy', function() {
-                widget.$destroy();
-              });
-            }];
-          });
+          angular.module.formModule = function($compileProvider){
+            $compileProvider.directive('ngHtmlEditorModel', function ($formFactory) {
+              return function(scope, element, attr) {
+                var form = $formFactory.forElement(element),
+                    widget;
+                element.attr('contentEditable', true);
+                widget = form.$createWidget({
+                  scope: scope,
+                  model: attr.ngHtmlEditorModel,
+                  controller: HTMLEditorWidget,
+                  controllerArgs: {$element: element}});
+                // if the element is destroyed, then we need to
+                // notify the form.
+                element.bind('$destroy', function() {
+                  widget.$destroy();
+                });
+              };
+            });
+          };
         </script>
         <form name='editorForm' ng:controller="EditorCntl">
           <div ng:html-editor-model="htmlContent"></div>
@@ -341,7 +342,7 @@ This example shows how to implement a custom HTML editor widget in Angular.
           HTML: <br/>
           <textarea ng:model="htmlContent" cols="80"></textarea>
           <hr/>
-          <pre>editorForm = {{editorForm}}</pre>
+          <pre>editorForm = {{editorForm|json}}</pre>
         </form>
       </doc:source>
       <doc:scenario>

@@ -56,41 +56,73 @@ function publishExternalAPI(angular){
 
 ngModule.$inject = ['$provide', '$injector'];
 function ngModule($provide, $injector) {
-// TODO(misko): temporary services to get the compiler working;
-  $provide.value('$textMarkup', angularTextMarkup);
-  $provide.value('$attrMarkup', angularAttrMarkup);
-  $provide.value('$directive', angularDirective);
-  $provide.value('$widget', angularWidget);
-
   // load the LOCALE if present
   $injector.invoke(null, angularModule.ngLocale || function(){
     $provide.service('$locale', $LocaleProvider);
   });
 
-  $provide.service('$autoScroll', $AutoScrollProvider);
-  $provide.service('$browser', $BrowserProvider);
-  $provide.service('$cacheFactory', $CacheFactoryProvider);
-  $provide.service('$compile', $CompileProvider);
-  $provide.service('$cookies', $CookiesProvider);
-  $provide.service('$cookieStore', $CookieStoreProvider);
-  $provide.service('$defer', $DeferProvider);
-  $provide.service('$document', $DocumentProvider);
-  $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
-  $provide.service('$filter', $FilterProvider);
-  $provide.service('$interpolate', $InterpolateProvider);
-  $provide.service('$formFactory', $FormFactoryProvider);
-  $provide.service('$http', $HttpProvider);
-  $provide.service('$httpBackend', $HttpBackendProvider);
-  $provide.service('$location', $LocationProvider);
-  $provide.service('$log', $LogProvider);
-  $provide.service('$parse', $ParseProvider);
-  $provide.service('$resource', $ResourceProvider);
-  $provide.service('$route', $RouteProvider);
-  $provide.service('$routeParams', $RouteParamsProvider);
-  $provide.service('$rootScope', $RootScopeProvider);
-  $provide.service('$q', $QProvider);
-  $provide.service('$sniffer', $SnifferProvider);
-  $provide.service('$templateCache', $TemplateCacheProvider);
-  $provide.service('$window', $WindowProvider);
+  forEach({
+    $autoScroll: $AutoScrollProvider,
+    $browser: $BrowserProvider,
+    $cacheFactory: $CacheFactoryProvider,
+    $cookies: $CookiesProvider,
+    $cookieStore: $CookieStoreProvider,
+    $defer: $DeferProvider,
+    $document: $DocumentProvider,
+    $exceptionHandler: $ExceptionHandlerProvider,
+    $filter: $FilterProvider,
+    $interpolate: $InterpolateProvider,
+    $formFactory: $FormFactoryProvider,
+    $http: $HttpProvider,
+    $httpBackend: $HttpBackendProvider,
+    $location: $LocationProvider,
+    $log: $LogProvider,
+    $parse: $ParseProvider,
+    $resource: $ResourceProvider,
+    $route: $RouteProvider,
+    $routeParams: $RouteParamsProvider,
+    $rootScope: $RootScopeProvider,
+    $q: $QProvider,
+    $sniffer: $SnifferProvider,
+    $sanitize: $SanitizeProvider,
+    $templateCache: $TemplateCacheProvider,
+    $window: $WindowProvider
+  }, function(service, name) { $provide.service(name, service); });
+  
+  $provide.service('$compile', $CompileProvider).
+    directive({
+      ngInit: ngInitDirective,
+      ngBind: ngBindDirective,
+      ngBindHtml: ngBindHtmlDirective,
+      ngBindHtmlUnsafe: ngBindHtmlUnsafeDirective,
+      ngBindTemplate: ngBindTemplateDirective,
+      ngBindAttr: ngBindAttrDirective,
+      ngClass: ngClassDirective,
+      ngClassEven: ngClassEvenDirective,
+      ngClassOdd: ngClassOddDirective,
+      ngStyle: ngStyleDirective,
+      ngShow: ngShowDirective,
+      ngHide: ngHideDirective,
+      ngController: ngControllerDirective,
+      ngCloak: ngCloakDirective,
+      ngRepeat: ngRepeatDirective,
+      ngSwitch: ngSwitchDirective,
+      ngInclude: ngIncludeDirective,
+      a: htmlAnchorDirective,
+      ngNonBindable: ngNonBindableDirective,
+      ngView: ngViewDirective,
+      ngPluralize: ngPluralizeDirective,
+      input: inputDirective,
+      textarea: inputDirective,
+      form: ngFormDirective,
+      ngForm: ngFormDirective,
+      select: selectDirective,
+      ngOptions: ngOptionsDirective,
+      option: optionDirective,
+      ngSubmit: ngSubmitDirective,
+      script: scriptTemplateLoader
+    }).
+    directive(ngEventDirectives).
+    directive(ngAttributeAliasDirectives);
 }
 

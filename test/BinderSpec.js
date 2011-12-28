@@ -1,11 +1,13 @@
 'use strict';
 
 describe('Binder', function() {
+  
+  var element;
 
   function childNode(element, index) {
     return jqLite(element[0].childNodes[index]);
   }
-
+  
   beforeEach(function() {
     this.compileToHtml = function (content) {
       var html;
@@ -19,9 +21,8 @@ describe('Binder', function() {
   });
 
   afterEach(function() {
-    if (this.element && this.element.dealoc) {
-      this.element.dealoc();
-    }
+    dealoc(element);
+    dealoc(this.element);
   });
 
   it('BindUpdate', inject(function($rootScope, $compile) {
@@ -42,59 +43,16 @@ describe('Binder', function() {
   }));
 
   it('ApplyTextBindings', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:bind="model.a">x</div>')($rootScope);
+    element = $compile('<div ng:bind="model.a">x</div>')($rootScope);
     $rootScope.model = {a:123};
     $rootScope.$apply();
     assertEquals('123', element.text());
-  }));
-
-  it('ReplaceBindingInTextWithSpan preserve surounding text', function() {
-    assertEquals(this.compileToHtml("<b>a{{b}}c</b>"), '<b>a<span ng:bind="b"></span>c</b>');
-  });
-
-  it('ReplaceBindingInTextWithSpan', function() {
-    assertEquals(this.compileToHtml("<b>{{b}}</b>"), '<b><span ng:bind="b"></span></b>');
-  });
-
-  it('BindingSpaceConfusesIE', inject(function($rootScope, $compile) {
-    if (!msie) return;
-    var span = document.createElement("span");
-    span.innerHTML = '&nbsp;';
-    var nbsp = span.firstChild.nodeValue;
-    assertEquals(
-        '<b><span ng:bind="a"></span><span>'+nbsp+'</span><span ng:bind="b"></span></b>',
-        this.compileToHtml("<b>{{a}} {{b}}</b>"));
-    dealoc(($rootScope));
-    assertEquals(
-        '<b><span ng:bind="A"></span><span>'+nbsp+'x </span><span ng:bind="B"></span><span>'+nbsp+'(</span><span ng:bind="C"></span>)</b>',
-        this.compileToHtml("<b>{{A}} x {{B}} ({{C}})</b>"));
-  }));
-
-  it('BindingOfAttributes', inject(function($rootScope, $compile) {
-    var element = $compile("<a href='http://s/a{{b}}c' foo='x'></a>")($rootScope);
-    var attrbinding = element.attr("ng:bind-attr");
-    var bindings = fromJson(attrbinding);
-    assertEquals("http://s/a{{b}}c", decodeURI(bindings.href));
-    assertTrue(!bindings.foo);
-  }));
-
-  it('MarkMultipleAttributes', inject(function($rootScope, $compile) {
-    var element = $compile('<a href="http://s/a{{b}}c" foo="{{d}}"></a>')($rootScope);
-    var attrbinding = element.attr("ng:bind-attr");
-    var bindings = fromJson(attrbinding);
-    assertEquals(bindings.foo, "{{d}}");
-    assertEquals(decodeURI(bindings.href), "http://s/a{{b}}c");
   }));
 
   it('AttributesNoneBound', inject(function($rootScope, $compile) {
     var a = $compile("<a href='abc' foo='def'></a>")($rootScope);
     assertEquals(a[0].nodeName, "A");
     assertTrue(!a.attr("ng:bind-attr"));
-  }));
-
-  it('ExistingAttrbindingIsAppended', inject(function($rootScope, $compile) {
-    var a = $compile("<a href='http://s/{{abc}}' ng:bind-attr='{\"b\":\"{{def}}\"}'></a>")($rootScope);
-    assertEquals('{"b":"{{def}}","href":"http://s/{{abc}}"}', a.attr('ng:bind-attr'));
   }));
 
   it('AttributesAreEvaluated', inject(function($rootScope, $compile) {
@@ -107,7 +65,7 @@ describe('Binder', function() {
 
   it('InputTypeButtonActionExecutesInScope', inject(function($rootScope, $compile) {
     var savedCalled = false;
-    var element = $compile(
+    element = $compile(
       '<input type="button" ng:click="person.save()" value="Apply">')($rootScope);
     $rootScope.person = {};
     $rootScope.person.save = function() {
@@ -119,7 +77,7 @@ describe('Binder', function() {
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
     var log = "";
-    var element = $compile('<input type="image" ng:click="action()">')($rootScope);
+    element = $compile('<input type="image" ng:click="action()">')($rootScope);
     $rootScope.action = function() {
       log += 'click;';
     };
@@ -130,7 +88,7 @@ describe('Binder', function() {
 
   it('ButtonElementActionExecutesInScope', inject(function($rootScope, $compile) {
     var savedCalled = false;
-    var element = $compile('<button ng:click="person.save()">Apply</button>')($rootScope);
+    element = $compile('<button ng:click="person.save()">Apply</button>')($rootScope);
     $rootScope.person = {};
     $rootScope.person.save = function() {
       savedCalled = true;
@@ -177,7 +135,7 @@ describe('Binder', function() {
   }));
 
   it('RepeaterContentDoesNotBind', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       '<ul>' +
         '<LI ng:repeat="item in model.items"><span ng:bind="item.a"></span></li>' +
       '</ul>')($rootScope);
@@ -195,7 +153,7 @@ describe('Binder', function() {
   });
 
   it('RepeaterAdd', inject(function($rootScope, $compile, $browser) {
-    var element = $compile('<div><input type="text" ng:model="item.x" ng:repeat="item in items"></div>')($rootScope);
+    element = $compile('<div><input type="text" ng:model="item.x" ng:repeat="item in items"></div>')($rootScope);
     $rootScope.items = [{x:'a'}, {x:'b'}];
     $rootScope.$apply();
     var first = childNode(element, 1);
@@ -210,7 +168,7 @@ describe('Binder', function() {
   }));
 
   it('ItShouldRemoveExtraChildrenWhenIteratingOverHash', inject(function($rootScope, $compile) {
-    var element = $compile('<div><div ng:repeat="i in items">{{i}}</div></div>')($rootScope);
+    element = $compile('<div><div ng:repeat="i in items">{{i}}</div></div>')($rootScope);
     var items = {};
     $rootScope.items = items;
 
@@ -231,7 +189,7 @@ describe('Binder', function() {
       $exceptionHandlerProvider.mode('log');
     },
     function($rootScope, $exceptionHandler, $compile) {
-      $compile('<div>{{error.throw()}}</div>', null, true)($rootScope);
+      element = $compile('<div>{{error.throw()}}</div>', null, true)($rootScope);
       var errorLogs = $exceptionHandler.errors;
 
       $rootScope.error = {
@@ -271,7 +229,7 @@ describe('Binder', function() {
   }));
 
   it('NestedRepeater', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       '<div>' +
         '<div ng:repeat="m in model" name="{{m.name}}">' +
            '<ul name="{{i}}" ng:repeat="i in m.item"></ul>' +
@@ -283,20 +241,20 @@ describe('Binder', function() {
 
     assertEquals('<div>'+
         '<#comment></#comment>'+
-        '<div name="a" ng:bind-attr="{"name":"{{m.name}}"}">'+
+        '<div name="a">'+
           '<#comment></#comment>'+
-          '<ul name="a1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
-          '<ul name="a2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+          '<ul name="a1"></ul>'+
+          '<ul name="a2"></ul>'+
         '</div>'+
-        '<div name="b" ng:bind-attr="{"name":"{{m.name}}"}">'+
+        '<div name="b">'+
           '<#comment></#comment>'+
-          '<ul name="b1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
-          '<ul name="b2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+          '<ul name="b1"></ul>'+
+          '<ul name="b2"></ul>'+
         '</div></div>', sortedHtml(element));
   }));
 
   it('HideBindingExpression', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:hide="hidden == 3"/>')($rootScope);
+    element = $compile('<div ng:hide="hidden == 3"/>')($rootScope);
 
     $rootScope.hidden = 3;
     $rootScope.$apply();
@@ -310,7 +268,7 @@ describe('Binder', function() {
   }));
 
   it('HideBinding', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:hide="hidden"/>')($rootScope);
+    element = $compile('<div ng:hide="hidden"/>')($rootScope);
 
     $rootScope.hidden = 'true';
     $rootScope.$apply();
@@ -329,7 +287,7 @@ describe('Binder', function() {
   }));
 
   it('ShowBinding', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:show="show"/>')($rootScope);
+    element = $compile('<div ng:show="show"/>')($rootScope);
 
     $rootScope.show = 'true';
     $rootScope.$apply();
@@ -349,7 +307,7 @@ describe('Binder', function() {
 
 
   it('BindClass', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:class="clazz"/>')($rootScope);
+    element = $compile('<div ng:class="clazz"/>')($rootScope);
 
     $rootScope.clazz = 'testClass';
     $rootScope.$apply();
@@ -363,7 +321,7 @@ describe('Binder', function() {
   }));
 
   it('BindClassEvenOdd', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       '<div>' +
         '<div ng:repeat="i in [0,1]" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div>' +
       '</div>')($rootScope);
@@ -380,7 +338,7 @@ describe('Binder', function() {
   }));
 
   it('BindStyle', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:style="style"/>')($rootScope);
+    element = $compile('<div ng:style="style"/>')($rootScope);
 
     $rootScope.$eval('style={height: "10px"}');
     $rootScope.$apply();
@@ -406,7 +364,7 @@ describe('Binder', function() {
   );
 
   it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       "<div>{{a}}" +
         "<div ng:non-bindable>{{a}}</div>" +
         "<div ng:non-bindable=''>{{b}}</div>" +
@@ -418,17 +376,17 @@ describe('Binder', function() {
   }));
 
   it('ShouldTemplateBindPreElements', inject(function ($rootScope, $compile) {
-    var element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
+    element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
     $rootScope.name = "World";
     $rootScope.$apply();
 
     assertEquals(
-      '<pre ng:bind-template="Hello {{name}}!">Hello World!</pre>',
+      '<pre>Hello World!</pre>',
       sortedHtml(element));
   }));
 
   it('FillInOptionValueWhenMissing', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
         '<select ng:model="foo">' +
           '<option selected="true">{{a}}</option>' +
           '<option value="">{{b}}</option>' +
@@ -452,7 +410,7 @@ describe('Binder', function() {
   }));
 
   it('DeleteAttributeIfEvaluatesFalse', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       '<div>' +
         '<input ng:model="a0" ng:bind-attr="{disabled:\'{{true}}\'}">' +
         '<input ng:model="a1" ng:bind-attr="{disabled:\'{{false}}\'}">' +
@@ -480,7 +438,7 @@ describe('Binder', function() {
       $exceptionHandlerProvider.mode('log');
     },
     function($rootScope, $exceptionHandler, $log, $compile) {
-      var element = $compile(
+      element = $compile(
         '<div>' +
           '<input type="button" ng:click="greeting=\'ABC\'"/>' +
           '<input type="button" ng:click=":garbage:"/>' +
@@ -500,7 +458,7 @@ describe('Binder', function() {
   );
 
   it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       '<div>' +
         '<input type="radio" ng:model="sex" value="female">' +
         '<input type="radio" ng:model="sex" value="male">' +
@@ -522,7 +480,7 @@ describe('Binder', function() {
   }));
 
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
-    var element = $compile(
+    element = $compile(
       '<ul>' +
         '<li ng:repeat="(k,v) in {a:0,b:1}" ng:bind=\"k + v\"></li>' +
       '</ul>')($rootScope);
@@ -536,7 +494,7 @@ describe('Binder', function() {
   }));
 
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
-    var element = $compile('<div ng:bind="name"></div>')($rootScope);
+    element = $compile('<div ng:bind="name"></div>')($rootScope);
     $rootScope.name = "";
     $rootScope.$watch("watched", "name=123");
     $rootScope.watched = "change";
@@ -548,7 +506,7 @@ describe('Binder', function() {
   }));
 
   it('ItShouldHandleMultilineBindings', inject(function($rootScope, $compile) {
-    var element = $compile('<div>{{\n 1 \n + \n 2 \n}}</div>')($rootScope);
+    element = $compile('<div>{{\n 1 \n + \n 2 \n}}</div>')($rootScope);
     $rootScope.$apply();
     assertEquals("3", element.text());
   }));

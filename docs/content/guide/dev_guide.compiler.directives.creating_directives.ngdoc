@@ -4,7 +4,7 @@
 
 The following code snippet shows how to define a custom directive. You define a new directive by
 extending the {@link dev_guide.compiler Angular HTML compiler}. The code snippet below is a
-simplified definition of the built-in {@link api/angular.directive.ng:bind ng:bind} directive:
+simplified definition of the built-in {@link api/angular.module.ng.$compileProvider.directive.ng:bind ng:bind} directive:
 
 <pre>
 angular.directive('ng:bind', function(expression, compiledElement) {

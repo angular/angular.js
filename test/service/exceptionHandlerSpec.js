@@ -8,8 +8,8 @@ describe('$exceptionHandler', function() {
       $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
     },
     function($log, $exceptionHandler) {
-      $exceptionHandler('myError');
-      expect($log.error.logs.shift()).toEqual(['myError']);
+      $exceptionHandler('myError', 'comment');
+      expect($log.error.logs.shift()).toEqual(['myError', 'comment']);
     }
   ));
 });

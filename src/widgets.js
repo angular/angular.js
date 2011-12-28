@@ -1,35 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc overview
- * @name angular.widget
- * @description
- *
- * An angular widget can be either a custom attribute that modifies an existing DOM element or an
- * entirely new DOM element.
- *
- * During html compilation, widgets are processed after {@link angular.markup markup}, but before
- * {@link angular.directive directives}.
- *
- * Following is the list of built-in angular widgets:
- *
- * * {@link angular.widget.@ng:non-bindable ng:non-bindable} - Blocks angular from processing an
- *   HTML element.
- * * {@link angular.widget.@ng:repeat ng:repeat} - Creates and manages a collection of cloned HTML
- *   elements.
- * * {@link angular.inputType HTML input elements} - Standard HTML input elements data-bound by
- *   angular.
- * * {@link angular.widget.ng:view ng:view} - Works with $route to "include" partial templates
- * * {@link angular.widget.ng:switch ng:switch} - Conditionally changes DOM structure
- * * {@link angular.widget.ng:include ng:include} - Includes an external HTML fragment
- *
- * For more information about angular widgets, see {@link guide/dev_guide.compiler.widgets
- * Understanding Angular Widgets} in the angular Developer Guide.
- */
-
-/**
  * @ngdoc widget
- * @name angular.widget.ng:include
+ * @name angular.module.ng.$compileProvider.directive.ng:include
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
@@ -60,7 +33,7 @@
          </select>
          url of the template: <tt><a href="{{template.url}}">{{template.url}}</a></tt>
          <hr/>
-         <ng:include src="template.url"></ng:include>
+         <div class="ng-include" src="template.url"></div>
        </div>
       </doc:source>
       <doc:scenario>
@@ -80,64 +53,63 @@
       </doc:scenario>
     </doc:example>
  */
-angularWidget('ng:include', function(element){
-  var compiler = this,
-      srcExp = element.attr("src"),
-      scopeExp = element.attr("scope") || '',
-      onloadExp = element[0].getAttribute('onload') || ''; //workaround for jquery bug #7537
-  if (element[0]['ng:compiled']) {
-    this.descend(true);
-    this.directives(true);
-  } else {
-    element[0]['ng:compiled'] = true;
-    return ['$http', '$templateCache', '$autoScroll', '$element',
-    function($http,   $templateCache,   $autoScroll,   element) {
-      var scope = this,
-          changeCounter = 0,
-          childScope;
+var ngIncludeDirective = ['$http', '$templateCache', '$autoScroll', '$compile',
+                  function($http,   $templateCache,   $autoScroll,   $compile) {
+  return {
+    compile: function(element, attr) {
+      var srcExp = attr.src,
+          scopeExp = attr.scope || '',
+          onloadExp = attr.onload || '';
+      if (!element[0]['ng:compiled']) {
+        element[0]['ng:compiled'] = true;
+        return function(scope, element, attr){
+          var changeCounter = 0,
+              childScope;
 
-      function incrementChange() { changeCounter++;}
-      this.$watch(srcExp, incrementChange);
-      this.$watch(function() {
-        var includeScope = scope.$eval(scopeExp);
-        if (includeScope) return includeScope.$id;
-      }, incrementChange);
-      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
-        var src = scope.$eval(srcExp),
-            useScope = scope.$eval(scopeExp);
+          function incrementChange() { changeCounter++;}
+          scope.$watch(srcExp, incrementChange);
+          scope.$watch(function() {
+            var includeScope = scope.$eval(scopeExp);
+            if (includeScope) return includeScope.$id;
+          }, incrementChange);
+          scope.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
+             var src = scope.$eval(srcExp),
+                 useScope = scope.$eval(scopeExp);
 
-        function clearContent() {
-          // if this callback is still desired
-          if (newChangeCounter === changeCounter) {
-            if (childScope) childScope.$destroy();
-            childScope = null;
-            element.html('');
-          }
-        }
+             function clearContent() {
+               // if this callback is still desired
+               if (newChangeCounter === changeCounter) {
+                 if (childScope) childScope.$destroy();
+                 childScope = null;
+                 element.html('');
+               }
+             }
 
-        if (src) {
-          $http.get(src, {cache: $templateCache}).success(function(response) {
-            // if this callback is still desired
-            if (newChangeCounter === changeCounter) {
-              element.html(response);
-              if (childScope) childScope.$destroy();
-              childScope = useScope ? useScope : scope.$new();
-              compiler.compile(element)(childScope);
-              $autoScroll();
-              scope.$eval(onloadExp);
-            }
-          }).error(clearContent);
-        } else {
-          clearContent();
-        }
-      });
-    }];
+             if (src) {
+               $http.get(src, {cache: $templateCache}).success(function(response) {
+                 // if this callback is still desired
+                 if (newChangeCounter === changeCounter) {
+                   element.html(response);
+                   if (childScope) childScope.$destroy();
+                   childScope = useScope ? useScope : scope.$new();
+                   $compile(element)(childScope);
+                   $autoScroll();
+                   scope.$eval(onloadExp);
+                 }
+               }).error(clearContent);
+             } else {
+               clearContent();
+             }
+          });
+        };
+      }
+    }
   }
-});
+}];
 
 /**
  * @ngdoc widget
- * @name angular.widget.ng:switch
+ * @name angular.module.ng.$compileProvider.directive.ng:switch
  *
  * @description
  * Conditionally change the DOM structure.
@@ -192,57 +164,62 @@ angularWidget('ng:include', function(element){
       </doc:scenario>
     </doc:example>
  */
-angularWidget('ng:switch', function(element) {
-  var compiler = this,
-      watchExpr = element.attr("on"),
-      changeExpr = element.attr('change'),
-      casesTemplate = {},
-      defaultCaseTemplate,
-      children = element.children(),
-      length = children.length,
-      child,
-      when;
+var ngSwitchDirective = ['$compile', function($compile){
+  return {
+    compile: function(element, attr) {
+      var watchExpr = attr.on,
+        changeExpr = attr.change,
+        casesTemplate = {},
+        defaultCaseTemplate,
+        children = element.children(),
+        length = children.length,
+        child,
+        when;
 
-  if (!watchExpr) throw new Error("Missing 'on' attribute.");
-  while(length--) {
-    child = jqLite(children[length]);
-    // this needs to be here for IE
-    child.remove();
-    when = child.attr('ng:switch-when');
-    if (isString(when)) {
-      casesTemplate[when] = compiler.compile(child);
-    } else if (isString(child.attr('ng:switch-default'))) {
-      defaultCaseTemplate = compiler.compile(child);
-    }
-  }
-  children = null; // release memory;
-  element.html('');
-
-  return function(element){
-    var changeCounter = 0;
-    var childScope;
-    var selectedTemplate;
-
-    this.$watch(watchExpr, function(scope, value) {
-      element.html('');
-      if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
-        changeCounter++;
-        if (childScope) childScope.$destroy();
-        childScope = scope.$new();
-        childScope.$eval(changeExpr);
+      if (!watchExpr) throw new Error("Missing 'on' attribute.");
+      while(length--) {
+        child = jqLite(children[length]);
+        // this needs to be here for IE
+        child.remove();
+        // TODO(misko): this attr reading is not normilized
+        when = child.attr('ng:switch-when');
+        if (isString(when)) {
+          casesTemplate[when] = $compile(child);
+          // TODO(misko): this attr reading is not normilized
+        } else if (isString(child.attr('ng:switch-default'))) {
+          defaultCaseTemplate = $compile(child);
+        }
       }
-    });
-
-    this.$watch(function() {return changeCounter;}, function() {
+      children = null; // release memory;
       element.html('');
-      if (selectedTemplate) {
-        selectedTemplate(childScope, function(caseElement) {
-          element.append(caseElement);
+
+      return function(scope, element, attr){
+        var changeCounter = 0;
+        var childScope;
+        var selectedTemplate;
+
+        scope.$watch(watchExpr, function(scope, value) {
+          element.html('');
+          if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
+            changeCounter++;
+            if (childScope) childScope.$destroy();
+            childScope = scope.$new();
+            childScope.$eval(changeExpr);
+          }
         });
-      }
-    });
+
+        scope.$watch(function() {return changeCounter;}, function() {
+          element.html('');
+          if (selectedTemplate) {
+            selectedTemplate(childScope, function(caseElement) {
+              element.append(caseElement);
+            });
+          }
+        });
+      };
+    }
   };
-});
+}];
 
 
 /*
@@ -253,31 +230,30 @@ angularWidget('ng:switch', function(element) {
  * changing the location or causing page reloads, e.g.:
  * <a href="" ng:click="model.$save()">Save</a>
  */
-angularWidget('a', function() {
-  this.descend(true);
-  this.directives(true);
-
-  return function(element) {
-    var hasNgHref = ((element.attr('ng:bind-attr') || '').indexOf('"href":') !== -1);
-
+var htmlAnchorDirective = valueFn({
+  restrict: 'E',
+  compile: function(element, attr) {
     // turn <a href ng:click="..">link</a> into a link in IE
     // but only if it doesn't have name attribute, in which case it's an anchor
-    if (!hasNgHref && !element.attr('name') && !element.attr('href')) {
-      element.attr('href', '');
+    if (!attr.href) {
+      attr.$set('href', '');
     }
 
-    if (element.attr('href') === '' && !hasNgHref) {
+    return function(scope, element) {
       element.bind('click', function(event){
-        event.preventDefault();
+        // if we have no href url, then don't navigate anywhere.
+        if (!element.attr('href')) {
+          event.preventDefault();
+        }
       });
     }
-  };
+  }
 });
 
 
 /**
  * @ngdoc widget
- * @name angular.widget.@ng:repeat
+ * @name angular.module.ng.$compileProvider.directive.ng:repeat
  *
  * @description
  * The `ng:repeat` widget instantiates a template once per item from a collection. Each template
@@ -332,130 +308,136 @@ angularWidget('a', function() {
       </doc:scenario>
     </doc:example>
  */
-angularWidget('@ng:repeat', function(expression, element){
-  element.removeAttr('ng:repeat');
-  element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' -->'));
-  var linker = this.compile(element);
-  return function(iterStartElement){
-    var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-        lhs, rhs, valueIdent, keyIdent;
-    if (! match) {
-      throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
-      expression + "'.");
-    }
-    lhs = match[1];
-    rhs = match[2];
-    match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
-    if (!match) {
-      throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-      keyValue + "'.");
-    }
-    valueIdent = match[3] || match[1];
-    keyIdent = match[2];
-
-    var parentScope = this;
-    // Store a list of elements from previous run. This is a hash where key is the item from the
-    // iterator, and the value is an array of objects with following properties.
-    //   - scope: bound scope
-    //   - element: previous element.
-    //   - index: position
-    // We need an array of these objects since the same object can be returned from the iterator.
-    // We expect this to be a rare case.
-    var lastOrder = new HashQueueMap();
-    this.$watch(function(scope){
-      var index, length,
-          collection = scope.$eval(rhs),
-          collectionLength = size(collection, true),
-          childScope,
-          // Same as lastOrder but it has the current state. It will become the
-          // lastOrder on the next iteration.
-          nextOrder = new HashQueueMap(),
-          key, value, // key/value of iteration
-          array, last,       // last object information {scope, element, index}
-          cursor = iterStartElement;     // current position of the node
-
-      if (!isArray(collection)) {
-        // if object, extract keys, sort them and use to determine order of iteration over obj props
-        array = [];
-        for(key in collection) {
-          if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-            array.push(key);
-          }
+var ngRepeatDirective = ['$compile', function($compile) {
+  return {
+    priority: 1000,
+    terminal: true,
+    compile: function(element, attr) {
+      var expression = attr.ngRepeat;
+      attr.$set(attr.$attr.ngRepeat);
+      element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' -->'));
+      var linker = $compile(element);
+      return function(scope, iterStartElement, attr){
+        var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+          lhs, rhs, valueIdent, keyIdent;
+        if (! match) {
+          throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
+            expression + "'.");
         }
-        array.sort();
-      } else {
-        array = collection || [];
-      }
+        lhs = match[1];
+        rhs = match[2];
+        match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
+        if (!match) {
+          throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+            keyValue + "'.");
+        }
+        valueIdent = match[3] || match[1];
+        keyIdent = match[2];
 
-      // we are not using forEach for perf reasons (trying to avoid #call)
-      for (index = 0, length = array.length; index < length; index++) {
-        key = (collection === array) ? index : array[index];
-        value = collection[key];
-        last = lastOrder.shift(value);
-        if (last) {
-          // if we have already seen this object, then we need to reuse the
-          // associated scope/element
-          childScope = last.scope;
-          nextOrder.push(value, last);
+        // Store a list of elements from previous run. This is a hash where key is the item from the
+        // iterator, and the value is an array of objects with following properties.
+        //   - scope: bound scope
+        //   - element: previous element.
+        //   - index: position
+        // We need an array of these objects since the same object can be returned from the iterator.
+        // We expect this to be a rare case.
+        var lastOrder = new HashQueueMap();
+        scope.$watch(function(scope){
+          var index, length,
+              collection = scope.$eval(rhs),
+              collectionLength = size(collection, true),
+              childScope,
+              // Same as lastOrder but it has the current state. It will become the
+              // lastOrder on the next iteration.
+              nextOrder = new HashQueueMap(),
+              key, value, // key/value of iteration
+              array, last,       // last object information {scope, element, index}
+              cursor = iterStartElement;     // current position of the node
 
-          if (index === last.index) {
-            // do nothing
-            cursor = last.element;
+          if (!isArray(collection)) {
+            // if object, extract keys, sort them and use to determine order of iteration over obj props
+            array = [];
+            for(key in collection) {
+              if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
+                array.push(key);
+              }
+            }
+            array.sort();
           } else {
-            // existing item which got moved
-            last.index = index;
-            // This may be a noop, if the element is next, but I don't know of a good way to
-            // figure this out,  since it would require extra DOM access, so let's just hope that
-            // the browsers realizes that it is noop, and treats it as such.
-            cursor.after(last.element);
-            cursor = last.element;
+            array = collection || [];
           }
-        } else {
-          // new item which we don't know about
-          childScope = parentScope.$new();
-        }
 
-        childScope[valueIdent] = value;
-        if (keyIdent) childScope[keyIdent] = key;
-        childScope.$index = index;
-        childScope.$position = index === 0 ?
-            'first' :
-            (index == collectionLength - 1 ? 'last' : 'middle');
+          // we are not using forEach for perf reasons (trying to avoid #call)
+          for (index = 0, length = array.length; index < length; index++) {
+            key = (collection === array) ? index : array[index];
+            value = collection[key];
+            last = lastOrder.shift(value);
+            if (last) {
+              // if we have already seen this object, then we need to reuse the
+              // associated scope/element
+              childScope = last.scope;
+              nextOrder.push(value, last);
 
-        if (!last) {
-          linker(childScope, function(clone){
-            cursor.after(clone);
-            last = {
-                scope: childScope,
-                element: (cursor = clone),
-                index: index
-              };
-            nextOrder.push(value, last);
-          });
-        }
-      }
+              if (index === last.index) {
+                // do nothing
+                cursor = last.element;
+              } else {
+                // existing item which got moved
+                last.index = index;
+                // This may be a noop, if the element is next, but I don't know of a good way to
+                // figure this out,  since it would require extra DOM access, so let's just hope that
+                // the browsers realizes that it is noop, and treats it as such.
+                cursor.after(last.element);
+                cursor = last.element;
+              }
+            } else {
+              // new item which we don't know about
+              childScope = scope.$new();
+            }
 
-      //shrink children
-      for (key in lastOrder) {
-        if (lastOrder.hasOwnProperty(key)) {
-          array = lastOrder[key];
-          while(array.length) {
-            value = array.pop();
-            value.element.remove();
-            value.scope.$destroy();
+            childScope[valueIdent] = value;
+            if (keyIdent) childScope[keyIdent] = key;
+            childScope.$index = index;
+            childScope.$position = index === 0 ?
+                'first' :
+                (index == collectionLength - 1 ? 'last' : 'middle');
+
+            if (!last) {
+              linker(childScope, function(clone){
+                cursor.after(clone);
+                last = {
+                    scope: childScope,
+                    element: (cursor = clone),
+                    index: index
+                  };
+                nextOrder.push(value, last);
+              });
+            }
           }
-        }
-      }
 
-      lastOrder = nextOrder;
-    });
+          //shrink children
+          for (key in lastOrder) {
+            if (lastOrder.hasOwnProperty(key)) {
+              array = lastOrder[key];
+              while(array.length) {
+                value = array.pop();
+                value.element.remove();
+                value.scope.$destroy();
+              }
+            }
+          }
+
+          lastOrder = nextOrder;
+        });
+      };
+    }
   };
-});
+}];
 
 
 /**
  * @ngdoc widget
- * @name angular.widget.@ng:non-bindable
+ * @name angular.module.ng.$compileProvider.directive.ng:non-bindable
  *
  * @description
  * Sometimes it is necessary to write code which looks like bindings but which should be left alone
@@ -484,12 +466,12 @@ angularWidget('@ng:repeat', function(expression, element){
       </doc:scenario>
     </doc:example>
  */
-angularWidget("@ng:non-bindable", noop);
+var ngNonBindableDirective = valueFn({ terminal: true });
 
 
 /**
  * @ngdoc widget
- * @name angular.widget.ng:view
+ * @name angular.module.ng.$compileProvider.directive.ng:view
  *
  * @description
  * # Overview
@@ -498,7 +480,7 @@ angularWidget("@ng:non-bindable", noop);
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * This widget provides functionality similar to {@link angular.widget.ng:include ng:include} when
+ * This widget provides functionality similar to {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} when
  * used like this:
  *
  *     <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
@@ -552,54 +534,53 @@ angularWidget("@ng:non-bindable", noop);
       </doc:scenario>
     </doc:example>
  */
-angularWidget('ng:view', function(element) {
-  var compiler = this;
+var ngViewDirective = ['$http', '$templateCache', '$route', '$autoScroll', '$compile',
+               function($http,   $templateCache,   $route,   $autoScroll,   $compile) {
+  return {
+    compile: function(element, attr) {
+      if (!element[0]['ng:compiled']) {
+        element[0]['ng:compiled'] = true;
 
-  if (!element[0]['ng:compiled']) {
-    element[0]['ng:compiled'] = true;
-    return ['$http', '$templateCache', '$route', '$autoScroll', '$element',
-    function($http,   $templateCache,   $route,   $autoScroll,   element) {
-      var template;
-      var changeCounter = 0;
+        return function(scope, element, attrs) {
+          var changeCounter = 0;
 
-      this.$on('$afterRouteChange', function() {
-        changeCounter++;
-      });
+          scope.$on('$afterRouteChange', function() {
+            changeCounter++;
+          });
 
-      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
-        var template = $route.current && $route.current.template;
+          scope.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
+            var template = $route.current && $route.current.template;
 
-        function clearContent() {
-          // ignore callback if another route change occured since
-          if (newChangeCounter == changeCounter) {
-            element.html('');
-          }
-        }
-
-        if (template) {
-          $http.get(template, {cache: $templateCache}).success(function(response) {
-            // ignore callback if another route change occured since
-            if (newChangeCounter == changeCounter) {
-              element.html(response);
-              compiler.compile(element)($route.current.scope);
-              $autoScroll();
+            function clearContent() {
+              // ignore callback if another route change occured since
+              if (newChangeCounter == changeCounter) {
+                element.html('');
+              }
             }
-          }).error(clearContent);
-        } else {
-          clearContent();
-        }
-      });
-    }];
-  } else {
-    compiler.descend(true);
-    compiler.directives(true);
-  }
-});
+
+            if (template) {
+              $http.get(template, {cache: $templateCache}).success(function(response) {
+                // ignore callback if another route change occured since
+                if (newChangeCounter == changeCounter) {
+                  element.html(response);
+                  $compile(element)($route.current.scope);
+                  $autoScroll();
+                }
+              }).error(clearContent);
+            } else {
+              clearContent();
+            }
+          });
+        };
+      }
+    }
+  };
+}];
 
 
 /**
  * @ngdoc widget
- * @name angular.widget.ng:pluralize
+ * @name angular.module.ng.$compileProvider.directive.ng:pluralize
  *
  * @description
  * # Overview
@@ -703,21 +684,21 @@ angularWidget('ng:view', function(element) {
 
           <!--- Example with simple pluralization rules for en locale --->
           Without Offset:
-          <ng:pluralize count="personCount"
+          <div class="ng-pluralize" count="personCount"
                         when="{'0': 'Nobody is viewing.',
                                'one': '1 person is viewing.',
                                'other': '{} people are viewing.'}">
-          </ng:pluralize><br>
+          </div><br>
 
           <!--- Example with offset --->
           With Offset(2):
-          <ng:pluralize count="personCount" offset=2
+          <div class="ng-pluralize" count="personCount" offset=2
                         when="{'0': 'Nobody is viewing.',
                                '1': '{{person1}} is viewing.',
                                '2': '{{person1}} and {{person2}} are viewing.',
                                'one': '{{person1}}, {{person2}} and one other person are viewing.',
                                'other': '{{person1}}, {{person2}} and {} other people are viewing.'}">
-          </ng:pluralize>
+          </div>
         </div>
       </doc:source>
       <doc:scenario>
@@ -765,19 +746,18 @@ angularWidget('ng:view', function(element) {
       </doc:scenario>
     </doc:example>
  */
-angularWidget('ng:pluralize', function(element) {
-  var numberExp = element.attr('count'),
-      whenExp = element.attr('when'),
-      offset = element.attr('offset') || 0;
-
-  return ['$locale', '$element', function($locale, element) {
-    var scope = this,
+var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interpolate) {
+  var BRACE = /{}/g;
+  return function(scope, element, attr) {
+    var numberExp = attr.count,
+        whenExp = attr.when,
+        offset = attr.offset || 0,
         whens = scope.$eval(whenExp),
         whensExpFns = {};
 
     forEach(whens, function(expression, key) {
-      whensExpFns[key] = compileBindTemplate(expression.replace(/{}/g,
-                                             '{{' + numberExp + '-' + offset + '}}'));
+      whensExpFns[key] =
+        $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
     });
 
     scope.$watch(function() {
@@ -794,5 +774,18 @@ angularWidget('ng:pluralize', function(element) {
     }, function(scope, newVal) {
       element.text(newVal);
     });
-  }];
-});
+  };
+}];
+
+
+var scriptTemplateLoader = ['$templateCache', function($templateCache) {
+  return {
+
+    compile: function(element, attr) {
+      if (attr.type !== 'text/ng-template') return;
+
+      var templateUrl = attr.id;
+      $templateCache.put(templateUrl, element[0].innerText);
+    }
+  };
+}];

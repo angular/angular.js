@@ -1,4 +1,3 @@
-'use strict';
 
 describe('jqLite', function() {
   var scope, a, b, c;
@@ -718,6 +717,16 @@ describe('jqLite', function() {
   });
 
 
+  describe('contents', function() {
+    it('should select all children nodes', function() {
+      var root = jqLite('<div>').html('before-<div></div>after-<span></span>');
+      var contents = root.contents();
+      expect(contents.length).toEqual(4);
+      expect(jqLite(contents[0]).text()).toEqual('before-');
+    });
+  });
+
+
   describe('append', function() {
     it('should append', function() {
       var root = jqLite('<div>');
@@ -857,6 +866,7 @@ describe('jqLite', function() {
    it('should covert dash-separated strings to camelCase', function() {
      expect(camelCase('foo-bar')).toBe('fooBar');
      expect(camelCase('foo-bar-baz')).toBe('fooBarBaz');
+     expect(camelCase('foo:bar_baz')).toBe('fooBarBaz');
    });
 
 

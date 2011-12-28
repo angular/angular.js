@@ -139,8 +139,8 @@ and title elements:
 
   While using double curlies works fine in within the title element, you might have noticed that
 for a split second they are actually displayed to the user while the page is loading. A better
-solution would be to use the {@link api/angular.directive.ng:bind ng:bind} or {@link
-api/angular.directive.ng:bind-template ng:bind-template} directives, which are invisible to the
+solution would be to use the {@link api/angular.module.ng.$compileProvider.directive.ng:bind ng:bind} or {@link
+api/angular.module.ng.$compileProvider.directive.ng:bind-template ng:bind-template} directives, which are invisible to the
 user while the page is loading:
 
           <title ng:bind-template="Google Phone Gallery: {{query}}">Google Phone Gallery</title>

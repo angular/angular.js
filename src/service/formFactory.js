@@ -22,77 +22,80 @@
  * This example shows how one could write a widget which would enable data-binding on
  * `contenteditable` feature of HTML.
  *
-    <doc:example>
-      <doc:source>
-        <script>
-          function EditorCntl() {
-            this.html = '<b>Hello</b> <i>World</i>!';
-          }
+ <doc:example module="formModule">
+   <doc:source>
+     <script>
+       function EditorCntl() {
+         this.htmlContent = '<b>Hello</b> <i>World</i>!';
+       }
 
-          HTMLEditorWidget.$inject = ['$element', 'htmlFilter'];
-          function HTMLEditorWidget(element, htmlFilter) {
-            var self = this;
+       HTMLEditorWidget.$inject = ['$element', '$sanitize'];
+       function HTMLEditorWidget(element, $sanitize) {
+         var self = this;
 
-            this.$parseModel = function() {
-              // need to protect for script injection
-              try {
-                this.$viewValue = htmlFilter(this.$modelValue || '').get();
-                if (this.$error.HTML) {
-                  // we were invalid, but now we are OK.
-                  this.$emit('$valid', 'HTML');
-                }
-              } catch (e) {
-                // if HTML not parsable invalidate form.
-                this.$emit('$invalid', 'HTML');
-              }
-            }
+         this.$parseModel = function() {
+           // need to protect for script injection
+           try {
+             this.$viewValue = $sanitize(
+               this.$modelValue || '');
+             if (this.$error.HTML) {
+               // we were invalid, but now we are OK.
+               this.$emit('$valid', 'HTML');
+             }
+           } catch (e) {
+             // if HTML not parsable invalidate form.
+             this.$emit('$invalid', 'HTML');
+           }
+         }
 
-            this.$render = function() {
-              element.html(this.$viewValue);
-            }
+         this.$render = function() {
+           element.html(this.$viewValue);
+         }
 
-            element.bind('keyup', function() {
-              self.$apply(function() {
-                self.$emit('$viewChange', element.html());
-              });
-            });
-          }
+         element.bind('keyup', function() {
+           self.$apply(function() {
+             self.$emit('$viewChange', element.html());
+           });
+         });
+       }
 
-          angular.directive('ng:contenteditable', function() {
-            return ['$formFactory', '$element', function ($formFactory, element) {
-              var exp = element.attr('ng:contenteditable'),
-                  form = $formFactory.forElement(element),
-                  widget;
-              element.attr('contentEditable', true);
-              widget = form.$createWidget({
-                scope: this,
-                model: exp,
-                controller: HTMLEditorWidget,
-                controllerArgs: {$element: element}});
-              // if the element is destroyed, then we need to notify the form.
-              element.bind('$destroy', function() {
-                widget.$destroy();
-              });
-            }];
-          });
-        </script>
-        <form name='editorForm' ng:controller="EditorCntl">
-          <div ng:contenteditable="html"></div>
-          <hr/>
-          HTML: <br/>
-          <textarea ng:model="html" cols=80></textarea>
-          <hr/>
-          <pre>editorForm = {{editorForm}}</pre>
-        </form>
-      </doc:source>
-      <doc:scenario>
-        it('should enter invalid HTML', function() {
-          expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
-          input('html').enter('<');
-          expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
-        });
-      </doc:scenario>
-    </doc:example>
+       angular.module.formModule = function($compileProvider){
+         $compileProvider.directive('ngHtmlEditorModel', function ($formFactory) {
+           return function(scope, element, attr) {
+             var form = $formFactory.forElement(element),
+                 widget;
+             element.attr('contentEditable', true);
+             widget = form.$createWidget({
+               scope: scope,
+               model: attr.ngHtmlEditorModel,
+               controller: HTMLEditorWidget,
+               controllerArgs: {$element: element}});
+             // if the element is destroyed, then we need to
+             // notify the form.
+             element.bind('$destroy', function() {
+               widget.$destroy();
+             });
+           };
+         });
+       };
+     </script>
+     <form name='editorForm' ng:controller="EditorCntl">
+       <div ng:html-editor-model="htmlContent"></div>
+       <hr/>
+       HTML: <br/>
+       <textarea ng:model="htmlContent" cols="80"></textarea>
+       <hr/>
+       <pre>editorForm = {{editorForm|json}}</pre>
+     </form>
+   </doc:source>
+   <doc:scenario>
+     it('should enter invalid HTML', function() {
+       expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-valid/);
+       input('htmlContent').enter('<');
+       expect(element('form[name=editorForm]').prop('className')).toMatch(/ng-invalid/);
+     });
+   </doc:scenario>
+ </doc:example>
  */
 
 /**

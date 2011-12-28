@@ -54,8 +54,8 @@ angular.widget('my:greeter', function(compileElement){
 </pre>
 
 
-Note: For more about widgets, see {@link dev_guide.compiler.widgets Understanding Angular Widgets}
-and the {@link api/angular.widget widget API reference page}.
+Note: For more about widgets, see {@link dev_guide.compiler.directives Understanding Angular Directives}
+and the {@link api/angular.module.ng.$compileProvider.directive directive API reference page}.
 
 # Compilation process for `<my:greeter>`
 
