@@ -78,7 +78,6 @@ describe('widget', function() {
       $rootScope.childScope.name = 'misko';
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browser.defer.flush();
       expect(element.text()).toEqual('misko');
     }));
 
@@ -92,7 +91,6 @@ describe('widget', function() {
       $rootScope.childScope.name = 'igor';
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browser.defer.flush();
 
       expect(element.text()).toEqual('igor');
 
@@ -109,7 +107,6 @@ describe('widget', function() {
       element = $compile(element)($rootScope);
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browser.defer.flush();
 
       // TODO(misko): because we are using scope==this, the eval gets registered
       // during the flush phase and hence does not get called.
@@ -131,7 +128,6 @@ describe('widget', function() {
 
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browser.defer.flush();
 
       expect(element.text()).toEqual('my partial');
       expect($rootScope.loaded).toBe(true);
@@ -147,7 +143,6 @@ describe('widget', function() {
 
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browser.defer.flush();
       expect($rootScope.$$childHead).toBeTruthy();
 
       $rootScope.url = null;
@@ -171,7 +166,6 @@ describe('widget', function() {
 
       $rootScope.url = 'myUrl';
       $rootScope.$digest();
-      $browser.defer.flush();
       expect(element.text()).toEqual('my partial');
       dealoc($rootScope);
     }));
@@ -202,7 +196,6 @@ describe('widget', function() {
       });
 
       $rootScope.$digest();
-      $browser.defer.flush();
       expect(element.text()).toBe('my partial');
     }));
 
@@ -656,7 +649,6 @@ describe('widget', function() {
       $rootScope.log = [];
       $location.path('/foo');
       $rootScope.$apply();
-      $browser.defer.flush();
 
       expect($rootScope.log).toEqual(['parent', 'init', 'child']);
     }));
@@ -708,7 +700,6 @@ describe('widget', function() {
       });
 
       $rootScope.$digest();
-      $browser.defer.flush();
       expect(element.text()).toBe('my partial');
     }));
   });

@@ -58,15 +58,10 @@ describe('$httpBackend', function() {
     $backend('POST', 'URL', null, noop, {'X-header1': 'value1', 'X-header2': 'value2'});
     xhr = MockXhr.$$lastInstance;
 
-    expect(xhr.$$headers).toEqual({
+    expect(xhr.$$reqHeaders).toEqual({
       'X-header1': 'value1',
       'X-header2': 'value2'
     });
-  });
-
-
-  it('should return raw xhr object', function() {
-    expect($backend('GET', '/url', null, noop)).toBe(MockXhr.$$lastInstance);
   });
 
 
@@ -91,16 +86,20 @@ describe('$httpBackend', function() {
   });
 
 
-  it('should be async even if xhr.send() is sync', function() {
-    // IE6, IE7 is sync when serving from cache
+  it('should register onreadystatechange callback before sending', function() {
+    // send() in IE6, IE7 is sync when serving from cache
     function SyncXhr() {
       xhr = this;
       this.open = this.setRequestHeader = noop;
+
       this.send = function() {
         this.status = 200;
         this.responseText = 'response';
         this.readyState = 4;
+        this.onreadystatechange();
       };
+
+      this.getAllResponseHeaders = valueFn('');
     }
 
     callback.andCallFake(function(status, response) {
@@ -108,14 +107,8 @@ describe('$httpBackend', function() {
       expect(response).toBe('response');
     });
 
-    $backend = createHttpBackend($browser, SyncXhr, fakeTimeout);
+    $backend = createHttpBackend($browser, SyncXhr);
     $backend('GET', '/url', null, callback);
-    expect(callback).not.toHaveBeenCalled();
-
-    fakeTimeout.flush();
-    expect(callback).toHaveBeenCalledOnce();
-
-    (xhr.onreadystatechange || noop)();
     expect(callback).toHaveBeenCalledOnce();
   });
 

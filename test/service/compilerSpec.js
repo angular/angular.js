@@ -352,16 +352,13 @@ describe('$compile', function() {
 
 
         it('should fetch template via $http and cache it in $templateCache', inject(
-            function($compile, $httpBackend, $templateCache, $rootScope, $browser) {
+            function($compile, $httpBackend, $templateCache, $rootScope) {
               $httpBackend.expect('GET', 'hello.html').respond('Hello!');
               $templateCache.put('cau.html', 'Cau!');
               element = $compile('<div><hello>ignore</hello><cau>ignore</cau></div>')($rootScope);
               expect(sortedHtml(element)).
                   toEqual('<div><hello></hello><cau></cau></div>');
 
-              // TODO(i): remove defer.flush from here and all the tests below once $http is cleaned
-              //   up and uses promises only instead of $browser.defer
-              $browser.defer.flush();
               $rootScope.$digest();
 
 
@@ -376,12 +373,11 @@ describe('$compile', function() {
 
 
         it('should compile, link and flush the template', inject(
-            function($compile, $templateCache, $rootScope, $browser) {
+            function($compile, $templateCache, $rootScope) {
               $templateCache.put('hello.html', 'Hello, {{name}}!');
               $rootScope.name = 'Elvis';
               element = $compile('<div><hello></hello></div>')($rootScope);
 
-              $browser.defer.flush();
               $rootScope.$digest();
 
               expect(sortedHtml(element)).
@@ -390,13 +386,11 @@ describe('$compile', function() {
         ));
 
 
-        it('should compile, flush and link the template', inject(
-            function($compile, $templateCache, $rootScope, $browser) {
+        it('should compile and link the template', inject(
+            function($compile, $templateCache, $rootScope) {
               $templateCache.put('hello.html', 'Hello, {{name}}!');
               $rootScope.name = 'Elvis';
               var template = $compile('<div><hello></hello></div>');
-
-              $browser.defer.flush();
 
               element = template($rootScope);
               $rootScope.$digest();
@@ -411,8 +405,7 @@ describe('$compile', function() {
           function($exceptionHandlerProvider) {
             $exceptionHandlerProvider.mode('log');
           },
-          function($compile, $templateCache, $rootScope, $httpBackend, $browser,
-                   $exceptionHandler) {
+          function($compile, $templateCache, $rootScope, $httpBackend, $exceptionHandler) {
             $httpBackend.expect('GET', 'hello.html').respond('{{greeting}} ');
             $httpBackend.expect('GET', 'error.html').respond('');
             $templateCache.put('cau.html', '{{name}}');
@@ -429,10 +422,10 @@ describe('$compile', function() {
             var e2;
 
             e1 = template($rootScope.$new(), noop); // clone
-            $rootScope.$digest();
             expect(e1.text()).toEqual('');
+            $rootScope.$digest();
+            expect(e1.text()).toEqual('Elvis');
 
-            $browser.defer.flush();
             $httpBackend.flush();
 
             e2 = template($rootScope.$new(), noop); // clone
@@ -451,7 +444,7 @@ describe('$compile', function() {
 
 
         it('should be implicitly terminal and not compile placeholder content', inject(
-            function($compile, $templateCache, $rootScope, $browser) {
+            function($compile, $templateCache, $rootScope) {
               // we can't compile the contents because that would result in a memory leak
 
               $templateCache.put('hello.html', 'Hello!');
