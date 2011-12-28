@@ -108,7 +108,8 @@ function DocsController($location, $window, $cookies, $filter) {
     window.disqus_url = 'http://docs-next.angularjs.org' + currentPageId;
 
     if ($location.host() == 'localhost') {
-      window.disqus_developer = 1;
+      return; // don't display disqus on localhost, comment this out if needed
+      //window.disqus_developer = 1;
     }
 
     // http://docs.disqus.com/developers/universal/
