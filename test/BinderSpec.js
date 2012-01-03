@@ -27,33 +27,33 @@ describe('Binder', function() {
   it('BindUpdate', inject(function($rootScope, $compile) {
     $compile('<div ng:init="a=123"/>')($rootScope);
     $rootScope.$digest();
-    assertEquals(123, $rootScope.a);
+    expect($rootScope.a).toBe(123);
   }));
 
   it('ExecuteInitialization', inject(function($rootScope, $compile) {
     $compile('<div ng:init="a=123">')($rootScope);
-    assertEquals($rootScope.a, 123);
+    expect($rootScope.a).toBe(123);
   }));
 
   it('ExecuteInitializationStatements', inject(function($rootScope, $compile) {
     $compile('<div ng:init="a=123;b=345">')($rootScope);
-    assertEquals($rootScope.a, 123);
-    assertEquals($rootScope.b, 345);
+    expect($rootScope.a).toBe(123);
+    expect($rootScope.b).toBe(345);
   }));
 
   it('ApplyTextBindings', inject(function($rootScope, $compile) {
     var element = $compile('<div ng:bind="model.a">x</div>')($rootScope);
     $rootScope.model = {a:123};
     $rootScope.$apply();
-    assertEquals('123', element.text());
+    expect(element.text()).toBe('123');
   }));
 
   it('ReplaceBindingInTextWithSpan preserve surounding text', function() {
-    assertEquals(this.compileToHtml("<b>a{{b}}c</b>"), '<b>a<span ng:bind="b"></span>c</b>');
+    expect(this.compileToHtml("<b>a{{b}}c</b>")).toBe('<b>a<span ng:bind="b"></span>c</b>');
   });
 
   it('ReplaceBindingInTextWithSpan', function() {
-    assertEquals(this.compileToHtml("<b>{{b}}</b>"), '<b><span ng:bind="b"></span></b>');
+    expect(this.compileToHtml("<b>{{b}}</b>")).toBe('<b><span ng:bind="b"></span></b>');
   });
 
   it('BindingSpaceConfusesIE', inject(function($rootScope, $compile) {
@@ -61,48 +61,47 @@ describe('Binder', function() {
     var span = document.createElement("span");
     span.innerHTML = '&nbsp;';
     var nbsp = span.firstChild.nodeValue;
-    assertEquals(
-        '<b><span ng:bind="a"></span><span>'+nbsp+'</span><span ng:bind="b"></span></b>',
-        this.compileToHtml("<b>{{a}} {{b}}</b>"));
+    expect(this.compileToHtml("<b>{{a}} {{b}}</b>")).
+        toBe('<b><span ng:bind="a"></span><span>' + nbsp + '</span><span ng:bind="b"></span></b>');
     dealoc(($rootScope));
-    assertEquals(
-        '<b><span ng:bind="A"></span><span>'+nbsp+'x </span><span ng:bind="B"></span><span>'+nbsp+'(</span><span ng:bind="C"></span>)</b>',
-        this.compileToHtml("<b>{{A}} x {{B}} ({{C}})</b>"));
+    expect(this.compileToHtml("<b>{{A}} x {{B}} ({{C}})</b>")).
+        toBe('<b><span ng:bind="A"></span><span>' + nbsp + 'x </span><span ng:bind="B"></span>' +
+             '<span>' + nbsp + '(</span><span ng:bind="C"></span>)</b>');
   }));
 
   it('BindingOfAttributes', inject(function($rootScope, $compile) {
     var element = $compile("<a href='http://s/a{{b}}c' foo='x'></a>")($rootScope);
     var attrbinding = element.attr("ng:bind-attr");
     var bindings = fromJson(attrbinding);
-    assertEquals("http://s/a{{b}}c", decodeURI(bindings.href));
-    assertTrue(!bindings.foo);
+    expect(decodeURI(bindings.href)).toBe("http://s/a{{b}}c");
+    expect(bindings.foo).toBeFalsy();
   }));
 
   it('MarkMultipleAttributes', inject(function($rootScope, $compile) {
     var element = $compile('<a href="http://s/a{{b}}c" foo="{{d}}"></a>')($rootScope);
     var attrbinding = element.attr("ng:bind-attr");
     var bindings = fromJson(attrbinding);
-    assertEquals(bindings.foo, "{{d}}");
-    assertEquals(decodeURI(bindings.href), "http://s/a{{b}}c");
+    expect(bindings.foo).toBe("{{d}}");
+    expect(decodeURI(bindings.href)).toBe("http://s/a{{b}}c");
   }));
 
   it('AttributesNoneBound', inject(function($rootScope, $compile) {
     var a = $compile("<a href='abc' foo='def'></a>")($rootScope);
-    assertEquals(a[0].nodeName, "A");
-    assertTrue(!a.attr("ng:bind-attr"));
+    expect(a[0].nodeName).toBe("A");
+    expect(a.attr("ng:bind-attr")).toBeFalsy();
   }));
 
   it('ExistingAttrbindingIsAppended', inject(function($rootScope, $compile) {
     var a = $compile("<a href='http://s/{{abc}}' ng:bind-attr='{\"b\":\"{{def}}\"}'></a>")($rootScope);
-    assertEquals('{"b":"{{def}}","href":"http://s/{{abc}}"}', a.attr('ng:bind-attr'));
+    expect(a.attr('ng:bind-attr')).toBe('{"b":"{{def}}","href":"http://s/{{abc}}"}');
   }));
 
   it('AttributesAreEvaluated', inject(function($rootScope, $compile) {
     var a = $compile('<a ng:bind-attr=\'{"a":"a", "b":"a+b={{a+b}}"}\'></a>')($rootScope);
     $rootScope.$eval('a=1;b=2');
     $rootScope.$apply();
-    assertEquals(a.attr('a'), 'a');
-    assertEquals(a.attr('b'), 'a+b=3');
+    expect(a.attr('a')).toBe('a');
+    expect(a.attr('b')).toBe('a+b=3');
   }));
 
   it('InputTypeButtonActionExecutesInScope', inject(function($rootScope, $compile) {
@@ -114,7 +113,7 @@ describe('Binder', function() {
       savedCalled = true;
     };
     browserTrigger(element, 'click');
-    assertTrue(savedCalled);
+    expect(savedCalled).toBe(true);
   }));
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
@@ -136,7 +135,7 @@ describe('Binder', function() {
       savedCalled = true;
     };
     browserTrigger(element, 'click');
-    assertTrue(savedCalled);
+    expect(savedCalled).toBe(true);
   }));
 
   it('RepeaterUpdateBindings', inject(function($rootScope, $compile) {
@@ -148,28 +147,31 @@ describe('Binder', function() {
     $rootScope.model = {items:items};
 
     $rootScope.$apply();
-    assertEquals('<ul>' +
+    expect(sortedHtml(form)).toBe(
+        '<ul>' +
           '<#comment></#comment>' +
           '<li ng:bind="item.a">A</li>' +
           '<li ng:bind="item.a">B</li>' +
-          '</ul>', sortedHtml(form));
+        '</ul>');
 
     items.unshift({a:'C'});
     $rootScope.$apply();
-    assertEquals('<ul>' +
+    expect(sortedHtml(form)).toBe(
+        '<ul>' +
           '<#comment></#comment>' +
           '<li ng:bind="item.a">C</li>' +
           '<li ng:bind="item.a">A</li>' +
           '<li ng:bind="item.a">B</li>' +
-          '</ul>', sortedHtml(form));
+        '</ul>');
 
     items.shift();
     $rootScope.$apply();
-    assertEquals('<ul>' +
+    expect(sortedHtml(form)).toBe(
+        '<ul>' +
           '<#comment></#comment>' +
           '<li ng:bind="item.a">A</li>' +
           '<li ng:bind="item.a">B</li>' +
-          '</ul>', sortedHtml(form));
+        '</ul>');
 
     items.shift();
     items.shift();
@@ -183,15 +185,16 @@ describe('Binder', function() {
       '</ul>')($rootScope);
     $rootScope.model = {items:[{a:"A"}]};
     $rootScope.$apply();
-    assertEquals('<ul>' +
+    expect(sortedHtml(element)).toBe(
+        '<ul>' +
           '<#comment></#comment>' +
           '<li><span ng:bind="item.a">A</span></li>' +
-          '</ul>', sortedHtml(element));
+        '</ul>');
   }));
 
   it('DoNotOverwriteCustomAction', function() {
     var html = this.compileToHtml('<input type="submit" value="Save" action="foo();">');
-    assertTrue(html.indexOf('action="foo();"') > 0 );
+    expect(html.indexOf('action="foo();"')).toBeGreaterThan(0);
   });
 
   it('RepeaterAdd', inject(function($rootScope, $compile, $browser) {
@@ -242,11 +245,11 @@ describe('Binder', function() {
       $rootScope.error['throw'] = function() {throw "MyError";};
       errorLogs.length = 0;
       $rootScope.$apply();
-      assertEquals(['MyError'], errorLogs.shift());
+      expect(errorLogs.shift()).toBe('MyError');
 
       $rootScope.error['throw'] = function() {return "ok";};
       $rootScope.$apply();
-      assertEquals(0, errorLogs.length);
+      expect(errorLogs.length).toBe(0);
     })
   );
 
@@ -281,18 +284,20 @@ describe('Binder', function() {
     $rootScope.model = [{name:'a', item:['a1', 'a2']}, {name:'b', item:['b1', 'b2']}];
     $rootScope.$apply();
 
-    assertEquals('<div>'+
-        '<#comment></#comment>'+
-        '<div name="a" ng:bind-attr="{"name":"{{m.name}}"}">'+
+    expect(sortedHtml(element)).toBe(
+        '<div>'+
           '<#comment></#comment>'+
-          '<ul name="a1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
-          '<ul name="a2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
-        '</div>'+
-        '<div name="b" ng:bind-attr="{"name":"{{m.name}}"}">'+
-          '<#comment></#comment>'+
-          '<ul name="b1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
-          '<ul name="b2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
-        '</div></div>', sortedHtml(element));
+          '<div name="a" ng:bind-attr="{"name":"{{m.name}}"}">'+
+            '<#comment></#comment>'+
+            '<ul name="a1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+            '<ul name="a2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+          '</div>'+
+          '<div name="b" ng:bind-attr="{"name":"{{m.name}}"}">'+
+            '<#comment></#comment>'+
+            '<ul name="b1" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+            '<ul name="b2" ng:bind-attr="{"name":"{{i}}"}"></ul>'+
+          '</div>' +
+        '</div>');
   }));
 
   it('HideBindingExpression', inject(function($rootScope, $compile) {
@@ -354,12 +359,12 @@ describe('Binder', function() {
     $rootScope.clazz = 'testClass';
     $rootScope.$apply();
 
-    assertEquals('<div class="testClass" ng:class="clazz"></div>', sortedHtml(element));
+    expect(sortedHtml(element)).toBe('<div class="testClass" ng:class="clazz"></div>');
 
     $rootScope.clazz = ['a', 'b'];
     $rootScope.$apply();
 
-    assertEquals('<div class="a b" ng:class="clazz"></div>', sortedHtml(element));
+    expect(sortedHtml(element)).toBe('<div class="a b" ng:class="clazz"></div>');
   }));
 
   it('BindClassEvenOdd', inject(function($rootScope, $compile) {
@@ -372,11 +377,10 @@ describe('Binder', function() {
     var d2 = jqLite(element[0].childNodes[2]);
     expect(d1.hasClass('o')).toBeTruthy();
     expect(d2.hasClass('e')).toBeTruthy();
-    assertEquals(
+    expect(sortedHtml(element)).toBe(
         '<div><#comment></#comment>' +
         '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div>' +
-        '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div></div>',
-        sortedHtml(element));
+        '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div></div>');
   }));
 
   it('BindStyle', inject(function($rootScope, $compile) {
@@ -385,7 +389,7 @@ describe('Binder', function() {
     $rootScope.$eval('style={height: "10px"}');
     $rootScope.$apply();
 
-    assertEquals("10px", element.css('height'));
+    expect(element.css('height')).toBe("10px");
 
     $rootScope.$eval('style={}');
     $rootScope.$apply();
@@ -414,7 +418,7 @@ describe('Binder', function() {
       "</div>")($rootScope);
     $rootScope.a = 123;
     $rootScope.$apply();
-    assertEquals('123{{a}}{{b}}{{c}}', element.text());
+    expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
   }));
 
   it('ShouldTemplateBindPreElements', inject(function ($rootScope, $compile) {
@@ -422,9 +426,8 @@ describe('Binder', function() {
     $rootScope.name = "World";
     $rootScope.$apply();
 
-    assertEquals(
-      '<pre ng:bind-template="Hello {{name}}!">Hello World!</pre>',
-      sortedHtml(element));
+    expect(      sortedHtml(element)).toBe(
+      '<pre ng:bind-template="Hello {{name}}!">Hello World!</pre>');
   }));
 
   it('FillInOptionValueWhenMissing', inject(function($rootScope, $compile) {
@@ -463,8 +466,7 @@ describe('Binder', function() {
       '</div>')($rootScope);
     $rootScope.$apply();
     function assertChild(index, disabled) {
-      var child = childNode(element, index);
-      assertEquals(sortedHtml(child), disabled, !!child.attr('disabled'));
+      expect(!!childNode(element, index).attr('disabled')).toBe(disabled);
     }
 
     assertChild(0, true);
@@ -490,7 +492,7 @@ describe('Binder', function() {
       var errorLogs = $log.error.logs;
 
       browserTrigger(first, 'click');
-      assertEquals("ABC", $rootScope.greeting);
+      expect($rootScope.greeting).toBe("ABC");
       expect(errorLogs).toEqual([]);
 
       browserTrigger(second, 'click');
@@ -509,16 +511,16 @@ describe('Binder', function() {
     var male = jqLite(element[0].childNodes[1]);
 
     browserTrigger(female);
-    assertEquals("female", $rootScope.sex);
-    assertEquals(true, female[0].checked);
-    assertEquals(false, male[0].checked);
-    assertEquals("female", female.val());
+    expect($rootScope.sex).toBe("female");
+    expect(female[0].checked).toBe(true);
+    expect(male[0].checked).toBe(false);
+    expect(female.val()).toBe("female");
 
     browserTrigger(male);
-    assertEquals("male", $rootScope.sex);
-    assertEquals(false, female[0].checked);
-    assertEquals(true, male[0].checked);
-    assertEquals("male", male.val());
+    expect($rootScope.sex).toBe("male");
+    expect(female[0].checked).toBe(false);
+    expect(male[0].checked).toBe(true);
+    expect(male.val()).toBe("male");
   }));
 
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
@@ -527,12 +529,12 @@ describe('Binder', function() {
         '<li ng:repeat="(k,v) in {a:0,b:1}" ng:bind=\"k + v\"></li>' +
       '</ul>')($rootScope);
     $rootScope.$apply();
-    assertEquals('<ul>' +
-        '<#comment></#comment>' +
-        '<li ng:bind=\"k + v\">a0</li>' +
-        '<li ng:bind=\"k + v\">b1</li>' +
-        '</ul>',
-        sortedHtml(element));
+    expect(sortedHtml(element)).toBe(
+        '<ul>' +
+          '<#comment></#comment>' +
+          '<li ng:bind=\"k + v\">a0</li>' +
+          '<li ng:bind=\"k + v\">b1</li>' +
+        '</ul>');
   }));
 
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
@@ -541,16 +543,14 @@ describe('Binder', function() {
     $rootScope.$watch("watched", "name=123");
     $rootScope.watched = "change";
     $rootScope.$apply();
-    assertEquals(123, $rootScope.name);
-    assertEquals(
-        '<div ng:bind="name">123</div>',
-        sortedHtml(element));
+    expect($rootScope.name).toBe(123);
+    expect(sortedHtml(element)).toBe('<div ng:bind="name">123</div>');
   }));
 
   it('ItShouldHandleMultilineBindings', inject(function($rootScope, $compile) {
     var element = $compile('<div>{{\n 1 \n + \n 2 \n}}</div>')($rootScope);
     $rootScope.$apply();
-    assertEquals("3", element.text());
+    expect(element.text()).toBe("3");
   }));
 
 });
