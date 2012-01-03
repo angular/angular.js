@@ -173,87 +173,87 @@ describe("markups", function() {
 
   it('should Parse Text With No Bindings', inject(function($rootScope, $compile) {
     var parts = parseBindings("a");
-    assertEquals(parts.length, 1);
-    assertEquals(parts[0], "a");
-    assertTrue(!binding(parts[0]));
+    expect(parts.length).toBe(1);
+    expect(parts[0]).toBe("a");
+    expect(binding(parts[0])).toBeFalsy();
   }));
 
   it('should Parse Empty Text', inject(function($rootScope, $compile) {
     var parts = parseBindings("");
-    assertEquals(parts.length, 1);
-    assertEquals(parts[0], "");
-    assertTrue(!binding(parts[0]));
+    expect(parts.length).toBe(1);
+    expect(parts[0]).toBe("");
+    expect(binding(parts[0])).toBeFalsy();
   }));
 
   it('should Parse Inner Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("a{{b}}C");
-    assertEquals(parts.length, 3);
-    assertEquals(parts[0], "a");
-    assertTrue(!binding(parts[0]));
-    assertEquals(parts[1], "{{b}}");
-    assertEquals(binding(parts[1]), "b");
-    assertEquals(parts[2], "C");
-    assertTrue(!binding(parts[2]));
+    expect(parts.length).toBe(3);
+    expect(parts[0]).toBe("a");
+    expect(binding(parts[0])).toBeFalsy();
+    expect(parts[1]).toBe("{{b}}");
+    expect(binding(parts[1])).toBe("b");
+    expect(parts[2]).toBe("C");
+    expect(binding(parts[2])).toBeFalsy();
   }));
 
   it('should Parse Ending Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("a{{b}}");
-    assertEquals(parts.length, 2);
-    assertEquals(parts[0], "a");
-    assertTrue(!binding(parts[0]));
-    assertEquals(parts[1], "{{b}}");
-    assertEquals(binding(parts[1]), "b");
+    expect(parts.length).toBe(2);
+    expect(parts[0]).toBe("a");
+    expect(binding(parts[0])).toBeFalsy();
+    expect(parts[1]).toBe("{{b}}");
+    expect(binding(parts[1])).toBe("b");
   }));
 
   it('should Parse Begging Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}c");
-    assertEquals(parts.length, 2);
-    assertEquals(parts[0], "{{b}}");
-    assertEquals(binding(parts[0]), "b");
-    assertEquals(parts[1], "c");
-    assertTrue(!binding(parts[1]));
+    expect(parts.length).toBe(2);
+    expect(parts[0]).toBe("{{b}}");
+    expect(binding(parts[0])).toBe("b");
+    expect(parts[1]).toBe("c");
+    expect(binding(parts[1])).toBeFalsy();
   }));
 
   it('should Parse Loan Binding', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}");
-    assertEquals(parts.length, 1);
-    assertEquals(parts[0], "{{b}}");
-    assertEquals(binding(parts[0]), "b");
+    expect(parts.length).toBe(1);
+    expect(parts[0]).toBe("{{b}}");
+    expect(binding(parts[0])).toBe("b");
   }));
 
   it('should Parse Two Bindings', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}{{c}}");
-    assertEquals(parts.length, 2);
-    assertEquals(parts[0], "{{b}}");
-    assertEquals(binding(parts[0]), "b");
-    assertEquals(parts[1], "{{c}}");
-    assertEquals(binding(parts[1]), "c");
+    expect(parts.length).toBe(2);
+    expect(parts[0]).toBe("{{b}}");
+    expect(binding(parts[0])).toBe("b");
+    expect(parts[1]).toBe("{{c}}");
+    expect(binding(parts[1])).toBe("c");
   }));
 
   it('should Parse Two Bindings With Text In Middle', inject(function($rootScope, $compile) {
     var parts = parseBindings("{{b}}x{{c}}");
-    assertEquals(parts.length, 3);
-    assertEquals(parts[0], "{{b}}");
-    assertEquals(binding(parts[0]), "b");
-    assertEquals(parts[1], "x");
-    assertTrue(!binding(parts[1]));
-    assertEquals(parts[2], "{{c}}");
-    assertEquals(binding(parts[2]), "c");
+    expect(parts.length).toBe(3);
+    expect(parts[0]).toBe("{{b}}");
+    expect(binding(parts[0])).toBe("b");
+    expect(parts[1]).toBe("x");
+    expect(binding(parts[1])).toBeFalsy();
+    expect(parts[2]).toBe("{{c}}");
+    expect(binding(parts[2])).toBe("c");
   }));
 
   it('should Parse Multiline', inject(function($rootScope, $compile) {
     var parts = parseBindings('"X\nY{{A\nB}}C\nD"');
-    assertTrue(!!binding('{{A\nB}}'));
-    assertEquals(parts.length, 3);
-    assertEquals(parts[0], '"X\nY');
-    assertEquals(parts[1], '{{A\nB}}');
-    assertEquals(parts[2], 'C\nD"');
+    expect(binding('{{A\nB}}')).toBeTruthy();
+    expect(parts.length).toBe(3);
+    expect(parts[0]).toBe('"X\nY');
+    expect(parts[1]).toBe('{{A\nB}}');
+    expect(parts[2]).toBe('C\nD"');
   }));
 
   it('should Has Binding', inject(function($rootScope, $compile) {
-    assertTrue(hasBindings(parseBindings("{{a}}")));
-    assertTrue(!hasBindings(parseBindings("a")));
-    assertTrue(hasBindings(parseBindings("{{b}}x{{c}}")));
+    expect(hasBindings(parseBindings("{{a}}"))).toBe(true);
+    expect(hasBindings(parseBindings("a"))).toBeFalsy();
+    expect(hasBindings(parseBindings("{{b}}x{{c}}"))).toBe(true);
   }));
 
 });
