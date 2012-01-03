@@ -49,50 +49,50 @@ describe('Binder', function() {
   }));
 
   it('ReplaceBindingInTextWithSpan preserve surounding text', function() {
-    expect(this.compileToHtml("<b>a{{b}}c</b>")).toBe('<b>a<span ng:bind="b"></span>c</b>');
+    expect(this.compileToHtml('<b>a{{b}}c</b>')).toBe('<b>a<span ng:bind="b"></span>c</b>');
   });
 
   it('ReplaceBindingInTextWithSpan', function() {
-    expect(this.compileToHtml("<b>{{b}}</b>")).toBe('<b><span ng:bind="b"></span></b>');
+    expect(this.compileToHtml('<b>{{b}}</b>')).toBe('<b><span ng:bind="b"></span></b>');
   });
 
   it('BindingSpaceConfusesIE', inject(function($rootScope, $compile) {
     if (!msie) return;
-    var span = document.createElement("span");
+    var span = document.createElement('span');
     span.innerHTML = '&nbsp;';
     var nbsp = span.firstChild.nodeValue;
-    expect(this.compileToHtml("<b>{{a}} {{b}}</b>")).
+    expect(this.compileToHtml('<b>{{a}} {{b}}</b>')).
         toBe('<b><span ng:bind="a"></span><span>' + nbsp + '</span><span ng:bind="b"></span></b>');
     dealoc(($rootScope));
-    expect(this.compileToHtml("<b>{{A}} x {{B}} ({{C}})</b>")).
+    expect(this.compileToHtml('<b>{{A}} x {{B}} ({{C}})</b>')).
         toBe('<b><span ng:bind="A"></span><span>' + nbsp + 'x </span><span ng:bind="B"></span>' +
              '<span>' + nbsp + '(</span><span ng:bind="C"></span>)</b>');
   }));
 
   it('BindingOfAttributes', inject(function($rootScope, $compile) {
-    var element = $compile("<a href='http://s/a{{b}}c' foo='x'></a>")($rootScope);
-    var attrbinding = element.attr("ng:bind-attr");
+    var element = $compile('<a href="http://s/a{{b}}c" foo="x"></a>')($rootScope);
+    var attrbinding = element.attr('ng:bind-attr');
     var bindings = fromJson(attrbinding);
-    expect(decodeURI(bindings.href)).toBe("http://s/a{{b}}c");
+    expect(decodeURI(bindings.href)).toBe('http://s/a{{b}}c');
     expect(bindings.foo).toBeFalsy();
   }));
 
   it('MarkMultipleAttributes', inject(function($rootScope, $compile) {
     var element = $compile('<a href="http://s/a{{b}}c" foo="{{d}}"></a>')($rootScope);
-    var attrbinding = element.attr("ng:bind-attr");
+    var attrbinding = element.attr('ng:bind-attr');
     var bindings = fromJson(attrbinding);
-    expect(bindings.foo).toBe("{{d}}");
-    expect(decodeURI(bindings.href)).toBe("http://s/a{{b}}c");
+    expect(bindings.foo).toBe('{{d}}');
+    expect(decodeURI(bindings.href)).toBe('http://s/a{{b}}c');
   }));
 
   it('AttributesNoneBound', inject(function($rootScope, $compile) {
-    var a = $compile("<a href='abc' foo='def'></a>")($rootScope);
-    expect(a[0].nodeName).toBe("A");
-    expect(a.attr("ng:bind-attr")).toBeFalsy();
+    var a = $compile('<a href="abc" foo="def"></a>')($rootScope);
+    expect(a[0].nodeName).toBe('A');
+    expect(a.attr('ng:bind-attr')).toBeFalsy();
   }));
 
   it('ExistingAttrbindingIsAppended', inject(function($rootScope, $compile) {
-    var a = $compile("<a href='http://s/{{abc}}' ng:bind-attr='{\"b\":\"{{def}}\"}'></a>")($rootScope);
+    var a = $compile('<a href="http://s/{{abc}}" ng:bind-attr="{\'b\':\'{{def}}\'}"></a>')($rootScope);
     expect(a.attr('ng:bind-attr')).toBe('{"b":"{{def}}","href":"http://s/{{abc}}"}');
   }));
 
@@ -117,7 +117,7 @@ describe('Binder', function() {
   }));
 
   it('InputTypeButtonActionExecutesInScope2', inject(function($rootScope, $compile) {
-    var log = "";
+    var log = '';
     var element = $compile('<input type="image" ng:click="action()">')($rootScope);
     $rootScope.action = function() {
       log += 'click;';
@@ -143,8 +143,8 @@ describe('Binder', function() {
       '<ul>' +
         '<LI ng:repeat="item in model.items" ng:bind="item.a"></LI>' +
       '</ul>')($rootScope);
-    var items = [{a:"A"}, {a:"B"}];
-    $rootScope.model = {items:items};
+    var items = [{a: 'A'}, {a: 'B'}];
+    $rootScope.model = {items: items};
 
     $rootScope.$apply();
     expect(sortedHtml(form)).toBe(
@@ -154,7 +154,7 @@ describe('Binder', function() {
           '<li ng:bind="item.a">B</li>' +
         '</ul>');
 
-    items.unshift({a:'C'});
+    items.unshift({a: 'C'});
     $rootScope.$apply();
     expect(sortedHtml(form)).toBe(
         '<ul>' +
@@ -183,7 +183,7 @@ describe('Binder', function() {
       '<ul>' +
         '<LI ng:repeat="item in model.items"><span ng:bind="item.a"></span></li>' +
       '</ul>')($rootScope);
-    $rootScope.model = {items:[{a:"A"}]};
+    $rootScope.model = {items: [{a: 'A'}]};
     $rootScope.$apply();
     expect(sortedHtml(element)).toBe(
         '<ul>' +
@@ -199,7 +199,7 @@ describe('Binder', function() {
 
   it('RepeaterAdd', inject(function($rootScope, $compile, $browser) {
     var element = $compile('<div><input type="text" ng:model="item.x" ng:repeat="item in items"></div>')($rootScope);
-    $rootScope.items = [{x:'a'}, {x:'b'}];
+    $rootScope.items = [{x: 'a'}, {x: 'b'}];
     $rootScope.$apply();
     var first = childNode(element, 1);
     var second = childNode(element, 2);
@@ -220,7 +220,7 @@ describe('Binder', function() {
     $rootScope.$apply();
     expect(element[0].childNodes.length - 1).toEqual(0);
 
-    items.name = "misko";
+    items.name = 'misko';
     $rootScope.$apply();
     expect(element[0].childNodes.length - 1).toEqual(1);
 
@@ -238,16 +238,16 @@ describe('Binder', function() {
       var errorLogs = $exceptionHandler.errors;
 
       $rootScope.error = {
-          'throw': function() {throw "ErrorMsg1";}
+          'throw': function() {throw 'ErrorMsg1';}
       };
       $rootScope.$apply();
 
-      $rootScope.error['throw'] = function() {throw "MyError";};
+      $rootScope.error['throw'] = function() {throw 'MyError';};
       errorLogs.length = 0;
       $rootScope.$apply();
       expect(errorLogs.shift()).toBe('MyError');
 
-      $rootScope.error['throw'] = function() {return "ok";};
+      $rootScope.error['throw'] = function() {return 'ok';};
       $rootScope.$apply();
       expect(errorLogs.length).toBe(0);
     })
@@ -261,7 +261,7 @@ describe('Binder', function() {
     var count = 0;
 
     $rootScope.error = {
-        'throw': function() {throw new Error("ErrorMsg" + (++count));}
+        'throw': function() {throw new Error('ErrorMsg' + (++count));}
     };
     $rootScope.$apply();
     expect(errorLogs.length).not.toEqual(0);
@@ -389,7 +389,7 @@ describe('Binder', function() {
     $rootScope.$eval('style={height: "10px"}');
     $rootScope.$apply();
 
-    expect(element.css('height')).toBe("10px");
+    expect(element.css('height')).toBe('10px');
 
     $rootScope.$eval('style={}');
     $rootScope.$apply();
@@ -411,11 +411,11 @@ describe('Binder', function() {
 
   it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     var element = $compile(
-      "<div>{{a}}" +
-        "<div ng:non-bindable>{{a}}</div>" +
-        "<div ng:non-bindable=''>{{b}}</div>" +
-        "<div ng:non-bindable='true'>{{c}}</div>" +
-      "</div>")($rootScope);
+      '<div>{{a}}' +
+        '<div ng:non-bindable>{{a}}</div>' +
+        '<div ng:non-bindable="">{{b}}</div>' +
+        '<div ng:non-bindable="true">{{c}}</div>' +
+      '</div>')($rootScope);
     $rootScope.a = 123;
     $rootScope.$apply();
     expect(element.text()).toBe('123{{a}}{{b}}{{c}}');
@@ -423,7 +423,7 @@ describe('Binder', function() {
 
   it('ShouldTemplateBindPreElements', inject(function ($rootScope, $compile) {
     var element = $compile('<pre>Hello {{name}}!</pre>')($rootScope);
-    $rootScope.name = "World";
+    $rootScope.name = 'World';
     $rootScope.$apply();
 
     expect(      sortedHtml(element)).toBe(
@@ -492,7 +492,7 @@ describe('Binder', function() {
       var errorLogs = $log.error.logs;
 
       browserTrigger(first, 'click');
-      expect($rootScope.greeting).toBe("ABC");
+      expect($rootScope.greeting).toBe('ABC');
       expect(errorLogs).toEqual([]);
 
       browserTrigger(second, 'click');
@@ -511,16 +511,16 @@ describe('Binder', function() {
     var male = jqLite(element[0].childNodes[1]);
 
     browserTrigger(female);
-    expect($rootScope.sex).toBe("female");
+    expect($rootScope.sex).toBe('female');
     expect(female[0].checked).toBe(true);
     expect(male[0].checked).toBe(false);
-    expect(female.val()).toBe("female");
+    expect(female.val()).toBe('female');
 
     browserTrigger(male);
-    expect($rootScope.sex).toBe("male");
+    expect($rootScope.sex).toBe('male');
     expect(female[0].checked).toBe(false);
     expect(male[0].checked).toBe(true);
-    expect(male.val()).toBe("male");
+    expect(male.val()).toBe('male');
   }));
 
   it('ItShouldRepeatOnHashes', inject(function($rootScope, $compile) {
@@ -539,9 +539,9 @@ describe('Binder', function() {
 
   it('ItShouldFireChangeListenersBeforeUpdate', inject(function($rootScope, $compile) {
     var element = $compile('<div ng:bind="name"></div>')($rootScope);
-    $rootScope.name = "";
-    $rootScope.$watch("watched", "name=123");
-    $rootScope.watched = "change";
+    $rootScope.name = '';
+    $rootScope.$watch('watched', 'name=123');
+    $rootScope.watched = 'change';
     $rootScope.$apply();
     expect($rootScope.name).toBe(123);
     expect(sortedHtml(element)).toBe('<div ng:bind="name">123</div>');
@@ -550,7 +550,7 @@ describe('Binder', function() {
   it('ItShouldHandleMultilineBindings', inject(function($rootScope, $compile) {
     var element = $compile('<div>{{\n 1 \n + \n 2 \n}}</div>')($rootScope);
     $rootScope.$apply();
-    expect(element.text()).toBe("3");
+    expect(element.text()).toBe('3');
   }));
 
 });

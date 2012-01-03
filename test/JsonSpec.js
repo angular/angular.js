@@ -6,9 +6,9 @@ describe('json', function() {
     expect(toJson(null)).toEqual('null');
     expect(toJson(true)).toEqual('true');
     expect(toJson(false)).toEqual('false');
-    expect(toJson(123.45)).toEqual("123.45");
-    expect(toJson("abc")).toEqual('"abc"');
-    expect(toJson("a \t \n \r b \\")).toEqual('"a \\t \\n \\r b \\\\"');
+    expect(toJson(123.45)).toEqual('123.45');
+    expect(toJson('abc')).toEqual('"abc"');
+    expect(toJson('a \t \n \r b \\')).toEqual('"a \\t \\n \\r b \\\\"');
   });
 
   it('should not serialize $$properties', function() {
@@ -24,25 +24,25 @@ describe('json', function() {
   });
 
   it('should serialize objects', function() {
-    expect(toJson({a:1,b:2})).toEqual('{"a":1,"b":2}');
-    expect(toJson({a:{b:2}})).toEqual('{"a":{"b":2}}');
-    expect(toJson({a:{b:{c:0}}})).toEqual('{"a":{"b":{"c":0}}}');
-    expect(toJson({a:{b:0/0}})).toEqual('{"a":{"b":null}}');
+    expect(toJson({a: 1, b: 2})).toEqual('{"a":1,"b":2}');
+    expect(toJson({a: {b: 2}})).toEqual('{"a":{"b":2}}');
+    expect(toJson({a: {b: {c: 0}}})).toEqual('{"a":{"b":{"c":0}}}');
+    expect(toJson({a: {b: 0/0}})).toEqual('{"a":{"b":null}}');
   });
 
   it('should format objects pretty', function() {
-    expect(toJson({a:1,b:2}, true)).toEqual('{\n  "a":1,\n  "b":2}');
-    expect(toJson({a:{b:2}}, true)).toEqual('{\n  "a":{\n    "b":2}}');
+    expect(toJson({a: 1, b: 2}, true)).toEqual('{\n  "a":1,\n  "b":2}');
+    expect(toJson({a: {b: 2}}, true)).toEqual('{\n  "a":{\n    "b":2}}');
   });
 
   it('should serialize array', function() {
     expect(toJson([])).toEqual('[]');
-    expect(toJson([1,"b"])).toEqual('[1,"b"]');
+    expect(toJson([1, 'b'])).toEqual('[1,"b"]');
   });
 
   it('should serialize RegExp', function() {
     expect(toJson(/foo/)).toEqual('"/foo/"');
-    expect(toJson([1,new RegExp("foo")])).toEqual('[1,"/foo/"]');
+    expect(toJson([1, new RegExp('foo')])).toEqual('[1,"/foo/"]');
   });
 
   it('should ignore functions', function() {
@@ -51,34 +51,34 @@ describe('json', function() {
   });
 
   it('should parse null', function() {
-    expect(fromJson("null")).toBeNull();
+    expect(fromJson('null')).toBeNull();
   });
 
   it('should parse boolean', function() {
-    expect(fromJson("true")).toBeTruthy();
-    expect(fromJson("false")).toBeFalsy();
+    expect(fromJson('true')).toBeTruthy();
+    expect(fromJson('false')).toBeFalsy();
   });
 
   it('should serialize array with empty items', function() {
     var a = [];
-    a[1] = "X";
+    a[1] = 'X';
     expect(toJson(a)).toEqual('[null,"X"]');
   });
 
   it('should escape unicode', function() {
-    expect("\u00a0".length).toEqual(1);
-    expect(toJson("\u00a0").length).toEqual(8);
-    expect(fromJson(toJson("\u00a0")).length).toEqual(1);
+    expect('\u00a0'.length).toEqual(1);
+    expect(toJson('\u00a0').length).toEqual(8);
+    expect(fromJson(toJson('\u00a0')).length).toEqual(1);
   });
 
   it('should serialize UTC dates', function() {
-    var date = jsonStringToDate("2009-10-09T01:02:03.027Z");
+    var date = jsonStringToDate('2009-10-09T01:02:03.027Z');
     expect(toJson(date)).toEqual('"2009-10-09T01:02:03.027Z"');
     expect(fromJson('"2009-10-09T01:02:03.027Z"').getTime()).toEqual(date.getTime());
   });
 
   it('should prevent recursion', function() {
-    var obj = {a:'b'};
+    var obj = {a: 'b'};
     obj.recursion = obj;
     expect(angular.toJson(obj)).toEqual('{"a":"b","recursion":RECURSION}');
   });
@@ -212,48 +212,48 @@ describe('json', function() {
     });
 
     it('should not allow assignments', function() {
-      expect(function() {fromJson("{a:1, b:[1]=1, c:1}");}).toThrow();
-      expect(function() {fromJson("{a:1, b:=1, c:1}");}).toThrow();
-      expect(function() {fromJson("{a:1, b:x=1, c:1}");}).toThrow();
+      expect(function() {fromJson('{a:1, b:[1]=1, c:1}');}).toThrow();
+      expect(function() {fromJson('{a:1, b:=1, c:1}');}).toThrow();
+      expect(function() {fromJson('{a:1, b:x=1, c:1}');}).toThrow();
     });
 
   });
 
 
   it('should read/write to date', function() {
-    var date = new Date("Sep 10 2003 13:02:03 GMT");
-    expect(jsonDateToString(date)).toBe("2003-09-10T13:02:03.000Z");
+    var date = new Date('Sep 10 2003 13:02:03 GMT');
+    expect(jsonDateToString(date)).toBe('2003-09-10T13:02:03.000Z');
     expect(jsonStringToDate(jsonDateToString(date)).getTime()).toBe(date.getTime());
   });
 
 
   it('should convert to date', function() {
     //full ISO8061
-    expect(jsonStringToDate("2003-09-10T13:02:03.000Z")).
-      toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+    expect(jsonStringToDate('2003-09-10T13:02:03.000Z')).
+      toEqual(new Date('Sep 10 2003 13:02:03 GMT'));
 
     //no millis
-    expect(jsonStringToDate("2003-09-10T13:02:03Z")).
-      toEqual(new Date("Sep 10 2003 13:02:03 GMT"));
+    expect(jsonStringToDate('2003-09-10T13:02:03Z')).
+      toEqual(new Date('Sep 10 2003 13:02:03 GMT'));
 
     //no seconds
-    expect(jsonStringToDate("2003-09-10T13:02Z")).
-      toEqual(new Date("Sep 10 2003 13:02:00 GMT"));
+    expect(jsonStringToDate('2003-09-10T13:02Z')).
+      toEqual(new Date('Sep 10 2003 13:02:00 GMT'));
 
     //no minutes
-    expect(jsonStringToDate("2003-09-10T13Z")).
-      toEqual(new Date("Sep 10 2003 13:00:00 GMT"));
+    expect(jsonStringToDate('2003-09-10T13Z')).
+      toEqual(new Date('Sep 10 2003 13:00:00 GMT'));
 
     //no time
-    expect(jsonStringToDate("2003-09-10")).
-      toEqual(new Date("Sep 10 2003 00:00:00 GMT"));
+    expect(jsonStringToDate('2003-09-10')).
+      toEqual(new Date('Sep 10 2003 00:00:00 GMT'));
   });
 
 
   it('should parse date', function() {
-    var date = jsonStringToDate("2003-09-10T13:02:03.000Z");
-    expect(jsonDateToString(date)).toBe("2003-09-10T13:02:03.000Z");
-    expect(jsonStringToDate("str")).toBe("str");
+    var date = jsonStringToDate('2003-09-10T13:02:03.000Z');
+    expect(jsonDateToString(date)).toBe('2003-09-10T13:02:03.000Z');
+    expect(jsonStringToDate('str')).toBe('str');
   });
 
 
