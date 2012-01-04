@@ -417,16 +417,17 @@ describe('parser', function() {
     }));
 
     describe('{{promise}}', function() {
-      it('should evaluated resolved promise and get its value', function() {
-        deferred.resolve('hello!');
-        scope.greeting = promise;
-        expect(scope.$eval('greeting')).toBe(undefined);
-        scope.$digest();
+      it('should evaluate resolved promise and get its value', function() {
+        scope.$apply(function() {
+          deferred.resolve('hello!');
+          scope.greeting = promise;
+          expect(scope.$eval('greeting')).toBe(undefined);
+        });
         expect(scope.$eval('greeting')).toBe('hello!');
       });
 
 
-      it('should evaluated rejected promise and ignore the rejection reason', function() {
+      it('should evaluate rejected promise and ignore the rejection reason', function() {
         deferred.reject('sorry');
         scope.greeting = promise;
         expect(scope.$eval('gretting')).toBe(undefined);
@@ -442,9 +443,10 @@ describe('parser', function() {
         scope.$digest();
         expect(scope.$eval('greeting')).toBe(undefined);
 
-        deferred.resolve('hello!');
-        expect(scope.$eval('greeting')).toBe(undefined);
-        scope.$digest();
+        scope.$apply(function() {
+          deferred.resolve('hello!');
+          expect(scope.$eval('greeting')).toBe(undefined);
+        });
         expect(scope.$eval('greeting')).toBe('hello!');
       });
 
@@ -521,10 +523,10 @@ describe('parser', function() {
         scope.$digest();
         expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
 
-        deferred.resolve('Veronica');
-        expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
-
-        scope.$digest();
+        scope.$apply(function() {
+          deferred.resolve('Veronica');
+          expect(scope.$eval('greet(name)')).toBe('Hi undefined!');
+        });
         expect(scope.$eval('greet(name)')).toBe('Hi Veronica!');
       });
 
@@ -537,10 +539,10 @@ describe('parser', function() {
         scope.$digest();
         expect(scope.$eval('kids[childIndex]')).toBe(undefined);
 
-        deferred.resolve(1);
-        expect(scope.$eval('kids[childIndex]')).toBe(undefined);
-
-        scope.$digest();
+        scope.$apply(function() {
+          deferred.resolve(1);
+          expect(scope.$eval('kids[childIndex]')).toBe(undefined);
+        });
         expect(scope.$eval('kids[childIndex]')).toBe('Veronica');
       });
 
@@ -554,10 +556,10 @@ describe('parser', function() {
         scope.$digest();
         expect(scope.$eval('kids[childKey]')).toBe(undefined);
 
-        deferred.resolve('v');
-        expect(scope.$eval('kids[childKey]')).toBe(undefined);
-
-        scope.$digest();
+        scope.$apply(function() {
+          deferred.resolve('v');
+          expect(scope.$eval('kids[childKey]')).toBe(undefined);
+        });
         expect(scope.$eval('kids[childKey]')).toBe('Veronica');
       });
 
