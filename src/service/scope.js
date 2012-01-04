@@ -36,7 +36,8 @@
  */
 function $RootScopeProvider(){
   this.$get = ['$injector', '$exceptionHandler', '$parse',
-      function( $injector,   $exceptionHandler,   $parse){
+      function( $injector,   $exceptionHandler,   $parse) {
+
     /**
      * @ngdoc function
      * @name angular.module.ng.$rootScope.Scope
@@ -152,8 +153,7 @@ function $RootScopeProvider(){
         child.$parent = this;
         child.$id = nextUid();
         child.$$asyncQueue = [];
-        child.$$phase = child.$$watchers =
-          child.$$nextSibling = child.$$childHead = child.$$childTail = null;
+        child.$$watchers = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
         if (this.$$childHead) {
           this.$$childTail.$$nextSibling = child;
@@ -326,15 +326,12 @@ function $RootScopeProvider(){
             watchLog = [],
             logIdx, logMsg;
 
-        if (target.$$phase) {
-          throw Error(target.$$phase + ' already in progress');
-        }
-        do {
+        flagPhase(target, '$digest');
 
+        do {
           dirty = false;
           current = target;
           do {
-            current.$$phase = '$digest';
             asyncQueue = current.$$asyncQueue;
             while(asyncQueue.length) {
               try {
@@ -356,7 +353,7 @@ function $RootScopeProvider(){
                     watch.last = copy(value);
                     watch.fn(current, value, ((last === initWatchVal) ? value : last));
                     if (ttl < 5) {
-                      logIdx = 4-ttl;
+                      logIdx = 4 - ttl;
                       if (!watchLog[logIdx]) watchLog[logIdx] = [];
                       logMsg = (isFunction(watch.exp))
                           ? 'fn: ' + (watch.exp.name || watch.exp.toString())
@@ -370,8 +367,6 @@ function $RootScopeProvider(){
                 }
               }
             }
-
-            current.$$phase = null;
 
             // Insanity Warning: scope depth-first traversal
             // yes, this code is a bit crazy, but it works and we have tests to prove it!
@@ -388,6 +383,8 @@ function $RootScopeProvider(){
                 'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
           }
         } while (dirty || asyncQueue.length);
+
+        this.$root.$$phase = null;
       },
 
       /**
@@ -524,10 +521,12 @@ function $RootScopeProvider(){
        */
       $apply: function(expr) {
         try {
+          flagPhase(this, '$apply');
           return this.$eval(expr);
         } catch (e) {
           $exceptionHandler(e);
         } finally {
+          this.$root.$$phase = null;
           this.$root.$digest();
         }
       },
@@ -670,6 +669,17 @@ function $RootScopeProvider(){
         } while ((current = next));
       }
     };
+
+
+    function flagPhase(scope, phase) {
+      var root = scope.$root;
+
+      if (root.$$phase) {
+        throw Error(root.$$phase + ' already in progress');
+      }
+
+      root.$$phase = phase;
+    }
 
     return new Scope();
 

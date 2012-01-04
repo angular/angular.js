@@ -2,11 +2,6 @@
 
 describe('Scope', function() {
 
-  beforeEach(inject(function($exceptionHandlerProvider) {
-    $exceptionHandlerProvider.mode('log');
-  }));
-
-
   describe('$root', function() {
     it('should point to itself', inject(function($rootScope) {
       expect($rootScope.$root).toEqual($rootScope);
@@ -122,7 +117,9 @@ describe('Scope', function() {
     }));
 
 
-    it('should delegate exceptions', inject(function($rootScope, $exceptionHandler, $log) {
+    it('should delegate exceptions', inject(function($exceptionHandlerProvider) {
+      $exceptionHandlerProvider.mode('log');
+    }, function($rootScope, $exceptionHandler, $log) {
       $rootScope.$watch('a', function() {throw new Error('abc');});
       $rootScope.a = 1;
       $rootScope.$digest();
@@ -227,7 +224,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should prevent infinite recurcion and print print watcher function name or body',
+    it('should prevent infinite recursion and print print watcher function name or body',
         inject(function($rootScope) {
       $rootScope.$watch(function watcherA() {return $rootScope.a;}, function(self) {self.b++;});
       $rootScope.$watch(function() {return $rootScope.b;}, function(self) {self.a++;});
@@ -277,7 +274,7 @@ describe('Scope', function() {
     }));
 
 
-    it('should prevent recursion', inject(function($rootScope) {
+    it('should prevent $digest recursion', inject(function($rootScope) {
       var callCount = 0;
       $rootScope.$watch('name', function() {
         expect(function() {
@@ -462,7 +459,9 @@ describe('Scope', function() {
     }));
 
 
-    it('should catch exceptions', inject(function($rootScope, $exceptionHandler, $log) {
+    it('should catch exceptions', inject(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      }, function($rootScope, $exceptionHandler, $log) {
       var log = '';
       var child = $rootScope.$new();
       $rootScope.$watch('a', function(scope, a) { log += '1'; });
@@ -476,7 +475,9 @@ describe('Scope', function() {
 
     describe('exceptions', function() {
       var log;
-      beforeEach(inject(function($rootScope) {
+      beforeEach(inject(function($exceptionHandlerProvider) {
+          $exceptionHandlerProvider.mode('log');
+        }, function($rootScope) {
         log = '';
         $rootScope.$watch(function() { log += '$digest;'; });
         $rootScope.$digest();
@@ -500,6 +501,57 @@ describe('Scope', function() {
         $rootScope.$apply(function() { throw error; });
         expect(log).toEqual('$digest;');
         expect($exceptionHandler.errors).toEqual([error]);
+      }));
+    });
+
+
+    describe('recursive $apply protection', function() {
+      it('should throw an exception if $apply is called while an $apply is in progress', inject(
+          function($rootScope) {
+        expect(function() {
+          $rootScope.$apply(function() {
+            $rootScope.$apply();
+          });
+        }).toThrow('$apply already in progress');
+      }));
+
+
+      it('should throw an exception if $apply is called while flushing evalAsync queue', inject(
+          function($rootScope) {
+        expect(function() {
+          $rootScope.$apply(function() {
+            $rootScope.$evalAsync(function() {
+              $rootScope.$apply();
+            });
+          });
+        }).toThrow('$digest already in progress');
+      }));
+
+
+      it('should throw an exception if $apply is called while a watch is being initialized', inject(
+          function($rootScope) {
+        var childScope1 = $rootScope.$new();
+        childScope1.$watch('x', function() {
+          childScope1.$apply();
+        });
+        expect(function() { childScope1.$apply(); }).toThrow('$digest already in progress');
+      }));
+
+
+      it('should thrown an exception if $apply in called from a watch fn (after init)', inject(
+          function($rootScope) {
+        var childScope2 = $rootScope.$new();
+        childScope2.$apply(function() {
+          childScope2.$watch('x', function(scope, newVal, oldVal) {
+            if (newVal !== oldVal) {
+              childScope2.$apply();
+            }
+          });
+        });
+
+        expect(function() { childScope2.$apply(function() {
+          childScope2.x = 'something';
+        }); }).toThrow('$digest already in progress');
       }));
     });
   });
@@ -561,7 +613,10 @@ describe('Scope', function() {
         log += event.currentScope.id + '>';
       }
 
-      beforeEach(inject(function($rootScope) {
+      beforeEach(inject(
+          function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      }, function($rootScope) {
         log = '';
         child = $rootScope.$new();
         grandChild = child.$new();
