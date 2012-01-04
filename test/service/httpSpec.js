@@ -567,6 +567,35 @@ describe('$http', function() {
             $http({method: 'POST', url: '/url', data: 'string-data'});
           });
         });
+
+
+        it('should have access to request headers', function() {
+          $httpBackend.expect('POST', '/url', 'header1').respond(200);
+          $http.post('/url', 'req', {
+            headers: {h1: 'header1'},
+            transformRequest: function(data, headers) {
+              return headers('h1');
+            }
+          }).success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+        });
+
+
+        it('should pipeline more functions', function() {
+          function first(d, h) {return d + '-first' + ':' + h('h1')}
+          function second(d) {return uppercase(d)}
+
+          $httpBackend.expect('POST', '/url', 'REQ-FIRST:V1').respond(200);
+          $http.post('/url', 'req', {
+            headers: {h1: 'v1'},
+            transformRequest: [first, second]
+          }).success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+        });
       });
 
 
@@ -625,16 +654,30 @@ describe('$http', function() {
         });
 
 
-        it('should pipeline more functions', function() {
-          function first(d) {return d + '1';}
-          function second(d) {return d + '2';}
-
-          $httpBackend.expect('POST', '/url').respond('0');
-          $http({method: 'POST', url: '/url', transformResponse: [first, second]}).success(callback);
+        it('should have access to response headers', function() {
+          $httpBackend.expect('GET', '/url').respond(200, 'response', {h1: 'header1'});
+          $http.get('/url', {
+            transformResponse: function(data, headers) {
+              return headers('h1');
+            }
+          }).success(callback);
           $httpBackend.flush();
 
           expect(callback).toHaveBeenCalledOnce();
-          expect(callback.mostRecentCall.args[0]).toBe('012');
+          expect(callback.mostRecentCall.args[0]).toBe('header1');
+        });
+
+
+        it('should pipeline more functions', function() {
+          function first(d, h) {return d + '-first' + ':' + h('h1')}
+          function second(d) {return uppercase(d)}
+
+          $httpBackend.expect('POST', '/url').respond(200, 'resp', {h1: 'v1'});
+          $http.post('/url', '', {transformResponse: [first, second]}).success(callback);
+          $httpBackend.flush();
+
+          expect(callback).toHaveBeenCalledOnce();
+          expect(callback.mostRecentCall.args[0]).toBe('RESP-FIRST:V1');
         });
       });
     });

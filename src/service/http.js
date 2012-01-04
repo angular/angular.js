@@ -41,17 +41,17 @@ function parseHeaders(headers) {
  *   - if called with single an argument returns a single header value or null
  *   - if called with no arguments returns an object containing all headers.
  */
-function headersGetter(headersString) {
-  var headers = isObject(headersString) ? headersString : undefined;
+function headersGetter(headers) {
+  var headersObj = isObject(headers) ? headers : undefined;
 
   return function(name) {
-    if (!headers) headers =  parseHeaders(headersString);
+    if (!headersObj) headersObj =  parseHeaders(headers);
 
     if (name) {
-      return headers[lowercase(name)] || null;
+      return headersObj[lowercase(name)] || null;
     }
 
-    return headers;
+    return headersObj;
   };
 }
 
@@ -62,16 +62,16 @@ function headersGetter(headersString) {
  * This function is used for both request and response transforming
  *
  * @param {*} data Data to transform.
- * @param {function|Array.<function>} fns Function or an array of functions.
- * @param {*=} param Optional parameter to be passed to all transform functions.
+ * @param {function(string=)} headers Http headers getter fn.
+ * @param {(function|Array.<function>)} fns Function or an array of functions.
  * @returns {*} Transformed data.
  */
-function transformData(data, fns, param) {
+function transformData(data, headers, fns) {
   if (isFunction(fns))
-    return fns(data);
+    return fns(data, headers);
 
   forEach(fns, function(fn) {
-    data = fn(data, param);
+    data = fn(data, headers);
   });
 
   return data;
@@ -172,10 +172,10 @@ function $HttpProvider() {
 
       var reqTransformFn = config.transformRequest || $config.transformRequest,
           respTransformFn = config.transformResponse || $config.transformResponse,
-          reqData = transformData(config.data, reqTransformFn),
           defHeaders = $config.headers,
           reqHeaders = extend({'X-XSRF-TOKEN': $browser.cookies()['XSRF-TOKEN']},
               defHeaders.common, defHeaders[lowercase(config.method)], config.headers),
+          reqData = transformData(config.data, headersGetter(reqHeaders), reqTransformFn),
           promise;
 
 
@@ -210,7 +210,7 @@ function $HttpProvider() {
       function transformResponse(response) {
         // make a copy since the response must be cacheable
         var resp = extend({}, response, {
-          data: transformData(response.data, respTransformFn, response.headers)
+          data: transformData(response.data, response.headers, respTransformFn)
         });
         return (isSuccess(response.status))
           ? resp
