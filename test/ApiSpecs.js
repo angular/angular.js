@@ -36,6 +36,25 @@ describe('api', function() {
       expect(map.shift('key')).toEqual(undefined);
       expect(map[hashKey('key')]).toEqual(undefined);
     });
+
+    it('should support primitive and object keys', function() {
+      var obj1 = {},
+          obj2 = {};
+
+      var map = new HashQueueMap();
+      map.push(obj1, 'a1');
+      map.push(obj1, 'a2');
+      map.push(obj2, 'b');
+      map.push(1, 'c');
+      map.push(undefined, 'd');
+      map.push(null, 'e');
+
+      expect(map[hashKey(obj1)]).toEqual(['a1', 'a2']);
+      expect(map[hashKey(obj2)]).toEqual(['b']);
+      expect(map[hashKey(1)]).toEqual(['c']);
+      expect(map[hashKey(undefined)]).toEqual(['d']);
+      expect(map[hashKey(null)]).toEqual(['e']);
+    });
   });
 });
 
