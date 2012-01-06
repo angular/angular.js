@@ -1,5 +1,10 @@
-Angular
-======
+AngularJS
+=========
+
+* Web site: http://angularjs.org
+* Tutorial: http://docs.angularjs.org/#!/tutorial
+* API Docs: http://docs.angularjs.org
+* Developer Guide: http://docs.angularjs.org/#!/guide
 
 Compiling
 ---------
@@ -7,6 +12,8 @@ Compiling
 
 Running Tests
 -------------
-    rake server:start
-    rake test
+    ./server.sh                          # start the server
+    open http://localhost:9876/capture   # capture browser
+    ./test.sh                            # run all unit tests
+
 
