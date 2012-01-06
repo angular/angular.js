@@ -14,16 +14,20 @@
  *         The resulting string key is in 'type:hashKey' format.
  */
 function hashKey(obj) {
-  var objType = typeof obj;
-  var key = obj;
-  if (objType == 'object') {
+  var objType = typeof obj,
+      key;
+
+  if (objType == 'object' && obj !== null) {
     if (typeof (key = obj.$$hashKey) == 'function') {
       // must invoke on object to keep the right this
       key = obj.$$hashKey();
     } else if (key === undefined) {
       key = obj.$$hashKey = nextUid();
     }
+  } else {
+    key = obj;
   }
+
   return objType + ':' + key;
 }
 
