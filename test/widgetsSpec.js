@@ -1,7 +1,7 @@
 'use strict';
 
 describe('widget', function() {
-  describe('ng:switch', inject(function($rootScope, $compile) {
+  describe('ng:switch', function() {
     it('should switch on value change', inject(function($rootScope, $compile) {
       var element = $compile(
         '<ng:switch on="select">' +
@@ -26,7 +26,7 @@ describe('widget', function() {
       $rootScope.$apply();
       expect(element.text()).toEqual('true:misko');
     }));
-    
+
 
     it('should switch on switch-when-default', inject(function($rootScope, $compile) {
       var element = $compile(
@@ -41,7 +41,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('one');
     }));
 
-    
+
     it('should call change on switch', inject(function($rootScope, $compile) {
       var element = $compile(
         '<ng:switch on="url" change="name=\'works\'">' +
@@ -52,7 +52,7 @@ describe('widget', function() {
       expect($rootScope.name).toEqual(undefined);
       expect(element.text()).toEqual('works');
     }));
-  }));
+  });
 
 
   describe('ng:include', inject(function($rootScope, $compile) {
@@ -149,6 +149,7 @@ describe('widget', function() {
       expect($rootScope.$$childHead).toBeFalsy();
     }));
 
+
     it('should do xhr request and cache it',
         inject(function($rootScope, $httpBackend, $compile, $browser) {
       var element = $compile('<ng:include src="url"></ng:include>')($rootScope);
@@ -170,6 +171,7 @@ describe('widget', function() {
       dealoc($rootScope);
     }));
 
+
     it('should clear content when error during xhr request',
         inject(function($httpBackend, $compile, $rootScope) {
       var element = $compile('<ng:include src="url">content</ng:include>')($rootScope);
@@ -181,6 +183,7 @@ describe('widget', function() {
 
       expect(element.text()).toBe('');
     }));
+
 
     it('should be async even if served from cache', inject(
           putIntoCache('myUrl', 'my partial'),
@@ -199,6 +202,7 @@ describe('widget', function() {
       $browser.defer.flush();
       expect(element.text()).toBe('my partial');
     }));
+
 
     it('should discard pending xhr callbacks if a new template is requested before the current ' +
         'finished loading', inject(function($rootScope, $compile, $httpBackend) {
@@ -226,7 +230,7 @@ describe('widget', function() {
   }));
 
 
-  describe('a', inject(function($rootScope, $compile) {
+  describe('a', function() {
     it('should prevent default action to be executed when href is empty',
         inject(function($rootScope, $compile) {
       var orgLocation = document.location.href,
@@ -261,10 +265,10 @@ describe('widget', function() {
 
       expect(document.location.href).toEqual(orgLocation);
     }));
-  }));
+  });
 
 
-  describe('@ng:repeat', inject(function($rootScope, $compile) {
+  describe('@ng:repeat', function() {
     it('should ng:repeat over array', inject(function($rootScope, $compile) {
       var element = $compile(
         '<ul>' +
@@ -292,6 +296,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('brad;');
     }));
 
+
     it('should ng:repeat over object', inject(function($rootScope, $compile) {
       var element = $compile(
         '<ul>' +
@@ -301,6 +306,7 @@ describe('widget', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('misko:swe;shyam:set;');
     }));
+
 
     it('should not ng:repeat over parent properties', inject(function($rootScope, $compile) {
       var Class = function() {};
@@ -317,6 +323,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('name:value;');
     }));
 
+
     it('should error on wrong parsing of ng:repeat', inject(function($rootScope, $compile, $log) {
       expect(function() {
         var element = $compile('<ul><li ng:repeat="i dont parse"></li></ul>')($rootScope);
@@ -324,6 +331,7 @@ describe('widget', function() {
 
       $log.error.logs.shift();
     }));
+
 
     it('should expose iterator offset as $index when iterating over arrays',
         inject(function($rootScope, $compile) {
@@ -336,6 +344,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('misko0|shyam1|frodo2|');
     }));
 
+
     it('should expose iterator offset as $index when iterating over objects',
         inject(function($rootScope, $compile) {
       var element = $compile(
@@ -346,6 +355,7 @@ describe('widget', function() {
       $rootScope.$digest();
       expect(element.text()).toEqual('frodo:f0|misko:m1|shyam:s2|');
     }));
+
 
     it('should expose iterator position as $position when iterating over arrays',
         inject(function($rootScope, $compile) {
@@ -367,6 +377,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('misko:first|shyam:last|');
     }));
 
+
     it('should expose iterator position as $position when iterating over objects',
         inject(function($rootScope, $compile) {
       var element = $compile(
@@ -384,6 +395,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('misko:m:first|shyam:s:last|');
     }));
 
+
     it('should ignore $ and $$ properties', inject(function($rootScope, $compile) {
       var element = $compile('<ul><li ng:repeat="i in items">{{i}}|</li></ul>')($rootScope);
       $rootScope.items = ['a', 'b', 'c'];
@@ -393,6 +405,7 @@ describe('widget', function() {
 
       expect(element.text()).toEqual('a|b|c|');
     }));
+
 
     it('should repeat over nested arrays', inject(function($rootScope, $compile) {
       var element = $compile(
@@ -407,6 +420,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('a|b|Xc|d|X');
     }));
 
+
     it('should ignore non-array element properties when iterating over an array',
         inject(function($rootScope, $compile) {
       var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
@@ -418,6 +432,7 @@ describe('widget', function() {
       expect(element.text()).toBe('a|b|c|');
     }));
 
+
     it('should iterate over non-existent elements of a sparse array',
         inject(function($rootScope, $compile) {
       var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
@@ -428,6 +443,7 @@ describe('widget', function() {
 
       expect(element.text()).toBe('a|b|||c||d|');
     }));
+
 
     it('should iterate over all kinds of types', inject(function($rootScope, $compile) {
       var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
@@ -456,7 +472,8 @@ describe('widget', function() {
         lis = element.find('li');
       }));
 
-      it('should preserve the order of elements', inject(function($rootScope, $compile) {
+
+      it('should preserve the order of elements', inject(function($rootScope) {
         $rootScope.items = [a, c, d];
         $rootScope.$digest();
         var newElements = element.find('li');
@@ -465,7 +482,8 @@ describe('widget', function() {
         expect(newElements[2]).not.toEqual(lis[1]);
       }));
 
-      it('should support duplicates', inject(function($rootScope, $compile) {
+
+      it('should support duplicates', inject(function($rootScope) {
         $rootScope.items = [a, a, b, c];
         $rootScope.$digest();
         var newElements = element.find('li');
@@ -490,8 +508,9 @@ describe('widget', function() {
         expect(newElements[3]).toEqual(lis[3]);
       }));
 
+
       it('should remove last item when one duplicate instance is removed',
-          inject(function($rootScope, $compile) {
+          inject(function($rootScope) {
         $rootScope.items = [a, a, a];
         $rootScope.$digest();
         lis = element.find('li');
@@ -504,8 +523,9 @@ describe('widget', function() {
         expect(newElements[1]).toEqual(lis[1]);
       }));
 
+
       it('should reverse items when the collection is reversed',
-          inject(function($rootScope, $compile) {
+          inject(function($rootScope) {
         $rootScope.items = [a, b, c];
         $rootScope.$digest();
         lis = element.find('li');
@@ -519,7 +539,7 @@ describe('widget', function() {
         expect(newElements[2]).toEqual(lis[0]);
       }));
     });
-  }));
+  });
 
 
   describe('@ng:non-bindable', function() {
@@ -568,6 +588,7 @@ describe('widget', function() {
       expect(element.text()).toEqual('angular is da best');
     }));
 
+
     it('should remove all content when location changes to an unknown route',
         inject(function($rootScope, $compile, $location, $httpBackend, $route) {
       $route.when('/foo', {template: 'myUrl1'});
@@ -582,6 +603,7 @@ describe('widget', function() {
       $rootScope.$digest();
       expect($rootScope.$element.text()).toEqual('');
     }));
+
 
     it('should chain scopes and propagate evals to the child scope',
         inject(function($rootScope, $compile, $location, $httpBackend, $route) {
@@ -598,6 +620,7 @@ describe('widget', function() {
       $rootScope.$digest();
       expect($rootScope.$element.text()).toEqual('new parent');
     }));
+
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
       // TODO(vojta): refactor this test
@@ -623,6 +646,7 @@ describe('widget', function() {
       expect($route.current.template).toEqual('viewPartial.html');
       dealoc(myApp);
     }));
+
 
     it('should initialize view template after the view controller was initialized even when ' +
        'templates were cached',
@@ -662,6 +686,7 @@ describe('widget', function() {
       expect($rootScope.log).toEqual(['parent', 'init', 'child']);
     }));
 
+
     it('should discard pending xhr callbacks if a new route is requested before the current ' +
         'finished loading', inject(function($route, $rootScope, $location, $httpBackend) {
       // this is a test for a bad race condition that affected feedback
@@ -682,6 +707,7 @@ describe('widget', function() {
       expect($rootScope.$element.text()).toEqual('2');
     }));
 
+
     it('should clear the content when error during xhr request',
         inject(function($route, $location, $rootScope, $httpBackend) {
       $route.when('/foo', {controller: noop, template: 'myUrl1'});
@@ -695,6 +721,7 @@ describe('widget', function() {
 
       expect($rootScope.$element.text()).toBe('');
     }));
+
 
     it('should be async even if served from cache',
         inject(function($route, $rootScope, $location, $templateCache, $browser) {
@@ -717,7 +744,6 @@ describe('widget', function() {
 
   describe('ng:pluralize', function() {
 
-
     describe('deal with pluralized strings without offset', function() {
        var element;
        beforeEach(inject(function($rootScope, $compile) {
@@ -729,7 +755,8 @@ describe('widget', function() {
             '</ng:pluralize>')($rootScope);
         }));
 
-        it('should show single/plural strings', inject(function($rootScope, $compile) {
+
+        it('should show single/plural strings', inject(function($rootScope) {
           $rootScope.email = 0;
           $rootScope.$digest();
           expect(element.text()).toBe('You have no new email');
@@ -768,8 +795,7 @@ describe('widget', function() {
         }));
 
 
-        it('should show single/plural strings with mal-formed inputs',
-            inject(function($rootScope, $compile) {
+        it('should show single/plural strings with mal-formed inputs', inject(function($rootScope) {
           $rootScope.email = '';
           $rootScope.$digest();
           expect(element.text()).toBe('');
@@ -845,4 +871,3 @@ describe('widget', function() {
     });
   });
 });
-
