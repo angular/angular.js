@@ -57,7 +57,8 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
       var status;
 
       // In IE6 and 7, this might be called synchronously when xhr.send below is called and the
-      // response is in the cache
+      // response is in the cache. the promise api will ensure that to the app code the api is
+      // always async
       xhr.onreadystatechange = function() {
         if (xhr.readyState == 4) {
           completeRequest(
