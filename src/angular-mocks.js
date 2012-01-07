@@ -21,7 +21,7 @@ angular.module.ngMock = function($provide){
   $provide.service('$browser', angular.module.ngMock.$BrowserProvider);
   $provide.service('$exceptionHandler', angular.module.ngMock.$ExceptionHandlerProvider);
   $provide.service('$log', angular.module.ngMock.$LogProvider);
-  $provide.service('$httpBackend', angular.module.ngMock.$HttpBackendProvider);
+  $provide.decorator('$httpBackend', angular.module.ngMock.$httpBackendDecorator);
 };
 angular.module.ngMock.$inject = ['$provide'];
 
@@ -56,8 +56,8 @@ angular.module.ngMock.$Browser = function() {
   self.pollFns = [];
 
   // TODO(vojta): remove this temporary api
-  self.$$completeOutstandingRequest = noop;
-  self.$$incOutstandingRequestCount = noop;
+  self.$$completeOutstandingRequest = angular.noop;
+  self.$$incOutstandingRequestCount = angular.noop;
 
 
   // register url polling fn
@@ -593,144 +593,160 @@ angular.module.ngMock.dump = function(object){
  * respond with static or dynamic responses via the `expect` and `when` apis and their shortcuts
  * (`expectGET`, `whenPOST`, etc).
  */
-angular.module.ngMock.$HttpBackendProvider = function() {
-  this.$get = function() {
-    var definitions = [],
-        expectations = [],
-        responses = [];
+angular.module.ngMock.$httpBackendDecorator = function($delegate, $defer) {
+  var definitions = [],
+      expectations = [],
+      responses = [],
+      responsesPush = angular.bind(responses, responses.push),
+      autoflush = false;
 
-    function createResponse(status, data, headers) {
-      if (isFunction(status)) return status;
+  function createResponse(status, data, headers) {
+    if (angular.isFunction(status)) return status;
 
-      return function() {
-        return angular.isNumber(status)
-            ? [status, data, headers]
-            : [200, status, data];
-      }
+    return function() {
+      return angular.isNumber(status)
+          ? [status, data, headers]
+          : [200, status, data];
+    }
+  }
+
+  // TODO(vojta): change params to: method, url, data, headers, callback
+  function $httpBackend(method, url, data, callback, headers) {
+    var xhr = new MockXhr(),
+        expectation = expectations[0],
+        wasExpected = false;
+
+    function prettyPrint(data) {
+      return (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
+          ? data
+          : angular.toJson(data);
     }
 
-    // TODO(vojta): change params to: method, url, data, headers, callback
-    function $httpBackend(method, url, data, callback, headers) {
-      var xhr = new MockXhr(),
-          expectation = expectations[0],
-          wasExpected = false;
+    if (expectation && expectation.match(method, url)) {
+      if (!expectation.matchData(data))
+        throw Error('Expected ' + expectation + ' with different data\n' +
+            'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
 
-      function prettyPrint(data) {
-        return (angular.isString(data) || angular.isFunction(data) || data instanceof RegExp)
-            ? data
-            : angular.toJson(data);
+      if (!expectation.matchHeaders(headers))
+        throw Error('Expected ' + expectation + ' with different headers\n' +
+            'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
+
+      expectations.shift();
+
+      if (expectation.response) {
+        responses.push(function() {
+          var response = expectation.response(method, url, data, headers);
+          xhr.$$respHeaders = response[2];
+          callback(response[0], response[1], xhr.getAllResponseHeaders());
+        });
+        return;
       }
+      wasExpected = true;
+    }
 
-      if (expectation && expectation.match(method, url)) {
-        if (!expectation.matchData(data))
-          throw Error('Expected ' + expectation + ' with different data\n' +
-              'EXPECTED: ' + prettyPrint(expectation.data) + '\nGOT:      ' + data);
-
-        if (!expectation.matchHeaders(headers))
-          throw Error('Expected ' + expectation + ' with different headers\n' +
-              'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
-
-        expectations.shift();
-
-        if (expectation.response) {
-          responses.push(function() {
-            var response = expectation.response(method, url, data, headers);
-            xhr.$$respHeaders = response[2];
-            callback(response[0], response[1], xhr.getAllResponseHeaders());
-          });
-          return;
-        }
-        wasExpected = true;
-      }
-
-      var i = -1, definition;
-      while ((definition = definitions[++i])) {
-        if (definition.match(method, url, data, headers || {})) {
-          if (!definition.response) throw Error('No response defined !');
-          responses.push(function() {
+    var i = -1, definition;
+    while ((definition = definitions[++i])) {
+      if (definition.match(method, url, data, headers || {})) {
+        if (definition.response) {
+          (autoflush ? $defer : responsesPush)(function() {
             var response = definition.response(method, url, data, headers);
             xhr.$$respHeaders = response[2];
             callback(response[0], response[1], xhr.getAllResponseHeaders());
           });
-          return;
-        }
+        } else if (definition.passThrough) {
+          $delegate(method, url, data, callback, headers);
+        } else throw Error('No response defined !');
+        return;
       }
-      throw wasExpected ?
-          Error('No response defined !') :
-          Error('Unexpected request: ' + method + ' ' + url + '\n' +
-                (expectation ? 'Expected ' + expectation : 'No more request expected'));
     }
+    throw wasExpected ?
+        Error('No response defined !') :
+        Error('Unexpected request: ' + method + ' ' + url + '\n' +
+              (expectation ? 'Expected ' + expectation : 'No more request expected'));
+  }
 
-    $httpBackend.when = function(method, url, data, headers) {
-      var definition = new MockHttpExpectation(method, url, data, headers);
-      definitions.push(definition);
-      return {
-        respond: function(status, data, headers) {
-          definition.response = createResponse(status, data, headers);
-        }
-      };
-    };
+  $httpBackend.when = function(method, url, data, headers) {
+    var definition = new MockHttpExpectation(method, url, data, headers);
+    definitions.push(definition);
+    return {
+      respond: function(status, data, headers) {
+        definition.response = createResponse(status, data, headers);
+      },
 
-    createShortMethods('when');
-
-
-    $httpBackend.expect = function(method, url, data, headers) {
-      var expectation = new MockHttpExpectation(method, url, data, headers);
-      expectations.push(expectation);
-      return {
-        respond: function(status, data, headers) {
-          expectation.response = createResponse(status, data, headers);
-        }
-      };
-    };
-
-    createShortMethods('expect');
-
-
-    $httpBackend.flush = function(count) {
-      if (!responses.length) throw Error('No pending request to flush !');
-
-      if (angular.isDefined(count)) {
-        while (count--) {
-          if (!responses.length) throw Error('No more pending request to flush !');
-          responses.shift()();
-        }
-      } else {
-        while (responses.length) {
-          responses.shift()();
-        }
-      }
-      $httpBackend.verifyNoOutstandingExpectation();
-    };
-
-    $httpBackend.verifyNoOutstandingExpectation = function() {
-      if (expectations.length) {
-        throw Error('Unsatisfied requests: ' + expectations.join(', '));
+      passThrough: function() {
+        definition.passThrough = true;
       }
     };
+  };
 
-    $httpBackend.verifyNoOutstandingRequest = function() {
-      if (responses.length) {
-        throw Error('Unflushed requests: ' + responses.length);
+  createShortMethods('when');
+
+
+  $httpBackend.expect = function(method, url, data, headers) {
+    var expectation = new MockHttpExpectation(method, url, data, headers);
+    expectations.push(expectation);
+    return {
+      respond: function(status, data, headers) {
+        expectation.response = createResponse(status, data, headers);
       }
     };
+  };
 
-    $httpBackend.resetExpectations = function() {
-      expectations = [];
-      responses = [];
-    };
-
-    return $httpBackend;
+  createShortMethods('expect');
 
 
-    function createShortMethods(prefix) {
-      angular.forEach(['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'JSONP'], function(method) {
-       $httpBackend[prefix + method] = function(url, data, headers) {
-         return $httpBackend[prefix](method, url, data, headers)
-       }
-      });
+  $httpBackend.flush = function(count) {
+    if (!responses.length) throw Error('No pending request to flush !');
+
+    if (angular.isDefined(count)) {
+      while (count--) {
+        if (!responses.length) throw Error('No more pending request to flush !');
+        responses.shift()();
+      }
+    } else {
+      while (responses.length) {
+        responses.shift()();
+      }
+    }
+    $httpBackend.verifyNoOutstandingExpectation();
+  };
+
+
+  $httpBackend.autoflush = function(val) {
+    if (arguments.length) {
+      autoflush = !!val;
+    } else {
+      return autoflush;
+    }
+  }
+
+  $httpBackend.verifyNoOutstandingExpectation = function() {
+    if (expectations.length) {
+      throw Error('Unsatisfied requests: ' + expectations.join(', '));
     }
   };
+
+  $httpBackend.verifyNoOutstandingRequest = function() {
+    if (responses.length) {
+      throw Error('Unflushed requests: ' + responses.length);
+    }
+  };
+
+  $httpBackend.resetExpectations = function() {
+    expectations = [];
+    responses = [];
+  };
+
+  return $httpBackend;
+
+
+  function createShortMethods(prefix) {
+    angular.forEach(['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'JSONP'], function(method) {
+     $httpBackend[prefix + method] = function(url, data, headers) {
+       return $httpBackend[prefix](method, url, data, headers)
+     }
+    });
+  }
 };
 
 function MockHttpExpectation(method, url, data, headers) {
@@ -816,7 +832,7 @@ function MockXhr() {
     return lines.join('\n');
   };
 
-  this.abort = noop;
+  this.abort = angular.noop;
 }
 
 window.jstestdriver && (function(window){

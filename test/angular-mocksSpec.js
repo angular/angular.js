@@ -375,12 +375,19 @@ describe('mocks', function() {
 
 
   describe('$httpBackend', function() {
-    var hb, callback;
+    var hb, callback, realBackendSpy;
 
-    beforeEach(inject(function($httpBackend) {
-      callback = jasmine.createSpy('callback');
-      hb = $httpBackend;
-    }));
+    beforeEach(inject(
+        function($provide) {
+          realBackendSpy = jasmine.createSpy('realBackend');
+          $provide.value('$httpBackend', realBackendSpy);
+          $provide.decorator('$httpBackend', angular.module.ngMock.$httpBackendDecorator)
+        },
+        function($httpBackend) {
+          callback = jasmine.createSpy('callback');
+          hb = $httpBackend;
+        }
+    ));
 
 
     it('should respond with first matched definition', function() {
@@ -673,6 +680,34 @@ describe('mocks', function() {
 
       expect(hb('JSONP', '/url1')).toBeUndefined();
       expect(hb('JSONP', '/url2')).toBeUndefined();
+    });
+
+
+    describe('definitions with passThrough delegation', function() {
+      it('should delegate requests to the real backend when passThrough is invoked', function() {
+        hb.when('GET', /\/passThrough\/.*/).passThrough();
+
+        expect(hb('GET', '/passThrough/23', null, callback));
+        expect(realBackendSpy).
+            toHaveBeenCalledOnceWith('GET', '/passThrough/23', null, callback, undefined);
+      });
+    });
+
+
+    describe('autoflush', function() {
+      it('should flush responses via $defer when autoflush is turned on', inject(
+          function($browser) {
+        expect(hb.autoflush()).toBe(false);
+        hb.autoflush(true);
+        expect(hb.autoflush()).toBe(true);
+
+        hb.when('GET', '/foo').respond('bar');
+        hb('GET', '/foo', null, callback);
+
+        expect(callback).not.toHaveBeenCalled();
+        $browser.defer.flush();
+        expect(callback).toHaveBeenCalledOnce();
+      }));
     });
 
 
