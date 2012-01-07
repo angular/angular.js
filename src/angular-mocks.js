@@ -115,7 +115,7 @@ angular.module.ngMock.$Browser = function() {
    * @description
    * Flushes all pending requests and executes the defer callbacks.
    *
-   * @param {number=} number of miliseconds to flush. See {@link #defer.now}
+   * @param {number=} number of milliseconds to flush. See {@link #defer.now}
    */
   self.defer.flush = function(delay) {
     if (angular.isDefined(delay)) {
@@ -629,7 +629,8 @@ angular.module.ngMock.$httpBackendDecorator = function($delegate, $defer) {
 
       if (!expectation.matchHeaders(headers))
         throw Error('Expected ' + expectation + ' with different headers\n' +
-            'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' + prettyPrint(headers));
+            'EXPECTED: ' + prettyPrint(expectation.headers) + '\nGOT:      ' +
+            prettyPrint(headers));
 
       expectations.shift();
 

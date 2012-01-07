@@ -118,8 +118,8 @@ function $HttpProvider() {
 
   var providerResponseInterceptors = this.responseInterceptors = [];
 
-  this.$get = ['$httpBackend', '$browser', '$exceptionHandler', '$cacheFactory', '$rootScope', '$q', '$injector',
-      function($httpBackend, $browser, $exceptionHandler, $cacheFactory, $rootScope, $q, $injector) {
+  this.$get = ['$httpBackend', '$browser', '$cacheFactory', '$rootScope', '$q', '$injector',
+      function($httpBackend, $browser, $cacheFactory, $rootScope, $q, $injector) {
 
     var defaultCache = $cacheFactory('$http'),
         responseInterceptors = [];
@@ -134,8 +134,10 @@ function $HttpProvider() {
      * @name angular.module.ng.$http
      * @requires $httpBacked
      * @requires $browser
-     * @requires $exceptionHandler //TODO(i): still needed?
      * @requires $cacheFactory
+     * @requires $rootScope
+     * @requires $q
+     * @requires $injector
      *
      * @param {object} config Object describing the request to be made and how it should be processed.
      *    The object has following properties:
@@ -369,10 +371,7 @@ function $HttpProvider() {
         cachedResp = cache.get(config.url);
         if (cachedResp) {
           if (cachedResp.then) {
-            // cached request has already been sent, but there is no response yet,
-            // we need to register callback and fire callbacks when the request is back
-            // note, we have to get the values from cache and perform transformations on them,
-            // as the configurations don't have to be same
+            // cached request has already been sent, but there is no response yet
             cachedResp.then(removePendingReq, removePendingReq);
             return cachedResp;
           } else {
