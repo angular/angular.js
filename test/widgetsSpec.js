@@ -55,7 +55,7 @@ describe('widget', function() {
   });
 
 
-  describe('ng:include', inject(function($rootScope, $compile) {
+  describe('ng:include', function() {
 
     function putIntoCache(url, content) {
       return function($templateCache) {
@@ -227,8 +227,73 @@ describe('widget', function() {
       expect(log.join('; ')).toEqual('url2; url2'); // it's here twice because we go through at
                                                     // least two digest cycles
     }));
-  }));
 
+
+    describe('autoscoll', function() {
+      var autoScrollSpy;
+
+      function spyOnAutoScroll() {
+        return function($provide) {
+          autoScrollSpy = jasmine.createSpy('$autoScroll');
+          $provide.value('$autoScroll', autoScrollSpy);
+        };
+      }
+
+      function compileAndLink(tpl) {
+        return function($compile, $rootScope) {
+          $compile(tpl)($rootScope);
+        };
+      }
+
+      function changeTplAndValueTo(template, value) {
+        return function($rootScope, $browser) {
+          $rootScope.$apply(function() {
+            $rootScope.tpl = template;
+            $rootScope.value = value;
+          });
+          $browser.defer.flush();
+        };
+      }
+
+      beforeEach(inject(
+          spyOnAutoScroll(),
+          putIntoCache('template.html', 'CONTENT'),
+          putIntoCache('another.html', 'CONTENT')));
+
+
+      it('should call $autoScroll if autoscroll attribute is present', inject(
+          compileAndLink('<ng:include src="tpl" autoscroll></ng:include>'),
+          changeTplAndValueTo('template.html'), function() {
+        expect(autoScrollSpy).toHaveBeenCalledOnce();
+      }));
+
+
+      it('should call $autoScroll if autoscroll evaluates to true', inject(
+          compileAndLink('<ng:include src="tpl" autoscroll="value"></ng:include>'),
+          changeTplAndValueTo('template.html', true),
+          changeTplAndValueTo('another.html', 'some-string'),
+          changeTplAndValueTo('template.html', 100), function() {
+        expect(autoScrollSpy).toHaveBeenCalled();
+        expect(autoScrollSpy.callCount).toBe(3);
+      }));
+
+
+      it('should not call $autoScroll if autoscroll attribute is not present', inject(
+          compileAndLink('<ng:include src="tpl"></ng:include>'),
+          changeTplAndValueTo('template.html'), function() {
+        expect(autoScrollSpy).not.toHaveBeenCalled();
+      }));
+
+
+      it('should not call $autoScroll if autoscroll evaluates to false', inject(
+          compileAndLink('<ng:include src="tpl" autoscroll="value"></ng:include>'),
+          changeTplAndValueTo('template.html', false),
+          changeTplAndValueTo('template.html', undefined),
+          changeTplAndValueTo('template.html', null), function() {
+        expect(autoScrollSpy).not.toHaveBeenCalled();
+      }));
+    });
+  });
 
   describe('a', function() {
     it('should prevent default action to be executed when href is empty',

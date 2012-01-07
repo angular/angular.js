@@ -43,6 +43,13 @@
  *                 instance of angular.module.ng.$rootScope.Scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
+ * @param {string=} autoscroll Whether `ng:include` should call {@link angular.module.ng.$autoScroll
+ *                  $autoScroll} to scroll the viewport after the content is loaded.
+ *
+ *                  - If the attribute is not set, disable scrolling.
+ *                  - If the attribute is set without value, enable scrolling.
+ *                  - Otherwise enable scrolling only if the expression evaluates to truthy value.
+ *
  * @example
     <doc:example>
       <doc:source jsfiddle="false">
@@ -84,7 +91,9 @@ angularWidget('ng:include', function(element){
   var compiler = this,
       srcExp = element.attr("src"),
       scopeExp = element.attr("scope") || '',
-      onloadExp = element[0].getAttribute('onload') || ''; //workaround for jquery bug #7537
+      onloadExp = element[0].getAttribute('onload') || '', //workaround for jquery bug #7537
+      autoScrollExp = element.attr('autoscroll');
+
   if (element[0]['ng:compiled']) {
     this.descend(true);
     this.directives(true);
@@ -123,7 +132,9 @@ angularWidget('ng:include', function(element){
               if (childScope) childScope.$destroy();
               childScope = useScope ? useScope : scope.$new();
               compiler.compile(element)(childScope);
-              $autoScroll();
+              if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                $autoScroll();
+              }
               scope.$eval(onloadExp);
             }
           }).error(clearContent);
