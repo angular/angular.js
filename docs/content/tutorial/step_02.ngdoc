@@ -29,6 +29,7 @@ The __view__ component is constructed by Angular from this template:
 
 __`app/index.html`:__
 <pre>
+<html ng:app>
 ...
 <body ng:controller="PhoneListCtrl">
 
@@ -39,7 +40,7 @@ __`app/index.html`:__
     </li>
   </ul>
 
-  <script src="lib/angular/angular.js" ng:autobind></script>
+  <script src="lib/angular/angular.js"></script>
   <script src="js/controllers.js"></script>
 </body>
 </html>

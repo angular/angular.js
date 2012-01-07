@@ -6,10 +6,7 @@ exports.convertDatetimeData = convertDatetimeData;
 exports.convertNumberData = convertNumberData;
 
 
-require.paths.push(__dirname);
-
-
-var parsePattern = require('parser').parsePattern;
+var parsePattern = require('./parser').parsePattern;
 
 
 function convertNumberData(dataObj, currencySymbols) {

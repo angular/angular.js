@@ -109,6 +109,27 @@ task :compile => [:init, :compile_scenario, :compile_jstd_scenario_adapter] do
         --js_output_file #{path_to('angular.min.js')})
 
   FileUtils.cp_r 'i18n/locale', path_to('i18n')
+
+  File.open(path_to('angular-loader.js'), 'w') do |f|
+    concat = 'cat ' + [
+      'src/loader.prefix',
+      'src/loader.js',
+      'src/loader.suffix'].flatten.join(' ')
+
+    content = %x{#{concat}}.
+              gsub('"NG_VERSION_FULL"', NG_VERSION.full).
+              gsub(/^\s*['"]use strict['"];?\s*$/, '') # remove all file-specific strict mode flags
+
+    f.write(content)
+  end
+
+  %x(java -jar lib/closure-compiler/compiler.jar \
+        --compilation_level SIMPLE_OPTIMIZATIONS \
+        --language_in ECMASCRIPT5_STRICT \
+        --js #{path_to('angular-loader.js')} \
+        --js_output_file #{path_to('angular-loader.min.js')})
+
+
 end
 
 
@@ -134,7 +155,9 @@ task :package => [:clean, :compile, :docs] do
 
   ['src/angular-mocks.js',
     path_to('angular.js'),
+    path_to('angular-loader.js'),
     path_to('angular.min.js'),
+    path_to('angular-loader.min.js'),
     path_to('angular-scenario.js'),
     path_to('jstd-scenario-adapter.js'),
     path_to('jstd-scenario-adapter-config.js'),

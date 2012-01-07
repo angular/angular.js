@@ -20,10 +20,10 @@ example points to (non-minified) version 0.9.12:
 
 <pre>
   <!doctype html>
-  <html xmlns:ng="http://angularjs.org">
+  <html xmlns:ng="http://angularjs.org" ng:app>
     <head>
       <title>My Angular App</title>
-      <script src="http://code.angularjs.org/angular-0.9.12.js" ng:autobind></script>
+      <script src="http://code.angularjs.org/angular-0.9.12.js"></script>
     </head>
     <body>
     </body>

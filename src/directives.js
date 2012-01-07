@@ -9,33 +9,6 @@
  * behavior of the element in which it is specified. Do not use directives to add elements to the
  * DOM; instead, use {@link angular.widget widgets} to add DOM elements.
  *
- * Following is the list of built-in Angular directives:
- *
- * * {@link angular.directive.ng:autobind ng:autobind} - An Angular bootstrap parameter that can
- * act as a directive.
- * * {@link angular.directive.ng:bind ng:bind} - Creates a data-binding between an HTML text value
- * and a data model.
- * * {@link angular.directive.ng:bind-attr ng:bind-attr} - Creates a data-binding in a way similar
- * to `ng:bind`, but uses JSON key / value pairs to do so.
- * * {@link angular.directive.ng:bind-template ng:bind-template} - Replaces the text value of an
- * element with a specified template.
- * * {@link angular.directive.ng:class ng:class} - Conditionally set a CSS class on an element.
- * * {@link angular.directive.ng:class-even ng:class-even} - Like `ng:class`, but works in
- * conjunction with {@link angular.widget.@ng:repeat} to affect even rows in a collection.
- * * {@link angular.directive.ng:class-odd ng:class-odd} - Like `ng:class`, but works with {@link
- * angular.widget.@ng:repeat}  to affect odd rows.
- * * {@link angular.directive.ng:click ng:click} - Executes custom behavior when an element is
- * clicked.
- * * {@link angular.directive.ng:controller ng:controller} - Creates a scope object linked to the
- * DOM element and assigns behavior to the scope.
- * * {@link angular.directive.ng:hide ng:hide} - Conditionally hides a portion of HTML.
- * * {@link angular.directive.ng:href ng:href} - Places an href in the Angular namespace.
- * * {@link angular.directive.ng:init} - Initialization tasks run before a template is executed.
- * * {@link angular.directive.ng:show ng:show} - Conditionally displays a portion of HTML.
- * * {@link angular.directive.ng:src ng:src} - Places a `src` attribute into the Angular namespace.
- * * {@link angular.directive.ng:style ng:style} - Conditionally set CSS styles on an element.
- * * {@link angular.directive.ng:submit} - Binds Angular expressions to `onSubmit` events.
- *
  * For more information about how Angular directives work, and to learn how to create your own
  * directives, see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in
  * the Angular Developer Guide.

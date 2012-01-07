@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
-require.paths.push(__dirname);
 var Q  = require('qq'),
     qfs  = require('q-fs'),
-    converter = require('converter.js'),
-    util = require('util.js'),
+    converter = require('./converter.js'),
+    util = require('./util.js'),
     localeInfo = {},
     localeIds = [],
     currencySymbols,
@@ -25,7 +24,7 @@ createFolder('../locale/').then(function() {
     qfs.read(__dirname + '/../closure/numberSymbols.js', 'b').then(function(content) {
       //eval script in the current context so that we get access to all the symbols
       eval(content.toString());
-      for (propName in goog.i18n) {
+      for (var propName in goog.i18n) {
         var localeID = util.findLocaleId(propName, 'num');
         if (localeID) {
           if (!localeInfo[localeID]) {
@@ -44,7 +43,7 @@ createFolder('../locale/').then(function() {
 
   qfs.read(__dirname + '/../closure/datetimeSymbols.js', 'b').then(function(content) {
     eval(content.toString());
-    for (propName in goog.i18n) {
+    for (var propName in goog.i18n) {
       var localeID = util.findLocaleId(propName, 'datetime');
       if (localeID) {
         if (!localeInfo[localeID]) {
@@ -65,7 +64,7 @@ createFolder('../locale/').then(function() {
 
   qfs.read(__dirname + '/../closure/pluralRules.js').then(function(content) {
     for(var i = 0; i < localeIds.length; i++) {
-      //We don't need to care about country ID because the plural rules in more specific id are 
+      //We don't need to care about country ID because the plural rules in more specific id are
       //always the same as those in its language ID.
       // e.g. plural rules for en_SG is the same as those for en.
       goog.LOCALE = localeIds[i].match(/[^_]+/)[0];
@@ -101,15 +100,13 @@ createFolder('../locale/').then(function() {
     localeObj.id = correctedLocaleId;
 
     var prefix =
-      'window.angular = window.angular || {};\n' +
-      'angular.module = angular.module || {};\n' +
-      'angular.module.ngLocale = ["$provide", function($provide) {\n' +
+      'angular.module("ngLocale", [], ["$provide", function($provide) {\n' +
          'var PLURAL_CATEGORY = {' +
            'ZERO: "zero", ONE: "one", TWO: "two", FEW: "few", MANY: "many", OTHER: "other"' +
          '};\n' +
          '$provide.value("$locale", ';
 
-    var suffix = ');\n}];';
+    var suffix = ');\n}]);';
 
     var content = JSON.stringify(localeInfo[localeID]).replace(/\¤/g,'\\u00A4').
                       replace(/"@@|@@"/g, '');

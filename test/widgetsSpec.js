@@ -501,14 +501,6 @@ describe('widget', function() {
       expect(element.text()).toBe('a|b|||c||d|');
     }));
 
-    it('should iterate over all kinds of types', inject(function($rootScope, $compile) {
-      var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
-      $rootScope.array = ['a', 1, null, undefined, {}];
-      $rootScope.$digest();
-
-      expect(element.text()).toBe('a|1|||{\n  }|');
-    }));
-
 
     it('should iterate over all kinds of types', inject(function($rootScope, $compile) {
       var element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);

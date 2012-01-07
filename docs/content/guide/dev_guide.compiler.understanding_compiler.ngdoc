@@ -6,8 +6,7 @@ Every {@link api/angular.widget widget}, {@link api/angular.directive directive}
 dev_guide.compiler.markup markup} is defined with a compile function, which the angular compiler
 executes on each widget or directive it encounters. The compile function optionally returns a link
 function.  This compilation process happens automatically when the page is loaded when you specify
-`ng:autobind` in the script tag from which you load the angular script file.  (See {@link
-dev_guide.bootstrap Initializing Angular}.)
+`ng:app` on the root element of the application.  (See {@link dev_guide.bootstrap Initializing Angular}.)
 
 The compile and link functions are related as follows:
 

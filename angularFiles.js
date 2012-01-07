@@ -1,6 +1,7 @@
 angularFiles = {
   'angularSrc': [
     'src/Angular.js',
+    'src/loader.js',
     'src/AngularPublic.js',
     'src/JSON.js',
     'src/Injector.js',

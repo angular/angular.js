@@ -26,7 +26,7 @@ events:
 In the illustration above, the dependency injection sequence proceeds as follows:
 
 1. Service factory functions are registered with angular's service factory repository.
-2. `ng:autobind` triggers angular's bootstrap sequence, during which angular compiles the template,
+2. `ng:app` triggers angular's bootstrap sequence, during which angular compiles the template,
 creates the root scope, and creates the dependency injector.
 3. The `ng:controller` directive implicitly creates a new child scope, augmented by the application
 of the `PhoneListCtrl` controller function.

@@ -152,10 +152,7 @@ function TutorialInstructionsCtrl($cookieStore) {
   };
 }
 
-window.angular = window.angular || {};
-angular.module = angular.module || {};
-
-angular.module.ngdocs = function($locationProvider, $filterProvider) {
+angular.module('ngdocs', [], function($locationProvider, $filterProvider) {
   $locationProvider.html5Mode(true).hashPrefix('!');
 
   $filterProvider.register('title', function(){
@@ -165,4 +162,4 @@ angular.module.ngdocs = function($locationProvider, $filterProvider) {
       });
     }
   });
-};
+});

@@ -7,10 +7,10 @@ describe("angular.scenario.dsl", function() {
   beforeEach(inject(function($injector) {
     eventLog = [];
     $window = {
-      document: jqLite('<div class="document"></div>'),
+      document: window.document.body,
       angular: new angular.scenario.testing.MockAngular()
     };
-    $window.document.data('$injector', $injector);
+    jqLite($window.document).data('$injector', $injector).attr('ng-app', '').addClass('html');
     $root = $injector.get('$rootScope');
     $root.emit = function(eventName) {
       eventLog.push(eventName);
@@ -35,7 +35,7 @@ describe("angular.scenario.dsl", function() {
         return fn.call($root).apply($root, arguments);
       };
     });
-    $root.application = new angular.scenario.Application($window.document);
+    $root.application = new angular.scenario.Application(jqLite($window.document));
     $root.application.getWindow_ = function() {
       return $window;
     };
@@ -46,6 +46,7 @@ describe("angular.scenario.dsl", function() {
     // Just use the real one since it delegates to this.addFuture
     $root.addFutureAction = angular.scenario.
       SpecRunner.prototype.addFutureAction;
+    jqLite($window.document).html('');
   }));
 
   afterEach(function(){
@@ -202,26 +203,9 @@ describe("angular.scenario.dsl", function() {
 
   describe('Element Finding', function() {
     var doc;
-    //TODO(esprehn): Work around a bug in jQuery where attribute selectors
-    //  only work if they are executed on a real document, not an element.
-    //
-    //  ex. jQuery('#foo').find('[name="bar"]') // fails
-    //  ex. jQuery('#foo [name="bar"]') // works, wtf?
-    //
     beforeEach(inject(function($injector) {
-      doc = _jQuery('<div id="angular-scenario-binding"></div>');
-      _jQuery(document.body).html('').append(doc);
-
-      dealoc($window.document); // we are about to override it
-      $window.document = window.document;
-      jqLite($window.document).data('$injector', $injector);
+      doc = _jQuery($window.document).append('<div class="body"></div>').find('.body');
     }));
-
-    afterEach(function() {
-      _jQuery(document.body).
-        find('#angular-scenario-binding').
-        remove();
-    });
 
     describe('Select', function() {
       it('should select single option', function() {
@@ -232,7 +216,7 @@ describe("angular.scenario.dsl", function() {
           '</select>'
         );
         $root.dsl.select('test').option('A');
-        expect(_jQuery('[ng\\:model="test"]').val()).toEqual('A');
+        expect(doc.find('[ng\\:model="test"]').val()).toEqual('A');
       });
 
       it('should select option by name', function() {
@@ -243,7 +227,7 @@ describe("angular.scenario.dsl", function() {
             '</select>'
           );
           $root.dsl.select('test').option('one');
-          expect(_jQuery('[ng\\:model="test"]').val()).toEqual('A');
+          expect(doc.find('[ng\\:model="test"]').val()).toEqual('A');
       });
 
       it('should select multiple options', function() {
@@ -255,7 +239,7 @@ describe("angular.scenario.dsl", function() {
           '</select>'
         );
         $root.dsl.select('test').options('A', 'B');
-        expect(_jQuery('[ng\\:model="test"]').val()).toEqual(['A','B']);
+        expect(doc.find('[ng\\:model="test"]').val()).toEqual(['A','B']);
       });
 
       it('should fail to select multiple options on non-multiple select', function() {
@@ -318,7 +302,7 @@ describe("angular.scenario.dsl", function() {
       it('should set attribute', function() {
         doc.append('<div id="test" class="foo"></div>');
         $root.dsl.element('#test').attr('class', 'bam');
-        expect(doc.find('div').attr('class')).toEqual('bam');
+        expect(doc.find('#test').attr('class')).toEqual('bam');
       });
 
       it('should get property', function() {
@@ -330,7 +314,7 @@ describe("angular.scenario.dsl", function() {
       it('should set property', function() {
         doc.append('<div id="test" class="foo"></div>');
         $root.dsl.element('#test').prop('className', 'bam');
-        expect(doc.find('div').prop('className')).toEqual('bam');
+        expect(doc.find('#test').prop('className')).toEqual('bam');
       });
 
       it('should get css', function() {

@@ -224,21 +224,27 @@ describe('injector', function() {
 
 
     it('should run symbolic modules', function() {
-      var $injector = createInjector(['myModule'], {
-        myModule: ['$provide', function(provide) {
-          provide.value('a', 'abc');
-        }]
-      });
+      angularModule('myModule', []).value('a', 'abc');
+      var $injector = createInjector(['myModule']);
       expect($injector.get('a')).toEqual('abc');
     });
 
 
-    it('should error on invalid madule name', function() {
+    it('should error on invalid module name', function() {
       expect(function() {
         createInjector(['IDontExist'], {});
-      }).toThrow("Module 'IDontExist' is not defined!");
+      }).toThrow("No module: IDontExist");
     });
 
+
+    it('should load dependant modules only once', function() {
+      var log = '';
+      angular.module('a', [], function(){ log += 'a'; });
+      angular.module('b', ['a'], function(){ log += 'b'; });
+      angular.module('c', ['a', 'b'], function(){ log += 'c'; });
+      createInjector(['c', 'c']);
+      expect(log).toEqual('abc');
+    });
 
     describe('$provide', function() {
       describe('value', function() {
@@ -246,6 +252,13 @@ describe('injector', function() {
           expect(createInjector([function($provide) {
             $provide.value('value', 'abc');
           }]).get('value')).toEqual('abc');
+        });
+
+
+        it('should configure a set of values', function() {
+          expect(createInjector([function($provide) {
+            $provide.value({value: Array});
+          }]).get('value')).toEqual(Array);
         });
       });
 
@@ -255,6 +268,13 @@ describe('injector', function() {
           expect(createInjector([function($provide) {
             $provide.factory('value', valueFn('abc'));
           }]).get('value')).toEqual('abc');
+        });
+
+
+        it('should configure a set of factories', function() {
+          expect(createInjector([function($provide) {
+            $provide.factory({value: Array});
+          }]).get('value')).toEqual([]);
         });
       });
 
@@ -278,6 +298,13 @@ describe('injector', function() {
           expect(createInjector([function($provide) {
             $provide.service('value', Type);
           }]).get('value')).toEqual('abc');
+        });
+
+
+        it('should configure a set of services', function() {
+          expect(createInjector([function($provide) {
+            $provide.service({value: valueFn({$get:Array})});
+          }]).get('value')).toEqual([]);
         });
       });
 

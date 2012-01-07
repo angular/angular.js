@@ -7,20 +7,20 @@ angular should process and manage the page. To initialize angular you do the fol
 
 * Specify the angular namespace in the `<html>` page
 * Choose which flavor of angular script to load (debug or production)
-* Specify whether or not angular should process and manage the page automatically (`ng:autobind`)
+* Specify whether or not angular should process and manage the page automatically (`ng:app`)
 
 The simplest way to initialize angular is to load the angular script and tell angular to compile
 and manage the whole page. You do this as follows:
 
 <pre>
 <!doctype html>
-<html xmlns:ng="http://angularjs.org">
+<html xmlns:ng="http://angularjs.org" ng:app>
   <head>
     ...
   </head>
   <body>
     ...
-    <script src="angular.js" ng:autobind>
+    <script src="angular.js">
   </body>
 </pre>
 
@@ -31,7 +31,7 @@ and manage the whole page. You do this as follows:
 
 You need to declare the angular namespace declaration in the following cases:
 
-* For all types of browser if you are using XHTML.
+* For all browsers if you are using XHTML.
 * For Internet Explorer older than version 9 (because older versions of IE do not render widgets
 properly for either HTML or XHTML).
 

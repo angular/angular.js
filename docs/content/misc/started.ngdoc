@@ -27,18 +27,17 @@ Now let's take a closer look at that code, and see what is going on behind
 the scenes.
 
 The first line of interest defines the `ng` namespace, which makes
-AngularJS work across all browsers (especially important for IE):
+AngularJS work across all browsers (especially important for IE). The
+`ng:app` tags tells angular to process the entire HTML when it is loaded:
 
 <pre>
-    <html xmlns:ng="http://angularjs.org">
+    <html xmlns:ng="http://angularjs.org" ng:app>
 </pre>
 
-The next line downloads the angular script, and instructs angular to process
-the entire HTML page when it is loaded:
+The next line downloads the angular script:
 
 <pre>
-    <script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js"
-ng:autobind></script>
+    <script type="text/javascript" src="http://code.angularjs.org/angular-?.?.?.min.js"></script>
 </pre>
 
 (For details on what happens when angular processes an HTML page,

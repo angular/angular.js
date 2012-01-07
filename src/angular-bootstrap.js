@@ -9,17 +9,10 @@
 
   var filename = /^(.*\/)angular-bootstrap.js(#.*)?$/,
       scripts = document.getElementsByTagName("SCRIPT"),
-      autobind = scripts[scripts.length-1].getAttribute('ng:autobind'),
       config,
       serverPath,
       match,
       globalVars = {};
-
-  if (autobind) {
-    config = {autobind: autobind};
-  } else {
-    config = (autobind == '') ? {autobind: true} : {}
-  }
 
   for(var j = 0; j < scripts.length; j++) {
     match = (scripts[j].src || "").match(filename);
@@ -109,7 +102,7 @@
 
     bindJQuery();
 
-    angularInit(config, document);
+    angularInit(document, angular.bootstrap);
   }
 
   if (window.addEventListener) {

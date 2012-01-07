@@ -21,8 +21,8 @@ controller from the HTML template, as follows:
 
 <pre>
 <!doctype html>
-<html xmlns:ng="http://angularjs.org" ng:controller="MyController">
-<script src="http://code.angularjs.org/angular.min.js" ng:autobind></script>
+<html xmlns:ng="http://angularjs.org" ng:controller="MyController" ng:app>
+<script src="http://code.angularjs.org/angular.min.js"></script>
 <body>
  ...
 </body>

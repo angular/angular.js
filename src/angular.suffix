@@ -4,10 +4,8 @@
 
   publishExternalAPI(angular);
 
-  var config = angularJsConfig(document);
-
   jqLiteWrap(document).ready(function() {
-    angularInit(config, document);
+    angularInit(document, bootstrap);
   });
 
 })(window, document);
