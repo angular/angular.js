@@ -13,27 +13,31 @@
 
 
   var HTML_TEMPLATE =
-  '<!doctype html>\n' +
-  '<html xmlns:ng="http://angularjs.org">\n' +
-  ' <script src="' + angularJsUrl + '" ng:autobind_MODULE_></script>\n' +
-  ' <body>\n' +
-  '_HTML_SOURCE_\n' +
-  ' </body>\n' +
-  '</html>';
+    '<!doctype html>\n' +
+    '<html xmlns:ng="http://angularjs.org" ng:app_MODULE_>\n' +
+    ' <script src="' + angularJsUrl + '"></script>\n' +
+    '_SCRIPT_SOURCE_' +
+    ' <body>\n' +
+    '_HTML_SOURCE_\n' +
+    ' </body>\n' +
+    '</html>';
 
   angular.widget('doc:example', ['$injector', '$element', function($injector, element){
     this.descend(true); //compile the example code
-    var module = element.attr('module');
+    var module = element.attr('module') || '';
 
     //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
     //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
     var example = element.find('pre').eq(0),  //doc-source
-        exampleSrc = example.text(),
+        scriptSrc = '',
+        htmlSrc = example.text().replace(/<script[^\>]*>([\s\S]+)<\/script>/im, function(_, script) {
+            scriptSrc = script;
+            return '';
+          }),
         showSource = example.attr('source') !== 'false',
         jsfiddle = example.attr('jsfiddle') || true,
         scenario = element.find('pre').eq(1); //doc-scenario
 
-    var code = indent(exampleSrc);
     var tabHtml =
       '<ul class="doc-example">';
 
@@ -43,13 +47,12 @@
         '<li class="doc-example-heading"><h3>Source</h3></li>' +
         '<li class="doc-example-source" ng:non-bindable>' +
         jsFiddleButton(jsfiddle) + // may or may not have value
-        '<pre class="brush: js; html-script: true; highlight: [' +
-          code.hilite + ']; toolbar: false;"></pre></li>';
+        '<pre class="brush: js; html-script: true; toolbar: false;"></pre></li>';
     }
     // show live preview tab
     tabHtml +=
         '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
-        '<li class="doc-example-live">' + exampleSrc +'</li>';
+        '<li class="doc-example-live">' + htmlSrc +'</li>';
     // show scenario tab, if present
     if (scenario.text()) {
       tabHtml +=
@@ -62,19 +65,18 @@
 
     tabs.find('li').eq(1).find('pre').text(
       HTML_TEMPLATE.
-        replace('_HTML_SOURCE_', code.html).
-        replace('_MODULE_', (module ? (' ng:module="' + module + '"') : '')));
+        replace('_SCRIPT_SOURCE_', scriptSrc ? ' <script>\n' + indent(scriptSrc, '  ') + '\n </script>\n'  : '').
+        replace('_HTML_SOURCE_', indent(htmlSrc, '  ')).
+        replace('_MODULE_', module ? '="' + module + '"' : ''));
 
     element.html('');
     element.append(tabs);
 
-    var script = (exampleSrc.match(/<script[^\>]*>([\s\S]*)<\/script>/) || [])[1] || '';
-
     try {
       if (window.execScript) { // IE
-        window.execScript(script || '"stupid IE!"'); // IE complains when evaling empty string
+        window.execScript(scriptSrc || '"stupid IE!"'); // IE complains when evaling empty string
       } else {
-        window.eval(script);
+        window.eval(scriptSrc);
       }
     } catch (e) {
       alert(e);
@@ -86,20 +88,20 @@
 
 
     function jsFiddleButton(jsfiddle) {
+      var fixJsFiddleIssue132 = true;
       if (jsfiddle !== 'false') {
         if(jsfiddle === true) {
           //dynamically generate a fiddle
-          var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/',
-              fiddleSrc =  exampleSrc,
-              stripIndent = fiddleSrc.match(/^(\s*)/)[1].length;
+          var fiddleUrl = 'http://jsfiddle.net/api/post/library/pure/';
 
-          //escape closing textarea
-          fiddleSrc = fiddleSrc.replace(/<\/textarea>/gi,'&lt;/textarea&gt;');
-          //strip extra indentation
-          fiddleSrc = fiddleSrc.replace(new RegExp('^\\s{' + stripIndent + '}', 'gm'), '');
+          function jsFiddleEscape(text, prefix) {
+            return indent(text.replace(/<\/textarea>/gi,'&lt;/textarea&gt;'), prefix);
+          }
 
           return '<form class="jsfiddle" method="post" action="' + fiddleUrl + '" target="_blank">' +
-                    '<textarea name="css">' +
+                    (fixJsFiddleIssue132 ? '' : '<textarea name="resources">' + angularJsUrl + '</textarea>') +
+                    '<textarea name="css">\n' +
+                      (fixJsFiddleIssue132 ? '</style>\n<script src="' + angularJsUrl + '"></script>\n<style>\n' : '') +
                       '.ng-invalid { border: 1px solid red; } \n' +
                       'body { font-family: Arial,Helvetica,sans-serif; }\n' +
                       'body, td, th { font-size: 14px; margin: 0; }\n' +
@@ -109,10 +111,9 @@
                     '</textarea>' +
                     '<input type="text" name="title" value="AngularJS Live Example">' +
                     '<textarea name="html">' +
-                      '<script src="' + angularJsUrl + '" ng:autobind' + (module ? (' ng:module="' + module + '"') : '') + '></script>\n\n' +
-                      '<!-- AngularJS Example Code: -->\n\n' +
-                      fiddleSrc +
+                      '<div ng:app' + (module ? '="' + module + '"' : '') + '>\n' + jsFiddleEscape(htmlSrc, ' ') + '\n</div>' +
                     '</textarea>' +
+                    '<textarea name="js">' + jsFiddleEscape(scriptSrc) + '</textarea>' +
                     '<button>edit at jsFiddle</button>' +
                   '</form>';
         } else {
@@ -127,10 +128,10 @@
     }
   }]);
 
-  function indent(text) {
+  function indent(text, prefix) {
+    prefix = prefix || '';
     if (!text) return text;
     var lines = text.split(/\r?\n/);
-    var lineNo = [];
     var i;
 
     // remove any leading blank lines
@@ -147,10 +148,9 @@
     }
 
     for (i = 0; i < lines.length; i++) {
-      lines[i] = '  ' + lines[i].substring(minIndent);
-      lineNo.push(5 + i);
+      lines[i] = prefix + lines[i].substring(minIndent);
     }
-    return {html: lines.join('\n'), hilite: lineNo.join(',') };
+    return lines.join('\n');
   }
 
   var HTML_TPL =

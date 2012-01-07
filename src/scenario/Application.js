@@ -90,11 +90,13 @@ angular.scenario.Application.prototype.executeAction = function(action) {
   if (!$window.angular) {
     return action.call(this, $window, _jQuery($window.document));
   }
-  var element = $window.angular.element($window.document);
-  var $injector = element.inheritedData('$injector');
-  $injector.invoke(null, function($browser){
-    $browser.notifyWhenNoOutstandingRequests(function() {
-      action.call(self, $window, _jQuery($window.document));
+  angularInit($window.document, function(element) {
+    element = $window.angular.element(element);
+    var $injector = element.inheritedData('$injector');
+    $injector.invoke(null, function($browser){
+      $browser.notifyWhenNoOutstandingRequests(function() {
+        action.call(self, $window, _jQuery($window.document));
+      });
     });
   });
 };

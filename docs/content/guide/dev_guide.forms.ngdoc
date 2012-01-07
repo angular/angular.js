@@ -516,9 +516,8 @@ function LoginController() {
 }
 
 describe('LoginController', function() {
-  it('should disable login button when form is invalid', function() {
-    var scope = angular.module.ng.$rootScope.Scope();
-    var loginController = scope.$new(LoginController);
+  it('should disable login button when form is invalid', inject(function($rootScope) {
+    var loginController = $rootScope.$new(LoginController);
 
     // In production the 'loginForm' form instance gets set from the view,
     // but in unit-test we have to set it manually.
@@ -533,7 +532,7 @@ describe('LoginController', function() {
     // Now simulate a valid form
     loginController.loginForm.$emit('$valid', 'MyReason');
     expect(loginController.disableLogin()).toBe(false);
-  });
+  }));
 });
 </pre>
 
@@ -569,9 +568,8 @@ function LoginController(){
 }
 
 describe('LoginController', function() {
-  it('should disable login button when form is invalid', function() {
-    var scope = angular.module.ng.$rootScope.Scope();
-    var loginController = scope.$new(LoginController);
+  it('should disable login button when form is invalid', inject(function($rootScope) {
+    var loginController = $rootScope.$new(LoginController);
     var input = angular.element('<input>');
 
     // In production the 'loginForm' form instance gets set from the view,
@@ -609,7 +607,7 @@ describe('LoginController', function() {
     loginController.password = 'abcdef'; // should be valid
     scope.$digest();
     expect(loginController.loginForm.password.$valid).toBe(true);
-  });
+  }));
 });
 </pre>
 

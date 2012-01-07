@@ -27,7 +27,7 @@ angular {@link dev_guide.compiler.directives directives}, {@link dev_guide.compi
 and {@link dev_guide.expressions expressions}:
 
 <pre>
-<html>
+<html ng:app>
  <!-- Body tag augmented with ng:controller directive  -->
  <body ng:controller="MyController">
    <input ng:model="foo" value="bar">
@@ -35,7 +35,7 @@ and {@link dev_guide.expressions expressions}:
           string expression 'buttonText'
           wrapped in "{{ }}" markup -->
    <button ng:click="changeFoo()">{{buttonText}}</button>
-   <script src="angular.js" ng:autobind>
+   <script src="angular.js">
  </body>
 </html>
 </pre>

@@ -201,7 +201,7 @@ function inferInjectionArgs(fn) {
  *
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
  * @param {(Object|function())} provider If the provider is:
- * 
+ *
  *   - `Object`: then it should have a `$get` method. The `$get` method will be invoked using
  *               {@link angular.module.AUTO.$injector#invoke $injector.invoke()} when an instance needs to be created.
  *   - `Constructor`: a new instance of the provider will be created using
@@ -237,11 +237,12 @@ function inferInjectionArgs(fn) {
  */
 
 
-function createInjector(modulesToLoad, moduleRegistry) {
+function createInjector(modulesToLoad) {
   var cache = {},
       providerSuffix = 'Provider',
       path = [],
-      $injector;
+      $injector,
+      loadedModules = new HashMap();
 
   value('$injector', $injector = {
     get: getService,
@@ -249,24 +250,34 @@ function createInjector(modulesToLoad, moduleRegistry) {
     instantiate: instantiate
   });
   value('$provide', {
-    service: service,
-    factory: factory,
-    value: value,
+    service: supportObject(service),
+    factory: supportObject(factory),
+    value: supportObject(value),
     decorator: decorator
   });
 
-  loadModule(modulesToLoad);
+  loadModules(modulesToLoad);
 
   return $injector;
 
   ////////////////////////////////////
+
+  function supportObject(delegate) {
+    return function(key, value) {
+      if (isObject(key)) {
+        forEach(key, reverseParams(delegate));
+      } else {
+        delegate(key, value);
+      }
+    }
+  }
 
   function service(name, provider) {
     if (isFunction(provider)){
       provider = instantiate(provider);
     }
     if (!provider.$get) {
-      throw Error('Providers must define $get factory method.');
+      throw Error('Provider ' + name + ' must define $get factory method.');
     }
     cache['#' + name + providerSuffix] = provider;
   }
@@ -362,16 +373,21 @@ function createInjector(modulesToLoad, moduleRegistry) {
     return invoke(instance, Type, locals) || instance;
   }
 
-  function loadModule(modulesToLoad){
-    forEach(isString(modulesToLoad) ? modulesToLoad.split(',') : modulesToLoad, function(module) {
+  function loadModules(modulesToLoad){
+    forEach(modulesToLoad, function(module) {
+      if (loadedModules.get(module)) return;
+      loadedModules.put(module, true);
       if (isString(module)) {
-        if (moduleRegistry[module = trim(module)]) {
-          module = moduleRegistry[module];
-        } else {
-          throw Error("Module '" + module + "' is not defined!");
+        module = angularModule(module);
+        loadModules(module.requires);
+
+        for(var invokeQueue = module.invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
+          var invokeArgs = invokeQueue[i],
+              service = getService(invokeArgs[0]);
+
+          service[invokeArgs[1]].apply(service, invokeArgs[2]);
         }
-      }
-      if (isFunction(module) || isArray(module)) {
+      } else if (isFunction(module) || isArray(module)) {
         invoke(null, module);
       } else {
         assertArgFn(module, 'module');

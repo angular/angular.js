@@ -116,7 +116,7 @@ describe('angular.scenario.Application', function() {
     var called, polled;
     var handlers = [];
     var testWindow = {
-      document: jqLite('<div class="test-foo"></div>'),
+      document: jqLite('<div class="test-foo" ng-app></div>')[0],
       angular: {
         element: jqLite,
         service: {}
@@ -125,7 +125,7 @@ describe('angular.scenario.Application', function() {
     $browser.notifyWhenNoOutstandingRequests = function(fn) {
       handlers.push(fn);
     };
-    testWindow.document.data('$injector', $injector);
+    jqLite(testWindow.document).data('$injector', $injector);
     app.getWindow_ = function() {
       return testWindow;
     };

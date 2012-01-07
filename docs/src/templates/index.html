@@ -1,6 +1,7 @@
 <!doctype html>
 <html xmlns:ng="http://angularjs.org/"
       xmlns:doc="http://docs.angularjs.org/"
+      id="ng:app" ng:app="ngdocs"
       ng:controller="DocsController"
       doc:manifest>
 <head>
@@ -27,7 +28,7 @@
                       type: 'text/css'});
       addTag('script', {src: 'syntaxhighlighter/syntaxhighlighter-combined.js'}, sync);
       if (jQuery) addTag('script', {src: 'jquery.min.js'});
-      addTag('script', {src: angularPath, 'ng:autobind':'', 'ng:modules':'ngdocs'}, sync);
+      addTag('script', {src: angularPath}, sync);
       addTag('script', {src: 'docs-combined.js'}, sync);
       addTag('script', {src: 'docs-keywords.js'}, sync);
 

@@ -67,10 +67,10 @@ You can also include the locale specific js file in the index.html page. For exa
 requires German locale, you would serve index_de-ge.html which will look something like this:
 
 <pre>
-<html>
+<html ng:app>
  <head>
 ….
-   <script src="angular.js" ng:autobind></script>
+   <script src="angular.js"></script>
    <script src="i18n/angular-locale_de-ge.js"></script>
 ….
  </head>
