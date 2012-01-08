@@ -14,7 +14,7 @@
  * `ng:options` expression.
  *
  * When an item in the select menu is select, the value of array element or object property
- * represented by the selected option will be bound to the model identified by the `name` attribute
+ * represented by the selected option will be bound to the model identified by the `ng:model` attribute
  * of the parent select element.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
