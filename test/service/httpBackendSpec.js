@@ -19,7 +19,7 @@ describe('$httpBackend', function() {
 
 
   beforeEach(inject(function($injector) {
-    callbacks = {};
+    callbacks = {counter: 0};
     $browser = $injector.get('$browser');
     fakeBody = {removeChild: jasmine.createSpy('body.removeChild')};
     $backend = createHttpBackend($browser, MockXhr, fakeTimeout, callbacks, fakeBody);
@@ -115,6 +115,9 @@ describe('$httpBackend', function() {
 
   describe('JSONP', function() {
 
+    var SCRIPT_URL = /([^\?]*)\?cb=angular\.callbacks\.(.*)/;
+
+
     it('should add script tag for JSONP request', function() {
       callback.andCallFake(function(status, response) {
         expect(status).toBe(200);
@@ -125,10 +128,10 @@ describe('$httpBackend', function() {
       expect($browser.$$scripts.length).toBe(1);
 
       var script = $browser.$$scripts.shift(),
-          url = script.url.split('?cb=');
+          url = script.url.match(SCRIPT_URL);
 
-      expect(url[0]).toBe('http://example.org/path');
-      callbacks[url[1]]('some-data');
+      expect(url[1]).toBe('http://example.org/path');
+      callbacks[url[2]]('some-data');
       script.done();
 
       expect(callback).toHaveBeenCalledOnce();
@@ -140,7 +143,7 @@ describe('$httpBackend', function() {
       expect($browser.$$scripts.length).toBe(1);
 
       var script = $browser.$$scripts.shift(),
-          callbackId = script.url.split('?cb=')[1];
+          callbackId = script.url.match(SCRIPT_URL)[2];
 
       callbacks[callbackId]('some-data');
       script.done();

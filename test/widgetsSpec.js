@@ -244,7 +244,6 @@ describe('widget', function() {
             $rootScope.tpl = template;
             $rootScope.value = value;
           });
-          $browser.defer.flush();
         };
       }
 
