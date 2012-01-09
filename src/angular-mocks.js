@@ -147,8 +147,8 @@ angular.module.ngMock.$Browser = function() {
   };
 
   self.$$scripts = [];
-  self.addJs = function(url, domId, done) {
-    var script = {url: url, id: domId, done: done};
+  self.addJs = function(url, done) {
+    var script = {url: url, done: done};
     self.$$scripts.push(script);
     return script;
   };

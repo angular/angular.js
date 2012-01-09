@@ -6,16 +6,14 @@ describe('mocks', function() {
 
     describe('addJs', function() {
 
-      it('should store url, id, done', inject(function($browser) {
+      it('should store url, done', inject(function($browser) {
         var url  = 'some.js',
-            id   = 'js-id',
             done = noop;
 
-        $browser.addJs(url, id, done);
+        $browser.addJs(url, done);
 
         var script = $browser.$$scripts.shift();
         expect(script.url).toBe(url);
-        expect(script.id).toBe(id);
         expect(script.done).toBe(done);
       }));
 

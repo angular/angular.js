@@ -38,7 +38,8 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
         callbacks[callbackId].data = data;
       };
 
-      var script = $browser.addJs(url.replace('JSON_CALLBACK', callbackId), null, function() {
+      var script = $browser.addJs(url.replace('JSON_CALLBACK', 'angular.callbacks.' + callbackId),
+          function() {
         if (callbacks[callbackId].data) {
           completeRequest(callback, 200, callbacks[callbackId].data);
         } else {
