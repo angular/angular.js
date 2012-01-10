@@ -1,7 +1,6 @@
 if (global.jasmine) return;
 
 var jasmine = require('../../lib/jasmine-1.0.1');
-var sys = require('util');
 
 for(var key in jasmine) {
   global[key] = jasmine[key];
