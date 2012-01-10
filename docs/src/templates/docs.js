@@ -49,7 +49,9 @@ function DocsController($location, $window, $cookies, $filter) {
   };
 
   scope.getCurrentPartial = function() {
-    return this.partialId ? ('./partials/' + this.sectionId + '/' + this.partialId + '.html') : '';
+    return this.partialId
+        ? ('./partials/' + this.sectionId + '/' + this.partialId.replace('angular.Module', 'angular.IModule') + '.html')
+        : '';
   };
 
   scope.getClass = function(page) {
