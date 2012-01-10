@@ -11,7 +11,7 @@ exports.output = function(file, content) {
   var fullPath = OUTPUT_DIR + file;
   var dir = parent(fullPath);
   return Q.when(exports.makeDir(dir), function(error) {
-    qfs.write(fullPath,exports.toString(content));
+    qfs.write(fullPath, exports.toString(content));
   });
 };
 

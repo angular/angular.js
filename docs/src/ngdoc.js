@@ -456,7 +456,7 @@ Doc.prototype = {
     dom.html(this.description);
   },
 
-  html_usage_object: function(dom){
+  html_usage_interface: function(dom){
     var self = this;
 
     if (this.param.length) {
@@ -477,7 +477,11 @@ Doc.prototype = {
   },
 
   html_usage_service: function(dom) {
-    this.html_usage_object(dom)
+    this.html_usage_interface(dom)
+  },
+
+  html_usage_object: function(dom) {
+    this.html_usage_interface(dom)
   },
 
   method_properties_events: function(dom) {
@@ -619,15 +623,18 @@ var KEYWORD_PRIORITY = {
   '.index': 1,
   '.guide': 2,
   '.angular': 7,
+  '.angular.Module': 7,
+  '.angular.module': 8,
+  '.angular.mock': 9,
   '.angular.module.ng.$filter': 7,
-  '.angular.Object': 7,
-  '.angular.directive': 7,
   '.angular.module.ng.$filter': 7,
   '.angular.module.ng.$rootScope.Scope': 7,
   '.angular.module.ng': 7,
-  '.angular.inputType': 7,
-  '.angular.widget': 7,
   '.angular.mock': 8,
+  '.angular.directive': 6,
+  '.angular.inputType': 6,
+  '.angular.widget': 6,
+  '.angular.module.ngMock': 8,
   '.dev_guide.overview': 1,
   '.dev_guide.bootstrap': 2,
   '.dev_guide.mvc': 3,
@@ -648,7 +655,7 @@ function keywordSort(a, b){
       mangled.push(KEYWORD_PRIORITY[partialName] || 5);
       mangled.push(name);
     });
-    return doc.section + '/' + mangled.join('.');
+    return (doc.section + '/' + mangled.join('.')).toLowerCase();
   }
   var nameA = mangleName(a);
   var nameB = mangleName(b);
