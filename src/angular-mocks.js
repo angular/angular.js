@@ -748,10 +748,16 @@ function createHttpBackendMock($delegate, $defer) {
 
 
   function createShortMethods(prefix) {
-    angular.forEach(['GET', 'PUT', 'POST', 'DELETE', 'PATCH', 'JSONP'], function(method) {
-     $httpBackend[prefix + method] = function(url, data, headers) {
-       return $httpBackend[prefix](method, url, data, headers)
+    angular.forEach(['GET', 'DELETE', 'JSONP'], function(method) {
+     $httpBackend[prefix + method] = function(url, headers) {
+       return $httpBackend[prefix](method, url, undefined, headers)
      }
+    });
+
+    angular.forEach(['PUT', 'POST'], function(method) {
+      $httpBackend[prefix + method] = function(url, data, headers) {
+        return $httpBackend[prefix](method, url, data, headers)
+      }
     });
   }
 };
