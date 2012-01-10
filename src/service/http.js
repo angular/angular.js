@@ -287,7 +287,7 @@ function $HttpProvider() {
      * @param {Object=} config Optional configuration object
      * @returns {XhrFuture} Future object
      */
-    createShortMethods('get', 'delete', 'head', 'patch', 'jsonp');
+    createShortMethods('get', 'delete', 'head', 'jsonp');
 
     /**
      * @ngdoc method
