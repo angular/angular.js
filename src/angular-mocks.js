@@ -33,11 +33,12 @@ angular.mock = {};
  * - $browser.defer — enables testing of code that uses
  *   {@link angular.module.ng.$defer $defer} for executing functions via the `setTimeout` api.
  */
-angular.mock.$BrowserProvider = function(){
+angular.mock.$BrowserProvider = function() {
   this.$get = function(){
     return new angular.mock.$Browser();
   };
 };
+
 angular.mock.$Browser = function() {
   var self = this;
 
@@ -143,7 +144,7 @@ angular.mock.$Browser = function() {
     self.$$scripts.push(script);
     return script;
   };
-}
+};
 angular.mock.$Browser.prototype = {
 
 /**
@@ -217,7 +218,7 @@ angular.mock.$Browser.prototype = {
  * information.
  */
 
-angular.mock.$ExceptionHandlerProvider = function(){
+angular.mock.$ExceptionHandlerProvider = function() {
   var handler;
 
   /**
@@ -238,18 +239,18 @@ angular.mock.$ExceptionHandlerProvider = function(){
    *            See {@link angular.module.ngMock.$log#assertEmpty assertEmpty()} and
    *             {@link angular.module.ngMock.$log#reset reset()}
    */
-  this.mode = function(mode){
+  this.mode = function(mode) {
     switch(mode) {
       case 'rethrow':
         handler = function(e) {
           throw e;
-        }
+        };
         break;
       case 'log':
         var errors = [];
         handler = function(e) {
           errors.push(e);
-        }
+        };
         handler.errors = errors;
         break;
       default:
@@ -257,7 +258,7 @@ angular.mock.$ExceptionHandlerProvider = function(){
     }
   };
 
-  this.$get = function(){
+  this.$get = function() {
     return handler;
   };
 
@@ -275,7 +276,7 @@ angular.mock.$ExceptionHandlerProvider = function(){
  * level-specific log function, e.g. for level `error` the array is exposed as `$log.error.logs`.
  *
  */
-angular.mock.$logProvider = function(){
+angular.mock.$LogProvider = function() {
 
   function concat(array1, array2, index) {
     return array1.concat(Array.prototype.slice.call(array2, index));
@@ -298,7 +299,7 @@ angular.mock.$logProvider = function(){
      * @description
      * Reset all of the logging arrays to empty.
      */
-    $log.reset = function (){
+    $log.reset = function () {
       /**
        * @ngdoc property
        * @name angular.module.ngMock.$log#log.logs
@@ -357,7 +358,7 @@ angular.mock.$logProvider = function(){
       if (errors.length) {
         errors.unshift("Expected $log to be empty! Either a message was logged unexpectedly, or an expected " +
           "log message was not checked and removed:");
-        errors.push('')
+        errors.push('');
         throw new Error(errors.join('\n---------\n'));
       }
     };
@@ -504,7 +505,7 @@ angular.mock.TzDate = function (offset, timestamp) {
   });
 
   return self;
-}
+};
 
 //make "tzDateInstance instanceof Date" return true
 angular.mock.TzDate.prototype = Date.prototype;
@@ -524,7 +525,7 @@ angular.mock.TzDate.prototype = Date.prototype;
  * @param {*} object - any object to turn into string.
  * @return a serialized string of the argument
  */
-angular.mock.dump = function(object){
+angular.mock.dump = function(object) {
   return serialize(object);
 
   function serialize(object) {
@@ -532,8 +533,8 @@ angular.mock.dump = function(object){
 
     if (angular.isElement(object)) {
       object = angular.element(object);
-      out = angular.element('<div></div>')
-      angular.forEach(object, function(element){
+      out = angular.element('<div></div>');
+      angular.forEach(object, function(element) {
         out.append(angular.element(element).clone());
       });
       out = out.html();
@@ -616,7 +617,7 @@ function createHttpBackendMock($delegate, $defer) {
       return angular.isNumber(status)
           ? [status, data, headers]
           : [200, status, data];
-    }
+    };
   }
 
   // TODO(vojta): change params to: method, url, data, headers, callback
@@ -850,10 +851,10 @@ function MockXhr() {
  * mocks to the {@link angular.module.AUTO.$injector $injector}.
  */
 angular.module('ngMock', ['ng']).service({
-  '$browser': angular.mock.$BrowserProvider,
-  '$exceptionHandler': angular.mock.$ExceptionHandlerProvider,
-  '$log': angular.mock.$logProvider,
-  '$httpBackend': angular.mock.$HttpBackendProvider
+  $browser: angular.mock.$BrowserProvider,
+  $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
+  $log: angular.mock.$LogProvider,
+  $httpBackend: angular.mock.$HttpBackendProvider
 });
 
 
@@ -875,13 +876,13 @@ angular.mock.e2e.$httpBackendDecorator = ['$delegate', '$defer', createHttpBacke
 
 
 
-window.jstestdriver && (function(window){
+window.jstestdriver && (function(window) {
   /**
    * Global method to output any number of objects into JSTD console. Useful for debugging.
    */
   window.dump = function() {
     var args = [];
-    angular.forEach(arguments, function(arg){
+    angular.forEach(arguments, function(arg) {
       args.push(angular.mock.dump(arg));
     });
     jstestdriver.console.log.apply(jstestdriver.console, args);
@@ -911,7 +912,7 @@ window.jstestdriver && (function(window){
  *     });
  *
  *     // Argument inference is used to inject the $rootScope as well as the version
- *     it('should provide a version', inject(function($rootScope, version){
+ *     it('should provide a version', inject(function($rootScope, version) {
  *       expect(version).toEqual('v1.0.1');
  *       expect($rootScope.value).toEqual(123);
  *     });
@@ -933,10 +934,10 @@ window.jstestdriver && (function(window){
  * @param {*} fns... any number of functions which will be injected using the injector.
  * @return a method
  */
-window.jasmine && (function(window){
-  window.inject = function (){
+window.jasmine && (function(window) {
+  window.inject = function () {
     var blockFns = Array.prototype.slice.call(arguments, 0);
-    return function(){
+    return function() {
       var injector = this.$injector;
       if (!injector) {
         injector = this.$injector = angular.injector('ng', 'ngMock');
