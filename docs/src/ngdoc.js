@@ -292,6 +292,9 @@ Doc.prototype = {
         }
         dom.text(' – {');
         dom.text(param.type);
+        if (param.optional) {
+          dom.text('=');
+        }
         dom.text('} – ');
       });
       dom.html(param.description);
