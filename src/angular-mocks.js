@@ -3,6 +3,8 @@
  * @license AngularJS v"NG_VERSION_FULL"
  * (c) 2010-2011 AngularJS http://angularjs.org
  * License: MIT
+ *
+ * TODO(vojta): wrap whole file into closure during build
  */
 
 /**
@@ -578,16 +580,34 @@ angular.mock.dump = function(object){
  * @ngdoc object
  * @name angular.module.ngMock.$httpBackend
  * @describe
- * Fake HTTP backend used by the $http service during testing. This implementation can be used to
- * respond with static or dynamic responses via the `expect` and `when` apis and their shortcuts
- * (`expectGET`, `whenPOST`, etc).
+ * Fake version of `$httpBackend` service used by the `$http` service during unit testing.
+ *
+ * This implementation can be used to respond with static or dynamic responses via the `expect` and
+ * `when` apis and their shortcuts (`expectGET`, `whenPOST`, etc).
  */
-angular.mock.$httpBackendDecorator = function($delegate, $defer) {
+angular.mock.$HttpBackendProvider = function() {
+  this.$get = [createHttpBackendMock];
+};
+
+/**
+ * General factory function for $httpBackend mock.
+ * Returns instance for unit testing (when no arguments specified):
+ *   - passing through is disabled
+ *   - auto flushing is disabled
+ *
+ * Returns instance for e2e testing (when `$delegate` and `$defer` specified):
+ *   - passing through (delegating request to real backend) is enabled
+ *   - auto flushing is enabled
+ *
+ * @param {Object=} $delegate Real $httpBackend instance (allow passing through if specified)
+ * @param {Object=} $defer Auto-flushing enabled if specified
+ * @return {Object} Instance of $httpBackend mock
+ */
+function createHttpBackendMock($delegate, $defer) {
   var definitions = [],
       expectations = [],
       responses = [],
-      responsesPush = angular.bind(responses, responses.push),
-      autoflush = false;
+      responsesPush = angular.bind(responses, responses.push);
 
   function createResponse(status, data, headers) {
     if (angular.isFunction(status)) return status;
@@ -638,7 +658,8 @@ angular.mock.$httpBackendDecorator = function($delegate, $defer) {
     while ((definition = definitions[++i])) {
       if (definition.match(method, url, data, headers || {})) {
         if (definition.response) {
-          (autoflush ? $defer : responsesPush)(function() {
+          // if $defer specified, we do auto flush all requests
+          ($defer ? $defer : responsesPush)(function() {
             var response = definition.response(method, url, data, headers);
             xhr.$$respHeaders = response[2];
             callback(response[0], response[1], xhr.getAllResponseHeaders());
@@ -656,17 +677,21 @@ angular.mock.$httpBackendDecorator = function($delegate, $defer) {
   }
 
   $httpBackend.when = function(method, url, data, headers) {
-    var definition = new MockHttpExpectation(method, url, data, headers);
-    definitions.push(definition);
-    return {
-      respond: function(status, data, headers) {
-        definition.response = createResponse(status, data, headers);
-      },
+    var definition = new MockHttpExpectation(method, url, data, headers),
+        chain = {
+          respond: function(status, data, headers) {
+            definition.response = createResponse(status, data, headers);
+          }
+        };
 
-      passThrough: function() {
+    if ($defer) {
+      chain.passThrough = function() {
         definition.passThrough = true;
-      }
-    };
+      };
+    }
+
+    definitions.push(definition);
+    return chain;
   };
 
   createShortMethods('when');
@@ -700,15 +725,6 @@ angular.mock.$httpBackendDecorator = function($delegate, $defer) {
     }
     $httpBackend.verifyNoOutstandingExpectation();
   };
-
-
-  $httpBackend.autoflush = function(val) {
-    if (arguments.length) {
-      autoflush = !!val;
-    } else {
-      return autoflush;
-    }
-  }
 
   $httpBackend.verifyNoOutstandingExpectation = function() {
     if (expectations.length) {
@@ -836,10 +852,26 @@ function MockXhr() {
 angular.module('ngMock', ['ng']).service({
   '$browser': angular.mock.$BrowserProvider,
   '$exceptionHandler': angular.mock.$ExceptionHandlerProvider,
-  '$log': angular.mock.$logProvider
-}).init(function($provide) {
-  $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
+  '$log': angular.mock.$logProvider,
+  '$httpBackend': angular.mock.$HttpBackendProvider
 });
+
+
+
+/**
+ * @ngdoc overview
+ * @name angular.module.ngMockE2E
+ * @description
+ *
+ * The `ngMockE2E` is an angular module which contains mock for `$httpBackend`. This mock allows you
+ * to either respond with fake data or delegate to real backend.
+ */
+angular.module('ngMockE2E', ['ng']).init(function($provide) {
+  $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
+});
+
+angular.mock.e2e = {};
+angular.mock.e2e.$httpBackendDecorator = ['$delegate', '$defer', createHttpBackendMock];
 
 
 
