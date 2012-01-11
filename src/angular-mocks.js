@@ -723,8 +723,8 @@ angular.mock.$httpBackendDecorator = function($delegate, $defer) {
   };
 
   $httpBackend.resetExpectations = function() {
-    expectations = [];
-    responses = [];
+    expectations.length = 0;
+    responses.length = 0;
   };
 
   return $httpBackend;
