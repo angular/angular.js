@@ -1,8 +1,8 @@
 <!doctype html>
-<html xmlns:ng="http://angularjs.org">
+<html xmlns:ng="http://angularjs.org" ng:app>
   <head>
     <title>angular dev sandbox</title>
-    <script src="../src/angular-bootstrap.js" ng:autobind></script>
+    <script src="../src/angular-bootstrap.js"></script>
     <script>
     angular.module.ng('routeConfig', function($route) {
           $route.when('/view1', {controller: MyCtrl, template: 'view1.html'});

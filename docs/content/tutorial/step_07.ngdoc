@@ -103,12 +103,13 @@ route into the layout template, which makes it a perfect fit for our `index.html
 
 __`app/index.html`:__
 <pre>
+<html ng:app>
 ...
 <body ng:controller="PhoneCatCtrl">
 
   <ng:view></ng:view>
 
-  <script src="lib/angular/angular.js" ng:autobind></script>
+  <script src="lib/angular/angular.js"></script>
   <script src="js/controllers.js"></script>
 </body>
 </html>

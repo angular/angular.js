@@ -2,88 +2,33 @@
 @name Developer Guide: Initializing Angular: Automatic Initialization
 @description
 
-Angular initializes automatically when you load the angular script into your page, specifying
-angular's `ng:autobind` attribute with no arguments:
+Angular initializes automatically when you load the angular script into your page that contains an element
+with `ng:app` directive:
 
-        <script src="angular.js" ng:autobind>
+        <html ng:app>
+          <head>
+            <script src="angular.js"></script>
+          </head>
+          <body>
+            I can add: {{ 1+2 }}.
+          </body>
+        </html>
 
 From a high-level view, this is what happens during angular's automatic initialization process:
 
-1. The browser loads the page, and then runs the angular script.
+1. The browser loads the page, and then runs the angular script. Angular waits for the
+`DOMContentLoaded` (or 'Load') event to attempt to bootstrap.
 
-    The `ng:autobind` attribute tells angular to compile and manage the whole HTML document. The
-compilation phase is initiated in the page's `onLoad()` handler. Angular doesn't begin processing
-the page until after the page load is complete.
-
-2. Angular finds the root of the HTML document and creates the global variable `angular` in the
-global namespace. Everything that angular subsequently creates is bound to fields in this global
-object.
-
-3. Angular walks the DOM looking for angular widgets, directives, and markup (such as `ng:init` or
-`ng:repeat`). As angular encounters these, it creates child scopes as necessary and attaches them
-to the DOM, registers listeners on those scopes, associates any controller functions with their
-data and their part of the view, and ultimately constructs a runnable application. The resulting
-app features two-way data-binding and a nice separation between data, presentation, and business
-logic.
-
-4. For the duration of the application session (while the page is loaded), angular monitors the
-state of the application, and updates the view and the data model whenever the state of either one
-changes.
-
-For details on how the compiler works, see {@link dev_guide.compiler Angular HTML Compiler}.
+2. Angular looks for the `ng:app` directive. If found it then proceeds to compile the DOM element and its children.
+Optionally the `ng:app` may specify a {@link api/angular.module module} to load before the compilation. For details on
+how the compiler works, see {@link dev_guide.compiler Angular HTML Compiler}.
 
 
 ## Initialization Options
 
-The reason why `ng:autobind` exists is because angular should not assume that the entire HTML
+The reason why `ng:app` exists is because angular should not assume that the entire HTML
 document should be processed just because the `angular.js` script is included. In order to compile
-only a part of the document, specify the ID of the element you want to use for angular's root
-element as the value of the `ng:autobind` attribute:
-
-        ng:autobind="angularContent"
-
-
-## Auto-bootstrap with `#autobind`
-
-In some rare cases you can't define the `ng:` prefix before the script tag's attribute  (for
-example,  in some CMS systems). In those situations it is possible to auto-bootstrap angular by
-appending `#autobind` to the `<script src=...>` URL, like in this snippet:
-
-<pre>
-  <!doctype html>
-  <html>
-   <head>
-    <script src="http://code.angularjs.org/angular.js#autobind"></script>
-   </head>
-   <body>
-     <div xmlns:ng="http://angularjs.org">
-       Hello {{'world'}}!
-     </div>
-   </body>
-  </html>
-</pre>
-
-As with `ng:autobind`, you can specify an element id that should be exclusively targeted for
-compilation as the value of the `#autobind`, for example: `#autobind=angularContent`.
-
-If angular.js file is being combined with other scripts into a single script file, then all of the
-config options above apply to this processed script as well. That means if the contents of
-`angular.js` were appended to `all-my-scripts.js`, then the app can be bootstrapped as:
-
-<pre>
-  <!doctype html>
-  <html xmlns:ng="http://angularjs.org">
-   <head>
-    <script src="http://myapp.com/all-my-scripts.js" ng:autobind></script>
-   </head>
-   <body>
-     <div>
-       Hello {{'world'}}!
-     </div>
-   </body>
-  </html>
-</pre>
-
+only a part of the document set the `ng:app` on the root element of this portion.
 
 ## Global Angular Object
 

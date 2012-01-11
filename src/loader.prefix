@@ -3,5 +3,5 @@
  * (c) 2010-2012 AngularJS http://angularjs.org
  * License: MIT
  */
-'USE STRICT';
-(function(window, document, undefined){
+'use strict';
+(

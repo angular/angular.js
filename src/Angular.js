@@ -90,7 +90,7 @@ var $$scope           = '$scope',
 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
-    angularModule     = angular.module || (angular.module  = {}),
+    angularModule     = null,
     /** @name angular.markup */
     angularTextMarkup = extensionMap(angular, 'markup'),
     /** @name angular.attrMarkup */
@@ -172,6 +172,15 @@ function forEachSorted(obj, iterator, context) {
   return keys;
 }
 
+
+/**
+ * when using forEach the params are value, key, but it is often useful to have key, value.
+ * @param {function(string, *)} iteratorFn
+ * @returns {function(*, string)}
+ */
+function reverseParams(iteratorFn) {
+  return function(value, key) { iteratorFn(key, value) };
+}
 
 /**
  * A consistent way of creating unique IDs in angular. The ID is a sequence of alpha numeric
@@ -808,37 +817,73 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:autobind
- * @element script
+ * @name angular.directive.ng:app
  *
- * @TODO ng:autobind is not a directive!! it should be documented as bootstrap parameter in a
- *     separate bootstrap section.
- * @TODO rename to ng:autobind to ng:autoboot
+ * @element ANY
+ * @param {angular.Module} module on optional application
+ *   {@link angular.module module} name to load.
  *
  * @description
- * Technically, ng:autobind is not a directive; it is an Angular bootstrap parameter that can act
- * as a directive. It must exist in the script used to boot Angular and can be used only one time.
- * For details on bootstrapping Angular, see {@link guide/dev_guide.bootstrap Initializing Angular}
- * in the Angular Developer Guide.
  *
- * `ng:autobind` with no parameters tells Angular to compile and manage the whole page.
+ * Use this directive to auto-bootstrap on application. Only
+ * one directive can be used per HTML document. The directive
+ * designates the root of the application and is typically placed
+ * ot the root of the page.
  *
- * `ng:autobind="[root element ID]"` tells Angular to compile and manage part of the document,
- * starting at "root element ID".
+ * In the example below if the `ng:app` directive would not be placed
+ * on the `html` element then the document would not be compiled
+ * and the `{{ 1+2 }}` would not be resolved to `3`.
+ *
+ * `ng:app` is the easiest way to bootstrap an application.
+ *
+ <doc:example>
+   <doc:source>
+    I can add: 1 + 2 =  {{ 1+2 }}
+   </doc:source>
+ </doc:example>
  *
  */
-function angularInit(config, document){
-  var autobind = config.autobind;
-  
-  if (autobind) {
-    var modules = [];
-    forEach((config.modules || '').split(','), function(module){
-      module = trim(module);
-      if (module) {
-        modules.push(module);
+function angularInit(element, bootstrap) {
+  var elements = [element],
+      appElement,
+      module,
+      names = ['ng:app', 'ng-app', 'x-ng-app', 'data-ng-app'],
+      NG_APP_CLASS_REGEXP = /\sng[:\-]app(:\s*([\w\d_]+);?)?\s/;
+
+  function append(element) {
+    element && elements.push(element);
+  }
+
+  forEach(names, function(name) {
+    names[name] = true;
+    append(document.getElementById(name));
+    name = name.replace(':', '\\:');
+    if (element.querySelectorAll) {
+      forEach(element.querySelectorAll('.' + name), append);
+      forEach(element.querySelectorAll('.' + name + '\\:'), append);
+      forEach(element.querySelectorAll('[' + name + ']'), append);
+    };
+  });
+
+  forEach(elements, function(element) {
+    if (!appElement) {
+      var className = ' ' + element.className + ' ';
+      var match = NG_APP_CLASS_REGEXP.exec(className);
+      if (match) {
+        appElement = element;
+        module = (match[2] || '').replace(/\s+/g, ',');
+      } else {
+        forEach(element.attributes, function(attr) {
+          if (!appElement && names[attr.name]) {
+            appElement = element;
+            module = attr.value;
+          }
+        });
       }
-    });
-    bootstrap(jqLite(isString(autobind) ? document.getElementById(autobind) : document), modules);
+    }
+  });
+  if (appElement) {
+    bootstrap(appElement, module ? [module] : []);
   }
 }
 
@@ -854,9 +899,10 @@ function angularInit(config, document){
  * @param {Array<String,function>=} modules an array of module declarations. See: {@link angular.module modules}
  */
 function bootstrap(element, modules) {
+  element = jqLite(element);
   modules = modules || [];
-  modules.unshift(ngModule);
-  createInjector(modules, angularModule).invoke(null,
+  modules.unshift('ng');
+  createInjector(modules).invoke(null,
     ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
       scope.$apply(function() {
         element.data('$injector', injector);
@@ -864,28 +910,6 @@ function bootstrap(element, modules) {
       });
     }]
   );
-}
-
-function angularJsConfig(document) {
-  bindJQuery();
-  var scripts = document.getElementsByTagName('script'),
-      script = scripts[scripts.length-1],
-      scriptSrc = script.src,
-      config = {},
-      hashPos;
-
-  hashPos = scriptSrc.indexOf('#');
-  if (hashPos != -1) extend(config, parseKeyValue(scriptSrc.substr(hashPos+1)));
-
-  eachAttribute(jqLite(script), function(value, name){
-    if (/^ng:/.exec(name)) {
-      name = name.substring(3).replace(/-/g, '_');
-      value = value || true;
-      config[name] = value;
-    }
-  });
-
-  return config;
 }
 
 function bindJQuery() {

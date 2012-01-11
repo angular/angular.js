@@ -30,7 +30,7 @@ function publishExternalAPI(angular){
     'equals': equals,
     'element': jqLite,
     'forEach': forEach,
-    'injector': function(){ return createInjector(arguments, angularModule); },
+    'injector': function(){ return createInjector(arguments); },
     'noop':noop,
     'bind':bind,
     'toJson': toJson,
@@ -51,46 +51,46 @@ function publishExternalAPI(angular){
     'callbacks': {counter: 0}
   });
 
-  angularModule.ng = ngModule;
-}
+  angularModule = setupModuleLoader(window);
+  try {
+    angularModule('ngLocale');
+  } catch (e) {
+    angularModule('ngLocale', []).service('$locale', $LocaleProvider);
+  }
 
-ngModule.$inject = ['$provide', '$injector'];
-function ngModule($provide, $injector) {
-// TODO(misko): temporary services to get the compiler working;
-  $provide.value('$textMarkup', angularTextMarkup);
-  $provide.value('$attrMarkup', angularAttrMarkup);
-  $provide.value('$directive', angularDirective);
-  $provide.value('$widget', angularWidget);
+  angularModule('ng', ['ngLocale'], ['$provide', '$injector',
+    function ngModule($provide, $injector) {
+    // TODO(misko): temporary services to get the compiler working;
+      $provide.value('$textMarkup', angularTextMarkup);
+      $provide.value('$attrMarkup', angularAttrMarkup);
+      $provide.value('$directive', angularDirective);
+      $provide.value('$widget', angularWidget);
 
-  // load the LOCALE if present
-  $injector.invoke(null, angularModule.ngLocale || function(){
-    $provide.service('$locale', $LocaleProvider);
-  });
-
-  $provide.service('$autoScroll', $AutoScrollProvider);
-  $provide.service('$browser', $BrowserProvider);
-  $provide.service('$cacheFactory', $CacheFactoryProvider);
-  $provide.service('$compile', $CompileProvider);
-  $provide.service('$cookies', $CookiesProvider);
-  $provide.service('$cookieStore', $CookieStoreProvider);
-  $provide.service('$defer', $DeferProvider);
-  $provide.service('$document', $DocumentProvider);
-  $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
-  $provide.service('$filter', $FilterProvider);
-  $provide.service('$interpolate', $InterpolateProvider);
-  $provide.service('$formFactory', $FormFactoryProvider);
-  $provide.service('$http', $HttpProvider);
-  $provide.service('$httpBackend', $HttpBackendProvider);
-  $provide.service('$location', $LocationProvider);
-  $provide.service('$log', $LogProvider);
-  $provide.service('$parse', $ParseProvider);
-  $provide.service('$resource', $ResourceProvider);
-  $provide.service('$route', $RouteProvider);
-  $provide.service('$routeParams', $RouteParamsProvider);
-  $provide.service('$rootScope', $RootScopeProvider);
-  $provide.service('$q', $QProvider);
-  $provide.service('$sniffer', $SnifferProvider);
-  $provide.service('$templateCache', $TemplateCacheProvider);
-  $provide.service('$window', $WindowProvider);
+      $provide.service('$autoScroll', $AutoScrollProvider);
+      $provide.service('$browser', $BrowserProvider);
+      $provide.service('$cacheFactory', $CacheFactoryProvider);
+      $provide.service('$compile', $CompileProvider);
+      $provide.service('$cookies', $CookiesProvider);
+      $provide.service('$cookieStore', $CookieStoreProvider);
+      $provide.service('$defer', $DeferProvider);
+      $provide.service('$document', $DocumentProvider);
+      $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
+      $provide.service('$filter', $FilterProvider);
+      $provide.service('$interpolate', $InterpolateProvider);
+      $provide.service('$formFactory', $FormFactoryProvider);
+      $provide.service('$http', $HttpProvider);
+      $provide.service('$httpBackend', $HttpBackendProvider);
+      $provide.service('$location', $LocationProvider);
+      $provide.service('$log', $LogProvider);
+      $provide.service('$parse', $ParseProvider);
+      $provide.service('$resource', $ResourceProvider);
+      $provide.service('$route', $RouteProvider);
+      $provide.service('$routeParams', $RouteParamsProvider);
+      $provide.service('$rootScope', $RootScopeProvider);
+      $provide.service('$q', $QProvider);
+      $provide.service('$sniffer', $SnifferProvider);
+      $provide.service('$templateCache', $TemplateCacheProvider);
+      $provide.service('$window', $WindowProvider);
+    }]);
 }
 

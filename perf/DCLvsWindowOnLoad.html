@@ -5,13 +5,13 @@ This test demonstrates the time difference between document's DOMContentLoaded a
 
 -->
 <html>
-  <head>
+  <head ng:app>
     <script>
       startTS = new Date().getTime();
       onDOMContentLoadedTS = 0; // default for browsers where DOMCL is not supported
     </script>
     <title>DOMContentLoaded test</title>
-    <script src="../build/angular.min.js" ng:autobind></script>
+    <script src="../build/angular.min.js"></script>
     <script>
       angular.element(document).bind('DOMContentLoaded', function(e) {onDOMContentLoadedTS = new Date().getTime()});
       angular.element(window).bind('load', function(e) {

@@ -149,7 +149,7 @@ below. The code contains some key Angular elements that we will need going forwa
 __`app/index.html`:__
 <pre>
 <!doctype html>
-<html xmlns:ng="http://angularjs.org/">
+<html xmlns:ng="http://angularjs.org/" ng:app>
 <head>
   <meta charset="utf-8">
   <title>my angular app</title>
@@ -159,7 +159,7 @@ __`app/index.html`:__
 
   Nothing here yet!
 
-  <script src="lib/angular/angular.js" ng:autobind></script>
+  <script src="lib/angular/angular.js"></script>
 </body>
 </html>
 </pre>
@@ -170,7 +170,7 @@ __`app/index.html`:__
 
 * xmlns declaration
 
-          <html xmlns:ng="http://angularjs.org">
+          <html xmlns:ng="http://angularjs.org" ng:app>
 
   This `xmlns` declaration for the `ng` namespace must be specified in all Angular applications in
 order to make Angular work with XHTML and IE versions older than 9 (regardless of whether you are
@@ -178,15 +178,15 @@ using XHTML or HTML).
 
 * Angular script tag
 
-          <script src="lib/angular/angular.js" ng:autobind>
+          <script src="lib/angular/angular.js">
 
   This single line of code is all that is needed to bootstrap an angular application.
 
   The code downloads the `angular.js` script and registers a callback that will be executed by the
 browser when the containing HTML page is fully downloaded. When the callback is executed, Angular
-looks for the {@link api/angular.directive.ng:autobind ng:autobind} attribute. If Angular finds
-`ng:autobind`, it creates a root scope for the application and associates it with the `<html>`
-element of the template:
+looks for the {@link api/angular.directive.ng:app ng:app} attribute. If Angular finds
+`ng:app`, it creates a root scope for the application and associates it with the element of
+when `ng:app` was declared.
 
   <img src="img/tutorial/tutorial_00_final.png">
 

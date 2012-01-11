@@ -5,25 +5,14 @@
  * License: MIT
  */
 
-
-window.angular = window.angular || {};
-angular.module = angular.module || {};
-
 /**
  * @ngdoc overview
- * @name angular.module.ngMock
+ * @name angular.mock
  * @description
  *
- * The `ngMock` is an angular module which is used with `ng` module and adds unit-test configuration as well as useful
- * mocks to the {@link angular.module.AUTO.$injector $injector}.
+ * Namespace from 'angular-mocks.js' which contains testing related code.
  */
-angular.module.ngMock = function($provide){
-  $provide.service('$browser', angular.module.ngMock.$BrowserProvider);
-  $provide.service('$exceptionHandler', angular.module.ngMock.$ExceptionHandlerProvider);
-  $provide.service('$log', angular.module.ngMock.$LogProvider);
-  $provide.decorator('$httpBackend', angular.module.ngMock.$httpBackendDecorator);
-};
-angular.module.ngMock.$inject = ['$provide'];
+angular.mock = {};
 
 /**
  * @ngdoc object
@@ -42,12 +31,12 @@ angular.module.ngMock.$inject = ['$provide'];
  * - $browser.defer — enables testing of code that uses
  *   {@link angular.module.ng.$defer $defer} for executing functions via the `setTimeout` api.
  */
-angular.module.ngMock.$BrowserProvider = function(){
+angular.mock.$BrowserProvider = function(){
   this.$get = function(){
-    return new angular.module.ngMock.$Browser();
+    return new angular.mock.$Browser();
   };
 };
-angular.module.ngMock.$Browser = function() {
+angular.mock.$Browser = function() {
   var self = this;
 
   this.isMock = true;
@@ -153,7 +142,7 @@ angular.module.ngMock.$Browser = function() {
     return script;
   };
 }
-angular.module.ngMock.$Browser.prototype = {
+angular.mock.$Browser.prototype = {
 
 /**
   * @name angular.module.ngMock.$browser#poll
@@ -226,7 +215,7 @@ angular.module.ngMock.$Browser.prototype = {
  * information.
  */
 
-angular.module.ngMock.$ExceptionHandlerProvider = function(){
+angular.mock.$ExceptionHandlerProvider = function(){
   var handler;
 
   /**
@@ -284,7 +273,7 @@ angular.module.ngMock.$ExceptionHandlerProvider = function(){
  * level-specific log function, e.g. for level `error` the array is exposed as `$log.error.logs`.
  *
  */
-angular.module.ngMock.$LogProvider = function(){
+angular.mock.$logProvider = function(){
 
   function concat(array1, array2, index) {
     return array1.concat(Array.prototype.slice.call(array2, index));
@@ -379,7 +368,7 @@ angular.module.ngMock.$LogProvider = function(){
 
 /**
  * @ngdoc object
- * @name angular.module.ngMock.TzDate
+ * @name angular.mock.TzDate
  * @description
  *
  * *NOTE*: this is not an injectable instance, just a globally available mock class of `Date`.
@@ -413,7 +402,7 @@ angular.module.ngMock.$LogProvider = function(){
  * </pre>
  *
  */
-angular.module.ngMock.TzDate = function (offset, timestamp) {
+angular.mock.TzDate = function (offset, timestamp) {
   var self = new Date(0);
   if (angular.isString(timestamp)) {
     var tsStr = timestamp;
@@ -516,12 +505,12 @@ angular.module.ngMock.TzDate = function (offset, timestamp) {
 }
 
 //make "tzDateInstance instanceof Date" return true
-angular.module.ngMock.TzDate.prototype = Date.prototype;
+angular.mock.TzDate.prototype = Date.prototype;
 
 
 /**
  * @ngdoc function
- * @name angular.module.ngMock.debug
+ * @name angular.mock.debug
  * @description
  *
  * *NOTE*: this is not an injectable instance, just a globally available function.
@@ -533,7 +522,7 @@ angular.module.ngMock.TzDate.prototype = Date.prototype;
  * @param {*} object - any object to turn into string.
  * @return a serialized string of the argument
  */
-angular.module.ngMock.dump = function(object){
+angular.mock.dump = function(object){
   return serialize(object);
 
   function serialize(object) {
@@ -593,7 +582,7 @@ angular.module.ngMock.dump = function(object){
  * respond with static or dynamic responses via the `expect` and `when` apis and their shortcuts
  * (`expectGET`, `whenPOST`, etc).
  */
-angular.module.ngMock.$httpBackendDecorator = function($delegate, $defer) {
+angular.mock.$httpBackendDecorator = function($delegate, $defer) {
   var definitions = [],
       expectations = [],
       responses = [],
@@ -836,6 +825,24 @@ function MockXhr() {
   this.abort = angular.noop;
 }
 
+/**
+ * @ngdoc overview
+ * @name angular.module.ngMock
+ * @description
+ *
+ * The `ngMock` is an angular module which is used with `ng` module and adds unit-test configuration as well as useful
+ * mocks to the {@link angular.module.AUTO.$injector $injector}.
+ */
+angular.module('ngMock', ['ng']).service({
+  '$browser': angular.mock.$BrowserProvider,
+  '$exceptionHandler': angular.mock.$ExceptionHandlerProvider,
+  '$log': angular.mock.$logProvider
+}).init(function($provide) {
+  $provide.decorator('$httpBackend', angular.mock.$httpBackendDecorator);
+});
+
+
+
 window.jstestdriver && (function(window){
   /**
    * Global method to output any number of objects into JSTD console. Useful for debugging.
@@ -843,7 +850,7 @@ window.jstestdriver && (function(window){
   window.dump = function() {
     var args = [];
     angular.forEach(arguments, function(arg){
-      args.push(angular.module.ngMock.dump(arg));
+      args.push(angular.mock.dump(arg));
     });
     jstestdriver.console.log.apply(jstestdriver.console, args);
   };
@@ -852,7 +859,7 @@ window.jstestdriver && (function(window){
 
 /**
  * @ngdoc function
- * @name angular.module.ngMock.inject
+ * @name angular.mock.inject
  * @description
  *
  * *NOTE*: this is not an injectable instance, just a globally available function on window.

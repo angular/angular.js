@@ -20,7 +20,9 @@ writer.makeDir('build/docs/syntaxhighlighter').then(function() {
   ngdoc.merge(docs);
   var fileFutures = [];
   docs.forEach(function(doc){
-    fileFutures.push(writer.output('partials/' + doc.section + '/' + doc.id + '.html', doc.html()));
+    // this hack is here bocause on OSX angular.module and angular.Module map to the same file.
+    var id = doc.id.replace('angular.Module', 'angular.IModule');
+    fileFutures.push(writer.output('partials/' + doc.section + '/' + id + '.html', doc.html()));
   });
 
   writeTheRest(fileFutures);

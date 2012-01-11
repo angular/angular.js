@@ -264,148 +264,83 @@ describe('angular', function() {
   });
 
 
-  describe('angularJsConfig', function() {
-    it('should always consider angular.js script tag to be the last script tag', function() {
-      var doc = {
-        getElementsByTagName: function(tagName) {
-          expect(tagName).toEqual('script');
-          return [{nodeName: 'SCRIPT', src: 'random.js',
-                    attributes: [{name: 'ng:autobind', value: 'wrong'}]},
-                  {nodeName: 'SCRIPT', src: 'angular.js',
-                    attributes: [{name: 'ng:autobind', value: 'correct'}]}];
-        }
-      };
-
-      expect(angularJsConfig(doc)).toEqual({autobind: 'correct'});
-
-      doc = {
-        getElementsByTagName: function(tagName) {
-          expect(tagName).toEqual('script');
-          return [{nodeName: 'SCRIPT', src: 'angular.js',
-                    attributes: [{name: 'ng:autobind', value: 'wrong'}]},
-                  {nodeName: 'SCRIPT', src: 'concatinatedAndObfuscadedScriptWithOurScript.js',
-                    attributes: [{name: 'ng:autobind', value: 'correct'}]}];
-        }
-      };
-
-      expect(angularJsConfig(doc)).toEqual({autobind: 'correct'});
-    });
-
-
-    it('should extract angular config from the ng: attributes', function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(lowercase(tagName)).toEqual('script');
-        return [{
-          nodeName: 'SCRIPT',
-          src: 'angularjs/angular.js',
-          attributes: [{name: 'ng:autobind', value:'elementIdToCompile'},
-                       {name: 'ng:css', value: 'css/my_custom_angular.css'}] }];
-      }};
-
-      expect(angularJsConfig(doc)).toEqual({
-        autobind: 'elementIdToCompile',
-        css: 'css/my_custom_angular.css'
-      });
-    });
-
-
-    it('should extract angular config and default autobind value to true if present', function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(lowercase(tagName)).toEqual('script');
-        return [{
-          nodeName: 'SCRIPT',
-          src: 'angularjs/angular.js',
-          attributes: [{name: 'ng:autobind', value:undefined}]}];
-      }};
-
-      expect(angularJsConfig(doc)).toEqual({autobind: true});
-    });
-
-
-    it('should extract angular autobind config from the script hashpath attributes', function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(lowercase(tagName)).toEqual('script');
-        return [{
-          nodeName: 'SCRIPT',
-          src: 'angularjs/angular.js#autobind'}];
-      }};
-
-      expect(angularJsConfig(doc)).toEqual({autobind: true});
-    });
-
-
-    it('should extract autobind config with element id from the script hashpath', function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(lowercase(tagName)).toEqual('script');
-        return [{
-          nodeName: 'SCRIPT',
-          src: 'angularjs/angular.js#autobind=foo'}];
-      }};
-
-      expect(angularJsConfig(doc)).toEqual({autobind: 'foo'});
-    });
-
-
-    it('should default to versioned ie-compat file if angular file is versioned', function() {
-      var doc = { getElementsByTagName: function(tagName) {
-        expect(lowercase(tagName)).toEqual('script');
-        return [{
-          nodeName: 'SCRIPT',
-          src: 'js/angular-0.9.0.js'}];
-      }};
-
-      expect(angularJsConfig(doc)).toEqual({});
-    });
-  });
-
-
   describe('angularInit', function() {
-    var dom;
+    var bootstrap;
+    var element;
 
     beforeEach(function() {
-      dom = jqLite('<div foo="{{1+2}}">{{2+3}}' +
-                     '<div id="child" bar="{{3+4}}">{{4+5}}</div>' +
-                   '</div>')[0];
-    });
+      element = {
+        getElementById: function (id) {
+          return element.getElementById[id] || [];
+        },
 
-
-    afterEach(function() {
-      dealoc(dom);
-    });
-
-
-    it('should not compile anything if autobind is missing or false', function() {
-      angularInit({}, dom);
-      expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
-                                        '<div bar="{{3+4}}" id="child">{{4+5}}</div>' +
-                                      '</div>');
-    });
-
-
-    it('should compile the document if autobind is true', function() {
-      angularInit({autobind: true}, dom);
-      expect(sortedHtml(dom)).toEqual('<div foo="3" ng:bind-attr="{"foo":"{{1+2}}"}">' +
-                                        '<span ng:bind="2+3">5</span>' +
-                                        '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
-                                          '<span ng:bind="4+5">9</span>' +
-                                        '</div>' +
-                                      '</div>');
-    });
-
-
-    it('should compile only the element specified via autobind', function() {
-      dom.getElementById = function() {
-        return this.childNodes[1];
+        getAttribute: function(name) {
+          return element[name];
+        }
       };
+      bootstrap = jasmine.createSpy('bootstrap');
+    });
 
 
-      angularInit({autobind: 'child'}, dom);
+    it('should do nothing when not found', function() {
+      angularInit(element, bootstrap);
+      expect(bootstrap).not.toHaveBeenCalled();
+    });
 
-      expect(sortedHtml(dom)).toEqual('<div foo="{{1+2}}">{{2+3}}' +
-                                        '<div bar="7" id="child" ng:bind-attr="{"bar":"{{3+4}}"}">'+
-                                          '<span ng:bind="4+5">9</span>' +
-                                        '</div>' +
-                                      '</div>');
+
+    it('should look for ng:app directive in id', function() {
+      var appElement = jqLite('<div id="ng:app" data-ng-app="ABC"></div>')[0];
+      jqLite(document.body).append(appElement);
+      angularInit(element, bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+    });
+
+
+    it('should look for ng:app directive in className', function() {
+      var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
+      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
+      element.querySelectorAll['.ng\\:app'] = [appElement];
+      angularInit(element, bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+    });
+
+
+    it('should look for ng:app directive using querySelectorAll', function() {
+      var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
+      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
+      element.querySelectorAll['[ng\\:app]'] = [ appElement ];
+      angularInit(element, bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+    });
+
+
+    it('should bootstrap using class name', function() {
+      var appElement = jqLite('<div class="ng-app: ABC;"></div>')[0];
+      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
+    });
+
+
+    it('should bootstrap anonymously', function() {
+      var appElement = jqLite('<div x-ng-app></div>')[0];
+      element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
+      element.querySelectorAll['[x-ng-app]'] = [ appElement ];
+      angularInit(element, bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+    });
+
+
+    it('should bootstrap anonymously using class only', function() {
+      var appElement = jqLite('<div class="ng-app"></div>')[0];
+      angularInit(jqLite('<div></div>').append(appElement)[0], bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
+    });
+
+
+    it('should bootstrap if the annotation is on the root element', function() {
+      var appElement = jqLite('<div class="ng-app"></div>')[0];
+      angularInit(appElement, bootstrap);
+      expect(bootstrap).toHaveBeenCalledOnceWith(appElement, []);
     });
   });
 
