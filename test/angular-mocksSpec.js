@@ -780,6 +780,21 @@ describe('mocks', function() {
         expect(callback).toHaveBeenCalledOnce();
         expect(cancelledClb).not.toHaveBeenCalled();
       });
+
+
+      it('should not remove definitions', function() {
+        var cancelledClb = jasmine.createSpy('cancelled');
+
+        hb.when('GET', '/url').respond(200, 'success');
+        hb('GET', '/url', null, cancelledClb);
+        hb.resetExpectations();
+
+        hb('GET', '/url', null, callback, {});
+        hb.flush();
+
+        expect(callback).toHaveBeenCalledOnce();
+        expect(cancelledClb).not.toHaveBeenCalled();
+      });
     });
 
 
