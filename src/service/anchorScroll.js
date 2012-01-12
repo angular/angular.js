@@ -1,6 +1,6 @@
 /**
  * @ngdoc function
- * @name angular.module.ng.$autoScroll
+ * @name angular.module.ng.$anchorScroll
  * @requires $window
  * @requires $location
  * @requires $rootScope
@@ -11,14 +11,14 @@
  * {@link http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document Html5 spec}.
  *
  * It also watches the `$location.hash()` and scroll whenever it changes to match any anchor.
- *
- * You can disable `$autoScroll` service by calling `disable()` on `$autoScrollProvider`.
- * Note: disabling is only possible before the service is instantiated !
+ * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
  */
-function $AutoScrollProvider() {
+function $AnchorScrollProvider() {
 
-  this.disable = function() {
-    this.$get = function() {return noop;};
+  var autoScrollingEnabled = true;
+
+  this.disableAutoScrolling = function() {
+    autoScrollingEnabled = false;
   };
 
   this.$get = ['$window', '$location', '$rootScope', function($window, $location, $rootScope) {
@@ -54,9 +54,11 @@ function $AutoScrollProvider() {
 
     // does not scroll when user clicks on anchor link that is currently on
     // (no url change, no $locaiton.hash() change), browser native does scroll
-    $rootScope.$watch(function() {return $location.hash();}, function() {
-      $rootScope.$evalAsync(scroll);
-    });
+    if (autoScrollingEnabled) {
+      $rootScope.$watch(function() {return $location.hash();}, function() {
+        $rootScope.$evalAsync(scroll);
+      });
+    }
 
     return scroll;
   }];

@@ -1,4 +1,4 @@
-describe('$autoScroll', function() {
+describe('$anchorScroll', function() {
 
   var elmSpy;
 
@@ -18,9 +18,9 @@ describe('$autoScroll', function() {
   }
 
   function changeHashAndScroll(hash) {
-    return function($location, $autoScroll) {
+    return function($location, $anchorScroll) {
       $location.hash(hash);
-      $autoScroll();
+      $anchorScroll();
     };
   }
 
@@ -44,12 +44,6 @@ describe('$autoScroll', function() {
 
   function expectNoScrolling() {
     return expectScrollingTo(NaN);
-  }
-
-  function disableScroller() {
-    return function($autoScrollProvider) {
-      $autoScrollProvider.disable();
-    };
   }
 
 
@@ -108,16 +102,6 @@ describe('$autoScroll', function() {
     expectScrollingTo('id=top')));
 
 
-  it('should not scroll when disabled', function() {
-    module(disableScroller());
-    inject(
-      addElements('id=fake', 'a name=fake', 'input name=fake'),
-      changeHashAndScroll('fake'),
-      expectNoScrolling()
-    );
-  });
-
-
   describe('watcher', function() {
 
     function initLocation(config) {
@@ -128,10 +112,16 @@ describe('$autoScroll', function() {
     }
 
     function changeHashTo(hash) {
-      return function ($location, $rootScope, $autoScroll) {
+      return function ($location, $rootScope, $anchorScroll) {
         $rootScope.$apply(function() {
           $location.hash(hash);
         });
+      };
+    }
+
+    function disableAutoScrolling() {
+      return function($anchorScrollProvider) {
+        $anchorScrollProvider.disableAutoScrolling();
       };
     }
 
@@ -182,7 +172,7 @@ describe('$autoScroll', function() {
 
     it('should not scroll when disabled', function() {
       module(
-          disableScroller(),
+          disableAutoScrolling(),
           initLocation({html5Mode: false, historyApi: false})
       );
       inject(

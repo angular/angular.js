@@ -66,7 +66,7 @@ function publishExternalAPI(angular){
       $provide.value('$directive', angularDirective);
       $provide.value('$widget', angularWidget);
 
-      $provide.service('$autoScroll', $AutoScrollProvider);
+      $provide.service('$anchorScroll', $AnchorScrollProvider);
       $provide.service('$browser', $BrowserProvider);
       $provide.service('$cacheFactory', $CacheFactoryProvider);
       $provide.service('$compile', $CompileProvider);

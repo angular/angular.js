@@ -43,8 +43,8 @@
  *                 instance of angular.module.ng.$rootScope.Scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
- * @param {string=} autoscroll Whether `ng:include` should call {@link angular.module.ng.$autoScroll
- *                  $autoScroll} to scroll the viewport after the content is loaded.
+ * @param {string=} autoscroll Whether `ng:include` should call {@link angular.module.ng.$anchorScroll
+ *                  $anchorScroll} to scroll the viewport after the content is loaded.
  *
  *                  - If the attribute is not set, disable scrolling.
  *                  - If the attribute is set without value, enable scrolling.
@@ -99,8 +99,8 @@ angularWidget('ng:include', function(element){
     this.directives(true);
   } else {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$templateCache', '$autoScroll', '$element',
-    function($http,   $templateCache,   $autoScroll,   element) {
+    return ['$http', '$templateCache', '$anchorScroll', '$element',
+    function($http,   $templateCache,   $anchorScroll,   element) {
       var scope = this,
           changeCounter = 0,
           childScope;
@@ -133,7 +133,7 @@ angularWidget('ng:include', function(element){
               childScope = useScope ? useScope : scope.$new();
               compiler.compile(element)(childScope);
               if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                $autoScroll();
+                $anchorScroll();
               }
               scope.$eval(onloadExp);
             }
@@ -568,8 +568,8 @@ angularWidget('ng:view', function(element) {
 
   if (!element[0]['ng:compiled']) {
     element[0]['ng:compiled'] = true;
-    return ['$http', '$templateCache', '$route', '$autoScroll', '$element',
-    function($http,   $templateCache,   $route,   $autoScroll,   element) {
+    return ['$http', '$templateCache', '$route', '$anchorScroll', '$element',
+    function($http,   $templateCache,   $route,   $anchorScroll,   element) {
       var template;
       var changeCounter = 0;
 
@@ -593,7 +593,7 @@ angularWidget('ng:view', function(element) {
             if (newChangeCounter == changeCounter) {
               element.html(response);
               compiler.compile(element)($route.current.scope);
-              $autoScroll();
+              $anchorScroll();
             }
           }).error(clearContent);
         } else {
