@@ -1,20 +1,15 @@
 'use strict';
 
 describe('$http', function() {
-  var $rootScope, callback;
 
-  beforeEach(inject(
-    function($exceptionHandlerProvider) {
+  var callback;
+
+  beforeEach(function() {
+    callback = jasmine.createSpy('done');
+  });
+  beforeEach(module(function($exceptionHandlerProvider) {
       $exceptionHandlerProvider.mode('log');
-    },
-    ['$rootScope', function($rs) {
-      $rootScope = $rs;
-
-      spyOn($rootScope, '$apply').andCallThrough();
-      callback = jasmine.createSpy('done');
-    }]
-  ));
-
+  }));
 
   afterEach(inject(function($exceptionHandler, $httpBackend) {
     forEach($exceptionHandler.errors, function(e) {
@@ -33,73 +28,87 @@ describe('$http', function() {
 
     describe('interceptors', function() {
 
-      it('should default to an empty array', inject(function($httpProvider) {
+      it('should default to an empty array', module(function($httpProvider) {
         expect($httpProvider.responseInterceptors).toEqual([]);
       }));
 
 
-      it('should pass the responses through interceptors', inject(function($httpProvider, $q) {
-        // just change the response data and pass the response object along
-        $httpProvider.responseInterceptors.push(function(httpPromise) {
-          return httpPromise.then(function(response) {
-            response.data += '!';
-            return response;
-          });
-        });
-
-        // return a new resolved promise representing modified response object
-        $httpProvider.responseInterceptors.push(function(httpPromise) {
-          return httpPromise.then(function(response) {
-            var deferred = $q.defer();
-            deferred.resolve({
-              data: response.data + '?',
-              status: 209,
-              headers: response.headers,
-              config: response.config
-            });
-            return deferred.promise;
-          });
-        });
-      }, function($http, $httpBackend) {
-        $httpBackend.expect('GET', '/foo').respond(201, 'Hello');
-        $http.get('/foo').success(function(data, status) {
-          expect(data).toBe('Hello!?');
-          expect(status).toBe(209);
-          callback();
-        });
-        $httpBackend.flush();
-        expect(callback).toHaveBeenCalledOnce();
-      }));
-
-
-      it('should support interceptors defined as services', inject(
-          function($provide, $httpProvider) {
-            $provide.factory('myInterceptor', function() {
-              return function(promise) {
-                return promise.then(function(response) {
-                  response.data = uppercase(response.data);
-                  return response;
+      it('should pass the responses through interceptors', function() {
+        var shared = {};
+        module(function($httpProvider, $provide) {
+          $provide.factory('testInterceptor', function ($q) {
+            return function(httpPromise) {
+              return httpPromise.then(function(response) {
+                var deferred = $q.defer();
+                deferred.resolve({
+                  data: response.data + '?',
+                  status: 209,
+                  headers: response.headers,
+                  config: response.config
                 });
-              }
+                return deferred.promise;
+              });
+            };
+          });
+          // just change the response data and pass the response object along
+          $httpProvider.responseInterceptors.push(function(httpPromise) {
+            return httpPromise.then(function(response) {
+              response.data += '!';
+              return response;
             });
-            $httpProvider.responseInterceptors.push('myInterceptor');
-          }, function($http, $httpBackend) {
-            var response;
+          });
 
-            $httpBackend.expect('GET', '/test').respond('hello!');
-            $http.get('/test').success(function(data) {response = data;});
-            expect(response).toBeUndefined();
+          // return a new resolved promise representing modified response object
+          $httpProvider.responseInterceptors.push('testInterceptor');
+        });
+        inject(function($http, $httpBackend) {
+          $httpBackend.expect('GET', '/foo').respond(201, 'Hello');
+          $http.get('/foo').success(function(data, status) {
+            expect(data).toBe('Hello!?');
+            expect(status).toBe(209);
+            callback();
+          });
+          $httpBackend.flush();
+          expect(callback).toHaveBeenCalledOnce();
+        });
+      });
 
-            $httpBackend.flush();
-            expect(response).toBe('HELLO!');
-          }
-      ));
+
+      it('should support interceptors defined as services', function() {
+        module(function($provide, $httpProvider) {
+          $provide.factory('myInterceptor', function() {
+            return function(promise) {
+              return promise.then(function(response) {
+                response.data = uppercase(response.data);
+                return response;
+              });
+            }
+          });
+          $httpProvider.responseInterceptors.push('myInterceptor');
+        });
+        inject(function($http, $httpBackend) {
+          var response;
+
+          $httpBackend.expect('GET', '/test').respond('hello!');
+          $http.get('/test').success(function(data) {response = data;});
+          expect(response).toBeUndefined();
+
+          $httpBackend.flush();
+          expect(response).toBe('HELLO!');
+        });
+      });
     });
   });
 
 
   describe('the instance', function() {
-    var $httpBackend, $http;
+    var $httpBackend, $http, $rootScope;
+
+    beforeEach(inject(['$rootScope', function($rs) {
+      $rootScope = $rs;
+
+      spyOn($rootScope, '$apply').andCallThrough();
+    }]));
 
     beforeEach(inject(['$httpBackend', '$http', function($hb, $h) {
       $httpBackend = $hb;

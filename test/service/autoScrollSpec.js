@@ -53,7 +53,7 @@ describe('$autoScroll', function() {
   }
 
 
-  beforeEach(inject(function($provide) {
+  beforeEach(module(function($provide) {
     elmSpy = {};
     $provide.value('$window', {
       scrollTo: jasmine.createSpy('$window.scrollTo'),
@@ -108,11 +108,14 @@ describe('$autoScroll', function() {
     expectScrollingTo('id=top')));
 
 
-  it('should not scroll when disabled', inject(
-    addElements('id=fake', 'a name=fake', 'input name=fake'),
-    disableScroller(),
-    changeHashAndScroll('fake'),
-    expectNoScrolling()));
+  it('should not scroll when disabled', function() {
+    module(disableScroller());
+    inject(
+      addElements('id=fake', 'a name=fake', 'input name=fake'),
+      changeHashAndScroll('fake'),
+      expectNoScrolling()
+    );
+  });
 
 
   describe('watcher', function() {
@@ -136,40 +139,57 @@ describe('$autoScroll', function() {
     }));
 
 
-    it('should scroll to element when hash change in hashbang mode', inject(
-      initLocation({html5Mode: false, historyApi: true}),
-      addElements('id=some'),
-      changeHashAndDigest('some'),
-      expectScrollingTo('id=some')));
+    it('should scroll to element when hash change in hashbang mode', function() {
+      module(initLocation({html5Mode: false, historyApi: true}));
+      inject(
+        addElements('id=some'),
+        changeHashAndDigest('some'),
+        expectScrollingTo('id=some')
+      );
+    });
 
 
-    it('should scroll to element when hash change in html5 mode with no history api', inject(
-      initLocation({html5Mode: true, historyApi: false}),
-      addElements('id=some'),
-      changeHashAndDigest('some'),
-      expectScrollingTo('id=some')));
+    it('should scroll to element when hash change in html5 mode with no history api', function() {
+      module(initLocation({html5Mode: true, historyApi: false}));
+      inject(
+        addElements('id=some'),
+        changeHashAndDigest('some'),
+        expectScrollingTo('id=some')
+      );
+    });
 
 
-    it('should not scroll when element does not exist', inject(
-      initLocation({html5Mode: false, historyApi: false}),
-      addElements('id=some'),
-      changeHashAndDigest('other'),
-      expectNoScrolling()));
+    it('should not scroll when element does not exist', function() {
+      module(initLocation({html5Mode: false, historyApi: false}));
+      inject(
+        addElements('id=some'),
+        changeHashAndDigest('other'),
+        expectNoScrolling()
+      );
+    });
 
 
-    it('should not scroll when html5 mode with history api', inject(
-      initLocation({html5Mode: true, historyApi: true}),
-      addElements('id=some'),
-      changeHashAndDigest('some'),
-      expectNoScrolling()));
+    it('should not scroll when html5 mode with history api', function() {
+      module(initLocation({html5Mode: true, historyApi: true}));
+      inject(
+        addElements('id=some'),
+        changeHashAndDigest('some'),
+        expectNoScrolling()
+      );
+    });
 
 
-    it('should not scroll when disabled', inject(
-      disableScroller(),
-      initLocation({html5Mode: false, historyApi: false}),
-      addElements('id=fake'),
-      changeHashAndDigest('fake'),
-      expectNoScrolling()));
+    it('should not scroll when disabled', function() {
+      module(
+          disableScroller(),
+          initLocation({html5Mode: false, historyApi: false})
+      );
+      inject(
+        addElements('id=fake'),
+        changeHashAndDigest('fake'),
+        expectNoScrolling()
+      );
+    });
   });
 });
 

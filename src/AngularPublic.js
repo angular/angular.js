@@ -30,7 +30,7 @@ function publishExternalAPI(angular){
     'equals': equals,
     'element': jqLite,
     'forEach': forEach,
-    'injector': function(){ return createInjector(arguments); },
+    'injector': createInjector,
     'noop':noop,
     'bind':bind,
     'toJson': toJson,
@@ -58,8 +58,8 @@ function publishExternalAPI(angular){
     angularModule('ngLocale', []).service('$locale', $LocaleProvider);
   }
 
-  angularModule('ng', ['ngLocale'], ['$provide', '$injector',
-    function ngModule($provide, $injector) {
+  angularModule('ng', ['ngLocale'], ['$provide',
+    function ngModule($provide) {
     // TODO(misko): temporary services to get the compiler working;
       $provide.value('$textMarkup', angularTextMarkup);
       $provide.value('$attrMarkup', angularAttrMarkup);

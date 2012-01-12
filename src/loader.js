@@ -48,7 +48,7 @@ function setupModuleLoader(window) {
      * Then you can load your module like this:
      *
      * <pre>
-     * var injector = angular.injector('ng', 'MyModule')
+     * var injector = angular.injector(['ng', 'MyModule'])
      * </pre>
      *
      * @param {!string} name The name of the module to create or retrieve.
@@ -67,12 +67,10 @@ function setupModuleLoader(window) {
           throw Error('No module: ' + name);
         }
 
-        function init(fn) {
-          invokeQueue.push(['$injector', 'invoke', [null, fn]]);
-        }
-
         /** @type {!Array.<Array.<*>>} */
         var invokeQueue = [];
+
+        var init = invokeLater('$injector', 'invoke');
 
         /** @type {angular.Module} */
         var moduleInstance = {

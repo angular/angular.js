@@ -10,7 +10,7 @@
  * dependency injection (see {@link guide/dev_guide.di dependency injection}).
  *
 
- * @param {<string, function()>} modules... A list of module functions or their aliases. See
+ * @param {Array.<string|Function>} modules A list of module functions or their aliases. See
  *        {@link angular.module}. The `ng` module must be explicitly added.
  * @returns {function()} Injector function. See {@link angular.module.AUTO.$injector $injector}.
  *
@@ -18,11 +18,11 @@
  * Typical usage
  * <pre>
  *   // create an injector
- *   var $injector = angular.injector('ng');
+ *   var $injector = angular.injector(['ng']);
  *
  *   // use the injector to kick of your application
  *   // use the type inference to auto inject arguments, or use implicit injection
- *   $injector.invoke(null, function($rootScope, $compile, $document){
+ *   $injector.invoke(function($rootScope, $compile, $document){
  *     $compile($document)($rootScope);
  *     $rootScope.$digest();
  *   });
@@ -113,14 +113,26 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
+ * @name angular.module.AUTO.$injector#get
+ * @methodOf angular.module.AUTO.$injector
+ *
+ * @description
+ * Return an instance of the service.
+ *
+ * @param {string} name The name of the instance to retrieve.
+ * @return {*} The instance.
+ */
+
+/**
+ * @ngdoc method
  * @name angular.module.AUTO.$injector#invoke
  * @methodOf angular.module.AUTO.$injector
  *
  * @description
  * Invoke the method and supply the method arguments from the `$injector`.
  *
- * @param {Object} self The `this` for the invoked method.
- * @param {function} fn The function to invoke. The function arguments come form the function annotation.
+ * @param {!function} fn The function to invoke. The function arguments come form the function annotation.
+ * @param {Object=} self The `this` for the invoked method.
  * @param {Object=} locals Optional object. If preset then any argument names are read from this object first, before
  *   the `$injector` is consulted.
  * @return the value returned by the invoked `fn` function.
@@ -238,28 +250,34 @@ function inferInjectionArgs(fn) {
 
 
 function createInjector(modulesToLoad) {
-  var cache = {},
-      providerSuffix = 'Provider',
+  var providerSuffix = 'Provider',
       path = [],
-      $injector,
-      loadedModules = new HashMap();
+      loadedModules = new HashMap(),
+      providerCache = {
+        $provide: {
+            service: supportObject(service),
+            factory: supportObject(factory),
+            value: supportObject(value),
+            decorator: decorator
+          }
+      },
+      providerInjector = createInternalInjector(providerCache, function() {
+        throw Error("Unknown provider: " + path.join(' <- '));
+      }),
+      instanceCache = {},
+      instanceInjector = (instanceCache.$injector =
+          createInternalInjector(instanceCache, function(servicename) {
+            var provider = providerInjector.get(servicename + providerSuffix);
+            return instanceInjector.invoke(provider.$get, provider);
+          }));
 
-  value('$injector', $injector = {
-    get: getService,
-    invoke: invoke,
-    instantiate: instantiate
-  });
-  value('$provide', {
-    service: supportObject(service),
-    factory: supportObject(factory),
-    value: supportObject(value),
-    decorator: decorator
-  });
 
   loadModules(modulesToLoad);
 
-  return $injector;
+  return instanceInjector;
 
+  ////////////////////////////////////
+  // $provider
   ////////////////////////////////////
 
   function supportObject(delegate) {
@@ -274,124 +292,146 @@ function createInjector(modulesToLoad) {
 
   function service(name, provider) {
     if (isFunction(provider)){
-      provider = instantiate(provider);
+      provider = providerInjector.instantiate(provider);
     }
     if (!provider.$get) {
       throw Error('Provider ' + name + ' must define $get factory method.');
     }
-    cache['#' + name + providerSuffix] = provider;
+    providerCache[name + providerSuffix] = provider;
   }
 
   function factory(name, factoryFn) { service(name, { $get:factoryFn }); }
 
   function value(name, value) { factory(name, valueFn(value)); }
 
-  function decorator(name, decorFn) {
-    var origProvider = cache['#' + name + providerSuffix];
-    if (!origProvider) throw Error("Can't find provider for: " + name);
-    if (cache['#' + name]) throw Error("Service " + name + " already instantiated, can't decorate!");
-    var orig$get = origProvider.$get;
+  function decorator(serviceName, decorFn) {
+    var origProvider = providerInjector.get(serviceName + providerSuffix),
+        orig$get = origProvider.$get;
+
     origProvider.$get = function() {
-      var origInstance = $injector.invoke(origProvider, orig$get);
-      return $injector.invoke(null, decorFn, {$delegate: origInstance});
+      var origInstance = instanceInjector.invoke(orig$get, origProvider);
+      return instanceInjector.invoke(decorFn, null, {$delegate: origInstance});
     };
   }
 
-
-  function getService(value) {
-    if (typeof value !== 'string') {
-      throw Error('Service name expected');
-    }
-    var instanceKey = '#' + value,
-        instance = cache[instanceKey];
-    if (instance !== undefined || cache.hasOwnProperty(instanceKey)) {
-      return instance;
-    }
-    try {
-      path.unshift(value);
-      var providerKey = instanceKey + providerSuffix,
-          provider = cache[providerKey];
-      if (provider) {
-        return cache[instanceKey] = invoke(provider, provider.$get);
-      } else {
-        throw Error("Unknown provider for '" + path.join("' <- '") + "'.");
-      }
-    } finally {
-      path.shift();
-    }
-  }
-
-  function invoke(self, fn, locals){
-    var args = [],
-        $inject,
-        length,
-        key;
-
-    if (typeof fn == 'function') {
-      $inject = inferInjectionArgs(fn);
-      length = $inject.length;
-    } else {
-      if (isArray(fn)) {
-        $inject = fn;
-        length = $inject.length;
-        fn = $inject[--length];
-      }
-      assertArgFn(fn, 'fn');
-    }
-
-    while(length--) {
-      key = $inject[length];
-      args.unshift(
-        locals && locals.hasOwnProperty(key)
-        ? locals[key]
-        : getService($inject[length], path)
-      );
-    }
-
-    // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
-    switch (self ? -1 : args.length) {
-      case  0: return fn();
-      case  1: return fn(args[0]);
-      case  2: return fn(args[0], args[1]);
-      case  3: return fn(args[0], args[1], args[2]);
-      case  4: return fn(args[0], args[1], args[2], args[3]);
-      case  5: return fn(args[0], args[1], args[2], args[3], args[4]);
-      case  6: return fn(args[0], args[1], args[2], args[3], args[4], args[5]);
-      case  7: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
-      case  8: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
-      case  9: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
-      case 10: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
-      default: return fn.apply(self, args);
-    }
-  }
-
-  function instantiate(Type, locals){
-    var Constructor = function(){},
-        instance;
-    Constructor.prototype = Type.prototype;
-    instance = new Constructor();
-    return invoke(instance, Type, locals) || instance;
-  }
-
+  ////////////////////////////////////
+  // Module Loading
+  ////////////////////////////////////
   function loadModules(modulesToLoad){
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);
       if (isString(module)) {
-        module = angularModule(module);
-        loadModules(module.requires);
+        var moduleFn = angularModule(module);
+        loadModules(moduleFn.requires);
 
-        for(var invokeQueue = module.invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
-          var invokeArgs = invokeQueue[i],
-              service = getService(invokeArgs[0]);
+        try {
+          for(var invokeQueue = moduleFn.invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
+            var invokeArgs = invokeQueue[i],
+                provider = invokeArgs[0] == '$injector'
+                    ? providerInjector
+                    : providerInjector.get(invokeArgs[0]);
 
-          service[invokeArgs[1]].apply(service, invokeArgs[2]);
+            provider[invokeArgs[1]].apply(provider, invokeArgs[2]);
+          }
+        } catch (e) {
+          if (e.message) e.message += ' from ' + module;
+          throw e;
         }
-      } else if (isFunction(module) || isArray(module)) {
-        invoke(null, module);
+      } else if (isFunction(module)) {
+        try {
+          providerInjector.invoke(module);
+        } catch (e) {
+          if (e.message) e.message += ' from ' + module;
+          throw e;
+        }
+      } else if (isArray(module)) {
+        try {
+          providerInjector.invoke(module);
+        } catch (e) {
+          if (e.message) e.message += ' from ' + String(module[module.length - 1]);
+          throw e;
+        }
       } else {
         assertArgFn(module, 'module');
       }
     });
+  }
+
+  ////////////////////////////////////
+  // internal Injector
+  ////////////////////////////////////
+
+  function createInternalInjector(cache, factory) {
+
+    function getService(serviceName) {
+      if (typeof serviceName !== 'string') {
+        throw Error('Service name expected');
+      }
+      if (cache.hasOwnProperty(serviceName)) {
+        return cache[serviceName];
+      } else {
+        try {
+          path.unshift(serviceName);
+          return cache[serviceName] = factory(serviceName);
+        } finally {
+          path.shift();
+        }
+      }
+    }
+
+    function invoke(fn, self, locals){
+      var args = [],
+          $injectAnnotation,
+          $injectAnnotationIndex,
+          key;
+
+      if (typeof fn == 'function') {
+        $injectAnnotation = inferInjectionArgs(fn);
+        $injectAnnotationIndex = $injectAnnotation.length;
+      } else {
+        if (isArray(fn)) {
+          $injectAnnotation = fn;
+          $injectAnnotationIndex = $injectAnnotation.length;
+          fn = $injectAnnotation[--$injectAnnotationIndex];
+        }
+        assertArgFn(fn, 'fn');
+      }
+
+      while($injectAnnotationIndex--) {
+        key = $injectAnnotation[$injectAnnotationIndex];
+        args.unshift(locals && locals.hasOwnProperty(key) ? locals[key] : getService(key));
+      }
+
+      // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke
+      switch (self ? -1 : args.length) {
+        case  0: return fn();
+        case  1: return fn(args[0]);
+        case  2: return fn(args[0], args[1]);
+        case  3: return fn(args[0], args[1], args[2]);
+        case  4: return fn(args[0], args[1], args[2], args[3]);
+        case  5: return fn(args[0], args[1], args[2], args[3], args[4]);
+        case  6: return fn(args[0], args[1], args[2], args[3], args[4], args[5]);
+        case  7: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+        case  8: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+        case  9: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+        case 10: return fn(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+        default: return fn.apply(self, args);
+      }
+    }
+
+    function instantiate(Type, locals){
+      var Constructor = function(){},
+          instance;
+      Constructor.prototype = Type.prototype;
+      instance = new Constructor();
+      return invoke(Type, instance, locals) || instance;
+    }
+
+    return {
+      invoke: invoke,
+      instantiate: instantiate,
+      get: getService
+    };
   }
 }

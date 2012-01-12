@@ -2,6 +2,12 @@
 
 describe("directive", function() {
 
+  var $filterProvider;
+
+  beforeEach(module(['$filterProvider', function(provider){
+    $filterProvider = provider;
+  }]));
+
   it("should ng:init", inject(function($rootScope, $compile) {
     var element = $compile('<div ng:init="a=123"></div>')($rootScope);
     expect($rootScope.a).toEqual(123);
@@ -41,7 +47,7 @@ describe("directive", function() {
       expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
     }));
 
-    it('should set element element', inject(function($rootScope, $compile, $filterProvider) {
+    it('should set element element', inject(function($rootScope, $compile) {
       $filterProvider.register('myElement', valueFn(function() {
         return jqLite('<a>hello</a>');
       }));
@@ -73,7 +79,7 @@ describe("directive", function() {
       expect(element.text()).toEqual('Hello Misko!');
     }));
 
-    it('should have $element set to current bind element', inject(function($rootScope, $compile, $filterProvider) {
+    it('should have $element set to current bind element', inject(function($rootScope, $compile) {
       var innerText;
       $filterProvider.register('myFilter', valueFn(function(text) {
         innerText = innerText || this.$element.text();
@@ -415,7 +421,7 @@ describe("directive", function() {
         scope.$apply();
         expect(element.css(preCompStyle)).not.toBe('88px');
         expect(element.css(postCompStyle)).not.toBe('99px');
-      }); 
+      });
     });
   });
 

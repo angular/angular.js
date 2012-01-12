@@ -935,16 +935,56 @@ window.jstestdriver && (function(window) {
  * @return a method
  */
 window.jasmine && (function(window) {
-  window.inject = function () {
+
+  function getCurrentSpec() {
+    return jasmine.getEnv().currentSpec;
+  }
+
+  function isSpecRunning() {
+    var spec = getCurrentSpec();
+    return spec && spec.queue.running;
+  }
+
+  window.module = function() {
+    var moduleFns = Array.prototype.slice.call(arguments, 0);
+    var stack = Error('Declaration Location').stack;
+    return isSpecRunning() ? workFn() : workFn;
+    /////////////////////
+    function workFn() {
+      var spec = getCurrentSpec();
+      if (spec.$injector) {
+        throw Error('Injector already created, can not register a module!');
+      } else {
+        var modules = spec.$modules || (spec.$modules = []);
+        angular.forEach(moduleFns, function(module) {
+          modules.push(module);
+        });
+      }
+    }
+  };
+  window.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
-    return function() {
-      var injector = this.$injector;
+    var stack = Error('Declaration Location').stack;
+    return isSpecRunning() ? workFn() : workFn;
+    /////////////////////
+    function workFn() {
+      var spec = getCurrentSpec();
+      var modules = spec.$modules || [];
+      modules.unshift('ngMock');
+      modules.unshift('ng');
+      var injector = spec.$injector;
       if (!injector) {
-        injector = this.$injector = angular.injector('ng', 'ngMock');
+        injector = spec.$injector = angular.injector(modules);
       }
+      console.log('inject', modules)
       for(var i = 0, ii = blockFns.length; i < ii; i++) {
-        injector.invoke(this, blockFns[i]);
+        try {
+          injector.invoke(blockFns[i] || angular.noop, this);
+        } catch (e) {
+          if(e.stack) e.stack +=  '\n' + stack;
+          throw e;
+        }
       }
-    };
+    }
   }
 })(window);

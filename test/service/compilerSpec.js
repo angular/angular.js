@@ -1,10 +1,10 @@
 'use strict';
 
 describe('compiler', function() {
-  var compiler, textMmarkup, attrMarkup, directives, widgets, compile, log, $rootScope;
+  var textMarkup, attrMarkup, directives, widgets, compile, log;
 
-  beforeEach(inject(function($provide){
-    textMmarkup = [];
+  beforeEach(module(function($provide){
+    textMarkup = [];
     attrMarkup = [];
     widgets = extensionMap({}, 'widget');
     directives = {
@@ -26,7 +26,7 @@ describe('compiler', function() {
 
     };
     log = "";
-    $provide.value('$textMarkup', textMmarkup);
+    $provide.value('$textMarkup', textMarkup);
     $provide.value('$attrMarkup', attrMarkup);
     $provide.value('$directive', directives);
     $provide.value('$widget', widgets);
@@ -138,7 +138,7 @@ describe('compiler', function() {
 
 
   it('should process markup before directives', inject(function($rootScope, $compile) {
-    textMmarkup.push(function(text, textNode, parentNode) {
+    textMarkup.push(function(text, textNode, parentNode) {
       if (text == 'middle') {
         expect(textNode.text()).toEqual(text);
         parentNode.attr('hello', text);
@@ -176,7 +176,7 @@ describe('compiler', function() {
       this.directives(true);
       return noop;
     };
-    textMmarkup.push(function(text, textNode, parent){
+    textMarkup.push(function(text, textNode, parent){
       if (text == '{{1+2}}')
         parent.text('3');
     });
@@ -186,7 +186,7 @@ describe('compiler', function() {
 
 
   it('should allow multiple markups per text element', inject(function($rootScope, $compile) {
-    textMmarkup.push(function(text, textNode, parent){
+    textMarkup.push(function(text, textNode, parent){
       var index = text.indexOf('---');
       if (index > -1) {
         textNode.after(text.substring(index + 3));
@@ -195,7 +195,7 @@ describe('compiler', function() {
         textNode.remove();
       }
     });
-    textMmarkup.push(function(text, textNode, parent){
+    textMarkup.push(function(text, textNode, parent){
       var index = text.indexOf('===');
       if (index > -1) {
         textNode.after(text.substring(index + 3));

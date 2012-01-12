@@ -2,7 +2,7 @@ describe('example.personalLog.LogCtrl', function() {
   var logCtrl;
 
   function createNotesCtrl() {
-    var injector = angular.injector('ng', 'ngMock');
+    var injector = angular.injector(['ng', 'ngMock']);
     var scope = injector.get('$rootScope');
     scope.$cookies = injector.get('$cookies');
     return scope.$new(example.personalLog.LogCtrl);

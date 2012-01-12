@@ -19,8 +19,8 @@ text upper-case and assigns color.
 <doc:example module="MyReverseModule">
 <doc:source>
 <script type="text/javascript">
-  angular.module.MyReverseModule = function ($filterProvider) {
-    $filterProvider.register('reverse', function() {
+  angular.module('MyReverseModule', []).
+    filter('reverse', function() {
       return function(input, uppercase) {
         var out = "";
         for (var i = 0; i < input.length; i++) {
@@ -33,7 +33,6 @@ text upper-case and assigns color.
         return out;
       }
     });
-  }
 
   function Ctrl() {
     this.greeting = 'hello';

@@ -8,13 +8,15 @@ describe('filters', function() {
     filter = $filter;
   }));
 
-  it('should called the filter when evaluating expression', inject(function($rootScope, $filterProvider) {
+  it('should call the filter when evaluating expression', function(){
     var filter = jasmine.createSpy('myFilter');
-    $filterProvider.register('myFilter', valueFn(filter));
-
-    $rootScope.$eval('10|myFilter');
+    createInjector(['ng', function($filterProvider) {
+      $filterProvider.register('myFilter', valueFn(filter));
+    }]).invoke(function($rootScope) {
+      $rootScope.$eval('10|myFilter');
+    });
     expect(filter).toHaveBeenCalledWith(10);
-  }));
+  });
 
   describe('formatNumber', function() {
     var pattern;

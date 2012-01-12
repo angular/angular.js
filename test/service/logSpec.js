@@ -9,7 +9,7 @@ describe('$log', function() {
   function info() { logger+= 'info;'; }
   function error() { logger+= 'error;'; }
 
-  beforeEach(inject(function($provide){
+  beforeEach(module(function($provide){
     $window = {};
     logger = '';
     $provide.service('$log', $LogProvider);

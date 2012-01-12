@@ -128,7 +128,7 @@ var $$scope           = '$scope',
    </pre>
  *
  * @param {Object|Array} obj Object to iterate over.
- * @param {function()} iterator Iterator function.
+ * @param {Function} iterator Iterator function.
  * @param {Object=} context Object to become context (`this`) for the iterator function.
  * @returns {Object|Array} Reference to `obj`.
  */
@@ -897,12 +897,14 @@ function angularInit(element, bootstrap) {
  *
  * @param {Element} element DOM element which is the root of angular application.
  * @param {Array<String,function>=} modules an array of module declarations. See: {@link angular.module modules}
+ * @param {angular.module.auta.$injector} the injector;
  */
 function bootstrap(element, modules) {
   element = jqLite(element);
   modules = modules || [];
   modules.unshift('ng');
-  createInjector(modules).invoke(null,
+  var injector = createInjector(modules);
+  injector.invoke(
     ['$rootScope', '$compile', '$injector', function(scope, compile, injector){
       scope.$apply(function() {
         element.data('$injector', injector);
@@ -910,6 +912,7 @@ function bootstrap(element, modules) {
       });
     }]
   );
+  return injector;
 }
 
 function bindJQuery() {

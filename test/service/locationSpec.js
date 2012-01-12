@@ -335,11 +335,11 @@ describe('$location', function() {
 
 
   function initService(html5Mode, hashPrefix, supportHistory) {
-    return function($provide, $locationProvider){
+    return module(function($provide, $locationProvider){
       $locationProvider.html5Mode(html5Mode);
       $locationProvider.hashPrefix(hashPrefix);
       $provide.value('$sniffer', {history: supportHistory});
-    };
+    });
   }
   function initBrowser(url, basePath) {
     return function($browser){
@@ -350,7 +350,8 @@ describe('$location', function() {
 
   describe('wiring', function() {
 
-    beforeEach(inject(initService(false, '!', true), initBrowser('http://new.com/a/b#!', '/a/b')));
+    beforeEach(initService(false, '!', true));
+    beforeEach(inject(initBrowser('http://new.com/a/b#!', '/a/b')));
 
 
     it('should update $location when browser url changes', inject(function($browser, $location) {
@@ -413,30 +414,34 @@ describe('$location', function() {
   // html5 history is disabled
   describe('disabled history', function() {
 
-    it('should use hashbang url with hash prefix', inject(
-      initService(false, '!'),
-      initBrowser('http://domain.com/base/index.html#!/a/b', '/base/index.html'),
-      function($rootScope, $location, $browser) {
-        expect($browser.url()).toBe('http://domain.com/base/index.html#!/a/b');
-        $location.path('/new');
-        $location.search({a: true});
-        $rootScope.$apply();
-        expect($browser.url()).toBe('http://domain.com/base/index.html#!/new?a');
-      })
-    );
+    it('should use hashbang url with hash prefix', function() {
+      initService(false, '!');
+      inject(
+        initBrowser('http://domain.com/base/index.html#!/a/b', '/base/index.html'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!/a/b');
+          $location.path('/new');
+          $location.search({a: true});
+          $rootScope.$apply();
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!/new?a');
+        }
+      );
+    });
 
 
-    it('should use hashbang url without hash prefix', inject(
-      initService(false, ''),
-      initBrowser('http://domain.com/base/index.html#/a/b', '/base/index.html'),
-      function($rootScope, $location, $browser) {
-        expect($browser.url()).toBe('http://domain.com/base/index.html#/a/b');
-        $location.path('/new');
-        $location.search({a: true});
-        $rootScope.$apply();
-        expect($browser.url()).toBe('http://domain.com/base/index.html#/new?a');
-      })
-    );
+    it('should use hashbang url without hash prefix', function() {
+      initService(false, '');
+      inject(
+        initBrowser('http://domain.com/base/index.html#/a/b', '/base/index.html'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/index.html#/a/b');
+          $location.path('/new');
+          $location.search({a: true});
+          $rootScope.$apply();
+          expect($browser.url()).toBe('http://domain.com/base/index.html#/new?a');
+        }
+      );
+    });
   });
 
 
@@ -447,26 +452,30 @@ describe('$location', function() {
       dealoc($document);
     }));
 
-    it('should use hashbang url with hash prefix', inject(
-      initService(true, '!!', false),
-      initBrowser('http://domain.com/base/index.html#!!/a/b', '/base/index.html'),
-      function($rootScope, $location,  $browser) {
-        expect($browser.url()).toBe('http://domain.com/base/index.html#!!/a/b');
-        $location.path('/new');
-        $location.search({a: true});
-        $rootScope.$apply();
-        expect($browser.url()).toBe('http://domain.com/base/index.html#!!/new?a');
-      })
-    );
+    it('should use hashbang url with hash prefix', function() {
+      initService(true, '!!', false);
+      inject(
+        initBrowser('http://domain.com/base/index.html#!!/a/b', '/base/index.html'),
+        function($rootScope, $location,  $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!!/a/b');
+          $location.path('/new');
+          $location.search({a: true});
+          $rootScope.$apply();
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!!/new?a');
+        }
+      );
+    });
 
 
-    it('should redirect to hashbang url when new url given', inject(
-      initService(true, '!'),
-      initBrowser('http://domain.com/base/new-path/index.html', '/base/index.html'),
-      function($browser, $location) {
-        expect($browser.url()).toBe('http://domain.com/base/index.html#!/new-path/index.html');
-      })
-    );
+    it('should redirect to hashbang url when new url given', function() {
+      initService(true, '!');
+      inject(
+        initBrowser('http://domain.com/base/new-path/index.html', '/base/index.html'),
+        function($browser, $location) {
+          expect($browser.url()).toBe('http://domain.com/base/index.html#!/new-path/index.html');
+        }
+      );
+    });
   });
 
 
@@ -477,41 +486,47 @@ describe('$location', function() {
       dealoc($document);
     }));
 
-    it('should use new url', inject(
-      initService(true, '', true),
-      initBrowser('http://domain.com/base/old/index.html#a', '/base/index.html'),
-      function($rootScope, $location, $browser) {
-        expect($browser.url()).toBe('http://domain.com/base/old/index.html#a');
-        $location.path('/new');
-        $location.search({a: true});
-        $rootScope.$apply();
-        expect($browser.url()).toBe('http://domain.com/base/new?a#a');
-      })
-    );
+    it('should use new url', function() {
+      initService(true, '', true);
+      inject(
+        initBrowser('http://domain.com/base/old/index.html#a', '/base/index.html'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/old/index.html#a');
+          $location.path('/new');
+          $location.search({a: true});
+          $rootScope.$apply();
+          expect($browser.url()).toBe('http://domain.com/base/new?a#a');
+        }
+      );
+    });
 
 
-    it('should rewrite when hashbang url given', inject(
-      initService(true, '!', true),
-      initBrowser('http://domain.com/base/index.html#!/a/b', '/base/index.html'),
-      function($rootScope, $location, $browser) {
-        expect($browser.url()).toBe('http://domain.com/base/a/b');
-        $location.path('/new');
-        $location.hash('abc');
-        $rootScope.$apply();
-        expect($browser.url()).toBe('http://domain.com/base/new#abc');
-        expect($location.path()).toBe('/new');
-      })
-    );
+    it('should rewrite when hashbang url given', function() {
+      initService(true, '!', true);
+      inject(
+        initBrowser('http://domain.com/base/index.html#!/a/b', '/base/index.html'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/a/b');
+          $location.path('/new');
+          $location.hash('abc');
+          $rootScope.$apply();
+          expect($browser.url()).toBe('http://domain.com/base/new#abc');
+          expect($location.path()).toBe('/new');
+        }
+      );
+    });
 
 
-    it('should rewrite when hashbang url given (without hash prefix)', inject(
-      initService(true, '', true),
-      initBrowser('http://domain.com/base/index.html#/a/b', '/base/index.html'),
-      function($rootScope, $location, $browser) {
-        expect($browser.url()).toBe('http://domain.com/base/a/b');
-        expect($location.path()).toBe('/a/b');
-      })
-    );
+    it('should rewrite when hashbang url given (without hash prefix)', function() {
+      initService(true, '', true);
+      inject(
+        initBrowser('http://domain.com/base/index.html#/a/b', '/base/index.html'),
+        function($rootScope, $location, $browser) {
+          expect($browser.url()).toBe('http://domain.com/base/a/b');
+          expect($location.path()).toBe('/a/b');
+        }
+      );
+    });
   });
 
 
@@ -604,7 +619,7 @@ describe('$location', function() {
     var root, link, originalBrowser, lastEventPreventDefault;
 
     function configureService(linkHref, html5Mode, supportHist, attrs, content) {
-      return function($provide, $locationProvider){
+      module(function($provide, $locationProvider) {
         var jqRoot = jqLite('<div></div>');
         attrs = attrs ? ' ' + attrs + ' ' : '';
         link = jqLite('<a href="' + linkHref + '"' + attrs + '>' + content + '</a>')[0];
@@ -616,7 +631,7 @@ describe('$location', function() {
         $provide.value('$sniffer', {history: supportHist});
         $locationProvider.html5Mode(html5Mode);
         $locationProvider.hashPrefix('!');
-      };
+      });
     }
 
     function initBrowser() {
@@ -654,152 +669,178 @@ describe('$location', function() {
     });
 
 
-    it('should rewrite rel link to new url when history enabled on new browser', inject(
-      configureService('link?a#b', true, true),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectRewriteTo($browser, 'http://host.com/base/link?a#b');
-      })
-    );
+    it('should rewrite rel link to new url when history enabled on new browser', function() {
+      configureService('link?a#b', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
 
 
-    it('should rewrite abs link to new url when history enabled on new browser', inject(
-      configureService('/base/link?a#b', true, true),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectRewriteTo($browser, 'http://host.com/base/link?a#b');
-      })
-    );
+    it('should rewrite abs link to new url when history enabled on new browser', function() {
+      configureService('/base/link?a#b', true, true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/link?a#b');
+        }
+      );
+    });
 
 
-    it('should rewrite rel link to hashbang url when history enabled on old browser', inject(
-      configureService('link?a#b', true, false),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
-      })
-    );
+    it('should rewrite rel link to hashbang url when history enabled on old browser', function() {
+      configureService('link?a#b', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+        }
+      );
+    });
 
 
-    it('should rewrite abs link to hashbang url when history enabled on old browser', inject(
-      configureService('/base/link?a#b', true, false),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
-      })
-    );
+    it('should rewrite abs link to hashbang url when history enabled on old browser', function() {
+      configureService('/base/link?a#b', true, false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/link?a#b');
+        }
+      );
+    });
 
 
-    it('should not rewrite when history disabled', inject(
-      configureService('#new', false),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectNoRewrite($browser);
-      })
-    );
+    it('should not rewrite when history disabled', function() {
+      configureService('#new', false);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
-    it('should not rewrite ng:ext-link', inject(
-      configureService('#new', true, true, 'ng:ext-link'),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectNoRewrite($browser);
-      })
-    );
+    it('should not rewrite ng:ext-link', function() {
+      configureService('#new', true, true, 'ng:ext-link');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
-    it('should not rewrite full url links do different domain', inject(
-      configureService('http://www.dot.abc/a?b=c', true),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectNoRewrite($browser);
-      })
-    );
+    it('should not rewrite full url links do different domain', function() {
+      configureService('http://www.dot.abc/a?b=c', true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
-    it('should not rewrite links with target="_blank"', inject(
-      configureService('/a?b=c', true, true, 'target="_blank"'),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectNoRewrite($browser);
-      })
-    );
+    it('should not rewrite links with target="_blank"', function() {
+      configureService('/a?b=c', true, true, 'target="_blank"');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
-    it('should not rewrite links with target specified', inject(
-      configureService('/a?b=c', true, true, 'target="some-frame"'),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectNoRewrite($browser);
-      })
-    );
+    it('should not rewrite links with target specified', function() {
+      configureService('/a?b=c', true, true, 'target="some-frame"');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectNoRewrite($browser);
+        }
+      );
+    });
 
 
-    it('should rewrite full url links to same domain and base path', inject(
-      configureService('http://host.com/base/new', true),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        browserTrigger(link, 'click');
-        expectRewriteTo($browser, 'http://host.com/base/index.html#!/new');
-      })
-    );
+    it('should rewrite full url links to same domain and base path', function() {
+      configureService('http://host.com/base/new', true);
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          browserTrigger(link, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/index.html#!/new');
+        }
+      );
+    });
 
 
-    it('should rewrite when clicked span inside link', inject(
-      configureService('some/link', true, true, '', '<span>link</span>'),
-      initBrowser(),
-      initLocation(),
-      function($browser) {
-        var span = jqLite(link).find('span');
+    it('should rewrite when clicked span inside link', function() {
+      configureService('some/link', true, true, '', '<span>link</span>');
+      inject(
+        initBrowser(),
+        initLocation(),
+        function($browser) {
+          var span = jqLite(link).find('span');
 
-        browserTrigger(span, 'click');
-        expectRewriteTo($browser, 'http://host.com/base/some/link');
-      })
-    );
+          browserTrigger(span, 'click');
+          expectRewriteTo($browser, 'http://host.com/base/some/link');
+        }
+      );
+    });
 
 
     // don't run next tests on IE<9, as browserTrigger does not simulate pressed keys
     if (!(msie < 9)) {
 
-      it('should not rewrite when clicked with ctrl pressed', inject(
-        configureService('/a?b=c', true, true),
-        initBrowser(),
-        initLocation(),
-        function($browser) {
-          browserTrigger(link, 'click', ['ctrl']);
-          expectNoRewrite($browser);
-        })
-      );
+      it('should not rewrite when clicked with ctrl pressed', function() {
+        configureService('/a?b=c', true, true);
+        inject(
+          initBrowser(),
+          initLocation(),
+          function($browser) {
+            browserTrigger(link, 'click', ['ctrl']);
+            expectNoRewrite($browser);
+          }
+        );
+      });
 
 
-      it('should not rewrite when clicked with meta pressed', inject(
-        configureService('/a?b=c', true, true),
-        initBrowser(),
-        initLocation(),
-        function($browser) {
-          browserTrigger(link, 'click', ['meta']);
-          expectNoRewrite($browser);
-        })
-      );
+      it('should not rewrite when clicked with meta pressed', function() {
+        configureService('/a?b=c', true, true);
+        inject(
+          initBrowser(),
+          initLocation(),
+          function($browser) {
+            browserTrigger(link, 'click', ['meta']);
+            expectNoRewrite($browser);
+          }
+        );
+      });
     }
   });
 });

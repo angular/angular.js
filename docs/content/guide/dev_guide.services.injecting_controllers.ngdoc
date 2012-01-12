@@ -31,8 +31,9 @@ myController.$inject = ['$location', '$log'];
 <doc:example module="MyServiceModule">
 <doc:source>
 <script type="text/javascript">
-angular.module.MyServiceModule = ['$provide', function($provide){
-  $provide.factory('notify', ['$window', function(win) {
+angular.
+ module('MyServiceModule', []).
+ factory('notify', ['$window', function(win) {
     var msgs = [];
     return function(msg) {
       msgs.push(msg);
@@ -42,7 +43,6 @@ angular.module.MyServiceModule = ['$provide', function($provide){
       }
     };
   }]);
-}];
 
 function myController(notifyService) {
   this.callNotify = function(msg) {

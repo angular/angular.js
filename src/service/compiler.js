@@ -28,7 +28,7 @@ function $CompileProvider(){
           forEach(this.linkFns, function(fn) {
             try {
               if (isArray(fn) || fn.$inject) {
-                $injector.invoke(childScope, fn, locals);
+                $injector.invoke(fn, childScope, locals);
               } else {
                 fn.call(childScope, element);
               }
@@ -97,7 +97,7 @@ function $CompileProvider(){
        * that is a DOM clone of the original template.
        *
          <pre>
-          angular.injector('ng').invoke(null, function($rootScope, $compile) {
+          angular.injector(['ng']).invoke(function($rootScope, $compile) {
             // Chose one:
 
             // A: compile the entire window.document.
@@ -143,8 +143,8 @@ function $CompileProvider(){
        * - If you are not asking the linking function to clone the template, create the DOM element(s)
        *   before you send them to the compiler and keep this reference around.
        *   <pre>
-       *     var $injector = angular.injector('ng');
-       *     var scope = $injector.invoke(null, function($rootScope, $compile){
+       *     var $injector = angular.injector(['ng']);
+       *     var scope = $injector.invoke(function($rootScope, $compile){
        *       var element = $compile('<p>{{total}}</p>')($rootScope);
        *     });
        *   </pre>
@@ -277,7 +277,7 @@ function $CompileProvider(){
             descend = false;
             directives = false;
             var parent = element.parent();
-            template.addLinkFn($injector.invoke(selfApi, widget, locals));
+            template.addLinkFn($injector.invoke(widget, selfApi, locals));
             if (parent && parent[0]) {
               element = jqLite(parent[0].childNodes[elementIndex]);
             }
@@ -310,7 +310,7 @@ function $CompileProvider(){
               if (fn) {
                 element.addClass('ng-directive');
                 template.addLinkFn((isArray(fn) || fn.$inject)
-                  ? $injector.invoke(selfApi, fn, {$value:value, $element: element})
+                  ? $injector.invoke(fn, selfApi, {$value:value, $element: element})
                   : fn.call(selfApi, value, element));
               }
             });

@@ -247,8 +247,8 @@ describe('widget', function() {
         };
       }
 
+      beforeEach(module(spyOnAutoScroll()));
       beforeEach(inject(
-          spyOnAutoScroll(),
           putIntoCache('template.html', 'CONTENT'),
           putIntoCache('another.html', 'CONTENT')));
 
@@ -681,7 +681,7 @@ describe('widget', function() {
 
     it('should be possible to nest ng:view in ng:include', inject(function() {
       // TODO(vojta): refactor this test
-      var injector = angular.injector('ng', 'ngMock');
+      var injector = angular.injector(['ng', 'ngMock']);
       var myApp = injector.get('$rootScope');
       var $httpBackend = injector.get('$httpBackend');
       $httpBackend.expect('GET', 'includePartial.html').respond('view: <ng:view></ng:view>');

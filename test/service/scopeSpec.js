@@ -117,15 +117,18 @@ describe('Scope', function() {
     }));
 
 
-    it('should delegate exceptions', inject(function($exceptionHandlerProvider) {
-      $exceptionHandlerProvider.mode('log');
-    }, function($rootScope, $exceptionHandler, $log) {
-      $rootScope.$watch('a', function() {throw new Error('abc');});
-      $rootScope.a = 1;
-      $rootScope.$digest();
-      expect($exceptionHandler.errors[0].message).toEqual('abc');
-      $log.assertEmpty();
-    }));
+    it('should delegate exceptions', function() {
+      module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      });
+      inject(function($rootScope, $exceptionHandler, $log) {
+        $rootScope.$watch('a', function() {throw new Error('abc');});
+        $rootScope.a = 1;
+        $rootScope.$digest();
+        expect($exceptionHandler.errors[0].message).toEqual('abc');
+        $log.assertEmpty();
+      });
+    });
 
 
     it('should fire watches in order of addition', inject(function($rootScope) {
@@ -459,25 +462,29 @@ describe('Scope', function() {
     }));
 
 
-    it('should catch exceptions', inject(function($exceptionHandlerProvider) {
+    it('should catch exceptions', function() {
+      module(function($exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');
-      }, function($rootScope, $exceptionHandler, $log) {
-      var log = '';
-      var child = $rootScope.$new();
-      $rootScope.$watch('a', function(scope, a) { log += '1'; });
-      $rootScope.a = 0;
-      child.$apply(function() { throw new Error('MyError'); });
-      expect(log).toEqual('1');
-      expect($exceptionHandler.errors[0].message).toEqual('MyError');
-      $log.error.logs.shift();
-    }));
+      });
+      inject(function($rootScope, $exceptionHandler, $log) {
+        var log = '';
+        var child = $rootScope.$new();
+        $rootScope.$watch('a', function(scope, a) { log += '1'; });
+        $rootScope.a = 0;
+        child.$apply(function() { throw new Error('MyError'); });
+        expect(log).toEqual('1');
+        expect($exceptionHandler.errors[0].message).toEqual('MyError');
+        $log.error.logs.shift();
+      });
+    });
 
 
     describe('exceptions', function() {
       var log;
-      beforeEach(inject(function($exceptionHandlerProvider) {
-          $exceptionHandlerProvider.mode('log');
-        }, function($rootScope) {
+      beforeEach(module(function($exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+      }));
+      beforeEach(inject(function($rootScope) {
         log = '';
         $rootScope.$watch(function() { log += '$digest;'; });
         $rootScope.$digest();
@@ -613,10 +620,10 @@ describe('Scope', function() {
         log += event.currentScope.id + '>';
       }
 
-      beforeEach(inject(
-          function($exceptionHandlerProvider) {
+      beforeEach(module(function($exceptionHandlerProvider) {
         $exceptionHandlerProvider.mode('log');
-      }, function($rootScope) {
+      }));
+      beforeEach(inject(function($rootScope) {
         log = '';
         child = $rootScope.$new();
         grandChild = child.$new();

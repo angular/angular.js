@@ -1,7 +1,7 @@
 'use strict';
 
 describe('$defer', function() {
-  beforeEach(inject(function($provide) {
+  beforeEach(module(function($provide) {
     $provide.factory('$exceptionHandler', function(){
       return jasmine.createSpy('$exceptionHandler');
     });
