@@ -225,10 +225,10 @@ describe('widget', function() {
     describe('autoscoll', function() {
       var autoScrollSpy;
 
-      function spyOnAutoScroll() {
+      function spyOnAnchorScroll() {
         return function($provide) {
-          autoScrollSpy = jasmine.createSpy('$autoScroll');
-          $provide.value('$autoScroll', autoScrollSpy);
+          autoScrollSpy = jasmine.createSpy('$anchorScroll');
+          $provide.value('$anchorScroll', autoScrollSpy);
         };
       }
 
@@ -247,20 +247,20 @@ describe('widget', function() {
         };
       }
 
-      beforeEach(module(spyOnAutoScroll()));
+      beforeEach(module(spyOnAnchorScroll()));
       beforeEach(inject(
           putIntoCache('template.html', 'CONTENT'),
           putIntoCache('another.html', 'CONTENT')));
 
 
-      it('should call $autoScroll if autoscroll attribute is present', inject(
+      it('should call $anchorScroll if autoscroll attribute is present', inject(
           compileAndLink('<ng:include src="tpl" autoscroll></ng:include>'),
           changeTplAndValueTo('template.html'), function() {
         expect(autoScrollSpy).toHaveBeenCalledOnce();
       }));
 
 
-      it('should call $autoScroll if autoscroll evaluates to true', inject(
+      it('should call $anchorScroll if autoscroll evaluates to true', inject(
           compileAndLink('<ng:include src="tpl" autoscroll="value"></ng:include>'),
           changeTplAndValueTo('template.html', true),
           changeTplAndValueTo('another.html', 'some-string'),
@@ -270,14 +270,14 @@ describe('widget', function() {
       }));
 
 
-      it('should not call $autoScroll if autoscroll attribute is not present', inject(
+      it('should not call $anchorScroll if autoscroll attribute is not present', inject(
           compileAndLink('<ng:include src="tpl"></ng:include>'),
           changeTplAndValueTo('template.html'), function() {
         expect(autoScrollSpy).not.toHaveBeenCalled();
       }));
 
 
-      it('should not call $autoScroll if autoscroll evaluates to false', inject(
+      it('should not call $anchorScroll if autoscroll evaluates to false', inject(
           compileAndLink('<ng:include src="tpl" autoscroll="value"></ng:include>'),
           changeTplAndValueTo('template.html', false),
           changeTplAndValueTo('template.html', undefined),

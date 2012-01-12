@@ -9,7 +9,7 @@ angularFiles = {
     'src/sanitizer.js',
     'src/jqLite.js',
     'src/apis.js',
-    'src/service/autoScroll.js',
+    'src/service/anchorScroll.js',
     'src/service/browser.js',
     'src/service/cacheFactory.js',
     'src/service/compiler.js',
