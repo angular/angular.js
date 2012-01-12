@@ -117,10 +117,8 @@
 
     <div class="content-panel">
       <h2 ng:bind="partialTitle | title"></h2>
-      <ng:include id="content"
-                  class="content-panel-content"
-                  src="getCurrentPartial()"
-                  onload="afterPartialLoaded()"></ng:include>
+      <ng:include id="content" class="content-panel-content" autoscroll
+                  src="getCurrentPartial()" onload="afterPartialLoaded()"></ng:include>
     </div>
 
     <div id="disqus" class="content-panel">

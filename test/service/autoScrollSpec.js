@@ -169,12 +169,12 @@ describe('$autoScroll', function() {
     });
 
 
-    it('should not scroll when html5 mode with history api', function() {
+    it('should scroll when html5 mode with history api', function() {
       module(initLocation({html5Mode: true, historyApi: true}));
       inject(
         addElements('id=some'),
         changeHashAndDigest('some'),
-        expectNoScrolling()
+        expectScrollingTo('id=some')
       );
     });
 

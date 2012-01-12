@@ -10,9 +10,7 @@
  * according to rules specified in
  * {@link http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document Html5 spec}.
  *
- * If `$location` uses `hashbang` url (running in `hashbang` mode or `html5` mode on browser without
- * history API support), `$autoScroll` watches the `$location.hash()` and scroll whenever it
- * changes.
+ * It also watches the `$location.hash()` and scroll whenever it changes to match any anchor.
  *
  * You can disable `$autoScroll` service by calling `disable()` on `$autoScrollProvider`.
  * Note: disabling is only possible before the service is instantiated !
@@ -54,12 +52,11 @@ function $AutoScrollProvider() {
       else if (hash === 'top') $window.scrollTo(0, 0);
     }
 
-    // scroll whenever hash changes (with hashbang url, regular urls are handled by browser)
-    if ($location instanceof LocationHashbangUrl) {
-      $rootScope.$watch(function() {return $location.hash();}, function() {
-        $rootScope.$evalAsync(scroll);
-      });
-    }
+    // does not scroll when user clicks on anchor link that is currently on
+    // (no url change, no $locaiton.hash() change), browser native does scroll
+    $rootScope.$watch(function() {return $location.hash();}, function() {
+      $rootScope.$evalAsync(scroll);
+    });
 
     return scroll;
   }];
