@@ -346,18 +346,21 @@ describe('angular', function() {
 
 
   describe('angular service', function() {
-    it('should override services', inject(function($provide){
-      $provide.value('fake', 'old');
-      $provide.value('fake', 'new');
-    }, function(fake) {
-      expect(fake).toEqual('new');
-    }));
+    it('should override services', function() {
+      module(function($provide){
+        $provide.value('fake', 'old');
+        $provide.value('fake', 'new');
+      });
+      inject(function(fake) {
+        expect(fake).toEqual('new');
+      });
+    });
 
     it('should inject dependencies specified by $inject and ignore function argument name', function() {
-      expect(angular.injector(function($provide){
+      expect(angular.injector([function($provide){
         $provide.factory('svc1', function() { return 'svc1'; });
         $provide.factory('svc2', ['svc1', function(s) { return 'svc2-' + s; }]);
-      }).get('svc2')).toEqual('svc2-svc1');
+      }]).get('svc2')).toEqual('svc2-svc1');
     });
 
   });
@@ -492,8 +495,7 @@ describe('angular', function() {
   describe('bootstrap', function() {
     it('should bootstrap app', function(){
       var element = jqLite('<div>{{1+2}}</div>');
-      var injector;
-      angular.bootstrap(element, [function($injector){ injector = $injector; }]);
+      var injector = angular.bootstrap(element);
       expect(injector).toBeDefined();
       expect(element.data('$injector')).toBe(injector);
       dealoc(element);

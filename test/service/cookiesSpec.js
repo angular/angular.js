@@ -1,13 +1,13 @@
 'use strict';
 
 describe('$cookies', function() {
-  beforeEach(inject(function($provide) {
+  beforeEach(module(function($provide) {
     $provide.factory('$browser', function(){
       return angular.extend(new angular.mock.$Browser(), {cookieHash: {preexisting:'oldCookie'}});
     });
   }));
 
-  
+
   it('should provide access to existing cookies via object properties and keep them in sync',
       inject(function($cookies, $browser, $rootScope) {
     expect($cookies).toEqual({'preexisting': 'oldCookie'});

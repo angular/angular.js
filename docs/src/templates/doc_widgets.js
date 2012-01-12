@@ -22,8 +22,9 @@
     ' </body>\n' +
     '</html>';
 
-  angular.widget('doc:example', ['$injector', '$element', function($injector, element){
-    this.descend(true); //compile the example code
+  angular.widget('doc:example', ['$injector', '$browser', '$location', '$element',
+                        function($injector,    $browser,   $location,   element){
+    this.descend(false); // do not compile the example code
     var module = element.attr('module') || '';
 
     //jQuery find() methods in this widget contain primitive selectors on purpose so that we can use
@@ -38,30 +39,26 @@
         jsfiddle = example.attr('jsfiddle') || true,
         scenario = element.find('pre').eq(1); //doc-scenario
 
-    var tabHtml =
-      '<ul class="doc-example">';
+    var tabs = angular.element('<ul class="doc-example">');
 
     // show source tab, if not disabled
     if (showSource) {
-      tabHtml +=
+      tabs.append(
         '<li class="doc-example-heading"><h3>Source</h3></li>' +
         '<li class="doc-example-source" ng:non-bindable>' +
         jsFiddleButton(jsfiddle) + // may or may not have value
-        '<pre class="brush: js; html-script: true; toolbar: false;"></pre></li>';
+        '<pre class="brush: js; html-script: true; toolbar: false;"></pre></li>');
     }
     // show live preview tab
-    tabHtml +=
-        '<li class="doc-example-heading"><h3>Live Preview</h3></li>' +
-        '<li class="doc-example-live">' + htmlSrc +'</li>';
+    var livePreviewTab;
+    tabs.append('<li class="doc-example-heading"><h3>Live Preview</h3></li>');
+    tabs.append(livePreviewTab = angular.element('<li class="doc-example-live">' + htmlSrc +'</li>'));
     // show scenario tab, if present
     if (scenario.text()) {
-      tabHtml +=
+      tabs.append(
         '<li class="doc-example-heading"><h3>Scenario Test</h3></li>' +
-        '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>';
+        '<li class="doc-example-scenario"><pre class="brush: js">' + scenario.text() + '</pre></li>');
     }
-    tabHtml +=
-      '</ul>';
-    var tabs = angular.element(tabHtml);
 
     tabs.find('li').eq(1).find('pre').text(
       HTML_TEMPLATE.
@@ -82,10 +79,23 @@
       alert(e);
     }
 
-    if (module) {
-      $injector.invoke(null, angular.module[module]);
-    }
+    return function() {
+      var scope = this;
+      var modules = [
+        'ng',
+        function($provide) {
+          $provide.value('$browser', $browser);
+          $provide.value('$location', $location);
+        }
+      ];
+      module && modules.push(module);
 
+      angular.bootstrap(livePreviewTab, modules).invoke(function($rootScope) {
+        element.bind('$destroy', scope.$root.$watch(function() {
+          $rootScope.$digest();
+        }));
+      });
+    };
 
     function jsFiddleButton(jsfiddle) {
       var fixJsFiddleIssue132 = true;

@@ -40,12 +40,12 @@ describe('module loader', function() {
 
     expect(myModule.requires).toEqual(['other']);
     expect(myModule.invokeQueue).toEqual([
-      ['$injector', 'invoke', [null, 'init'] ],
+      ['$injector', 'invoke', ['init'] ],
       ['$provide', 'service', ['sk', 'sv'] ],
       ['$provide', 'factory', ['fk', 'fv'] ],
       ['$provide', 'value', ['k', 'v'] ],
       ['$filterProvider', 'register', ['f', 'ff'] ],
-      ['$injector', 'invoke', [null, 'init2'] ]
+      ['$injector', 'invoke', ['init2'] ]
     ]);
   });
 

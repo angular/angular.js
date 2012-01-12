@@ -50,7 +50,7 @@ function $RootScopeProvider(){
      *
      * Here is a simple scope snippet to show how you can interact with the scope.
      * <pre>
-        angular.injector(function($rootScope) {
+        angular.injector(['ng']).invoke(function($rootScope) {
            var scope = $rootScope.$new();
            scope.salutation = 'Hello';
            scope.name = 'World';
@@ -168,7 +168,7 @@ function $RootScopeProvider(){
           for(var key in ClassPrototype) {
             child[key] = bind(child, ClassPrototype[key]);
           }
-          $injector.invoke(child, Class, curryArguments);
+          $injector.invoke(Class, child, curryArguments);
         }
         return child;
       },

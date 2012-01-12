@@ -53,7 +53,7 @@ provided by angular's web framework:
   }
 
   // get the main service to kick of the application
-  angular.injector(batchLogModule).get('routeTemplateMonitor');
+  angular.injector([batchLogModule]).get('routeTemplateMonitor');
 </pre>
 
 Things to notice in this example:

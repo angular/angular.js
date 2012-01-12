@@ -302,7 +302,7 @@ describe('ngMock', function() {
     }));
 
 
-    it('should log exceptions', inject(function($exceptionHandlerProvider){
+    it('should log exceptions', module(function($exceptionHandlerProvider){
       $exceptionHandlerProvider.mode('log');
       var $exceptionHandler = $exceptionHandlerProvider.$get();
       $exceptionHandler('MyError');
@@ -310,7 +310,7 @@ describe('ngMock', function() {
     }));
 
 
-    it('should thorw on wrong argument', inject(function($exceptionHandlerProvider) {
+    it('should throw on wrong argument', module(function($exceptionHandlerProvider) {
       expect(function() {
         $exceptionHandlerProvider.mode('XXX');
       }).toThrow("Unknown mode 'XXX', only 'log'/'rethrow' modes are allowed!");
@@ -348,32 +348,83 @@ describe('ngMock', function() {
     });
   });
 
-  describe('jasmine inject', function(){
-    it('should call invoke', function(){
-      var count = 0;
-      function fn1(){
-        expect(this).toBe(self);
-        count++;
-      }
-      function fn2(){
-        expect(this).toBe(self);
-        count++;
-      }
-      var fn = inject(fn1, fn2);
-      var self = {
-        $injector: {
-          invoke: function(self, fn) { fn.call(self); }
-        }
-      };
+  describe('jasmine module and inject', function(){
+    var log;
 
-      fn.call(self);
-      expect(count).toBe(2);
+    beforeEach(function(){
+      log = '';
+    });
+
+    describe('module', function() {
+      describe('in DSL', function() {
+        it('should load module', module(function() {
+          log += 'module';
+        }));
+
+        afterEach(function() {
+          inject();
+          expect(log).toEqual('module');
+        });
+      });
+
+
+      describe('inline in test', function() {
+        it('should load module', function() {
+          module(function() {
+            log += 'module';
+          });
+          inject();
+        });
+
+        afterEach(function() {
+          expect(log).toEqual('module');
+        });
+      });
+    });
+
+    describe('inject', function() {
+      describe('in DSL', function() {
+        it('should load module', inject(function() {
+          log += 'inject';
+        }));
+
+        afterEach(function() {
+          expect(log).toEqual('inject');
+        });
+      });
+
+
+      describe('inline in test', function() {
+        it('should load module', function() {
+          inject(function() {
+            log += 'inject';
+          });
+        });
+
+        afterEach(function() {
+          expect(log).toEqual('inject');
+        });
+      });
+
+      describe('module with inject', function() {
+        beforeEach(module(function(){
+          log += 'module;';
+        }));
+
+        it('should inject', inject(function() {
+          log += 'inject;';
+        }));
+
+        afterEach(function() {
+          expect(log).toEqual('module;inject;')
+        });
+      });
     });
   });
 
 
   describe('$httpBackend', function() {
-    var hb, callback;
+    var hb, callback, realBackendSpy;
 
     beforeEach(inject(function($httpBackend) {
       callback = jasmine.createSpy('callback');
@@ -832,13 +883,17 @@ describe('ngMockE2E', function() {
   describe('$httpBackend', function() {
     var hb, realHttpBackend, callback;
 
-    beforeEach(inject(function($provide, $injector) {
-      callback = jasmine.createSpy('callback');
-      realHttpBackend = jasmine.createSpy('real $httpBackend');
-      $provide.value('$httpBackend', realHttpBackend);
-      $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
-      hb = $injector.get('$httpBackend');
-    }));
+    beforeEach(function() {
+      module(function($provide) {
+        callback = jasmine.createSpy('callback');
+        realHttpBackend = jasmine.createSpy('real $httpBackend');
+        $provide.value('$httpBackend', realHttpBackend);
+        $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
+      });
+      inject(function($injector) {
+        hb = $injector.get('$httpBackend');
+      });
+    });
 
 
     describe('passThrough()', function() {

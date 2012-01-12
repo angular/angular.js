@@ -13,7 +13,7 @@ describe('Binder', function() {
         content = jqLite(content);
         $compile(content)($rootScope);
         html = sortedHtml(content);
-      }).call(this);
+      });
       return html;
     };
   });
@@ -229,11 +229,11 @@ describe('Binder', function() {
     expect(element[0].childNodes.length - 1).toEqual(0);
   }));
 
-  it('IfTextBindingThrowsErrorDecorateTheSpan', inject(
-    function($exceptionHandlerProvider){
+  it('IfTextBindingThrowsErrorDecorateTheSpan', function() {
+    module(function($exceptionHandlerProvider){
       $exceptionHandlerProvider.mode('log');
-    },
-    function($rootScope, $exceptionHandler, $compile) {
+    });
+    inject(function($rootScope, $exceptionHandler, $compile) {
       $compile('<div>{{error.throw()}}</div>', null, true)($rootScope);
       var errorLogs = $exceptionHandler.errors;
 
@@ -250,28 +250,31 @@ describe('Binder', function() {
       $rootScope.error['throw'] = function() {return 'ok';};
       $rootScope.$apply();
       expect(errorLogs.length).toBe(0);
-    })
-  );
+    });
+  });
 
-  it('IfAttrBindingThrowsErrorDecorateTheAttribute', inject(function($exceptionHandlerProvider){
-    $exceptionHandlerProvider.mode('log');
-  }, function($rootScope, $exceptionHandler, $compile) {
-    $compile('<div attr="before {{error.throw()}} after"></div>', null, true)($rootScope);
-    var errorLogs = $exceptionHandler.errors;
-    var count = 0;
+  it('IfAttrBindingThrowsErrorDecorateTheAttribute', function() {
+    module(function($exceptionHandlerProvider){
+      $exceptionHandlerProvider.mode('log');
+    });
+    inject(function($rootScope, $exceptionHandler, $compile) {
+      $compile('<div attr="before {{error.throw()}} after"></div>', null, true)($rootScope);
+      var errorLogs = $exceptionHandler.errors;
+      var count = 0;
 
-    $rootScope.error = {
+      $rootScope.error = {
         'throw': function() {throw new Error('ErrorMsg' + (++count));}
-    };
-    $rootScope.$apply();
-    expect(errorLogs.length).not.toEqual(0);
-    expect(errorLogs.shift()).toMatch(/ErrorMsg1/);
-    errorLogs.length = 0;
+      };
+      $rootScope.$apply();
+      expect(errorLogs.length).not.toEqual(0);
+      expect(errorLogs.shift()).toMatch(/ErrorMsg1/);
+      errorLogs.length = 0;
 
-    $rootScope.error['throw'] =  function() { return 'X';};
-    $rootScope.$apply();
-    expect(errorLogs.length).toMatch(0);
-  }));
+      $rootScope.error['throw'] =  function() { return 'X';};
+      $rootScope.$apply();
+      expect(errorLogs.length).toMatch(0);
+    });
+  });
 
   it('NestedRepeater', inject(function($rootScope, $compile) {
     var element = $compile(
@@ -395,19 +398,19 @@ describe('Binder', function() {
     $rootScope.$apply();
   }));
 
-  it('ActionOnAHrefThrowsError', inject(
-    function($exceptionHandlerProvider){
+  it('ActionOnAHrefThrowsError', function() {
+    module(function($exceptionHandlerProvider){
       $exceptionHandlerProvider.mode('log');
-    },
-    function($rootScope, $exceptionHandler, $compile) {
+    });
+    inject(function($rootScope, $exceptionHandler, $compile) {
       var input = $compile('<a ng:click="action()">Add Phone</a>')($rootScope);
       $rootScope.action = function() {
         throw new Error('MyError');
       };
       browserTrigger(input, 'click');
       expect($exceptionHandler.errors[0]).toMatch(/MyError/);
-    })
-  );
+    });
+  });
 
   it('ShoulIgnoreVbNonBindable', inject(function($rootScope, $compile) {
     var element = $compile(
@@ -477,11 +480,11 @@ describe('Binder', function() {
     assertChild(5, false);
   }));
 
-  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', inject(
-    function($exceptionHandlerProvider){
+  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', function() {
+    module(function($exceptionHandlerProvider){
       $exceptionHandlerProvider.mode('log');
-    },
-    function($rootScope, $exceptionHandler, $log, $compile) {
+    });
+    inject(function($rootScope, $exceptionHandler, $log, $compile) {
       var element = $compile(
         '<div>' +
           '<input type="button" ng:click="greeting=\'ABC\'"/>' +
@@ -498,8 +501,8 @@ describe('Binder', function() {
       browserTrigger(second, 'click');
       expect($exceptionHandler.errors[0]).
         toMatchError(/Syntax Error: Token ':' not a primary expression/);
-    })
-  );
+    });
+  });
 
   it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile) {
     var element = $compile(

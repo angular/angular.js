@@ -154,7 +154,10 @@ describe('parser', function() {
     });
   });
 
-  var scope;
+  var scope, $filterProvider;
+  beforeEach(module(['$filterProvider', function (filterProvider) {
+    $filterProvider = filterProvider;
+  }]));
   beforeEach(inject(function ($rootScope) {
     scope = $rootScope;
   }));
@@ -191,19 +194,19 @@ describe('parser', function() {
     expect(scope.$eval("'a' + 'b c'")).toEqual("ab c");
   });
 
-  it('should parse filters', inject(function($filterProvider) {
+  it('should parse filters', function() {
     $filterProvider.register('substring', valueFn(function(input, start, end) {
       return input.substring(start, end);
     }));
 
     expect(function() {
       scope.$eval("1|nonexistent");
-    }).toThrow(new Error("Unknown provider for 'nonexistentFilter'."));
+    }).toThrow(new Error("Unknown provider: nonexistentFilterProvider <- nonexistentFilter"));
 
     scope.offset =  3;
     expect(scope.$eval("'abcd'|substring:1:offset")).toEqual("bc");
     expect(scope.$eval("'abcd'|substring:1:3|uppercase")).toEqual("BC");
-  }));
+  });
 
   it('should access scope', function() {
     scope.a =  123;
