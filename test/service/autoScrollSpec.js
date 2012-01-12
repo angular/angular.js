@@ -127,10 +127,11 @@ describe('$autoScroll', function() {
       };
     }
 
-    function changeHashAndDigest(hash) {
+    function changeHashTo(hash) {
       return function ($location, $rootScope, $autoScroll) {
-        $location.hash(hash);
-        $rootScope.$digest();
+        $rootScope.$apply(function() {
+          $location.hash(hash);
+        });
       };
     }
 
@@ -143,7 +144,7 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: false, historyApi: true}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('some'),
+        changeHashTo('some'),
         expectScrollingTo('id=some')
       );
     });
@@ -153,7 +154,7 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: true, historyApi: false}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('some'),
+        changeHashTo('some'),
         expectScrollingTo('id=some')
       );
     });
@@ -163,7 +164,7 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: false, historyApi: false}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('other'),
+        changeHashTo('other'),
         expectNoScrolling()
       );
     });
@@ -173,7 +174,7 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: true, historyApi: true}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('some'),
+        changeHashTo('some'),
         expectScrollingTo('id=some')
       );
     });
@@ -186,7 +187,7 @@ describe('$autoScroll', function() {
       );
       inject(
         addElements('id=fake'),
-        changeHashAndDigest('fake'),
+        changeHashTo('fake'),
         expectNoScrolling()
       );
     });
