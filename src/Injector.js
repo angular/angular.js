@@ -272,7 +272,15 @@ function createInjector(modulesToLoad) {
     }
   }
 
+  function assertNotInstantiated(name, consequence) {
+    if (cache.hasOwnProperty('#' + name)) {
+      throw Error('Service ' + name + ' already instantiated, ' + consequence + '!');
+    }
+  }
+
   function service(name, provider) {
+    assertNotInstantiated(name, "can't override the provider");
+
     if (isFunction(provider)){
       provider = instantiate(provider);
     }
@@ -289,7 +297,7 @@ function createInjector(modulesToLoad) {
   function decorator(name, decorFn) {
     var origProvider = cache['#' + name + providerSuffix];
     if (!origProvider) throw Error("Can't find provider for: " + name);
-    if (cache['#' + name]) throw Error("Service " + name + " already instantiated, can't decorate!");
+    assertNotInstantiated(name, "can't decorate");
     var orig$get = origProvider.$get;
     origProvider.$get = function() {
       var origInstance = $injector.invoke(origProvider, orig$get);

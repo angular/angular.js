@@ -476,6 +476,22 @@ describe('injector', function() {
           }], {});
         }).toThrow("Unknown provider for 'dontExist'.");
       });
+
+
+      it('should complain if a provider for an already instantiated service is being reregistered',
+          function() {
+        injector = createInjector([function($provide) {
+          $provide.value('serviceX', 'xxx');
+        }]);
+
+        injector.get('serviceX');
+
+        expect(function() {
+          injector.invoke(null, function($provide) {
+            $provide.value('serviceX', 'yyy');
+          });
+        }).toThrow("Service serviceX already instantiated, can't override the provider!");
+      });
     });
   });
 
