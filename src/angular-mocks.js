@@ -890,50 +890,6 @@ window.jstestdriver && (function(window) {
 })(window);
 
 
-/**
- * @ngdoc function
- * @name angular.mock.inject
- * @description
- *
- * *NOTE*: this is not an injectable instance, just a globally available function on window.
- *
- * This function wraps a test method into an injectable method. It create one
- * {@link angular.module.AUTO.$injector $injector} per test, which is then used for testing.
- *
- * Here is an example of what a typical jasmine tests looks like with the inject method.
- * <pre>
- *   describe('MyApp', function() {
- *
- *     // Argument inference is used to inject the $provide service
- *     beforeEach(inject(function($provide, $rootScope) {
- *       // $provide service is configured as needed
- *       $provide.value('version', 'v1.0.1');
- *       $rootScope.value = 123;
- *     });
- *
- *     // Argument inference is used to inject the $rootScope as well as the version
- *     it('should provide a version', inject(function($rootScope, version) {
- *       expect(version).toEqual('v1.0.1');
- *       expect($rootScope.value).toEqual(123);
- *     });
- *
- *     // The inject can also chain the methods
- *     it('should override a version and test the new version is injected', inject(
- *       function($provide) {
- *         $provide.value('version', 'overridden'); // override version here
- *       },
- *       function(version) {
- *         expect(version).toEqual('overridden');
- *       }
- *     ));
- *
- *   });
- *
- * </pre>
- *
- * @param {*} fns... any number of functions which will be injected using the injector.
- * @return a method
- */
 window.jasmine && (function(window) {
 
   function getCurrentSpec() {
@@ -945,7 +901,24 @@ window.jasmine && (function(window) {
     return spec && spec.queue.running;
   }
 
-  window.module = function() {
+  /**
+   * @ngdoc function
+   * @name angular.mock.module
+   * @description
+   *
+   * *NOTE*: This is function is also published on window for easy access.
+   * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
+   *
+   * This function registers a module configuration code. It collects the configuration information
+   * which will be used when the injector is created by {@link angular.mock.inject inject}.
+   *
+   * See {@link angular.mock.inject inject} for usage example
+   *
+   * @param {...(string|Function)} fns any number of modules which are represented as string
+   *        aliases or as anonymous module initialization functions. The modules are used to
+   *        configure the injector. The 'ng' and 'ngMock' modules are automatically loaded.
+   */
+  window.module = angular.mock.module = function() {
     var moduleFns = Array.prototype.slice.call(arguments, 0);
     var stack = Error('Declaration Location').stack;
     return isSpecRunning() ? workFn() : workFn;
@@ -962,7 +935,60 @@ window.jasmine && (function(window) {
       }
     }
   };
-  window.inject = function() {
+
+  /**
+   * @ngdoc function
+   * @name angular.mock.inject
+   * @description
+   *
+   * *NOTE*: This is function is also published on window for easy access.
+   * *NOTE*: Only available with {@link http://pivotal.github.com/jasmine/ jasmine}.
+   *
+   * The inject function wraps a function into an injectable function. The inject() creates new
+   * instance of {@link angular.module.AUTO.$injector $injector} per test, which is then used for
+   * resolving references.
+   *
+   * See also {@link angular.mock.module module}
+   *
+   * Example of what a typical jasmine tests looks like with the inject method.
+   * <pre>
+   *
+   *   angular.module('myTestsModule', [], function($provide) {
+   *     $provide.value('mode', 'test');
+   *   });
+   *
+   *   describe('MyApp', function() {
+   *
+   *     // you can list multiple module function or aliases
+   *     // which will be used in creating the injector
+   *     beforeEach(module('myTestModule', function($provide) {
+   *       // $provide service is configured as needed
+   *       $provide.value('version', 'v1.0.1');
+   *     });
+   *
+   *     // The inject() is used to get references.
+   *     it('should provide a version', inject(function(mode, version) {
+   *       expect(version).toEqual('v1.0.1');
+   *       expect(mode).toEqual('test');
+   *     });
+   *
+   *     // The inject and module method can also be used inside of the it or beforeEach
+   *     it('should override a version and test the new version is injected', function(){
+   *       module(function($provide) {
+   *         $provide.value('version', 'overridden'); // override version here
+   *       });
+   *       inject(function(version) {
+   *         expect(version).toEqual('overridden');
+   *       });
+   *     ));
+   *
+   *   });
+   *
+   * </pre>
+   *
+   * @param {...Function} fns any number of functions which will be injected using the injector.
+   */
+  window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
     var stack = Error('Declaration Location').stack;
     return isSpecRunning() ? workFn() : workFn;
