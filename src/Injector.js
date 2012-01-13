@@ -272,7 +272,7 @@ function createInjector(modulesToLoad) {
           }));
 
 
-  loadModules(modulesToLoad);
+  forEach(loadModules(modulesToLoad), function(fn) { instanceInjector.invoke(fn || noop); });
 
   return instanceInjector;
 
@@ -318,15 +318,16 @@ function createInjector(modulesToLoad) {
   // Module Loading
   ////////////////////////////////////
   function loadModules(modulesToLoad){
+    var runBlocks = [];
     forEach(modulesToLoad, function(module) {
       if (loadedModules.get(module)) return;
       loadedModules.put(module, true);
       if (isString(module)) {
         var moduleFn = angularModule(module);
-        loadModules(moduleFn.requires);
+        runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks);
 
         try {
-          for(var invokeQueue = moduleFn.invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
+          for(var invokeQueue = moduleFn._invokeQueue, i = 0, ii = invokeQueue.length; i < ii; i++) {
             var invokeArgs = invokeQueue[i],
                 provider = invokeArgs[0] == '$injector'
                     ? providerInjector
@@ -340,14 +341,14 @@ function createInjector(modulesToLoad) {
         }
       } else if (isFunction(module)) {
         try {
-          providerInjector.invoke(module);
+          runBlocks.push(providerInjector.invoke(module));
         } catch (e) {
           if (e.message) e.message += ' from ' + module;
           throw e;
         }
       } else if (isArray(module)) {
         try {
-          providerInjector.invoke(module);
+          runBlocks.push(providerInjector.invoke(module));
         } catch (e) {
           if (e.message) e.message += ' from ' + String(module[module.length - 1]);
           throw e;
@@ -356,6 +357,7 @@ function createInjector(modulesToLoad) {
         assertArgFn(module, 'module');
       }
     });
+    return runBlocks;
   }
 
   ////////////////////////////////////

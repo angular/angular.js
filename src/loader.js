@@ -58,7 +58,7 @@ function setupModuleLoader(window) {
      *        {@link angular.Module#init Module.init()}.
      * @return {angular.Module}
      */
-    return function module(name, requires, initFn) {
+    return function module(name, requires, configFn) {
       if (requires && modules.hasOwnProperty(name)) {
         modules[name] = null;
       }
@@ -70,10 +70,17 @@ function setupModuleLoader(window) {
         /** @type {!Array.<Array.<*>>} */
         var invokeQueue = [];
 
-        var init = invokeLater('$injector', 'invoke');
+        /** @type {!Array.<Function>} */
+        var runBlocks = [];
+
+        var config = invokeLater('$injector', 'invoke');
 
         /** @type {angular.Module} */
         var moduleInstance = {
+          // Private state
+          _invokeQueue: invokeQueue,
+          _runBlocks: runBlocks,
+
           /**
            * @ngdoc property
            * @name angular.Module#requires
@@ -83,7 +90,16 @@ function setupModuleLoader(window) {
            * Holds the list of modules which the injector will load before the current module is loaded.
            */
           requires: requires,
-          invokeQueue: invokeQueue,
+
+          /**
+           * @ngdoc property
+           * @name angular.Module#name
+           * @propertyOf angular.Module
+           * @returns {string} Name of the module.
+           * @description
+           */
+          name: name,
+
 
           /**
            * @ngdoc method
@@ -131,18 +147,32 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
-           * @name angular.Module#init
+           * @name angular.Module#config
            * @methodOf angular.Module
-           * @param {Function} initializationFn Execute this function on module load, allowing it to do any
-           *   service configuration..
+           * @param {Function} initializationFn Execute this function on module load. Useful for
+           *    service configuration.
            * @description
            * Use this method to register work which needs to be performed on module loading.
            */
-          init: init
+          config: config,
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#run
+           * @methodOf angular.Module
+           * @param {Function} initializationFn Execute this function after injector creation.
+           *    Useful for application initialization.
+           * @description
+           * Use this method to register work which needs to be performed on module loading.
+           */
+          run: function(block) {
+            runBlocks.push(block);
+            return this;
+          }
         };
 
-        if (initFn) {
-          init(initFn);
+        if (configFn) {
+          config(configFn);
         }
 
         return  moduleInstance;
