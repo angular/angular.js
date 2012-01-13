@@ -125,7 +125,11 @@ function $HttpProvider() {
         responseInterceptors = [];
 
     forEach(providerResponseInterceptors, function(interceptor) {
-      responseInterceptors.push(isString(interceptor) ? $injector.get(interceptor) : interceptor);
+      responseInterceptors.push(
+          isString(interceptor)
+              ? $injector.get(interceptor)
+              : $injector.invoke(interceptor)
+      );
     });
 
 
