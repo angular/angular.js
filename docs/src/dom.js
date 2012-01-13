@@ -86,7 +86,7 @@ DOM.prototype = {
     if (typeof heading == 'string') {
       var id = heading.
           replace(/\(.*\)/mg, '').
-          replace(/[^\d\w]/mg, '.').
+          replace(/[^\d\w\$]/mg, '.').
           replace(/-+/gm, '-').
           replace(/-*$/gm, '');
       anchor = {'id': id};
