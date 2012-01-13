@@ -1,4 +1,4 @@
-describe('$autoScroll', function() {
+describe('$anchorScroll', function() {
 
   var elmSpy;
 
@@ -18,9 +18,9 @@ describe('$autoScroll', function() {
   }
 
   function changeHashAndScroll(hash) {
-    return function($location, $autoScroll) {
+    return function($location, $anchorScroll) {
       $location.hash(hash);
-      $autoScroll();
+      $anchorScroll();
     };
   }
 
@@ -44,12 +44,6 @@ describe('$autoScroll', function() {
 
   function expectNoScrolling() {
     return expectScrollingTo(NaN);
-  }
-
-  function disableScroller() {
-    return function($autoScrollProvider) {
-      $autoScrollProvider.disable();
-    };
   }
 
 
@@ -108,16 +102,6 @@ describe('$autoScroll', function() {
     expectScrollingTo('id=top')));
 
 
-  it('should not scroll when disabled', function() {
-    module(disableScroller());
-    inject(
-      addElements('id=fake', 'a name=fake', 'input name=fake'),
-      changeHashAndScroll('fake'),
-      expectNoScrolling()
-    );
-  });
-
-
   describe('watcher', function() {
 
     function initLocation(config) {
@@ -127,10 +111,17 @@ describe('$autoScroll', function() {
       };
     }
 
-    function changeHashAndDigest(hash) {
-      return function ($location, $rootScope, $autoScroll) {
-        $location.hash(hash);
-        $rootScope.$digest();
+    function changeHashTo(hash) {
+      return function ($location, $rootScope, $anchorScroll) {
+        $rootScope.$apply(function() {
+          $location.hash(hash);
+        });
+      };
+    }
+
+    function disableAutoScrolling() {
+      return function($anchorScrollProvider) {
+        $anchorScrollProvider.disableAutoScrolling();
       };
     }
 
@@ -143,7 +134,7 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: false, historyApi: true}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('some'),
+        changeHashTo('some'),
         expectScrollingTo('id=some')
       );
     });
@@ -153,7 +144,7 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: true, historyApi: false}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('some'),
+        changeHashTo('some'),
         expectScrollingTo('id=some')
       );
     });
@@ -163,30 +154,30 @@ describe('$autoScroll', function() {
       module(initLocation({html5Mode: false, historyApi: false}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('other'),
+        changeHashTo('other'),
         expectNoScrolling()
       );
     });
 
 
-    it('should not scroll when html5 mode with history api', function() {
+    it('should scroll when html5 mode with history api', function() {
       module(initLocation({html5Mode: true, historyApi: true}));
       inject(
         addElements('id=some'),
-        changeHashAndDigest('some'),
-        expectNoScrolling()
+        changeHashTo('some'),
+        expectScrollingTo('id=some')
       );
     });
 
 
     it('should not scroll when disabled', function() {
       module(
-          disableScroller(),
+          disableAutoScrolling(),
           initLocation({html5Mode: false, historyApi: false})
       );
       inject(
         addElements('id=fake'),
-        changeHashAndDigest('fake'),
+        changeHashTo('fake'),
         expectNoScrolling()
       );
     });

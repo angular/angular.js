@@ -1,6 +1,6 @@
 /**
  * @ngdoc function
- * @name angular.module.ng.$autoScroll
+ * @name angular.module.ng.$anchorScroll
  * @requires $window
  * @requires $location
  * @requires $rootScope
@@ -10,17 +10,15 @@
  * according to rules specified in
  * {@link http://dev.w3.org/html5/spec/Overview.html#the-indicated-part-of-the-document Html5 spec}.
  *
- * If `$location` uses `hashbang` url (running in `hashbang` mode or `html5` mode on browser without
- * history API support), `$autoScroll` watches the `$location.hash()` and scroll whenever it
- * changes.
- *
- * You can disable `$autoScroll` service by calling `disable()` on `$autoScrollProvider`.
- * Note: disabling is only possible before the service is instantiated !
+ * It also watches the `$location.hash()` and scroll whenever it changes to match any anchor.
+ * This can be disabled by calling `$anchorScrollProvider.disableAutoScrolling()`.
  */
-function $AutoScrollProvider() {
+function $AnchorScrollProvider() {
 
-  this.disable = function() {
-    this.$get = function() {return noop;};
+  var autoScrollingEnabled = true;
+
+  this.disableAutoScrolling = function() {
+    autoScrollingEnabled = false;
   };
 
   this.$get = ['$window', '$location', '$rootScope', function($window, $location, $rootScope) {
@@ -54,8 +52,9 @@ function $AutoScrollProvider() {
       else if (hash === 'top') $window.scrollTo(0, 0);
     }
 
-    // scroll whenever hash changes (with hashbang url, regular urls are handled by browser)
-    if ($location instanceof LocationHashbangUrl) {
+    // does not scroll when user clicks on anchor link that is currently on
+    // (no url change, no $locaiton.hash() change), browser native does scroll
+    if (autoScrollingEnabled) {
       $rootScope.$watch(function() {return $location.hash();}, function() {
         $rootScope.$evalAsync(scroll);
       });
