@@ -247,6 +247,18 @@ describe('injector', function() {
       expect(log).toEqual('abc');
     });
 
+    it('should execute runBlocks after injector creation', function() {
+      var log = '';
+      angular.module('a', [], function(){ log += 'a'; }).run(function() { log += 'A'; });
+      angular.module('b', ['a'], function(){ log += 'b'; }).run(function() { log += 'B'; });
+      createInjector([
+          'b',
+          valueFn(function() { log += 'C'; }),
+          [valueFn(function() { log += 'D'; })]
+      ]);
+      expect(log).toEqual('abABCD');
+    });
+
     describe('$provide', function() {
       describe('value', function() {
         it('should configure $provide values', function() {

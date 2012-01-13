@@ -27,26 +27,28 @@ describe('module loader', function() {
 
   it('should record calls', function() {
     var otherModule = window.angular.module('other', []);
-    otherModule.init('otherInit');
+    otherModule.config('otherInit');
 
-    var myModule = window.angular.module('my', ['other'], 'init');
+    var myModule = window.angular.module('my', ['other'], 'config');
 
-    myModule.
+    expect(myModule.
       service('sk', 'sv').
       factory('fk', 'fv').
       value('k', 'v').
       filter('f', 'ff').
-      init('init2');
+      config('init2').
+      run('runBlock')).toBe(myModule);
 
     expect(myModule.requires).toEqual(['other']);
-    expect(myModule.invokeQueue).toEqual([
-      ['$injector', 'invoke', ['init'] ],
+    expect(myModule._invokeQueue).toEqual([
+      ['$injector', 'invoke', ['config'] ],
       ['$provide', 'service', ['sk', 'sv'] ],
       ['$provide', 'factory', ['fk', 'fv'] ],
       ['$provide', 'value', ['k', 'v'] ],
       ['$filterProvider', 'register', ['f', 'ff'] ],
       ['$injector', 'invoke', ['init2'] ]
     ]);
+    expect(myModule._runBlocks).toEqual(['runBlock']);
   });
 
 

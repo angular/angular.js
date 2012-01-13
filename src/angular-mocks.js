@@ -1287,7 +1287,7 @@ angular.module('ngMock', ['ng']).service({
  * Currently there is only one mock present in this module -
  * the {@link angular.module.ngMockE2E.$httpBackend e2e $httpBackend} mock.
  */
-angular.module('ngMockE2E', ['ng']).init(function($provide) {
+angular.module('ngMockE2E', ['ng']).config(function($provide) {
   $provide.decorator('$httpBackend', angular.mock.e2e.$httpBackendDecorator);
 });
 
