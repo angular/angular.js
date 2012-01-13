@@ -1002,7 +1002,6 @@ window.jasmine && (function(window) {
       if (!injector) {
         injector = spec.$injector = angular.injector(modules);
       }
-      console.log('inject', modules)
       for(var i = 0, ii = blockFns.length; i < ii; i++) {
         try {
           injector.invoke(blockFns[i] || angular.noop, this);
