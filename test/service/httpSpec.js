@@ -51,11 +51,13 @@ describe('$http', function() {
             };
           });
           // just change the response data and pass the response object along
-          $httpProvider.responseInterceptors.push(function(httpPromise) {
-            return httpPromise.then(function(response) {
-              response.data += '!';
-              return response;
-            });
+          $httpProvider.responseInterceptors.push(function() {
+            return function(httpPromise) {
+              return httpPromise.then(function(response) {
+                response.data += '!';
+                return response;
+              });
+            }
           });
 
           // return a new resolved promise representing modified response object
