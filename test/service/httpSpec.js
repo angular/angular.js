@@ -34,7 +34,6 @@ describe('$http', function() {
 
 
       it('should pass the responses through interceptors', function() {
-        var shared = {};
         module(function($httpProvider, $provide) {
           $provide.factory('testInterceptor', function ($q) {
             return function(httpPromise) {

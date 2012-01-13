@@ -1490,7 +1490,7 @@ window.jasmine && (function(window) {
    */
   window.module = angular.mock.module = function() {
     var moduleFns = Array.prototype.slice.call(arguments, 0);
-    var stack = Error('Declaration Location').stack;
+    var stack = new Error('Module Declaration Location:').stack;
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
@@ -1560,7 +1560,7 @@ window.jasmine && (function(window) {
    */
   window.inject = angular.mock.inject = function() {
     var blockFns = Array.prototype.slice.call(arguments, 0);
-    var stack = Error('Declaration Location').stack;
+    var stack = new Error('Declaration Location').stack;
     return isSpecRunning() ? workFn() : workFn;
     /////////////////////
     function workFn() {
