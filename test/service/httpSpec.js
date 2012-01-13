@@ -34,7 +34,6 @@ describe('$http', function() {
 
 
       it('should pass the responses through interceptors', function() {
-        var shared = {};
         module(function($httpProvider, $provide) {
           $provide.factory('testInterceptor', function ($q) {
             return function(httpPromise) {
@@ -51,11 +50,13 @@ describe('$http', function() {
             };
           });
           // just change the response data and pass the response object along
-          $httpProvider.responseInterceptors.push(function(httpPromise) {
-            return httpPromise.then(function(response) {
-              response.data += '!';
-              return response;
-            });
+          $httpProvider.responseInterceptors.push(function() {
+            return function(httpPromise) {
+              return httpPromise.then(function(response) {
+                response.data += '!';
+                return response;
+              });
+            }
           });
 
           // return a new resolved promise representing modified response object
@@ -476,18 +477,6 @@ describe('$http', function() {
       it('head() should allow config param', function() {
         $httpBackend.expect('HEAD', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
         $http.head('/url', {headers: {'Custom': 'Header'}});
-      });
-
-
-      it('should have patch()', function() {
-        $httpBackend.expect('PATCH', '/url').respond('');
-        $http.patch('/url');
-      });
-
-
-      it('patch() should allow config param', function() {
-        $httpBackend.expect('PATCH', '/url', undefined, checkHeader('Custom', 'Header')).respond('');
-        $http.patch('/url', {headers: {'Custom': 'Header'}});
       });
 
 
