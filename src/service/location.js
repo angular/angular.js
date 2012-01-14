@@ -530,8 +530,10 @@ function $LocationProvider(){
     // update $location when $browser url changes
     $browser.onUrlChange(function(newUrl) {
       if (currentUrl.absUrl() != newUrl) {
-        currentUrl.$$parse(newUrl);
-        $rootScope.$apply();
+        $rootScope.$evalAsync(function() {
+          currentUrl.$$parse(newUrl);
+        });
+        if (!$rootScope.$$phase) $rootScope.$digest();
       }
     });
 
