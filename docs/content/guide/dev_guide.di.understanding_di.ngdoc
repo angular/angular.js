@@ -25,15 +25,16 @@ events:
 
 In the illustration above, the dependency injection sequence proceeds as follows:
 
-1. Service factory functions are registered with angular's service factory repository.
-2. `ng:app` triggers angular's bootstrap sequence, during which angular compiles the template,
-creates the root scope, and creates the dependency injector.
-3. The `ng:controller` directive implicitly creates a new child scope, augmented by the application
-of the `PhoneListCtrl` controller function.
-4. The Injector identifies the `$xhr` service as `PhoneListCtrl` controller's only dependency.
-5. The Injector checks if the `$xhr` service has already been instantiated, and if not uses the
-factory function from the service factory repository to construct it.
-6. DI provides the instance of $xhr service to the PhoneListCtrl controller constructor
+1. Module "phonecat" is created and all the service providers are registered with this module.
+   (the "ng" module is created by Angular behind the scenes as well)
+2. `ng:app` triggers bootstrap sequence on given element, during which angular creates injector,
+loads "phonecat" and "ng" modules and compiles the template.
+3. The `ng:controller` directive implicitly creates a new child scope and instantiates
+`PhoneListCtrl` controller.
+4. Injector identifies the `$http` service as `PhoneListCtrl` controller's only dependency.
+5. Injector checks its instances cache whether the `$http` service has already been instantiated.
+If not uses the provider from the available modules to construct it.
+6. Injector provides the instance of `$http` service to the `PhoneListCtrl` controller constructor.
 
 
 ## How Scope Relates to DI
