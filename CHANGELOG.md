@@ -1,9 +1,78 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.5">0.10.5 steel-fist</a>
+- The Latest Unstable Release: <a href="#0.10.6">0.10.6 bubblewrap-cape</a>
 
 <a name="0.10.6"></a>
 # 0.10.6 bubblewrap-cape (in-progress) #
 
+## Features:
+
+- [Dependency injection subsystem][$injector] rewrite. This is a huge change to the Angular core
+  that was necessary for many reasons. Please read the full
+  [design doc](https://docs.google.com/document/d/1hJnIqWhSt7wCacmWBB01Bmc6faZ8XdXJAEeiJwjZmqs/edit?hl=en_US)
+  to understand the changes and reasoning behind them.
+- Added [angular.bootstrap] for manual bootstrapping of the app. Also see
+  [Initializing Angular App][bootstraping] doc.
+- Helper functions [inject] and [module] that make testing with DI and jasmine a lot easier.
+- [jqLite] and jQuery were extended with helper method `injector()` that simplifies the access to
+  the application injector during debugging.
+- Rewrite of $xhr service and its dependencies, which was replaced with [$http] service.
+  The $browser.xhr and its mock were replaced by [$httpBackend] and its
+  [unit testing][unit-testing $httpBackend] and [end-to-end testing][e2e-testing $httpBackend]
+  mocks. The $resource service api and functionality was preserved, with the exception of caching,
+  which is not happening automatically as it used it in the past (verifyCache has no effect).
+- [$q] - Q-like deferred/promise implementation 
+  ([commit](https://github.com/angular/angular.js/commit/1cdfa3b9601c199ec0b45096b38e26350eca744f))
+- Transparent data-binding to promises in templates. [Example](http://jsfiddle.net/IgorMinar/aNSWu/)
+  ([commit](https://github.com/angular/angular.js/commit/78b6e8a446c0e38075c14b724f3cdf345c01fa06))
+- New [$anchorScroll] service that watches url hash and navigates to the html anchor even if the
+  content was loaded via [ng:view]  (for [ng:include] you have to opt into this behavior using
+  autoscroll attribute)
+- New LRU cache factory - [$cacheFactory] service
+- jQuery 1.7 compatibility
+
+
+## Bug Fixes:
+
+- Directive names are now case insensitive
+  ([commit](https://github.com/angular/angular.js/commit/1e00db8daa5c09e7f8f9134f5c94b9a18c7dc425))
+- $location#url setter fix (Issue [#648](https://github.com/angular/angular.js/issues/648))
+- [ng:include] - prevent race conditions by ignoring stale http callbacks
+  ([commit](https://github.com/angular/angular.js/commit/1d14760c6d3eefb676f5670bc323b2a7cadcdbfa))
+- [ng:repeat] - support repeating over array with null
+  ([commit](https://github.com/angular/angular.js/commit/cd9a7b9608707c34bec2316ee8c789a617d22a7b))
+- [angular.copy] - throw Error if source and destination are identical
+  ([commit](https://github.com/angular/angular.js/commit/08029c7b72a857ffe52f302ed79ae12db9efcc08))
+- Forms should not prevent POST submission if the action attribute is present
+  ([commit](https://github.com/angular/angular.js/commit/c9f2b1eec5e8a9eaf10faae8a8accf0b771096e0))
+
+
+## Breaking Changes:
+
+- App bootstrapping works differently (see [angular.bootstrap] and [ng:app] and [bootstrapping])
+- scope.$service is no more (because injector creates scope and not the other way around),
+  if you really can't get services injected and need to fetch them manually then, get hold of
+  [$injector] service and call $injector.get('serviceId')
+- the $xhr service was replaced with [$http] with promise based apis.
+- [unit-testing $httpBackend]'s expect method (the replacement for $browser.xhr.expect) is stricter -
+  the order of requests matters and a single request expectation can handle only a single request.
+- compiler
+  - compiler is a service, so use [$compile] instead of angular.compile to compile templates
+  - $compile (nee angular.compile) returns the linking function which takes one mandatory argument -
+    the scope. previously this argument was optional and if missing, the compiler would create a new
+    root scope, this was a source of bugs and was removed
+- filters
+  - filters need to be registered either via [moduleName.filter][angular.Module] or
+    [$filterProvider.filter][$filterProvider]
+  - filters don't have access to the dom element
+  - currency filter doesn't make negative values red
+  - json filter doesn't print out stuff in monospace
+- type augmentation via angular.Array, and angular.Object is gone. As a replacement use filters
+  ([filter], [limitTo], [orderBy]) or ES5 apis (e.g. Array#indexOf)
+- [$browser.defer.flush] now throws an exception when queue is empty
+  ([commit](https://github.com/angular/angular.js/commit/63cca9afbcf7a772086eb4582d2f409c39e0ed12))
+- scope.$apply and scope.$digest throws an exception if called while $apply or $digest is already
+  in progress (this is a programming error, you should never need to do this)
+  ([commit](https://github.com/angular/angular.js/commit/0bf611087b2773fd36cf95c938d1cda8e65ffb2b))
 
 
 <a name="0.10.5"></a>
@@ -204,7 +273,7 @@
 
 - complete rewrite of the $location service with HTML5 support, many API and semantic changes.
   Please see:
-  - [$location service API docs](http://docs-next.angularjs.org/#!/api/angular.service.$location)
+  - [$location service API docs](http://docs-next.angularjs.org/#!/api/angular.module.ng.$location)
   - [$location service dev guide article](http://docs-next.angularjs.org/#!/guide/dev_guide.services.$location)
   - [location.js source file](https://github.com/angular/angular.js/blob/master/src/service/location.js)
   - breaking changes section of this changelog
@@ -515,7 +584,7 @@
 
 ### New Features
 - Added XSRF protection for the [$xhr] service. (commit c578f8c3)
-- Targeted auto-bootstrap ‚Äî [ng:autobind] now takes an optional value which specifies an element id
+- Targeted auto-bootstrap – [ng:autobind] now takes an optional value which specifies an element id
   to be compiled instead of compiling the entire html document. (commit 9d5c5337)
 
 
@@ -964,12 +1033,12 @@ with the `$route` service
 [ng:src]: http://docs.angularjs.org/#!/api/angular.directive.ng:src
 [ng:href]: http://docs.angularjs.org/#!/api/angular.directive.ng:href
 [ng:style]: http://docs.angularjs.org/#!/api/angular.directive.ng:style
-[$defer]: http://docs.angularjs.org/#!/api/angular.service.$defer
-[$cookies]: http://docs.angularjs.org/#!/api/angular.service.$cookies
-[$xhr]: http://docs.angularjs.org/#!/api/angular.service.$xhr
-[$xhr.cache]: http://docs.angularjs.org/#!/api/angular.service.$xhr.cache
-[$resource]: http://docs.angularjs.org/#!/api/angular.service.$resource
-[$route]: http://docs.angularjs.org/#!/api/angular.service.$route
+[$defer]: http://docs.angularjs.org/#!/api/angular.module.ng.$defer
+[$cookies]: http://docs.angularjs.org/#!/api/angular.module.ng.$cookies
+[$xhr]: http://docs.angularjs.org/#!/api/angular.module.ng.$xhr
+[$xhr.cache]: http://docs.angularjs.org/#!/api/angular.module.ng.$xhr.cache
+[$resource]: http://docs.angularjs.org/#!/api/angular.module.ng.$resource
+[$route]: http://docs.angularjs.org/#!/api/angular.module.ng.$route
 [$orderBy]: http://docs.angularjs.org/#!/api/angular.Array.orderBy
 [date]: http://docs.angularjs.org/#!/api/angular.filter.date
 [number]: http://docs.angularjs.org/#!/api/angular.filter.number
@@ -992,3 +1061,24 @@ with the `$route` service
 [$limitTo]: http://docs-next.angularjs.org/api/angular.Array.limitTo
 [$location]: http://docs-next.angularjs.org/api/angular.service.$location
 [e2e test runner]: http://docs-next.angularjs.org/guide/dev_guide.e2e-testing
+[$injector]: http://docs-next.angularjs.org/api/angular.module.AUTO.$injector
+[$http]: http://docs-next.angularjs.org/api/angular.module.ng.$http
+[$httpBackend]: http://docs-next.angularjs.org/api/angular.module.ng.$httpBackend
+[unit-testing $httpBackend]: http://docs-next.angularjs.org/api/angular.module.ngMock.$httpBackend
+[e2e-testing $httpBackend]: http://docs-next.angularjs.org/api/angular.module.ngMockE2E.$httpBackend
+[$q]: http://docs-next.angularjs.org/api/angular.module.ng.$q
+[angular.bootstrap]: http://docs-next.angularjs.org/api/angular.bootstrap
+[$anchorScroll]: http://docs-next.angularjs.org/api/angular.module.ng.$anchorScroll
+[$cacheFactory]: http://docs-next.angularjs.org/api/angular.module.ng.$cacheFactory
+[bootstraping]: http://docs-next.angularjs.org/guide/dev_guide.bootstrap
+[angular.copy]: http://docs-next.angularjs.org/api/angular.copy
+[ng:app]: http://docs-next.angularjs.org/api/angular.directive.ng:app
+[$compile]: http://docs-next.angularjs.org/api/angular.module.ng.$compile
+[$filterProvider]: http://docs-next.angularjs.org/api/angular.module.ng.$filterProvider
+[angular.Module]: http://docs-next.angularjs.org/api/angular.Module
+[filter]: http://docs-next.angularjs.org/api/angular.module.ng.$filter.filter
+[limitTo]: http://docs-next.angularjs.org/api/angular.module.ng.$filter.limitTo
+[orderBy]: http://docs-next.angularjs.org/api/angular.module.ng.$filter.orderBy
+[$browser.defer.flush]: http://docs-next.angularjs.org/api/angular.module.ngMock.$browser#defer.flush
+[inject]: http://docs-next.angularjs.org/api/angular.mock.inject
+[module]: http://docs-next.angularjs.org/api/angular.mock.module
