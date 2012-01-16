@@ -923,6 +923,7 @@ function bindJQuery() {
     jqLite = jQuery;
     extend(jQuery.fn, {
       scope: JQLitePrototype.scope,
+      injector: JQLitePrototype.injector,
       inheritedData: JQLitePrototype.inheritedData
     });
     JQLitePatchJQueryRemove('remove', true);
