@@ -11,7 +11,14 @@ var mock, notify;
 
 beforeEach(function() {
   mock = {alert: jasmine.createSpy()};
-  notify = angular.module.ng('notify')(mock);
+
+  module(function($provide) {
+    $provide.value('$window', mock);
+  });
+
+  inject(function($injector) {
+    notify = $injector.get('notify');
+  });
 });
 
 it('should not alert first two notifications', function() {
@@ -47,12 +54,9 @@ it('should clear messages after alert', function() {
 
 * {@link dev_guide.services.understanding_services Understanding Angular Services}
 * {@link dev_guide.services.creating_services Creating Angular Services}
-* {@link dev_guide.services.registering_services Registering Angular Services}
 * {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
 * {@link dev_guide.services.injecting_controllers Injecting Services Into Conrollers}
 
 ## Related API
 
 * {@link api/angular.module.ng Angular Service API}
-
-

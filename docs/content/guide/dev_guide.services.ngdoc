@@ -12,9 +12,8 @@ most often used with {@link dev_guide.di dependency injection}, also a key featu
 
 * {@link dev_guide.services.understanding_services Understanding Angular Services}
 * {@link dev_guide.services.creating_services Creating Angular Services}
-* {@link dev_guide.services.registering_services Registering Angular Services}
 * {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
-* {@link dev_guide.services.injecting_controllers Injecting Services Into Conrollers}
+* {@link dev_guide.services.injecting_controllers Injecting Services Into Controllers}
 * {@link dev_guide.services.testing_services Testing Angular Services}
 
 ## Related API

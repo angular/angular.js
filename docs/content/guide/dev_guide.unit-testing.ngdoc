@@ -252,11 +252,13 @@ format. They are important because they remove the formatting responsibility fro
 logic, further simplifying the application logic.
 
 <pre>
-angular.module.ng.$filter('length', function(text){
-  return (''+(text||'')).length;
+myModule.filter('length', function() {
+  return function(text){
+    return (''+(text||'')).length;
+  }
 });
 
-var length = angular.module.ng.$filter('length');
+var length = $filter('length');
 expect(length(null)).toEqual(0);
 expect(length('abc')).toEqual(3);
 </pre>

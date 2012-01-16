@@ -111,7 +111,8 @@ angularDirective("ng:init", function(expression){
            this.contacts.push({type:'email', value:'yourname@example.org'});
          },
          removeContact: function(contactToRemove) {
-           angular.module.ng.$filter.remove(this.contacts, contactToRemove);
+           var index = this.contacts.indexOf(contactToRemove);
+           this.contacts.splice(index, 1);
          },
          clearContact: function(contact) {
            contact.type = 'phone';

@@ -212,7 +212,8 @@ function $RootScopeProvider(){
        *
        * # Example
          <pre>
-           var scope = angular.module.ng.$rootScope.Scope();
+           // let's assume that scope was dependency injected as the $rootScope
+           var scope = $rootScope;
            scope.name = 'misko';
            scope.counter = 0;
 
