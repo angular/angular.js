@@ -30,8 +30,8 @@
  * @param {Object.<Object>=} actions Hash with declaration of custom action that should extend the
  *   default set of resource actions. The declaration should be created in the following format:
  *
- *       {action1: {method:?, params:?, isArray:?, verifyCache:?},
- *        action2: {method:?, params:?, isArray:?, verifyCache:?},
+ *       {action1: {method:?, params:?, isArray:?},
+ *        action2: {method:?, params:?, isArray:?},
  *        ...}
  *
  *   Where:
@@ -43,9 +43,6 @@
  *   - `params` – {object=} – Optional set of pre-bound parameters for this action.
  *   - isArray – {boolean=} – If true then the returned object for this action is an array, see
  *     `returns` section.
- *   - verifyCache – {boolean=} – If true then whenever cache hit occurs, the object is returned and
- *     an async request will be made to the server and the resources as well as the cache will be
- *     updated when the response is received.
  *
  * @returns {Object} A resource "class" object with methods for the default set of resource actions
  *   optionally extended with custom `actions`. The default set contains these actions:

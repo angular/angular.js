@@ -12,14 +12,14 @@ of the rest. The angular injector subsystem is in charge of service instantiatio
 dependencies, and provision of dependencies to factory functions as requested.
 
 Angular injects dependencies using "constructor" injection (the service is passed in via a factory
-function). Because JavaScript is a dynamically typed language, angular's dependency injection
+function). Because JavaScript is a dynamically typed language, Angular's dependency injection
 subsystem cannot use static types to identify service dependencies. For this reason a dependent
 must explicitly define its dependencies by using the `$inject` property.  For example:
 
         myController.$inject = ['$location'];
 
 The angular web framework provides a set of services for common operations. Like other core angular
-variables and identifiers, the built-in services always start with `$` (such as `$xhr` mentioned
+variables and identifiers, the built-in services always start with `$` (such as `$http` mentioned
 above). You can also create your own custom services.
 
 
@@ -27,7 +27,6 @@ above). You can also create your own custom services.
 
 * {@link dev_guide.di About Angular Dependency Injection}
 * {@link dev_guide.services.creating_services Creating Angular Services}
-* {@link dev_guide.services.registering_services Registering Angular Services}
 * {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
 * {@link dev_guide.services.testing_services Testing Angular Services}
 

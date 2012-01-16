@@ -75,7 +75,7 @@ function inferInjectionArgs(fn) {
  * <pre>
  *   var $injector = angular.injector();
  *   expect($injector.get('$injector')).toBe($injector);
- *   expect($injector.invoke(null, function($injector){
+ *   expect($injector.invoke(function($injector){
  *     return $injector;
  *   }).toBe($injector);
  * </pre>
@@ -182,7 +182,7 @@ function inferInjectionArgs(fn) {
  *
  *   describe('Greeter', function(){
  *
- *     beforeEach(inject(function($provide) {
+ *     beforeEach(module(function($provide) {
  *       $provide.service('greet', GreetProvider);
  *     });
  *
@@ -190,13 +190,13 @@ function inferInjectionArgs(fn) {
  *       expect(greet('angular')).toEqual('Hello angular!');
  *     }));
  *
- *     it('should allow configuration of salutation', inject(
- *       function(greetProvider) {
+ *     it('should allow configuration of salutation', function() {
+ *       module(function(greetProvider) {
  *         greetProvider.salutation('Ahoj');
- *       },
- *       function(greet) {
+ *       });
+ *       inject(function(greet) {
  *         expect(greet('angular')).toEqual('Ahoj angular!');
- *       }
+ *       });
  *     )};
  *
  *   });

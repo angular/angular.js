@@ -7,11 +7,11 @@ While DI is widely used in statically typed languages such as Java or C++, it ha
 used in JavaScript. Angular brings the benefits of DI into JavaScript apps.
 
 In angular, DI is implemented as a subsystem that manages dependencies between services,
-controllers, widgets, and filters. The most important of these are {@link api/angular.module.ng
-services}.
+controllers, widgets, and filters.
 
-Services are objects that handle common tasks in web applications. Angular provides several{@link
-api/angular.module.ng built-in services}, and you can create your own custom services.
+Services are objects that handle common tasks in web applications. Angular provides several {@link
+api/angular.module.ng built-in services}, and you can create your
+{@link dev_guide.services.creating_services own custom services}.
 
 The main job of angular's DI subsystem is to provide services to angular components that depend on
 them. The way the DI subsystem provides services is as follows: all services are registered with
@@ -38,21 +38,9 @@ factory function from the service factory repository to construct it.
 
 ## How Scope Relates to DI
 
-The {@link api/angular.injector injector} is responsible for resolving the service dependencies in
-the application. It gets created and configured with the creation of a root scope. The injector
-caches instances of services, with the services cache bound to the root scope.
+The root scope of the application is just a service that is available for injection to any part of
+the application under the service name "$rootScope".
 
-Different root scopes have different instances of the injector. While typical angular applications
-will only have one root scope (and hence the services will act like application singletons), in
-tests it is important to not share singletons across test invocations for isolation reasons. We
-achieve the necessary isolation by having each test create its own separate root scope.
-
-<pre>
-// create a root scope
-var rootScope = angular.module.ng.$rootScope.Scope();
-// access the service locator
-var myService = rootScope.$service('myService');
-</pre>
 
 ## Inferring dependencies from the signature of the factory function or constructor
 
@@ -74,7 +62,9 @@ equivalent:
 
 <pre>
 // given a user defined service
-angular.module.ng('serviceA', ...);
+angular.module('module1', [], function($provide) {
+  $provide.factory('serviceA', ...);
+});
 
 // inject '$window', 'serviceA', curry 'name';
 function fnA($window, serviceA, name){};

@@ -57,16 +57,18 @@ A property write will always write to the current scope. This means that a write
 property within the scope it writes to, as shown in the following example.
 
 <pre>
-var root = angular.module.ng.$rootScope.Scope();
-var child = root.$new();
+it('should inherit properties', inject(function($rootScope)) {
+  var root = $rootScope;
+  var child = root.$new();
 
-root.name = 'angular';
-expect(child.name).toEqual('angular');
-expect(root.name).toEqual('angular');
+  root.name = 'angular';
+  expect(child.name).toEqual('angular');
+  expect(root.name).toEqual('angular');
 
-child.name = 'super-heroic framework';
-expect(child.name).toEqual('super-heroic framework');
-expect(root.name).toEqual('angular');
+  child.name = 'super-heroic framework';
+  expect(child.name).toEqual('super-heroic framework');
+  expect(root.name).toEqual('angular');
+});
 </pre>
 
 
@@ -172,8 +174,8 @@ doesn't need to worry about propagating the `$digest` call from the parent scope
 This happens automatically.
 
 ## Scopes in unit-testing
-You can create scopes, including the root scope, in tests using the {@link api/angular.module.ng.$rootScope.Scope
-angular.module.ng.$rootScope.Scope()} API. This allows you to mimic the run-time environment and have full control over
+You can create scopes, including the root scope, in tests by having the $rootScope injected into
+your spec. This allows you to mimic the run-time environment and have full control over
 the life cycle of the scope so that you can assert correct model transitions. Since these scopes
 are created outside the normal compilation process, their life cycles must be managed by the test.
 
@@ -183,18 +185,20 @@ within the unit-tests.
 
 <pre>
   // example of a test
-  var scope = angular.module.ng.$rootScope.Scope();
-  scope.$watch('name', function(scope, name){
-   scope.greeting = 'Hello ' + name + '!';
-  });
+  it('should trigger a watcher', inject(function($rootScope) {
+    var scope = $rootScope;
+    scope.$watch('name', function(scope, name){
+     scope.greeting = 'Hello ' + name + '!';
+    });
 
-  scope.name = 'angular';
-  // The watch does not fire yet since we have to manually trigger the digest phase.
-  expect(scope.greeting).toEqual(undefined);
+    scope.name = 'angular';
+    // The watch does not fire yet since we have to manually trigger the digest phase.
+    expect(scope.greeting).toEqual(undefined);
 
-  // manually trigger digest phase from the test
-  scope.$digest();
-  expect(scope.greeting).toEqual('Hello Angular!');
+    // manually trigger digest phase from the test
+    scope.$digest();
+    expect(scope.greeting).toEqual('Hello Angular!');
+  }
 </pre>
 
 
