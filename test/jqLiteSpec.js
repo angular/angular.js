@@ -138,6 +138,19 @@ describe('jqLite', function() {
   });
 
 
+  describe('injector', function() {
+    it('should retrieve injector attached to the current element or its parent', function() {
+      var template = jqLite('<div><span></span></div>'),
+          span = template.children().eq(0),
+          injector = angular.bootstrap(template);
+
+
+      expect(span.injector()).toBe(injector);
+      dealoc(template);
+    });
+  });
+
+
   describe('data', function() {
     it('should set and get and remove data', function() {
       var selected = jqLite([a, b, c]);

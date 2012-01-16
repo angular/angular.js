@@ -59,6 +59,8 @@
  * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
  * - `scope()` - retrieves the current Angular scope of the element.
+ * - `injector()` - retrieves the Angular injector associated with application that the element is
+ *   part of.
  * - `inheritedData()` - same as `data()`, but walks up the DOM until a value is found or the top
  *   parent element is reached.
  *
@@ -312,6 +314,10 @@ forEach({
 
   scope: function(element) {
     return jqLite(element).inheritedData($$scope);
+  },
+
+  injector: function(element) {
+      return jqLite(element).inheritedData('$injector');
   },
 
   removeAttr: function(element,name) {
