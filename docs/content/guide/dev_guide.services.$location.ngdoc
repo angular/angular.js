@@ -516,7 +516,7 @@ api/angular.module.ng.$rootScope.Scope scope} life-cycle. This means it's your r
 
 <pre>
 describe('serviceUnderTest', function() {
-  beforeEach(inject(function($provide) {
+  beforeEach(module(function($provide) {
     $provide.factory('serviceUnderTest', function($location){
       // whatever it does...
     });
