@@ -23,9 +23,9 @@ function setupModuleLoader(window) {
      * @name angular.module
      * @description
      *
-     * The `angular.module` is a global place for registering angular modules. All modules
-     * (angular core or 3rd party) that should be available to an application must be registered
-     * using this mechanism.
+     * The `angular.module` is a global place for creating and registering Angular modules. All
+     * modules (angular core or 3rd party) that should be available to an application must be
+     * registered using this mechanism.
      *
      *
      * # Module
@@ -61,7 +61,7 @@ function setupModuleLoader(window) {
      *        the module is being retrieved for further configuration.
      * @param {Function} configFn Option configuration function for the module. Same as
      *        {@link angular.Module#config Module#config()}.
-     * @return {angular.Module}
+     * @returns {module} new module with the {@link angular.Module} api.
      */
     return function module(name, requires, configFn) {
       if (requires && modules.hasOwnProperty(name)) {
