@@ -169,6 +169,13 @@ task :package => [:clean, :compile, :docs] do
   FileUtils.cp_r path_to('i18n'), "#{pkg_dir}/i18n-#{NG_VERSION.full}"
   FileUtils.cp_r path_to('docs'), "#{pkg_dir}/docs-#{NG_VERSION.full}"
 
+  File.open("#{pkg_dir}/angular-mocks-#{NG_VERSION.full}.js", File::RDWR) do |f|
+    text = f.read
+    f.truncate 0
+    f.rewind
+    f.write text.sub('"NG_VERSION_FULL"', NG_VERSION.full)
+  end
+
   File.open("#{pkg_dir}/docs-#{NG_VERSION.full}/index.html", File::RDWR) do |f|
     text = f.read
     f.truncate 0
