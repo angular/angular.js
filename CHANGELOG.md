@@ -6,21 +6,21 @@
 
 ## Features:
 
-- [Dependency injection subsystem][$injector] rewrite. This is a huge change to the Angular core
+- [Dependency injection subsystem][guide2.di] rewrite. This is a huge change to the Angular core
   that was necessary for many reasons. Please read the full
   [design doc](https://docs.google.com/document/d/1hJnIqWhSt7wCacmWBB01Bmc6faZ8XdXJAEeiJwjZmqs/edit?hl=en_US)
   to understand the changes and reasoning behind them.
 - Added [angular.bootstrap] for manual bootstrapping of the app. Also see
-  [Initializing Angular App][bootstraping] doc.
+  [Initializing Angular App][bootstrapping] doc.
 - Helper functions [inject] and [module] that make testing with DI and jasmine a lot easier.
-- [jqLite] and jQuery were extended with helper method `injector()` that simplifies the access to
-  the application injector during debugging.
+- [jqLite][jqLite2] and jQuery were extended with helper method `injector()` that simplifies the
+  access to the application injector during debugging.
 - Rewrite of $xhr service and its dependencies, which was replaced with [$http] service.
   The $browser.xhr and its mock were replaced by [$httpBackend] and its
   [unit testing][unit-testing $httpBackend] and [end-to-end testing][e2e-testing $httpBackend]
   mocks. The $resource service api and functionality was preserved, with the exception of caching,
   which is not happening automatically as it used it in the past (verifyCache has no effect).
-- [$q] - Q-like deferred/promise implementation 
+- [$q] - Q-like deferred/promise implementation
   ([commit](https://github.com/angular/angular.js/commit/1cdfa3b9601c199ec0b45096b38e26350eca744f))
 - Transparent data-binding to promises in templates. [Example](http://jsfiddle.net/IgorMinar/aNSWu/)
   ([commit](https://github.com/angular/angular.js/commit/78b6e8a446c0e38075c14b724f3cdf345c01fa06))
@@ -52,6 +52,8 @@
 - scope.$service is no more (because injector creates scope and not the other way around),
   if you really can't get services injected and need to fetch them manually then, get hold of
   [$injector] service and call $injector.get('serviceId')
+- angular.service style service registration was replaced with module system, please see
+  [angular.module] api and [DI documentation][guide2.di] for more info.
 - the $xhr service was replaced with [$http] with promise based apis.
 - [unit-testing $httpBackend]'s expect method (the replacement for $browser.xhr.expect) is stricter -
   the order of requests matters and a single request expectation can handle only a single request.
@@ -1070,15 +1072,18 @@ with the `$route` service
 [angular.bootstrap]: http://docs-next.angularjs.org/api/angular.bootstrap
 [$anchorScroll]: http://docs-next.angularjs.org/api/angular.module.ng.$anchorScroll
 [$cacheFactory]: http://docs-next.angularjs.org/api/angular.module.ng.$cacheFactory
-[bootstraping]: http://docs-next.angularjs.org/guide/dev_guide.bootstrap
+[bootstrapping]: http://docs-next.angularjs.org/guide/dev_guide.bootstrap
 [angular.copy]: http://docs-next.angularjs.org/api/angular.copy
 [ng:app]: http://docs-next.angularjs.org/api/angular.directive.ng:app
 [$compile]: http://docs-next.angularjs.org/api/angular.module.ng.$compile
 [$filterProvider]: http://docs-next.angularjs.org/api/angular.module.ng.$filterProvider
 [angular.Module]: http://docs-next.angularjs.org/api/angular.Module
+[angular.module]: http://docs-next.angularjs.org/api/angular.module
 [filter]: http://docs-next.angularjs.org/api/angular.module.ng.$filter.filter
 [limitTo]: http://docs-next.angularjs.org/api/angular.module.ng.$filter.limitTo
 [orderBy]: http://docs-next.angularjs.org/api/angular.module.ng.$filter.orderBy
 [$browser.defer.flush]: http://docs-next.angularjs.org/api/angular.module.ngMock.$browser#defer.flush
 [inject]: http://docs-next.angularjs.org/api/angular.mock.inject
 [module]: http://docs-next.angularjs.org/api/angular.mock.module
+[guide2.di]: http://docs-next.angularjs.org/guide/dev_guide.di
+[jqLite2]: http://docs.angularjs.org/#!/api/angular.element
