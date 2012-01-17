@@ -46,7 +46,7 @@ function writeTheRest(writesFuture) {
   var manifest = 'manifest="/build/docs/appcache.manifest"';
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index.html',
-                                writer.replace, {'doc:manifest': manifest}));
+                                writer.replace, {'doc:manifest': ''})); //manifest //TODO(i): enable
 
   writesFuture.push(writer.copy('docs/src/templates/index.html', 'build/docs/index-nocache.html',
                                 writer.replace, {'doc:manifest': ''}));
