@@ -5,14 +5,17 @@
 Angular initializes automatically when you load the angular script into your page that contains an element
 with `ng:app` directive:
 
-        <html ng:app>
-          <head>
-            <script src="angular.js"></script>
-          </head>
-          <body>
-            I can add: {{ 1+2 }}.
-          </body>
-        </html>
+<pre>
+<!doctype html>
+<html ng:app>
+  <head>
+    <script src="angular.js"></script>
+  </head>
+  <body>
+    I can add: {{ 1+2 }}.
+  </body>
+</html>
+</pre>
 
 From a high-level view, this is what happens during angular's automatic initialization process:
 
