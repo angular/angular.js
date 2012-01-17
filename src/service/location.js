@@ -447,13 +447,13 @@ function $LocationProvider(){
       hashPrefix = prefix;
       return this;
     } else {
-      return html5Mode;
+      return hashPrefix;
     }
   }
 
   /**
    * @ngdoc property
-   * @name angular.module.ng.$locationProvider#hashPrefix
+   * @name angular.module.ng.$locationProvider#html5Mode
    * @methodOf angular.module.ng.$locationProvider
    * @description
    * @param {string=} mode Use HTML5 strategy if available.
