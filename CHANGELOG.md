@@ -73,7 +73,8 @@
   - currency filter doesn't make negative values red
   - json filter doesn't print out stuff in monospace
 - type augmentation via angular.Array, and angular.Object is gone. As a replacement use filters
-  ([filter], [limitTo], [orderBy]) or ES5 apis (e.g. Array#indexOf)
+  ([filter], [limitTo], [orderBy]), ES5 apis (e.g. Array#indexOf), or create custom filters (e.g.
+  as a replacement for $count and $sum).
 - [$browser.defer.flush] now throws an exception when queue is empty
   ([commit](https://github.com/angular/angular.js/commit/63cca9afbcf7a772086eb4582d2f409c39e0ed12))
 - scope.$apply and scope.$digest throws an exception if called while $apply or $digest is already
