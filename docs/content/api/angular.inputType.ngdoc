@@ -21,7 +21,7 @@ All `inputType` widgets support:
     - **`$valid`**: When widget is valid.
     - **`$invalid`**: When widget is invalid.
     - **`$pristine`**: When widget has not been modified by user interaction.
-    - **`$dirty`**: When user has been modified do to user interaction.
+    - **`$dirty`**: When user has been modified by user interaction.
     - **`$required`**: When the `<input>` element has `required` attribute. This means that the
        widget will have `REQUIRED` validation error if empty.
     - **`$disabled`**: When the `<input>` element has `disabled` attribute.
