@@ -144,8 +144,8 @@ function $HttpProvider() {
      * @requires $injector
      *
      * @description
-     * The `$http` service is a core Angular service that is responsible for communication with the
-     * remote HTTP servers via browser's {@link https://developer.mozilla.org/en/xmlhttprequest
+     * The `$http` service is a core Angular service that facilitates communication with the remote
+     * HTTP servers via browser's {@link https://developer.mozilla.org/en/xmlhttprequest
      * XMLHttpRequest} object or via {@link http://en.wikipedia.org/wiki/JSONP JSONP}.
      *
      * For unit testing applications that use `$http` service, see
@@ -153,6 +153,10 @@ function $HttpProvider() {
      *
      * For a higher level of abstraction, please check out the {@link angular.module.ng.$resource
      * $resource} service.
+     *
+     * The $http API is based on the {@link angular.module.ng.$q deferred/promise APIs} exposed by
+     * the $q service. While for simple usage patters this doesn't matter much, for advanced usage,
+     * it is important to familiarize yourself with these apis and guarantees they provide.
      *
      *
      * # General usage
@@ -173,9 +177,10 @@ function $HttpProvider() {
      *     });
      * </pre>
      *
-     * Since the returned value is a Promise object, you can also use the `then` method to register
-     * callbacks, and these callbacks will receive a single argument – an object representing the
-     * response. See the api signature and type info below for more details.
+     * Since the returned value of calling the $http function is a Promise object, you can also use
+     * the `then` method to register callbacks, and these callbacks will receive a single argument –
+     * an object representing the response. See the api signature and type info below for more
+     * details.
      *
      *
      * # Shortcut methods
@@ -199,7 +204,7 @@ function $HttpProvider() {
      * - {@link angular.module.ng.$http#jsonp $http.jsonp}
      *
      *
-     * # HTTP Headers
+     * # Setting HTTP Headers
      *
      * The $http service will automatically add certain http headers to all requests. These defaults
      * can be fully configured by accessing the `$httpProvider.defaults.headers` configuration
@@ -219,7 +224,7 @@ function $HttpProvider() {
      * `$httpProvider.defaults.headers.get['My-Header']='value'`.
      *
      *
-     * # Request / Response transformations
+     * # Transforming Requests and Responses
      *
      * Both requests and responses can be transformed using transform functions. By default, Angular
      * applies these transformations:
@@ -234,16 +239,16 @@ function $HttpProvider() {
      *  - if XSRF prefix is detected, strip it (see Security Considerations section below)
      *  - if json response is detected, deserialize it using a JSON parser
      *
-     * These transformations can be overridden locally by specifying transform functions as
-     * `transformRequest` and/or `transformResponse` properties of the config object. To globally
-     * override the default transforms, override the `$httpProvider.defaults.transformRequest` and
+     * To override these transformation locally, specify transform functions as `transformRequest`
+     * and/or `transformResponse` properties of the config object. To globally override the default
+     * transforms, override the `$httpProvider.defaults.transformRequest` and
      * `$httpProvider.defaults.transformResponse` properties of the `$httpProvider`.
      *
      *
      * # Caching
      *
-     * You can enable caching by setting the configuration property `cache` to `true`. When the
-     * cache is enabled, `$http` stores the response from the server in local cache. Next time the
+     * To enable caching set the configuration property `cache` to `true`. When the cache is
+     * enabled, `$http` stores the response from the server in local cache. Next time the
      * response is served from the cache without sending a request to the server.
      *
      * Note that even if the response is served from cache, delivery of the data is asynchronous in
@@ -256,6 +261,9 @@ function $HttpProvider() {
      *
      * # Response interceptors
      *
+     * Before you start creating interceptors, be sure to understand the
+     * {@link angular.module.ng.$q $q and deferred/promise APIs}.
+     *
      * For purposes of global error handling, authentication or any kind of synchronous or
      * asynchronous preprocessing of received responses, it is desirable to be able to intercept
      * responses for http requests before they are handed over to the application code that
@@ -266,9 +274,6 @@ function $HttpProvider() {
      * adding them to the `$httpProvider.responseInterceptors` array. The factory is called and
      * injected with dependencies (if specified) and returns the interceptor  — a function that
      * takes a {@link angular.module.ng.$q promise} and returns the original or a new promise.
-     *
-     * Before you start creating interceptors, be sure to understand the
-     * {@link angular.module.ng.$q $q and deferred/promise APIs}.
      *
      * <pre>
      *   // register the interceptor as a service
@@ -300,9 +305,12 @@ function $HttpProvider() {
      *
      * # Security Considerations
      *
-     * When designing web applications your design needs to consider security threats from
-     * {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
-     * JSON Vulnerability} and {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF}.
+     * When designing web applications, consider security threats from:
+     *
+     * - {@link http://haacked.com/archive/2008/11/20/anatomy-of-a-subtle-json-vulnerability.aspx
+     *   JSON Vulnerability}
+     * - {@link http://en.wikipedia.org/wiki/Cross-site_request_forgery XSRF}
+     *
      * Both server and the client must cooperate in order to eliminate these threats. Angular comes
      * pre-configured with strategies that address these issues, but for this to work backend server
      * cooperation is required.
