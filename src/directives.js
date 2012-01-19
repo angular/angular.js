@@ -448,6 +448,7 @@ angularDirective("ng:click", function(expression, element){
     element.bind('click', function(event){
       self.$apply(expression);
       event.stopPropagation();
+      event.preventDefault();
     });
   };
 });
@@ -507,8 +508,10 @@ angularDirective("ng:click", function(expression, element){
 angularDirective("ng:submit", function(expression, element) {
   return function(element) {
     var self = this;
-    element.bind('submit', function() {
+    element.bind('submit', function(event) {
       self.$apply(expression);
+      event.stopPropagation();
+      event.preventDefault();
     });
   };
 });
