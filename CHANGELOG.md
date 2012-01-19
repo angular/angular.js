@@ -1,8 +1,12 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
 - The Latest Unstable Release: <a href="#0.10.6">0.10.6 bubblewrap-cape</a>
 
+<a name="0.10.7"></a>
+# 0.10.7 moiré-vision (in-progress)
+
+
 <a name="0.10.6"></a>
-# 0.10.6 bubblewrap-cape (in-progress) #
+# 0.10.6 bubblewrap-cape (2012-01-17) #
 
 ## Features:
 
