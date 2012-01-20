@@ -527,8 +527,12 @@ function ngClass(selector) {
       scope.$watch(expression, function(newVal, oldVal) {
         if (selector(scope.$index)) {
           if (oldVal && (newVal !== oldVal)) {
+            if (isObject(oldVal) && !isArray(oldVal))
+              oldVal = map(oldVal, function(v, k) { if (v) return k });
             element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
           }
+          if (isObject(newVal) && !isArray(newVal))
+            newVal = map(newVal, function(v, k) { if (v) return k });
           if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
@@ -551,7 +555,8 @@ function ngClass(selector) {
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
- *   of the evaluation can be a string representing space delimited class names or an array.
+ *   of the evaluation can be a string representing space delimited class
+ *   names, an array, or a map of class names to boolean values.
  *
  * @example
    <doc:example>
