@@ -520,8 +520,12 @@ function ngClass(selector) {
       this.$watch(expression, function(scope, newVal, oldVal) {
         if (selector(scope.$index)) {
           if (oldVal && (newVal !== oldVal)) {
+            if (isObject(oldVal) && !isArray(oldVal))
+              oldVal = map(oldVal, function(v, k) { if (v) return k });
             element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
           }
+          if (isObject(newVal) && !isArray(newVal))
+            newVal = map(newVal, function(v, k) { if (v) return k });
           if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
         }
       });
