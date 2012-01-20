@@ -102,8 +102,8 @@
 
 function $FormFactoryProvider() {
   var $parse;
-  this.$get = ['$rootScope', '$parse', '$injector',
-      function($rootScope, $parse_, $injector) {
+  this.$get = ['$rootScope', '$parse', '$controller',
+      function($rootScope, $parse_, $controller) {
     $parse = $parse_;
     /**
      * @ngdoc proprety
@@ -136,7 +136,7 @@ function $FormFactoryProvider() {
 
     function formFactory(parent) {
       var scope = (parent || formFactory.rootForm).$new();
-      $injector.instantiate(FormController, {$scope: scope});
+      $controller(FormController, scope);
       return scope;
     }
 
