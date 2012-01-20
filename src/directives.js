@@ -160,12 +160,12 @@ angularDirective("ng:init", function(expression){
  */
 angularDirective("ng:controller", function(expression) {
   this.scope(true);
-  return ['$injector', '$window', function($injector, $window) {
+  return ['$controller', '$window', function($controller, $window) {
     var scope = this,
         Controller = getter(scope, expression, true) || getter($window, expression, true);
 
     assertArgFn(Controller, expression);
-    $injector.instantiate(Controller, {$scope: scope});
+    $controller(Controller, scope);
   }];
 });
 

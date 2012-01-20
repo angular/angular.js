@@ -70,6 +70,7 @@ function publishExternalAPI(angular){
       $provide.service('$browser', $BrowserProvider);
       $provide.service('$cacheFactory', $CacheFactoryProvider);
       $provide.service('$compile', $CompileProvider);
+      $provide.service('$controller', $ControllerProvider);
       $provide.service('$cookies', $CookiesProvider);
       $provide.service('$cookieStore', $CookieStoreProvider);
       $provide.service('$defer', $DeferProvider);

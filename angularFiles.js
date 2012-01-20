@@ -13,6 +13,7 @@ angularFiles = {
     'src/service/browser.js',
     'src/service/cacheFactory.js',
     'src/service/compiler.js',
+    'src/service/controller.js',
     'src/service/cookieStore.js',
     'src/service/cookies.js',
     'src/service/defer.js',
