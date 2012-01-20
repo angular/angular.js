@@ -548,7 +548,8 @@ function ngClass(selector) {
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
- *   of the evaluation can be a string representing space delimited class names or an array.
+ *   of the evaluation can be a string representing space delimited class
+ *   names, an array, or a map of class names to boolean values.
  *
  * @example
    <doc:example>
