@@ -248,6 +248,22 @@ describe('Scope', function() {
     }));
 
 
+    it('should watch functions', function() {
+      module(provideLog);
+      inject(function($rootScope, log) {
+        $rootScope.fn = function() {return 'a'};
+        $rootScope.$watch('fn', function(scope, fn) {
+          log(fn());
+        });
+        $rootScope.$digest();
+        expect(log).toEqual('a');
+        $rootScope.fn = function() {return 'b'};
+        $rootScope.$digest();
+        expect(log).toEqual('a; b');
+      })
+    });
+
+
     it('should prevent $digest recursion', inject(function($rootScope) {
       var callCount = 0;
       $rootScope.$watch('name', function() {
