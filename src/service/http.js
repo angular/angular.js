@@ -213,7 +213,7 @@ function $HttpProvider() {
      * - `$httpProvider.defaults.headers.common` (headers that are common for all requests):
      *   - `Accept: application/json, text/plain, * / *`
      *   - `X-Requested-With: XMLHttpRequest`
-     * - `$httpProvider.defaults.headers.post: (header defaults for HTTP POST requests)
+     * - `$httpProvider.defaults.headers.post`: (header defaults for HTTP POST requests)
      *   - `Content-Type: application/json`
      * - `$httpProvider.defaults.headers.put` (header defaults for HTTP PUT requests)
      *   - `Content-Type: application/json`
