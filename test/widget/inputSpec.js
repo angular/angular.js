@@ -579,15 +579,28 @@ describe('widget: input', function() {
 
 
     itShouldVerify('integer',
-        [null, '', '1', '12', '-4', '+13'],
+        [null, undefined, '', '1', '12', '-4', '+13'],
         ['x', '12b', '-6', '101', '1.', '1.2'],
         {min:-5, max:100});
 
 
     itShouldVerify('integer',
-        [null, '', '0', '1'],
+        [null, undefined, '', '0', '1'],
         ['-1', '2'],
         {min:0, max:1});
+
+    itShouldVerify('integer',
+        [],
+        [null, '', undefined],
+        {required:true});
+
+    itShouldVerify('integer',
+        [null, undefined, '', '0', '1'],
+        ['-2','2'],
+        {min: "{{min_value}}", max:"{{max_value}}"}, function(scope){
+          scope.min_value = "-1";
+          scope.max_value = "1";
+        });
 
 
     itShouldVerify('text with inlined pattern constraint',
