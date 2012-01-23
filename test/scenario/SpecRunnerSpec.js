@@ -40,7 +40,13 @@ describe('angular.scenario.SpecRunner', function() {
     };
     $root.application = new ApplicationMock($window);
     $root.$window = $window;
-    runner = $root.$new(angular.scenario.SpecRunner);
+    runner = $root.$new();
+
+    var Cls = angular.scenario.SpecRunner;
+    for (var name in Cls.prototype)
+      runner[name] = angular.bind(runner, Cls.prototype[name]);
+
+    Cls.call(runner);
   }));
 
   it('should bind futures to the spec', function() {

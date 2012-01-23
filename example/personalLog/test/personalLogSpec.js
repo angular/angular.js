@@ -1,63 +1,58 @@
 describe('example.personalLog.LogCtrl', function() {
-  var logCtrl;
-
-  function createNotesCtrl() {
-    var injector = angular.injector(['ng', 'ngMock']);
-    var scope = injector.get('$rootScope');
-    scope.$cookies = injector.get('$cookies');
-    return scope.$new(example.personalLog.LogCtrl);
-  }
-
+  var logScope;
 
   beforeEach(function() {
-    logCtrl = createNotesCtrl();
+    var injector = angular.injector(['ng', 'ngMock']);
+    logScope = injector.get('$rootScope');
+    logScope.$cookies = injector.get('$cookies');
+    injector.instantiate(example.personalLog.LogCtrl, {$scope: logScope});
   });
 
 
   it('should initialize notes with an empty array', function() {
-    expect(logCtrl.logs).toEqual([]);
+    expect(logScope.logs).toEqual([]);
   });
 
 
   describe('addLog', function() {
 
     beforeEach(function() {
-      expect(logCtrl.logs).toEqual([]);
+      expect(logScope.logs).toEqual([]);
     });
 
 
     it('should add newMsg to logs as a log entry', function() {
-      logCtrl.newMsg = 'first log message';
-      logCtrl.addLog();
+      logScope.newMsg = 'first log message';
+      logScope.addLog();
 
-      expect(logCtrl.logs.length).toBe(1);
-      expect(logCtrl.logs[0].msg).toBe('first log message');
+      expect(logScope.logs.length).toBe(1);
+      expect(logScope.logs[0].msg).toBe('first log message');
 
       //one more msg, this time passed in as param
-      logCtrl.addLog('second log message');
+      logScope.addLog('second log message');
 
-      expect(logCtrl.logs.length).toBe(2);
-      expect(logCtrl.logs[0].msg).toBe('first log message');
-      expect(logCtrl.logs[1].msg).toBe('second log message');
+      expect(logScope.logs.length).toBe(2);
+      expect(logScope.logs[0].msg).toBe('first log message');
+      expect(logScope.logs[1].msg).toBe('second log message');
     });
 
 
     it('should clear newMsg when log entry is persisted', function() {
-      logCtrl.addLog('first log message');
-      expect(logCtrl.newMsg).toBe('');
+      logScope.addLog('first log message');
+      expect(logScope.newMsg).toBe('');
     });
 
 
     it('should store logs in the logs cookie', function() {
-      expect(logCtrl.$cookies.logs).not.toBeDefined();
-      logCtrl.addLog('first log message');
-      expect(logCtrl.$cookies.logs).toBeTruthy();
+      expect(logScope.$cookies.logs).not.toBeDefined();
+      logScope.addLog('first log message');
+      expect(logScope.$cookies.logs).toBeTruthy();
     });
 
 
     it('should do nothing if newMsg is empty', function() {
-      logCtrl.addLog('');
-      expect(logCtrl.logs.length).toBe(0);
+      logScope.addLog('');
+      expect(logScope.logs.length).toBe(0);
     });
   });
 
@@ -65,35 +60,35 @@ describe('example.personalLog.LogCtrl', function() {
   describe('rmLog', function() {
 
     beforeEach(function() {
-      logCtrl.addLog('message1');
-      logCtrl.addLog('message2');
-      logCtrl.addLog('message3');
-      logCtrl.addLog('message4');
-      expect(logCtrl.logs.length).toBe(4);
+      logScope.addLog('message1');
+      logScope.addLog('message2');
+      logScope.addLog('message3');
+      logScope.addLog('message4');
+      expect(logScope.logs.length).toBe(4);
     });
 
 
     it('should delete a message identified by index', function() {
-      logCtrl.rmLog(logCtrl.logs[1]);
-      expect(logCtrl.logs.length).toBe(3);
+      logScope.rmLog(logScope.logs[1]);
+      expect(logScope.logs.length).toBe(3);
 
-      logCtrl.rmLog(logCtrl.logs[2]);
-      expect(logCtrl.logs.length).toBe(2);
-      expect(logCtrl.logs[0].msg).toBe('message1');
-      expect(logCtrl.logs[1].msg).toBe('message3');
+      logScope.rmLog(logScope.logs[2]);
+      expect(logScope.logs.length).toBe(2);
+      expect(logScope.logs[0].msg).toBe('message1');
+      expect(logScope.logs[1].msg).toBe('message3');
     });
 
 
     it('should update cookies when a log is deleted', function() {
-      expect(logCtrl.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){3}\]/);
+      expect(logScope.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){3}\]/);
 
-      logCtrl.rmLog(logCtrl.logs[1]);
-      expect(logCtrl.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){2}\]/);
+      logScope.rmLog(logScope.logs[1]);
+      expect(logScope.$cookies.logs).toMatch(/\[\{.*?\}(,\{.*?\}){2}\]/);
 
-      logCtrl.rmLog(logCtrl.logs[0]);
-      logCtrl.rmLog(logCtrl.logs[0]);
-      logCtrl.rmLog(logCtrl.logs[0]);
-      expect(logCtrl.$cookies.logs).toMatch(/\[\]/);
+      logScope.rmLog(logScope.logs[0]);
+      logScope.rmLog(logScope.logs[0]);
+      logScope.rmLog(logScope.logs[0]);
+      expect(logScope.$cookies.logs).toMatch(/\[\]/);
     });
   });
 
@@ -101,24 +96,24 @@ describe('example.personalLog.LogCtrl', function() {
   describe('rmLogs', function() {
 
     beforeEach(function() {
-      logCtrl.addLog('message1');
-      logCtrl.addLog('message2');
-      logCtrl.addLog('message3');
-      logCtrl.addLog('message4');
-      expect(logCtrl.logs.length).toBe(4);
+      logScope.addLog('message1');
+      logScope.addLog('message2');
+      logScope.addLog('message3');
+      logScope.addLog('message4');
+      expect(logScope.logs.length).toBe(4);
     });
 
 
     it('should remove all logs', function() {
-      logCtrl.rmLogs();
-      expect(logCtrl.logs).toEqual([]);
+      logScope.rmLogs();
+      expect(logScope.logs).toEqual([]);
     });
 
 
     it('should remove logs cookie', function() {
-      expect(logCtrl.$cookies.logs).toBeTruthy();
-      logCtrl.rmLogs();
-      expect(logCtrl.$cookies.logs).not.toBeDefined();
+      expect(logScope.$cookies.logs).toBeTruthy();
+      logScope.rmLogs();
+      expect(logScope.$cookies.logs).not.toBeDefined();
     });
   });
 });

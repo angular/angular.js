@@ -187,7 +187,7 @@ within the unit-tests.
   // example of a test
   it('should trigger a watcher', inject(function($rootScope) {
     var scope = $rootScope;
-    scope.$watch('name', function(scope, name){
+    scope.$watch('name', function(name) {
      scope.greeting = 'Hello ' + name + '!';
     });
 

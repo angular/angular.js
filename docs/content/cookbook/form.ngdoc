@@ -10,23 +10,23 @@ allow a user to enter data.
 <doc:example>
  <doc:source>
   <script>
-    function FormController() {
-      this.user = {
+    function FormController($scope) {
+      $scope.user = {
         name: 'John Smith',
         address:{line1: '123 Main St.', city:'Anytown', state:'AA', zip:'12345'},
         contacts:[{type:'phone', value:'1(234) 555-1212'}]
       };
-      this.state = /^\w\w$/;
-      this.zip = /^\d\d\d\d\d$/;
+      $scope.state = /^\w\w$/;
+      $scope.zip = /^\d\d\d\d\d$/;
 
-      this.addContact = function() {
-         this.user.contacts.push({type:'', value:''});
+      $scope.addContact = function() {
+         $scope.user.contacts.push({type:'', value:''});
       };
 
-      this.removeContact = function(contact) {
-        for ( var i = 0, ii = this.user.contacts.length; i < ii; i++) {
+      $scope.removeContact = function(contact) {
+        for (var i = 0, ii = this.user.contacts.length; i < ii; i++) {
           if (contact === this.user.contacts[i]) {
-            this.user.contacts.splice(i, 1);
+            $scope.user.contacts.splice(i, 1);
           }
         }
       };

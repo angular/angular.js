@@ -54,11 +54,11 @@
     <doc:example>
       <doc:source jsfiddle="false">
        <script>
-         function Ctrl() {
-           this.templates =
+         function Ctrl($scope) {
+           $scope.templates =
              [ { name: 'template1.html', url: 'examples/ng-include/template1.html'}
              , { name: 'template2.html', url: 'examples/ng-include/template2.html'} ];
-           this.template = this.templates[0];
+           $scope.template = $scope.templates[0];
          }
        </script>
        <div ng:controller="Ctrl">
@@ -111,7 +111,7 @@ angularWidget('ng:include', function(element){
         var includeScope = scope.$eval(scopeExp);
         if (includeScope) return includeScope.$id;
       }, incrementChange);
-      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
+      this.$watch(function() {return changeCounter;}, function(newChangeCounter) {
         var src = scope.$eval(srcExp),
             useScope = scope.$eval(scopeExp);
 
@@ -171,9 +171,9 @@ angularWidget('ng:include', function(element){
     <doc:example>
       <doc:source>
         <script>
-          function Ctrl() {
-            this.items = ['settings', 'home', 'other'];
-            this.selection = this.items[0];
+          function Ctrl($scope) {
+            $scope.items = ['settings', 'home', 'other'];
+            $scope.selection = $scope.items[0];
           }
         </script>
         <div ng:controller="Ctrl">
@@ -233,8 +233,9 @@ angularWidget('ng:switch', function(element) {
     var changeCounter = 0;
     var childScope;
     var selectedTemplate;
+    var scope = this;
 
-    this.$watch(watchExpr, function(scope, value) {
+    this.$watch(watchExpr, function(value) {
       element.html('');
       if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
         changeCounter++;
@@ -577,7 +578,7 @@ angularWidget('ng:view', function(element) {
         changeCounter++;
       });
 
-      this.$watch(function() {return changeCounter;}, function(scope, newChangeCounter) {
+      this.$watch(function() {return changeCounter;}, function(newChangeCounter) {
         var template = $route.current && $route.current.template;
 
         function clearContent() {
@@ -701,10 +702,10 @@ angularWidget('ng:view', function(element) {
     <doc:example>
       <doc:source>
         <script>
-          function Ctrl() {
-            this.person1 = 'Igor';
-            this.person2 = 'Misko';
-            this.personCount = 1;
+          function Ctrl($scope) {
+            $scope.person1 = 'Igor';
+            $scope.person2 = 'Misko';
+            $scope.personCount = 1;
           }
         </script>
         <div ng:controller="Ctrl">
@@ -802,7 +803,7 @@ angularWidget('ng:pluralize', function(element) {
       } else {
         return '';
       }
-    }, function(scope, newVal) {
+    }, function(newVal) {
       element.text(newVal);
     });
   }];

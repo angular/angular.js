@@ -63,8 +63,8 @@
     </doc:example>
  */
 function $RouteProvider(){
-  this.$get = ['$rootScope', '$location', '$routeParams',
-      function( $rootScope,  $location,  $routeParams) {
+  this.$get = ['$rootScope', '$location', '$routeParams', '$controller',
+      function( $rootScope,  $location,  $routeParams, $controller) {
     /**
      * @ngdoc event
      * @name angular.module.ng.$route#$beforeRouteChange
@@ -278,8 +278,10 @@ function $RouteProvider(){
             }
           } else {
             copy(next.params, $routeParams);
-            (Controller = next.controller) && inferInjectionArgs(Controller);
-            next.scope = parentScope.$new(Controller);
+            next.scope = parentScope.$new();
+            if (next.controller) {
+              $controller(next.controller, next.scope);
+            }
           }
         }
         $rootScope.$broadcast('$afterRouteChange', next, last);

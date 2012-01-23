@@ -43,9 +43,6 @@ describe('angular.scenario.Runner', function() {
       location: {}
     };
     runner = new angular.scenario.Runner($window);
-    runner.createSpecRunner_ = function(scope) {
-      return scope.$new(MockSpecRunner);
-    };
     runner.on('SpecError', angular.mock.rethrow);
     runner.on('StepError', angular.mock.rethrow);
   });

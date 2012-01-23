@@ -13,23 +13,24 @@ describe('$formFactory', function() {
     var scope;
     var log;
 
-    function WidgetCtrl($formFactory){
-      this.$formFactory = $formFactory;
+    function WidgetCtrl($formFactory, $scope) {
       log += '<init>';
-      this.$render = function() {
+      $scope.$render = function() {
         log += '$render();';
       };
-      this.$on('$validate', function(e){
+      $scope.$on('$validate', function(e){
         log += '$validate();';
       });
+
+      this.$formFactory = $formFactory;
     }
 
-    WidgetCtrl.$inject = ['$formFactory'];
+    WidgetCtrl.$inject = ['$formFactory', '$scope'];
 
     WidgetCtrl.prototype = {
-        getFormFactory: function() {
-          return this.$formFactory;
-        }
+      getFormFactory: function() {
+        return this.$formFactory;
+      }
     };
 
     beforeEach(inject(function($rootScope, $formFactory) {
@@ -69,11 +70,6 @@ describe('$formFactory', function() {
           scope.$digest();
           expect(widget.$modelValue).toEqual('xyz');
 
-        }));
-
-
-        it('should have controller prototype methods', inject(function($rootScope, $formFactory) {
-          expect(widget.getFormFactory()).toEqual($formFactory);
         }));
       });
 

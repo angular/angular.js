@@ -713,12 +713,12 @@ describe('widget', function() {
       $route.when('/foo', {controller: ParentCtrl, template: 'viewPartial.html'});
       $rootScope.log = [];
 
-      function ParentCtrl() {
-        this.log.push('parent');
+      function ParentCtrl($scope) {
+        $scope.log.push('parent');
       }
 
-      $rootScope.ChildCtrl = function() {
-        this.log.push('child');
+      $rootScope.ChildCtrl = function($scope) {
+        $scope.log.push('child');
       };
 
       $location.path('/foo');

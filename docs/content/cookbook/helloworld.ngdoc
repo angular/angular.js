@@ -5,8 +5,8 @@
 <doc:example>
  <doc:source>
   <script>
-    function HelloCntl() {
-      this.name = 'World';
+    function HelloCntl($scope) {
+      $scope.name = 'World';
     }
   </script>
   <div ng:controller="HelloCntl">

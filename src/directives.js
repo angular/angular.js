@@ -97,28 +97,30 @@ angularDirective("ng:init", function(expression){
    <doc:example>
      <doc:source>
       <script type="text/javascript">
-        function SettingsController() {
-          this.name = "John Smith";
-          this.contacts = [
+        function SettingsController($scope) {
+          $scope.name = "John Smith";
+          $scope.contacts = [
             {type:'phone', value:'408 555 1212'},
             {type:'email', value:'john.smith@example.org'} ];
-        }
-        SettingsController.prototype = {
-         greet: function() {
+
+          $scope.greet = function() {
            alert(this.name);
-         },
-         addContact: function() {
+          };
+
+          $scope.addContact = function() {
            this.contacts.push({type:'email', value:'yourname@example.org'});
-         },
-         removeContact: function(contactToRemove) {
+          };
+
+          $scope.removeContact = function(contactToRemove) {
            var index = this.contacts.indexOf(contactToRemove);
            this.contacts.splice(index, 1);
-         },
-         clearContact: function(contact) {
+          };
+
+          $scope.clearContact = function(contact) {
            contact.type = 'phone';
            contact.value = '';
-         }
-        };
+          };
+        }
       </script>
       <div ng:controller="SettingsController">
         Name: <input type="text" ng:model="name"/>
@@ -156,16 +158,15 @@ angularDirective("ng:init", function(expression){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:controller", function(expression){
-  this.scope(function(scope){
-    var Controller =
-      getter(scope, expression, true) ||
-      getter(window, expression, true);
+angularDirective("ng:controller", function(expression) {
+  this.scope(true);
+  return ['$controller', '$window', function($controller, $window) {
+    var scope = this,
+        Controller = getter(scope, expression, true) || getter($window, expression, true);
+
     assertArgFn(Controller, expression);
-    inferInjectionArgs(Controller);
-    return Controller;
-  });
-  return noop;
+    $controller(Controller, scope);
+  }];
 });
 
 /**
@@ -189,8 +190,8 @@ angularDirective("ng:controller", function(expression){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.name = 'Whirled';
+         function Ctrl($scope) {
+           $scope.name = 'Whirled';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -211,9 +212,10 @@ angularDirective("ng:bind", function(expression, element){
   element.addClass('ng-binding');
   return ['$exceptionHandler', '$parse', '$element', function($exceptionHandler, $parse, element) {
     var exprFn = $parse(expression),
-        lastValue = Number.NaN;
+        lastValue = Number.NaN,
+        scope = this;
 
-    this.$watch(function(scope) {
+    scope.$watch(function() {
       // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
       var value, html, isHtml, isDomElement,
           hadOwnElement = scope.hasOwnProperty('$element'),
@@ -277,9 +279,9 @@ angularDirective("ng:bind", function(expression, element){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.salutation = 'Hello';
-           this.name = 'World';
+         function Ctrl($scope) {
+           $scope.salutation = 'Hello';
+           $scope.name = 'World';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -304,8 +306,10 @@ angularDirective("ng:bind-template", function(expression, element){
   element.addClass('ng-binding');
   var templateFn = compileBindTemplate(expression);
   return function(element) {
-    var lastValue;
-    this.$watch(function(scope) {
+    var lastValue,
+        scope = this;
+
+    scope.$watch(function() {
       var value = templateFn(scope, element, true);
       if (value != lastValue) {
         element.text(value);
@@ -363,8 +367,8 @@ angularDirective("ng:bind-template", function(expression, element){
    <doc:example>
      <doc:source>
        <script>
-         function Ctrl() {
-           this.query = 'AngularJS';
+         function Ctrl($scope) {
+           $scope.query = 'AngularJS';
          }
        </script>
        <div ng:controller="Ctrl">
@@ -390,8 +394,10 @@ angularDirective("ng:bind-template", function(expression, element){
  */
 angularDirective("ng:bind-attr", function(expression){
   return function(element){
-    var lastValue = {};
-    this.$watch(function(scope){
+    var lastValue = {},
+        scope = this;
+
+    scope.$watch(function() {
       var values = scope.$eval(expression);
       for(var key in values) {
         var value = compileBindTemplate(values[key])(scope, element);
@@ -470,10 +476,10 @@ angularDirective("ng:click", function(expression, element){
    <doc:example>
      <doc:source>
       <script>
-        function Ctrl() {
-          this.list = [];
-          this.text = 'hello';
-          this.submit = function() {
+        function Ctrl($scope) {
+          $scope.list = [];
+          $scope.text = 'hello';
+          $scope.submit = function() {
             if (this.text) {
               this.list.push(this.text);
               this.text = '';
@@ -517,7 +523,8 @@ angularDirective("ng:submit", function(expression, element) {
 function ngClass(selector) {
   return function(expression, element) {
     return function(element) {
-      this.$watch(expression, function(scope, newVal, oldVal) {
+      var scope = this;
+      scope.$watch(expression, function(newVal, oldVal) {
         if (selector(scope.$index)) {
           if (oldVal && (newVal !== oldVal)) {
             element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
@@ -686,8 +693,9 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
    </doc:example>
  */
 angularDirective("ng:show", function(expression, element){
-  return function(element){
-    this.$watch(expression, function(scope, value){
+  return function(element) {
+    var scope = this;
+    scope.$watch(expression, function(value) {
       element.css('display', toBoolean(value) ? '' : 'none');
     });
   };
@@ -726,8 +734,9 @@ angularDirective("ng:show", function(expression, element){
    </doc:example>
  */
 angularDirective("ng:hide", function(expression, element){
-  return function(element){
-    this.$watch(expression, function(scope, value){
+  return function(element) {
+    var scope = this;
+    scope.$watch(expression, function(value) {
       element.css('display', toBoolean(value) ? 'none' : '');
     });
   };
@@ -767,7 +776,8 @@ angularDirective("ng:hide", function(expression, element){
  */
 angularDirective("ng:style", function(expression, element) {
   return function(element) {
-    this.$watch(expression, function(scope, newStyles, oldStyles) {
+    var scope = this;
+    scope.$watch(expression, function(newStyles, oldStyles) {
       if (oldStyles && (newStyles !== oldStyles)) {
         forEach(oldStyles, function(val, style) { element.css(style, '');});
       }
