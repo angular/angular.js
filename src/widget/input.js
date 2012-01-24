@@ -741,7 +741,7 @@ var inputDirective = ['$defer', '$formFactory', function($defer, $formFactory) {
 
       type = lowercase(type);
       TypeController = (loadFromScope
-              ? (assertArgFn(modelScope.$eval(loadFromScope[1]), loadFromScope[1])).$unboundFn
+              ? assertArgFn(modelScope.$eval(loadFromScope[1]), loadFromScope[1])
               : angularInputType(type)) || noop;
 
       if (!HTML5_INPUTS_TYPES[type]) {
