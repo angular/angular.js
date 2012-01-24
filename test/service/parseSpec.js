@@ -110,18 +110,15 @@ describe('parser', function() {
       expect(tokens[3].text).toEqual(';');
     });
 
+    it('should tokenize function invocation', function() {
+      var tokens = lex("a()")
+      expect(map(tokens, function(t) { return t.text;})).toEqual(['a', '(', ')']);
+    });
+
     it('should tokenize method invocation', function() {
       var tokens = lex("a.b.c (d) - e.f()");
-      expect(tokens[0].text).toBe('a.b');
-      expect(tokens[1].text).toBe('.');
-      expect(tokens[2].text).toBe('c');
-      expect(tokens[3].text).toBe('(');
-      expect(tokens[4].text).toBe('d');
-      expect(tokens[5].text).toBe(')');
-      expect(tokens[6].text).toBe('-');
-      expect(tokens[7].text).toBe('e');
-      expect(tokens[8].text).toBe('.');
-      expect(tokens[9].text).toBe('f');
+      expect(map(tokens, function(t) { return t.text;})).
+          toEqual(['a.b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
     });
 
     it('should tokenize number', function() {
@@ -301,7 +298,7 @@ describe('parser', function() {
     expect(toJson(scope.$eval("[{a:[]}, {b:1}]"))).toEqual('[{"a":[]},{"b":1}]');
   });
 
-  it('should evaluate multipple statements', function() {
+  it('should evaluate multiple statements', function() {
     expect(scope.$eval("a=1;b=3;a+b")).toEqual(4);
     expect(scope.$eval(";;1;;")).toEqual(1);
   });
