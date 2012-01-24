@@ -200,8 +200,10 @@ describe("directive", function() {
     }));
 
 
-    it('should support adding multiple classes conditionally via a map of class names to boolean expressions', inject(function($rootScope, $compile) {
-      var element = $compile('<div class="existing" ng:class="{A: conditionA, B: conditionB, AnotB: conditionA&&!conditionB}"></div>')($rootScope);
+    it('should support adding multiple classes conditionally via a map of class names to boolean' +
+       ' expressions', inject(function($rootScope, $compile) {
+      var element = $compile('<div class="existing" ng:class="{A: conditionA, B: conditionB,' +
+        ' AnotB: conditionA&&!conditionB}"></div>')($rootScope);
       $rootScope.conditionA = true;
       $rootScope.$digest();
       expect(element.hasClass('existing')).toBeTruthy();
