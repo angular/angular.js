@@ -144,18 +144,40 @@ function lex(text){
       fn:function() {return number;}});
   }
   function readIdent() {
-    var ident = "";
-    var start = index;
-    var fn;
+    var ident = "",
+        start = index,
+        fn, lastDot, peekIndex, methodName;
+
     while (index < text.length) {
       var ch = text.charAt(index);
       if (ch == '.' || isIdent(ch) || isNumber(ch)) {
+        if (ch == '.') lastDot = index;
         ident += ch;
       } else {
         break;
       }
       index++;
     }
+
+    //check if this is not a method invocation and if it is back out to last dot
+    if (lastDot) {
+      peekIndex = index
+      while(peekIndex < text.length) {
+        var ch = text.charAt(peekIndex);
+        if (ch == '(') {
+          methodName = ident.substr(lastDot - start + 1);
+          ident = ident.substr(0, lastDot - start);
+          index = peekIndex;
+          break;
+        }
+        if(isWhitespace(ch)) {
+          peekIndex++;
+        } else {
+          break;
+        }
+      }
+    }
+
     fn = OPERATORS[ident];
     tokens.push({
       index:start,
@@ -167,6 +189,19 @@ function lex(text){
         }
       })
     });
+
+    if (methodName) {
+      tokens.push({
+        index:lastDot,
+        text: '.',
+        json: false
+      });
+      tokens.push({
+        index: lastDot + 1,
+        text: methodName,
+        json: false
+      });
+    }
   }
 
   function readString(quote) {
@@ -490,13 +525,17 @@ function parser(text, json, $filter){
         throwError("not a primary expression", token);
       }
     }
-    var next;
+
+    var next, context;
     while ((next = expect('(', '[', '.'))) {
       if (next.text === '(') {
-        primary = functionCall(primary);
+        primary = functionCall(primary, context);
+        context = null;
       } else if (next.text === '[') {
+        context = primary;
         primary = objectIndex(primary);
       } else if (next.text === '.') {
+        context = primary;
         primary = fieldAccess(primary);
       } else {
         throwError("IMPOSSIBLE");
@@ -544,7 +583,7 @@ function parser(text, json, $filter){
       });
   }
 
-  function _functionCall(fn) {
+  function _functionCall(fn, contextGetter) {
     var argsFn = [];
     if (peekToken().text != ')') {
       do {
@@ -553,14 +592,16 @@ function parser(text, json, $filter){
     }
     consume(')');
     return function(self){
-      var args = [];
+      var args = [],
+          context = contextGetter ? contextGetter(self) : self;
+
       for ( var i = 0; i < argsFn.length; i++) {
         args.push(argsFn[i](self));
       }
       var fnPtr = fn(self) || noop;
       // IE stupidity!
       return fnPtr.apply
-          ? fnPtr.apply(self, args)
+          ? fnPtr.apply(context, args)
           : fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
   }
@@ -691,11 +732,7 @@ function getterFn(path) {
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
             's=s' + key + ';\n' +
-            'if(typeof s=="function" && !(s instanceof RegExp)) {\n' +
-              ' fn=function(){ return l' + key + '.apply(l, arguments); };\n' +
-              ' fn.$unboundFn=s;\n' +
-              ' s=fn;\n' +
-            '} else if (s && s.then) {\n' +
+            'if (s && s.then) {\n' +
               ' if (!("$$v" in s)) {\n' +
                 ' p=s;\n' +
                 ' p.$$v = undefined;\n' +

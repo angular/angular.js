@@ -252,7 +252,7 @@ describe('Scope', function() {
       module(provideLog);
       inject(function($rootScope, log) {
         $rootScope.fn = function() {return 'a'};
-        $rootScope.$watch('fn', function(scope, fn) {
+        $rootScope.$watch('fn', function(fn) {
           log(fn());
         });
         $rootScope.$digest();
