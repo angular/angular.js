@@ -4,7 +4,7 @@ var OPERATORS = {
     'null':function(self){return null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
-    $undefined:noop,
+    undefined:noop,
     '+':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
     '-':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
     '*':function(self, a,b){return a(self)*b(self);},
@@ -511,9 +511,8 @@ function parser(text, json, $filter){
   function primary() {
     var primary;
     if (expect('(')) {
-      var expression = filterChain();
+      primary = filterChain();
       consume(')');
-      primary = expression;
     } else if (expect('[')) {
       primary = arrayDeclaration();
     } else if (expect('{')) {
@@ -644,22 +643,6 @@ function parser(text, json, $filter){
         object[keyValue.key] = value;
       }
       return object;
-    };
-  }
-
-  function watchDecl () {
-    var anchorName = expect().text;
-    consume(":");
-    var expressionFn;
-    if (peekToken().text == '{') {
-      consume("{");
-      expressionFn = statements();
-      consume("}");
-    } else {
-      expressionFn = expression();
-    }
-    return function(self) {
-      return {name:anchorName, fn:expressionFn};
     };
   }
 }
