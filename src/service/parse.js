@@ -33,7 +33,8 @@ function lex(text){
       index = 0,
       json = [],
       ch,
-      lastCh = ':'; // can start regexp
+      lastCh = ':', // can start regexp
+      methodName, lastDot;
 
   while (index < text.length) {
     ch = text.charAt(index);
@@ -48,7 +49,39 @@ function lex(text){
          (token=tokens[tokens.length-1])) {
         token.json = token.text.indexOf('.') == -1;
       }
-    } else if (is('(){}[].,;:')) {
+    } else if (is('(')) {
+      token=tokens[tokens.length-1];
+      if (token && !OPERATORS[token.text]) {
+        lastDot = token.text.lastIndexOf('.');
+        if (lastDot !== -1) {
+          // method invocation
+          methodName = token.text.substr(lastDot + 1);
+          token.text = token.text.substr(0, lastDot);
+          token.fn = extend(getterFn(token.text), {
+            assign:function(self, value){
+              return setter(self, token.text, value);
+            }
+          });
+          tokens.push({
+            index: token.index + token.text.length,
+            text: '.',
+            json: false
+          });
+          tokens.push({
+            index: token.index + token.text.length + 1,
+            text: methodName,
+            json: false
+          });
+        }
+      }
+      tokens.push({
+        index: index,
+        text: ch,
+        json: false
+      });
+      json.unshift(ch);
+      index++;
+    } else if (is('){}[].,;:')) {
       tokens.push({
         index:index,
         text:ch,
@@ -146,36 +179,16 @@ function lex(text){
   function readIdent() {
     var ident = "",
         start = index,
-        fn, lastDot, peekIndex, methodName;
+        fn;
 
     while (index < text.length) {
       var ch = text.charAt(index);
       if (ch == '.' || isIdent(ch) || isNumber(ch)) {
-        if (ch == '.') lastDot = index;
         ident += ch;
       } else {
         break;
       }
       index++;
-    }
-
-    //check if this is not a method invocation and if it is back out to last dot
-    if (lastDot) {
-      peekIndex = index
-      while(peekIndex < text.length) {
-        var ch = text.charAt(peekIndex);
-        if (ch == '(') {
-          methodName = ident.substr(lastDot - start + 1);
-          ident = ident.substr(0, lastDot - start);
-          index = peekIndex;
-          break;
-        }
-        if(isWhitespace(ch)) {
-          peekIndex++;
-        } else {
-          break;
-        }
-      }
     }
 
     fn = OPERATORS[ident];
@@ -189,19 +202,6 @@ function lex(text){
         }
       })
     });
-
-    if (methodName) {
-      tokens.push({
-        index:lastDot,
-        text: '.',
-        json: false
-      });
-      tokens.push({
-        index: lastDot + 1,
-        text: methodName,
-        json: false
-      });
-    }
   }
 
   function readString(quote) {
