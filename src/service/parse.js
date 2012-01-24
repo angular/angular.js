@@ -693,17 +693,7 @@ function getter(obj, path, bindFnToScope) {
   return obj;
 }
 
-var getterFnCache = {},
-    JS_KEYWORDS = {};
-
-forEach(
-    ("abstract,boolean,break,byte,case,catch,char,class,const,continue,debugger,default," +
-    "delete,do,double,else,enum,export,extends,false,final,finally,float,for,function,goto," +
-    "if,implements,import,in,instanceof,int,interface,long,native,new,null,package,private," +
-    "protected,public,return,short,static,super,switch,synchronized,this,throw,throws," +
-    "transient,true,try,typeof,var,volatile,void,undefined,while,with").split(/,/),
-  function(key){ JS_KEYWORDS[key] = true;}
-);
+var getterFnCache = {};
 
 function getterFn(path) {
   var fn = getterFnCache[path];
@@ -711,10 +701,9 @@ function getterFn(path) {
 
   var code = 'var l, fn, p;\n';
   forEach(path.split('.'), function(key) {
-    key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
-            's=s' + key + ';\n' +
+            's=s' + '["' + key + '"]' + ';\n' +
             'if (s && s.then) {\n' +
               ' if (!("$$v" in s)) {\n' +
                 ' p=s;\n' +
