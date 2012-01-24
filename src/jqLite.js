@@ -321,7 +321,7 @@ forEach({
   },
 
   scope: function(element) {
-    return jqLite(element).inheritedData($$scope);
+    return jqLite(element).inheritedData('$scope');
   },
 
   injector: function(element) {

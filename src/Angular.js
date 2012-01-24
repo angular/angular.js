@@ -68,8 +68,7 @@ function shivForIE(elementName) {
   return elementName;
 }
 
-var $$scope           = '$scope',
-    $boolean          = 'boolean',
+var $boolean          = 'boolean',
     $console          = 'console',
     $length           = 'length',
     $name             = 'name',
