@@ -522,6 +522,25 @@ describe('widget: input', function() {
     }));
   });
 
+  describe('custom input types with ng:type', function() {
+    it('should define custom type on non-input form elements', function() {
+      angular.inputType('custom', function(inputElement) {
+        var widget = this;
+        widget.$render = function() {
+          inputElement[0].checked = widget.$modelValue > 5;
+        };
+      });
+      compile('<input type="checkbox" ng:type="custom" ng:model="value" />');
+      (noop)(scope);
+
+      scope.value = 6;
+      scope.$digest();
+      expect(scope.$element[0].checked).toBeTruthy();
+      scope.value = 3;
+      scope.$digest();
+      expect(scope.$element[0].checked).toBeFalsy();
+    });
+  });
 
   describe('text subtypes', function() {
 
