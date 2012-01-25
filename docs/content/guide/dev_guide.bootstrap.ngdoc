@@ -31,18 +31,19 @@ and manage the whole page. You do this as follows:
 
 You need to declare the angular namespace declaration in the following cases:
 
-* For all browsers if you are using XHTML.
-* For Internet Explorer older than version 9 (because older versions of IE do not render widgets
+* For all types of browser if you are using XHTML.
+* For Internet Explorer older than version 9 (because older versions of IE do not render namespace
 properly for either HTML or XHTML).
 
 
 ## Creating Your Own Namespaces
 
-When you are ready to define your own {@link dev_guide.compiler.widgets widgets}, you must create
-your own namespace in addition to specifying the angular namespace. You use your own namespace to
-form the fully qualified name for widgets that you create.
+When you are ready to define your own {@link api/angular.module.ng.$compileProvider.directive
+directive}, you may chose to create your own namespace in addition to specifying the angular
+namespace. You use your own namespace to form the fully qualified name for directives that you
+create.
 
-For example, you could map the alias `my` to your domain, and create a widget called `my:widget`.
+For example, you could map the alias `my` to your domain, and create a directive called `my:directive`.
 To create your own namespace, simply add another `xmlns` tag to your page, create an alias, and set
 it to your unique domain:
 

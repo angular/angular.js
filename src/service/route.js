@@ -13,7 +13,7 @@
  * Watches `$location.url()` and tries to map the path to an existing route
  * definition. It is used for deep-linking URLs to controllers and views (HTML partials).
  *
- * The `$route` service is typically used in conjunction with {@link angular.widget.ng:view ng:view}
+ * The `$route` service is typically used in conjunction with {@link angular.module.ng.$compileProvider.directive.ng:view ng:view}
  * widget and the {@link angular.module.ng.$routeParams $routeParams} service.
  *
  * @example
@@ -150,8 +150,8 @@ function $RouteProvider(){
            *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
            *      created scope.
            *    - `template` – `{string=}` – path to an html template that should be used by
-           *      {@link angular.widget.ng:view ng:view} or
-           *      {@link angular.widget.ng:include ng:include} widgets.
+           *      {@link angular.module.ng.$compileProvider.directive.ng:view ng:view} or
+           *      {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} widgets.
            *    - `redirectTo` – {(string|function())=} – value to update
            *      {@link angular.module.ng.$location $location} path with and trigger route redirection.
            *

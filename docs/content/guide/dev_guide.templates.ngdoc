@@ -13,7 +13,7 @@ These are the types of angular elements and element attributes you can use in a 
 * {@link dev_guide.compiler.directives Directive} — An attribute that augments an existing DOM
 element.
 * {@link dev_guide.compiler.widgets Widget} — A custom DOM element. An example of a built-in widget
-is {@link api/angular.widget.@ng:repeat ng:repeat}.
+is {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeat}.
 * {@link dev_guide.compiler.markup  Markup} — Shorthand for a widget or a directive. The double
 curly brace notation `{{ }}` to bind expressions to elements is built-in angular markup.
 * {@link dev_guide.templates.filters Filter} — Formats your data for display to the user.
@@ -44,7 +44,7 @@ In a simple single-page app, the template consists of HTML, CSS, and angular dir
 in just one HTML file (usually `index.html`). In a more complex app, you can display multiple views
 within one main page using "partials", which are segments of template located in separate HTML
 files.  You "include" the partials in the main page using the {@link api/angular.module.ng.$route
-$route} service in conjunction with the {@link api/angular.widget.ng:view ng:view} directive. An
+$route} service in conjunction with the {@link api/angular.module.ng.$compileProvider.directive.ng:view ng:view} directive. An
 example of this technique is shown in the {@link tutorial/ angular tutorial}, in steps seven and
 eight.
 

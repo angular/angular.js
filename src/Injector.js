@@ -219,6 +219,7 @@ function inferInjectionArgs(fn) {
  *   - `Constructor`: a new instance of the provider will be created using
  *               {@link angular.module.AUTO.$injector#instantiate $injector.instantiate()}, then treated as `object`.
  *
+ * @returns {Object} registered provider instance
  */
 
 /**
@@ -232,6 +233,7 @@ function inferInjectionArgs(fn) {
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
  * @param {function()} $getFn The $getFn for the instance creation. Internally this is a short hand for
  * `$provide.service(name, {$get:$getFn})`.
+ * @returns {Object} registered provider instance
  */
 
 
@@ -246,6 +248,7 @@ function inferInjectionArgs(fn) {
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
  * @param {function()} value The $getFn for the instance creation. Internally this is a short hand for
  * `$provide.service(name, {$get:function(){ return value; }})`.
+ * @returns {Object} registered provider instance
  */
 
 
@@ -285,7 +288,7 @@ function createInjector(modulesToLoad) {
       if (isObject(key)) {
         forEach(key, reverseParams(delegate));
       } else {
-        delegate(key, value);
+        return delegate(key, value);
       }
     }
   }
@@ -297,12 +300,12 @@ function createInjector(modulesToLoad) {
     if (!provider.$get) {
       throw Error('Provider ' + name + ' must define $get factory method.');
     }
-    providerCache[name + providerSuffix] = provider;
+    return providerCache[name + providerSuffix] = provider;
   }
 
-  function factory(name, factoryFn) { service(name, { $get:factoryFn }); }
+  function factory(name, factoryFn) { return service(name, { $get:factoryFn }); }
 
-  function value(name, value) { factory(name, valueFn(value)); }
+  function value(name, value) { return factory(name, valueFn(value)); }
 
   function decorator(serviceName, decorFn) {
     var origProvider = providerInjector.get(serviceName + providerSuffix),
@@ -384,25 +387,29 @@ function createInjector(modulesToLoad) {
 
     function invoke(fn, self, locals){
       var args = [],
-          $injectAnnotation,
-          $injectAnnotationIndex,
+          $inject,
+          length,
           key;
 
       if (typeof fn == 'function') {
-        $injectAnnotation = inferInjectionArgs(fn);
-        $injectAnnotationIndex = $injectAnnotation.length;
+        $inject = inferInjectionArgs(fn);
+        length = $inject.length;
       } else {
         if (isArray(fn)) {
-          $injectAnnotation = fn;
-          $injectAnnotationIndex = $injectAnnotation.length;
-          fn = $injectAnnotation[--$injectAnnotationIndex];
+          $inject = fn;
+          length = $inject.length - 1;
+          fn = $inject[length];
         }
         assertArgFn(fn, 'fn');
       }
 
-      while($injectAnnotationIndex--) {
-        key = $injectAnnotation[$injectAnnotationIndex];
-        args.unshift(locals && locals.hasOwnProperty(key) ? locals[key] : getService(key));
+      for(var i = 0; i < length; i++) {
+        key = $inject[i];
+        args.push(
+          locals && locals.hasOwnProperty(key)
+          ? locals[key]
+          : getService(key, path)
+        );
       }
 
       // Performance optimization: http://jsperf.com/apply-vs-call-vs-invoke

@@ -1,6 +1,12 @@
 'use strict';
 
 describe('angular', function() {
+  var element;
+
+  afterEach(function(){
+    dealoc(element);
+  });
+
   describe('case', function() {
     it('should change case', function() {
       expect(lowercase('ABC90')).toEqual('abc90');
@@ -72,6 +78,22 @@ describe('angular', function() {
       expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
       src = dst = [2, 4];
       expect(function() { copy(src, dst); }).toThrow("Can't copy equivalent objects or arrays");
+    });
+  });
+
+  describe('shallow copy', function() {
+    it('should make a copy', function() {
+      var original = {key:{}};
+      var copy = shallowCopy(original);
+      expect(copy).toEqual(original);
+      expect(copy.key).toBe(original.key);
+    });
+  });
+
+  describe('elementHTML', function() {
+    it('should dump element', function() {
+      expect(lowercase(startingTag('<div attr="123">something<span></span></div>'))).
+        toEqual('<div attr="123">');
     });
   });
 
@@ -366,28 +388,6 @@ describe('angular', function() {
   });
 
 
-  describe('directive', function() {
-    it('should register directives with case-insensitive id', inject(function($compile) {
-      angularDirective('ALLCAPS', function(val, el) {el.text('+' + val + '+')});
-      angularDirective('lowercase', function(val, el) {el.text('-' + val + '-')});
-
-      var el = jqLite('<div>' +
-                        '<span allcaps="xx1"></span>' +
-                        '<span ALLcaps="xx2"></span>' +
-                        '<span ALLCAPS="xx3"></span>' +
-                        '<span lowerCASE="XX4">xx4</span>' +
-                      '</div>');
-      $compile(el);
-      expect(lowercase(sortedHtml(el))).toBe('<div>' +
-                                                '<span allcaps="xx1">+xx1+</span>' +
-                                                '<span allcaps="xx2">+xx2+</span>' +
-                                                '<span allcaps="xx3">+xx3+</span>' +
-                                                '<span lowercase="xx4">-xx4-</span>' +
-                                              '</div>');
-    }));
-  });
-
-
   describe('isDate', function() {
     it('should return true for Date object', function() {
       expect(isDate(new Date())).toBe(true);
@@ -404,7 +404,7 @@ describe('angular', function() {
   describe('compile', function() {
     it('should link to existing node and create scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      $compile(template)($rootScope);
+      element = $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
       expect($rootScope.greeting).toEqual('hello world');
@@ -412,7 +412,7 @@ describe('angular', function() {
 
     it('should link to existing node and given scope', inject(function($rootScope, $compile) {
       var template = angular.element('<div>{{greeting = "hello world"}}</div>');
-      $compile(template)($rootScope);
+      element = $compile(template)($rootScope);
       $rootScope.$digest();
       expect(template.text()).toEqual('hello world');
     }));
@@ -420,15 +420,15 @@ describe('angular', function() {
     it('should link to new node and given scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
 
-      var templateFn = $compile(template);
+      var compile = $compile(template);
       var templateClone = template.clone();
 
-      var element = templateFn($rootScope, function(clone){
+      element = compile($rootScope, function(clone){
         templateClone = clone;
       });
       $rootScope.$digest();
 
-      expect(template.text()).toEqual('');
+      expect(template.text()).toEqual('{{greeting = "hello world"}}');
       expect(element.text()).toEqual('hello world');
       expect(element).toEqual(templateClone);
       expect($rootScope.greeting).toEqual('hello world');
@@ -436,9 +436,9 @@ describe('angular', function() {
 
     it('should link to cloned node and create scope', inject(function($rootScope, $compile) {
       var template = jqLite('<div>{{greeting = "hello world"}}</div>');
-      var element = $compile(template)($rootScope, noop);
+      element = $compile(template)($rootScope, noop);
       $rootScope.$digest();
-      expect(template.text()).toEqual('');
+      expect(template.text()).toEqual('{{greeting = "hello world"}}');
       expect(element.text()).toEqual('hello world');
       expect($rootScope.greeting).toEqual('hello world');
     }));
@@ -499,6 +499,20 @@ describe('angular', function() {
       expect(injector).toBeDefined();
       expect(element.data('$injector')).toBe(injector);
       dealoc(element);
+    });
+  });
+
+
+  describe('startingElementHtml', function(){
+    it('should show starting element tag only', function(){
+      expect(startingTag('<ng:abc x="2"><div>text</div></ng:abc>')).toEqual('<ng:abc x="2">');
+    });
+  });
+
+  describe('snake_case', function(){
+    it('should convert to snake_case', function() {
+      expect(snake_case('ABC')).toEqual('a_b_c');
+      expect(snake_case('alanBobCharles')).toEqual('alan_bob_charles');
     });
   });
 });

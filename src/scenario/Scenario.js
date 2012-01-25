@@ -345,25 +345,71 @@ function browserTrigger(element, type, keys) {
  * Finds all bindings with the substring match of name and returns an
  * array of their values.
  *
- * @param {string} name The name to match
+ * @param {string} bindExp The name to match
  * @return {Array.<string>} String of binding values
  */
-_jQuery.fn.bindings = function(name) {
-  function contains(text, value) {
-    return value instanceof RegExp
-      ? value.test(text)
-      : text && text.indexOf(value) >= 0;
+_jQuery.fn.bindings = function(windowJquery, bindExp) {
+  var result = [], match,
+      bindSelector = '.ng-binding:visible';
+  if (angular.isString(bindExp)) {
+    bindExp = bindExp.replace(/\s/g, '');
+    match = function (actualExp) {
+      if (actualExp) {
+        actualExp = actualExp.replace(/\s/g, '');
+        if (actualExp == bindExp) return true;
+        if (actualExp.indexOf(bindExp) == 0) {
+          return actualExp.charAt(bindExp.length) == '|';
+        }
+      }
+    }
+  } else if (bindExp) {
+    match = function(actualExp) {
+      return actualExp && bindExp.exec(actualExp);
+    }
+  } else {
+    match = function(actualExp) {
+      return !!actualExp;
+    };
   }
-  var result = [];
-  this.find('.ng-binding:visible').each(function() {
-    var element = new _jQuery(this);
-    if (!angular.isDefined(name) ||
-      contains(element.attr('ng:bind'), name) ||
-      contains(element.attr('ng:bind-template'), name)) {
-      if (element.is('input, textarea')) {
-        result.push(element.val());
+  var selection = this.find(bindSelector);
+  if (this.is(bindSelector)) {
+    selection = selection.add(this);
+  }
+
+  function push(value) {
+    if (value == undefined) {
+      value = '';
+    } else if (typeof value != 'string') {
+      value = angular.toJson(value);
+    }
+    result.push('' + value);
+  }
+
+  selection.each(function() {
+    var element = windowJquery(this),
+        binding;
+    if (binding = element.data('$binding')) {
+      if (typeof binding == 'string') {
+        if (match(binding)) {
+          push(element.scope().$eval(binding));
+        }
       } else {
-        result.push(element.html());
+        if (!angular.isArray(binding)) {
+          binding = [binding];
+        }
+        for(var fns, j=0, jj=binding.length;  j<jj; j++) {
+          fns = binding[j];
+          if (fns.parts) {
+            fns = fns.parts;
+          } else {
+            fns = [fns];
+          }
+          for (var scope, fn, i = 0, ii = fns.length; i < ii; i++) {
+            if(match((fn = fns[i]).exp)) {
+              push(fn(scope = scope || element.scope()));
+            }
+          }
+        }
       }
     }
   });

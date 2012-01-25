@@ -68,8 +68,7 @@ function shivForIE(elementName) {
   return elementName;
 }
 
-var $$scope           = '$scope',
-    $boolean          = 'boolean',
+var $boolean          = 'boolean',
     $console          = 'console',
     $length           = 'length',
     $name             = 'name',
@@ -90,15 +89,7 @@ var $$scope           = '$scope',
 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
-    angularModule     = null,
-    /** @name angular.markup */
-    angularTextMarkup = extensionMap(angular, 'markup'),
-    /** @name angular.attrMarkup */
-    angularAttrMarkup = extensionMap(angular, 'attrMarkup'),
-    /** @name angular.directive */
-    angularDirective  = extensionMap(angular, 'directive', lowercase),
-    /** @name angular.widget */
-    angularWidget     = extensionMap(angular, 'widget', shivForIE),
+    angularModule,
     /** @name angular.module.ng */
     angularInputType  = extensionMap(angular, 'inputType', lowercase),
     nodeName_,
@@ -627,6 +618,22 @@ function copy(source, destination){
 }
 
 /**
+ * Create a shallow copy of an object
+ * @param src
+ */
+function shallowCopy(src) {
+  var dst = {},
+      key;
+  for(key in src) {
+    if (src.hasOwnProperty(key)) {
+      dst[key] = src[key];
+    }
+  }
+  return dst;
+}
+
+
+/**
  * @ngdoc function
  * @name angular.equals
  * @function
@@ -748,6 +755,19 @@ function toBoolean(value) {
     value = false;
   }
   return value;
+}
+
+/**
+ * @returns {string} Returns the string representation of the element.
+ */
+function startingTag(element) {
+  element = jqLite(element).clone();
+  try {
+    // turns out IE does not let you set .html() on elements which
+    // are not allowed to have children. So we just ignore it.
+    element.html('');
+  } catch(e) {};
+  return jqLite('<div>').append(element).html().replace(/\<\/[\w\:\-]+\>$/, '');
 }
 
 
@@ -918,6 +938,14 @@ function bootstrap(element, modules) {
   return injector;
 }
 
+var SNAKE_CASE_REGEXP = /[A-Z]/g;
+function snake_case(name, separator){
+  separator = separator || '_';
+  return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
+    return (pos ? separator : '') + letter.toLowerCase();
+  });
+}
+
 function bindJQuery() {
   // bind to jQuery if present;
   jQuery = window.jQuery;
@@ -952,6 +980,6 @@ function assertArg(arg, name, reason) {
 
 function assertArgFn(arg, name) {
   assertArg(isFunction(arg), name, 'not a function, got ' +
-      (typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
+      (arg && typeof arg == 'object' ? arg.constructor.name || 'Object' : typeof arg));
   return arg;
 }

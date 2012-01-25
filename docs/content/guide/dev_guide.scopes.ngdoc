@@ -14,7 +14,7 @@ the contexts in which Angular creates data-bindings between the model and the vi
 In addition to providing the context in which data is evaluated, Angular scope objects watch for
 model changes. The scope objects also notify all components interested in any model changes (for
 example, functions registered through {@link api/angular.module.ng.$rootScope.Scope#$watch $watch}, bindings created by
-{@link api/angular.directive.ng:bind ng:bind}, or HTML input elements).
+{@link api/angular.module.ng.$compileProvider.directive.ng:bind ng:bind}, or HTML input elements).
 
 Angular scope objects:
 

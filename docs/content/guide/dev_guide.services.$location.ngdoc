@@ -434,40 +434,40 @@ In this examples we use `<base href="/base/index.html" />`
     this.$location = $location;
   }
 
-  angular.widget('ng:address-bar', function(tpl) {
-    return function(elm) {
-      var browser = browsers[elm.attr('browser')],
-          input = angular.element('<input type="text" />').val(browser.url()),
-          delay;
-
-      input.bind('keypress keyup keydown', function() {
-        if (!delay) {
-          delay = setTimeout(fireUrlChange, 250);
-        }
-      });
-
-      browser.url = function(url) {
-        return input.val(url);
-      };
-
-      elm.append('Address: ').append(input);
-
-      function fireUrlChange() {
-        delay = null;
-        browser.urlChange(input.val());
-      }
-    };
-  });
-
   function initEnv(name) {
     var root = angular.element(document.getElementById(name + '-mode'));
-    angular.bootstrap(root, [function($locationProvider, $provide){
+    angular.bootstrap(root, [function($compileProvider, $locationProvider, $provide){
       $locationProvider.html5Mode = true;
       $locationProvider.hashPrefix = '!';
       
       $provide.value('$browser', browsers[name]);
       $provide.value('$document', root);
       $provide.value('$sniffer', {history: name == 'html5'});
+
+      $compileProvider.directive('ngAddressBar', function() {
+        return function(scope, elm, attrs) {
+          var browser = browsers[attrs.browser],
+              input = angular.element('<input type="text" />').val(browser.url()),
+              delay;
+
+          input.bind('keypress keyup keydown', function() {
+            if (!delay) {
+              delay = setTimeout(fireUrlChange, 250);
+            }
+          });
+
+          browser.url = function(url) {
+            return input.val(url);
+          };
+
+          elm.append('Address: ').append(input);
+
+          function fireUrlChange() {
+            delay = null;
+            browser.urlChange(input.val());
+          }
+        };
+      });
     }]);
     root.bind('click', function(e) {
       e.stopPropagation();

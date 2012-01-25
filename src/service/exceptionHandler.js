@@ -10,13 +10,17 @@
  * The default implementation simply delegates to `$log.error` which logs it into
  * the browser console.
  *
- * In unit tests, if `angular-mocks.js` is loaded, this service is overriden by
+ * In unit tests, if `angular-mocks.js` is loaded, this service is overridden by
  * {@link angular.module.ngMock.$exceptionHandler mock $exceptionHandler}
+ *
+ * @param {Error} exception Exception associated with the error.
+ * @param {string=} cause optional information about the context in which
+ *       the error was thrown.
  */
-function $ExceptionHandlerProvider(){
+function $ExceptionHandlerProvider() {
   this.$get = ['$log', function($log){
-    return function(e) {
-      $log.error(e);
+    return function(exception, cause) {
+      $log.error.apply($log, arguments);
     };
   }];
 }

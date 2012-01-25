@@ -35,6 +35,7 @@
  * - [bind()](http://api.jquery.com/bind/)
  * - [children()](http://api.jquery.com/children/)
  * - [clone()](http://api.jquery.com/clone/)
+ * - [contents()](http://api.jquery.com/contents/)
  * - [css()](http://api.jquery.com/css/)
  * - [data()](http://api.jquery.com/data/)
  * - [eq()](http://api.jquery.com/eq/)
@@ -99,13 +100,20 @@ function getStyle(element) {
 }
 
 
+var SPECIAL_CHARS_REGEXP = /([\:\-\_]+(.))/g;
+var MOZ_HACK_REGEXP = /^moz([A-Z])/;
+
 /**
- * Converts dash-separated names to camelCase. Useful for dealing with css properties.
+ * Converts snake_case to camelCase.
+ * Also there is special case for Moz prefix starting with upper case letter.
+ * @param name Name to normalize
  */
 function camelCase(name) {
-  return name.replace(/\-(\w)/g, function(all, letter, offset){
-    return (offset == 0 && letter == 'w') ? 'w' : letter.toUpperCase();
-  });
+  return name.
+    replace(SPECIAL_CHARS_REGEXP, function(_, separator, letter, offset) {
+      return offset ? letter.toUpperCase() : letter;
+    }).
+    replace(MOZ_HACK_REGEXP, 'Moz$1');
 }
 
 /////////////////////////////////////////////
@@ -313,7 +321,7 @@ forEach({
   },
 
   scope: function(element) {
-    return jqLite(element).inheritedData($$scope);
+    return jqLite(element).inheritedData('$scope');
   },
 
   injector: function(element) {
@@ -390,15 +398,14 @@ forEach({
 
   text: extend((msie < 9)
       ? function(element, value) {
-        // NodeType == 3 is text node
-        if (element.nodeType == 3) {
-          if (isUndefined(value))
-            return element.nodeValue;
-          element.nodeValue = value;
-        } else {
+        if (element.nodeType == 1 /** Element */) {
           if (isUndefined(value))
             return element.innerText;
           element.innerText = value;
+        } else {
+          if (isUndefined(value))
+            return element.nodeValue;
+          element.nodeValue = value;
         }
       }
       : function(element, value) {
@@ -554,6 +561,10 @@ forEach({
         children.push(element);
     });
     return children;
+  },
+
+  contents: function(element) {
+    return element.childNodes;
   },
 
   append: function(element, node) {

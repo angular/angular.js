@@ -153,14 +153,6 @@ describe('filters', function() {
     });
   });
 
-  describe('html', function() {
-    it('should do basic filter', function() {
-      var html = filter('html')("a<b>c</b>d");
-      expect(html instanceof HTML).toBeTruthy();
-      expect(html.html).toEqual("a<b>c</b>d");
-    });
-  });
-
   describe('linky', function() {
     var linky;
 
@@ -169,7 +161,7 @@ describe('filters', function() {
     }));
 
     it('should do basic filter', function() {
-      expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c").html).
+      expect(linky("http://ab/ (http://a/) <http://a/> http://1.2/v:~-123. c")).
         toEqual('<a href="http://ab/">http://ab/</a> ' +
                 '(<a href="http://a/">http://a/</a>) ' +
                 '&lt;<a href="http://a/">http://a/</a>&gt; ' +
@@ -178,11 +170,11 @@ describe('filters', function() {
     });
 
     it('should handle mailto:', function() {
-      expect(linky("mailto:me@example.com").html).
+      expect(linky("mailto:me@example.com")).
                       toEqual('<a href="mailto:me@example.com">me@example.com</a>');
-      expect(linky("me@example.com").html).
+      expect(linky("me@example.com")).
                       toEqual('<a href="mailto:me@example.com">me@example.com</a>');
-      expect(linky("send email to me@example.com, but").html).
+      expect(linky("send email to me@example.com, but")).
         toEqual('send email to <a href="mailto:me@example.com">me@example.com</a>, but');
     });
   });

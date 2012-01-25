@@ -154,13 +154,12 @@ describe('ngdoc', function() {
           };
         }
 
-        var angular_widget = doc('overview', 'angular.widget');
-        var angular_x = doc('function', 'angular.x');
-        var angular_y = doc('property', 'angular.y');
+        var dev_guide_overview = doc('overview', 'dev_guide.overview');
+        var dev_guide_bootstrap = doc('function', 'dev_guide.bootstrap');
 
-        it('should put angular.fn() in front of angular.widget, etc', function() {
-          expect(ngdoc.metadata([angular_widget, angular_y, angular_x]).map(property('id')))
-            .toEqual(['angular.x', 'angular.y', 'angular.widget' ]);
+        it('should put angular.fn() in front of dev_guide.overview, etc', function() {
+          expect(ngdoc.metadata([dev_guide_overview, dev_guide_bootstrap]).map(property('id')))
+            .toEqual(['dev_guide.overview', 'dev_guide.bootstrap']);
         });
       });
     });

@@ -438,14 +438,14 @@ function $HttpProvider() {
             it('should make an xhr GET request', function() {
               element(':button:contains("Sample GET")').click();
               element(':button:contains("fetch")').click();
-              expect(binding('status')).toBe('http status code: 200');
-              expect(binding('data')).toBe('http response data: Hello, $http!\n');
+              expect(binding('status')).toBe('200');
+              expect(binding('data')).toBe('Hello, $http!\n');
             });
 
             it('should make a JSONP request to angularjs.org', function() {
               element(':button:contains("Sample JSONP")').click();
               element(':button:contains("fetch")').click();
-              expect(binding('status')).toBe('http status code: 200');
+              expect(binding('status')).toBe('200');
               expect(binding('data')).toMatch(/Super Hero!/);
             });
 
@@ -453,8 +453,8 @@ function $HttpProvider() {
                 function() {
               element(':button:contains("Invalid JSONP")').click();
               element(':button:contains("fetch")').click();
-              expect(binding('status')).toBe('http status code: 0');
-              expect(binding('data')).toBe('http response data: Request failed');
+              expect(binding('status')).toBe('0');
+              expect(binding('data')).toBe('Request failed');
             });
           </doc:scenario>
         </doc:example>

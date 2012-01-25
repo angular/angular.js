@@ -84,7 +84,7 @@ All `inputType` widgets support:
   it('should invalidate on wrong input', function() {
     expect(element('form[name=myForm]').prop('className')).toMatch('ng-valid');
     input('data').enter('{}');
-    expect(binding('data')).toEqual('data={\n  }');
+    expect(binding('data')).toEqual('{}');
     input('data').enter('{');
     expect(element('form[name=myForm]').prop('className')).toMatch('ng-invalid');
   });

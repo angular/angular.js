@@ -20,17 +20,17 @@ following ways:
 * Make a direct property assignment to the scope object in JavaScript code; this most commonly
 occurs in controllers:
 
-         function MyCtrl() {
+         function MyCtrl($scope) {
              // create property 'foo' on the MyCtrl's scope
              // and assign it an initial value 'bar'
-             this.foo = 'bar';
+             $scope.foo = 'bar';
          }
 
 * Use an {@link dev_guide.expressions angular expression} with an assignment operator in templates:
 
          <button ng:click="{{foos='ball'}}">Click me</button>
 
-* Use {@link api/angular.directive.ng:init ng:init directive} in templates (for toy/example apps
+* Use {@link api/angular.module.ng.$compileProvider.directive.ng:init ng:init directive} in templates (for toy/example apps
 only, not recommended for real applications):
 
          <body ng:init=" foo = 'bar' ">
@@ -45,7 +45,7 @@ when processing the following template constructs:
    The code above creates a model called "query" on the current scope with the value set to "fluffy
 cloud".
 
-* An iterator declaration in {@link api/angular.widget.@ng:repeat ng:repeater}:
+* An iterator declaration in {@link api/angular.module.ng.$compileProvider.directive.@ng:repeat ng:repeater}:
 
          <p ng:repeat="phone in phones"></p>
 

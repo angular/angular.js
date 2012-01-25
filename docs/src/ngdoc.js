@@ -630,7 +630,6 @@ var KEYWORD_PRIORITY = {
   '.angular.module': 8,
   '.angular.mock': 9,
   '.angular.module.ng.$filter': 7,
-  '.angular.module.ng.$filter': 7,
   '.angular.module.ng.$rootScope.Scope': 7,
   '.angular.module.ng': 7,
   '.angular.mock': 8,

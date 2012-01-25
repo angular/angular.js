@@ -1,40 +1,8 @@
 'use strict';
 
 /**
- * @ngdoc function
- * @name angular.directive
- * @description
- *
- * Angular directives create custom attributes for DOM elements. A directive can modify the
- * behavior of the element in which it is specified. Do not use directives to add elements to the
- * DOM; instead, use {@link angular.widget widgets} to add DOM elements.
- *
- * For more information about how Angular directives work, and to learn how to create your own
- * directives, see {@link guide/dev_guide.compiler.directives Understanding Angular Directives} in
- * the Angular Developer Guide.
- *
- * @param {string} name Directive identifier (case insensitive).
- * @param {function(string, Element)} compileFn Also called "template function" is a function called
- *    during compilation of the template when the compiler comes across the directive being
- *    registered. The string value of the element attribute representing the directive and
- *    jQuery/jqLite wrapped DOM element are passed as arguments to this function.
- *
- *    The `compileFn` function may return a linking function also called an instance function.
- *    This function is called during the linking phase when a Scope is being associated with the
- *    template or template clone (see repeater notes below). The signature of the linking function
- *    is: `function(Element)` where Element is jQuery/jqLite wrapped DOM Element that is being
- *    linked.
- *
- * The biggest differenciator between the compile and linking functions is how they are being called
- * when a directive is present within an {@link angular.widget.@ng:repeat ng:repeat}. In this case,
- * the compile function gets called once per occurence of the directive in the template. On the
- * other hand the linking function gets called once for each repeated clone of the template (times
- * number of occurences of the directive in the repeated template).
- */
-
-/**
  * @ngdoc directive
- * @name angular.directive.ng:init
+ * @name angular.module.ng.$compileProvider.directive.ng:init
  *
  * @description
  * The `ng:init` attribute specifies initialization tasks to be executed
@@ -58,15 +26,19 @@
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:init", function(expression){
-  return function(element){
-    this.$eval(expression);
-  };
+var ngInitDirective = valueFn({
+  compile: function() {
+    return {
+      pre: function(scope, element, attrs) {
+        scope.$eval(attrs.ngInit);
+      }
+    }
+  }
 });
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:controller
+ * @name angular.module.ng.$compileProvider.directive.ng:controller
  *
  * @description
  * The `ng:controller` directive assigns behavior to a scope. This is a key aspect of how angular
@@ -158,20 +130,28 @@ angularDirective("ng:init", function(expression){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:controller", function(expression) {
-  this.scope(true);
-  return ['$controller', '$window', function($controller, $window) {
-    var scope = this,
-        Controller = getter(scope, expression, true) || getter($window, expression, true);
+var ngControllerDirective = ['$controller', '$window', function($controller, $window) {
+  return {
+    scope: true,
+    compile: function() {
+      return {
+        pre: function(scope, element, attr) {
+          var expression = attr.ngController,
+              Controller = getter(scope, expression, true) || getter($window, expression, true);
 
-    assertArgFn(Controller, expression);
-    $controller(Controller, scope);
-  }];
-});
+          assertArgFn(Controller, expression);
+          $controller(Controller, scope);
+        }
+      };
+    }
+  }
+}];
+
+
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:bind
+ * @name angular.module.ng.$compileProvider.directive.ng:bind
  *
  * @description
  * The `ng:bind` attribute tells Angular to replace the text content of the specified HTML element
@@ -208,60 +188,35 @@ angularDirective("ng:controller", function(expression) {
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:bind", function(expression, element){
-  element.addClass('ng-binding');
-  return ['$exceptionHandler', '$parse', '$element', function($exceptionHandler, $parse, element) {
-    var exprFn = $parse(expression),
-        lastValue = Number.NaN,
-        scope = this;
+var ngBindDirective = valueFn(function(scope, element, attr) {
+  element.addClass('ng-binding').data('$binding', attr.ngBind);
+  scope.$watch(attr.ngBind, function(value) {
+    element.text(value == undefined ? '' : value);
+  });
+});
 
-    scope.$watch(function() {
-      // TODO(misko): remove error handling https://github.com/angular/angular.js/issues/347
-      var value, html, isHtml, isDomElement,
-          hadOwnElement = scope.hasOwnProperty('$element'),
-          oldElement = scope.$element;
-      // TODO(misko): get rid of $element https://github.com/angular/angular.js/issues/348
-      scope.$element = element;
-      try {
-        value = exprFn(scope);
-        // If we are HTML than save the raw HTML data so that we don't recompute sanitization since
-        // it is expensive.
-        // TODO(misko): turn this into a more generic way to compute this
-        if ((isHtml = (value instanceof HTML)))
-          value = (html = value).html;
-        if (lastValue === value) return;
-        isDomElement = isElement(value);
-        if (!isHtml && !isDomElement && isObject(value)) {
-          value = toJson(value, true);
-        }
-        if (value != lastValue) {
-          lastValue = value;
-          if (isHtml) {
-            element.html(html.get());
-          } else if (isDomElement) {
-            element.html('');
-            element.append(value);
-          } else {
-            element.text(value == undefined ? '' : value);
-          }
-        }
-      } catch (e) {
-        $exceptionHandler(e);
-      } finally {
-        if (hadOwnElement) {
-          scope.$element = oldElement;
-        } else {
-          delete scope.$element;
-        }
+var ngBindHtmlUnsafeDirective = valueFn(function(scope, element, attr) {
+  element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
+  scope.$watch(attr.ngBindHtmlUnsafe, function(value) {
+    element.html(value == undefined ? '' : value);
+  });
+});
+
+var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
+  return function(scope, element, attr) {
+    element.addClass('ng-binding').data('$binding', attr.ngBindHtml);
+    scope.$watch(attr.ngBindHtml, function(value) {
+      if (value = $sanitize(value)) {
+        element.html(value);
       }
     });
-  }];
-});
+  }
+}];
 
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:bind-template
+ * @name angular.module.ng.$compileProvider.directive.ng:bind-template
  *
  * @description
  * The `ng:bind-template` attribute specifies that the element
@@ -292,36 +247,33 @@ angularDirective("ng:bind", function(expression, element){
      </doc:source>
      <doc:scenario>
        it('should check ng:bind', function() {
-         expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
-           toBe('Hello World!');
+         expect(using('.doc-example-live').binding('salutation')).
+           toBe('Hello');
+         expect(using('.doc-example-live').binding('name')).
+           toBe('World');
          using('.doc-example-live').input('salutation').enter('Greetings');
          using('.doc-example-live').input('name').enter('user');
-         expect(using('.doc-example-live').binding('{{salutation}} {{name}}')).
-           toBe('Greetings user!');
+         expect(using('.doc-example-live').binding('salutation')).
+           toBe('Greetings');
+         expect(using('.doc-example-live').binding('name')).
+           toBe('user');
        });
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:bind-template", function(expression, element){
-  element.addClass('ng-binding');
-  var templateFn = compileBindTemplate(expression);
-  return function(element) {
-    var lastValue,
-        scope = this;
-
-    scope.$watch(function() {
-      var value = templateFn(scope, element, true);
-      if (value != lastValue) {
-        element.text(value);
-        lastValue = value;
-      }
+var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
+  return function(scope, element, attr) {
+    var interpolateFn = $interpolate(attr.ngBindTemplate);
+    element.addClass('ng-binding').data('$binding', interpolateFn);
+    scope.$watch(interpolateFn, function(value) {
+      element.text(value);
     });
-  };
-});
+  }
+}];
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:bind-attr
+ * @name angular.module.ng.$compileProvider.directive.ng:bind-attr
  *
  * @description
  * The `ng:bind-attr` attribute specifies that a
@@ -349,7 +301,7 @@ angularDirective("ng:bind-template", function(expression, element){
  * During compilation, the template with attribute markup gets translated to the ng:bind-attr form
  * mentioned above.
  *
- * _Note_: You might want to consider using {@link angular.directive.ng:href ng:href} instead of
+ * _Note_: You might want to consider using {@link angular.module.ng.$compileProvider.directive.ng:href ng:href} instead of
  * `href` if the binding is present in the main application template (`index.html`) and you want to
  * make sure that a user is not capable of clicking on raw/uncompiled link.
  *
@@ -392,28 +344,30 @@ angularDirective("ng:bind-template", function(expression, element){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:bind-attr", function(expression){
-  return function(element){
-    var lastValue = {},
-        scope = this;
 
+var ngBindAttrDirective = ['$interpolate', function($interpolate) {
+  return function(scope, element, attr) {
+    var lastValue = {};
+    var interpolateFns = {};
     scope.$watch(function() {
-      var values = scope.$eval(expression);
+      var values = scope.$eval(attr.ngBindAttr);
       for(var key in values) {
-        var value = compileBindTemplate(values[key])(scope, element);
+        var exp = values[key],
+            fn = (interpolateFns[exp] ||
+              (interpolateFns[values[key]] = $interpolate(exp))),
+            value = fn(scope);
         if (lastValue[key] !== value) {
-          lastValue[key] = value;
-          element.attr(key, BOOLEAN_ATTR[lowercase(key)] ? toBoolean(value) : value);
+          attr.$set(key, lastValue[key] = value);
         }
       }
     });
-  };
-});
+  }
+}];
 
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:click
+ * @name angular.module.ng.$compileProvider.directive.ng:click
  *
  * @description
  * The ng:click allows you to specify custom behavior when
@@ -448,20 +402,134 @@ angularDirective("ng:bind-attr", function(expression){
  *
  * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
-angularDirective("ng:click", function(expression, element){
-  return function(element){
-    var self = this;
-    element.bind('click', function(event){
-      self.$apply(expression);
-      event.stopPropagation();
+var ngEventDirectives = {};
+forEach(
+  'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave'.split(' '),
+  function(name) {
+    var directiveName = directiveNormalize('ng-' + name);
+    ngEventDirectives[directiveName] = valueFn(function(scope, element, attr) {
+      element.bind(lowercase(name), function(event) {
+        scope.$apply(attr[directiveName]);
+        event.stopPropagation();
+      });
     });
-  };
-});
+  }
+);
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:dblclick
+ *
+ * @description
+ * The ng:dblclick allows you to specify custom behavior on dblclick event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * dblclick.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
 
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:submit
+ * @name angular.module.ng.$compileProvider.directive.ng:mousedown
+ *
+ * @description
+ * The ng:mousedown allows you to specify custom behavior on mousedown event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mousedown.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseup
+ *
+ * @description
+ * Specify custom behavior on mouseup event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseup.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseover
+ *
+ * @description
+ * Specify custom behavior on mouseover event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseover.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseenter
+ *
+ * @description
+ * Specify custom behavior on mouseenter event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseenter.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mouseleave
+ *
+ * @description
+ * Specify custom behavior on mouseleave event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mouseleave.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:mousemove
+ *
+ * @description
+ * Specify custom behavior on mousemove event.
+ *
+ * @element ANY
+ * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
+ * mousemove.
+ *
+ * @example
+ * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ */
+
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:submit
  *
  * @description
  * Enables binding angular expressions to onsubmit events.
@@ -496,53 +564,47 @@ angularDirective("ng:click", function(expression, element){
      </doc:source>
      <doc:scenario>
        it('should check ng:submit', function() {
-         expect(binding('list')).toBe('list=[]');
+         expect(binding('list')).toBe('[]');
          element('.doc-example-live #submit').click();
-         expect(binding('list')).toBe('list=["hello"]');
+         expect(binding('list')).toBe('["hello"]');
          expect(input('text').val()).toBe('');
        });
        it('should ignore empty strings', function() {
-         expect(binding('list')).toBe('list=[]');
+         expect(binding('list')).toBe('[]');
          element('.doc-example-live #submit').click();
          element('.doc-example-live #submit').click();
-         expect(binding('list')).toBe('list=["hello"]');
+         expect(binding('list')).toBe('["hello"]');
        });
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:submit", function(expression, element) {
-  return function(element) {
-    var self = this;
-    element.bind('submit', function() {
-      self.$apply(expression);
-    });
-  };
+var ngSubmitDirective = valueFn(function(scope, element, attrs) {
+  element.bind('submit', function() {
+    scope.$apply(attrs.ngSubmit);
+  });
 });
 
 
-function ngClass(selector) {
-  return function(expression, element) {
-    return function(element) {
-      var scope = this;
-      scope.$watch(expression, function(newVal, oldVal) {
-        if (selector(scope.$index)) {
-          if (oldVal && (newVal !== oldVal)) {
-            if (isObject(oldVal) && !isArray(oldVal))
-              oldVal = map(oldVal, function(v, k) { if (v) return k });
-            element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
-          }
-          if (isObject(newVal) && !isArray(newVal))
+function classDirective(name, selector) {
+  name = 'ngClass' + name;
+  return valueFn(function(scope, element, attr) {
+    scope.$watch(attr[name], function(newVal, oldVal) {
+      if (selector === true || scope.$index % 2 === selector) {
+        if (oldVal && (newVal !== oldVal)) {
+           if (isObject(oldVal) && !isArray(oldVal))
+             oldVal = map(oldVal, function(v, k) { if (v) return k });
+           element.removeClass(isArray(oldVal) ? oldVal.join(' ') : oldVal);
+         }
+         if (isObject(newVal) && !isArray(newVal))
             newVal = map(newVal, function(v, k) { if (v) return k });
-          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);
-        }
-      });
-    };
-  };
+         if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);      }
+    });
+  });
 }
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:class
+ * @name angular.module.ng.$compileProvider.directive.ng:class
  *
  * @description
  * The `ng:class` allows you to set CSS class on HTML element dynamically by databinding an
@@ -584,19 +646,19 @@ function ngClass(selector) {
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class", ngClass(function() {return true;}));
+var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:class-odd
+ * @name angular.module.ng.$compileProvider.directive.ng:class-odd
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * {@link angular.module.ng.$compileProvider.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
  * takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.widget.@ng:repeat ng:repeat}.
+ * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
@@ -624,19 +686,19 @@ angularDirective("ng:class", ngClass(function() {return true;}));
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
+var ngClassOddDirective = classDirective('Odd', 0);
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:class-even
+ * @name angular.module.ng.$compileProvider.directive.ng:class-even
  *
  * @description
  * The `ng:class-odd` and `ng:class-even` works exactly as
- * {@link angular.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * {@link angular.module.ng.$compileProvider.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
  * takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.widget.@ng:repeat ng:repeat}.
+ * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
@@ -663,11 +725,11 @@ angularDirective("ng:class-odd", ngClass(function(i){return i % 2 === 0;}));
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
+var ngClassEvenDirective = classDirective('Even', 1);
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:show
+ * @name angular.module.ng.$compileProvider.directive.ng:show
  *
  * @description
  * The `ng:show` and `ng:hide` directives show or hide a portion of the DOM tree (HTML)
@@ -697,18 +759,16 @@ angularDirective("ng:class-even", ngClass(function(i){return i % 2 === 1;}));
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:show", function(expression, element){
-  return function(element) {
-    var scope = this;
-    scope.$watch(expression, function(value) {
-      element.css('display', toBoolean(value) ? '' : 'none');
-    });
-  };
+//TODO(misko): refactor to remove element from the DOM
+var ngShowDirective = valueFn(function(scope, element, attr){
+  scope.$watch(attr.ngShow, function(value){
+    element.css('display', toBoolean(value) ? '' : 'none');
+  });
 });
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:hide
+ * @name angular.module.ng.$compileProvider.directive.ng:hide
  *
  * @description
  * The `ng:hide` and `ng:show` directives hide or show a portion
@@ -738,18 +798,16 @@ angularDirective("ng:show", function(expression, element){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:hide", function(expression, element){
-  return function(element) {
-    var scope = this;
-    scope.$watch(expression, function(value) {
-      element.css('display', toBoolean(value) ? 'none' : '');
-    });
-  };
+//TODO(misko): refactor to remove element from the DOM
+var ngHideDirective = valueFn(function(scope, element, attr){
+  scope.$watch(attr.ngHide, function(value){
+    element.css('display', toBoolean(value) ? 'none' : '');
+  });
 });
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:style
+ * @name angular.module.ng.$compileProvider.directive.ng:style
  *
  * @description
  * The ng:style allows you to set CSS style on an HTML element conditionally.
@@ -779,22 +837,19 @@ angularDirective("ng:hide", function(expression, element){
      </doc:scenario>
    </doc:example>
  */
-angularDirective("ng:style", function(expression, element) {
-  return function(element) {
-    var scope = this;
-    scope.$watch(expression, function(newStyles, oldStyles) {
-      if (oldStyles && (newStyles !== oldStyles)) {
-        forEach(oldStyles, function(val, style) { element.css(style, '');});
-      }
-      if (newStyles) element.css(newStyles);
-    });
-  };
+var ngStyleDirective = valueFn(function(scope, element, attr) {
+  scope.$watch(attr.ngStyle, function(newStyles, oldStyles) {
+    if (oldStyles && (newStyles !== oldStyles)) {
+      forEach(oldStyles, function(val, style) { element.css(style, '');});
+    }
+    if (newStyles) element.css(newStyles);
+  });
 });
 
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:cloak
+ * @name angular.module.ng.$compileProvider.directive.ng:cloak
  *
  * @description
  * The `ng:cloak` directive is used to prevent the Angular html template from being briefly
@@ -845,7 +900,22 @@ angularDirective("ng:style", function(expression, element) {
    </doc:example>
  *
  */
-angularDirective("ng:cloak", function(expression, element) {
-  element.removeAttr('ng:cloak');
-  element.removeClass('ng-cloak');
+var ngCloakDirective = valueFn({
+  compile: function(element, attr) {
+    attr.$set(attr.$attr.ngCloak, undefined);
+    element.removeClass('ng-cloak');
+  }
 });
+
+function ngAttributeAliasDirective(propName, attrName) {
+  ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = ['$interpolate', function($interpolate) {
+    return function(scope, element, attr) {
+      scope.$watch($interpolate(attr[directiveNormalize('ng-' + attrName)]), function(value) {
+        attr.$set(attrName, value);
+      });
+    }
+  }];
+}
+var ngAttributeAliasDirectives = {};
+forEach(BOOLEAN_ATTR, ngAttributeAliasDirective);
+ngAttributeAliasDirective(null, 'src');
