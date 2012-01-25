@@ -590,6 +590,38 @@ describe('select', function() {
 
         browserTrigger(select, 'change');
         expect(scope.selected).toEqual([scope.values[0]]);
+        
+        scope.selected = [];
+        scope.$digest();
+        select.find('option')[0].selected = true;
+        select.find('option')[1].selected = true;
+        
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(scope.values);
+      });
+      
+      it('should update model if given values list is object', function() {
+        createSelect({
+          'ng:model':'selected',
+          'multiple':true,
+          'ng:options':'key as value for (key, value) in values'
+        });
+        scope.values = {'a':'A', 'b':'B'};
+
+        scope.selected = [];
+        scope.$digest();
+        select.find('option')[0].selected = true;
+
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(['a']);
+        
+        scope.selected = [];
+        scope.$digest();
+        select.find('option')[0].selected = true;
+        select.find('option')[1].selected = true;
+        
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(['a', 'b']);
       });
     });
   });

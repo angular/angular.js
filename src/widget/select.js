@@ -264,7 +264,7 @@ angularWidget('select', function(element){
 
               for(index = 1, length = optionGroup.length; index < length; index++) {
                 if ((optionElement = optionGroup[index].element)[0].selected) {
-                  if (keyName) tempScope[keyName] = key;
+                  if (keyName) tempScope[keyName] = optionElement.val();
                   tempScope[valueName] = collection[optionElement.val()];
                   value.push(valueFn(tempScope));
                 }
