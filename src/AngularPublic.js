@@ -69,6 +69,7 @@ function publishExternalAPI(angular){
             input: inputDirective,
             textarea: inputDirective,
             form: ngFormDirective,
+            script: scriptTemplateLoader,
             select: selectDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
