@@ -363,11 +363,11 @@ Specifically listener registration as not allowed inside the compile function.
   function link(scope, iElement, iAttrs) { ... }
 </pre>
 
-Compile function is responsible for registering DOM listeners as well as updating the DOM. It is
+Link function is responsible for registering DOM listeners as well as updating the DOM. It is
 executed after the template has been cloned. This is where most of the directive logic will be
 put.
 
-  * `scope` - {@link angular.module.ng.$rootScope.Scope Scope} - The scope to be used be the
+  * `scope` - {@link angular.module.ng.$rootScope.Scope Scope} - The scope to be used by the
     directive for registering {@link angular.module.ng.$rootScope.Scope#.watch watches}.
 
   * `iElement` - instance element - The element where the directive is to be used. It is safe to
