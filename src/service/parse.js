@@ -4,7 +4,7 @@ var OPERATORS = {
     'null':function(self){return null;},
     'true':function(self){return true;},
     'false':function(self){return false;},
-    $undefined:noop,
+    undefined:noop,
     '+':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
     '-':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
     '*':function(self, a,b){return a(self)*b(self);},
@@ -33,7 +33,8 @@ function lex(text){
       index = 0,
       json = [],
       ch,
-      lastCh = ':'; // can start regexp
+      lastCh = ':', // can start regexp
+      methodName, lastDot;
 
   while (index < text.length) {
     ch = text.charAt(index);
@@ -48,7 +49,39 @@ function lex(text){
          (token=tokens[tokens.length-1])) {
         token.json = token.text.indexOf('.') == -1;
       }
-    } else if (is('(){}[].,;:')) {
+    } else if (is('(')) {
+      token=tokens[tokens.length-1];
+      if (token && !OPERATORS[token.text]) {
+        lastDot = token.text.lastIndexOf('.');
+        if (lastDot !== -1) {
+          // method invocation
+          methodName = token.text.substr(lastDot + 1);
+          token.text = token.text.substr(0, lastDot);
+          token.fn = extend(getterFn(token.text), {
+            assign:function(self, value){
+              return setter(self, token.text, value);
+            }
+          });
+          tokens.push({
+            index: token.index + token.text.length,
+            text: '.',
+            json: false
+          });
+          tokens.push({
+            index: token.index + token.text.length + 1,
+            text: methodName,
+            json: false
+          });
+        }
+      }
+      tokens.push({
+        index: index,
+        text: ch,
+        json: false
+      });
+      json.unshift(ch);
+      index++;
+    } else if (is('){}[].,;:')) {
       tokens.push({
         index:index,
         text:ch,
@@ -144,9 +177,10 @@ function lex(text){
       fn:function() {return number;}});
   }
   function readIdent() {
-    var ident = "";
-    var start = index;
-    var fn;
+    var ident = "",
+        start = index,
+        fn;
+
     while (index < text.length) {
       var ch = text.charAt(index);
       if (ch == '.' || isIdent(ch) || isNumber(ch)) {
@@ -156,6 +190,7 @@ function lex(text){
       }
       index++;
     }
+
     fn = OPERATORS[ident];
     tokens.push({
       index:start,
@@ -476,9 +511,8 @@ function parser(text, json, $filter){
   function primary() {
     var primary;
     if (expect('(')) {
-      var expression = filterChain();
+      primary = filterChain();
       consume(')');
-      primary = expression;
     } else if (expect('[')) {
       primary = arrayDeclaration();
     } else if (expect('{')) {
@@ -490,13 +524,17 @@ function parser(text, json, $filter){
         throwError("not a primary expression", token);
       }
     }
-    var next;
+
+    var next, context;
     while ((next = expect('(', '[', '.'))) {
       if (next.text === '(') {
-        primary = functionCall(primary);
+        primary = functionCall(primary, context);
+        context = null;
       } else if (next.text === '[') {
+        context = primary;
         primary = objectIndex(primary);
       } else if (next.text === '.') {
+        context = primary;
         primary = fieldAccess(primary);
       } else {
         throwError("IMPOSSIBLE");
@@ -544,7 +582,7 @@ function parser(text, json, $filter){
       });
   }
 
-  function _functionCall(fn) {
+  function _functionCall(fn, contextGetter) {
     var argsFn = [];
     if (peekToken().text != ')') {
       do {
@@ -553,14 +591,16 @@ function parser(text, json, $filter){
     }
     consume(')');
     return function(self){
-      var args = [];
+      var args = [],
+          context = contextGetter ? contextGetter(self) : self;
+
       for ( var i = 0; i < argsFn.length; i++) {
         args.push(argsFn[i](self));
       }
       var fnPtr = fn(self) || noop;
       // IE stupidity!
       return fnPtr.apply
-          ? fnPtr.apply(self, args)
+          ? fnPtr.apply(context, args)
           : fnPtr(args[0], args[1], args[2], args[3], args[4]);
     };
   }
@@ -603,22 +643,6 @@ function parser(text, json, $filter){
         object[keyValue.key] = value;
       }
       return object;
-    };
-  }
-
-  function watchDecl () {
-    var anchorName = expect().text;
-    consume(":");
-    var expressionFn;
-    if (peekToken().text == '{') {
-      consume("{");
-      expressionFn = statements();
-      consume("}");
-    } else {
-      expressionFn = expression();
-    }
-    return function(self) {
-      return {name:anchorName, fn:expressionFn};
     };
   }
 }
@@ -669,17 +693,7 @@ function getter(obj, path, bindFnToScope) {
   return obj;
 }
 
-var getterFnCache = {},
-    JS_KEYWORDS = {};
-
-forEach(
-    ("abstract,boolean,break,byte,case,catch,char,class,const,continue,debugger,default," +
-    "delete,do,double,else,enum,export,extends,false,final,finally,float,for,function,goto," +
-    "if,implements,import,in,instanceof,int,interface,long,native,new,null,package,private," +
-    "protected,public,return,short,static,super,switch,synchronized,this,throw,throws," +
-    "transient,true,try,typeof,var,volatile,void,undefined,while,with").split(/,/),
-  function(key){ JS_KEYWORDS[key] = true;}
-);
+var getterFnCache = {};
 
 function getterFn(path) {
   var fn = getterFnCache[path];
@@ -687,15 +701,10 @@ function getterFn(path) {
 
   var code = 'var l, fn, p;\n';
   forEach(path.split('.'), function(key) {
-    key = (JS_KEYWORDS[key]) ? '["' + key + '"]' : '.' + key;
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
-            's=s' + key + ';\n' +
-            'if(typeof s=="function" && !(s instanceof RegExp)) {\n' +
-              ' fn=function(){ return l' + key + '.apply(l, arguments); };\n' +
-              ' fn.$unboundFn=s;\n' +
-              ' s=fn;\n' +
-            '} else if (s && s.then) {\n' +
+            's=s' + '["' + key + '"]' + ';\n' +
+            'if (s && s.then) {\n' +
               ' if (!("$$v" in s)) {\n' +
                 ' p=s;\n' +
                 ' p.$$v = undefined;\n' +

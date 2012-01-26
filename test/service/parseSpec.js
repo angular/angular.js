@@ -110,6 +110,17 @@ describe('parser', function() {
       expect(tokens[3].text).toEqual(';');
     });
 
+    it('should tokenize function invocation', function() {
+      var tokens = lex("a()")
+      expect(map(tokens, function(t) { return t.text;})).toEqual(['a', '(', ')']);
+    });
+
+    it('should tokenize method invocation', function() {
+      var tokens = lex("a.b.c (d) - e.f()");
+      expect(map(tokens, function(t) { return t.text;})).
+          toEqual(['a.b', '.', 'c',  '(', 'd', ')', '-', 'e', '.', 'f', '(', ')']);
+    });
+
     it('should tokenize number', function() {
       var tokens = lex("0.5");
       expect(tokens[0].text).toEqual(0.5);
@@ -244,6 +255,12 @@ describe('parser', function() {
     expect(scope.$eval("add(1,2)")).toEqual(3);
   });
 
+  it('should evaluate function call from a return value', function() {
+    scope.val = 33;
+    scope.getter = function() { return function() { return this.val; }};
+    expect(scope.$eval("getter()()")).toBe(33);
+  });
+
   it('should evaluate multiplication and division', function() {
     scope.taxRate =  8;
     scope.subTotal =  100;
@@ -281,7 +298,7 @@ describe('parser', function() {
     expect(toJson(scope.$eval("[{a:[]}, {b:1}]"))).toEqual('[{"a":[]},{"b":1}]');
   });
 
-  it('should evaluate multipple statements', function() {
+  it('should evaluate multiple statements', function() {
     expect(scope.$eval("a=1;b=3;a+b")).toEqual(4);
     expect(scope.$eval(";;1;;")).toEqual(1);
   });
@@ -296,6 +313,7 @@ describe('parser', function() {
 
     scope.obj = new C();
     expect(scope.$eval("obj.getA()")).toEqual(123);
+    expect(scope.$eval("obj['getA']()")).toEqual(123);
   });
 
   it('should evaluate methods in correct context (this) in argument', function() {
@@ -311,6 +329,7 @@ describe('parser', function() {
 
     scope.obj = new C();
     expect(scope.$eval("obj.sum(obj.getA())")).toEqual(246);
+    expect(scope.$eval("obj['sum'](obj.getA())")).toEqual(246);
   });
 
   it('should evaluate objects on scope context', function() {

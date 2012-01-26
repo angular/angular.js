@@ -686,7 +686,6 @@ function equals(o1, o2) {
         return true;
       }
     }
-    if (t1 == 'function' && o1.$unboundFn) return o1.$unboundFn === o2.$unboundFn;
   }
   return false;
 }
