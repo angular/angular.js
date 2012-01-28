@@ -280,7 +280,7 @@ function $RouteProvider(){
             copy(next.params, $routeParams);
             next.scope = parentScope.$new();
             if (next.controller) {
-              $controller(next.controller, next.scope);
+              $controller(next.controller, {$scope: next.scope});
             }
           }
         }

@@ -53,6 +53,15 @@ describe('Scope', function() {
       $rootScope.a = 123;
       expect(child.a).toEqual(123);
     }));
+
+    it('should create a non prototypically inherited child scope', inject(function($rootScope) {
+      var child = $rootScope.$new(true);
+      $rootScope.a = 123;
+      expect(child.a).toBeUndefined();
+      expect(child.$parent).toEqual($rootScope);
+      expect(child.$new).toBe($rootScope.$new);
+      expect(child.$root).toBe($rootScope);
+    }));
   });
 
 
