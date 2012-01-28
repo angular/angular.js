@@ -1458,6 +1458,9 @@ window.jstestdriver && (function(window) {
       args.push(angular.mock.dump(arg));
     });
     jstestdriver.console.log.apply(jstestdriver.console, args);
+    if (window.console) {
+      window.console.log.apply(window.console, args);
+    }
   };
 })(window);
 

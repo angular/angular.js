@@ -136,20 +136,36 @@ function $RootScopeProvider(){
        * the scope and its child scopes to be permanently detached from the parent and thus stop
        * participating in model change detection and listener notification by invoking.
        *
+       * @params {boolean} isolate if true then the scoped does not prototypically inherit from the
+       *         parent scope. The scope is isolated, as it can not se parent scope properties.
+       *         When creating widgets it is useful for the widget to not accidently read parent
+       *         state.
+       *
        * @returns {Object} The newly created child scope.
        *
        */
-      $new: function() {
-        var Child = function() {}; // should be anonymous; This is so that when the minifier munges
-          // the name it does not become random set of chars. These will then show up as class
-          // name in the debugger.
-        var child;
-        Child.prototype = this;
-        child = new Child();
+      $new: function(isolate) {
+        var Child,
+            child;
+
+        if (isFunction(isolate)) {
+          // TODO: remove at some point
+          throw Error('API-CHANGE: Use $controller to instantiate controllers.');
+        }
+        if (isolate) {
+          child = new Scope();
+          child.$root = this.$root;
+        } else {
+          Child = function() {}; // should be anonymous; This is so that when the minifier munges
+            // the name it does not become random set of chars. These will then show up as class
+            // name in the debugger.
+          Child.prototype = this;
+          child = new Child();
+          child.$id = nextUid();
+        }
         child['this'] = child;
         child.$$listeners = {};
         child.$parent = this;
-        child.$id = nextUid();
         child.$$asyncQueue = [];
         child.$$watchers = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
@@ -277,7 +293,7 @@ function $RootScopeProvider(){
        * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 100.
        *
        * Usually you don't call `$digest()` directly in
-       * {@link angular.module.ng.$compileProvider.directive.ng:controller controllers} or in 
+       * {@link angular.module.ng.$compileProvider.directive.ng:controller controllers} or in
        * {@link angular.module.ng.$compileProvider.directive directives}.
        * Instead a call to {@link angular.module.ng.$rootScope.Scope#$apply $apply()} (typically from within a
        * {@link angular.module.ng.$compileProvider.directive directives}) will force a `$digest()`.
