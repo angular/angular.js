@@ -133,17 +133,7 @@ var ngInitDirective = valueFn({
 var ngControllerDirective = ['$controller', '$window', function($controller, $window) {
   return {
     scope: true,
-    compile: function() {
-      return {
-        pre: function(scope, element, attr) {
-          var expression = attr.ngController,
-              Controller = getter(scope, expression, true) || getter($window, expression, true);
-
-          assertArgFn(Controller, expression);
-          $controller(Controller, scope);
-        }
-      };
-    }
+    controller: '@'
   }
 }];
 
@@ -263,11 +253,12 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {
-    var interpolateFn = $interpolate(attr.ngBindTemplate);
+    var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
     element.addClass('ng-binding').data('$binding', interpolateFn);
-    scope.$watch(interpolateFn, function(value) {
-      element.text(value);
-    });
+    scope.$watch(
+        function() { return attr.ngBindTemplate; },
+        function(value) { element.text(value); }
+    );
   }
 }];
 
@@ -912,7 +903,7 @@ var ngCloakDirective = valueFn({
 function ngAttributeAliasDirective(propName, attrName) {
   ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = ['$interpolate', function($interpolate) {
     return function(scope, element, attr) {
-      scope.$watch($interpolate(attr[directiveNormalize('ng-' + attrName)]), function(value) {
+      scope.$watch($interpolate(element.attr(attr.$attr[directiveNormalize('ng-' + attrName)])), function(value) {
         attr.$set(attrName, value);
       });
     }
@@ -921,3 +912,59 @@ function ngAttributeAliasDirective(propName, attrName) {
 var ngAttributeAliasDirectives = {};
 forEach(BOOLEAN_ATTR, ngAttributeAliasDirective);
 ngAttributeAliasDirective(null, 'src');
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:transclude
+ *
+ * @description
+ * Insert the transcluded DOM here.
+ *
+ * @element ANY
+ *
+ * @example
+   <doc:example module="transclude">
+     <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.title = 'Lorem Ipsum';
+           $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';
+         }
+
+         angular.module('transclude', [])
+          .directive('pane', function(){
+             return {
+               transclude: true,
+               scope: 'isolate',
+               locals: { title:'bind' },
+               template: '<div style="border: 1px solid black;">' +
+                           '<div style="background-color: gray">{{title}}</div>' +
+                           '<div ng-transclude></div>' +
+                         '</div>'
+             };
+         });
+       </script>
+       <div ng:controller="Ctrl">
+         <input ng:model="title"><br>
+         <textarea ng:model="text"></textarea> <br/>
+         <pane title="{{title}}">{{text}}</pane>
+       </div>
+     </doc:source>
+     <doc:scenario>
+        it('should have transcluded', function() {
+          input('title').enter('TITLE');
+          input('text').enter('TEXT');
+          expect(binding('title')).toEqual('TITLE');
+          expect(binding('text')).toEqual('TEXT');
+        });
+     </doc:scenario>
+   </doc:example>
+ *
+ */
+var ngTranscludeDirective = valueFn({
+  controller: ['$transclude', '$element', function($transclude, $element) {
+    $transclude(function(clone) {
+      $element.append(clone);
+    });
+  }]
+});

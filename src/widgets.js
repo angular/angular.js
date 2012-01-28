@@ -760,7 +760,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
   var BRACE = /{}/g;
   return function(scope, element, attr) {
     var numberExp = attr.count,
-        whenExp = attr.when,
+        whenExp = element.attr(attr.$attr.when), // this is becaues we have {{}} in attrs
         offset = attr.offset || 0,
         whens = scope.$eval(whenExp),
         whensExpFns = {};
