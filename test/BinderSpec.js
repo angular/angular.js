@@ -388,9 +388,7 @@ describe('Binder', function() {
     $rootScope.name = "World";
     $rootScope.$apply();
 
-    assertEquals(
-      '<pre>Hello World!</pre>',
-      sortedHtml(element));
+    expect(sortedHtml(element)).toBe('<pre>Hello World!</pre>');
   }));
 
   it('FillInOptionValueWhenMissing', inject(function($rootScope, $compile) {
