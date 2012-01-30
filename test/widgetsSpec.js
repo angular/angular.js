@@ -7,7 +7,7 @@ describe('widget', function() {
     dealoc(element);
   });
 
-  describe('ng:switch', inject(function($rootScope, $compile) {
+  describe('ng:switch', function() {
     it('should switch on value change', inject(function($rootScope, $compile) {
       element = $compile(
         '<ng:switch on="select">' +
@@ -58,7 +58,7 @@ describe('widget', function() {
       expect($rootScope.name).toEqual(undefined);
       expect(element.text()).toEqual('works');
     }));
-  }));
+  });
 
 
   describe('ng:include', function() {
