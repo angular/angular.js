@@ -243,9 +243,8 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
           widget.$apply(function() {
             var optionGroup,
                 collection = valuesFn(modelScope) || [],
-                key = selectElement.val(),
                 tempScope = inherit(modelScope),
-                value, optionElement, index, groupIndex, length, groupLength;
+                key, value, optionElement, index, groupIndex, length, groupLength;
 
             if (multiple) {
               value = [];
@@ -257,13 +256,15 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
 
                 for(index = 1, length = optionGroup.length; index < length; index++) {
                   if ((optionElement = optionGroup[index].element)[0].selected) {
+                    key = optionElement.val();
                     if (keyName) tempScope[keyName] = key;
-                    tempScope[valueName] = collection[optionElement.val()];
+                    tempScope[valueName] = collection[key];
                     value.push(valueFn(tempScope));
                   }
                 }
               }
             } else {
+              key = selectElement.val();
               if (key == '?') {
                 value = undefined;
               } else if (key == ''){
