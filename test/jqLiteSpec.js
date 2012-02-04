@@ -802,6 +802,26 @@ describe('jqLite', function() {
     });
   });
 
+
+  describe('wrap', function() {
+    it('should wrap text node', function() {
+      var root = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
+      var text = root.contents();
+      expect(text.wrap("<span>")[0]).toBe(text[0]);
+      expect(root.find('span').text()).toEqual('A<a>B</a>C');
+    });
+    it('should wrap free text node', function() {
+      var root = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
+      var text = root.contents();
+      text.remove();
+      expect(root.text()).toBe('');
+
+      text.wrap("<span>");
+      expect(text.parent().text()).toEqual('A<a>B</a>C');
+    });
+  });
+
+
   describe('prepend', function() {
     it('should prepend to empty', function() {
       var root = jqLite('<div>');
