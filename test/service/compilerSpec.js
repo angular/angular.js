@@ -96,6 +96,15 @@ describe('$compile', function() {
 
   describe('compile phase', function() {
 
+    it('should wrap root text nodes in spans', inject(function($compile) {
+      element = jqLite('<div>A&lt;a&gt;B&lt;/a&gt;C</div>');
+      var text = element.contents();
+      expect(text[0].nodeName).toEqual('#text');
+      $compile(text);
+      expect(lowercase(text[0].nodeName)).toEqual('span');
+      expect(element.find('span').text()).toEqual('A<a>B</a>C');
+    }));
+
     describe('multiple directives per element', function() {
       it('should allow multiple directives per element', inject(function($compile, $rootScope, log){
         element = $compile(

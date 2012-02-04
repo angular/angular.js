@@ -229,6 +229,26 @@ function JQLiteData(element, key, value) {
   }
 }
 
+var JQLiteText = (msie < 9)
+  ? function(element, value) {
+      if (element.nodeType == 1 /** Element */) {
+        if (isUndefined(value))
+          return element.innerText;
+        element.innerText = value;
+      } else {
+        if (isUndefined(value))
+          return element.nodeValue;
+        element.nodeValue = value;
+      }
+    }
+  : function(element, value) {
+      if (isUndefined(value)) {
+        return element.textContent;
+      }
+      element.textContent = value;
+    };
+JQLiteText.$dv = '';
+
 function JQLiteHasClass(element, selector) {
   return ((" " + element.className + " ").replace(/[\n\t]/g, " ").
       indexOf( " " + selector + " " ) > -1);
@@ -396,24 +416,7 @@ forEach({
     }
   },
 
-  text: extend((msie < 9)
-      ? function(element, value) {
-        if (element.nodeType == 1 /** Element */) {
-          if (isUndefined(value))
-            return element.innerText;
-          element.innerText = value;
-        } else {
-          if (isUndefined(value))
-            return element.nodeValue;
-          element.nodeValue = value;
-        }
-      }
-      : function(element, value) {
-        if (isUndefined(value)) {
-          return element.textContent;
-        }
-        element.textContent = value;
-      }, {$dv:''}),
+  text: JQLiteText,
 
   val: function(element, value) {
     if (isUndefined(value)) {
@@ -625,6 +628,15 @@ forEach({
         }
       });
     }
+  },
+
+  wrap: function(element, wrapNode) {
+    wrapNode = jqLite(wrapNode)[0];
+    var parent = element.parentNode;
+    if (parent) {
+      parent.replaceChild(wrapNode, element);
+    }
+    wrapNode.appendChild(element);
   },
 
   remove: function(element) {
