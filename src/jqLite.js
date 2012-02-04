@@ -627,6 +627,15 @@ forEach({
     }
   },
 
+  wrap: function(element, wrapNode) {
+    wrapNode = jqLite(wrapNode)[0];
+    var parent = element.parentNode;
+    if (parent) {
+      parent.replaceChild(wrapNode, element);
+    }
+    wrapNode.appendChild(element);
+  },
+
   remove: function(element) {
     JQLiteDealoc(element);
     var parent = element.parentNode;

@@ -180,6 +180,13 @@ function $CompileProvider($provide) {
 
     return function(templateElement) {
       templateElement = jqLite(templateElement);
+      // We can not compile top level text elements since text nodes can be merged and we will
+      // not be able to attach scope data to them, so we will wrap them in <span>
+      forEach(templateElement, function(node, index){
+        if (node.nodeType == 3 /* text node */) {
+          templateElement[index] = jqLite(node).wrap('<span>').parent()[0];
+        }
+      });
       var linkingFn = compileNodes(templateElement, templateElement);
       return function(scope, cloneConnectFn){
         assertArg(scope, 'scope');
