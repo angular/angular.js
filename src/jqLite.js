@@ -514,6 +514,13 @@ forEach({
           forEach(eventHandler.fns, function(fn){
             fn.call(element, event);
           });
+
+          // Remove monkey-patched methods (IE),
+          // as they would cause memory leaks in IE8.
+          // It shouldn't affect normal browsers, as their native methods are defined on prototype.
+          delete event.preventDefault
+          delete event.stopPropagation
+          delete event.isDefaultPrevented
         };
         eventHandler.fns = [];
         addEventListenerFn(element, type, eventHandler);
