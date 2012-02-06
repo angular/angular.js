@@ -491,7 +491,7 @@ angular.mock.TzDate = function (offset, timestamp) {
   };
 
   self.getDay = function() {
-    return self.origDate.getDay();
+    return self.date.getDay();
   };
 
   //hide all methods not implemented in this mock that the Date prototype exposes
