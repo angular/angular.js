@@ -603,4 +603,18 @@ describe('parser', function() {
       expect(scope).toEqual({a:123});
     }));
   });
+
+
+  describe('locals', function() {
+    it('should expose local variables', inject(function($parse) {
+      expect($parse('a')({a: 0}, {a: 1})).toEqual(1);
+      expect($parse('add(a,b)')({b: 1, add: function(a, b) { return a + b; }}, {a: 2})).toEqual(3);
+    }));
+
+    it('should expose traverse locals', inject(function($parse) {
+      expect($parse('a.b')({a: {b: 0}}, {a: {b:1}})).toEqual(1);
+      expect($parse('a.b')({a: null}, {a: {b:1}})).toEqual(1);
+      expect($parse('a.b')({a: {b: 0}}, {a: null})).toEqual(undefined);
+    }));
+  });
 });
