@@ -375,7 +375,7 @@ var ngBindAttrDirective = ['$interpolate', function($interpolate) {
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * click.
+ * click. (Event object is available as `$event`)
  *
  * @example
    <doc:example>
@@ -399,20 +399,22 @@ var ngBindAttrDirective = ['$interpolate', function($interpolate) {
  * expressions and are compiled and executed within the current scope.
  *
  * Events that are handled via these handler are always configured not to propagate further.
- *
- * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 var ngEventDirectives = {};
 forEach(
   'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
-    ngEventDirectives[directiveName] = valueFn(function(scope, element, attr) {
-      element.bind(lowercase(name), function(event) {
-        scope.$apply(attr[directiveName]);
-        event.stopPropagation();
-      });
-    });
+    ngEventDirectives[directiveName] = ['$parse', function($parse) {
+      return function(scope, element, attr) {
+        var fn = $parse(attr[directiveName]);
+        element.bind(lowercase(name), function(event) {
+          scope.$apply(function() {
+            fn(scope, {$event:event});
+          });
+        });
+      };
+    }];
   }
 );
 
@@ -425,7 +427,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * dblclick.
+ * dblclick. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -441,7 +443,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mousedown.
+ * mousedown. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -457,7 +459,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseup.
+ * mouseup. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -472,7 +474,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseover.
+ * mouseover. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -488,7 +490,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseenter.
+ * mouseenter. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -504,7 +506,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseleave.
+ * mouseleave. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -520,7 +522,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mousemove.
+ * mousemove. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
