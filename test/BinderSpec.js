@@ -438,30 +438,6 @@ describe('Binder', function() {
     assertChild(5, false);
   }));
 
-  it('ItShouldDisplayErrorWhenActionIsSyntacticlyIncorrect', function() {
-    module(function($exceptionHandlerProvider){
-      $exceptionHandlerProvider.mode('log');
-    });
-    inject(function($rootScope, $exceptionHandler, $log, $compile) {
-      element = $compile(
-        '<div>' +
-          '<input type="button" ng:click="greeting=\'ABC\'"/>' +
-          '<input type="button" ng:click=":garbage:"/>' +
-        '</div>')($rootScope);
-      var first = jqLite(element.find('input')[0]);
-      var second = jqLite(element.find('input')[1]);
-      var errorLogs = $log.error.logs;
-
-      browserTrigger(first, 'click');
-      expect($rootScope.greeting).toBe('ABC');
-      expect(errorLogs).toEqual([]);
-
-      browserTrigger(second, 'click');
-      expect($exceptionHandler.errors[0]).
-        toMatchError(/Syntax Error: Token ':' not a primary expression/);
-    });
-  });
-
   it('ItShouldSelectTheCorrectRadioBox', inject(function($rootScope, $compile) {
     element = $compile(
       '<div>' +
