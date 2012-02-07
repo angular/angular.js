@@ -137,15 +137,12 @@ describe("directive", function() {
       expect($rootScope.clicked).toEqual(true);
     }));
 
-    it('should stop event propagation', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:click="outer = true"><div ng:click="inner = true"></div></div>')($rootScope);
+    it('should pass event object', inject(function($rootScope, $compile) {
+      element = $compile('<div ng:click="event = $event"></div>')($rootScope);
       $rootScope.$digest();
-      expect($rootScope.outer).not.toBeDefined();
-      expect($rootScope.inner).not.toBeDefined();
 
-      browserTrigger(element.find('div'), 'click');
-      expect($rootScope.outer).not.toBeDefined();
-      expect($rootScope.inner).toEqual(true);
+      browserTrigger(element, 'click');
+      expect($rootScope.event).toBeDefined();
     }));
   });
 
