@@ -1,29 +1,29 @@
 'use strict';
 
 var OPERATORS = {
-    'null':function(self){return null;},
-    'true':function(self){return true;},
-    'false':function(self){return false;},
+    'null':function(){return null;},
+    'true':function(){return true;},
+    'false':function(){return false;},
     undefined:noop,
-    '+':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
-    '-':function(self, a,b){a=a(self); b=b(self); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
-    '*':function(self, a,b){return a(self)*b(self);},
-    '/':function(self, a,b){return a(self)/b(self);},
-    '%':function(self, a,b){return a(self)%b(self);},
-    '^':function(self, a,b){return a(self)^b(self);},
+    '+':function(self, locals, a,b){a=a(self, locals); b=b(self, locals); return (isDefined(a)?a:0)+(isDefined(b)?b:0);},
+    '-':function(self, locals, a,b){a=a(self, locals); b=b(self, locals); return (isDefined(a)?a:0)-(isDefined(b)?b:0);},
+    '*':function(self, locals, a,b){return a(self, locals)*b(self, locals);},
+    '/':function(self, locals, a,b){return a(self, locals)/b(self, locals);},
+    '%':function(self, locals, a,b){return a(self, locals)%b(self, locals);},
+    '^':function(self, locals, a,b){return a(self, locals)^b(self, locals);},
     '=':noop,
-    '==':function(self, a,b){return a(self)==b(self);},
-    '!=':function(self, a,b){return a(self)!=b(self);},
-    '<':function(self, a,b){return a(self)<b(self);},
-    '>':function(self, a,b){return a(self)>b(self);},
-    '<=':function(self, a,b){return a(self)<=b(self);},
-    '>=':function(self, a,b){return a(self)>=b(self);},
-    '&&':function(self, a,b){return a(self)&&b(self);},
-    '||':function(self, a,b){return a(self)||b(self);},
-    '&':function(self, a,b){return a(self)&b(self);},
-//    '|':function(self, a,b){return a|b;},
-    '|':function(self, a,b){return b(self)(self, a(self));},
-    '!':function(self, a){return !a(self);}
+    '==':function(self, locals, a,b){return a(self, locals)==b(self, locals);},
+    '!=':function(self, locals, a,b){return a(self, locals)!=b(self, locals);},
+    '<':function(self, locals, a,b){return a(self, locals)<b(self, locals);},
+    '>':function(self, locals, a,b){return a(self, locals)>b(self, locals);},
+    '<=':function(self, locals, a,b){return a(self, locals)<=b(self, locals);},
+    '>=':function(self, locals, a,b){return a(self, locals)>=b(self, locals);},
+    '&&':function(self, locals, a,b){return a(self, locals)&&b(self, locals);},
+    '||':function(self, locals, a,b){return a(self, locals)||b(self, locals);},
+    '&':function(self, locals, a,b){return a(self, locals)&b(self, locals);},
+//    '|':function(self, locals, a,b){return a|b;},
+    '|':function(self, locals, a,b){return b(self, locals)(self, locals, a(self, locals));},
+    '!':function(self, locals, a){return !a(self, locals);}
 };
 var ESCAPE = {"n":"\n", "f":"\f", "r":"\r", "t":"\t", "v":"\v", "'":"'", '"':'"'};
 
@@ -146,7 +146,7 @@ function lex(text){
   function readIdent() {
     var ident = "",
         start = index,
-        fn, lastDot, peekIndex, methodName;
+        fn, lastDot, peekIndex, methodName, getter;
 
     while (index < text.length) {
       var ch = text.charAt(index);
@@ -179,15 +179,21 @@ function lex(text){
     }
 
     fn = OPERATORS[ident];
+    getter = getterFn(ident);
     tokens.push({
       index:start,
       text:ident,
       json: fn,
-      fn:fn||extend(getterFn(ident), {
-        assign:function(self, value){
-          return setter(self, ident, value);
-        }
-      })
+      fn:fn||extend(
+          function(self, locals) {
+            return (getter(self, locals));
+          },
+          {
+            assign:function(self, value){
+              return setter(self, ident, value);
+            }
+          }
+      )
     });
 
     if (methodName) {
@@ -257,12 +263,10 @@ function parser(text, json, $filter){
       value,
       tokens = lex(text),
       assignment = _assignment,
-      assignable = logicalOR,
       functionCall = _functionCall,
       fieldAccess = _fieldAccess,
       objectIndex = _objectIndex,
-      filterChain = _filterChain,
-      functionIdent = _functionIdent;
+      filterChain = _filterChain
   if(json){
     // The extra level of aliasing is here, just in case the lexer misses something, so that
     // we prevent any accidental execution in JSON.
@@ -270,9 +274,7 @@ function parser(text, json, $filter){
     functionCall =
       fieldAccess =
       objectIndex =
-      assignable =
       filterChain =
-      functionIdent =
         function() { throwError("is not valid json", {text:text, index:0}); };
     value = primary();
   } else {
@@ -328,14 +330,14 @@ function parser(text, json, $filter){
   }
 
   function unaryFn(fn, right) {
-    return function(self) {
-      return fn(self, right);
+    return function(self, locals) {
+      return fn(self, locals, right);
     };
   }
 
   function binaryFn(left, fn, right) {
-    return function(self) {
-      return fn(self, left, right);
+    return function(self, locals) {
+      return fn(self, locals, left, right);
     };
   }
 
@@ -353,12 +355,12 @@ function parser(text, json, $filter){
         // TODO(size): maybe we should not support multiple statements?
         return statements.length == 1
           ? statements[0]
-          : function(self){
+          : function(self, locals){
             var value;
             for ( var i = 0; i < statements.length; i++) {
               var statement = statements[i];
               if (statement)
-                value = statement(self);
+                value = statement(self, locals);
             }
             return value;
           };
@@ -386,10 +388,10 @@ function parser(text, json, $filter){
       if ((token = expect(':'))) {
         argsFn.push(expression());
       } else {
-        var fnInvoke = function(self, input){
+        var fnInvoke = function(self, locals, input){
           var args = [input];
           for ( var i = 0; i < argsFn.length; i++) {
-            args.push(argsFn[i](self));
+            args.push(argsFn[i](self, locals));
           }
           return fn.apply(self, args);
         };
@@ -414,8 +416,8 @@ function parser(text, json, $filter){
           text.substring(0, token.index) + "] can not be assigned to", token);
       }
       right = logicalOR();
-      return function(self){
-        return left.assign(self, right(self));
+      return function(self, locals){
+        return left.assign(self, right(self, locals), locals);
       };
     } else {
       return left;
@@ -546,22 +548,25 @@ function parser(text, json, $filter){
   function _fieldAccess(object) {
     var field = expect().text;
     var getter = getterFn(field);
-    return extend(function(self){
-      return getter(object(self));
-    }, {
-      assign:function(self, value){
-        return setter(object(self), field, value);
-      }
-    });
+    return extend(
+        function(self, locals) {
+          return getter(object(self, locals), locals);
+        },
+        {
+          assign:function(self, value, locals) {
+            return setter(object(self, locals), field, value);
+          }
+        }
+    );
   }
 
   function _objectIndex(obj) {
     var indexFn = expression();
     consume(']');
     return extend(
-      function(self){
-        var o = obj(self),
-            i = indexFn(self),
+      function(self, locals){
+        var o = obj(self, locals),
+            i = indexFn(self, locals),
             v, p;
 
         if (!o) return undefined;
@@ -576,8 +581,8 @@ function parser(text, json, $filter){
         }
         return v;
       }, {
-        assign:function(self, value){
-          return obj(self)[indexFn(self)] = value;
+        assign:function(self, value, locals){
+          return obj(self, locals)[indexFn(self, locals)] = value;
         }
       });
   }
@@ -590,14 +595,14 @@ function parser(text, json, $filter){
       } while (expect(','));
     }
     consume(')');
-    return function(self){
+    return function(self, locals){
       var args = [],
-          context = contextGetter ? contextGetter(self) : self;
+          context = contextGetter ? contextGetter(self, locals) : self;
 
       for ( var i = 0; i < argsFn.length; i++) {
-        args.push(argsFn[i](self));
+        args.push(argsFn[i](self, locals));
       }
-      var fnPtr = fn(self) || noop;
+      var fnPtr = fn(self, locals) || noop;
       // IE stupidity!
       return fnPtr.apply
           ? fnPtr.apply(context, args)
@@ -614,10 +619,10 @@ function parser(text, json, $filter){
       } while (expect(','));
     }
     consume(']');
-    return function(self){
+    return function(self, locals){
       var array = [];
       for ( var i = 0; i < elementFns.length; i++) {
-        array.push(elementFns[i](self));
+        array.push(elementFns[i](self, locals));
       }
       return array;
     };
@@ -635,11 +640,11 @@ function parser(text, json, $filter){
       } while (expect(','));
     }
     consume('}');
-    return function(self){
+    return function(self, locals){
       var object = {};
       for ( var i = 0; i < keyValues.length; i++) {
         var keyValue = keyValues[i];
-        var value = keyValue.value(self);
+        var value = keyValue.value(self, locals);
         object[keyValue.key] = value;
       }
       return object;
@@ -700,10 +705,14 @@ function getterFn(path) {
   if (fn) return fn;
 
   var code = 'var l, fn, p;\n';
-  forEach(path.split('.'), function(key) {
+  forEach(path.split('.'), function(key, index) {
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
-            's=s' + '["' + key + '"]' + ';\n' +
+            's='+ (index
+                    // we simply direference 's' on any .dot notation
+                    ? 's'
+                    // but if we are first then we check locals firs, and if so read it first
+                    : '((k&&k.hasOwnProperty("' + key + '"))?k:s)') + '["' + key + '"]' + ';\n' +
             'if (s && s.then) {\n' +
               ' if (!("$$v" in s)) {\n' +
                 ' p=s;\n' +
@@ -714,7 +723,7 @@ function getterFn(path) {
             '}\n';
   });
   code += 'return s;';
-  fn = Function('s', code);
+  fn = Function('s', 'k', code);
   fn.toString = function() { return code; };
 
   return getterFnCache[path] = fn;
