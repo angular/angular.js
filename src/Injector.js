@@ -429,12 +429,15 @@ function createInjector(modulesToLoad) {
       }
     }
 
-    function instantiate(Type, locals){
-      var Constructor = function(){},
-          instance;
+    function instantiate(Type, locals) {
+      var Constructor = function() {},
+          instance, returnedValue;
+
       Constructor.prototype = Type.prototype;
       instance = new Constructor();
-      return invoke(Type, instance, locals) || instance;
+      returnedValue = invoke(Type, instance, locals);
+
+      return isObject(returnedValue) ? returnedValue : instance;
     }
 
     return {
