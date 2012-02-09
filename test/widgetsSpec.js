@@ -10,12 +10,13 @@ describe('widget', function() {
   describe('ng:switch', function() {
     it('should switch on value change', inject(function($rootScope, $compile) {
       element = $compile(
-        '<ng:switch on="select">' +
+        '<div ng-switch="select">' +
           '<div ng:switch-when="1">first:{{name}}</div>' +
           '<div ng:switch-when="2">second:{{name}}</div>' +
           '<div ng:switch-when="true">true:{{name}}</div>' +
-        '</ng:switch>')($rootScope);
-      expect(element.html()).toEqual('');
+        '</div>')($rootScope);
+      expect(element.html()).toEqual(
+          '<!-- ngSwitchWhen: 1 --><!-- ngSwitchWhen: 2 --><!-- ngSwitchWhen: true -->');
       $rootScope.select = 1;
       $rootScope.$apply();
       expect(element.text()).toEqual('first:');
@@ -55,7 +56,7 @@ describe('widget', function() {
         '</ng:switch>')($rootScope);
       $rootScope.url = 'a';
       $rootScope.$apply();
-      expect($rootScope.name).toEqual(undefined);
+      expect($rootScope.name).toEqual('works');
       expect(element.text()).toEqual('works');
     }));
   });
