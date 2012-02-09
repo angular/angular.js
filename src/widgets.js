@@ -161,75 +161,67 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
       </doc:source>
       <doc:scenario>
         it('should start in settings', function() {
-         expect(element('.doc-example-live ng\\:switch').text()).toEqual('Settings Div');
+         expect(element('.doc-example-live ng\\:switch').text()).toMatch(/Settings Div/);
         });
         it('should change to home', function() {
          select('selection').option('home');
-         expect(element('.doc-example-live ng\\:switch').text()).toEqual('Home Span');
+         expect(element('.doc-example-live ng\\:switch').text()).toMatch(/Home Span/);
         });
         it('should select deafault', function() {
          select('selection').option('other');
-         expect(element('.doc-example-live ng\\:switch').text()).toEqual('default');
+         expect(element('.doc-example-live ng\\:switch').text()).toMatch(/default/);
         });
       </doc:scenario>
     </doc:example>
  */
-var ngSwitchDirective = ['$compile', function($compile){
-  return {
-    compile: function(element, attr) {
-      var watchExpr = attr.on,
-        changeExpr = attr.change,
-        casesTemplate = {},
-        defaultCaseTemplate,
-        children = element.children(),
-        length = children.length,
-        child,
-        when;
+var NG_SWITCH = 'ng-switch';
+var ngSwitchDirective = valueFn({
+  compile: function(element, attr) {
+    var watchExpr = attr.ngSwitch || attr.on,
+        cases = {};
 
-      if (!watchExpr) throw new Error("Missing 'on' attribute.");
-      while(length--) {
-        child = jqLite(children[length]);
-        // this needs to be here for IE
-        child.remove();
-        // TODO(misko): this attr reading is not normilized
-        when = child.attr('ng:switch-when');
-        if (isString(when)) {
-          casesTemplate[when] = $compile(child);
-          // TODO(misko): this attr reading is not normilized
-        } else if (isString(child.attr('ng:switch-default'))) {
-          defaultCaseTemplate = $compile(child);
+    element.data(NG_SWITCH, cases);
+    return function(scope, element){
+      var selectedTransclude,
+          selectedElement;
+
+      scope.$watch(watchExpr, function(value) {
+        if (selectedElement) {
+          selectedElement.remove();
+          selectedElement = null;
         }
-      }
-      children = null; // release memory;
-      element.html('');
+        if ((selectedTransclude = cases['!' + value] || cases['?'])) {
+          scope.$eval(attr.change);
+          selectedTransclude(scope.$new(), function(caseElement, scope) {
+            selectedElement = caseElement;
+            element.append(caseElement);
+            element.bind('$destroy', bind(scope, scope.$destroy));
+          });
+        }
+      });
+    };
+  }
+});
 
-      return function(scope, element, attr){
-        var changeCounter = 0;
-        var childScope;
-        var selectedTemplate;
+var ngSwitchWhenDirective = valueFn({
+  transclude: 'element',
+  priority: 500,
+  compile: function(element, attrs, transclude) {
+    var cases = element.inheritedData(NG_SWITCH);
+    assertArg(cases);
+    cases['!' + attrs.ngSwitchWhen] = transclude;
+  }
+});
 
-        scope.$watch(watchExpr, function(value) {
-          element.html('');
-          if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
-            changeCounter++;
-            if (childScope) childScope.$destroy();
-            childScope = scope.$new();
-            childScope.$eval(changeExpr);
-          }
-        });
-
-        scope.$watch(function() {return changeCounter;}, function() {
-          element.html('');
-          if (selectedTemplate) {
-            selectedTemplate(childScope, function(caseElement) {
-              element.append(caseElement);
-            });
-          }
-        });
-      };
-    }
-  };
-}];
+var ngSwitchDefaultDirective = valueFn({
+  transclude: 'element',
+  priority: 500,
+  compile: function(element, attrs, transclude) {
+    var cases = element.inheritedData(NG_SWITCH);
+    assertArg(cases);
+    cases['?'] = transclude;
+  }
+});
 
 
 /*
