@@ -606,8 +606,12 @@ describe('injector', function() {
 
 
     it('should allow constructor to return different object', function() {
-      var t = $injector.instantiate(function() { return 'ABC'; });
-      expect(t).toBe('ABC');
+      var obj = {};
+      var Class = function() {
+        return obj;
+      };
+
+      expect($injector.instantiate(Class)).toBe(obj);
     });
 
 
@@ -615,6 +619,25 @@ describe('injector', function() {
       expect(function() {
         $injector.instantiate(function() { throw 'MyError'; });
       }).toThrow('MyError');
+    });
+
+
+    it('should return instance if constructor returns non-object value', function() {
+      var A = function() {
+        return 10;
+      };
+
+      var B = function() {
+        return 'some-string';
+      };
+
+      var C = function() {
+        return undefined;
+      };
+
+      expect($injector.instantiate(A) instanceof A).toBe(true);
+      expect($injector.instantiate(B) instanceof B).toBe(true);
+      expect($injector.instantiate(C) instanceof C).toBe(true);
     });
   });
 
