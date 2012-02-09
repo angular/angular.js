@@ -176,10 +176,10 @@ In this example we will build a directive which displays the current time.
        $scope.format = 'M/d/yy h:mm:ss a';
      }
 
-     angular.module('time', [], function($compileProvider) {
+     angular.module('time', [])
        // Register the 'myCurrentTime' directive factory method.
        // We inject $defer and dateFilter service since the factory method is DI.
-       $compileProvider.directive('myCurrentTime', function($defer, dateFilter) {
+       .directive('myCurrentTime', function($defer, dateFilter) {
          // return the directive link function. (compile function not needed)
          return function(scope, element, attrs) {
            var format,  // date format
@@ -214,8 +214,6 @@ In this example we will build a directive which displays the current time.
            updateLater(); // kick of the UI update process.
          }
        });
-     });
-
    </script>
    <div ng-controller="Ctrl2">
      Date format: <input ng-model='format'> <hr/>
@@ -232,19 +230,22 @@ In this example we will build a directive which displays the current time.
 The full skeleton of the directive is shown here:
 
 <pre>
-  var $compileProvider = ...;
+  var myModule = angular.module(...);
 
-  $compileProvider.directive('directiveName', function factory(injectables) {
+  myModule.directive('directiveName', function factory(injectables) {
     var directiveDefinitionObject = {
       priority: 0,
       template: '<div></div>',
       templateUrl: 'directive.html',
+      replace: false,
+      transclude: false,
       restrict: 'EACM',
       scope: false,
-      compile: function compile(tElement, tAttrs) {
+      local: {},
+      compile: function compile(tElement, tAttrs, transclude) {
         return {
-          pre: function preLink(scope, iElement, iAttrs) { ... },
-          post: function postLink(scope, iElement, iAttrs) { ... }
+          pre: function preLink(scope, iElement, iAttrs, controller) { ... },
+          post: function postLink(scope, iElement, iAttrs, controller) { ... }
         }
       },
       link: function postLink(scope, iElement, iAttrs) { ... }
@@ -257,13 +258,13 @@ In most cases you will not need such fine control and so the above can be simpli
 different parts of this skeleton are explained in following sections. In this section we are
 interested only isomers of this skeleton.
 
-It is rare that you need `preLink` method since most directives use the `postLink` method.
-Therefore the above can be simplified as:
+The first step in simplyfing the code is to rely on the deafult values. Therefore the above can be
+simplified as:
 
 <pre>
-  var $compileProvider = ...;
+  var myModule = angular.module(...);
 
-  $compileProvider.directive('directiveName', function factory(injectables) {
+  myModule.directive('directiveName', function factory(injectables) {
     var directiveDefinitionObject = {
       compile: function compile(tElement, tAttrs) {
         return function postLink(scope, iElement, iAttrs) { ... }
@@ -277,9 +278,9 @@ Most directives concern themselves only with instances not with template transfo
 further simplification:
 
 <pre>
-  var $compileProvider = ...;
+  var myModule = angular.module(...);
 
-  $compileProvider.directive('directiveName', function factory(injectables) {
+  myModule.directive('directiveName', function factory(injectables) {
     return function postLink(scope, iElement, iAttrs) { ... }
   });
 </pre>
@@ -298,18 +299,103 @@ makes it injectable following all of the rules of injection annotation.
 The directive definition object provides instructions to the {@link angular.module.ng.$compile
 compiler}. The attributes are:
 
+  * `name` - Name of the current scope. Optional defaults to the name at registration.
+
   * `priority` - When there are multiple directives defined on a single DOM element, sometimes it
     is necessary to specify the order in which the directives are applied. The `priority` is used
     to sort the directives before their `compile` functions get called. Higher `priority` goes
     first. The order of directives within the same priority is undefined.
 
   * `terminal` - If set to true then the current `priority` will be the last set of directives
-    which will execute (this means that any directives at the current priority will still execute
+    which will execute (any directives at the current priority will still execute
     as the order of execution on same `priority` is undefined).
 
-  * `scope` - If set to true, then a new scope will be created for this directive. It is an error
-    to have two directives on the same element both requesting new scope. The new scope rule does
-    not apply for the root of the template since the root of the template always gets a new scope.
+  * `scope` - If set to:
+
+    * `true` - then a new scope will be created for this directive. It is an error to have two
+      directives on the same element both requesting new scope. The new scope rule does not apply
+      for the root of the template since the root of the template always gets a new scope.
+
+    * `{}` (object hash) - then a new 'isolate' scope is created. The 'isolate' scope differs from
+      normal scope that it does not prototypically inherit from the parent scope. This is useful
+      when creating reusable widgets, which should not accidentally read or modify data in parent
+      scope. <br/>
+      The 'isolate' scope takes an object hash which defines a set of local scope properties derived
+      from the parent scope. These local properties are usefull for aliasing values for
+      templates. Locals definition is a hash of normalized element attribute name to their
+      coresponding binding strategy. Valid binding strategies are:
+
+      * `attribute` - one time read of element attribute value and save it to widget scope. <br/>
+        Given `<widget my-attr='abc'>` and widget definition of `locals: {myAttr:'attribute'}`, then
+        widget scope property `myAttr` will be `"abc"`.
+
+      * `evaluate` - one time evaluation of expression stored in the attribute. <br/>
+        Given `<widget my-attr='name'>` and widget definition of `locals: {myAttr:'evaluate'}`, and
+        parent scope `{name:'angular'}` then widget scope property `myAttr` will be `"angular"`.
+
+      * `bind` - Set up one way binding from the element attribute to the widget scope. <br/>
+        Given `<widget my-attr='{{name}}'>` and widget definition of `locals: {myAttr:'bind'}`, and
+        parent scope `{name:'angular'}` then widget scope property `myAttr` will be `"angular"`, but
+        any changes in the parent scope will be reflected in the widget scope.
+
+      * `accessor` - Set up getter/setter function for the expression in the widget element attribute
+        to the widget scope. <br/>
+        Given `<widget my-attr='name'>` and widget definition of `locals: {myAttr:'prop'}`, and
+        parent scope `{name:'angular'}` then widget scope property `myAttr` will be a function such
+        that `myAttr()` will return `"angular"` and `myAttr('new value')` will update the parent
+        scope `name` property. This is usefull for treating the element as a data-model for
+        reading/writing.
+
+      * `expression` - Treat element attribute as an expression to be exectude in form of an event.
+        <br/>
+        Given `<widget my-attr='doSomething()'>` and widget definition of
+        `locals: {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then calling
+        the widget scope function `myAttr` will execute the expression against the parent scope.
+
+  * `controller` - Controller constructor function. The controller is instantiated before the
+    pre-linking phase and it is shared with directives, if they request it by name. This allows the
+    directives to communicate with each other and augment each other behavior. The controller is
+    injectable with the following locals:
+
+    * `$scope` - Current scope associated with the element
+    * `$element` - Current element
+    * `$attrs` - Current attributes obeject for the element
+    * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
+      `function(cloneLinkingFn)`.
+
+  * `inject` (object hash) -  Specifies a way to inject bindings into a controller. Injection
+    definition is a hash of normalized element attribute name to their coresponding binding
+    strategy. Valid binding strategies are:
+
+    * `attribute` - inject attribute value. <br/>
+      Given `<widget my-attr='abc'>` and widget definition of `inject: {myAttr:'attribute'}`, then
+      `myAttr` will inject `"abc"`.
+
+    * `evaluate` - inject one time evaluation of expression stored in the attribute. <br/>
+      Given `<widget my-attr='name'>` and widget definition of `inject: {myAttr:'evaluate'}`, and
+      parent scope `{name:'angular'}` then `myAttr` will inject `"angular"`.
+
+    * `accessor` - inject a getter/setter function for the expression in the widget element
+      attribute to the widget scope. <br/>
+      Given `<widget my-attr='name'>` and widget definition of `inject: {myAttr:'prop'}`, and
+      parent scope `{name:'angular'}` then injecting `myAttr` will inject a function such
+      that `myAttr()` will return `"angular"` and `myAttr('new value')` will update the parent
+      scope `name` property. This is usefull for treating the element as a data-model for
+      reading/writing.
+
+    * `expression` - Inject expression function. <br/>
+      Given `<widget my-attr='doSomething()'>` and widget definition of
+      `inject: {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then
+      injecting `myAttr` will inject a function which when called will execute the expression
+      against the parent scope.
+
+  * `require` - Require the another controller be passed into current directive linking function.
+    The `require` takes a name of the directive controller to pass in. If no such controller
+    can be found an error is raised. The name can be prefixd with:
+
+    * `?` - Don't reaise an error. This makes the require dependency optional.
+    * `^` - Look for the controller on parent elements as well.
+
 
   * `restrict` - String of subset of `EACM` which restricts the directive to a specific directive
     declaration style.
@@ -319,14 +405,28 @@ compiler}. The attributes are:
     * `C` - Class: `<div class="my-directive: exp;"></div>`
     * `M` - Comment: `<!-- directive: my-directive exp -->`
 
-  * `template` - replace the current element with the contents of the HTML. The HTML may have
-    `<<content>>` string embedded in itself, in which case the current element content
-    will be transferred there. The replacement process migrates all of the attributes / classes
-    from the old element to the new one. See Creating Widgets section below for more information.
+  * `template` - replace the current element with the contents of the HTML. The replacement process
+    migrates all of the attributes / classes from the old element to the new one. See Creating
+    Widgets section below for more information.
 
   * `templateURL` - Same as `template` but the template is loaded from the specified URL. Because
     the template loading is asynchronous the compilation/linking is suspended until the template
     is loaded.
+
+  * `replace` - if set to `true` then the template will replace the current element, rather then
+    append the template to the element.
+
+  * `transclude` - compile the content of the element and make it available to the directive.
+    Typically used with {@link api/angular.module.ng.$compileProvider.directive.ng-transclude
+    ng-transclude}. The advantage of transclusion is that the linking function receives a
+    transclusion function which is pre-bound to the correct scope. In a typical setup the widget
+    creates an `isolate` scope, but the transclusion is not a child, but a sibling of the `isolate`
+    scope. This makes it possible for the widget to have private state, and the transclusion to
+    be bound to the pre-`isolate` scope.
+
+    * `true` - transclude the content of the directive.
+    * `element` - transclude the whole element including any directives defined at lower priority.
+
 
   * `compile`: This is the compile function described in the section below.
 
@@ -336,7 +436,7 @@ compiler}. The attributes are:
 ## Compile function
 
 <pre>
-  function compile(tElement, tAttrs) { ... }
+  function compile(tElement, tAttrs, transclude) { ... }
 </pre>
 
 Compile function deals with transforming the template DOM. Since most directives do not do
@@ -353,6 +453,8 @@ compile functions takes the following arguments.
     between all directive compile functions. See {@link
     angular.module.ng.$compileProvider.directive.Attributes Attributes}
 
+  * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
+
 NOTE: The template instance and the link instance may not be the same objects if the template has
 been cloned. For this reason it is not safe to do anything other the DOM transformation.
 Specifically listener registration as not allowed inside the compile function.
@@ -360,7 +462,7 @@ Specifically listener registration as not allowed inside the compile function.
 ## Link function
 
 <pre>
-  function link(scope, iElement, iAttrs) { ... }
+  function link(scope, iElement, iAttrs, controller) { ... }
 </pre>
 
 Link function is responsible for registering DOM listeners as well as updating the DOM. It is
@@ -378,6 +480,11 @@ put.
     between all directive linking functions. See {@link
     angular.module.ng.$compileProvider.directive.Attributes Attributes}
 
+  * `controller` - a controller instance - A controller instance if at least one directive on the
+    element defines a controller. The controller is shared among all the directives, which allows
+    the directives to use the controllers as a communication channel.
+
+
 
 ### Pre link function
 
@@ -390,7 +497,8 @@ Executed after the child elements are linked. Safe to do DOM transformation in h
 
 ## Attributes
 
-Attributes object is a way of accessing element attributes which:
+The attributes object - passed as a parameter in the link() or compile() functions - is a way of
+accessing:
 
   * *normalize attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
     sucha s as 'ng:bind', or 'x-ng-bind', the attributes object allows for a normalize accessed to
@@ -403,6 +511,89 @@ Attributes object is a way of accessing element attributes which:
   * *supports interpolation:* Interpolation attributes are assigned to the attribute object
     allowing other directives to read the interpolated value.
 
+
+# Understanding Transclusion and Scopes
+
+It is often desirable to have reusable components, which we will refer to as widgets. Below is a
+pseudo code showing how a simplified dialog widget may work.
+
+<pre>
+  <div>
+    <button ng-click="show=true">show</button>
+    <dialog title="Hello {{username}}."
+            visible="show"
+            on-cancel="show = false"
+            on-ok="show = false; doSomething()">
+       Body goes here: {{username}} is {{title}}.
+    </dialog>
+</pre>
+
+Clicking on the "show" button will open the dialog. The dialog will have a title, which is
+data bound to `username`, and it will also have a body which we would like to transclude
+into the dialog.
+
+Here is an example of what the template definition for the `dialog` widget may look like.
+
+<pre>
+  <div ng-show="show()">
+    <h3>{{title}}</h3>
+    <div class="body" ng-transclude></div>
+    <div class="footer">
+      <button ng-click="onOk()">Save changes</button>
+      <button ng-click="onCancel()">Close</button>
+    </div>
+  </div>
+</pre>
+
+This will not render properly, unless we do some scope magic.
+
+The first issue we have to solve is that the dialog box template expect `title` to be defined, but
+the place of instantiation would like to bind to `username`. Furthermore the buttons expect `onOk`
+as well as `onCancel` functions to be present in the scope. This limits the usefulness of the
+widget. To solve the mapping issue we use the `locals` to create local variables which the template expects as follows
+<pre>
+  locals: {
+    title: 'bind',   // set up title to accept data-binding
+    onOk: 'exp',     // create a delegate onOk function
+    onCancel: 'exp', // create a delegate onCancel function
+    show: 'prop'     // create a getter/setter function for visibility.
+  }
+</pre>
+
+Creating local properties on widget scope creates two problems:
+
+  1. isolation - if the user forgets to set `title` attribute of the dialog widget the dialog
+     template will bind to parent scope property. This is unpredictable and undesirable.
+
+  2. transclusion - the transcluded DOM can see the widget locals, which may overwrite the
+     properties which the transclusion needs for data-binding. In our example the `title`
+     property of the widget clobbers the `title` property of the transclusion.
+
+
+To solve the issue of lack of isolation, the directive declares a new `isolated` scope. An
+isolated scope does not prototypically inherit from the child scope, and therefore we don't have
+to worry about accidentally clobbering any properties.
+
+However 'isolated' scope creates a new problem: if a transcluded DOM is a child of the widget
+isolated scope then it will not be able to bind to anything. For this reason the transcluded scope
+is a child of the original scope, before the widget created an isolated scope for its local
+variables. This makes the transcluded and widget isolated scope siblings.
+
+This may seem as unexpected complexity, but it gives the widget user and developer the least
+surprise.
+
+Therefore the final directive definition looks something like this:
+
+<pre>
+transclude: true,
+scope: 'isolate',
+locals: {
+  title: 'bind',   // set up title to accept data-binding
+  onOk: 'exp',     // create a delegate onOk function
+  onCancel: 'exp', // create a delegate onCancel function
+  show: 'prop'     // create a getter/setter function for visibility.
+}
+</pre>
 
 # Creating Widgets
 
@@ -421,14 +612,16 @@ Following is an example of building a reusable widget.
        $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';
      }
 
-     angular.module('zippyModule', [], function($compileProvider) {
-       $compileProvider.directive('zippy', function(){
+     angular.module('zippyModule', [])
+       .directive('zippy', function(){
          return {
            // This HTML will replace the zippy directive.
            replace: true,
+           transclude: true,
+           scope: { zippyTitle:'bind' },
            template: '<div>' +
-                       '<div class="title"></div>' +
-                       '<div class="body"><<content>></div>' +
+                       '<div class="title">{{zippyTitle}}</div>' +
+                       '<div class="body" ng-transclude></div>' +
                      '</div>',
            // The linking function will add behavior to the template
            link: function(scope, element, attrs) {
@@ -436,12 +629,6 @@ Following is an example of building a reusable widget.
              var title = angular.element(element.children()[0]),
                  // Opened / closed state
                  opened = true;
-
-             // Watch the zippy-title attribute, copy changes to title element
-             scope.$watch(
-               function(){ return attrs.zippyTitle; },
-               function(value) { return title.text(value); }
-             );
 
              // Clicking on title should open/close the zippy
              title.bind('click', toggle);
@@ -458,8 +645,6 @@ Following is an example of building a reusable widget.
            }
          }
        });
-     });
-
    </script>
    <style>
      .zippy {
