@@ -2,7 +2,7 @@ require 'yaml'
 include FileUtils
 
 content = File.open('angularFiles.js', 'r') {|f| f.read }
-files = eval(content.gsub(/angularFiles = /, '').gsub(/:/, '=>'));
+files = eval(content.gsub(/\};(\s|\S)*/, '}').gsub(/angularFiles = /, '').gsub(/:/, '=>'));
 
 BUILD_DIR = 'build'
 
