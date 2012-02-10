@@ -109,8 +109,8 @@ describe('Binder', function() {
     expect(sortedHtml(form)).toBe(
         '<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind="item.a">A</li>' +
-          '<li ng:bind="item.a">B</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">A</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">B</li>' +
         '</ul>');
 
     items.unshift({a: 'C'});
@@ -118,9 +118,9 @@ describe('Binder', function() {
     expect(sortedHtml(form)).toBe(
         '<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind="item.a">C</li>' +
-          '<li ng:bind="item.a">A</li>' +
-          '<li ng:bind="item.a">B</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">C</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">A</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">B</li>' +
         '</ul>');
 
     items.shift();
@@ -128,8 +128,8 @@ describe('Binder', function() {
     expect(sortedHtml(form)).toBe(
         '<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind="item.a">A</li>' +
-          '<li ng:bind="item.a">B</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">A</li>' +
+          '<li ng:bind="item.a" ng:repeat="item in model.items">B</li>' +
         '</ul>');
 
     items.shift();
@@ -147,7 +147,7 @@ describe('Binder', function() {
     expect(sortedHtml(element)).toBe(
         '<ul>' +
           '<#comment></#comment>' +
-          '<li><span ng:bind="item.a">A</span></li>' +
+          '<li ng:repeat="item in model.items"><span ng:bind="item.a">A</span></li>' +
         '</ul>');
   }));
 
@@ -249,15 +249,15 @@ describe('Binder', function() {
     expect(sortedHtml(element)).toBe(
         '<div>'+
           '<#comment></#comment>'+
-          '<div name="a">'+
+          '<div name="a" ng:repeat="m in model">'+
             '<#comment></#comment>'+
-            '<ul name="a1"></ul>'+
-            '<ul name="a2"></ul>'+
+            '<ul name="a1" ng:repeat="i in m.item"></ul>'+
+            '<ul name="a2" ng:repeat="i in m.item"></ul>'+
           '</div>'+
-          '<div name="b">'+
+          '<div name="b" ng:repeat="m in model">'+
             '<#comment></#comment>'+
-            '<ul name="b1"></ul>'+
-            '<ul name="b2"></ul>'+
+            '<ul name="b1" ng:repeat="i in m.item"></ul>'+
+            '<ul name="b2" ng:repeat="i in m.item"></ul>'+
           '</div>' +
         '</div>');
   }));
@@ -341,8 +341,8 @@ describe('Binder', function() {
     expect(d2.hasClass('e')).toBeTruthy();
     expect(sortedHtml(element)).toBe(
         '<div><#comment></#comment>' +
-        '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div>' +
-        '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'"></div></div>');
+        '<div class="o" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat="i in [0,1]"></div>' +
+        '<div class="e" ng:class-even="\'e\'" ng:class-odd="\'o\'" ng:repeat="i in [0,1]"></div></div>');
   }));
 
   it('BindStyle', inject(function($rootScope, $compile) {
@@ -469,8 +469,8 @@ describe('Binder', function() {
     expect(sortedHtml(element)).toBe(
         '<ul>' +
           '<#comment></#comment>' +
-          '<li ng:bind=\"k + v\">a0</li>' +
-          '<li ng:bind=\"k + v\">b1</li>' +
+          '<li ng:bind=\"k + v\" ng:repeat="(k,v) in {a:0,b:1}">a0</li>' +
+          '<li ng:bind=\"k + v\" ng:repeat="(k,v) in {a:0,b:1}">b1</li>' +
         '</ul>');
   }));
 

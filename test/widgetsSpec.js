@@ -332,7 +332,7 @@ describe('widget', function() {
   });
 
 
-  describe('@ng:repeat', function() {
+  describe('ng:repeat', function() {
     it('should ng:repeat over array', inject(function($rootScope, $compile) {
       element = $compile(
         '<ul>' +
