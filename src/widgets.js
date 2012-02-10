@@ -310,131 +310,127 @@ var htmlAnchorDirective = valueFn({
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ['$compile', function($compile) {
-  return {
-    priority: 1000,
-    terminal: true,
-    compile: function(element, attr) {
+var ngRepeatDirective = valueFn({
+  transclude: 'element',
+  priority: 1000,
+  terminal: true,
+  compile: function(element, attr, linker) {
+    return function(scope, iterStartElement, attr){
       var expression = attr.ngRepeat;
-      attr.$set(attr.$attr.ngRepeat);
-      element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' -->'));
-      var linker = $compile(element);
-      return function(scope, iterStartElement, attr){
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-          lhs, rhs, valueIdent, keyIdent;
-        if (! match) {
-          throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
-            expression + "'.");
-        }
-        lhs = match[1];
-        rhs = match[2];
-        match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
-        if (!match) {
-          throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-            keyValue + "'.");
-        }
-        valueIdent = match[3] || match[1];
-        keyIdent = match[2];
+      var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+        lhs, rhs, valueIdent, keyIdent;
+      if (! match) {
+        throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
+          expression + "'.");
+      }
+      lhs = match[1];
+      rhs = match[2];
+      match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
+      if (!match) {
+        throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+          keyValue + "'.");
+      }
+      valueIdent = match[3] || match[1];
+      keyIdent = match[2];
 
-        // Store a list of elements from previous run. This is a hash where key is the item from the
-        // iterator, and the value is an array of objects with following properties.
-        //   - scope: bound scope
-        //   - element: previous element.
-        //   - index: position
-        // We need an array of these objects since the same object can be returned from the iterator.
-        // We expect this to be a rare case.
-        var lastOrder = new HashQueueMap();
-        scope.$watch(function(scope){
-          var index, length,
-              collection = scope.$eval(rhs),
-              collectionLength = size(collection, true),
-              childScope,
-              // Same as lastOrder but it has the current state. It will become the
-              // lastOrder on the next iteration.
-              nextOrder = new HashQueueMap(),
-              key, value, // key/value of iteration
-              array, last,       // last object information {scope, element, index}
-              cursor = iterStartElement;     // current position of the node
+      // Store a list of elements from previous run. This is a hash where key is the item from the
+      // iterator, and the value is an array of objects with following properties.
+      //   - scope: bound scope
+      //   - element: previous element.
+      //   - index: position
+      // We need an array of these objects since the same object can be returned from the iterator.
+      // We expect this to be a rare case.
+      var lastOrder = new HashQueueMap();
+      scope.$watch(function(scope){
+        var index, length,
+            collection = scope.$eval(rhs),
+            collectionLength = size(collection, true),
+            childScope,
+            // Same as lastOrder but it has the current state. It will become the
+            // lastOrder on the next iteration.
+            nextOrder = new HashQueueMap(),
+            key, value, // key/value of iteration
+            array, last,       // last object information {scope, element, index}
+            cursor = iterStartElement;     // current position of the node
 
-          if (!isArray(collection)) {
-            // if object, extract keys, sort them and use to determine order of iteration over obj props
-            array = [];
-            for(key in collection) {
-              if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-                array.push(key);
-              }
+        if (!isArray(collection)) {
+          // if object, extract keys, sort them and use to determine order of iteration over obj props
+          array = [];
+          for(key in collection) {
+            if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
+              array.push(key);
             }
-            array.sort();
-          } else {
-            array = collection || [];
           }
+          array.sort();
+        } else {
+          array = collection || [];
+        }
 
-          // we are not using forEach for perf reasons (trying to avoid #call)
-          for (index = 0, length = array.length; index < length; index++) {
-            key = (collection === array) ? index : array[index];
-            value = collection[key];
-            last = lastOrder.shift(value);
-            if (last) {
-              // if we have already seen this object, then we need to reuse the
-              // associated scope/element
-              childScope = last.scope;
-              nextOrder.push(value, last);
+        // we are not using forEach for perf reasons (trying to avoid #call)
+        for (index = 0, length = array.length; index < length; index++) {
+          key = (collection === array) ? index : array[index];
+          value = collection[key];
+          last = lastOrder.shift(value);
+          if (last) {
+            // if we have already seen this object, then we need to reuse the
+            // associated scope/element
+            childScope = last.scope;
+            nextOrder.push(value, last);
 
-              if (index === last.index) {
-                // do nothing
-                cursor = last.element;
-              } else {
-                // existing item which got moved
-                last.index = index;
-                // This may be a noop, if the element is next, but I don't know of a good way to
-                // figure this out,  since it would require extra DOM access, so let's just hope that
-                // the browsers realizes that it is noop, and treats it as such.
-                cursor.after(last.element);
-                cursor = last.element;
-              }
+            if (index === last.index) {
+              // do nothing
+              cursor = last.element;
             } else {
-              // new item which we don't know about
-              childScope = scope.$new();
+              // existing item which got moved
+              last.index = index;
+              // This may be a noop, if the element is next, but I don't know of a good way to
+              // figure this out,  since it would require extra DOM access, so let's just hope that
+              // the browsers realizes that it is noop, and treats it as such.
+              cursor.after(last.element);
+              cursor = last.element;
             }
-
-            childScope[valueIdent] = value;
-            if (keyIdent) childScope[keyIdent] = key;
-            childScope.$index = index;
-            childScope.$position = index === 0 ?
-                'first' :
-                (index == collectionLength - 1 ? 'last' : 'middle');
-
-            if (!last) {
-              linker(childScope, function(clone){
-                cursor.after(clone);
-                last = {
-                    scope: childScope,
-                    element: (cursor = clone),
-                    index: index
-                  };
-                nextOrder.push(value, last);
-              });
-            }
+          } else {
+            // new item which we don't know about
+            childScope = scope.$new();
           }
 
-          //shrink children
-          for (key in lastOrder) {
-            if (lastOrder.hasOwnProperty(key)) {
-              array = lastOrder[key];
-              while(array.length) {
-                value = array.pop();
-                value.element.remove();
-                value.scope.$destroy();
-              }
+          childScope[valueIdent] = value;
+          if (keyIdent) childScope[keyIdent] = key;
+          childScope.$index = index;
+          childScope.$position = index === 0 ?
+              'first' :
+              (index == collectionLength - 1 ? 'last' : 'middle');
+
+          if (!last) {
+            linker(childScope, function(clone){
+              cursor.after(clone);
+              last = {
+                  scope: childScope,
+                  element: (cursor = clone),
+                  index: index
+                };
+              nextOrder.push(value, last);
+            });
+          }
+        }
+
+        //shrink children
+        for (key in lastOrder) {
+          if (lastOrder.hasOwnProperty(key)) {
+            array = lastOrder[key];
+            while(array.length) {
+              value = array.pop();
+              value.element.remove();
+              value.scope.$destroy();
             }
           }
+        }
 
-          lastOrder = nextOrder;
-        });
-      };
-    }
-  };
-}];
+        lastOrder = nextOrder;
+      });
+    };
+  }
+});
 
 
 /**
