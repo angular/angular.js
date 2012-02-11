@@ -888,6 +888,7 @@ describe('$compile', function() {
         it('should allow creation of new scopes', inject(function($rootScope, $compile, log) {
           element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
           expect(log).toEqual('LOG; log-002-001; 002');
+          expect(element.find('span').hasClass('ng-scope')).toBe(true);
         }));
 
 
@@ -913,7 +914,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="scope-a; scope-b"></div>');
             }).toThrow('Multiple directives [scopeA, scopeB] asking for new scope on: ' +
-                '<' + (msie < 9 ? 'DIV' : 'div') + ' class="scope-a; scope-b">');
+                '<' + (msie < 9 ? 'DIV' : 'div') + ' class="scope-a; scope-b ng-scope">');
           }));
 
 
