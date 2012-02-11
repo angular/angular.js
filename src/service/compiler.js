@@ -371,6 +371,7 @@ function $CompileProvider($provide) {
 
         if (directive.scope) {
           assertNoDuplicate('new scope', newScopeDirective, directive, element);
+          element.addClass('ng-scope');
           newScopeDirective = directive;
         }
 
