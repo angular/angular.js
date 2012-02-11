@@ -467,6 +467,50 @@ forEach({
   };
 });
 
+function createEventHandler(element) {
+  var eventHandler = function (event) {
+    if (!event.preventDefault) {
+      event.preventDefault = function() {
+        event.returnValue = false; //ie
+      };
+    }
+    if (!event.stopPropagation) {
+      event.stopPropagation = function() {
+        event.cancelBubble = true; //ie
+      };
+    }
+    if (!event.target) {
+      event.target = event.srcElement || document;
+    }
+
+    if (isUndefined(event.defaultPrevented)) {
+      var prevent = event.preventDefault;
+      event.preventDefault = function() {
+        event.defaultPrevented = true;
+        prevent.call(event);
+      };
+      event.defaultPrevented = false;
+    }
+
+    event.isDefaultPrevented = function() {
+      return event.defaultPrevented;
+    };
+
+    forEach(eventHandler.fns, function(fn){
+      fn.call(element, event);
+    });
+
+    // Remove monkey-patched methods (IE),
+    // as they would cause memory leaks in IE8.
+    // It shouldn't affect normal browsers, as their native methods are defined on prototype.
+    delete event.preventDefault;
+    delete event.stopPropagation;
+    delete event.isDefaultPrevented;
+  };
+  eventHandler.fns = [];
+  return eventHandler;
+};
+
 //////////////////////////////////////////
 // Functions iterating traversal.
 // These functions chain results into a single
@@ -477,53 +521,41 @@ forEach({
 
   dealoc: JQLiteDealoc,
 
-  bind: function(element, type, fn){
+  bind: function bindFn(element, type, fn){
     var bind = JQLiteData(element, 'bind');
+
+
     if (!bind) JQLiteData(element, 'bind', bind = {});
     forEach(type.split(' '), function(type){
       var eventHandler = bind[type];
+
+
       if (!eventHandler) {
-        bind[type] = eventHandler = function(event) {
-          if (!event.preventDefault) {
-            event.preventDefault = function() {
-              event.returnValue = false; //ie
-            };
-          }
-          if (!event.stopPropagation) {
-            event.stopPropagation = function() {
-              event.cancelBubble = true; //ie
-            };
-          }
-          if (!event.target) {
-            event.target = event.srcElement || document;
-          }
+        if (type == 'mouseenter' || type == 'mouseleave') {
+          var mouseenter = bind.mouseenter = createEventHandler(element);
+          var mouseleave = bind.mouseleave = createEventHandler(element);
+          var counter = 0;
 
-          if (isUndefined(event.defaultPrevented)) {
-            var prevent = event.preventDefault;
-            event.preventDefault = function() {
-              event.defaultPrevented = true;
-              prevent.call(event);
-            };
-            event.defaultPrevented = false;
-          }
 
-          event.isDefaultPrevented = function() {
-            return event.defaultPrevented;
-          };
-
-          forEach(eventHandler.fns, function(fn){
-            fn.call(element, event);
+          bindFn(element, 'mouseover', function(event) {
+            counter++;
+            if (counter == 1) {
+              event.type = 'mouseenter';
+              mouseenter(event);
+            }
           });
-
-          // Remove monkey-patched methods (IE),
-          // as they would cause memory leaks in IE8.
-          // It shouldn't affect normal browsers, as their native methods are defined on prototype.
-          delete event.preventDefault
-          delete event.stopPropagation
-          delete event.isDefaultPrevented
-        };
-        eventHandler.fns = [];
-        addEventListenerFn(element, type, eventHandler);
+          bindFn(element, 'mouseout', function(event) {
+            counter --;
+            if (counter == 0) {
+              event.type = 'mouseleave';
+              mouseleave(event);
+            }
+          });
+          eventHandler = bind[type];
+        } else {
+          eventHandler = bind[type] = createEventHandler(element);
+          addEventListenerFn(element, type, eventHandler);
+        }
       }
       eventHandler.fns.push(fn);
     });
