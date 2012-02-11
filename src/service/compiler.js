@@ -195,7 +195,7 @@ function $CompileProvider($provide) {
         var element = cloneConnectFn
           ? JQLitePrototype.clone.call(templateElement) // IMPORTANT!!!
           : templateElement;
-        element.data('$scope', scope);
+        element.data('$scope', scope).addClass('ng-scope');
         if (cloneConnectFn) cloneConnectFn(element, scope);
         if (linkingFn) linkingFn(scope, element, element);
         return element;
@@ -371,6 +371,7 @@ function $CompileProvider($provide) {
 
         if (directive.scope) {
           assertNoDuplicate('new scope', newScopeDirective, directive, element);
+          element.addClass('ng-scope');
           newScopeDirective = directive;
         }
 
