@@ -261,7 +261,7 @@ describe("directive", function() {
       $rootScope.$digest();
       $rootScope.dynCls = 'foo';
       $rootScope.$digest();
-      expect(element[0].className).toBe('ui-panel ui-selected foo');
+      expect(element[0].className).toBe('ui-panel ui-selected ng-scope foo');
     }));
 
 
@@ -269,7 +269,7 @@ describe("directive", function() {
       element = $compile('<div class="panel bar" ng:class="dynCls"></div>')($rootScope);
       $rootScope.dynCls = 'panel';
       $rootScope.$digest();
-      expect(element[0].className).toBe('panel bar');
+      expect(element[0].className).toBe('panel bar ng-scope');
     }));
 
 
@@ -279,7 +279,7 @@ describe("directive", function() {
       $rootScope.$digest();
       $rootScope.dynCls = 'window';
       $rootScope.$digest();
-      expect(element[0].className).toBe('bar window');
+      expect(element[0].className).toBe('bar ng-scope window');
     }));
 
 

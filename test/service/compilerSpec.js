@@ -189,19 +189,21 @@ describe('$compile', function() {
               toEqual('<div factory-error linking-error template-error>');
           expect($exceptionHandler.errors[2][0]).toEqual('LinkingError');
           expect(ie($exceptionHandler.errors[2][1])).
-              toEqual('<div factory-error linking-error template-error>');
+              toEqual('<div class="ng-scope" factory-error linking-error template-error>');
 
 
           // crazy stuff to make IE happy
           function ie(text) {
             var list = [],
-                parts;
+                parts, elementName;
 
             parts = lowercase(text).
                 replace('<', '').
                 replace('>', '').
                 split(' ');
+            elementName = parts.shift();
             parts.sort();
+            parts.unshift(elementName);
             forEach(parts, function(value, key){
               if (value.substring(0,3) == 'ng-') {
               } else {
@@ -888,6 +890,7 @@ describe('$compile', function() {
         it('should allow creation of new scopes', inject(function($rootScope, $compile, log) {
           element = $compile('<div><span scope><a log></a></span></div>')($rootScope);
           expect(log).toEqual('LOG; log-002-001; 002');
+          expect(element.find('span').hasClass('ng-scope')).toBe(true);
         }));
 
 
@@ -913,7 +916,7 @@ describe('$compile', function() {
             expect(function(){
               $compile('<div class="scope-a; scope-b"></div>');
             }).toThrow('Multiple directives [scopeA, scopeB] asking for new scope on: ' +
-                '<' + (msie < 9 ? 'DIV' : 'div') + ' class="scope-a; scope-b">');
+                '<' + (msie < 9 ? 'DIV' : 'div') + ' class="scope-a; scope-b ng-scope">');
           }));
 
 
