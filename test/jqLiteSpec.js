@@ -603,6 +603,50 @@ describe('jqLite', function() {
 
       browserTrigger(a, 'click');
     });
+
+    describe('mouseenter-mouseleave', function() {
+      var root, parent, sibling, child, log;
+
+      beforeEach(function() {
+        log = '';
+        root = jqLite('<div>root<p>parent<span>child</span></p><ul></ul></div>');
+        parent = root.find('p');
+        sibling = root.find('ul');
+        child = parent.find('span');
+
+        parent.bind('mouseenter', function() { log += 'parentEnter;'; });
+        parent.bind('mouseleave', function() { log += 'parentLeave;'; });
+        parent.mouseover = function(event) { parent.data('bind').mouseover(event || {}); };
+        parent.mouseout = function(event) { parent.data('bind').mouseout(event || {}); };
+
+        child.bind('mouseenter', function() { log += 'childEnter;'; });
+        child.bind('mouseleave', function() { log += 'childLeave;'; });
+        child.mouseover = function(event) { child.data('bind').mouseover(event || {}); };
+        child.mouseout = function(event) { child.data('bind').mouseout(event || {}); };
+      });
+
+      afterEach(function() {
+        dealoc(root);
+      });
+
+      it('should fire mouseenter when coming from outside the browser window', function() {
+        if (window.jQuery) return;
+        parent.mouseover();
+        expect(log).toEqual('parentEnter;');
+
+        child.mouseover();
+        expect(log).toEqual('parentEnter;childEnter;');
+        child.mouseover();
+        expect(log).toEqual('parentEnter;childEnter;');
+
+        child.mouseout();
+        expect(log).toEqual('parentEnter;childEnter;');
+        child.mouseout();
+        expect(log).toEqual('parentEnter;childEnter;childLeave;');
+        parent.mouseout();
+        expect(log).toEqual('parentEnter;childEnter;childLeave;parentLeave;');
+      });
+    });
   });
 
 
