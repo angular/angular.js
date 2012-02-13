@@ -160,7 +160,7 @@ function inferInjectionArgs(fn) {
  * @description
  *
  * Use `$provide` to register new providers with the `$injector`. The providers are the factories for the instance.
- * The providers share the same name as the instance they create with the `Provide` suffixed to them.
+ * The providers share the same name as the instance they create with the `Provider` suffixed to them.
  *
  * A provider is an object with a `$get()` method. The injector calls the `$get` method to create a new instance of
  * a service. The Provider can have additional methods which would allow for configuration of the provider.
@@ -211,7 +211,7 @@ function inferInjectionArgs(fn) {
  *
  * Register a provider for a service. The providers can be retrieved and can have additional configuration methods.
  *
- * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
+ * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provider'` key.
  * @param {(Object|function())} provider If the provider is:
  *
  *   - `Object`: then it should have a `$get` method. The `$get` method will be invoked using
@@ -230,7 +230,7 @@ function inferInjectionArgs(fn) {
  *
  * A short hand for configuring services if only `$get` method is required.
  *
- * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
+ * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provider'` key.
  * @param {function()} $getFn The $getFn for the instance creation. Internally this is a short hand for
  * `$provide.service(name, {$get:$getFn})`.
  * @returns {Object} registered provider instance
@@ -245,7 +245,7 @@ function inferInjectionArgs(fn) {
  *
  * A short hand for configuring services if the `$get` method is a constant.
  *
- * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
+ * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provider'` key.
  * @param {*} value The value.
  * @returns {Object} registered provider instance
  */
