@@ -13,7 +13,7 @@
  *
  * @returns {object} Newly created cache object with the following set of methods:
  *
- * - `{object}` `info()` — Returns info about all created caches.
+ * - `{object}` `info()` — Returns id, size, and options of cache.
  * - `{void}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache.
  * - `{{*}} `get({string} key) — Returns cached value for `key` or undefined for cache miss.
  * - `{void}` `remove({string} key) — Removes a key-value pair from the cache.
