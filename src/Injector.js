@@ -252,6 +252,26 @@ function inferInjectionArgs(fn) {
  */
 
 
+/**
+ * @ngdoc method
+ * @name angular.module.AUTO.$provide#decorator
+ * @methodOf angular.module.AUTO.$provide
+ * @description
+ *
+ * Decoration of service, allows the decorator to intercept the service instance creation. The
+ * returned instance may be the original instance, or a new instance which delegates to the
+ * original instance.
+ *
+ * @param {string} name The name of the service to decorate.
+ * @param {function()} decorator This function will be invoked when the service needs to be
+ *    instanciated. The function is called using the {@link angular.module.AUTO.$injector#invoke
+ *    injector.invoke} method and is therefore fully injectable. Local injection arguments:
+ *
+ *    * `$delegate` - The original service instance, which can be monkey patched, configured,
+ *      decorated or delegated to.
+ */
+
+
 function createInjector(modulesToLoad) {
   var providerSuffix = 'Provider',
       path = [],
