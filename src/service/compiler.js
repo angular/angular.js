@@ -281,7 +281,9 @@ function $CompileProvider($provide) {
        attrs = {
          $attr: {},
          $normalize: directiveNormalize,
-         $set: attrSetter
+         $set: attrSetter,
+         $observe: interpolatedAttrObserve,
+         $observers: {}
        };
        // we must always refer to nodeList[i] since the nodes can be replaced underneath us.
        directives = collectDirectives(nodeList[i], [], attrs, maxPriority);
@@ -861,6 +863,10 @@ function $CompileProvider($provide) {
         compile: function(element, attr) {
           if (interpolateFn) {
             return function(scope, element, attr) {
+              // we define observers array only for interpolated attrs
+              // and ignore observers for non interpolated attrs to save some memory
+              attr.$observers[name] = [];
+              attr[name] = undefined;
               scope.$watch(interpolateFn, function(value) {
                 attr.$set(name, value);
               });
@@ -900,45 +906,69 @@ function $CompileProvider($provide) {
       }
       element[0] = newNode;
     }
-  }];
 
 
-  /**
-   * Set a normalized attribute on the element in a way such that all directives
-   * can share the attribute. This function properly handles boolean attributes.
-   * @param {string} key Normalized key. (ie ngAttribute)
-   * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
-   * @param {string=} attrName Optional none normalized name. Defaults to key.
-   */
-  function attrSetter(key, value, attrName) {
-    var booleanKey = BOOLEAN_ATTR[key.toLowerCase()];
+    /**
+     * Set a normalized attribute on the element in a way such that all directives
+     * can share the attribute. This function properly handles boolean attributes.
+     * @param {string} key Normalized key. (ie ngAttribute)
+     * @param {string|boolean} value The value to set. If `null` attribute will be deleted.
+     * @param {string=} attrName Optional none normalized name. Defaults to key.
+     */
+    function attrSetter(key, value, attrName) {
+      var booleanKey = BOOLEAN_ATTR[key.toLowerCase()];
 
-    if (booleanKey) {
-      value = toBoolean(value);
-      this.$element.prop(key, value);
-      this[key] = value;
-      attrName = key = booleanKey;
-      value = value ? booleanKey : undefined;
-    } else {
-      this[key] = value;
+      if (booleanKey) {
+        value = toBoolean(value);
+        this.$element.prop(key, value);
+        this[key] = value;
+        attrName = key = booleanKey;
+        value = value ? booleanKey : undefined;
+      } else {
+        this[key] = value;
+      }
+
+      // translate normalized key to actual key
+      if (attrName) {
+        this.$attr[key] = attrName;
+      } else {
+        attrName = this.$attr[key];
+        if (!attrName) {
+          this.$attr[key] = attrName = snake_case(key, '-');
+        }
+      }
+
+      if (value === null || value === undefined) {
+        this.$element.removeAttr(attrName);
+      } else {
+        this.$element.attr(attrName, value);
+      }
+
+      // fire observers
+      forEach(this.$observers[key], function(fn) {
+        try {
+          fn(value);
+        } catch (e) {
+          $exceptionHandler(e);
+        }
+      });
     }
 
-    // translate normalized key to actual key
-    if (attrName) {
-      this.$attr[key] = attrName;
-    } else {
-      attrName = this.$attr[key];
-      if (!attrName) {
-        this.$attr[key] = attrName = snake_case(key, '-');
+
+    /**
+     * Observe an interpolated attribute.
+     * The observer will never be called, if given attribute is not interpolated.
+     *
+     * @param {string} key Normalized key. (ie ngAttribute) .
+     * @param {function(*)} fn Function that will be called whenever the attribute value changes.
+     */
+    function interpolatedAttrObserve(key, fn) {
+      // keep only observers for interpolated attrs
+      if (this.$observers[key]) {
+        this.$observers[key].push(fn);
       }
     }
-
-    if (value === null || value === undefined) {
-      this.$element.removeAttr(attrName);
-    } else {
-      this.$element.attr(attrName, value);
-    }
-  }
+  }];
 }
 
 var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
