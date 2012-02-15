@@ -540,42 +540,37 @@ var ngNonBindableDirective = valueFn({ terminal: true });
 var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
                function($http,   $templateCache,   $route,   $anchorScroll,   $compile) {
   return {
-    compile: function(element, attr) {
-      if (!element[0]['ng:compiled']) {
-        element[0]['ng:compiled'] = true;
+    terminal: true,
+    link: function(scope, element) {
+      var changeCounter = 0;
 
-        return function(scope, element, attrs) {
-          var changeCounter = 0;
+      scope.$on('$afterRouteChange', function() {
+        changeCounter++;
+      });
 
-          scope.$on('$afterRouteChange', function() {
-            changeCounter++;
-          });
+      scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
+        var template = $route.current && $route.current.template;
 
-          scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
-            var template = $route.current && $route.current.template;
+        function clearContent() {
+          // ignore callback if another route change occured since
+          if (newChangeCounter == changeCounter) {
+            element.html('');
+          }
+        }
 
-            function clearContent() {
-              // ignore callback if another route change occured since
-              if (newChangeCounter == changeCounter) {
-                element.html('');
-              }
+        if (template) {
+          $http.get(template, {cache: $templateCache}).success(function(response) {
+            // ignore callback if another route change occured since
+            if (newChangeCounter == changeCounter) {
+              element.html(response);
+              $compile(element.contents())($route.current.scope);
+              $anchorScroll();
             }
-
-            if (template) {
-              $http.get(template, {cache: $templateCache}).success(function(response) {
-                // ignore callback if another route change occured since
-                if (newChangeCounter == changeCounter) {
-                  element.html(response);
-                  $compile(element)($route.current.scope);
-                  $anchorScroll();
-                }
-              }).error(clearContent);
-            } else {
-              clearContent();
-            }
-          });
-        };
-      }
+          }).error(clearContent);
+        } else {
+          clearContent();
+        }
+      });
     }
   };
 }];
