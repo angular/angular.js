@@ -1005,6 +1005,19 @@ describe('$compile', function() {
 
 
   describe('interpolation', function() {
+    var observeSpy, attrValueDuringLinking;
+
+    beforeEach(module(function($compileProvider) {
+      $compileProvider.directive('observer', function() {
+        return function(scope, elm, attr) {
+          observeSpy = jasmine.createSpy('$observe attr');
+
+          attr.$observe('someAttr', observeSpy);
+          attrValueDuringLinking = attr.someAttr;
+        };
+      });
+    }));
+
 
     it('should compile and link both attribute and text bindings', inject(
         function($rootScope, $compile) {
@@ -1022,6 +1035,59 @@ describe('$compile', function() {
           expect(element.hasClass('ng-binding')).toBe(true);
           expect(element.data('$binding')[0].exp).toEqual('{{1+2}}');
         }));
+
+
+    it('should observe interpolated attrs', inject(function($rootScope, $compile) {
+      $compile('<div some-attr="{{value}}" observer></div>')($rootScope);
+
+      // should be async
+      expect(observeSpy).not.toHaveBeenCalled();
+
+      $rootScope.$apply(function() {
+        $rootScope.value = 'bound-value';
+      });
+      expect(observeSpy).toHaveBeenCalledOnceWith('bound-value');
+    }));
+
+
+    it('should set interpolated attrs to undefined', inject(function($rootScope, $compile) {
+      attrValueDuringLinking = null;
+      $compile('<div some-attr="{{whatever}}" observer></div>')($rootScope);
+      expect(attrValueDuringLinking).toBeUndefined();
+    }));
+
+
+    it('should not call observer of non-interpolated attr', inject(function($rootScope, $compile) {
+      $compile('<div some-attr="nonBound" observer></div>')($rootScope);
+      expect(attrValueDuringLinking).toBe('nonBound');
+
+      $rootScope.$digest();
+      expect(observeSpy).not.toHaveBeenCalled();
+    }));
+
+
+    it('should delegate exceptions to $exceptionHandler', function() {
+      observeSpy = jasmine.createSpy('$observe attr').andThrow('ERROR');
+
+      module(function($compileProvider, $exceptionHandlerProvider) {
+        $exceptionHandlerProvider.mode('log');
+        $compileProvider.directive('error', function() {
+          return function(scope, elm, attr) {
+            attr.$observe('someAttr', observeSpy);
+            attr.$observe('someAttr', observeSpy);
+          };
+        });
+      });
+
+      inject(function($compile, $rootScope, $exceptionHandler) {
+        $compile('<div some-attr="{{value}}" error></div>')($rootScope);
+        $rootScope.$digest();
+
+        expect(observeSpy).toHaveBeenCalled();
+        expect(observeSpy.callCount).toBe(2);
+        expect($exceptionHandler.errors).toEqual(['ERROR', 'ERROR']);
+      });
+    })
   });
 
 
