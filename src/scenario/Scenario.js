@@ -327,7 +327,7 @@ function browserTrigger(element, type, keys) {
 (function(fn){
   var parentTrigger = fn.trigger;
   fn.trigger = function(type) {
-    if (/(click|change|keydown)/.test(type)) {
+    if (/(click|change|keydown|blur)/.test(type)) {
       var processDefaults = [];
       this.each(function(index, node) {
         processDefaults.push(browserTrigger(node, type));
