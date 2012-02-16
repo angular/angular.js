@@ -533,14 +533,18 @@ var ngNonBindableDirective = valueFn({ terminal: true });
     </doc:example>
  */
 var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
-               function($http,   $templateCache,   $route,   $anchorScroll,   $compile) {
+                       '$controller',
+               function($http,   $templateCache,   $route,   $anchorScroll,   $compile,
+                        $controller) {
   return {
     terminal: true,
     link: function(scope, element) {
       var changeCounter = 0;
 
-      scope.$on('$afterRouteChange', function() {
+      processRoute($route.current);
+      scope.$on('$afterRouteChange', function(event, next) {
         changeCounter++;
+        processRoute(next);
       });
 
       scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
@@ -566,6 +570,15 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
           clearContent();
         }
       });
+
+      function processRoute(route) {
+        if (route) {
+          route.scope = scope.$new();
+          if (route.controller) {
+            $controller(route.controller, {$scope: route.scope});
+          }
+        }
+      }
     }
   };
 }];

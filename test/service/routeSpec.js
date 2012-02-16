@@ -1,6 +1,20 @@
 'use strict';
 
 describe('$route', function() {
+
+  beforeEach(module(function() {
+    return function($rootScope, $controller) {
+      $rootScope.$on('$afterRouteChange', function(event, next) {
+        // emulate ng:view scope creation
+        if (next) {
+          next.scope = $rootScope.$new();
+          next.controller && $controller(next.controller, {$scope: next.scope});
+        }
+      });
+    };
+  }));
+
+
   it('should route and fire change event', function() {
     var log = '',
         lastRoute,

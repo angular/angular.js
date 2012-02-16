@@ -135,8 +135,8 @@ function $RouteProvider(){
   };
 
 
-  this.$get = ['$rootScope', '$location', '$routeParams', '$controller',
-      function( $rootScope,  $location,  $routeParams, $controller) {
+  this.$get = ['$rootScope', '$location', '$routeParams',
+      function( $rootScope,  $location,  $routeParams) {
     /**
      * @ngdoc event
      * @name angular.module.ng.$route#$beforeRouteChange
@@ -185,27 +185,10 @@ function $RouteProvider(){
      */
 
     var matcher = switchRouteMatcher,
-        parentScope = $rootScope,
         dirty = 0,
         forceReload = false,
         $route = {
           routes: routes,
-
-          /**
-           * @ngdoc method
-           * @name angular.module.ng.$route#parent
-           * @methodOf angular.module.ng.$route
-           *
-           * @param {Scope} [scope=rootScope] Scope to be used as parent for newly created
-           *    `$route.current.scope` scopes.
-           *
-           * @description
-           * Sets a scope to be used as the parent scope for scopes created on route change. If not
-           * set, defaults to the root scope.
-           */
-          parent: function(scope) {
-            if (scope) parentScope = scope;
-          },
 
           /**
            * @ngdoc method
@@ -266,7 +249,10 @@ function $RouteProvider(){
       } else {
         forceReload = false;
         $rootScope.$broadcast('$beforeRouteChange', next, last);
-        last && last.scope && last.scope.$destroy();
+        if (last && last.scope) {
+          last.scope.$destroy();
+          last.scope = null;
+        }
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
@@ -279,10 +265,6 @@ function $RouteProvider(){
             }
           } else {
             copy(next.params, $routeParams);
-            next.scope = parentScope.$new();
-            if (next.controller) {
-              $controller(next.controller, {$scope: next.scope});
-            }
           }
         }
         $rootScope.$broadcast('$afterRouteChange', next, last);
