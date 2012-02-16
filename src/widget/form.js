@@ -1,5 +1,86 @@
 'use strict';
 
+FormController.$inject = ['$scope', 'name'];
+function FormController($scope, name) {
+  var form = this,
+      errors = form.error = {};
+
+  // publish the form into scope
+  name(this);
+
+  $scope.$on('$destroy', function(event, widget) {
+    if (!widget) return;
+
+    if (widget.widgetId) {
+      delete form[widget.widgetId];
+    }
+    forEach(errors, removeWidget, widget);
+  });
+
+  $scope.$on('$valid', function(event, error, widget) {
+    removeWidget(errors[error], error, widget);
+
+    if (equals(errors, {})) {
+      form.valid = true;
+      form.invalid = false;
+    }
+  });
+
+  $scope.$on('$invalid', function(event, error, widget) {
+    addWidget(error, widget);
+
+    form.valid = false;
+    form.invalid = true;
+  });
+
+  $scope.$on('$viewTouch', function() {
+    form.dirty = true;
+    form.pristine = false;
+  });
+
+  // init state
+  form.dirty = false;
+  form.pristine = true;
+  form.valid = true;
+  form.invalid = false;
+
+  function removeWidget(queue, errorKey, widget) {
+    if (queue) {
+      widget = widget || this; // so that we can be used in forEach;
+      for (var i = 0, length = queue.length; i < length; i++) {
+        if (queue[i] === widget) {
+          queue.splice(i, 1);
+          if (!queue.length) {
+            delete errors[errorKey];
+          }
+        }
+      }
+    }
+  }
+
+  function addWidget(errorKey, widget) {
+    var queue = errors[errorKey];
+    if (queue) {
+      for (var i = 0, length = queue.length; i < length; i++) {
+        if (queue[i] === widget) {
+          return;
+        }
+      }
+    } else {
+      errors[errorKey] = queue = [];
+    }
+    queue.push(widget);
+  }
+}
+
+FormController.prototype.registerWidget = function(widget, alias) {
+  if (alias && !this.hasOwnProperty(alias)) {
+    widget.widgetId = alias;
+    this[alias] = widget;
+  }
+};
+
+
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.form
@@ -57,55 +138,54 @@
            $scope.text = 'guest';
          }
        </script>
-       <div ng:controller="Ctrl">
-         <form name="myForm">
-           text: <input type="text" name="input" ng:model="text" required>
-           <span class="error" ng:show="myForm.text.$error.REQUIRED">Required!</span>
-         </form>
+       <form name="myForm" ng:controller="Ctrl">
+         text: <input type="text" name="input" ng:model="text" required>
+         <span class="error" ng:show="myForm.input.error.REQUIRED">Required!</span>
          <tt>text = {{text}}</tt><br/>
-         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
-         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
-         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
-       </div>
+         <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
+         <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
+         <tt>myForm.valid = {{myForm.valid}}</tt><br/>
+         <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
+        </form>
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
          expect(binding('text')).toEqual('guest');
-         expect(binding('myForm.input.$valid')).toEqual('true');
+         expect(binding('myForm.input.valid')).toEqual('true');
         });
 
         it('should be invalid if empty', function() {
          input('text').enter('');
          expect(binding('text')).toEqual('');
-         expect(binding('myForm.input.$valid')).toEqual('false');
+         expect(binding('myForm.input.valid')).toEqual('false');
         });
       </doc:scenario>
     </doc:example>
  */
-var ngFormDirective = ['$formFactory', function($formFactory) {
+var ngFormDirective = [function() {
   return {
+    name: 'form',
     restrict: 'E',
+    scope: true,
+    inject: {
+      name: 'accessor'
+    },
+    controller: FormController,
     compile: function() {
       return {
-        pre: function(scope, formElement, attr) {
-          var name = attr.name,
-            parentForm = $formFactory.forElement(formElement),
-            form = $formFactory(parentForm);
-          formElement.data('$form', form);
-          formElement.bind('submit', function(event){
+        pre: function(scope, formElement, attr, controller) {
+          formElement.data('$form', controller);
+          formElement.bind('submit', function(event) {
             if (!attr.action) event.preventDefault();
           });
-          if (name) {
-            scope[name] = form;
-          }
-          watch('valid');
-          watch('invalid');
-          function watch(name) {
-            form.$watch('$' + name, function(value) {
+
+          forEach(['valid', 'invalid', 'dirty', 'pristine'], function(name) {
+            scope.$watch(function() {
+              return controller[name];
+            }, function(value) {
               formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
             });
-          }
+          });
         }
       };
     }

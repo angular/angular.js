@@ -91,7 +91,6 @@ var $boolean          = 'boolean',
     angular           = window.angular || (window.angular = {}),
     angularModule,
     /** @name angular.module.ng */
-    angularInputType  = extensionMap(angular, 'inputType', lowercase),
     nodeName_,
     uid               = ['0', '0', '0'],
     DATE_ISOSTRING_LN = 24;
@@ -271,17 +270,6 @@ identity.$inject = [];
 
 
 function valueFn(value) {return function() {return value;};}
-
-function extensionMap(angular, name, transform) {
-  var extPoint;
-  return angular[name] || (extPoint = angular[name] = function(name, fn, prop){
-    name = (transform || identity)(name);
-    if (isDefined(fn)) {
-      extPoint[name] = extend(fn, prop || {});
-    }
-    return extPoint[name];
-  });
-}
 
 /**
  * @ngdoc function
