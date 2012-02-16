@@ -633,6 +633,18 @@ describe('widget', function() {
     }));
 
 
+    it('should create controller instance on $afterRouteChange event', inject(
+      function($route, $rootScope) {
+        var controllerScope;
+        $route.current = { controller: function($scope) { controllerScope = $scope; } };
+        $rootScope.$broadcast('$afterRouteChange', $route.current);
+
+        expect(controllerScope.$parent.$id).toBe($rootScope.$id);
+        expect(controllerScope.$id).toBe($route.current.scope.$id);
+      }
+    ));
+
+
     it('should load content via xhr when route changes', function() {
       module(function($routeProvider) {
         $routeProvider.when('/foo', {template: 'myUrl1'});
