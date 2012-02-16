@@ -98,7 +98,13 @@ function publishExternalAPI(angular){
             ngSwitchDefault: ngSwitchDefaultDirective,
             ngOptions: ngOptionsDirective,
             ngView: ngViewDirective,
-            ngTransclude: ngTranscludeDirective
+            ngTransclude: ngTranscludeDirective,
+            ngModel: ngModelDirective,
+            ngList: ngListDirective,
+            ngChange: ngChangeDirective,
+            ngBindImmediate: ngBindImmediateDirective,
+            required: requiredDirective,
+            ngRequired: requiredDirective
           }).
         directive(ngEventDirectives).
         directive(ngAttributeAliasDirectives);
@@ -110,7 +116,6 @@ function publishExternalAPI(angular){
       $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
       $provide.service('$filter', $FilterProvider);
       $provide.service('$interpolate', $InterpolateProvider);
-      $provide.service('$formFactory', $FormFactoryProvider);
       $provide.service('$http', $HttpProvider);
       $provide.service('$httpBackend', $HttpBackendProvider);
       $provide.service('$location', $LocationProvider);
