@@ -605,6 +605,15 @@ describe('injector', function() {
     });
 
 
+    it('should instantiate object and preserve constructor property and be instanceof', function() {
+      var t = $injector.instantiate(['book', 'author', Type]);
+      expect(t.book).toEqual('moby');
+      expect(t.author).toEqual('melville');
+      expect(t.title()).toEqual('melville: moby');
+      expect(t instanceof Type).toBe(true);
+    });
+
+
     it('should allow constructor to return different object', function() {
       var obj = {};
       var Class = function() {
