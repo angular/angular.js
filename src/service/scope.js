@@ -574,7 +574,7 @@ function $RootScopeProvider(){
        *
        * The event listener function format is: `function(event)`. The `event` object passed into the
        * listener has the following attributes
-       * 
+       *
        *   - `targetScope` - {Scope}: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
        *   - `currentScope` - {Scope}: the current scope which is handling the event.
        *   - `name` - {string}: Name of the event.

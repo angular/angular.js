@@ -498,23 +498,23 @@ var ngNonBindableDirective = valueFn({ terminal: true });
  *
  *
  * @example
-    <doc:example>
+    <doc:example module="ngView">
       <doc:source jsfiddle="false">
          <script>
-           function MyCtrl($route) {
-             $route.when('/overview',
-               { controller: OverviewCtrl,
-                 template: 'partials/guide/dev_guide.overview.html'});
-             $route.when('/bootstrap',
-               { controller: BootstrapCtrl,
-                 template: 'partials/guide/dev_guide.bootstrap.auto_bootstrap.html'});
-           };
-           MyCtrl.$inject = ['$route'];
-
            function BootstrapCtrl() {}
            function OverviewCtrl() {}
+
+           angular.module('ngView', [])
+             .config(function($routeProvider) {
+               $routeProvider.when('/overview',
+                 { controller: OverviewCtrl,
+                   template: 'partials/guide/dev_guide.overview.html'});
+               $routeProvider.when('/bootstrap',
+                 { controller: BootstrapCtrl,
+                   template: 'partials/guide/dev_guide.bootstrap.auto_bootstrap.html'});
+             });
          </script>
-         <div ng:controller="MyCtrl">
+         <div>
            <a href="overview">overview</a> |
            <a href="bootstrap">bootstrap</a> |
            <a href="undefined">undefined</a>
@@ -538,14 +538,18 @@ var ngNonBindableDirective = valueFn({ terminal: true });
     </doc:example>
  */
 var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
-               function($http,   $templateCache,   $route,   $anchorScroll,   $compile) {
+                       '$controller',
+               function($http,   $templateCache,   $route,   $anchorScroll,   $compile,
+                        $controller) {
   return {
     terminal: true,
     link: function(scope, element) {
       var changeCounter = 0;
 
-      scope.$on('$afterRouteChange', function() {
+      processRoute($route.current);
+      scope.$on('$afterRouteChange', function(event, next) {
         changeCounter++;
+        processRoute(next);
       });
 
       scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
@@ -571,6 +575,15 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
           clearContent();
         }
       });
+
+      function processRoute(route) {
+        if (route) {
+          route.scope = scope.$new();
+          if (route.controller) {
+            $controller(route.controller, {$scope: route.scope});
+          }
+        }
+      }
     }
   };
 }];
