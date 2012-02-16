@@ -36,16 +36,17 @@ The two partials are defined in the following URLs:
 * <a href="./examples/settings.html" ng:ext-link>./examples/settings.html</a>
 * <a href="./examples/welcome.html" ng:ext-link>./examples/welcome.html</a>
 
-<doc:example>
+<doc:example module="deepLinking">
  <doc:source jsfiddle="false">
     <script>
+     angular.module('deepLinking', [])
+       .config(function($routeProvider) {
+          $routeProvider.when("/welcome",  {template:'./examples/welcome.html',  controller:WelcomeCntl});
+          $routeProvider.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
+       });
+
      AppCntl.$inject = ['$scope', '$route']
      function AppCntl($scope, $route) {
-      // define routes
-      $route.when("/welcome",  {template:'./examples/welcome.html',  controller:WelcomeCntl});
-      $route.when("/settings", {template:'./examples/settings.html', controller:SettingsCntl});
-      $route.parent($scope);
-
       // initialize the model to something useful
       $scope.person = {
        name:'anonymous',
