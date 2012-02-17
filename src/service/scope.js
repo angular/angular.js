@@ -585,12 +585,12 @@ function $RootScopeProvider(){
       $emit: function(name, args) {
         var empty = [],
             namedListeners,
-            canceled = false,
             scope = this,
             event = {
               name: name,
               targetScope: scope,
-              cancel: function() {canceled = true;}
+              cancel: function() {event.cancelled = true;},
+              cancelled: false
             },
             listenerArgs = concat([event], arguments, 1),
             i, length;
@@ -601,7 +601,7 @@ function $RootScopeProvider(){
           for (i=0, length=namedListeners.length; i<length; i++) {
             try {
               namedListeners[i].apply(null, listenerArgs);
-              if (canceled) return;
+              if (event.cancelled) return event;
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -609,6 +609,8 @@ function $RootScopeProvider(){
           //traverse upwards
           scope = scope.$parent;
         } while (scope);
+
+        return event;
       },
 
 
@@ -662,6 +664,8 @@ function $RootScopeProvider(){
             }
           }
         } while ((current = next));
+
+        return event;
       }
     };
 
