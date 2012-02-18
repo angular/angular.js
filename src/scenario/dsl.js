@@ -363,6 +363,14 @@ angular.scenario.dsl('element', function() {
       }
     });
   };
+  
+  chain.trigger = function(eventname) {
+    return this.addFutureAction("element '" + this.label + "' trigger "+eventname, function($window, $document, done) {
+      var elements = $document.elements();
+      elements.trigger(eventname);
+      done();
+    });
+  };
 
   chain.query = function(fn) {
     return this.addFutureAction('element ' + this.label + ' custom query', function($window, $document, done) {
