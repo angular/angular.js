@@ -658,6 +658,18 @@ describe('Scope', function() {
         child.$emit('abc', 'arg1', 'arg2');
       });
 
+
+      it('should return event object with cancelled property', function() {
+        child.$on('some', function(event) {
+          event.cancel();
+        });
+
+        var result = grandChild.$emit('some');
+        expect(result).toBeDefined();
+        expect(result.cancelled).toBe(true);
+      });
+
+
       describe('event object', function() {
         it('should have methods/properties', function() {
           var event;
@@ -752,6 +764,15 @@ describe('Scope', function() {
           $rootScope.$broadcast('fooEvent');
           expect(log).toBe('');
         }));
+
+
+        it('should return event object', function() {
+          var result = child1.$broadcast('some');
+
+          expect(result).toBeDefined();
+          expect(result.name).toBe('some');
+          expect(result.targetScope).toBe(child1);
+        });
       });
 
 
