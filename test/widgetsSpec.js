@@ -119,6 +119,22 @@ describe('widget', function() {
     }));
 
 
+    it('should fire $contentLoaded event after linking the content', inject(
+        function($rootScope, $compile, $templateCache) {
+      var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function() {
+        expect(element.text()).toBe('partial content');
+      });
+
+      $templateCache.put('url', [200, 'partial content', {}]);
+      $rootScope.$on('$contentLoaded', contentLoadedSpy);
+
+      element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
+      $rootScope.$digest();
+
+      expect(contentLoadedSpy).toHaveBeenCalledOnce();
+    }));
+
+
     it('should evaluate onload expression when a partial is loaded', inject(
         putIntoCache('myUrl', 'my partial'),
         function($rootScope, $compile, $browser) {
@@ -620,7 +636,7 @@ describe('widget', function() {
   describe('ng:view', function() {
     beforeEach(module(function() {
       return function($rootScope, $compile) {
-        element = $compile('<ng:view></ng:view>')($rootScope);
+        element = $compile('<ng:view onload="load()"></ng:view>')($rootScope);
       };
     }));
 
@@ -847,7 +863,7 @@ describe('widget', function() {
         $routeProvider.when('/foo', {controller: noop, template: 'myUrl1'});
       });
 
-      inject(function($route, $rootScope, $location, $templateCache, $browser) {
+      inject(function($route, $rootScope, $location, $templateCache) {
         $templateCache.put('myUrl1', [200, 'my partial', {}]);
         $location.path('/foo');
 
@@ -1004,6 +1020,22 @@ describe('widget', function() {
         expect(log).toEqual(['init-foo', 'route-update', 'destroy-foo', 'init-bar']);
       });
     });
+
+
+    it('should evaluate onload expression after linking the content', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', {template: 'tpl.html'});
+      });
+
+      inject(function($templateCache, $location, $rootScope) {
+        $templateCache.put('tpl.html', [200, '{{1+1}}', {}]);
+        $rootScope.load = jasmine.createSpy('onload');
+
+        $location.url('/foo');
+        $rootScope.$digest();
+        expect($rootScope.load).toHaveBeenCalledOnce();
+      });
+    })
   });
 
 

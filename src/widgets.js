@@ -66,7 +66,6 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
     compile: function(element, attr) {
       var srcExp = attr.src,
           scopeExp = attr.scope || '',
-          onloadExp = attr.onload || '', //workaround for jquery bug #7537
           autoScrollExp = attr.autoscroll;
       if (!element[0]['ng:compiled']) {
         element[0]['ng:compiled'] = true;
@@ -104,7 +103,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
                    if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
                      $anchorScroll();
                    }
-                   scope.$eval(onloadExp);
+                   scope.$emit('$contentLoaded');
                  }
                }).error(clearContent);
              } else {
