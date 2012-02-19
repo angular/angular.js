@@ -544,22 +544,29 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
   return {
     terminal: true,
     link: function(scope, element) {
-      var changeCounter = 0;
+      var changeCounter = 0,
+          lastScope;
 
-      processRoute($route.current);
-      scope.$on('$afterRouteChange', function(event, next) {
+      scope.$on('$afterRouteChange', function(event, next, previous) {
         changeCounter++;
-        processRoute(next);
       });
 
       scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
         var template = $route.current && $route.current.template;
+
+        function destroyLastScope() {
+          if (lastScope) {
+            lastScope.$destroy();
+            lastScope = null;
+          }
+        }
 
         function clearContent() {
           // ignore callback if another route change occured since
           if (newChangeCounter == changeCounter) {
             element.html('');
           }
+          destroyLastScope();
         }
 
         if (template) {
@@ -567,7 +574,20 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
             // ignore callback if another route change occured since
             if (newChangeCounter == changeCounter) {
               element.html(response);
-              $compile(element.contents())($route.current.scope);
+              destroyLastScope();
+
+              var link = $compile(element.contents()),
+                  current = $route.current;
+
+              lastScope = current.scope = scope.$new();
+              if (current.controller) {
+                $controller(current.controller, {$scope: lastScope});
+              }
+
+              link(lastScope);
+              lastScope.$emit('$contentLoaded');
+
+              // $anchorScroll might listen on event...
               $anchorScroll();
             }
           }).error(clearContent);
@@ -575,15 +595,6 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
           clearContent();
         }
       });
-
-      function processRoute(route) {
-        if (route) {
-          route.scope = scope.$new();
-          if (route.controller) {
-            $controller(route.controller, {$scope: route.scope});
-          }
-        }
-      }
     }
   };
 }];
