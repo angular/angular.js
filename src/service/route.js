@@ -177,7 +177,7 @@ function $RouteProvider(){
      * @ngdoc event
      * @name angular.module.ng.$route#$routeUpdate
      * @eventOf angular.module.ng.$route
-     * @eventType emit on the current route scope
+     * @eventType broadcast on root scope
      * @description
      *
      * The `reloadOnSearch` property has been set to false, and we are reusing the same

@@ -975,3 +975,15 @@ var styleDirective = valueFn({
   restrict: 'E',
   terminal: true
 });
+
+
+var onloadDirective = valueFn({
+  restrict: 'AC',
+  link: function(scope, elm, attr) {
+    var onloadExp = attr.onload || ''; //workaround for jquery bug #7537)
+
+    scope.$on('$contentLoaded', function(event) {
+      scope.$eval(onloadExp);
+    });
+  }
+});
