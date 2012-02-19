@@ -2,30 +2,14 @@
 
 describe('$route', function() {
 
-  beforeEach(module(function() {
-    return function($rootScope, $controller) {
-      $rootScope.$on('$afterRouteChange', function(event, next) {
-        // emulate ng:view scope creation
-        if (next) {
-          next.scope = $rootScope.$new();
-          next.controller && $controller(next.controller, {$scope: next.scope});
-        }
-      });
-    };
-  }));
-
-
   it('should route and fire change event', function() {
     var log = '',
         lastRoute,
         nextRoute;
 
-    function BookChapter() {
-      log += '<init>;';
-    }
     module(function($routeProvider) {
       $routeProvider.when('/Book/:book/Chapter/:chapter',
-          {controller: BookChapter, template: 'Chapter.html'});
+          {controller: noop, template: 'Chapter.html'});
       $routeProvider.when('/Blank');
     });
     inject(function($route, $location, $rootScope) {
@@ -44,16 +28,14 @@ describe('$route', function() {
 
       $location.path('/Book/Moby/Chapter/Intro').search('p=123');
       $rootScope.$digest();
-      expect(log).toEqual('before();<init>;after();');
+      expect(log).toEqual('before();after();');
       expect($route.current.params).toEqual({book:'Moby', chapter:'Intro', p:'123'});
-      var lastId = $route.current.scope.$id;
 
       log = '';
       $location.path('/Blank').search('ignore');
       $rootScope.$digest();
       expect(log).toEqual('before();after();');
       expect($route.current.params).toEqual({ignore:true});
-      expect($route.current.scope.$id).not.toEqual(lastId);
 
       log = '';
       $location.path('/NONE');
@@ -133,9 +115,7 @@ describe('$route', function() {
 
 
   it('should handle unknown routes with "otherwise" route definition', function() {
-    function NotFoundCtrl($scope) {
-      $scope.notFoundProp = 'not found!';
-    }
+    function NotFoundCtrl() {}
 
     module(function($routeProvider){
       $routeProvider.when('/foo', {template: 'foo.html'});
@@ -154,7 +134,6 @@ describe('$route', function() {
 
       expect($route.current.template).toBe('404.html');
       expect($route.current.controller).toBe(NotFoundCtrl);
-      expect($route.current.scope.notFoundProp).toBe('not found!');
       expect(onChangeSpy).toHaveBeenCalled();
 
       onChangeSpy.reset();
@@ -163,55 +142,28 @@ describe('$route', function() {
 
       expect($route.current.template).toEqual('foo.html');
       expect($route.current.controller).toBeUndefined();
-      expect($route.current.scope.notFoundProp).toBeUndefined();
       expect(onChangeSpy).toHaveBeenCalled();
     });
   });
 
 
-  it('should $destroy old routes', function() {
+  it('should not fire $after/beforeRouteChange during bootstrap (if no route)', function() {
+    var routeChangeSpy = jasmine.createSpy('route change');
+
     module(function($routeProvider) {
-      $routeProvider.when('/foo', {template: 'foo.html', controller: function() {this.name = 'FOO';}});
-      $routeProvider.when('/bar', {template: 'bar.html', controller: function() {this.name = 'BAR';}});
-      $routeProvider.when('/baz', {template: 'baz.html'});
+      $routeProvider.when('/one', {}); // no otherwise defined
     });
 
-    inject(function($route, $location, $rootScope) {
-      expect($rootScope.$childHead).toEqual(null);
+    inject(function($rootScope, $route, $location) {
+      $rootScope.$on('$beforeRouteChange', routeChangeSpy);
+      $rootScope.$on('$afterRouteChange', routeChangeSpy);
 
-      $location.path('/foo');
       $rootScope.$digest();
-      expect($rootScope.$$childHead.$id).toBeTruthy();
-      expect($rootScope.$$childHead.$id).toEqual($rootScope.$$childTail.$id);
+      expect(routeChangeSpy).not.toHaveBeenCalled();
 
-      $location.path('/bar');
+      $location.path('/no-route-here');
       $rootScope.$digest();
-      expect($rootScope.$$childHead.$id).toBeTruthy();
-      expect($rootScope.$$childHead.$id).toEqual($rootScope.$$childTail.$id);
-
-      $location.path('/baz');
-      $rootScope.$digest();
-      expect($rootScope.$$childHead.$id).toBeTruthy();
-      expect($rootScope.$$childHead.$id).toEqual($rootScope.$$childTail.$id);
-
-      $location.path('/');
-      $rootScope.$digest();
-      expect($rootScope.$$childHead).toEqual(null);
-      expect($rootScope.$$childTail).toEqual(null);
-    });
-  });
-
-
-  it('should infer arguments in injection', function() {
-    var injectedRoute;
-    module(function($routeProvider) {
-      $routeProvider.when('/test', {controller: function($route) {injectedRoute = $route;}});
-    });
-
-    inject(function($route, $location, $rootScope) {
-      $location.path('/test');
-      $rootScope.$digest();
-      expect(injectedRoute).toBe($route);
+      expect(routeChangeSpy).not.toHaveBeenCalled();
     });
   });
 
@@ -330,12 +282,8 @@ describe('$route', function() {
     it('should reload a route when reloadOnSearch is enabled and .search() changes', function() {
       var reloaded = jasmine.createSpy('route reload');
 
-      function FooCtrl() {
-        reloaded();
-      }
-
       module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: FooCtrl});
+        $routeProvider.when('/foo', {controller: noop});
       });
 
       inject(function($route, $location, $rootScope, $routeParams) {
@@ -356,157 +304,105 @@ describe('$route', function() {
 
 
     it('should not reload a route when reloadOnSearch is disabled and only .search() changes', function() {
-      var reloaded = jasmine.createSpy('route reload'),
-          routeUpdateEvent = jasmine.createSpy('route reload');
-
-      function FooCtrl($scope) {
-        reloaded();
-        $scope.$on('$routeUpdate', routeUpdateEvent);
-      }
+      var routeChange = jasmine.createSpy('route change'),
+          routeUpdate = jasmine.createSpy('route update');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: FooCtrl, reloadOnSearch: false});
+        $routeProvider.when('/foo', {controller: noop, reloadOnSearch: false});
       });
 
       inject(function($route, $location, $rootScope) {
-        $rootScope.$on('$beforeRouteChange', reloaded);
+        $rootScope.$on('$beforeRouteChange', routeChange);
+        $rootScope.$on('$afterRouteChange', routeChange);
+        $rootScope.$on('$routeUpdate', routeUpdate);
 
-        expect(reloaded).not.toHaveBeenCalled();
+        expect(routeChange).not.toHaveBeenCalled();
 
         $location.path('/foo');
         $rootScope.$digest();
-        expect(reloaded).toHaveBeenCalled();
-        expect(routeUpdateEvent).not.toHaveBeenCalled();
-        reloaded.reset();
+        expect(routeChange).toHaveBeenCalled();
+        expect(routeChange.callCount).toBe(2);
+        expect(routeUpdate).not.toHaveBeenCalled();
+        routeChange.reset();
 
         // don't trigger reload
         $location.search({foo: 'bar'});
         $rootScope.$digest();
-        expect(reloaded).not.toHaveBeenCalled();
-        expect(routeUpdateEvent).toHaveBeenCalled();
+        expect(routeChange).not.toHaveBeenCalled();
+        expect(routeUpdate).toHaveBeenCalled();
       });
     });
 
 
     it('should reload reloadOnSearch route when url differs only in route path param', function() {
-      var reloaded = jasmine.createSpy('routeReload'),
-          onRouteChange = jasmine.createSpy('onRouteChange');
-
-      function FooCtrl() {
-        reloaded();
-      }
+      var routeChange = jasmine.createSpy('route change');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo/:fooId', {controller: FooCtrl, reloadOnSearch: false});
+        $routeProvider.when('/foo/:fooId', {controller: noop, reloadOnSearch: false});
       });
 
       inject(function($route, $location, $rootScope) {
-        $rootScope.$on('$beforeRouteChange', onRouteChange);
+        $rootScope.$on('$beforeRouteChange', routeChange);
+        $rootScope.$on('$afterRouteChange', routeChange);
 
-        expect(reloaded).not.toHaveBeenCalled();
-        expect(onRouteChange).not.toHaveBeenCalled();
+        expect(routeChange).not.toHaveBeenCalled();
 
         $location.path('/foo/aaa');
         $rootScope.$digest();
-        expect(reloaded).toHaveBeenCalled();
-        expect(onRouteChange).toHaveBeenCalled();
-        reloaded.reset();
-        onRouteChange.reset();
+        expect(routeChange).toHaveBeenCalled();
+        expect(routeChange.callCount).toBe(2);
+        routeChange.reset();
 
         $location.path('/foo/bbb');
         $rootScope.$digest();
-        expect(reloaded).toHaveBeenCalled();
-        expect(onRouteChange).toHaveBeenCalled();
-        reloaded.reset();
-        onRouteChange.reset();
+        expect(routeChange).toHaveBeenCalled();
+        expect(routeChange.callCount).toBe(2);
+        routeChange.reset();
 
         $location.search({foo: 'bar'});
         $rootScope.$digest();
-        expect(reloaded).not.toHaveBeenCalled();
-        expect(onRouteChange).not.toHaveBeenCalled();
+        expect(routeChange).not.toHaveBeenCalled();
       });
     });
 
 
     it('should update params when reloadOnSearch is disabled and .search() changes', function() {
-      var routeParams = jasmine.createSpy('routeParams');
-
-      function FooCtrl($scope, $route) {
-        $scope.$watch(function() {
-          return $route.current.params;
-        }, function(value) {
-          routeParams(value);
-        });
-      }
+      var routeParamsWatcher = jasmine.createSpy('routeParamsWatcher');
 
       module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: FooCtrl});
-        $routeProvider.when('/bar/:barId', {controller: FooCtrl, reloadOnSearch: false});
+        $routeProvider.when('/foo', {controller: noop});
+        $routeProvider.when('/bar/:barId', {controller: noop, reloadOnSearch: false});
       });
 
-      inject(function($route, $location, $rootScope) {
-        expect(routeParams).not.toHaveBeenCalled();
+      inject(function($route, $location, $rootScope, $routeParams) {
+        $rootScope.$watch(function() {
+          return $routeParams;
+        }, function(value) {
+          routeParamsWatcher(value);
+        }, true);
+
+        expect(routeParamsWatcher).not.toHaveBeenCalled();
 
         $location.path('/foo');
         $rootScope.$digest();
-        expect(routeParams).toHaveBeenCalledWith({});
-        routeParams.reset();
+        expect(routeParamsWatcher).toHaveBeenCalledWith({});
+        routeParamsWatcher.reset();
 
         // trigger reload
         $location.search({foo: 'bar'});
         $rootScope.$digest();
-        expect(routeParams).toHaveBeenCalledWith({foo: 'bar'});
-        routeParams.reset();
+        expect(routeParamsWatcher).toHaveBeenCalledWith({foo: 'bar'});
+        routeParamsWatcher.reset();
 
         $location.path('/bar/123').search({});
         $rootScope.$digest();
-        expect(routeParams).toHaveBeenCalledWith({barId: '123'});
-        routeParams.reset();
+        expect(routeParamsWatcher).toHaveBeenCalledWith({barId: '123'});
+        routeParamsWatcher.reset();
 
         // don't trigger reload
         $location.search({foo: 'bar'});
         $rootScope.$digest();
-        expect(routeParams).toHaveBeenCalledWith({barId: '123', foo: 'bar'});
-      });
-    });
-
-
-    it('should $destroy scope after update and reload',  function() {
-      // this is a regression of bug, where $route doesn't copy scope when only updating
-
-      var log = [];
-
-      function logger(msg) {
-        return function() {
-          log.push(msg);
-        };
-      }
-
-      function createController(name) {
-        return function($scope) {
-          log.push('init-' + name);
-          $scope.$on('$destroy', logger('destroy-' + name));
-          $scope.$on('$routeUpdate', logger('route-update'));
-        };
-      }
-
-      module(function($routeProvider) {
-        $routeProvider.when('/foo', {controller: createController('foo'), reloadOnSearch: false});
-        $routeProvider.when('/bar', {controller: createController('bar')});
-      });
-
-      inject(function($route, $location, $rootScope) {
-        $location.url('/foo');
-        $rootScope.$digest();
-        expect(log).toEqual(['init-foo']);
-
-        $location.search({q: 'some'});
-        $rootScope.$digest();
-        expect(log).toEqual(['init-foo', 'route-update']);
-
-        $location.url('/bar');
-        $rootScope.$digest();
-        expect(log).toEqual(['init-foo', 'route-update', 'destroy-foo', 'init-bar']);
+        expect(routeParamsWatcher).toHaveBeenCalledWith({barId: '123', foo: 'bar'});
       });
     });
 
@@ -514,29 +410,30 @@ describe('$route', function() {
     describe('reload', function() {
 
       it('should reload even if reloadOnSearch is false', function() {
-        var count = 0;
-
-        function FooCtrl() { count ++; }
+        var routeChangeSpy = jasmine.createSpy('route change');
 
         module(function($routeProvider) {
-          $routeProvider.when('/bar/:barId', {controller: FooCtrl, reloadOnSearch: false});
+          $routeProvider.when('/bar/:barId', {controller: noop, reloadOnSearch: false});
         });
 
         inject(function($route, $location, $rootScope, $routeParams) {
+          $rootScope.$on('$afterRouteChange', routeChangeSpy);
+
           $location.path('/bar/123');
           $rootScope.$digest();
           expect($routeParams).toEqual({barId:'123'});
-          expect(count).toEqual(1);
+          expect(routeChangeSpy).toHaveBeenCalledOnce();
+          routeChangeSpy.reset();
 
           $location.path('/bar/123').search('a=b');
           $rootScope.$digest();
           expect($routeParams).toEqual({barId:'123', a:'b'});
-          expect(count).toEqual(1);
+          expect(routeChangeSpy).not.toHaveBeenCalled();
 
           $route.reload();
           $rootScope.$digest();
           expect($routeParams).toEqual({barId:'123', a:'b'});
-          expect(count).toEqual(2);
+          expect(routeChangeSpy).toHaveBeenCalledOnce();
         });
       });
     });
