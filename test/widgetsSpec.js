@@ -633,16 +633,35 @@ describe('widget', function() {
     }));
 
 
-    it('should create controller instance on $afterRouteChange event', inject(
-      function($route, $rootScope) {
-        var controllerScope;
-        $route.current = { controller: function($scope) { controllerScope = $scope; } };
-        $rootScope.$broadcast('$afterRouteChange', $route.current);
+    it('should instantiate controller after compiling the content', function() {
+      var log = [], controllerScope,
+          Ctrl = function($scope) {
+            controllerScope = $scope;
+            log.push('ctrl-init');
+          };
 
-        expect(controllerScope.$parent.$id).toBe($rootScope.$id);
-        expect(controllerScope.$id).toBe($route.current.scope.$id);
-      }
-    ));
+      module(function($compileProvider, $routeProvider) {
+        $compileProvider.directive('compileLog', function() {
+          return {
+            compile: function() {
+              log.push('compile');
+            }
+          };
+        });
+
+        $routeProvider.when('/some', {template: '/tpl.html', controller: Ctrl});
+      });
+
+      inject(function($route, $rootScope, $templateCache, $location) {
+        $templateCache.put('/tpl.html', [200, '<div compile-log>partial</div>', {}]);
+        $location.path('/some');
+        $rootScope.$digest();
+
+        expect(controllerScope.$parent).toBe($rootScope);
+        expect(controllerScope).toBe($route.current.scope);
+        expect(log).toEqual(['compile', 'ctrl-init']);
+      });
+    });
 
 
     it('should load content via xhr when route changes', function() {
@@ -840,6 +859,149 @@ describe('widget', function() {
 
         $rootScope.$digest();
         expect(element.text()).toBe('my partial');
+      });
+    });
+
+    it('should fire $contentLoaded event when content compiled and linked', function() {
+      var log = [];
+      var logger = function(name) {
+        return function() {
+          log.push(name);
+        };
+      };
+      var Ctrl = function($scope) {
+        $scope.value = 'bound-value';
+        log.push('init-ctrl');
+      };
+
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', {template: 'tpl.html', controller: Ctrl});
+      });
+
+      inject(function($templateCache, $rootScope, $location) {
+        $rootScope.$on('$beforeRouteChange', logger('$beforeRouteChange'));
+        $rootScope.$on('$afterRouteChange', logger('$afterRouteChange'));
+        $rootScope.$on('$contentLoaded', logger('$contentLoaded'));
+
+        $templateCache.put('tpl.html', [200, '{{value}}', {}]);
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('bound-value');
+        expect(log).toEqual(['$beforeRouteChange', '$afterRouteChange', 'init-ctrl',
+                             '$contentLoaded']);
+      });
+    });
+
+    it('should destroy previous scope', function() {
+      module(function($routeProvider) {
+        $routeProvider.when('/foo', {template: 'tpl.html'});
+      });
+
+      inject(function($templateCache, $rootScope, $location) {
+        $templateCache.put('tpl.html', [200, 'partial', {}]);
+
+        expect($rootScope.$$childHead).toBeNull();
+        expect($rootScope.$$childTail).toBeNull();
+
+        $location.path('/foo');
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('partial');
+        expect($rootScope.$$childHead).not.toBeNull();
+        expect($rootScope.$$childTail).not.toBeNull();
+
+        $location.path('/non/existing/route');
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('');
+        expect($rootScope.$$childHead).toBeNull();
+        expect($rootScope.$$childTail).toBeNull();
+      });
+    });
+
+
+    it('should destroy previous scope if multiple route changes occur before server responds',
+        function() {
+      var log = [];
+      var createCtrl = function(name) {
+        return function($scope) {
+          log.push('init-' + name);
+          $scope.$on('$destroy', function() {
+            log.push('destroy-' + name);
+          });
+        };
+      };
+
+      module(function($routeProvider) {
+        $routeProvider.when('/one', {template: 'one.html', controller: createCtrl('ctrl1')});
+        $routeProvider.when('/two', {template: 'two.html', controller: createCtrl('ctrl2')});
+      });
+
+      inject(function($httpBackend, $rootScope, $location) {
+        $httpBackend.whenGET('one.html').respond('content 1');
+        $httpBackend.whenGET('two.html').respond('content 2');
+
+        $location.path('/one');
+        $rootScope.$digest();
+        $location.path('/two');
+        $rootScope.$digest();
+
+        $httpBackend.flush();
+        expect(element.text()).toBe('content 2');
+        expect(log).toEqual(['init-ctrl2']);
+
+        $location.path('/non-existing');
+        $rootScope.$digest();
+
+        expect(element.text()).toBe('');
+        expect(log).toEqual(['init-ctrl2', 'destroy-ctrl2']);
+
+        expect($rootScope.$$childHead).toBeNull();
+        expect($rootScope.$$childTail).toBeNull();
+      });
+    });
+
+
+    it('should $destroy scope after update and reload',  function() {
+      // this is a regression of bug, where $route doesn't copy scope when only updating
+
+      var log = [];
+
+      function logger(msg) {
+        return function() {
+          log.push(msg);
+        };
+      }
+
+      function createController(name) {
+        return function($scope) {
+          log.push('init-' + name);
+          $scope.$on('$destroy', logger('destroy-' + name));
+          $scope.$on('$routeUpdate', logger('route-update'));
+        };
+      }
+
+      module(function($routeProvider) {
+        $routeProvider.when('/bar', {template: 'tpl.html', controller: createController('bar')});
+        $routeProvider.when('/foo', {
+            template: 'tpl.html', controller: createController('foo'), reloadOnSearch: false});
+      });
+
+      inject(function($templateCache, $location, $rootScope) {
+        $templateCache.put('tpl.html', [200, 'partial', {}]);
+
+        $location.url('/foo');
+        $rootScope.$digest();
+        expect(log).toEqual(['init-foo']);
+
+        $location.search({q: 'some'});
+        $rootScope.$digest();
+        expect(log).toEqual(['init-foo', 'route-update']);
+
+        $location.url('/bar');
+        $rootScope.$digest();
+        expect(log).toEqual(['init-foo', 'route-update', 'destroy-foo', 'init-bar']);
       });
     });
   });

@@ -237,22 +237,17 @@ function $RouteProvider(){
 
     function updateRoute() {
       var next = parseRoute(),
-          last = $route.current,
-          Controller;
+          last = $route.current;
 
       if (next && last && next.$route === last.$route
           && equals(next.pathParams, last.pathParams) && !next.reloadOnSearch && !forceReload) {
         next.scope = last.scope;
         $route.current = next;
         copy(next.params, $routeParams);
-        last.scope && last.scope.$emit('$routeUpdate');
-      } else {
+        $rootScope.$broadcast('$routeUpdate');
+      } else if (next || last) {
         forceReload = false;
         $rootScope.$broadcast('$beforeRouteChange', next, last);
-        if (last && last.scope) {
-          last.scope.$destroy();
-          last.scope = null;
-        }
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
@@ -308,7 +303,5 @@ function $RouteProvider(){
       });
       return result.join('');
     }
-
-
   }];
 }
