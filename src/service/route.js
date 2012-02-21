@@ -63,8 +63,80 @@
     </doc:example>
  */
 function $RouteProvider(){
-  this.$get = ['$rootScope', '$location', '$routeParams', '$controller',
-      function( $rootScope,  $location,  $routeParams, $controller) {
+  var routes = {};
+
+  /**
+   * @ngdoc method
+   * @name angular.module.ng.$route#when
+   * @methodOf angular.module.ng.$route
+   *
+   * @param {string} path Route path (matched against `$location.hash`)
+   * @param {Object} route Mapping information to be assigned to `$route.current` on route
+   *    match.
+   *
+   *    Object properties:
+   *
+   *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
+   *      created scope.
+   *    - `template` – `{string=}` – path to an html template that should be used by
+   *      {@link angular.module.ng.$compileProvider.directive.ng:view ng:view} or
+   *      {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} widgets.
+   *    - `redirectTo` – {(string|function())=} – value to update
+   *      {@link angular.module.ng.$location $location} path with and trigger route redirection.
+   *
+   *      If `redirectTo` is a function, it will be called with the following parameters:
+   *
+   *      - `{Object.<string>}` - route parameters extracted from the current
+   *        `$location.path()` by applying the current route template.
+   *      - `{string}` - current `$location.path()`
+   *      - `{Object}` - current `$location.search()`
+   *
+   *      The custom `redirectTo` function is expected to return a string which will be used
+   *      to update `$location.path()` and `$location.search()`.
+   *
+   *    - `[reloadOnSearch=true]` - {boolean=} - reload route when only $location.search()
+   *    changes.
+   *
+   *      If the option is set to false and url in the browser changes, then
+   *      $routeUpdate event is emited on the current route scope. You can use this event to
+   *      react to {@link angular.module.ng.$routeParams} changes:
+   *
+   *            function MyCtrl($route, $routeParams) {
+   *              this.$on('$routeUpdate', function() {
+   *                // do stuff with $routeParams
+   *              });
+   *            }
+   *
+   * @returns {Object} route object
+   *
+   * @description
+   * Adds a new route definition to the `$route` service.
+   */
+  this.when = function(path, route) {
+    var routeDef = routes[path];
+    if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
+    if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
+    return routeDef;
+  };
+
+  /**
+   * @ngdoc method
+   * @name angular.module.ng.$route#otherwise
+   * @methodOf angular.module.ng.$route
+   *
+   * @description
+   * Sets route definition that will be used on route change when no other route definition
+   * is matched.
+   *
+   * @param {Object} params Mapping information to be assigned to `$route.current`.
+   */
+  this.otherwise = function(params) {
+    this.when(null, params);
+  };
+
+
+  this.$get = ['$rootScope', '$location', '$routeParams',
+      function( $rootScope,  $location,  $routeParams) {
     /**
      * @ngdoc event
      * @name angular.module.ng.$route#$beforeRouteChange
@@ -112,99 +184,11 @@ function $RouteProvider(){
      * instance of the Controller.
      */
 
-    var routes = {},
-        matcher = switchRouteMatcher,
-        parentScope = $rootScope,
+    var matcher = switchRouteMatcher,
         dirty = 0,
         forceReload = false,
         $route = {
           routes: routes,
-
-          /**
-           * @ngdoc method
-           * @name angular.module.ng.$route#parent
-           * @methodOf angular.module.ng.$route
-           *
-           * @param {Scope} [scope=rootScope] Scope to be used as parent for newly created
-           *    `$route.current.scope` scopes.
-           *
-           * @description
-           * Sets a scope to be used as the parent scope for scopes created on route change. If not
-           * set, defaults to the root scope.
-           */
-          parent: function(scope) {
-            if (scope) parentScope = scope;
-          },
-
-          /**
-           * @ngdoc method
-           * @name angular.module.ng.$route#when
-           * @methodOf angular.module.ng.$route
-           *
-           * @param {string} path Route path (matched against `$location.hash`)
-           * @param {Object} route Mapping information to be assigned to `$route.current` on route
-           *    match.
-           *
-           *    Object properties:
-           *
-           *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
-           *      created scope.
-           *    - `template` – `{string=}` – path to an html template that should be used by
-           *      {@link angular.module.ng.$compileProvider.directive.ng:view ng:view} or
-           *      {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} widgets.
-           *    - `redirectTo` – {(string|function())=} – value to update
-           *      {@link angular.module.ng.$location $location} path with and trigger route redirection.
-           *
-           *      If `redirectTo` is a function, it will be called with the following parameters:
-           *
-           *      - `{Object.<string>}` - route parameters extracted from the current
-           *        `$location.path()` by applying the current route template.
-           *      - `{string}` - current `$location.path()`
-           *      - `{Object}` - current `$location.search()`
-           *
-           *      The custom `redirectTo` function is expected to return a string which will be used
-           *      to update `$location.path()` and `$location.search()`.
-           *
-           *    - `[reloadOnSearch=true]` - {boolean=} - reload route when only $location.search()
-           *    changes.
-           *
-           *      If the option is set to false and url in the browser changes, then
-           *      $routeUpdate event is emited on the current route scope. You can use this event to
-           *      react to {@link angular.module.ng.$routeParams} changes:
-           *
-           *            function MyCtrl($route, $routeParams) {
-           *              this.$on('$routeUpdate', function() {
-           *                // do stuff with $routeParams
-           *              });
-           *            }
-           *
-           * @returns {Object} route object
-           *
-           * @description
-           * Adds a new route definition to the `$route` service.
-           */
-          when: function(path, route) {
-            var routeDef = routes[path];
-            if (!routeDef) routeDef = routes[path] = {reloadOnSearch: true};
-            if (route) extend(routeDef, route); // TODO(im): what the heck? merge two route definitions?
-            dirty++;
-            return routeDef;
-          },
-
-          /**
-           * @ngdoc method
-           * @name angular.module.ng.$route#otherwise
-           * @methodOf angular.module.ng.$route
-           *
-           * @description
-           * Sets route definition that will be used on route change when no other route definition
-           * is matched.
-           *
-           * @param {Object} params Mapping information to be assigned to `$route.current`.
-           */
-          otherwise: function(params) {
-            $route.when(null, params);
-          },
 
           /**
            * @ngdoc method
@@ -265,7 +249,10 @@ function $RouteProvider(){
       } else {
         forceReload = false;
         $rootScope.$broadcast('$beforeRouteChange', next, last);
-        last && last.scope && last.scope.$destroy();
+        if (last && last.scope) {
+          last.scope.$destroy();
+          last.scope = null;
+        }
         $route.current = next;
         if (next) {
           if (next.redirectTo) {
@@ -278,10 +265,6 @@ function $RouteProvider(){
             }
           } else {
             copy(next.params, $routeParams);
-            next.scope = parentScope.$new();
-            if (next.controller) {
-              $controller(next.controller, next.scope);
-            }
           }
         }
         $rootScope.$broadcast('$afterRouteChange', next, last);

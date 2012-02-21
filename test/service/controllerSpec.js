@@ -31,7 +31,7 @@ describe('$controller', function() {
     };
 
     var scope = {},
-        ctrl = $controller(MyClass, scope);
+        ctrl = $controller(MyClass, {$scope: scope});
 
     expect(ctrl.$scope).toBe(scope);
   });
