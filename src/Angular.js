@@ -91,7 +91,6 @@ var $boolean          = 'boolean',
     angular           = window.angular || (window.angular = {}),
     angularModule,
     /** @name angular.module.ng */
-    angularInputType  = extensionMap(angular, 'inputType', lowercase),
     nodeName_,
     uid               = ['0', '0', '0'],
     DATE_ISOSTRING_LN = 24;

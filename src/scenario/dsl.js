@@ -203,7 +203,7 @@ angular.scenario.dsl('input', function() {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
-      input.trigger('keydown');
+      input.trigger('blur');
       done();
     });
   };

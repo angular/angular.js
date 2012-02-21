@@ -138,7 +138,7 @@ The following example demonstrates:
      };
 
      $scope.isSaveDisabled = function() {
-       return $scope.userForm.$invalid || angular.equals($scope.master, $scope.form);
+       return $scope.userForm.invalid || angular.equals($scope.master, $scope.form);
      };
 
      $scope.cancel();
@@ -150,7 +150,7 @@ The following example demonstrates:
 
        <label>Name:</label><br/>
        <input type="text" name="customer" ng:model="form.customer" required/>
-       <span class="error" ng:show="userForm.customer.$error.REQUIRED">
+       <span class="error" ng:show="userForm.customer.error.REQUIRED">
          Customer name is required!</span>
        <br/><br/>
 
@@ -165,15 +165,15 @@ The following example demonstrates:
          <input type="text" name="zip" ng:pattern="zip" size="5" required
                 ng:model="form.address.zip"/><br/><br/>
 
-         <span class="error" ng:show="addressForm.$invalid">
+         <span class="error" ng:show="addressForm.invalid">
            Incomplete address:
-           <span class="error" ng:show="addressForm.state.$error.REQUIRED">
+           <span class="error" ng:show="addressForm.state.error.REQUIRED">
              Missing state!</span>
-           <span class="error" ng:show="addressForm.state.$error.PATTERN">
+           <span class="error" ng:show="addressForm.state.error.PATTERN">
              Invalid state!</span>
-           <span class="error" ng:show="addressForm.zip.$error.REQUIRED">
+           <span class="error" ng:show="addressForm.zip.error.REQUIRED">
              Missing zip!</span>
-           <span class="error" ng:show="addressForm.zip.$error.PATTERN">
+           <span class="error" ng:show="addressForm.zip.error.PATTERN">
              Invalid zip!</span>
          </span>
        </ng:form>
@@ -284,56 +284,38 @@ This example shows how to implement a custom HTML editor widget in Angular.
             $scope.htmlContent = '<b>Hello</b> <i>World</i>!';
           }
 
-          HTMLEditorWidget.$inject = ['$scope', '$element', '$sanitize'];
-          function HTMLEditorWidget(scope, element, $sanitize) {
-            scope.$parseModel = function() {
-              // need to protect for script injection
-              try {
-                scope.$viewValue = $sanitize(
-                  scope.$modelValue || '');
-                if (this.$error.HTML) {
-                  // we were invalid, but now we are OK.
-                  scope.$emit('$valid', 'HTML');
-                }
-              } catch (e) {
-                // if HTML not parsable invalidate form.
-                scope.$emit('$invalid', 'HTML');
-              }
-            }
+          angular.module('formModule', []).directive('ngHtmlEditor', function ($sanitize) {
+            return {
+              require: 'ngModel',
+              link: function(scope, elm, attr, ctrl) {
+                attr.$set('contentEditable', true);
 
-            scope.$render = function() {
-              element.html(this.$viewValue);
-            }
+                ctrl.$render = function() {
+                  elm.html(ctrl.viewValue);
+                };
 
-            element.bind('keyup', function() {
-              scope.$apply(function() {
-                scope.$emit('$viewChange', element.html());
-              });
-            });
-          }
+                ctrl.formatters.push(function(value) {
+                  try {
+                    value = $sanitize(value || '');
+                    ctrl.emitValidity('HTML', true);
+                  } catch (e) {
+                    ctrl.emitValidity('HTML', false);
+                  }
 
-          angular.module('formModule', [], function($compileProvider){
-            $compileProvider.directive('ngHtmlEditorModel', function ($formFactory) {
-              return function(scope, element, attr) {
-                var form = $formFactory.forElement(element),
-                    widget;
-                element.attr('contentEditable', true);
-                widget = form.$createWidget({
-                  scope: scope,
-                  model: attr.ngHtmlEditorModel,
-                  controller: HTMLEditorWidget,
-                  controllerArgs: {$element: element}});
-                // if the element is destroyed, then we need to
-                // notify the form.
-                element.bind('$destroy', function() {
-                  widget.$destroy();
                 });
-              };
-            });
+
+                elm.bind('keyup', function() {
+                  scope.$apply(function() {
+                    ctrl.read(elm.html());
+                  });
+                });
+
+              }
+            };
           });
         </script>
         <form name='editorForm' ng:controller="EditorCntl">
-          <div ng:html-editor-model="htmlContent"></div>
+          <div ng:html-editor ng:model="htmlContent"></div>
           <hr/>
           HTML: <br/>
           <textarea ng:model="htmlContent" cols="80"></textarea>

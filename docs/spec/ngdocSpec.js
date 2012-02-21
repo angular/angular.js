@@ -23,6 +23,13 @@ describe('ngdoc', function() {
         expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
       });
 
+      it('should get property and methods', function() {
+        var doc = new Doc('Document');
+        doc.properties.push(new Doc('Proprety'));
+        doc.properties.push(new Doc('Method'));
+        expect(doc.keywords()).toEqual('document method proprety');
+      });
+
       it('should have shortName', function() {
         var d1 = new Doc('@name a.b.c').parse();
         var d2 = new Doc('@name a.b.ng:c').parse();
