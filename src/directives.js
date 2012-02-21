@@ -133,17 +133,7 @@ var ngInitDirective = valueFn({
 var ngControllerDirective = ['$controller', '$window', function($controller, $window) {
   return {
     scope: true,
-    compile: function() {
-      return {
-        pre: function(scope, element, attr) {
-          var expression = attr.ngController,
-              Controller = getter(scope, expression, true) || getter($window, expression, true);
-
-          assertArgFn(Controller, expression);
-          $controller(Controller, scope);
-        }
-      };
-    }
+    controller: '@'
   }
 }];
 
@@ -263,11 +253,12 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {
-    var interpolateFn = $interpolate(attr.ngBindTemplate);
+    var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
     element.addClass('ng-binding').data('$binding', interpolateFn);
-    scope.$watch(interpolateFn, function(value) {
-      element.text(value);
-    });
+    scope.$watch(
+        function() { return attr.ngBindTemplate; },
+        function(value) { element.text(value); }
+    );
   }
 }];
 
@@ -375,7 +366,7 @@ var ngBindAttrDirective = ['$interpolate', function($interpolate) {
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * click.
+ * click. (Event object is available as `$event`)
  *
  * @example
    <doc:example>
@@ -399,20 +390,22 @@ var ngBindAttrDirective = ['$interpolate', function($interpolate) {
  * expressions and are compiled and executed within the current scope.
  *
  * Events that are handled via these handler are always configured not to propagate further.
- *
- * TODO: maybe we should consider allowing users to control event propagation in the future.
  */
 var ngEventDirectives = {};
 forEach(
   'click dblclick mousedown mouseup mouseover mouseout mousemove mouseenter mouseleave'.split(' '),
   function(name) {
     var directiveName = directiveNormalize('ng-' + name);
-    ngEventDirectives[directiveName] = valueFn(function(scope, element, attr) {
-      element.bind(lowercase(name), function(event) {
-        scope.$apply(attr[directiveName]);
-        event.stopPropagation();
-      });
-    });
+    ngEventDirectives[directiveName] = ['$parse', function($parse) {
+      return function(scope, element, attr) {
+        var fn = $parse(attr[directiveName]);
+        element.bind(lowercase(name), function(event) {
+          scope.$apply(function() {
+            fn(scope, {$event:event});
+          });
+        });
+      };
+    }];
   }
 );
 
@@ -425,7 +418,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * dblclick.
+ * dblclick. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -441,7 +434,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mousedown.
+ * mousedown. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -457,7 +450,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseup.
+ * mouseup. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -472,7 +465,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseover.
+ * mouseover. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -488,7 +481,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseenter.
+ * mouseenter. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -504,7 +497,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mouseleave.
+ * mouseleave. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -520,7 +513,7 @@ forEach(
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
- * mousemove.
+ * mousemove. (Event object is available as `$event`)
  *
  * @example
  * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
@@ -623,7 +616,7 @@ function classDirective(name, selector) {
  * @example
    <doc:example>
      <doc:source>
-      <input type="button" value="set" ng:click="myVar='ng-input-indicator-wait'">
+      <input type="button" value="set" ng:click="myVar='ng-invalid'">
       <input type="button" value="clear" ng:click="myVar=''">
       <br>
       <span ng:class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -631,17 +624,17 @@ function classDirective(name, selector) {
      <doc:scenario>
        it('should check ng:class', function() {
          expect(element('.doc-example-live span').prop('className')).not().
-           toMatch(/ng-input-indicator-wait/);
+           toMatch(/ng-invalid/);
 
          using('.doc-example-live').element(':button:first').click();
 
          expect(element('.doc-example-live span').prop('className')).
-           toMatch(/ng-input-indicator-wait/);
+           toMatch(/ng-invalid/);
 
          using('.doc-example-live').element(':button:last').click();
 
          expect(element('.doc-example-live span').prop('className')).not().
-           toMatch(/ng-input-indicator-wait/);
+           toMatch(/ng-invalid/);
        });
      </doc:scenario>
    </doc:example>
@@ -670,7 +663,7 @@ var ngClassDirective = classDirective('', true);
         <ol ng:init="names=['John', 'Mary', 'Cate', 'Suz']">
           <li ng:repeat="name in names">
            <span ng:class-odd="'ng-format-negative'"
-                 ng:class-even="'ng-input-indicator-wait'">
+                 ng:class-even="'ng-invalid'">
              {{name}} &nbsp; &nbsp; &nbsp;
            </span>
           </li>
@@ -681,7 +674,7 @@ var ngClassDirective = classDirective('', true);
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
          expect(element('.doc-example-live li:last span').prop('className')).
-           toMatch(/ng-input-indicator-wait/);
+           toMatch(/ng-invalid/);
        });
      </doc:scenario>
    </doc:example>
@@ -910,7 +903,7 @@ var ngCloakDirective = valueFn({
 function ngAttributeAliasDirective(propName, attrName) {
   ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = ['$interpolate', function($interpolate) {
     return function(scope, element, attr) {
-      scope.$watch($interpolate(attr[directiveNormalize('ng-' + attrName)]), function(value) {
+      scope.$watch($interpolate(element.attr(attr.$attr[directiveNormalize('ng-' + attrName)])), function(value) {
         attr.$set(attrName, value);
       });
     }
@@ -919,3 +912,59 @@ function ngAttributeAliasDirective(propName, attrName) {
 var ngAttributeAliasDirectives = {};
 forEach(BOOLEAN_ATTR, ngAttributeAliasDirective);
 ngAttributeAliasDirective(null, 'src');
+
+/**
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng:transclude
+ *
+ * @description
+ * Insert the transcluded DOM here.
+ *
+ * @element ANY
+ *
+ * @example
+   <doc:example module="transclude">
+     <doc:source>
+       <script>
+         function Ctrl($scope) {
+           $scope.title = 'Lorem Ipsum';
+           $scope.text = 'Neque porro quisquam est qui dolorem ipsum quia dolor...';
+         }
+
+         angular.module('transclude', [])
+          .directive('pane', function(){
+             return {
+               transclude: true,
+               scope: 'isolate',
+               locals: { title:'bind' },
+               template: '<div style="border: 1px solid black;">' +
+                           '<div style="background-color: gray">{{title}}</div>' +
+                           '<div ng-transclude></div>' +
+                         '</div>'
+             };
+         });
+       </script>
+       <div ng:controller="Ctrl">
+         <input ng:model="title"><br>
+         <textarea ng:model="text"></textarea> <br/>
+         <pane title="{{title}}">{{text}}</pane>
+       </div>
+     </doc:source>
+     <doc:scenario>
+        it('should have transcluded', function() {
+          input('title').enter('TITLE');
+          input('text').enter('TEXT');
+          expect(binding('title')).toEqual('TITLE');
+          expect(binding('text')).toEqual('TEXT');
+        });
+     </doc:scenario>
+   </doc:example>
+ *
+ */
+var ngTranscludeDirective = valueFn({
+  controller: ['$transclude', '$element', function($transclude, $element) {
+    $transclude(function(clone) {
+      $element.append(clone);
+    });
+  }]
+});

@@ -154,3 +154,24 @@ angularFiles = {
     'test/jquery_remove.js'
   ]
 };
+
+// just to suppress warning when using angular-bootstrap
+if (typeof JASMINE_ADAPTER === 'undefined') {
+  JASMINE_ADAPTER = LOG_DISABLE = LOG_ERROR = LOG_WARN = LOG_INFO = LOG_DEBUG = null;
+}
+
+// SlimJim config
+files = [JASMINE_ADAPTER];
+angularFiles.jstd.forEach(function(pattern) {
+  // replace angular source
+  if (pattern === '@angularSrc') files = files.concat(angularFiles.angularSrc);
+  // ignore jstd files
+  else if (!/jstd-(scenario-)?adapter/.test(pattern)) files.push(pattern);
+});
+
+exclude = angularFiles.jstdExclude;
+
+autoWatch = true;
+autoWatchInterval = 1;
+logLevel = LOG_ERROR;
+logColors = true;

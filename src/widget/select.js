@@ -243,7 +243,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
           widget.$apply(function() {
             var optionGroup,
                 collection = valuesFn(modelScope) || [],
-                key = selectElement.val(),
+                key = selectElement[0].value, // jQuery is a bit too smart for us.
                 tempScope = inherit(modelScope),
                 value, optionElement, index, groupIndex, length, groupLength;
 
@@ -257,8 +257,9 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
 
                 for(index = 1, length = optionGroup.length; index < length; index++) {
                   if ((optionElement = optionGroup[index].element)[0].selected) {
+                    key = optionElement[0].value;
                     if (keyName) tempScope[keyName] = key;
-                    tempScope[valueName] = collection[optionElement.val()];
+                    tempScope[valueName] = collection[key];
                     value.push(valueFn(tempScope));
                   }
                 }

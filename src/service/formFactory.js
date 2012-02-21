@@ -139,7 +139,7 @@ function $FormFactoryProvider() {
 
     function formFactory(parent) {
       var scope = (parent || formFactory.rootForm).$new();
-      $controller(FormController, scope);
+      $controller(FormController, {$scope: scope});
       return scope;
     }
 

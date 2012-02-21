@@ -161,75 +161,67 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
       </doc:source>
       <doc:scenario>
         it('should start in settings', function() {
-         expect(element('.doc-example-live ng\\:switch').text()).toEqual('Settings Div');
+         expect(element('.doc-example-live ng\\:switch').text()).toMatch(/Settings Div/);
         });
         it('should change to home', function() {
          select('selection').option('home');
-         expect(element('.doc-example-live ng\\:switch').text()).toEqual('Home Span');
+         expect(element('.doc-example-live ng\\:switch').text()).toMatch(/Home Span/);
         });
         it('should select deafault', function() {
          select('selection').option('other');
-         expect(element('.doc-example-live ng\\:switch').text()).toEqual('default');
+         expect(element('.doc-example-live ng\\:switch').text()).toMatch(/default/);
         });
       </doc:scenario>
     </doc:example>
  */
-var ngSwitchDirective = ['$compile', function($compile){
-  return {
-    compile: function(element, attr) {
-      var watchExpr = attr.on,
-        changeExpr = attr.change,
-        casesTemplate = {},
-        defaultCaseTemplate,
-        children = element.children(),
-        length = children.length,
-        child,
-        when;
+var NG_SWITCH = 'ng-switch';
+var ngSwitchDirective = valueFn({
+  compile: function(element, attr) {
+    var watchExpr = attr.ngSwitch || attr.on,
+        cases = {};
 
-      if (!watchExpr) throw new Error("Missing 'on' attribute.");
-      while(length--) {
-        child = jqLite(children[length]);
-        // this needs to be here for IE
-        child.remove();
-        // TODO(misko): this attr reading is not normilized
-        when = child.attr('ng:switch-when');
-        if (isString(when)) {
-          casesTemplate[when] = $compile(child);
-          // TODO(misko): this attr reading is not normilized
-        } else if (isString(child.attr('ng:switch-default'))) {
-          defaultCaseTemplate = $compile(child);
+    element.data(NG_SWITCH, cases);
+    return function(scope, element){
+      var selectedTransclude,
+          selectedElement;
+
+      scope.$watch(watchExpr, function(value) {
+        if (selectedElement) {
+          selectedElement.remove();
+          selectedElement = null;
         }
-      }
-      children = null; // release memory;
-      element.html('');
+        if ((selectedTransclude = cases['!' + value] || cases['?'])) {
+          scope.$eval(attr.change);
+          selectedTransclude(scope.$new(), function(caseElement, scope) {
+            selectedElement = caseElement;
+            element.append(caseElement);
+            element.bind('$destroy', bind(scope, scope.$destroy));
+          });
+        }
+      });
+    };
+  }
+});
 
-      return function(scope, element, attr){
-        var changeCounter = 0;
-        var childScope;
-        var selectedTemplate;
+var ngSwitchWhenDirective = valueFn({
+  transclude: 'element',
+  priority: 500,
+  compile: function(element, attrs, transclude) {
+    var cases = element.inheritedData(NG_SWITCH);
+    assertArg(cases);
+    cases['!' + attrs.ngSwitchWhen] = transclude;
+  }
+});
 
-        scope.$watch(watchExpr, function(value) {
-          element.html('');
-          if ((selectedTemplate = casesTemplate[value] || defaultCaseTemplate)) {
-            changeCounter++;
-            if (childScope) childScope.$destroy();
-            childScope = scope.$new();
-            childScope.$eval(changeExpr);
-          }
-        });
-
-        scope.$watch(function() {return changeCounter;}, function() {
-          element.html('');
-          if (selectedTemplate) {
-            selectedTemplate(childScope, function(caseElement) {
-              element.append(caseElement);
-            });
-          }
-        });
-      };
-    }
-  };
-}];
+var ngSwitchDefaultDirective = valueFn({
+  transclude: 'element',
+  priority: 500,
+  compile: function(element, attrs, transclude) {
+    var cases = element.inheritedData(NG_SWITCH);
+    assertArg(cases);
+    cases['?'] = transclude;
+  }
+});
 
 
 /*
@@ -318,131 +310,127 @@ var htmlAnchorDirective = valueFn({
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = ['$compile', function($compile) {
-  return {
-    priority: 1000,
-    terminal: true,
-    compile: function(element, attr) {
+var ngRepeatDirective = valueFn({
+  transclude: 'element',
+  priority: 1000,
+  terminal: true,
+  compile: function(element, attr, linker) {
+    return function(scope, iterStartElement, attr){
       var expression = attr.ngRepeat;
-      attr.$set(attr.$attr.ngRepeat);
-      element.replaceWith(jqLite('<!-- ng:repeat: ' + expression + ' -->'));
-      var linker = $compile(element);
-      return function(scope, iterStartElement, attr){
-        var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
-          lhs, rhs, valueIdent, keyIdent;
-        if (! match) {
-          throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
-            expression + "'.");
-        }
-        lhs = match[1];
-        rhs = match[2];
-        match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
-        if (!match) {
-          throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
-            keyValue + "'.");
-        }
-        valueIdent = match[3] || match[1];
-        keyIdent = match[2];
+      var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
+        lhs, rhs, valueIdent, keyIdent;
+      if (! match) {
+        throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
+          expression + "'.");
+      }
+      lhs = match[1];
+      rhs = match[2];
+      match = lhs.match(/^([\$\w]+)|\(([\$\w]+)\s*,\s*([\$\w]+)\)$/);
+      if (!match) {
+        throw Error("'item' in 'item in collection' should be identifier or (key, value) but got '" +
+          keyValue + "'.");
+      }
+      valueIdent = match[3] || match[1];
+      keyIdent = match[2];
 
-        // Store a list of elements from previous run. This is a hash where key is the item from the
-        // iterator, and the value is an array of objects with following properties.
-        //   - scope: bound scope
-        //   - element: previous element.
-        //   - index: position
-        // We need an array of these objects since the same object can be returned from the iterator.
-        // We expect this to be a rare case.
-        var lastOrder = new HashQueueMap();
-        scope.$watch(function(scope){
-          var index, length,
-              collection = scope.$eval(rhs),
-              collectionLength = size(collection, true),
-              childScope,
-              // Same as lastOrder but it has the current state. It will become the
-              // lastOrder on the next iteration.
-              nextOrder = new HashQueueMap(),
-              key, value, // key/value of iteration
-              array, last,       // last object information {scope, element, index}
-              cursor = iterStartElement;     // current position of the node
+      // Store a list of elements from previous run. This is a hash where key is the item from the
+      // iterator, and the value is an array of objects with following properties.
+      //   - scope: bound scope
+      //   - element: previous element.
+      //   - index: position
+      // We need an array of these objects since the same object can be returned from the iterator.
+      // We expect this to be a rare case.
+      var lastOrder = new HashQueueMap();
+      scope.$watch(function(scope){
+        var index, length,
+            collection = scope.$eval(rhs),
+            collectionLength = size(collection, true),
+            childScope,
+            // Same as lastOrder but it has the current state. It will become the
+            // lastOrder on the next iteration.
+            nextOrder = new HashQueueMap(),
+            key, value, // key/value of iteration
+            array, last,       // last object information {scope, element, index}
+            cursor = iterStartElement;     // current position of the node
 
-          if (!isArray(collection)) {
-            // if object, extract keys, sort them and use to determine order of iteration over obj props
-            array = [];
-            for(key in collection) {
-              if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
-                array.push(key);
-              }
+        if (!isArray(collection)) {
+          // if object, extract keys, sort them and use to determine order of iteration over obj props
+          array = [];
+          for(key in collection) {
+            if (collection.hasOwnProperty(key) && key.charAt(0) != '$') {
+              array.push(key);
             }
-            array.sort();
-          } else {
-            array = collection || [];
           }
+          array.sort();
+        } else {
+          array = collection || [];
+        }
 
-          // we are not using forEach for perf reasons (trying to avoid #call)
-          for (index = 0, length = array.length; index < length; index++) {
-            key = (collection === array) ? index : array[index];
-            value = collection[key];
-            last = lastOrder.shift(value);
-            if (last) {
-              // if we have already seen this object, then we need to reuse the
-              // associated scope/element
-              childScope = last.scope;
-              nextOrder.push(value, last);
+        // we are not using forEach for perf reasons (trying to avoid #call)
+        for (index = 0, length = array.length; index < length; index++) {
+          key = (collection === array) ? index : array[index];
+          value = collection[key];
+          last = lastOrder.shift(value);
+          if (last) {
+            // if we have already seen this object, then we need to reuse the
+            // associated scope/element
+            childScope = last.scope;
+            nextOrder.push(value, last);
 
-              if (index === last.index) {
-                // do nothing
-                cursor = last.element;
-              } else {
-                // existing item which got moved
-                last.index = index;
-                // This may be a noop, if the element is next, but I don't know of a good way to
-                // figure this out,  since it would require extra DOM access, so let's just hope that
-                // the browsers realizes that it is noop, and treats it as such.
-                cursor.after(last.element);
-                cursor = last.element;
-              }
+            if (index === last.index) {
+              // do nothing
+              cursor = last.element;
             } else {
-              // new item which we don't know about
-              childScope = scope.$new();
+              // existing item which got moved
+              last.index = index;
+              // This may be a noop, if the element is next, but I don't know of a good way to
+              // figure this out,  since it would require extra DOM access, so let's just hope that
+              // the browsers realizes that it is noop, and treats it as such.
+              cursor.after(last.element);
+              cursor = last.element;
             }
-
-            childScope[valueIdent] = value;
-            if (keyIdent) childScope[keyIdent] = key;
-            childScope.$index = index;
-            childScope.$position = index === 0 ?
-                'first' :
-                (index == collectionLength - 1 ? 'last' : 'middle');
-
-            if (!last) {
-              linker(childScope, function(clone){
-                cursor.after(clone);
-                last = {
-                    scope: childScope,
-                    element: (cursor = clone),
-                    index: index
-                  };
-                nextOrder.push(value, last);
-              });
-            }
+          } else {
+            // new item which we don't know about
+            childScope = scope.$new();
           }
 
-          //shrink children
-          for (key in lastOrder) {
-            if (lastOrder.hasOwnProperty(key)) {
-              array = lastOrder[key];
-              while(array.length) {
-                value = array.pop();
-                value.element.remove();
-                value.scope.$destroy();
-              }
+          childScope[valueIdent] = value;
+          if (keyIdent) childScope[keyIdent] = key;
+          childScope.$index = index;
+          childScope.$position = index === 0 ?
+              'first' :
+              (index == collectionLength - 1 ? 'last' : 'middle');
+
+          if (!last) {
+            linker(childScope, function(clone){
+              cursor.after(clone);
+              last = {
+                  scope: childScope,
+                  element: (cursor = clone),
+                  index: index
+                };
+              nextOrder.push(value, last);
+            });
+          }
+        }
+
+        //shrink children
+        for (key in lastOrder) {
+          if (lastOrder.hasOwnProperty(key)) {
+            array = lastOrder[key];
+            while(array.length) {
+              value = array.pop();
+              value.element.remove();
+              value.scope.$destroy();
             }
           }
+        }
 
-          lastOrder = nextOrder;
-        });
-      };
-    }
-  };
-}];
+        lastOrder = nextOrder;
+      });
+    };
+  }
+});
 
 
 /**
@@ -760,7 +748,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
   var BRACE = /{}/g;
   return function(scope, element, attr) {
     var numberExp = attr.count,
-        whenExp = attr.when,
+        whenExp = element.attr(attr.$attr.when), // this is becaues we have {{}} in attrs
         offset = attr.offset || 0,
         whens = scope.$eval(whenExp),
         whensExpFns = {};

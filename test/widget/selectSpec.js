@@ -591,6 +591,27 @@ describe('select', function() {
         browserTrigger(select, 'change');
         expect(scope.selected).toEqual([scope.values[0]]);
       });
+
+      it('should select from object', function() {
+        createSelect({
+          'ng:model':'selected',
+          'multiple':true,
+          'ng:options':'key as value for (key,value) in values'
+        });
+        scope.values = {'0':'A', '1':'B'};
+
+        scope.selected = ['1'];
+        scope.$digest();
+        expect(select.find('option')[1].selected).toBe(true);
+
+        select.find('option')[0].selected = true;
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(['0', '1']);
+
+        select.find('option')[1].selected = false;
+        browserTrigger(select, 'change');
+        expect(scope.selected).toEqual(['0']);
+      });
     });
   });
 });
