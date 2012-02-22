@@ -374,6 +374,7 @@ Doc.prototype = {
         dom.text('>\n   ...\n');
         dom.text('</' + self.element + '>');
       });
+      self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
     });
   },
@@ -461,9 +462,23 @@ Doc.prototype = {
         });
       });
 
+      self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
-      self.html_usage_returns(dom);
     });
+  },
+
+  html_usage_directiveInfo: function(dom) {
+    var self = this;
+    var list = [];
+
+
+    if (self.scope !== undefined) {
+      list.push('This directive creates new scope.');
+    }
+    if (self.priority !== undefined) {
+      list.push('This directive executes at priority level ' + self.priority + '.');
+    }
+    dom.ul(list);
   },
 
   html_usage_overview: function(dom){

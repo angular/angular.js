@@ -349,6 +349,26 @@ describe('ngdoc', function() {
       });
     });
 
+    describe('@scope', function() {
+      it('should state the new scope will be created', function() {
+        var doc = new Doc('@name a\n@scope');
+        doc.ngdoc = 'directive';
+        doc.parse();
+        expect(doc.scope).toEqual('');
+        expect(doc.html()).toContain('This directive creates new scope.');
+      });
+    });
+
+    describe('@priority', function() {
+      it('should state the priority', function() {
+        var doc = new Doc('@name a\n@priority 123');
+        doc.ngdoc = 'directive';
+        doc.parse();
+        expect(doc.priority).toEqual('123');
+        expect(doc.html()).toContain('This directive executes at priority level 123.');
+      });
+    });
+
     describe('@property', function() {
       it('should parse @property tags into array', function() {
         var doc = new Doc("@name a\n@property {type} name1 desc\n@property {type} name2 desc");
