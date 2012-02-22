@@ -273,7 +273,8 @@ function inferInjectionArgs(fn) {
 
 
 function createInjector(modulesToLoad) {
-  var providerSuffix = 'Provider',
+  var INSTANTIATING = {},
+      providerSuffix = 'Provider',
       path = [],
       loadedModules = new HashMap(),
       providerCache = {
@@ -394,10 +395,14 @@ function createInjector(modulesToLoad) {
         throw Error('Service name expected');
       }
       if (cache.hasOwnProperty(serviceName)) {
+        if (cache[serviceName] === INSTANTIATING) {
+          throw Error('Circular dependency: ' + path.join(' <- '));
+        }
         return cache[serviceName];
       } else {
         try {
           path.unshift(serviceName);
+          cache[serviceName] = INSTANTIATING;
           return cache[serviceName] = factory(serviceName);
         } finally {
           path.shift();
