@@ -10,6 +10,8 @@
  * Keep in mind that Same Origin Policy applies to included resources
  * (e.g. ng:include won't work for file:// access).
  *
+ * @scope
+ *
  * @param {string} src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an
@@ -130,6 +132,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
  *   ...
  *   <any ng:switch-default>...</any>
  *
+ * @scope
  * @param {*} on expression to match against <tt>ng:switch-when</tt>.
  * @paramDescription
  * On child elments add:
@@ -254,7 +257,7 @@ var htmlAnchorDirective = valueFn({
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:repeat
  *
  * @description
@@ -273,6 +276,8 @@ var htmlAnchorDirective = valueFn({
  * Note: Although `ng:repeat` looks like a directive, it is actually an attribute widget.
  *
  * @element ANY
+ * @scope
+ * @priority 1000
  * @param {string} repeat_expression The expression indicating how to enumerate a collection. Two
  *   formats are currently supported:
  *

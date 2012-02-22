@@ -1,9 +1,10 @@
 'use strict';
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.form
  *
+ * @scope
  * @description
  * Angular widget that creates a form scope using the
  * {@link angular.module.ng.$formFactory $formFactory} API. The resulting form scope instance is
