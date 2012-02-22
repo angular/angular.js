@@ -260,6 +260,29 @@ describe('injector', function() {
     });
 
     describe('$provide', function() {
+      describe('constant', function() {
+        it('should create configuration injectable constants', function() {
+          var log = [];
+          createInjector([
+              function($provide){
+                $provide.constant('abc', 123);
+                $provide.constant({a: 'A', b:'B'});
+                return function(a) {
+                  log.push(a);
+                }
+              },
+              function(abc) {
+                log.push(abc);
+                return function(b) {
+                  log.push(b);
+                }
+              }
+          ]).get('abc');
+          expect(log).toEqual([123, 'A', 'B']);
+        });
+      });
+
+
       describe('value', function() {
         it('should configure $provide values', function() {
           expect(createInjector([function($provide) {
