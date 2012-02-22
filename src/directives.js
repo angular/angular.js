@@ -253,10 +253,10 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
  */
 var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
   return function(scope, element, attr) {
-    var interpolateFn = $interpolate(attr.ngBindTemplate);
+    // TODO: move this to scenario runner
     var interpolateFn = $interpolate(element.attr(attr.$attr.ngBindTemplate));
     element.addClass('ng-binding').data('$binding', interpolateFn);
-    scope.$watch(interpolateFn, function(value) {
+    attr.$observe('ngBindTemplate', function(value) {
       element.text(value);
     });
   }
@@ -901,13 +901,13 @@ var ngCloakDirective = valueFn({
 });
 
 function ngAttributeAliasDirective(propName, attrName) {
-  ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = ['$interpolate', function($interpolate) {
-    return function(scope, element, attr) {
-      scope.$watch($interpolate(attr[directiveNormalize('ng-' + attrName)]), function(value) {
+  ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = valueFn(
+    function(scope, element, attr) {
+      attr.$observe(directiveNormalize('ng-' + attrName), function(value) {
         attr.$set(attrName, value);
       });
     }
-  }];
+  );
 }
 var ngAttributeAliasDirectives = {};
 forEach(BOOLEAN_ATTR, ngAttributeAliasDirective);
