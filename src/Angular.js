@@ -839,7 +839,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:app
+ * @name angular.module.ng.$compileProvider.directive.ng:app
  *
  * @element ANY
  * @param {angular.Module} module on optional application

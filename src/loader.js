@@ -53,7 +53,8 @@ function setupModuleLoader(window) {
      * var injector = angular.injector(['ng', 'MyModule'])
      * </pre>
      *
-     * However it's more likely that you'll just use {@link angular.directive.ng:app ng:app} or
+     * However it's more likely that you'll just use
+     * {@link angular.module.ng.$compileProvider.directive.ng:app ng:app} or
      * {@link angular.bootstrap} to simplify this process for you.
      *
      * @param {!string} name The name of the module to create or retrieve.
