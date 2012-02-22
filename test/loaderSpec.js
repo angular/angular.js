@@ -38,10 +38,12 @@ describe('module loader', function() {
       filter('f', 'ff').
       directive('d', 'dd').
       config('init2').
+      constant('abc', 123).
       run('runBlock')).toBe(myModule);
 
     expect(myModule.requires).toEqual(['other']);
     expect(myModule._invokeQueue).toEqual([
+      ['$provide', 'constant', ['abc', 123] ],
       ['$injector', 'invoke', ['config'] ],
       ['$provide', 'service', ['sk', 'sv'] ],
       ['$provide', 'factory', ['fk', 'fv'] ],

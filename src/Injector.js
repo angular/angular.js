@@ -246,9 +246,24 @@ function inferInjectionArgs(fn) {
  * A short hand for configuring services if the `$get` method is a constant.
  *
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provide'` key.
- * @param {function()} value The $getFn for the instance creation. Internally this is a short hand for
- * `$provide.service(name, {$get:function(){ return value; }})`.
+ * @param {*} value The value.
  * @returns {Object} registered provider instance
+ */
+
+
+/**
+ * @ngdoc method
+ * @name angular.module.AUTO.$provide#constant
+ * @methodOf angular.module.AUTO.$provide
+ * @description
+ *
+ * A constant value, but unlike {@link angular.module.AUTO.$provide#value value} it can be injected
+ * into configuration function (other modules) and it is not interceptable by
+ * {@link angular.module.AUTO.$provide#decorator decorator}.
+ *
+ * @param {string} name The name of the constant.
+ * @param {*} value The constant value.
+ * @returns {Object} registered instance
  */
 
 
@@ -282,6 +297,7 @@ function createInjector(modulesToLoad) {
             service: supportObject(service),
             factory: supportObject(factory),
             value: supportObject(value),
+            constant: supportObject(constant),
             decorator: decorator
           }
       },
@@ -327,6 +343,11 @@ function createInjector(modulesToLoad) {
   function factory(name, factoryFn) { return service(name, { $get:factoryFn }); }
 
   function value(name, value) { return factory(name, valueFn(value)); }
+
+  function constant(name, value) {
+    providerCache[name] = value;
+    instanceCache[name] = value;
+  }
 
   function decorator(serviceName, decorFn) {
     var origProvider = providerInjector.get(serviceName + providerSuffix),

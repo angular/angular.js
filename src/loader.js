@@ -142,6 +142,18 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
+           * @name angular.Module#constant
+           * @methodOf angular.Module
+           * @param {string} name constant name
+           * @param {*} object Constant value.
+           * @description
+           * Because the constant are fixed, they get applied before other provide methods.
+           * See {@link angular.module.AUTO.$provide#constant $provide.constant()}.
+           */
+          constant: invokeLater('$provide', 'constant', 'unshift'),
+
+          /**
+           * @ngdoc method
            * @name angular.Module#filter
            * @methodOf angular.Module
            * @param {string} name filter name
@@ -199,11 +211,12 @@ function setupModuleLoader(window) {
         /**
          * @param {string} provider
          * @param {string} method
+         * @param {String=} insertMethod
          * @returns {angular.Module}
          */
-        function invokeLater(provider, method) {
+        function invokeLater(provider, method, insertMethod) {
           return function() {
-            invokeQueue.push([provider, method, arguments]);
+            invokeQueue[insertMethod || 'push']([provider, method, arguments]);
             return moduleInstance;
           }
         }
