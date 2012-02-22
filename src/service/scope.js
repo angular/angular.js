@@ -563,6 +563,7 @@ function $RootScopeProvider(){
        *   - `name` - {string}: Name of the event.
        *   - `cancel` - {function=}: calling `cancel` function will cancel further event propagation
        *     (available only for events that were `$emit`-ed).
+       *   - `cancelled` - {boolean}: Whether the event was cancelled.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
@@ -597,6 +598,7 @@ function $RootScopeProvider(){
        *
        * @param {string} name Event name to emit.
        * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @return {Object} Event object, see {@link angular.module.ng.$rootScope.Scope#$on}
        */
       $emit: function(name, args) {
         var empty = [],
@@ -650,6 +652,7 @@ function $RootScopeProvider(){
        *
        * @param {string} name Event name to emit.
        * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @return {Object} Event object, see {@link angular.module.ng.$rootScope.Scope#$on}
        */
       $broadcast: function(name, args) {
         var target = this,
