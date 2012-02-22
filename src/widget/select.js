@@ -243,7 +243,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
           widget.$apply(function() {
             var optionGroup,
                 collection = valuesFn(modelScope) || [],
-                tempScope = inherit(modelScope),
+                locals = {},
                 key, value, optionElement, index, groupIndex, length, groupLength;
 
             if (multiple) {
@@ -257,9 +257,9 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
                 for(index = 1, length = optionGroup.length; index < length; index++) {
                   if ((optionElement = optionGroup[index].element)[0].selected) {
                     key = optionElement.val();
-                    if (keyName) tempScope[keyName] = key;
-                    tempScope[valueName] = collection[key];
-                    value.push(valueFn(tempScope));
+                    if (keyName) locals[keyName] = key;
+                    locals[valueName] = collection[key];
+                    value.push(valueFn(modelScope, locals));
                   }
                 }
               }
@@ -270,9 +270,9 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
               } else if (key == ''){
                 value = null;
               } else {
-                tempScope[valueName] = collection[key];
-                if (keyName) tempScope[keyName] = key;
-                value = valueFn(tempScope);
+                locals[valueName] = collection[key];
+                if (keyName) locals[keyName] = key;
+                value = valueFn(modelScope, locals);
               }
             }
             if (isDefined(value) && modelScope.$viewVal !== value) {
@@ -296,7 +296,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
               keys = keyName ? sortedKeys(values) : values,
               groupLength, length,
               groupIndex, index,
-              optionScope = inherit(modelScope),
+              locals = {},
               selected,
               selectedSet = false, // nothing is selected yet
               lastElement,
@@ -312,21 +312,21 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
 
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
-               optionScope[valueName] = values[keyName ? optionScope[keyName]=keys[index]:index];
-               optionGroupName = groupByFn(optionScope) || '';
+               locals[valueName] = values[keyName ? locals[keyName]=keys[index]:index];
+               optionGroupName = groupByFn(modelScope, locals) || '';
             if (!(optionGroup = optionGroups[optionGroupName])) {
               optionGroup = optionGroups[optionGroupName] = [];
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(valueFn(optionScope)) != undefined;
+              selected = selectedSet.remove(valueFn(modelScope, locals)) != undefined;
             } else {
-              selected = modelValue === valueFn(optionScope);
+              selected = modelValue === valueFn(modelScope, locals);
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
             optionGroup.push({
               id: keyName ? keys[index] : index,   // either the index into array or key from object
-              label: displayFn(optionScope) || '', // what will be seen by the user
+              label: displayFn(modelScope, locals) || '', // what will be seen by the user
               selected: selected                   // determine if we should be selected
             });
           }
