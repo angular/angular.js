@@ -483,6 +483,27 @@ describe('injector', function() {
           createInjector([['$injector', myModule]]);
         }).toThrow('Unknown provider: $injector from ' + myModule);
       });
+
+
+      it('should throw error when trying to inject oneself', function() {
+        expect(function() {
+          createInjector([function($provide){
+            $provide.factory('service', function(service){});
+            return function(service) {}
+          }])
+        }).toThrow('Circular dependency: service');
+      });
+
+
+      it('should throw error when trying to inject circular dependency', function() {
+        expect(function() {
+          createInjector([function($provide){
+            $provide.factory('a', function(b){});
+            $provide.factory('b', function(a){});
+            return function(a) {}
+          }])
+        }).toThrow('Circular dependency: b <- a');
+      });
     });
   });
 
