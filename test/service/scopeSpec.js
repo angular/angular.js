@@ -189,22 +189,26 @@ describe('Scope', function() {
     }));
 
 
-    it('should prevent infinite recursion and print watcher expression',inject(
-        function($rootScope) {
-      $rootScope.$watch('a', function() {$rootScope.b++;});
-      $rootScope.$watch('b', function() {$rootScope.a++;});
-      $rootScope.a = $rootScope.b = 0;
+    it('should prevent infinite recursion and print watcher expression',function() {
+      module(function($rootScopeProvider) {
+        $rootScopeProvider.ttl(100);
+      });
+      inject(function($rootScope) {
+        $rootScope.$watch('a', function() {$rootScope.b++;});
+        $rootScope.$watch('b', function() {$rootScope.a++;});
+        $rootScope.a = $rootScope.b = 0;
 
-      expect(function() {
-        $rootScope.$digest();
-      }).toThrow('100 $digest() iterations reached. Aborting!\n'+
-          'Watchers fired in the last 5 iterations: ' +
-          '[["a; newVal: 96; oldVal: 95","b; newVal: 97; oldVal: 96"],' +
-           '["a; newVal: 97; oldVal: 96","b; newVal: 98; oldVal: 97"],' +
-           '["a; newVal: 98; oldVal: 97","b; newVal: 99; oldVal: 98"],' +
-           '["a; newVal: 99; oldVal: 98","b; newVal: 100; oldVal: 99"],' +
-           '["a; newVal: 100; oldVal: 99","b; newVal: 101; oldVal: 100"]]');
-    }));
+        expect(function() {
+          $rootScope.$digest();
+        }).toThrow('100 $digest() iterations reached. Aborting!\n'+
+            'Watchers fired in the last 5 iterations: ' +
+            '[["a; newVal: 96; oldVal: 95","b; newVal: 97; oldVal: 96"],' +
+            '["a; newVal: 97; oldVal: 96","b; newVal: 98; oldVal: 97"],' +
+            '["a; newVal: 98; oldVal: 97","b; newVal: 99; oldVal: 98"],' +
+            '["a; newVal: 99; oldVal: 98","b; newVal: 100; oldVal: 99"],' +
+            '["a; newVal: 100; oldVal: 99","b; newVal: 101; oldVal: 100"]]');
+      });
+    });
 
 
     it('should prevent infinite recursion and print print watcher function name or body',
@@ -241,11 +245,11 @@ describe('Scope', function() {
       $rootScope.$watch('a', function(value) {
         log +='.';
         expect(value).toBe($rootScope.a);
-      });
+      }, true);
       $rootScope.$watch('b', function(value) {
         log +='!';
         expect(value).toBe($rootScope.b);
-      });
+      }, true);
       $rootScope.$digest();
       log = '';
 
@@ -331,7 +335,7 @@ describe('Scope', function() {
       $rootScope.$watch(function() { return undefined;}, logger);
       $rootScope.$watch(function() { return '';}, logger);
       $rootScope.$watch(function() { return false;}, logger);
-      $rootScope.$watch(function() { return {};}, logger);
+      $rootScope.$watch(function() { return {};}, logger, true);
       $rootScope.$watch(function() { return 23;}, logger);
 
       $rootScope.$digest();

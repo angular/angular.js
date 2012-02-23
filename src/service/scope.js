@@ -35,6 +35,15 @@
  * event processing life-cycle. See {@link guide/dev_guide.scopes developer guide on scopes}.
  */
 function $RootScopeProvider(){
+  var TTL = 10;
+
+  this.ttl = function(value) {
+    if (arguments.length) {
+      TTL = value;
+    }
+    return TTL;
+  }
+
   this.$get = ['$injector', '$exceptionHandler', '$parse',
       function( $injector,   $exceptionHandler,   $parse) {
 
@@ -248,9 +257,11 @@ function $RootScopeProvider(){
        *
        *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
+       *
+       * @param {boolean=} objectEquality Compare object for equality rather then for refference.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $watch: function(watchExp, listener) {
+      $watch: function(watchExp, listener, objectEquality) {
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
@@ -258,7 +269,8 @@ function $RootScopeProvider(){
               fn: listener,
               last: initWatchVal,
               get: get,
-              exp: watchExp
+              exp: watchExp,
+              eq: !!objectEquality
             };
 
         // in the case user pass string, we need to compile it, do we really need this ?
@@ -332,7 +344,7 @@ function $RootScopeProvider(){
             watchers,
             asyncQueue,
             length,
-            dirty, ttl = 100,
+            dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
             logIdx, logMsg;
@@ -359,9 +371,13 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
+                  if ((value = watch.get(current)) !== (last = watch.last) &&
+                      !(watch.eq
+                          ? equals(value, last)
+                          : (typeof value == 'number' && typeof last == 'number'
+                             && isNaN(value) && isNaN(last)))) {
                     dirty = true;
-                    watch.last = copy(value);
+                    watch.last = watch.eq ? copy(value) : value;
                     watch.fn(value, ((last === initWatchVal) ? value : last), current);
                     if (ttl < 5) {
                       logIdx = 4 - ttl;
@@ -390,7 +406,7 @@ function $RootScopeProvider(){
           } while ((current = next));
 
           if(dirty && !(ttl--)) {
-            throw Error('100 $digest() iterations reached. Aborting!\n' +
+            throw Error(TTL + ' $digest() iterations reached. Aborting!\n' +
                 'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
           }
         } while (dirty || asyncQueue.length);
