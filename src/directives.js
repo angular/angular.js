@@ -592,7 +592,7 @@ function classDirective(name, selector) {
          if (isObject(newVal) && !isArray(newVal))
             newVal = map(newVal, function(v, k) { if (v) return k });
          if (newVal) element.addClass(isArray(newVal) ? newVal.join(' ') : newVal);      }
-    });
+    }, true);
   });
 }
 
@@ -837,7 +837,7 @@ var ngStyleDirective = valueFn(function(scope, element, attr) {
       forEach(oldStyles, function(val, style) { element.css(style, '');});
     }
     if (newStyles) element.css(newStyles);
-  });
+  }, true);
 });
 
 
