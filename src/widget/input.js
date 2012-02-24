@@ -1004,22 +1004,22 @@ var ngChangeDirective = valueFn({
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:bind-immediate
+ * @name angular.module.ng.$compileProvider.directive.ng:model-instant
  *
  * @element input
  *
  * @description
  * By default, Angular udpates the model only on `blur` event - when the input looses focus.
- * If you want to update after every key stroke, use `ng:bind-immediate`.
+ * If you want to update after every key stroke, use `ng:model-instant`.
  *
  * @example
  * <doc:example>
  *   <doc:source>
  *     First name: <input type="text" ng:model="firstName" /><br />
- *     Last name: <input type="text" ng:model="lastName" ng:bind-immediate /><br />
+ *     Last name: <input type="text" ng:model="lastName" ng:model-instant /><br />
  *
  *     First name ({{firstName}}) is only updated on `blur` event, but the last name ({{lastName}})
- *     is updated immediately, because of using `ng:bind-immediate`.
+ *     is updated immediately, because of using `ng:model-instant`.
  *   </doc:source>
  *   <doc:scenario>
  *     it('should update first name on blur', function() {
@@ -1034,7 +1034,7 @@ var ngChangeDirective = valueFn({
  *   </doc:scenario>
  * </doc:example>
  */
-var ngBindImmediateDirective = ['$browser', function($browser) {
+var ngModelInstantDirective = ['$browser', function($browser) {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {

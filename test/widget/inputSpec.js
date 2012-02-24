@@ -923,10 +923,10 @@ describe('input', function() {
   });
 
 
-  describe('ng:bind-change', function() {
+  describe('ng:model-instant', function() {
 
     it('should bind keydown, change, input events', inject(function($browser) {
-      compileInput('<input type="text" ng:model="value" ng:bind-immediate />');
+      compileInput('<input type="text" ng:model="value" ng:model-instant />');
 
       inputElm.val('value1');
       browserTrigger(inputElm, 'keydown');

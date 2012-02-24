@@ -101,7 +101,7 @@
 
     <div id="sidebar">
       <input type="text" ng:model="search" id="search-box" placeholder="search the docs"
-             tabindex="1" accesskey="s" ng:bind-immediate>
+             tabindex="1" accesskey="s" ng:model-instant>
 
       <ul id="content-list" ng:class="sectionId" ng:cloak>
         <li ng:repeat="page in pages | filter:search" ng:class="getClass(page)">
