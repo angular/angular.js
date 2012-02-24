@@ -168,6 +168,17 @@ describe('$httpBackend', function() {
     });
 
 
+    it('should set url to current location if not specified or empty string', function() {
+      $backend('JSONP', undefined, null, callback);
+      expect($browser.$$scripts[0].url).toBe($browser.url());
+      $browser.$$scripts.shift();
+
+      $backend('JSONP', '', null, callback);
+      expect($browser.$$scripts[0].url).toBe($browser.url());
+      $browser.$$scripts.shift();
+    });
+
+
     // TODO(vojta): test whether it fires "async-start"
     // TODO(vojta): test whether it fires "async-end" on both success and error
   });
