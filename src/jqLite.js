@@ -474,11 +474,13 @@ function createEventHandler(element) {
         event.returnValue = false; //ie
       };
     }
+
     if (!event.stopPropagation) {
       event.stopPropagation = function() {
         event.cancelBubble = true; //ie
       };
     }
+
     if (!event.target) {
       event.target = event.srcElement || document;
     }
@@ -502,10 +504,17 @@ function createEventHandler(element) {
 
     // Remove monkey-patched methods (IE),
     // as they would cause memory leaks in IE8.
-    // It shouldn't affect normal browsers, as their native methods are defined on prototype.
-    delete event.preventDefault;
-    delete event.stopPropagation;
-    delete event.isDefaultPrevented;
+    if (msie < 8) {
+      // IE7 does not allow to delete property on native object
+      event.preventDefault = null;
+      event.stopPropagation = null;
+      event.isDefaultPrevented = null;
+    } else {
+      // It shouldn't affect normal browsers (native methods are defined on prototype).
+      delete event.preventDefault;
+      delete event.stopPropagation;
+      delete event.isDefaultPrevented;
+    }
   };
   eventHandler.fns = [];
   return eventHandler;

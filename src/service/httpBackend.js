@@ -34,6 +34,7 @@ function createHttpBackend($browser, XHR, $browserDefer, callbacks, body, locati
   // TODO(vojta): fix the signature
   return function(method, url, post, callback, headers, timeout) {
     $browser.$$incOutstandingRequestCount();
+    url = url || $browser.url();
 
     if (lowercase(method) == 'jsonp') {
       var callbackId = '_' + (callbacks.counter++).toString(36);
