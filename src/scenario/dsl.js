@@ -199,11 +199,11 @@ angular.scenario.dsl('binding', function() {
 angular.scenario.dsl('input', function() {
   var chain = {};
 
-  chain.enter = function(value) {
+  chain.enter = function(value, event) {
     return this.addFutureAction("input '" + this.name + "' enter '" + value + "'", function($window, $document, done) {
       var input = $document.elements('[ng\\:model="$1"]', this.name).filter(':input');
       input.val(value);
-      input.trigger('blur');
+      input.trigger(event || 'blur');
       done();
     });
   };

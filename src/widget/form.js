@@ -1,5 +1,27 @@
 'use strict';
 
+
+/**
+ * @ngdoc object
+ * @name angular.module.ng.$compileProvider.directive.form.FormController
+ *
+ * @property {boolean} pristine True if user has not interacted with the form yet.
+ * @property {boolean} dirty True if user has already interacted with the form.
+ * @property {boolean} valid True if all of the containg widgets are valid.
+ * @property {boolean} invalid True if at least one containing widget is invalid.
+ *
+ * @property {Object} error Is an object hash, containing references to all invalid widgets, where
+ *
+ *  - keys are error ids (such as `REQUIRED`, `URL` or `EMAIL`),
+ *  - values are arrays of widgets that are invalid with given error.
+ *
+ * @description
+ * Form is a controller that keeps track of all registered widgets.
+ *
+ * Each {@link angular.module.ng.$compileProvider.directive.form form} directive creates an instance
+ * of `FormController`.
+ *
+ */
 FormController.$inject = ['$scope', 'name'];
 function FormController($scope, name) {
   var form = this,
@@ -73,6 +95,19 @@ function FormController($scope, name) {
   }
 }
 
+/**
+ * @ngdoc function
+ * @name angular.module.ng.$compileProvider.directive.form.FormController#registerWidget
+ * @methodOf angular.module.ng.$compileProvider.directive.form.FormController
+ * @function
+ *
+ * @param {Object} widget Widget to register (controller of a widget)
+ * @param {string=} alias Name alias of the widget.
+ *                        (If specified, widget will be accesible as a form property)
+ *
+ * @description
+ *
+ */
 FormController.prototype.registerWidget = function(widget, alias) {
   if (alias && !this.hasOwnProperty(alias)) {
     widget.widgetId = alias;
@@ -82,16 +117,15 @@ FormController.prototype.registerWidget = function(widget, alias) {
 
 
 /**
- * @ngdoc directive
+ * @ngdoc widget
  * @name angular.module.ng.$compileProvider.directive.form
  *
  * @scope
  * @description
- * Angular widget that creates a form scope using the
- * {@link angular.module.ng.$formFactory $formFactory} API. The resulting form scope instance is
- * attached to the DOM element using the jQuery `.data()` method under the `$form` key.
- * See {@link guide/dev_guide.forms forms} on detailed discussion of forms and widgets.
+ * Directive that instantiates
+ * {@link angular.module.ng.$compileProvider.directive.form.FormController Form} controller.
  *
+ * If `name` attribute is specified, the controller is published to the scope as well.
  *
  * # Alias: `ng:form`
  *
@@ -101,9 +135,16 @@ FormController.prototype.registerWidget = function(widget, alias) {
  * element nesting.
  *
  *
+ * # CSS classes
+ *  - `ng-valid` Is set if the form is valid.
+ *  - `ng-invalid` Is set if the form is invalid.
+ *  - `ng-pristine` Is set if the form is pristine.
+ *  - `ng-dirty` Is set if the form is dirty.
+ *
+ *
  * # Submitting a form and preventing default action
  *
- * Since the role of forms in client-side Angular applications is different than in old-school
+ * Since the role of forms in client-side Angular applications is different than in classical
  * roundtrip apps, it is desirable for the browser not to translate the form submission into a full
  * page reload that sends the data to the server. Instead some javascript logic should be triggered
  * to handle the form submission in application specific way.
@@ -128,7 +169,8 @@ FormController.prototype.registerWidget = function(widget, alias) {
  * hitting enter in any of the input fields will trigger the click handler on the *first* button or
  * input[type=submit] (`ng:click`) *and* a submit handler on the enclosing form (`ng:submit`)
  *
- * @param {string=} name Name of the form.
+ * @param {string=} name Name of the form. If specified, the form controller will be published into
+ *                       related scope, under this name.
  *
  * @example
     <doc:example>

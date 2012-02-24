@@ -58,8 +58,8 @@ the following example.
 During the compilation process the {@link angular.module.ng.$compile compiler} matches text and
 attributes using the {@link angular.module.ng.$interpolate $interpolate} service to see if they
 contain embedded expressions. These expressions are registered as {@link
-angular.module.ng.$rootScope.Scope#.watch watches} and will update as part of normal {@link
-angular.module.ng.$rootScope.Scope#.digest digest} cycle. An example of interpolation is shown
+angular.module.ng.$rootScope.Scope#$watch watches} and will update as part of normal {@link
+angular.module.ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is shown
 here:
 
 <pre>
@@ -87,7 +87,7 @@ Compilation of HTML happens in three phases:
   3. Link the template with scope by calling the liking function returned from the previous step.
   This in turn will call the linking function of the individual directives allowing them to
   register any listeners on the elements and set up any {@link
-  angular.module.ng.$rootScope.Scope#.watch watches} with the {@link
+  angular.module.ng.$rootScope.Scope#$watch watches} with the {@link
   angular.module.ng.$rootScope.Scope scope}. The result of this is a live binding between the
   scope and the DOM. A change in the scope is reflected in the DOM.
 
@@ -417,8 +417,8 @@ compiler}. The attributes are:
     append the template to the element.
 
   * `transclude` - compile the content of the element and make it available to the directive.
-    Typically used with {@link api/angular.module.ng.$compileProvider.directive.ng-transclude
-    ng-transclude}. The advantage of transclusion is that the linking function receives a
+    Typically used with {@link api/angular.module.ng.$compileProvider.directive.ng:transclude
+    ng:transclude}. The advantage of transclusion is that the linking function receives a
     transclusion function which is pre-bound to the correct scope. In a typical setup the widget
     creates an `isolate` scope, but the transclusion is not a child, but a sibling of the `isolate`
     scope. This makes it possible for the widget to have private state, and the transclusion to
@@ -451,7 +451,7 @@ compile functions takes the following arguments.
 
   * `tAttrs` - template attributes - Normalized list of attributes declared on this element shared
     between all directive compile functions. See {@link
-    angular.module.ng.$compileProvider.directive.Attributes Attributes}
+    #Attributes Attributes}
 
   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
 
@@ -470,15 +470,14 @@ executed after the template has been cloned. This is where most of the directive
 put.
 
   * `scope` - {@link angular.module.ng.$rootScope.Scope Scope} - The scope to be used by the
-    directive for registering {@link angular.module.ng.$rootScope.Scope#.watch watches}.
+    directive for registering {@link angular.module.ng.$rootScope.Scope#$watch watches}.
 
   * `iElement` - instance element - The element where the directive is to be used. It is safe to
     manipulate the children of the element only in `postLink` function since the children have
     already been linked.
 
   * `iAttrs` - instance attributes - Normalized list of attributes declared on this element shared
-    between all directive linking functions. See {@link
-    angular.module.ng.$compileProvider.directive.Attributes Attributes}
+    between all directive linking functions. See {@link #Attributes Attributes}
 
   * `controller` - a controller instance - A controller instance if at least one directive on the
     element defines a controller. The controller is shared among all the directives, which allows
@@ -495,6 +494,7 @@ compiler linking function will fail to locate the correct elements for linking.
 
 Executed after the child elements are linked. Safe to do DOM transformation in here.
 
+<a name="Attributes"></a>
 ## Attributes
 
 The attributes object - passed as a parameter in the link() or compile() functions - is a way of

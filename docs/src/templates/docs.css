@@ -295,6 +295,9 @@ li {
   margin-left: 4em;
 }
 
+#content-list .level-6 {
+  margin-left: 5em;
+}
 
 #content-list a.current {
   font-weight: bold;
@@ -509,7 +512,7 @@ td.empty-corner-lt {
   width: 360px;
 }
 
-.error {
+.doc-example-live .error {
    color: red;
 }
 
