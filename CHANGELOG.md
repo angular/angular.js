@@ -1758,7 +1758,7 @@ with the `$route` service
 [angular.bootstrap]: http://docs-next.angularjs.org/api/angular.bootstrap
 [$anchorScroll]: http://docs-next.angularjs.org/api/angular.module.ng.$anchorScroll
 [$cacheFactory]: http://docs-next.angularjs.org/api/angular.module.ng.$cacheFactory
-[bootstrapping]: http://docs-next.angularjs.org/guide/dev_guide.bootstrap
+[bootstrapping]: http://docs-next.angularjs.org/guide/bootstrap
 [angular.copy]: http://docs-next.angularjs.org/api/angular.copy
 [ng:app]: http://docs-next.angularjs.org/api/angular.directive.ng-app
 [$compile]: http://docs-next.angularjs.org/api/angular.module.ng.$compile
