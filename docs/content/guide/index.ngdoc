@@ -15,10 +15,7 @@ of the following documents before returning here to the Developer Guide:
 
 ## {@link dev_guide.overview Overview of Angular}
 
-## {@link dev_guide.bootstrap Initializing Angular}
-
-* {@link dev_guide.bootstrap.auto_bootstrap Understanding Automatic Initialization}
-* {@link dev_guide.bootstrap.manual_bootstrap Understanding Manual Initialization}
+## {@link bootstrap Initializing Angular}
 
 ## {@link dev_guide.mvc About MVC in Angular}
 
