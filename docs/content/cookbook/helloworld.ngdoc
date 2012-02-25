@@ -28,7 +28,7 @@
 
 Take a look through the source and note:
 
-* The script tag that {@link guide/dev_guide.bootstrap bootstraps} the angular environment.
+* The script tag that {@link guide/bootstrap bootstraps} the angular environment.
 * The text {@link api/angular.module.ng.$compileProvider.directive.input input widget} which is
   bound to the greeting name text.
 * No need for listener registration and event firing on change events.

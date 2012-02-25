@@ -113,7 +113,7 @@ on.
 
 In the `<html>` tag, we specify that it is an angular
 application with the `ng-app` directive. The `ng-app' will cause the angular to {@link
-dev_guide.bootstrap auto initialize} your application.
+bootstrap auto initialize} your application.
 
     <html ng-app>
 
