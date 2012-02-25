@@ -93,8 +93,11 @@ function publishExternalAPI(angular){
             ngSubmit: ngSubmitDirective,
             ngStyle: ngStyleDirective,
             ngSwitch: ngSwitchDirective,
+            ngSwitchWhen: ngSwitchWhenDirective,
+            ngSwitchDefault: ngSwitchDefaultDirective,
             ngOptions: ngOptionsDirective,
-            ngView: ngViewDirective
+            ngView: ngViewDirective,
+            ngTransclude: ngTranscludeDirective
           }).
         directive(ngEventDirectives).
         directive(ngAttributeAliasDirectives);

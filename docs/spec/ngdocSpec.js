@@ -23,6 +23,13 @@ describe('ngdoc', function() {
         expect(new Doc('The `ng:class-odd` and').keywords()).toEqual('and ng:class-odd the');
       });
 
+      it('should get property and methods', function() {
+        var doc = new Doc('Document');
+        doc.properties.push(new Doc('Proprety'));
+        doc.properties.push(new Doc('Method'));
+        expect(doc.keywords()).toEqual('document method proprety');
+      });
+
       it('should have shortName', function() {
         var d1 = new Doc('@name a.b.c').parse();
         var d2 = new Doc('@name a.b.ng:c').parse();
@@ -339,6 +346,26 @@ describe('ngdoc', function() {
         expect(doc.html()).toContain('<a href="api/angular.module.ng.$another">$another</a>');
         expect(doc.html()).toContain('<p>for \n<code>A</code></p>');
         expect(doc.html()).toContain('<p>for <code>B</code></p>');
+      });
+    });
+
+    describe('@scope', function() {
+      it('should state the new scope will be created', function() {
+        var doc = new Doc('@name a\n@scope');
+        doc.ngdoc = 'directive';
+        doc.parse();
+        expect(doc.scope).toEqual('');
+        expect(doc.html()).toContain('This directive creates new scope.');
+      });
+    });
+
+    describe('@priority', function() {
+      it('should state the priority', function() {
+        var doc = new Doc('@name a\n@priority 123');
+        doc.ngdoc = 'directive';
+        doc.parse();
+        expect(doc.priority).toEqual('123');
+        expect(doc.html()).toContain('This directive executes at priority level 123.');
       });
     });
 

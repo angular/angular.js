@@ -137,15 +137,12 @@ describe("directive", function() {
       expect($rootScope.clicked).toEqual(true);
     }));
 
-    it('should stop event propagation', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:click="outer = true"><div ng:click="inner = true"></div></div>')($rootScope);
+    it('should pass event object', inject(function($rootScope, $compile) {
+      element = $compile('<div ng:click="event = $event"></div>')($rootScope);
       $rootScope.$digest();
-      expect($rootScope.outer).not.toBeDefined();
-      expect($rootScope.inner).not.toBeDefined();
 
-      browserTrigger(element.find('div'), 'click');
-      expect($rootScope.outer).not.toBeDefined();
-      expect($rootScope.inner).toEqual(true);
+      browserTrigger(element, 'click');
+      expect($rootScope.event).toBeDefined();
     }));
   });
 
@@ -264,7 +261,7 @@ describe("directive", function() {
       $rootScope.$digest();
       $rootScope.dynCls = 'foo';
       $rootScope.$digest();
-      expect(element[0].className).toBe('ui-panel ui-selected foo');
+      expect(element[0].className).toBe('ui-panel ui-selected ng-scope foo');
     }));
 
 
@@ -272,7 +269,7 @@ describe("directive", function() {
       element = $compile('<div class="panel bar" ng:class="dynCls"></div>')($rootScope);
       $rootScope.dynCls = 'panel';
       $rootScope.$digest();
-      expect(element[0].className).toBe('panel bar');
+      expect(element[0].className).toBe('panel bar ng-scope');
     }));
 
 
@@ -282,7 +279,7 @@ describe("directive", function() {
       $rootScope.$digest();
       $rootScope.dynCls = 'window';
       $rootScope.$digest();
-      expect(element[0].className).toBe('bar window');
+      expect(element[0].className).toBe('bar ng-scope window');
     }));
 
 

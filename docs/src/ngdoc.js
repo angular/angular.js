@@ -46,18 +46,29 @@ Doc.METADATA_IGNORE = (function() {
 Doc.prototype = {
   keywords: function keywords() {
     var keywords = {};
-    Doc.METADATA_IGNORE.forEach(function(ignore){ keywords[ignore] = true; });
     var words = [];
-    var tokens = this.text.toLowerCase().split(/[,\.\`\'\"\s]+/mg);
-    tokens.forEach(function(key){
-      var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]{2,})/);
-      if (match){
-        key = match[1];
-        if (!keywords[key]) {
-          keywords[key] = true;
-          words.push(key);
+    Doc.METADATA_IGNORE.forEach(function(ignore){ keywords[ignore] = true; });
+
+    function extractWords(text) {
+      var tokens = text.toLowerCase().split(/[,\.\`\'\"\s]+/mg);
+      tokens.forEach(function(key){
+        var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]{2,})/);
+        if (match){
+          key = match[1];
+          if (!keywords[key]) {
+            keywords[key] = true;
+            words.push(key);
+          }
         }
-      }
+      });
+    }
+
+    extractWords(this.text);
+    this.properties.forEach(function(prop) {
+      extractWords(prop.text || prop.description || '');
+    });
+    this.methods.forEach(function(method) {
+      extractWords(method.text || method.description || '');
     });
     words.sort();
     return words.join(' ');
@@ -363,6 +374,7 @@ Doc.prototype = {
         dom.text('>\n   ...\n');
         dom.text('</' + self.element + '>');
       });
+      self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
     });
   },
@@ -450,9 +462,23 @@ Doc.prototype = {
         });
       });
 
+      self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
-      self.html_usage_returns(dom);
     });
+  },
+
+  html_usage_directiveInfo: function(dom) {
+    var self = this;
+    var list = [];
+
+
+    if (self.scope !== undefined) {
+      list.push('This directive creates new scope.');
+    }
+    if (self.priority !== undefined) {
+      list.push('This directive executes at priority level ' + self.priority + '.');
+    }
+    dom.ul(list);
   },
 
   html_usage_overview: function(dom){

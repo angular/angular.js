@@ -35,6 +35,15 @@
  * event processing life-cycle. See {@link guide/dev_guide.scopes developer guide on scopes}.
  */
 function $RootScopeProvider(){
+  var TTL = 10;
+
+  this.ttl = function(value) {
+    if (arguments.length) {
+      TTL = value;
+    }
+    return TTL;
+  }
+
   this.$get = ['$injector', '$exceptionHandler', '$parse',
       function( $injector,   $exceptionHandler,   $parse) {
 
@@ -136,20 +145,36 @@ function $RootScopeProvider(){
        * the scope and its child scopes to be permanently detached from the parent and thus stop
        * participating in model change detection and listener notification by invoking.
        *
+       * @params {boolean} isolate if true then the scoped does not prototypically inherit from the
+       *         parent scope. The scope is isolated, as it can not se parent scope properties.
+       *         When creating widgets it is useful for the widget to not accidently read parent
+       *         state.
+       *
        * @returns {Object} The newly created child scope.
        *
        */
-      $new: function() {
-        var Child = function() {}; // should be anonymous; This is so that when the minifier munges
-          // the name it does not become random set of chars. These will then show up as class
-          // name in the debugger.
-        var child;
-        Child.prototype = this;
-        child = new Child();
+      $new: function(isolate) {
+        var Child,
+            child;
+
+        if (isFunction(isolate)) {
+          // TODO: remove at some point
+          throw Error('API-CHANGE: Use $controller to instantiate controllers.');
+        }
+        if (isolate) {
+          child = new Scope();
+          child.$root = this.$root;
+        } else {
+          Child = function() {}; // should be anonymous; This is so that when the minifier munges
+            // the name it does not become random set of chars. These will then show up as class
+            // name in the debugger.
+          Child.prototype = this;
+          child = new Child();
+          child.$id = nextUid();
+        }
         child['this'] = child;
         child.$$listeners = {};
         child.$parent = this;
-        child.$id = nextUid();
         child.$$asyncQueue = [];
         child.$$watchers = child.$$nextSibling = child.$$childHead = child.$$childTail = null;
         child.$$prevSibling = this.$$childTail;
@@ -232,9 +257,11 @@ function $RootScopeProvider(){
        *
        *    - `string`: Evaluated as {@link guide/dev_guide.expressions expression}
        *    - `function(newValue, oldValue, scope)`: called with current and previous values as parameters.
+       *
+       * @param {boolean=} objectEquality Compare object for equality rather then for refference.
        * @returns {function()} Returns a deregistration function for this listener.
        */
-      $watch: function(watchExp, listener) {
+      $watch: function(watchExp, listener, objectEquality) {
         var scope = this,
             get = compileToFn(watchExp, 'watch'),
             array = scope.$$watchers,
@@ -242,7 +269,8 @@ function $RootScopeProvider(){
               fn: listener,
               last: initWatchVal,
               get: get,
-              exp: watchExp
+              exp: watchExp,
+              eq: !!objectEquality
             };
 
         // in the case user pass string, we need to compile it, do we really need this ?
@@ -277,7 +305,7 @@ function $RootScopeProvider(){
        * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 100.
        *
        * Usually you don't call `$digest()` directly in
-       * {@link angular.module.ng.$compileProvider.directive.ng:controller controllers} or in 
+       * {@link angular.module.ng.$compileProvider.directive.ng:controller controllers} or in
        * {@link angular.module.ng.$compileProvider.directive directives}.
        * Instead a call to {@link angular.module.ng.$rootScope.Scope#$apply $apply()} (typically from within a
        * {@link angular.module.ng.$compileProvider.directive directives}) will force a `$digest()`.
@@ -316,7 +344,7 @@ function $RootScopeProvider(){
             watchers,
             asyncQueue,
             length,
-            dirty, ttl = 100,
+            dirty, ttl = TTL,
             next, current, target = this,
             watchLog = [],
             logIdx, logMsg;
@@ -343,9 +371,13 @@ function $RootScopeProvider(){
                   watch = watchers[length];
                   // Most common watches are on primitives, in which case we can short
                   // circuit it with === operator, only when === fails do we use .equals
-                  if ((value = watch.get(current)) !== (last = watch.last) && !equals(value, last)) {
+                  if ((value = watch.get(current)) !== (last = watch.last) &&
+                      !(watch.eq
+                          ? equals(value, last)
+                          : (typeof value == 'number' && typeof last == 'number'
+                             && isNaN(value) && isNaN(last)))) {
                     dirty = true;
-                    watch.last = copy(value);
+                    watch.last = watch.eq ? copy(value) : value;
                     watch.fn(value, ((last === initWatchVal) ? value : last), current);
                     if (ttl < 5) {
                       logIdx = 4 - ttl;
@@ -374,7 +406,7 @@ function $RootScopeProvider(){
           } while ((current = next));
 
           if(dirty && !(ttl--)) {
-            throw Error('100 $digest() iterations reached. Aborting!\n' +
+            throw Error(TTL + ' $digest() iterations reached. Aborting!\n' +
                 'Watchers fired in the last 5 iterations: ' + toJson(watchLog));
           }
         } while (dirty || asyncQueue.length);
@@ -547,6 +579,7 @@ function $RootScopeProvider(){
        *   - `name` - {string}: Name of the event.
        *   - `cancel` - {function=}: calling `cancel` function will cancel further event propagation
        *     (available only for events that were `$emit`-ed).
+       *   - `cancelled` - {boolean}: Whether the event was cancelled.
        */
       $on: function(name, listener) {
         var namedListeners = this.$$listeners[name];
@@ -581,16 +614,17 @@ function $RootScopeProvider(){
        *
        * @param {string} name Event name to emit.
        * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @return {Object} Event object, see {@link angular.module.ng.$rootScope.Scope#$on}
        */
       $emit: function(name, args) {
         var empty = [],
             namedListeners,
-            canceled = false,
             scope = this,
             event = {
               name: name,
               targetScope: scope,
-              cancel: function() {canceled = true;}
+              cancel: function() {event.cancelled = true;},
+              cancelled: false
             },
             listenerArgs = concat([event], arguments, 1),
             i, length;
@@ -601,7 +635,7 @@ function $RootScopeProvider(){
           for (i=0, length=namedListeners.length; i<length; i++) {
             try {
               namedListeners[i].apply(null, listenerArgs);
-              if (canceled) return;
+              if (event.cancelled) return event;
             } catch (e) {
               $exceptionHandler(e);
             }
@@ -609,6 +643,8 @@ function $RootScopeProvider(){
           //traverse upwards
           scope = scope.$parent;
         } while (scope);
+
+        return event;
       },
 
 
@@ -632,6 +668,7 @@ function $RootScopeProvider(){
        *
        * @param {string} name Event name to emit.
        * @param {...*} args Optional set of arguments which will be passed onto the event listeners.
+       * @return {Object} Event object, see {@link angular.module.ng.$rootScope.Scope#$on}
        */
       $broadcast: function(name, args) {
         var target = this,
@@ -662,6 +699,8 @@ function $RootScopeProvider(){
             }
           }
         } while ((current = next));
+
+        return event;
       }
     };
 

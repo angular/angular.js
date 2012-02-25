@@ -260,6 +260,29 @@ describe('injector', function() {
     });
 
     describe('$provide', function() {
+      describe('constant', function() {
+        it('should create configuration injectable constants', function() {
+          var log = [];
+          createInjector([
+              function($provide){
+                $provide.constant('abc', 123);
+                $provide.constant({a: 'A', b:'B'});
+                return function(a) {
+                  log.push(a);
+                }
+              },
+              function(abc) {
+                log.push(abc);
+                return function(b) {
+                  log.push(b);
+                }
+              }
+          ]).get('abc');
+          expect(log).toEqual([123, 'A', 'B']);
+        });
+      });
+
+
       describe('value', function() {
         it('should configure $provide values', function() {
           expect(createInjector([function($provide) {
@@ -483,6 +506,27 @@ describe('injector', function() {
           createInjector([['$injector', myModule]]);
         }).toThrow('Unknown provider: $injector from ' + myModule);
       });
+
+
+      it('should throw error when trying to inject oneself', function() {
+        expect(function() {
+          createInjector([function($provide){
+            $provide.factory('service', function(service){});
+            return function(service) {}
+          }])
+        }).toThrow('Circular dependency: service');
+      });
+
+
+      it('should throw error when trying to inject circular dependency', function() {
+        expect(function() {
+          createInjector([function($provide){
+            $provide.factory('a', function(b){});
+            $provide.factory('b', function(a){});
+            return function(a) {}
+          }])
+        }).toThrow('Circular dependency: b <- a');
+      });
     });
   });
 
@@ -605,9 +649,22 @@ describe('injector', function() {
     });
 
 
+    it('should instantiate object and preserve constructor property and be instanceof', function() {
+      var t = $injector.instantiate(['book', 'author', Type]);
+      expect(t.book).toEqual('moby');
+      expect(t.author).toEqual('melville');
+      expect(t.title()).toEqual('melville: moby');
+      expect(t instanceof Type).toBe(true);
+    });
+
+
     it('should allow constructor to return different object', function() {
-      var t = $injector.instantiate(function() { return 'ABC'; });
-      expect(t).toBe('ABC');
+      var obj = {};
+      var Class = function() {
+        return obj;
+      };
+
+      expect($injector.instantiate(Class)).toBe(obj);
     });
 
 
@@ -615,6 +672,25 @@ describe('injector', function() {
       expect(function() {
         $injector.instantiate(function() { throw 'MyError'; });
       }).toThrow('MyError');
+    });
+
+
+    it('should return instance if constructor returns non-object value', function() {
+      var A = function() {
+        return 10;
+      };
+
+      var B = function() {
+        return 'some-string';
+      };
+
+      var C = function() {
+        return undefined;
+      };
+
+      expect($injector.instantiate(A) instanceof A).toBe(true);
+      expect($injector.instantiate(B) instanceof B).toBe(true);
+      expect($injector.instantiate(C) instanceof C).toBe(true);
     });
   });
 

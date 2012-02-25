@@ -168,6 +168,13 @@ describe('angular', function() {
       expect(equals(window, window.parent)).toBe(false);
       expect(equals(window, undefined)).toBe(false);
     });
+
+    it('should compare dates', function() {
+      expect(equals(new Date(0), new Date(0))).toBe(true);
+      expect(equals(new Date(0), new Date(1))).toBe(false);
+      expect(equals(new Date(0), 0)).toBe(false);
+      expect(equals(0, new Date(0))).toBe(false);
+    });
   });
 
   describe('size', function() {

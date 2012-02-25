@@ -671,6 +671,8 @@ function equals(o1, o2) {
           }
           return true;
         }
+      } else if (isDate(o1)) {
+        return isDate(o2) && o1.getTime() == o2.getTime();
       } else {
         if (isScope(o1) || isScope(o2) || isWindow(o1) || isWindow(o2)) return false;
         keySet = {};
@@ -839,7 +841,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.directive.ng:app
+ * @name angular.module.ng.$compileProvider.directive.ng:app
  *
  * @element ANY
  * @param {angular.Module} module on optional application
