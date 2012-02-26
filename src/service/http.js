@@ -102,7 +102,7 @@ function $HttpProvider() {
 
     // transform outgoing request data
     transformRequest: function(d) {
-      return isObject(d) ? toJson(d) : d;
+      return isObject(d) && !isFile(d) ? toJson(d) : d;
     },
 
     // default headers
