@@ -334,6 +334,16 @@ describe('input', function() {
   });
 
 
+  it('should render 0 even if it is a number', function() {
+    compileInput('<input type="text" ng:model="value" />');
+    scope.$apply(function() {
+      scope.value = 0;
+    });
+
+    expect(inputElm.val()).toBe('0');
+  });
+
+
   describe('pattern', function() {
 
     it('should validate in-lined pattern', function() {

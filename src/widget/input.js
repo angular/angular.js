@@ -382,7 +382,7 @@ function textInputType(scope, element, attr, ctrl) {
   });
 
   ctrl.render = function() {
-    element.val(ctrl.viewValue || '');
+    element.val(isEmpty(ctrl.viewValue) ? '' : ctrl.viewValue);
   };
 
   // pattern validator
