@@ -12,7 +12,7 @@ The MVC pattern greatly summarized:
 * Separate applications into distinct presentation, data, and logic components
 * Encourage loose coupling between these components
 
-Along with {@link dev_guide.services services} and {@link dev_guide.di dependency injection}, MVC
+Along with {@link dev_guide.services services} and {@link di dependency injection}, MVC
 makes angular applications better structured, easier to maintain and more testable.
 
 The following topics explain how angular incorporates the MVC pattern into the angular way of
