@@ -44,7 +44,4 @@ of the following documents before returning here to the Developer Guide:
 * {@link dev_guide.services.managing_dependencies Managing Service Dependencies}
 * {@link dev_guide.services.testing_services Testing Angular Services}
 
-## {@link dev_guide.di About Dependency Injection}
-
-* {@link dev_guide.di.understanding_di Understanding DI in Angular}
-* {@link dev_guide.di.using_di_controllers Using DI in Controllers}
+## {@link di About Dependency Injection}
