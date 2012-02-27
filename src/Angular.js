@@ -417,6 +417,11 @@ function isScope(obj) {
 }
 
 
+function isFile(obj) {
+  return toString.apply(obj) === '[object File]';
+}
+
+
 function isBoolean(value) {return typeof value == $boolean;}
 function isTextNode(node) {return nodeName_(node) == '#text';}
 
