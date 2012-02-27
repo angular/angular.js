@@ -949,14 +949,12 @@ describe('input', function() {
 
       inputElm.val('value2');
       browserTrigger(inputElm, 'change');
-      $browser.defer.flush();
       expect(scope.value).toBe('value2');
 
       if (msie < 9) return;
 
       inputElm.val('value3');
       browserTrigger(inputElm, 'input');
-      $browser.defer.flush();
       expect(scope.value).toBe('value3');
     }));
   });

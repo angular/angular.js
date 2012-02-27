@@ -1038,14 +1038,8 @@ var ngModelInstantDirective = ['$browser', function($browser) {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
-      element.bind('keydown change input', function(event) {
-        var key = event.keyCode;
-
-        //    command            modifiers                   arrows
-        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
-
-        $browser.defer(function() {
-          var touched = ctrl.touch(),
+      var handler = function() {
+        var touched = ctrl.touch(),
               value = trim(element.val());
 
           if (ctrl.viewValue !== value) {
@@ -1055,8 +1049,24 @@ var ngModelInstantDirective = ['$browser', function($browser) {
           } else if (touched) {
             scope.$apply();
           }
-        });
+      };
+
+      var timeout;
+      element.bind('keydown', function(event) {
+        var key = event.keyCode;
+
+        //    command            modifiers                   arrows
+        if (key === 91 || (15 < key && key < 19) || (37 <= key && key <= 40)) return;
+
+        if (!timeout) {
+          timeout = $browser.defer(function() {
+            handler();
+            timeout = null;
+          });
+        }
       });
+
+      element.bind('change input', handler);
     }
   };
 }];
