@@ -47,7 +47,7 @@ needed for a single view.
 
 The most common way to keep controllers slim is by encapsulating work that doesn't belong to
 controllers into services and then using these services in controllers via dependency injection.
-This is discussed in the {@link dev_guide.di Dependency Injection} {@link dev_guide.services
+This is discussed in the {@link di Dependency Injection} {@link dev_guide.services
 Services} sections of this guide.
 
 Do not use controllers for:
