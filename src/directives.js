@@ -969,3 +969,9 @@ var ngTranscludeDirective = valueFn({
     });
   }]
 });
+
+
+var styleDirective = valueFn({
+  restrict: 'E',
+  terminal: true
+});
