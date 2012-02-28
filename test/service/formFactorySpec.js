@@ -36,6 +36,7 @@ describe('$formFactory', function() {
     beforeEach(inject(function($rootScope, $formFactory) {
       log = '';
       scope = $rootScope.$new();
+      scope.$element = jqLite(document.body);
       form = $formFactory(scope);
     }));
 
@@ -57,6 +58,7 @@ describe('$formFactory', function() {
           expect(widget.$error).toEqual({});
           expect(widget.$valid).toBe(true);
           expect(widget.$invalid).toBe(false);
+          expect(widget.$element).toEqual(scope.$element);
         }));
 
 
