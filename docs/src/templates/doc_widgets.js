@@ -33,7 +33,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
         //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
         var example = element.find('pre').eq(0),  //doc-source
             scriptSrc = '',
-            htmlSrc = example.text().replace(/<script[^\>]*>([\s\S]+)<\/script>/im, function(_, script) {
+            htmlSrc = example.text().replace(/<script(\s+type="text\/javascript")?>([\s\S]+)<\/script>/im, function(_, type, script) {
                 scriptSrc = script;
                 return '';
               }),
