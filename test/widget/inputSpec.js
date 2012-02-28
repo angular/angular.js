@@ -49,44 +49,44 @@ describe('NgModelController', function() {
   });
 
 
-  describe('emitValidity', function() {
+  describe('setValidity', function() {
 
     it('should emit $invalid only when $valid', function() {
       var spy = jasmine.createSpy('$invalid');
       scope.$on('$invalid', spy);
 
-      ctrl.emitValidity('ERROR', false);
+      ctrl.setValidity('ERROR', false);
       expect(spy).toHaveBeenCalledOnce();
 
       spy.reset();
-      ctrl.emitValidity('ERROR', false);
+      ctrl.setValidity('ERROR', false);
       expect(spy).not.toHaveBeenCalled();
     });
 
 
     it('should set and unset the error', function() {
-      ctrl.emitValidity('REQUIRED', false);
+      ctrl.setValidity('REQUIRED', false);
       expect(ctrl.error.REQUIRED).toBe(true);
 
-      ctrl.emitValidity('REQUIRED', true);
+      ctrl.setValidity('REQUIRED', true);
       expect(ctrl.error.REQUIRED).toBeUndefined();
     });
 
 
     it('should set valid/invalid', function() {
-      ctrl.emitValidity('FIRST', false);
+      ctrl.setValidity('FIRST', false);
       expect(ctrl.valid).toBe(false);
       expect(ctrl.invalid).toBe(true);
 
-      ctrl.emitValidity('SECOND', false);
+      ctrl.setValidity('SECOND', false);
       expect(ctrl.valid).toBe(false);
       expect(ctrl.invalid).toBe(true);
 
-      ctrl.emitValidity('SECOND', true);
+      ctrl.setValidity('SECOND', true);
       expect(ctrl.valid).toBe(false);
       expect(ctrl.invalid).toBe(true);
 
-      ctrl.emitValidity('FIRST', true);
+      ctrl.setValidity('FIRST', true);
       expect(ctrl.valid).toBe(true);
       expect(ctrl.invalid).toBe(false);
     });
@@ -96,11 +96,11 @@ describe('NgModelController', function() {
       var spy = jasmine.createSpy('$valid');
       scope.$on('$valid', spy);
 
-      ctrl.emitValidity('ERROR', true);
+      ctrl.setValidity('ERROR', true);
       expect(spy).not.toHaveBeenCalled();
 
-      ctrl.emitValidity('ERROR', false);
-      ctrl.emitValidity('ERROR', true);
+      ctrl.setValidity('ERROR', false);
+      ctrl.setValidity('ERROR', true);
       expect(spy).toHaveBeenCalledOnce();
     });
   });
