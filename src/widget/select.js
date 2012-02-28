@@ -139,7 +139,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       // required validator
       if (multiple && (attr.required || attr.ngRequired)) {
         var requiredValidator = function(value) {
-          ctrl.emitValidity('REQUIRED', !attr.required || (value && value.length));
+          ctrl.setValidity('REQUIRED', !attr.required || (value && value.length));
           return value;
         };
 

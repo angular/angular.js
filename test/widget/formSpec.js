@@ -38,7 +38,7 @@ describe('form', function() {
         '</form>')(scope);
 
     var form = scope.form;
-    widget.emitValidity('REQUIRED', false);
+    widget.setValidity('REQUIRED', false);
     expect(form.alias).toBe(widget);
     expect(form.error.REQUIRED).toEqual([widget]);
 
@@ -107,11 +107,11 @@ describe('form', function() {
     var child = scope.child;
     var input = child.text;
 
-    input.emitValidity('MyError', false);
+    input.setValidity('MyError', false);
     expect(parent.error.MyError).toEqual([input]);
     expect(child.error.MyError).toEqual([input]);
 
-    input.emitValidity('MyError', true);
+    input.setValidity('MyError', true);
     expect(parent.error.MyError).toBeUndefined();
     expect(child.error.MyError).toBeUndefined();
   });
@@ -138,12 +138,12 @@ describe('form', function() {
     expect(child).toBeDefined();
     expect(input).toBeDefined();
 
-    input.emitValidity('myRule', false);
+    input.setValidity('myRule', false);
     expect(input.error.myRule).toEqual(true);
     expect(child.error.myRule).toEqual([input]);
     expect(parent.error.myRule).toEqual([input]);
 
-    input.emitValidity('myRule', true);
+    input.setValidity('myRule', true);
     expect(parent.error.myRule).toBeUndefined();
     expect(child.error.myRule).toBeUndefined();
   });
@@ -177,18 +177,18 @@ describe('form', function() {
     it('should have ng-valid/ng-invalid css class', function() {
       expect(doc).toBeValid();
 
-      widget.emitValidity('ERROR', false);
+      widget.setValidity('ERROR', false);
       scope.$apply();
       expect(doc).toBeInvalid();
 
-      widget.emitValidity('ANOTHER', false);
+      widget.setValidity('ANOTHER', false);
       scope.$apply();
 
-      widget.emitValidity('ERROR', true);
+      widget.setValidity('ERROR', true);
       scope.$apply();
       expect(doc).toBeInvalid();
 
-      widget.emitValidity('ANOTHER', true);
+      widget.setValidity('ANOTHER', true);
       scope.$apply();
       expect(doc).toBeValid();
     });

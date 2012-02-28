@@ -391,10 +391,10 @@ function textInputType(scope, element, attr, ctrl) {
 
   var emit = function(regexp, value) {
     if (isEmpty(value) || regexp.test(value)) {
-      ctrl.emitValidity('PATTERN', true);
+      ctrl.setValidity('PATTERN', true);
       return value;
     } else {
-      ctrl.emitValidity('PATTERN', false);
+      ctrl.setValidity('PATTERN', false);
       return undefined;
     }
   };
@@ -425,10 +425,10 @@ function textInputType(scope, element, attr, ctrl) {
     var minlength = parseInt(attr.ngMinlength, 10);
     var minLengthValidator = function(value) {
       if (!isEmpty(value) && value.length < minlength) {
-        ctrl.emitValidity('MINLENGTH', false);
+        ctrl.setValidity('MINLENGTH', false);
         return undefined;
       } else {
-        ctrl.emitValidity('MINLENGTH', true);
+        ctrl.setValidity('MINLENGTH', true);
         return value;
       }
     };
@@ -442,10 +442,10 @@ function textInputType(scope, element, attr, ctrl) {
     var maxlength = parseInt(attr.ngMaxlength, 10);
     var maxLengthValidator = function(value) {
       if (!isEmpty(value) && value.length > maxlength) {
-        ctrl.emitValidity('MAXLENGTH', false);
+        ctrl.setValidity('MAXLENGTH', false);
         return undefined;
       } else {
-        ctrl.emitValidity('MAXLENGTH', true);
+        ctrl.setValidity('MAXLENGTH', true);
         return value;
       }
     };
@@ -461,10 +461,10 @@ function numberInputType(scope, element, attr, ctrl) {
   ctrl.parsers.push(function(value) {
     var empty = isEmpty(value);
     if (empty || NUMBER_REGEXP.test(value)) {
-      ctrl.emitValidity('NUMBER', true);
+      ctrl.setValidity('NUMBER', true);
       return value === '' ? null : (empty ? value : parseFloat(value));
     } else {
-      ctrl.emitValidity('NUMBER', false);
+      ctrl.setValidity('NUMBER', false);
       return undefined;
     }
   });
@@ -477,10 +477,10 @@ function numberInputType(scope, element, attr, ctrl) {
     var min = parseFloat(attr.min);
     var minValidator = function(value) {
       if (!isEmpty(value) && value < min) {
-        ctrl.emitValidity('MIN', false);
+        ctrl.setValidity('MIN', false);
         return undefined;
       } else {
-        ctrl.emitValidity('MIN', true);
+        ctrl.setValidity('MIN', true);
         return value;
       }
     };
@@ -493,10 +493,10 @@ function numberInputType(scope, element, attr, ctrl) {
     var max = parseFloat(attr.max);
     var maxValidator = function(value) {
       if (!isEmpty(value) && value > max) {
-        ctrl.emitValidity('MAX', false);
+        ctrl.setValidity('MAX', false);
         return undefined;
       } else {
-        ctrl.emitValidity('MAX', true);
+        ctrl.setValidity('MAX', true);
         return value;
       }
     };
@@ -508,10 +508,10 @@ function numberInputType(scope, element, attr, ctrl) {
   ctrl.formatters.push(function(value) {
 
     if (isEmpty(value) || isNumber(value)) {
-      ctrl.emitValidity('NUMBER', true);
+      ctrl.setValidity('NUMBER', true);
       return value;
     } else {
-      ctrl.emitValidity('NUMBER', false);
+      ctrl.setValidity('NUMBER', false);
       return undefined;
     }
   });
@@ -522,10 +522,10 @@ function urlInputType(scope, element, attr, ctrl) {
 
   var urlValidator = function(value) {
     if (isEmpty(value) || URL_REGEXP.test(value)) {
-      ctrl.emitValidity('URL', true);
+      ctrl.setValidity('URL', true);
       return value;
     } else {
-      ctrl.emitValidity('URL', false);
+      ctrl.setValidity('URL', false);
       return undefined;
     }
   };
@@ -539,10 +539,10 @@ function emailInputType(scope, element, attr, ctrl) {
 
   var emailValidator = function(value) {
     if (isEmpty(value) || EMAIL_REGEXP.test(value)) {
-      ctrl.emitValidity('EMAIL', true);
+      ctrl.setValidity('EMAIL', true);
       return value;
     } else {
-      ctrl.emitValidity('EMAIL', false);
+      ctrl.setValidity('EMAIL', false);
       return undefined;
     }
   };
@@ -794,7 +794,7 @@ var NgModelController = ['$scope', '$exceptionHandler', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng:model.NgModelController#emitValidity
+   * @name angular.module.ng.$compileProvider.directive.ng:model.NgModelController#setValidity
    * @methodOf angular.module.ng.$compileProvider.directive.ng:model.NgModelController
    *
    * @description
@@ -806,7 +806,7 @@ var NgModelController = ['$scope', '$exceptionHandler', 'ngModel',
    * @param {string} name Name of the validator.
    * @param {boolean} isValid Whether it should $emit `$valid` (true) or `$invalid` (false) event.
    */
-  this.emitValidity = function(name, isValid) {
+  this.setValidity = function(name, isValid) {
 
     if (!isValid && this.error[name]) return;
     if (isValid && !this.error[name]) return;
@@ -890,7 +890,8 @@ var NgModelController = ['$scope', '$exceptionHandler', 'ngModel',
  * @element input
  *
  * @description
- * Is directive that tells Angular to do two-way data binding. It works together with `input`, `select`, `textarea`. You can easily write your own directives to use `ng:model` pretty easily.
+ * Is directive that tells Angular to do two-way data binding. It works together with `input`,
+ * `select`, `textarea`. You can easily write your own directives to use `ng:model` as well.
  *
  * `ng:model` is responsible for:
  *
@@ -901,7 +902,7 @@ var NgModelController = ['$scope', '$exceptionHandler', 'ngModel',
  * - setting related css class onto the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`),
  * - register the widget with parent {@link angular.module.ng.$compileProvider.directive.form form}.
  *
- * For examples, how to use `ng:model`, see:
+ * For basic examples, how to use `ng:model`, see:
  *
  *  - {@link angular.module.ng.$compileProvider.directive.input input}
  *    - {@link angular.module.ng.$compileProvider.directive.input.text text}
@@ -1080,10 +1081,10 @@ var requiredDirective = [function() {
 
       var validator = function(value) {
         if (attr.required && isEmpty(value)) {
-          ctrl.emitValidity('REQUIRED', false);
+          ctrl.setValidity('REQUIRED', false);
           return null;
         } else {
-          ctrl.emitValidity('REQUIRED', true);
+          ctrl.setValidity('REQUIRED', true);
           return value;
         }
       };

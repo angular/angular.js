@@ -16,8 +16,8 @@
  *  - values are arrays of widgets that are invalid with given error.
  *
  * @description
- * Form is a controller that keeps track of all registered widgets.
- *
+ * `FormController` keeps track of all its widgets as well as state of them form, such as being valid/invalid or dirty/pristine.
+ * 
  * Each {@link angular.module.ng.$compileProvider.directive.form form} directive creates an instance
  * of `FormController`.
  *
@@ -123,7 +123,7 @@ FormController.prototype.registerWidget = function(widget, alias) {
  * @scope
  * @description
  * Directive that instantiates
- * {@link angular.module.ng.$compileProvider.directive.form.FormController Form} controller.
+ * {@link angular.module.ng.$compileProvider.directive.form.FormController FormController}.
  *
  * If `name` attribute is specified, the controller is published to the scope as well.
  *

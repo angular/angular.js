@@ -297,9 +297,9 @@ This example shows how to implement a custom HTML editor widget in Angular.
                 ctrl.formatters.push(function(value) {
                   try {
                     value = $sanitize(value || '');
-                    ctrl.emitValidity('HTML', true);
+                    ctrl.setValidity('HTML', true);
                   } catch (e) {
-                    ctrl.emitValidity('HTML', false);
+                    ctrl.setValidity('HTML', false);
                   }
 
                 });
