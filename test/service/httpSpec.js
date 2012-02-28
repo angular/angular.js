@@ -340,12 +340,11 @@ describe('$http', function() {
 
       it('should send custom headers', function() {
         $httpBackend.expect('GET', '/url', undefined, function(headers) {
-          return headers['Custom'] == 'header' && headers['Content-Type'] == 'application/json';
+          return headers['Custom'] == 'header';
         }).respond('');
 
         $http({url: '/url', method: 'GET', headers: {
           'Custom': 'header',
-          'Content-Type': 'application/json'
         }});
 
         $httpBackend.flush();
@@ -364,25 +363,25 @@ describe('$http', function() {
 
 
       it('should set default headers for POST request', function() {
-        $httpBackend.expect('POST', '/url', undefined, function(headers) {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
                  headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'application/json';
         }).respond('');
 
-        $http({url: '/url', method: 'POST', headers: {}});
+        $http({url: '/url', method: 'POST', headers: {}, data: 'messageBody'});
         $httpBackend.flush();
       });
 
 
       it('should set default headers for PUT request', function() {
-        $httpBackend.expect('PUT', '/url', undefined, function(headers) {
+        $httpBackend.expect('PUT', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'application/json, text/plain, */*' &&
                  headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'application/json';
         }).respond('');
 
-        $http({url: '/url', method: 'PUT', headers: {}});
+        $http({url: '/url', method: 'PUT', headers: {}, data: 'messageBody'});
         $httpBackend.flush();
       });
 
@@ -399,16 +398,26 @@ describe('$http', function() {
 
 
       it('should override default headers with custom', function() {
-        $httpBackend.expect('POST', '/url', undefined, function(headers) {
+        $httpBackend.expect('POST', '/url', 'messageBody', function(headers) {
           return headers['Accept'] == 'Rewritten' &&
                  headers['X-Requested-With'] == 'XMLHttpRequest' &&
                  headers['Content-Type'] == 'Rewritten';
         }).respond('');
 
-        $http({url: '/url', method: 'POST', headers: {
+        $http({url: '/url', method: 'POST', data: 'messageBody', headers: {
           'Accept': 'Rewritten',
           'Content-Type': 'Rewritten'
         }});
+        $httpBackend.flush();
+      });
+
+
+      it('should not send Content-Type header if request data/body is undefined', function() {
+        $httpBackend.expect('POST', '/url', undefined, function(headers) {
+          return !headers.hasOwnProperty('Content-Type');
+        }).respond('');
+
+        $http({url: '/url', method: 'POST'});
         $httpBackend.flush();
       });
 
