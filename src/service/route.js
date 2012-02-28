@@ -75,6 +75,7 @@ function $RouteProvider(){
      *
      * @param {Route} next Future route information.
      * @param {Route} current Current route information.
+     * @param {Function} function which stops route change and reverts location to previous state.
      *
      * The `Route` object extends the route definition with the following properties.
      *
@@ -117,6 +118,7 @@ function $RouteProvider(){
         parentScope = $rootScope,
         dirty = 0,
         forceReload = false,
+        stopUpdateUrl,
         $route = {
           routes: routes,
 
@@ -221,7 +223,7 @@ function $RouteProvider(){
           }
         };
 
-    $rootScope.$watch(function() { return dirty + $location.url(); }, updateRoute);
+    $rootScope.$watch(function() { return {dirty: dirty, url: $location.url()}; }, updateRoute);
 
     return $route;
 
@@ -251,7 +253,22 @@ function $RouteProvider(){
       return match ? dst : null;
     }
 
-    function updateRoute() {
+    function disableUpdate(backUrl) {
+      stopUpdateUrl = backUrl;
+      $location.url(backUrl);
+    }
+
+    function enableUpdate(newUrl) {
+      if(equals(newUrl, stopUpdateUrl)){
+        stopUpdateUrl = undefined;
+      }
+    }
+
+    function isUpdateStopped(){
+      return !!stopUpdateUrl;
+    }
+
+    function updateRoute(scope, newValue, oldValue) {
       var next = parseRoute(),
           last = $route.current,
           Controller;
@@ -264,7 +281,15 @@ function $RouteProvider(){
         last.scope && last.scope.$emit('$routeUpdate');
       } else {
         forceReload = false;
-        $rootScope.$broadcast('$beforeRouteChange', next, last);
+        if(!isUpdateStopped()) {
+          $rootScope.$broadcast('$beforeRouteChange', next, last, function(){
+            disableUpdate(oldValue.url);
+          });
+        }
+        if(isUpdateStopped()) {
+          enableUpdate(newValue.url);
+          return;
+        }
         last && last.scope && last.scope.$destroy();
         $route.current = next;
         if (next) {
