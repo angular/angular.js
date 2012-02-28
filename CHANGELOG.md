@@ -1007,7 +1007,7 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
 
 - complete rewrite of the Scope implementation with several API and semantic changes. Please see:
   - [angular.scope API docs](http://docs-next.angularjs.org/#!/api/angular.scope)
-  - [scopes dev guide article](http://docs-next.angularjs.org/#!/guide/dev_guide.scopes)
+  - [scopes dev guide article](http://docs-next.angularjs.org/#!/guide/scopes)
   - [scope.js source file](https://github.com/angular/angular.js/blob/master/src/Scope.js)
   - breaking changes section of this changelog
 - added event system to scopes (see [$on], [$emit] and [$broadcast])
