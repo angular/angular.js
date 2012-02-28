@@ -783,6 +783,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
 
 var scriptTemplateLoader = ['$templateCache', function($templateCache) {
   return {
+    terminal: true,
     compile: function(element, attr) {
       if (attr.type == 'text/ng-template') {
         var templateUrl = attr.id;
