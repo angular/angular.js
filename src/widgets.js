@@ -475,61 +475,82 @@ var ngNonBindableDirective = valueFn({ terminal: true });
  *
  * @description
  * # Overview
- * `ng:view` is a widget that complements the {@link angular.module.ng.$route $route} service by
+ * `ng:view` is a directive that complements the {@link angular.module.ng.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- * This widget provides functionality similar to {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} when
- * used like this:
- *
- *     <ng:include src="$route.current.template" scope="$route.current.scope"></ng:include>
- *
- *
- * # Advantages
- * Compared to `ng:include`, `ng:view` offers these advantages:
- *
- * - shorter syntax
- * - more efficient execution
- * - doesn't require `$route` service to be available on the root scope
- *
  *
  * @example
     <doc:example module="ngView">
-      <doc:source jsfiddle="false">
-         <script>
-           function BootstrapCtrl() {}
-           function OverviewCtrl() {}
+      <doc:source>
+        <script type="text/ng-template" id="examples/book.html">
+          controller: {{name}}<br />
+          Book Id: {{params.bookId}}<br />
+        </script>
 
-           angular.module('ngView', [])
-             .config(function($routeProvider) {
-               $routeProvider.when('/overview',
-                 { controller: OverviewCtrl,
-                   template: 'partials/guide/dev_guide.overview.html'});
-               $routeProvider.when('/bootstrap',
-                 { controller: BootstrapCtrl,
-                   template: 'partials/guide/dev_guide.bootstrap.auto_bootstrap.html'});
-             });
-         </script>
-         <div>
-           <a href="overview">overview</a> |
-           <a href="bootstrap">bootstrap</a> |
-           <a href="undefined">undefined</a>
+        <script type="text/ng-template" id="examples/chapter.html">
+          controller: {{name}}<br />
+          Book Id: {{params.bookId}}<br />
+          Chapter Id: {{params.chapterId}}
+        </script>
 
-           <br/>
+        <script>
+          angular.module('ngView', [], function($routeProvider, $locationProvider) {
+            $routeProvider.when('/Book/:bookId', {template: 'examples/book.html', controller: BookCntl});
+            $routeProvider.when('/Book/:bookId/ch/:chapterId', {template: 'examples/chapter.html', controller: ChapterCntl});
 
-           The view is included below:
-           <hr/>
-           <ng:view></ng:view>
-         </div>
+            // configure html5 to get links working on jsfiddle
+            $locationProvider.html5Mode(true);
+          });
+
+          function MainCntl($scope, $route, $routeParams, $location) {
+            $scope.$route = $route;
+            $scope.$location = $location;
+            $scope.$routeParams = $routeParams;
+          }
+
+          function BookCntl($scope, $routeParams) {
+            $scope.name = "BookCntl";
+            $scope.params = $routeParams;
+          }
+
+          function ChapterCntl($scope, $routeParams) {
+            $scope.name = "ChapterCntl";
+            $scope.params = $routeParams;
+          }
+        </script>
+
+        <div ng:controller="MainCntl">
+          Choose:
+          <a href="/Book/Moby">Moby</a> |
+          <a href="/Book/Moby/ch/1">Moby: Ch1</a> |
+          <a href="/Book/Gatsby">Gatsby</a> |
+          <a href="/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
+          <a href="/Book/Scarlet">Scarlet Letter</a><br/>
+
+          <ng:view></ng:view>
+          <hr />
+
+          <pre>$location.path() = {{$location.path()}}</pre>
+          <pre>$route.current.template = {{$route.current.template}}</pre>
+          <pre>$route.current.params = {{$route.current.params}}</pre>
+          <pre>$route.current.scope.name = {{$route.current.scope.name}}</pre>
+          <pre>$routeParams = {{$routeParams}}</pre>
+        </div>
       </doc:source>
       <doc:scenario>
-        it('should load templates', function() {
-          element('.doc-example-live a:contains(overview)').click();
-          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Overview/);
+        it('should load and compile correct template', function() {
+          element('a:contains("Moby: Ch1")').click();
+          var content = element('.doc-example-live ng\\:view').text();
+          expect(content).toMatch(/controller\: ChapterCntl/);
+          expect(content).toMatch(/Book Id\: Moby/);
+          expect(content).toMatch(/Chapter Id\: 1/);
 
-          element('.doc-example-live a:contains(bootstrap)').click();
-          expect(element('.doc-example-live ng\\:view').text()).toMatch(/Developer Guide: Initializing Angular: Automatic Initialization/);
+          element('a:contains("Scarlet")').click();
+          content = element('.doc-example-live ng\\:view').text();
+          expect(content).toMatch(/controller\: BookCntl/);
+          expect(content).toMatch(/Book Id\: Scarlet/);
         });
       </doc:scenario>
     </doc:example>
