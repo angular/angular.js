@@ -787,7 +787,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
  *
  * @description
  * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the
- * template can be used by `ng:include` or `ng:view`.
+ * template can be used by `ng:include`, `ng:view` or directive templates.
  *
  * @example
   <doc:example>
