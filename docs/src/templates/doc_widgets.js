@@ -85,7 +85,12 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
           var modules = [
             function($provide) {
               $provide.value('$browser', $browser);
-              $provide.value('$location', $location);
+              $provide.service('$location', function() {
+                this.$get = function() {
+                  return $location;
+                };
+                this.hashPrefix = this.html5Mode = angular.noop;
+              });
               $provide.decorator('$defer', function($rootScope, $delegate) {
                 return angular.extend(function(fn, delay) {
                   if (delay && delay > 500) {
