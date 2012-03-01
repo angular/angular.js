@@ -726,7 +726,7 @@ function scenarios(docs){
 
 //////////////////////////////////////////////////////////
 function metadata(docs){
-  var words = [];
+  var pages = [];
   docs.forEach(function(doc){
     var path = (doc.name || '').split(/(\.|\:\s+)/);
     for ( var i = 1; i < path.length; i++) {
@@ -738,7 +738,7 @@ function metadata(docs){
       shortName = 'input [' + shortName + ']';
     }
 
-    words.push({
+    pages.push({
       section: doc.section,
       id: doc.id,
       name: title(doc.name),
@@ -747,27 +747,12 @@ function metadata(docs){
       keywords:doc.keywords()
     });
   });
-  words.sort(keywordSort);
-  return words;
+  pages.sort(keywordSort);
+  return pages;
 }
 
 var KEYWORD_PRIORITY = {
   '.index': 1,
-  '.guide': 2,
-  '.angular': 7,
-  '.angular.Module': 7,
-  '.angular.module': 8,
-  '.angular.module.ng': 2,
-  '.angular.module.AUTO': 1,
-  '.angular.mock': 9,
-  '.angular.module.ng.$filter': 7,
-  '.angular.module.ng.$rootScope.Scope': 7,
-  '.angular.module.ng': 7,
-  '.angular.mock': 8,
-  '.angular.directive': 6,
-  '.angular.inputType': 6,
-  '.angular.widget': 6,
-  '.angular.module.ngMock': 8,
   '.overview': 1,
   '.bootstrap': 2,
   '.mvc': 3,
