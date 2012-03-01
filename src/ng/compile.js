@@ -135,7 +135,7 @@
  *
  *
  * For information on how the compiler works, see the
- * {@link guide/dev_guide.compiler Angular HTML Compiler} section of the Developer Guide.
+ * {@link guide/compiler Angular HTML Compiler} section of the Developer Guide.
  */
 
 
@@ -145,7 +145,20 @@
  * @function
  *
  * @description
+ */
+
+/**
+ * @ngdoc function
+ * @name angular.module.ng.$compileProvider#directive
+ * @methodOf angular.module.ng.$compileProvider
+ * @function
  *
+ * @description
+ * Register a new directive with compiler
+ *
+ * @param {string} name name of the directive.
+ * @param {function} directiveFactory An injectable directive factory function.
+ * @returns {angular.module.ng.$compileProvider} Self for chaining.
  */
 $CompileProvider.$inject = ['$provide'];
 function $CompileProvider($provide) {
@@ -1044,6 +1057,43 @@ var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
 function directiveNormalize(name) {
   return camelCase(name.replace(PREFIX_REGEXP, ''));
 }
+
+/**
+ * @ngdoc object
+ * @name angular.module.ng.$compile.directive.Attributes
+ * @description
+ *
+ * A shared object between directive compile / linking functions which contains normalized DOM element
+ * attributes. The the values reflect current binding state `{{ }}`. The normalization is needed
+ * since all of these are treated as equivalent in Angular:
+ *
+ *          <span ng:bind="a" ng-bind="a" data-ng-bind="a" x-ng-bind="a">
+ */
+
+/**
+ * @ngdoc property
+ * @name angular.module.ng.$compile.directive.Attributes#$attr
+ * @propertyOf angular.module.ng.$compile.directive.Attributes
+ * @returns {object} A map of DOM element attribute names to the normalized name. This is
+ *          needed to do reverse lookup from normalized name back to actual name.
+ */
+
+
+/**
+ * @ngdoc function
+ * @name angular.module.ng.$compile.directive.Attributes#$set
+ * @methodOf angular.module.ng.$compile.directive.Attributes
+ * @function
+ *
+ * @description
+ * Set DOM element attribute value.
+ *
+ *
+ * @param {string} name Normalized element attribute name of the property to modify. The name is
+ *          revers translated using the {@link angular.module.ng.$compile.directive.Attributes#$attr $attr}
+ *          property to the original name.
+ * @param {string} value Value to set the attribute to.
+ */
 
 
 

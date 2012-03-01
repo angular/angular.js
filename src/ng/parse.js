@@ -814,7 +814,7 @@ function getterFn(path, csp) {
  *
  * @description
  *
- * Converts Angular {@link guid/expression expression} into a function.
+ * Converts Angular {@link guide/expression expression} into a function.
  *
  * <pre>
  *   var getter = $parse('user.name');
