@@ -165,7 +165,7 @@ function $RootScopeProvider(){
        * the scope and its child scopes to be permanently detached from the parent and thus stop
        * participating in model change detection and listener notification by invoking.
        *
-       * @params {boolean} isolate if true then the scoped does not prototypically inherit from the
+       * @param {boolean} isolate if true then the scoped does not prototypically inherit from the
        *         parent scope. The scope is isolated, as it can not se parent scope properties.
        *         When creating widgets it is useful for the widget to not accidently read parent
        *         state.
