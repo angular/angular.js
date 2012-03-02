@@ -80,11 +80,12 @@ function $InterpolateProvider() {
      * @param {boolean=} mustHaveExpression if set to true then the interpolation string must have
      *    embedded expression in order to return an interpolation function. Strings with no
      *    embedded expression will return null for the interpolation function.
-     * @returns {function(context)} an interpolation function which is used to compute the interpolated
+     * @returns {function(context, locals)} an interpolation function which is used to compute the interpolated
      *    string. The function has these parameters:
      *
      *    * `context`: an object against which any expressions embedded in the strings are evaluated
      *      against.
+     *    * `locals`: an local variable objects. See $parse service.
      *
      */
     return function(text, mustHaveExpression) {
@@ -121,10 +122,10 @@ function $InterpolateProvider() {
 
       if (!mustHaveExpression  || hasInterpolation) {
         concat.length = length;
-        fn = function(context) {
+        fn = function(context, locals) {
           for(var i = 0, ii = length, part; i<ii; i++) {
             if (typeof (part = parts[i]) == 'function') {
-              part = part(context);
+              part = part(context, locals);
               if (part == null || part == undefined) {
                 part = '';
               } else if (typeof part != 'string') {
