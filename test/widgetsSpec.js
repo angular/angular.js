@@ -245,6 +245,24 @@ describe('widget', function() {
     }));
 
 
+    it('should compile only the content', inject(function($compile, $rootScope, $templateCache) {
+      // regression
+
+      var onload = jasmine.createSpy('$contentLoaded');
+      $rootScope.$on('$contentLoaded', onload);
+      $templateCache.put('tpl.html', [200, 'partial {{tpl}}', {}]);
+
+      element = $compile('<div><div ng:repeat="i in [1]">' +
+          '<ng:include src="tpl"></ng:include></div></div>')($rootScope);
+      expect(onload).not.toHaveBeenCalled();
+
+      $rootScope.$apply(function() {
+        $rootScope.tpl = 'tpl.html';
+      });
+      expect(onload).toHaveBeenCalledOnce();
+    }));
+
+
     describe('autoscoll', function() {
       var autoScrollSpy;
 
