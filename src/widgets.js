@@ -69,51 +69,49 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
       var srcExp = attr.src,
           scopeExp = attr.scope || '',
           autoScrollExp = attr.autoscroll;
-      if (!element[0]['ng:compiled']) {
-        element[0]['ng:compiled'] = true;
-        return function(scope, element, attr){
-          var changeCounter = 0,
-              childScope;
 
-          function incrementChange() { changeCounter++;}
-          scope.$watch(srcExp, incrementChange);
-          scope.$watch(function() {
-            var includeScope = scope.$eval(scopeExp);
-            if (includeScope) return includeScope.$id;
-          }, incrementChange);
-          scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
-             var src = scope.$eval(srcExp),
-                 useScope = scope.$eval(scopeExp);
+      return function(scope, element, attr) {
+        var changeCounter = 0,
+            childScope;
 
-            function clearContent() {
-              // if this callback is still desired
-              if (newChangeCounter === changeCounter) {
-                if (childScope) childScope.$destroy();
-                childScope = null;
-                element.html('');
-              }
+        function incrementChange() { changeCounter++;}
+        scope.$watch(srcExp, incrementChange);
+        scope.$watch(function() {
+          var includeScope = scope.$eval(scopeExp);
+          if (includeScope) return includeScope.$id;
+        }, incrementChange);
+        scope.$watch(function() {return changeCounter;}, function(newChangeCounter) {
+           var src = scope.$eval(srcExp),
+               useScope = scope.$eval(scopeExp);
+
+          function clearContent() {
+            // if this callback is still desired
+            if (newChangeCounter === changeCounter) {
+              if (childScope) childScope.$destroy();
+              childScope = null;
+              element.html('');
             }
+          }
 
-             if (src) {
-               $http.get(src, {cache: $templateCache}).success(function(response) {
-                 // if this callback is still desired
-                 if (newChangeCounter === changeCounter) {
-                   element.html(response);
-                   if (childScope) childScope.$destroy();
-                   childScope = useScope ? useScope : scope.$new();
-                   $compile(element)(childScope);
-                   if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
-                     $anchorScroll();
-                   }
-                   scope.$emit('$contentLoaded');
+           if (src) {
+             $http.get(src, {cache: $templateCache}).success(function(response) {
+               // if this callback is still desired
+               if (newChangeCounter === changeCounter) {
+                 element.html(response);
+                 if (childScope) childScope.$destroy();
+                 childScope = useScope ? useScope : scope.$new();
+                 $compile(element.contents())(childScope);
+                 if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
+                   $anchorScroll();
                  }
-               }).error(clearContent);
-             } else {
-               clearContent();
-             }
-          });
-        };
-      }
+                 scope.$emit('$contentLoaded');
+               }
+             }).error(clearContent);
+           } else {
+             clearContent();
+           }
+        });
+      };
     }
   }
 }];
