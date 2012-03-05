@@ -25,6 +25,30 @@
  * are expensive to construct.
  */
 
+
+/**
+ * @ngdoc object
+ * @name angular.module.ng.$rootScopeProvider
+ * @description
+ *
+ * Provider for the $rootScope service.
+ */
+
+/**
+ * @ngdoc function
+ * @name angular.module.ng.$rootScopeProvider#digestTtl
+ * @methodOf angular.module.ng.$rootScopeProvider
+ * @description
+ *
+ * Sets the number of digest iteration the scope should attempt to execute before giving up and
+ * assuming that the model is unstable.
+ *
+ * The current default is 10 iterations.
+ *
+ * @param {number} limit The number of digest iterations.
+ */
+
+
 /**
  * @ngdoc object
  * @name angular.module.ng.$rootScope
@@ -37,7 +61,7 @@
 function $RootScopeProvider(){
   var TTL = 10;
 
-  this.ttl = function(value) {
+  this.digestTtl = function(value) {
     if (arguments.length) {
       TTL = value;
     }
