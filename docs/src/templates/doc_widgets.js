@@ -152,6 +152,8 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
                        '<button>edit at jsFiddle</button>' +
                      '</form>';
             }
+          } else {
+            return '';
           }
         };
       }
