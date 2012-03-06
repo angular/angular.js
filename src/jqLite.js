@@ -56,6 +56,7 @@
  * - [toggleClass()](http://api.jquery.com/toggleClass/)
  * - [unbind()](http://api.jquery.com/unbind/)
  * - [val()](http://api.jquery.com/val/)
+ * - [wrap()](http://api.jquery.com/wrap/)
  *
  * ## In addtion to the above, Angular privides an additional method to both jQuery and jQuery lite:
  *
