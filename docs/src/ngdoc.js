@@ -473,7 +473,12 @@ Doc.prototype = {
     if (self.priority !== undefined) {
       list.push('This directive executes at priority level ' + self.priority + '.');
     }
-    dom.ul(list);
+
+    if (list.length) {
+      dom.h('Directive info', function() {
+        dom.ul(list);
+      });
+    }
   },
 
   html_usage_overview: function(dom){
