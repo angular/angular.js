@@ -83,9 +83,6 @@ var $boolean          = 'boolean',
     slice             = [].slice,
     push              = [].push,
     toString          = Object.prototype.toString,
-    error             = window[$console]
-                           ? bind(window[$console], window[$console]['error'] || noop)
-                           : noop,
 
     /** @name angular */
     angular           = window.angular || (window.angular = {}),
