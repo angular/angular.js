@@ -500,7 +500,7 @@ Executed after the child elements are linked. Safe to do DOM transformation in h
 The attributes object - passed as a parameter in the link() or compile() functions - is a way of
 accessing:
 
-  * *normalize attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
+  * *normalized attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
     sucha s as 'ng:bind', or 'x-ng-bind', the attributes object allows for a normalize accessed to
     the attributes.
 
@@ -510,6 +510,26 @@ accessing:
 
   * *supports interpolation:* Interpolation attributes are assigned to the attribute object
     allowing other directives to read the interpolated value.
+
+  * *observing interpolated attributes:* Use `$observe` to observe the value changes of attributes
+    that contain interpolation (e.g. `src="{{bar}}"`). Not only is this very efficient but it's also
+    the only way to easily get the actual value because during the linking phase the interpolation
+    hasn't been evaluated yet and so the value is at this time set to `undefined`.
+
+<pre>
+function linkingFn(scope, elm, attrs, ctrl) {
+  // get the attribute value
+  console.log(attrs.ngModel);
+
+  // change the attribute
+  attrs.$set('ngModel', 'new value');
+
+  // observe changes to interpolated attribute
+  attrs.$observe('ngModel', function(value) {
+    console.log('ngModel has changed value to ' + value);
+  });
+}
+</pre>
 
 
 # Understanding Transclusion and Scopes
