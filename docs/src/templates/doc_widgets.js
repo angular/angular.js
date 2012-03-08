@@ -25,6 +25,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
   $compileProvider.directive('docExample', ['$injector', '$log', '$browser', '$location',
                                     function($injector,   $log,   $browser,   $location) {
     return {
+      restrict: 'E',
       terminal: true,
       compile: function(element, attrs) {
         var module = attrs.module;
@@ -238,6 +239,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
       '</div>';
 
     return {
+      restrict: 'EA',
       compile: function(element, attrs) {
         var tabs = angular.element(HTML_TPL.replace('{show}', attrs.show || 'false')),
             nav = tabs.find('ul'),
@@ -268,35 +270,38 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
 
 
   $compileProvider.directive('docTutorialNav', function() {
-    return function(scope, element, attrs) {
-      var prevStep, codeDiff, nextStep,
-          content, step = attrs.docTutorialNav;
+    return {
+      restrict: 'EA',
+      link:function(scope, element, attrs) {
+        var prevStep, codeDiff, nextStep,
+            content, step = attrs.docTutorialNav;
 
-      step = parseInt(step, 10);
+        step = parseInt(step, 10);
 
-      if (step === 0) {
-        prevStep = '';
-        nextStep = 'step_01';
-        codeDiff = 'step-0~7...step-0';
-      } else if (step === 11){
-        prevStep = 'step_10';
-        nextStep = 'the_end';
-        codeDiff = 'step-10...step-11';
-      } else {
-        prevStep = 'step_' + pad(step - 1);
-        nextStep = 'step_'  + pad(step + 1);
-        codeDiff = 'step-' + step + '...step-' + step;
+        if (step === 0) {
+          prevStep = '';
+          nextStep = 'step_01';
+          codeDiff = 'step-0~7...step-0';
+        } else if (step === 11){
+          prevStep = 'step_10';
+          nextStep = 'the_end';
+          codeDiff = 'step-10...step-11';
+        } else {
+          prevStep = 'step_' + pad(step - 1);
+          nextStep = 'step_'  + pad(step + 1);
+          codeDiff = 'step-' + step + '...step-' + step;
+        }
+
+        content = angular.element(
+          '<li><a href="#!/tutorial/' + prevStep + '">Previous</a></li>' +
+          '<li><a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Live Demo</a></li>' +
+          '<li><a href="https://github.com/angular/angular-phonecat/compare/' + codeDiff + '">Code Diff</a></li>' +
+          '<li><a href="#!/tutorial/' + nextStep + '">Next</a></li>'
+        );
+
+        element.attr('id', 'tutorial-nav');
+        element.append(content);
       }
-
-      content = angular.element(
-        '<li><a href="#!/tutorial/' + prevStep + '">Previous</a></li>' +
-        '<li><a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Live Demo</a></li>' +
-        '<li><a href="https://github.com/angular/angular-phonecat/compare/' + codeDiff + '">Code Diff</a></li>' +
-        '<li><a href="#!/tutorial/' + nextStep + '">Next</a></li>'
-      );
-
-      element.attr('id', 'tutorial-nav');
-      element.append(content);
     };
 
     function pad(step) {

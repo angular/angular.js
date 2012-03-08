@@ -158,6 +158,6 @@ angular.module('ngdocs', ['ngdocs.directives'], function($locationProvider, $fil
   });
 
   $compileProvider.directive('code', function() {
-    return { terminal: true };
+    return { restrict: 'E', terminal: true };
   });
 });

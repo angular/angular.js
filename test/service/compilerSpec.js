@@ -8,6 +8,7 @@ describe('$compile', function() {
 
     $compileProvider.directive('log', function(log) {
       return {
+        restrict: 'CAM',
         priority:0,
         compile: valueFn(function(scope, element, attrs) {
           log(attrs.log || 'LOG');
@@ -16,19 +17,19 @@ describe('$compile', function() {
     });
 
     $compileProvider.directive('highLog', function(log) {
-      return { priority:3, compile: valueFn(function(scope, element, attrs) {
+      return { restrict: 'CAM', priority:3, compile: valueFn(function(scope, element, attrs) {
         log(attrs.highLog || 'HIGH');
       })};
     });
 
     $compileProvider.directive('mediumLog', function(log) {
-      return { priority:2, compile: valueFn(function(scope, element, attrs) {
+      return { restrict: 'CAM', priority:2, compile: valueFn(function(scope, element, attrs) {
         log(attrs.mediumLog || 'MEDIUM');
       })};
     });
 
     $compileProvider.directive('greet', function() {
-      return { priority:10, compile: valueFn(function(scope, element, attrs) {
+      return { restrict: 'CAM', priority:10,  compile: valueFn(function(scope, element, attrs) {
         element.text("Hello " + attrs.greet);
       })};
     });
@@ -64,9 +65,12 @@ describe('$compile', function() {
     it('should register a directive', function() {
       module(function($compileProvider) {
         $compileProvider.directive('div', function(log) {
-          return function(scope, element) {
-            log('OK');
-            element.text('SUCCESS');
+          return {
+            restrict: 'ECA',
+            link: function(scope, element) {
+              log('OK');
+              element.text('SUCCESS');
+            }
           };
         })
       });
@@ -80,10 +84,16 @@ describe('$compile', function() {
     it('should allow registration of multiple directives with same name', function() {
       module(function($compileProvider) {
         $compileProvider.directive('div', function(log) {
-          return log.fn('1');
+          return {
+            restrict: 'ECA',
+            link: log.fn('1')
+          };
         });
         $compileProvider.directive('div', function(log) {
-          return log.fn('2');
+          return {
+            restrict: 'ECA',
+            link: log.fn('2')
+          };
         });
       });
       inject(function($compile, $rootScope, log) {
@@ -142,6 +152,7 @@ describe('$compile', function() {
           $compileProvider.directive('log', function($injector, $rootScope) {
             injector = $injector;
             return {
+              restrict: 'CA',
               compile: function(element, templateAttr) {
                 expect(typeof templateAttr.$normalize).toBe('function');
                 expect(typeof templateAttr.$set).toBe('function');
@@ -318,6 +329,7 @@ describe('$compile', function() {
 
         beforeEach(module(function($compileProvider) {
           $compileProvider.directive('replace', valueFn({
+            restrict: 'CAM',
             replace: true,
             template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
             compile: function(element, attr) {
@@ -326,6 +338,7 @@ describe('$compile', function() {
             }
           }));
           $compileProvider.directive('append', valueFn({
+            restrict: 'CAM',
             template: '<div class="log" style="width: 10px" high-log>Hello: <<CONTENT>></div>',
             compile: function(element, attr) {
               attr.$set('compiled', 'COMPILED');
@@ -415,16 +428,18 @@ describe('$compile', function() {
 
         beforeEach(module(
           function($compileProvider) {
-            $compileProvider.directive('hello', valueFn({ templateUrl: 'hello.html' }));
-            $compileProvider.directive('cau', valueFn({ templateUrl:'cau.html' }));
+            $compileProvider.directive('hello', valueFn({ restrict: 'CAM', templateUrl: 'hello.html' }));
+            $compileProvider.directive('cau', valueFn({ restrict: 'CAM', templateUrl:'cau.html' }));
 
             $compileProvider.directive('cError', valueFn({
+              restrict: 'CAM',
               templateUrl:'error.html',
               compile: function() {
                 throw Error('cError');
               }
             }));
             $compileProvider.directive('lError', valueFn({
+              restrict: 'CAM',
               templateUrl: 'error.html',
               compile: function() {
                 throw Error('lError');
@@ -433,15 +448,18 @@ describe('$compile', function() {
 
 
             $compileProvider.directive('iHello', valueFn({
+              restrict: 'CAM',
               replace: true,
               templateUrl: 'hello.html'
             }));
             $compileProvider.directive('iCau', valueFn({
+              restrict: 'CAM',
               replace: true,
               templateUrl:'cau.html'
             }));
 
             $compileProvider.directive('iCError', valueFn({
+              restrict: 'CAM',
               replace: true,
               templateUrl:'error.html',
               compile: function() {
@@ -449,6 +467,7 @@ describe('$compile', function() {
               }
             }));
             $compileProvider.directive('iLError', valueFn({
+              restrict: 'CAM',
               replace: true,
               templateUrl: 'error.html',
               compile: function() {
@@ -685,9 +704,11 @@ describe('$compile', function() {
         it('should prevent multiple templates per element', function() {
           module(function($compileProvider) {
             $compileProvider.directive('sync', valueFn({
+              restrict: 'C',
               template: '<span></span>'
             }));
             $compileProvider.directive('async', valueFn({
+              restrict: 'C',
               templateUrl: 'template.html'
             }));
           });
@@ -876,6 +897,7 @@ describe('$compile', function() {
             $compileProvider.directive('scope' + uppercase(name), function(log) {
               return {
                 scope: true,
+                restrict: 'CA',
                 compile: function() {
                   return function (scope, element) {
                     log(scope.$id);
@@ -887,6 +909,7 @@ describe('$compile', function() {
             $compileProvider.directive('iscope' + uppercase(name), function(log) {
               return {
                 scope: {},
+                restrict: 'CA',
                 compile: function() {
                   return function (scope, element) {
                     iscope = scope;
@@ -899,6 +922,7 @@ describe('$compile', function() {
             $compileProvider.directive('tiscope' + uppercase(name), function(log) {
               return {
                 scope: {},
+                restrict: 'CA',
                 templateUrl: 'tiscope.html',
                 compile: function() {
                   return function (scope, element) {
@@ -911,8 +935,11 @@ describe('$compile', function() {
             });
           });
           $compileProvider.directive('log', function(log) {
-            return function(scope) {
-              log('log-' + scope.$id + '-' + scope.$parent.$id);
+            return {
+              restrict: 'CA',
+              link: function(scope) {
+                log('log-' + scope.$id + '-' + scope.$parent.$id);
+              }
             };
           });
         }));
@@ -1098,6 +1125,7 @@ describe('$compile', function() {
       forEach(['a', 'b', 'c'], function(name) {
         $compileProvider.directive(name, function(log) {
           return {
+            restrict: 'ECA',
             compile: function() {
               log('t' + uppercase(name))
               return {
@@ -1174,8 +1202,11 @@ describe('$compile', function() {
     it('should read boolean attributes as boolean', function() {
       module(function($compileProvider) {
         $compileProvider.directive({
-          div: valueFn(function(scope, element, attr) {
-            element.text(attr.required);
+          div: valueFn({
+            restrict: 'ECA',
+            link:function(scope, element, attr) {
+              element.text(attr.required);
+            }
           })
         });
       });
@@ -1207,8 +1238,11 @@ describe('$compile', function() {
     it('should read boolean attributes as boolean', function() {
       module(function($compileProvider) {
         $compileProvider.directive({
-          div: valueFn(function(scope, element, attr) {
-            element.text(attr.required);
+          div: valueFn({
+            restrict: 'ECA',
+            link: function(scope, element, attr) {
+              element.text(attr.required);
+            }
           })
         });
       });
@@ -1274,8 +1308,11 @@ describe('$compile', function() {
       var attr;
       beforeEach(function(){
         module(function($compileProvider) {
-          $compileProvider.directive('div', valueFn(function(scope, element, attr){
-            scope.attr = attr;
+          $compileProvider.directive('div', valueFn({
+            restrict: 'ECA',
+            link: function(scope, element, attr) {
+              scope.attr = attr;
+            }
           }));
         });
         inject(function($compile, $rootScope) {
@@ -1629,9 +1666,11 @@ describe('$compile', function() {
       module(function($compileProvider) {
         $compileProvider.directive('first', valueFn({
           scope: {},
+          restrict: 'CA',
           transclude: 'content'
         }));
         $compileProvider.directive('second', valueFn({
+          restrict: 'CA',
           transclude: 'content'
         }));
       });
