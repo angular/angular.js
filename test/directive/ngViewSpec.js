@@ -271,7 +271,7 @@ describe('ng:view', function() {
     inject(function($templateCache, $rootScope, $location) {
       $rootScope.$on('$beforeRouteChange', logger('$beforeRouteChange'));
       $rootScope.$on('$afterRouteChange', logger('$afterRouteChange'));
-      $rootScope.$on('$contentLoaded', logger('$contentLoaded'));
+      $rootScope.$on('$viewContentLoaded', logger('$viewContentLoaded'));
 
       $templateCache.put('tpl.html', [200, '{{value}}', {}]);
       $location.path('/foo');
@@ -279,7 +279,7 @@ describe('ng:view', function() {
 
       expect(element.text()).toBe('bound-value');
       expect(log).toEqual(['$beforeRouteChange', '$afterRouteChange', 'init-ctrl',
-                           '$contentLoaded']);
+                           '$viewContentLoaded']);
     });
   });
 

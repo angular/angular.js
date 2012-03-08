@@ -64,14 +64,14 @@ describe('ng:include', function() {
   }));
 
 
-  it('should fire $contentLoaded event after linking the content', inject(
+  it('should fire $includeContentLoaded event after linking the content', inject(
       function($rootScope, $compile, $templateCache) {
     var contentLoadedSpy = jasmine.createSpy('content loaded').andCallFake(function() {
       expect(element.text()).toBe('partial content');
     });
 
     $templateCache.put('url', [200, 'partial content', {}]);
-    $rootScope.$on('$contentLoaded', contentLoadedSpy);
+    $rootScope.$on('$includeContentLoaded', contentLoadedSpy);
 
     element = $compile('<ng:include src="\'url\'"></ng:include>')($rootScope);
     $rootScope.$digest();
@@ -193,8 +193,8 @@ describe('ng:include', function() {
   it('should compile only the content', inject(function($compile, $rootScope, $templateCache) {
     // regression
 
-    var onload = jasmine.createSpy('$contentLoaded');
-    $rootScope.$on('$contentLoaded', onload);
+    var onload = jasmine.createSpy('$includeContentLoaded');
+    $rootScope.$on('$includeContentLoaded', onload);
     $templateCache.put('tpl.html', [200, 'partial {{tpl}}', {}]);
 
     element = $compile('<div><div ng:repeat="i in [1]">' +

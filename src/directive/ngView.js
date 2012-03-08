@@ -93,6 +93,16 @@
       </doc:scenario>
     </doc:example>
  */
+
+
+/**
+ * @ngdoc event
+ * @name angular.module.ng.$compileProvider.directive.ng:view#$viewContentLoaded
+ * @eventOf angular.module.ng.$compileProvider.directive.ng:view
+ * @eventType emit on the current ng:view scope
+ * @description
+ * Emitted every time the ng:view content is reloaded.
+ */
 var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
                        '$controller',
                function($http,   $templateCache,   $route,   $anchorScroll,   $compile,
@@ -100,9 +110,10 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
   return {
     restrict: 'ECA',
     terminal: true,
-    link: function(scope, element) {
+    link: function(scope, element, attr) {
       var changeCounter = 0,
-          lastScope;
+          lastScope,
+          onloadExp = attr.onload || '';
 
       scope.$on('$afterRouteChange', function(event, next, previous) {
         changeCounter++;
@@ -142,7 +153,8 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
               }
 
               link(lastScope);
-              lastScope.$emit('$contentLoaded');
+              lastScope.$emit('$viewContentLoaded');
+              lastScope.$eval(onloadExp);
 
               // $anchorScroll might listen on event...
               $anchorScroll();
@@ -155,15 +167,3 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
     }
   };
 }];
-
-
-var onloadDirective = valueFn({
-  restrict: 'AC',
-  link: function(scope, elm, attr) {
-    var onloadExp = attr.onload || ''; //workaround for jquery bug #7537)
-
-    scope.$on('$contentLoaded', function(event) {
-      scope.$eval(onloadExp);
-    });
-  }
-});
