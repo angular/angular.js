@@ -227,6 +227,17 @@ describe('parser', function() {
     expect(scope.$eval("x.y.z", scope)).not.toBeDefined();
   });
 
+  it('should support property names that colide with native object properties', function() {
+    // regression
+    scope.watch = 1;
+    scope.constructor = 2;
+    scope.toString = 3;
+
+    expect(scope.$eval('watch', scope)).toBe(1);
+    expect(scope.$eval('constructor', scope)).toBe(2);
+    expect(scope.$eval('toString', scope)).toBe(3);
+  });
+
   it('should evaluate grouped expressions', function() {
     expect(scope.$eval("(1+2)*3")).toEqual((1+2)*3);
   });
