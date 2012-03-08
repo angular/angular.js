@@ -806,4 +806,50 @@ describe('select', function() {
       });
     });
   });
+
+
+  describe('OPTION value', function() {
+    beforeEach(function() {
+      this.addMatchers({
+        toHaveValue: function(expected){
+          this.message = function() {
+            return 'Expected "' + this.actual.html() + '" to have value="' + expected + '".';
+          };
+
+          var value;
+          htmlParser(this.actual.html(), {
+            start:function(tag, attrs){
+              value = attrs.value;
+            },
+            end:noop,
+            chars:noop
+          });
+          return trim(value) == trim(expected);
+        }
+      });
+    });
+
+
+    it('should populate value attribute on OPTION', inject(function($rootScope, $compile) {
+      element = $compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
+      expect(element).toHaveValue('abc');
+    }));
+
+    it('should ignore value if already exists', inject(function($rootScope, $compile) {
+      element = $compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
+      expect(element).toHaveValue('abc');
+    }));
+
+    it('should set value even if newlines present', inject(function($rootScope, $compile) {
+      element = $compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
+      expect(element).toHaveValue('\nabc\n');
+    }));
+
+    it('should set value even if self closing HTML', inject(function($rootScope, $compile) {
+      // IE removes the \n from option, which makes this test pointless
+      if (msie) return;
+      element = $compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
+      expect(element).toHaveValue('\n');
+    }));
+  });
 });

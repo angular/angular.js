@@ -1,6 +1,5 @@
 'use strict';
 
-
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:href
@@ -267,3 +266,17 @@
 * @param {template} template any string which can contain '{{}}' markup.
 */
 
+
+function ngAttributeAliasDirective(propName, attrName) {
+  ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = valueFn(
+    function(scope, element, attr) {
+      attr.$observe(directiveNormalize('ng-' + attrName), function(value) {
+        attr.$set(attrName, value);
+      });
+    }
+  );
+}
+
+var ngAttributeAliasDirectives = {};
+forEach(BOOLEAN_ATTR, ngAttributeAliasDirective);
+ngAttributeAliasDirective(null, 'src');
