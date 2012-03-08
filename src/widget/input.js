@@ -1107,15 +1107,6 @@ var requiredDirective = [function() {
  * @description
  * Text input that converts between comma-seperated string into an array of strings.
  *
- * @param {string} ng:model Assignable angular expression to data-bind to.
- * @param {string=} name Property name of the form under which the widgets is published.
- * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
- * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
- *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
- *    patterns defined as scope expressions.
- * @param {string=} ng:change Angular expression to be executed when input changes due to user
- *    interaction with the input element.
- *
  * @element input
  *
  * @example
@@ -1127,7 +1118,7 @@ var requiredDirective = [function() {
          }
        </script>
        <form name="myForm" ng:controller="Ctrl">
-         List: <input type="list" name="input" ng:model="names" required>
+         List: <input name="input" ng:model="names" ng:list required>
          <span class="error" ng:show="myForm.list.error.REQUIRED">
            Required!</span>
          <tt>names = {{names}}</tt><br/>
@@ -1145,7 +1136,7 @@ var requiredDirective = [function() {
 
         it('should be invalid if empty', function() {
           input('names').enter('');
-          expect(binding('names')).toEqual('');
+          expect(binding('names')).toEqual('[]');
           expect(binding('myForm.input.valid')).toEqual('false');
         });
       </doc:scenario>

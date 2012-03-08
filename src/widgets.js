@@ -485,7 +485,7 @@ var ngNonBindableDirective = ngDirective({ terminal: true });
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
  *
- *
+ * @scope
  * @example
     <doc:example module="ngView">
       <doc:source>
@@ -502,8 +502,14 @@ var ngNonBindableDirective = ngDirective({ terminal: true });
 
         <script>
           angular.module('ngView', [], function($routeProvider, $locationProvider) {
-            $routeProvider.when('/Book/:bookId', {template: 'examples/book.html', controller: BookCntl});
-            $routeProvider.when('/Book/:bookId/ch/:chapterId', {template: 'examples/chapter.html', controller: ChapterCntl});
+            $routeProvider.when('/Book/:bookId', {
+              template: 'examples/book.html',
+              controller: BookCntl
+            });
+            $routeProvider.when('/Book/:bookId/ch/:chapterId', {
+              template: 'examples/chapter.html',
+              controller: ChapterCntl
+            });
 
             // configure html5 to get links working on jsfiddle
             $locationProvider.html5Mode(true);
@@ -799,7 +805,7 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
     restrict: 'EA',
     link: function(scope, element, attr) {
       var numberExp = attr.count,
-          whenExp = element.attr(attr.$attr.when), // this is becaues we have {{}} in attrs
+          whenExp = element.attr(attr.$attr.when), // this is because we have {{}} in attrs
           offset = attr.offset || 0,
           whens = scope.$eval(whenExp),
           whensExpFns = {};

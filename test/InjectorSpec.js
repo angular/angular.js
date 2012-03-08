@@ -649,7 +649,8 @@ describe('injector', function() {
     });
 
 
-    it('should instantiate object and preserve constructor property and be instanceof', function() {
+    it('should instantiate object and preserve constructor property and be instanceof ' +
+        'with the array annotated type', function() {
       var t = $injector.instantiate(['book', 'author', Type]);
       expect(t.book).toEqual('moby');
       expect(t.author).toEqual('melville');
