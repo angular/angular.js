@@ -241,7 +241,6 @@ The full skeleton of the directive is shown here:
       transclude: false,
       restrict: 'A',
       scope: false,
-      local: {},
       compile: function compile(tElement, tAttrs, transclude) {
         return {
           pre: function preLink(scope, iElement, iAttrs, controller) { ... },
@@ -319,35 +318,35 @@ compiler}. The attributes are:
     * `{}` (object hash) - then a new 'isolate' scope is created. The 'isolate' scope differs from
       normal scope that it does not prototypically inherit from the parent scope. This is useful
       when creating reusable components, which should not accidentally read or modify data in
-      parent scope. <br/> 
+      parent scope. <br/>
       The 'isolate' scope takes an object hash which defines a set of local scope properties
       derived from the parent scope. These local properties are useful for aliasing values for
       templates. Locals definition is a hash of normalized element attribute name to their
       corresponding binding strategy. Valid binding strategies are:
 
       * `attribute` - one time read of element attribute value and save it to widget scope. <br/>
-        Given `<widget my-attr='abc'>` and widget definition of `locals: {myAttr:'attribute'}`,
+        Given `<widget my-attr='abc'>` and widget definition of `scope: {myAttr:'attribute'}`,
         then widget scope property `myAttr` will be `"abc"`.
 
       * `evaluate` - one time evaluation of expression stored in the attribute. <br/> Given
-        `<widget my-attr='name'>` and widget definition of `locals: {myAttr:'evaluate'}`, and
+        `<widget my-attr='name'>` and widget definition of `scope: {myAttr:'evaluate'}`, and
         parent scope `{name:'angular'}` then widget scope property `myAttr` will be `"angular"`.
 
       * `bind` - Set up one way binding from the element attribute to the widget scope. <br/>
-        Given `<widget my-attr='{{name}}'>` and widget definition of `locals: {myAttr:'bind'}`,
+        Given `<widget my-attr='{{name}}'>` and widget definition of `scope: {myAttr:'bind'}`,
         and parent scope `{name:'angular'}` then widget scope property `myAttr` will be
         `"angular"`, but any changes in the parent scope will be reflected in the widget scope.
 
       * `accessor` - Set up getter/setter function for the expression in the widget element
         attribute to the widget scope. <br/> Given `<widget my-attr='name'>` and widget definition
-        of `locals: {myAttr:'prop'}`, and parent scope `{name:'angular'}` then widget scope
+        of `scope: {myAttr:'prop'}`, and parent scope `{name:'angular'}` then widget scope
         property `myAttr` will be a function such that `myAttr()` will return `"angular"` and
         `myAttr('new value')` will update the parent scope `name` property. This is useful for
         treating the element as a data-model for reading/writing.
 
-      * `expression` - Treat element attribute as an expression to be executed in form of an event.
+      * `expression` - Treat element attribute as an expression to be executed on the parent scope.
         <br/>
-        Given `<widget my-attr='doSomething()'>` and widget definition of `locals:
+        Given `<widget my-attr='doSomething()'>` and widget definition of `scope:
         {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then calling the
         widget scope function `myAttr` will execute the expression against the parent scope.
 
@@ -371,7 +370,7 @@ compiler}. The attributes are:
 
 
   * `inject` (object hash) -  Specifies a way to inject bindings into a controller. Injection
-    definition is a hash of normalized element attribute name to their corresponding binding
+    definition is a hash of normalized element attribute names to their corresponding binding
     strategy. Valid binding strategies are:
 
     * `attribute` - inject attribute value. <br/>
@@ -421,10 +420,10 @@ compiler}. The attributes are:
     transclusion function which is pre-bound to the correct scope. In a typical setup the widget
     creates an `isolate` scope, but the transclusion is not a child, but a sibling of the `isolate`
     scope. This makes it possible for the widget to have private state, and the transclusion to
-    be bound to the pre-`isolate` scope.
+    be bound to the parent (pre-`isolate`) scope.
 
     * `true` - transclude the content of the directive.
-    * `element` - transclude the whole element including any directives defined at lower priority.
+    * `'element'` - transclude the whole element including any directives defined at lower priority.
 
 
   * `compile`: This is the compile function described in the section below.
@@ -569,11 +568,11 @@ This will not render properly, unless we do some scope magic.
 The first issue we have to solve is that the dialog box template expect `title` to be defined, but
 the place of instantiation would like to bind to `username`. Furthermore the buttons expect `onOk`
 as well as `onCancel` functions to be present in the scope. This limits the usefulness of the
-widget. To solve the mapping issue we use the `locals` to create local variables which the
-template expects as follows
+widget. To solve the mapping issue we use the `locals` to create local variables which the template
+expects as follows:
 
 <pre>
-  locals: {
+  scope: {
     title: 'bind',   // set up title to accept data-binding
     onOk: 'exp',     // create a delegate onOk function
     onCancel: 'exp', // create a delegate onCancel function

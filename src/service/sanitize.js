@@ -63,7 +63,7 @@
              </tr>
              <tr id="escaped-html">
                <td>no filter</td>
-               <td><pre>&lt;div ng:bind-="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
                <td><div ng:bind="snippet"></div></td>
              </tr>
              <tr id="html-unsafe-filter">
