@@ -17,7 +17,7 @@
  *
  * @description
  * `FormController` keeps track of all its widgets as well as state of them form, such as being valid/invalid or dirty/pristine.
- * 
+ *
  * Each {@link angular.module.ng.$compileProvider.directive.form form} directive creates an instance
  * of `FormController`.
  *
