@@ -146,7 +146,7 @@ function lex(text){
   function readIdent() {
     var ident = "",
         start = index,
-        fn, lastDot, peekIndex, methodName, getter;
+        lastDot, peekIndex, methodName;
 
     while (index < text.length) {
       var ch = text.charAt(index);
@@ -178,23 +178,26 @@ function lex(text){
       }
     }
 
-    fn = OPERATORS[ident];
-    getter = getterFn(ident);
-    tokens.push({
+
+    var token = {
       index:start,
-      text:ident,
-      json: fn,
-      fn:fn||extend(
-          function(self, locals) {
-            return (getter(self, locals));
-          },
-          {
-            assign:function(self, value){
-              return setter(self, ident, value);
-            }
-          }
-      )
-    });
+      text:ident
+    };
+
+    if (OPERATORS.hasOwnProperty(ident)) {
+      token.fn = token.json = OPERATORS[ident];
+    } else {
+      var getter = getterFn(ident);
+      token.fn = extend(function(self, locals) {
+        return (getter(self, locals));
+      }, {
+        assign: function(self, value) {
+          return setter(self, ident, value);
+        }
+      });
+    }
+
+    tokens.push(token);
 
     if (methodName) {
       tokens.push({
@@ -701,10 +704,11 @@ function getter(obj, path, bindFnToScope) {
 var getterFnCache = {};
 
 function getterFn(path) {
-  var fn = getterFnCache[path];
-  if (fn) return fn;
+  if (getterFnCache.hasOwnProperty(path)) {
+    return getterFnCache[path];
+  }
 
-  var code = 'var l, fn, p;\n';
+  var fn, code = 'var l, fn, p;\n';
   forEach(path.split('.'), function(key, index) {
     code += 'if(!s) return s;\n' +
             'l=s;\n' +
