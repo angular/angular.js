@@ -55,12 +55,12 @@ function publishExternalAPI(angular){
   try {
     angularModule('ngLocale');
   } catch (e) {
-    angularModule('ngLocale', []).service('$locale', $LocaleProvider);
+    angularModule('ngLocale', []).provider('$locale', $LocaleProvider);
   }
 
   angularModule('ng', ['ngLocale'], ['$provide',
     function ngModule($provide) {
-      $provide.service('$compile', $CompileProvider).
+      $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
             input: inputDirective,
@@ -105,7 +105,7 @@ function publishExternalAPI(angular){
         }).
         directive(ngAttributeAliasDirectives).
         directive(ngEventDirectives);
-      $provide.service({
+      $provide.provider({
         $anchorScroll: $AnchorScrollProvider,
         $browser: $BrowserProvider,
         $cacheFactory: $CacheFactoryProvider,

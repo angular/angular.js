@@ -12,7 +12,7 @@ describe('$log', function() {
   beforeEach(module(function($provide){
     $window = {};
     logger = '';
-    $provide.service('$log', $LogProvider);
+    $provide.provider('$log', $LogProvider);
     $provide.value('$exceptionHandler', angular.mock.rethrow);
     $provide.value('$window', $window);
   }));
