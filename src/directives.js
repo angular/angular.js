@@ -1,5 +1,15 @@
 'use strict';
 
+function ngDirective(directive) {
+  if (isFunction(directive)) {
+    directive = {
+      link: directive
+    }
+  }
+  directive.restrict = directive.restrict || 'AC';
+  return valueFn(directive);
+};
+
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:init
@@ -26,7 +36,7 @@
      </doc:scenario>
    </doc:example>
  */
-var ngInitDirective = valueFn({
+var ngInitDirective = ngDirective({
   compile: function() {
     return {
       pre: function(scope, element, attrs) {
@@ -179,14 +189,14 @@ var ngControllerDirective = ['$controller', '$window', function($controller, $wi
      </doc:scenario>
    </doc:example>
  */
-var ngBindDirective = valueFn(function(scope, element, attr) {
+var ngBindDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBind);
   scope.$watch(attr.ngBind, function(value) {
     element.text(value == undefined ? '' : value);
   });
 });
 
-var ngBindHtmlUnsafeDirective = valueFn(function(scope, element, attr) {
+var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
   scope.$watch(attr.ngBindHtmlUnsafe, function(value) {
     element.html(value == undefined ? '' : value);
@@ -572,7 +582,7 @@ forEach(
      </doc:scenario>
    </doc:example>
  */
-var ngSubmitDirective = valueFn(function(scope, element, attrs) {
+var ngSubmitDirective = ngDirective(function(scope, element, attrs) {
   element.bind('submit', function() {
     scope.$apply(attrs.ngSubmit);
   });
@@ -581,7 +591,7 @@ var ngSubmitDirective = valueFn(function(scope, element, attrs) {
 
 function classDirective(name, selector) {
   name = 'ngClass' + name;
-  return valueFn(function(scope, element, attr) {
+  return ngDirective(function(scope, element, attr) {
     scope.$watch(attr[name], function(newVal, oldVal) {
       if (selector === true || scope.$index % 2 === selector) {
         if (oldVal && (newVal !== oldVal)) {
@@ -754,7 +764,7 @@ var ngClassEvenDirective = classDirective('Even', 1);
    </doc:example>
  */
 //TODO(misko): refactor to remove element from the DOM
-var ngShowDirective = valueFn(function(scope, element, attr){
+var ngShowDirective = ngDirective(function(scope, element, attr){
   scope.$watch(attr.ngShow, function(value){
     element.css('display', toBoolean(value) ? '' : 'none');
   });
@@ -793,7 +803,7 @@ var ngShowDirective = valueFn(function(scope, element, attr){
    </doc:example>
  */
 //TODO(misko): refactor to remove element from the DOM
-var ngHideDirective = valueFn(function(scope, element, attr){
+var ngHideDirective = ngDirective(function(scope, element, attr){
   scope.$watch(attr.ngHide, function(value){
     element.css('display', toBoolean(value) ? 'none' : '');
   });
@@ -831,7 +841,7 @@ var ngHideDirective = valueFn(function(scope, element, attr){
      </doc:scenario>
    </doc:example>
  */
-var ngStyleDirective = valueFn(function(scope, element, attr) {
+var ngStyleDirective = ngDirective(function(scope, element, attr) {
   scope.$watch(attr.ngStyle, function(newStyles, oldStyles) {
     if (oldStyles && (newStyles !== oldStyles)) {
       forEach(oldStyles, function(val, style) { element.css(style, '');});
@@ -894,7 +904,7 @@ var ngStyleDirective = valueFn(function(scope, element, attr) {
    </doc:example>
  *
  */
-var ngCloakDirective = valueFn({
+var ngCloakDirective = ngDirective({
   compile: function(element, attr) {
     attr.$set(attr.$attr.ngCloak, undefined);
     element.removeClass('ng-cloak');
@@ -935,6 +945,7 @@ ngAttributeAliasDirective(null, 'src');
          angular.module('transclude', [])
           .directive('pane', function(){
              return {
+               restrict: 'E',
                transclude: true,
                scope: 'isolate',
                locals: { title:'bind' },
@@ -962,7 +973,7 @@ ngAttributeAliasDirective(null, 'src');
    </doc:example>
  *
  */
-var ngTranscludeDirective = valueFn({
+var ngTranscludeDirective = ngDirective({
   controller: ['$transclude', '$element', function($transclude, $element) {
     $transclude(function(clone) {
       $element.append(clone);

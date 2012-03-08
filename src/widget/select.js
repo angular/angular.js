@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.select
  *
  * @description
@@ -424,6 +424,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
 var optionDirective = ['$interpolate', function($interpolate) {
   return {
+    restrict: 'E',
     priority: 100,
     compile: function(element, attr) {
       if (isUndefined(attr.value)) {

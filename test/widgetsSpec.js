@@ -1186,7 +1186,7 @@ describe('widget', function() {
   });
 
 
-  describe('scriptTemplateLoader', function() {
+  describe('scriptDirective', function() {
     it('should populate $templateCache with contents of a ng-template script element', inject(
         function($compile, $templateCache) {
           if (msie <=8) return;

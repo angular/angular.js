@@ -117,7 +117,7 @@ FormController.prototype.registerWidget = function(widget, alias) {
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.form
  *
  * @scope
@@ -204,7 +204,7 @@ FormController.prototype.registerWidget = function(widget, alias) {
       </doc:scenario>
     </doc:example>
  */
-var ngFormDirective = [function() {
+var formDirective = [function() {
   return {
     name: 'form',
     restrict: 'E',

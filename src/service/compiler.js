@@ -162,7 +162,7 @@ function $CompileProvider($provide) {
                 directive.priority = directive.priority || 0;
                 directive.name = directive.name || name;
                 directive.require = directive.require || (directive.controller && directive.name);
-                directive.restrict = directive.restrict || 'EACM';
+                directive.restrict = directive.restrict || 'A';
                 directives.push(directive);
               } catch (e) {
                 $exceptionHandler(e);
