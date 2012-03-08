@@ -4,9 +4,11 @@ describe('NgModelController', function() {
   var ctrl, scope, ngModelAccessor;
 
   beforeEach(inject(function($rootScope, $controller) {
+    var attrs = {name: 'testAlias'};
+
     scope = $rootScope;
     ngModelAccessor = jasmine.createSpy('ngModel accessor');
-    ctrl = $controller(NgModelController, {$scope: scope, ngModel: ngModelAccessor});
+    ctrl = $controller(NgModelController, {$scope: scope, ngModel: ngModelAccessor, $attrs: attrs});
 
     // mock accessor (locals)
     ngModelAccessor.andCallFake(function(val) {
@@ -27,6 +29,8 @@ describe('NgModelController', function() {
 
     expect(ctrl.formatters).toEqual([]);
     expect(ctrl.parsers).toEqual([]);
+
+    expect(ctrl.widgetId).toBe('testAlias');
   });
 
 

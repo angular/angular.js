@@ -33,7 +33,7 @@ function FormController($scope, name) {
   $scope.$on('$destroy', function(event, widget) {
     if (!widget) return;
 
-    if (widget.widgetId) {
+    if (widget.widgetId && form[widget.widgetId] === widget) {
       delete form[widget.widgetId];
     }
     forEach(errors, removeWidget, widget);
@@ -58,6 +58,12 @@ function FormController($scope, name) {
   $scope.$on('$viewTouch', function() {
     form.dirty = true;
     form.pristine = false;
+  });
+
+  $scope.$on('$newFormControl', function(event, widget) {
+    if (widget.widgetId && !form.hasOwnProperty(widget.widgetId)) {
+      form[widget.widgetId] = widget;
+    }
   });
 
   // init state
@@ -94,26 +100,6 @@ function FormController($scope, name) {
     queue.push(widget);
   }
 }
-
-/**
- * @ngdoc function
- * @name angular.module.ng.$compileProvider.directive.form.FormController#registerWidget
- * @methodOf angular.module.ng.$compileProvider.directive.form.FormController
- * @function
- *
- * @param {Object} widget Widget to register (controller of a widget)
- * @param {string=} alias Name alias of the widget.
- *                        (If specified, widget will be accesible as a form property)
- *
- * @description
- *
- */
-FormController.prototype.registerWidget = function(widget, alias) {
-  if (alias && !this.hasOwnProperty(alias)) {
-    widget.widgetId = alias;
-    this[alias] = widget;
-  }
-};
 
 
 /**

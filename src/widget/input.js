@@ -750,8 +750,8 @@ var inputDirective = [function() {
  * @description
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', 'ngModel',
-    function($scope, $exceptionHandler, ngModel) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
+    function($scope, $exceptionHandler, $attr, ngModel) {
   this.viewValue = Number.NaN;
   this.modelValue = Number.NaN;
   this.parsers = [];
@@ -762,6 +762,7 @@ var NgModelController = ['$scope', '$exceptionHandler', 'ngModel',
   this.valid = true;
   this.invalid = false;
   this.render = noop;
+  this.widgetId = $attr.name;
 
 
   /**
@@ -920,26 +921,22 @@ var ngModelDirective = [function() {
     inject: {
       ngModel: 'accessor'
     },
-    require: ['ngModel', '^?form'],
+    require: 'ngModel',
     controller: NgModelController,
-    link: function(scope, element, attr, controllers) {
-      var modelController = controllers[0],
-          formController = controllers[1];
-
-      if (formController) {
-        formController.registerWidget(modelController, attr.name);
-      }
+    link: function(scope, element, attr, ctrl) {
+      // notify others, especially parent forms
+      scope.$emit('$newFormControl', ctrl);
 
       forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
         scope.$watch(function() {
-          return modelController[name];
+          return ctrl[name];
         }, function(value) {
           element[value ? 'addClass' : 'removeClass']('ng-' + name);
         });
       });
 
       element.bind('$destroy', function() {
-        scope.$emit('$destroy', modelController);
+        scope.$emit('$destroy', ctrl);
       });
     }
   };
