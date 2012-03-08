@@ -3,7 +3,7 @@
 describe('$exceptionHandler', function() {
     it('should log errors with single argument', function() {
       module(function($provide){
-        $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
+        $provide.provider('$exceptionHandler', $ExceptionHandlerProvider);
       });
       inject(function($log, $exceptionHandler) {
         $exceptionHandler('myError');
@@ -14,7 +14,7 @@ describe('$exceptionHandler', function() {
 
     it('should log errors with multiple arguments', function() {
       module(function($provide){
-        $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
+        $provide.provider('$exceptionHandler', $ExceptionHandlerProvider);
       });
       inject(function($log, $exceptionHandler) {
         $exceptionHandler('myError', 'comment');

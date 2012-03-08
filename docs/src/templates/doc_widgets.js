@@ -86,7 +86,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
           var modules = [
             function($provide) {
               $provide.value('$browser', $browser);
-              $provide.service('$location', function() {
+              $provide.provider('$location', function() {
                 this.$get = function() {
                   return $location;
                 };

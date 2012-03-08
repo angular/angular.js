@@ -180,7 +180,7 @@ describe('injector', function() {
     var injector = createInjector([function($provide) {
       $provide.value('value', 'value;');
       $provide.factory('fn', valueFn('function;'));
-      $provide.service('service', function() {
+      $provide.provider('service', function() {
         this.$get = valueFn('service;');
       });
     }, function(valueProvider, fnProvider, serviceProvider) {
@@ -315,31 +315,31 @@ describe('injector', function() {
       });
 
 
-      describe('service', function() {
-        it('should configure $provide service object', function() {
+      describe('provider', function() {
+        it('should configure $provide provider object', function() {
           expect(createInjector([function($provide) {
-            $provide.service('value', {
+            $provide.provider('value', {
               $get: valueFn('abc')
             });
           }]).get('value')).toEqual('abc');
         });
 
 
-        it('should configure $provide service type', function() {
+        it('should configure $provide provider type', function() {
           function Type() {};
           Type.prototype.$get = function() {
             expect(this instanceof Type).toBe(true);
             return 'abc';
           };
           expect(createInjector([function($provide) {
-            $provide.service('value', Type);
+            $provide.provider('value', Type);
           }]).get('value')).toEqual('abc');
         });
 
 
-        it('should configure a set of services', function() {
+        it('should configure a set of providers', function() {
           expect(createInjector([function($provide) {
-            $provide.service({value: valueFn({$get:Array})});
+            $provide.provider({value: valueFn({$get:Array})});
           }]).get('value')).toEqual([]);
         });
       });
