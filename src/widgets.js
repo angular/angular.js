@@ -1,8 +1,9 @@
 'use strict';
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:include
+ * @restrict EA
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
@@ -42,22 +43,22 @@
          </select>
          url of the template: <tt><a href="{{template.url}}">{{template.url}}</a></tt>
          <hr/>
-         <div class="ng-include" src="template.url"></div>
+         <div ng-include src="template.url"></div>
        </div>
       </doc:source>
       <doc:scenario>
         it('should load template1.html', function() {
-         expect(element('.doc-example-live .ng-include').text()).
+         expect(element('.doc-example-live [ng-include]').text()).
            toBe('Content of template1.html\n');
         });
         it('should load template2.html', function() {
          select('template').option('1');
-         expect(element('.doc-example-live .ng-include').text()).
+         expect(element('.doc-example-live [ng-include]').text()).
            toBe('Content of template2.html\n');
         });
         it('should change to blank', function() {
          select('template').option('');
-         expect(element('.doc-example-live .ng-include').text()).toEqual('');
+         expect(element('.doc-example-live [ng-include]').text()).toEqual('');
         });
       </doc:scenario>
     </doc:example>
@@ -65,6 +66,7 @@
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
                   function($http,   $templateCache,   $anchorScroll,   $compile) {
   return {
+    restrict: 'EA',
     compile: function(element, attr) {
       var srcExp = attr.src,
           scopeExp = attr.scope || '',
@@ -117,8 +119,9 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
 }];
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:switch
+ * @restrict EA
  *
  * @description
  * Conditionally change the DOM structure.
@@ -176,6 +179,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
  */
 var NG_SWITCH = 'ng-switch';
 var ngSwitchDirective = valueFn({
+  restrict: 'EA',
   compile: function(element, attr) {
     var watchExpr = attr.ngSwitch || attr.on,
         cases = {};
@@ -203,7 +207,7 @@ var ngSwitchDirective = valueFn({
   }
 });
 
-var ngSwitchWhenDirective = valueFn({
+var ngSwitchWhenDirective = ngDirective({
   transclude: 'element',
   priority: 500,
   compile: function(element, attrs, transclude) {
@@ -213,7 +217,7 @@ var ngSwitchWhenDirective = valueFn({
   }
 });
 
-var ngSwitchDefaultDirective = valueFn({
+var ngSwitchDefaultDirective = ngDirective({
   transclude: 'element',
   priority: 500,
   compile: function(element, attrs, transclude) {
@@ -312,7 +316,7 @@ var htmlAnchorDirective = valueFn({
       </doc:scenario>
     </doc:example>
  */
-var ngRepeatDirective = valueFn({
+var ngRepeatDirective = ngDirective({
   transclude: 'element',
   priority: 1000,
   terminal: true,
@@ -436,7 +440,7 @@ var ngRepeatDirective = valueFn({
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:non-bindable
  *
  * @description
@@ -466,12 +470,13 @@ var ngRepeatDirective = valueFn({
       </doc:scenario>
     </doc:example>
  */
-var ngNonBindableDirective = valueFn({ terminal: true });
+var ngNonBindableDirective = ngDirective({ terminal: true });
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:view
+ * @restrict ECA
  *
  * @description
  * # Overview
@@ -560,6 +565,7 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
                function($http,   $templateCache,   $route,   $anchorScroll,   $compile,
                         $controller) {
   return {
+    restrict: 'ECA',
     terminal: true,
     link: function(scope, element) {
       var changeCounter = 0,
@@ -619,8 +625,9 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng:pluralize
+ * @restrict EA
  *
  * @description
  * # Overview
@@ -788,43 +795,48 @@ var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$c
  */
 var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interpolate) {
   var BRACE = /{}/g;
-  return function(scope, element, attr) {
-    var numberExp = attr.count,
-        whenExp = element.attr(attr.$attr.when), // this is becaues we have {{}} in attrs
-        offset = attr.offset || 0,
-        whens = scope.$eval(whenExp),
-        whensExpFns = {};
+  return {
+    restrict: 'EA',
+    link: function(scope, element, attr) {
+      var numberExp = attr.count,
+          whenExp = element.attr(attr.$attr.when), // this is becaues we have {{}} in attrs
+          offset = attr.offset || 0,
+          whens = scope.$eval(whenExp),
+          whensExpFns = {};
 
-    forEach(whens, function(expression, key) {
-      whensExpFns[key] =
-        $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
-    });
+      forEach(whens, function(expression, key) {
+        whensExpFns[key] =
+          $interpolate(expression.replace(BRACE, '{{' + numberExp + '-' + offset + '}}'));
+      });
 
-    scope.$watch(function() {
-      var value = parseFloat(scope.$eval(numberExp));
+      scope.$watch(function() {
+        var value = parseFloat(scope.$eval(numberExp));
 
-      if (!isNaN(value)) {
-        //if explicit number rule such as 1, 2, 3... is defined, just use it. Otherwise,
-        //check it against pluralization rules in $locale service
-        if (!whens[value]) value = $locale.pluralCat(value - offset);
-         return whensExpFns[value](scope, element, true);
-      } else {
-        return '';
-      }
-    }, function(newVal) {
-      element.text(newVal);
-    });
+        if (!isNaN(value)) {
+          //if explicit number rule such as 1, 2, 3... is defined, just use it. Otherwise,
+          //check it against pluralization rules in $locale service
+          if (!whens[value]) value = $locale.pluralCat(value - offset);
+           return whensExpFns[value](scope, element, true);
+        } else {
+          return '';
+        }
+      }, function(newVal) {
+        element.text(newVal);
+      });
+    }
   };
 }];
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.script
  *
  * @description
  * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the
  * template can be used by `ng:include`, `ng:view` or directive templates.
+ *
+ * @restrict E
  *
  * @example
   <doc:example>
@@ -844,8 +856,9 @@ var ngPluralizeDirective = ['$locale', '$interpolate', function($locale, $interp
     </doc:scenario>
   </doc:example>
  */
-var scriptTemplateLoader = ['$templateCache', function($templateCache) {
+var scriptDirective = ['$templateCache', function($templateCache) {
   return {
+    restrict: 'E',
     terminal: true,
     compile: function(element, attr) {
       if (attr.type == 'text/ng-template') {
