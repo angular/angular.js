@@ -952,7 +952,8 @@ describe('$compile', function() {
         }));
 
 
-        it('should allow creation of new isolated scopes', inject(function($rootScope, $compile, log) {
+        it('should allow creation of new isolated scopes for directives', inject(
+            function($rootScope, $compile, log) {
           element = $compile('<div><span iscope><a log></a></span></div>')($rootScope);
           expect(log).toEqual('LOG; log-002-001; 002');
           $rootScope.name = 'abc';
@@ -961,7 +962,7 @@ describe('$compile', function() {
         }));
 
 
-        it('should allow creation of new isolated scopes', inject(
+        it('should allow creation of new isolated scopes for directives with templates', inject(
             function($rootScope, $compile, log, $httpBackend) {
           $httpBackend.expect('GET', 'tiscope.html').respond('<a log></a>');
           element = $compile('<div><span tiscope></span></div>')($rootScope);
@@ -973,7 +974,7 @@ describe('$compile', function() {
         }));
 
 
-        it('should correctly create the scope hierachy properly', inject(
+        it('should correctly create the scope hierachy', inject(
           function($rootScope, $compile, log) {
             element = $compile(
                 '<div>' + //1
