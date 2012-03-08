@@ -183,7 +183,7 @@ function inferInjectionArgs(fn) {
  *   describe('Greeter', function(){
  *
  *     beforeEach(module(function($provide) {
- *       $provide.service('greet', GreetProvider);
+ *       $provide.provider('greet', GreetProvider);
  *     });
  *
  *     it('should greet', inject(function(greet) {
@@ -205,7 +205,7 @@ function inferInjectionArgs(fn) {
 
 /**
  * @ngdoc method
- * @name angular.module.AUTO.$provide#service
+ * @name angular.module.AUTO.$provide#provider
  * @methodOf angular.module.AUTO.$provide
  * @description
  *
@@ -232,7 +232,7 @@ function inferInjectionArgs(fn) {
  *
  * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provider'` key.
  * @param {function()} $getFn The $getFn for the instance creation. Internally this is a short hand for
- * `$provide.service(name, {$get:$getFn})`.
+ * `$provide.provider(name, {$get: $getFn})`.
  * @returns {Object} registered provider instance
  */
 
@@ -294,7 +294,7 @@ function createInjector(modulesToLoad) {
       loadedModules = new HashMap(),
       providerCache = {
         $provide: {
-            service: supportObject(service),
+            provider: supportObject(provider),
             factory: supportObject(factory),
             value: supportObject(value),
             constant: supportObject(constant),
@@ -330,17 +330,17 @@ function createInjector(modulesToLoad) {
     }
   }
 
-  function service(name, provider) {
-    if (isFunction(provider)){
-      provider = providerInjector.instantiate(provider);
+  function provider(name, provider_) {
+    if (isFunction(provider_)) {
+      provider_ = providerInjector.instantiate(provider_);
     }
-    if (!provider.$get) {
+    if (!provider_.$get) {
       throw Error('Provider ' + name + ' must define $get factory method.');
     }
-    return providerCache[name + providerSuffix] = provider;
+    return providerCache[name + providerSuffix] = provider_;
   }
 
-  function factory(name, factoryFn) { return service(name, { $get:factoryFn }); }
+  function factory(name, factoryFn) { return provider(name, { $get: factoryFn }); }
 
   function value(name, value) { return factory(name, valueFn(value)); }
 

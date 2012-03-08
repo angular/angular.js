@@ -109,14 +109,14 @@ function setupModuleLoader(window) {
 
           /**
            * @ngdoc method
-           * @name angular.Module#service
+           * @name angular.Module#provider
            * @methodOf angular.Module
            * @param {string} name service name
            * @param {Function} providerType Construction function for creating new instance of the service.
            * @description
-           * See {@link angular.module.AUTO.$provide#service $provide.service()}.
+           * See {@link angular.module.AUTO.$provide#provider $provide.provider()}.
            */
-          service: invokeLater('$provide', 'service'),
+          provider: invokeLater('$provide', 'provider'),
 
           /**
            * @ngdoc method

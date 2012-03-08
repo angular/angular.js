@@ -1271,7 +1271,7 @@ function MockXhr() {
  * The `ngMock` is an angular module which is used with `ng` module and adds unit-test configuration as well as useful
  * mocks to the {@link angular.module.AUTO.$injector $injector}.
  */
-angular.module('ngMock', ['ng']).service({
+angular.module('ngMock', ['ng']).provider({
   $browser: angular.mock.$BrowserProvider,
   $exceptionHandler: angular.mock.$ExceptionHandlerProvider,
   $log: angular.mock.$LogProvider,
