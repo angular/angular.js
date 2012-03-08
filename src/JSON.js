@@ -37,17 +37,12 @@ function fromJson(json, useNative) {
 
   var obj;
 
-  try {
-    if (useNative && window.JSON && window.JSON.parse) {
-      obj = JSON.parse(json);
-    } else {
-      obj = parseJson(json, true)();
-    }
-    return transformDates(obj);
-  } catch (e) {
-    error("fromJson error: ", json, e);
-    throw e;
+  if (useNative && window.JSON && window.JSON.parse) {
+    obj = JSON.parse(json);
+  } else {
+    obj = parseJson(json, true)();
   }
+  return transformDates(obj);
 
   // TODO make forEach optionally recursive and remove this function
   // TODO(misko): remove this once the $http service is checked in.
