@@ -69,7 +69,6 @@ function publishExternalAPI(angular){
             script: scriptDirective,
             select: selectDirective,
             style: styleDirective,
-            onload: onloadDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
             ngBindHtml: ngBindHtmlDirective,

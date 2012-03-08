@@ -63,6 +63,16 @@
       </doc:scenario>
     </doc:example>
  */
+
+
+/**
+ * @ngdoc event
+ * @name angular.module.ng.$compileProvider.directive.ng:include#$includeContentLoaded
+ * @eventOf angular.module.ng.$compileProvider.directive.ng:include
+ * @eventType emit on the current ng:include scope
+ * @description
+ * Emitted every time the ng:include content is reloaded.
+ */
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
                   function($http,   $templateCache,   $anchorScroll,   $compile) {
   return {
@@ -70,6 +80,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
     compile: function(element, attr) {
       var srcExp = attr.src,
           scopeExp = attr.scope || '',
+          onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
 
       return function(scope, element, attr) {
@@ -106,7 +117,8 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
                  if (isDefined(autoScrollExp) && (!autoScrollExp || scope.$eval(autoScrollExp))) {
                    $anchorScroll();
                  }
-                 scope.$emit('$contentLoaded');
+                 scope.$emit('$includeContentLoaded');
+                 scope.$eval(onloadExp);
                }
              }).error(clearContent);
            } else {
