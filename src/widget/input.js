@@ -599,7 +599,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.textarea
  *
  * @description
@@ -623,7 +623,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.input
  *
  * @description
