@@ -412,6 +412,8 @@ Doc.prototype = {
       self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
     });
+
+    self.method_properties_events(dom);
   },
 
   html_usage_filter: function(dom){
@@ -441,24 +443,6 @@ Doc.prototype = {
       self.html_usage_parameters(dom);
       self.html_usage_this(dom);
       self.html_usage_returns(dom);
-    });
-  },
-
-  html_usage_inputType: function(dom){
-    var self = this;
-    dom.h('Usage', function() {
-      dom.code(function() {
-        dom.text('<input type="' + self.shortName + '"');
-        (self.param||[]).forEach(function(param){
-          dom.text('\n      ');
-          dom.text(param.optional ? ' [' : ' ');
-          dom.text(param.name);
-          dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
-          dom.text(param.optional ? ']' : '');
-        });
-        dom.text('>');
-      });
-      self.html_usage_parameters(dom);
     });
   },
 
@@ -660,8 +644,6 @@ var KEYWORD_PRIORITY = {
   '.angular.module.ng': 7,
   '.angular.mock': 8,
   '.angular.directive': 6,
-  '.angular.inputType': 6,
-  '.angular.widget': 6,
   '.angular.module.ngMock': 8,
   '.dev_guide.overview': 1,
   '.dev_guide.bootstrap': 2,
