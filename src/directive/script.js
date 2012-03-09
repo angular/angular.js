@@ -9,6 +9,7 @@
  * template can be used by `ng-include`, `ng-view` or directive templates.
  *
  * @restrict E
+ * @param {'text/ng-template'} type must be set to `'text/ng-template'`
  *
  * @example
   <doc:example>

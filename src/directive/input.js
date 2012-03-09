@@ -625,6 +625,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.input
+ * @restrict E
  *
  * @description
  * HTML input element widget with angular data-binding. Input widget follows HTML5 input types
@@ -946,6 +947,7 @@ var ngModelDirective = [function() {
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-change
+ * @restrict E
  *
  * @description
  * Evaluate given expression when user changes the input.
