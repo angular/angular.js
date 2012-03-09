@@ -742,7 +742,7 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {};
-  return jqLite('<div>').append(element).html().replace(/\<\/[\w\:\-]+\>$/, '');
+  return jqLite('<div>').append(element).html().match(/^(<[^>]+>)/)[1];
 }
 
 
