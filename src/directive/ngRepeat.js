@@ -2,10 +2,10 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:repeat
+ * @name angular.module.ng.$compileProvider.directive.ng-repeat
  *
  * @description
- * The `ng:repeat` widget instantiates a template once per item from a collection. Each template
+ * The `ng-repeat` widget instantiates a template once per item from a collection. Each template
  * instance gets its own scope, where the given loop variable is set to the current collection item,
  * and `$index` is set to the item index or key.
  *
@@ -17,12 +17,12 @@
  *        * `'middle'`
  *        * `'last'`
  *
- * Note: Although `ng:repeat` looks like a directive, it is actually an attribute widget.
+ * Note: Although `ng-repeat` looks like a directive, it is actually an attribute widget.
  *
  * @element ANY
  * @scope
  * @priority 1000
- * @param {string} repeat_expression The expression indicating how to enumerate a collection. Two
+ * @param {repeat_expression} ng-repeat The expression indicating how to enumerate a collection. Two
  *   formats are currently supported:
  *
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`
@@ -37,20 +37,20 @@
  *
  * @example
  * This example initializes the scope to a list of names and
- * then uses `ng:repeat` to display every person:
+ * then uses `ng-repeat` to display every person:
     <doc:example>
       <doc:source>
-        <div ng:init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">
+        <div ng-init="friends = [{name:'John', age:25}, {name:'Mary', age:28}]">
           I have {{friends.length}} friends. They are:
           <ul>
-            <li ng:repeat="friend in friends">
+            <li ng-repeat="friend in friends">
               [{{$index + 1}}] {{friend.name}} who is {{friend.age}} years old.
             </li>
           </ul>
         </div>
       </doc:source>
       <doc:scenario>
-         it('should check ng:repeat', function() {
+         it('should check ng-repeat', function() {
            var r = using('.doc-example-live').repeater('ul li');
            expect(r.count()).toBe(2);
            expect(r.row(0)).toEqual(["1","John","25"]);
@@ -69,7 +69,7 @@ var ngRepeatDirective = ngDirective({
       var match = expression.match(/^\s*(.+)\s+in\s+(.*)\s*$/),
         lhs, rhs, valueIdent, keyIdent;
       if (! match) {
-        throw Error("Expected ng:repeat in form of '_item_ in _collection_' but got '" +
+        throw Error("Expected ng-repeat in form of '_item_ in _collection_' but got '" +
           expression + "'.");
       }
       lhs = match[1];

@@ -30,14 +30,14 @@
            $scope.limit = 3;
          }
        </script>
-       <div ng:controller="Ctrl">
-         Limit {{numbers}} to: <input type="integer" ng:model="limit"/>
+       <div ng-controller="Ctrl">
+         Limit {{numbers}} to: <input type="integer" ng-model="limit"/>
          <p>Output: {{ numbers | limitTo:limit | json }}</p>
        </div>
      </doc:source>
      <doc:scenario>
        it('should limit the numer array to first three items', function() {
-         expect(element('.doc-example-live input[ng\\:model=limit]').val()).toBe('3');
+         expect(element('.doc-example-live input[ng-model=limit]').val()).toBe('3');
          expect(binding('numbers | limitTo:limit | json')).toEqual('[1,2,3]');
        });
 

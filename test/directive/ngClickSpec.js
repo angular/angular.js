@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:click', function() {
+describe('ng-click', function() {
   var element;
 
   afterEach(function() {
@@ -8,7 +8,7 @@ describe('ng:click', function() {
   });
 
   it('should get called on a click', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:click="clicked = true"></div>')($rootScope);
+    element = $compile('<div ng-click="clicked = true"></div>')($rootScope);
     $rootScope.$digest();
     expect($rootScope.clicked).toBeFalsy();
 
@@ -17,7 +17,7 @@ describe('ng:click', function() {
   }));
 
   it('should pass event object', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:click="event = $event"></div>')($rootScope);
+    element = $compile('<div ng-click="event = $event"></div>')($rootScope);
     $rootScope.$digest();
 
     browserTrigger(element, 'click');

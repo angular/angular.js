@@ -44,8 +44,8 @@
              'snippet</p>';
          }
        </script>
-       <div ng:controller="Ctrl">
-          Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
+       <div ng-controller="Ctrl">
+          Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
            <table>
              <tr>
                <td>Filter</td>
@@ -55,21 +55,21 @@
              <tr id="html-filter">
                <td>html filter</td>
                <td>
-                 <pre>&lt;div ng:bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre>
+                 <pre>&lt;div ng-bind-html="snippet"&gt;<br/>&lt;/div&gt;</pre>
                </td>
                <td>
-                 <div ng:bind-html="snippet"></div>
+                 <div ng-bind-html="snippet"></div>
                </td>
              </tr>
              <tr id="escaped-html">
                <td>no filter</td>
-               <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng:bind="snippet"></div></td>
+               <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng-bind="snippet"></div></td>
              </tr>
              <tr id="html-unsafe-filter">
                <td>unsafe html filter</td>
-               <td><pre>&lt;div ng:bind-html-unsafe="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-               <td><div ng:bind-html-unsafe="snippet"></div></td>
+               <td><pre>&lt;div ng-bind-html-unsafe="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+               <td><div ng-bind-html-unsafe="snippet"></div></td>
              </tr>
            </table>
          </div>

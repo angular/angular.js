@@ -35,27 +35,27 @@
  * @example
    <doc:example>
      <doc:source>
-       <div ng:init="friends = [{name:'John', phone:'555-1276'},
+       <div ng-init="friends = [{name:'John', phone:'555-1276'},
                                 {name:'Mary', phone:'800-BIG-MARY'},
                                 {name:'Mike', phone:'555-4321'},
                                 {name:'Adam', phone:'555-5678'},
                                 {name:'Julie', phone:'555-8765'}]"></div>
 
-       Search: <input ng:model="searchText"/>
+       Search: <input ng-model="searchText"/>
        <table id="searchTextResults">
          <tr><th>Name</th><th>Phone</th><tr>
-         <tr ng:repeat="friend in friends | filter:searchText">
+         <tr ng-repeat="friend in friends | filter:searchText">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
          <tr>
        </table>
        <hr>
-       Any: <input ng:model="search.$"/> <br>
-       Name only <input ng:model="search.name"/><br>
-       Phone only <input ng:model="search.phone"/><br>
+       Any: <input ng-model="search.$"/> <br>
+       Name only <input ng-model="search.name"/><br>
+       Phone only <input ng-model="search.phone"/><br>
        <table id="searchObjResults">
          <tr><th>Name</th><th>Phone</th><tr>
-         <tr ng:repeat="friend in friends | filter:search">
+         <tr ng-repeat="friend in friends | filter:search">
            <td>{{friend.name}}</td>
            <td>{{friend.phone}}</td>
          <tr>

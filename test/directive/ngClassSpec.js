@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:class', function() {
+describe('ng-class', function() {
   var element;
 
 
@@ -10,7 +10,7 @@ describe('ng:class', function() {
 
 
   it('should add new and remove old classes dynamically', inject(function($rootScope, $compile) {
-    element = $compile('<div class="existing" ng:class="dynClass"></div>')($rootScope);
+    element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBe(true);
@@ -31,7 +31,7 @@ describe('ng:class', function() {
 
 
   it('should support adding multiple classes via an array', inject(function($rootScope, $compile) {
-    element = $compile('<div class="existing" ng:class="[\'A\', \'B\']"></div>')($rootScope);
+    element = $compile('<div class="existing" ng-class="[\'A\', \'B\']"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBeTruthy();
     expect(element.hasClass('A')).toBeTruthy();
@@ -43,7 +43,7 @@ describe('ng:class', function() {
       'expressions', inject(function($rootScope, $compile) {
     var element = $compile(
         '<div class="existing" ' +
-            'ng:class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB}">' +
+            'ng-class="{A: conditionA, B: conditionB(), AnotB: conditionA&&!conditionB}">' +
         '</div>')($rootScope);
     $rootScope.conditionA = true;
     $rootScope.$digest();
@@ -62,7 +62,7 @@ describe('ng:class', function() {
 
 
   it('should support adding multiple classes via a space delimited string', inject(function($rootScope, $compile) {
-    element = $compile('<div class="existing" ng:class="\'A B\'"></div>')($rootScope);
+    element = $compile('<div class="existing" ng-class="\'A B\'"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBeTruthy();
     expect(element.hasClass('A')).toBeTruthy();
@@ -71,7 +71,7 @@ describe('ng:class', function() {
 
 
   it('should preserve class added post compilation with pre-existing classes', inject(function($rootScope, $compile) {
-    element = $compile('<div class="existing" ng:class="dynClass"></div>')($rootScope);
+    element = $compile('<div class="existing" ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
     $rootScope.$digest();
     expect(element.hasClass('existing')).toBe(true);
@@ -88,7 +88,7 @@ describe('ng:class', function() {
 
 
   it('should preserve class added post compilation without pre-existing classes"', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:class="dynClass"></div>')($rootScope);
+    element = $compile('<div ng-class="dynClass"></div>')($rootScope);
     $rootScope.dynClass = 'A';
     $rootScope.$digest();
     expect(element.hasClass('A')).toBe(true);
@@ -104,7 +104,7 @@ describe('ng:class', function() {
 
 
   it('should preserve other classes with similar name"', inject(function($rootScope, $compile) {
-    element = $compile('<div class="ui-panel ui-selected" ng:class="dynCls"></div>')($rootScope);
+    element = $compile('<div class="ui-panel ui-selected" ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'panel';
     $rootScope.$digest();
     $rootScope.dynCls = 'foo';
@@ -114,7 +114,7 @@ describe('ng:class', function() {
 
 
   it('should not add duplicate classes', inject(function($rootScope, $compile) {
-    element = $compile('<div class="panel bar" ng:class="dynCls"></div>')($rootScope);
+    element = $compile('<div class="panel bar" ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'panel';
     $rootScope.$digest();
     expect(element[0].className).toBe('panel bar ng-scope');
@@ -122,7 +122,7 @@ describe('ng:class', function() {
 
 
   it('should remove classes even if it was specified via class attribute', inject(function($rootScope, $compile) {
-    element = $compile('<div class="panel bar" ng:class="dynCls"></div>')($rootScope);
+    element = $compile('<div class="panel bar" ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'panel';
     $rootScope.$digest();
     $rootScope.dynCls = 'window';
@@ -132,7 +132,7 @@ describe('ng:class', function() {
 
 
   it('should remove classes even if they were added by another code', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:class="dynCls"></div>')($rootScope);
+    element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = 'foo';
     $rootScope.$digest();
     element.addClass('foo');
@@ -142,14 +142,14 @@ describe('ng:class', function() {
 
 
   it('should convert undefined and null values to an empty string', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:class="dynCls"></div>')($rootScope);
+    element = $compile('<div ng-class="dynCls"></div>')($rootScope);
     $rootScope.dynCls = [undefined, null];
     $rootScope.$digest();
   }));
 
 
-  it('should ng:class odd/even', inject(function($rootScope, $compile) {
-    element = $compile('<ul><li ng:repeat="i in [0,1]" class="existing" ng:class-odd="\'odd\'" ng:class-even="\'even\'"></li><ul>')($rootScope);
+  it('should ng-class odd/even', inject(function($rootScope, $compile) {
+    element = $compile('<ul><li ng-repeat="i in [0,1]" class="existing" ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li><ul>')($rootScope);
     $rootScope.$digest();
     var e1 = jqLite(element[0].childNodes[1]);
     var e2 = jqLite(element[0].childNodes[2]);
@@ -160,10 +160,10 @@ describe('ng:class', function() {
   }));
 
 
-  it('should allow both ng:class and ng:class-odd/even on the same element', inject(function($rootScope, $compile) {
+  it('should allow both ng-class and ng-class-odd/even on the same element', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
-      '<li ng:repeat="i in [0,1]" ng:class="\'plainClass\'" ' +
-      'ng:class-odd="\'odd\'" ng:class-even="\'even\'"></li>' +
+      '<li ng-repeat="i in [0,1]" ng-class="\'plainClass\'" ' +
+      'ng-class-odd="\'odd\'" ng-class-even="\'even\'"></li>' +
       '<ul>')($rootScope);
     $rootScope.$apply();
     var e1 = jqLite(element[0].childNodes[1]);
@@ -178,10 +178,10 @@ describe('ng:class', function() {
   }));
 
 
-  it('should allow both ng:class and ng:class-odd/even with multiple classes', inject(function($rootScope, $compile) {
+  it('should allow both ng-class and ng-class-odd/even with multiple classes', inject(function($rootScope, $compile) {
     element = $compile('<ul>' +
-      '<li ng:repeat="i in [0,1]" ng:class="[\'A\', \'B\']" ' +
-      'ng:class-odd="[\'C\', \'D\']" ng:class-even="[\'E\', \'F\']"></li>' +
+      '<li ng-repeat="i in [0,1]" ng-class="[\'A\', \'B\']" ' +
+      'ng-class-odd="[\'C\', \'D\']" ng-class-even="[\'E\', \'F\']"></li>' +
       '<ul>')($rootScope);
     $rootScope.$apply();
     var e1 = jqLite(element[0].childNodes[1]);

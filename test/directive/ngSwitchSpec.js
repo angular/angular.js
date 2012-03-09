@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:switch', function() {
+describe('ng-switch', function() {
   var element;
 
 
@@ -12,9 +12,9 @@ describe('ng:switch', function() {
   it('should switch on value change', inject(function($rootScope, $compile) {
     element = $compile(
       '<div ng-switch="select">' +
-        '<div ng:switch-when="1">first:{{name}}</div>' +
-        '<div ng:switch-when="2">second:{{name}}</div>' +
-        '<div ng:switch-when="true">true:{{name}}</div>' +
+        '<div ng-switch-when="1">first:{{name}}</div>' +
+        '<div ng-switch-when="2">second:{{name}}</div>' +
+        '<div ng-switch-when="true">true:{{name}}</div>' +
       '</div>')($rootScope);
     expect(element.html()).toEqual(
         '<!-- ngSwitchWhen: 1 --><!-- ngSwitchWhen: 2 --><!-- ngSwitchWhen: true -->');
@@ -53,7 +53,7 @@ describe('ng:switch', function() {
   it('should call change on switch', inject(function($rootScope, $compile) {
     element = $compile(
       '<ng:switch on="url" change="name=\'works\'">' +
-        '<div ng:switch-when="a">{{name}}</div>' +
+        '<div ng-switch-when="a">{{name}}</div>' +
       '</ng:switch>')($rootScope);
     $rootScope.url = 'a';
     $rootScope.$apply();

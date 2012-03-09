@@ -15,7 +15,7 @@
  * instance functions into a single template function which is then returned.
  *
  * The template function can then be used once to produce the view or as it is the case with
- * {@link angular.module.ng.$compileProvider.directive.ng:repeat repeater} many-times, in which
+ * {@link angular.module.ng.$compileProvider.directive.ng-repeat repeater} many-times, in which
  * case each call results in a view that is a DOM clone of the original template.
  *
  <doc:example module="compile">
@@ -55,8 +55,8 @@
       }
     </script>
     <div ng-controller="Ctrl">
-      <input ng:model="name"> <br>
-      <textarea ng:model="html"></textarea> <br>
+      <input ng-model="name"> <br>
+      <textarea ng-model="html"></textarea> <br>
       <div compile="html"></div>
     </div>
    </doc:source>
@@ -146,6 +146,7 @@ function $CompileProvider($provide) {
   this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
       assertArg(directiveFactory, 'directive');
+      shivForIE(name);
       if (!hasDirectives.hasOwnProperty(name)) {
         hasDirectives[name] = [];
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',
@@ -969,6 +970,22 @@ function $CompileProvider($provide) {
       }
     }
   }];
+
+
+  /**
+   * Creates the element for IE8 and below to allow styling of widgets
+   * (http://ejohn.org/blog/html5-shiv/). This hack works only if angular is
+   * included synchronously at the top of the document before IE sees any
+   * unknown elements. See regression/issue-584.html.
+   */
+  function shivForIE(name) {
+    if (msie < 9) {
+      var dash = snake_case(name, '-');
+      document.createElement(dash);                   //foo-bar-baz
+      document.createElement('x-' + dash);            //x-foo-bar-baz
+      document.createElement(dash.replace('-', ':')); //foo:bar-baz
+    }
+  }
 }
 
 var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;

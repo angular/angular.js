@@ -23,7 +23,7 @@ describe('select', function() {
 
   describe('select-one', function() {
 
-    it('should compile children of a select without a ng:model, but not create a model for it',
+    it('should compile children of a select without a ng-model, but not create a model for it',
         function() {
       compile('<select>' +
                 '<option selected="true">{{a}}</option>' +
@@ -41,7 +41,7 @@ describe('select', function() {
 
     it('should require', function() {
       compile(
-        '<select name="select" ng:model="selection" required ng:change="change()">' +
+        '<select name="select" ng-model="selection" required ng-change="change()">' +
           '<option value=""></option>' +
           '<option value="c">C</option>' +
         '</select>');
@@ -78,7 +78,7 @@ describe('select', function() {
 
     it('should not be invalid if no require', function() {
       compile(
-        '<select name="select" ng:model="selection">' +
+        '<select name="select" ng-model="selection">' +
           '<option value=""></option>' +
           '<option value="c">C</option>' +
         '</select>');
@@ -93,7 +93,7 @@ describe('select', function() {
 
     it('should support type="select-multiple"', function() {
       compile(
-        '<select ng:model="selection" multiple>' +
+        '<select ng-model="selection" multiple>' +
           '<option>A</option>' +
           '<option>B</option>' +
         '</select>');
@@ -108,7 +108,7 @@ describe('select', function() {
 
     it('should require', function() {
       compile(
-        '<select name="select" ng:model="selection" multiple required>' +
+        '<select name="select" ng-model="selection" multiple required>' +
           '<option>A</option>' +
           '<option>B</option>' +
         '</select>');
@@ -136,7 +136,7 @@ describe('select', function() {
   });
 
 
-  describe('ng:options', function() {
+  describe('ng-options', function() {
     function createSelect(attrs, blank, unknown) {
       var html = '<select';
       forEach(attrs, function(value, key) {
@@ -156,24 +156,24 @@ describe('select', function() {
 
     function createSingleSelect(blank, unknown) {
       createSelect({
-        'ng:model':'selected',
-        'ng:options':'value.name for value in values'
+        'ng-model':'selected',
+        'ng-options':'value.name for value in values'
       }, blank, unknown);
     }
 
     function createMultiSelect(blank, unknown) {
       createSelect({
-        'ng:model':'selected',
+        'ng-model':'selected',
         'multiple':true,
-        'ng:options':'value.name for value in values'
+        'ng-options':'value.name for value in values'
       }, blank, unknown);
     }
 
 
     it('should throw when not formated "? for ? in ?"', function() {
       expect(function() {
-        compile('<select ng:model="selected" ng:options="i dont parse"></select>');
-      }).toThrow("Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
+        compile('<select ng-model="selected" ng-options="i dont parse"></select>');
+      }).toThrow("Expected ng-options in form of '_select_ (as _label_)? for (_key_,)?_value_ in" +
                  " _collection_' but got 'i dont parse'.");
     });
 
@@ -196,8 +196,8 @@ describe('select', function() {
 
     it('should render an object', function() {
       createSelect({
-        'ng:model': 'selected',
-        'ng:options': 'value as key for (key, value) in object'
+        'ng-model': 'selected',
+        'ng-options': 'value as key for (key, value) in object'
       });
 
       scope.$apply(function() {
@@ -380,8 +380,8 @@ describe('select', function() {
 
       it('should bind to scope value and group', function() {
         createSelect({
-          'ng:model': 'selected',
-          'ng:options': 'item.name group by item.group for item in values'
+          'ng-model': 'selected',
+          'ng-options': 'item.name group by item.group for item in values'
         });
 
         scope.$apply(function() {
@@ -419,8 +419,8 @@ describe('select', function() {
 
       it('should bind to scope value through experession', function() {
         createSelect({
-          'ng:model': 'selected',
-          'ng:options': 'item.id as item.name for item in values'
+          'ng-model': 'selected',
+          'ng-options': 'item.id as item.name for item in values'
         });
 
         scope.$apply(function() {
@@ -440,8 +440,8 @@ describe('select', function() {
 
       it('should bind to object key', function() {
         createSelect({
-          'ng:model': 'selected',
-          'ng:options': 'key as value for (key, value) in object'
+          'ng-model': 'selected',
+          'ng-options': 'key as value for (key, value) in object'
         });
 
         scope.$apply(function() {
@@ -461,8 +461,8 @@ describe('select', function() {
 
       it('should bind to object value', function() {
         createSelect({
-          'ng:model': 'selected',
-          'ng:options': 'value as key for (key, value) in object'
+          'ng-model': 'selected',
+          'ng-options': 'value as key for (key, value) in object'
         });
 
         scope.$apply(function() {
@@ -592,9 +592,9 @@ describe('select', function() {
       });
 
 
-      it('should support binding via ng:bind-template attribute', function () {
+      it('should support binding via ng-bind-template attribute', function () {
         var option;
-        createSingleSelect('<option value="" ng:bind-template="blank is {{blankVal}}"></option>');
+        createSingleSelect('<option value="" ng-bind-template="blank is {{blankVal}}"></option>');
 
         scope.$apply(function() {
           scope.blankVal = 'so blank';
@@ -609,9 +609,9 @@ describe('select', function() {
       });
 
 
-      it('should support biding via ng:bind attribute', function () {
+      it('should support biding via ng-bind attribute', function () {
         var option;
-        createSingleSelect('<option value="" ng:bind="blankVal"></option>');
+        createSingleSelect('<option value="" ng-bind="blankVal"></option>');
 
         scope.$apply(function() {
           scope.blankVal = 'is blank';
@@ -664,8 +664,8 @@ describe('select', function() {
 
       it('should update model on change through expression', function() {
         createSelect({
-          'ng:model': 'selected',
-          'ng:options': 'item.id as item.name for item in values'
+          'ng-model': 'selected',
+          'ng-options': 'item.id as item.name for item in values'
         });
 
         scope.$apply(function() {
@@ -745,9 +745,9 @@ describe('select', function() {
 
       it('should select from object', function() {
         createSelect({
-          'ng:model':'selected',
+          'ng-model':'selected',
           'multiple':true,
-          'ng:options':'key as value for (key,value) in values'
+          'ng-options':'key as value for (key,value) in values'
         });
         scope.values = {'0':'A', '1':'B'};
 
@@ -766,13 +766,13 @@ describe('select', function() {
     });
 
 
-    describe('ng:required', function() {
+    describe('ng-required', function() {
 
-      it('should allow bindings on ng:required', function() {
+      it('should allow bindings on ng-required', function() {
         createSelect({
-          'ng:model': 'value',
-          'ng:options': 'item.name for item in values',
-          'ng:required': '{{required}}'
+          'ng-model': 'value',
+          'ng-options': 'item.name for item in values',
+          'ng-required': '{{required}}'
         }, true);
 
 
@@ -831,24 +831,24 @@ describe('select', function() {
 
 
     it('should populate value attribute on OPTION', inject(function($rootScope, $compile) {
-      element = $compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
+      element = $compile('<select ng-model="x"><option>abc</option></select>')($rootScope)
       expect(element).toHaveValue('abc');
     }));
 
     it('should ignore value if already exists', inject(function($rootScope, $compile) {
-      element = $compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
+      element = $compile('<select ng-model="x"><option value="abc">xyz</option></select>')($rootScope)
       expect(element).toHaveValue('abc');
     }));
 
     it('should set value even if newlines present', inject(function($rootScope, $compile) {
-      element = $compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
+      element = $compile('<select ng-model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
       expect(element).toHaveValue('\nabc\n');
     }));
 
     it('should set value even if self closing HTML', inject(function($rootScope, $compile) {
       // IE removes the \n from option, which makes this test pointless
       if (msie) return;
-      element = $compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
+      element = $compile('<select ng-model="x"><option>\n</option></select>')($rootScope)
       expect(element).toHaveValue('\n');
     }));
   });

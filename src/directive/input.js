@@ -13,17 +13,17 @@ var inputType = {
    * @description
    * Standard HTML text input with angular data binding.
    *
-   * @param {string} ng:model Assignable angular expression to data-bind to.
+   * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the widgets is published.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
-   * @param {string=} ng:change Angular expression to be executed when input changes due to user
+   * @param {string=} ng-change Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
    * @example
@@ -35,12 +35,12 @@ var inputType = {
              $scope.word = /^\w*$/;
            }
          </script>
-         <form name="myForm" ng:controller="Ctrl">
-           Single word: <input type="text" name="input" ng:model="text"
-                               ng:pattern="word" required>
-           <span class="error" ng:show="myForm.input.error.REQUIRED">
+         <form name="myForm" ng-controller="Ctrl">
+           Single word: <input type="text" name="input" ng-model="text"
+                               ng-pattern="word" required>
+           <span class="error" ng-show="myForm.input.error.REQUIRED">
              Required!</span>
-           <span class="error" ng:show="myForm.input.error.PATTERN">
+           <span class="error" ng-show="myForm.input.error.PATTERN">
              Single word only!</span>
 
            <tt>text = {{text}}</tt><br/>
@@ -80,19 +80,19 @@ var inputType = {
    * Text input with number validation and transformation. Sets the `NUMBER` validation
    * error if not a valid number.
    *
-   * @param {string} ng:model Assignable angular expression to data-bind to.
+   * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the widgets is published.
    * @param {string=} min Sets the `MIN` validation error key if the value entered is less then `min`.
    * @param {string=} max Sets the `MAX` validation error key if the value entered is greater then `min`.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
-   * @param {string=} ng:change Angular expression to be executed when input changes due to user
+   * @param {string=} ng-change Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
    * @example
@@ -103,12 +103,12 @@ var inputType = {
              $scope.value = 12;
            }
          </script>
-         <form name="myForm" ng:controller="Ctrl">
-           Number: <input type="number" name="input" ng:model="value"
+         <form name="myForm" ng-controller="Ctrl">
+           Number: <input type="number" name="input" ng-model="value"
                           min="0" max="99" required>
-           <span class="error" ng:show="myForm.list.error.REQUIRED">
+           <span class="error" ng-show="myForm.list.error.REQUIRED">
              Required!</span>
-           <span class="error" ng:show="myForm.list.error.NUMBER">
+           <span class="error" ng-show="myForm.list.error.NUMBER">
              Not valid number!</span>
            <tt>value = {{value}}</tt><br/>
            <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
@@ -148,17 +148,17 @@ var inputType = {
    * Text input with URL validation. Sets the `URL` validation error key if the content is not a
    * valid URL.
    *
-   * @param {string} ng:model Assignable angular expression to data-bind to.
+   * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the widgets is published.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
-   * @param {string=} ng:change Angular expression to be executed when input changes due to user
+   * @param {string=} ng-change Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
    * @example
@@ -169,11 +169,11 @@ var inputType = {
              $scope.text = 'http://google.com';
            }
          </script>
-         <form name="myForm" ng:controller="Ctrl">
-           URL: <input type="url" name="input" ng:model="text" required>
-           <span class="error" ng:show="myForm.input.error.REQUIRED">
+         <form name="myForm" ng-controller="Ctrl">
+           URL: <input type="url" name="input" ng-model="text" required>
+           <span class="error" ng-show="myForm.input.error.REQUIRED">
              Required!</span>
-           <span class="error" ng:show="myForm.input.error.url">
+           <span class="error" ng-show="myForm.input.error.url">
              Not valid url!</span>
            <tt>text = {{text}}</tt><br/>
            <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
@@ -213,14 +213,14 @@ var inputType = {
    * Text input with email validation. Sets the `EMAIL` validation error key if not a valid email
    * address.
    *
-   * @param {string} ng:model Assignable angular expression to data-bind to.
+   * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the widgets is published.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
    *
@@ -232,11 +232,11 @@ var inputType = {
              $scope.text = 'me@example.com';
            }
          </script>
-           <form name="myForm" ng:controller="Ctrl">
-             Email: <input type="email" name="input" ng:model="text" required>
-             <span class="error" ng:show="myForm.input.error.REQUIRED">
+           <form name="myForm" ng-controller="Ctrl">
+             Email: <input type="email" name="input" ng-model="text" required>
+             <span class="error" ng-show="myForm.input.error.REQUIRED">
                Required!</span>
-             <span class="error" ng:show="myForm.input.error.EMAIL">
+             <span class="error" ng-show="myForm.input.error.EMAIL">
                Not valid email!</span>
              <tt>text = {{text}}</tt><br/>
              <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
@@ -275,10 +275,10 @@ var inputType = {
    * @description
    * HTML radio button.
    *
-   * @param {string} ng:model Assignable angular expression to data-bind to.
+   * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string} value The value to which the expression should be set when selected.
    * @param {string=} name Property name of the form under which the widgets is published.
-   * @param {string=} ng:change Angular expression to be executed when input changes due to user
+   * @param {string=} ng-change Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
    * @example
@@ -289,10 +289,10 @@ var inputType = {
              $scope.color = 'blue';
            }
          </script>
-         <form name="myForm" ng:controller="Ctrl">
-           <input type="radio" ng:model="color" value="red">  Red <br/>
-           <input type="radio" ng:model="color" value="green"> Green <br/>
-           <input type="radio" ng:model="color" value="blue"> Blue <br/>
+         <form name="myForm" ng-controller="Ctrl">
+           <input type="radio" ng-model="color" value="red">  Red <br/>
+           <input type="radio" ng-model="color" value="green"> Green <br/>
+           <input type="radio" ng-model="color" value="blue"> Blue <br/>
            <tt>color = {{color}}</tt><br/>
           </form>
         </doc:source>
@@ -316,11 +316,11 @@ var inputType = {
    * @description
    * HTML checkbox.
    *
-   * @param {string} ng:model Assignable angular expression to data-bind to.
+   * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the widgets is published.
-   * @param {string=} ng:true-value The value to which the expression should be set when selected.
-   * @param {string=} ng:false-value The value to which the expression should be set when not selected.
-   * @param {string=} ng:change Angular expression to be executed when input changes due to user
+   * @param {string=} ng-true-value The value to which the expression should be set when selected.
+   * @param {string=} ng-false-value The value to which the expression should be set when not selected.
+   * @param {string=} ng-change Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
    * @example
@@ -332,10 +332,10 @@ var inputType = {
              $scope.value2 = 'YES'
            }
          </script>
-         <form name="myForm" ng:controller="Ctrl">
-           Value1: <input type="checkbox" ng:model="value1"> <br/>
-           Value2: <input type="checkbox" ng:model="value2"
-                          ng:true-value="YES" ng:false-value="NO"> <br/>
+         <form name="myForm" ng-controller="Ctrl">
+           Value1: <input type="checkbox" ng-model="value1"> <br/>
+           Value2: <input type="checkbox" ng-model="value2"
+                          ng-true-value="YES" ng-false-value="NO"> <br/>
            <tt>value1 = {{value1}}</tt><br/>
            <tt>value2 = {{value2}}</tt><br/>
           </form>
@@ -607,17 +607,17 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * properties of this element are exactly the same as those of the
  * {@link angular.module.ng.$compileProvider.directive.input input element}.
  *
- * @param {string} ng:model Assignable angular expression to data-bind to.
+ * @param {string} ng-model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
- * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
  *    minlength.
- * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
  *    maxlength.
- * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+ * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
- * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ * @param {string=} ng-change Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  */
 
@@ -630,17 +630,17 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * HTML input element widget with angular data-binding. Input widget follows HTML5 input types
  * and polyfills the HTML5 validation behavior for older browsers.
  *
- * @param {string} ng:model Assignable angular expression to data-bind to.
+ * @param {string} ng-model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the widgets is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
- * @param {number=} ng:minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
  *    minlength.
- * @param {number=} ng:maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
  *    maxlength.
- * @param {string=} ng:pattern Sets `PATTERN` validation error key if the value does not match the
+ * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
- * @param {string=} ng:change Angular expression to be executed when input changes due to user
+ * @param {string=} ng-change Angular expression to be executed when input changes due to user
  *    interaction with the input element.
  *
  * @example
@@ -651,16 +651,16 @@ function checkboxInputType(scope, element, attr, ctrl) {
            $scope.user = {name: 'guest', last: 'visitor'};
          }
        </script>
-       <div ng:controller="Ctrl">
+       <div ng-controller="Ctrl">
          <form name="myForm">
-           User name: <input type="text" name="userName" ng:model="user.name" required>
-           <span class="error" ng:show="myForm.userName.error.REQUIRED">
+           User name: <input type="text" name="userName" ng-model="user.name" required>
+           <span class="error" ng-show="myForm.userName.error.REQUIRED">
              Required!</span><br>
-           Last name: <input type="text" name="lastName" ng:model="user.last"
-             ng:minlength="3" ng:maxlength="10">
-           <span class="error" ng:show="myForm.lastName.error.MINLENGTH">
+           Last name: <input type="text" name="lastName" ng-model="user.last"
+             ng-minlength="3" ng-maxlength="10">
+           <span class="error" ng-show="myForm.lastName.error.MINLENGTH">
              Too short!</span>
-           <span class="error" ng:show="myForm.lastName.error.MAXLENGTH">
+           <span class="error" ng-show="myForm.lastName.error.MAXLENGTH">
              Too long!</span><br>
          </form>
          <hr>
@@ -730,7 +730,7 @@ var inputDirective = [function() {
 
 /**
  * @ngdoc object
- * @name angular.module.ng.$compileProvider.directive.ng:model.NgModelController
+ * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController
  *
  * @property {string} viewValue Actual string value in the view.
  * @property {*} modelValue The value in the model, that the widget is bound to.
@@ -767,8 +767,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng:model.NgModelController#touch
-   * @methodOf angular.module.ng.$compileProvider.directive.ng:model.NgModelController
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#touch
+   * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @return {boolean} Whether it did change state.
    *
@@ -795,8 +795,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng:model.NgModelController#setValidity
-   * @methodOf angular.module.ng.$compileProvider.directive.ng:model.NgModelController
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#setValidity
+   * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
    * Change the validity state, and notifies the form when the widget changes validity. (i.e. does
@@ -830,8 +830,8 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng:model.NgModelController#read
-   * @methodOf angular.module.ng.$compileProvider.directive.ng:model.NgModelController
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#read
+   * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
    * Read a value from view.
@@ -886,15 +886,15 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:model
+ * @name angular.module.ng.$compileProvider.directive.ng-model
  *
  * @element input
  *
  * @description
  * Is directive that tells Angular to do two-way data binding. It works together with `input`,
- * `select`, `textarea`. You can easily write your own directives to use `ng:model` as well.
+ * `select`, `textarea`. You can easily write your own directives to use `ng-model` as well.
  *
- * `ng:model` is responsible for:
+ * `ng-model` is responsible for:
  *
  * - binding the view into the model, which other directives such as `input`, `textarea` or `select`
  *   require,
@@ -903,7 +903,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
  * - setting related css class onto the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`),
  * - register the widget with parent {@link angular.module.ng.$compileProvider.directive.form form}.
  *
- * For basic examples, how to use `ng:model`, see:
+ * For basic examples, how to use `ng-model`, see:
  *
  *  - {@link angular.module.ng.$compileProvider.directive.input input}
  *    - {@link angular.module.ng.$compileProvider.directive.input.text text}
@@ -945,13 +945,13 @@ var ngModelDirective = [function() {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:change
+ * @name angular.module.ng.$compileProvider.directive.ng-change
  *
  * @description
  * Evaluate given expression when user changes the input.
  * The expression is not evaluated when the value change is coming from the model.
  *
- * Note, this directive requires `ng:model` to be present.
+ * Note, this directive requires `ng-model` to be present.
  *
  * @element input
  *
@@ -966,9 +966,9 @@ var ngModelDirective = [function() {
  *         };
  *       }
  *     </script>
- *     <div ng:controller="Controller">
- *       <input type="checkbox" ng:model="confirmed" ng:change="change()" id="ng-change-example1" />
- *       <input type="checkbox" ng:model="confirmed" id="ng-change-example2" />
+ *     <div ng-controller="Controller">
+ *       <input type="checkbox" ng-model="confirmed" ng-change="change()" id="ng-change-example1" />
+ *       <input type="checkbox" ng-model="confirmed" id="ng-change-example2" />
  *       <label for="ng-change-example2">Confirmed</label><br />
  *       debug = {{confirmed}}<br />
  *       counter = {{counter}}
@@ -1002,22 +1002,22 @@ var ngChangeDirective = valueFn({
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:model-instant
+ * @name angular.module.ng.$compileProvider.directive.ng-model-instant
  *
  * @element input
  *
  * @description
  * By default, Angular udpates the model only on `blur` event - when the input looses focus.
- * If you want to update after every key stroke, use `ng:model-instant`.
+ * If you want to update after every key stroke, use `ng-model-instant`.
  *
  * @example
  * <doc:example>
  *   <doc:source>
- *     First name: <input type="text" ng:model="firstName" /><br />
- *     Last name: <input type="text" ng:model="lastName" ng:model-instant /><br />
+ *     First name: <input type="text" ng-model="firstName" /><br />
+ *     Last name: <input type="text" ng-model="lastName" ng-model-instant /><br />
  *
  *     First name ({{firstName}}) is only updated on `blur` event, but the last name ({{lastName}})
- *     is updated immediately, because of using `ng:model-instant`.
+ *     is updated immediately, because of using `ng-model-instant`.
  *   </doc:source>
  *   <doc:scenario>
  *     it('should update first name on blur', function() {
@@ -1099,7 +1099,7 @@ var requiredDirective = [function() {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:list
+ * @name angular.module.ng.$compileProvider.directive.ng-list
  *
  * @description
  * Text input that converts between comma-seperated string into an array of strings.
@@ -1114,9 +1114,9 @@ var requiredDirective = [function() {
            $scope.names = ['igor', 'misko', 'vojta'];
          }
        </script>
-       <form name="myForm" ng:controller="Ctrl">
-         List: <input name="input" ng:model="names" ng:list required>
-         <span class="error" ng:show="myForm.list.error.REQUIRED">
+       <form name="myForm" ng-controller="Ctrl">
+         List: <input name="input" ng-model="names" ng-list required>
+         <span class="error" ng-show="myForm.list.error.REQUIRED">
            Required!</span>
          <tt>names = {{names}}</tt><br/>
          <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>

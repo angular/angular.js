@@ -2,12 +2,12 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:view
+ * @name angular.module.ng.$compileProvider.directive.ng-view
  * @restrict ECA
  *
  * @description
  * # Overview
- * `ng:view` is a directive that complements the {@link angular.module.ng.$route $route} service by
+ * `ng-view` is a directive that complements the {@link angular.module.ng.$route $route} service by
  * including the rendered template of the current route into the main layout (`index.html`) file.
  * Every time the current route changes, the included view changes with it according to the
  * configuration of the `$route` service.
@@ -59,7 +59,7 @@
           }
         </script>
 
-        <div ng:controller="MainCntl">
+        <div ng-controller="MainCntl">
           Choose:
           <a href="/Book/Moby">Moby</a> |
           <a href="/Book/Moby/ch/1">Moby: Ch1</a> |
@@ -67,7 +67,7 @@
           <a href="/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
           <a href="/Book/Scarlet">Scarlet Letter</a><br/>
 
-          <ng:view></ng:view>
+          <div ng-view></div>
           <hr />
 
           <pre>$location.path() = {{$location.path()}}</pre>
@@ -80,13 +80,13 @@
       <doc:scenario>
         it('should load and compile correct template', function() {
           element('a:contains("Moby: Ch1")').click();
-          var content = element('.doc-example-live ng\\:view').text();
+          var content = element('.doc-example-live [ng-view]').text();
           expect(content).toMatch(/controller\: ChapterCntl/);
           expect(content).toMatch(/Book Id\: Moby/);
           expect(content).toMatch(/Chapter Id\: 1/);
 
           element('a:contains("Scarlet")').click();
-          content = element('.doc-example-live ng\\:view').text();
+          content = element('.doc-example-live [ng-view]').text();
           expect(content).toMatch(/controller\: BookCntl/);
           expect(content).toMatch(/Book Id\: Scarlet/);
         });
@@ -97,11 +97,11 @@
 
 /**
  * @ngdoc event
- * @name angular.module.ng.$compileProvider.directive.ng:view#$viewContentLoaded
- * @eventOf angular.module.ng.$compileProvider.directive.ng:view
- * @eventType emit on the current ng:view scope
+ * @name angular.module.ng.$compileProvider.directive.ng-view#$viewContentLoaded
+ * @eventOf angular.module.ng.$compileProvider.directive.ng-view
+ * @eventType emit on the current ng-view scope
  * @description
- * Emitted every time the ng:view content is reloaded.
+ * Emitted every time the ng-view content is reloaded.
  */
 var ngViewDirective = ['$http', '$templateCache', '$route', '$anchorScroll', '$compile',
                        '$controller',

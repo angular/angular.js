@@ -51,22 +51,6 @@ if ('i' !== 'I'.toLowerCase()) {
 
 function fromCharCode(code) {return String.fromCharCode(code);}
 
-/**
- * Creates the element for IE8 and below to allow styling of widgets
- * (http://ejohn.org/blog/html5-shiv/). This hack works only if angular is
- * included synchronously at the top of the document before IE sees any
- * unknown elements. See regression/issue-584.html.
- *
- * @param {string} elementName Name of the widget.
- * @returns {string} Lowercased string.
- */
-function shivForIE(elementName) {
-  elementName = lowercase(elementName);
-  if (msie < 9 && elementName.charAt(0) != '@') { // ignore attr-widgets
-    document.createElement(elementName);
-  }
-  return elementName;
-}
 
 var $boolean          = 'boolean',
     $console          = 'console',
@@ -445,7 +429,7 @@ function makeMap(str){
 
 
 /**
- * HTML class which is the only class which can be used in ng:bind to inline HTML for security
+ * HTML class which is the only class which can be used in ng-bind to inline HTML for security
  * reasons.
  *
  * @constructor
@@ -758,7 +742,7 @@ function startingTag(element) {
     // are not allowed to have children. So we just ignore it.
     element.html('');
   } catch(e) {};
-  return jqLite('<div>').append(element).html().replace(/\<\/[\w\:\-]+\>$/, '');
+   return lowercase(jqLite('<div>').append(element).html().match(/^(<[^>]+>)/)[1]);
 }
 
 
@@ -831,7 +815,7 @@ function encodeUriQuery(val, pctEncodeSpaces) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:app
+ * @name angular.module.ng.$compileProvider.directive.ng-app
  *
  * @element ANY
  * @param {angular.Module} module on optional application
@@ -844,11 +828,11 @@ function encodeUriQuery(val, pctEncodeSpaces) {
  * designates the root of the application and is typically placed
  * ot the root of the page.
  *
- * In the example below if the `ng:app` directive would not be placed
+ * In the example below if the `ng-app` directive would not be placed
  * on the `html` element then the document would not be compiled
  * and the `{{ 1+2 }}` would not be resolved to `3`.
  *
- * `ng:app` is the easiest way to bootstrap an application.
+ * `ng-app` is the easiest way to bootstrap an application.
  *
  <doc:example>
    <doc:source>
