@@ -937,7 +937,7 @@ var ngStyleDirective = ngDirective(function(scope, element, attr) {
  */
 var ngCloakDirective = ngDirective({
   compile: function(element, attr) {
-    attr.$set(attr.$attr.ngCloak, undefined);
+    attr.$set('ngCloak', undefined);
     element.removeClass('ng-cloak');
   }
 });
