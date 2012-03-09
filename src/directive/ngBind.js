@@ -14,7 +14,7 @@
  * `<span ng-bind="expression"></span>` when the template is compiled.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ng-bind {@link guide/dev_guide.expressions Expression} to evaluate.
  *
  * @example
  * Enter a name in the Live Preview text box; the greeting below the text box changes instantly.
@@ -60,7 +60,7 @@ var ngBindDirective = ngDirective(function(scope, element, attr) {
  * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ng-bind-html-unsafe {@link guide/dev_guide.expressions Expression} to evaluate.
  */
 var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
   element.addClass('ng-binding').data('$binding', attr.ngBindHtmlUnsafe);
@@ -82,7 +82,7 @@ var ngBindHtmlUnsafeDirective = ngDirective(function(scope, element, attr) {
  * See {@link angular.module.ng.$sanitize $sanitize} docs for examples.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate.
+ * @param {expression} ng-bind-html {@link guide/dev_guide.expressions Expression} to evaluate.
  */
 var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
   return function(scope, element, attr) {
@@ -108,7 +108,7 @@ var ngBindHtmlDirective = ['$sanitize', function($sanitize) {
  * can not have SPAN elements such as TITLE, or OPTION to name a few.)
  *
  * @element ANY
- * @param {string} template of form
+ * @param {string} ng-bind-template template of form
  *   <tt>{{</tt> <tt>expression</tt> <tt>}}</tt> to eval.
  *
  * @example
@@ -191,7 +191,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
  *
  *
  * @element ANY
- * @param {string} attribute_json one or more JSON key-value pairs representing
+ * @param {string} ng-bind-attr one or more JSON key-value pairs representing
  *    the attributes to replace with expressions. Each key matches an attribute
  *    which needs to be replaced. Each value is a text template of
  *    the attribute with the embedded
