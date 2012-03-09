@@ -14,7 +14,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
 
   var HTML_TEMPLATE =
     '<!doctype html>\n' +
-    '<html xmlns:ng="http://angularjs.org" ng:app_MODULE_>\n' +
+    '<html ng-app_MODULE_>\n' +
     ' <script src="' + angularJsUrl + '"></script>\n' +
     '_SCRIPT_SOURCE_' +
     ' <body>\n' +

@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:view', function() {
+describe('ng-view', function() {
   var element;
 
   beforeEach(module(function() {
@@ -118,7 +118,7 @@ describe('ng:view', function() {
   });
 
 
-  it('should be possible to nest ng:view in ng:include', inject(function() {
+  it('should be possible to nest ng-view in ng-include', inject(function() {
     // TODO(vojta): refactor this test
     dealoc(element);
     var injector = angular.injector(['ng', 'ngMock', function($routeProvider) {
@@ -149,7 +149,7 @@ describe('ng:view', function() {
 
   it('should initialize view template after the view controller was initialized even when ' +
      'templates were cached', function() {
-     //this is a test for a regression that was introduced by making the ng:view cache sync
+     //this is a test for a regression that was introduced by making the ng-view cache sync
     function ParentCtrl($scope) {
        $scope.log.push('parent');
     }
@@ -168,8 +168,8 @@ describe('ng:view', function() {
 
       $location.path('/foo');
       $httpBackend.expect('GET', 'viewPartial.html').
-          respond('<div ng:init="log.push(\'init\')">' +
-                    '<div ng:controller="ChildCtrl"></div>' +
+          respond('<div ng-init="log.push(\'init\')">' +
+                    '<div ng-controller="ChildCtrl"></div>' +
                   '</div>');
       $rootScope.$apply();
       $httpBackend.flush();

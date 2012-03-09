@@ -200,11 +200,11 @@ describe('NgModelController', function() {
   });
 });
 
-describe('ng:model', function() {
+describe('ng-model', function() {
 
   it('should set css classes (ng-valid, ng-invalid, ng-pristine, ng-dirty)',
       inject(function($compile, $rootScope) {
-    var element = $compile('<input type="email" ng:model="value" />')($rootScope);
+    var element = $compile('<input type="email" ng-model="value" />')($rootScope);
 
     $rootScope.$digest();
     expect(element).toBeValid();
@@ -256,7 +256,7 @@ describe('input', function() {
 
 
   it('should bind to a model', function() {
-    compileInput('<input type="text" ng:model="name" name="alias" ng:change="change()" />');
+    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
     scope.$apply(function() {
       scope.name = 'misko';
@@ -267,7 +267,7 @@ describe('input', function() {
 
 
   it('should call $destroy on element remove', function() {
-    compileInput('<input type="text" ng:model="name" name="alias" ng:change="change()" />');
+    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
     var spy = jasmine.createSpy('on destroy');
     scope.$on('$destroy', spy);
@@ -278,7 +278,7 @@ describe('input', function() {
 
 
   it('should update the model on "blur" event', function() {
-    compileInput('<input type="text" ng:model="name" name="alias" ng:change="change()" />');
+    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
     changeInputValueTo('adam');
     expect(scope.name).toEqual('adam');
@@ -286,7 +286,7 @@ describe('input', function() {
 
 
   it('should update the model and trim the value', function() {
-    compileInput('<input type="text" ng:model="name" name="alias" ng:change="change()" />');
+    compileInput('<input type="text" ng-model="name" name="alias" ng-change="change()" />');
 
     changeInputValueTo('  a  ');
     expect(scope.name).toEqual('a');
@@ -294,7 +294,7 @@ describe('input', function() {
 
 
   it('should allow complex reference binding', function() {
-    compileInput('<input type="text" ng:model="obj[\'abc\'].name"/>');
+    compileInput('<input type="text" ng-model="obj[\'abc\'].name"/>');
 
     scope.$apply(function() {
       scope.obj = { abc: { name: 'Misko'} };
@@ -303,7 +303,7 @@ describe('input', function() {
   });
 
 
-  it('should ignore input without ng:model attr', function() {
+  it('should ignore input without ng-model attr', function() {
     compileInput('<input type="text" name="whatever" required />');
 
     browserTrigger(inputElm, 'blur');
@@ -316,14 +316,14 @@ describe('input', function() {
 
   it('should report error on assignment error', function() {
     expect(function() {
-      compileInput('<input type="text" ng:model="throw \'\'">');
+      compileInput('<input type="text" ng-model="throw \'\'">');
       scope.$digest();
     }).toThrow("Syntax Error: Token '''' is an unexpected token at column 7 of the expression [throw ''] starting at [''].");
   });
 
 
   it("should render as blank if null", function() {
-    compileInput('<input type="text" ng:model="age" />');
+    compileInput('<input type="text" ng-model="age" />');
 
     scope.$apply(function() {
       scope.age = null;
@@ -335,7 +335,7 @@ describe('input', function() {
 
 
   it('should render 0 even if it is a number', function() {
-    compileInput('<input type="text" ng:model="value" />');
+    compileInput('<input type="text" ng-model="value" />');
     scope.$apply(function() {
       scope.value = 0;
     });
@@ -347,7 +347,7 @@ describe('input', function() {
   describe('pattern', function() {
 
     it('should validate in-lined pattern', function() {
-      compileInput('<input type="text" ng:model="value" ng:pattern="/^\\d\\d\\d-\\d\\d-\\d\\d\\d\\d$/" />');
+      compileInput('<input type="text" ng-model="value" ng-pattern="/^\\d\\d\\d-\\d\\d-\\d\\d\\d\\d$/" />');
       scope.$digest();
 
       changeInputValueTo('x000-00-0000x');
@@ -368,7 +368,7 @@ describe('input', function() {
 
 
     it('should validate pattern from scope', function() {
-      compileInput('<input type="text" ng:model="value" ng:pattern="regexp" />');
+      compileInput('<input type="text" ng-model="value" ng-pattern="regexp" />');
       scope.regexp = /^\d\d\d-\d\d-\d\d\d\d$/;
       scope.$digest();
 
@@ -398,7 +398,7 @@ describe('input', function() {
 
 
     xit('should throw an error when scope pattern can\'t be found', function() {
-      compileInput('<input type="text" ng:model="foo" ng:pattern="fooRegexp" />');
+      compileInput('<input type="text" ng-model="foo" ng-pattern="fooRegexp" />');
 
       expect(function() { changeInputValueTo('xx'); }).
           toThrow('Expected fooRegexp to be a RegExp but was undefined');
@@ -409,7 +409,7 @@ describe('input', function() {
   describe('minlength', function() {
 
     it('should invalid shorter than given minlenght', function() {
-      compileInput('<input type="text" ng:model="value" ng:minlength="3" />');
+      compileInput('<input type="text" ng-model="value" ng-minlength="3" />');
 
       changeInputValueTo('aa');
       expect(scope.value).toBeUndefined();
@@ -423,7 +423,7 @@ describe('input', function() {
   describe('maxlength', function() {
 
     it('should invalid shorter than given maxlenght', function() {
-      compileInput('<input type="text" ng:model="value" ng:maxlength="5" />');
+      compileInput('<input type="text" ng-model="value" ng-maxlength="5" />');
 
       changeInputValueTo('aaaaaaaa');
       expect(scope.value).toBeUndefined();
@@ -439,7 +439,7 @@ describe('input', function() {
   describe('number', function() {
 
     it('should not update model if view invalid', function() {
-      compileInput('<input type="number" ng:model="age"/>');
+      compileInput('<input type="number" ng-model="age"/>');
 
       scope.$apply(function() {
         scope.age = 123;
@@ -461,7 +461,7 @@ describe('input', function() {
 
 
     it('should render as blank if null', function() {
-      compileInput('<input type="number" ng:model="age" />');
+      compileInput('<input type="number" ng-model="age" />');
 
       scope.$apply(function() {
         scope.age = null;
@@ -473,7 +473,7 @@ describe('input', function() {
 
 
     it('should come up blank when no value specified', function() {
-      compileInput('<input type="number" ng:model="age" />');
+      compileInput('<input type="number" ng-model="age" />');
 
       scope.$digest();
       expect(inputElm.val()).toBe('');
@@ -488,7 +488,7 @@ describe('input', function() {
 
 
     it('should parse empty string to null', function() {
-      compileInput('<input type="number" ng:model="age" />');
+      compileInput('<input type="number" ng-model="age" />');
 
       scope.$apply(function() {
         scope.age = 10;
@@ -503,7 +503,7 @@ describe('input', function() {
     describe('min', function() {
 
       it('should validate', function() {
-        compileInput('<input type="number" ng:model="value" name="alias" min="10" />');
+        compileInput('<input type="number" ng-model="value" name="alias" min="10" />');
         scope.$digest();
 
         changeInputValueTo('1');
@@ -522,7 +522,7 @@ describe('input', function() {
     describe('max', function() {
 
       it('should validate', function() {
-        compileInput('<input type="number" ng:model="value" name="alias" max="10" />');
+        compileInput('<input type="number" ng-model="value" name="alias" max="10" />');
         scope.$digest();
 
         changeInputValueTo('20');
@@ -541,7 +541,7 @@ describe('input', function() {
     describe('required', function() {
 
       it('should be valid even if value is 0', function() {
-        compileInput('<input type="number" ng:model="value" name="alias" required />');
+        compileInput('<input type="number" ng-model="value" name="alias" required />');
 
         changeInputValueTo('0');
         expect(inputElm).toBeValid();
@@ -550,7 +550,7 @@ describe('input', function() {
       });
 
       it('should be valid even if value 0 is set from model', function() {
-        compileInput('<input type="number" ng:model="value" name="alias" required />');
+        compileInput('<input type="number" ng-model="value" name="alias" required />');
 
         scope.$apply(function() {
           scope.value = 0;
@@ -566,7 +566,7 @@ describe('input', function() {
   describe('email', function() {
 
     it('should validate e-mail', function() {
-      compileInput('<input type="email" ng:model="email" name="alias" />');
+      compileInput('<input type="email" ng-model="email" name="alias" />');
 
       var widget = scope.form.alias;
       changeInputValueTo('vojta@google.com');
@@ -595,7 +595,7 @@ describe('input', function() {
   describe('url', function() {
 
     it('should validate url', function() {
-      compileInput('<input type="url" ng:model="url" name="alias" />');
+      compileInput('<input type="url" ng-model="url" name="alias" />');
       var widget = scope.form.alias;
 
       changeInputValueTo('http://www.something.com');
@@ -624,9 +624,9 @@ describe('input', function() {
 
     it('should update the model', function() {
       compileInput(
-          '<input type="radio" ng:model="color" value="white" />' +
-          '<input type="radio" ng:model="color" value="red" />' +
-          '<input type="radio" ng:model="color" value="blue" />');
+          '<input type="radio" ng-model="color" value="white" />' +
+          '<input type="radio" ng-model="color" value="red" />' +
+          '<input type="radio" ng-model="color" value="blue" />');
 
       scope.$apply(function() {
         scope.color = 'white';
@@ -651,8 +651,8 @@ describe('input', function() {
     xit('should allow {{expr}} as value', function() {
       scope.some = 11;
       compileInput(
-          '<input type="radio" ng:model="value" value="{{some}}" />' +
-          '<input type="radio" ng:model="value" value="{{other}}" />');
+          '<input type="radio" ng-model="value" value="{{some}}" />' +
+          '<input type="radio" ng-model="value" value="{{other}}" />');
 
       browserTrigger(inputElm[0]);
       expect(scope.value).toBe(true);
@@ -665,7 +665,7 @@ describe('input', function() {
 
   describe('checkbox', function() {
 
-    it('should ignore checkbox without ng:model attr', function() {
+    it('should ignore checkbox without ng-model attr', function() {
       compileInput('<input type="checkbox" name="whatever" required />');
 
       browserTrigger(inputElm, 'blur');
@@ -677,7 +677,7 @@ describe('input', function() {
 
 
     it('should format booleans', function() {
-      compileInput('<input type="checkbox" ng:model="name" />');
+      compileInput('<input type="checkbox" ng-model="name" />');
 
       scope.$apply(function() {
         scope.name = false;
@@ -692,7 +692,7 @@ describe('input', function() {
 
 
     it('should support type="checkbox" with non-standard capitalization', function() {
-      compileInput('<input type="checkBox" ng:model="checkbox" />');
+      compileInput('<input type="checkBox" ng-model="checkbox" />');
 
       browserTrigger(inputElm, 'click');
       expect(scope.checkbox).toBe(true);
@@ -703,8 +703,8 @@ describe('input', function() {
 
 
     it('should allow custom enumeration', function() {
-      compileInput('<input type="checkbox" ng:model="name" ng:true-value="y" ' +
-          'ng:false-value="n">');
+      compileInput('<input type="checkbox" ng-model="name" ng-true-value="y" ' +
+          'ng-false-value="n">');
 
       scope.$apply(function() {
         scope.name = 'y';
@@ -733,7 +733,7 @@ describe('input', function() {
   describe('textarea', function() {
 
     it("should process textarea", function() {
-      compileInput('<textarea ng:model="name"></textarea>');
+      compileInput('<textarea ng-model="name"></textarea>');
       inputElm = formElm.find('textarea');
 
       scope.$apply(function() {
@@ -749,7 +749,7 @@ describe('input', function() {
     });
 
 
-    it('should ignore textarea without ng:model attr', function() {
+    it('should ignore textarea without ng-model attr', function() {
       compileInput('<textarea name="whatever" required></textarea>');
       inputElm = formElm.find('textarea');
 
@@ -762,10 +762,10 @@ describe('input', function() {
   });
 
 
-  describe('ng:list', function() {
+  describe('ng-list', function() {
 
     it('should parse text into an array', function() {
-      compileInput('<input type="text" ng:model="list" ng:list />');
+      compileInput('<input type="text" ng-model="list" ng-list />');
 
       // model -> view
       scope.$apply(function() {
@@ -783,7 +783,7 @@ describe('input', function() {
       // When the user types 'a,b' the 'a,' stage parses to ['a'] but if the
       // $parseModel function runs it will change to 'a', in essence preventing
       // the user from ever typying ','.
-      compileInput('<input type="text" ng:model="list" ng:list />');
+      compileInput('<input type="text" ng-model="list" ng-list />');
 
       changeInputValueTo('a ');
       expect(inputElm.val()).toEqual('a ');
@@ -804,7 +804,7 @@ describe('input', function() {
 
 
     xit('should require at least one item', function() {
-      compileInput('<input type="text" ng:model="list" ng:list required />');
+      compileInput('<input type="text" ng-model="list" ng-list required />');
 
       changeInputValueTo(' , ');
       expect(inputElm).toBeInvalid();
@@ -812,7 +812,7 @@ describe('input', function() {
 
 
     it('should convert empty string to an empty array', function() {
-      compileInput('<input type="text" ng:model="list" ng:list />');
+      compileInput('<input type="text" ng-model="list" ng-list />');
 
       changeInputValueTo('');
       expect(scope.list).toEqual([]);
@@ -822,7 +822,7 @@ describe('input', function() {
   describe('required', function() {
 
     it('should allow bindings on required', function() {
-      compileInput('<input type="text" ng:model="value" required="{{required}}" />');
+      compileInput('<input type="text" ng-model="value" required="{{required}}" />');
 
       scope.$apply(function() {
         scope.required = false;
@@ -853,7 +853,7 @@ describe('input', function() {
 
 
     it('should invalid initial value with bound required', function() {
-      compileInput('<input type="text" ng:model="value" required="{{required}}" />');
+      compileInput('<input type="text" ng-model="value" required="{{required}}" />');
 
       scope.$apply(function() {
         scope.required = true;
@@ -864,7 +864,7 @@ describe('input', function() {
 
 
     it('should be $invalid but $pristine if not touched', function() {
-      compileInput('<input type="text" ng:model="name" name="alias" required />');
+      compileInput('<input type="text" ng-model="name" name="alias" required />');
 
       scope.$apply(function() {
         scope.name = '';
@@ -880,7 +880,7 @@ describe('input', function() {
 
 
     it('should allow empty string if not required', function() {
-      compileInput('<input type="text" ng:model="foo" />');
+      compileInput('<input type="text" ng-model="foo" />');
       changeInputValueTo('a');
       changeInputValueTo('');
       expect(scope.foo).toBe('');
@@ -888,17 +888,17 @@ describe('input', function() {
 
 
     it('should set $invalid when model undefined', function() {
-      compileInput('<input type="text" ng:model="notDefiend" required />');
+      compileInput('<input type="text" ng-model="notDefiend" required />');
       scope.$digest();
       expect(inputElm).toBeInvalid();
     })
   });
 
 
-  describe('ng:change', function() {
+  describe('ng-change', function() {
 
     it('should $eval expression after new value is set in the model', function() {
-      compileInput('<input type="text" ng:model="value" ng:change="change()" />');
+      compileInput('<input type="text" ng-model="value" ng-change="change()" />');
 
       scope.change = jasmine.createSpy('change').andCallFake(function() {
         expect(scope.value).toBe('new value');
@@ -909,7 +909,7 @@ describe('input', function() {
     });
 
     it('should not $eval the expression if changed from model', function() {
-      compileInput('<input type="text" ng:model="value" ng:change="change()" />');
+      compileInput('<input type="text" ng-model="value" ng-change="change()" />');
 
       scope.change = jasmine.createSpy('change');
       scope.$apply(function() {
@@ -920,8 +920,8 @@ describe('input', function() {
     });
 
 
-    it('should $eval ng:change expression on checkbox', function() {
-      compileInput('<input type="checkbox" ng:model="foo" ng:change="changeFn()">');
+    it('should $eval ng-change expression on checkbox', function() {
+      compileInput('<input type="checkbox" ng-model="foo" ng-change="changeFn()">');
 
       scope.changeFn = jasmine.createSpy('changeFn');
       scope.$digest();
@@ -933,10 +933,10 @@ describe('input', function() {
   });
 
 
-  describe('ng:model-instant', function() {
+  describe('ng-model-instant', function() {
 
     it('should bind keydown, change, input events', inject(function($browser) {
-      compileInput('<input type="text" ng:model="value" ng:model-instant />');
+      compileInput('<input type="text" ng-model="value" ng-model-instant />');
 
       inputElm.val('value1');
       browserTrigger(inputElm, 'keydown');

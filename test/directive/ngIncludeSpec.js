@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:include', function() {
+describe('ng-include', function() {
   var element;
 
 
@@ -19,12 +19,14 @@ describe('ng:include', function() {
   it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
       function($rootScope, $compile, $browser) {
     element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+    jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
     $rootScope.childScope = $rootScope.$new();
     $rootScope.childScope.name = 'misko';
     $rootScope.url = 'myUrl';
     $rootScope.$digest();
     expect(element.text()).toEqual('misko');
+    jqLite(document.body).html('');
   }));
 
 
@@ -56,7 +58,7 @@ describe('ng:include', function() {
 
     // TODO(misko): because we are using scope==this, the eval gets registered
     // during the flush phase and hence does not get called.
-    // I don't think passing 'this' makes sense. Does having scope on ng:include makes sense?
+    // I don't think passing 'this' makes sense. Does having scope on ng-include makes sense?
     // should we make scope="this" illegal?
     $rootScope.$digest();
 
@@ -197,7 +199,7 @@ describe('ng:include', function() {
     $rootScope.$on('$includeContentLoaded', onload);
     $templateCache.put('tpl.html', [200, 'partial {{tpl}}', {}]);
 
-    element = $compile('<div><div ng:repeat="i in [1]">' +
+    element = $compile('<div><div ng-repeat="i in [1]">' +
         '<ng:include src="tpl"></ng:include></div></div>')($rootScope);
     expect(onload).not.toHaveBeenCalled();
 

@@ -7,34 +7,34 @@
  * @description
  * HTML `SELECT` element with angular data-binding.
  *
- * # `ng:options`
+ * # `ng-options`
  *
- * Optionally `ng:options` attribute can be used to dynamically generate a list of `<option>`
+ * Optionally `ng-options` attribute can be used to dynamically generate a list of `<option>`
  * elements for a `<select>` element using an array or an object obtained by evaluating the
- * `ng:options` expression.
+ * `ng-options` expression.
  *˝˝
  * When an item in the select menu is select, the value of array element or object property
- * represented by the selected option will be bound to the model identified by the `ng:model` attribute
+ * represented by the selected option will be bound to the model identified by the `ng-model` attribute
  * of the parent select element.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent `null` or "not selected"
  * option. See example below for demonstration.
  *
- * Note: `ng:options` provides iterator facility for `<option>` element which must be used instead
- * of {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}. `ng:repeat` is not suitable for use with
+ * Note: `ng-options` provides iterator facility for `<option>` element which must be used instead
+ * of {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}. `ng-repeat` is not suitable for use with
  * `<option>` element because of the following reasons:
  *
  *   * value attribute of the option element that we need to bind to requires a string, but the
  *     source of data for the iteration might be in a form of array containing objects instead of
  *     strings
- *   * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat} unrolls after the select binds causing
+ *   * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} unrolls after the select binds causing
  *     incorect rendering on most browsers.
  *   * binding to a value not in list confuses most browsers.
  *
  * @param {string} name assignable expression to data-bind to.
  * @param {string=} required The widget is considered valid only if value is entered.
- * @param {comprehension_expression=} ng:options in one of the following forms:
+ * @param {comprehension_expression=} ng-options in one of the following forms:
  *
  *   * for array data sources:
  *     * `label` **`for`** `value` **`in`** `array`
@@ -76,42 +76,42 @@
           $scope.color = $scope.colors[2]; // red
         }
         </script>
-        <div ng:controller="MyCntrl">
+        <div ng-controller="MyCntrl">
           <ul>
-            <li ng:repeat="color in colors">
-              Name: <input ng:model="color.name">
-              [<a href ng:click="colors.$remove(color)">X</a>]
+            <li ng-repeat="color in colors">
+              Name: <input ng-model="color.name">
+              [<a href ng-click="colors.$remove(color)">X</a>]
             </li>
             <li>
-              [<a href ng:click="colors.push({})">add</a>]
+              [<a href ng-click="colors.push({})">add</a>]
             </li>
           </ul>
           <hr/>
           Color (null not allowed):
-          <select ng:model="color" ng:options="c.name for c in colors"></select><br>
+          <select ng-model="color" ng-options="c.name for c in colors"></select><br>
 
           Color (null allowed):
           <div  class="nullable">
-            <select ng:model="color" ng:options="c.name for c in colors">
+            <select ng-model="color" ng-options="c.name for c in colors">
               <option value="">-- chose color --</option>
             </select>
           </div><br/>
 
           Color grouped by shade:
-          <select ng:model="color" ng:options="c.name group by c.shade for c in colors">
+          <select ng-model="color" ng-options="c.name group by c.shade for c in colors">
           </select><br/>
 
 
-          Select <a href ng:click="color={name:'not in list'}">bogus</a>.<br>
+          Select <a href ng-click="color={name:'not in list'}">bogus</a>.<br>
           <hr/>
           Currently selected: {{ {selected_color:color}  }}
           <div style="border:solid 1px black; height:20px"
-               ng:style="{'background-color':color.name}">
+               ng-style="{'background-color':color.name}">
           </div>
         </div>
       </doc:source>
       <doc:scenario>
-         it('should check ng:options', function() {
+         it('should check ng-options', function() {
            expect(binding('{selected_color:color}')).toMatch('red');
            select('color').option('0');
            expect(binding('{selected_color:color}')).toMatch('black');
@@ -200,7 +200,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
           throw Error(
-            "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            "Expected ng-options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
             " but got '" + optionsExp + "'.");
         }
 

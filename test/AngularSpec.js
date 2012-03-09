@@ -317,15 +317,15 @@ describe('angular', function() {
     });
 
 
-    it('should look for ng:app directive in id', function() {
-      var appElement = jqLite('<div id="ng:app" data-ng-app="ABC"></div>')[0];
+    it('should look for ng-app directive in id', function() {
+      var appElement = jqLite('<div id="ng-app" data-ng-app="ABC"></div>')[0];
       jqLite(document.body).append(appElement);
       angularInit(element, bootstrap);
       expect(bootstrap).toHaveBeenCalledOnceWith(appElement, ['ABC']);
     });
 
 
-    it('should look for ng:app directive in className', function() {
+    it('should look for ng-app directive in className', function() {
       var appElement = jqLite('<div data-ng-app="ABC"></div>')[0];
       element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['.ng\\:app'] = [appElement];
@@ -334,7 +334,7 @@ describe('angular', function() {
     });
 
 
-    it('should look for ng:app directive using querySelectorAll', function() {
+    it('should look for ng-app directive using querySelectorAll', function() {
       var appElement = jqLite('<div x-ng-app="ABC"></div>')[0];
       element.querySelectorAll = function(arg) { return element.querySelectorAll[arg] || []; }
       element.querySelectorAll['[ng\\:app]'] = [ appElement ];
@@ -464,7 +464,7 @@ describe('angular', function() {
     if (!msie || msie >= 9) {
       it('should correctly detect node name with "namespace" when xmlns is NOT defined', function() {
         var div = jqLite('<div xmlns:ngtest="http://angularjs.org/">' +
-                           '<ngtest:foo ngtest:attr="bar"></ng:test>' +
+                           '<ngtest:foo ngtest:attr="bar"></ng-test>' +
                          '</div>')[0];
         expect(nodeName_(div.childNodes[0])).toBe('NGTEST:FOO');
         expect(div.childNodes[0].getAttribute('ngtest:attr')).toBe('bar');
@@ -512,7 +512,7 @@ describe('angular', function() {
 
   describe('startingElementHtml', function(){
     it('should show starting element tag only', function(){
-      expect(startingTag('<ng:abc x="2"><div>text</div></ng:abc>')).toEqual('<ng:abc x="2">');
+      expect(startingTag('<ng-abc x="2"><div>text</div></ng-abc>')).toEqual('<ng-abc x="2">');
     });
   });
 

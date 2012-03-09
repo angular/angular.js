@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:bind-*', function() {
+describe('ng-bind-*', function() {
   var element;
 
 
@@ -9,10 +9,10 @@ describe('ng:bind-*', function() {
   });
 
 
-  describe('ng:bind', function() {
+  describe('ng-bind', function() {
 
     it('should set text', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:bind="a"></div>')($rootScope);
+      element = $compile('<div ng-bind="a"></div>')($rootScope);
       expect(element.text()).toEqual('');
       $rootScope.a = 'misko';
       $rootScope.$digest();
@@ -21,7 +21,7 @@ describe('ng:bind-*', function() {
     }));
 
     it('should set text to blank if undefined', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:bind="a"></div>')($rootScope);
+      element = $compile('<div ng-bind="a"></div>')($rootScope);
       $rootScope.a = 'misko';
       $rootScope.$digest();
       expect(element.text()).toEqual('misko');
@@ -34,14 +34,14 @@ describe('ng:bind-*', function() {
     }));
 
     it('should set html', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:bind-html="html"></div>')($rootScope);
+      element = $compile('<div ng-bind-html="html"></div>')($rootScope);
       $rootScope.html = '<div unknown>hello</div>';
       $rootScope.$digest();
       expect(lowercase(element.html())).toEqual('<div>hello</div>');
     }));
 
     it('should set unsafe html', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:bind-html-unsafe="html"></div>')($rootScope);
+      element = $compile('<div ng-bind-html-unsafe="html"></div>')($rootScope);
       $rootScope.html = '<div onclick="">hello</div>';
       $rootScope.$digest();
       expect(lowercase(element.html())).toEqual('<div onclick="">hello</div>');
@@ -61,10 +61,10 @@ describe('ng:bind-*', function() {
   });
 
 
-  describe('ng:bind-template', function() {
+  describe('ng-bind-template', function() {
 
-    it('should ng:bind-template', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:bind-template="Hello {{name}}!"></div>')($rootScope);
+    it('should ng-bind-template', inject(function($rootScope, $compile) {
+      element = $compile('<div ng-bind-template="Hello {{name}}!"></div>')($rootScope);
       $rootScope.name = 'Misko';
       $rootScope.$digest();
       expect(element.hasClass('ng-binding')).toEqual(true);
@@ -79,9 +79,9 @@ describe('ng:bind-*', function() {
   });
 
 
-  describe('ng:bind-attr', function() {
+  describe('ng-bind-attr', function() {
     it('should bind attributes', inject(function($rootScope, $compile) {
-      element = $compile('<div ng:bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>')($rootScope);
+      element = $compile('<div ng-bind-attr="{src:\'http://localhost/mysrc\', alt:\'myalt\'}"/>')($rootScope);
       $rootScope.$digest();
       expect(element.attr('src')).toEqual('http://localhost/mysrc');
       expect(element.attr('alt')).toEqual('myalt');
@@ -94,7 +94,7 @@ describe('ng:bind-*', function() {
     }));
 
     it('should remove special attributes on false', inject(function($rootScope, $compile) {
-      element = $compile('<input ng:bind-attr="{disabled:\'{{disabled}}\', readonly:\'{{readonly}}\', checked:\'{{checked}}\'}"/>')($rootScope);
+      element = $compile('<input ng-bind-attr="{disabled:\'{{disabled}}\', readonly:\'{{readonly}}\', checked:\'{{checked}}\'}"/>')($rootScope);
       var input = element[0];
       expect(input.disabled).toEqual(false);
       expect(input.readOnly).toEqual(false);

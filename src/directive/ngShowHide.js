@@ -2,10 +2,10 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:show
+ * @name angular.module.ng.$compileProvider.directive.ng-show
  *
  * @description
- * The `ng:show` and `ng:hide` directives show or hide a portion of the DOM tree (HTML)
+ * The `ng-show` and `ng-hide` directives show or hide a portion of the DOM tree (HTML)
  * conditionally.
  *
  * @element ANY
@@ -15,12 +15,12 @@
  * @example
    <doc:example>
      <doc:source>
-        Click me: <input type="checkbox" ng:model="checked"><br/>
-        Show: <span ng:show="checked">I show up when your checkbox is checked.</span> <br/>
-        Hide: <span ng:hide="checked">I hide when your checkbox is checked.</span>
+        Click me: <input type="checkbox" ng-model="checked"><br/>
+        Show: <span ng-show="checked">I show up when your checkbox is checked.</span> <br/>
+        Hide: <span ng-hide="checked">I hide when your checkbox is checked.</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:show / ng:hide', function() {
+       it('should check ng-show / ng-hide', function() {
          expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
          expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
 
@@ -42,10 +42,10 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:hide
+ * @name angular.module.ng.$compileProvider.directive.ng-hide
  *
  * @description
- * The `ng:hide` and `ng:show` directives hide or show a portion
+ * The `ng-hide` and `ng-show` directives hide or show a portion
  * of the HTML conditionally.
  *
  * @element ANY
@@ -55,12 +55,12 @@ var ngShowDirective = ngDirective(function(scope, element, attr){
  * @example
    <doc:example>
      <doc:source>
-        Click me: <input type="checkbox" ng:model="checked"><br/>
-        Show: <span ng:show="checked">I show up when you checkbox is checked?</span> <br/>
-        Hide: <span ng:hide="checked">I hide when you checkbox is checked?</span>
+        Click me: <input type="checkbox" ng-model="checked"><br/>
+        Show: <span ng-show="checked">I show up when you checkbox is checked?</span> <br/>
+        Hide: <span ng-hide="checked">I hide when you checkbox is checked?</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:show / ng:hide', function() {
+       it('should check ng-show / ng-hide', function() {
          expect(element('.doc-example-live span:first:hidden').count()).toEqual(1);
          expect(element('.doc-example-live span:last:visible').count()).toEqual(1);
 

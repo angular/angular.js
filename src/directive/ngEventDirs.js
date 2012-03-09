@@ -2,10 +2,10 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:click
+ * @name angular.module.ng.$compileProvider.directive.ng-click
  *
  * @description
- * The ng:click allows you to specify custom behavior when
+ * The ng-click allows you to specify custom behavior when
  * element is clicked.
  *
  * @element ANY
@@ -15,13 +15,13 @@
  * @example
    <doc:example>
      <doc:source>
-      <button ng:click="count = count + 1" ng:init="count=0">
+      <button ng-click="count = count + 1" ng-init="count=0">
         Increment
       </button>
       count: {{count}}
      </doc:source>
      <doc:scenario>
-       it('should check ng:click', function() {
+       it('should check ng-click', function() {
          expect(binding('count')).toBe('0');
          element('.doc-example-live :button').click();
          expect(binding('count')).toBe('1');
@@ -55,39 +55,39 @@ forEach(
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:dblclick
+ * @name angular.module.ng.$compileProvider.directive.ng-dblclick
  *
  * @description
- * The ng:dblclick allows you to specify custom behavior on dblclick event.
+ * The ng-dblclick allows you to specify custom behavior on dblclick event.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
  * dblclick. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:mousedown
+ * @name angular.module.ng.$compileProvider.directive.ng-mousedown
  *
  * @description
- * The ng:mousedown allows you to specify custom behavior on mousedown event.
+ * The ng-mousedown allows you to specify custom behavior on mousedown event.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to evaluate upon
  * mousedown. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:mouseup
+ * @name angular.module.ng.$compileProvider.directive.ng-mouseup
  *
  * @description
  * Specify custom behavior on mouseup event.
@@ -97,12 +97,12 @@ forEach(
  * mouseup. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:mouseover
+ * @name angular.module.ng.$compileProvider.directive.ng-mouseover
  *
  * @description
  * Specify custom behavior on mouseover event.
@@ -112,13 +112,13 @@ forEach(
  * mouseover. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:mouseenter
+ * @name angular.module.ng.$compileProvider.directive.ng-mouseenter
  *
  * @description
  * Specify custom behavior on mouseenter event.
@@ -128,13 +128,13 @@ forEach(
  * mouseenter. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:mouseleave
+ * @name angular.module.ng.$compileProvider.directive.ng-mouseleave
  *
  * @description
  * Specify custom behavior on mouseleave event.
@@ -144,13 +144,13 @@ forEach(
  * mouseleave. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:mousemove
+ * @name angular.module.ng.$compileProvider.directive.ng-mousemove
  *
  * @description
  * Specify custom behavior on mousemove event.
@@ -160,13 +160,13 @@ forEach(
  * mousemove. (Event object is available as `$event`)
  *
  * @example
- * See {@link angular.module.ng.$compileProvider.directive.ng:click ng:click}
+ * See {@link angular.module.ng.$compileProvider.directive.ng-click ng-click}
  */
 
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:submit
+ * @name angular.module.ng.$compileProvider.directive.ng-submit
  *
  * @description
  * Enables binding angular expressions to onsubmit events.
@@ -192,15 +192,15 @@ forEach(
           };
         }
       </script>
-      <form ng:submit="submit()" ng:controller="Ctrl">
+      <form ng-submit="submit()" ng-controller="Ctrl">
         Enter text and hit enter:
-        <input type="text" ng:model="text" name="text" />
+        <input type="text" ng-model="text" name="text" />
         <input type="submit" id="submit" value="Submit" />
         <pre>list={{list}}</pre>
       </form>
      </doc:source>
      <doc:scenario>
-       it('should check ng:submit', function() {
+       it('should check ng-submit', function() {
          expect(binding('list')).toBe('[]');
          element('.doc-example-live #submit').click();
          expect(binding('list')).toBe('["hello"]');

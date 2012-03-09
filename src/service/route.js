@@ -27,8 +27,8 @@ function $RouteProvider(){
    *    - `controller` – `{function()=}` – Controller fn that should be associated with newly
    *      created scope.
    *    - `template` – `{string=}` – path to an html template that should be used by
-   *      {@link angular.module.ng.$compileProvider.directive.ng:view ng:view} or
-   *      {@link angular.module.ng.$compileProvider.directive.ng:include ng:include} widgets.
+   *      {@link angular.module.ng.$compileProvider.directive.ng-view ng-view} or
+   *      {@link angular.module.ng.$compileProvider.directive.ng-include ng-include} widgets.
    *    - `redirectTo` – {(string|function())=} – value to update
    *      {@link angular.module.ng.$location $location} path with and trigger route redirection.
    *
@@ -94,12 +94,12 @@ function $RouteProvider(){
      *
      * You can define routes through {@link angular.module.ng.$routeProvider $routeProvider}'s API.
      *
-     * The `$route` service is typically used in conjunction with {@link angular.module.ng.$compileProvider.directive.ng:view ng:view}
+     * The `$route` service is typically used in conjunction with {@link angular.module.ng.$compileProvider.directive.ng-view ng-view}
      * directive and the {@link angular.module.ng.$routeParams $routeParams} service.
      *
      * @example
        This example shows how changing the URL hash causes the `$route` to match a route against the
-       URL, and the `ng:view` pulls in the partial.
+       URL, and the `ng-view` pulls in the partial.
 
        Note that this example is using {@link angular.module.ng.$compileProvide.directive.script inlined templates}
        to get it working on jsfiddle as well.
@@ -143,7 +143,7 @@ function $RouteProvider(){
             }
           </script>
 
-          <div ng:controller="MainCntl">
+          <div ng-controller="MainCntl">
             Choose:
             <a href="/Book/Moby">Moby</a> |
             <a href="/Book/Moby/ch/1">Moby: Ch1</a> |
@@ -151,7 +151,7 @@ function $RouteProvider(){
             <a href="/Book/Gatsby/ch/4?key=value">Gatsby: Ch4</a> |
             <a href="/Book/Scarlet">Scarlet Letter</a><br/>
 
-            <ng:view></ng:view>
+            <div ng-view></div>
             <hr />
 
             <pre>$location.path() = {{$location.path()}}</pre>
@@ -164,13 +164,13 @@ function $RouteProvider(){
         <doc:scenario>
           it('should load and compile correct template', function() {
             element('a:contains("Moby: Ch1")').click();
-            var content = element('.doc-example-live ng\\:view').text();
+            var content = element('.doc-example-live [ng-view]').text();
             expect(content).toMatch(/controller\: ChapterCntl/);
             expect(content).toMatch(/Book Id\: Moby/);
             expect(content).toMatch(/Chapter Id\: 1/);
 
             element('a:contains("Scarlet")').click();
-            content = element('.doc-example-live ng\\:view').text();
+            content = element('.doc-example-live [ng-view]').text();
             expect(content).toMatch(/controller\: BookCntl/);
             expect(content).toMatch(/Book Id\: Scarlet/);
           });
@@ -228,7 +228,7 @@ function $RouteProvider(){
            * Causes `$route` service to reload the current route even if
            * {@link angular.module.ng.$location $location} hasn't changed.
            *
-           * As a result of that, {@link angular.module.ng.$compileProvider.directive.ng:view ng:view}
+           * As a result of that, {@link angular.module.ng.$compileProvider.directive.ng-view ng-view}
            * creates new scope, reinstantiates the controller.
            */
           reload: function() {

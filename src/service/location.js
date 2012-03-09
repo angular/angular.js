@@ -501,7 +501,7 @@ function $LocationProvider(){
         }
 
         var href = elm.attr('href');
-        if (!href || isDefined(elm.attr('ng:ext-link')) || elm.attr('target')) return;
+        if (!href || isDefined(elm.attr('ng-ext-link')) || elm.attr('target')) return;
 
         // remove same domain from full url links (IE7 always returns full hrefs)
         href = href.replace(absUrlPrefix, '');

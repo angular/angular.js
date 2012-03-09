@@ -2,7 +2,7 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:transclude
+ * @name angular.module.ng.$compileProvider.directive.ng-transclude
  *
  * @description
  * Insert the transcluded DOM here.
@@ -32,9 +32,9 @@
              };
          });
        </script>
-       <div ng:controller="Ctrl">
-         <input ng:model="title"><br>
-         <textarea ng:model="text"></textarea> <br/>
+       <div ng-controller="Ctrl">
+         <input ng-model="title"><br>
+         <textarea ng-model="text"></textarea> <br/>
          <pane title="{{title}}">{{text}}</pane>
        </div>
      </doc:source>

@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:controller', function() {
+describe('ng-controller', function() {
   var element;
 
   beforeEach(inject(function($window) {
@@ -35,19 +35,19 @@ describe('ng:controller', function() {
 
 
   it('should instantiate controller and bind methods', inject(function($compile, $rootScope) {
-    element = $compile('<div ng:controller="Greeter">{{greet(name)}}</div>')($rootScope);
+    element = $compile('<div ng-controller="Greeter">{{greet(name)}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Hello Misko!');
   }));
 
 
   it('should allow nested controllers', inject(function($compile, $rootScope) {
-    element = $compile('<div ng:controller="Greeter"><div ng:controller="Child">{{greet(name)}}</div></div>')($rootScope);
+    element = $compile('<div ng-controller="Greeter"><div ng-controller="Child">{{greet(name)}}</div></div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Hello Adam!');
     dealoc(element);
 
-    element = $compile('<div ng:controller="Greeter"><div ng:controller="Child">{{protoGreet(name)}}</div></div>')($rootScope);
+    element = $compile('<div ng-controller="Greeter"><div ng-controller="Child">{{protoGreet(name)}}</div></div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Hello Adam!');
   }));
@@ -58,7 +58,7 @@ describe('ng:controller', function() {
       $scope.name = 'Vojta';
     };
 
-    element = $compile('<div ng:controller="Greeter">{{name}}</div>')($rootScope);
+    element = $compile('<div ng-controller="Greeter">{{name}}</div>')($rootScope);
     $rootScope.$digest();
     expect(element.text()).toBe('Vojta');
   }));
