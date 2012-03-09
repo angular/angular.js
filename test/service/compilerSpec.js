@@ -1115,7 +1115,23 @@ describe('$compile', function() {
         expect(observeSpy.callCount).toBe(2);
         expect($exceptionHandler.errors).toEqual(['ERROR', 'ERROR']);
       });
-    })
+    });
+
+
+    it('should translate {{}} in terminal nodes', inject(function($rootScope, $compile) {
+      element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope)
+      $rootScope.$digest();
+      expect(sortedHtml(element).replace(' selected="true"', '')).
+        toEqual('<select ng:model="x">' +
+                  '<option>Greet !</option>' +
+                '</select>');
+      $rootScope.name = 'Misko';
+      $rootScope.$digest();
+      expect(sortedHtml(element).replace(' selected="true"', '')).
+        toEqual('<select ng:model="x">' +
+                  '<option>Greet Misko!</option>' +
+                '</select>');
+    }));
   });
 
 

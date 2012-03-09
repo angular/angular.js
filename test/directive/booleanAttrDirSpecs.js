@@ -1,88 +1,12 @@
 'use strict';
 
-describe("markups", function() {
+describe('boolean attr directives', function() {
   var element;
 
   afterEach(function() {
     dealoc(element);
   });
 
-  it('should translate {{}} in text', inject(function($rootScope, $compile) {
-    element = $compile('<div>hello {{name}}!</div>')($rootScope)
-    $rootScope.$digest();
-    expect(sortedHtml(element)).toEqual('<div>hello !</div>');
-    $rootScope.name = 'Misko';
-    $rootScope.$digest();
-    expect(sortedHtml(element)).toEqual('<div>hello Misko!</div>');
-  }));
-
-  it('should translate {{}} in terminal nodes', inject(function($rootScope, $compile) {
-    element = $compile('<select ng:model="x"><option value="">Greet {{name}}!</option></select>')($rootScope)
-    $rootScope.$digest();
-    expect(sortedHtml(element).replace(' selected="true"', '')).
-      toEqual('<select ng:model="x">' +
-                '<option>Greet !</option>' +
-              '</select>');
-    $rootScope.name = 'Misko';
-    $rootScope.$digest();
-    expect(sortedHtml(element).replace(' selected="true"', '')).
-      toEqual('<select ng:model="x">' +
-                '<option>Greet Misko!</option>' +
-              '</select>');
-  }));
-
-  it('should translate {{}} in attributes', inject(function($rootScope, $compile) {
-    element = $compile('<div src="http://server/{{path}}.png"/>')($rootScope)
-    $rootScope.path = 'a/b';
-    $rootScope.$digest();
-    expect(element.attr('src')).toEqual("http://server/a/b.png");
-  }));
-
-  describe('OPTION value', function() {
-    beforeEach(function() {
-      this.addMatchers({
-        toHaveValue: function(expected){
-          this.message = function() {
-            return 'Expected "' + this.actual.html() + '" to have value="' + expected + '".';
-          };
-
-          var value;
-          htmlParser(this.actual.html(), {
-            start:function(tag, attrs){
-              value = attrs.value;
-            },
-            end:noop,
-            chars:noop
-          });
-          return trim(value) == trim(expected);
-        }
-      });
-    });
-
-
-    it('should populate value attribute on OPTION', inject(function($rootScope, $compile) {
-      element = $compile('<select ng:model="x"><option>abc</option></select>')($rootScope)
-      expect(element).toHaveValue('abc');
-    }));
-
-    it('should ignore value if already exists', inject(function($rootScope, $compile) {
-      element = $compile('<select ng:model="x"><option value="abc">xyz</option></select>')($rootScope)
-      expect(element).toHaveValue('abc');
-    }));
-
-    it('should set value even if newlines present', inject(function($rootScope, $compile) {
-      element = $compile('<select ng:model="x"><option attr="\ntext\n" \n>\nabc\n</option></select>')($rootScope)
-      expect(element).toHaveValue('\nabc\n');
-    }));
-
-    it('should set value even if self closing HTML', inject(function($rootScope, $compile) {
-      // IE removes the \n from option, which makes this test pointless
-      if (msie) return;
-      element = $compile('<select ng:model="x"><option>\n</option></select>')($rootScope)
-      expect(element).toHaveValue('\n');
-    }));
-
-  });
 
   it('should bind href', inject(function($rootScope, $compile) {
     element = $compile('<a ng:href="{{url}}"></a>')($rootScope)
@@ -90,6 +14,7 @@ describe("markups", function() {
     $rootScope.$digest();
     expect(element.attr('href')).toEqual('http://server');
   }));
+
 
   it('should bind disabled', inject(function($rootScope, $compile) {
     element = $compile('<button ng:disabled="{{isDisabled}}">Button</button>')($rootScope)
@@ -101,6 +26,7 @@ describe("markups", function() {
     expect(element.attr('disabled')).toBeTruthy();
   }));
 
+
   it('should bind checked', inject(function($rootScope, $compile) {
     element = $compile('<input type="checkbox" ng:checked="{{isChecked}}" />')($rootScope)
     $rootScope.isChecked = false;
@@ -110,6 +36,7 @@ describe("markups", function() {
     $rootScope.$digest();
     expect(element.attr('checked')).toBeTruthy();
   }));
+
 
   it('should bind selected', inject(function($rootScope, $compile) {
     element = $compile('<select><option value=""></option><option ng:selected="{{isSelected}}">Greetings!</option></select>')($rootScope)
@@ -122,6 +49,7 @@ describe("markups", function() {
     expect(element.children()[1].selected).toBeTruthy();
   }));
 
+
   it('should bind readonly', inject(function($rootScope, $compile) {
     element = $compile('<input type="text" ng:readonly="{{isReadonly}}" />')($rootScope)
     $rootScope.isReadonly=false;
@@ -131,6 +59,7 @@ describe("markups", function() {
     $rootScope.$digest();
     expect(element.attr('readOnly')).toBeTruthy();
   }));
+
 
   it('should bind multiple', inject(function($rootScope, $compile) {
     element = $compile('<select ng:multiple="{{isMultiple}}"></select>')($rootScope)
@@ -142,12 +71,14 @@ describe("markups", function() {
     expect(element.attr('multiple')).toBeTruthy();
   }));
 
+
   it('should bind src', inject(function($rootScope, $compile) {
     element = $compile('<div ng:src="{{url}}" />')($rootScope)
     $rootScope.url = 'http://localhost/';
     $rootScope.$digest();
     expect(element.attr('src')).toEqual('http://localhost/');
   }));
+
 
   it('should bind href and merge with other attrs', inject(function($rootScope, $compile) {
     element = $compile('<a ng:href="{{url}}" rel="{{rel}}"></a>')($rootScope);
@@ -157,6 +88,7 @@ describe("markups", function() {
     expect(element.attr('href')).toEqual('http://server');
     expect(element.attr('rel')).toEqual('REL');
   }));
+
 
   it('should bind Text with no Bindings', inject(function($compile, $rootScope) {
     forEach(['checked', 'disabled', 'multiple', 'readonly', 'selected'], function(name) {
@@ -177,4 +109,3 @@ describe("markups", function() {
     dealoc(element);
   }));
 });
-
