@@ -230,9 +230,23 @@ function inferInjectionArgs(fn) {
  *
  * A short hand for configuring services if only `$get` method is required.
  *
- * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provider'` key.
+ * @param {string} name The name of the instance.
  * @param {function()} $getFn The $getFn for the instance creation. Internally this is a short hand for
  * `$provide.provider(name, {$get: $getFn})`.
+ * @returns {Object} registered provider instance
+ */
+
+
+/**
+ * @ngdoc method
+ * @name angular.module.AUTO.$provide#service
+ * @methodOf angular.module.AUTO.$provide
+ * @description
+ *
+ * A short hand for registering service of given class.
+ *
+ * @param {string} name The name of the instance.
+ * @param {Function} constructor A class (constructor function) that will be instantiated.
  * @returns {Object} registered provider instance
  */
 
@@ -245,7 +259,7 @@ function inferInjectionArgs(fn) {
  *
  * A short hand for configuring services if the `$get` method is a constant.
  *
- * @param {string} name The name of the instance. NOTE: the provider will be available under `name + 'Provider'` key.
+ * @param {string} name The name of the instance.
  * @param {*} value The value.
  * @returns {Object} registered provider instance
  */
@@ -296,6 +310,7 @@ function createInjector(modulesToLoad) {
         $provide: {
             provider: supportObject(provider),
             factory: supportObject(factory),
+            service: supportObject(service),
             value: supportObject(value),
             constant: supportObject(constant),
             decorator: decorator
@@ -341,6 +356,12 @@ function createInjector(modulesToLoad) {
   }
 
   function factory(name, factoryFn) { return provider(name, { $get: factoryFn }); }
+
+  function service(name, constructor) {
+    return factory(name, ['$injector', function($injector) {
+      return $injector.instantiate(constructor);
+    }]);
+  }
 
   function value(name, value) { return factory(name, valueFn(value)); }
 
