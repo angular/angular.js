@@ -19,7 +19,8 @@ function DOM() {
 
 var INLINE_TAGS = {
     i: true,
-    b: true
+    b: true,
+    a: true
 };
 
 DOM.prototype = {

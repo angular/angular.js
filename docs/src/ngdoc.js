@@ -367,18 +367,14 @@ Doc.prototype = {
     dom.h('Usage', function() {
       var restrict = self.restrict || 'AC';
       if (restrict.match(/E/)) {
-        dom.text('as element');
+        dom.text('as element (see ');
+        dom.tag('a', {href:'guide/ie'}, 'IE restrictions');
+        dom.text(')');
         dom.code(function() {
           dom.text('<');
           dom.text(self.shortName);
-          (self.param||[]).forEach(function(param){
-            dom.text('\n      ');
-            dom.text(param.optional ? ' [' : ' ');
-            dom.text(param.name);
-            dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
-            dom.text(param.optional ? ']' : '');
-          });
-          dom.text('></');
+          renderParams('\n       ', '="', '"');
+          dom.text('>\n</');
           dom.text(self.shortName);
           dom.text('>');
         });
@@ -389,9 +385,7 @@ Doc.prototype = {
         dom.code(function() {
           dom.text('<' + element + ' ');
           dom.text(self.shortName);
-          if (self.param.length) {
-            dom.text('="' + self.param[0].name + '"');
-          }
+          renderParams('\n     ', '="', '"', true);
           dom.text('>\n   ...\n');
           dom.text('</' + element + '>');
         });
@@ -402,9 +396,7 @@ Doc.prototype = {
         dom.code(function() {
           dom.text('<' + element + ' class="');
           dom.text(self.shortName);
-          if (self.param.length) {
-            dom.text(': ' + self.param[0].name + ';');
-          }
+          renderParams(' ', ': ', ';', true);
           dom.text('">\n   ...\n');
           dom.text('</' + element + '>');
         });
@@ -414,6 +406,27 @@ Doc.prototype = {
     });
 
     self.method_properties_events(dom);
+
+    function renderParams(prefix, infix, suffix, skipSelf) {
+      (self.param||[]).forEach(function(param) {
+        var skip = skipSelf && (param.name == self.shortName || param.name.indexOf(self.shortName + '|') == 0);
+        if (!skip) {
+          dom.text(prefix);
+          dom.text(param.optional ? '[' : '');
+          var parts = param.name.split('|');
+          dom.text(parts[skipSelf ? 0 : 1] || parts[0]);
+        }
+        if (BOOLEAN_ATTR[param.name]) {
+          dom.text(param.optional ? ']' : '');
+        } else {
+          dom.text(BOOLEAN_ATTR[param.name] ? '' : infix );
+          dom.text(('{' + param.type + '}').replace(/^\{\'(.*)\'\}$/, '$1'));
+          dom.text(param.optional ? ']' : '');
+          dom.text(suffix);
+        }
+      });
+    }
+
   },
 
   html_usage_filter: function(dom){
@@ -455,7 +468,7 @@ Doc.prototype = {
           dom.text('\n      ');
           dom.text(param.optional ? ' [' : ' ');
           dom.text(param.name);
-          dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
+          dom.text(BOOLEAN_ATTR[param.name] ? '' : '="{' + param.type + '}"');
           dom.text(param.optional ? ']' : '');
         });
         dom.text('>');

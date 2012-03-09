@@ -158,6 +158,7 @@ var ngBindTemplateDirective = ['$interpolate', function($interpolate) {
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-bind-attr
+ * @restrict A
  *
  * @description
  * The `ng-bind-attr` attribute specifies that a

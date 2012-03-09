@@ -15,7 +15,7 @@
  *   <any ng-switch-default>...</any>
  *
  * @scope
- * @param {*} on expression to match against <tt>ng-switch-when</tt>.
+ * @param {*} ng-switch|on expression to match against <tt>ng-switch-when</tt>.
  * @paramDescription
  * On child elments add:
  *

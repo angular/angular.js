@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.select
+ * @restrict E
  *
  * @description
  * HTML `SELECT` element with angular data-binding.
