@@ -146,6 +146,7 @@ function $CompileProvider($provide) {
   this.directive = function registerDirective(name, directiveFactory) {
     if (isString(name)) {
       assertArg(directiveFactory, 'directive');
+      shivForIE(name);
       if (!hasDirectives.hasOwnProperty(name)) {
         hasDirectives[name] = [];
         $provide.factory(name + Suffix, ['$injector', '$exceptionHandler',
@@ -969,6 +970,22 @@ function $CompileProvider($provide) {
       }
     }
   }];
+
+
+  /**
+   * Creates the element for IE8 and below to allow styling of widgets
+   * (http://ejohn.org/blog/html5-shiv/). This hack works only if angular is
+   * included synchronously at the top of the document before IE sees any
+   * unknown elements. See regression/issue-584.html.
+   */
+  function shivForIE(name) {
+    if (msie < 9) {
+      var dash = snake_case(name, '-');
+      document.createElement(dash);                   //foo-bar-baz
+      document.createElement('x-' + dash);            //x-foo-bar-baz
+      document.createElement(dash.replace('-', ':')); //foo:bar-baz
+    }
+  }
 }
 
 var PREFIX_REGEXP = /^(x[\:\-_]|data[\:\-_])/i;
