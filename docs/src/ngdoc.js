@@ -446,6 +446,24 @@ Doc.prototype = {
     });
   },
 
+  html_usage_inputType: function(dom){
+    var self = this;
+    dom.h('Usage', function() {
+      dom.code(function() {
+        dom.text('<input type="' + self.shortName + '"');
+        (self.param||[]).forEach(function(param){
+          dom.text('\n      ');
+          dom.text(param.optional ? ' [' : ' ');
+          dom.text(param.name);
+          dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
+          dom.text(param.optional ? ']' : '');
+        });
+        dom.text('>');
+      });
+      self.html_usage_parameters(dom);
+    });
+  },
+
   html_usage_directiveInfo: function(dom) {
     var self = this;
     var list = [];
