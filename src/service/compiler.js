@@ -15,7 +15,7 @@
  * instance functions into a single template function which is then returned.
  *
  * The template function can then be used once to produce the view or as it is the case with
- * {@link angular.module.ng.$compileProvider.directive.ng:repeat repeater} many-times, in which
+ * {@link angular.module.ng.$compileProvider.directive.ng-repeat repeater} many-times, in which
  * case each call results in a view that is a DOM clone of the original template.
  *
  <doc:example module="compile">
@@ -55,8 +55,8 @@
       }
     </script>
     <div ng-controller="Ctrl">
-      <input ng:model="name"> <br>
-      <textarea ng:model="html"></textarea> <br>
+      <input ng-model="name"> <br>
+      <textarea ng-model="html"></textarea> <br>
       <div compile="html"></div>
     </div>
    </doc:source>

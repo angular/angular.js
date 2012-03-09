@@ -9,10 +9,10 @@ describe('event directives', function() {
   });
 
 
-  describe('ng:submit', function() {
+  describe('ng-submit', function() {
 
     it('should get called on form submit', inject(function($rootScope, $compile) {
-      element = $compile('<form action="" ng:submit="submitted = true">' +
+      element = $compile('<form action="" ng-submit="submitted = true">' +
         '<input type="submit"/>' +
         '</form>')($rootScope);
       $rootScope.$digest();

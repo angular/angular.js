@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:include
+ * @name angular.module.ng.$compileProvider.directive.ng-include
  * @restrict EA
  *
  * @description
  * Fetches, compiles and includes an external HTML fragment.
  *
  * Keep in mind that Same Origin Policy applies to included resources
- * (e.g. ng:include won't work for file:// access).
+ * (e.g. ng-include won't work for file:// access).
  *
  * @scope
  *
@@ -19,7 +19,7 @@
  *                 instance of angular.module.ng.$rootScope.Scope to set the HTML fragment to.
  * @param {string=} onload Expression to evaluate when a new partial is loaded.
  *
- * @param {string=} autoscroll Whether `ng:include` should call {@link angular.module.ng.$anchorScroll
+ * @param {string=} autoscroll Whether `ng-include` should call {@link angular.module.ng.$anchorScroll
  *                  $anchorScroll} to scroll the viewport after the content is loaded.
  *
  *                  - If the attribute is not set, disable scrolling.
@@ -37,8 +37,8 @@
            $scope.template = $scope.templates[0];
          }
        </script>
-       <div ng:controller="Ctrl">
-         <select ng:model="template" ng:options="t.name for t in templates">
+       <div ng-controller="Ctrl">
+         <select ng-model="template" ng-options="t.name for t in templates">
           <option value="">(blank)</option>
          </select>
          url of the template: <tt><a href="{{template.url}}">{{template.url}}</a></tt>
@@ -67,11 +67,11 @@
 
 /**
  * @ngdoc event
- * @name angular.module.ng.$compileProvider.directive.ng:include#$includeContentLoaded
- * @eventOf angular.module.ng.$compileProvider.directive.ng:include
- * @eventType emit on the current ng:include scope
+ * @name angular.module.ng.$compileProvider.directive.ng-include#$includeContentLoaded
+ * @eventOf angular.module.ng.$compileProvider.directive.ng-include
+ * @eventType emit on the current ng-include scope
  * @description
- * Emitted every time the ng:include content is reloaded.
+ * Emitted every time the ng-include content is reloaded.
  */
 var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile',
                   function($http,   $templateCache,   $anchorScroll,   $compile) {

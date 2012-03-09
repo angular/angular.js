@@ -2,14 +2,14 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:pluralize
+ * @name angular.module.ng.$compileProvider.directive.ng-pluralize
  * @restrict EA
  *
  * @description
  * # Overview
- * ng:pluralize is a widget that displays messages according to en-US localization rules.
+ * ng-pluralize is a widget that displays messages according to en-US localization rules.
  * These rules are bundled with angular.js and the rules can be overridden
- * (see {@link guide/dev_guide.i18n Angular i18n} dev guide). You configure ng:pluralize by
+ * (see {@link guide/dev_guide.i18n Angular i18n} dev guide). You configure ng-pluralize by
  * specifying the mappings between
  * {@link http://unicode.org/repos/cldr-tmp/trunk/diff/supplemental/language_plural_rules.html
  * plural categories} and the strings to be displayed.
@@ -24,8 +24,8 @@
  * explicit number rule for "3" matches the number 3. You will see the use of plural categories
  * and explicit number rules throughout later parts of this documentation.
  *
- * # Configuring ng:pluralize
- * You configure ng:pluralize by providing 2 attributes: `count` and `when`.
+ * # Configuring ng-pluralize
+ * You configure ng-pluralize by providing 2 attributes: `count` and `when`.
  * You can also provide an optional attribute, `offset`.
  *
  * The value of the `count` attribute can be either a string or an {@link guide/dev_guide.expressions
@@ -35,14 +35,14 @@
  * string to be displayed. The value of the attribute should be a JSON object so that Angular
  * can interpret it correctly.
  *
- * The following example shows how to configure ng:pluralize:
+ * The following example shows how to configure ng-pluralize:
  *
  * <pre>
- * <ng:pluralize count="personCount"
+ * <ng-pluralize count="personCount"
                  when="{'0': 'Nobody is viewing.',
  *                      'one': '1 person is viewing.',
  *                      'other': '{} people are viewing.'}">
- * </ng:pluralize>
+ * </ng-pluralize>
  *</pre>
  *
  * In the example, `"0: Nobody is viewing."` is an explicit number rule. If you did not
@@ -53,10 +53,10 @@
  *
  * You can use a set of closed braces(`{}`) as a placeholder for the number that you want substituted
  * into pluralized strings. In the previous example, Angular will replace `{}` with
- * <span ng:non-bindable>`{{personCount}}`</span>. The closed braces `{}` is a placeholder
- * for <span ng:non-bindable>{{numberExpression}}</span>.
+ * <span ng-non-bindable>`{{personCount}}`</span>. The closed braces `{}` is a placeholder
+ * for <span ng-non-bindable>{{numberExpression}}</span>.
  *
- * # Configuring ng:pluralize with offset
+ * # Configuring ng-pluralize with offset
  * The `offset` attribute allows further customization of pluralized text, which can result in
  * a better user experience. For example, instead of the message "4 people are viewing this document",
  * you might display "John, Kate and 2 others are viewing this document".
@@ -64,13 +64,13 @@
  * Let's take a look at an example:
  *
  * <pre>
- * <ng:pluralize count="personCount" offset=2
+ * <ng-pluralize count="personCount" offset=2
  *               when="{'0': 'Nobody is viewing.',
  *                      '1': '{{person1}} is viewing.',
  *                      '2': '{{person1}} and {{person2}} are viewing.',
  *                      'one': '{{person1}}, {{person2}} and one other person are viewing.',
  *                      'other': '{{person1}}, {{person2}} and {} other people are viewing.'}">
- * </ng:pluralize>
+ * </ng-pluralize>
  * </pre>
  *
  * Notice that we are still using two plural categories(one, other), but we added
@@ -100,10 +100,10 @@
             $scope.personCount = 1;
           }
         </script>
-        <div ng:controller="Ctrl">
-          Person 1:<input type="text" ng:model="person1" value="Igor" /><br/>
-          Person 2:<input type="text" ng:model="person2" value="Misko" /><br/>
-          Number of People:<input type="text" ng:model="personCount" value="1" /><br/>
+        <div ng-controller="Ctrl">
+          Person 1:<input type="text" ng-model="person1" value="Igor" /><br/>
+          Person 2:<input type="text" ng-model="person2" value="Misko" /><br/>
+          Number of People:<input type="text" ng-model="personCount" value="1" /><br/>
 
           <!--- Example with simple pluralization rules for en locale --->
           Without Offset:

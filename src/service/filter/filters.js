@@ -22,8 +22,8 @@
            $scope.amount = 1234.56;
          }
        </script>
-       <div ng:controller="Ctrl">
-         <input type="number" ng:model="amount"/> <br/>
+       <div ng-controller="Ctrl">
+         <input type="number" ng-model="amount"/> <br/>
          default currency symbol ($): {{amount | currency}}<br/>
          custom currency identifier (USD$): {{amount | currency:"USD$"}}
        </div>
@@ -73,8 +73,8 @@ function currencyFilter($locale) {
            $scope.val = 1234.56789;
          }
        </script>
-       <div ng:controller="Ctrl">
-         Enter number: <input ng:model='val'><br/>
+       <div ng-controller="Ctrl">
+         Enter number: <input ng-model='val'><br/>
          Default formatting: {{val | number}}<br/>
          No fractions: {{val | number:0}}<br/>
          Negative number: {{-val | number:4}}
@@ -296,11 +296,11 @@ var DATE_FORMATS_SPLIT = /((?:[^yMdHhmsaZE']+)|(?:'(?:[^']|'')*')|(?:E+|y+|M+|d+
  * @example
    <doc:example>
      <doc:source>
-       <span ng:non-bindable>{{1288323623006 | date:'medium'}}</span>:
+       <span ng-non-bindable>{{1288323623006 | date:'medium'}}</span>:
            {{1288323623006 | date:'medium'}}<br/>
-       <span ng:non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
+       <span ng-non-bindable>{{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}</span>:
           {{1288323623006 | date:'yyyy-MM-dd HH:mm:ss Z'}}<br/>
-       <span ng:non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
+       <span ng-non-bindable>{{1288323623006 | date:'MM/dd/yyyy @ h:mma'}}</span>:
           {{'1288323623006' | date:'MM/dd/yyyy @ h:mma'}}<br/>
      </doc:source>
      <doc:scenario>
@@ -445,8 +445,8 @@ var uppercaseFilter = valueFn(uppercase);
              'and one more: ftp://127.0.0.1/.';
          }
        </script>
-       <div ng:controller="Ctrl">
-       Snippet: <textarea ng:model="snippet" cols="60" rows="3"></textarea>
+       <div ng-controller="Ctrl">
+       Snippet: <textarea ng-model="snippet" cols="60" rows="3"></textarea>
        <table>
          <tr>
            <td>Filter</td>
@@ -456,16 +456,16 @@ var uppercaseFilter = valueFn(uppercase);
          <tr id="linky-filter">
            <td>linky filter</td>
            <td>
-             <pre>&lt;div ng:bind-html="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
+             <pre>&lt;div ng-bind-html="snippet | linky"&gt;<br/>&lt;/div&gt;</pre>
            </td>
            <td>
-             <div ng:bind-html="snippet | linky"></div>
+             <div ng-bind-html="snippet | linky"></div>
            </td>
          </tr>
          <tr id="escaped-html">
            <td>no filter</td>
-           <td><pre>&lt;div ng:bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
-           <td><div ng:bind="snippet"></div></td>
+           <td><pre>&lt;div ng-bind="snippet"&gt;<br/>&lt;/div&gt;</pre></td>
+           <td><div ng-bind="snippet"></div></td>
          </tr>
        </table>
      </doc:source>

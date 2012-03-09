@@ -420,16 +420,16 @@ function $HttpProvider() {
                 };
               }
             </script>
-            <div ng:controller="FetchCtrl">
-              <select ng:model="method">
+            <div ng-controller="FetchCtrl">
+              <select ng-model="method">
                 <option>GET</option>
                 <option>JSONP</option>
               </select>
-              <input type="text" ng:model="url" size="80"/>
-              <button ng:click="fetch()">fetch</button><br>
-              <button ng:click="updateModel('GET', 'examples/http-hello.html')">Sample GET</button>
-              <button ng:click="updateModel('JSONP', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>
-              <button ng:click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">Invalid JSONP</button>
+              <input type="text" ng-model="url" size="80"/>
+              <button ng-click="fetch()">fetch</button><br>
+              <button ng-click="updateModel('GET', 'examples/http-hello.html')">Sample GET</button>
+              <button ng-click="updateModel('JSONP', 'http://angularjs.org/greet.php?callback=JSON_CALLBACK&name=Super%20Hero')">Sample JSONP</button>
+              <button ng-click="updateModel('JSONP', 'http://angularjs.org/doesntexist&callback=JSON_CALLBACK')">Invalid JSONP</button>
               <pre>http status code: {{status}}</pre>
               <pre>http response data: {{data}}</pre>
             </div>

@@ -2,17 +2,17 @@
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:controller
+ * @name angular.module.ng.$compileProvider.directive.ng-controller
  *
  * @description
- * The `ng:controller` directive assigns behavior to a scope. This is a key aspect of how angular
+ * The `ng-controller` directive assigns behavior to a scope. This is a key aspect of how angular
  * supports the principles behind the Model-View-Controller design pattern.
  *
  * MVC components in angular:
  *
  * * Model — The Model is data in scope properties; scopes are attached to the DOM.
  * * View — The template (HTML with data bindings) is rendered into the View.
- * * Controller — The `ng:controller` directive specifies a Controller class; the class has
+ * * Controller — The `ng-controller` directive specifies a Controller class; the class has
  *   methods that typically express the business logic behind the application.
  *
  * Note that an alternative way to define controllers is via the `{@link angular.module.ng.$route}`
@@ -59,21 +59,21 @@
           };
         }
       </script>
-      <div ng:controller="SettingsController">
-        Name: <input type="text" ng:model="name"/>
-        [ <a href="" ng:click="greet()">greet</a> ]<br/>
+      <div ng-controller="SettingsController">
+        Name: <input type="text" ng-model="name"/>
+        [ <a href="" ng-click="greet()">greet</a> ]<br/>
         Contact:
         <ul>
-          <li ng:repeat="contact in contacts">
-            <select ng:model="contact.type">
+          <li ng-repeat="contact in contacts">
+            <select ng-model="contact.type">
                <option>phone</option>
                <option>email</option>
             </select>
-            <input type="text" ng:model="contact.value"/>
-            [ <a href="" ng:click="clearContact(contact)">clear</a>
-            | <a href="" ng:click="removeContact(contact)">X</a> ]
+            <input type="text" ng-model="contact.value"/>
+            [ <a href="" ng-click="clearContact(contact)">clear</a>
+            | <a href="" ng-click="removeContact(contact)">X</a> ]
           </li>
-          <li>[ <a href="" ng:click="addContact()">add</a> ]</li>
+          <li>[ <a href="" ng-click="addContact()">add</a> ]</li>
        </ul>
       </div>
      </doc:source>

@@ -19,10 +19,10 @@ function classDirective(name, selector) {
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:class
+ * @name angular.module.ng.$compileProvider.directive.ng-class
  *
  * @description
- * The `ng:class` allows you to set CSS class on HTML element dynamically by databinding an
+ * The `ng-class` allows you to set CSS class on HTML element dynamically by databinding an
  * expression that represents all classes to be added.
  *
  * The directive won't add duplicate classes if a particular class was already set.
@@ -38,13 +38,13 @@ function classDirective(name, selector) {
  * @example
    <doc:example>
      <doc:source>
-      <input type="button" value="set" ng:click="myVar='ng-invalid'">
-      <input type="button" value="clear" ng:click="myVar=''">
+      <input type="button" value="set" ng-click="myVar='ng-invalid'">
+      <input type="button" value="clear" ng-click="myVar=''">
       <br>
-      <span ng:class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span ng-class="myVar">Sample Text &nbsp;&nbsp;&nbsp;&nbsp;</span>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class', function() {
+       it('should check ng-class', function() {
          expect(element('.doc-example-live span').prop('className')).not().
            toMatch(/ng-invalid/);
 
@@ -65,15 +65,15 @@ var ngClassDirective = classDirective('', true);
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:class-odd
+ * @name angular.module.ng.$compileProvider.directive.ng-class-odd
  *
  * @description
- * The `ng:class-odd` and `ng:class-even` works exactly as
- * {@link angular.module.ng.$compileProvider.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * The `ng-class-odd` and `ng-class-even` works exactly as
+ * {@link angular.module.ng.$compileProvider.directive.ng-class ng-class}, except it works in conjunction with `ng-repeat` and
  * takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}.
+ * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
@@ -82,17 +82,17 @@ var ngClassDirective = classDirective('', true);
  * @example
    <doc:example>
      <doc:source>
-        <ol ng:init="names=['John', 'Mary', 'Cate', 'Suz']">
-          <li ng:repeat="name in names">
-           <span ng:class-odd="'ng-format-negative'"
-                 ng:class-even="'ng-invalid'">
+        <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
+          <li ng-repeat="name in names">
+           <span ng-class-odd="'ng-format-negative'"
+                 ng-class-even="'ng-invalid'">
              {{name}} &nbsp; &nbsp; &nbsp;
            </span>
           </li>
         </ol>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class-odd and ng:class-even', function() {
+       it('should check ng-class-odd and ng-class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/ng-format-negative/);
          expect(element('.doc-example-live li:last span').prop('className')).
@@ -105,15 +105,15 @@ var ngClassOddDirective = classDirective('Odd', 0);
 
 /**
  * @ngdoc directive
- * @name angular.module.ng.$compileProvider.directive.ng:class-even
+ * @name angular.module.ng.$compileProvider.directive.ng-class-even
  *
  * @description
- * The `ng:class-odd` and `ng:class-even` works exactly as
- * {@link angular.module.ng.$compileProvider.directive.ng:class ng:class}, except it works in conjunction with `ng:repeat` and
+ * The `ng-class-odd` and `ng-class-even` works exactly as
+ * {@link angular.module.ng.$compileProvider.directive.ng-class ng-class}, except it works in conjunction with `ng-repeat` and
  * takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
- * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}.
+ * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}.
  *
  * @element ANY
  * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
@@ -122,16 +122,16 @@ var ngClassOddDirective = classDirective('Odd', 0);
  * @example
    <doc:example>
      <doc:source>
-        <ol ng:init="names=['John', 'Mary', 'Cate', 'Suz']">
-          <li ng:repeat="name in names">
-           <span ng:class-odd="'odd'" ng:class-even="'even'">
+        <ol ng-init="names=['John', 'Mary', 'Cate', 'Suz']">
+          <li ng-repeat="name in names">
+           <span ng-class-odd="'odd'" ng-class-even="'even'">
              {{name}} &nbsp; &nbsp; &nbsp;
            </span>
           </li>
         </ol>
      </doc:source>
      <doc:scenario>
-       it('should check ng:class-odd and ng:class-even', function() {
+       it('should check ng-class-odd and ng-class-even', function() {
          expect(element('.doc-example-live li:first span').prop('className')).
            toMatch(/odd/);
          expect(element('.doc-example-live li:last span').prop('className')).

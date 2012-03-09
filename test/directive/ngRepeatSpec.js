@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:repeat', function() {
+describe('ng-repeat', function() {
   var element;
 
 
@@ -9,10 +9,10 @@ describe('ng:repeat', function() {
   });
 
 
-  it('should ng:repeat over array', inject(function($rootScope, $compile) {
+  it('should ng-repeat over array', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="item in items" ng:init="suffix = \';\'" ng:bind="item + suffix"></li>' +
+        '<li ng-repeat="item in items" ng-init="suffix = \';\'" ng-bind="item + suffix"></li>' +
       '</ul>')($rootScope);
 
     Array.prototype.extraProperty = "should be ignored";
@@ -37,10 +37,10 @@ describe('ng:repeat', function() {
   }));
 
 
-  it('should ng:repeat over object', inject(function($rootScope, $compile) {
+  it('should ng-repeat over object', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li>' +
+        '<li ng-repeat="(key, value) in items" ng-bind="key + \':\' + value + \';\' "></li>' +
       '</ul>')($rootScope);
     $rootScope.items = {misko:'swe', shyam:'set'};
     $rootScope.$digest();
@@ -48,14 +48,14 @@ describe('ng:repeat', function() {
   }));
 
 
-  it('should not ng:repeat over parent properties', inject(function($rootScope, $compile) {
+  it('should not ng-repeat over parent properties', inject(function($rootScope, $compile) {
     var Class = function() {};
     Class.prototype.abc = function() {};
     Class.prototype.value = 'abc';
 
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="(key, value) in items" ng:bind="key + \':\' + value + \';\' "></li>' +
+        '<li ng-repeat="(key, value) in items" ng-bind="key + \':\' + value + \';\' "></li>' +
       '</ul>')($rootScope);
     $rootScope.items = new Class();
     $rootScope.items.name = 'value';
@@ -64,10 +64,10 @@ describe('ng:repeat', function() {
   }));
 
 
-  it('should error on wrong parsing of ng:repeat', inject(function($rootScope, $compile, $log) {
+  it('should error on wrong parsing of ng-repeat', inject(function($rootScope, $compile, $log) {
     expect(function() {
-      element = $compile('<ul><li ng:repeat="i dont parse"></li></ul>')($rootScope);
-    }).toThrow("Expected ng:repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
+      element = $compile('<ul><li ng-repeat="i dont parse"></li></ul>')($rootScope);
+    }).toThrow("Expected ng-repeat in form of '_item_ in _collection_' but got 'i dont parse'.");
 
     $log.error.logs.shift();
   }));
@@ -77,7 +77,7 @@ describe('ng:repeat', function() {
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="item in items" ng:bind="item + $index + \'|\'"></li>' +
+        '<li ng-repeat="item in items" ng-bind="item + $index + \'|\'"></li>' +
       '</ul>')($rootScope);
     $rootScope.items = ['misko', 'shyam', 'frodo'];
     $rootScope.$digest();
@@ -89,7 +89,7 @@ describe('ng:repeat', function() {
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="(key, val) in items" ng:bind="key + \':\' + val + $index + \'|\'"></li>' +
+        '<li ng-repeat="(key, val) in items" ng-bind="key + \':\' + val + $index + \'|\'"></li>' +
       '</ul>')($rootScope);
     $rootScope.items = {'misko':'m', 'shyam':'s', 'frodo':'f'};
     $rootScope.$digest();
@@ -101,7 +101,7 @@ describe('ng:repeat', function() {
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="item in items" ng:bind="item + \':\' + $position + \'|\'"></li>' +
+        '<li ng-repeat="item in items" ng-bind="item + \':\' + $position + \'|\'"></li>' +
       '</ul>')($rootScope);
     $rootScope.items = ['misko', 'shyam', 'doug'];
     $rootScope.$digest();
@@ -122,7 +122,7 @@ describe('ng:repeat', function() {
       inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="(key, val) in items" ng:bind="key + \':\' + val + \':\' + $position + \'|\'">' +
+        '<li ng-repeat="(key, val) in items" ng-bind="key + \':\' + val + \':\' + $position + \'|\'">' +
         '</li>' +
       '</ul>')($rootScope);
     $rootScope.items = {'misko':'m', 'shyam':'s', 'doug':'d', 'frodo':'f'};
@@ -137,7 +137,7 @@ describe('ng:repeat', function() {
 
 
   it('should ignore $ and $$ properties', inject(function($rootScope, $compile) {
-    element = $compile('<ul><li ng:repeat="i in items">{{i}}|</li></ul>')($rootScope);
+    element = $compile('<ul><li ng-repeat="i in items">{{i}}|</li></ul>')($rootScope);
     $rootScope.items = ['a', 'b', 'c'];
     $rootScope.items.$$hashkey = 'xxx';
     $rootScope.items.$root = 'yyy';
@@ -150,8 +150,8 @@ describe('ng:repeat', function() {
   it('should repeat over nested arrays', inject(function($rootScope, $compile) {
     element = $compile(
       '<ul>' +
-        '<li ng:repeat="subgroup in groups">' +
-          '<div ng:repeat="group in subgroup">{{group}}|</div>X' +
+        '<li ng-repeat="subgroup in groups">' +
+          '<div ng-repeat="group in subgroup">{{group}}|</div>X' +
         '</li>' +
       '</ul>')($rootScope);
     $rootScope.groups = [['a', 'b'], ['c','d']];
@@ -163,7 +163,7 @@ describe('ng:repeat', function() {
 
   it('should ignore non-array element properties when iterating over an array',
       inject(function($rootScope, $compile) {
-    element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
+    element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')($rootScope);
     $rootScope.array = ['a', 'b', 'c'];
     $rootScope.array.foo = '23';
     $rootScope.array.bar = function() {};
@@ -175,7 +175,7 @@ describe('ng:repeat', function() {
 
   it('should iterate over non-existent elements of a sparse array',
       inject(function($rootScope, $compile) {
-    element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
+    element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')($rootScope);
     $rootScope.array = ['a', 'b'];
     $rootScope.array[4] = 'c';
     $rootScope.array[6] = 'd';
@@ -186,7 +186,7 @@ describe('ng:repeat', function() {
 
 
   it('should iterate over all kinds of types', inject(function($rootScope, $compile) {
-    element = $compile('<ul><li ng:repeat="item in array">{{item}}|</li></ul>')($rootScope);
+    element = $compile('<ul><li ng-repeat="item in array">{{item}}|</li></ul>')($rootScope);
     $rootScope.array = ['a', 1, null, undefined, {}];
     $rootScope.$digest();
 
@@ -200,7 +200,7 @@ describe('ng:repeat', function() {
     beforeEach(inject(function($rootScope, $compile) {
       element = $compile(
         '<ul>' +
-          '<li ng:repeat="item in items" ng:bind="key + \':\' + val + \':\' + $position + \'|\'"></li>' +
+          '<li ng-repeat="item in items" ng-bind="key + \':\' + val + \':\' + $position + \'|\'"></li>' +
         '</ul>')($rootScope);
       a = {};
       b = {};
