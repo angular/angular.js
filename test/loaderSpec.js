@@ -34,6 +34,7 @@ describe('module loader', function() {
     expect(myModule.
       provider('sk', 'sv').
       factory('fk', 'fv').
+      service('a', 'aa').
       value('k', 'v').
       filter('f', 'ff').
       directive('d', 'dd').
@@ -47,6 +48,7 @@ describe('module loader', function() {
       ['$injector', 'invoke', ['config'] ],
       ['$provide', 'provider', ['sk', 'sv'] ],
       ['$provide', 'factory', ['fk', 'fv'] ],
+      ['$provide', 'service', ['a', 'aa'] ],
       ['$provide', 'value', ['k', 'v'] ],
       ['$filterProvider', 'register', ['f', 'ff'] ],
       ['$compileProvider', 'directive', ['d', 'dd'] ],
