@@ -543,8 +543,23 @@ describe("directive", function() {
     }));
 
 
-    it('should remove ng-cloak class from a compiled element', inject(function($rootScope, $compile) {
+    it('should remove ng-cloak class from a compiled element with attribute', inject(function($rootScope, $compile) {
       element = jqLite('<div ng:cloak class="foo ng-cloak bar"></div>');
+
+      expect(element.hasClass('foo')).toBe(true);
+      expect(element.hasClass('ng-cloak')).toBe(true);
+      expect(element.hasClass('bar')).toBe(true);
+
+      $compile(element);
+
+      expect(element.hasClass('foo')).toBe(true);
+      expect(element.hasClass('ng-cloak')).toBe(false);
+      expect(element.hasClass('bar')).toBe(true);
+    }));
+
+
+    it('should remove ng-cloak class from a compiled element', inject(function($rootScope, $compile) {
+      element = jqLite('<div class="foo ng-cloak bar"></div>');
 
       expect(element.hasClass('foo')).toBe(true);
       expect(element.hasClass('ng-cloak')).toBe(true);
