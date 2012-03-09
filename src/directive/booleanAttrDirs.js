@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-href
+ * @restrict A
  *
  * @description
  * Using <angular/> markup like {{hash}} in an href attribute makes
@@ -22,8 +23,8 @@
  * <a ng-href="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
  *
- * @element ANY
- * @param {template} template any string which can contain `{{}}` markup.
+ * @element A
+ * @param {template} ng-href any string which can contain `{{}}` markup.
  *
  * @example
  * This example uses `link` variable inside `href` attribute:
@@ -83,6 +84,7 @@
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-src
+ * @restrict A
  *
  * @description
  * Using <angular/> markup like `{{hash}}` in a `src` attribute doesn't
@@ -101,13 +103,14 @@
  * <img ng-src="http://www.gravatar.com/avatar/{{hash}}"/>
  * </pre>
  *
- * @element ANY
- * @param {template} template any string which can contain `{{}}` markup.
+ * @element IMG
+ * @param {template} ng-src any string which can contain `{{}}` markup.
  */
 
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-disabled
+ * @restrict A
  *
  * @description
  *
@@ -138,14 +141,15 @@
       </doc:scenario>
     </doc:example>
  *
- * @element ANY
- * @param {template} template any string which can contain '{{}}' markup.
+ * @element INPUT
+ * @param {template} ng-disabled any string which can contain '{{}}' markup.
  */
 
 
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-checked
+ * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as checked.
@@ -167,14 +171,15 @@
       </doc:scenario>
     </doc:example>
  *
- * @element ANY
- * @param {template} template any string which can contain '{{}}' markup.
+ * @element INPUT
+ * @param {template} ng-checked any string which can contain '{{}}' markup.
  */
 
 
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-multiple
+ * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as multiple.
@@ -202,14 +207,15 @@
        </doc:scenario>
      </doc:example>
  *
- * @element ANY
- * @param {template} template any string which can contain '{{}}' markup.
+ * @element SELECT
+ * @param {template} ng-multiple any string which can contain '{{}}' markup.
  */
 
 
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-readonly
+ * @restrict A
  *
  * @description
  * The HTML specs do not require browsers to preserve the special attributes such as readonly.
@@ -231,41 +237,42 @@
       </doc:scenario>
     </doc:example>
  *
- * @element ANY
- * @param {template} template any string which can contain '{{}}' markup.
+ * @element INPUT
+ * @param {template} ng-readonly any string which can contain '{{}}' markup.
  */
 
 
 /**
-* @ngdoc directive
-* @name angular.module.ng.$compileProvider.directive.ng-selected
-*
-* @description
-* The HTML specs do not require browsers to preserve the special attributes such as selected.
-* (The presence of them means true and absence means false)
-* This prevents the angular compiler from correctly retrieving the binding expression.
-* To solve this problem, we introduce ng-selected.
-* @example
-   <doc:example>
-     <doc:source>
-       Check me to select: <input type="checkbox" ng-model="checked"><br/>
-       <select>
-         <option>Hello!</option>
-         <option id="greet" ng-selected="{{checked}}">Greetings!</option>
-       </select>
-     </doc:source>
-     <doc:scenario>
-       it('should select Greetings!', function() {
-         expect(element('.doc-example-live #greet').prop('selected')).toBeFalsy();
-         input('checked').check();
-         expect(element('.doc-example-live #greet').prop('selected')).toBeTruthy();
-       });
-     </doc:scenario>
-   </doc:example>
-* @element ANY
-* @param {template} template any string which can contain '{{}}' markup.
-*/
-
+ * @ngdoc directive
+ * @name angular.module.ng.$compileProvider.directive.ng-selected
+ * @restrict A
+ *
+ * @description
+ * The HTML specs do not require browsers to preserve the special attributes such as selected.
+ * (The presence of them means true and absence means false)
+ * This prevents the angular compiler from correctly retrieving the binding expression.
+ * To solve this problem, we introduce ng-selected.
+ * @example
+    <doc:example>
+      <doc:source>
+        Check me to select: <input type="checkbox" ng-model="checked"><br/>
+        <select>
+          <option>Hello!</option>
+          <option id="greet" ng-selected="{{checked}}">Greetings!</option>
+        </select>
+      </doc:source>
+      <doc:scenario>
+        it('should select Greetings!', function() {
+          expect(element('.doc-example-live #greet').prop('selected')).toBeFalsy();
+          input('checked').check();
+          expect(element('.doc-example-live #greet').prop('selected')).toBeTruthy();
+        });
+      </doc:scenario>
+    </doc:example>
+ * @element OPTION
+ * @param {template} ng-selected any string which can contain '{{}}' markup.
+ */
+ 
 
 function ngAttributeAliasDirective(propName, attrName) {
   ngAttributeAliasDirectives[directiveNormalize('ng-' + attrName)] = valueFn(

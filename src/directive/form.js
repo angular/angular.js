@@ -105,6 +105,7 @@ function FormController($scope, name) {
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.form
+ * @restrict EA
  *
  * @scope
  * @description
