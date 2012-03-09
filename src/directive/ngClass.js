@@ -31,7 +31,7 @@ function classDirective(name, selector) {
  * new classes are added.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ * @param {expression} ng-class {@link guide/dev_guide.expressions Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class
  *   names, an array, or a map of class names to boolean values.
  *
@@ -76,7 +76,7 @@ var ngClassDirective = classDirective('', true);
  * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
+ * @param {expression} ng-class-odd {@link guide/dev_guide.expressions Expression} to eval. The result
  *   of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
@@ -109,15 +109,15 @@ var ngClassOddDirective = classDirective('Odd', 0);
  *
  * @description
  * The `ng-class-odd` and `ng-class-even` works exactly as
- * {@link angular.module.ng.$compileProvider.directive.ng-class ng-class}, except it works in conjunction with `ng-repeat` and
- * takes affect only on odd (even) rows.
+ * {@link angular.module.ng.$compileProvider.directive.ng-class ng-class}, except it works in
+ * conjunction with `ng-repeat` and takes affect only on odd (even) rows.
  *
  * This directive can be applied only within a scope of an
  * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} to eval. The result
- *   of the evaluation can be a string representing space delimited class names or an array.
+ * @param {expression} ng-class-even {@link guide/dev_guide.expressions Expression} to eval. The
+ *   result of the evaluation can be a string representing space delimited class names or an array.
  *
  * @example
    <doc:example>

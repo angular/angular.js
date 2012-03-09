@@ -8,7 +8,7 @@
  * The ng-style allows you to set CSS style on an HTML element conditionally.
  *
  * @element ANY
- * @param {expression} expression {@link guide/dev_guide.expressions Expression} which evals to an
+ * @param {expression} ng-style {@link guide/dev_guide.expressions Expression} which evals to an
  *      object whose keys are CSS style names and values are corresponding values for those CSS
  *      keys.
  *

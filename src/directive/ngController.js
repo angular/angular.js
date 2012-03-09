@@ -20,7 +20,7 @@
  *
  * @element ANY
  * @scope
- * @param {expression} expression Name of a globally accessible constructor function or an
+ * @param {expression} ng-controller Name of a globally accessible constructor function or an
  *     {@link guide/dev_guide.expressions expression} that on the current scope evaluates to a
  *     constructor function.
  *

@@ -22,7 +22,7 @@
  * @element ANY
  * @scope
  * @priority 1000
- * @param {string} repeat_expression The expression indicating how to enumerate a collection. Two
+ * @param {repeat_expression} ng-repeat The expression indicating how to enumerate a collection. Two
  *   formats are currently supported:
  *
  *   * `variable in expression` – where variable is the user defined loop variable and `expression`
