@@ -7,7 +7,7 @@ var NUMBER_REGEXP = /^\s*(\-|\+)?(\d+|(\d*(\.\d*)))\s*$/;
 var inputType = {
 
   /**
-   * @ngdoc directive
+   * @ngdoc inputType
    * @name angular.module.ng.$compileProvider.directive.input.text
    *
    * @description
@@ -73,7 +73,7 @@ var inputType = {
 
 
   /**
-   * @ngdoc directive
+   * @ngdoc inputType
    * @name angular.module.ng.$compileProvider.directive.input.number
    *
    * @description
@@ -141,7 +141,7 @@ var inputType = {
 
 
   /**
-   * @ngdoc directive
+   * @ngdoc inputType
    * @name angular.module.ng.$compileProvider.directive.input.url
    *
    * @description
@@ -206,7 +206,7 @@ var inputType = {
 
 
   /**
-   * @ngdoc directive
+   * @ngdoc inputType
    * @name angular.module.ng.$compileProvider.directive.input.email
    *
    * @description
@@ -269,7 +269,7 @@ var inputType = {
 
 
   /**
-   * @ngdoc directive
+   * @ngdoc inputType
    * @name angular.module.ng.$compileProvider.directive.input.radio
    *
    * @description
@@ -310,7 +310,7 @@ var inputType = {
 
 
   /**
-   * @ngdoc directive
+   * @ngdoc inputType
    * @name angular.module.ng.$compileProvider.directive.input.checkbox
    *
    * @description
