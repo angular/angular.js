@@ -512,7 +512,8 @@ describe('angular', function() {
 
   describe('startingElementHtml', function(){
     it('should show starting element tag only', function(){
-      expect(startingTag('<ng-abc x="2"><div>text</div></ng-abc>')).toEqual('<ng-abc x="2">');
+      expect(startingTag('<ng-abc x="2A"><div>text</div></ng-abc>')).
+          toBeOneOf('<ng-abc x="2A">', '<NG-ABC x="2A">');
     });
   });
 
