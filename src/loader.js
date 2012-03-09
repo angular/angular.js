@@ -125,9 +125,20 @@ function setupModuleLoader(window) {
            * @param {string} name service name
            * @param {Function} providerFunction Function for creating new instance of the service.
            * @description
-           * See {@link angular.module.AUTO.$provide#service $provide.factory()}.
+           * See {@link angular.module.AUTO.$provide#factory $provide.factory()}.
            */
           factory: invokeLater('$provide', 'factory'),
+
+          /**
+           * @ngdoc method
+           * @name angular.Module#service
+           * @methodOf angular.Module
+           * @param {string} name service name
+           * @param {Function} constructor A constructor function that will be instantiated.
+           * @description
+           * See {@link angular.module.AUTO.$provide#service $provide.service()}.
+           */
+          service: invokeLater('$provide', 'service'),
 
           /**
            * @ngdoc method

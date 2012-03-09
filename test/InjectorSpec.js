@@ -315,6 +315,38 @@ describe('injector', function() {
       });
 
 
+      describe('service', function() {
+        it('should register a class', function() {
+          var Type = function(value) {
+            this.value = value;
+          };
+
+          var instance = createInjector([function($provide) {
+            $provide.value('value', 123);
+            $provide.service('foo', Type);
+          }]).get('foo');
+
+          expect(instance instanceof Type).toBe(true);
+          expect(instance.value).toBe(123);
+        });
+
+
+        it('should register a set of classes', function() {
+          var Type = function() {};
+
+          var injector = createInjector([function($provide) {
+            $provide.service({
+              foo: Type,
+              bar: Type
+            });
+          }]);
+
+          expect(injector.get('foo') instanceof Type).toBe(true);
+          expect(injector.get('bar') instanceof Type).toBe(true);
+        });
+      });
+
+
       describe('provider', function() {
         it('should configure $provide provider object', function() {
           expect(createInjector([function($provide) {
