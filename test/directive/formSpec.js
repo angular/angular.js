@@ -34,7 +34,7 @@ describe('form', function() {
   it('should remove the widget when element removed', function() {
     doc = $compile(
         '<form name="form">' +
-          '<input type="text" name="alias" ng:model="value" store-model-ctrl/>' +
+          '<input type="text" name="alias" ng-model="value" store-model-ctrl/>' +
         '</form>')(scope);
 
     var form = scope.form;
@@ -150,7 +150,7 @@ describe('form', function() {
 
 
   it('should publish widgets', function() {
-    doc = jqLite('<form name="form"><input type="text" name="w1" ng:model="some" /></form>');
+    doc = jqLite('<form name="form"><input type="text" name="w1" ng-model="some" /></form>');
     $compile(doc)(scope);
 
     var widget = scope.form.w1;
@@ -167,7 +167,7 @@ describe('form', function() {
     beforeEach(function() {
       doc = $compile(
           '<form name="form">' +
-            '<input type="text" ng:model="name" name="name" store-model-ctrl/>' +
+            '<input type="text" ng-model="name" name="name" store-model-ctrl/>' +
           '</form>')(scope);
 
       scope.$digest();

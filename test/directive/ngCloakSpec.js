@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:cloak', function() {
+describe('ng-cloak', function() {
   var element;
 
 
@@ -10,16 +10,16 @@ describe('ng:cloak', function() {
 
 
   it('should get removed when an element is compiled', inject(function($rootScope, $compile) {
-    element = jqLite('<div ng:cloak></div>');
-    expect(element.attr('ng:cloak')).toBe('');
+    element = jqLite('<div ng-cloak></div>');
+    expect(element.attr('ng-cloak')).toBe('');
     $compile(element);
-    expect(element.attr('ng:cloak')).toBeUndefined();
+    expect(element.attr('ng-cloak')).toBeUndefined();
   }));
 
 
   it('should remove ng-cloak class from a compiled element with attribute', inject(
       function($rootScope, $compile) {
-    element = jqLite('<div ng:cloak class="foo ng-cloak bar"></div>');
+    element = jqLite('<div ng-cloak class="foo ng-cloak bar"></div>');
 
     expect(element.hasClass('foo')).toBe(true);
     expect(element.hasClass('ng-cloak')).toBe(true);

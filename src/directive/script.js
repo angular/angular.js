@@ -6,7 +6,7 @@
  *
  * @description
  * Load content of a script tag, with type `text/ng-template`, into `$templateCache`, so that the
- * template can be used by `ng:include`, `ng:view` or directive templates.
+ * template can be used by `ng-include`, `ng-view` or directive templates.
  *
  * @restrict E
  *
@@ -17,7 +17,7 @@
         Content of the template.
       </script>
 
-      <a ng:click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
+      <a ng-click="currentTpl='/tpl.html'" id="tpl-link">Load inlined template</a>
       <div id="tpl-content" ng-include src="currentTpl"></div>
     </doc:source>
     <doc:scenario>

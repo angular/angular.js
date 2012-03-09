@@ -1,6 +1,6 @@
 'use strict';
 
-describe('ng:style', function() {
+describe('ng-style', function() {
   var element;
 
 
@@ -10,14 +10,14 @@ describe('ng:style', function() {
 
 
   it('should set', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:style="{height: \'40px\'}"></div>')($rootScope);
+    element = $compile('<div ng-style="{height: \'40px\'}"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.css('height')).toEqual('40px');
   }));
 
 
   it('should silently ignore undefined style', inject(function($rootScope, $compile) {
-    element = $compile('<div ng:style="myStyle"></div>')($rootScope);
+    element = $compile('<div ng-style="myStyle"></div>')($rootScope);
     $rootScope.$digest();
     expect(element.hasClass('ng-exception')).toBeFalsy();
   }));
@@ -31,7 +31,7 @@ describe('ng:style', function() {
       preCompVal = '300px';
       postCompStyle = 'height';
       postCompVal = '100px';
-      element = jqLite('<div ng:style="styleObj"></div>');
+      element = jqLite('<div ng-style="styleObj"></div>');
       element.css(preCompStyle, preCompVal);
       jqLite(document.body).append(element);
       $compile(element)($rootScope);
