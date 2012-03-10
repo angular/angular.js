@@ -374,7 +374,7 @@ function textInputType(scope, element, attr, ctrl) {
 
     if (ctrl.viewValue !== value) {
       scope.$apply(function() {
-        ctrl.read(value);
+        ctrl.setViewValue(value);
       });
     } else if (touched) {
       scope.$apply();
@@ -559,7 +559,7 @@ function radioInputType(scope, element, attr, ctrl) {
     if (element[0].checked) {
       scope.$apply(function() {
         ctrl.touch();
-        ctrl.read(attr.value);
+        ctrl.setViewValue(attr.value);
       });
     };
   });
@@ -580,7 +580,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
   element.bind('click', function() {
     scope.$apply(function() {
       ctrl.touch();
-      ctrl.read(element[0].checked);
+      ctrl.setViewValue(element[0].checked);
     });
   });
 
@@ -830,7 +830,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#read
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#setViewValue
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
@@ -845,7 +845,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    *
    * @param {string} value Value from the view
    */
-  this.read = function(value) {
+  this.setViewValue = function(value) {
     this.viewValue = value;
 
     forEach(this.parsers, function(fn) {
@@ -1042,7 +1042,7 @@ var ngModelInstantDirective = ['$browser', function($browser) {
 
           if (ctrl.viewValue !== value) {
             scope.$apply(function() {
-              ctrl.read(value);
+              ctrl.setViewValue(value);
             });
           } else if (touched) {
             scope.$apply();
