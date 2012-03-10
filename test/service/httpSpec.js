@@ -564,6 +564,25 @@ describe('$http', function() {
             $httpBackend.expect('POST', '/url', 'string-data').respond('');
             $http({method: 'POST', url: '/url', data: 'string-data'});
           });
+
+
+          it('should ignore File objects', function() {
+            var file = {
+              some: true,
+              // $httpBackend compares toJson values by default,
+              // we need to be sure it's not serialized into json string
+              test: function(actualValue) {
+                return this === actualValue;
+              }
+            };
+
+            // I'm really sorry for doing this :-D
+            // Unfortunatelly I don't know how to trick toString.apply(obj) comparison
+            spyOn(window, 'isFile').andReturn(true);
+
+            $httpBackend.expect('POST', '/some', file).respond('');
+            $http({method: 'POST', url: '/some', data: file});
+          });
         });
 
 

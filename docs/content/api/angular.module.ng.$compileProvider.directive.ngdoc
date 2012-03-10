@@ -17,13 +17,14 @@ list of some of the possible directive names: `ng:bind`, `ng-bind`, `ng_bind`, `
 `data-ng-bind`.
 
 The directives can be placed in element names, attributes, class names, as well as comments. Here
-are some equivalent examples of invoking `ngBind`.
+are some equivalent examples of invoking `myDir`. (However, most directives are restricted to
+attribute only.)
 
 <pre>
-  <span ng-bind="exp"></span>
-  <span class="ng-bind: exp;"></span>
-  <ng-bind></ng-bind>
-  <!-- directive: ng-bind exp --!>
+  <span my-dir="exp"></span>
+  <span class="my-dir: exp;"></span>
+  <my-dir></my-dir>
+  <!-- directive: my-dir exp -->
 </pre>
 
 Directives can be invoked in many different ways, but are equivalent in the end result as shown in
@@ -37,13 +38,12 @@ the following example.
      }
    </script>
    <div ng-controller="Ctrl1">
-     Hello <input ng-model='name'> <hr/>
+     Hello <input ng-model='name' ng-model-instant> <hr/>
      &ltspan ng:bind="name"&gt <span ng:bind="name"></span> <br/>
      &ltspan ng_bind="name"&gt <span ng_bind="name"></span> <br/>
      &ltspan ng-bind="name"&gt <span ng-bind="name"></span> <br/>
      &ltspan data-ng-bind="name"&gt <span data-ng-bind="name"></span> <br/>
      &ltspan x-ng-bind="name"&gt <span x-ng-bind="name"></span> <br/>
-     &ltspan class="ng-bind: name;"&gt <span class="ng-bind: name;"></span> <br/>
    </div>
   </doc:source>
   <doc:scenario>
@@ -58,8 +58,8 @@ the following example.
 During the compilation process the {@link angular.module.ng.$compile compiler} matches text and
 attributes using the {@link angular.module.ng.$interpolate $interpolate} service to see if they
 contain embedded expressions. These expressions are registered as {@link
-angular.module.ng.$rootScope.Scope#.watch watches} and will update as part of normal {@link
-angular.module.ng.$rootScope.Scope#.digest digest} cycle. An example of interpolation is shown
+angular.module.ng.$rootScope.Scope#$watch watches} and will update as part of normal {@link
+angular.module.ng.$rootScope.Scope#$digest digest} cycle. An example of interpolation is shown
 here:
 
 <pre>
@@ -87,7 +87,7 @@ Compilation of HTML happens in three phases:
   3. Link the template with scope by calling the liking function returned from the previous step.
   This in turn will call the linking function of the individual directives allowing them to
   register any listeners on the elements and set up any {@link
-  angular.module.ng.$rootScope.Scope#.watch watches} with the {@link
+  angular.module.ng.$rootScope.Scope#$watch watches} with the {@link
   angular.module.ng.$rootScope.Scope scope}. The result of this is a live binding between the
   scope and the DOM. A change in the scope is reflected in the DOM.
 
@@ -239,9 +239,8 @@ The full skeleton of the directive is shown here:
       templateUrl: 'directive.html',
       replace: false,
       transclude: false,
-      restrict: 'EACM',
+      restrict: 'A',
       scope: false,
-      local: {},
       compile: function compile(tElement, tAttrs, transclude) {
         return {
           pre: function preLink(scope, iElement, iAttrs, controller) { ... },
@@ -312,50 +311,49 @@ compiler}. The attributes are:
 
   * `scope` - If set to:
 
-    * `true` - then a new scope will be created for this directive. It is an error to have two
-      directives on the same element both requesting new scope. The new scope rule does not apply
-      for the root of the template since the root of the template always gets a new scope.
+    * `true` - then a new scope will be created for this directive. If multiple directives on the
+      same element request new scope, only one new scope is created. The new scope rule does not
+      apply for the root of the template since the root of the template always gets a new scope.
 
     * `{}` (object hash) - then a new 'isolate' scope is created. The 'isolate' scope differs from
       normal scope that it does not prototypically inherit from the parent scope. This is useful
-      when creating reusable widgets, which should not accidentally read or modify data in parent
-      scope. <br/>
-      The 'isolate' scope takes an object hash which defines a set of local scope properties derived
-      from the parent scope. These local properties are usefull for aliasing values for
+      when creating reusable components, which should not accidentally read or modify data in
+      parent scope. <br/>
+      The 'isolate' scope takes an object hash which defines a set of local scope properties
+      derived from the parent scope. These local properties are useful for aliasing values for
       templates. Locals definition is a hash of normalized element attribute name to their
-      coresponding binding strategy. Valid binding strategies are:
+      corresponding binding strategy. Valid binding strategies are:
 
       * `attribute` - one time read of element attribute value and save it to widget scope. <br/>
-        Given `<widget my-attr='abc'>` and widget definition of `locals: {myAttr:'attribute'}`, then
-        widget scope property `myAttr` will be `"abc"`.
+        Given `<widget my-attr='abc'>` and widget definition of `scope: {myAttr:'attribute'}`,
+        then widget scope property `myAttr` will be `"abc"`.
 
-      * `evaluate` - one time evaluation of expression stored in the attribute. <br/>
-        Given `<widget my-attr='name'>` and widget definition of `locals: {myAttr:'evaluate'}`, and
+      * `evaluate` - one time evaluation of expression stored in the attribute. <br/> Given
+        `<widget my-attr='name'>` and widget definition of `scope: {myAttr:'evaluate'}`, and
         parent scope `{name:'angular'}` then widget scope property `myAttr` will be `"angular"`.
 
       * `bind` - Set up one way binding from the element attribute to the widget scope. <br/>
-        Given `<widget my-attr='{{name}}'>` and widget definition of `locals: {myAttr:'bind'}`, and
-        parent scope `{name:'angular'}` then widget scope property `myAttr` will be `"angular"`, but
-        any changes in the parent scope will be reflected in the widget scope.
+        Given `<widget my-attr='{{name}}'>` and widget definition of `scope: {myAttr:'bind'}`,
+        and parent scope `{name:'angular'}` then widget scope property `myAttr` will be
+        `"angular"`, but any changes in the parent scope will be reflected in the widget scope.
 
-      * `accessor` - Set up getter/setter function for the expression in the widget element attribute
-        to the widget scope. <br/>
-        Given `<widget my-attr='name'>` and widget definition of `locals: {myAttr:'prop'}`, and
-        parent scope `{name:'angular'}` then widget scope property `myAttr` will be a function such
-        that `myAttr()` will return `"angular"` and `myAttr('new value')` will update the parent
-        scope `name` property. This is usefull for treating the element as a data-model for
-        reading/writing.
+      * `accessor` - Set up getter/setter function for the expression in the widget element
+        attribute to the widget scope. <br/> Given `<widget my-attr='name'>` and widget definition
+        of `scope: {myAttr:'prop'}`, and parent scope `{name:'angular'}` then widget scope
+        property `myAttr` will be a function such that `myAttr()` will return `"angular"` and
+        `myAttr('new value')` will update the parent scope `name` property. This is useful for
+        treating the element as a data-model for reading/writing.
 
-      * `expression` - Treat element attribute as an expression to be exectude in form of an event.
+      * `expression` - Treat element attribute as an expression to be executed on the parent scope.
         <br/>
-        Given `<widget my-attr='doSomething()'>` and widget definition of
-        `locals: {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then calling
-        the widget scope function `myAttr` will execute the expression against the parent scope.
+        Given `<widget my-attr='doSomething()'>` and widget definition of `scope:
+        {myAttr:'expression'}`, and parent scope `{doSomething:function() {}}` then calling the
+        widget scope function `myAttr` will execute the expression against the parent scope.
 
   * `controller` - Controller constructor function. The controller is instantiated before the
-    pre-linking phase and it is shared with directives, if they request it by name. This allows the
-    directives to communicate with each other and augment each other behavior. The controller is
-    injectable with the following locals:
+    pre-linking phase and it is shared with other directives if they request it by name (see
+    `require` attribute). This allows the directives to communicate with each other and augment
+    each other behavior. The controller is injectable with the following locals:
 
     * `$scope` - Current scope associated with the element
     * `$element` - Current element
@@ -363,8 +361,16 @@ compiler}. The attributes are:
     * `$transclude` - A transclude linking function pre-bound to the correct transclusion scope:
       `function(cloneLinkingFn)`.
 
+  * `require` - Require another controller be passed into current directive linking function. The
+    `require` takes a name of the directive controller to pass in. If no such controller can be
+    found an error is raised. The name can be prefixed with:
+
+    * `?` - Don't raise an error. This makes the require dependency optional.
+    * `^` - Look for the controller on parent elements as well.
+
+
   * `inject` (object hash) -  Specifies a way to inject bindings into a controller. Injection
-    definition is a hash of normalized element attribute name to their coresponding binding
+    definition is a hash of normalized element attribute names to their corresponding binding
     strategy. Valid binding strategies are:
 
     * `attribute` - inject attribute value. <br/>
@@ -389,16 +395,8 @@ compiler}. The attributes are:
       injecting `myAttr` will inject a function which when called will execute the expression
       against the parent scope.
 
-  * `require` - Require the another controller be passed into current directive linking function.
-    The `require` takes a name of the directive controller to pass in. If no such controller
-    can be found an error is raised. The name can be prefixd with:
-
-    * `?` - Don't reaise an error. This makes the require dependency optional.
-    * `^` - Look for the controller on parent elements as well.
-
-
   * `restrict` - String of subset of `EACM` which restricts the directive to a specific directive
-    declaration style.
+    declaration style. If omitted directives are allowed on attributes only.
 
     * `E` - Element name: `<my-directive></my-directive>`
     * `A` - Attribute: `<div my-directive="exp"></div>`
@@ -417,15 +415,15 @@ compiler}. The attributes are:
     append the template to the element.
 
   * `transclude` - compile the content of the element and make it available to the directive.
-    Typically used with {@link api/angular.module.ng.$compileProvider.directive.ng-transclude
-    ng-transclude}. The advantage of transclusion is that the linking function receives a
+    Typically used with {@link api/angular.module.ng.$compileProvider.directive.ng:transclude
+    ng:transclude}. The advantage of transclusion is that the linking function receives a
     transclusion function which is pre-bound to the correct scope. In a typical setup the widget
     creates an `isolate` scope, but the transclusion is not a child, but a sibling of the `isolate`
     scope. This makes it possible for the widget to have private state, and the transclusion to
-    be bound to the pre-`isolate` scope.
+    be bound to the parent (pre-`isolate`) scope.
 
     * `true` - transclude the content of the directive.
-    * `element` - transclude the whole element including any directives defined at lower priority.
+    * `'element'` - transclude the whole element including any directives defined at lower priority.
 
 
   * `compile`: This is the compile function described in the section below.
@@ -451,7 +449,7 @@ compile functions takes the following arguments.
 
   * `tAttrs` - template attributes - Normalized list of attributes declared on this element shared
     between all directive compile functions. See {@link
-    angular.module.ng.$compileProvider.directive.Attributes Attributes}
+    #Attributes Attributes}
 
   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
 
@@ -470,15 +468,14 @@ executed after the template has been cloned. This is where most of the directive
 put.
 
   * `scope` - {@link angular.module.ng.$rootScope.Scope Scope} - The scope to be used by the
-    directive for registering {@link angular.module.ng.$rootScope.Scope#.watch watches}.
+    directive for registering {@link angular.module.ng.$rootScope.Scope#$watch watches}.
 
   * `iElement` - instance element - The element where the directive is to be used. It is safe to
     manipulate the children of the element only in `postLink` function since the children have
     already been linked.
 
   * `iAttrs` - instance attributes - Normalized list of attributes declared on this element shared
-    between all directive linking functions. See {@link
-    angular.module.ng.$compileProvider.directive.Attributes Attributes}
+    between all directive linking functions. See {@link #Attributes Attributes}
 
   * `controller` - a controller instance - A controller instance if at least one directive on the
     element defines a controller. The controller is shared among all the directives, which allows
@@ -495,12 +492,13 @@ compiler linking function will fail to locate the correct elements for linking.
 
 Executed after the child elements are linked. Safe to do DOM transformation in here.
 
+<a name="Attributes"></a>
 ## Attributes
 
 The attributes object - passed as a parameter in the link() or compile() functions - is a way of
 accessing:
 
-  * *normalize attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
+  * *normalized attribute names:* Since a directive such as 'ngBind' can be expressed in many ways
     sucha s as 'ng:bind', or 'x-ng-bind', the attributes object allows for a normalize accessed to
     the attributes.
 
@@ -511,11 +509,31 @@ accessing:
   * *supports interpolation:* Interpolation attributes are assigned to the attribute object
     allowing other directives to read the interpolated value.
 
+  * *observing interpolated attributes:* Use `$observe` to observe the value changes of attributes
+    that contain interpolation (e.g. `src="{{bar}}"`). Not only is this very efficient but it's also
+    the only way to easily get the actual value because during the linking phase the interpolation
+    hasn't been evaluated yet and so the value is at this time set to `undefined`.
+
+<pre>
+function linkingFn(scope, elm, attrs, ctrl) {
+  // get the attribute value
+  console.log(attrs.ngModel);
+
+  // change the attribute
+  attrs.$set('ngModel', 'new value');
+
+  // observe changes to interpolated attribute
+  attrs.$observe('ngModel', function(value) {
+    console.log('ngModel has changed value to ' + value);
+  });
+}
+</pre>
+
 
 # Understanding Transclusion and Scopes
 
-It is often desirable to have reusable components, which we will refer to as widgets. Below is a
-pseudo code showing how a simplified dialog widget may work.
+It is often desirable to have reusable components. Below is a pseudo code showing how a simplified
+dialog component may work.
 
 <pre>
   <div>
@@ -550,9 +568,11 @@ This will not render properly, unless we do some scope magic.
 The first issue we have to solve is that the dialog box template expect `title` to be defined, but
 the place of instantiation would like to bind to `username`. Furthermore the buttons expect `onOk`
 as well as `onCancel` functions to be present in the scope. This limits the usefulness of the
-widget. To solve the mapping issue we use the `locals` to create local variables which the template expects as follows
+widget. To solve the mapping issue we use the `locals` to create local variables which the template
+expects as follows:
+
 <pre>
-  locals: {
+  scope: {
     title: 'bind',   // set up title to accept data-binding
     onOk: 'exp',     // create a delegate onOk function
     onCancel: 'exp', // create a delegate onCancel function
@@ -586,8 +606,7 @@ Therefore the final directive definition looks something like this:
 
 <pre>
 transclude: true,
-scope: 'isolate',
-locals: {
+scope: {
   title: 'bind',   // set up title to accept data-binding
   onOk: 'exp',     // create a delegate onOk function
   onCancel: 'exp', // create a delegate onCancel function
@@ -595,7 +614,7 @@ locals: {
 }
 </pre>
 
-# Creating Widgets
+# Creating Components
 
 It is often desirable to replace a single directive with a more complex DOM structure. This
 allows the directives to become a short hand for reusable components from which applications
@@ -615,6 +634,7 @@ Following is an example of building a reusable widget.
      angular.module('zippyModule', [])
        .directive('zippy', function(){
          return {
+           restrict: 'C',
            // This HTML will replace the zippy directive.
            replace: true,
            transclude: true,

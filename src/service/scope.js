@@ -25,6 +25,30 @@
  * are expensive to construct.
  */
 
+
+/**
+ * @ngdoc object
+ * @name angular.module.ng.$rootScopeProvider
+ * @description
+ *
+ * Provider for the $rootScope service.
+ */
+
+/**
+ * @ngdoc function
+ * @name angular.module.ng.$rootScopeProvider#digestTtl
+ * @methodOf angular.module.ng.$rootScopeProvider
+ * @description
+ *
+ * Sets the number of digest iteration the scope should attempt to execute before giving up and
+ * assuming that the model is unstable.
+ *
+ * The current default is 10 iterations.
+ *
+ * @param {number} limit The number of digest iterations.
+ */
+
+
 /**
  * @ngdoc object
  * @name angular.module.ng.$rootScope
@@ -37,7 +61,7 @@
 function $RootScopeProvider(){
   var TTL = 10;
 
-  this.ttl = function(value) {
+  this.digestTtl = function(value) {
     if (arguments.length) {
       TTL = value;
     }
@@ -305,7 +329,7 @@ function $RootScopeProvider(){
        * `'Maximum iteration limit exceeded.'` if the number of iterations exceeds 100.
        *
        * Usually you don't call `$digest()` directly in
-       * {@link angular.module.ng.$compileProvider.directive.ng:controller controllers} or in
+       * {@link angular.module.ng.$compileProvider.directive.ng-controller controllers} or in
        * {@link angular.module.ng.$compileProvider.directive directives}.
        * Instead a call to {@link angular.module.ng.$rootScope.Scope#$apply $apply()} (typically from within a
        * {@link angular.module.ng.$compileProvider.directive directives}) will force a `$digest()`.
@@ -429,7 +453,7 @@ function $RootScopeProvider(){
        * The destructing scope emits an `$destroy` {@link angular.module.ng.$rootScope.Scope#$emit event}.
        *
        * The `$destroy()` is usually used by directives such as
-       * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat} for managing the unrolling of the loop.
+       * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} for managing the unrolling of the loop.
        *
        */
       $destroy: function() {
@@ -574,6 +598,7 @@ function $RootScopeProvider(){
        *
        * The event listener function format is: `function(event)`. The `event` object passed into the
        * listener has the following attributes
+       *
        *   - `targetScope` - {Scope}: the scope on which the event was `$emit`-ed or `$broadcast`-ed.
        *   - `currentScope` - {Scope}: the current scope which is handling the event.
        *   - `name` - {string}: Name of the event.

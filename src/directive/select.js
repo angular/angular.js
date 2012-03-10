@@ -1,40 +1,40 @@
 'use strict';
 
 /**
- * @ngdoc widget
+ * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.select
  *
  * @description
  * HTML `SELECT` element with angular data-binding.
  *
- * # `ng:options`
+ * # `ng-options`
  *
- * Optionally `ng:options` attribute can be used to dynamically generate a list of `<option>`
+ * Optionally `ng-options` attribute can be used to dynamically generate a list of `<option>`
  * elements for a `<select>` element using an array or an object obtained by evaluating the
- * `ng:options` expression.
+ * `ng-options` expression.
  *˝˝
  * When an item in the select menu is select, the value of array element or object property
- * represented by the selected option will be bound to the model identified by the `ng:model` attribute
+ * represented by the selected option will be bound to the model identified by the `ng-model` attribute
  * of the parent select element.
  *
  * Optionally, a single hard-coded `<option>` element, with the value set to an empty string, can
  * be nested into the `<select>` element. This element will then represent `null` or "not selected"
  * option. See example below for demonstration.
  *
- * Note: `ng:options` provides iterator facility for `<option>` element which must be used instead
- * of {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat}. `ng:repeat` is not suitable for use with
+ * Note: `ng-options` provides iterator facility for `<option>` element which must be used instead
+ * of {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat}. `ng-repeat` is not suitable for use with
  * `<option>` element because of the following reasons:
  *
  *   * value attribute of the option element that we need to bind to requires a string, but the
  *     source of data for the iteration might be in a form of array containing objects instead of
  *     strings
- *   * {@link angular.module.ng.$compileProvider.directive.ng:repeat ng:repeat} unrolls after the select binds causing
+ *   * {@link angular.module.ng.$compileProvider.directive.ng-repeat ng-repeat} unrolls after the select binds causing
  *     incorect rendering on most browsers.
  *   * binding to a value not in list confuses most browsers.
  *
  * @param {string} name assignable expression to data-bind to.
  * @param {string=} required The widget is considered valid only if value is entered.
- * @param {comprehension_expression=} ng:options in one of the following forms:
+ * @param {comprehension_expression=} ng-options in one of the following forms:
  *
  *   * for array data sources:
  *     * `label` **`for`** `value` **`in`** `array`
@@ -76,42 +76,42 @@
           $scope.color = $scope.colors[2]; // red
         }
         </script>
-        <div ng:controller="MyCntrl">
+        <div ng-controller="MyCntrl">
           <ul>
-            <li ng:repeat="color in colors">
-              Name: <input ng:model="color.name">
-              [<a href ng:click="colors.$remove(color)">X</a>]
+            <li ng-repeat="color in colors">
+              Name: <input ng-model="color.name">
+              [<a href ng-click="colors.$remove(color)">X</a>]
             </li>
             <li>
-              [<a href ng:click="colors.push({})">add</a>]
+              [<a href ng-click="colors.push({})">add</a>]
             </li>
           </ul>
           <hr/>
           Color (null not allowed):
-          <select ng:model="color" ng:options="c.name for c in colors"></select><br>
+          <select ng-model="color" ng-options="c.name for c in colors"></select><br>
 
           Color (null allowed):
           <div  class="nullable">
-            <select ng:model="color" ng:options="c.name for c in colors">
+            <select ng-model="color" ng-options="c.name for c in colors">
               <option value="">-- chose color --</option>
             </select>
           </div><br/>
 
           Color grouped by shade:
-          <select ng:model="color" ng:options="c.name group by c.shade for c in colors">
+          <select ng-model="color" ng-options="c.name group by c.shade for c in colors">
           </select><br/>
 
 
-          Select <a href ng:click="color={name:'not in list'}">bogus</a>.<br>
+          Select <a href ng-click="color={name:'not in list'}">bogus</a>.<br>
           <hr/>
           Currently selected: {{ {selected_color:color}  }}
           <div style="border:solid 1px black; height:20px"
-               ng:style="{'background-color':color.name}">
+               ng-style="{'background-color':color.name}">
           </div>
         </div>
       </doc:source>
       <doc:scenario>
-         it('should check ng:options', function() {
+         it('should check ng-options', function() {
            expect(binding('{selected_color:color}')).toMatch('red');
            select('color').option('0');
            expect(binding('{selected_color:color}')).toMatch('black');
@@ -123,92 +123,84 @@
  */
 
 var ngOptionsDirective = valueFn({ terminal: true });
-var selectDirective = ['$formFactory', '$compile', '$parse',
-               function($formFactory,   $compile,   $parse){
+var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                          //00001111100000000000222200000000000000000000003333000000000000044444444444444444000000000555555555555555550000000666666666666666660000000000000007777
   var NG_OPTIONS_REGEXP = /^\s*(.*?)(?:\s+as\s+(.*?))?(?:\s+group\s+by\s+(.*))?\s+for\s+(?:([\$\w][\$\w\d]*)|(?:\(\s*([\$\w][\$\w\d]*)\s*,\s*([\$\w][\$\w\d]*)\s*\)))\s+in\s+(.*)$/;
 
   return {
     restrict: 'E',
-    link: function(modelScope, selectElement, attr) {
-      if (!attr.ngModel) return;
-      var form = $formFactory.forElement(selectElement),
-          multiple = attr.multiple,
-          optionsExp = attr.ngOptions,
-          modelExp = attr.ngModel,
-          widget = form.$createWidget({
-            scope: modelScope,
-            model: modelExp,
-            onChange: attr.ngChange,
-            alias: attr.name,
-            controller: ['$scope', optionsExp ? Options : (multiple ? Multiple : Single)]});
+    require: '?ngModel',
+    link: function(scope, element, attr, ctrl) {
+      if (!ctrl) return;
 
-      selectElement.bind('$destroy', function() { widget.$destroy(); });
+      var multiple = attr.multiple,
+          optionsExp = attr.ngOptions;
 
-      widget.$pristine = !(widget.$dirty = false);
+      // required validator
+      if (multiple && (attr.required || attr.ngRequired)) {
+        var requiredValidator = function(value) {
+          ctrl.setValidity('REQUIRED', !attr.required || (value && value.length));
+          return value;
+        };
 
-      widget.$on('$validate', function() {
-        var valid = !attr.required || !!widget.$modelValue;
-        if (valid && multiple && attr.required) valid = !!widget.$modelValue.length;
-        if (valid !== !widget.$error.REQUIRED) {
-          widget.$emit(valid ? '$valid' : '$invalid', 'REQUIRED');
-        }
-      });
+        ctrl.parsers.push(requiredValidator);
+        ctrl.formatters.unshift(requiredValidator);
 
-      widget.$on('$viewChange', function() {
-        widget.$pristine = !(widget.$dirty = true);
-      });
-
-      forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
-        widget.$watch('$' + name, function(value) {
-          selectElement[value ? 'addClass' : 'removeClass']('ng-' + name);
+        attr.$observe('required', function() {
+          requiredValidator(ctrl.viewValue);
         });
-      });
+      }
+
+      if (optionsExp) Options(scope, element, ctrl);
+      else if (multiple) Multiple(scope, element, ctrl);
+      else Single(scope, element, ctrl);
+
 
       ////////////////////////////
 
-      function Multiple(widget) {
-        widget.$render = function() {
-          var items = new HashMap(this.$viewValue);
-          forEach(selectElement.children(), function(option){
+
+
+      function Single(scope, selectElement, ctrl) {
+        ctrl.render = function() {
+          selectElement.val(ctrl.viewValue);
+        };
+
+        selectElement.bind('change', function() {
+          scope.$apply(function() {
+            ctrl.touch();
+            ctrl.read(selectElement.val());
+          });
+        });
+      }
+
+      function Multiple(scope, selectElement, ctrl) {
+        ctrl.render = function() {
+          var items = new HashMap(ctrl.viewValue);
+          forEach(selectElement.children(), function(option) {
             option.selected = isDefined(items.get(option.value));
           });
         };
 
         selectElement.bind('change', function() {
-          widget.$apply(function() {
+          scope.$apply(function() {
             var array = [];
-            forEach(selectElement.children(), function(option){
+            forEach(selectElement.children(), function(option) {
               if (option.selected) {
                 array.push(option.value);
               }
             });
-            widget.$emit('$viewChange', array);
+            ctrl.touch();
+            ctrl.read(array);
           });
         });
-
       }
 
-      function Single(widget) {
-        widget.$render = function() {
-          selectElement.val(widget.$viewValue);
-        };
-
-        selectElement.bind('change', function() {
-          widget.$apply(function() {
-            widget.$emit('$viewChange', selectElement.val());
-          });
-        });
-
-        widget.$viewValue = selectElement.val();
-      }
-
-      function Options(widget) {
+      function Options(scope, selectElement, ctrl) {
         var match;
 
         if (! (match = optionsExp.match(NG_OPTIONS_REGEXP))) {
           throw Error(
-            "Expected ng:options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
+            "Expected ng-options in form of '_select_ (as _label_)? for (_key_,)?_value_ in _collection_'" +
             " but got '" + optionsExp + "'.");
         }
 
@@ -234,15 +226,15 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
             // developer declared null option, so user should be able to select it
             nullOption = jqLite(option).remove();
             // compile the element since there might be bindings in it
-            $compile(nullOption)(modelScope);
+            $compile(nullOption)(scope);
           }
         });
         selectElement.html(''); // clear contents
 
         selectElement.bind('change', function() {
-          widget.$apply(function() {
+          scope.$apply(function() {
             var optionGroup,
-                collection = valuesFn(modelScope) || [],
+                collection = valuesFn(scope) || [],
                 locals = {},
                 key, value, optionElement, index, groupIndex, length, groupLength;
 
@@ -259,7 +251,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
                     key = optionElement.val();
                     if (keyName) locals[keyName] = key;
                     locals[valueName] = collection[key];
-                    value.push(valueFn(modelScope, locals));
+                    value.push(valueFn(scope, locals));
                   }
                 }
               }
@@ -272,17 +264,21 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
               } else {
                 locals[valueName] = collection[key];
                 if (keyName) locals[keyName] = key;
-                value = valueFn(modelScope, locals);
+                value = valueFn(scope, locals);
               }
             }
-            if (isDefined(value) && modelScope.$viewVal !== value) {
-              widget.$emit('$viewChange', value);
+            ctrl.touch();
+
+            if (ctrl.viewValue !== value) {
+              ctrl.read(value);
             }
           });
         });
 
-        widget.$watch(render);
-        widget.$render = render;
+        ctrl.render = render;
+
+        // TODO(vojta): can't we optimize this ?
+        scope.$watch(render);
 
         function render() {
           var optionGroups = {'':[]}, // Temporary location for the option groups before we render them
@@ -291,8 +287,8 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
               optionGroup,
               option,
               existingParent, existingOptions, existingOption,
-              modelValue = widget.$modelValue,
-              values = valuesFn(modelScope) || [],
+              modelValue = ctrl.modelValue,
+              values = valuesFn(scope) || [],
               keys = keyName ? sortedKeys(values) : values,
               groupLength, length,
               groupIndex, index,
@@ -313,20 +309,20 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
           // We now build up the list of options we need (we merge later)
           for (index = 0; length = keys.length, index < length; index++) {
                locals[valueName] = values[keyName ? locals[keyName]=keys[index]:index];
-               optionGroupName = groupByFn(modelScope, locals) || '';
+               optionGroupName = groupByFn(scope, locals) || '';
             if (!(optionGroup = optionGroups[optionGroupName])) {
               optionGroup = optionGroups[optionGroupName] = [];
               optionGroupNames.push(optionGroupName);
             }
             if (multiple) {
-              selected = selectedSet.remove(valueFn(modelScope, locals)) != undefined;
+              selected = selectedSet.remove(valueFn(scope, locals)) != undefined;
             } else {
-              selected = modelValue === valueFn(modelScope, locals);
+              selected = modelValue === valueFn(scope, locals);
               selectedSet = selectedSet || selected; // see if at least one item is selected
             }
             optionGroup.push({
               id: keyName ? keys[index] : index,   // either the index into array or key from object
-              label: displayFn(modelScope, locals) || '', // what will be seen by the user
+              label: displayFn(scope, locals) || '', // what will be seen by the user
               selected: selected                   // determine if we should be selected
             });
           }
@@ -428,6 +424,7 @@ var selectDirective = ['$formFactory', '$compile', '$parse',
 
 var optionDirective = ['$interpolate', function($interpolate) {
   return {
+    restrict: 'E',
     priority: 100,
     compile: function(element, attr) {
       if (isUndefined(attr.value)) {

@@ -32,8 +32,9 @@ describe('module loader', function() {
     var myModule = window.angular.module('my', ['other'], 'config');
 
     expect(myModule.
-      service('sk', 'sv').
+      provider('sk', 'sv').
       factory('fk', 'fv').
+      service('a', 'aa').
       value('k', 'v').
       filter('f', 'ff').
       directive('d', 'dd').
@@ -45,8 +46,9 @@ describe('module loader', function() {
     expect(myModule._invokeQueue).toEqual([
       ['$provide', 'constant', ['abc', 123] ],
       ['$injector', 'invoke', ['config'] ],
-      ['$provide', 'service', ['sk', 'sv'] ],
+      ['$provide', 'provider', ['sk', 'sv'] ],
       ['$provide', 'factory', ['fk', 'fv'] ],
+      ['$provide', 'service', ['a', 'aa'] ],
       ['$provide', 'value', ['k', 'v'] ],
       ['$filterProvider', 'register', ['f', 'ff'] ],
       ['$compileProvider', 'directive', ['d', 'dd'] ],

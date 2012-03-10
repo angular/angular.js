@@ -191,7 +191,7 @@ describe('Scope', function() {
 
     it('should prevent infinite recursion and print watcher expression',function() {
       module(function($rootScopeProvider) {
-        $rootScopeProvider.ttl(100);
+        $rootScopeProvider.digestTtl(100);
       });
       inject(function($rootScope) {
         $rootScope.$watch('a', function() {$rootScope.b++;});

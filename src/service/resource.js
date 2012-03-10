@@ -178,18 +178,18 @@
          BuzzController.$inject = ['$resource'];
        </script>
 
-       <div ng:controller="BuzzController">
-         <input ng:model="userId"/>
-         <button ng:click="fetch()">fetch</button>
+       <div ng-controller="BuzzController">
+         <input ng-model="userId"/>
+         <button ng-click="fetch()">fetch</button>
          <hr/>
-         <div ng:repeat="item in activities.data.items">
+         <div ng-repeat="item in activities.data.items">
            <h1 style="font-size: 15px;">
              <img src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
              <a href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-             <a href ng:click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
+             <a href ng-click="expandReplies(item)" style="float: right;">Expand replies: {{item.links.replies[0].count}}</a>
            </h1>
            {{item.object.content | html}}
-           <div ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+           <div ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
              <img src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
              <a href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>: {{reply.content | html}}
            </div>

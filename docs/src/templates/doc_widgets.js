@@ -14,7 +14,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
 
   var HTML_TEMPLATE =
     '<!doctype html>\n' +
-    '<html xmlns:ng="http://angularjs.org" ng:app_MODULE_>\n' +
+    '<html ng-app_MODULE_>\n' +
     ' <script src="' + angularJsUrl + '"></script>\n' +
     '_SCRIPT_SOURCE_' +
     ' <body>\n' +
@@ -25,6 +25,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
   $compileProvider.directive('docExample', ['$injector', '$log', '$browser', '$location',
                                     function($injector,   $log,   $browser,   $location) {
     return {
+      restrict: 'E',
       terminal: true,
       compile: function(element, attrs) {
         var module = attrs.module;
@@ -33,7 +34,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
         //jqlite instead. jqlite's find() method currently supports onlt getElementsByTagName!
         var example = element.find('pre').eq(0),  //doc-source
             scriptSrc = '',
-            htmlSrc = example.text().replace(/<script[^\>]*>([\s\S]+)<\/script>/im, function(_, script) {
+            htmlSrc = example.text().replace(/<script(\s+type="text\/javascript")?>([\s\S]+)<\/script>/im, function(_, type, script) {
                 scriptSrc = script;
                 return '';
               }),
@@ -85,7 +86,12 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
           var modules = [
             function($provide) {
               $provide.value('$browser', $browser);
-              $provide.value('$location', $location);
+              $provide.provider('$location', function() {
+                this.$get = function() {
+                  return $location;
+                };
+                this.hashPrefix = this.html5Mode = angular.noop;
+              });
               $provide.decorator('$defer', function($rootScope, $delegate) {
                 return angular.extend(function(fn, delay) {
                   if (delay && delay > 500) {
@@ -146,6 +152,8 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
                        '<button>edit at jsFiddle</button>' +
                      '</form>';
             }
+          } else {
+            return '';
           }
         };
       }
@@ -233,6 +241,7 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
       '</div>';
 
     return {
+      restrict: 'EA',
       compile: function(element, attrs) {
         var tabs = angular.element(HTML_TPL.replace('{show}', attrs.show || 'false')),
             nav = tabs.find('ul'),
@@ -263,35 +272,38 @@ angular.module('ngdocs.directives', [], function($compileProvider) {
 
 
   $compileProvider.directive('docTutorialNav', function() {
-    return function(scope, element, attrs) {
-      var prevStep, codeDiff, nextStep,
-          content, step = attrs.docTutorialNav;
+    return {
+      restrict: 'EA',
+      link:function(scope, element, attrs) {
+        var prevStep, codeDiff, nextStep,
+            content, step = attrs.docTutorialNav;
 
-      step = parseInt(step, 10);
+        step = parseInt(step, 10);
 
-      if (step === 0) {
-        prevStep = '';
-        nextStep = 'step_01';
-        codeDiff = 'step-0~7...step-0';
-      } else if (step === 11){
-        prevStep = 'step_10';
-        nextStep = 'the_end';
-        codeDiff = 'step-10...step-11';
-      } else {
-        prevStep = 'step_' + pad(step - 1);
-        nextStep = 'step_'  + pad(step + 1);
-        codeDiff = 'step-' + step + '...step-' + step;
+        if (step === 0) {
+          prevStep = '';
+          nextStep = 'step_01';
+          codeDiff = 'step-0~7...step-0';
+        } else if (step === 11){
+          prevStep = 'step_10';
+          nextStep = 'the_end';
+          codeDiff = 'step-10...step-11';
+        } else {
+          prevStep = 'step_' + pad(step - 1);
+          nextStep = 'step_'  + pad(step + 1);
+          codeDiff = 'step-' + step + '...step-' + step;
+        }
+
+        content = angular.element(
+          '<li><a href="#!/tutorial/' + prevStep + '">Previous</a></li>' +
+          '<li><a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Live Demo</a></li>' +
+          '<li><a href="https://github.com/angular/angular-phonecat/compare/' + codeDiff + '">Code Diff</a></li>' +
+          '<li><a href="#!/tutorial/' + nextStep + '">Next</a></li>'
+        );
+
+        element.attr('id', 'tutorial-nav');
+        element.append(content);
       }
-
-      content = angular.element(
-        '<li><a href="#!/tutorial/' + prevStep + '">Previous</a></li>' +
-        '<li><a href="http://angular.github.com/angular-phonecat/step-' + step + '/app">Live Demo</a></li>' +
-        '<li><a href="https://github.com/angular/angular-phonecat/compare/' + codeDiff + '">Code Diff</a></li>' +
-        '<li><a href="#!/tutorial/' + nextStep + '">Next</a></li>'
-      );
-
-      element.attr('id', 'tutorial-nav');
-      element.append(content);
     };
 
     function pad(step) {

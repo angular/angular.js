@@ -54,7 +54,7 @@ afterEach(function() {
     });
   });
   if (count) {
-    fail('Found jqCache references that were not deallocated!');
+    throw new Error('Found jqCache references that were not deallocated!');
   }
 });
 
@@ -106,7 +106,7 @@ function sortedHtml(element, showNgClass) {
           continue; //IE9 creates dupes. Ignore them!
 
         var attr = attributes[i];
-        if(attr.name.match(/^ng:/) ||
+        if(attr.name.match(/^ng[\:\-]/) ||
             attr.value &&
             attr.value !='null' &&
             attr.value !='auto' &&

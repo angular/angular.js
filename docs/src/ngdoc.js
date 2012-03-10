@@ -365,18 +365,55 @@ Doc.prototype = {
   html_usage_directive: function(dom){
     var self = this;
     dom.h('Usage', function() {
-      dom.tag('pre', {'class':"brush: js; html-script: true;"}, function() {
-        dom.text('<' + self.element + ' ');
-        dom.text(self.shortName);
-        if (self.param.length) {
-          dom.text('="' + self.param[0].name + '"');
-        }
-        dom.text('>\n   ...\n');
-        dom.text('</' + self.element + '>');
-      });
+      var restrict = self.restrict || 'AC';
+      if (restrict.match(/E/)) {
+        dom.text('as element');
+        dom.code(function() {
+          dom.text('<');
+          dom.text(self.shortName);
+          (self.param||[]).forEach(function(param){
+            dom.text('\n      ');
+            dom.text(param.optional ? ' [' : ' ');
+            dom.text(param.name);
+            dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
+            dom.text(param.optional ? ']' : '');
+          });
+          dom.text('></');
+          dom.text(self.shortName);
+          dom.text('>');
+        });
+      }
+      if (restrict.match(/A/)) {
+        var element = self.element || 'ANY'
+        dom.text('as attribute');
+        dom.code(function() {
+          dom.text('<' + element + ' ');
+          dom.text(self.shortName);
+          if (self.param.length) {
+            dom.text('="' + self.param[0].name + '"');
+          }
+          dom.text('>\n   ...\n');
+          dom.text('</' + element + '>');
+        });
+      }
+      if (restrict.match(/C/)) {
+        dom.text('as class');
+        var element = self.element || 'ANY'
+        dom.code(function() {
+          dom.text('<' + element + ' class="');
+          dom.text(self.shortName);
+          if (self.param.length) {
+            dom.text(': ' + self.param[0].name + ';');
+          }
+          dom.text('">\n   ...\n');
+          dom.text('</' + element + '>');
+        });
+      }
       self.html_usage_directiveInfo(dom);
       self.html_usage_parameters(dom);
     });
+
+    self.method_properties_events(dom);
   },
 
   html_usage_filter: function(dom){
@@ -409,64 +446,6 @@ Doc.prototype = {
     });
   },
 
-  html_usage_inputType: function(dom){
-    var self = this;
-    dom.h('Usage', function() {
-      dom.code(function() {
-        dom.text('<input type="' + self.shortName + '"');
-        (self.param||[]).forEach(function(param){
-          dom.text('\n      ');
-          dom.text(param.optional ? ' [' : ' ');
-          dom.text(param.name);
-          dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
-          dom.text(param.optional ? ']' : '');
-        });
-        dom.text('>');
-      });
-      self.html_usage_parameters(dom);
-    });
-  },
-
-  html_usage_widget: function(dom){
-    var self = this;
-    dom.h('Usage', function() {
-      dom.h('In HTML Template Binding', function() {
-        dom.code(function() {
-          if (self.shortName.match(/^@/)) {
-            dom.text('<');
-            dom.text(self.element);
-            dom.text(' ');
-            dom.text(self.shortName.substring(1));
-            if (self.param.length) {
-              dom.text('="');
-              dom.text(self.param[0].name);
-              dom.text('"');
-            }
-            dom.text('>\n   ...\n</');
-            dom.text(self.element);
-            dom.text('>');
-          } else {
-            dom.text('<');
-            dom.text(self.shortName);
-            (self.param||[]).forEach(function(param){
-              dom.text('\n      ');
-              dom.text(param.optional ? ' [' : ' ');
-              dom.text(param.name);
-              dom.text(BOOLEAN_ATTR[param.name] ? '' : '="..."');
-              dom.text(param.optional ? ']' : '');
-            });
-            dom.text('></');
-            dom.text(self.shortName);
-            dom.text('>');
-          }
-        });
-      });
-
-      self.html_usage_directiveInfo(dom);
-      self.html_usage_parameters(dom);
-    });
-  },
-
   html_usage_directiveInfo: function(dom) {
     var self = this;
     var list = [];
@@ -478,7 +457,12 @@ Doc.prototype = {
     if (self.priority !== undefined) {
       list.push('This directive executes at priority level ' + self.priority + '.');
     }
-    dom.ul(list);
+
+    if (list.length) {
+      dom.h('Directive info', function() {
+        dom.ul(list);
+      });
+    }
   },
 
   html_usage_overview: function(dom){
@@ -660,8 +644,6 @@ var KEYWORD_PRIORITY = {
   '.angular.module.ng': 7,
   '.angular.mock': 8,
   '.angular.directive': 6,
-  '.angular.inputType': 6,
-  '.angular.widget': 6,
   '.angular.module.ngMock': 8,
   '.dev_guide.overview': 1,
   '.dev_guide.bootstrap': 2,

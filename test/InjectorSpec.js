@@ -180,7 +180,7 @@ describe('injector', function() {
     var injector = createInjector([function($provide) {
       $provide.value('value', 'value;');
       $provide.factory('fn', valueFn('function;'));
-      $provide.service('service', function() {
+      $provide.provider('service', function() {
         this.$get = valueFn('service;');
       });
     }, function(valueProvider, fnProvider, serviceProvider) {
@@ -316,30 +316,62 @@ describe('injector', function() {
 
 
       describe('service', function() {
-        it('should configure $provide service object', function() {
+        it('should register a class', function() {
+          var Type = function(value) {
+            this.value = value;
+          };
+
+          var instance = createInjector([function($provide) {
+            $provide.value('value', 123);
+            $provide.service('foo', Type);
+          }]).get('foo');
+
+          expect(instance instanceof Type).toBe(true);
+          expect(instance.value).toBe(123);
+        });
+
+
+        it('should register a set of classes', function() {
+          var Type = function() {};
+
+          var injector = createInjector([function($provide) {
+            $provide.service({
+              foo: Type,
+              bar: Type
+            });
+          }]);
+
+          expect(injector.get('foo') instanceof Type).toBe(true);
+          expect(injector.get('bar') instanceof Type).toBe(true);
+        });
+      });
+
+
+      describe('provider', function() {
+        it('should configure $provide provider object', function() {
           expect(createInjector([function($provide) {
-            $provide.service('value', {
+            $provide.provider('value', {
               $get: valueFn('abc')
             });
           }]).get('value')).toEqual('abc');
         });
 
 
-        it('should configure $provide service type', function() {
+        it('should configure $provide provider type', function() {
           function Type() {};
           Type.prototype.$get = function() {
             expect(this instanceof Type).toBe(true);
             return 'abc';
           };
           expect(createInjector([function($provide) {
-            $provide.service('value', Type);
+            $provide.provider('value', Type);
           }]).get('value')).toEqual('abc');
         });
 
 
-        it('should configure a set of services', function() {
+        it('should configure a set of providers', function() {
           expect(createInjector([function($provide) {
-            $provide.service({value: valueFn({$get:Array})});
+            $provide.provider({value: valueFn({$get:Array})});
           }]).get('value')).toEqual([]);
         });
       });
@@ -649,7 +681,8 @@ describe('injector', function() {
     });
 
 
-    it('should instantiate object and preserve constructor property and be instanceof', function() {
+    it('should instantiate object and preserve constructor property and be instanceof ' +
+        'with the array annotated type', function() {
       var t = $injector.instantiate(['book', 'author', Type]);
       expect(t.book).toEqual('moby');
       expect(t.author).toEqual('melville');

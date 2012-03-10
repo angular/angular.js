@@ -23,7 +23,6 @@ angularFiles = {
     'src/service/filter/filters.js',
     'src/service/filter/limitTo.js',
     'src/service/filter/orderBy.js',
-    'src/service/formFactory.js',
     'src/service/interpolate.js',
     'src/service/location.js',
     'src/service/log.js',
@@ -39,12 +38,29 @@ angularFiles = {
     'src/service/http.js',
     'src/service/httpBackend.js',
     'src/service/locale.js',
-    'src/directives.js',
-    'src/markups.js',
-    'src/widgets.js',
-    'src/widget/form.js',
-    'src/widget/input.js',
-    'src/widget/select.js'
+    'src/directive/directives.js',
+    'src/directive/a.js',
+    'src/directive/booleanAttrDirs.js',
+    'src/directive/form.js',
+    'src/directive/input.js',
+    'src/directive/ngBind.js',
+    'src/directive/ngClass.js',
+    'src/directive/ngCloak.js',
+    'src/directive/ngController.js',
+    'src/directive/ngEventDirs.js',
+    'src/directive/ngInclude.js',
+    'src/directive/ngInit.js',
+    'src/directive/ngNonBindable.js',
+    'src/directive/ngPluralize.js',
+    'src/directive/ngRepeat.js',
+    'src/directive/ngShowHide.js',
+    'src/directive/ngStyle.js',
+    'src/directive/ngSwitch.js',
+    'src/directive/ngTransclude.js',
+    'src/directive/ngView.js',
+    'src/directive/script.js',
+    'src/directive/select.js',
+    'src/directive/style.js'
   ],
 
   'angularScenario': [
@@ -84,7 +100,7 @@ angularFiles = {
     'test/*.js',
     'test/service/*.js',
     'test/service/filter/*.js',
-    'test/widget/*.js',
+    'test/directive/*.js',
     'example/personalLog/test/*.js'
   ],
 
@@ -144,7 +160,7 @@ angularFiles = {
     'test/jstd-scenario-adapter/*.js',
     'test/*.js',
     'test/service/*.js',
-    'test/widget/*.js',
+    'test/directive/*.js',
     'example/personalLog/test/*.js'
   ],
 
@@ -158,18 +174,18 @@ angularFiles = {
 // Execute only in slim-jim
 if (typeof JASMINE_ADAPTER !== 'undefined') {
   // SlimJim config
-  files = [JASMINE_ADAPTER];
+  files = [JASMINE, JASMINE_ADAPTER];
   angularFiles.jstd.forEach(function(pattern) {
     // replace angular source
     if (pattern === '@angularSrc') files = files.concat(angularFiles.angularSrc);
-    // ignore jstd files
-    else if (!/jstd-(scenario-)?adapter/.test(pattern)) files.push(pattern);
+    // ignore jstd and jasmine files
+    else if (!/jstd|jasmine/.test(pattern)) files.push(pattern);
   });
 
   exclude = angularFiles.jstdExclude;
 
   autoWatch = true;
   autoWatchInterval = 1;
-  logLevel = LOG_ERROR;
+  logLevel = LOG_INFO;
   logColors = true;
 }

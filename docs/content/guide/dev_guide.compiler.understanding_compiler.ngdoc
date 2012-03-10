@@ -2,8 +2,8 @@
 @name Developer Guide: Angular HTML Compiler: Understanding How the Compiler Works
 @description
 
-The {@link angular.module.ng.$compile compiler} is responsible for applying
-{@link angular.module.ng.$compileProvider.directive directives} to the HTML. The directives
+The {@link api/angular.module.ng.$compile compiler} is responsible for applying
+{@link api/angular.module.ng.$compileProvider.directive directives} to the HTML. The directives
 extend the behavior of HTML elements and can effect the DOM structure, presentation, and behavior.
 This allows Angular to teach the browser new tricks.
 
@@ -13,7 +13,7 @@ function. The result of the compilation process is a linking function. The linki
 can be used on the template clones to quickly bind the directives with the scope.
 
 The result of the compilation process is a live view. We say 'live' since any changes to the
-model attached to the {@link angular.module.ng.$rootScope.Scope scope} are reflected in the view,
+model attached to the {@link api/angular.module.ng.$rootScope.Scope scope} are reflected in the view,
 and any changes in the view are reflected in the scope. This makes the scope the 'single source of
 truth'.
 
@@ -21,7 +21,7 @@ Since directives allow attachment of behavior to the HTML, the angular philosoph
 HTML as Domain Specific Language (DSL) when building an application. For example it may be useful
 to declare `TabPanel` directive, or `KeyboardShortcut` directive when for an application.
 
-For details on how directives are created see {@link angular.module.ng.$compileProvider.directive
+For details on how directives are created see {@link api/angular.module.ng.$compileProvider.directive
 directives}
 
 ## Related Topics

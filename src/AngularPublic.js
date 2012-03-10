@@ -55,22 +55,20 @@ function publishExternalAPI(angular){
   try {
     angularModule('ngLocale');
   } catch (e) {
-    angularModule('ngLocale', []).service('$locale', $LocaleProvider);
+    angularModule('ngLocale', []).provider('$locale', $LocaleProvider);
   }
 
   angularModule('ng', ['ngLocale'], ['$provide',
     function ngModule($provide) {
-      $provide.service('$anchorScroll', $AnchorScrollProvider);
-      $provide.service('$browser', $BrowserProvider);
-      $provide.service('$cacheFactory', $CacheFactoryProvider);
-      $provide.service('$compile', $CompileProvider).
+      $provide.provider('$compile', $CompileProvider).
         directive({
             a: htmlAnchorDirective,
             input: inputDirective,
             textarea: inputDirective,
-            form: ngFormDirective,
-            script: scriptTemplateLoader,
+            form: formDirective,
+            script: scriptDirective,
             select: selectDirective,
+            style: styleDirective,
             option: optionDirective,
             ngBind: ngBindDirective,
             ngBindHtml: ngBindHtmlDirective,
@@ -82,7 +80,7 @@ function publishExternalAPI(angular){
             ngClassOdd: ngClassOddDirective,
             ngCloak: ngCloakDirective,
             ngController: ngControllerDirective,
-            ngForm: ngFormDirective,
+            ngForm: formDirective,
             ngHide: ngHideDirective,
             ngInclude: ngIncludeDirective,
             ngInit: ngInitDirective,
@@ -97,32 +95,43 @@ function publishExternalAPI(angular){
             ngSwitchDefault: ngSwitchDefaultDirective,
             ngOptions: ngOptionsDirective,
             ngView: ngViewDirective,
-            ngTransclude: ngTranscludeDirective
-          }).
-        directive(ngEventDirectives).
-        directive(ngAttributeAliasDirectives);
-      $provide.service('$controller', $ControllerProvider);
-      $provide.service('$cookies', $CookiesProvider);
-      $provide.service('$cookieStore', $CookieStoreProvider);
-      $provide.service('$defer', $DeferProvider);
-      $provide.service('$document', $DocumentProvider);
-      $provide.service('$exceptionHandler', $ExceptionHandlerProvider);
-      $provide.service('$filter', $FilterProvider);
-      $provide.service('$interpolate', $InterpolateProvider);
-      $provide.service('$formFactory', $FormFactoryProvider);
-      $provide.service('$http', $HttpProvider);
-      $provide.service('$httpBackend', $HttpBackendProvider);
-      $provide.service('$location', $LocationProvider);
-      $provide.service('$log', $LogProvider);
-      $provide.service('$parse', $ParseProvider);
-      $provide.service('$resource', $ResourceProvider);
-      $provide.service('$route', $RouteProvider);
-      $provide.service('$routeParams', $RouteParamsProvider);
-      $provide.service('$rootScope', $RootScopeProvider);
-      $provide.service('$q', $QProvider);
-      $provide.service('$sanitize', $SanitizeProvider);
-      $provide.service('$sniffer', $SnifferProvider);
-      $provide.service('$templateCache', $TemplateCacheProvider);
-      $provide.service('$window', $WindowProvider);
-    }]);
+            ngTransclude: ngTranscludeDirective,
+            ngModel: ngModelDirective,
+            ngList: ngListDirective,
+            ngChange: ngChangeDirective,
+            ngModelInstant: ngModelInstantDirective,
+            required: requiredDirective,
+            ngRequired: requiredDirective
+        }).
+        directive(ngAttributeAliasDirectives).
+        directive(ngEventDirectives);
+      $provide.provider({
+        $anchorScroll: $AnchorScrollProvider,
+        $browser: $BrowserProvider,
+        $cacheFactory: $CacheFactoryProvider,
+        $controller: $ControllerProvider,
+        $cookies: $CookiesProvider,
+        $cookieStore: $CookieStoreProvider,
+        $defer: $DeferProvider,
+        $document: $DocumentProvider,
+        $exceptionHandler: $ExceptionHandlerProvider,
+        $filter: $FilterProvider,
+        $interpolate: $InterpolateProvider,
+        $http: $HttpProvider,
+        $httpBackend: $HttpBackendProvider,
+        $location: $LocationProvider,
+        $log: $LogProvider,
+        $parse: $ParseProvider,
+        $resource: $ResourceProvider,
+        $route: $RouteProvider,
+        $routeParams: $RouteParamsProvider,
+        $rootScope: $RootScopeProvider,
+        $q: $QProvider,
+        $sanitize: $SanitizeProvider,
+        $sniffer: $SnifferProvider,
+        $templateCache: $TemplateCacheProvider,
+        $window: $WindowProvider
+      });
+    }
+  ]);
 };

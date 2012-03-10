@@ -13,12 +13,12 @@
  *
  * @returns {object} Newly created cache object with the following set of methods:
  *
- * - `{string}` `id()` — Returns id or name of the cache.
- * - `{number}` `size()` — Returns number of items currently in the cache
- * - `{void}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache
- * - `{(*}} `get({string} key) — Returns cached value for `key` or undefined for cache miss.
- * - `{void}` `remove{string} key) — Removes a key-value pair from the cache.
+ * - `{object}` `info()` — Returns id, size, and options of cache.
+ * - `{void}` `put({string} key, {*} value)` — Puts a new key-value pair into the cache.
+ * - `{{*}} `get({string} key) — Returns cached value for `key` or undefined for cache miss.
+ * - `{void}` `remove({string} key) — Removes a key-value pair from the cache.
  * - `{void}` `removeAll() — Removes all cached values.
+ * - `{void}` `destroy() — Removes references to this cache from $cacheFactory.
  *
  */
 function $CacheFactoryProvider() {
