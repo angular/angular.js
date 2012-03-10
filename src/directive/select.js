@@ -167,8 +167,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
         selectElement.bind('change', function() {
           scope.$apply(function() {
-            ctrl.touch();
-            ctrl.read(selectElement.val());
+            ctrl.setViewValue(selectElement.val());
           });
         });
       }
@@ -189,8 +188,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 array.push(option.value);
               }
             });
-            ctrl.touch();
-            ctrl.read(array);
+            ctrl.setViewValue(array);
           });
         });
       }
@@ -267,11 +265,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 value = valueFn(scope, locals);
               }
             }
-            ctrl.touch();
-
-            if (ctrl.viewValue !== value) {
-              ctrl.read(value);
-            }
+            ctrl.setViewValue(value);
           });
         });
 

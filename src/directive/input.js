@@ -369,16 +369,9 @@ function isEmpty(value) {
 
 function textInputType(scope, element, attr, ctrl) {
   element.bind('blur', function() {
-    var touched = ctrl.touch(),
-        value = trim(element.val());
-
-    if (ctrl.viewValue !== value) {
-      scope.$apply(function() {
-        ctrl.read(value);
-      });
-    } else if (touched) {
-      scope.$apply();
-    }
+    scope.$apply(function() {
+      ctrl.setViewValue(trim(element.val()));
+    });
   });
 
   ctrl.render = function() {
@@ -558,8 +551,7 @@ function radioInputType(scope, element, attr, ctrl) {
   element.bind('click', function() {
     if (element[0].checked) {
       scope.$apply(function() {
-        ctrl.touch();
-        ctrl.read(attr.value);
+        ctrl.setViewValue(attr.value);
       });
     };
   });
@@ -579,8 +571,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
   element.bind('click', function() {
     scope.$apply(function() {
-      ctrl.touch();
-      ctrl.read(element[0].checked);
+      ctrl.setViewValue(element[0].checked);
     });
   });
 
@@ -767,34 +758,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#touch
-   * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
-   *
-   * @return {boolean} Whether it did change state.
-   *
-   * @description
-   * This method should be called from within a DOM event handler.
-   * For example {@link angular.module.ng.$compileProvider.directive.input input} or
-   * {@link angular.module.ng.$compileProvider.directive.select select} directives call it.
-   *
-   * It changes state to `dirty` and emits `$viewTouch` event if the state was `pristine` before.
-   */
-  this.touch = function() {
-    if (this.dirty) return false;
-
-    this.dirty = true;
-    this.pristine = false;
-    try {
-      $scope.$emit('$viewTouch');
-    } catch (e) {
-      $exceptionHandler(e);
-    }
-    return true;
-  };
-
-
-  /**
-   * @ngdoc function
    * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#setValidity
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
@@ -830,7 +793,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#read
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#setViewValue
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
@@ -845,8 +808,15 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    *
    * @param {string} value Value from the view
    */
-  this.read = function(value) {
+  this.setViewValue = function(value) {
     this.viewValue = value;
+
+    // change to dirty
+    if (this.pristine) {
+      this.dirty = true;
+      this.pristine = false;
+      $scope.$emit('$viewTouch', this);
+    }
 
     forEach(this.parsers, function(fn) {
       value = fn(value);
@@ -1037,16 +1007,9 @@ var ngModelInstantDirective = ['$browser', function($browser) {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
       var handler = function() {
-        var touched = ctrl.touch(),
-              value = trim(element.val());
-
-          if (ctrl.viewValue !== value) {
-            scope.$apply(function() {
-              ctrl.read(value);
-            });
-          } else if (touched) {
-            scope.$apply();
-          }
+        scope.$apply(function() {
+          ctrl.setViewValue(trim(element.val()));
+        });
       };
 
       var timeout;

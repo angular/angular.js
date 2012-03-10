@@ -197,7 +197,7 @@ describe('form', function() {
     it('should have ng-pristine/ng-dirty css class', function() {
       expect(doc).toBePristine();
 
-      widget.touch();
+      widget.setViewValue('');
       scope.$apply();
       expect(doc).toBeDirty();
     });
