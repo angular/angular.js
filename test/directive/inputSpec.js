@@ -113,7 +113,7 @@ describe('NgModelController', function() {
   describe('view -> model', function() {
 
     it('should set the value to $viewValue', function() {
-      ctrl.read('some-val');
+      ctrl.setViewValue('some-val');
       expect(ctrl.viewValue).toBe('some-val');
     });
 
@@ -131,7 +131,7 @@ describe('NgModelController', function() {
         return value + '-b';
       });
 
-      ctrl.read('init');
+      ctrl.setViewValue('init');
       expect(log).toEqual(['init', 'init-a']);
       expect(ctrl.modelValue).toBe('init-a-b');
     });
@@ -141,13 +141,13 @@ describe('NgModelController', function() {
       var spy = jasmine.createSpy('$viewChange');
       scope.$on('$viewChange', spy);
 
-      ctrl.read('val');
+      ctrl.setViewValue('val');
       expect(spy).toHaveBeenCalledOnce();
       spy.reset();
 
       // invalid
       ctrl.parsers.push(function() {return undefined;});
-      ctrl.read('val');
+      ctrl.setViewValue('val');
       expect(spy).not.toHaveBeenCalled();
     });
   });
