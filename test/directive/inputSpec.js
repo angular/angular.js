@@ -34,25 +34,6 @@ describe('NgModelController', function() {
   });
 
 
-  describe('touch', function() {
-    it('should only fire $viewTouch when pristine', function() {
-      var spy = jasmine.createSpy('$viewTouch');
-      scope.$on('$viewTouch', spy);
-
-      ctrl.touch();
-      expect(ctrl.pristine).toBe(false);
-      expect(ctrl.dirty).toBe(true);
-      expect(spy).toHaveBeenCalledOnce();
-
-      spy.reset();
-      ctrl.touch();
-      expect(ctrl.pristine).toBe(false);
-      expect(ctrl.dirty).toBe(true);
-      expect(spy).not.toHaveBeenCalled();
-    });
-  });
-
-
   describe('setValidity', function() {
 
     it('should emit $invalid only when $valid', function() {
@@ -148,6 +129,23 @@ describe('NgModelController', function() {
       // invalid
       ctrl.parsers.push(function() {return undefined;});
       ctrl.setViewValue('val');
+      expect(spy).not.toHaveBeenCalled();
+    });
+
+
+    it('should only fire $viewTouch when pristine', function() {
+      var spy = jasmine.createSpy('$viewTouch');
+      scope.$on('$viewTouch', spy);
+
+      ctrl.setViewValue('');
+      expect(ctrl.pristine).toBe(false);
+      expect(ctrl.dirty).toBe(true);
+      expect(spy).toHaveBeenCalledOnce();
+
+      spy.reset();
+      ctrl.setViewValue('');
+      expect(ctrl.pristine).toBe(false);
+      expect(ctrl.dirty).toBe(true);
       expect(spy).not.toHaveBeenCalled();
     });
   });
