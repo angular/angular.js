@@ -1,8 +1,283 @@
 - The Latest Stable Release: <a href="#0.9.19">0.9.19 canine-psychokinesis</a>
-- The Latest Unstable Release: <a href="#0.10.6">0.10.6 bubblewrap-cape</a>
+- The Latest Unstable Release: <a href="#1.0.0rc1">1.0.0rc1 moiré-vision</a>
 
-<a name="0.10.7"></a>
-# 0.10.7 moiré-vision (in-progress)
+<a name="1.0.0rc1"></a>
+# 1.0.0rc1 moiré-vision (in-progress)
+
+## $compile rewrite
+
+The compiler was completely rewritten from scratch using ideas from this
+[design document](https://docs.google.com/document/d/1PNh4lxlYpSRK2RhEwD4paJLMwdcnddcYJn3rsDsdayc/edit).
+Please check out the [$compile] and
+[$compileProvider.directive](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive)
+docs. The biggest improvements and changes are listed below.
+
+- the compiler now transparently supports several directive syntaxes. For example while before there
+  was just one way to use `ng:include` directive: `<ng:include src="someSrc"></ng:include>`. The new
+  compiler treats all of the following as equivalent:
+
+  - `<ng:include src="someSrc"></ng:include>`
+  - `<ng-include src="someSrc"></ng-include>`
+  - `<x-ng-include src="someSrc"></x-ng-include>`
+  - `<div ng:include src="someSrc"></div>`
+  - `<div ng-include src="someSrc"></div>`
+  - `<div data-ng-include src="someSrc"></div>`
+  - `<div ng:include="someSrc"></div>`
+  - `<div ng-include="someSrc"></div>`
+  - `<div data-ng-include="someSrc"></div>`
+  - `<div class="ng-include: someSrc"></div>`
+
+  This will give template creators great flexibility to consider the tradeoffs between html code
+  validity and code conciseness and pick the syntax that works the best for them.
+
+- we are switching all of our code/docs/examples to use `ng-foo` directive name style instead of
+  `ng:foo`. The new compiler doesn't distinguish between these and other name styles (all of them
+  are [equally supported](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive)),
+  the main difference is that `ng-foo` is easier to select with css selectors. Check out the
+  [Internet Explorer Compatibility](http://docs-next.angularjs.org/guide/ie.ngdoc)
+  doc to learn about various IE-related requirements for different directive naming styles.
+
+- `angular.directive`, `angular.widget`, `angular.attrWidget` were merged into a single concept: a
+  `directive` which is registered via
+  [myModule.directive](http://docs-next.angularjs.org/api/angular.Module#directive) or
+  [$compileProvider.directive](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive).
+  You can control execution priority of multiple directives on the same element (previously the main
+  difference between a attribute widget and a directive) via a directive priority setting.
+
+- previously the linking functions of directives were called top to bottom following the DOM tree,
+  to enable a linking fn to work child DOM nodes that were already processed by child linking fns
+  the order was changed as follows: compile functions run top to bottom following the DOM tree, but
+  linking functions run bottom-up following the DOM tree. In some rare cases it is desirable for
+  linking fns to be called top to bottom and for these it is possible to register "prelinking"
+  functions (check out
+  [the docs](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive)
+  for the return value of the compile function).
+
+- `angular.markup` and `angular.attrMarkup` were replaced with interpolation via `$interpolate`
+  service.
+
+  - In the past `{{foo}}` markup was getting translated to `<span ng-bind="foo"></span>` during the
+    early stage of template compilation. Addition of this extra node was in some cases undesirable
+    and caused problems. The new compiler with the help of the $interpolate service removes the need
+    for these artificial nodes.
+
+  - As a side-effect of not using artificial nodes available for all bindings, the `html` filter
+    which used to innerHTML (sanitized) html into the artificial node was converted into a directive.
+    So instead of `{{ someRawHtml | html }}` use `<div ng-bind-html="someRawHtml"></div>` and
+    instead of `{{ someRawHtml | html:"unsafe" }}` use `<div ng-bind-html-unsafe="someRawHtml"></div>`.
+    Please check out the
+    [ng-bind-html](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-bind-html)
+    and
+    [ng-bind-html-unsafe](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-bind-html-unsafe)
+    directive docs.
+
+  - Custom markup has been used by developers only to switch from `{{ }}` markup to `(( ))` or
+    something similar in order to avoid conflicts with server-side templating libraries. We made it
+    easier to do this kind of customization by making the start and end symbol of the interpolation
+    configurable via [$interpolateProvider](http://docs-next.angularjs.org/api/angular.module.ng.$interpolateProvider).
+
+- [template loader](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.script)
+  loads template fragments from script elements and populates the $templateCache with them. Templates
+  loaded in this way can be then used with `ng-include`, `ng-view` as well as directive templates
+  (see the `templateUrl` property of the
+  [directive config object](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive)).
+
+
+## Forms / input controls / two-way data binding
+
+The implementation of forms and input bindings was modified to address issues around composability,
+ease of adding custom validation and formatting. Please check out the
+[forms dev guide article](http://docs-next.angularjs.org/guide/dev_guide.forms) to learn about forms,
+form control bindings and input validation. The biggest changes are listed below.
+
+- any directive can add formatter/parser (validators, convertors) to an input type. This allows
+  better composability of input types with custom validators and formatters. So instead of creating
+  new custom input type for everything, it's now possible to take existing input type and add an
+  additional formatter and/or validator to it via a custom directive.
+
+- inputs propagates changes only on the blur event by default (use new `ng-model-instant` directive
+  if you want to propagate changes on each keystroke).
+
+- no more custom input types, use directives to customize existing types.
+
+- removed $formFactory.
+
+- removed parallel scope hierarchy (forms, widgets).
+
+- removed `list` input type (use `ng-list` directive instead).
+
+- removed integer input type.
+
+
+## Controller-scope separation
+
+Controllers are now standalone objects, created using the "new" operator, and not mixed with scope
+object anymore. This addresses many issues including:
+[#321](https://github.com/angular/angular.js/issues/321) and
+[#425](https://github.com/angular/angular.js/issues/425).
+
+The [design doc](https://docs.google.com/document/pub?id=1SsgVj17ec6tnZEX3ugsvg0rVVR11wTso5Md-RdEmC0k)
+explains the reasoning for this major change and how it solves many issues.
+
+### Before:
+
+<pre>
+function MyCtrl() {
+  var self = this;
+
+  this.model = 'some model of any type';
+
+  this.fnUsedFromTemplate = function() {
+    someApiThatTakesCallback(function callbackFn() {
+      self.model = 'updatedModel';
+    });
+  };
+}
+</pre>
+
+### After:
+
+<pre>
+function MyCtrl($scope) {
+  $scope.mode = 'some model of any type';
+
+  $scope.fnUsedFromTemplate = function() {
+    someApiThatTakesCallback(function() {
+      $scope.model = 'updatedModel';
+    });
+  }
+}
+</pre>
+
+Temporary backwards compatibility: Load the following module in your app to recreate the previous
+behavior and migrate your controllers one at a time: <https://gist.github.com/1649788>
+
+
+## $route service changes
+
+- As advertised in the past we moved the $route configuration from the run phase of the application
+  to the config phase. This means that instead of defining routes via `$route.when`/`$route.otherwise`
+  you should use `$routeProvider.when`/`$routeProvider.otherwise` instead.
+
+- route scope is now being created by the `ng-view` rather than by `$route`, this resolved many
+  issues we've previously faced. For more info, read the
+  [commit message](https://github.com/angular/angular.js/commit/60743fc52aea9eabee58258a31f4ba465013cb4e).
+
+- removed `$route.parent()` - it's unnecessary because the scope is properly created in the scope
+  hierarchy by `ng-view`.
+
+- new `$viewContentLoaded` and `$includeContentLoaded` events which directives can use to be
+  notified when a template content is (re)loaded.
+
+- `ng-view` now has `onload` attribute which behaves similarly to the one on `ng-include`.
+
+
+## Directives
+
+- `ng-model` binding on select[multiple] element should support binding to an array
+  ([commit](https://github.com/angular/angular.js/commit/85b2084f578652cc0dcba46c689683fc550554fe))
+- event object is now accessible as `$event` in `ng-click` and other directives
+  ([commit](https://github.com/angular/angular.js/commit/1752c8c44a7058e974ef208e583683eac8817789),
+   issue [#259](https://github.com/angular/angular.js/issues/259)
+- `ng-class` directive now support map of classnames and conditions
+  e.g. `<div ng-class="{'hide': !visible, 'warning': isAlert()}"...` (contributed by Kai Groner)
+  ([commit](https://github.com/angular/angular.js/commit/56bcc04c54ed24c19204f68de52b8c30c00e08f0))
+
+
+## Scope changes
+
+- `scope.$emit`/`$broadcast` return the event object, add cancelled property
+  ([commit](https://github.com/angular/angular.js/commit/6e635012fb30905e5fe659a024864e275f1c14b5))
+
+- `scope.$new()` takes one argument - a boolean indicating if the newly-created child scope should be
+  isolated (not prototypically inheriting from the current scope). Previously the first argument was
+  reference to the controller constructor, but because of the scope/controller separation the
+  controllers should be instantiated via the `$controller` service.
+  ([commit](https://github.com/angular/angular.js/commit/78656fe0dfc99c341ce02d71e7006e9c05b1fe3f))
+
+- fn signature change for change listener functions registered via `scope.$watch` - this means that
+  the scope object can be listed in the arguments list only if its needed and skipped otherwise.
+  ([commit](https://github.com/angular/angular.js/commit/0196411dbe179afe24f4faa6d6503ff3f69472da))
+
+  - before: `scope.$watch('someModel', function(scope, newVal, oldVal) {})`
+  - after: `scope.$watch('someModel', function(newVal, oldVal, scope) {})`
+
+- `scope.$watch` now compares object by reference and only if extra boolean flag is passed
+  comparison by equality is used. This was done to avoid unintended performance issues.
+  ([commit](https://github.com/angular/angular.js/commit/d6e3e1baabc3acc930e4fda387b62cbd03e64577))
+
+  - before: `scope.$watch('expression', function(scope, newVal, oldVal) {})`
+  - after: `scope.$watch('expression', function(newVal, oldVal, scope) {}, true)`
+
+
+## New directives:
+
+- [ng-mouseleave](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-mouseleave)
+- [ng-mousemove](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-mousemove)
+- [ng-mouseover](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-mouseover)
+- [ng-mouseup](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-mouseup)
+- [ng-mousedown](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-mousedown)
+- [ng-dblclick](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-dblclick)
+- [ng-model-instant](http://docs-next.angularjs.org/api/angular.module.ng.$compileProvider.directive.ng-model-instant)
+
+
+## $injector / modules
+
+- `$injector.instantiate` should return the object returned from constructor if one was returned
+  ([commit](https://github.com/angular/angular.js/commit/776739299b698a965ef818eeda75d4eddd10c491))
+- `$injector.instantiate` should support array annotations for Type argument (e.g. instantiate(['dep1', 'dep2', Type]))
+  ([commit](https://github.com/angular/angular.js/commit/eb92735c9ea3e5ddc747b66d8e895b6187a5f9e0))
+- quickly fail if circular dependencies are detected during instantiation
+  ([commit](https://github.com/angular/angular.js/commit/fbcb7fdd141c277d326dc3ed34545210c4d5628f))
+- added [$provide.constant](http://docs-next.angularjs.org/api/angular.module.AUTO.$provide#constant)
+  to enable registration of constants that are available in both the config and run phase
+  ([commit](https://github.com/angular/angular.js/commit/80edcadb1dd418dcf5adf85704c6693940c8bb28))
+- `$provide.service` was renamed to $provide.provider
+  ([commit](https://github.com/angular/angular.js/commit/00d4427388eeec81d434f9ee96bb7ccc70190923))
+- `$provide.service` takes a constructor fn and creates a service instance by using $injector.instantiate
+
+
+## New services:
+
+- [$sanitize](http://docs-next.angularjs.org/api/angular.module.ng.$sanitize)
+- [$interpolate](http://docs-next.angularjs.org/api/angular.module.ng.$interpolate)
+
+
+## jqLite (angular.element)
+
+- added `contents()` ([commit](https://github.com/angular/angular.js/commit/97dae0d0a0226ee527771578bfad1342d51bf4dd))
+- added `wrap()` ([commit](https://github.com/angular/angular.js/commit/4a051efb89cf33e30d56f1227d1f6084ead4cd42))
+- fix memory leaking in IE8 (remove monkey patched methods on Event)
+  ([commit](https://github.com/angular/angular.js/commit/3173d8603db4ae1c2373e13a7a490988126bb1e7),
+   [commit](https://github.com/angular/angular.js/commit/230f29d0a78a04a6963514da8b1e34cc03e553d0))
+
+
+## Docs
+
+- new [Modules dev guide article](http://docs-next.angularjs.org/guide/module.ngdoc)
+
+
+## Small bug fixes
+
+- fix incorrect comparison of dates by angular.equals
+  ([commit](https://github.com/angular/angular.js/commit/ffa84418862a9f768ce5b9b681916438f14a0d79))
+- `scope.$watch` support watching functions
+  ([commit](https://github.com/angular/angular.js/commit/7da2bdb82a72dffc8c72c1becf6f62aae52d32ce),
+   [commit](https://github.com/angular/angular.js/commit/39b3297fc34b6b15bb3487f619ad1e93c4480741))
+- `$http` should not json-serialize File objects, instead just send them raw
+  ([commit](https://github.com/angular/angular.js/commit/5b0d0683584e304db30462f3448d9f090120c444)
+- `$compile` should ignore content of style and script elements
+  ([commit](https://github.com/angular/angular.js/commit/4c1c50fd9bfafaa89cdc66dfde818a3f8f4b0c6b),
+   [commit](https://github.com/angular/angular.js/commit/d656d11489a0dbce0f549b20006052b215c4b500))
+- `TzDate#getDay()` should take into account the timezone offset (contributed by Stephane Bisson)
+  ([commit](https://github.com/angular/angular.js/commit/e86bafecd212789cde61050073a69c1e49ffd011))
+
+
+## Small features
+
+- `$parse` service now supports local vars in expressions
+  ([commit](https://github.com/angular/angular.js/commit/761b2ed85ad9685c35f85513e17363abf17ce6b3))
+
 
 
 <a name="0.10.6"></a>
