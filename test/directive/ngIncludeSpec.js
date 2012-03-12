@@ -33,7 +33,7 @@ describe('ng-include', function() {
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
         function($rootScope, $compile, $browser) {
-    element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
+    element = jqLite('<div ng-include="url" scope="childScope"></div>');
     element = $compile(element)($rootScope);
     $rootScope.childScope = $rootScope.$new();
     $rootScope.childScope.name = 'igor';
