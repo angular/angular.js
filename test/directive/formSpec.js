@@ -26,8 +26,8 @@ describe('form', function() {
 
   it('should instantiate form and attach it to DOM', function() {
     doc = $compile('<form>')(scope);
-    expect(doc.data('$form')).toBeTruthy();
-    expect(doc.data('$form') instanceof FormController).toBe(true);
+    expect(doc.data('$formController')).toBeTruthy();
+    expect(doc.data('$formController') instanceof FormController).toBe(true);
   });
 
 
@@ -78,15 +78,15 @@ describe('form', function() {
   });
 
 
-  it('should publish form to scope', function() {
+  it('should publish form to scope when name attr is defined', function() {
     doc = $compile('<form name="myForm"></form>')(scope);
     expect(scope.myForm).toBeTruthy();
-    expect(doc.data('$form')).toBeTruthy();
-    expect(doc.data('$form')).toEqual(scope.myForm);
+    expect(doc.data('$formController')).toBeTruthy();
+    expect(doc.data('$formController')).toEqual(scope.myForm);
   });
 
 
-  it('should allow name to be an expression', function() {
+  it('should allow form name to be an expression', function() {
     doc = $compile('<form name="obj.myForm"></form>')(scope);
 
     expect(scope.obj).toBeDefined();
@@ -108,12 +108,47 @@ describe('form', function() {
     var input = child.text;
 
     input.setValidity('MyError', false);
-    expect(parent.error.MyError).toEqual([input]);
+    expect(parent.error.MyError).toEqual([child]);
     expect(child.error.MyError).toEqual([input]);
 
     input.setValidity('MyError', true);
     expect(parent.error.MyError).toBeUndefined();
     expect(child.error.MyError).toBeUndefined();
+  });
+
+
+  it('should support two forms on a single scope', function() {
+    doc = $compile(
+      '<div>' +
+        '<form name="formA">' +
+          '<input name="firstName" ng-model="firstName" required>' +
+        '</form>' +
+        '<form name="formB">' +
+          '<input name="lastName" ng-model="lastName" required>' +
+        '</form>' +
+      '</div>'
+    )(scope);
+
+    scope.$apply();
+
+    expect(scope.formA.error.REQUIRED.length).toBe(1);
+    expect(scope.formA.error.REQUIRED).toEqual([scope.formA.firstName]);
+    expect(scope.formB.error.REQUIRED.length).toBe(1);
+    expect(scope.formB.error.REQUIRED).toEqual([scope.formB.lastName]);
+
+    var inputA = doc.find('input').eq(0),
+        inputB = doc.find('input').eq(1);
+
+    inputA.val('val1');
+    browserTrigger(inputA, 'blur');
+    inputB.val('val2');
+    browserTrigger(inputB, 'blur');
+
+    expect(scope.firstName).toBe('val1');
+    expect(scope.lastName).toBe('val2');
+
+    expect(scope.formA.error.REQUIRED).toBeUndefined();
+    expect(scope.formB.error.REQUIRED).toBeUndefined();
   });
 
 
@@ -141,7 +176,7 @@ describe('form', function() {
     input.setValidity('myRule', false);
     expect(input.error.myRule).toEqual(true);
     expect(child.error.myRule).toEqual([input]);
-    expect(parent.error.myRule).toEqual([input]);
+    expect(parent.error.myRule).toEqual([child]);
 
     input.setValidity('myRule', true);
     expect(parent.error.myRule).toBeUndefined();
