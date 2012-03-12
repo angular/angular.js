@@ -13,7 +13,7 @@
  *
  * @scope
  *
- * @param {string} src angular expression evaluating to URL. If the source is a string constant,
+ * @param {string} ng-include|src angular expression evaluating to URL. If the source is a string constant,
  *                 make sure you wrap it in quotes, e.g. `src="'myPartialTemplate.html'"`.
  * @param {Scope=} [scope=new_child_scope] optional expression which evaluates to an
  *                 instance of angular.module.ng.$rootScope.Scope to set the HTML fragment to.
@@ -78,7 +78,7 @@ var ngIncludeDirective = ['$http', '$templateCache', '$anchorScroll', '$compile'
   return {
     restrict: 'EA',
     compile: function(element, attr) {
-      var srcExp = attr.src,
+      var srcExp = attr.ngInclude  || attr.src,
           scopeExp = attr.scope || '',
           onloadExp = attr.onload || '',
           autoScrollExp = attr.autoscroll;
