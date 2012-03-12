@@ -847,7 +847,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
       value = formatters[idx](value);
     }
 
-    if (isDefined(value) && ctrl.viewValue !== value) {
+    if (ctrl.viewValue !== value) {
       ctrl.viewValue = value;
       ctrl.render();
     }
@@ -1042,7 +1042,7 @@ var requiredDirective = [function() {
       if (!ctrl) return;
 
       var validator = function(value) {
-        if (attr.required && isEmpty(value)) {
+        if (attr.required && (isEmpty(value) || value === false)) {
           ctrl.setValidity('REQUIRED', false);
           return null;
         } else {

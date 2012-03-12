@@ -183,21 +183,31 @@ describe('NgModelController', function() {
     });
 
 
-    it('should $render only if value changed and is valid', function() {
+    it('should $render only if value changed', function() {
       spyOn(ctrl, 'render');
 
       scope.$apply(function() {
-        scope.value= 3;
+        scope.value = 3;
       });
       expect(ctrl.render).toHaveBeenCalledOnce();
       ctrl.render.reset();
 
-      // invalid
-      ctrl.formatters.push(function() {return undefined;});
+      ctrl.formatters.push(function() {return 3;});
       scope.$apply(function() {
-        scope.value= 5;
+        scope.value = 5;
       });
       expect(ctrl.render).not.toHaveBeenCalled();
+    });
+
+
+    it('should clear the view even if invalid', function() {
+      spyOn(ctrl, 'render');
+
+      ctrl.formatters.push(function() {return undefined;});
+      scope.$apply(function() {
+        scope.value = 5;
+      });
+      expect(ctrl.render).toHaveBeenCalledOnce();
     });
   });
 });
@@ -728,6 +738,19 @@ describe('input', function() {
 
       browserTrigger(inputElm, 'click');
       expect(scope.name).toEqual('n');
+    });
+
+
+    it('should be required if false', function() {
+      compileInput('<input type="checkbox" ng:model="value" required />');
+
+      browserTrigger(inputElm, 'click');
+      expect(inputElm[0].checked).toBe(true);
+      expect(inputElm).toBeValid();
+
+      browserTrigger(inputElm, 'click');
+      expect(inputElm[0].checked).toBe(false);
+      expect(inputElm).toBeInvalid();
     });
   });
 
