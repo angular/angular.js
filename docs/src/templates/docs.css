@@ -49,10 +49,6 @@ li {
   margin: 0.3em 0 0.3em 0;
 }
 
-.ng-invalid {
-  border: 1px solid red;
-}
-
 .member {
   border: 1px solid gray;
   margin: 2em 0;
