@@ -22,49 +22,52 @@
  * of `FormController`.
  *
  */
-FormController.$inject = ['$scope', 'name'];
-function FormController($scope, name) {
+FormController.$inject = ['$scope', 'name', '$element'];
+function FormController($scope, name, element) {
   var form = this,
+      parentForm = element.parent().inheritedData('$formController'),
       errors = form.error = {};
 
   // publish the form into scope
   name(this);
 
-  $scope.$on('$destroy', function(event, widget) {
-    if (!widget) return;
+  if (parentForm) {
+    parentForm.$addControl(form);
+  }
 
-    if (widget.widgetId && form[widget.widgetId] === widget) {
-      delete form[widget.widgetId];
+  form.$addControl = function(control) {
+    if (control.name && !form.hasOwnProperty(control.name)) {
+      form[control.name] = control;
     }
-    forEach(errors, removeWidget, widget);
-  });
+  }
 
-  $scope.$on('$valid', function(event, error, widget) {
-    removeWidget(errors[error], error, widget);
-
-    if (equals(errors, {})) {
-      form.valid = true;
-      form.invalid = false;
+  form.$removeControl = function(control) {
+    if (control.name && form[control.name] === control) {
+      delete form[control.name];
     }
-  });
+    forEach(errors, cleanupControlErrors, control);
+  };
 
-  $scope.$on('$invalid', function(event, error, widget) {
-    addWidget(error, widget);
+  form.$setValidity = function(validationToken, isValid, control) {
+    if (isValid) {
+      cleanupControlErrors(errors[validationToken], validationToken, control);
 
-    form.valid = false;
-    form.invalid = true;
-  });
+      if (equals(errors, {})) {
+        form.valid = true;
+        form.invalid = false;
+      }
+    } else {
+      addControlError(validationToken, control);
 
-  $scope.$on('$viewTouch', function() {
+      form.valid = false;
+      form.invalid = true;
+    }
+  };
+
+  form.$setDirty = function() {
     form.dirty = true;
     form.pristine = false;
-  });
-
-  $scope.$on('$newFormControl', function(event, widget) {
-    if (widget.widgetId && !form.hasOwnProperty(widget.widgetId)) {
-      form[widget.widgetId] = widget;
-    }
-  });
+  }
 
   // init state
   form.dirty = false;
@@ -72,32 +75,40 @@ function FormController($scope, name) {
   form.valid = true;
   form.invalid = false;
 
-  function removeWidget(queue, errorKey, widget) {
+  function cleanupControlErrors(queue, validationToken, control) {
     if (queue) {
-      widget = widget || this; // so that we can be used in forEach;
+      control = control || this; // so that we can be used in forEach;
       for (var i = 0, length = queue.length; i < length; i++) {
-        if (queue[i] === widget) {
+        if (queue[i] === control) {
           queue.splice(i, 1);
           if (!queue.length) {
-            delete errors[errorKey];
+            delete errors[validationToken];
+
+            if (parentForm) {
+              parentForm.$setValidity(validationToken, true, form);
+            }
           }
         }
       }
     }
   }
 
-  function addWidget(errorKey, widget) {
-    var queue = errors[errorKey];
+  function addControlError(validationToken, control) {
+    var queue = errors[validationToken];
     if (queue) {
       for (var i = 0, length = queue.length; i < length; i++) {
-        if (queue[i] === widget) {
+        if (queue[i] === control) {
           return;
         }
       }
     } else {
-      errors[errorKey] = queue = [];
+      errors[validationToken] = queue = [];
+
+      if (parentForm) {
+        parentForm.$setValidity(validationToken, false, form);
+      }
     }
-    queue.push(widget);
+    queue.push(control);
   }
 }
 
@@ -107,12 +118,12 @@ function FormController($scope, name) {
  * @name angular.module.ng.$compileProvider.directive.form
  * @restrict EA
  *
- * @scope
  * @description
  * Directive that instantiates
  * {@link angular.module.ng.$compileProvider.directive.form.FormController FormController}.
  *
- * If `name` attribute is specified, the controller is published to the scope as well.
+ * If `name` attribute is specified, the form controller is published onto the current scope under
+ * this name.
  *
  * # Alias: `ng-form`
  *
@@ -164,28 +175,28 @@ function FormController($scope, name) {
       <doc:source>
        <script>
          function Ctrl($scope) {
-           $scope.text = 'guest';
+           $scope.userType = 'guest';
          }
        </script>
        <form name="myForm" ng-controller="Ctrl">
-         text: <input type="text" name="input" ng-model="text" required>
-         <span class="error" ng-show="myForm.input.error.REQUIRED">Required!</span>
-         <tt>text = {{text}}</tt><br/>
-         <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
-         <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
-         <tt>myForm.valid = {{myForm.valid}}</tt><br/>
-         <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
+         userType: <input name="input" ng-model="userType" required>
+         <span class="error" ng-show="myForm.input.error.REQUIRED">Required!</span><br>
+         <tt>userType = {{userType}}</tt><br>
+         <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br>
+         <tt>myForm.input.error = {{myForm.input.error}}</tt><br>
+         <tt>myForm.valid = {{myForm.valid}}</tt><br>
+         <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br>
         </form>
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
-         expect(binding('text')).toEqual('guest');
+         expect(binding('userType')).toEqual('guest');
          expect(binding('myForm.input.valid')).toEqual('true');
         });
 
         it('should be invalid if empty', function() {
-         input('text').enter('');
-         expect(binding('text')).toEqual('');
+         input('userType').enter('');
+         expect(binding('userType')).toEqual('');
          expect(binding('myForm.input.valid')).toEqual('false');
         });
       </doc:scenario>
@@ -195,7 +206,6 @@ var formDirective = [function() {
   return {
     name: 'form',
     restrict: 'E',
-    scope: true,
     inject: {
       name: 'accessor'
     },
@@ -203,7 +213,6 @@ var formDirective = [function() {
     compile: function() {
       return {
         pre: function(scope, formElement, attr, controller) {
-          formElement.data('$form', controller);
           formElement.bind('submit', function(event) {
             if (!attr.action) event.preventDefault();
           });

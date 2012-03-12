@@ -131,7 +131,7 @@ var inputType = {
 
           it('should be invalid if over max', function() {
            input('value').enter('123');
-           expect(binding('value')).toEqual('12');
+           expect(binding('value')).toEqual('');
            expect(binding('myForm.input.valid')).toEqual('false');
           });
         </doc:scenario>
@@ -382,7 +382,7 @@ function textInputType(scope, element, attr, ctrl) {
   var pattern = attr.ngPattern,
       patternValidator;
 
-  var emit = function(regexp, value) {
+  var validate = function(regexp, value) {
     if (isEmpty(value) || regexp.test(value)) {
       ctrl.setValidity('PATTERN', true);
       return value;
@@ -396,7 +396,7 @@ function textInputType(scope, element, attr, ctrl) {
     if (pattern.match(/^\/(.*)\/$/)) {
       pattern = new RegExp(pattern.substr(1, pattern.length - 2));
       patternValidator = function(value) {
-        return emit(pattern, value)
+        return validate(pattern, value)
       };
     } else {
       patternValidator = function(value) {
@@ -405,7 +405,7 @@ function textInputType(scope, element, attr, ctrl) {
         if (!patternObj || !patternObj.test) {
           throw new Error('Expected ' + pattern + ' to be a RegExp but was ' + patternObj);
         }
-        return emit(patternObj, value);
+        return validate(patternObj, value);
       };
     }
 
@@ -676,7 +676,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
         it('should be invalid if empty when required', function() {
           input('user.name').enter('');
-          expect(binding('user')).toEqual('{"last":"visitor","name":null}');
+          expect(binding('user')).toEqual('{"last":"visitor"}');
           expect(binding('myForm.userName.valid')).toEqual('false');
           expect(binding('myForm.valid')).toEqual('false');
         });
@@ -690,16 +690,16 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
         it('should be invalid if less than required min length', function() {
           input('user.last').enter('xx');
-          expect(binding('user')).toEqual('{"last":"visitor","name":"guest"}');
+          expect(binding('user')).toEqual('{"name":"guest"}');
           expect(binding('myForm.lastName.valid')).toEqual('false');
           expect(binding('myForm.lastName.error')).toMatch(/MINLENGTH/);
           expect(binding('myForm.valid')).toEqual('false');
         });
 
-        it('should be valid if longer than max length', function() {
+        it('should be invalid if longer than max length', function() {
           input('user.last').enter('some ridiculously long name');
           expect(binding('user'))
-            .toEqual('{"last":"visitor","name":"guest"}');
+            .toEqual('{"name":"guest"}');
           expect(binding('myForm.lastName.valid')).toEqual('false');
           expect(binding('myForm.lastName.error')).toMatch(/MAXLENGTH/);
           expect(binding('myForm.valid')).toEqual('false');
@@ -748,13 +748,14 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
   this.modelValue = Number.NaN;
   this.parsers = [];
   this.formatters = [];
+  this.viewChangeListeners = [];
   this.error = {};
   this.pristine = true;
   this.dirty = false;
   this.valid = true;
   this.invalid = false;
   this.render = noop;
-  this.widgetId = $attr.name;
+  this.name = $attr.name;
 
 
   /**
@@ -763,32 +764,34 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
-   * Change the validity state, and notifies the form when the widget changes validity. (i.e. does
-   * not emit `$invalid` if given validator is already marked as invalid).
+   * Change the validity state, and notifies the form when the widget changes validity. (i.e. it
+   * does not notify form if given validator is already marked as invalid).
    *
-   * This method should be called by validators - ie the parser or formatter method.
+   * This method should be called by validators - i.e. the parser or formatter functions.
    *
-   * @param {string} name Name of the validator.
-   * @param {boolean} isValid Whether it should $emit `$valid` (true) or `$invalid` (false) event.
+   * @param {string} validationToken Name of the validator.
+   * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
    */
-  this.setValidity = function(name, isValid) {
+  this.setValidity = function(validationToken, isValid) {
 
-    if (!isValid && this.error[name]) return;
-    if (isValid && !this.error[name]) return;
+    if (!isValid && this.error[validationToken]) return;
+    if (isValid && !this.error[validationToken]) return;
 
     if (isValid) {
-      delete this.error[name];
+      delete this.error[validationToken];
       if (equals(this.error, {})) {
         this.valid = true;
         this.invalid = false;
       }
     } else {
-      this.error[name] = true;
+      this.error[validationToken] = true;
       this.invalid = true;
       this.valid = false;
     }
 
-    return $scope.$emit(isValid ? '$valid' : '$invalid', name, this);
+    if (this.$form) {
+      this.$form.$setValidity(validationToken, isValid, this);
+    }
   };
 
 
@@ -804,10 +807,10 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    * For example {@link angular.module.ng.$compileProvider.directive.input input} or
    * {@link angular.module.ng.$compileProvider.directive.select select} directives call it.
    *
-   * It internally calls all `formatters` and if resulted value is valid, update the model and emits
-   * `$viewChange` event afterwards.
+   * It internally calls all `formatters` and if resulted value is valid, updates the model and
+   * calls all registered change listeners.
    *
-   * @param {string} value Value from the view
+   * @param {string} value Value from the view.
    */
   this.setViewValue = function(value) {
     this.viewValue = value;
@@ -816,17 +819,23 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
     if (this.pristine) {
       this.dirty = true;
       this.pristine = false;
-      $scope.$emit('$viewTouch', this);
+      if (this.$form) this.$form.$setDirty();
     }
 
     forEach(this.parsers, function(fn) {
       value = fn(value);
     });
 
-    if (isDefined(value) && this.model !== value) {
+    if (this.modelValue !== value) {
       this.modelValue = value;
       ngModel(value);
-      $scope.$emit('$viewChange', value, this);
+      forEach(this.viewChangeListeners, function(listener) {
+        try {
+          listener();
+        } catch(e) {
+          $exceptionHandler(e);
+        }
+      })
     }
   };
 
@@ -892,22 +901,28 @@ var ngModelDirective = [function() {
     inject: {
       ngModel: 'accessor'
     },
-    require: 'ngModel',
+    require: ['ngModel', '^?form'],
     controller: NgModelController,
-    link: function(scope, element, attr, ctrl) {
+    link: function(scope, element, attr, ctrls) {
       // notify others, especially parent forms
-      scope.$emit('$newFormControl', ctrl);
+
+      var modelCtrl = ctrls[0],
+          formCtrl = ctrls[1];
+
+      modelCtrl.$form = formCtrl;
+
+      if (formCtrl) formCtrl.$addControl(modelCtrl);
 
       forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
         scope.$watch(function() {
-          return ctrl[name];
+          return modelCtrl[name];
         }, function(value) {
           element[value ? 'addClass' : 'removeClass']('ng-' + name);
         });
       });
 
       element.bind('$destroy', function() {
-        scope.$emit('$destroy', ctrl);
+        if (formCtrl) formCtrl.$removeControl(modelCtrl);
       });
     }
   };
@@ -965,8 +980,8 @@ var ngModelDirective = [function() {
 var ngChangeDirective = valueFn({
   require: 'ngModel',
   link: function(scope, element, attr, ctrl) {
-    scope.$on('$viewChange', function(event, value, widget) {
-      if (ctrl === widget) scope.$eval(attr.ngChange);
+    ctrl.viewChangeListeners.push(function() {
+      scope.$eval(attr.ngChange);
     });
   }
 });
@@ -1044,7 +1059,7 @@ var requiredDirective = [function() {
       var validator = function(value) {
         if (attr.required && (isEmpty(value) || value === false)) {
           ctrl.setValidity('REQUIRED', false);
-          return null;
+          return;
         } else {
           ctrl.setValidity('REQUIRED', true);
           return value;
