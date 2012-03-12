@@ -17,7 +17,7 @@ describe('ng-include', function() {
 
 
   it('should include on external file', inject(putIntoCache('myUrl', '{{name}}'),
-      function($rootScope, $compile, $browser) {
+      function($rootScope, $compile) {
     element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
     jqLite(document.body).append(element);
     element = $compile(element)($rootScope);
@@ -63,7 +63,7 @@ describe('ng-include', function() {
 
 
   it('should allow this for scope', inject(putIntoCache('myUrl', '{{"abc"}}'),
-        function($rootScope, $compile, $browser) {
+        function($rootScope, $compile) {
     element = jqLite('<ng:include src="url" scope="this"></ng:include>');
     element = $compile(element)($rootScope);
     $rootScope.url = 'myUrl';
@@ -97,7 +97,7 @@ describe('ng-include', function() {
 
   it('should evaluate onload expression when a partial is loaded', inject(
       putIntoCache('myUrl', 'my partial'),
-      function($rootScope, $compile, $browser) {
+      function($rootScope, $compile) {
     element = jqLite('<ng:include src="url" onload="loaded = true"></ng:include>');
     element = $compile(element)($rootScope);
 
@@ -112,7 +112,7 @@ describe('ng-include', function() {
 
 
   it('should destroy old scope', inject(putIntoCache('myUrl', 'my partial'),
-        function($rootScope, $compile, $browser) {
+        function($rootScope, $compile) {
     element = jqLite('<ng:include src="url"></ng:include>');
     element = $compile(element)($rootScope);
 
@@ -129,7 +129,7 @@ describe('ng-include', function() {
 
 
   it('should do xhr request and cache it',
-      inject(function($rootScope, $httpBackend, $compile, $browser) {
+      inject(function($rootScope, $httpBackend, $compile) {
     element = $compile('<ng:include src="url"></ng:include>')($rootScope);
     $httpBackend.expect('GET', 'myUrl').respond('my partial');
 
@@ -164,7 +164,7 @@ describe('ng-include', function() {
 
   it('should be async even if served from cache', inject(
         putIntoCache('myUrl', 'my partial'),
-        function($rootScope, $compile, $browser) {
+        function($rootScope, $compile) {
     element = $compile('<ng:include src="url"></ng:include>')($rootScope);
 
     $rootScope.url = 'myUrl';
