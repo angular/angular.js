@@ -454,10 +454,21 @@ compile functions takes the following arguments.
   * `transclude` - A transclude linking function: `function(scope, cloneLinkingFn)`.
 
 NOTE: The template instance and the link instance may not be the same objects if the template has
-been cloned. For this reason it is not safe to do anything other the DOM transformation.
-Specifically listener registration as not allowed inside the compile function.
+been cloned. For this reason it is not safe in the compile function to do anything other the DOM
+transformation that applies to all DOM clones. Specifically, DOM listener registration should be
+done in a linking function rather than in a compile function.
 
-## Link function
+A compile function can have a return value which can be either a function or an object.
+
+* returning a function - is equivalent to registering the linking function via the `link` property
+  of the config object when the compile function is empty.
+
+* returning an object with function(s) registered via `pre` and `post` properties - allows you to
+  control when a linking function should be called during the linking phase. See info about
+  pre-linking and post-linking functions below.
+
+
+## Linking function
 
 <pre>
   function link(scope, iElement, iAttrs, controller) { ... }
@@ -483,12 +494,12 @@ put.
 
 
 
-### Pre link function
+### Pre-linking function
 
 Executed before the child elements are linked. Not safe to do DOM transformation since the
 compiler linking function will fail to locate the correct elements for linking.
 
-### Post link function
+### Post-linking function
 
 Executed after the child elements are linked. Safe to do DOM transformation in here.
 
@@ -706,5 +717,3 @@ Following is an example of building a reusable widget.
     });
   </doc:scenario>
 </doc:example>
-
-
