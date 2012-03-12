@@ -247,7 +247,7 @@ function $CompileProvider($provide) {
         var element = cloneConnectFn
           ? JQLitePrototype.clone.call(templateElement) // IMPORTANT!!!
           : templateElement;
-        element.data('$scope', scope).addClass('ng-scope');
+        safeAddClass(element.data('$scope', scope), 'ng-scope');
         if (cloneConnectFn) cloneConnectFn(element, scope);
         if (linkingFn) linkingFn(scope, element, element);
         return element;
@@ -256,6 +256,15 @@ function $CompileProvider($provide) {
 
     function wrongMode(localName, mode) {
       throw Error("Unsupported '" + mode + "' for '" + localName + "'.");
+    }
+
+    function safeAddClass(element, className) {
+      try {
+        element.addClass(className);
+      } catch(e) {
+        // ignore, since it means that we are trying to set class on
+        // SVG element, where class name is read-only.
+      }
     }
 
     /**
@@ -387,12 +396,14 @@ function $CompileProvider($provide) {
 
           // use class as directive
           className = node.className;
-          while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
-            nName = directiveNormalize(match[2]);
-            if (addDirective(directives, nName, 'C', maxPriority)) {
-              attrs[nName] = trim(match[3]);
+          if (isString(className)) {
+            while (match = CLASS_DIRECTIVE_REGEXP.exec(className)) {
+              nName = directiveNormalize(match[2]);
+              if (addDirective(directives, nName, 'C', maxPriority)) {
+                attrs[nName] = trim(match[3]);
+              }
+              className = className.substr(match.index + match[0].length);
             }
-            className = className.substr(match.index + match[0].length);
           }
           break;
         case 3: /* Text Node */
@@ -459,10 +470,10 @@ function $CompileProvider($provide) {
         if (directiveValue = directive.scope) {
           assertNoDuplicate('isolated scope', newIsolatedScopeDirective, directive, element);
           if (isObject(directiveValue)) {
-            element.addClass('ng-isolate-scope');
+            safeAddClass(element, 'ng-isolate-scope');
             newIsolatedScopeDirective = directive;
           }
-          element.addClass('ng-scope');
+          safeAddClass(element, 'ng-scope');
           newScopeDirective = newScopeDirective || directive;
         }
 
@@ -725,7 +736,7 @@ function $CompileProvider($provide) {
       // copy the new attributes on the old attrs object
       forEach(src, function(value, key) {
         if (key == 'class') {
-          element.addClass(value);
+          safeAddClass(element, value);
         } else if (key == 'style') {
           element.attr('style', element.attr('style') + ';' + value);
         } else if (key.charAt(0) != '$' && !dst.hasOwnProperty(key)) {
@@ -837,7 +848,7 @@ function $CompileProvider($provide) {
             var parent = node.parent(),
                 bindings = parent.data('$binding') || [];
             bindings.push(interpolateFn);
-            parent.data('$binding', bindings).addClass('ng-binding');
+            safeAddClass(parent.data('$binding', bindings), 'ng-binding');
             scope.$watch(interpolateFn, function(value) {
               node[0].nodeValue = value;
             });
