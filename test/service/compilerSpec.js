@@ -138,6 +138,16 @@ describe('$compile', function() {
       }));
 
 
+      it('should ignore not set CSS classes on SVG elements', inject(function($compile, $rootScope, log) {
+        if (!window.SVGElement) return;
+        // According to spec SVG element className property is readonly, but only FF
+        // implements it this way which causes compile exceptions.
+        element = $compile('<svg><text>{{1}}</text></svg>')($rootScope);
+        $rootScope.$digest();
+        expect(element.text()).toEqual('1');
+      }));
+
+
       it('should allow directives in comments', inject(
         function($compile, $rootScope, log) {
           element = $compile('<div>0<!-- directive: log angular -->1</div>')($rootScope);
