@@ -30,10 +30,23 @@ describe('ng-include', function() {
   }));
 
 
+  it('should support ng-include="src" syntax', inject(putIntoCache('myUrl', '{{name}}'),
+      function($rootScope, $compile) {
+    element = jqLite('<div ng-include="url"></div>');
+    jqLite(document.body).append(element);
+    element = $compile(element)($rootScope);
+    $rootScope.name = 'Alibaba';
+    $rootScope.url = 'myUrl';
+    $rootScope.$digest();
+    expect(element.text()).toEqual('Alibaba');
+    jqLite(document.body).html('');
+  }));
+
+
   it('should remove previously included text if a falsy value is bound to src', inject(
         putIntoCache('myUrl', '{{name}}'),
-        function($rootScope, $compile, $browser) {
-    element = jqLite('<div ng-include="url" scope="childScope"></div>');
+        function($rootScope, $compile) {
+    element = jqLite('<ng:include src="url" scope="childScope"></ng:include>');
     element = $compile(element)($rootScope);
     $rootScope.childScope = $rootScope.$new();
     $rootScope.childScope.name = 'igor';
