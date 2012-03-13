@@ -140,15 +140,15 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
       // required validator
       if (multiple && (attr.required || attr.ngRequired)) {
         var requiredValidator = function(value) {
-          ctrl.setValidity('REQUIRED', !attr.required || (value && value.length));
+          ctrl.$setValidity('REQUIRED', !attr.required || (value && value.length));
           return value;
         };
 
-        ctrl.parsers.push(requiredValidator);
-        ctrl.formatters.unshift(requiredValidator);
+        ctrl.$parsers.push(requiredValidator);
+        ctrl.$formatters.unshift(requiredValidator);
 
         attr.$observe('required', function() {
-          requiredValidator(ctrl.viewValue);
+          requiredValidator(ctrl.$viewValue);
         });
       }
 
@@ -162,20 +162,20 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
 
 
       function Single(scope, selectElement, ctrl) {
-        ctrl.render = function() {
-          selectElement.val(ctrl.viewValue);
+        ctrl.$render = function() {
+          selectElement.val(ctrl.$viewValue);
         };
 
         selectElement.bind('change', function() {
           scope.$apply(function() {
-            ctrl.setViewValue(selectElement.val());
+            ctrl.$setViewValue(selectElement.val());
           });
         });
       }
 
       function Multiple(scope, selectElement, ctrl) {
-        ctrl.render = function() {
-          var items = new HashMap(ctrl.viewValue);
+        ctrl.$render = function() {
+          var items = new HashMap(ctrl.$viewValue);
           forEach(selectElement.children(), function(option) {
             option.selected = isDefined(items.get(option.value));
           });
@@ -189,7 +189,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 array.push(option.value);
               }
             });
-            ctrl.setViewValue(array);
+            ctrl.$setViewValue(array);
           });
         });
       }
@@ -266,11 +266,11 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
                 value = valueFn(scope, locals);
               }
             }
-            ctrl.setViewValue(value);
+            ctrl.$setViewValue(value);
           });
         });
 
-        ctrl.render = render;
+        ctrl.$render = render;
 
         // TODO(vojta): can't we optimize this ?
         scope.$watch(render);
@@ -282,7 +282,7 @@ var selectDirective = ['$compile', '$parse', function($compile,   $parse) {
               optionGroup,
               option,
               existingParent, existingOptions, existingOption,
-              modelValue = ctrl.modelValue,
+              modelValue = ctrl.$modelValue,
               values = valuesFn(scope) || [],
               keys = keyName ? sortedKeys(values) : values,
               groupLength, length,

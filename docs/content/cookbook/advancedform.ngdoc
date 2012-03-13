@@ -52,7 +52,7 @@ detection, and preventing invalid form submission.
      };
 
      $scope.isSaveDisabled = function() {
-       return $scope.myForm.invalid || angular.equals(master, $scope.form);
+       return $scope.myForm.$invalid || angular.equals(master, $scope.form);
      };
 
      $scope.cancel();
