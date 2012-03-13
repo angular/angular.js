@@ -5,12 +5,12 @@
  * @ngdoc object
  * @name angular.module.ng.$compileProvider.directive.form.FormController
  *
- * @property {boolean} pristine True if user has not interacted with the form yet.
- * @property {boolean} dirty True if user has already interacted with the form.
- * @property {boolean} valid True if all of the containg widgets are valid.
- * @property {boolean} invalid True if at least one containing widget is invalid.
+ * @property {boolean} $pristine True if user has not interacted with the form yet.
+ * @property {boolean} $dirty True if user has already interacted with the form.
+ * @property {boolean} $valid True if all of the containg widgets are valid.
+ * @property {boolean} $invalid True if at least one containing widget is invalid.
  *
- * @property {Object} error Is an object hash, containing references to all invalid widgets, where
+ * @property {Object} $error Is an object hash, containing references to all invalid widgets, where
  *
  *  - keys are error ids (such as `REQUIRED`, `URL` or `EMAIL`),
  *  - values are arrays of widgets that are invalid with given error.
@@ -22,11 +22,11 @@
  * of `FormController`.
  *
  */
-FormController.$inject = ['$scope', 'name', '$element'];
-function FormController($scope, name, element) {
+FormController.$inject = ['name', '$element'];
+function FormController(name, element) {
   var form = this,
       parentForm = element.parent().inheritedData('$formController'),
-      errors = form.error = {};
+      errors = form.$error = {};
 
   // publish the form into scope
   name(this);
@@ -36,14 +36,14 @@ function FormController($scope, name, element) {
   }
 
   form.$addControl = function(control) {
-    if (control.name && !form.hasOwnProperty(control.name)) {
-      form[control.name] = control;
+    if (control.$name && !form.hasOwnProperty(control.$name)) {
+      form[control.$name] = control;
     }
   }
 
   form.$removeControl = function(control) {
-    if (control.name && form[control.name] === control) {
-      delete form[control.name];
+    if (control.$name && form[control.$name] === control) {
+      delete form[control.$name];
     }
     forEach(errors, cleanupControlErrors, control);
   };
@@ -53,27 +53,27 @@ function FormController($scope, name, element) {
       cleanupControlErrors(errors[validationToken], validationToken, control);
 
       if (equals(errors, {})) {
-        form.valid = true;
-        form.invalid = false;
+        form.$valid = true;
+        form.$invalid = false;
       }
     } else {
       addControlError(validationToken, control);
 
-      form.valid = false;
-      form.invalid = true;
+      form.$valid = false;
+      form.$invalid = true;
     }
   };
 
   form.$setDirty = function() {
-    form.dirty = true;
-    form.pristine = false;
+    form.$dirty = true;
+    form.$pristine = false;
   }
 
   // init state
-  form.dirty = false;
-  form.pristine = true;
-  form.valid = true;
-  form.invalid = false;
+  form.$dirty = false;
+  form.$pristine = true;
+  form.$valid = true;
+  form.$invalid = false;
 
   function cleanupControlErrors(queue, validationToken, control) {
     if (queue) {
@@ -180,24 +180,24 @@ function FormController($scope, name, element) {
        </script>
        <form name="myForm" ng-controller="Ctrl">
          userType: <input name="input" ng-model="userType" required>
-         <span class="error" ng-show="myForm.input.error.REQUIRED">Required!</span><br>
+         <span class="error" ng-show="myForm.input.$error.REQUIRED">Required!</span><br>
          <tt>userType = {{userType}}</tt><br>
-         <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br>
-         <tt>myForm.input.error = {{myForm.input.error}}</tt><br>
-         <tt>myForm.valid = {{myForm.valid}}</tt><br>
-         <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br>
+         <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br>
+         <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
+         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br>
         </form>
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
          expect(binding('userType')).toEqual('guest');
-         expect(binding('myForm.input.valid')).toEqual('true');
+         expect(binding('myForm.input.$valid')).toEqual('true');
         });
 
         it('should be invalid if empty', function() {
          input('userType').enter('');
          expect(binding('userType')).toEqual('');
-         expect(binding('myForm.input.valid')).toEqual('false');
+         expect(binding('myForm.input.$valid')).toEqual('false');
         });
       </doc:scenario>
     </doc:example>
@@ -219,7 +219,7 @@ var formDirective = [function() {
 
           forEach(['valid', 'invalid', 'dirty', 'pristine'], function(name) {
             scope.$watch(function() {
-              return controller[name];
+              return controller['$' + name];
             }, function(value) {
               formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
             });

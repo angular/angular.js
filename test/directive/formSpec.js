@@ -1,14 +1,14 @@
 'use strict';
 
 describe('form', function() {
-  var doc, widget, scope, $compile;
+  var doc, control, scope, $compile;
 
   beforeEach(module(function($compileProvider) {
     $compileProvider.directive('storeModelCtrl', function() {
       return {
         require: 'ngModel',
         link: function(scope, elm, attr, ctrl) {
-          widget = ctrl;
+          control = ctrl;
         }
       };
     });
@@ -33,17 +33,17 @@ describe('form', function() {
 
   it('should remove the widget when element removed', function() {
     doc = $compile(
-        '<form name="form">' +
+        '<form name="myForm">' +
           '<input type="text" name="alias" ng-model="value" store-model-ctrl/>' +
         '</form>')(scope);
 
-    var form = scope.form;
-    widget.setValidity('REQUIRED', false);
-    expect(form.alias).toBe(widget);
-    expect(form.error.REQUIRED).toEqual([widget]);
+    var form = scope.myForm;
+    control.$setValidity('REQUIRED', false);
+    expect(form.alias).toBe(control);
+    expect(form.$error.REQUIRED).toEqual([control]);
 
     doc.find('input').remove();
-    expect(form.error.REQUIRED).toBeUndefined();
+    expect(form.$error.REQUIRED).toBeUndefined();
     expect(form.alias).toBeUndefined();
   });
 
@@ -98,22 +98,22 @@ describe('form', function() {
     doc = jqLite(
         '<ng:form name="parent">' +
           '<ng:form name="child">' +
-            '<input type="text" ng:model="text" name="text">' +
+            '<input ng:model="modelA" name="inputA">' +
           '</ng:form>' +
         '</ng:form>');
     $compile(doc)(scope);
 
     var parent = scope.parent;
     var child = scope.child;
-    var input = child.text;
+    var input = child.inputA;
 
-    input.setValidity('MyError', false);
-    expect(parent.error.MyError).toEqual([child]);
-    expect(child.error.MyError).toEqual([input]);
+    input.$setValidity('MyError', false);
+    expect(parent.$error.MyError).toEqual([child]);
+    expect(child.$error.MyError).toEqual([input]);
 
-    input.setValidity('MyError', true);
-    expect(parent.error.MyError).toBeUndefined();
-    expect(child.error.MyError).toBeUndefined();
+    input.$setValidity('MyError', true);
+    expect(parent.$error.MyError).toBeUndefined();
+    expect(child.$error.MyError).toBeUndefined();
   });
 
 
@@ -131,10 +131,10 @@ describe('form', function() {
 
     scope.$apply();
 
-    expect(scope.formA.error.REQUIRED.length).toBe(1);
-    expect(scope.formA.error.REQUIRED).toEqual([scope.formA.firstName]);
-    expect(scope.formB.error.REQUIRED.length).toBe(1);
-    expect(scope.formB.error.REQUIRED).toEqual([scope.formB.lastName]);
+    expect(scope.formA.$error.REQUIRED.length).toBe(1);
+    expect(scope.formA.$error.REQUIRED).toEqual([scope.formA.firstName]);
+    expect(scope.formB.$error.REQUIRED.length).toBe(1);
+    expect(scope.formB.$error.REQUIRED).toEqual([scope.formB.lastName]);
 
     var inputA = doc.find('input').eq(0),
         inputB = doc.find('input').eq(1);
@@ -147,8 +147,8 @@ describe('form', function() {
     expect(scope.firstName).toBe('val1');
     expect(scope.lastName).toBe('val2');
 
-    expect(scope.formA.error.REQUIRED).toBeUndefined();
-    expect(scope.formB.error.REQUIRED).toBeUndefined();
+    expect(scope.formA.$error.REQUIRED).toBeUndefined();
+    expect(scope.formB.$error.REQUIRED).toBeUndefined();
   });
 
 
@@ -173,14 +173,14 @@ describe('form', function() {
     expect(child).toBeDefined();
     expect(input).toBeDefined();
 
-    input.setValidity('myRule', false);
-    expect(input.error.myRule).toEqual(true);
-    expect(child.error.myRule).toEqual([input]);
-    expect(parent.error.myRule).toEqual([child]);
+    input.$setValidity('myRule', false);
+    expect(input.$error.myRule).toEqual(true);
+    expect(child.$error.myRule).toEqual([input]);
+    expect(parent.$error.myRule).toEqual([child]);
 
-    input.setValidity('myRule', true);
-    expect(parent.error.myRule).toBeUndefined();
-    expect(child.error.myRule).toBeUndefined();
+    input.$setValidity('myRule', true);
+    expect(parent.$error.myRule).toBeUndefined();
+    expect(child.$error.myRule).toBeUndefined();
   });
 
 
@@ -190,10 +190,10 @@ describe('form', function() {
 
     var widget = scope.form.w1;
     expect(widget).toBeDefined();
-    expect(widget.pristine).toBe(true);
-    expect(widget.dirty).toBe(false);
-    expect(widget.valid).toBe(true);
-    expect(widget.invalid).toBe(false);
+    expect(widget.$pristine).toBe(true);
+    expect(widget.$dirty).toBe(false);
+    expect(widget.$valid).toBe(true);
+    expect(widget.$invalid).toBe(false);
   });
 
 
@@ -202,7 +202,7 @@ describe('form', function() {
     beforeEach(function() {
       doc = $compile(
           '<form name="form">' +
-            '<input type="text" ng-model="name" name="name" store-model-ctrl/>' +
+            '<input ng-model="name" name="name" store-model-ctrl/>' +
           '</form>')(scope);
 
       scope.$digest();
@@ -212,18 +212,18 @@ describe('form', function() {
     it('should have ng-valid/ng-invalid css class', function() {
       expect(doc).toBeValid();
 
-      widget.setValidity('ERROR', false);
+      control.$setValidity('ERROR', false);
       scope.$apply();
       expect(doc).toBeInvalid();
 
-      widget.setValidity('ANOTHER', false);
+      control.$setValidity('ANOTHER', false);
       scope.$apply();
 
-      widget.setValidity('ERROR', true);
+      control.$setValidity('ERROR', true);
       scope.$apply();
       expect(doc).toBeInvalid();
 
-      widget.setValidity('ANOTHER', true);
+      control.$setValidity('ANOTHER', true);
       scope.$apply();
       expect(doc).toBeValid();
     });
@@ -232,7 +232,7 @@ describe('form', function() {
     it('should have ng-pristine/ng-dirty css class', function() {
       expect(doc).toBePristine();
 
-      widget.setViewValue('');
+      control.$setViewValue('');
       scope.$apply();
       expect(doc).toBeDirty();
     });

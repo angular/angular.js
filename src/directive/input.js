@@ -38,33 +38,33 @@ var inputType = {
          <form name="myForm" ng-controller="Ctrl">
            Single word: <input type="text" name="input" ng-model="text"
                                ng-pattern="word" required>
-           <span class="error" ng-show="myForm.input.error.REQUIRED">
+           <span class="error" ng-show="myForm.input.$error.REQUIRED">
              Required!</span>
-           <span class="error" ng-show="myForm.input.error.PATTERN">
+           <span class="error" ng-show="myForm.input.$error.PATTERN">
              Single word only!</span>
 
            <tt>text = {{text}}</tt><br/>
-           <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
-           <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
-           <tt>myForm.valid = {{myForm.valid}}</tt><br/>
-           <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
           it('should initialize to model', function() {
             expect(binding('text')).toEqual('guest');
-            expect(binding('myForm.input.valid')).toEqual('true');
+            expect(binding('myForm.input.$valid')).toEqual('true');
           });
 
           it('should be invalid if empty', function() {
             input('text').enter('');
             expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.valid')).toEqual('false');
+            expect(binding('myForm.input.$valid')).toEqual('false');
           });
 
           it('should be invalid if multi word', function() {
             input('text').enter('hello world');
-            expect(binding('myForm.input.valid')).toEqual('false');
+            expect(binding('myForm.input.$valid')).toEqual('false');
           });
         </doc:scenario>
       </doc:example>
@@ -106,33 +106,33 @@ var inputType = {
          <form name="myForm" ng-controller="Ctrl">
            Number: <input type="number" name="input" ng-model="value"
                           min="0" max="99" required>
-           <span class="error" ng-show="myForm.list.error.REQUIRED">
+           <span class="error" ng-show="myForm.list.$error.REQUIRED">
              Required!</span>
-           <span class="error" ng-show="myForm.list.error.NUMBER">
+           <span class="error" ng-show="myForm.list.$error.NUMBER">
              Not valid number!</span>
            <tt>value = {{value}}</tt><br/>
-           <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
-           <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
-           <tt>myForm.valid = {{myForm.valid}}</tt><br/>
-           <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
           it('should initialize to model', function() {
            expect(binding('value')).toEqual('12');
-           expect(binding('myForm.input.valid')).toEqual('true');
+           expect(binding('myForm.input.$valid')).toEqual('true');
           });
 
           it('should be invalid if empty', function() {
            input('value').enter('');
            expect(binding('value')).toEqual('');
-           expect(binding('myForm.input.valid')).toEqual('false');
+           expect(binding('myForm.input.$valid')).toEqual('false');
           });
 
           it('should be invalid if over max', function() {
            input('value').enter('123');
            expect(binding('value')).toEqual('');
-           expect(binding('myForm.input.valid')).toEqual('false');
+           expect(binding('myForm.input.$valid')).toEqual('false');
           });
         </doc:scenario>
       </doc:example>
@@ -171,33 +171,33 @@ var inputType = {
          </script>
          <form name="myForm" ng-controller="Ctrl">
            URL: <input type="url" name="input" ng-model="text" required>
-           <span class="error" ng-show="myForm.input.error.REQUIRED">
+           <span class="error" ng-show="myForm.input.$error.REQUIRED">
              Required!</span>
-           <span class="error" ng-show="myForm.input.error.url">
+           <span class="error" ng-show="myForm.input.$error.url">
              Not valid url!</span>
            <tt>text = {{text}}</tt><br/>
-           <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
-           <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
-           <tt>myForm.valid = {{myForm.valid}}</tt><br/>
-           <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
-           <tt>myForm.error.url = {{!!myForm.error.url}}</tt><br/>
+           <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+           <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+           <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+           <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+           <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
           it('should initialize to model', function() {
             expect(binding('text')).toEqual('http://google.com');
-            expect(binding('myForm.input.valid')).toEqual('true');
+            expect(binding('myForm.input.$valid')).toEqual('true');
           });
 
           it('should be invalid if empty', function() {
             input('text').enter('');
             expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.valid')).toEqual('false');
+            expect(binding('myForm.input.$valid')).toEqual('false');
           });
 
           it('should be invalid if not url', function() {
             input('text').enter('xxx');
-            expect(binding('myForm.input.valid')).toEqual('false');
+            expect(binding('myForm.input.$valid')).toEqual('false');
           });
         </doc:scenario>
       </doc:example>
@@ -234,33 +234,33 @@ var inputType = {
          </script>
            <form name="myForm" ng-controller="Ctrl">
              Email: <input type="email" name="input" ng-model="text" required>
-             <span class="error" ng-show="myForm.input.error.REQUIRED">
+             <span class="error" ng-show="myForm.input.$error.REQUIRED">
                Required!</span>
-             <span class="error" ng-show="myForm.input.error.EMAIL">
+             <span class="error" ng-show="myForm.input.$error.EMAIL">
                Not valid email!</span>
              <tt>text = {{text}}</tt><br/>
-             <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
-             <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
-             <tt>myForm.valid = {{myForm.valid}}</tt><br/>
-             <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
-             <tt>myForm.error.EMAIL = {{!!myForm.error.EMAIL}}</tt><br/>
+             <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
+             <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
+             <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+             <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+             <tt>myForm.$error.EMAIL = {{!!myForm.$error.EMAIL}}</tt><br/>
            </form>
         </doc:source>
         <doc:scenario>
           it('should initialize to model', function() {
             expect(binding('text')).toEqual('me@example.com');
-            expect(binding('myForm.input.valid')).toEqual('true');
+            expect(binding('myForm.input.$valid')).toEqual('true');
           });
 
           it('should be invalid if empty', function() {
             input('text').enter('');
             expect(binding('text')).toEqual('');
-            expect(binding('myForm.input.valid')).toEqual('false');
+            expect(binding('myForm.input.$valid')).toEqual('false');
           });
 
           it('should be invalid if not email', function() {
             input('text').enter('xxx');
-            expect(binding('myForm.input.valid')).toEqual('false');
+            expect(binding('myForm.input.$valid')).toEqual('false');
           });
         </doc:scenario>
       </doc:example>
@@ -370,12 +370,12 @@ function isEmpty(value) {
 function textInputType(scope, element, attr, ctrl) {
   element.bind('blur', function() {
     scope.$apply(function() {
-      ctrl.setViewValue(trim(element.val()));
+      ctrl.$setViewValue(trim(element.val()));
     });
   });
 
-  ctrl.render = function() {
-    element.val(isEmpty(ctrl.viewValue) ? '' : ctrl.viewValue);
+  ctrl.$render = function() {
+    element.val(isEmpty(ctrl.$viewValue) ? '' : ctrl.$viewValue);
   };
 
   // pattern validator
@@ -384,10 +384,10 @@ function textInputType(scope, element, attr, ctrl) {
 
   var validate = function(regexp, value) {
     if (isEmpty(value) || regexp.test(value)) {
-      ctrl.setValidity('PATTERN', true);
+      ctrl.$setValidity('PATTERN', true);
       return value;
     } else {
-      ctrl.setValidity('PATTERN', false);
+      ctrl.$setValidity('PATTERN', false);
       return undefined;
     }
   };
@@ -409,8 +409,8 @@ function textInputType(scope, element, attr, ctrl) {
       };
     }
 
-    ctrl.formatters.push(patternValidator);
-    ctrl.parsers.push(patternValidator);
+    ctrl.$formatters.push(patternValidator);
+    ctrl.$parsers.push(patternValidator);
   }
 
   // min length validator
@@ -418,16 +418,16 @@ function textInputType(scope, element, attr, ctrl) {
     var minlength = parseInt(attr.ngMinlength, 10);
     var minLengthValidator = function(value) {
       if (!isEmpty(value) && value.length < minlength) {
-        ctrl.setValidity('MINLENGTH', false);
+        ctrl.$setValidity('MINLENGTH', false);
         return undefined;
       } else {
-        ctrl.setValidity('MINLENGTH', true);
+        ctrl.$setValidity('MINLENGTH', true);
         return value;
       }
     };
 
-    ctrl.parsers.push(minLengthValidator);
-    ctrl.formatters.push(minLengthValidator);
+    ctrl.$parsers.push(minLengthValidator);
+    ctrl.$formatters.push(minLengthValidator);
   }
 
   // max length validator
@@ -435,34 +435,34 @@ function textInputType(scope, element, attr, ctrl) {
     var maxlength = parseInt(attr.ngMaxlength, 10);
     var maxLengthValidator = function(value) {
       if (!isEmpty(value) && value.length > maxlength) {
-        ctrl.setValidity('MAXLENGTH', false);
+        ctrl.$setValidity('MAXLENGTH', false);
         return undefined;
       } else {
-        ctrl.setValidity('MAXLENGTH', true);
+        ctrl.$setValidity('MAXLENGTH', true);
         return value;
       }
     };
 
-    ctrl.parsers.push(maxLengthValidator);
-    ctrl.formatters.push(maxLengthValidator);
+    ctrl.$parsers.push(maxLengthValidator);
+    ctrl.$formatters.push(maxLengthValidator);
   }
 };
 
 function numberInputType(scope, element, attr, ctrl) {
   textInputType(scope, element, attr, ctrl);
 
-  ctrl.parsers.push(function(value) {
+  ctrl.$parsers.push(function(value) {
     var empty = isEmpty(value);
     if (empty || NUMBER_REGEXP.test(value)) {
-      ctrl.setValidity('NUMBER', true);
+      ctrl.$setValidity('NUMBER', true);
       return value === '' ? null : (empty ? value : parseFloat(value));
     } else {
-      ctrl.setValidity('NUMBER', false);
+      ctrl.$setValidity('NUMBER', false);
       return undefined;
     }
   });
 
-  ctrl.formatters.push(function(value) {
+  ctrl.$formatters.push(function(value) {
     return isEmpty(value) ? '' : '' + value;
   });
 
@@ -470,41 +470,41 @@ function numberInputType(scope, element, attr, ctrl) {
     var min = parseFloat(attr.min);
     var minValidator = function(value) {
       if (!isEmpty(value) && value < min) {
-        ctrl.setValidity('MIN', false);
+        ctrl.$setValidity('MIN', false);
         return undefined;
       } else {
-        ctrl.setValidity('MIN', true);
+        ctrl.$setValidity('MIN', true);
         return value;
       }
     };
 
-    ctrl.parsers.push(minValidator);
-    ctrl.formatters.push(minValidator);
+    ctrl.$parsers.push(minValidator);
+    ctrl.$formatters.push(minValidator);
   }
 
   if (attr.max) {
     var max = parseFloat(attr.max);
     var maxValidator = function(value) {
       if (!isEmpty(value) && value > max) {
-        ctrl.setValidity('MAX', false);
+        ctrl.$setValidity('MAX', false);
         return undefined;
       } else {
-        ctrl.setValidity('MAX', true);
+        ctrl.$setValidity('MAX', true);
         return value;
       }
     };
 
-    ctrl.parsers.push(maxValidator);
-    ctrl.formatters.push(maxValidator);
+    ctrl.$parsers.push(maxValidator);
+    ctrl.$formatters.push(maxValidator);
   }
 
-  ctrl.formatters.push(function(value) {
+  ctrl.$formatters.push(function(value) {
 
     if (isEmpty(value) || isNumber(value)) {
-      ctrl.setValidity('NUMBER', true);
+      ctrl.$setValidity('NUMBER', true);
       return value;
     } else {
-      ctrl.setValidity('NUMBER', false);
+      ctrl.$setValidity('NUMBER', false);
       return undefined;
     }
   });
@@ -515,16 +515,16 @@ function urlInputType(scope, element, attr, ctrl) {
 
   var urlValidator = function(value) {
     if (isEmpty(value) || URL_REGEXP.test(value)) {
-      ctrl.setValidity('URL', true);
+      ctrl.$setValidity('URL', true);
       return value;
     } else {
-      ctrl.setValidity('URL', false);
+      ctrl.$setValidity('URL', false);
       return undefined;
     }
   };
 
-  ctrl.formatters.push(urlValidator);
-  ctrl.parsers.push(urlValidator);
+  ctrl.$formatters.push(urlValidator);
+  ctrl.$parsers.push(urlValidator);
 }
 
 function emailInputType(scope, element, attr, ctrl) {
@@ -532,16 +532,16 @@ function emailInputType(scope, element, attr, ctrl) {
 
   var emailValidator = function(value) {
     if (isEmpty(value) || EMAIL_REGEXP.test(value)) {
-      ctrl.setValidity('EMAIL', true);
+      ctrl.$setValidity('EMAIL', true);
       return value;
     } else {
-      ctrl.setValidity('EMAIL', false);
+      ctrl.$setValidity('EMAIL', false);
       return undefined;
     }
   };
 
-  ctrl.formatters.push(emailValidator);
-  ctrl.parsers.push(emailValidator);
+  ctrl.$formatters.push(emailValidator);
+  ctrl.$parsers.push(emailValidator);
 }
 
 function radioInputType(scope, element, attr, ctrl) {
@@ -551,14 +551,14 @@ function radioInputType(scope, element, attr, ctrl) {
   element.bind('click', function() {
     if (element[0].checked) {
       scope.$apply(function() {
-        ctrl.setViewValue(attr.value);
+        ctrl.$setViewValue(attr.value);
       });
     };
   });
 
-  ctrl.render = function() {
+  ctrl.$render = function() {
     var value = attr.value;
-    element[0].checked = isDefined(value) && (value == ctrl.viewValue);
+    element[0].checked = isDefined(value) && (value == ctrl.$viewValue);
   };
 }
 
@@ -571,19 +571,19 @@ function checkboxInputType(scope, element, attr, ctrl) {
 
   element.bind('click', function() {
     scope.$apply(function() {
-      ctrl.setViewValue(element[0].checked);
+      ctrl.$setViewValue(element[0].checked);
     });
   });
 
-  ctrl.render = function() {
-    element[0].checked = ctrl.viewValue;
+  ctrl.$render = function() {
+    element[0].checked = ctrl.$viewValue;
   };
 
-  ctrl.formatters.push(function(value) {
+  ctrl.$formatters.push(function(value) {
     return value === trueValue;
   });
 
-  ctrl.parsers.push(function(value) {
+  ctrl.$parsers.push(function(value) {
     return value ? trueValue : falseValue;
   });
 }
@@ -646,63 +646,63 @@ function checkboxInputType(scope, element, attr, ctrl) {
        <div ng-controller="Ctrl">
          <form name="myForm">
            User name: <input type="text" name="userName" ng-model="user.name" required>
-           <span class="error" ng-show="myForm.userName.error.REQUIRED">
+           <span class="error" ng-show="myForm.userName.$error.REQUIRED">
              Required!</span><br>
            Last name: <input type="text" name="lastName" ng-model="user.last"
              ng-minlength="3" ng-maxlength="10">
-           <span class="error" ng-show="myForm.lastName.error.MINLENGTH">
+           <span class="error" ng-show="myForm.lastName.$error.MINLENGTH">
              Too short!</span>
-           <span class="error" ng-show="myForm.lastName.error.MAXLENGTH">
+           <span class="error" ng-show="myForm.lastName.$error.MAXLENGTH">
              Too long!</span><br>
          </form>
          <hr>
          <tt>user = {{user}}</tt><br/>
-         <tt>myForm.userName.valid = {{myForm.userName.valid}}</tt><br>
-         <tt>myForm.userName.error = {{myForm.userName.error}}</tt><br>
-         <tt>myForm.lastName.valid = {{myForm.lastName.valid}}</tt><br>
-         <tt>myForm.userName.error = {{myForm.lastName.error}}</tt><br>
-         <tt>myForm.valid = {{myForm.valid}}</tt><br>
-         <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br>
-         <tt>myForm.error.MINLENGTH = {{!!myForm.error.MINLENGTH}}</tt><br>
-         <tt>myForm.error.MAXLENGTH = {{!!myForm.error.MAXLENGTH}}</tt><br>
+         <tt>myForm.userName.$valid = {{myForm.userName.$valid}}</tt><br>
+         <tt>myForm.userName.$error = {{myForm.userName.$error}}</tt><br>
+         <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br>
+         <tt>myForm.userName.$error = {{myForm.lastName.$error}}</tt><br>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
+         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br>
+         <tt>myForm.$error.MINLENGTH = {{!!myForm.$error.MINLENGTH}}</tt><br>
+         <tt>myForm.$error.MAXLENGTH = {{!!myForm.$error.MAXLENGTH}}</tt><br>
        </div>
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
           expect(binding('user')).toEqual('{"last":"visitor","name":"guest"}');
-          expect(binding('myForm.userName.valid')).toEqual('true');
-          expect(binding('myForm.valid')).toEqual('true');
+          expect(binding('myForm.userName.$valid')).toEqual('true');
+          expect(binding('myForm.$valid')).toEqual('true');
         });
 
         it('should be invalid if empty when required', function() {
           input('user.name').enter('');
           expect(binding('user')).toEqual('{"last":"visitor"}');
-          expect(binding('myForm.userName.valid')).toEqual('false');
-          expect(binding('myForm.valid')).toEqual('false');
+          expect(binding('myForm.userName.$valid')).toEqual('false');
+          expect(binding('myForm.$valid')).toEqual('false');
         });
 
         it('should be valid if empty when min length is set', function() {
           input('user.last').enter('');
           expect(binding('user')).toEqual('{"last":"","name":"guest"}');
-          expect(binding('myForm.lastName.valid')).toEqual('true');
-          expect(binding('myForm.valid')).toEqual('true');
+          expect(binding('myForm.lastName.$valid')).toEqual('true');
+          expect(binding('myForm.$valid')).toEqual('true');
         });
 
         it('should be invalid if less than required min length', function() {
           input('user.last').enter('xx');
           expect(binding('user')).toEqual('{"name":"guest"}');
-          expect(binding('myForm.lastName.valid')).toEqual('false');
-          expect(binding('myForm.lastName.error')).toMatch(/MINLENGTH/);
-          expect(binding('myForm.valid')).toEqual('false');
+          expect(binding('myForm.lastName.$valid')).toEqual('false');
+          expect(binding('myForm.lastName.$error')).toMatch(/MINLENGTH/);
+          expect(binding('myForm.$valid')).toEqual('false');
         });
 
         it('should be invalid if longer than max length', function() {
           input('user.last').enter('some ridiculously long name');
           expect(binding('user'))
             .toEqual('{"name":"guest"}');
-          expect(binding('myForm.lastName.valid')).toEqual('false');
-          expect(binding('myForm.lastName.error')).toMatch(/MAXLENGTH/);
-          expect(binding('myForm.valid')).toEqual('false');
+          expect(binding('myForm.lastName.$valid')).toEqual('false');
+          expect(binding('myForm.lastName.$error')).toMatch(/MAXLENGTH/);
+          expect(binding('myForm.$valid')).toEqual('false');
         });
       </doc:scenario>
     </doc:example>
@@ -729,7 +729,7 @@ var inputDirective = [function() {
  * @property {Array.<Function>} parsers Whenever the widget reads value from the DOM, it executes
  *     all of these functions to sanitize / convert the value as well as validate.
  *
- * @property {Array.<Function>} formatters Wheneveer the model value changes, it executes all of
+ * @property {Array.<Function>} formatters Whenever the model value changes, it executes all of
  *     these functions to convert the value as well as validate.
  *
  * @property {Object} error An bject hash with all errors as keys.
@@ -744,23 +744,23 @@ var inputDirective = [function() {
  */
 var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
     function($scope, $exceptionHandler, $attr, ngModel) {
-  this.viewValue = Number.NaN;
-  this.modelValue = Number.NaN;
-  this.parsers = [];
-  this.formatters = [];
-  this.viewChangeListeners = [];
-  this.error = {};
-  this.pristine = true;
-  this.dirty = false;
-  this.valid = true;
-  this.invalid = false;
-  this.render = noop;
-  this.name = $attr.name;
+  this.$viewValue = Number.NaN;
+  this.$modelValue = Number.NaN;
+  this.$parsers = [];
+  this.$formatters = [];
+  this.$viewChangeListeners = [];
+  this.$error = {};
+  this.$pristine = true;
+  this.$dirty = false;
+  this.$valid = true;
+  this.$invalid = false;
+  this.$render = noop;
+  this.$name = $attr.name;
 
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#setValidity
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$setValidity
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
@@ -772,21 +772,21 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    * @param {string} validationToken Name of the validator.
    * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
    */
-  this.setValidity = function(validationToken, isValid) {
+  this.$setValidity = function(validationToken, isValid) {
 
-    if (!isValid && this.error[validationToken]) return;
-    if (isValid && !this.error[validationToken]) return;
+    if (!isValid && this.$error[validationToken]) return;
+    if (isValid && !this.$error[validationToken]) return;
 
     if (isValid) {
-      delete this.error[validationToken];
-      if (equals(this.error, {})) {
-        this.valid = true;
-        this.invalid = false;
+      delete this.$error[validationToken];
+      if (equals(this.$error, {})) {
+        this.$valid = true;
+        this.$invalid = false;
       }
     } else {
-      this.error[validationToken] = true;
-      this.invalid = true;
-      this.valid = false;
+      this.$error[validationToken] = true;
+      this.$invalid = true;
+      this.$valid = false;
     }
 
     if (this.$form) {
@@ -797,7 +797,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
 
   /**
    * @ngdoc function
-   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#setViewValue
+   * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$setViewValue
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
@@ -812,24 +812,24 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    *
    * @param {string} value Value from the view.
    */
-  this.setViewValue = function(value) {
-    this.viewValue = value;
+  this.$setViewValue = function(value) {
+    this.$viewValue = value;
 
     // change to dirty
-    if (this.pristine) {
-      this.dirty = true;
-      this.pristine = false;
+    if (this.$pristine) {
+      this.$dirty = true;
+      this.$pristine = false;
       if (this.$form) this.$form.$setDirty();
     }
 
-    forEach(this.parsers, function(fn) {
+    forEach(this.$parsers, function(fn) {
       value = fn(value);
     });
 
-    if (this.modelValue !== value) {
-      this.modelValue = value;
+    if (this.$modelValue !== value) {
+      this.$modelValue = value;
       ngModel(value);
-      forEach(this.viewChangeListeners, function(listener) {
+      forEach(this.$viewChangeListeners, function(listener) {
         try {
           listener();
         } catch(e) {
@@ -846,19 +846,19 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
   }, function(value) {
 
     // ignore change from view
-    if (ctrl.modelValue === value) return;
+    if (ctrl.$modelValue === value) return;
 
-    var formatters = ctrl.formatters,
+    var formatters = ctrl.$formatters,
         idx = formatters.length;
 
-    ctrl.modelValue = value;
+    ctrl.$modelValue = value;
     while(idx--) {
       value = formatters[idx](value);
     }
 
-    if (ctrl.viewValue !== value) {
-      ctrl.viewValue = value;
-      ctrl.render();
+    if (ctrl.$viewValue !== value) {
+      ctrl.$viewValue = value;
+      ctrl.$render();
     }
   });
 }];
@@ -915,7 +915,7 @@ var ngModelDirective = [function() {
 
       forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
         scope.$watch(function() {
-          return modelCtrl[name];
+          return modelCtrl['$' + name];
         }, function(value) {
           element[value ? 'addClass' : 'removeClass']('ng-' + name);
         });
@@ -980,7 +980,7 @@ var ngModelDirective = [function() {
 var ngChangeDirective = valueFn({
   require: 'ngModel',
   link: function(scope, element, attr, ctrl) {
-    ctrl.viewChangeListeners.push(function() {
+    ctrl.$viewChangeListeners.push(function() {
       scope.$eval(attr.ngChange);
     });
   }
@@ -1025,7 +1025,7 @@ var ngModelInstantDirective = ['$browser', function($browser) {
     link: function(scope, element, attr, ctrl) {
       var handler = function() {
         scope.$apply(function() {
-          ctrl.setViewValue(trim(element.val()));
+          ctrl.$setViewValue(trim(element.val()));
         });
       };
 
@@ -1058,19 +1058,19 @@ var requiredDirective = [function() {
 
       var validator = function(value) {
         if (attr.required && (isEmpty(value) || value === false)) {
-          ctrl.setValidity('REQUIRED', false);
+          ctrl.$setValidity('REQUIRED', false);
           return;
         } else {
-          ctrl.setValidity('REQUIRED', true);
+          ctrl.$setValidity('REQUIRED', true);
           return value;
         }
       };
 
-      ctrl.formatters.push(validator);
-      ctrl.parsers.unshift(validator);
+      ctrl.$formatters.push(validator);
+      ctrl.$parsers.unshift(validator);
 
       attr.$observe('required', function() {
-        validator(ctrl.viewValue);
+        validator(ctrl.$viewValue);
       });
     }
   };
@@ -1095,26 +1095,26 @@ var requiredDirective = [function() {
          }
        </script>
        <form name="myForm" ng-controller="Ctrl">
-         List: <input name="input" ng-model="names" ng-list required>
-         <span class="error" ng-show="myForm.list.error.REQUIRED">
+         List: <input name="namesInput" ng-model="names" ng-list required>
+         <span class="error" ng-show="myForm.list.$error.REQUIRED">
            Required!</span>
          <tt>names = {{names}}</tt><br/>
-         <tt>myForm.input.valid = {{myForm.input.valid}}</tt><br/>
-         <tt>myForm.input.error = {{myForm.input.error}}</tt><br/>
-         <tt>myForm.valid = {{myForm.valid}}</tt><br/>
-         <tt>myForm.error.REQUIRED = {{!!myForm.error.REQUIRED}}</tt><br/>
+         <tt>myForm.namesInput.$valid = {{myForm.namesInput.$valid}}</tt><br/>
+         <tt>myForm.namesInput.$error = {{myForm.namesInput.$error}}</tt><br/>
+         <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
+         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
         </form>
       </doc:source>
       <doc:scenario>
         it('should initialize to model', function() {
           expect(binding('names')).toEqual('["igor","misko","vojta"]');
-          expect(binding('myForm.input.valid')).toEqual('true');
+          expect(binding('myForm.namesInput.$valid')).toEqual('true');
         });
 
         it('should be invalid if empty', function() {
           input('names').enter('');
           expect(binding('names')).toEqual('[]');
-          expect(binding('myForm.input.valid')).toEqual('false');
+          expect(binding('myForm.namesInput.$valid')).toEqual('false');
         });
       </doc:scenario>
     </doc:example>
@@ -1135,9 +1135,9 @@ var ngListDirective = function() {
         return list;
       };
 
-      ctrl.parsers.push(parse);
-      ctrl.formatters.push(function(value) {
-        if (isArray(value) && !equals(parse(ctrl.viewValue), value)) {
+      ctrl.$parsers.push(parse);
+      ctrl.$formatters.push(function(value) {
+        if (isArray(value) && !equals(parse(ctrl.$viewValue), value)) {
           return value.join(', ');
         }
 
