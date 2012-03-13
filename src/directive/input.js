@@ -1123,12 +1123,15 @@ var ngListDirective = function() {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
+      var match = /\/(.*)\//.exec(attr.ngList),
+          separator = match && new RegExp(match[1]) || attr.ngList || ',';
+
       var parse = function(viewValue) {
         var list = [];
 
         if (viewValue) {
-          forEach(viewValue.split(/\s*,\s*/), function(value) {
-            if (value) list.push(value);
+          forEach(viewValue.split(separator), function(value) {
+            if (value) list.push(trim(value));
           });
         }
 
