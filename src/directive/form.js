@@ -1,6 +1,12 @@
 'use strict';
 
 
+var nullFormCtrl = {
+  $addControl: noop,
+  $removeControl: noop,
+  $setValidity: noop
+}
+
 /**
  * @ngdoc object
  * @name angular.module.ng.$compileProvider.directive.form.FormController
@@ -24,18 +30,23 @@
  * of `FormController`.
  *
  */
-FormController.$inject = ['name', '$element'];
-function FormController(name, element) {
+FormController.$inject = ['name', '$element', '$attrs'];
+function FormController(name, element, attrs) {
   var form = this,
-      parentForm = element.parent().inheritedData('$formController'),
+      parentForm = element.parent().inheritedData('$formController') || nullFormCtrl,
       errors = form.$error = {};
+
+  // init state
+  form.$name = attrs.name;
+  form.$dirty = false;
+  form.$pristine = true;
+  form.$valid = true;
+  form.$invalid = false;
 
   // publish the form into scope
   name(this);
 
-  if (parentForm) {
-    parentForm.$addControl(form);
-  }
+  parentForm.$addControl(form);
 
   form.$addControl = function(control) {
     if (control.$name && !form.hasOwnProperty(control.$name)) {
@@ -71,26 +82,13 @@ function FormController(name, element) {
     form.$pristine = false;
   }
 
-  // init state
-  form.$dirty = false;
-  form.$pristine = true;
-  form.$valid = true;
-  form.$invalid = false;
-
   function cleanupControlErrors(queue, validationToken, control) {
     if (queue) {
       control = control || this; // so that we can be used in forEach;
-      for (var i = 0, length = queue.length; i < length; i++) {
-        if (queue[i] === control) {
-          queue.splice(i, 1);
-          if (!queue.length) {
-            delete errors[validationToken];
-
-            if (parentForm) {
-              parentForm.$setValidity(validationToken, true, form);
-            }
-          }
-        }
+      arrayRemove(queue, control);
+      if (!queue.length) {
+        delete errors[validationToken];
+        parentForm.$setValidity(validationToken, true, form);
       }
     }
   }
@@ -98,13 +96,10 @@ function FormController(name, element) {
   function addControlError(validationToken, control) {
     var queue = errors[validationToken];
     if (queue) {
-      if (indexOf(queue, control)) return;
+      if (includes(queue, control)) return;
     } else {
       errors[validationToken] = queue = [];
-
-      if (parentForm) {
-        parentForm.$setValidity(validationToken, false, form);
-      }
+      parentForm.$setValidity(validationToken, false, form);
     }
     queue.push(control);
   }
@@ -222,6 +217,15 @@ var formDirective = [function() {
               formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
             });
           });
+
+          var parentFormCtrl = formElement.parent().inheritedData('$formController');
+          if (parentFormCtrl) {
+            formElement.bind('$destroy', function() {
+              parentFormCtrl.$removeControl(controller);
+              if (attr.name) delete scope[attr.name];
+              extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+            });
+          }
         }
       };
     }
