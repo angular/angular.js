@@ -719,6 +719,10 @@ var inputDirective = [function() {
   };
 }];
 
+var VALID_CLASS = 'ng-valid',
+    INVALID_CLASS = 'ng-invalid',
+    PRISTINE_CLASS = 'ng-pristine',
+    DIRTY_CLASS = 'ng-dirty';
 
 /**
  * @ngdoc object
@@ -749,7 +753,6 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
   this.$parsers = [];
   this.$formatters = [];
   this.$viewChangeListeners = [];
-  this.$error = {};
   this.$pristine = true;
   this.$dirty = false;
   this.$valid = true;
@@ -757,7 +760,22 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
   this.$render = noop;
   this.$name = $attr.name;
 
-  var parentForm = $element.inheritedData('$formController') || nullFormCtrl;
+  var parentForm = $element.inheritedData('$formController') || nullFormCtrl,
+      invalidCount = 0, // used to easily determine if we are valid
+      $error = this.$error = {}; // keep invalid keys here
+
+
+  // Setup initial state of the control
+  $element.addClass(PRISTINE_CLASS);
+  toggleValidCss(true);
+
+  // convenience method for easy toggling of classes
+  function toggleValidCss(isValid, validationErrorKey) {
+    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+    $element.
+      removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
+      addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+  }
 
   /**
    * @ngdoc function
@@ -770,22 +788,30 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
    *
    * This method should be called by validators - i.e. the parser or formatter functions.
    *
-   * @param {string} validationErrorKey Name of the validator.
+   * @param {string} validationErrorKey Name of the validator. the `validationErrorKey` will assign
+   *        to `$error[validationErrorKey]=isValid` so that it is available for data-binding.
+   *        The `validationErrorKey` should be in camelCase and will get converted into dash-case
+   *        for class name. Example: `myError` will result in `ng-valid-my-error` and `ng-invalid-my-error`
+   *        class and can be bound to as  `{{someForm.someControl.$error.myError}}` .
    * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
    */
   this.$setValidity = function(validationErrorKey, isValid) {
-
-    if (!isValid && this.$error[validationErrorKey]) return;
-    if (isValid && !this.$error[validationErrorKey]) return;
+    if ($error[validationErrorKey] === !isValid) return;
 
     if (isValid) {
-      delete this.$error[validationErrorKey];
-      if (equals(this.$error, {})) {
+      if ($error[validationErrorKey]) invalidCount--;
+      $error[validationErrorKey] = false;
+      toggleValidCss(isValid);
+      if (!invalidCount) {
+        toggleValidCss(isValid, validationErrorKey);
         this.$valid = true;
         this.$invalid = false;
       }
     } else {
-      this.$error[validationErrorKey] = true;
+      if (!$error[validationErrorKey]) invalidCount++;
+      $error[validationErrorKey] = true;
+      toggleValidCss(isValid)
+      toggleValidCss(isValid, validationErrorKey);
       this.$invalid = true;
       this.$valid = false;
     }
@@ -818,6 +844,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$e
     if (this.$pristine) {
       this.$dirty = true;
       this.$pristine = false;
+      $element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
       parentForm.$setDirty();
     }
 
@@ -909,14 +936,6 @@ var ngModelDirective = [function() {
           formCtrl = ctrls[1] || nullFormCtrl;
 
       formCtrl.$addControl(modelCtrl);
-
-      forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
-        scope.$watch(function() {
-          return modelCtrl['$' + name];
-        }, function(value) {
-          element[value ? 'addClass' : 'removeClass']('ng-' + name);
-        });
-      });
 
       element.bind('$destroy', function() {
         formCtrl.$removeControl(modelCtrl);

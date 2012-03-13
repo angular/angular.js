@@ -35,6 +35,7 @@ FormController.$inject = ['name', '$element', '$attrs'];
 function FormController(name, element, attrs) {
   var form = this,
       parentForm = element.parent().inheritedData('$formController') || nullFormCtrl,
+      invalidCount = 0, // used to easily determine if we are valid
       errors = form.$error = {};
 
   // init state
@@ -49,11 +50,27 @@ function FormController(name, element, attrs) {
 
   parentForm.$addControl(form);
 
+  // Setup initial state of the control
+  element.addClass(PRISTINE_CLASS);
+  toggleValidCss(true);
+
+  // convenience method for easy toggling of classes
+  function toggleValidCss(isValid, validationErrorKey) {
+    validationErrorKey = validationErrorKey ? '-' + snake_case(validationErrorKey, '-') : '';
+    element.
+      removeClass((isValid ? INVALID_CLASS : VALID_CLASS) + validationErrorKey).
+      addClass((isValid ? VALID_CLASS : INVALID_CLASS) + validationErrorKey);
+  }
+
+  if (parentForm) {
+    parentForm.$addControl(form);
+  }
+
   form.$addControl = function(control) {
     if (control.$name && !form.hasOwnProperty(control.$name)) {
       form[control.$name] = control;
     }
-  }
+  };
 
   form.$removeControl = function(control) {
     if (control.$name && form[control.$name] === control) {
@@ -66,11 +83,15 @@ function FormController(name, element, attrs) {
     if (isValid) {
       cleanupControlErrors(errors[validationToken], validationToken, control);
 
-      if (equals(errors, {})) {
+      if (!invalidCount) {
+        toggleValidCss(isValid);
         form.$valid = true;
         form.$invalid = false;
       }
     } else {
+      if (!invalidCount) {
+        toggleValidCss(isValid);
+      }
       addControlError(validationToken, control);
 
       form.$valid = false;
@@ -79,16 +100,19 @@ function FormController(name, element, attrs) {
   };
 
   form.$setDirty = function() {
+    element.removeClass(PRISTINE_CLASS).addClass(DIRTY_CLASS);
     form.$dirty = true;
     form.$pristine = false;
-  }
+  };
 
   function cleanupControlErrors(queue, validationToken, control) {
     if (queue) {
       control = control || this; // so that we can be used in forEach;
       arrayRemove(queue, control);
       if (!queue.length) {
-        delete errors[validationToken];
+        invalidCount--;
+        errors[validationToken] = false;
+        toggleValidCss(true, validationToken);
         parentForm.$setValidity(validationToken, true, form);
       }
     }
@@ -100,6 +124,8 @@ function FormController(name, element, attrs) {
       if (includes(queue, control)) return;
     } else {
       errors[validationToken] = queue = [];
+      invalidCount++;
+      toggleValidCss(false, validationToken);
       parentForm.$setValidity(validationToken, false, form);
     }
     queue.push(control);
@@ -209,14 +235,6 @@ var formDirective = [function() {
         pre: function(scope, formElement, attr, controller) {
           formElement.bind('submit', function(event) {
             if (!attr.action) event.preventDefault();
-          });
-
-          forEach(['valid', 'invalid', 'dirty', 'pristine'], function(name) {
-            scope.$watch(function() {
-              return controller['$' + name];
-            }, function(value) {
-              formElement[value ? 'addClass' : 'removeClass']('ng-' + name);
-            });
           });
 
           var parentFormCtrl = formElement.parent().inheritedData('$formController');
