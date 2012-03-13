@@ -2,14 +2,13 @@
 @name Developer Guide: Forms
 @description
 
-Forms and form controls (`input`, `select`, `textarea`) are user's gateway to your application -
-that's how your application accepts input from the user.
+Form-controls (`input`, `select`, `textarea`) are a way for user to enter data.
+Form is a colloction of form-controlls for the purpose of grouping related inputs together.
 
-In order to provide good user experience while gathering user input, it is important to validate
-this input and give the user hints on how to correct errors. Angular provides several mechanisms
-that make this easier, but keep in mind that while client-side validation plays an important role in
-providing good user experience, it can be easily circumvented and thus a server-side validation is
-still necessary.
+Form and form-controlls provide validation services, so that the user can be notified of invalid input.
+This provides a better user experience, since the user gets instant feedback, as well as instructions on how to correct the input.
+Keep in mind that while client-side validation plays an important role in providing good user experience, it can easily be circumvented and thus can not be trusted.
+Server-side validation is still necessary for a secure application.
 
 
 # Simple form
