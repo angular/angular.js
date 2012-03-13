@@ -8,8 +8,6 @@
  * Sometimes it is necessary to write code which looks like bindings but which should be left alone
  * by angular. Use `ng-non-bindable` to make angular ignore a chunk of HTML.
  *
- * Note: `ng-non-bindable` looks like a directive, but is actually an attribute widget.
- *
  * @element ANY
  *
  * @example

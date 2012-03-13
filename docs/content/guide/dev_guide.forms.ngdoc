@@ -162,9 +162,9 @@ stored on the `FormController`.
   <form name="form" class="css-form" novalidate>
     Name: <input type="text" ng-model="user.name" name="userName" required /><br />
     E-mail: <input type="email" ng-model="user.email" name="userEmail" required/><br />
-    <span ng-show="form.userEmail.dirty && form.userEmail.invalid">Invalid:
-      <span ng-show="form.userEmail.error.REQUIRED">Please tell us your email.</span>
-      <span ng-show="form.userEmail.error.EMAIL">This is not a valid email.</span><br />
+    <span ng-show="form.userEmail.$dirty && form.userEmail.$invalid">Invalid:
+      <span ng-show="form.userEmail.$error.REQUIRED">Please tell us your email.</span>
+      <span ng-show="form.userEmail.$error.EMAIL">This is not a valid email.</span><br />
     </span>
 
     Gender: <input type="radio" ng-model="user.gender" value="male" />male
@@ -175,7 +175,7 @@ stored on the `FormController`.
     <div ng-show="!user.agree || !user.agreeSign">Please agree and sign.</div>
 
     <button ng-click="reset()" disabled="{{isUnchanged(user)}}">RESET</button>
-    <button ng-click="update(user)" disabled="{{form.invalid || isUnchanged(user)}}">SAVE</button>
+    <button ng-click="update(user)" disabled="{{form.$invalid || isUnchanged(user)}}">SAVE</button>
   </form>
 </div>
 
@@ -214,10 +214,10 @@ function gets fourth argument - an instance of `NgModelController`, which is a c
 to `ng-model`, that allows you to hook into the validation process.
 
 ## Model to View update
-Whenever the bound model changes, all functions in {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#formatters NgModelController#formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link api/angualar.module.ng.$compileProvider.directive.ng:model.NgModelController#setValidity NgModelController#setValidity}.
+Whenever the bound model changes, all functions in {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#formatters NgModelController#formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link api/angualar.module.ng.$compileProvider.directive.ng:model.NgModelController#$setValidity NgModelController#$setValidity}.
 
 ## View to Model update
-In a similar way, whenever a form control calls {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#setViewValue NgModelController#setViewValue}, all functions in {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#parsers NgModelController#parsers} array are pipe-lined, so that each of these functions has an opportunity to correct/convert the value and change validity state of the form control through {@link api/angualar.module.ng.$compileProvider.directive.ng:model.NgModelController#setValidity NgModelController#setValidity}.
+In a similar way, whenever a form control calls {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#setViewValue NgModelController#setViewValue}, all functions in {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#parsers NgModelController#parsers} array are pipe-lined, so that each of these functions has an opportunity to correct/convert the value and change validity state of the form control through {@link api/angualar.module.ng.$compileProvider.directive.ng:model.NgModelController#setValidity NgModelController#$setValidity}.
 
 In this example we create two simple directives. The first one is `integer` and it validates whether the input is valid integer, so for example `1.23` is an invalid value. Note, that we unshift the array instead of pushing - that's because we want to get a string value, so we need to execute the validation function before a conversion to number happens.
 
@@ -230,13 +230,13 @@ The second directive is `smart-float`. It parses both `1.2` and `1,2` into a val
   <form name="form" class="css-form" novalidate>
     <div>
       Size (integer 0 - 10): <input type="number" ng-model="size" name="size" min="0" max="10" integer />{{size}}<br />
-      <span ng-show="form.size.error.INTEGER">This is not valid integer!</span>
-      <span ng-show="form.size.error.MIN || form.size.error.MAX">The value must be in range 0 to 10!</span>
+      <span ng-show="form.size.$error.INTEGER">This is not valid integer!</span>
+      <span ng-show="form.size.$error.MIN || form.size.$error.MAX">The value must be in range 0 to 10!</span>
     </div>
 
     <div>
       Length (float): <input type="text" ng-model="length" name="length" smart-float />{{length}}<br />
-      <span ng-show="form.length.error.FLOAT">This is not valid number!</span>
+      <span ng-show="form.length.$error.FLOAT">This is not valid number!</span>
     </div>
   </form>
 </div>
@@ -249,14 +249,14 @@ The second directive is `smart-float`. It parses both `1.2` and `1,2` into a val
     return {
       require: 'ngModel',
       link: function(scope, elm, attrs, ctrl) {
-        ctrl.parsers.unshift(function(viewValue) {
+        ctrl.$parsers.unshift(function(viewValue) {
           if (INTEGER_REGEXP.test(viewValue)) {
             // it is valid
-            ctrl.setValidity('INTEGER', true);
+            ctrl.$setValidity('INTEGER', true);
             return viewValue;
           } else {
             // it is invalid, return undefined (no model update)
-            ctrl.setValidity('INTEGER', false);
+            ctrl.$setValidity('INTEGER', false);
             return undefined;
           }
         });
@@ -269,12 +269,12 @@ The second directive is `smart-float`. It parses both `1.2` and `1,2` into a val
     return {
       require: 'ngModel',
       link: function(scope, elm, attrs, ctrl) {
-        ctrl.parsers.unshift(function(viewValue) {
+        ctrl.$parsers.unshift(function(viewValue) {
           if (FLOAT_REGEXP.test(viewValue)) {
-            ctrl.setValidity('FLOAT', true);
+            ctrl.$setValidity('FLOAT', true);
             return parseFloat(viewValue.replace(',', '.'));
           } else {
-            ctrl.setValidity('FLOAT', false);
+            ctrl.$setValidity('FLOAT', false);
             return undefined;
           }
         });
@@ -308,7 +308,7 @@ This example shows how easy it is to add a support for binding contentEditable e
         // view -> model
         elm.bind('blur', function() {
           scope.$apply(function() {
-            ctrl.setViewValue(elm.html());
+            ctrl.$setViewValue(elm.html());
           });
         });
 
@@ -318,7 +318,7 @@ This example shows how easy it is to add a support for binding contentEditable e
         };
 
         // load init value from DOM
-        ctrl.setViewValue(elm.html());
+        ctrl.$setViewValue(elm.html());
       }
     };
   });

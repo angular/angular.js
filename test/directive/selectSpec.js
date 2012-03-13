@@ -55,7 +55,7 @@ describe('select', function() {
         scope.selection = 'c';
       });
 
-      expect(scope.form.select.error.REQUIRED).toBeFalsy();
+      expect(scope.form.select.$error.REQUIRED).toBeFalsy();
       expect(element).toBeValid();
       expect(element).toBePristine();
 
@@ -63,7 +63,7 @@ describe('select', function() {
         scope.selection = '';
       });
 
-      expect(scope.form.select.error.REQUIRED).toBeTruthy();
+      expect(scope.form.select.$error.REQUIRED).toBeTruthy();
       expect(element).toBeInvalid();
       expect(element).toBePristine();
       expect(scope.log).toEqual('');
@@ -117,7 +117,7 @@ describe('select', function() {
         scope.selection = [];
       });
 
-      expect(scope.form.select.error.REQUIRED).toBeTruthy();
+      expect(scope.form.select.$error.REQUIRED).toBeTruthy();
       expect(element).toBeInvalid();
       expect(element).toBePristine();
 
