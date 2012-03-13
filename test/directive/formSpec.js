@@ -176,17 +176,19 @@ describe('form', function() {
 
     it('should deregister a child form when its DOM is removed', function() {
       doc = jqLite(
-          '<ng:form name="parent">' +
-            '<ng:form name="child">' +
+          '<form name="parent">' +
+            '<div class="ng-form" name="child">' +
               '<input ng:model="modelA" name="inputA" required>' +
-            '</ng:form>' +
-          '</ng:form>');
+            '</div>' +
+          '</form>');
       $compile(doc)(scope);
       scope.$apply();
 
       var parent = scope.parent,
           child = scope.child;
 
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
       expect(parent.$error.required).toEqual([child]);
       doc.children().remove(); //remove child
 

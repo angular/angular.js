@@ -222,31 +222,32 @@ function FormController(name, element, attrs) {
       </doc:scenario>
     </doc:example>
  */
-var formDirective = [function() {
-  return {
-    name: 'form',
-    restrict: 'E',
-    inject: {
-      name: 'accessor'
-    },
-    controller: FormController,
-    compile: function() {
-      return {
-        pre: function(scope, formElement, attr, controller) {
-          formElement.bind('submit', function(event) {
-            if (!attr.action) event.preventDefault();
-          });
+var formDirectiveDev = {
+  name: 'form',
+  restrict: 'E',
+  inject: {
+    name: 'accessor'
+  },
+  controller: FormController,
+  compile: function() {
+    return {
+      pre: function(scope, formElement, attr, controller) {
+        formElement.bind('submit', function(event) {
+          if (!attr.action) event.preventDefault();
+        });
 
-          var parentFormCtrl = formElement.parent().inheritedData('$formController');
-          if (parentFormCtrl) {
-            formElement.bind('$destroy', function() {
-              parentFormCtrl.$removeControl(controller);
-              if (attr.name) delete scope[attr.name];
-              extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
-            });
-          }
+        var parentFormCtrl = formElement.parent().inheritedData('$formController');
+        if (parentFormCtrl) {
+          formElement.bind('$destroy', function() {
+            parentFormCtrl.$removeControl(controller);
+            if (attr.name) delete scope[attr.name];
+            extend(controller, nullFormCtrl); //stop propagating child destruction handlers upwards
+          });
         }
-      };
-    }
-  };
-}];
+      }
+    };
+  }
+};
+
+var formDirective = valueFn(formDirectiveDev);
+var ngFormDirective = valueFn(extend(copy(formDirectiveDev), {restrict:'EAC'}));
