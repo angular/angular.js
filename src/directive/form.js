@@ -98,11 +98,7 @@ function FormController(name, element) {
   function addControlError(validationToken, control) {
     var queue = errors[validationToken];
     if (queue) {
-      for (var i = 0, length = queue.length; i < length; i++) {
-        if (queue[i] === control) {
-          return;
-        }
-      }
+      if (indexOf(queue, control)) return;
     } else {
       errors[validationToken] = queue = [];
 
