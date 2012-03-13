@@ -7,7 +7,7 @@
  *
  * @description
  * # Overview
- * ng-pluralize is a widget that displays messages according to en-US localization rules.
+ * ng-pluralize is a directive that displays messages according to en-US localization rules.
  * These rules are bundled with angular.js and the rules can be overridden
  * (see {@link guide/dev_guide.i18n Angular i18n} dev guide). You configure ng-pluralize by
  * specifying the mappings between

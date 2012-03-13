@@ -14,7 +14,7 @@ var inputType = {
    * Standard HTML text input with angular data binding.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the widgets is published.
+   * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
    * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
@@ -81,7 +81,7 @@ var inputType = {
    * error if not a valid number.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the widgets is published.
+   * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} min Sets the `MIN` validation error key if the value entered is less then `min`.
    * @param {string=} max Sets the `MAX` validation error key if the value entered is greater then `min`.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
@@ -149,7 +149,7 @@ var inputType = {
    * valid URL.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the widgets is published.
+   * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
    * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
@@ -214,7 +214,7 @@ var inputType = {
    * address.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the widgets is published.
+   * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
    * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
    *    minlength.
@@ -277,7 +277,7 @@ var inputType = {
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string} value The value to which the expression should be set when selected.
-   * @param {string=} name Property name of the form under which the widgets is published.
+   * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} ng-change Angular expression to be executed when input changes due to user
    *    interaction with the input element.
    *
@@ -317,7 +317,7 @@ var inputType = {
    * HTML checkbox.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
-   * @param {string=} name Property name of the form under which the widgets is published.
+   * @param {string=} name Property name of the form under which the control is published.
    * @param {string=} ng-true-value The value to which the expression should be set when selected.
    * @param {string=} ng-false-value The value to which the expression should be set when not selected.
    * @param {string=} ng-change Angular expression to be executed when input changes due to user
@@ -594,12 +594,12 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @name angular.module.ng.$compileProvider.directive.textarea
  *
  * @description
- * HTML textarea element widget with angular data-binding. The data-binding and validation
+ * HTML textarea element control with angular data-binding. The data-binding and validation
  * properties of this element are exactly the same as those of the
  * {@link angular.module.ng.$compileProvider.directive.input input element}.
  *
  * @param {string} ng-model Assignable angular expression to data-bind to.
- * @param {string=} name Property name of the form under which the widgets is published.
+ * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
  * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
  *    minlength.
@@ -619,11 +619,11 @@ function checkboxInputType(scope, element, attr, ctrl) {
  * @restrict E
  *
  * @description
- * HTML input element widget with angular data-binding. Input widget follows HTML5 input types
+ * HTML input element control with angular data-binding. Input control follows HTML5 input types
  * and polyfills the HTML5 validation behavior for older browsers.
  *
  * @param {string} ng-model Assignable angular expression to data-bind to.
- * @param {string=} name Property name of the form under which the widgets is published.
+ * @param {string=} name Property name of the form under which the control is published.
  * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
  * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
  *    minlength.
@@ -725,8 +725,8 @@ var inputDirective = [function() {
  * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController
  *
  * @property {string} viewValue Actual string value in the view.
- * @property {*} modelValue The value in the model, that the widget is bound to.
- * @property {Array.<Function>} parsers Whenever the widget reads value from the DOM, it executes
+ * @property {*} modelValue The value in the model, that the control is bound to.
+ * @property {Array.<Function>} parsers Whenever the control reads value from the DOM, it executes
  *     all of these functions to sanitize / convert the value as well as validate.
  *
  * @property {Array.<Function>} formatters Whenever the model value changes, it executes all of
@@ -734,10 +734,10 @@ var inputDirective = [function() {
  *
  * @property {Object} error An bject hash with all errors as keys.
  *
- * @property {boolean} pristine True if user has not interacted with the widget yet.
- * @property {boolean} dirty True if user has already interacted with the widget.
+ * @property {boolean} pristine True if user has not interacted with the control yet.
+ * @property {boolean} dirty True if user has already interacted with the control.
  * @property {boolean} valid True if there is no error.
- * @property {boolean} invalid True if at least one error on the widget.
+ * @property {boolean} invalid True if at least one error on the control.
  *
  * @description
  *
@@ -764,7 +764,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    * @methodOf angular.module.ng.$compileProvider.directive.ng-model.NgModelController
    *
    * @description
-   * Change the validity state, and notifies the form when the widget changes validity. (i.e. it
+   * Change the validity state, and notifies the form when the control changes validity. (i.e. it
    * does not notify form if given validator is already marked as invalid).
    *
    * This method should be called by validators - i.e. the parser or formatter functions.
@@ -879,9 +879,9 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
  * - binding the view into the model, which other directives such as `input`, `textarea` or `select`
  *   require,
  * - providing validation behavior (i.e. required, number, email, url),
- * - keeping state of the widget (valid/invalid, dirty/pristine, validation errors),
+ * - keeping state of the control (valid/invalid, dirty/pristine, validation errors),
  * - setting related css class onto the element (`ng-valid`, `ng-invalid`, `ng-dirty`, `ng-pristine`),
- * - register the widget with parent {@link angular.module.ng.$compileProvider.directive.form form}.
+ * - register the control with parent {@link angular.module.ng.$compileProvider.directive.form form}.
  *
  * For basic examples, how to use `ng-model`, see:
  *
