@@ -14,7 +14,7 @@ exports.merge = merge;
 exports.Doc = Doc;
 
 var BOOLEAN_ATTR = {};
-['multiple', 'selected', 'checked', 'disabled', 'readOnly', 'required'].forEach(function(value, key) {
+['multiple', 'selected', 'checked', 'disabled', 'readOnly', 'required'].forEach(function(value) {
   BOOLEAN_ATTR[value] = true;
 });
 
@@ -50,7 +50,7 @@ Doc.prototype = {
     Doc.METADATA_IGNORE.forEach(function(ignore){ keywords[ignore] = true; });
 
     function extractWords(text) {
-      var tokens = text.toLowerCase().split(/[,\.\`\'\"\s]+/mg);
+      var tokens = text.toLowerCase().split(/[,\.\`\'\"\#\s]+/mg);
       tokens.forEach(function(key){
         var match = key.match(/^(([\$\_a-z]|ng\:)[\w\_\-]{2,})/);
         if (match){
@@ -136,7 +136,7 @@ Doc.prototype = {
                    '</pre>';
           });
         text = text.replace(/(<doc:scenario>)([\s\S]*)(<\/doc:scenario>)/mi,
-          function(_, before, content, after){
+          function(_, before, content){
             self.scenarios.push(content);
             return '<pre class="doc-scenario">' + htmlEscape(content) + '</pre>';
           });
@@ -380,7 +380,7 @@ Doc.prototype = {
         });
       }
       if (restrict.match(/A/)) {
-        var element = self.element || 'ANY'
+        var element = self.element || 'ANY';
         dom.text('as attribute');
         dom.code(function() {
           dom.text('<' + element + ' ');
@@ -392,7 +392,7 @@ Doc.prototype = {
       }
       if (restrict.match(/C/)) {
         dom.text('as class');
-        var element = self.element || 'ANY'
+        var element = self.element || 'ANY';
         dom.code(function() {
           dom.text('<' + element + ' class="');
           dom.text(self.shortName);
@@ -669,7 +669,6 @@ var KEYWORD_PRIORITY = {
   '.angular': 7,
   '.angular.Module': 7,
   '.angular.module': 8,
-  '.angular.mock': 9,
   '.angular.module.ng.$filter': 7,
   '.angular.module.ng.$rootScope.Scope': 7,
   '.angular.module.ng': 7,
