@@ -31,22 +31,22 @@ to retrieve Buzz activity and comments.
      }
     };
     </script>
-    <div ng:controller="BuzzController">
-     <input ng:model="userId"/>
-     <button ng:click="fetch()">fetch</button>
+    <div ng-controller="BuzzController">
+     <input ng-model="userId"/>
+     <button ng-click="fetch()">fetch</button>
      <hr/>
-     <div class="buzz" ng:repeat="item in activities.data.items">
+     <div class="buzz" ng-repeat="item in activities.data.items">
       <h1 style="font-size: 15px;">
-       <img ng:src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-       <a ng:href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
-       <a href ng:click="expandReplies(item)" style="float: right;">
+       <img ng-src="{{item.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng-href="{{item.actor.profileUrl}}">{{item.actor.name}}</a>
+       <a href ng-click="expandReplies(item)" style="float: right;">
         Expand replies: {{item.links.replies[0].count}}
        </a>
       </h1>
       {{item.object.content | html}}
-      <div class="reply" ng:repeat="reply in item.replies.data.items" style="margin-left: 20px;">
-       <img ng:src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
-       <a ng:href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
+      <div class="reply" ng-repeat="reply in item.replies.data.items" style="margin-left: 20px;">
+       <img ng-src="{{reply.actor.thumbnailUrl}}" style="max-height:30px;max-width:30px;"/>
+       <a ng-href="{{reply.actor.profileUrl}}">{{reply.actor.name}}</a>:
        {{reply.content | html}}
       </div>
      </div>

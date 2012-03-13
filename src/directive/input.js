@@ -724,20 +724,20 @@ var inputDirective = [function() {
  * @ngdoc object
  * @name angular.module.ng.$compileProvider.directive.ng-model.NgModelController
  *
- * @property {string} viewValue Actual string value in the view.
- * @property {*} modelValue The value in the model, that the control is bound to.
- * @property {Array.<Function>} parsers Whenever the control reads value from the DOM, it executes
+ * @property {string} $viewValue Actual string value in the view.
+ * @property {*} $modelValue The value in the model, that the control is bound to.
+ * @property {Array.<Function>} $parsers Whenever the control reads value from the DOM, it executes
  *     all of these functions to sanitize / convert the value as well as validate.
  *
- * @property {Array.<Function>} formatters Whenever the model value changes, it executes all of
+ * @property {Array.<Function>} $formatters Whenever the model value changes, it executes all of
  *     these functions to convert the value as well as validate.
  *
- * @property {Object} error An bject hash with all errors as keys.
+ * @property {Object} $error An bject hash with all errors as keys.
  *
- * @property {boolean} pristine True if user has not interacted with the control yet.
- * @property {boolean} dirty True if user has already interacted with the control.
- * @property {boolean} valid True if there is no error.
- * @property {boolean} invalid True if at least one error on the control.
+ * @property {boolean} $pristine True if user has not interacted with the control yet.
+ * @property {boolean} $dirty True if user has already interacted with the control.
+ * @property {boolean} $valid True if there is no error.
+ * @property {boolean} $invalid True if at least one error on the control.
  *
  * @description
  *
