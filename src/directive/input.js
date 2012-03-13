@@ -15,12 +15,12 @@ var inputType = {
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {number=} ng-minlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
    * @param {string=} ng-change Angular expression to be executed when input changes due to user
@@ -38,16 +38,16 @@ var inputType = {
          <form name="myForm" ng-controller="Ctrl">
            Single word: <input type="text" name="input" ng-model="text"
                                ng-pattern="word" required>
-           <span class="error" ng-show="myForm.input.$error.REQUIRED">
+           <span class="error" ng-show="myForm.input.$error.required">
              Required!</span>
-           <span class="error" ng-show="myForm.input.$error.PATTERN">
+           <span class="error" ng-show="myForm.input.$error.pattern">
              Single word only!</span>
 
            <tt>text = {{text}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
@@ -77,19 +77,19 @@ var inputType = {
    * @name angular.module.ng.$compileProvider.directive.input.number
    *
    * @description
-   * Text input with number validation and transformation. Sets the `NUMBER` validation
+   * Text input with number validation and transformation. Sets the `number` validation
    * error if not a valid number.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} min Sets the `MIN` validation error key if the value entered is less then `min`.
-   * @param {string=} max Sets the `MAX` validation error key if the value entered is greater then `min`.
-   * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {string=} min Sets the `min` validation error key if the value entered is less then `min`.
+   * @param {string=} max Sets the `max` validation error key if the value entered is greater then `min`.
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {number=} ng-minlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
    * @param {string=} ng-change Angular expression to be executed when input changes due to user
@@ -106,15 +106,15 @@ var inputType = {
          <form name="myForm" ng-controller="Ctrl">
            Number: <input type="number" name="input" ng-model="value"
                           min="0" max="99" required>
-           <span class="error" ng-show="myForm.list.$error.REQUIRED">
+           <span class="error" ng-show="myForm.list.$error.required">
              Required!</span>
-           <span class="error" ng-show="myForm.list.$error.NUMBER">
+           <span class="error" ng-show="myForm.list.$error.number">
              Not valid number!</span>
            <tt>value = {{value}}</tt><br/>
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
           </form>
         </doc:source>
         <doc:scenario>
@@ -145,17 +145,17 @@ var inputType = {
    * @name angular.module.ng.$compileProvider.directive.input.url
    *
    * @description
-   * Text input with URL validation. Sets the `URL` validation error key if the content is not a
+   * Text input with URL validation. Sets the `url` validation error key if the content is not a
    * valid URL.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {number=} ng-minlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
    * @param {string=} ng-change Angular expression to be executed when input changes due to user
@@ -171,7 +171,7 @@ var inputType = {
          </script>
          <form name="myForm" ng-controller="Ctrl">
            URL: <input type="url" name="input" ng-model="text" required>
-           <span class="error" ng-show="myForm.input.$error.REQUIRED">
+           <span class="error" ng-show="myForm.input.$error.required">
              Required!</span>
            <span class="error" ng-show="myForm.input.$error.url">
              Not valid url!</span>
@@ -179,7 +179,7 @@ var inputType = {
            <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
            <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
            <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-           <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+           <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
            <tt>myForm.$error.url = {{!!myForm.$error.url}}</tt><br/>
           </form>
         </doc:source>
@@ -210,17 +210,17 @@ var inputType = {
    * @name angular.module.ng.$compileProvider.directive.input.email
    *
    * @description
-   * Text input with email validation. Sets the `EMAIL` validation error key if not a valid email
+   * Text input with email validation. Sets the `email` validation error key if not a valid email
    * address.
    *
    * @param {string} ng-model Assignable angular expression to data-bind to.
    * @param {string=} name Property name of the form under which the control is published.
-   * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
-   * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
+   * @param {string=} required Sets `required` validation error key if the value is not entered.
+   * @param {number=} ng-minlength Sets `minlength` validation error key if the value is shorter than
    *    minlength.
-   * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+   * @param {number=} ng-maxlength Sets `maxlength` validation error key if the value is longer than
    *    maxlength.
-   * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
+   * @param {string=} ng-pattern Sets `pattern` validation error key if the value does not match the
    *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
    *    patterns defined as scope expressions.
    *
@@ -234,16 +234,16 @@ var inputType = {
          </script>
            <form name="myForm" ng-controller="Ctrl">
              Email: <input type="email" name="input" ng-model="text" required>
-             <span class="error" ng-show="myForm.input.$error.REQUIRED">
+             <span class="error" ng-show="myForm.input.$error.required">
                Required!</span>
-             <span class="error" ng-show="myForm.input.$error.EMAIL">
+             <span class="error" ng-show="myForm.input.$error.email">
                Not valid email!</span>
              <tt>text = {{text}}</tt><br/>
              <tt>myForm.input.$valid = {{myForm.input.$valid}}</tt><br/>
              <tt>myForm.input.$error = {{myForm.input.$error}}</tt><br/>
              <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-             <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
-             <tt>myForm.$error.EMAIL = {{!!myForm.$error.EMAIL}}</tt><br/>
+             <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
+             <tt>myForm.$error.email = {{!!myForm.$error.email}}</tt><br/>
            </form>
         </doc:source>
         <doc:scenario>
@@ -384,10 +384,10 @@ function textInputType(scope, element, attr, ctrl) {
 
   var validate = function(regexp, value) {
     if (isEmpty(value) || regexp.test(value)) {
-      ctrl.$setValidity('PATTERN', true);
+      ctrl.$setValidity('pattern', true);
       return value;
     } else {
-      ctrl.$setValidity('PATTERN', false);
+      ctrl.$setValidity('pattern', false);
       return undefined;
     }
   };
@@ -418,10 +418,10 @@ function textInputType(scope, element, attr, ctrl) {
     var minlength = parseInt(attr.ngMinlength, 10);
     var minLengthValidator = function(value) {
       if (!isEmpty(value) && value.length < minlength) {
-        ctrl.$setValidity('MINLENGTH', false);
+        ctrl.$setValidity('minlength', false);
         return undefined;
       } else {
-        ctrl.$setValidity('MINLENGTH', true);
+        ctrl.$setValidity('minlength', true);
         return value;
       }
     };
@@ -435,10 +435,10 @@ function textInputType(scope, element, attr, ctrl) {
     var maxlength = parseInt(attr.ngMaxlength, 10);
     var maxLengthValidator = function(value) {
       if (!isEmpty(value) && value.length > maxlength) {
-        ctrl.$setValidity('MAXLENGTH', false);
+        ctrl.$setValidity('maxlength', false);
         return undefined;
       } else {
-        ctrl.$setValidity('MAXLENGTH', true);
+        ctrl.$setValidity('maxlength', true);
         return value;
       }
     };
@@ -454,10 +454,10 @@ function numberInputType(scope, element, attr, ctrl) {
   ctrl.$parsers.push(function(value) {
     var empty = isEmpty(value);
     if (empty || NUMBER_REGEXP.test(value)) {
-      ctrl.$setValidity('NUMBER', true);
+      ctrl.$setValidity('number', true);
       return value === '' ? null : (empty ? value : parseFloat(value));
     } else {
-      ctrl.$setValidity('NUMBER', false);
+      ctrl.$setValidity('number', false);
       return undefined;
     }
   });
@@ -470,10 +470,10 @@ function numberInputType(scope, element, attr, ctrl) {
     var min = parseFloat(attr.min);
     var minValidator = function(value) {
       if (!isEmpty(value) && value < min) {
-        ctrl.$setValidity('MIN', false);
+        ctrl.$setValidity('min', false);
         return undefined;
       } else {
-        ctrl.$setValidity('MIN', true);
+        ctrl.$setValidity('min', true);
         return value;
       }
     };
@@ -486,10 +486,10 @@ function numberInputType(scope, element, attr, ctrl) {
     var max = parseFloat(attr.max);
     var maxValidator = function(value) {
       if (!isEmpty(value) && value > max) {
-        ctrl.$setValidity('MAX', false);
+        ctrl.$setValidity('max', false);
         return undefined;
       } else {
-        ctrl.$setValidity('MAX', true);
+        ctrl.$setValidity('max', true);
         return value;
       }
     };
@@ -501,10 +501,10 @@ function numberInputType(scope, element, attr, ctrl) {
   ctrl.$formatters.push(function(value) {
 
     if (isEmpty(value) || isNumber(value)) {
-      ctrl.$setValidity('NUMBER', true);
+      ctrl.$setValidity('number', true);
       return value;
     } else {
-      ctrl.$setValidity('NUMBER', false);
+      ctrl.$setValidity('number', false);
       return undefined;
     }
   });
@@ -515,10 +515,10 @@ function urlInputType(scope, element, attr, ctrl) {
 
   var urlValidator = function(value) {
     if (isEmpty(value) || URL_REGEXP.test(value)) {
-      ctrl.$setValidity('URL', true);
+      ctrl.$setValidity('url', true);
       return value;
     } else {
-      ctrl.$setValidity('URL', false);
+      ctrl.$setValidity('url', false);
       return undefined;
     }
   };
@@ -532,10 +532,10 @@ function emailInputType(scope, element, attr, ctrl) {
 
   var emailValidator = function(value) {
     if (isEmpty(value) || EMAIL_REGEXP.test(value)) {
-      ctrl.$setValidity('EMAIL', true);
+      ctrl.$setValidity('email', true);
       return value;
     } else {
-      ctrl.$setValidity('EMAIL', false);
+      ctrl.$setValidity('email', false);
       return undefined;
     }
   };
@@ -600,12 +600,12 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *
  * @param {string} ng-model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
- * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
- * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {number=} ng-minlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
- * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ * @param {number=} ng-maxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength.
- * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
+ * @param {string=} ng-pattern Sets `pattern` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
  * @param {string=} ng-change Angular expression to be executed when input changes due to user
@@ -624,12 +624,12 @@ function checkboxInputType(scope, element, attr, ctrl) {
  *
  * @param {string} ng-model Assignable angular expression to data-bind to.
  * @param {string=} name Property name of the form under which the control is published.
- * @param {string=} required Sets `REQUIRED` validation error key if the value is not entered.
- * @param {number=} ng-minlength Sets `MINLENGTH` validation error key if the value is shorter than
+ * @param {string=} required Sets `required` validation error key if the value is not entered.
+ * @param {number=} ng-minlength Sets `minlength` validation error key if the value is shorter than
  *    minlength.
- * @param {number=} ng-maxlength Sets `MAXLENGTH` validation error key if the value is longer than
+ * @param {number=} ng-maxlength Sets `maxlength` validation error key if the value is longer than
  *    maxlength.
- * @param {string=} ng-pattern Sets `PATTERN` validation error key if the value does not match the
+ * @param {string=} ng-pattern Sets `pattern` validation error key if the value does not match the
  *    RegExp pattern expression. Expected value is `/regexp/` for inline patterns or `regexp` for
  *    patterns defined as scope expressions.
  * @param {string=} ng-change Angular expression to be executed when input changes due to user
@@ -646,13 +646,13 @@ function checkboxInputType(scope, element, attr, ctrl) {
        <div ng-controller="Ctrl">
          <form name="myForm">
            User name: <input type="text" name="userName" ng-model="user.name" required>
-           <span class="error" ng-show="myForm.userName.$error.REQUIRED">
+           <span class="error" ng-show="myForm.userName.$error.required">
              Required!</span><br>
            Last name: <input type="text" name="lastName" ng-model="user.last"
              ng-minlength="3" ng-maxlength="10">
-           <span class="error" ng-show="myForm.lastName.$error.MINLENGTH">
+           <span class="error" ng-show="myForm.lastName.$error.minlength">
              Too short!</span>
-           <span class="error" ng-show="myForm.lastName.$error.MAXLENGTH">
+           <span class="error" ng-show="myForm.lastName.$error.maxlength">
              Too long!</span><br>
          </form>
          <hr>
@@ -662,9 +662,9 @@ function checkboxInputType(scope, element, attr, ctrl) {
          <tt>myForm.lastName.$valid = {{myForm.lastName.$valid}}</tt><br>
          <tt>myForm.userName.$error = {{myForm.lastName.$error}}</tt><br>
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br>
-         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br>
-         <tt>myForm.$error.MINLENGTH = {{!!myForm.$error.MINLENGTH}}</tt><br>
-         <tt>myForm.$error.MAXLENGTH = {{!!myForm.$error.MAXLENGTH}}</tt><br>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br>
+         <tt>myForm.$error.minlength = {{!!myForm.$error.minlength}}</tt><br>
+         <tt>myForm.$error.maxlength = {{!!myForm.$error.maxlength}}</tt><br>
        </div>
       </doc:source>
       <doc:scenario>
@@ -692,7 +692,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
           input('user.last').enter('xx');
           expect(binding('user')).toEqual('{"name":"guest"}');
           expect(binding('myForm.lastName.$valid')).toEqual('false');
-          expect(binding('myForm.lastName.$error')).toMatch(/MINLENGTH/);
+          expect(binding('myForm.lastName.$error')).toMatch(/minlength/);
           expect(binding('myForm.$valid')).toEqual('false');
         });
 
@@ -701,7 +701,7 @@ function checkboxInputType(scope, element, attr, ctrl) {
           expect(binding('user'))
             .toEqual('{"name":"guest"}');
           expect(binding('myForm.lastName.$valid')).toEqual('false');
-          expect(binding('myForm.lastName.$error')).toMatch(/MAXLENGTH/);
+          expect(binding('myForm.lastName.$error')).toMatch(/maxlength/);
           expect(binding('myForm.$valid')).toEqual('false');
         });
       </doc:scenario>
@@ -769,28 +769,28 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
    *
    * This method should be called by validators - i.e. the parser or formatter functions.
    *
-   * @param {string} validationToken Name of the validator.
+   * @param {string} validationErrorKey Name of the validator.
    * @param {boolean} isValid Whether the current state is valid (true) or invalid (false).
    */
-  this.$setValidity = function(validationToken, isValid) {
+  this.$setValidity = function(validationErrorKey, isValid) {
 
-    if (!isValid && this.$error[validationToken]) return;
-    if (isValid && !this.$error[validationToken]) return;
+    if (!isValid && this.$error[validationErrorKey]) return;
+    if (isValid && !this.$error[validationErrorKey]) return;
 
     if (isValid) {
-      delete this.$error[validationToken];
+      delete this.$error[validationErrorKey];
       if (equals(this.$error, {})) {
         this.$valid = true;
         this.$invalid = false;
       }
     } else {
-      this.$error[validationToken] = true;
+      this.$error[validationErrorKey] = true;
       this.$invalid = true;
       this.$valid = false;
     }
 
     if (this.$form) {
-      this.$form.$setValidity(validationToken, isValid, this);
+      this.$form.$setValidity(validationErrorKey, isValid, this);
     }
   };
 
@@ -1058,10 +1058,10 @@ var requiredDirective = [function() {
 
       var validator = function(value) {
         if (attr.required && (isEmpty(value) || value === false)) {
-          ctrl.$setValidity('REQUIRED', false);
+          ctrl.$setValidity('required', false);
           return;
         } else {
-          ctrl.$setValidity('REQUIRED', true);
+          ctrl.$setValidity('required', true);
           return value;
         }
       };
@@ -1096,13 +1096,13 @@ var requiredDirective = [function() {
        </script>
        <form name="myForm" ng-controller="Ctrl">
          List: <input name="namesInput" ng-model="names" ng-list required>
-         <span class="error" ng-show="myForm.list.$error.REQUIRED">
+         <span class="error" ng-show="myForm.list.$error.required">
            Required!</span>
          <tt>names = {{names}}</tt><br/>
          <tt>myForm.namesInput.$valid = {{myForm.namesInput.$valid}}</tt><br/>
          <tt>myForm.namesInput.$error = {{myForm.namesInput.$error}}</tt><br/>
          <tt>myForm.$valid = {{myForm.$valid}}</tt><br/>
-         <tt>myForm.$error.REQUIRED = {{!!myForm.$error.REQUIRED}}</tt><br/>
+         <tt>myForm.$error.required = {{!!myForm.$error.required}}</tt><br/>
         </form>
       </doc:source>
       <doc:scenario>
