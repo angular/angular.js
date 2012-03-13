@@ -3,6 +3,7 @@
 /**
  * @ngdoc directive
  * @name angular.module.ng.$compileProvider.directive.ng-non-bindable
+ * @priority 1000
  *
  * @description
  * Sometimes it is necessary to write code which looks like bindings but which should be left alone
@@ -29,4 +30,4 @@
       </doc:scenario>
     </doc:example>
  */
-var ngNonBindableDirective = ngDirective({ terminal: true });
+var ngNonBindableDirective = ngDirective({ terminal: true, priority: 1000 });
