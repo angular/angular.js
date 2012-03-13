@@ -742,8 +742,8 @@ var inputDirective = [function() {
  * @description
  *
  */
-var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
-    function($scope, $exceptionHandler, $attr, ngModel) {
+var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel', '$element',
+    function($scope, $exceptionHandler, $attr, ngModel, $element) {
   this.$viewValue = Number.NaN;
   this.$modelValue = Number.NaN;
   this.$parsers = [];
@@ -757,6 +757,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
   this.$render = noop;
   this.$name = $attr.name;
 
+  var parentForm = $element.inheritedData('$formController') || nullFormCtrl;
 
   /**
    * @ngdoc function
@@ -789,9 +790,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
       this.$valid = false;
     }
 
-    if (this.$form) {
-      this.$form.$setValidity(validationErrorKey, isValid, this);
-    }
+    parentForm.$setValidity(validationErrorKey, isValid, this);
   };
 
 
@@ -819,7 +818,7 @@ var NgModelController = ['$scope', '$exceptionHandler', '$attrs', 'ngModel',
     if (this.$pristine) {
       this.$dirty = true;
       this.$pristine = false;
-      if (this.$form) this.$form.$setDirty();
+      parentForm.$setDirty();
     }
 
     forEach(this.$parsers, function(fn) {
@@ -907,11 +906,9 @@ var ngModelDirective = [function() {
       // notify others, especially parent forms
 
       var modelCtrl = ctrls[0],
-          formCtrl = ctrls[1];
+          formCtrl = ctrls[1] || nullFormCtrl;
 
-      modelCtrl.$form = formCtrl;
-
-      if (formCtrl) formCtrl.$addControl(modelCtrl);
+      formCtrl.$addControl(modelCtrl);
 
       forEach(['valid', 'invalid', 'pristine', 'dirty'], function(name) {
         scope.$watch(function() {
@@ -922,7 +919,7 @@ var ngModelDirective = [function() {
       });
 
       element.bind('$destroy', function() {
-        if (formCtrl) formCtrl.$removeControl(modelCtrl);
+        formCtrl.$removeControl(modelCtrl);
       });
     }
   };
