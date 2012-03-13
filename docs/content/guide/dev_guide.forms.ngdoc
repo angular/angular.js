@@ -2,21 +2,19 @@
 @name Developer Guide: Forms
 @description
 
-Forms and form controls (`input`, `select`, `textarea`) are user's gateway to your application -
-that's how your application accepts input from the user.
+Controls (`input`, `select`, `textarea`) are a way for user to enter data.
+Form is a collection of controls for the purpose of grouping related controls together.
 
-In order to provide good user experience while gathering user input, it is important to validate
-this input and give the user hints on how to correct errors. Angular provides several mechanisms
-that make this easier, but keep in mind that while client-side validation plays an important role in
-providing good user experience, it can be easily circumvented and thus a server-side validation is
-still necessary.
+Form and controls provide validation services, so that the user can be notified of invalid input.
+This provides a better user experience, because the user gets instant feedback on how to correct the error.
+Keep in mind that while client-side validation plays an important role in providing good user experience, it can easily be circumvented and thus can not be trusted.
+Server-side validation is still necessary for a secure application.
 
 
 # Simple form
-The most important directive is {@link api/angular.module.ng.$compileProvider.directive.ng:model ng-model},
-which tells Angular to do two-way data binding. That means, the value in the form control is
-synchronized in both directions with the bound model (specified as value of `ng-model` attribute).
-
+The key directive in understanding two-way data-binding is  {@link api/angular.module.ng.$compileProvider.directive.ng-model ng-model}.
+The `ng-model` provides the two-way data-binding by synchronizing the model to the view, as well as view to the model.
+In addition it provides {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController API} for other directives to augment its behavior.
 
 <doc:example>
 <doc:source>
@@ -29,8 +27,6 @@ synchronized in both directions with the bound model (specified as value of `ng-
     <button ng-click="reset()">RESET</button>
     <button ng-click="update(user)">SAVE</button>
   </form>
-  <!-- reading these values outside <form> scope is possible only because we defined these objects
-  on the parent scope, and ng-model only change properties of this object -->
   <pre>form = {{user | json}}</pre>
   <pre>master = {{master | json}}</pre>
 </div>
@@ -54,47 +50,33 @@ synchronized in both directions with the bound model (specified as value of `ng-
 </doc:example>
 
 
-Note, that the `user.name` is updated immediately - that's because of
-{@link api/angular.module.ng.$compileProvide.directive.ng:model-instant ng-model-instant}.
+Note that:
 
-Note, that we use `novalidate` to disable browser's native form validation.
+  * the {@link api/angular.module.ng.$compileProvider.directive.ng-model-instant ng-model-instant} causes the `user.name` to be updated immediately.
 
-
-## Scoping issues
-
-Angular sets the model value onto current scope. However it can be confusing where are the scope
-borders - in other words, which directives create new scope.
-It's crucial to understand how prototypical inheritance works as well as
-{@link dev_guide.scopes.internals Angular's scopes}.
-
-In this example, there are actually two directives, that create new scope (`ng-controller` and `form`).
-Angular sets the value onto the current scope, so the first input sets value to `scope.user.name`,
-where `scope` is the scope on `form` element. Therefore you would not be able to read the value
-outside the `form`, because that's a parent scope. That's why we defined the `$scope.user` object
-on the parent scope (on `div` element), because `ng-model` access this object through prototypical
-inheritance and bind to this object (defined on the parent scope) and we can access it even on
-parent scope.
+  * `novalidate` is used to disable browser's native form validation.
 
 
 
 # Using CSS classes
-Angular puts some basic css classes onto the form element as well as individual form control
-elements, to allow you to style them differently, depending on their state. These css classes are:
+
+To allow styling of form as well as controls, `ng-model`  add these CSS classes:
 
 - `ng-valid`
 - `ng-invalid`
 - `ng-pristine`
 - `ng-dirty`
 
-Here is the same example with some very basic css, displaying validity of each form control.
-Both `user.name` and `user.email` are required, but we display the red background only when they
-are dirty, which means the user has already interacted with them.
+Following example uses the CSS to display validity of each form control.
+In the example both `user.name` and `user.email` are required, but are rendered with red background only when they are dirty.
+This ensures that the user is not distracted with an error until after interacting with the control, and failing to satisfy its validity.
 
 <doc:example>
 <doc:source>
 <div ng-controller="Controller">
   <form novalidate class="css-form">
-    Name: <input type="text" ng-model="user.name" ng-model-instant required /><br />
+    Name:
+      <input type="text" ng-model="user.name" ng-model-instant required /><br />
     E-mail: <input type="email" ng-model="user.email" required /><br />
     Gender: <input type="radio" ng-model="user.gender" value="male" />male
     <input type="radio" ng-model="user.gender" value="female" />female<br />
@@ -133,24 +115,15 @@ are dirty, which means the user has already interacted with them.
 
 
 
-# Binding to form / form control state
+# Binding to form and control state
 
-Each form has an object, that keeps the state of the whole form. This object is an instance of
-{@link api/angular.module.ng.$compileProvide.directive.form.FormController FormController}.
-In a similar way, each form control with `ng-model` directive has an object, that keeps the state of
-the form control. This object is an instance of
-{@link api/angular.module.ng.$compileProvide.directive.form.NgModelController NgModelController}.
+A form is in instance of {@link api/angular.module.ng.$compileProvider.directive.form.FormController FormController}.
+The form instance can optionally be published into the scope using the `name` attribute.
+Similarly control is an instance of {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController NgModelController}.
+The control instance can similarly be published into the form instance using the `name` attribute.
+This implies that the internal state of both the form and the control is available for binding in the view using the standard binding primitives.
 
-The css classes used in the previous example are nothing else than just a reflection of these objects.
-But using css classes is not flexible enough - we need to do more. So this example shows, how to
-access these state objects and how to bind to them.
-
-Note, we added `name` attribute to the form element as well as to the form controls, so that we have access
-these objects. When a form has `name` attribute, its `FormController` is published onto the scope.
-In a similar way, if a form control has `name` attribute, a reference to its `NgModelController` is
-stored on the `FormController`.
-
-**Some changes to notice:**
+This allows us to extend the above example with these features:
 
 - RESET button is enabled only if form has some changes
 - SAVE button is enabled only if form has some changes and is valid
@@ -160,22 +133,26 @@ stored on the `FormController`.
 <doc:source>
 <div ng-controller="Controller">
   <form name="form" class="css-form" novalidate>
-    Name: <input type="text" ng-model="user.name" name="userName" required /><br />
-    E-mail: <input type="email" ng-model="user.email" name="userEmail" required/><br />
-    <span ng-show="form.userEmail.$dirty && form.userEmail.$invalid">Invalid:
-      <span ng-show="form.userEmail.$error.REQUIRED">Please tell us your email.</span>
-      <span ng-show="form.userEmail.$error.EMAIL">This is not a valid email.</span><br />
-    </span>
+    Name:
+      <input type="text" ng-model="user.name" name="uName" required /><br />
+    E-mail:
+      <input type="email" ng-model="user.email" name="uEmail" required/><br />
+    <div ng-show="form.uEmail.$dirty && form.uEmail.$invalid">Invalid:
+      <span ng-show="form.uEmail.$error.REQUIRED">Tell us your email.</span>
+      <span ng-show="form.uEmail.$error.EMAIL">This is not a valid email.</span>
+    </div>
 
     Gender: <input type="radio" ng-model="user.gender" value="male" />male
     <input type="radio" ng-model="user.gender" value="female" />female<br />
 
-    <input type="checkbox" ng-model="user.agree" name="userAgree" required />I agree:
-    <input ng-show="user.agree" type="text" ng-model="user.agreeSign" ng-model-instant required /><br />
+    <input type="checkbox" ng-model="user.agree" name="userAgree" required />
+    I agree: <input ng-show="user.agree" type="text" ng-model="user.agreeSign"
+              ng-model-instant required /><br />
     <div ng-show="!user.agree || !user.agreeSign">Please agree and sign.</div>
 
     <button ng-click="reset()" disabled="{{isUnchanged(user)}}">RESET</button>
-    <button ng-click="update(user)" disabled="{{form.$invalid || isUnchanged(user)}}">SAVE</button>
+    <button ng-click="update(user)"
+            disabled="{{form.$invalid || isUnchanged(user)}}">SAVE</button>
   </form>
 </div>
 
@@ -203,25 +180,32 @@ stored on the `FormController`.
 
 
 
-# Advanced  / custom validation
+# Custom Validation
 
 Angular provides basic implementation for most common html5 {@link api/angular.module.ng.$compileProvider.directive.input input}
-types ({@link api/angular.module.ng.$compileProvider.directive.input.text text}, {@link api/angular.module.ng.$compileProvider.directive.input.number number}, {@link api/angular.module.ng.$compileProvider.directive.input.url url}, {@link api/angular.module.ng.$compileProvider.directive.input.email email}, {@link api/angular.module.ng.$compileProvider.directive.input.radio radio}, {@link api/angular.module.ng.$compileProvider.directive.input.checkbox checkbox}), as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`, `min`, `max`).
+types: ({@link api/angular.module.ng.$compileProvider.directive.input.text text}, {@link api/angular.module.ng.$compileProvider.directive.input.number number}, {@link api/angular.module.ng.$compileProvider.directive.input.url url}, {@link api/angular.module.ng.$compileProvider.directive.input.email email}, {@link api/angular.module.ng.$compileProvider.directive.input.radio radio}, {@link api/angular.module.ng.$compileProvider.directive.input.checkbox checkbox}), as well as some directives for validation (`required`, `pattern`, `minlength`, `maxlength`, `min`, `max`).
 
-However, when this is not enough for your application, you can simply define a custom directive.
-This directive can require `ngModel`, which means it can't exist without `ng-model` and its linking
-function gets fourth argument - an instance of `NgModelController`, which is a communication channel
-to `ng-model`, that allows you to hook into the validation process.
+Defining your own validator can be done by defining your own directive which adds a custom validation function to the `ng-model` {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController controller}.
+To get a hold of the controller the directive specifies a dependency as shown in the example below.
+The validation can occur in two places:
 
-## Model to View update
-Whenever the bound model changes, all functions in {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#formatters NgModelController#formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link api/angualar.module.ng.$compileProvider.directive.ng:model.NgModelController#$setValidity NgModelController#$setValidity}.
+  * **Model to View update** -
+    Whenever the bound model changes, all functions in {@link   api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$formatters NgModelController#$formatters} array are pipe-lined, so that each of these functions has an opportunity to format the value and change validity state of the form control through {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$setValidity NgModelController#$setValidity}.
 
-## View to Model update
-In a similar way, whenever a form control calls {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#setViewValue NgModelController#setViewValue}, all functions in {@link api/angular.module.ng.$compileProvider.directive.ng:model.NgModelController#parsers NgModelController#parsers} array are pipe-lined, so that each of these functions has an opportunity to correct/convert the value and change validity state of the form control through {@link api/angualar.module.ng.$compileProvider.directive.ng:model.NgModelController#setValidity NgModelController#$setValidity}.
+  * **View to Model update** -
+    In a similar way, whenever a user interacts with a control, the controll calls {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$setViewValue NgModelController#$setViewValue}.
+This in turn pipelines all functions in {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$parsers NgModelController#$parsers} array, so that each of these functions has an opportunity to convert the value and change validity state of the form control through {@link api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$setValidity NgModelController#$setValidity}.
 
-In this example we create two simple directives. The first one is `integer` and it validates whether the input is valid integer, so for example `1.23` is an invalid value. Note, that we unshift the array instead of pushing - that's because we want to get a string value, so we need to execute the validation function before a conversion to number happens.
+In the following example we create two directives.
 
-The second directive is `smart-float`. It parses both `1.2` and `1,2` into a valid float number `1.2`. Note, we can't use input type `number` here - browser would not allow user to type invalid number such as `1,2`.
+  * The first one is `integer` and it validates whether the input is a valid integer.
+    For example `1.23` is an invalid value, since it contains a fraction.
+    Note, that we unshift the array instead of pushing.
+    This is because we want to be first parser and consume the control string value, as we need to execute the validation function before a conversion to number occurs.
+
+  * The second directive is a `smart-float`.
+    It parses both `1.2` and `1,2` into a valid float number `1.2`.
+    Note that, we can't use input type `number` here as HTML5 browsers would not allow the user to type what it would consider an invalid number such as `1,2`.
 
 
 <doc:example module="form-example1">
@@ -229,13 +213,18 @@ The second directive is `smart-float`. It parses both `1.2` and `1,2` into a val
 <div ng-controller="Controller">
   <form name="form" class="css-form" novalidate>
     <div>
-      Size (integer 0 - 10): <input type="number" ng-model="size" name="size" min="0" max="10" integer />{{size}}<br />
+      Size (integer 0 - 10):
+      <input type="number" ng-model="size" name="size"
+             min="0" max="10" integer />{{size}}<br />
       <span ng-show="form.size.$error.INTEGER">This is not valid integer!</span>
-      <span ng-show="form.size.$error.MIN || form.size.$error.MAX">The value must be in range 0 to 10!</span>
+      <span ng-show="form.size.$error.MIN || form.size.$error.MAX">
+        The value must be in range 0 to 10!</span>
     </div>
 
     <div>
-      Length (float): <input type="text" ng-model="length" name="length" smart-float />{{length}}<br />
+      Length (float):
+      <input type="text" ng-model="length" name="length" smart-float />
+      {{length}}<br />
       <span ng-show="form.length.$error.FLOAT">This is not valid number!</span>
     </div>
   </form>
@@ -287,16 +276,17 @@ The second directive is `smart-float`. It parses both `1.2` and `1,2` into a val
 
 
 # Implementing custom form control (using ng-model)
-Angular has all the basic form controls implemented ({@link api/angular.module.ng.$compileProvider.directive.input input}, {@link api/angular.module.ng.$compileProvider.directive.select select}, {@link api/angular.module.ng.$compileProvider.directive.textarea textarea}), so most of the time you should be just fine with them. However, if you need more flexibility, you can write your own form control - it's gonna be a directive again.
+Angular implements all of the basic HTML form controls ({@link api/angular.module.ng.$compileProvider.directive.input input}, {@link api/angular.module.ng.$compileProvider.directive.select select}, {@link api/angular.module.ng.$compileProvider.directive.textarea textarea}), which should be sufficient for most cases.
+However, if you need more flexibility, you can write your own form control as a directive.
 
-You basically need to do two things to get it working together with `ng-model` binding:
+In order for custom control to work with `ng-model` and to achieve two-way data-binding it needs to:
 
-- implement `render` method, that knows how to reflect value change to view,
-- call `setViewValue` method, whenever the view value changes - that's usually inside DOM Event listener.
+  - implement `render` method, which is responsible for rendering the data after it passed the {@link   api/angular.module.ng.$compileProvider.directive.ng-model.NgModelController#$formatters NgModelController#$formatters},
+  - call `$setViewValue` method, whenever the user interacts with the control and model needs to be updated. This is usually done inside a DOM Event listener.
 
 See {@link api/angular.module.ng.$compileProvider.directive $compileProvider.directive} for more info.
 
-This example shows how easy it is to add a support for binding contentEditable elements.
+The following example shows how to add two-way data-binding to contentEditable elements.
 
 <doc:example module="form-example2">
 <doc:source>
