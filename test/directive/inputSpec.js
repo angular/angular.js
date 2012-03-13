@@ -50,11 +50,11 @@ describe('NgModelController', function() {
 
 
     it('should set and unset the error', function() {
-      ctrl.$setValidity('REQUIRED', false);
-      expect(ctrl.$error.REQUIRED).toBe(true);
+      ctrl.$setValidity('required', false);
+      expect(ctrl.$error.required).toBe(true);
 
-      ctrl.$setValidity('REQUIRED', true);
-      expect(ctrl.$error.REQUIRED).toBeUndefined();
+      ctrl.$setValidity('required', true);
+      expect(ctrl.$error.required).toBeUndefined();
     });
 
 
@@ -296,10 +296,10 @@ describe('input', function() {
     compileInput('<input ng-model="name" name="alias" required>');
 
     scope.$apply();
-    expect(scope.form.$error.REQUIRED.length).toBe(1);
+    expect(scope.form.$error.required.length).toBe(1);
 
     inputElm.remove();
-    expect(scope.form.$error.REQUIRED).toBeUndefined();
+    expect(scope.form.$error.required).toBeUndefined();
   });
 
 
@@ -535,12 +535,12 @@ describe('input', function() {
         changeInputValueTo('1');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.MIN).toBeTruthy();
+        expect(scope.form.alias.$error.min).toBeTruthy();
 
         changeInputValueTo('100');
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(100);
-        expect(scope.form.alias.$error.MIN).toBeFalsy();
+        expect(scope.form.alias.$error.min).toBeFalsy();
       });
     });
 
@@ -554,12 +554,12 @@ describe('input', function() {
         changeInputValueTo('20');
         expect(inputElm).toBeInvalid();
         expect(scope.value).toBeFalsy();
-        expect(scope.form.alias.$error.MAX).toBeTruthy();
+        expect(scope.form.alias.$error.max).toBeTruthy();
 
         changeInputValueTo('0');
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.MAX).toBeFalsy();
+        expect(scope.form.alias.$error.max).toBeFalsy();
       });
     });
 
@@ -572,7 +572,7 @@ describe('input', function() {
         changeInputValueTo('0');
         expect(inputElm).toBeValid();
         expect(scope.value).toBe(0);
-        expect(scope.form.alias.$error.REQUIRED).toBeFalsy();
+        expect(scope.form.alias.$error.required).toBeFalsy();
       });
 
       it('should be valid even if value 0 is set from model', function() {
@@ -584,7 +584,7 @@ describe('input', function() {
 
         expect(inputElm).toBeValid();
         expect(inputElm.val()).toBe('0')
-        expect(scope.form.alias.$error.REQUIRED).toBeFalsy();
+        expect(scope.form.alias.$error.required).toBeFalsy();
       });
     });
   });
@@ -599,12 +599,12 @@ describe('input', function() {
 
       expect(scope.email).toBe('vojta@google.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.EMAIL).toBeUndefined();
+      expect(widget.$error.email).toBeUndefined();
 
       changeInputValueTo('invalid@');
       expect(scope.email).toBeUndefined();
       expect(inputElm).toBeInvalid();
-      expect(widget.$error.EMAIL).toBeTruthy();
+      expect(widget.$error.email).toBeTruthy();
     });
 
 
@@ -627,12 +627,12 @@ describe('input', function() {
       changeInputValueTo('http://www.something.com');
       expect(scope.url).toBe('http://www.something.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.URL).toBeUndefined();
+      expect(widget.$error.url).toBeUndefined();
 
       changeInputValueTo('invalid.com');
       expect(scope.url).toBeUndefined();
       expect(inputElm).toBeInvalid();
-      expect(widget.$error.URL).toBeTruthy();
+      expect(widget.$error.url).toBeTruthy();
     });
 
 

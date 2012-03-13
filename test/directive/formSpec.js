@@ -38,12 +38,12 @@ describe('form', function() {
         '</form>')(scope);
 
     var form = scope.myForm;
-    control.$setValidity('REQUIRED', false);
+    control.$setValidity('required', false);
     expect(form.alias).toBe(control);
-    expect(form.$error.REQUIRED).toEqual([control]);
+    expect(form.$error.required).toEqual([control]);
 
     doc.find('input').remove();
-    expect(form.$error.REQUIRED).toBeUndefined();
+    expect(form.$error.required).toBeUndefined();
     expect(form.alias).toBeUndefined();
   });
 
@@ -131,10 +131,10 @@ describe('form', function() {
 
     scope.$apply();
 
-    expect(scope.formA.$error.REQUIRED.length).toBe(1);
-    expect(scope.formA.$error.REQUIRED).toEqual([scope.formA.firstName]);
-    expect(scope.formB.$error.REQUIRED.length).toBe(1);
-    expect(scope.formB.$error.REQUIRED).toEqual([scope.formB.lastName]);
+    expect(scope.formA.$error.required.length).toBe(1);
+    expect(scope.formA.$error.required).toEqual([scope.formA.firstName]);
+    expect(scope.formB.$error.required.length).toBe(1);
+    expect(scope.formB.$error.required).toEqual([scope.formB.lastName]);
 
     var inputA = doc.find('input').eq(0),
         inputB = doc.find('input').eq(1);
@@ -147,8 +147,8 @@ describe('form', function() {
     expect(scope.firstName).toBe('val1');
     expect(scope.lastName).toBe('val2');
 
-    expect(scope.formA.$error.REQUIRED).toBeUndefined();
-    expect(scope.formB.$error.REQUIRED).toBeUndefined();
+    expect(scope.formA.$error.required).toBeUndefined();
+    expect(scope.formB.$error.required).toBeUndefined();
   });
 
 
