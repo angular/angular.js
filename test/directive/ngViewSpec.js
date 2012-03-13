@@ -317,9 +317,11 @@ describe('ng-view', function() {
     var createCtrl = function(name) {
       return function($scope) {
         log.push('init-' + name);
-        $scope.$on('$destroy', function() {
+        var destroy = $scope.$destroy;
+        $scope.$destroy = function() {
           log.push('destroy-' + name);
-        });
+          destroy.call($scope);
+        }
       };
     };
 
@@ -367,7 +369,11 @@ describe('ng-view', function() {
     function createController(name) {
       return function($scope) {
         log.push('init-' + name);
-        $scope.$on('$destroy', logger('destroy-' + name));
+        var destroy = $scope.$destroy;
+        $scope.$destroy = function() {
+          log.push('destroy-' + name);
+          destroy.call($scope);
+        }
         $scope.$on('$routeUpdate', logger('route-update'));
       };
     }
