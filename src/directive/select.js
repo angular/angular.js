@@ -34,7 +34,7 @@
  *   * binding to a value not in list confuses most browsers.
  *
  * @param {string} name assignable expression to data-bind to.
- * @param {string=} required The widget is considered valid only if value is entered.
+ * @param {string=} required The control is considered valid only if value is entered.
  * @param {comprehension_expression=} ng-options in one of the following forms:
  *
  *   * for array data sources:
