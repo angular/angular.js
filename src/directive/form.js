@@ -4,7 +4,8 @@
 var nullFormCtrl = {
   $addControl: noop,
   $removeControl: noop,
-  $setValidity: noop
+  $setValidity: noop,
+  $setDirty: noop
 }
 
 /**

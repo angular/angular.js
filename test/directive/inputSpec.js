@@ -1,21 +1,35 @@
 'use strict';
 
 describe('NgModelController', function() {
-  var ctrl, scope, ngModelAccessor;
+  var ctrl, scope, ngModelAccessor, element, parentFormCtrl;
 
   beforeEach(inject(function($rootScope, $controller) {
     var attrs = {name: 'testAlias'};
 
+    parentFormCtrl = {
+      $setValidity: jasmine.createSpy('$setValidity'),
+      $setDirty: jasmine.createSpy('$setDirty')
+    }
+
+    element = jqLite('<form><input></form>');
+    element.data('$formController', parentFormCtrl);
+
     scope = $rootScope;
     ngModelAccessor = jasmine.createSpy('ngModel accessor');
-    ctrl = $controller(NgModelController, {$scope: scope, ngModel: ngModelAccessor, $attrs: attrs});
-
+    ctrl = $controller(NgModelController, {
+      $scope: scope, $element: element.find('input'), ngModel: ngModelAccessor, $attrs: attrs
+    });
     // mock accessor (locals)
     ngModelAccessor.andCallFake(function(val) {
       if (isDefined(val)) scope.value = val;
       return scope.value;
     });
   }));
+
+
+  afterEach(function() {
+    dealoc(element);
+  });
 
 
   it('should init the properties', function() {
@@ -37,15 +51,13 @@ describe('NgModelController', function() {
   describe('setValidity', function() {
 
     it('should propagate invalid to the parent form only when valid', function() {
-      var spy = jasmine.createSpy('setValidity');
-      ctrl.$form = {$setValidity: spy};
-
+      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
       ctrl.$setValidity('ERROR', false);
-      expect(spy).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
 
-      spy.reset();
+      parentFormCtrl.$setValidity.reset();
       ctrl.$setValidity('ERROR', false);
-      expect(spy).not.toHaveBeenCalled();
+      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
     });
 
 
@@ -78,17 +90,14 @@ describe('NgModelController', function() {
 
 
     it('should emit $valid only when $invalid', function() {
-      var spy = jasmine.createSpy('setValidity');
-      ctrl.$form = {$setValidity: spy};
-
       ctrl.$setValidity('ERROR', true);
-      expect(spy).not.toHaveBeenCalled();
+      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
 
       ctrl.$setValidity('ERROR', false);
-      expect(spy).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
-      spy.reset();
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
+      parentFormCtrl.$setValidity.reset();
       ctrl.$setValidity('ERROR', true);
-      expect(spy).toHaveBeenCalledOnceWith('ERROR', true, ctrl);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', true, ctrl);
     });
   });
 
@@ -147,20 +156,17 @@ describe('NgModelController', function() {
     });
 
 
-    it('should call parentForm.setDirty only when pristine', function() {
-      var spy = jasmine.createSpy('setDirty');
-      ctrl.$form = {$setDirty: spy};
-
+    it('should call parentForm.$setDirty only when pristine', function() {
       ctrl.$setViewValue('');
       expect(ctrl.$pristine).toBe(false);
       expect(ctrl.$dirty).toBe(true);
-      expect(spy).toHaveBeenCalledOnce();
+      expect(parentFormCtrl.$setDirty).toHaveBeenCalledOnce();
 
-      spy.reset();
+      parentFormCtrl.$setDirty.reset();
       ctrl.$setViewValue('');
       expect(ctrl.$pristine).toBe(false);
       expect(ctrl.$dirty).toBe(true);
-      expect(spy).not.toHaveBeenCalled();
+      expect(parentFormCtrl.$setDirty).not.toHaveBeenCalled();
     });
   });
 
