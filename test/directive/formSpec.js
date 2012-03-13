@@ -94,29 +94,6 @@ describe('form', function() {
   });
 
 
-  it('should chain nested forms', function() {
-    doc = jqLite(
-        '<ng:form name="parent">' +
-          '<ng:form name="child">' +
-            '<input ng:model="modelA" name="inputA">' +
-          '</ng:form>' +
-        '</ng:form>');
-    $compile(doc)(scope);
-
-    var parent = scope.parent;
-    var child = scope.child;
-    var input = child.inputA;
-
-    input.$setValidity('MyError', false);
-    expect(parent.$error.MyError).toEqual([child]);
-    expect(child.$error.MyError).toEqual([input]);
-
-    input.$setValidity('MyError', true);
-    expect(parent.$error.MyError).toBeUndefined();
-    expect(child.$error.MyError).toBeUndefined();
-  });
-
-
   it('should support two forms on a single scope', function() {
     doc = $compile(
       '<div>' +
@@ -152,38 +129,6 @@ describe('form', function() {
   });
 
 
-  it('should chain nested forms in repeater', function() {
-    doc = jqLite(
-       '<ng:form name=parent>' +
-        '<ng:form ng:repeat="f in forms" name=child>' +
-          '<input type=text ng:model=text name=text>' +
-         '</ng:form>' +
-       '</ng:form>');
-    $compile(doc)(scope);
-
-    scope.$apply(function() {
-      scope.forms = [1];
-    });
-
-    var parent = scope.parent;
-    var child = doc.find('input').scope().child;
-    var input = child.text;
-
-    expect(parent).toBeDefined();
-    expect(child).toBeDefined();
-    expect(input).toBeDefined();
-
-    input.$setValidity('myRule', false);
-    expect(input.$error.myRule).toEqual(true);
-    expect(child.$error.myRule).toEqual([input]);
-    expect(parent.$error.myRule).toEqual([child]);
-
-    input.$setValidity('myRule', true);
-    expect(parent.$error.myRule).toBeUndefined();
-    expect(child.$error.myRule).toBeUndefined();
-  });
-
-
   it('should publish widgets', function() {
     doc = jqLite('<form name="form"><input type="text" name="w1" ng-model="some" /></form>');
     $compile(doc)(scope);
@@ -195,6 +140,93 @@ describe('form', function() {
     expect(widget.$valid).toBe(true);
     expect(widget.$invalid).toBe(false);
   });
+
+
+  describe('nested forms', function() {
+
+    it('should chain nested forms', function() {
+      doc = jqLite(
+          '<ng:form name="parent">' +
+            '<ng:form name="child">' +
+              '<input ng:model="modelA" name="inputA">' +
+              '<input ng:model="modelB" name="inputB">' +
+            '</ng:form>' +
+          '</ng:form>');
+      $compile(doc)(scope);
+
+      var parent = scope.parent,
+          child = scope.child,
+          inputA = child.inputA,
+          inputB = child.inputB;
+
+      inputA.$setValidity('MyError', false);
+      inputB.$setValidity('MyError', false);
+      expect(parent.$error.MyError).toEqual([child]);
+      expect(child.$error.MyError).toEqual([inputA, inputB]);
+
+      inputA.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toEqual([child]);
+      expect(child.$error.MyError).toEqual([inputB]);
+
+      inputB.$setValidity('MyError', true);
+      expect(parent.$error.MyError).toBeUndefined();
+      expect(child.$error.MyError).toBeUndefined();
+    });
+
+
+    it('should deregister a child form when its DOM is removed', function() {
+      doc = jqLite(
+          '<ng:form name="parent">' +
+            '<ng:form name="child">' +
+              '<input ng:model="modelA" name="inputA" required>' +
+            '</ng:form>' +
+          '</ng:form>');
+      $compile(doc)(scope);
+      scope.$apply();
+
+      var parent = scope.parent,
+          child = scope.child;
+
+      expect(parent.$error.required).toEqual([child]);
+      doc.children().remove(); //remove child
+
+      expect(parent.child).toBeUndefined();
+      expect(scope.child).toBeUndefined();
+      expect(parent.$error.required).toBeUndefined();
+    });
+
+
+    it('should chain nested forms in repeater', function() {
+      doc = jqLite(
+         '<ng:form name=parent>' +
+          '<ng:form ng:repeat="f in forms" name=child>' +
+            '<input type=text ng:model=text name=text>' +
+           '</ng:form>' +
+         '</ng:form>');
+      $compile(doc)(scope);
+
+      scope.$apply(function() {
+        scope.forms = [1];
+      });
+
+      var parent = scope.parent;
+      var child = doc.find('input').scope().child;
+      var input = child.text;
+
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
+      expect(input).toBeDefined();
+
+      input.$setValidity('myRule', false);
+      expect(input.$error.myRule).toEqual(true);
+      expect(child.$error.myRule).toEqual([input]);
+      expect(parent.$error.myRule).toEqual([child]);
+
+      input.$setValidity('myRule', true);
+      expect(parent.$error.myRule).toBeUndefined();
+      expect(child.$error.myRule).toBeUndefined();
+    });
+  })
 
 
   describe('validation', function() {
