@@ -80,7 +80,7 @@ function publishExternalAPI(angular){
             ngClassOdd: ngClassOddDirective,
             ngCloak: ngCloakDirective,
             ngController: ngControllerDirective,
-            ngForm: formDirective,
+            ngForm: ngFormDirective,
             ngHide: ngHideDirective,
             ngInclude: ngIncludeDirective,
             ngInit: ngInitDirective,
