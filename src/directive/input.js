@@ -1101,6 +1101,8 @@ var requiredDirective = [function() {
  * Text input that converts between comma-seperated string into an array of strings.
  *
  * @element input
+ * @param {string=} ng-list optional delimiter that should be used to split the value. If
+ *   specified in form `/something/` then the value will be converted into a regular expression.
  *
  * @example
     <doc:example>
@@ -1139,12 +1141,15 @@ var ngListDirective = function() {
   return {
     require: 'ngModel',
     link: function(scope, element, attr, ctrl) {
+      var match = /\/(.*)\//.exec(attr.ngList),
+          separator = match && new RegExp(match[1]) || attr.ngList || ',';
+
       var parse = function(viewValue) {
         var list = [];
 
         if (viewValue) {
-          forEach(viewValue.split(/\s*,\s*/), function(value) {
-            if (value) list.push(value);
+          forEach(viewValue.split(separator), function(value) {
+            if (value) list.push(trim(value));
           });
         }
 

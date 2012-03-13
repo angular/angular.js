@@ -871,6 +871,28 @@ describe('input', function() {
       changeInputValueTo('');
       expect(scope.list).toEqual([]);
     });
+
+
+    it('should allow custom separator', function() {
+      compileInput('<input type="text" ng-model="list" ng-list=":" />');
+
+      changeInputValueTo('a,a');
+      expect(scope.list).toEqual(['a,a']);
+
+      changeInputValueTo('a:b');
+      expect(scope.list).toEqual(['a', 'b']);
+    });
+
+
+    it('should allow regexp as a separator', function() {
+      compileInput('<input type="text" ng-model="list" ng-list="/:|,/" />');
+
+      changeInputValueTo('a,b');
+      expect(scope.list).toEqual(['a', 'b']);
+
+      changeInputValueTo('a,b: c');
+      expect(scope.list).toEqual(['a', 'b', 'c']);
+    });
   });
 
   describe('required', function() {
