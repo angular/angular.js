@@ -393,16 +393,6 @@ describe('Scope', function() {
       $rootScope.$digest();
       expect(log).toEqual('12');
     }));
-
-    it('should fire a $destroy event', inject(function($rootScope) {
-      var destructedScopes = [];
-      middle.$on('$destroy', function(event) {
-        destructedScopes.push(event.currentScope);
-      });
-      middle.$destroy();
-      expect(destructedScopes).toEqual([middle]);
-    }));
-
   });
 
 

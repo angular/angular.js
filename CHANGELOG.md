@@ -209,6 +209,11 @@ behavior and migrate your controllers one at a time: <https://gist.github.com/16
   - before: `scope.$watch('expression', function(scope, newVal, oldVal) {})`
   - after: `scope.$watch('expression', function(newVal, oldVal, scope) {}, true)`
 
+- `scope.$destroy` doesn't cause the `$destroy` event to be emitted any more - this event was
+   primarily used by the old forms implementation and is not needed any more. We are considering
+   broadcasting this event in the future, which could then be used by directives and child scopes to
+   be notified of their scope destruction.
+
 
 ## New directives:
 

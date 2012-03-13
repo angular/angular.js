@@ -1743,12 +1743,9 @@ describe('$compile', function() {
         expect(widgetScope.$parent).toEqual($rootScope);
         expect(transcludeScope.$parent).toEqual($rootScope);
 
-        var removed = 0;
-        $rootScope.$on('$destroy', function() { removed++; });
         $rootScope.select = false;
         $rootScope.$apply();
         expect(element.text()).toEqual('Hello: Misko!');
-        expect(removed).toEqual(1);
         expect(widgetScope.$$nextSibling).toEqual(null);
       });
     });
