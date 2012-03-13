@@ -138,8 +138,8 @@ This allows us to extend the above example with these features:
     E-mail:
       <input type="email" ng-model="user.email" name="uEmail" required/><br />
     <div ng-show="form.uEmail.$dirty && form.uEmail.$invalid">Invalid:
-      <span ng-show="form.uEmail.$error.REQUIRED">Tell us your email.</span>
-      <span ng-show="form.uEmail.$error.EMAIL">This is not a valid email.</span>
+      <span ng-show="form.uEmail.$error.required">Tell us your email.</span>
+      <span ng-show="form.uEmail.$error.email">This is not a valid email.</span>
     </div>
 
     Gender: <input type="radio" ng-model="user.gender" value="male" />male
@@ -216,8 +216,8 @@ In the following example we create two directives.
       Size (integer 0 - 10):
       <input type="number" ng-model="size" name="size"
              min="0" max="10" integer />{{size}}<br />
-      <span ng-show="form.size.$error.INTEGER">This is not valid integer!</span>
-      <span ng-show="form.size.$error.MIN || form.size.$error.MAX">
+      <span ng-show="form.size.$error.integer">This is not valid integer!</span>
+      <span ng-show="form.size.$error.min || form.size.$error.max">
         The value must be in range 0 to 10!</span>
     </div>
 
@@ -225,7 +225,8 @@ In the following example we create two directives.
       Length (float):
       <input type="text" ng-model="length" name="length" smart-float />
       {{length}}<br />
-      <span ng-show="form.length.$error.FLOAT">This is not valid number!</span>
+      <span ng-show="form.length.$error.float">
+        This is not a valid float number!</span>
     </div>
   </form>
 </div>
@@ -241,11 +242,11 @@ In the following example we create two directives.
         ctrl.$parsers.unshift(function(viewValue) {
           if (INTEGER_REGEXP.test(viewValue)) {
             // it is valid
-            ctrl.$setValidity('INTEGER', true);
+            ctrl.$setValidity('integer', true);
             return viewValue;
           } else {
             // it is invalid, return undefined (no model update)
-            ctrl.$setValidity('INTEGER', false);
+            ctrl.$setValidity('integer', false);
             return undefined;
           }
         });
@@ -260,10 +261,10 @@ In the following example we create two directives.
       link: function(scope, elm, attrs, ctrl) {
         ctrl.$parsers.unshift(function(viewValue) {
           if (FLOAT_REGEXP.test(viewValue)) {
-            ctrl.$setValidity('FLOAT', true);
+            ctrl.$setValidity('float', true);
             return parseFloat(viewValue.replace(',', '.'));
           } else {
-            ctrl.$setValidity('FLOAT', false);
+            ctrl.$setValidity('float', false);
             return undefined;
           }
         });
