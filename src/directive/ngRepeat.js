@@ -5,7 +5,7 @@
  * @name angular.module.ng.$compileProvider.directive.ng-repeat
  *
  * @description
- * The `ng-repeat` widget instantiates a template once per item from a collection. Each template
+ * The `ng-repeat` directive instantiates a template once per item from a collection. Each template
  * instance gets its own scope, where the given loop variable is set to the current collection item,
  * and `$index` is set to the item index or key.
  *
@@ -17,7 +17,6 @@
  *        * `'middle'`
  *        * `'last'`
  *
- * Note: Although `ng-repeat` looks like a directive, it is actually an attribute widget.
  *
  * @element ANY
  * @scope

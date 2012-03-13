@@ -28,7 +28,7 @@ function $RouteProvider(){
    *      created scope.
    *    - `template` – `{string=}` – path to an html template that should be used by
    *      {@link angular.module.ng.$compileProvider.directive.ng-view ng-view} or
-   *      {@link angular.module.ng.$compileProvider.directive.ng-include ng-include} widgets.
+   *      {@link angular.module.ng.$compileProvider.directive.ng-include ng-include} directives.
    *    - `redirectTo` – {(string|function())=} – value to update
    *      {@link angular.module.ng.$location $location} path with and trigger route redirection.
    *

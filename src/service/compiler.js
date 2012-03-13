@@ -116,12 +116,6 @@
  *   </pre>
  *
  *
- * Compiler Methods For Widgets and Directives:
- *
- * The following methods are available for use when you write your own widgets, directives,
- * and markup.
- *
- *
  * For information on how the compiler works, see the
  * {@link guide/dev_guide.compiler Angular HTML Compiler} section of the Developer Guide.
  */
@@ -427,7 +421,7 @@ function $CompileProvider($provide) {
 
     /**
      * Once the directives have been collected their compile functions is executed. This method
-     * is responsible for inlining widget templates as well as terminating the application
+     * is responsible for inlining directive templates as well as terminating the application
      * of the directives if the terminal directive has been reached..
      *
      * @param {Array} directives Array of collected directives to execute their compile function.
