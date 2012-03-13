@@ -43,7 +43,7 @@ describe('form', function() {
     expect(form.$error.required).toEqual([control]);
 
     doc.find('input').remove();
-    expect(form.$error.required).toBeUndefined();
+    expect(form.$error.required).toBe(false);
     expect(form.alias).toBeUndefined();
   });
 
@@ -94,6 +94,29 @@ describe('form', function() {
   });
 
 
+  it('should chain nested forms', function() {
+    doc = jqLite(
+        '<ng:form name="parent">' +
+          '<ng:form name="child">' +
+            '<input ng:model="modelA" name="inputA">' +
+          '</ng:form>' +
+        '</ng:form>');
+    $compile(doc)(scope);
+
+    var parent = scope.parent;
+    var child = scope.child;
+    var input = child.inputA;
+
+    input.$setValidity('MyError', false);
+    expect(parent.$error.MyError).toEqual([child]);
+    expect(child.$error.MyError).toEqual([input]);
+
+    input.$setValidity('MyError', true);
+    expect(parent.$error.MyError).toBe(false);
+    expect(child.$error.MyError).toBe(false);
+  });
+
+
   it('should support two forms on a single scope', function() {
     doc = $compile(
       '<div>' +
@@ -124,8 +147,8 @@ describe('form', function() {
     expect(scope.firstName).toBe('val1');
     expect(scope.lastName).toBe('val2');
 
-    expect(scope.formA.$error.required).toBeUndefined();
-    expect(scope.formB.$error.required).toBeUndefined();
+    expect(scope.formA.$error.required).toBe(false);
+    expect(scope.formB.$error.required).toBe(false);
   });
 
 
@@ -169,30 +192,32 @@ describe('form', function() {
       expect(child.$error.MyError).toEqual([inputB]);
 
       inputB.$setValidity('MyError', true);
-      expect(parent.$error.MyError).toBeUndefined();
-      expect(child.$error.MyError).toBeUndefined();
+      expect(parent.$error.MyError).toBe(false);
+      expect(child.$error.MyError).toBe(false);
     });
 
 
     it('should deregister a child form when its DOM is removed', function() {
       doc = jqLite(
-          '<ng:form name="parent">' +
-            '<ng:form name="child">' +
+          '<form name="parent">' +
+            '<div class="ng-form" name="child">' +
               '<input ng:model="modelA" name="inputA" required>' +
-            '</ng:form>' +
-          '</ng:form>');
+            '</div>' +
+          '</form>');
       $compile(doc)(scope);
       scope.$apply();
 
       var parent = scope.parent,
           child = scope.child;
 
+      expect(parent).toBeDefined();
+      expect(child).toBeDefined();
       expect(parent.$error.required).toEqual([child]);
       doc.children().remove(); //remove child
 
       expect(parent.child).toBeUndefined();
       expect(scope.child).toBeUndefined();
-      expect(parent.$error.required).toBeUndefined();
+      expect(parent.$error.required).toBe(false);
     });
 
 
@@ -223,8 +248,8 @@ describe('form', function() {
       expect(parent.$error.myRule).toEqual([child]);
 
       input.$setValidity('myRule', true);
-      expect(parent.$error.myRule).toBeUndefined();
-      expect(child.$error.myRule).toBeUndefined();
+      expect(parent.$error.myRule).toBe(false);
+      expect(child.$error.myRule).toBe(false);
     });
   })
 
@@ -244,20 +269,30 @@ describe('form', function() {
     it('should have ng-valid/ng-invalid css class', function() {
       expect(doc).toBeValid();
 
-      control.$setValidity('ERROR', false);
-      scope.$apply();
+      control.$setValidity('error', false);
       expect(doc).toBeInvalid();
+      expect(doc.hasClass('ng-valid-error')).toBe(false);
+      expect(doc.hasClass('ng-invalid-error')).toBe(true);
 
-      control.$setValidity('ANOTHER', false);
-      scope.$apply();
+      control.$setValidity('another', false);
+      expect(doc.hasClass('ng-valid-error')).toBe(false);
+      expect(doc.hasClass('ng-invalid-error')).toBe(true);
+      expect(doc.hasClass('ng-valid-another')).toBe(false);
+      expect(doc.hasClass('ng-invalid-another')).toBe(true);
 
-      control.$setValidity('ERROR', true);
-      scope.$apply();
+      control.$setValidity('error', true);
       expect(doc).toBeInvalid();
+      expect(doc.hasClass('ng-valid-error')).toBe(true);
+      expect(doc.hasClass('ng-invalid-error')).toBe(false);
+      expect(doc.hasClass('ng-valid-another')).toBe(false);
+      expect(doc.hasClass('ng-invalid-another')).toBe(true);
 
-      control.$setValidity('ANOTHER', true);
-      scope.$apply();
+      control.$setValidity('another', true);
       expect(doc).toBeValid();
+      expect(doc.hasClass('ng-valid-error')).toBe(true);
+      expect(doc.hasClass('ng-invalid-error')).toBe(false);
+      expect(doc.hasClass('ng-valid-another')).toBe(true);
+      expect(doc.hasClass('ng-invalid-another')).toBe(false);
     });
 
 

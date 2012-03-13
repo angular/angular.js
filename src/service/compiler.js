@@ -381,10 +381,10 @@ function $CompileProvider($provide) {
             attrs[nName] = value = trim((msie && name == 'href')
                 ? decodeURIComponent(node.getAttribute(name, 2))
                 : attr.value);
-            if (BOOLEAN_ATTR[nName]) {
+            if (isBooleanAttr(node, nName)) {
               attrs[nName] = true; // presence means true
             }
-            addAttrInterpolateDirective(directives, value, nName)
+            addAttrInterpolateDirective(node, directives, value, nName)
             addDirective(directives, nName, 'A', maxPriority);
           }
 
@@ -852,11 +852,11 @@ function $CompileProvider($provide) {
     }
 
 
-    function addAttrInterpolateDirective(directives, value, name) {
+    function addAttrInterpolateDirective(node, directives, value, name) {
       var interpolateFn = $interpolate(value, true);
       if (SIDE_EFFECT_ATTRS[name]) {
         name = SIDE_EFFECT_ATTRS[name];
-        if (BOOLEAN_ATTR[name]) {
+        if (isBooleanAttr(node, name)) {
           value = true;
         }
       } else if (!interpolateFn) {
@@ -921,7 +921,7 @@ function $CompileProvider($provide) {
      * @param {string=} attrName Optional none normalized name. Defaults to key.
      */
     function attrSetter(key, value, attrName) {
-      var booleanKey = BOOLEAN_ATTR[key.toLowerCase()];
+      var booleanKey = isBooleanAttr(this.$element[0], key.toLowerCase());
 
       if (booleanKey) {
         value = toBoolean(value);

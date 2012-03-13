@@ -1226,20 +1226,39 @@ describe('$compile', function() {
     });
 
 
-    it('should read boolean attributes as boolean', function() {
+    it('should read boolean attributes as boolean only on control elements', function() {
+      var value;
       module(function($compileProvider) {
         $compileProvider.directive({
-          div: valueFn({
+          input: valueFn({
             restrict: 'ECA',
             link:function(scope, element, attr) {
-              element.text(attr.required);
+              value = attr.required;
             }
           })
         });
       });
       inject(function($rootScope, $compile) {
-        element = $compile('<div required></div>')($rootScope);
-        expect(element.text()).toEqual('true');
+        element = $compile('<input required></input>')($rootScope);
+        expect(value).toEqual(true);
+      });
+    });
+
+    it('should read boolean attributes as text on non-controll elements', function() {
+      var value;
+      module(function($compileProvider) {
+        $compileProvider.directive({
+          div: valueFn({
+            restrict: 'ECA',
+            link:function(scope, element, attr) {
+              value = attr.required;
+            }
+          })
+        });
+      });
+      inject(function($rootScope, $compile) {
+        element = $compile('<div required="some text"></div>')($rootScope);
+        expect(value).toEqual('some text');
       });
     });
 
@@ -1258,24 +1277,6 @@ describe('$compile', function() {
         element = $compile('<div setter></div>')($rootScope);
         expect(element.attr('name')).toEqual('abc');
         expect(element.attr('disabled')).toEqual('disabled');
-      });
-    });
-
-
-    it('should read boolean attributes as boolean', function() {
-      module(function($compileProvider) {
-        $compileProvider.directive({
-          div: valueFn({
-            restrict: 'ECA',
-            link: function(scope, element, attr) {
-              element.text(attr.required);
-            }
-          })
-        });
-      });
-      inject(function($rootScope, $compile) {
-        element = $compile('<div required></div>')($rootScope);
-        expect(element.text()).toEqual('true');
       });
     });
 
@@ -1335,7 +1336,7 @@ describe('$compile', function() {
       var attr;
       beforeEach(function(){
         module(function($compileProvider) {
-          $compileProvider.directive('div', valueFn({
+          $compileProvider.directive('input', valueFn({
             restrict: 'ECA',
             link: function(scope, element, attr) {
               scope.attr = attr;
@@ -1343,7 +1344,7 @@ describe('$compile', function() {
           }));
         });
         inject(function($compile, $rootScope) {
-          element = $compile('<div></div>')($rootScope);
+          element = $compile('<input></input>')($rootScope);
           attr = $rootScope.attr;
           expect(attr).toBeDefined();
         });

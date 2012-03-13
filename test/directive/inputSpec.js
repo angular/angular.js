@@ -66,38 +66,39 @@ describe('NgModelController', function() {
       expect(ctrl.$error.required).toBe(true);
 
       ctrl.$setValidity('required', true);
-      expect(ctrl.$error.required).toBeUndefined();
+      expect(ctrl.$error.required).toBe(false);
     });
 
 
     it('should set valid/invalid', function() {
-      ctrl.$setValidity('FIRST', false);
+      ctrl.$setValidity('first', false);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
-      ctrl.$setValidity('SECOND', false);
+      ctrl.$setValidity('second', false);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
-      ctrl.$setValidity('SECOND', true);
+      ctrl.$setValidity('second', true);
       expect(ctrl.$valid).toBe(false);
       expect(ctrl.$invalid).toBe(true);
 
-      ctrl.$setValidity('FIRST', true);
+      ctrl.$setValidity('first', true);
       expect(ctrl.$valid).toBe(true);
       expect(ctrl.$invalid).toBe(false);
     });
 
 
     it('should emit $valid only when $invalid', function() {
-      ctrl.$setValidity('ERROR', true);
-      expect(parentFormCtrl.$setValidity).not.toHaveBeenCalled();
-
-      ctrl.$setValidity('ERROR', false);
-      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', false, ctrl);
+      ctrl.$setValidity('error', true);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', true, ctrl);
       parentFormCtrl.$setValidity.reset();
-      ctrl.$setValidity('ERROR', true);
-      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('ERROR', true, ctrl);
+
+      ctrl.$setValidity('error', false);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', false, ctrl);
+      parentFormCtrl.$setValidity.reset();
+      ctrl.$setValidity('error', true);
+      expect(parentFormCtrl.$setValidity).toHaveBeenCalledOnceWith('error', true, ctrl);
     });
   });
 
@@ -152,7 +153,7 @@ describe('NgModelController', function() {
       ctrl.$parsers.push(function() {return undefined;});
       expect(ctrl.$modelValue).toBe('aaaa');
       ctrl.$setViewValue('bbbb');
-      expect(ctrl.$modelValue).toBeUndefined;
+      expect(ctrl.$modelValue).toBeUndefined();
     });
 
 
@@ -241,22 +242,30 @@ describe('ng-model', function() {
     $rootScope.$digest();
     expect(element).toBeValid();
     expect(element).toBePristine();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
 
     $rootScope.$apply(function() {
       $rootScope.value = 'invalid-email';
     });
     expect(element).toBeInvalid();
     expect(element).toBePristine();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('invalid-again');
     browserTrigger(element, 'blur');
     expect(element).toBeInvalid();
     expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(false);
+    expect(element.hasClass('ng-invalid-email')).toBe(true);
 
     element.val('vojta@google.com');
     browserTrigger(element, 'blur');
     expect(element).toBeValid();
     expect(element).toBeDirty();
+    expect(element.hasClass('ng-valid-email')).toBe(true);
+    expect(element.hasClass('ng-invalid-email')).toBe(false);
 
     dealoc(element);
   }));
@@ -305,7 +314,7 @@ describe('input', function() {
     expect(scope.form.$error.required.length).toBe(1);
 
     inputElm.remove();
-    expect(scope.form.$error.required).toBeUndefined();
+    expect(scope.form.$error.required).toBe(false);
   });
 
 
@@ -605,7 +614,7 @@ describe('input', function() {
 
       expect(scope.email).toBe('vojta@google.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.email).toBeUndefined();
+      expect(widget.$error.email).toBe(false);
 
       changeInputValueTo('invalid@');
       expect(scope.email).toBeUndefined();
@@ -633,7 +642,7 @@ describe('input', function() {
       changeInputValueTo('http://www.something.com');
       expect(scope.url).toBe('http://www.something.com');
       expect(inputElm).toBeValid();
-      expect(widget.$error.url).toBeUndefined();
+      expect(widget.$error.url).toBe(false);
 
       changeInputValueTo('invalid.com');
       expect(scope.url).toBeUndefined();
