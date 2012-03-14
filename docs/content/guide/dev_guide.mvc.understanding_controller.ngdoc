@@ -207,11 +207,10 @@ are applied to the scope object.
 ## Testing Controllers
 
 Although there are many ways to test a controller, one of the best conventions, shown below,
-involves injecting the `$rootScope` and `$controller` in order to create the same scope hierarchy
-in your test as exist in the DOM.
+involves injecting the `$rootScope` and `$controller`
 
 Controller Function:
-</pre>
+<pre>
 function myController($scope) {
    $scope.spices = [{"name":"pasilla", "spiciness":"mild"},
                   {"name":"jalapeno", "spiceiness":"hot hot hot!"},
@@ -245,7 +244,8 @@ describe('myController function', function() {
 </pre>
 
 
-If you need to test a nested controller you need to setup the same nesting of scopes in your test:
+If you need to test a nested controller one needs to create the same scope hierarchy
+in your test as exist in the DOM.
 
 <pre>
 describe('state', function() {
