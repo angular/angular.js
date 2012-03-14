@@ -236,6 +236,10 @@ objects with additional behavior. By prefixing its additions with $ we are reser
 so that angular developers and developers who use angular can develop in harmony without collisions.
 
 
+## Related Topics
+
+* {@link dev_guide.templates.filters Understanding Angular Filters}
+
 ## Related API
 
 * {@link api/angular.module.ng.$compile Angular Compiler API}
