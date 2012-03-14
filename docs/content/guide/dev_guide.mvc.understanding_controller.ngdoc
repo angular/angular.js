@@ -206,19 +206,17 @@ are applied to the scope object.
 
 ## Testing Controllers
 
-The way to test a controller depends upon how complicated the controller is.
-
-- If your controller doesn't use DI or scope methods — create the controller with the `new`
-operator and test away. For example:
+Although there are many ways to test a controller, one of the best conventions, shown below,
+involves injecting the `$rootScope` and `$controller`
 
 Controller Function:
 <pre>
-function myController() {
-   this.spices = [{"name":"pasilla", "spiciness":"mild"},
+function myController($scope) {
+   $scope.spices = [{"name":"pasilla", "spiciness":"mild"},
                   {"name":"jalapeno", "spiceiness":"hot hot hot!"},
                   {"name":"habanero", "spiceness":"LAVA HOT!!"}];
 
-   this.spice = "habanero";
+   $scope.spice = "habanero";
 }
 </pre>
 
@@ -227,27 +225,51 @@ Controller Test:
 describe('myController function', function() {
 
   describe('myController', function() {
-    var ctrl;
+    var scope;
 
-    beforeEach(function() {
-      ctrl = new myController();
-    });
+    beforeEach(inject(function($rootScope, $controller) {
+      scope = $rootScope.$new();
+      var ctrl = $controller(myController, {$scope: scope});
+    }));
 
     it('should create "spices" model with 3 spices', function() {
-      expect(ctrl.spices.length).toBe(3);
+      expect(scope.spices.length).toBe(3);
     });
 
     it('should set the default value of spice', function() {
-      expect(ctrl.spice).toBe('habanero');
+      expect(scope.spice).toBe('habanero');
     });
   });
 });
 </pre>
 
-- If your controller does use DI or scope methods — create a root scope, then create the controller
-in the root scope with `scope.$new(MyController)`. Test the controller using `$eval`, if necessary.
-- If you need to test a nested controller that depends on its parent's state — create a root scope,
-create a parent scope, create a child scope, and test the controller using $eval if necessary.
+
+If you need to test a nested controller one needs to create the same scope hierarchy
+in your test as exist in the DOM.
+
+<pre>
+describe('state', function() {
+    var mainScope, childScope, babyScope;
+
+    beforeEach(inject(function($rootScope, $controller) {
+        mainScope = $rootScope.$new();
+        var mainCtrl = $controller(MainCtrl, {$scope: mainScope});
+        childScope = mainScope.$new();
+        var childCtrl = $controller(ChildCtrl, {$scope: childScope});
+        babyScope = $rootScope.$new();
+        var babyCtrl = $controller(BabyCtrl, {$scope: babyScope});
+    }));
+
+    it('should have over and selected', function() {
+        expect(mainScope.timeOfDay).toBe('morning');
+        expect(mainScope.name).toBe('Nikki');
+        expect(childScope.timeOfDay).toBe('morning');
+        expect(childScope.name).toBe('Mattie');
+        expect(babyScope.timeOfDay).toBe('evening');
+        expect(babyScope.name).toBe('Gingerbreak Baby');
+    });
+});
+</pre>
 
 
 ## Related Topics
