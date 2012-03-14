@@ -60,4 +60,34 @@ describe('ng-switch', function() {
     expect($rootScope.name).toEqual('works');
     expect(element.text()).toEqual('works');
   }));
+
+
+  it('should properly create and destory child scopes', inject(function($rootScope, $compile) {
+    element = $compile(
+      '<ng:switch on="url">' +
+        '<div ng-switch-when="a">{{name}}</div>' +
+      '</ng:switch>')($rootScope);
+    $rootScope.$apply();
+
+    var getChildScope = function() { return element.find('div').scope(); };
+
+    expect(getChildScope()).toBeUndefined();
+
+    $rootScope.url = 'a';
+    $rootScope.$apply();
+    var child1 = getChildScope();
+    expect(child1).toBeDefined();
+    spyOn(child1, '$destroy');
+
+    $rootScope.url = 'x';
+    $rootScope.$apply();
+    expect(getChildScope()).toBeUndefined();
+    expect(child1.$destroy).toHaveBeenCalledOnce();
+
+    $rootScope.url = 'a';
+    $rootScope.$apply();
+    var child2 = getChildScope();
+    expect(child2).toBeDefined();
+    expect(child2).not.toBe(child1);
+  }));
 });

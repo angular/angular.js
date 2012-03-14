@@ -69,19 +69,21 @@ var ngSwitchDirective = valueFn({
     element.data(NG_SWITCH, cases);
     return function(scope, element){
       var selectedTransclude,
-          selectedElement;
+          selectedElement,
+          selectedScope;
 
       scope.$watch(watchExpr, function(value) {
         if (selectedElement) {
+          selectedScope.$destroy();
           selectedElement.remove();
-          selectedElement = null;
+          selectedElement = selectedScope = null;
         }
         if ((selectedTransclude = cases['!' + value] || cases['?'])) {
           scope.$eval(attr.change);
-          selectedTransclude(scope.$new(), function(caseElement, scope) {
+          selectedScope = scope.$new();
+          selectedTransclude(selectedScope, function(caseElement) {
             selectedElement = caseElement;
             element.append(caseElement);
-            element.bind('$destroy', bind(scope, scope.$destroy));
           });
         }
       });
